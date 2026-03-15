@@ -81,6 +81,22 @@ export const paymentHistorySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
 })
 
+// === Report Export ===
+
+const EXPORT_REPORT_TYPES = ['invoices', 'party_statement', 'stock_summary', 'day_book', 'payment_history'] as const
+const EXPORT_FORMATS = ['CSV', 'PDF'] as const
+
+export const exportReportSchema = z.object({
+  reportType: z.enum(EXPORT_REPORT_TYPES),
+  format: z.enum(EXPORT_FORMATS),
+  filters: z.record(z.unknown()).default({}),
+  options: z.object({
+    includeHeader: z.boolean().default(true),
+    businessName: z.string().optional(),
+    dateFormat: z.string().default('DD/MM/YYYY'),
+  }).optional(),
+})
+
 // === Inferred types ===
 
 export type DashboardStatsQuery = z.infer<typeof dashboardStatsSchema>
@@ -89,3 +105,4 @@ export type PartyStatementQuery = z.infer<typeof partyStatementSchema>
 export type StockSummaryQuery = z.infer<typeof stockSummarySchema>
 export type DayBookQuery = z.infer<typeof dayBookSchema>
 export type PaymentHistoryQuery = z.infer<typeof paymentHistorySchema>
+export type ExportReportQuery = z.infer<typeof exportReportSchema>

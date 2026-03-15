@@ -13,6 +13,7 @@ import {
   stockSummarySchema,
   dayBookSchema,
   paymentHistorySchema,
+  exportReportSchema,
 } from '../schemas/report.schemas.js'
 import * as reportService from '../services/report.service.js'
 
@@ -74,6 +75,31 @@ router.get(
     const query = paymentHistorySchema.parse(req.query)
     const result = await reportService.getPaymentHistory(businessId, query)
     sendSuccess(res, result)
+  })
+)
+
+/** POST /api/reports/export — Export report as CSV */
+router.post(
+  '/export',
+  asyncHandler(async (req, res) => {
+    const businessId = await resolveBusinessId(req.user!.userId)
+    const body = exportReportSchema.parse(req.body)
+    const result = await reportService.exportReport(
+      businessId, body.reportType, body.filters
+    )
+    // For CSV, return as downloadable file
+    if (body.format === 'CSV') {
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8')
+      res.setHeader('Content-Disposition', `attachment; filename="${result.fileName}"`)
+      res.send(result.csv)
+    } else {
+      // PDF export — Phase 2
+      sendSuccess(res, {
+        message: 'PDF export coming soon. Use CSV for now.',
+        fileName: result.fileName,
+        rowCount: result.rowCount,
+      })
+    }
   })
 )
 

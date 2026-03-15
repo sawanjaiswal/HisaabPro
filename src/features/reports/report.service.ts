@@ -24,7 +24,6 @@ import type {
   PaymentHistoryFilters,
   PaymentHistoryResponse,
   ExportRequest,
-  ExportResponse,
 } from './report.types'
 
 // ─── Invoice Report (Sale / Purchase) ─────────────────────────────────────────
@@ -120,13 +119,44 @@ export async function getPaymentHistory(
  * Note: PDF exports are capped at MAX_PDF_EXPORT_ROWS rows — the server will
  * reject requests exceeding this limit with 400 EXPORT_LIMIT_EXCEEDED.
  */
+/**
+ * Export a report as CSV download.
+ * Triggers a file download in the browser.
+ * PDF export is planned for Phase 2.
+ */
 export async function exportReport(
   request: ExportRequest,
   signal?: AbortSignal
-): Promise<ExportResponse> {
-  return api<ExportResponse>('/reports/export', {
+): Promise<void> {
+  const { API_URL } = await import('@/config/app.config')
+  const token = sessionStorage.getItem('accessToken')
+
+  const response = await fetch(`${API_URL}/reports/export`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     body: JSON.stringify(request),
     signal,
   })
+
+  if (!response.ok) {
+    throw new Error(`Export failed (${response.status})`)
+  }
+
+  // CSV: trigger browser download
+  const blob = await response.blob()
+  const disposition = response.headers.get('Content-Disposition') || ''
+  const match = disposition.match(/filename="(.+)"/)
+  const fileName = match?.[1] || `${request.reportType}-export.csv`
+
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = fileName
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
 }

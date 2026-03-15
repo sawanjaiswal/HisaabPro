@@ -42,7 +42,7 @@ export type ReportSortBy =
   | 'amount_desc'
 
 /** Export formats for all report types */
-export type ExportFormat = 'pdf' | 'xlsx' | 'csv'
+export type ExportFormat = 'PDF' | 'CSV'
 
 /** Cursor-based pagination metadata returned on all list endpoints */
 export interface Pagination {
@@ -381,10 +381,10 @@ export interface PaymentHistoryResponse {
 /** Identifier for each exportable report */
 export type ExportReportType =
   | 'invoices'
-  | 'party-statement'
-  | 'stock-summary'
-  | 'day-book'
-  | 'payments'
+  | 'party_statement'
+  | 'stock_summary'
+  | 'day_book'
+  | 'payment_history'
 
 /** Request body for POST /reports/export */
 export interface ExportRequest {

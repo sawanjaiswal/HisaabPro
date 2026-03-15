@@ -5,7 +5,7 @@
  */
 
 import React from 'react'
-import { FileText, Table2, FileSpreadsheet } from 'lucide-react'
+import { FileText, FileSpreadsheet } from 'lucide-react'
 import type { ExportFormat } from '../report.types'
 
 interface ReportExportBarProps {
@@ -23,33 +23,23 @@ export const ReportExportBar: React.FC<ReportExportBarProps> = ({
       <div className="report-export-actions">
         <button
           className="report-export-btn"
-          onClick={() => onExport('pdf')}
-          disabled={disabled}
-          aria-label="Export as PDF"
-          type="button"
-        >
-          <FileText size={16} aria-hidden="true" />
-          PDF
-        </button>
-        <button
-          className="report-export-btn"
-          onClick={() => onExport('xlsx')}
-          disabled={disabled}
-          aria-label="Export as Excel"
-          type="button"
-        >
-          <Table2 size={16} aria-hidden="true" />
-          Excel
-        </button>
-        <button
-          className="report-export-btn"
-          onClick={() => onExport('csv')}
+          onClick={() => onExport('CSV')}
           disabled={disabled}
           aria-label="Export as CSV"
           type="button"
         >
           <FileSpreadsheet size={16} aria-hidden="true" />
           CSV
+        </button>
+        <button
+          className="report-export-btn"
+          onClick={() => onExport('PDF')}
+          disabled={disabled}
+          aria-label="Export as PDF (coming soon)"
+          type="button"
+        >
+          <FileText size={16} aria-hidden="true" />
+          PDF
         </button>
       </div>
     </div>

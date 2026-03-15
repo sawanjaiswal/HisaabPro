@@ -123,12 +123,11 @@ export default function StockSummaryPage() {
     async (format: ExportFormat) => {
       if (!data) return
       try {
-        const result = await exportReport({
-          reportType: 'stock-summary',
+        await exportReport({
+          reportType: 'stock_summary',
           format,
           filters: filters as unknown as Record<string, unknown>,
         })
-        window.open(result.data.fileUrl, '_blank')
         toast.success(`Stock summary exported as ${format.toUpperCase()}`)
       } catch {
         toast.error('Export failed. Please try again.')

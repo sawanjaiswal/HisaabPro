@@ -4,7 +4,7 @@
  * use paise. Display conversion is done at the component level via formatCurrency.
  *
  * API base: the `api()` helper already prepends API_URL, so paths start at /
- * (not /api). The server routes are mounted at /documents and /document-number-series.
+ * (not /api). The server routes are mounted at /documents and /settings/documents.
  */
 
 import { api } from '@/lib/api'
@@ -378,7 +378,7 @@ export async function getNextDocumentNumber(
   signal?: AbortSignal
 ): Promise<NextDocumentNumber> {
   return api<NextDocumentNumber>(
-    `/document-number-series/${type}/next`,
+    `/settings/documents/number-series/${type}/next`,
     { signal }
   )
 }
@@ -392,7 +392,7 @@ export async function updateNumberSeries(
   type: DocumentType,
   data: Partial<DocumentNumberSeriesConfig>
 ): Promise<NextDocumentNumber> {
-  return api<NextDocumentNumber>(`/document-number-series/${type}`, {
+  return api<NextDocumentNumber>(`/settings/documents/number-series/${type}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   })

@@ -108,12 +108,11 @@ export default function PartyStatementPage() {
     async (format: ExportFormat) => {
       if (!statement) return
       try {
-        const result = await exportReport({
-          reportType: 'party-statement',
+        await exportReport({
+          reportType: 'party_statement',
           format,
           filters: { partyId },
         })
-        window.open(result.data.fileUrl, '_blank')
         toast.success(`Statement exported as ${format.toUpperCase()}`)
       } catch {
         toast.error('Export failed. Please try again.')

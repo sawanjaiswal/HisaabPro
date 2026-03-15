@@ -48,12 +48,10 @@ export default function DayBookPage() {
 
   const handleExport = useCallback(() => {
     exportReport({
-      reportType: 'day-book',
-      format: 'pdf',
+      reportType: 'day_book',
+      format: 'CSV',
       filters: { ...filters },
-    }).then((res) => {
-      window.open(res.data.fileUrl, '_blank', 'noopener,noreferrer')
-    })
+    }).catch(() => { /* download handled internally */ })
   }, [filters])
 
   const isLoadingMore = status === 'loading' && data !== null

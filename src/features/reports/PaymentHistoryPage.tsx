@@ -83,12 +83,10 @@ export default function PaymentHistoryPage() {
   const handleExport = useCallback(
     (format: ExportFormat) => {
       exportReport({
-        reportType: 'payments',
+        reportType: 'payment_history',
         format,
         filters: { ...filters },
-      }).then((res) => {
-        window.open(res.data.fileUrl, '_blank', 'noopener,noreferrer')
-      })
+      }).catch(() => { /* download handled internally */ })
     },
     [filters],
   )
