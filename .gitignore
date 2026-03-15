@@ -13,3 +13,6 @@ test-screenshots/
 screenshots/
 tsconfig.tsbuildinfo
 .playwright-mcp/
+android/
+ios/
+.gradle/
