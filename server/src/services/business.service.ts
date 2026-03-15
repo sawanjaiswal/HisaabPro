@@ -95,3 +95,51 @@ export async function createBusiness(userId: string, data: CreateBusinessInput) 
   logger.info('Business created', { businessId: business.id, userId })
   return business
 }
+
+const BUSINESS_SELECT = {
+  id: true,
+  name: true,
+  phone: true,
+  email: true,
+  address: true,
+  city: true,
+  state: true,
+  pincode: true,
+  logoUrl: true,
+  businessType: true,
+  currencyCode: true,
+  financialYearStart: true,
+  isActive: true,
+  createdAt: true,
+  updatedAt: true,
+} as const
+
+export async function getBusiness(businessId: string) {
+  const business = await prisma.business.findUnique({
+    where: { id: businessId },
+    select: BUSINESS_SELECT,
+  })
+  if (!business) throw conflictError('Business not found')
+  return business
+}
+
+export async function updateBusiness(
+  businessId: string,
+  data: Partial<Omit<CreateBusinessInput, never>>
+) {
+  const business = await prisma.business.update({
+    where: { id: businessId },
+    data: {
+      ...(data.name !== undefined && { name: data.name }),
+      ...(data.businessType !== undefined && { businessType: data.businessType }),
+      ...(data.phone !== undefined && { phone: data.phone }),
+      ...(data.email !== undefined && { email: data.email }),
+      ...(data.address !== undefined && { address: data.address }),
+      ...(data.city !== undefined && { city: data.city }),
+      ...(data.state !== undefined && { state: data.state }),
+      ...(data.pincode !== undefined && { pincode: data.pincode }),
+    },
+    select: BUSINESS_SELECT,
+  })
+  return business
+}

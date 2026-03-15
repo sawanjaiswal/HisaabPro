@@ -42,6 +42,22 @@ businessSettingsRouter.post('/', validate(createBusinessSchema), asyncHandler(as
   sendSuccess(res, { business }, 201)
 }))
 
+// --- Business Profile ---
+
+businessSettingsRouter.get('/:businessId', asyncHandler(async (req, res) => {
+  const userId = req.user!.userId
+  await resolveBusinessId(userId) // Verify user belongs to this business
+  const business = await businessService.getBusiness(String(req.params.businessId))
+  sendSuccess(res, business)
+}))
+
+businessSettingsRouter.put('/:businessId', asyncHandler(async (req, res) => {
+  const userId = req.user!.userId
+  const businessId = await resolveBusinessId(userId)
+  const business = await businessService.updateBusiness(businessId, req.body)
+  sendSuccess(res, business)
+}))
+
 // --- Roles ---
 
 businessSettingsRouter.get('/:businessId/roles', asyncHandler(async (req, res) => {
