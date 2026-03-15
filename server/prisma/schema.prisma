@@ -28,6 +28,8 @@ model User {
   documentsUpdated Document[]   @relation("DocumentUpdater")
   documentsDeleted Document[]   @relation("DocumentDeleter")
   shareLogs        DocumentShareLog[]
+  paymentsCreated  Payment[]    @relation("PaymentCreator")
+  paymentsUpdated  Payment[]    @relation("PaymentUpdater")
 
   @@index([phone])
 }
@@ -64,6 +66,9 @@ model Business {
   documentSettings DocumentSettings?
   digitalSignature DigitalSignature?
   termsTemplates   TermsAndConditionsTemplate[]
+  payments         Payment[]
+  paymentReminders PaymentReminder[]
+  reminderConfig   ReminderConfig?
 
   @@index([name])
 }
@@ -167,6 +172,8 @@ model Party {
   openingBalance OpeningBalance?
   pricing        PartyPricing[]
   documents      Document[]
+  payments       Payment[]
+  paymentReminders PaymentReminder[]
 
   @@unique([businessId, phone])
   @@index([businessId, type, isActive])
@@ -501,6 +508,8 @@ model Document {
   lineItems              DocumentLineItem[]
   additionalCharges      DocumentAdditionalCharge[]
   shareLogs              DocumentShareLog[]
+  paymentAllocations     PaymentAllocation[]
+  paymentReminders       PaymentReminder[]
 
   @@unique([businessId, type, documentNumber])
   @@index([businessId, type, status])
@@ -635,6 +644,111 @@ model DocumentSettings {
   autoShareFormat           String   @default("PDF")
   createdAt                 DateTime @default(now())
   updatedAt                 DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+// === Payment Tracking ===
+
+model Payment {
+  id              String    @id @default(cuid())
+  offlineId       String?   @unique
+  businessId      String
+  type            String    // PAYMENT_IN, PAYMENT_OUT
+  partyId         String
+  amount          Int       // paise
+  date            DateTime
+  mode            String    // CASH, UPI, BANK_TRANSFER, CHEQUE, NEFT_RTGS_IMPS, CREDIT_CARD, OTHER
+  referenceNumber String?   @db.VarChar(100)
+  notes           String?   @db.VarChar(500)
+  isDeleted       Boolean   @default(false)
+  deletedAt       DateTime?
+  createdBy       String
+  updatedBy       String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  business     Business            @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  party        Party               @relation(fields: [partyId], references: [id], onDelete: Restrict)
+  creator      User                @relation("PaymentCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  updater      User?               @relation("PaymentUpdater", fields: [updatedBy], references: [id])
+  allocations  PaymentAllocation[]
+  discount     PaymentDiscount?
+
+  @@index([businessId, date])
+  @@index([businessId, partyId])
+  @@index([businessId, type])
+  @@index([businessId, mode])
+  @@index([businessId, isDeleted])
+}
+
+model PaymentAllocation {
+  id         String   @id @default(cuid())
+  paymentId  String
+  invoiceId  String
+  amount     Int      // paise
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  payment  Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  invoice  Document @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+
+  @@unique([paymentId, invoiceId])
+  @@index([invoiceId])
+}
+
+model PaymentDiscount {
+  id               String   @id @default(cuid())
+  paymentId        String   @unique
+  type             String   // PERCENTAGE, FIXED
+  value            Float    // percentage value or fixed paise
+  calculatedAmount Int      // paise
+  reason           String?  @db.VarChar(200)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+}
+
+model PaymentReminder {
+  id            String    @id @default(cuid())
+  businessId    String
+  partyId       String
+  invoiceId     String?
+  channel       String    // WHATSAPP, SMS, PUSH
+  status        String    @default("SCHEDULED")
+  message       String    @db.Text
+  scheduledAt   DateTime?
+  sentAt        DateTime?
+  failureReason String?   @db.VarChar(500)
+  retryCount    Int       @default(0)
+  isAutomatic   Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  business Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  party    Party     @relation(fields: [partyId], references: [id], onDelete: Restrict)
+  invoice  Document? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+
+  @@index([businessId, status])
+  @@index([businessId, partyId])
+  @@index([scheduledAt, status])
+}
+
+model ReminderConfig {
+  id                      String   @id @default(cuid())
+  businessId              String   @unique
+  enabled                 Boolean  @default(true)
+  autoRemindEnabled       Boolean  @default(false)
+  frequencyDays           Int[]    @default([1, 3, 7])
+  maxRemindersPerInvoice  Int      @default(5)
+  defaultChannel          String   @default("WHATSAPP")
+  quietHoursStart         String   @default("21:00")
+  quietHoursEnd           String   @default("09:00")
+  whatsappTemplate        String?  @db.Text
+  smsTemplate             String?  @db.Text
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 }

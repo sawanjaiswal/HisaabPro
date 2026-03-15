@@ -1,0 +1,141 @@
+/**
+ * Payment Zod Schemas — validation for payment, outstanding, reminder endpoints
+ */
+
+import { z } from 'zod'
+
+const PAYMENT_TYPES = ['PAYMENT_IN', 'PAYMENT_OUT'] as const
+const PAYMENT_MODES = ['CASH', 'UPI', 'BANK_TRANSFER', 'CHEQUE', 'NEFT_RTGS_IMPS', 'CREDIT_CARD', 'OTHER'] as const
+const DISCOUNT_TYPES = ['PERCENTAGE', 'FIXED'] as const
+const SORT_BY = ['date', 'amount', 'createdAt'] as const
+const SORT_ORDER = ['asc', 'desc'] as const
+const OUTSTANDING_TYPES = ['RECEIVABLE', 'PAYABLE', 'ALL'] as const
+const OUTSTANDING_SORT = ['amount', 'name', 'daysOverdue'] as const
+const REMINDER_CHANNELS = ['WHATSAPP', 'SMS', 'PUSH'] as const
+
+// === Payment CRUD ===
+
+const allocationSchema = z.object({
+  invoiceId: z.string().min(1),
+  amount: z.number().int().positive(),
+})
+
+const discountSchema = z.object({
+  type: z.enum(DISCOUNT_TYPES),
+  value: z.number().positive(),
+  reason: z.string().max(200).optional(),
+})
+
+export const createPaymentSchema = z.object({
+  body: z.object({
+    type: z.enum(PAYMENT_TYPES),
+    partyId: z.string().min(1),
+    amount: z.number().int().min(1).max(9_999_999_900),
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    mode: z.enum(PAYMENT_MODES),
+    referenceNumber: z.string().max(100).optional(),
+    notes: z.string().max(500).optional(),
+    allocations: z.array(allocationSchema).max(50).default([]),
+    discount: discountSchema.optional(),
+    offlineId: z.string().optional(),
+  }),
+})
+
+export const updatePaymentSchema = z.object({
+  body: z.object({
+    amount: z.number().int().min(1).max(9_999_999_900).optional(),
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+    mode: z.enum(PAYMENT_MODES).optional(),
+    referenceNumber: z.string().max(100).nullable().optional(),
+    notes: z.string().max(500).nullable().optional(),
+  }),
+})
+
+export const listPaymentsSchema = z.object({
+  type: z.enum(PAYMENT_TYPES).optional(),
+  partyId: z.string().optional(),
+  mode: z.enum(PAYMENT_MODES).optional(),
+  dateFrom: z.string().optional(),
+  dateTo: z.string().optional(),
+  search: z.string().optional(),
+  sortBy: z.enum(SORT_BY).default('date'),
+  sortOrder: z.enum(SORT_ORDER).default('desc'),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+})
+
+// === Allocations ===
+
+export const updateAllocationsSchema = z.object({
+  body: z.object({
+    allocations: z.array(allocationSchema).max(50),
+  }),
+})
+
+// === Outstanding ===
+
+export const listOutstandingSchema = z.object({
+  type: z.enum(OUTSTANDING_TYPES).default('ALL'),
+  overdue: z.coerce.boolean().default(false),
+  search: z.string().optional(),
+  sortBy: z.enum(OUTSTANDING_SORT).default('amount'),
+  sortOrder: z.enum(SORT_ORDER).default('desc'),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+})
+
+// === Reminders ===
+
+export const sendReminderSchema = z.object({
+  body: z.object({
+    partyId: z.string().min(1),
+    invoiceId: z.string().optional(),
+    channel: z.enum(REMINDER_CHANNELS),
+    message: z.string().max(1000).optional(),
+  }),
+})
+
+export const sendBulkRemindersSchema = z.object({
+  body: z.object({
+    partyIds: z.array(z.string().min(1)).min(1).max(50),
+    channel: z.enum(REMINDER_CHANNELS),
+    message: z.string().max(1000).optional(),
+  }),
+})
+
+export const listRemindersSchema = z.object({
+  partyId: z.string().optional(),
+  invoiceId: z.string().optional(),
+  status: z.string().optional(),
+  channel: z.enum(REMINDER_CHANNELS).optional(),
+  dateFrom: z.string().optional(),
+  dateTo: z.string().optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+})
+
+export const updateReminderConfigSchema = z.object({
+  body: z.object({
+    enabled: z.boolean().optional(),
+    autoRemindEnabled: z.boolean().optional(),
+    frequencyDays: z.array(z.number().int().positive()).optional(),
+    maxRemindersPerInvoice: z.number().int().min(1).max(20).optional(),
+    defaultChannel: z.enum(REMINDER_CHANNELS).optional(),
+    quietHoursStart: z.string().regex(/^\d{2}:\d{2}$/).optional(),
+    quietHoursEnd: z.string().regex(/^\d{2}:\d{2}$/).optional(),
+    whatsappTemplate: z.string().max(1000).optional(),
+    smsTemplate: z.string().max(1000).optional(),
+  }),
+})
+
+// === Inferred types ===
+
+export type CreatePaymentInput = z.infer<typeof createPaymentSchema>['body']
+export type UpdatePaymentInput = z.infer<typeof updatePaymentSchema>['body']
+export type ListPaymentsQuery = z.infer<typeof listPaymentsSchema>
+export type UpdateAllocationsInput = z.infer<typeof updateAllocationsSchema>['body']
+export type ListOutstandingQuery = z.infer<typeof listOutstandingSchema>
+export type SendReminderInput = z.infer<typeof sendReminderSchema>['body']
+export type SendBulkRemindersInput = z.infer<typeof sendBulkRemindersSchema>['body']
+export type ListRemindersQuery = z.infer<typeof listRemindersSchema>
+export type UpdateReminderConfigInput = z.infer<typeof updateReminderConfigSchema>['body']
