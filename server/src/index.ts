@@ -21,6 +21,7 @@ import documentSettingsRoutes from './routes/document-settings.js'
 import paymentRoutes from './routes/payments.js'
 import dashboardRoutes from './routes/dashboard.js'
 import reportRoutes from './routes/reports.js'
+import { businessSettingsRouter, userSettingsRouter, permissionsRouter } from './routes/settings.js'
 import logger from './lib/logger.js'
 
 const app = express()
@@ -57,6 +58,9 @@ app.use('/api/settings/documents', documentSettingsRoutes)
 app.use('/api/payments', paymentRoutes)
 app.use('/api/dashboard', dashboardRoutes)
 app.use('/api/reports', reportRoutes)
+app.use('/api/businesses', businessSettingsRouter)
+app.use('/api/users', userSettingsRouter)
+app.use('/api/permissions', permissionsRouter)
 
 // 404
 app.use((_req, res) => {

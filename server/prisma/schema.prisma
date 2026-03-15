@@ -30,6 +30,10 @@ model User {
   shareLogs        DocumentShareLog[]
   paymentsCreated  Payment[]    @relation("PaymentCreator")
   paymentsUpdated  Payment[]    @relation("PaymentUpdater")
+  auditLogs        AuditLog[]
+  appSettings      UserAppSettings?
+  approvalsRequested ApprovalRequest[] @relation("ApprovalRequester")
+  approvalsReviewed  ApprovalRequest[] @relation("ApprovalReviewer")
 
   @@index([phone])
 }
@@ -69,6 +73,11 @@ model Business {
   payments         Payment[]
   paymentReminders PaymentReminder[]
   reminderConfig   ReminderConfig?
+  roles            Role[]
+  staffInvites     StaffInvite[]
+  transactionLock  TransactionLockConfig?
+  approvals        ApprovalRequest[]
+  auditLogs        AuditLog[]
 
   @@index([name])
 }
@@ -78,11 +87,15 @@ model BusinessUser {
   userId     String
   businessId String
   role       String   @default("owner")
+  roleId     String?
   isActive   Boolean  @default(true)
+  status     String   @default("ACTIVE") // ACTIVE, SUSPENDED, PENDING
+  lastActiveAt DateTime?
   joinedAt   DateTime @default(now())
 
   user     User     @relation(fields: [userId], references: [id], onDelete: Restrict)
   business Business @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  roleRef  Role?    @relation(fields: [roleId], references: [id], onDelete: SetNull)
 
   @@unique([userId, businessId])
   @@index([businessId])
@@ -751,4 +764,125 @@ model ReminderConfig {
   updatedAt               DateTime @updatedAt
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+// === Settings & Security ===
+
+model Role {
+  id          String   @id @default(cuid())
+  businessId  String
+  name        String
+  description String?
+  isSystem    Boolean  @default(false)
+  isDefault   Boolean  @default(false)
+  priority    Int      @default(0)
+  permissions String[] @default([])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  business     Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  businessUsers BusinessUser[]
+
+  @@unique([businessId, name])
+  @@index([businessId])
+}
+
+model StaffInvite {
+  id         String   @id @default(cuid())
+  businessId String
+  name       String
+  phone      String
+  roleId     String
+  code       String   @unique
+  status     String   @default("PENDING") // PENDING, ACCEPTED, EXPIRED
+  expiresAt  DateTime
+  invitedBy  String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+  @@index([phone])
+  @@index([code])
+}
+
+model TransactionLockConfig {
+  id                          String   @id @default(cuid())
+  businessId                  String   @unique
+  lockAfterDays               Int?
+  requireApprovalForEdit      Boolean  @default(false)
+  requireApprovalForDelete    Boolean  @default(false)
+  priceChangeThresholdPercent Float?
+  discountThresholdPercent    Float?
+  operationPinHash            String?
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+model ApprovalRequest {
+  id               String    @id @default(cuid())
+  businessId       String
+  type             String    // EDIT_LOCKED_TRANSACTION, DELETE_TRANSACTION, PRICE_OVERRIDE, DISCOUNT_OVERRIDE
+  entityType       String
+  entityId         String
+  requestedBy      String
+  requestedChanges Json
+  status           String    @default("PENDING") // PENDING, APPROVED, DENIED, EXPIRED
+  reviewedBy       String?
+  reviewedAt       DateTime?
+  reviewNote       String?
+  expiresAt        DateTime
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  business  Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  requester User     @relation("ApprovalRequester", fields: [requestedBy], references: [id], onDelete: Restrict)
+  reviewer  User?    @relation("ApprovalReviewer", fields: [reviewedBy], references: [id])
+
+  @@index([businessId, status])
+  @@index([requestedBy])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  businessId  String
+  action      String   // CREATE, UPDATE, DELETE, RESTORE, LOCK_OVERRIDE, PIN_RESET, ROLE_CHANGE, APPROVAL_REQUEST, APPROVAL_RESPONSE
+  entityType  String
+  entityId    String
+  entityLabel String?
+  userId      String
+  changes     Json?
+  reason      String?
+  ipAddress   String?
+  deviceInfo  String?
+  createdAt   DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  // Immutable — no updatedAt
+  @@index([businessId, createdAt])
+  @@index([businessId, entityType])
+  @@index([userId])
+}
+
+model UserAppSettings {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  dateFormat          String   @default("DD/MM/YYYY")
+  pinEnabled          Boolean  @default(false)
+  pinHash             String?
+  pinAttempts         Int      @default(0)
+  pinLockedUntil      DateTime?
+  biometricEnabled    Boolean  @default(false)
+  calculatorPosition  String   @default("BOTTOM_RIGHT")
+  language            String   @default("en")
+  theme               String   @default("light")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
