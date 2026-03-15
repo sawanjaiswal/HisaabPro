@@ -28,7 +28,6 @@ screenshots/
 
 # IDE
 .idea/
-.vscode/
 *.swp
 *.swo
 

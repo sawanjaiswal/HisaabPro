@@ -1,0 +1,21 @@
+{
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/android/**": true,
+    "**/ios/**": true,
+    "**/.gradle/**": true,
+    "**/.playwright-mcp/**": true
+  },
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/android": true,
+    "**/ios": true,
+    "**/.gradle": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true
+  }
+}
