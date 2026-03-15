@@ -144,14 +144,16 @@ async function main() {
 
     // ── Payments ────────────────────────────────────────────────────────────
 
-    // Payment from Rajesh Electronics (partial payment on INV-001)
-    await createPayment(parties[0].id, 'PAYMENT_IN', 15000000, daysAgo(4), 'UPI', 'UPI-REF-001', inv1.id)
+    // Payment from Rajesh Electronics (partial payment on INV-001 — ~50% of grandTotal)
+    const rajeshPartial = Math.round(inv1.grandTotal * 0.5)
+    await createPayment(parties[0].id, 'PAYMENT_IN', rajeshPartial, daysAgo(4), 'UPI', 'UPI-REF-001', inv1.id)
 
     // Payment from Sharma General Store (full payment)
     await createPayment(parties[1].id, 'PAYMENT_IN', inv2.grandTotal, daysAgo(2), 'CASH', null, inv2.id)
 
-    // Payment to Mumbai Wholesale (partial)
-    await createPayment(parties[3].id, 'PAYMENT_OUT', 50000000, daysAgo(6), 'BANK_TRANSFER', 'NEFT-123456', inv6.id)
+    // Payment to Mumbai Wholesale (partial — ~60% of grandTotal)
+    const mumbaiPartial = Math.round(inv6.grandTotal * 0.6)
+    await createPayment(parties[3].id, 'PAYMENT_OUT', mumbaiPartial, daysAgo(6), 'BANK_TRANSFER', 'NEFT-123456', inv6.id)
 
     // Payment from Amit Kumar (full, today)
     await createPayment(parties[5].id, 'PAYMENT_IN', inv4.grandTotal, daysAgo(0), 'UPI', 'UPI-REF-002', inv4.id)

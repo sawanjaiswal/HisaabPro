@@ -62,9 +62,9 @@ export const otpRateLimiter = createRateLimiter({
   message: 'Too many OTP requests. Please wait before trying again.',
 })
 
-/** 100 requests per 15 minutes — general API */
+/** 500 requests per 15 minutes — general API (generous for dev; tighten in production) */
 export const apiRateLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 500,
   message: 'Too many requests. Please slow down.',
 })
