@@ -11,6 +11,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ROUTES } from '@/config/routes.config'
+import { PartySearchInput } from '@/features/invoices/components/PartySearchInput'
 import { usePaymentForm } from './usePaymentForm'
 import { PAYMENT_FORM_SECTION_LABELS, PAYMENT_MODE_LABELS, MODES_WITH_REFERENCE, PAYMENT_DISCOUNT_TYPE_LABELS } from './payment.constants'
 import { getReferencePlaceholder, calculateSettlement, calculateUnallocatedAmount } from './payment.utils'
@@ -89,19 +90,11 @@ export default function RecordPaymentPage() {
           {activeSection === 'details' && (
             <div className="payment-form">
               {/* Party */}
-              <div className="payment-field">
-                <label className="label" htmlFor="payment-party">Party *</label>
-                <input
-                  id="payment-party"
-                  type="text"
-                  className="input"
-                  placeholder="Search customer or supplier..."
-                  value={form.partyId}
-                  onChange={(e) => updateField('partyId', e.target.value)}
-                  aria-label="Select party"
-                />
-                {errors.partyId && <span className="field-error" role="alert">{errors.partyId}</span>}
-              </div>
+              <PartySearchInput
+                value={form.partyId}
+                onChange={(id) => updateField('partyId', id)}
+                error={errors.partyId}
+              />
 
               {/* Amount */}
               <div className="payment-field">

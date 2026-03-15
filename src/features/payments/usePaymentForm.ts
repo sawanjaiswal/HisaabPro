@@ -264,23 +264,37 @@ export function usePaymentForm({
 
     setIsSubmitting(true)
 
-    const payload: PaymentFormData = {
-      ...form,
-      referenceNumber: form.referenceNumber.trim(),
-      notes: form.notes.trim(),
-      allocations: selectedAllocations,
+    // Build API payload — strip client-only fields from allocations
+    const apiAllocations = selectedAllocations.map(({ invoiceId, amount }) => ({
+      invoiceId,
+      amount,
+    }))
+
+    const apiPayload = {
+      type: form.type,
+      partyId: form.partyId,
+      amount: form.amount,
+      date: form.date,
+      mode: form.mode,
+      referenceNumber: form.referenceNumber.trim() || undefined,
+      notes: form.notes.trim() || undefined,
+      allocations: apiAllocations,
       discount: form.discount !== null && form.discount.value > 0
-        ? { ...form.discount, reason: form.discount.reason.trim() }
-        : null,
+        ? {
+            type: form.discount.type,
+            value: form.discount.value,
+            reason: form.discount.reason.trim() || undefined,
+          }
+        : undefined,
     }
 
     try {
       if (isEditMode && payment !== null) {
-        await updatePayment(payment.id, payload)
+        await updatePayment(payment.id, apiPayload as unknown as PaymentFormData)
         toast.success('Payment updated')
         navigate(ROUTES.PAYMENT_DETAIL.replace(':id', payment.id))
       } else {
-        await createPayment(payload)
+        await createPayment(apiPayload as unknown as PaymentFormData)
         toast.success('Payment recorded')
         navigate(ROUTES.PAYMENTS)
       }
