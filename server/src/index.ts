@@ -16,6 +16,8 @@ import productRoutes from './routes/products.js'
 import categoryRoutes from './routes/categories.js'
 import unitRoutes from './routes/units.js'
 import inventorySettingsRoutes from './routes/inventory-settings.js'
+import documentRoutes from './routes/documents.js'
+import documentSettingsRoutes from './routes/document-settings.js'
 import logger from './lib/logger.js'
 
 const app = express()
@@ -47,7 +49,8 @@ app.use('/api/products', productRoutes)
 app.use('/api/categories', categoryRoutes)
 app.use('/api/units', unitRoutes)
 app.use('/api/settings/inventory', inventorySettingsRoutes)
-// app.use('/api/invoices', invoiceRoutes)
+app.use('/api/documents', documentRoutes)
+app.use('/api/settings/documents', documentSettingsRoutes)
 
 // 404
 app.use((_req, res) => {

@@ -24,6 +24,10 @@ model User {
   businessUsers  BusinessUser[]
   refreshTokens  RefreshToken[]
   stockMovements StockMovement[]
+  documentsCreated Document[]   @relation("DocumentCreator")
+  documentsUpdated Document[]   @relation("DocumentUpdater")
+  documentsDeleted Document[]   @relation("DocumentDeleter")
+  shareLogs        DocumentShareLog[]
 
   @@index([phone])
 }
@@ -55,6 +59,11 @@ model Business {
   unitConversions  UnitConversion[]
   stockMovements   StockMovement[]
   inventorySetting InventorySetting?
+  documents        Document[]
+  documentNumberSeries DocumentNumberSeries[]
+  documentSettings DocumentSettings?
+  digitalSignature DigitalSignature?
+  termsTemplates   TermsAndConditionsTemplate[]
 
   @@index([name])
 }
@@ -157,6 +166,7 @@ model Party {
   customFieldValues PartyCustomFieldValue[]
   openingBalance OpeningBalance?
   pricing        PartyPricing[]
+  documents      Document[]
 
   @@unique([businessId, phone])
   @@index([businessId, type, isActive])
@@ -346,6 +356,7 @@ model Product {
   stockMovements    StockMovement[]
   customFieldValues ProductCustomFieldValue[]
   partyPricing      PartyPricing[]
+  documentLineItems DocumentLineItem[]
 
   @@unique([businessId, sku])
   @@index([businessId, status])
@@ -410,6 +421,220 @@ model InventorySetting {
   defaultUnitId          String?
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+// === Invoicing & Documents ===
+
+model Document {
+  id                     String   @id @default(cuid())
+  businessId             String
+  type                   String   // SALE_INVOICE, PURCHASE_INVOICE, ESTIMATE, PROFORMA, SALE_ORDER, PURCHASE_ORDER, DELIVERY_CHALLAN
+  status                 String   @default("DRAFT") // DRAFT, SAVED, SHARED, CONVERTED, DELETED
+
+  // Numbering
+  documentNumber         String?  // Assigned on SAVE, null for DRAFT
+  sequenceNumber         Int?
+  financialYear          String?  // "2526" (April 2025 - March 2026)
+
+  // Party
+  partyId                String
+  shippingAddressId      String?
+
+  // Dates
+  documentDate           DateTime
+  dueDate                DateTime?
+  paymentTerms           String?  // COD, NET_7, NET_15, NET_30, NET_60, NET_90, CUSTOM
+
+  // Totals (PAISE — integer)
+  subtotal               Int      @default(0)
+  totalDiscount          Int      @default(0)
+  totalAdditionalCharges Int      @default(0)
+  roundOff               Int      @default(0)
+  grandTotal             Int      @default(0)
+
+  // Profit
+  totalCost              Int      @default(0)
+  totalProfit            Int      @default(0)
+  profitPercent          Float    @default(0)
+
+  // Content
+  notes                  String?  @db.Text
+  termsAndConditions     String?  @db.Text
+  includeSignature       Boolean  @default(false)
+
+  // Transport (Delivery Challan)
+  vehicleNumber          String?
+  driverName             String?
+  transportNotes         String?
+
+  // Conversion chain
+  sourceDocumentId       String?  @unique
+  sourceDocument         Document? @relation("DocumentConversion", fields: [sourceDocumentId], references: [id], onDelete: SetNull)
+  convertedTo            Document? @relation("DocumentConversion")
+
+  // Payment tracking (denormalized from payments)
+  paidAmount             Int      @default(0)
+  balanceDue             Int      @default(0)
+
+  // Recycle bin
+  deletedAt              DateTime?
+  deletedBy              String?
+  permanentDeleteAt      DateTime?
+
+  // Audit
+  createdBy              String
+  updatedBy              String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  // Offline sync
+  clientId               String?  @unique
+
+  // Relations
+  business               Business          @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  party                  Party             @relation(fields: [partyId], references: [id], onDelete: Restrict)
+  creator                User              @relation("DocumentCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  updater                User?             @relation("DocumentUpdater", fields: [updatedBy], references: [id])
+  deleter                User?             @relation("DocumentDeleter", fields: [deletedBy], references: [id])
+  lineItems              DocumentLineItem[]
+  additionalCharges      DocumentAdditionalCharge[]
+  shareLogs              DocumentShareLog[]
+
+  @@unique([businessId, type, documentNumber])
+  @@index([businessId, type, status])
+  @@index([businessId, partyId])
+  @@index([businessId, documentDate])
+  @@index([permanentDeleteAt])
+  @@index([clientId])
+}
+
+model DocumentLineItem {
+  id             String   @id @default(cuid())
+  documentId     String
+  productId      String
+  sortOrder      Int      @default(0)
+
+  quantity       Float    // supports decimals (kg/ltr)
+  rate           Int      // PAISE
+  discountType   String   @default("AMOUNT") // AMOUNT, PERCENTAGE
+  discountValue  Int      @default(0) // paise for AMOUNT, basis points (x100) for PERCENTAGE
+  discountAmount Int      @default(0) // calculated paise
+  lineTotal      Int      @default(0) // (qty * rate) - discountAmount
+
+  // Snapshot at time of invoice
+  purchasePrice  Int      @default(0)
+  profit         Int      @default(0)
+  profitPercent  Float    @default(0)
+
+  // Stock snapshot
+  stockBefore    Float    @default(0)
+  stockAfter     Float    @default(0)
+
+  document  Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@index([documentId])
+  @@index([productId])
+}
+
+model DocumentAdditionalCharge {
+  id         String   @id @default(cuid())
+  documentId String
+  name       String
+  type       String   @default("FIXED") // FIXED, PERCENTAGE
+  value      Int      @default(0) // paise for FIXED, basis points for PERCENTAGE
+  amount     Int      @default(0) // calculated paise
+  sortOrder  Int      @default(0)
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+}
+
+model DocumentShareLog {
+  id             String   @id @default(cuid())
+  documentId     String
+  channel        String   // WHATSAPP, EMAIL, PRINT
+  format         String   // PDF, JPG, PNG
+  recipientPhone String?
+  recipientEmail String?
+  fileUrl        String?
+  fileSize       Int?
+  message        String?  @db.Text
+  sentBy         String
+  sentAt         DateTime @default(now())
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [sentBy], references: [id], onDelete: Restrict)
+
+  @@index([documentId])
+}
+
+model DocumentNumberSeries {
+  id              String   @id @default(cuid())
+  businessId      String
+  documentType    String   // SALE_INVOICE, PURCHASE_INVOICE, etc.
+  financialYear   String   // "2526"
+
+  prefix          String   @default("INV")
+  suffix          String   @default("")
+  separator       String   @default("-")
+  paddingDigits   Int      @default(3)
+  currentSequence Int      @default(0)
+  startingNumber  Int      @default(1)
+  resetOnNewYear  Boolean  @default(true)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, documentType, financialYear])
+}
+
+model DigitalSignature {
+  id         String   @id @default(cuid())
+  businessId String   @unique
+  imageUrl   String
+  autoApply  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+model TermsAndConditionsTemplate {
+  id         String   @id @default(cuid())
+  businessId String
+  name       String
+  content    String   @db.Text
+  isDefault  Boolean  @default(false)
+  appliesTo  String[] @default([]) // Document types this applies to
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, name])
+  @@index([businessId])
+}
+
+model DocumentSettings {
+  id                        String   @id @default(cuid())
+  businessId                String   @unique
+  defaultPaymentTerms       String   @default("COD")
+  roundOffTo                String   @default("NEAREST_1") // NONE, NEAREST_1, NEAREST_050, NEAREST_010
+  showProfitDuringBilling   Boolean  @default(true)
+  allowFutureDates          Boolean  @default(false)
+  transactionLockDays       Int      @default(0)
+  recycleBinRetentionDays   Int      @default(30)
+  autoShareOnSave           Boolean  @default(false)
+  autoShareChannel          String   @default("WHATSAPP")
+  autoShareFormat           String   @default("PDF")
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 }
