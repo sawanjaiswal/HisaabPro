@@ -12,6 +12,10 @@ import backupRoutes from './routes/backup.js'
 import partyRoutes from './routes/party.js'
 import partyGroupRoutes from './routes/party-groups.js'
 import customFieldRoutes from './routes/custom-fields.js'
+import productRoutes from './routes/products.js'
+import categoryRoutes from './routes/categories.js'
+import unitRoutes from './routes/units.js'
+import inventorySettingsRoutes from './routes/inventory-settings.js'
 import logger from './lib/logger.js'
 
 const app = express()
@@ -39,7 +43,10 @@ app.use('/api/backup', backupRoutes)
 app.use('/api/parties', partyRoutes)
 app.use('/api/party-groups', partyGroupRoutes)
 app.use('/api/custom-fields', customFieldRoutes)
-// app.use('/api/products', productRoutes)
+app.use('/api/products', productRoutes)
+app.use('/api/categories', categoryRoutes)
+app.use('/api/units', unitRoutes)
+app.use('/api/settings/inventory', inventorySettingsRoutes)
 // app.use('/api/invoices', invoiceRoutes)
 
 // 404

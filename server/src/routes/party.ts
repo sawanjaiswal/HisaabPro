@@ -8,8 +8,7 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { prisma } from '../lib/prisma.js'
-import { unauthorizedError } from '../lib/errors.js'
+import { resolveBusinessId } from '../lib/business.js'
 import {
   createPartySchema,
   updatePartySchema,
@@ -25,18 +24,6 @@ const router = Router()
 
 // All party routes require auth
 router.use(auth)
-
-// === Business resolution helper ===
-
-/** Resolve the user's active business. Throws 401 if none found. */
-async function resolveBusinessId(userId: string): Promise<string> {
-  const bu = await prisma.businessUser.findFirst({
-    where: { userId, isActive: true },
-    select: { businessId: true },
-  })
-  if (!bu) throw unauthorizedError('No active business found for this user')
-  return bu.businessId
-}
 
 // ============================================================
 // Parties

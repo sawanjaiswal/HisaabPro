@@ -8,8 +8,7 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { prisma } from '../lib/prisma.js'
-import { unauthorizedError } from '../lib/errors.js'
+import { resolveBusinessId } from '../lib/business.js'
 import {
   createCustomFieldSchema,
   updateCustomFieldSchema,
@@ -19,15 +18,6 @@ import * as partyService from '../services/party.service.js'
 const router = Router()
 
 router.use(auth)
-
-async function resolveBusinessId(userId: string): Promise<string> {
-  const bu = await prisma.businessUser.findFirst({
-    where: { userId, isActive: true },
-    select: { businessId: true },
-  })
-  if (!bu) throw unauthorizedError('No active business found for this user')
-  return bu.businessId
-}
 
 /**
  * POST /api/custom-fields

@@ -26,6 +26,9 @@ export enum ErrorCode {
   PRODUCT_NOT_FOUND = 'PRODUCT_NOT_FOUND',
   PAYMENT_NOT_FOUND = 'PAYMENT_NOT_FOUND',
 
+  // Business Logic (422)
+  INSUFFICIENT_STOCK = 'INSUFFICIENT_STOCK',
+
   // Conflict (409)
   DUPLICATE_ENTRY = 'DUPLICATE_ENTRY',
 
@@ -80,6 +83,19 @@ export function notFoundError(resource: string, details?: Record<string, unknown
 
 export function unauthorizedError(message = 'Unauthorized access', code = ErrorCode.UNAUTHORIZED) {
   return new AppError(code, 401, message)
+}
+
+export function insufficientStockError(
+  productName: string,
+  currentStock: number,
+  requestedQty: number,
+  deficit: number
+) {
+  return new AppError(ErrorCode.INSUFFICIENT_STOCK, 422, `Insufficient stock for "${productName}"`, {
+    currentStock,
+    requestedQty,
+    deficit,
+  })
 }
 
 export function conflictError(message: string) {

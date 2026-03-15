@@ -21,8 +21,9 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  businessUsers BusinessUser[]
-  refreshTokens RefreshToken[]
+  businessUsers  BusinessUser[]
+  refreshTokens  RefreshToken[]
+  stockMovements StockMovement[]
 
   @@index([phone])
 }
@@ -48,6 +49,12 @@ model Business {
   parties          Party[]
   partyGroups      PartyGroup[]
   customFields     CustomFieldDefinition[]
+  categories       Category[]
+  units            Unit[]
+  products         Product[]
+  unitConversions  UnitConversion[]
+  stockMovements   StockMovement[]
+  inventorySetting InventorySetting?
 
   @@index([name])
 }
@@ -206,8 +213,9 @@ model CustomFieldDefinition {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  business Business               @relation(fields: [businessId], references: [id], onDelete: Restrict)
-  values   PartyCustomFieldValue[]
+  business      Business                @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  values        PartyCustomFieldValue[]
+  productValues ProductCustomFieldValue[]
 
   @@unique([businessId, name, entityType])
   @@index([businessId, entityType])
@@ -250,8 +258,158 @@ model PartyPricing {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  party   Party   @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
 
   @@unique([partyId, productId])
   @@index([productId])
+}
+
+// === Inventory & Products ===
+
+model Category {
+  id         String   @id @default(cuid())
+  businessId String
+  name       String
+  type       String   @default("CUSTOM") // PREDEFINED, CUSTOM
+  color      String   @default("#6B7280")
+  sortOrder  Int      @default(0)
+  isHidden   Boolean  @default(false) // hide predefined without deleting
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  business Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  products Product[]
+
+  @@unique([businessId, name])
+  @@index([businessId])
+}
+
+model Unit {
+  id         String   @id @default(cuid())
+  businessId String
+  name       String
+  symbol     String
+  type       String   @default("CUSTOM") // PREDEFINED, CUSTOM
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  business        Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  products        Product[]
+  conversionsFrom UnitConversion[] @relation("FromUnit")
+  conversionsTo   UnitConversion[] @relation("ToUnit")
+
+  @@unique([businessId, name])
+  @@unique([businessId, symbol])
+  @@index([businessId])
+}
+
+model UnitConversion {
+  id         String   @id @default(cuid())
+  businessId String
+  fromUnitId String
+  toUnitId   String
+  factor     Float    // 1 fromUnit = factor toUnits
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  fromUnit Unit     @relation("FromUnit", fields: [fromUnitId], references: [id], onDelete: Restrict)
+  toUnit   Unit     @relation("ToUnit", fields: [toUnitId], references: [id], onDelete: Restrict)
+
+  @@unique([businessId, fromUnitId, toUnitId])
+  @@index([businessId])
+}
+
+model Product {
+  id              String    @id @default(cuid())
+  businessId      String
+  name            String
+  sku             String?
+  categoryId      String?
+  unitId          String
+  salePrice       Int       @default(0) // in paise
+  purchasePrice   Int?      // in paise
+  currentStock    Float     @default(0) // supports decimals for kg/ltr
+  minStockLevel   Float     @default(0)
+  stockValidation String    @default("GLOBAL") // GLOBAL, WARN_ONLY, HARD_BLOCK
+  hsnCode         String?
+  sacCode         String?
+  description     String?
+  status          String    @default("ACTIVE") // ACTIVE, INACTIVE
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  business          Business                @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  category          Category?               @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  unit              Unit                    @relation(fields: [unitId], references: [id], onDelete: Restrict)
+  stockMovements    StockMovement[]
+  customFieldValues ProductCustomFieldValue[]
+  partyPricing      PartyPricing[]
+
+  @@unique([businessId, sku])
+  @@index([businessId, status])
+  @@index([businessId, categoryId])
+  @@index([businessId, name])
+  @@index([businessId, currentStock, minStockLevel])
+}
+
+model StockMovement {
+  id              String   @id @default(cuid())
+  businessId      String
+  productId       String
+  type            String   // OPENING, SALE, PURCHASE, ADJUSTMENT_IN, ADJUSTMENT_OUT, RETURN_IN, RETURN_OUT, REVERSAL
+  quantity         Float    // positive = in, negative = out
+  balanceAfter    Float
+  reason          String?  // DAMAGE, THEFT, AUDIT, GIFT, RETURN, OTHER
+  customReason    String?
+  notes           String?
+  referenceType   String?  // SALE_INVOICE, PURCHASE_INVOICE, CREDIT_NOTE, DEBIT_NOTE, ADJUSTMENT
+  referenceId     String?
+  referenceNumber String?
+  movementDate    DateTime @default(now())
+  createdBy       String
+  createdAt       DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  user     User     @relation(fields: [createdBy], references: [id], onDelete: Restrict)
+
+  // Immutable — no updatedAt
+  @@index([productId, createdAt])
+  @@index([businessId, movementDate])
+  @@index([referenceType, referenceId])
+}
+
+model ProductCustomFieldValue {
+  id        String   @id @default(cuid())
+  productId String
+  fieldId   String
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product              @relation(fields: [productId], references: [id], onDelete: Cascade)
+  field   CustomFieldDefinition @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, fieldId])
+  @@index([fieldId])
+}
+
+model InventorySetting {
+  id                     String   @id @default(cuid())
+  businessId             String   @unique
+  stockValidationMode    String   @default("WARN_ONLY") // WARN_ONLY, HARD_BLOCK
+  skuPrefix              String   @default("PRD")
+  skuAutoGenerate        Boolean  @default(true)
+  skuNextCounter         Int      @default(1)
+  lowStockAlertEnabled   Boolean  @default(true)
+  lowStockAlertFrequency String   @default("DAILY") // ONCE, DAILY, EVERY_TIME
+  decimalPrecisionQty    Int      @default(2)
+  defaultCategoryId      String?
+  defaultUnitId          String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 }
