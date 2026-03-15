@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/hooks/useToast'
 import { ROUTES } from '@/config/routes.config'
 import { createProduct } from './product.service'
-import { rupeesToPaise } from './product.utils'
+
 import type { ProductFormData, ProductStatus, StockValidationMode } from './product.types'
 
 type FormSection = 'basic' | 'stock' | 'extra'
@@ -107,18 +107,9 @@ export function useProductForm(): UseProductFormReturn {
 
     setIsSubmitting(true)
 
-    // Convert salePrice and purchasePrice from rupees to paise before sending.
-    // Form fields display rupees; storage is always paise (integer).
-    const payload: ProductFormData = {
-      ...form,
-      salePrice: rupeesToPaise(form.salePrice),
-      purchasePrice: form.purchasePrice !== undefined
-        ? rupeesToPaise(form.purchasePrice)
-        : undefined,
-    }
-
     try {
-      await createProduct(payload)
+      // Form already stores prices in paise (ProductFormBasic multiplies by 100 on input)
+      await createProduct(form)
       toast.success(`${form.name} added`)
       navigate(ROUTES.PRODUCTS)
     } catch {

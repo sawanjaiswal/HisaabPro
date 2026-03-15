@@ -1,8 +1,9 @@
 /** Create Product — Basic info section */
 
+import { useState, useEffect } from 'react'
 import { Input } from '@/components/ui/Input'
-import type { ProductFormData } from '../product.types'
-import { PREDEFINED_CATEGORIES, PREDEFINED_UNITS, DEFAULT_CATEGORY_ID, DEFAULT_UNIT_ID } from '../product.constants'
+import type { ProductFormData, Category, Unit } from '../product.types'
+import { getCategories, getUnits } from '../product.service'
 
 interface ProductFormBasicProps {
   form: ProductFormData
@@ -11,6 +12,34 @@ interface ProductFormBasicProps {
 }
 
 export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicProps) {
+  const [categories, setCategories] = useState<Category[]>([])
+  const [units, setUnits] = useState<Unit[]>([])
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    getCategories(undefined, controller.signal)
+      .then((cats) => {
+        setCategories(cats)
+        if (!form.categoryId && cats.length > 0) {
+          onUpdate('categoryId', cats[0].id)
+        }
+      })
+      .catch(() => {/* aborted or network error — silent, dropdown stays empty */})
+
+    getUnits(undefined, controller.signal)
+      .then((fetchedUnits) => {
+        setUnits(fetchedUnits)
+        if (!form.unitId && fetchedUnits.length > 0) {
+          onUpdate('unitId', fetchedUnits[0].id)
+        }
+      })
+      .catch(() => {/* aborted or network error — silent, dropdown stays empty */})
+
+    return () => controller.abort()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // fetch once on mount; onUpdate is stable (useCallback), form defaults applied once
+
   return (
     <div className="create-party-section">
       <Input
@@ -65,11 +94,15 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
         <select
           id="product-category"
           className="input"
-          value={form.categoryId ?? DEFAULT_CATEGORY_ID}
+          value={form.categoryId ?? ''}
           onChange={(e) => onUpdate('categoryId', e.target.value)}
           aria-label="Select product category"
+          disabled={categories.length === 0}
         >
-          {PREDEFINED_CATEGORIES.map((cat) => (
+          {categories.length === 0 && (
+            <option value="">Loading...</option>
+          )}
+          {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>{cat.name}</option>
           ))}
         </select>
@@ -80,14 +113,19 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
         <select
           id="product-unit"
           className="input"
-          value={form.unitId ?? DEFAULT_UNIT_ID}
+          value={form.unitId}
           onChange={(e) => onUpdate('unitId', e.target.value)}
           aria-label="Select product unit"
+          disabled={units.length === 0}
         >
-          {PREDEFINED_UNITS.map((unit) => (
+          {units.length === 0 && (
+            <option value="">Loading...</option>
+          )}
+          {units.map((unit) => (
             <option key={unit.id} value={unit.id}>{unit.name} ({unit.symbol})</option>
           ))}
         </select>
+        {errors.unitId && <p className="input-error" role="alert">{errors.unitId}</p>}
       </div>
 
       <div className="input-group">
