@@ -1,5 +1,8 @@
 /**
  * Document/Invoice Zod Schemas — validation for all document endpoints
+ *
+ * All schemas validate req.body directly (flat, no `body:` wrapper).
+ * The validate middleware calls schema.parse(req.body).
  */
 
 import { z } from 'zod'
@@ -50,41 +53,37 @@ const transportDetailsSchema = z.object({
 // === Create Document ===
 
 export const createDocumentSchema = z.object({
-  body: z.object({
-    type: z.enum(DOCUMENT_TYPES),
-    status: z.enum(DOCUMENT_STATUSES).default('DRAFT'),
-    partyId: z.string().min(1),
-    documentDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-    paymentTerms: z.enum(PAYMENT_TERMS).optional(),
-    dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-    shippingAddressId: z.string().nullable().optional(),
-    notes: z.string().max(2000).nullable().optional(),
-    termsAndConditions: z.string().max(5000).nullable().optional(),
-    includeSignature: z.boolean().default(false),
-    lineItems: z.array(lineItemSchema).min(1).max(100),
-    additionalCharges: z.array(additionalChargeSchema).max(10).default([]),
-    transportDetails: transportDetailsSchema.nullable().optional(),
-    clientId: z.string().optional(), // offline sync
-  }),
+  type: z.enum(DOCUMENT_TYPES),
+  status: z.enum(DOCUMENT_STATUSES).default('DRAFT'),
+  partyId: z.string().min(1),
+  documentDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  paymentTerms: z.enum(PAYMENT_TERMS).optional(),
+  dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  shippingAddressId: z.string().nullable().optional(),
+  notes: z.string().max(2000).nullable().optional(),
+  termsAndConditions: z.string().max(5000).nullable().optional(),
+  includeSignature: z.boolean().default(false),
+  lineItems: z.array(lineItemSchema).min(1).max(100),
+  additionalCharges: z.array(additionalChargeSchema).max(10).default([]),
+  transportDetails: transportDetailsSchema.nullable().optional(),
+  clientId: z.string().optional(), // offline sync
 })
 
 // === Update Document ===
 
 export const updateDocumentSchema = z.object({
-  body: z.object({
-    status: z.enum(DOCUMENT_STATUSES).optional(),
-    partyId: z.string().min(1).optional(),
-    documentDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-    paymentTerms: z.enum(PAYMENT_TERMS).optional(),
-    dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-    shippingAddressId: z.string().nullable().optional(),
-    notes: z.string().max(2000).nullable().optional(),
-    termsAndConditions: z.string().max(5000).nullable().optional(),
-    includeSignature: z.boolean().optional(),
-    lineItems: z.array(lineItemSchema).min(1).max(100).optional(),
-    additionalCharges: z.array(additionalChargeSchema).max(10).optional(),
-    transportDetails: transportDetailsSchema.nullable().optional(),
-  }),
+  status: z.enum(DOCUMENT_STATUSES).optional(),
+  partyId: z.string().min(1).optional(),
+  documentDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  paymentTerms: z.enum(PAYMENT_TERMS).optional(),
+  dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  shippingAddressId: z.string().nullable().optional(),
+  notes: z.string().max(2000).nullable().optional(),
+  termsAndConditions: z.string().max(5000).nullable().optional(),
+  includeSignature: z.boolean().optional(),
+  lineItems: z.array(lineItemSchema).min(1).max(100).optional(),
+  additionalCharges: z.array(additionalChargeSchema).max(10).optional(),
+  transportDetails: transportDetailsSchema.nullable().optional(),
 })
 
 // === List Documents (query params) ===
@@ -105,9 +104,7 @@ export const listDocumentsSchema = z.object({
 // === Convert Document ===
 
 export const convertDocumentSchema = z.object({
-  body: z.object({
-    targetType: z.enum(DOCUMENT_TYPES),
-  }),
+  targetType: z.enum(DOCUMENT_TYPES),
 })
 
 // === Recycle Bin ===
@@ -121,80 +118,68 @@ export const recycleBinSchema = z.object({
 // === Share ===
 
 export const shareWhatsAppSchema = z.object({
-  body: z.object({
-    format: z.enum(['IMAGE', 'PDF']),
-    recipientPhone: z.string().min(10).max(15),
-    message: z.string().max(1000).optional(),
-  }),
+  format: z.enum(['IMAGE', 'PDF']),
+  recipientPhone: z.string().min(10).max(15),
+  message: z.string().max(1000).optional(),
 })
 
 export const shareEmailSchema = z.object({
-  body: z.object({
-    recipientEmail: z.string().email(),
-    subject: z.string().max(200),
-    body: z.string().max(5000).optional(),
-    format: z.enum(['PDF']).default('PDF'),
-  }),
+  recipientEmail: z.string().email(),
+  subject: z.string().max(200),
+  body: z.string().max(5000).optional(),
+  format: z.enum(['PDF']).default('PDF'),
 })
 
 // === Number Series ===
 
 export const updateNumberSeriesSchema = z.object({
-  body: z.object({
-    prefix: z.string().max(10).optional(),
-    suffix: z.string().max(10).optional(),
-    separator: z.string().max(3).optional(),
-    paddingDigits: z.number().int().min(1).max(6).optional(),
-    startingNumber: z.number().int().min(1).optional(),
-    resetOnNewYear: z.boolean().optional(),
-  }),
+  prefix: z.string().max(10).optional(),
+  suffix: z.string().max(10).optional(),
+  separator: z.string().max(3).optional(),
+  paddingDigits: z.number().int().min(1).max(6).optional(),
+  startingNumber: z.number().int().min(1).optional(),
+  resetOnNewYear: z.boolean().optional(),
 })
 
 // === Document Settings ===
 
 export const updateDocumentSettingsSchema = z.object({
-  body: z.object({
-    defaultPaymentTerms: z.enum(PAYMENT_TERMS).optional(),
-    roundOffTo: z.enum(ROUND_OFF_SETTINGS).optional(),
-    showProfitDuringBilling: z.boolean().optional(),
-    allowFutureDates: z.boolean().optional(),
-    transactionLockDays: z.number().int().min(0).max(365).optional(),
-    recycleBinRetentionDays: z.number().int().min(1).max(90).optional(),
-    autoShareOnSave: z.boolean().optional(),
-    autoShareChannel: z.enum(SHARE_CHANNELS).optional(),
-    autoShareFormat: z.enum(EXPORT_FORMATS).optional(),
-  }),
+  defaultPaymentTerms: z.enum(PAYMENT_TERMS).optional(),
+  roundOffTo: z.enum(ROUND_OFF_SETTINGS).optional(),
+  showProfitDuringBilling: z.boolean().optional(),
+  allowFutureDates: z.boolean().optional(),
+  transactionLockDays: z.number().int().min(0).max(365).optional(),
+  recycleBinRetentionDays: z.number().int().min(1).max(90).optional(),
+  autoShareOnSave: z.boolean().optional(),
+  autoShareChannel: z.enum(SHARE_CHANNELS).optional(),
+  autoShareFormat: z.enum(EXPORT_FORMATS).optional(),
 })
 
 // === Terms & Conditions Template ===
 
 export const createTermsTemplateSchema = z.object({
-  body: z.object({
-    name: z.string().min(1).max(100),
-    content: z.string().min(1).max(5000),
-    isDefault: z.boolean().default(false),
-    appliesTo: z.array(z.enum(DOCUMENT_TYPES)).default([]),
-  }),
+  name: z.string().min(1).max(100),
+  content: z.string().min(1).max(5000),
+  isDefault: z.boolean().default(false),
+  appliesTo: z.array(z.enum(DOCUMENT_TYPES)).default([]),
 })
 
 export const updateTermsTemplateSchema = z.object({
-  body: z.object({
-    name: z.string().min(1).max(100).optional(),
-    content: z.string().min(1).max(5000).optional(),
-    isDefault: z.boolean().optional(),
-    appliesTo: z.array(z.enum(DOCUMENT_TYPES)).optional(),
-  }),
+  name: z.string().min(1).max(100).optional(),
+  content: z.string().min(1).max(5000).optional(),
+  isDefault: z.boolean().optional(),
+  appliesTo: z.array(z.enum(DOCUMENT_TYPES)).optional(),
 })
 
 // === Inferred types ===
 
-export type CreateDocumentInput = z.infer<typeof createDocumentSchema>['body']
-export type UpdateDocumentInput = z.infer<typeof updateDocumentSchema>['body']
+export type CreateDocumentInput = z.infer<typeof createDocumentSchema>
+export type UpdateDocumentInput = z.infer<typeof updateDocumentSchema>
 export type ListDocumentsQuery = z.infer<typeof listDocumentsSchema>
-export type ConvertDocumentInput = z.infer<typeof convertDocumentSchema>['body']
-export type ShareWhatsAppInput = z.infer<typeof shareWhatsAppSchema>['body']
-export type ShareEmailInput = z.infer<typeof shareEmailSchema>['body']
-export type UpdateNumberSeriesInput = z.infer<typeof updateNumberSeriesSchema>['body']
-export type UpdateDocumentSettingsInput = z.infer<typeof updateDocumentSettingsSchema>['body']
-export type CreateTermsTemplateInput = z.infer<typeof createTermsTemplateSchema>['body']
-export type UpdateTermsTemplateInput = z.infer<typeof updateTermsTemplateSchema>['body']
+export type ConvertDocumentInput = z.infer<typeof convertDocumentSchema>
+export type ShareWhatsAppInput = z.infer<typeof shareWhatsAppSchema>
+export type ShareEmailInput = z.infer<typeof shareEmailSchema>
+export type UpdateNumberSeriesInput = z.infer<typeof updateNumberSeriesSchema>
+export type UpdateDocumentSettingsInput = z.infer<typeof updateDocumentSettingsSchema>
+export type CreateTermsTemplateInput = z.infer<typeof createTermsTemplateSchema>
+export type UpdateTermsTemplateInput = z.infer<typeof updateTermsTemplateSchema>

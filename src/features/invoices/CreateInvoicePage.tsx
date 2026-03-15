@@ -5,6 +5,7 @@
  * Sections: Items · Details · Charges
  */
 
+import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -15,6 +16,8 @@ import type { UseInvoiceFormReturn } from './useInvoiceForm'
 import { LineItemEditor } from './components/LineItemEditor'
 import { InvoiceTotalsBar } from './components/InvoiceTotalsBar'
 import { PaymentTermsSelector } from './components/PaymentTermsSelector'
+import { PartySearchInput } from './components/PartySearchInput'
+import { ProductSearchInput } from './components/ProductSearchInput'
 import { calculateLineTotal, calculateLineProfit } from './invoice.utils'
 import type { PaymentTerms } from './invoice.types'
 import './create-invoice.css'
@@ -47,15 +50,35 @@ export default function CreateInvoicePage() {
     handleSaveDraft,
   } = formHook
 
-  const handleAddItem = () => {
+  // Map productId → productName for LineItemEditor display
+  const [productNames, setProductNames] = useState<Record<string, string>>({})
+
+  // Whether the inline product search panel is visible
+  const [showProductSearch, setShowProductSearch] = useState(false)
+
+  const handlePartyChange = (id: string, name: string) => {
+    updateField('partyId', id)
+    // If user cleared the selection, also clear the name tracking (no-op needed
+    // since PartySearchInput manages its own display state)
+    void name
+  }
+
+  const handleProductSelect = (productId: string, ratePaise: number, productName: string) => {
+    // Guard: don't add the same product twice
+    const alreadyAdded = form.lineItems.some((item) => item.productId === productId)
+    if (alreadyAdded) return
+
+    setProductNames((prev) => ({ ...prev, [productId]: productName }))
     addLineItem({
-      productId: 'temp-' + Date.now(),
+      productId,
       quantity: 1,
-      rate: 0,
+      rate: ratePaise,
       discountType: 'PERCENTAGE',
       discountValue: 0,
     })
   }
+
+  const addedProductIds = form.lineItems.map((item) => item.productId)
 
   const handlePaymentTermsChange = (terms: PaymentTerms) => {
     updateField('paymentTerms', terms)
@@ -90,25 +113,12 @@ export default function CreateInvoicePage() {
           {/* ── Items Section ─────────────────────────────────── */}
           {activeSection === 'items' && (
             <div className="line-items-section">
-              {/* Party selector placeholder */}
-              <div className="party-selector">
-                <label className="label" htmlFor="party-select">
-                  Customer / Supplier
-                </label>
-                <input
-                  id="party-select"
-                  type="text"
-                  className="input"
-                  placeholder="Search party name or phone..."
-                  value={form.partyId}
-                  onChange={(e) => updateField('partyId', e.target.value)}
-                  aria-label="Select customer or supplier"
-                  style={{ minHeight: '44px' }}
-                />
-                {errors.partyId && (
-                  <span className="field-error" role="alert">{errors.partyId}</span>
-                )}
-              </div>
+              {/* Party search */}
+              <PartySearchInput
+                value={form.partyId}
+                onChange={handlePartyChange}
+                error={errors.partyId}
+              />
 
               {/* Line items */}
               {form.lineItems.map((item, index) => {
@@ -129,7 +139,7 @@ export default function CreateInvoicePage() {
                     key={item.productId}
                     item={{
                       ...item,
-                      productName: `Product ${index + 1}`,
+                      productName: productNames[item.productId] ?? `Item ${index + 1}`,
                       discountAmount,
                       lineTotal,
                       profit,
@@ -147,14 +157,25 @@ export default function CreateInvoicePage() {
                 <span className="field-error" role="alert">{errors.lineItems}</span>
               )}
 
+              {/* Inline product search panel */}
+              {showProductSearch && (
+                <div className="product-search-panel">
+                  <ProductSearchInput
+                    onSelect={handleProductSelect}
+                    addedProductIds={addedProductIds}
+                  />
+                </div>
+              )}
+
               <button
                 type="button"
                 className="add-item-btn"
-                onClick={handleAddItem}
-                aria-label="Add line item"
+                onClick={() => setShowProductSearch((v) => !v)}
+                aria-label={showProductSearch ? 'Hide product search' : 'Add line item'}
+                aria-expanded={showProductSearch}
               >
                 <Plus size={18} aria-hidden="true" />
-                Add Item
+                {showProductSearch ? 'Hide Search' : 'Add Item'}
               </button>
             </div>
           )}
