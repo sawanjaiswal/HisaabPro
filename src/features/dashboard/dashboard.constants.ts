@@ -5,88 +5,59 @@
  */
 
 import { ROUTES } from '@/config/routes.config'
-import type { DashboardRange, QuickAction, DashboardFilters } from './dashboard.types'
-
-// ─── Range labels ─────────────────────────────────────────────────────────────
-
-export const DASHBOARD_RANGE_LABELS: Record<DashboardRange, string> = {
-  today:      'Today',
-  this_week:  'This Week',
-  this_month: 'This Month',
-  custom:     'Custom',
-}
-
-/** Ordered list for rendering range pill tabs */
-export const DASHBOARD_RANGES: DashboardRange[] = [
-  'today',
-  'this_week',
-  'this_month',
-  'custom',
-]
-
-// ─── Outstanding config ───────────────────────────────────────────────────────
-
-/** Max customers shown in top-outstanding section */
-export const TOP_OUTSTANDING_LIMIT = 5
+import type { QuickAction, ActivityType } from './dashboard.types'
 
 // ─── Quick actions ────────────────────────────────────────────────────────────
-// Colors are CSS variable references only — never raw hex.
 
 export const QUICK_ACTIONS: QuickAction[] = [
   {
     id:    'new-invoice',
-    label: 'New Invoice',
+    label: 'Create',
     icon:  'FileText',
     route: `${ROUTES.INVOICE_CREATE}?type=SALE`,
     color: 'var(--color-primary-600)',
   },
   {
     id:    'record-payment',
-    label: 'Record Payment',
+    label: 'Payment',
     icon:  'Banknote',
     route: `${ROUTES.PAYMENT_NEW}?type=PAYMENT_IN`,
     color: 'var(--color-success-600)',
   },
   {
     id:    'add-product',
-    label: 'Add Product',
+    label: 'Products',
     icon:  'Package',
     route: ROUTES.PRODUCT_NEW,
     color: 'var(--color-warning-600)',
   },
   {
     id:    'add-party',
-    label: 'Add Party',
+    label: 'Parties',
     icon:  'Users',
     route: ROUTES.PARTY_NEW,
     color: 'var(--color-info-600)',
   },
 ]
 
-// ─── Default filter state ─────────────────────────────────────────────────────
+// ─── Activity type labels & colors ──────────────────────────────────────────
 
-export const DEFAULT_DASHBOARD_FILTERS: DashboardFilters = {
-  range: 'today',
+export const ACTIVITY_TYPE_LABELS: Record<ActivityType, string> = {
+  sale_invoice:     'Sale Invoice',
+  purchase_invoice: 'Purchase Invoice',
+  payment_in:       'Payment In',
+  payment_out:      'Payment Out',
 }
 
-// ─── Summary card display labels ──────────────────────────────────────────────
+// ─── Section limits ─────────────────────────────────────────────────────────
 
-export const DASHBOARD_CARD_LABELS = {
-  sales:      'Sales',
-  purchases:  'Purchases',
-  receivable: 'Receivable',
-  payable:    'Payable',
-} as const
+export const TOP_DEBTORS_LIMIT = 5
+export const RECENT_ACTIVITY_LIMIT = 10
 
-export const DASHBOARD_CARD_SUBLABELS = {
-  invoices: 'invoices',
-  parties:  'parties',
-} as const
+// ─── Today snapshot labels ──────────────────────────────────────────────────
 
-// ─── Cash flow labels ─────────────────────────────────────────────────────────
-
-export const DASHBOARD_CASHFLOW_LABELS = {
-  received:    'Received',
-  paid:        'Paid',
-  netCashFlow: 'Net Cash Flow',
+export const TODAY_LABELS = {
+  sales:    'Sales',
+  received: 'Received',
+  net:      'Net',
 } as const

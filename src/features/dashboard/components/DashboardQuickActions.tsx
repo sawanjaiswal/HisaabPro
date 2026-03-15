@@ -1,13 +1,11 @@
-/** Dashboard — Quick action pill row
+/** Dashboard — Quick action grid (4 columns)
  *
- * Horizontally scrollable pills. Each pill has an icon + label with a
- * CSS-variable color from the action config. Uses QUICK_ACTIONS from constants.
- * Icon names are resolved to lucide-react components via a static map to keep
- * the bundle treeshakable — no dynamic require.
+ * Figma: white rounded boxes (18px radius) with icons inside,
+ * labels below. 4-column grid layout.
  */
 
 import React from 'react'
-import { FileText, Banknote, Package, Users } from 'lucide-react'
+import { FileText, Banknote, Package, Users, MoreHorizontal, Send, Upload, CreditCard } from 'lucide-react'
 import type { QuickAction } from '../dashboard.types'
 
 interface DashboardQuickActionsProps {
@@ -15,14 +13,15 @@ interface DashboardQuickActionsProps {
   onAction: (route: string) => void
 }
 
-/** Static map from icon name string → lucide component.
- *  Only icons used in QUICK_ACTIONS are included — keeps bundle lean.
- */
 const ICON_MAP: Record<string, React.FC<{ size?: number; 'aria-hidden'?: boolean }>> = {
   FileText,
   Banknote,
   Package,
   Users,
+  MoreHorizontal,
+  Send,
+  Upload,
+  CreditCard,
 }
 
 export const DashboardQuickActions: React.FC<DashboardQuickActionsProps> = ({
@@ -31,7 +30,7 @@ export const DashboardQuickActions: React.FC<DashboardQuickActionsProps> = ({
 }) => {
   return (
     <div
-      className="dashboard-quick-actions"
+      className="dashboard-action-grid"
       role="list"
       aria-label="Quick actions"
     >
@@ -41,18 +40,17 @@ export const DashboardQuickActions: React.FC<DashboardQuickActionsProps> = ({
         return (
           <button
             key={action.id}
-            className="dashboard-quick-action"
+            className="dashboard-action-item"
             role="listitem"
-            style={{ background: action.color }}
             onClick={() => onAction(action.route)}
             aria-label={action.label}
           >
-            {IconComponent !== undefined && (
-              <span className="dashboard-quick-action-icon">
-                <IconComponent size={16} aria-hidden={true} />
-              </span>
-            )}
-            {action.label}
+            <div className="dashboard-action-icon-box">
+              {IconComponent !== undefined && (
+                <IconComponent size={24} aria-hidden={true} />
+              )}
+            </div>
+            <span className="dashboard-action-label">{action.label}</span>
           </button>
         )
       })}

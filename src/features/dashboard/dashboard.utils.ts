@@ -4,52 +4,10 @@
  * All monetary params/return values in PAISE unless noted.
  */
 
-import type { DashboardRange } from './dashboard.types'
-
-// ─── Date range helpers ───────────────────────────────────────────────────────
-
-/** Format a Date as an ISO date string (YYYY-MM-DD) */
-function toISO(d: Date): string {
-  return d.toISOString().slice(0, 10)
-}
-
-/**
- * Return { from, to } ISO date strings for a given preset.
- * 'custom' falls back to today–today; caller must override with real values.
- */
-export function getDateRangeForPreset(range: DashboardRange): { from: string; to: string } {
-  const today = new Date()
-
-  switch (range) {
-    case 'today':
-      return { from: toISO(today), to: toISO(today) }
-
-    case 'this_week': {
-      const day = today.getDay() // 0 = Sun, 1 = Mon, …
-      const monday = new Date(today)
-      monday.setDate(today.getDate() - (day === 0 ? 6 : day - 1))
-      return { from: toISO(monday), to: toISO(today) }
-    }
-
-    case 'this_month': {
-      const firstDay = new Date(today.getFullYear(), today.getMonth(), 1)
-      return { from: toISO(firstDay), to: toISO(today) }
-    }
-
-    case 'custom':
-      // Caller responsible for supplying real from/to — fallback to today
-      return { from: toISO(today), to: toISO(today) }
-
-    default: {
-      const _exhaustive: never = range
-      return _exhaustive
-    }
-  }
-}
+import type { HomeDashboardData } from './dashboard.types'
 
 // ─── Currency formatting ──────────────────────────────────────────────────────
 
-/** Singleton formatter — created once, reused on every call */
 const INR = new Intl.NumberFormat('en-IN', {
   style:    'currency',
   currency: 'INR',
@@ -67,8 +25,6 @@ export function formatAmount(paise: number): string {
 
 /**
  * Format a paise amount compactly for summary cards.
- * Thresholds: Cr (≥ 1 Cr), L (≥ 1 L), K (≥ 1,000), else full format.
- *
  * formatCompactAmount(150000000) → "₹1.5Cr"
  * formatCompactAmount(1500000)   → "₹15.0L"
  * formatCompactAmount(150000)    → "₹1.5K"
@@ -82,7 +38,20 @@ export function formatCompactAmount(paise: number): string {
   return INR.format(rupees)
 }
 
-// ─── Date formatting ──────────────────────────────────────────────────────────
+// ─── Time formatting ──────────────────────────────────────────────────────────
+
+/**
+ * Format an ISO date as relative time: "2h ago", "3d ago"
+ */
+export function timeAgo(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime()
+  const diffSec = Math.floor(diffMs / 1000)
+  if (diffSec < 60) return 'Just now'
+  if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`
+  if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h ago`
+  if (diffSec < 604800) return `${Math.floor(diffSec / 86400)}d ago`
+  return formatDate(iso)
+}
 
 /**
  * Format an ISO date string for human display.
@@ -99,37 +68,18 @@ export function formatDate(iso: string): string {
   })
 }
 
-// ─── Overdue helpers ──────────────────────────────────────────────────────────
-
-/**
- * Calculate how many full days have passed since a due date.
- * Returns 0 if the due date is today or in the future.
- *
- * calculateDaysOverdue('2025-03-01') → 14  (if today is 2025-03-15)
- */
-export function calculateDaysOverdue(dueDateISO: string): number {
-  const dueDate = new Date(dueDateISO)
-  const today   = new Date()
-  const diffMs  = today.getTime() - dueDate.getTime()
-  return Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)))
-}
-
 // ─── Empty state detection ────────────────────────────────────────────────────
 
 /**
- * Returns true when the dashboard has no meaningful data to display —
- * used to show the first-time empty state over the stats grid.
+ * Returns true when the home dashboard has no meaningful data —
+ * used to show first-time empty state.
  */
-export function isDashboardEmpty(stats: {
-  sales:      { count: number }
-  purchases:  { count: number }
-  receivable: { total: number }
-  payable:    { total: number }
-}): boolean {
+export function isHomeDashboardEmpty(data: HomeDashboardData): boolean {
   return (
-    stats.sales.count      === 0 &&
-    stats.purchases.count  === 0 &&
-    stats.receivable.total === 0 &&
-    stats.payable.total    === 0
+    data.outstanding.receivable.total === 0 &&
+    data.outstanding.payable.total    === 0 &&
+    data.today.salesCount             === 0 &&
+    data.today.paymentsReceivedCount  === 0 &&
+    data.recentActivity.length        === 0
   )
 }

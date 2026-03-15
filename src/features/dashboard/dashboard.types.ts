@@ -4,90 +4,61 @@
  * Display via formatAmount() from dashboard.utils.ts.
  */
 
-// ─── Date range ───────────────────────────────────────────────────────────────
+// ─── Home dashboard (single-call response) ───────────────────────────────────
 
-/** Dashboard date range presets */
-export type DashboardRange = 'today' | 'this_week' | 'this_month' | 'custom'
+export interface HomeDashboardData {
+  outstanding: {
+    receivable: { total: number; partyCount: number }
+    payable: { total: number; partyCount: number }
+  }
+  today: {
+    salesCount: number
+    salesAmount: number
+    paymentsReceivedCount: number
+    paymentsReceivedAmount: number
+    paymentsMadeAmount: number
+    netCashFlow: number
+  }
+  recentActivity: RecentActivityItem[]
+  alerts: {
+    lowStockCount: number
+    overdueInvoiceCount: number
+    overdueAmount: number
+  }
+  topDebtors: TopDebtor[]
+}
 
-// ─── Summary stat shapes ──────────────────────────────────────────────────────
+export type ActivityType = 'sale_invoice' | 'purchase_invoice' | 'payment_in' | 'payment_out'
 
-export interface DashboardSalesStats {
-  /** Number of sale invoices in range */
-  count: number
-  /** Total invoiced amount in paise */
+export interface RecentActivityItem {
+  id: string
+  type: ActivityType
+  partyName: string
+  /** Amount in paise */
   amount: number
+  /** ISO date string */
+  date: string
+  /** Document number or "Payment" */
+  reference: string
+  /** Only for invoices */
+  status?: 'paid' | 'partial' | 'unpaid'
+  /** Only for payments */
+  mode?: string
 }
 
-export interface DashboardPurchaseStats {
-  /** Number of purchase invoices in range */
-  count: number
-  /** Total invoiced amount in paise */
-  amount: number
-}
-
-export interface DashboardReceivable {
-  /** Total receivable outstanding in paise */
-  total: number
-  /** Number of parties with outstanding */
-  partyCount: number
-}
-
-export interface DashboardPayable {
-  /** Total payable outstanding in paise */
-  total: number
-  /** Number of parties owed money to */
-  partyCount: number
-}
-
-// ─── Outstanding customer ─────────────────────────────────────────────────────
-
-export interface DashboardTopCustomer {
+export interface TopDebtor {
   partyId: string
   name: string
   phone: string
-  /** Total outstanding in paise */
+  /** Outstanding in paise */
   outstanding: number
-  /** ISO date string of oldest unpaid due date */
+  /** ISO date string */
   oldestDueDate: string
-  /** Computed days overdue from oldestDueDate */
   daysOverdue: number
 }
 
-// ─── Full stats object ────────────────────────────────────────────────────────
+// ─── Quick action pill config ────────────────────────────────────────────────
 
-export interface DashboardStats {
-  range: {
-    /** ISO date — start of selected range */
-    from: string
-    /** ISO date — end of selected range */
-    to: string
-    /** Human-readable label e.g. "Today" */
-    label: string
-  }
-  sales: DashboardSalesStats
-  purchases: DashboardPurchaseStats
-  receivable: DashboardReceivable
-  payable: DashboardPayable
-  /** Top N customers by outstanding amount */
-  topOutstandingCustomers: DashboardTopCustomer[]
-  /** Total payments received in paise during range */
-  paymentsReceived: number
-  /** Total payments made in paise during range */
-  paymentsMade: number
-  /** paymentsReceived - paymentsMade in paise */
-  netCashFlow: number
-}
-
-// ─── API response wrappers ────────────────────────────────────────────────────
-
-export interface DashboardStatsResponse {
-  success: boolean
-  data: DashboardStats
-}
-
-// ─── UI shapes ────────────────────────────────────────────────────────────────
-
-/** Quick action pill config */
 export interface QuickAction {
   id: string
   label: string
@@ -98,11 +69,24 @@ export interface QuickAction {
   color: string
 }
 
-/** Dashboard filter state */
+// ─── Legacy types (kept for /stats endpoint on Reports page) ─────────────────
+
+export type DashboardRange = 'today' | 'this_week' | 'this_month' | 'custom'
+
+export interface DashboardStats {
+  range: { from: string; to: string; label: string }
+  sales: { count: number; amount: number }
+  purchases: { count: number; amount: number }
+  receivable: { total: number; partyCount: number }
+  payable: { total: number; partyCount: number }
+  topOutstandingCustomers: TopDebtor[]
+  paymentsReceived: number
+  paymentsMade: number
+  netCashFlow: number
+}
+
 export interface DashboardFilters {
   range: DashboardRange
-  /** ISO date — required when range === 'custom' */
   from?: string
-  /** ISO date — required when range === 'custom' */
   to?: string
 }

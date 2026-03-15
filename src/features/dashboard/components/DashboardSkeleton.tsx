@@ -1,8 +1,6 @@
-/** Dashboard — Loading skeleton
+/** Dashboard — Loading skeleton (matches Figma layout)
  *
  * Mirrors the layout of the loaded dashboard so there is no layout shift.
- * Uses .dashboard-skeleton-* classes from dashboard.css (shimmer animation).
- * No props — purely presentational.
  */
 
 import React from 'react'
@@ -10,68 +8,77 @@ import { Skeleton } from '@/components/feedback/Skeleton'
 
 export const DashboardSkeleton: React.FC = () => {
   return (
-    <div className="dashboard-page" aria-busy="true" aria-label="Loading dashboard">
+    <>
+      {/* Top gradient section */}
+      <div className="dashboard-top-section" aria-busy="true" aria-label="Loading dashboard">
+        {/* Sales hero skeleton */}
+        <div className="dashboard-sales-hero" aria-hidden="true">
+          <Skeleton width="80px" height="13px" />
+          <Skeleton width="160px" height="32px" />
+        </div>
 
-      {/* Range pills skeleton */}
-      <div className="dashboard-range-bar" aria-hidden="true">
-        <Skeleton width="72px" height="44px" borderRadius="var(--radius-full)" />
-        <Skeleton width="88px" height="44px" borderRadius="var(--radius-full)" />
-        <Skeleton width="100px" height="44px" borderRadius="var(--radius-full)" />
-        <Skeleton width="72px" height="44px" borderRadius="var(--radius-full)" />
-      </div>
-
-      {/* Quick actions skeleton */}
-      <div className="dashboard-quick-actions" aria-hidden="true">
-        <Skeleton width="128px" height="44px" borderRadius="var(--radius-full)" />
-        <Skeleton width="148px" height="44px" borderRadius="var(--radius-full)" />
-        <Skeleton width="120px" height="44px" borderRadius="var(--radius-full)" />
-        <Skeleton width="112px" height="44px" borderRadius="var(--radius-full)" />
-      </div>
-
-      {/* 2×2 stat cards skeleton */}
-      <div className="dashboard-stats-grid" aria-hidden="true">
-        {Array.from({ length: 4 }, (_, i) => (
-          <div
-            key={`stat-skeleton-${i}`}
-            className="dashboard-stat-card dashboard-stat-card--skeleton"
-          >
-            <div className="dashboard-stat-header">
-              <div className="dashboard-skeleton-line dashboard-skeleton-sub" style={{ width: '60%' }} />
-              <div className="dashboard-skeleton-line dashboard-skeleton-icon" />
-            </div>
-            <div className="dashboard-skeleton-line dashboard-skeleton-amount" />
-            <div className="dashboard-skeleton-line dashboard-skeleton-sub" />
-          </div>
-        ))}
-      </div>
-
-      {/* Cash flow strip skeleton */}
-      <div className="dashboard-cashflow" aria-hidden="true">
-        {Array.from({ length: 3 }, (_, i) => (
-          <div key={`cashflow-skeleton-${i}`} className="dashboard-cashflow-item">
-            <Skeleton width="60%" height="10px" />
+        {/* Outstanding hero skeleton */}
+        <div className="dashboard-hero" aria-hidden="true">
+          <div className="dashboard-hero-card dashboard-hero-card--skeleton" style={{ flexDirection: 'column', gap: '16px' }}>
             <Skeleton width="80%" height="20px" />
+            <Skeleton width="60%" height="13px" />
           </div>
-        ))}
+          <div className="dashboard-hero-card dashboard-hero-card--skeleton" style={{ flexDirection: 'column', gap: '16px' }}>
+            <Skeleton width="80%" height="20px" />
+            <Skeleton width="60%" height="13px" />
+          </div>
+        </div>
+
+        {/* Action grid skeleton */}
+        <div className="dashboard-action-grid" aria-hidden="true">
+          {Array.from({ length: 4 }, (_, i) => (
+            <div key={`action-skeleton-${i}`} className="dashboard-action-item" style={{ cursor: 'default' }}>
+              <Skeleton width="56px" height="56px" borderRadius="18px" />
+              <Skeleton width="40px" height="12px" />
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Outstanding list skeleton */}
-      <div className="dashboard-outstanding-card" aria-hidden="true">
-        {Array.from({ length: 5 }, (_, i) => (
-          <div key={`outstanding-skeleton-${i}`} className="dashboard-outstanding-row" style={{ cursor: 'default' }}>
-            <Skeleton width="40px" height="40px" borderRadius="var(--radius-md)" />
-            <div className="dashboard-outstanding-info">
-              <Skeleton width="55%" height="15px" />
-              <Skeleton width="35%" height="11px" />
-            </div>
-            <div className="dashboard-outstanding-right">
-              <Skeleton width="64px" height="15px" />
-              <Skeleton width="56px" height="18px" borderRadius="var(--radius-full)" />
-            </div>
+      {/* White section skeleton */}
+      <div className="dashboard-white-section dashboard-white-section--no-alerts" aria-hidden="true">
+        {/* Starred skeleton */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Skeleton width="60px" height="17px" />
+            <Skeleton width="50px" height="13px" />
           </div>
-        ))}
-      </div>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            {Array.from({ length: 5 }, (_, i) => (
+              <div key={`starred-skeleton-${i}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                <Skeleton width="56px" height="56px" borderRadius="9999px" />
+                <Skeleton width="36px" height="12px" />
+              </div>
+            ))}
+          </div>
+        </div>
 
-    </div>
+        {/* Transactions skeleton */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Skeleton width="140px" height="16px" />
+            <Skeleton width="50px" height="13px" />
+          </div>
+          {Array.from({ length: 3 }, (_, i) => (
+            <div key={`txn-skeleton-${i}`} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '12px 0' }}>
+              <Skeleton width="32px" height="32px" borderRadius="9999px" />
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <Skeleton width="70%" height="16px" />
+                <Skeleton width="50%" height="14px" />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                <Skeleton width="56px" height="14px" />
+                <Skeleton width="44px" height="12px" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
   )
 }

@@ -1,71 +1,77 @@
 /** Dashboard — Home Page (lazy loaded)
  *
- * Business summary: date range toggle, 2×2 stat grid, cash flow strip,
- * top outstanding list, quick actions. 4 UI states.
+ * "Open app, see business" — instant value on first glance.
+ * Layout: Sales Hero → Outstanding Cards → Action Grid →
+ * Alerts → Starred Contacts → Recent Transactions.
+ * 4 UI states: loading, error, empty (first-time), success.
  */
 
 import { useNavigate } from 'react-router-dom'
 import { BarChart3 } from 'lucide-react'
-import { APP_NAME } from '@/config/app.config'
 import { AppShell } from '@/components/layout/AppShell'
-import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { ROUTES } from '@/config/routes.config'
-import { useDashboard } from './useDashboard'
-import { isDashboardEmpty } from './dashboard.utils'
+import { useHomeDashboard } from './useDashboard'
+import { isHomeDashboardEmpty, formatCompactAmount } from './dashboard.utils'
 import { QUICK_ACTIONS } from './dashboard.constants'
-import { DashboardDateRange } from './components/DashboardDateRange'
-import { DashboardSummaryCards } from './components/DashboardSummaryCards'
-import { DashboardCashFlow } from './components/DashboardCashFlow'
-import { TopOutstandingList } from './components/TopOutstandingList'
+import { DashboardHeader } from './components/DashboardHeader'
+import { OutstandingHero } from './components/OutstandingHero'
 import { DashboardQuickActions } from './components/DashboardQuickActions'
+import { AlertStrip } from './components/AlertStrip'
+import { TopDebtors } from './components/TopDebtors'
+import { RecentActivityFeed } from './components/RecentActivityFeed'
 import { DashboardSkeleton } from './components/DashboardSkeleton'
+import type { RecentActivityItem, TopDebtor } from './dashboard.types'
 import './dashboard.css'
-
-const CARD_ROUTE_MAP: Record<string, string> = {
-  sales: ROUTES.REPORT_SALES,
-  purchases: ROUTES.REPORT_PURCHASES,
-  receivable: ROUTES.OUTSTANDING,
-  payable: ROUTES.OUTSTANDING,
-}
 
 export default function DashboardPage() {
   const navigate = useNavigate()
-  const { stats, status, filters, setRange, refresh } = useDashboard()
+  const { data, status, refresh } = useHomeDashboard()
 
-  const handleCardClick = (type: string) => {
-    const route = CARD_ROUTE_MAP[type]
-    if (route) navigate(route)
+  const handleQuickAction = (route: string) => navigate(route)
+  const handleCollectClick = () => navigate(ROUTES.OUTSTANDING)
+  const handlePayClick = () => navigate(ROUTES.OUTSTANDING)
+
+  const handleActivityClick = (item: RecentActivityItem) => {
+    if (item.type === 'sale_invoice' || item.type === 'purchase_invoice') {
+      navigate(ROUTES.INVOICE_DETAIL.replace(':id', item.id))
+    } else {
+      navigate(ROUTES.PAYMENT_DETAIL.replace(':id', item.id))
+    }
   }
 
-  const handleCustomerClick = (partyId: string) => {
+  const handleAddPayment = (item: RecentActivityItem) => {
+    navigate(`${ROUTES.PAYMENT_NEW}?type=PAYMENT_IN&invoiceId=${item.id}`)
+  }
+
+  const handleViewAllActivity = () => navigate(ROUTES.REPORT_DAY_BOOK)
+
+  const handleDebtorClick = (partyId: string) => {
     navigate(ROUTES.REPORT_PARTY_STATEMENT.replace(':partyId', partyId))
   }
 
-  const handleViewAllOutstanding = () => {
-    navigate(ROUTES.OUTSTANDING)
+  const handleViewAllOutstanding = () => navigate(ROUTES.OUTSTANDING)
+
+  const handleSendReminder = (debtor: TopDebtor) => {
+    const message = `Hi ${debtor.name}, this is a reminder about your pending payment. Please settle at your earliest convenience.`
+    const phone = debtor.phone.replace(/\D/g, '')
+    const fullPhone = phone.length === 10 ? `91${phone}` : phone
+    window.open(`https://wa.me/${fullPhone}?text=${encodeURIComponent(message)}`, '_blank')
   }
 
-  const handleQuickAction = (route: string) => {
-    navigate(route)
-  }
+  const handleLowStockClick = () => navigate(ROUTES.REPORT_STOCK_SUMMARY)
+  const handleOverdueClick = () => navigate(ROUTES.OUTSTANDING)
+
+  const hasAlerts = data
+    ? data.alerts.lowStockCount > 0 || data.alerts.overdueInvoiceCount > 0
+    : false
 
   return (
     <AppShell>
-      <Header title={APP_NAME} />
+      <DashboardHeader />
 
-      <PageContainer>
-        {/* Date range pills — always visible */}
-        <DashboardDateRange
-          activeRange={filters.range}
-          onRangeChange={setRange}
-        />
-
-        {/* Quick actions — always visible */}
-        <DashboardQuickActions actions={QUICK_ACTIONS} onAction={handleQuickAction} />
-
+      <div className="dashboard-page">
         {/* Loading */}
         {status === 'loading' && <DashboardSkeleton />}
 
@@ -78,45 +84,78 @@ export default function DashboardPage() {
           />
         )}
 
-        {/* Empty — all zeros */}
-        {status === 'success' && stats && isDashboardEmpty(stats) && (
-          <EmptyState
-            icon={<BarChart3 size={48} aria-hidden="true" />}
-            title="Your dashboard is empty"
-            description="Create your first invoice to see your business summary here."
-            action={
-              <button
-                className="btn btn-primary btn-md"
-                onClick={() => navigate(`${ROUTES.INVOICE_CREATE}?type=SALE`)}
-                aria-label="Create first invoice"
-              >
-                Create Invoice
-              </button>
-            }
-          />
+        {/* Empty — first-time user */}
+        {status === 'success' && data && isHomeDashboardEmpty(data) && (
+          <div className="dashboard-top-section">
+            <DashboardQuickActions actions={QUICK_ACTIONS} onAction={handleQuickAction} />
+            <EmptyState
+              icon={<BarChart3 size={48} aria-hidden="true" />}
+              title="Your dashboard is empty"
+              description="Create your first invoice to see your business summary here."
+              action={
+                <button
+                  className="btn btn-primary btn-md"
+                  onClick={() => navigate(`${ROUTES.INVOICE_CREATE}?type=SALE`)}
+                  aria-label="Create first invoice"
+                >
+                  Create Invoice
+                </button>
+              }
+            />
+          </div>
         )}
 
         {/* Success — has data */}
-        {status === 'success' && stats && !isDashboardEmpty(stats) && (
+        {status === 'success' && data && !isHomeDashboardEmpty(data) && (
           <>
-            <DashboardSummaryCards stats={stats} onCardClick={handleCardClick} />
+            {/* Gradient area */}
+            <div className="dashboard-top-section">
+              <div className="dashboard-sales-hero">
+                <span className="dashboard-sales-label">Today&apos;s Sale</span>
+                <span className="dashboard-sales-amount">
+                  {formatCompactAmount(data.today.salesAmount)}
+                </span>
+              </div>
 
-            <DashboardCashFlow
-              received={stats.paymentsReceived}
-              paid={stats.paymentsMade}
-              net={stats.netCashFlow}
+              <OutstandingHero
+                receivableTotal={data.outstanding.receivable.total}
+                receivablePartyCount={data.outstanding.receivable.partyCount}
+                payableTotal={data.outstanding.payable.total}
+                payablePartyCount={data.outstanding.payable.partyCount}
+                onCollectClick={handleCollectClick}
+                onPayClick={handlePayClick}
+              />
+
+              <DashboardQuickActions actions={QUICK_ACTIONS} onAction={handleQuickAction} />
+            </div>
+
+            {/* Alert banner */}
+            <AlertStrip
+              lowStockCount={data.alerts.lowStockCount}
+              overdueInvoiceCount={data.alerts.overdueInvoiceCount}
+              onLowStockClick={handleLowStockClick}
+              onOverdueClick={handleOverdueClick}
             />
 
-            {stats.topOutstandingCustomers.length > 0 && (
-              <TopOutstandingList
-                customers={stats.topOutstandingCustomers}
+            {/* White card section */}
+            <div className={`dashboard-white-section${hasAlerts ? '' : ' dashboard-white-section--no-alerts'}`}>
+              <TopDebtors
+                debtors={data.topDebtors}
                 onViewAll={handleViewAllOutstanding}
-                onCustomerClick={handleCustomerClick}
+                onDebtorClick={handleDebtorClick}
+                onSendReminder={handleSendReminder}
               />
-            )}
+
+              <RecentActivityFeed
+                items={data.recentActivity}
+                onItemClick={handleActivityClick}
+                onAddPayment={handleAddPayment}
+                onViewAll={handleViewAllActivity}
+              />
+            </div>
           </>
         )}
-      </PageContainer>
+      </div>
     </AppShell>
   )
 }
