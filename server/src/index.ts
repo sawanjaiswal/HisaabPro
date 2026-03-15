@@ -19,6 +19,8 @@ import inventorySettingsRoutes from './routes/inventory-settings.js'
 import documentRoutes from './routes/documents.js'
 import documentSettingsRoutes from './routes/document-settings.js'
 import paymentRoutes from './routes/payments.js'
+import dashboardRoutes from './routes/dashboard.js'
+import reportRoutes from './routes/reports.js'
 import logger from './lib/logger.js'
 
 const app = express()
@@ -53,6 +55,8 @@ app.use('/api/settings/inventory', inventorySettingsRoutes)
 app.use('/api/documents', documentRoutes)
 app.use('/api/settings/documents', documentSettingsRoutes)
 app.use('/api/payments', paymentRoutes)
+app.use('/api/dashboard', dashboardRoutes)
+app.use('/api/reports', reportRoutes)
 
 // 404
 app.use((_req, res) => {
