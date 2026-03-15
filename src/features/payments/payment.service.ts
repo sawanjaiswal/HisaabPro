@@ -308,7 +308,7 @@ export async function getOutstanding(
   signal?: AbortSignal
 ): Promise<OutstandingListResponse> {
   return api<OutstandingListResponse>(
-    `/outstanding${buildOutstandingQuery(filters)}`,
+    `/payments/outstanding/list${buildOutstandingQuery(filters)}`,
     { signal }
   )
 }
@@ -322,7 +322,7 @@ export async function getPartyOutstanding(
   partyId: string,
   signal?: AbortSignal
 ): Promise<OutstandingPartyDetail> {
-  return api<OutstandingPartyDetail>(`/outstanding/${partyId}`, { signal })
+  return api<OutstandingPartyDetail>(`/payments/outstanding/${partyId}`, { signal })
 }
 
 // ─── Reminders ────────────────────────────────────────────────────────────────
@@ -336,7 +336,7 @@ export async function getPartyOutstanding(
 export async function sendReminder(
   data: SendReminderRequest
 ): Promise<PaymentReminder> {
-  return api<PaymentReminder>('/reminders/send', {
+  return api<PaymentReminder>('/payments/reminders/send', {
     method: 'POST',
     body: JSON.stringify(data),
   })
@@ -350,7 +350,7 @@ export async function sendReminder(
 export async function sendBulkReminders(
   data: SendBulkRemindersRequest
 ): Promise<SendBulkRemindersResponse> {
-  return api<SendBulkRemindersResponse>('/reminders/send-bulk', {
+  return api<SendBulkRemindersResponse>('/payments/reminders/send-bulk', {
     method: 'POST',
     body: JSON.stringify(data),
   })
@@ -365,7 +365,7 @@ export async function getReminders(
   signal?: AbortSignal
 ): Promise<ReminderListResponse> {
   return api<ReminderListResponse>(
-    `/reminders${buildReminderQuery(filters)}`,
+    `/payments/reminders/list${buildReminderQuery(filters)}`,
     { signal }
   )
 }
@@ -377,7 +377,7 @@ export async function getReminders(
 export async function getReminderConfig(
   signal?: AbortSignal
 ): Promise<ReminderConfig> {
-  return api<ReminderConfig>('/reminders/config', { signal })
+  return api<ReminderConfig>('/payments/reminders/config', { signal })
 }
 
 /**
@@ -387,7 +387,7 @@ export async function getReminderConfig(
 export async function updateReminderConfig(
   data: Partial<ReminderConfig>
 ): Promise<ReminderConfig> {
-  return api<ReminderConfig>('/reminders/config', {
+  return api<ReminderConfig>('/payments/reminders/config', {
     method: 'PUT',
     body: JSON.stringify(data),
   })

@@ -89,7 +89,10 @@ export function formatCompactAmount(paise: number): string {
  * formatDate('2025-03-15') → "15 Mar 2025"
  */
 export function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-IN', {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return ''
+  return d.toLocaleDateString('en-IN', {
     day:   '2-digit',
     month: 'short',
     year:  'numeric',

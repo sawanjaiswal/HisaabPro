@@ -107,13 +107,19 @@ export async function getDashboardStats(businessId: string, query: DashboardStat
       _sum: { amount: true },
     }),
 
-    // Top 5 outstanding customers
+    // Top 5 outstanding customers (with oldest unpaid invoice for due date)
     prisma.party.findMany({
       where: {
         businessId, isActive: true, outstandingBalance: { gt: 0 },
       },
       select: {
         id: true, name: true, phone: true, outstandingBalance: true,
+        documents: {
+          where: { status: { in: ['SAVED', 'SHARED'] }, balanceDue: { gt: 0 }, deletedAt: null },
+          select: { dueDate: true, documentDate: true },
+          orderBy: { documentDate: 'asc' },
+          take: 1,
+        },
       },
       orderBy: { outstandingBalance: 'desc' },
       take: 5,
@@ -145,14 +151,22 @@ export async function getDashboardStats(businessId: string, query: DashboardStat
       total: Math.abs(payableAgg._sum.outstandingBalance || 0),
       partyCount: payableAgg._count,
     },
-    topOutstandingCustomers: topCustomers.map(c => ({
-      partyId: c.id,
-      name: c.name,
-      phone: c.phone,
-      outstanding: c.outstandingBalance,
-      oldestDueDate: '', // simplified for MVP
-      daysOverdue: 0,
-    })),
+    topOutstandingCustomers: topCustomers.map(c => {
+      const oldestInv = c.documents[0]
+      const dueDate = oldestInv?.dueDate ?? oldestInv?.documentDate ?? null
+      const dueDateStr = dueDate instanceof Date ? dueDate.toISOString().split('T')[0] : (dueDate ?? '')
+      const daysOverdue = dueDate
+        ? Math.max(0, Math.floor((Date.now() - new Date(dueDate).getTime()) / 86_400_000))
+        : 0
+      return {
+        partyId: c.id,
+        name: c.name,
+        phone: c.phone,
+        outstanding: c.outstandingBalance,
+        oldestDueDate: dueDateStr,
+        daysOverdue,
+      }
+    }),
     paymentsReceived,
     paymentsMade,
     netCashFlow: paymentsReceived - paymentsMade,

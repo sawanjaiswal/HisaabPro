@@ -75,7 +75,7 @@ export const TopOutstandingList: React.FC<TopOutstandingListProps> = ({
             <div className="dashboard-outstanding-info">
               <div className="dashboard-outstanding-name">{customer.name}</div>
               <div className="dashboard-outstanding-date">
-                Due {formatDate(customer.oldestDueDate)}
+                {formatDate(customer.oldestDueDate) ? `Due ${formatDate(customer.oldestDueDate)}` : 'No due date'}
               </div>
             </div>
 
