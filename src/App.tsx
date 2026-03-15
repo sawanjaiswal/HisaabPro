@@ -11,6 +11,7 @@ import { CalculatorOverlay } from '@/features/settings/CalculatorOverlay'
 
 /** Lazy-loaded pages — split per route for small bundles */
 const Login = lazy(() => import('@/features/auth/LoginPage'))
+const Onboarding = lazy(() => import('@/features/onboarding/OnboardingPage'))
 const Dashboard = lazy(() => import('@/features/dashboard/DashboardPage'))
 const Parties = lazy(() => import('@/features/parties/PartiesPage'))
 const CreateParty = lazy(() => import('@/features/parties/CreatePartyPage'))
@@ -68,6 +69,7 @@ export function App() {
         <Routes>
           <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.DASHBOARD} replace />} />
           <Route path={ROUTES.LOGIN} element={<GuestRoute><Login /></GuestRoute>} />
+          <Route path={ROUTES.ONBOARDING} element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
           <Route path={ROUTES.DASHBOARD} element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path={ROUTES.PARTIES} element={<ProtectedRoute><Parties /></ProtectedRoute>} />
           <Route path={ROUTES.PARTY_NEW} element={<ProtectedRoute><CreateParty /></ProtectedRoute>} />

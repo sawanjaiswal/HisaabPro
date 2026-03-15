@@ -25,12 +25,22 @@ import {
   verifyPinSchema,
   setOperationPinSchema,
 } from '../schemas/settings.schemas.js'
+import { createBusinessSchema } from '../schemas/business.schemas.js'
 import * as settingsService from '../services/settings.service.js'
+import * as businessService from '../services/business.service.js'
 
 // === Business-scoped routes ===
 
 export const businessSettingsRouter = Router()
 businessSettingsRouter.use(auth)
+
+// --- Create Business (onboarding) ---
+
+businessSettingsRouter.post('/', validate(createBusinessSchema), asyncHandler(async (req, res) => {
+  const userId = req.user!.userId
+  const business = await businessService.createBusiness(userId, req.body)
+  sendSuccess(res, { business }, 201)
+}))
 
 // --- Roles ---
 

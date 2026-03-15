@@ -1,0 +1,186 @@
+/* Onboarding Page — mobile-first centered card layout */
+.onboarding-page {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: var(--color-gray-50);
+}
+
+.onboarding-page__card {
+  width: 100%;
+  max-width: 400px;
+  padding: var(--space-8);
+  background: var(--color-gray-0);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+}
+
+/* Header */
+.onboarding-page__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: var(--color-primary-50);
+  border-radius: var(--radius-lg);
+  margin: 0 auto var(--space-4);
+}
+
+.onboarding-page__icon svg {
+  width: 28px;
+  height: 28px;
+  color: var(--color-primary-500);
+}
+
+.onboarding-page__header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.onboarding-page__title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  margin-bottom: var(--space-2);
+}
+
+.onboarding-page__subtitle {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  line-height: 1.5;
+}
+
+/* Form */
+.onboarding-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.onboarding-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.onboarding-form__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-gray-700);
+}
+
+.onboarding-form__label--required::after {
+  content: ' *';
+  color: var(--color-error-500);
+}
+
+.onboarding-form__input {
+  height: 44px;
+  padding: 0 var(--space-3);
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  background: var(--color-gray-0);
+  color: var(--color-gray-800);
+  font-size: 1rem;
+  font-family: var(--font-primary);
+  transition: border-color var(--duration-fast) var(--ease-default);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.onboarding-form__input:focus {
+  outline: none;
+  border-color: var(--color-primary-400);
+  box-shadow: 0 0 0 3px var(--color-primary-50);
+}
+
+.onboarding-form__input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.onboarding-form__select {
+  height: 44px;
+  padding: 0 var(--space-3);
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  background: var(--color-gray-0);
+  color: var(--color-gray-800);
+  font-size: 1rem;
+  font-family: var(--font-primary);
+  transition: border-color var(--duration-fast) var(--ease-default);
+  width: 100%;
+  box-sizing: border-box;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237A7870' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-3) center;
+  padding-right: var(--space-8);
+  cursor: pointer;
+}
+
+.onboarding-form__select:focus {
+  outline: none;
+  border-color: var(--color-primary-400);
+  box-shadow: 0 0 0 3px var(--color-primary-50);
+}
+
+.onboarding-form__select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Error message */
+.onboarding-form__error {
+  font-size: 0.875rem;
+  color: var(--color-error-500);
+  text-align: center;
+  padding: var(--space-3);
+  background: var(--color-error-50);
+  border-radius: var(--radius-md);
+}
+
+/* Submit button */
+.onboarding-form__submit {
+  height: 48px;
+  width: 100%;
+  background: var(--color-primary-500);
+  color: var(--color-gray-0);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: var(--font-primary);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-default),
+              opacity var(--duration-fast) var(--ease-default);
+  margin-top: var(--space-2);
+}
+
+.onboarding-form__submit:hover:not(:disabled) {
+  background: var(--color-primary-600);
+}
+
+.onboarding-form__submit:active:not(:disabled) {
+  background: var(--color-primary-700);
+}
+
+.onboarding-form__submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Small phones: prevent card overflow at 320px */
+@media (max-width: 359px) {
+  .onboarding-page__card {
+    padding: var(--space-6);
+  }
+
+  .onboarding-page__title {
+    font-size: 1.25rem;
+  }
+}
