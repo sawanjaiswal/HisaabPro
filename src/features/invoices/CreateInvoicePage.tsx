@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react'
-import { Plus } from 'lucide-react'
+import { Plus, AlertTriangle } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -46,6 +46,8 @@ export default function CreateInvoicePage() {
     updateCharge,
     removeCharge,
     totals,
+    stockWarnings,
+    hasStockBlocks,
     handleSubmit,
     handleSaveDraft,
   } = formHook
@@ -155,6 +157,28 @@ export default function CreateInvoicePage() {
 
               {errors.lineItems && (
                 <span className="field-error" role="alert">{errors.lineItems}</span>
+              )}
+
+              {/* Stock warnings */}
+              {stockWarnings.length > 0 && (
+                <div className={`stock-warnings${hasStockBlocks ? ' stock-warnings--block' : ''}`} role="alert">
+                  <div className="stock-warnings-title">
+                    <AlertTriangle size={16} aria-hidden="true" />
+                    {hasStockBlocks ? 'Insufficient Stock' : 'Low Stock Warning'}
+                  </div>
+                  {stockWarnings.map(w => (
+                    <div key={w.productId} className="stock-warning-item">
+                      <span className="stock-warning-name">{w.productName}</span>
+                      <span className="stock-warning-detail">
+                        {w.currentStock} {w.requestedUnit} available, {w.requestedQty} requested
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {errors.stock && (
+                <span className="field-error" role="alert">{errors.stock}</span>
               )}
 
               {/* Inline product search panel */}

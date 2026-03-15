@@ -20,6 +20,7 @@ import {
   shareEmailSchema,
 } from '../schemas/document.schemas.js'
 import * as documentService from '../services/document.service.js'
+import { validateStockForInvoice } from '../services/stock.service.js'
 
 const router = Router()
 
@@ -58,6 +59,17 @@ router.get(
     const businessId = await resolveBusinessId(req.user!.userId)
     const doc = await documentService.getDocument(businessId, String(req.params.id))
     sendSuccess(res, doc)
+  })
+)
+
+/** POST /api/documents/validate-stock — Pre-save stock availability check */
+router.post(
+  '/validate-stock',
+  asyncHandler(async (req, res) => {
+    const businessId = await resolveBusinessId(req.user!.userId)
+    const items = (req.body.items ?? []) as Array<{ productId: string; quantity: number; unitId: string }>
+    const result = await validateStockForInvoice(businessId, items)
+    sendSuccess(res, result)
   })
 )
 

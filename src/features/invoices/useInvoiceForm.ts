@@ -5,11 +5,13 @@
  * and draft/save submit paths. All amounts in PAISE.
  */
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/hooks/useToast'
 import { ROUTES } from '@/config/routes.config'
-import { createDocument } from './invoice.service'
+import { TIMEOUTS } from '@/config/app.config'
+import { createDocument, validateStock } from './invoice.service'
+import type { StockValidationItem } from './invoice.service'
 import { calculateInvoiceTotals } from './invoice.utils'
 import type { InvoiceTotals, LineItemCalc, ChargeCalc } from './invoice.utils'
 import type {
@@ -64,6 +66,8 @@ export interface UseInvoiceFormReturn {
   updateCharge: (index: number, charge: Partial<AdditionalChargeFormData>) => void
   removeCharge: (index: number) => void
   totals: InvoiceTotals
+  stockWarnings: StockValidationItem[]
+  hasStockBlocks: boolean
   validate: () => boolean
   handleSubmit: () => Promise<void>
   handleSaveDraft: () => Promise<void>
@@ -184,6 +188,56 @@ export function useInvoiceForm(
     return calculateInvoiceTotals(lineItemCalcs, chargeCalcs, roundOffSetting)
   }, [form.lineItems, form.additionalCharges, roundOffSetting])
 
+  // ─── Stock validation (debounced, runs on line item changes) ──────────────
+
+  const [stockWarnings, setStockWarnings] = useState<StockValidationItem[]>([])
+  const stockAbortRef = useRef<AbortController | null>(null)
+
+  const isSaleType = type === 'SALE_INVOICE' || type === 'DELIVERY_CHALLAN'
+
+  useEffect(() => {
+    // Only validate stock for outgoing documents
+    if (!isSaleType || form.lineItems.length === 0) {
+      setStockWarnings([])
+      return
+    }
+
+    const items = form.lineItems
+      .filter(li => li.productId && li.quantity > 0)
+      .map(li => ({ productId: li.productId, quantity: li.quantity, unitId: li.productId }))
+
+    if (items.length === 0) {
+      setStockWarnings([])
+      return
+    }
+
+    const timerId = setTimeout(() => {
+      stockAbortRef.current?.abort()
+      const controller = new AbortController()
+      stockAbortRef.current = controller
+
+      validateStock(items)
+        .then(result => {
+          if (!controller.signal.aborted) {
+            setStockWarnings(result.items.filter(i => i.validation !== 'OK'))
+          }
+        })
+        .catch(() => {
+          // Silently ignore — stock validation is best-effort
+        })
+    }, TIMEOUTS.debounceMs)
+
+    return () => {
+      clearTimeout(timerId)
+      stockAbortRef.current?.abort()
+    }
+  }, [form.lineItems, isSaleType]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const hasStockBlocks = useMemo(
+    () => stockWarnings.some(w => w.validation === 'BLOCK'),
+    [stockWarnings],
+  )
+
   // ─── Validation ────────────────────────────────────────────────────────────
 
   const validate = useCallback((): boolean => {
@@ -213,9 +267,14 @@ export function useInvoiceForm(
       }
     })
 
+    // Block if any stock items are hard-blocked
+    if (hasStockBlocks) {
+      next.stock = 'Some items have insufficient stock'
+    }
+
     setErrors(next)
     return Object.keys(next).length === 0
-  }, [form])
+  }, [form, hasStockBlocks])
 
   // ─── Submit helpers ────────────────────────────────────────────────────────
 
@@ -281,6 +340,8 @@ export function useInvoiceForm(
     updateCharge,
     removeCharge,
     totals,
+    stockWarnings,
+    hasStockBlocks,
     validate,
     handleSubmit,
     handleSaveDraft,

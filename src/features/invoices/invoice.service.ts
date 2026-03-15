@@ -108,6 +108,39 @@ function buildRecycleBinQuery(filters: RecycleBinFilters): string {
   return qs ? `?${qs}` : ''
 }
 
+// ─── Stock Validation ────────────────────────────────────────────────────────
+
+export interface StockValidationItem {
+  productId: string
+  productName: string
+  requestedQty: number
+  requestedUnit: string
+  currentStock: number
+  deficit: number
+  validation: 'OK' | 'WARN' | 'BLOCK'
+  message: string | null
+}
+
+export interface StockValidationResult {
+  valid: boolean
+  items: StockValidationItem[]
+}
+
+/**
+ * Pre-save stock availability check.
+ * Returns per-item validation status (OK, WARN, BLOCK).
+ * BLOCK = hard block (insufficient stock, cannot save).
+ * WARN = soft warning (stock low but save is allowed).
+ */
+export async function validateStock(
+  items: Array<{ productId: string; quantity: number; unitId: string }>
+): Promise<StockValidationResult> {
+  return api<StockValidationResult>('/documents/validate-stock', {
+    method: 'POST',
+    body: JSON.stringify({ items }),
+  })
+}
+
 // ─── Documents CRUD ───────────────────────────────────────────────────────────
 
 /**
