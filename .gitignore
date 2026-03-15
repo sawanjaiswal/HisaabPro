@@ -1,18 +1,44 @@
+# Dependencies
 node_modules/
+
+# Build output
 dist/
+
+# Environment
 .env
 .env.local
 .env.*.local
+
+# Logs
 *.log
+
+# OS
 .DS_Store
-server/node_modules/
-server/dist/
-server/.env
-*.png
-test-screenshots/
-screenshots/
-tsconfig.tsbuildinfo
-.playwright-mcp/
+Thumbs.db
+
+# Capacitor / Native
 android/
 ios/
 .gradle/
+
+# Testing
+test-screenshots/
+screenshots/
+*.png
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# TypeScript
+tsconfig.tsbuildinfo
+
+# Playwright
+.playwright-mcp/
+
+# Server (redundant with above but explicit)
+server/node_modules/
+server/dist/
+server/.env
