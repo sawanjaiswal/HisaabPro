@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
@@ -29,7 +30,7 @@ const PORT = process.env.PORT || 4000
 
 // Security & parsing
 app.use(helmet())
-app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:3000' }))
+app.use(cors({ origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000', 'http://localhost:5173'] }))
 app.use(compression())
 app.use(express.json({ limit: '10mb' }))
 

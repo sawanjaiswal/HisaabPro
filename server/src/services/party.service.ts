@@ -194,8 +194,9 @@ export async function listParties(businessId: string, filters: ListPartiesQuery)
     [sortBy]: sortOrder,
   }
 
-  // Parallel: data + count + summary stats
-  const [parties, total, stats] = await Promise.all([
+  // Parallel: data + count + summary stats + type counts
+  const baseWhere: Prisma.PartyWhereInput = { businessId, isActive }
+  const [parties, total, receivableAgg, payableAgg, customersCount, suppliersCount, bothCount] = await Promise.all([
     prisma.party.findMany({
       where,
       orderBy,
@@ -223,12 +224,23 @@ export async function listParties(businessId: string, filters: ListPartiesQuery)
       },
     }),
     prisma.party.count({ where }),
+    // Sum of positive outstanding (receivable)
     prisma.party.aggregate({
-      where,
-      _sum: { outstandingBalance: true, totalBusiness: true },
-      _count: { id: true },
+      where: { ...baseWhere, outstandingBalance: { gt: 0 } },
+      _sum: { outstandingBalance: true },
     }),
+    // Sum of negative outstanding (payable)
+    prisma.party.aggregate({
+      where: { ...baseWhere, outstandingBalance: { lt: 0 } },
+      _sum: { outstandingBalance: true },
+    }),
+    prisma.party.count({ where: { ...baseWhere, type: 'CUSTOMER' } }),
+    prisma.party.count({ where: { ...baseWhere, type: 'SUPPLIER' } }),
+    prisma.party.count({ where: { ...baseWhere, type: 'BOTH' } }),
   ])
+
+  const totalReceivable = receivableAgg._sum.outstandingBalance ?? 0
+  const totalPayable = Math.abs(payableAgg._sum.outstandingBalance ?? 0)
 
   return {
     parties,
@@ -239,9 +251,13 @@ export async function listParties(businessId: string, filters: ListPartiesQuery)
       totalPages: Math.ceil(total / limit),
     },
     summary: {
-      totalParties: stats._count.id,
-      totalOutstanding: stats._sum.outstandingBalance ?? 0,
-      totalBusiness: stats._sum.totalBusiness ?? 0,
+      totalParties: total,
+      totalReceivable,
+      totalPayable,
+      netOutstanding: totalReceivable - totalPayable,
+      customersCount,
+      suppliersCount,
+      bothCount,
     },
   }
 }

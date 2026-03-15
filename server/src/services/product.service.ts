@@ -165,7 +165,7 @@ export async function listProducts(businessId: string, filters: ListProductsQuer
     [sortBy]: sortOrder,
   }
 
-  const [products, total, lowStockCountResult, totalActiveCount] = await Promise.all([
+  const [products, total, lowStockCountResult, totalActiveCount, stockValueResult] = await Promise.all([
     prisma.product.findMany({
       where,
       orderBy,
@@ -182,6 +182,12 @@ export async function listProducts(businessId: string, filters: ListProductsQuer
       businessId
     ),
     prisma.product.count({ where: { businessId, status: 'ACTIVE' } }),
+    // Total stock value: sum(currentStock * purchasePrice) in paise
+    prisma.$queryRawUnsafe<[{ value: number }]>(
+      `SELECT COALESCE(SUM("currentStock" * COALESCE("purchasePrice", "salePrice")), 0)::float as value
+       FROM "Product" WHERE "businessId" = $1 AND status = 'ACTIVE'`,
+      businessId
+    ),
   ])
 
   return {
@@ -195,6 +201,7 @@ export async function listProducts(businessId: string, filters: ListProductsQuer
     summary: {
       totalProducts: totalActiveCount,
       lowStockCount: Number(lowStockCountResult[0]?.count ?? 0),
+      totalStockValue: Math.round(stockValueResult[0]?.value ?? 0),
     },
   }
 }
@@ -255,7 +262,7 @@ async function listLowStockProducts(businessId: string, filters: LowStockFilters
   const countParams = [...params]
   const dataParams = [...params, limit, skip]
 
-  const [countResult, lowStockCountResult, totalActiveCount] = await Promise.all([
+  const [countResult, lowStockCountResult, totalActiveCount, stockValueResult2] = await Promise.all([
     prisma.$queryRawUnsafe<[{ count: bigint }]>(
       `SELECT COUNT(*) as count FROM "Product" p WHERE ${whereClause}`,
       ...countParams
@@ -267,6 +274,11 @@ async function listLowStockProducts(businessId: string, filters: LowStockFilters
       businessId
     ),
     prisma.product.count({ where: { businessId, status: 'ACTIVE' } }),
+    prisma.$queryRawUnsafe<[{ value: number }]>(
+      `SELECT COALESCE(SUM("currentStock" * COALESCE("purchasePrice", "salePrice")), 0)::float as value
+       FROM "Product" WHERE "businessId" = $1 AND status = 'ACTIVE'`,
+      businessId
+    ),
   ])
 
   const total = Number(countResult[0]?.count ?? 0)
@@ -330,6 +342,7 @@ async function listLowStockProducts(businessId: string, filters: LowStockFilters
     summary: {
       totalProducts: totalActiveCount,
       lowStockCount: Number(lowStockCountResult[0]?.count ?? 0),
+      totalStockValue: Math.round(stockValueResult2[0]?.value ?? 0),
     },
   }
 }
