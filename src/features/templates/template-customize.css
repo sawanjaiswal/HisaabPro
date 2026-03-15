@@ -1,0 +1,365 @@
+/* Invoice Template Customization — page styles */
+
+/* Full-height page shell — stacks preview on top, controls below on mobile */
+.template-customize-page {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--color-gray-50);
+}
+
+/* Top panel — live invoice preview */
+.template-preview-panel {
+  flex: 0 0 55%;
+  background: var(--color-gray-0);
+  border-bottom: 1px solid var(--color-gray-100);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.template-preview-panel::-webkit-scrollbar {
+  display: none;
+}
+
+/* Centers and constrains the mock invoice */
+.template-preview-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--space-4) var(--space-4) var(--space-6);
+  min-height: 100%;
+}
+
+/* The invoice card itself */
+.template-preview-invoice {
+  width: 100%;
+  max-width: 420px;
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+/* Bottom panel — controls (scrollable, never crops) */
+.template-controls-panel {
+  flex: 0 0 45%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Horizontal scrolling pill-tab bar for control sections */
+.template-controls-tabs {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-gray-100);
+  flex-shrink: 0;
+}
+
+.template-controls-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+/* Tab pill — reuses global .pill-tab pattern */
+.template-controls-tab {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-gray-200);
+  background: transparent;
+  color: var(--color-gray-500);
+  font-family: var(--font-primary);
+  font-size: 0.833rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.template-controls-tab.active {
+  background: var(--color-primary-600);
+  color: var(--color-gray-0);
+  border-color: var(--color-primary-600);
+}
+
+.template-controls-tab:active:not(.active) {
+  background: var(--color-gray-100);
+}
+
+/* Scrollable content area within controls panel */
+.template-controls-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--space-4);
+  padding-bottom: calc(var(--space-8) + 72px); /* clearance for sticky action bar */
+  scrollbar-width: none;
+}
+
+.template-controls-body::-webkit-scrollbar {
+  display: none;
+}
+
+/* A grouped section within a tab (e.g., "Company Info", "Line Items") */
+.template-control-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--color-gray-100);
+  margin-bottom: var(--space-5);
+}
+
+.template-control-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* Section heading — uppercase micro-label */
+.template-control-section-title {
+  font-size: 0.694rem;
+  font-weight: 700;
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Row: label on left, control on right */
+.template-control-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 44px;
+}
+
+/* Left-side label */
+.template-control-label {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-gray-700);
+  flex: 1;
+  min-width: 0;
+}
+
+.template-control-sublabel {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  margin-top: 2px;
+}
+
+/* Segmented control — for options like logo position (Left / Center / Right) */
+.template-segmented-control {
+  display: flex;
+  background: var(--color-gray-100);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+/* Individual segment button */
+.template-segmented-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+  min-height: 36px;
+  padding: 0 var(--space-3);
+  border: none;
+  border-radius: calc(var(--radius-sm) - 2px);
+  background: transparent;
+  color: var(--color-gray-500);
+  font-family: var(--font-primary);
+  font-size: 0.833rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+
+.template-segmented-btn:active:not(.active) {
+  background: var(--color-gray-200);
+}
+
+/* Selected segment */
+.template-segmented-btn.active {
+  background: var(--color-gray-0);
+  color: var(--color-primary-500);
+  font-weight: 600;
+  box-shadow: var(--shadow-xs);
+}
+
+/* Toggle row — label + switch aligned */
+.template-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 44px;
+}
+
+.template-toggle-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Color swatch grid — theme color picker */
+.template-color-swatches {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+}
+
+/* Individual color circle */
+.template-color-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--duration-fast) var(--ease-default),
+              border-color var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+
+.template-color-swatch:hover {
+  transform: scale(1.1);
+}
+
+.template-color-swatch:active {
+  transform: scale(0.95);
+}
+
+/* Selected state — white ring with primary outline */
+.template-color-swatch.active {
+  border-color: var(--color-gray-0);
+  box-shadow: 0 0 0 2px var(--color-primary-400);
+}
+
+/* Sticky save/reset bar at page bottom */
+.template-actions {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-0);
+  border-top: 1px solid var(--color-gray-100);
+  z-index: var(--z-sticky);
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+}
+
+/* Reset button — secondary ghost style */
+.template-actions-reset {
+  flex: 0 0 auto;
+  height: 48px;
+  padding: 0 var(--space-4);
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-gray-600);
+  font-family: var(--font-primary);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-default);
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.template-actions-reset:hover {
+  background: var(--color-gray-100);
+}
+
+.template-actions-reset:active {
+  background: var(--color-gray-200);
+}
+
+/* Save button — primary, fills remaining width */
+.template-actions-save {
+  flex: 1;
+  height: 48px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-600);
+  color: var(--color-gray-0);
+  font-family: var(--font-primary);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.template-actions-save:hover:not(:disabled) {
+  background: var(--color-primary-700);
+}
+
+.template-actions-save:active:not(:disabled) {
+  background: var(--color-primary-800);
+  transform: scale(0.98);
+}
+
+.template-actions-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Tablet+ — side-by-side split layout */
+@media (min-width: 768px) {
+  .template-customize-page {
+    flex-direction: row;
+  }
+
+  /* Preview on the left, 50% width */
+  .template-preview-panel {
+    flex: 0 0 50%;
+    border-bottom: none;
+    border-right: 1px solid var(--color-gray-100);
+    min-height: 100dvh;
+  }
+
+  /* Controls on the right, 50% width */
+  .template-controls-panel {
+    flex: 0 0 50%;
+    height: 100dvh;
+  }
+
+  .template-preview-container {
+    padding: var(--space-6);
+    align-items: center;
+    min-height: 100dvh;
+  }
+
+  .template-preview-invoice {
+    max-width: 480px;
+  }
+
+  .template-color-swatches {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}

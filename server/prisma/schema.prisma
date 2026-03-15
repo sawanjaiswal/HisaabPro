@@ -1,0 +1,257 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// === Foundation models — expanded per feature via /f ===
+
+model User {
+  id            String   @id @default(cuid())
+  phone         String   @unique
+  name          String?
+  email         String?
+  passwordHash  String?
+  pinHash       String?
+  biometricEnabled Boolean @default(false)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  businessUsers BusinessUser[]
+  refreshTokens RefreshToken[]
+
+  @@index([phone])
+}
+
+model Business {
+  id            String   @id @default(cuid())
+  name          String
+  phone         String?
+  email         String?
+  address       String?
+  city          String?
+  state         String?
+  pincode       String?
+  logoUrl       String?
+  businessType  String   @default("general")
+  currencyCode  String   @default("INR")
+  financialYearStart Int @default(4) // April
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  businessUsers    BusinessUser[]
+  parties          Party[]
+  partyGroups      PartyGroup[]
+  customFields     CustomFieldDefinition[]
+
+  @@index([name])
+}
+
+model BusinessUser {
+  id         String   @id @default(cuid())
+  userId     String
+  businessId String
+  role       String   @default("owner")
+  isActive   Boolean  @default(true)
+  joinedAt   DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  business Business @relation(fields: [businessId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, businessId])
+  @@index([businessId])
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  deviceInfo String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+}
+
+model OtpCode {
+  id        String   @id @default(cuid())
+  phone     String
+  code      String
+  attempts  Int      @default(0)
+  verified  Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([phone, verified])
+  @@index([expiresAt])
+}
+
+model IdempotencyLog {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  userId    String
+  response  Json
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
+}
+
+model Feedback {
+  id         String   @id @default(cuid())
+  userId     String?
+  type       String   // bug, feature, general
+  message    String
+  rating     Int?
+  screenshot String?  // base64 or URL
+  metadata   Json?    // device info, page, etc.
+  status     String   @default("open") // open, reviewed, resolved
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([status])
+}
+
+// === Party Management ===
+
+model Party {
+  id                String   @id @default(cuid())
+  businessId        String
+  name              String
+  phone             String?
+  email             String?
+  companyName       String?
+  type              String   @default("CUSTOMER") // CUSTOMER, SUPPLIER, BOTH
+  groupId           String?
+  tags              String[] @default([])
+  gstin             String?
+  pan               String?
+  creditLimit       Int      @default(0) // in paise, 0 = no limit
+  creditLimitMode   String   @default("WARN") // WARN, BLOCK
+  outstandingBalance Int     @default(0) // in paise, positive = receivable, negative = payable
+  totalBusiness     Int      @default(0) // in paise, lifetime total
+  lastTransactionAt DateTime?
+  notes             String?
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  business       Business           @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  group          PartyGroup?        @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  addresses      PartyAddress[]
+  customFieldValues PartyCustomFieldValue[]
+  openingBalance OpeningBalance?
+  pricing        PartyPricing[]
+
+  @@unique([businessId, phone])
+  @@index([businessId, type, isActive])
+  @@index([businessId, name])
+  @@index([businessId, outstandingBalance])
+  @@index([groupId])
+}
+
+model PartyAddress {
+  id        String   @id @default(cuid())
+  partyId   String
+  label     String   @default("Default")
+  line1     String
+  line2     String?
+  city      String
+  state     String
+  pincode   String
+  type      String   @default("BILLING") // BILLING, SHIPPING
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
+
+  @@index([partyId, type])
+}
+
+model PartyGroup {
+  id          String   @id @default(cuid())
+  businessId  String
+  name        String
+  description String?
+  color       String   @default("#6B7280")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  parties  Party[]
+
+  @@unique([businessId, name])
+  @@index([businessId])
+}
+
+model CustomFieldDefinition {
+  id            String   @id @default(cuid())
+  businessId    String
+  name          String
+  fieldType     String   // TEXT, NUMBER, DATE, DROPDOWN
+  options       String[] @default([]) // for DROPDOWN type
+  required      Boolean  @default(false)
+  showOnInvoice Boolean  @default(false)
+  entityType    String   @default("PARTY") // PARTY, PRODUCT, INVOICE
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  business Business               @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  values   PartyCustomFieldValue[]
+
+  @@unique([businessId, name, entityType])
+  @@index([businessId, entityType])
+}
+
+model PartyCustomFieldValue {
+  id        String   @id @default(cuid())
+  partyId   String
+  fieldId   String
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  party Party                 @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  field CustomFieldDefinition @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+
+  @@unique([partyId, fieldId])
+  @@index([fieldId])
+}
+
+model OpeningBalance {
+  id       String   @id @default(cuid())
+  partyId  String   @unique
+  amount   Int      // in paise
+  type     String   // RECEIVABLE, PAYABLE
+  asOfDate DateTime
+  notes    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
+}
+
+model PartyPricing {
+  id        String   @id @default(cuid())
+  partyId   String
+  productId String
+  price     Int      // in paise
+  minQty    Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
+
+  @@unique([partyId, productId])
+  @@index([productId])
+}

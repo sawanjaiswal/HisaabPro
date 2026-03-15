@@ -1,0 +1,138 @@
+/* Login Page */
+.login-page {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: var(--color-gray-50);
+}
+
+.login-page__card {
+  width: 100%;
+  max-width: 400px;
+  padding: var(--space-8);
+  background: var(--color-gray-0);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.login-page__header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.login-page__title {
+  font-family: var(--font-display);
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--color-primary-600);
+  margin-bottom: var(--space-2);
+}
+
+.login-page__subtitle {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+}
+
+/* Phone Step */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.auth-form__submit {
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+/* OTP Step */
+.auth-otp {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.auth-otp__back {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.875rem;
+  color: var(--color-primary-500);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: var(--font-primary);
+}
+
+.auth-otp__info {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  text-align: center;
+}
+
+.auth-otp__inputs {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+}
+
+.auth-otp__digit {
+  width: 48px;
+  height: 56px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  border: 2px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  background: var(--color-gray-0);
+  color: var(--color-gray-800);
+  font-family: var(--font-primary);
+  transition: border-color var(--duration-fast) var(--ease-default);
+}
+
+.auth-otp__digit:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px var(--color-primary-50);
+}
+
+.auth-otp__digit:disabled {
+  opacity: 0.5;
+}
+
+.auth-otp__error {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-error-500);
+}
+
+.auth-otp__verifying {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+}
+
+.auth-otp__resend {
+  text-align: center;
+}
+
+.auth-otp__cooldown {
+  font-size: 0.875rem;
+  color: var(--color-gray-400);
+}
+
+/* Mobile: ensure OTP inputs don't overflow on 320px */
+@media (max-width: 359px) {
+  .auth-otp__digit {
+    width: 40px;
+    height: 48px;
+    font-size: 1.25rem;
+  }
+
+  .login-page__card {
+    padding: var(--space-6);
+  }
+}

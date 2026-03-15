@@ -1,4 +1,4 @@
-# Product Brief — HisaabApp
+# Product Brief — HisaabPro
 
 > **Status:** Draft — Awaiting Approval
 > **Date:** 2026-03-14
@@ -8,7 +8,7 @@
 
 ## 1. What Is It?
 
-HisaabApp is a mobile-first business management app for Indian small businesses — billing, inventory, payments, and reports in one app that works offline. It replaces paper registers, Excel sheets, and unreliable competitors (Vyapar/MyBillBook) with a modern, reliable tool built for how Indian businesses actually operate.
+HisaabPro is a mobile-first business management app for Indian small businesses — billing, inventory, payments, and reports in one app that works offline. It replaces paper registers, Excel sheets, and unreliable competitors (Vyapar/MyBillBook) with a modern, reliable tool built for how Indian businesses actually operate.
 
 ## 2. Who Is It For?
 

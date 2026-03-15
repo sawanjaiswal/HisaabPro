@@ -1,4 +1,4 @@
-# HisaabApp — Project Rules
+# HisaabPro — Project Rules
 
 > Indian billing/business management app. Mobile-first, offline-first, premium UI.
 > Competing with Vyapar (15M+ downloads) and MyBillBook (9.7M+ downloads).
@@ -6,9 +6,9 @@
 ## Project Overview
 
 - **What:** Billing, inventory, payments, reports for Indian MSMEs
-- **Working Name:** HisaabApp (final brand TBD — see `docs/APP_CONFIG.md`)
+- **Name:** HisaabPro (domain: hisaabpro.in) — see `docs/APP_CONFIG.md`
 - **Architecture:** Modular monolith — 2 repos: `@hisaab/core` (shared from DudhHisaab) + `hisaab-app` (new business modules)
-- **Status:** Planning phase — PRDs written, design system next, then build
+- **Status:** Planning phase — PRDs approved, design system done, build next
 
 ## Tech Stack
 
@@ -60,25 +60,147 @@
 ## Project Structure
 
 ```
-HisaabApp/
-├── CLAUDE.md              ← You are here
-├── docs/
-│   ├── PRODUCT_BRIEF.md   ← What, who, why (approved)
-│   ├── USER_JOURNEYS.md   ← 8 user journeys (approved)
-│   ├── ROADMAP.md         ← 150 features, 7 phases (master tracking)
-│   ├── APP_CONFIG.md      ← Dynamic app name config
-│   └── DESIGN_SYSTEM.md   ← Colors, typography, spacing, components (713 lines)
-├── PRDs/                  ← 8 grouped PRDs for Phase 1 MVP
-│   ├── core-reused-PLAN.md        ← Auth, subs, offline, backup (10 features)
-│   ├── party-management-PLAN.md   ← Customers/suppliers (7 features)
-│   ├── invoicing-documents-PLAN.md ← 7 doc types (17 features)
-│   ├── invoice-templates-PLAN.md  ← Templates, printing (5 features)
-│   ├── payment-tracking-PLAN.md   ← Payments, outstanding (4 features)
-│   ├── basic-inventory-PLAN.md    ← Products, stock (6 features)
-│   ├── dashboard-reports-PLAN.md  ← Dashboard, reports (6 features)
-│   └── settings-security-PLAN.md  ← Roles, permissions (7 features)
-└── src/                   ← Code (not started yet)
+HisaabPro/
+├── CLAUDE.md
+├── docs/                          ← Planning docs
+│   ├── PRODUCT_BRIEF.md
+│   ├── USER_JOURNEYS.md
+│   ├── ROADMAP.md
+│   ├── FEATURE_MAP.md
+│   ├── APP_CONFIG.md
+│   └── DESIGN_SYSTEM.md
+├── PRDs/                          ← 8 grouped PRDs for Phase 1 MVP
+├── src/
+│   ├── main.tsx                   ← Entry, StrictMode, router
+│   ├── App.tsx                    ← Routes, ErrorBoundary, Suspense
+│   ├── config/                    ← App-wide constants (SSOT)
+│   │   ├── app.config.ts          ← APP_NAME, API_URL, VERSION
+│   │   └── routes.config.ts       ← Route paths as constants
+│   ├── lib/                       ← Shared pure utilities
+│   │   ├── api.ts                 ← Fetch wrapper (abort, retry, timeout)
+│   │   ├── format.ts              ← formatCurrency, formatDate, formatPhone
+│   │   ├── validation.ts          ← Shared Zod schemas
+│   │   └── offline.ts             ← Dexie DB, sync queue
+│   ├── hooks/                     ← Shared hooks (used by 2+ features)
+│   │   ├── useApi.ts              ← Fetch + loading/error/data + abort
+│   │   ├── useDebounce.ts
+│   │   ├── useInterval.ts         ← Auto-cleanup setInterval
+│   │   ├── useMediaQuery.ts
+│   │   ├── useToast.ts
+│   │   └── useAuth.ts
+│   ├── components/                ← SHARED UI (used by 2+ features)
+│   │   ├── ui/                    ← Design system primitives
+│   │   │   ├── Button.tsx
+│   │   │   ├── Input.tsx
+│   │   │   ├── Card.tsx
+│   │   │   ├── Badge.tsx
+│   │   │   ├── Modal.tsx
+│   │   │   └── BottomSheet.tsx
+│   │   ├── layout/                ← Page structure
+│   │   │   ├── AppShell.tsx
+│   │   │   ├── BottomNav.tsx
+│   │   │   ├── Header.tsx
+│   │   │   └── PageContainer.tsx
+│   │   └── feedback/              ← 4 UI state components
+│   │       ├── Spinner.tsx
+│   │       ├── Skeleton.tsx
+│   │       ├── EmptyState.tsx
+│   │       ├── ErrorState.tsx
+│   │       └── ErrorBoundary.tsx
+│   ├── features/                  ← Feature modules (6-layer split each)
+│   │   └── <feature>/
+│   │       ├── feature.types.ts
+│   │       ├── feature.constants.ts
+│   │       ├── feature.utils.ts
+│   │       ├── useFeature.ts
+│   │       ├── FeaturePage.tsx
+│   │       ├── FeaturePage.css
+│   │       └── components/        ← Feature-private sub-components
+│   └── styles/
+│       ├── globals.css            ← CSS variables from design system
+│       └── animations.css         ← Keyframes (CSS only)
+└── server/
+    ├── src/
+    │   ├── index.ts               ← Express entry
+    │   ├── middleware/             ← auth, asyncHandler, validate
+    │   ├── lib/                   ← prisma client, response helper
+    │   └── routes/                ← Feature route files
+    └── prisma/
+        └── schema.prisma
 ```
+
+## Code Architecture Rules (NON-NEGOTIABLE)
+
+### Shared vs Private
+- `components/ui/` `hooks/` `lib/` = **shared** — used by 2+ features
+- `features/X/components/` = **private** — only used inside that feature
+- Component used by 1 feature → stays in `features/X/components/`
+- Component used by 2+ features → **promote** to `components/ui/`
+
+### File Size Limits
+- Page: max 80 lines · Hook: max 60 lines · Utils: max 50 lines
+- Sub-component: max 50 lines · Any file > 100 lines = split it
+
+### Data Flow (DOWN only, never sideways)
+```
+config → lib → hooks → features → components
+```
+- `lib/` never imports from `hooks/` or `features/`
+- `hooks/` never imports from `features/`
+- `features/X/` never imports from `features/Y/` (shared code goes to `lib/` or `hooks/`)
+
+### Utils = Pure Functions Only
+- No React imports · No hooks · No state · No fetch
+- Same input = same output, every time
+- All calculations, formatting, validation go here
+
+## DudhHisaab Reuse Rule (NON-NEGOTIABLE)
+
+**Before building ANY feature, check DudhHisaab first.** Path: `/Users/sawanjaiswal/DudhHisaab`
+
+### Reuse Checklist
+1. **Search DudhHisaab** for the equivalent feature before writing new code
+2. **Read the existing file entirely** — understand patterns, edge cases already handled
+3. **Adapt, don't reinvent** — strip DudhHisaab-specific fields, keep battle-tested logic
+4. **Keep the same structure** when logic is identical — easier to maintain both projects
+
+### DudhHisaab Code Map (key reusable files)
+
+| Area | DudhHisaab Path | Reuse % |
+|------|----------------|---------|
+| OTP service | `src/services/auth/otp.service.ts` | 95% |
+| Auth service | `src/services/auth/auth.service.ts` | 80% |
+| Token blacklist | `src/services/tokenBlacklist.ts` | 100% |
+| Auth middleware | `src/middleware/auth.middleware.ts` | 95% |
+| Rate limiting | `src/middleware/rate-limit.middleware.ts` | 100% |
+| Password utils | `src/utils/password.ts` | 100% |
+| Auth schemas (Zod) | `src/schemas/auth.schemas.ts` | 95% |
+| WebAuthn service | `src/services/auth/webauthn.service.ts` | 100% |
+| Login history | `src/services/auth/login-history.service.ts` | 100% |
+| Frontend auth API | `frontend/src/services/api/auth.ts` | 95% |
+| API client (axios) | `frontend/src/services/api/client.ts` | 90% |
+| Auth context | `frontend/src/context/AuthContext.tsx` | 85% |
+| Login page | `frontend/src/pages/Login.tsx` | 70% |
+| OTP page | `frontend/src/pages/VerifyOTP.tsx` | 90% |
+| Storage utils | `frontend/src/utils/storage.ts` | 85% |
+| Biometric hook | `frontend/src/hooks/useBiometricLogin.ts` | 100% |
+| WebAuthn utils | `frontend/src/utils/webauthn.ts` | 100% |
+
+### What to Strip When Adapting
+- DudhHisaab-specific fields: `defaultCowRate`, `defaultBuffaloRate`, `upiBusinessName`, milk-related anything
+- Branding: `DudhHisaab` strings, `MadeInIndiaFooter`, DH-specific assets
+- Google Drive OAuth (DH-specific backup flow)
+- Referral auto-generation on register (different referral system in HisaabPro)
+- Sentry imports (add back later if needed)
+
+### What to Keep As-Is
+- Crypto-secure OTP generation (`crypto.randomInt`)
+- Constant-time OTP comparison (`crypto.timingSafeEqual`)
+- Token blacklist with auto-cleanup
+- Rate limit values and middleware
+- WebAuthn CBOR/COSE implementation (no external library)
+- Offline-first auth pattern (cached user + background verify)
+- 401 interceptor with silent refresh + request queue
 
 ## Build Order (Phase 1 MVP — 62 features)
 

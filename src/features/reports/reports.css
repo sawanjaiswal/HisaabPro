@@ -1,0 +1,792 @@
+/* Reports — Shared styles for all 6 report screens
+ *
+ * Covers: Reports Hub, Invoice Report, Party Statement,
+ *         Stock Summary, Day Book, Payment History.
+ *
+ * Mobile-first: base styles target 320px.
+ * min-width queries add tablet (768px) and desktop (1024px) layout.
+ *
+ * CSS variables only — no hex, no rgba, no hardcoded sizes.
+ * Z-index, duration, and easing values come from design system variables.
+ */
+
+/* ─── Reports Hub ─────────────────────────────────────────────────────────── */
+
+/* Page wrapper for the /reports hub */
+.report-hub {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Grid of report category cards — 2-col on mobile, 3-col on tablet+ */
+.report-hub-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+/* Individual category card — tappable, navigates to a specific report */
+.report-category-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    box-shadow var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default);
+}
+
+.report-category-card:hover {
+  border-color: var(--color-primary-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.report-category-card:active {
+  opacity: 0.85;
+}
+
+/* Icon circle with an accent color */
+.report-category-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: color-mix(in srgb, var(--report-accent-color, var(--color-primary-600)) 12%, transparent);
+  color: var(--report-accent-color, var(--color-primary-600));
+}
+
+.report-category-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  line-height: 1.3;
+}
+
+.report-category-desc {
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+  line-height: 1.4;
+  margin-top: var(--space-1);
+}
+
+/* Arrow — right-aligned bottom row */
+.report-category-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: auto;
+  color: var(--color-gray-400);
+}
+
+/* ─── Report filter bar ───────────────────────────────────────────────────── */
+
+/* Sticky filter section at the top of every report page.
+   Stacks vertically on mobile; goes horizontal on tablet+. */
+.report-filter-bar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-index-sticky, 10);
+  background: var(--color-gray-50);
+  padding: var(--space-3) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  border-bottom: 1px solid var(--color-gray-100);
+  margin-bottom: var(--space-4);
+}
+
+/* Horizontal scrollable row of filter pills (date presets, status, mode, etc.) */
+.report-filter-pills {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: var(--space-1);
+}
+
+.report-filter-pills::-webkit-scrollbar {
+  display: none;
+}
+
+/* Individual filter pill */
+.report-filter-pill {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  color: var(--color-gray-600);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: var(--font-primary);
+  cursor: pointer;
+  min-height: 44px;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default),
+    color var(--duration-fast) var(--ease-default);
+}
+
+.report-filter-pill:hover {
+  border-color: var(--color-primary-300);
+  color: var(--color-primary-500);
+}
+
+.report-filter-pill[aria-pressed='true'],
+.report-filter-pill--active {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-400);
+  color: var(--color-primary-500);
+  font-weight: 600;
+}
+
+/* ─── Report summary bar ──────────────────────────────────────────────────── */
+
+/* Totals row below the filter bar — 3-4 metric cards */
+.report-summary-bar {
+  display: flex;
+  gap: var(--space-3);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: var(--space-1);
+  margin-bottom: var(--space-4);
+}
+
+.report-summary-bar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Individual summary metric */
+.report-summary-item {
+  flex: 1;
+  min-width: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
+  flex-shrink: 0;
+}
+
+.report-summary-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.report-summary-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  letter-spacing: -0.01em;
+}
+
+.report-summary-value--positive {
+  color: var(--color-success-600);
+}
+
+.report-summary-value--negative {
+  color: var(--color-error-600);
+}
+
+.report-summary-value--primary {
+  color: var(--color-primary-500);
+}
+
+.report-summary-count {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  margin-top: 2px;
+}
+
+/* ─── Report card list ────────────────────────────────────────────────────── */
+
+/* Container for the scrolling list of report rows */
+.report-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Hide trailing divider on the very last card */
+.report-card-list > *:last-child .report-divider {
+  display: none;
+}
+
+/* A thin 1px separator between list rows */
+.report-divider {
+  height: 1px;
+  background: var(--color-gray-100);
+  margin: 0;
+}
+
+/* ─── Report card ─────────────────────────────────────────────────────────── */
+
+/* Individual report row card (used in Invoice Report, Payment History) */
+.report-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4) 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity var(--duration-fast) var(--ease-default);
+}
+
+.report-card:active {
+  opacity: 0.75;
+}
+
+/* Top row: invoice number + date (right) */
+.report-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.report-card-number {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.report-card-date {
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+  flex-shrink: 0;
+}
+
+/* Middle row: party name + item count */
+.report-card-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.report-card-party {
+  font-size: 0.875rem;
+  color: var(--color-gray-600);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.report-card-items {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  flex-shrink: 0;
+}
+
+/* Bottom row: amounts + status badge */
+.report-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.report-card-amounts {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.report-card-amount {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  letter-spacing: -0.01em;
+}
+
+.report-card-balance {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-error-600);
+}
+
+/* ─── Status badges ───────────────────────────────────────────────────────── */
+
+/* Shared badge base: small pill with colored text on 10% background */
+.report-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.report-status-badge--paid {
+  background: var(--color-success-50);
+  color: var(--color-success-700);
+}
+
+.report-status-badge--unpaid {
+  background: var(--color-gray-100);
+  color: var(--color-gray-600);
+}
+
+.report-status-badge--partial {
+  background: var(--color-warning-50);
+  color: var(--color-warning-700);
+}
+
+/* Stock status variant */
+.stock-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.stock-status-badge--in-stock {
+  background: var(--color-success-50);
+  color: var(--color-success-700);
+}
+
+.stock-status-badge--low {
+  background: var(--color-warning-50);
+  color: var(--color-warning-700);
+}
+
+.stock-status-badge--out-of-stock {
+  background: var(--color-error-50);
+  color: var(--color-error-700);
+}
+
+/* ─── Group header ────────────────────────────────────────────────────────── */
+
+/* Collapsible section header for grouped report views */
+.report-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.report-group-header:active {
+  opacity: 0.8;
+}
+
+.report-group-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+}
+
+.report-group-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+.report-group-count {
+  font-size: 0.75rem;
+  color: var(--color-gray-500);
+  font-weight: 500;
+}
+
+.report-group-total {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+}
+
+/* Chevron rotates when group is expanded */
+.report-group-chevron {
+  color: var(--color-gray-400);
+  transition: transform var(--duration-fast) var(--ease-default);
+  flex-shrink: 0;
+}
+
+.report-group-chevron--open {
+  transform: rotate(180deg);
+}
+
+/* Items inside an expanded group — indented slightly */
+.report-group-items {
+  padding-left: var(--space-2);
+}
+
+/* ─── Load more button ────────────────────────────────────────────────────── */
+
+.report-load-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  margin-top: var(--space-2);
+}
+
+.report-load-more-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-primary-300);
+  background: var(--color-gray-0);
+  color: var(--color-primary-500);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-primary);
+  cursor: pointer;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default);
+}
+
+.report-load-more-btn:hover {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-400);
+}
+
+.report-load-more-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Export bar ──────────────────────────────────────────────────────────── */
+
+/* Sticky bottom bar with export action buttons */
+.report-export-bar {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-index-sticky, 10);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-0);
+  border-top: 1px solid var(--color-gray-100);
+  box-shadow: 0 -2px 8px color-mix(in srgb, var(--color-gray-900) 6%, transparent);
+}
+
+.report-export-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-gray-500);
+  white-space: nowrap;
+}
+
+.report-export-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.report-export-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  color: var(--color-gray-700);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-family: var(--font-primary);
+  cursor: pointer;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default);
+}
+
+.report-export-btn:hover {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-300);
+}
+
+.report-export-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Day Book date navigator ─────────────────────────────────────────────── */
+
+/* Centered date with prev/next arrow buttons — 44px touch target per button */
+.report-date-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+}
+
+.report-date-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  color: var(--color-gray-600);
+  cursor: pointer;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default);
+}
+
+.report-date-nav-btn:hover {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-300);
+}
+
+.report-date-nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.report-date-nav-label {
+  flex: 1;
+  text-align: center;
+}
+
+.report-date-nav-primary {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+}
+
+.report-date-nav-secondary {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-gray-500);
+  margin-top: 2px;
+}
+
+/* ─── Party Statement row ─────────────────────────────────────────────────── */
+
+/* Ledger row: type indicator + description + debit/credit columns */
+.report-statement-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4) 0;
+}
+
+.report-statement-type-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  margin-top: 6px;
+  background: var(--statement-type-color, var(--color-gray-400));
+}
+
+.report-statement-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.report-statement-description {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-gray-800);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.report-statement-reference {
+  font-size: 0.75rem;
+  color: var(--color-primary-500);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.report-statement-date {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  margin-top: 2px;
+}
+
+/* Debit / Credit amounts column */
+.report-statement-amounts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.report-statement-debit {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-error-600);
+}
+
+.report-statement-credit {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-success-600);
+}
+
+/* Running balance pill */
+.report-statement-balance {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.report-statement-balance--receivable {
+  background: var(--color-success-50);
+  color: var(--color-success-700);
+}
+
+.report-statement-balance--payable {
+  background: var(--color-error-50);
+  color: var(--color-error-700);
+}
+
+/* ─── Empty state ─────────────────────────────────────────────────────────── */
+
+/* Centered empty state for all report screens */
+.report-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+}
+
+.report-empty-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gray-400);
+}
+
+.report-empty-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+}
+
+.report-empty-desc {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+/* ─── Tablet+ adjustments (768px) ────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  /* Hub grid goes to 3 columns on tablet */
+  .report-hub-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Filter bar stacks horizontally */
+  .report-filter-bar {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  /* Summary bar drops the horizontal scroll on larger screens */
+  .report-summary-bar {
+    overflow-x: visible;
+  }
+
+  /* Report cards become slightly more spacious */
+  .report-card {
+    padding: var(--space-4) 0;
+  }
+
+  /* Statement rows get more breathing room */
+  .report-statement-row {
+    gap: var(--space-4);
+  }
+
+  /* Summary amounts grow */
+  .report-summary-value {
+    font-size: 1.125rem;
+  }
+
+  /* Export bar becomes inline row (not full-width) */
+  .report-export-bar {
+    position: static;
+    border-top: none;
+    box-shadow: none;
+    padding: 0;
+    margin-top: var(--space-6);
+    border-top: 1px solid var(--color-gray-100);
+    padding-top: var(--space-4);
+  }
+}
+
+/* ─── Desktop+ adjustments (1024px) ──────────────────────────────────────── */
+
+@media (min-width: 1024px) {
+  /* Hub grid goes to 4 or 5 columns if there are enough cards */
+  .report-hub-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  .report-summary-value {
+    font-size: 1.25rem;
+  }
+}

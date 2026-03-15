@@ -1,0 +1,185 @@
+/* Invoice Templates — Gallery (list) page styles */
+
+/* Main gallery container */
+.template-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* Section wrapper (YOUR TEMPLATES / BASE TEMPLATES) */
+.template-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Uppercase section label — "YOUR TEMPLATES" */
+.template-section-title {
+  font-size: 0.694rem;
+  font-weight: 600;
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* 2-column card grid on mobile */
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+/* Card shell — preview area + info stacked vertically */
+.template-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-gray-0);
+  border: 1.5px solid var(--color-gray-100);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-default),
+              box-shadow var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.template-card:hover {
+  border-color: var(--color-primary-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.template-card:active {
+  border-color: var(--color-primary-400);
+  box-shadow: none;
+  transform: scale(0.99);
+}
+
+/* Selected / currently-active card */
+.template-card.selected {
+  border-color: var(--color-primary-400);
+  box-shadow: 0 0 0 3px var(--color-primary-50);
+}
+
+/* Preview thumbnail — 4:3 ratio, warm-cream background */
+.template-card-preview {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background: var(--color-gray-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Mini invoice preview SVG or image inside the preview area */
+.template-card-preview img,
+.template-card-preview svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Overlay badge for "Default" indicator on the preview */
+.template-card-default-badge {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  background: var(--color-primary-600);
+  color: var(--color-gray-0);
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+}
+
+/* Info row below preview */
+.template-card-info {
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Template name — truncate on one line */
+.template-card-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Badge row — wraps on narrow cards */
+.template-card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+/* Individual badge pill — doc type labels like "Sale Invoice", "Estimate" */
+.template-card-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  font-size: 0.625rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-50);
+  color: var(--color-primary-500);
+  white-space: nowrap;
+}
+
+/* "Use This" CTA button on base (system) template cards */
+.template-card-use-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 44px;
+  border: none;
+  border-top: 1px solid var(--color-gray-100);
+  background: transparent;
+  color: var(--color-primary-500);
+  font-family: var(--font-primary);
+  font-size: 0.833rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-default),
+              color var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.template-card-use-btn:hover {
+  background: var(--color-primary-50);
+}
+
+.template-card-use-btn:active {
+  background: var(--color-primary-100);
+  color: var(--color-primary-600);
+}
+
+/* Tablet+ — 3-column grid */
+@media (min-width: 768px) {
+  .template-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+  }
+
+  .template-card-name {
+    font-size: 0.9375rem;
+  }
+
+  .template-card-badge {
+    font-size: 0.694rem;
+    padding: 2px var(--space-2);
+  }
+
+  .template-card-info {
+    padding: var(--space-4);
+  }
+}

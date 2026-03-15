@@ -17,7 +17,7 @@ Indian small businesses need professional-looking invoices they can print on wha
 We ship 5 high-quality base templates that cover every real-world printing scenario, with deep customization (column toggles, field visibility, fonts, colors, logo placement) and smart defaults. Every template handles all 7 document types (sale invoice, purchase invoice, estimate, proforma, purchase order, sale order, delivery challan). Users also get fine-grained control over rounding, decimal precision, and print settings.
 
 **Why this matters:**
-- 90% of HisaabApp invoices will be shared via WhatsApp as PDF/image — the invoice IS the brand
+- 90% of HisaabPro invoices will be shared via WhatsApp as PDF/image — the invoice IS the brand
 - Thermal printers are standard in retail (Rs 3,000-5,000 device) — must support 58mm and 80mm rolls
 - Competitors frustrate users with too many templates and not enough customization of each one
 - Round-off and decimal precision are daily pain points — wholesalers deal in 3-decimal quantities (e.g., 1.375 kg), retailers want clean round numbers

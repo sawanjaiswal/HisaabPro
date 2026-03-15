@@ -13,7 +13,7 @@
 
 ## 1. What
 
-This module extracts, adapts, and ships the 10 core infrastructure features from DudhHisaab into `@hisaab/core` — a shared package that HisaabApp (and any future Hisaab product) consumes. It covers auth, payments, referrals, notifications, backup, offline sync, admin panel, theming, i18n, and onboarding. These are production-tested systems with 1+ year of real-user data; the work is adaptation (multi-tenant, generic business types, new subscription tiers) not invention.
+This module extracts, adapts, and ships the 10 core infrastructure features from DudhHisaab into `@hisaab/core` — a shared package that HisaabPro (and any future Hisaab product) consumes. It covers auth, payments, referrals, notifications, backup, offline sync, admin panel, theming, i18n, and onboarding. These are production-tested systems with 1+ year of real-user data; the work is adaptation (multi-tenant, generic business types, new subscription tiers) not invention.
 
 ---
 
@@ -34,7 +34,7 @@ This module extracts, adapts, and ships the 10 core infrastructure features from
 **What's adapted:**
 - User model gains `businessType` field (was hardcoded to "dairy")
 - Remove DudhHisaab-specific onboarding fields from auth response
-- Add `appId` to JWT payload — distinguishes HisaabApp vs DudhHisaab tokens
+- Add `appId` to JWT payload — distinguishes HisaabPro vs DudhHisaab tokens
 - Password is now OPTIONAL at signup (OTP-only login supported, password set later in settings)
 
 **What's new:**
@@ -79,7 +79,7 @@ This module extracts, adapts, and ships the 10 core infrastructure features from
 
 **What's adapted:**
 - Tier names changed (DudhHisaab had Free/Premium/Enterprise)
-- Feature gates table completely rewritten for HisaabApp feature set
+- Feature gates table completely rewritten for HisaabPro feature set
 - Pricing changed (DudhHisaab was Rs 199/Rs 499)
 - Add-on system expanded (DudhHisaab had only extra users)
 - Invoice limit counter (new — DudhHisaab had no invoice cap on free tier)
@@ -152,7 +152,7 @@ This module extracts, adapts, and ships the 10 core infrastructure features from
 - Channel preference storage per user
 
 **What's adapted:**
-- Notification types expanded (DudhHisaab had 6, HisaabApp has 10+)
+- Notification types expanded (DudhHisaab had 6, HisaabPro has 10+)
 - Template messages rewritten for generic business context (not dairy-specific)
 - WhatsApp templates need re-approval from Aisensy for new business use case
 
@@ -196,7 +196,7 @@ hisaab-backup-{businessId}-{timestamp}.hbk
 - Backup progress UI (percentage bar, cancel option)
 
 **What's adapted:**
-- Data schema changed (DudhHisaab exported milk entries, rates; HisaabApp exports invoices, products, etc.)
+- Data schema changed (DudhHisaab exported milk entries, rates; HisaabPro exports invoices, products, etc.)
 - Email backup uses Resend (DudhHisaab used Nodemailer)
 - Backup frequency tiers changed
 - File extension changed from `.dhb` to `.hbk`
@@ -261,7 +261,7 @@ interface SyncQueueItem {
 - Sync status UI (banner: "Offline — data saved locally" / "Syncing X changes..." / "All synced")
 
 **What's adapted:**
-- IndexedDB table schemas changed for HisaabApp data models
+- IndexedDB table schemas changed for HisaabPro data models
 - Conflict resolution gains field-level merge for invoices (DudhHisaab was last-write-wins only)
 - Service worker cache list updated for new routes
 
@@ -298,7 +298,7 @@ interface SyncQueueItem {
 
 **What's adapted:**
 - Dashboard metrics changed (DudhHisaab tracked dairy-specific KPIs)
-- User detail page shows HisaabApp-specific data (invoices, products, not milk entries)
+- User detail page shows HisaabPro-specific data (invoices, products, not milk entries)
 - Subscription management updated for new tiers and add-ons
 - Remove DudhHisaab-specific sections (milk rates management, collection centers)
 
@@ -376,7 +376,7 @@ interface SyncQueueItem {
 - Theme picker UI component
 
 **What's adapted:**
-- Color palette updated (DudhHisaab was green-primary for dairy, HisaabApp is blue-primary for business)
+- Color palette updated (DudhHisaab was green-primary for dairy, HisaabPro is blue-primary for business)
 - Add "Minimal" theme (DudhHisaab had Classic + Modern only)
 - Tailwind CSS 4 migration (DudhHisaab was Tailwind 3)
 
@@ -416,8 +416,8 @@ src/i18n/
 ```json
 {
   "login": {
-    "title": "Login to HisaabApp",
-    "title_hi": "HisaabApp mein login karein",
+    "title": "Login to HisaabPro",
+    "title_hi": "HisaabPro mein login karein",
     "phone_label": "Phone Number",
     "phone_placeholder": "Enter 10-digit number",
     "otp_sent": "OTP sent to {{phone}}",
@@ -509,7 +509,7 @@ src/i18n/
 
 **What's adapted:**
 - DudhHisaab had: Business name, Dairy type, Milk collection shift times, Rate chart upload
-- HisaabApp replaces with: Business type/category, preferences, opening balances
+- HisaabPro replaces with: Business type/category, preferences, opening balances
 - Step count changes from 3 to 4
 
 **What's new:**
@@ -618,8 +618,8 @@ Settings -> Backup & Restore -> "Backup Now"
   -> [If encryption enabled]: Enter/confirm backup password
   -> Progress: "Backing up... 45%" (cancelable)
   -> Complete: "Backup saved successfully. Size: 12.3 MB"
-     Local: saved to /HisaabApp/Backups/ on device
-     Drive: saved to HisaabApp Backups folder
+     Local: saved to /HisaabPro/Backups/ on device
+     Drive: saved to HisaabPro Backups folder
      Email: sent as attachment to user's email
 ```
 
@@ -927,7 +927,7 @@ Enable 2FA — returns TOTP secret.
   "success": true,
   "data": {
     "secret": "JBSWY3DPEHPK3PXP",
-    "qrCodeUri": "otpauth://totp/HisaabApp:9111111111?secret=JBSWY3DPEHPK3PXP&issuer=HisaabApp",
+    "qrCodeUri": "otpauth://totp/HisaabPro:9111111111?secret=JBSWY3DPEHPK3PXP&issuer=HisaabPro",
     "recoveryCodes": ["abc12345", "def67890", "ghi11111", "jkl22222", "mno33333"]
   }
 }
@@ -1177,7 +1177,7 @@ Get user's referral code and stats.
   "data": {
     "code": "ABCD1234",
     "shareUrl": "https://hisaabapp.com/r/ABCD1234",
-    "shareMessage": "I use HisaabApp for billing. Sign up with my code ABCD1234 and get Rs 25 credit! Download: https://hisaabapp.com/r/ABCD1234",
+    "shareMessage": "I use HisaabPro for billing. Sign up with my code ABCD1234 and get Rs 25 credit! Download: https://hisaabapp.com/r/ABCD1234",
     "stats": {
       "totalReferred": 12,
       "successfulReferrals": 8,      // created first invoice
@@ -2244,7 +2244,7 @@ model AdminAuditLog {
 
 | State | UI |
 |-------|-----|
-| **Default** | Phone input field, "Send OTP" button (blue, full-width), "Login with password" text link below, HisaabApp logo at top |
+| **Default** | Phone input field, "Send OTP" button (blue, full-width), "Login with password" text link below, HisaabPro logo at top |
 | **Loading (OTP sending)** | Button shows spinner + "Sending OTP...", input disabled |
 | **OTP Sent** | Phone field collapses, 6-digit OTP input appears with auto-focus, countdown timer "Resend in 29s", channel badge "Sent via WhatsApp" |
 | **OTP Verifying** | OTP input disabled, spinner on submit button |
@@ -2388,7 +2388,7 @@ model AdminAuditLog {
 | # | Scenario | Handling |
 |---|----------|----------|
 | 1 | User signs up, closes app before completing onboarding | On next open, resume onboarding from last completed step. `onboardingComplete=false` flag. |
-| 2 | Same phone number used on DudhHisaab and HisaabApp | Separate accounts — `appId` field distinguishes them. Same OTP system, different JWT tokens. |
+| 2 | Same phone number used on DudhHisaab and HisaabPro | Separate accounts — `appId` field distinguishes them. Same OTP system, different JWT tokens. |
 | 3 | User enters GSTIN during onboarding but it's invalid format | Inline validation: red border + "Enter a valid 15-character GSTIN (e.g., 23AABCJ1234A1Z5)". Allow "Skip" to add later. |
 | 4 | Free tier user hits 50 invoice limit mid-day | Soft warning at 45: "5 invoices remaining this month." At 50: modal with upgrade CTA. Existing invoices editable, no new creates. Counter resets 1st of month. |
 | 5 | User's subscription payment fails (card expired) | Status moves to `past_due`. Yellow banner: "Payment failed — update payment method to keep Pro features." 3 retry attempts by Razorpay over 7 days. After 7 days: downgrade to free. |
@@ -2408,7 +2408,7 @@ model AdminAuditLog {
 | 19 | Service worker update available while user is mid-invoice | Do NOT auto-reload. Show subtle banner: "Update available. Tap to refresh." Only auto-apply on next cold start. |
 | 20 | User switches language mid-session | Instant — all UI text changes. No reload needed (react-i18next handles reactively). Numbers and dates reformat to locale. |
 | 21 | Razorpay webhook arrives before client callback | Idempotent processing — if subscription already activated by webhook, client callback is a no-op. |
-| 22 | User on very old Android (< Android 8) | Capacitor 8 requires Android 6+. For Android 6-7: PWA fallback (no native features). Below Android 6: "Please update your device to use HisaabApp." |
+| 22 | User on very old Android (< Android 8) | Capacitor 8 requires Android 6+. For Android 6-7: PWA fallback (no native features). Below Android 6: "Please update your device to use HisaabPro." |
 | 23 | Opening balance entry with negative amounts | Block: "Amount must be positive. Use 'They Owe Us' for receivables and 'We Owe Them' for payables." |
 | 24 | Sync queue grows very large (1000+ items from extended offline) | Process in batches of 50. Show progress: "Syncing... 150/1,234 changes." Prioritize recent changes. Background sync with low priority. |
 

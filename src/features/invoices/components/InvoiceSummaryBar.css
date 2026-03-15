@@ -1,0 +1,52 @@
+.invoice-summary-bar-card {
+  margin-bottom: var(--space-4);
+}
+
+.invoice-summary-bar-heading {
+  font-size: 0.833rem;
+  font-weight: 500;
+  color: var(--color-primary-200);
+  margin-bottom: var(--space-4);
+}
+
+.invoice-summary-bar-grid {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.invoice-summary-bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.invoice-summary-bar-label {
+  color: var(--color-primary-200);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.invoice-summary-bar-amount {
+  color: var(--color-gray-0);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.invoice-summary-bar-amount--received {
+  color: var(--color-success-500);
+}
+
+.invoice-summary-bar-amount--due {
+  color: var(--color-error-300);
+}
+
+@media (min-width: 768px) {
+  .invoice-summary-bar-amount {
+    font-size: 1.5rem;
+  }
+}

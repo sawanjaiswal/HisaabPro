@@ -1,4 +1,4 @@
-# HisaabApp — Master Feature Roadmap
+# HisaabPro — Master Feature Roadmap
 
 > **Last Updated:** 2026-03-14
 > **Status:** Planning

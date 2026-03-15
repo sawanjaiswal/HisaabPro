@@ -1,0 +1,490 @@
+/* Outstanding — Dashboard page styles
+ *
+ * Covers receivables, payables, aging chart, and per-party outstanding cards.
+ * Mobile-first: base styles target 320px, min-width queries add tablet+ layout.
+ */
+
+/* ─── Page container ─────────────────────────────────────────────────────── */
+
+.outstanding-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/* ─── Summary cards (horizontal scroll) ─────────────────────────────────── */
+
+/* Horizontal scroll row: Receivable, Payable, Net */
+.outstanding-summary-cards {
+  display: flex;
+  gap: var(--space-3);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: var(--space-1);
+  margin-bottom: var(--space-5);
+}
+
+.outstanding-summary-cards::-webkit-scrollbar {
+  display: none;
+}
+
+/* Individual summary card — teal dark card style */
+.outstanding-summary-card {
+  flex-shrink: 0;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--color-primary-600);
+  border-radius: var(--radius-lg);
+  color: var(--color-gray-0);
+}
+
+.outstanding-summary-card--net {
+  background: var(--color-primary-500);
+}
+
+.outstanding-summary-card-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-primary-200);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.outstanding-summary-card-amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-gray-0);
+  letter-spacing: -0.02em;
+}
+
+.outstanding-summary-card-amount--receivable {
+  color: var(--color-success-500);
+}
+
+.outstanding-summary-card-amount--payable {
+  color: var(--color-error-500);
+}
+
+.outstanding-summary-card-count {
+  font-size: 0.6875rem;
+  color: var(--color-primary-200);
+}
+
+/* ─── Aging chart ────────────────────────────────────────────────────────── */
+
+/* Horizontal stacked bar chart showing aging buckets */
+.outstanding-aging-chart {
+  background: var(--color-gray-0);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-100);
+  padding: var(--space-4);
+  margin-bottom: var(--space-5);
+  box-shadow: var(--shadow-xs);
+}
+
+.outstanding-aging-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  margin-bottom: var(--space-3);
+}
+
+/* Horizontal progress track */
+.outstanding-aging-bar {
+  display: flex;
+  height: 10px;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  background: var(--color-gray-100);
+  margin-bottom: var(--space-3);
+}
+
+/* Individual segment inside the bar — widths set via inline style */
+.outstanding-aging-segment {
+  height: 100%;
+  transition: width var(--duration-slow) var(--ease-default);
+}
+
+.outstanding-aging-segment--current {
+  background: var(--color-success-500);
+}
+
+.outstanding-aging-segment--30 {
+  background: var(--color-secondary-300);
+}
+
+.outstanding-aging-segment--60 {
+  background: var(--color-warning-500);
+}
+
+.outstanding-aging-segment--90 {
+  background: var(--color-error-500);
+}
+
+/* Legend row */
+.outstanding-aging-legend {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.outstanding-aging-legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 0.6875rem;
+  color: var(--color-gray-500);
+}
+
+.outstanding-aging-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.outstanding-aging-legend-dot--current { background: var(--color-success-500); }
+.outstanding-aging-legend-dot--30 { background: var(--color-secondary-300); }
+.outstanding-aging-legend-dot--60 { background: var(--color-warning-500); }
+.outstanding-aging-legend-dot--90 { background: var(--color-error-500); }
+
+/* ─── Filter bar ─────────────────────────────────────────────────────────── */
+
+.outstanding-filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+/* Horizontal scrollable filter pills */
+.outstanding-filter-pills {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: var(--space-1);
+}
+
+.outstanding-filter-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.outstanding-filter-pill {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  color: var(--color-gray-600);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: var(--font-primary);
+  cursor: pointer;
+  min-height: 44px;
+  white-space: nowrap;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default),
+    color var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.outstanding-filter-pill:hover {
+  border-color: var(--color-primary-300);
+  color: var(--color-primary-500);
+}
+
+.outstanding-filter-pill[aria-pressed='true'],
+.outstanding-filter-pill--active {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-400);
+  color: var(--color-primary-500);
+  font-weight: 600;
+}
+
+/* ─── Outstanding list ───────────────────────────────────────────────────── */
+
+.outstanding-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ─── Outstanding card ───────────────────────────────────────────────────── */
+
+/* Per-party card: name, amount, days overdue, progress bar, actions */
+.outstanding-card {
+  background: var(--color-gray-0);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-100);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Overdue card gets a subtle red left border accent */
+.outstanding-card--overdue {
+  border-left: 3px solid var(--color-error-400);
+}
+
+/* Top row: avatar + party name + overdue badge + amount */
+.outstanding-card-top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.outstanding-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.outstanding-card-party {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--color-gray-800);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.outstanding-card-days {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  margin-top: 1px;
+}
+
+.outstanding-card-days--overdue {
+  color: var(--color-error-600);
+  font-weight: 500;
+}
+
+.outstanding-card-amount {
+  font-weight: 700;
+  font-size: 1.0625rem;
+  color: var(--color-gray-800);
+  flex-shrink: 0;
+  letter-spacing: -0.01em;
+}
+
+.outstanding-card-amount--receivable {
+  color: var(--color-success-600);
+}
+
+.outstanding-card-amount--payable {
+  color: var(--color-error-600);
+}
+
+/* ─── Progress bar ───────────────────────────────────────────────────────── */
+
+/* Track: shows paid portion (green) vs still due (gray) */
+.outstanding-progress-bar {
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-100);
+  overflow: hidden;
+}
+
+.outstanding-progress-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--color-success-500);
+  transition: width var(--duration-slow) var(--ease-default);
+}
+
+.outstanding-progress-fill--overdue {
+  background: var(--color-error-400);
+}
+
+.outstanding-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-1);
+}
+
+.outstanding-progress-label {
+  font-size: 0.6875rem;
+  color: var(--color-gray-400);
+}
+
+.outstanding-progress-label--paid {
+  color: var(--color-success-600);
+  font-weight: 500;
+}
+
+/* ─── Card action buttons ────────────────────────────────────────────────── */
+
+/* Remind + Pay / Record side by side */
+.outstanding-card-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.outstanding-action-remind {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  height: 44px;
+  padding: 0 var(--space-3);
+  background: transparent;
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-family: var(--font-primary);
+  color: var(--color-gray-700);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.outstanding-action-remind:active {
+  background: var(--color-gray-50);
+}
+
+.outstanding-action-pay {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  height: 44px;
+  padding: 0 var(--space-3);
+  background: var(--color-primary-600);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-family: var(--font-primary);
+  color: var(--color-gray-0);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.outstanding-action-pay:active {
+  background: var(--color-primary-700);
+}
+
+/* ─── Skeleton loader ────────────────────────────────────────────────────── */
+
+.outstanding-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.outstanding-skeleton-card {
+  background: var(--color-gray-0);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-100);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.outstanding-skeleton-top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.outstanding-skeleton-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.outstanding-skeleton-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.outstanding-skeleton-line {
+  height: 14px;
+  border-radius: var(--radius-sm);
+}
+
+.outstanding-skeleton-line--short {
+  width: 40%;
+}
+
+.outstanding-skeleton-line--medium {
+  width: 60%;
+}
+
+.outstanding-skeleton-bar {
+  height: 6px;
+  width: 100%;
+  border-radius: var(--radius-full);
+}
+
+.outstanding-skeleton-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.outstanding-skeleton-btn {
+  flex: 1;
+  height: 44px;
+  border-radius: var(--radius-md);
+}
+
+/* ─── Tablet+ adjustments ────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  /* Filter bar goes horizontal on tablet */
+  .outstanding-filter-bar {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .outstanding-filter-bar .search-bar {
+    flex: 1;
+  }
+
+  /* Summary cards no longer need to scroll — expand naturally */
+  .outstanding-summary-cards {
+    overflow-x: visible;
+  }
+
+  .outstanding-summary-card {
+    flex: 1;
+    min-width: unset;
+  }
+
+  .outstanding-summary-card-amount {
+    font-size: 1.5rem;
+  }
+
+  /* Two-column card grid on tablet */
+  .outstanding-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+  }
+}
+
+@media (min-width: 1024px) {
+  /* Three-column on desktop */
+  .outstanding-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

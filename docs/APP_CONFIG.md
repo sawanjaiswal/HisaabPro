@@ -7,12 +7,13 @@
 
 | Key | Value |
 |-----|-------|
-| **App Name** | HisaabApp |
+| **App Name** | HisaabPro |
+| **Domain** | hisaabpro.in |
 | **Tagline** | Billing, Inventory & Payments for Indian Businesses |
-| **Working Name** | Yes — final brand name TBD before Play Store launch |
 
 ## Notes
 
-- "HisaabApp" is the working/code name
-- Final brand name will be decided before Play Store submission
-- When renaming: update this file → search-replace across all docs → update GitHub repo name
+- Domain hisaabpro.in is available — register ASAP
+- File trademark in Class 9 (mobile app) + Class 42 (SaaS)
+- Secure @hisaabpro on Twitter/X, Instagram, YouTube, Facebook
+- When renaming in code: update this file → search-replace across all docs

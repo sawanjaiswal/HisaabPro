@@ -11,7 +11,7 @@
 
 ## 1. What
 
-Party Management is the customer/supplier backbone of HisaabApp. Every invoice, payment, report, and statement connects to a Party. This module lets business owners:
+Party Management is the customer/supplier backbone of HisaabPro. Every invoice, payment, report, and statement connects to a Party. This module lets business owners:
 
 1. **Add and manage customers & suppliers** (with contact import from phone)
 2. **Track balances** — who owes how much, for how long
@@ -1642,7 +1642,7 @@ class HisaabDB extends Dexie {
 **Permission denied:**
 ```
   Contact access required
-  Allow HisaabApp to access your contacts
+  Allow HisaabPro to access your contacts
   to import customers quickly.
   [Open Settings]
 ```

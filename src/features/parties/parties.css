@@ -1,0 +1,14 @@
+/* Party Management — Feature styles */
+
+/* Filter bar spacing */
+.party-filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+/* Party list items */
+.party-list-item:last-child .divider {
+  display: none;
+}

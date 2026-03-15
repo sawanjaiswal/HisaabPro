@@ -1,4 +1,4 @@
-# User Journeys — HisaabApp
+# User Journeys — HisaabPro
 
 > **Status:** Draft — Awaiting Approval
 > **Date:** 2026-03-14

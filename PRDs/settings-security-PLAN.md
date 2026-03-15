@@ -173,7 +173,7 @@ Settings → Staff & Roles → "Invite Staff"
     │       └─→ [Custom roles...]
     │
     ├─→ "Send Invite"
-    │       ├─→ WhatsApp message sent: "You've been invited to [Business] on HisaabApp.
+    │       ├─→ WhatsApp message sent: "You've been invited to [Business] on HisaabPro.
     │       │    Download: [link]. Your access code: [6-digit code]. Valid for 48 hours."
     │       ├─→ SMS fallback if WhatsApp fails
     │       └─→ Invite record created: status = PENDING
@@ -688,7 +688,7 @@ Response: {
         ],
         reason: null,
         ipAddress: "192.168.1.5",
-        deviceInfo: "Android 14 / HisaabApp 1.2.0",
+        deviceInfo: "Android 14 / HisaabPro 1.2.0",
         createdAt: "2026-03-14T10:30:00Z"
       }
     ],
@@ -1432,7 +1432,7 @@ All screens designed for 375px (iPhone SE) as minimum. Tested at 375px, 390px (i
 | Biometric enrolled changes (new fingerprint added) | OS handles this — Capacitor BiometricAuth re-validates. No app-side concern. |
 | App killed during PIN entry | On relaunch, PIN screen shows again (no bypass). |
 | PIN set on one device, opening on another | PIN is per-user (synced to server). Set on device A, device B fetches pinHash on login. |
-| Shared phone — multiple HisaabApp users | Each user logs in with their own phone number. PIN is per-user, not per-device. |
+| Shared phone — multiple HisaabPro users | Each user logs in with their own phone number. PIN is per-user, not per-device. |
 | Lockout expires while app is in background | On foregrounding, check lockout time. If expired, allow PIN entry. |
 
 ### Transaction Locks

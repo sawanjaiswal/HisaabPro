@@ -1,0 +1,129 @@
+/* === Create Product Page === */
+
+/* Sticky bottom action bar */
+.create-product-actions {
+  position: sticky;
+  bottom: var(--bottom-nav-height);
+  left: 0;
+  right: 0;
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-gray-50);
+  border-top: 1px solid var(--color-gray-100);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  z-index: var(--z-sticky);
+}
+
+.create-product-actions .btn-primary {
+  width: 100%;
+}
+
+.create-product-save-another {
+  background: none;
+  border: none;
+  color: var(--color-primary-400);
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--font-primary);
+  text-align: center;
+  cursor: pointer;
+  padding: var(--space-2);
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--duration-fast) var(--ease-default);
+}
+
+.create-product-save-another:hover {
+  color: var(--color-primary-600);
+}
+
+/* Section spacing */
+.create-product-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding-bottom: var(--space-8);
+}
+
+/* Textarea */
+.create-product-textarea {
+  height: 100px;
+  padding: var(--space-3) var(--space-4);
+  resize: vertical;
+  line-height: 1.5;
+  min-height: 80px;
+}
+
+/* Prefix input (Rs prefix) */
+.create-product-prefix-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.create-product-prefix {
+  position: absolute;
+  left: var(--space-4);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-gray-500);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.create-product-input-prefixed {
+  padding-left: 2.75rem;
+}
+
+/* Toggle switch for SKU auto-generate */
+.sku-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.sku-toggle-label {
+  font-size: 0.875rem;
+  color: var(--color-gray-600);
+}
+
+.sku-toggle-switch {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  background: var(--color-gray-200);
+  border-radius: var(--radius-full);
+  border: none;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+
+.sku-toggle-switch.active {
+  background: var(--color-primary-500);
+}
+
+.sku-toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  background: var(--color-gray-0);
+  border-radius: var(--radius-full);
+  transition: transform var(--duration-fast) var(--ease-default);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sku-toggle-switch.active::after {
+  transform: translateX(20px);
+}
+
+/* Section pill tabs top spacing */
+.create-product-page .pill-tabs {
+  margin-bottom: var(--space-5);
+}

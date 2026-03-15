@@ -763,7 +763,7 @@ CREATE INDEX idx_products_stock ON products (current_stock);
 
 ```typescript
 // db.ts — Dexie schema additions for report performance
-const db = new Dexie('HisaabApp');
+const db = new Dexie('HisaabPro');
 
 db.version(X).stores({
   invoices: '++id, number, type, date, partyId, status, [type+date], [partyId+date], [status+date]',
@@ -873,7 +873,7 @@ Every screen has exactly 4 states: Loading, Error, Empty, Success.
 
 ```
 ┌─────────────────────────────┐
-│  HisaabApp          🔔  👤  │  ← Top bar: app name, notifications, profile
+│  HisaabPro          🔔  👤  │  ← Top bar: app name, notifications, profile
 ├─────────────────────────────┤
 │ [Today ▼] [Week] [Month]   │  ← Date range pills (horizontal scroll)
 ├──────────────┬──────────────┤
@@ -993,7 +993,7 @@ With horizontal scroll if columns exceed viewport. Sticky first column (date or 
 
 ### 8.3 Timezone Handling
 
-- All dates stored as **IST (Asia/Kolkata, UTC+5:30)** — HisaabApp is India-only
+- All dates stored as **IST (Asia/Kolkata, UTC+5:30)** — HisaabPro is India-only
 - No timezone conversion needed
 - Date boundaries: midnight IST (00:00:00+05:30)
 - "Today" = current date in IST regardless of device timezone (enforce via `Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata' })`)

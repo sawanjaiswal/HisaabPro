@@ -1,0 +1,542 @@
+/* ============================================================
+   Dashboard — NexoWallet premium aesthetic
+   Mobile-first: base = 375px → 768px tablet → 1024px desktop
+   All values use design-system CSS variables only.
+   ============================================================ */
+
+/* ─── Page wrapper ─────────────────────────────────────────── */
+
+.dashboard-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-4) var(--space-4) var(--space-8);
+}
+
+/* ─── Date range pills ──────────────────────────────────────── */
+
+.dashboard-range-bar {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--space-1) 0;
+}
+
+.dashboard-range-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.dashboard-range-pill {
+  flex-shrink: 0;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-gray-200);
+  background: transparent;
+  color: var(--color-gray-500);
+  font-family: var(--font-primary);
+  font-size: 0.833rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    color var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.dashboard-range-pill:active {
+  background: var(--color-gray-100);
+}
+
+.dashboard-range-pill--active {
+  background: var(--color-primary-600);
+  color: var(--color-gray-0);
+  border-color: var(--color-primary-600);
+}
+
+/* ─── Summary card grid (2×2) ───────────────────────────────── */
+
+.dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.dashboard-stat-card {
+  background: var(--color-gray-0);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: box-shadow var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 100px;
+}
+
+.dashboard-stat-card:active {
+  box-shadow: var(--shadow-xs);
+}
+
+/* Icon + label row */
+.dashboard-stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard-stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Icon background tints per card type */
+.dashboard-stat-card--sales .dashboard-stat-icon {
+  background: var(--color-primary-50);
+  color: var(--color-primary-500);
+}
+
+.dashboard-stat-card--purchases .dashboard-stat-icon {
+  background: var(--color-gray-100);
+  color: var(--color-gray-500);
+}
+
+.dashboard-stat-card--receivable .dashboard-stat-icon {
+  background: var(--color-success-50);
+  color: var(--color-success-600);
+}
+
+.dashboard-stat-card--payable .dashboard-stat-icon {
+  background: var(--color-error-50);
+  color: var(--color-error-600);
+}
+
+.dashboard-stat-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Amount value — coloured per card type */
+.dashboard-stat-amount {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-stat-card--sales .dashboard-stat-amount {
+  color: var(--color-primary-500);
+}
+
+.dashboard-stat-card--purchases .dashboard-stat-amount {
+  color: var(--color-gray-700);
+}
+
+.dashboard-stat-card--receivable .dashboard-stat-amount {
+  color: var(--color-success-700);
+}
+
+.dashboard-stat-card--payable .dashboard-stat-amount {
+  color: var(--color-error-600);
+}
+
+/* Sublabel e.g. "12 invoices" */
+.dashboard-stat-sublabel {
+  font-size: 0.694rem;
+  color: var(--color-gray-400);
+  margin-top: var(--space-1);
+}
+
+/* ─── Skeleton loaders for stat cards ───────────────────────── */
+
+.dashboard-stat-card--skeleton {
+  cursor: default;
+}
+
+.dashboard-skeleton-line {
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--color-gray-100) 25%,
+    var(--color-gray-50)  50%,
+    var(--color-gray-100) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.dashboard-skeleton-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+}
+
+.dashboard-skeleton-amount {
+  height: 22px;
+  width: 75%;
+  margin-top: var(--space-2);
+}
+
+.dashboard-skeleton-sub {
+  height: 12px;
+  width: 50%;
+  margin-top: var(--space-1);
+}
+
+/* ─── Section wrapper ───────────────────────────────────────── */
+
+.dashboard-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ─── Quick actions row ──────────────────────────────────────── */
+
+.dashboard-quick-actions {
+  display: flex;
+  gap: var(--space-3);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--space-1) 0;
+}
+
+.dashboard-quick-actions::-webkit-scrollbar {
+  display: none;
+}
+
+.dashboard-quick-action {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+  height: 44px;
+  border-radius: var(--radius-full);
+  border: none;
+  color: var(--color-gray-0);
+  font-family: var(--font-primary);
+  font-size: 0.833rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    opacity var(--duration-fast) var(--ease-default),
+    transform var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+
+.dashboard-quick-action:active {
+  opacity: 0.85;
+  transform: scale(0.97);
+}
+
+.dashboard-quick-action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ─── Cash flow strip ───────────────────────────────────────── */
+
+.dashboard-cashflow {
+  background: var(--color-gray-0);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.dashboard-cashflow-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.dashboard-cashflow-item:not(:last-child) {
+  padding-right: var(--space-3);
+  border-right: 1px solid var(--color-gray-100);
+}
+
+.dashboard-cashflow-label {
+  font-size: 0.694rem;
+  font-weight: 500;
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dashboard-cashflow-amount {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-cashflow-amount--positive {
+  color: var(--color-success-700);
+}
+
+.dashboard-cashflow-amount--negative {
+  color: var(--color-error-600);
+}
+
+.dashboard-cashflow-amount--neutral {
+  color: var(--color-gray-700);
+}
+
+/* ─── Top outstanding section ───────────────────────────────── */
+
+.dashboard-outstanding-card {
+  background: var(--color-gray-0);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.dashboard-outstanding-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  transition: background var(--duration-fast) var(--ease-default);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  text-decoration: none;
+  color: inherit;
+}
+
+.dashboard-outstanding-row:not(:last-of-type) {
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.dashboard-outstanding-row:active {
+  background: var(--color-gray-50);
+}
+
+/* Avatar initials circle */
+.dashboard-outstanding-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--color-gray-0);
+  flex-shrink: 0;
+  background: var(--color-primary-400);
+}
+
+.dashboard-outstanding-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-outstanding-name {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--color-gray-800);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-outstanding-date {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  margin-top: 2px;
+}
+
+.dashboard-outstanding-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.dashboard-outstanding-amount {
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: var(--color-error-600);
+}
+
+/* Days overdue badge */
+.dashboard-overdue-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: 0.694rem;
+  font-weight: 600;
+  background: var(--color-warning-100);
+  color: var(--color-warning-700);
+  white-space: nowrap;
+}
+
+.dashboard-overdue-badge--severe {
+  background: var(--color-error-100);
+  color: var(--color-error-700);
+}
+
+/* "View All" footer link */
+.dashboard-outstanding-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-gray-100);
+}
+
+.dashboard-view-all-link {
+  font-size: 0.833rem;
+  font-weight: 600;
+  color: var(--color-primary-400);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 44px;
+  padding: 0 var(--space-2);
+}
+
+/* ─── Empty state (first-time user) ─────────────────────────── */
+
+.dashboard-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  gap: var(--space-3);
+}
+
+.dashboard-empty-icon {
+  color: var(--color-gray-300);
+}
+
+.dashboard-empty-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+}
+
+.dashboard-empty-description {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  max-width: 280px;
+}
+
+/* ─── Error state ────────────────────────────────────────────── */
+
+.dashboard-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  gap: var(--space-3);
+}
+
+.dashboard-error-icon {
+  color: var(--color-error-500);
+}
+
+.dashboard-error-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.dashboard-error-message {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  max-width: 320px;
+}
+
+/* ─── Tablet and above ──────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .dashboard-page {
+    padding: var(--space-6) var(--space-6) var(--space-8);
+    gap: var(--space-6);
+  }
+
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+  }
+
+  .dashboard-stat-card {
+    min-height: 120px;
+    padding: var(--space-5);
+  }
+
+  .dashboard-stat-amount {
+    font-size: 1.25rem;
+  }
+
+  .dashboard-cashflow {
+    padding: var(--space-5);
+  }
+
+  .dashboard-outstanding-row {
+    padding: var(--space-4) var(--space-5);
+  }
+}
+
+/* ─── Desktop ────────────────────────────────────────────────── */
+
+@media (min-width: 1024px) {
+  .dashboard-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-6) var(--space-8) var(--space-8);
+  }
+
+  .dashboard-stat-card:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .dashboard-outstanding-row:hover {
+    background: var(--color-gray-50);
+  }
+}
+
+/* ─── Reduced motion ────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-skeleton-line {
+    animation: none;
+    background: var(--color-gray-100);
+  }
+}

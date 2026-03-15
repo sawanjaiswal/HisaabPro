@@ -1,4 +1,4 @@
-# HisaabApp Design System
+# HisaabPro Design System
 
 > Informed by research on CRED, Jupiter Money, Fi Money, Razorpay (Blade), Zerodha Kite, and Slice.
 > Optimized for small Indian business owners on budget Android phones (Rs 8000-15000).
@@ -9,7 +9,7 @@
 
 ### Lessons from Premium Indian Apps
 
-| App | Key Takeaway for HisaabApp |
+| App | Key Takeaway for HisaabPro |
 |-----|---------------------------|
 | **CRED** (NeoPOP) | Bold typography hierarchy makes numbers the hero. Gilroy + Cirka pairing creates premium feel without complexity. Dark theme uses high-contrast whites on deep blacks. |
 | **Jupiter** (Europa) | Numbers-first design — balance, spends, invested amount are always the visual hero. Color supports hierarchy, not decoration. Simplicity and speed above all. |
@@ -18,7 +18,7 @@
 | **Zerodha Kite** | Data-dense screens made readable through: tight typography (Kohinoor Bangla chosen for number readability), ample line-height, restrained color (green/red only for gain/loss), and aggressive whitespace between data groups. |
 | **Slice** | Modern fintech with orange accent. Proves bold accent color on neutral base creates visual identity without overwhelming. |
 
-### HisaabApp Design Principles
+### HisaabPro Design Principles
 
 1. **Numbers are heroes** — Invoice totals, balances, due amounts get the largest, boldest treatment (learned from Jupiter, Zerodha)
 2. **Sunlight-first contrast** — Minimum 5.5:1 contrast ratio (exceeds WCAG AA 4.5:1) because users are in outdoor markets, bright shops
@@ -278,7 +278,7 @@ Base size: 14px (not 16px — optimized for 5.5"-6.5" screens at typical 393px v
 
 ## 5. Border Radius Scale
 
-Inspired by CRED's evolution from sharp (Topaz) to rounded (NeoPOP). HisaabApp uses moderate radii — professional but not playful.
+Inspired by CRED's evolution from sharp (Topaz) to rounded (NeoPOP). HisaabPro uses moderate radii — professional but not playful.
 
 ```
 --radius-none:   0;

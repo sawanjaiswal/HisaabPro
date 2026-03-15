@@ -1,0 +1,450 @@
+/* Payment Form — Record payment page styles
+ *
+ * Covers the "Record Payment" and "Record Purchase Payment" forms.
+ * Mobile-first: base styles target 320px, min-width queries add tablet+ layout.
+ */
+
+/* ─── Page container ─────────────────────────────────────────────────────── */
+
+.payment-form-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding-bottom: calc(var(--bottom-nav-height) + 80px); /* clearance for save bar */
+}
+
+/* ─── Form wrapper ───────────────────────────────────────────────────────── */
+
+.payment-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* ─── Party selector ─────────────────────────────────────────────────────── */
+
+.payment-party-selector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* When a party is selected — show avatar + name + outstanding */
+.payment-party-selected {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
+}
+
+.payment-party-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.payment-party-name {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--color-gray-800);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.payment-party-outstanding {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  margin-top: 2px;
+}
+
+.payment-party-change {
+  font-size: 0.8125rem;
+  color: var(--color-primary-500);
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-2);
+  min-height: 44px;
+  font-family: var(--font-primary);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ─── Amount field ───────────────────────────────────────────────────────── */
+
+.payment-amount-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Large rupee prefix + number display */
+.payment-amount-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--color-gray-0);
+  border: 2px solid var(--color-primary-400);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.payment-amount-prefix {
+  padding: 0 var(--space-3) 0 var(--space-4);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-gray-500);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.payment-amount-input {
+  flex: 1;
+  height: 64px;
+  padding: 0 var(--space-4) 0 0;
+  font-family: var(--font-primary);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-gray-900);
+  background: transparent;
+  border: none;
+  outline: none;
+  letter-spacing: -0.02em;
+  -moz-appearance: textfield;
+}
+
+.payment-amount-input::-webkit-outer-spin-button,
+.payment-amount-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.payment-amount-input::placeholder {
+  color: var(--color-gray-300);
+  font-weight: 400;
+}
+
+/* Quick-fill "Full Amount" button */
+.payment-quick-fill {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.payment-quick-fill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-secondary-50);
+  border: 1px solid var(--color-secondary-200);
+  border-radius: var(--radius-full);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-family: var(--font-primary);
+  color: var(--color-secondary-700);
+  cursor: pointer;
+  min-height: 36px;
+  transition: background var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.payment-quick-fill-btn:active {
+  background: var(--color-secondary-100);
+}
+
+.payment-quick-fill-label {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+}
+
+/* ─── Payment mode grid ──────────────────────────────────────────────────── */
+
+/* 2x4 icon grid for: Cash, UPI, Bank, Cheque, NEFT, RTGS, Card, Other */
+.payment-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-2);
+}
+
+.payment-mode-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  background: var(--color-gray-0);
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  min-height: 64px;
+  justify-content: center;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+  font-family: var(--font-primary);
+}
+
+.payment-mode-item:active {
+  background: var(--color-primary-50);
+}
+
+.payment-mode-item--active {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-400);
+}
+
+.payment-mode-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gray-500);
+}
+
+.payment-mode-item--active .payment-mode-icon {
+  color: var(--color-primary-500);
+}
+
+.payment-mode-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--color-gray-500);
+  text-align: center;
+}
+
+.payment-mode-item--active .payment-mode-label {
+  color: var(--color-primary-500);
+  font-weight: 600;
+}
+
+/* ─── Invoices section (expandable) ─────────────────────────────────────── */
+
+.payment-invoices-section {
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.payment-invoices-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-50);
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  font-family: var(--font-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.payment-invoices-header-count {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-primary-500);
+  background: var(--color-primary-50);
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-full);
+}
+
+.payment-invoices-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Individual invoice checkbox row */
+.payment-invoice-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-gray-100);
+  cursor: pointer;
+  min-height: 56px;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+.payment-invoice-row:hover {
+  background: var(--color-gray-50);
+}
+
+.payment-invoice-row--checked {
+  background: var(--color-primary-50);
+}
+
+.payment-invoice-checkbox {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-primary-500);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.payment-invoice-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.payment-invoice-number {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.payment-invoice-due {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  margin-top: 1px;
+}
+
+.payment-invoice-amount {
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--color-error-600);
+  flex-shrink: 0;
+}
+
+/* ─── Discount section (expandable) ─────────────────────────────────────── */
+
+.payment-discount-section {
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.payment-discount-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-50);
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  font-family: var(--font-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.payment-discount-body {
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ─── Settlement summary ─────────────────────────────────────────────────── */
+
+.payment-settlement-summary {
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.payment-settlement-title {
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--color-gray-50);
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.payment-settlement-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.payment-settlement-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.8125rem;
+  color: var(--color-gray-600);
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.payment-settlement-row:last-child {
+  border-bottom: none;
+}
+
+.payment-settlement-row--total {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-primary-50);
+}
+
+.payment-settlement-row--balance {
+  color: var(--color-success-600);
+  font-weight: 600;
+}
+
+.payment-settlement-row--balance-due {
+  color: var(--color-error-600);
+  font-weight: 600;
+}
+
+/* ─── Sticky save bar ────────────────────────────────────────────────────── */
+
+.payment-save-bar {
+  position: fixed;
+  bottom: var(--bottom-nav-height);
+  left: 0;
+  right: 0;
+  background: var(--color-gray-0);
+  border-top: 1px solid var(--color-gray-100);
+  padding: var(--space-3) var(--space-5);
+  z-index: var(--z-sticky);
+  box-shadow: 0 -2px 8px rgba(26, 25, 23, 0.06);
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+}
+
+.payment-save-bar .btn {
+  width: 100%;
+}
+
+/* ─── Tablet+ adjustments ────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  /* 4-column mode grid fits in one row on tablet */
+  .payment-mode-grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
+
+  .payment-amount-input {
+    font-size: 2rem;
+  }
+
+  .payment-amount-prefix {
+    font-size: 2rem;
+  }
+
+  .payment-save-bar .btn {
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+  }
+}
