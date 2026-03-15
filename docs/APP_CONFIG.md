@@ -13,7 +13,7 @@
 
 ## Notes
 
-- Domain hisaabpro.in is available — register ASAP
+- Domain hisaabpro.in — **purchased** (2026-03)
 - File trademark in Class 9 (mobile app) + Class 42 (SaaS)
 - Secure @hisaabpro on Twitter/X, Instagram, YouTube, Facebook
 - When renaming in code: update this file → search-replace across all docs
