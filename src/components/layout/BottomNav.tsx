@@ -21,12 +21,12 @@ export function BottomNav() {
       <div className="bottom-nav-bg" aria-hidden="true">
         <svg
           className="bottom-nav-svg"
-          viewBox="0 0 375 90"
+          viewBox="0 0 375 72"
           preserveAspectRatio="none"
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            d="M0,0 H140 C148,0 152,6 158,16 C166,32 176,44 187.5,44 C199,44 209,32 217,16 C223,6 227,0 235,0 H375 V90 H0 Z"
+            d="M0,0 H148 C154,0 157,4 161,12 C167,24 175,34 187.5,34 C200,34 208,24 214,12 C218,4 221,0 227,0 H375 V72 H0 Z"
             fill="white"
           />
         </svg>

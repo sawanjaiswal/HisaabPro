@@ -110,9 +110,12 @@
   --z-modal: 50;
   --z-toast: 70;
 
+  /* Accent — Figma lime */
+  --color-lime-accent: #cfdf2e;
+
   /* Layout */
   --side-padding: 16px;
-  --bottom-nav-height: 90px;
+  --bottom-nav-height: 72px;
 
   /* Toast (dark overlay style) */
   --toast-bg: #1a1a2e;
@@ -249,14 +252,14 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 90px;
+  height: 72px;
   background: transparent;
   display: flex;
   align-items: flex-end;
   justify-content: space-around;
   z-index: var(--z-sticky);
   padding: 0 8px;
-  padding-bottom: max(8px, env(safe-area-inset-bottom, 8px));
+  padding-bottom: max(6px, env(safe-area-inset-bottom, 6px));
   /* Shadow on parent follows the SVG shape including the wave notch */
   filter: drop-shadow(0 -4px 12px rgba(0, 0, 0, 0.08));
 }
@@ -308,8 +311,8 @@ body {
   position: relative;
   z-index: 2;
   align-self: flex-start;
-  /* Position FAB so its center aligns with the notch circle center (6px above bar top) */
-  margin-top: -18px;
+  /* Position FAB so its center aligns with the notch curve */
+  margin-top: -30px;
 }
 
 /* Center FAB button — lime circle (Figma: 48x48) sitting inside the 82px notch */
@@ -317,7 +320,7 @@ body {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: var(--dash-lime, #cfdf2e);
+  background: var(--color-lime-accent);
   border: none;
   display: flex;
   align-items: center;

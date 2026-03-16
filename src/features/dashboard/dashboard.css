@@ -12,7 +12,7 @@
 .dashboard-page {
   --dash-teal-start: #1b6369;
   --dash-teal-end: #123e42;
-  --dash-lime: #cfdf2e;
+  --dash-lime: var(--color-lime-accent);
   --dash-lime-hover: #c1d22b;
   --dash-text-primary: #111827;
   --dash-text-secondary: #4b5563;
@@ -106,7 +106,7 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--dash-lime);
+  background: var(--color-lime-accent);
   border: 2.5px solid var(--color-gray-0);
   display: flex;
   align-items: center;
