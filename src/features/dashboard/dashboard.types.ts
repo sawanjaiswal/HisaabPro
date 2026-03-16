@@ -33,6 +33,7 @@ export type ActivityType = 'sale_invoice' | 'purchase_invoice' | 'payment_in' | 
 export interface RecentActivityItem {
   id: string
   type: ActivityType
+  partyId: string
   partyName: string
   /** Amount in paise */
   amount: number

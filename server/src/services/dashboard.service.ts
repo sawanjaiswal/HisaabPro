@@ -79,6 +79,7 @@ export async function getHomeDashboard(businessId: string) {
       select: {
         id: true,
         type: true,
+        partyId: true,
         documentNumber: true,
         grandTotal: true,
         balanceDue: true,
@@ -95,6 +96,7 @@ export async function getHomeDashboard(businessId: string) {
       select: {
         id: true,
         type: true,
+        partyId: true,
         amount: true,
         mode: true,
         date: true,
@@ -151,6 +153,7 @@ export async function getHomeDashboard(businessId: string) {
     return {
       id: inv.id,
       type: inv.type === 'SALE_INVOICE' ? 'sale_invoice' as const : 'purchase_invoice' as const,
+      partyId: inv.partyId,
       partyName: inv.party.name,
       amount: inv.grandTotal,
       date: inv.documentDate.toISOString(),
@@ -162,6 +165,7 @@ export async function getHomeDashboard(businessId: string) {
   const paymentActivities = recentPayments.map(pmt => ({
     id: pmt.id,
     type: pmt.type === 'PAYMENT_IN' ? 'payment_in' as const : 'payment_out' as const,
+    partyId: pmt.partyId,
     partyName: pmt.party.name,
     amount: pmt.amount,
     date: pmt.date.toISOString(),

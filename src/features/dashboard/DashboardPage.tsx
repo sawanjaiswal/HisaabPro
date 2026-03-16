@@ -30,8 +30,8 @@ export default function DashboardPage() {
   const { data, status, refresh } = useHomeDashboard()
 
   const handleQuickAction = (route: string) => navigate(route)
-  const handleCollectClick = () => navigate(ROUTES.OUTSTANDING)
-  const handlePayClick = () => navigate(ROUTES.OUTSTANDING)
+  const handleCollectClick = () => navigate(`${ROUTES.OUTSTANDING}?tab=receivable`)
+  const handlePayClick = () => navigate(`${ROUTES.OUTSTANDING}?tab=payable`)
 
   const handleActivityClick = (item: RecentActivityItem) => {
     if (item.type === 'sale_invoice' || item.type === 'purchase_invoice') {
@@ -42,7 +42,7 @@ export default function DashboardPage() {
   }
 
   const handleAddPayment = (item: RecentActivityItem) => {
-    navigate(`${ROUTES.PAYMENT_NEW}?type=PAYMENT_IN&invoiceId=${item.id}`)
+    navigate(`${ROUTES.PAYMENT_NEW}?type=PAYMENT_IN&invoiceId=${item.id}&partyId=${item.partyId}`)
   }
 
   const handleViewAllActivity = () => navigate(ROUTES.REPORT_DAY_BOOK)

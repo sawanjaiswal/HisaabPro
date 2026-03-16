@@ -5,7 +5,7 @@
  * card list, 4 UI states.
  */
 
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Banknote } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -25,7 +25,15 @@ import './outstanding.css'
 
 export default function OutstandingPage() {
   const navigate = useNavigate()
-  const { data, status, filters, setSearch, setFilter, refresh } = useOutstanding()
+  const [searchParams] = useSearchParams()
+
+  // Read initial tab from URL: ?tab=receivable|payable → maps to RECEIVABLE|PAYABLE
+  const tabParam = searchParams.get('tab')?.toUpperCase()
+  const initialType = tabParam === 'RECEIVABLE' || tabParam === 'PAYABLE' ? tabParam : undefined
+
+  const { data, status, filters, setSearch, setFilter, refresh } = useOutstanding({
+    initialFilters: initialType ? { type: initialType } : undefined,
+  })
 
   const handleTypeChange = (type: OutstandingType) => {
     setFilter('type', type)
