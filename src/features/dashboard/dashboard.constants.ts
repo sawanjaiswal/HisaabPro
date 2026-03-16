@@ -7,7 +7,7 @@
 import { ROUTES } from '@/config/routes.config'
 import type { QuickAction, ActivityType } from './dashboard.types'
 
-// ─── Quick actions ────────────────────────────────────────────────────────────
+// ─── Quick actions (Figma: Create, Send, Pay, More) ────────────────────────
 
 export const QUICK_ACTIONS: QuickAction[] = [
   {
@@ -18,25 +18,25 @@ export const QUICK_ACTIONS: QuickAction[] = [
     color: 'var(--color-primary-600)',
   },
   {
+    id:    'send-invoice',
+    label: 'Send',
+    icon:  'Send',
+    route: ROUTES.INVOICES,
+    color: 'var(--color-info-600)',
+  },
+  {
     id:    'record-payment',
-    label: 'Payment',
-    icon:  'Banknote',
+    label: 'Pay',
+    icon:  'CreditCard',
     route: `${ROUTES.PAYMENT_NEW}?type=PAYMENT_IN`,
     color: 'var(--color-success-600)',
   },
   {
-    id:    'add-product',
-    label: 'Products',
-    icon:  'Package',
-    route: ROUTES.PRODUCT_NEW,
-    color: 'var(--color-warning-600)',
-  },
-  {
-    id:    'add-party',
-    label: 'Parties',
-    icon:  'Users',
-    route: ROUTES.PARTY_NEW,
-    color: 'var(--color-info-600)',
+    id:    'more-actions',
+    label: 'More',
+    icon:  'MoreHorizontal',
+    route: ROUTES.SETTINGS,
+    color: 'var(--color-gray-600)',
   },
 ]
 

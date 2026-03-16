@@ -3,7 +3,7 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { authRateLimiter, otpRateLimiter } from '../middleware/rate-limit.js'
-import { sendOtpSchema, verifyOtpSchema, refreshTokenSchema, logoutSchema } from '../schemas/auth.schemas.js'
+import { sendOtpSchema, verifyOtpSchema, refreshTokenSchema, logoutSchema, devLoginSchema } from '../schemas/auth.schemas.js'
 import { sendSuccess, sendError } from '../lib/response.js'
 import { isBlacklisted, blacklistToken } from '../lib/token-blacklist.js'
 import { decodeToken } from '../lib/jwt.js'
@@ -12,35 +12,17 @@ import * as authService from '../services/auth.service.js'
 const router = Router()
 
 /**
- * POST /api/auth/send-otp
- * Send OTP to phone number for login/signup
+ * POST /api/auth/dev-login
+ * Dev-only: login with username + password (no OTP needed)
+ * Creates user if not exists. For development/testing only.
  */
 router.post(
-  '/send-otp',
-  authRateLimiter,
-  validate(sendOtpSchema),
+  '/dev-login',
+  validate(devLoginSchema),
   asyncHandler(async (req, res) => {
-    const result = await authService.sendOtp(req.body)
-    if (!result.sent) {
-      sendError(res, result.message, 'OTP_FAILED', 400)
-      return
-    }
-    sendSuccess(res, { message: result.message })
-  })
-)
-
-/**
- * POST /api/auth/verify-otp
- * Verify OTP, auto-create user if new, return tokens
- */
-router.post(
-  '/verify-otp',
-  otpRateLimiter,
-  validate(verifyOtpSchema),
-  asyncHandler(async (req, res) => {
-    const result = await authService.verifyOtp(req.body)
+    const result = await authService.devLogin(req.body)
     if (!result.verified) {
-      sendError(res, result.message, 'OTP_INVALID', 400)
+      sendError(res, result.message, 'LOGIN_FAILED', 400)
       return
     }
     sendSuccess(res, {
@@ -50,6 +32,48 @@ router.post(
     }, result.isNewUser as boolean ? 201 : 200)
   })
 )
+
+// --- OTP-based auth (commented out for dev, restore for production) ---
+
+// /**
+//  * POST /api/auth/send-otp
+//  * Send OTP to phone number for login/signup
+//  */
+// router.post(
+//   '/send-otp',
+//   authRateLimiter,
+//   validate(sendOtpSchema),
+//   asyncHandler(async (req, res) => {
+//     const result = await authService.sendOtp(req.body)
+//     if (!result.sent) {
+//       sendError(res, result.message, 'OTP_FAILED', 400)
+//       return
+//     }
+//     sendSuccess(res, { message: result.message })
+//   })
+// )
+
+// /**
+//  * POST /api/auth/verify-otp
+//  * Verify OTP, auto-create user if new, return tokens
+//  */
+// router.post(
+//   '/verify-otp',
+//   otpRateLimiter,
+//   validate(verifyOtpSchema),
+//   asyncHandler(async (req, res) => {
+//     const result = await authService.verifyOtp(req.body)
+//     if (!result.verified) {
+//       sendError(res, result.message, 'OTP_INVALID', 400)
+//       return
+//     }
+//     sendSuccess(res, {
+//       isNewUser: result.isNewUser,
+//       user: result.user,
+//       tokens: result.tokens,
+//     }, result.isNewUser as boolean ? 201 : 200)
+//   })
+// )
 
 /**
  * POST /api/auth/refresh

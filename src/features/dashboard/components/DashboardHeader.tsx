@@ -1,18 +1,17 @@
 /** Dashboard — Custom header (Figma design)
  *
- * Profile avatar (left) + centered app name + bell icon (right).
- * Matches the Figma design: teal gradient avatar ring,
- * lime notification badge, white bell button.
+ * Profile photo (left) with "+" badge + truly centered app name +
+ * calculator & bell icons (right).
  */
 
-import React from 'react'
-import { Bell } from 'lucide-react'
-import { APP_NAME } from '@/config/app.config'
+import React, { useState, useEffect } from 'react'
+import { Bell, Calculator } from 'lucide-react'
 
 interface DashboardHeaderProps {
-  /** User's name for initials (falls back to "U") */
   userName?: string | null
+  profilePhoto?: string | null
   onNotificationsClick?: () => void
+  onCalculatorClick?: () => void
 }
 
 function getInitials(name?: string | null): string {
@@ -27,31 +26,68 @@ function getInitials(name?: string | null): string {
 
 export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   userName,
+  profilePhoto,
   onNotificationsClick,
+  onCalculatorClick,
 }) => {
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 16)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   return (
-    <header className="dashboard-header">
-      {/* Profile avatar */}
-      <div className="dashboard-header-avatar" aria-label="Profile">
-        <div className="dashboard-header-avatar-inner">
-          <span className="dashboard-header-avatar-text">
-            {getInitials(userName)}
-          </span>
+    <header className={`dashboard-header${isScrolled ? ' is-scrolled' : ''}`}>
+      {/* Left: profile avatar with + badge */}
+      <div className="dashboard-header-side">
+        <div className="dashboard-header-avatar" aria-label="Profile">
+          <div className="dashboard-header-avatar-inner">
+            {profilePhoto ? (
+              <img
+                src={profilePhoto}
+                alt={userName ?? 'Profile'}
+                className="dashboard-header-avatar-img"
+                width={40}
+                height={40}
+              />
+            ) : (
+              <span className="dashboard-header-avatar-text">
+                {getInitials(userName)}
+              </span>
+            )}
+          </div>
+          <div className="dashboard-header-badge" aria-hidden="true">
+            <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+              <path d="M4 1v6M1 4h6" stroke="#1A1A1A" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+          </div>
         </div>
-        <div className="dashboard-header-badge" aria-hidden="true" />
       </div>
 
-      {/* Centered title */}
-      <h1 className="dashboard-header-title">{APP_NAME}</h1>
+      {/* Center: truly centered title */}
+      <h1 className="dashboard-header-title">HisaabPro</h1>
 
-      {/* Bell icon */}
-      <button
-        className="dashboard-header-bell"
-        onClick={onNotificationsClick}
-        aria-label="Notifications"
-      >
-        <Bell size={24} aria-hidden="true" />
-      </button>
+      {/* Right: calculator + bell */}
+      <div className="dashboard-header-side dashboard-header-side--right">
+        <button
+          className="dashboard-header-icon-btn"
+          onClick={onCalculatorClick}
+          aria-label="Calculator"
+        >
+          <Calculator size={20} aria-hidden="true" />
+        </button>
+        <button
+          className="dashboard-header-icon-btn"
+          onClick={onNotificationsClick}
+          aria-label="Notifications"
+        >
+          <Bell size={20} aria-hidden="true" />
+        </button>
+      </div>
     </header>
   )
 }

@@ -1,11 +1,10 @@
 /** Dashboard — Quick action grid (4 columns)
  *
- * Figma: white rounded boxes (18px radius) with icons inside,
- * labels below. 4-column grid layout.
+ * Figma: white rounded boxes with SVG icons inside,
+ * labels below. Create, Send, Pay, More.
  */
 
 import React from 'react'
-import { FileText, Banknote, Package, Users, MoreHorizontal, Send, Upload, CreditCard } from 'lucide-react'
 import type { QuickAction } from '../dashboard.types'
 
 interface DashboardQuickActionsProps {
@@ -13,15 +12,11 @@ interface DashboardQuickActionsProps {
   onAction: (route: string) => void
 }
 
-const ICON_MAP: Record<string, React.FC<{ size?: number; 'aria-hidden'?: boolean }>> = {
-  FileText,
-  Banknote,
-  Package,
-  Users,
-  MoreHorizontal,
-  Send,
-  Upload,
-  CreditCard,
+const FIGMA_ICONS: Record<string, string> = {
+  'new-invoice': '/assets/icon-create.svg',
+  'send-invoice': '/assets/icon-send.svg',
+  'record-payment': '/assets/icon-pay.svg',
+  'more-actions': '/assets/icon-more.svg',
 }
 
 export const DashboardQuickActions: React.FC<DashboardQuickActionsProps> = ({
@@ -35,7 +30,7 @@ export const DashboardQuickActions: React.FC<DashboardQuickActionsProps> = ({
       aria-label="Quick actions"
     >
       {actions.map((action) => {
-        const IconComponent = ICON_MAP[action.icon]
+        const iconSrc = FIGMA_ICONS[action.id] ?? '/assets/icon-more.svg'
 
         return (
           <button
@@ -46,9 +41,7 @@ export const DashboardQuickActions: React.FC<DashboardQuickActionsProps> = ({
             aria-label={action.label}
           >
             <div className="dashboard-action-icon-box">
-              {IconComponent !== undefined && (
-                <IconComponent size={24} aria-hidden={true} />
-              )}
+              <img src={iconSrc} alt="" width={24} height={24} aria-hidden="true" />
             </div>
             <span className="dashboard-action-label">{action.label}</span>
           </button>

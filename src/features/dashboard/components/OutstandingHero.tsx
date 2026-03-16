@@ -1,12 +1,12 @@
 /** Dashboard — Outstanding hero cards (To Collect / To Pay)
  *
- * Figma design: teal gradient collect card + lime-yellow pay card.
- * ₹ shown separately at smaller size, amount large.
+ * Figma design: teal card (collect) + lime card (pay).
+ * Amount left-aligned, label below with arrow, chevron on right.
  * All amounts in PAISE — formatted via formatCompactAmount.
  */
 
 import React from 'react'
-import { ArrowDown, ArrowUp, ChevronRight } from 'lucide-react'
+import { ChevronRight, ArrowDown, ArrowUp } from 'lucide-react'
 import { formatCompactAmount } from '../dashboard.utils'
 
 interface OutstandingHeroProps {
@@ -18,15 +18,6 @@ interface OutstandingHeroProps {
   onPayClick: () => void
 }
 
-/** Strip ₹ prefix from formatted amount so we can render ₹ separately */
-function splitAmount(paise: number): { symbol: string; value: string } {
-  const formatted = formatCompactAmount(paise)
-  if (formatted.startsWith('₹')) {
-    return { symbol: '₹', value: formatted.slice(1) }
-  }
-  return { symbol: '', value: formatted }
-}
-
 export const OutstandingHero: React.FC<OutstandingHeroProps> = ({
   receivableTotal,
   receivablePartyCount,
@@ -35,51 +26,40 @@ export const OutstandingHero: React.FC<OutstandingHeroProps> = ({
   onCollectClick,
   onPayClick,
 }) => {
-  const collect = splitAmount(receivableTotal)
-  const pay = splitAmount(payableTotal)
-
   return (
     <div className="dashboard-hero" role="list" aria-label="Outstanding summary">
+      {/* To Collect — teal */}
       <button
         className="dashboard-hero-card dashboard-hero-card--collect"
         role="listitem"
         onClick={onCollectClick}
         aria-label={`To collect: ${formatCompactAmount(receivableTotal)} from ${receivablePartyCount} parties`}
       >
-        <div className="dashboard-hero-content">
-          <div className="dashboard-hero-amount-row">
-            <span className="dashboard-hero-rupee">{collect.symbol}</span>
-            <span className="dashboard-hero-amount">{collect.value}</span>
-          </div>
-          <div className="dashboard-hero-label-row">
-            <span className="dashboard-hero-label">To Collect</span>
-            <ArrowDown size={16} aria-hidden="true" />
-          </div>
+        <div className="dashboard-hero-card-content">
+          <span className="dashboard-hero-amount">{formatCompactAmount(receivableTotal)}</span>
+          <span className="dashboard-hero-label">
+            To Collect
+            <ArrowDown size={14} aria-hidden="true" />
+          </span>
         </div>
-        <div className="dashboard-hero-chevron">
-          <ChevronRight size={16} aria-hidden="true" />
-        </div>
+        <ChevronRight size={20} aria-hidden="true" className="dashboard-hero-chevron" />
       </button>
 
+      {/* To Pay — lime */}
       <button
         className="dashboard-hero-card dashboard-hero-card--pay"
         role="listitem"
         onClick={onPayClick}
         aria-label={`To pay: ${formatCompactAmount(payableTotal)} to ${payablePartyCount} parties`}
       >
-        <div className="dashboard-hero-content">
-          <div className="dashboard-hero-amount-row">
-            <span className="dashboard-hero-rupee">{pay.symbol}</span>
-            <span className="dashboard-hero-amount">{pay.value}</span>
-          </div>
-          <div className="dashboard-hero-label-row">
-            <span className="dashboard-hero-label">To Pay</span>
-            <ArrowUp size={16} aria-hidden="true" />
-          </div>
+        <div className="dashboard-hero-card-content">
+          <span className="dashboard-hero-amount">{formatCompactAmount(payableTotal)}</span>
+          <span className="dashboard-hero-label">
+            To Pay
+            <ArrowUp size={14} aria-hidden="true" />
+          </span>
         </div>
-        <div className="dashboard-hero-chevron">
-          <ChevronRight size={16} aria-hidden="true" />
-        </div>
+        <ChevronRight size={20} aria-hidden="true" className="dashboard-hero-chevron dashboard-hero-chevron--dark" />
       </button>
     </div>
   )

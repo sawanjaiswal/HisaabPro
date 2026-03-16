@@ -2,61 +2,93 @@
    Dashboard — Figma Design Implementation
    Mobile-first: base = 375px → 768px tablet → 1024px desktop
 
-   Design DNA: Clean warm cream → white gradient, teal + lime
-   accents, generous radius, Inter font, subtle shadows.
+   Design DNA: Warm cream (#f9f9ed) → white gradient,
+   teal + lime accents, generous radius, Inter font.
+   Edge-to-edge: 16px side padding, 24px inner padding.
    ============================================================ */
-
-@import './dashboard-themes.css';
 
 /* ─── Dashboard-specific tokens ───────────────────────────── */
 
 .dashboard-page {
-  --dash-teal-start: #16555A;
-  --dash-teal-end: #0F3638;
-  --dash-lime: #CDDC39;
-  --dash-lime-hover: #c4d230;
-  --dash-text-primary: #1A1A1A;
-  --dash-text-secondary: #454940;
-  --dash-text-muted: #999;
-  --dash-text-action: #303030;
-  --dash-error: #e50914;
-  --dash-teal-10: rgba(22, 85, 90, 0.1);
-  --dash-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.01), 0 1px 2px rgba(0, 0, 0, 0.01);
-  --dash-avatar-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --dash-teal-start: #1b6369;
+  --dash-teal-end: #123e42;
+  --dash-lime: #cfdf2e;
+  --dash-lime-hover: #c1d22b;
+  --dash-text-primary: #111827;
+  --dash-text-secondary: #4b5563;
+  --dash-text-muted: #6b7280;
+  --dash-text-action: #374151;
+  --dash-error: #ef4444;
+  --dash-teal-10: rgba(27, 99, 105, 0.1);
+  --dash-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.03);
+  --dash-avatar-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --dash-side-padding: 16px;
+  --dash-inner-padding: 24px;
+  --dash-section-gap: 24px;
 }
 
-/* ─── Dashboard header (profile + title + bell) ───────────── */
+/* ─── Dashboard header (profile + title + icons) ────────────── */
 
 .dashboard-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-3) var(--space-4);
+  padding: 12px 16px;
+  padding-top: max(12px, env(safe-area-inset-top, 12px));
   background: transparent;
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
-  min-height: 56px;
+  min-height: 64px;
+  transition: background var(--duration-normal) var(--ease-default),
+              box-shadow var(--duration-normal) var(--ease-default);
+}
+
+/* Scrolled state — filled background so content doesn't show through */
+.dashboard-header.is-scrolled {
+  background: rgba(249, 249, 237, 0.98);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Left/right sides — equal width so title centers */
+.dashboard-header-side {
+  display: flex;
+  align-items: center;
+  min-width: 88px;
+}
+
+.dashboard-header-side--right {
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .dashboard-header-avatar {
   position: relative;
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   flex-shrink: 0;
 }
 
 .dashboard-header-avatar-inner {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-full);
   background: linear-gradient(135deg, var(--dash-teal-start) 0%, var(--dash-teal-end) 100%);
-  border: 2px solid var(--color-gray-0);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  border: 2.5px solid var(--color-gray-0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+}
+
+.dashboard-header-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-full);
 }
 
 .dashboard-header-avatar-text {
@@ -66,30 +98,37 @@
   letter-spacing: 0.02em;
 }
 
+/* Lime "+" badge — top-right of profile pic (matches Figma lime accent) */
 .dashboard-header-badge {
   position: absolute;
-  top: -4px;
-  right: -4px;
+  top: -2px;
+  right: -2px;
   width: 20px;
   height: 20px;
-  border-radius: var(--radius-full);
+  border-radius: 50%;
   background: var(--dash-lime);
-  border: 2px solid var(--color-gray-0);
+  border: 2.5px solid var(--color-gray-0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
+/* Title — flex: 1 centers it between equal-width sides */
 .dashboard-header-title {
-  font-size: 1.25rem;
-  font-weight: 600;
+  flex: 1;
+  font-size: 1.125rem;
+  font-weight: 700;
   color: var(--dash-text-primary);
-  letter-spacing: 0.025em;
+  letter-spacing: 0.01em;
   text-align: center;
 }
 
-.dashboard-header-bell {
-  width: 40px;
-  height: 40px;
+.dashboard-header-icon-btn {
+  width: 38px;
+  height: 38px;
   border-radius: var(--radius-full);
-  background: var(--color-gray-0);
+  background: rgba(255, 255, 255, 0.85);
   border: none;
   display: flex;
   align-items: center;
@@ -99,19 +138,40 @@
   color: var(--dash-text-primary);
   flex-shrink: 0;
   transition: background var(--duration-fast) var(--ease-default);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
-.dashboard-header-bell:active {
+.dashboard-header-icon-btn:active {
   background: var(--color-gray-100);
 }
 
-/* ─── Page wrapper ─────────────────────────────────────────── */
+/* Hide floating calculator FAB on dashboard — it's in the header instead */
+:root:has(.dashboard-page) .calculator-fab {
+  display: none !important;
+}
+
+/* ─── Page wrapper with warm gradient ─────────────────────── */
 
 .dashboard-page {
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  background: linear-gradient(180deg, #F9F9ED 0%, #FDFDFD 40%);
+  background: linear-gradient(180deg, #f9f9ed 0%, #fafaef 30%, #fdfdfd 60%, #ffffff 100%);
+  position: relative;
+}
+
+/* Background pattern overlay */
+.dashboard-bg-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 340px;
+  background: url('/assets/bg-pattern.png') no-repeat center top;
+  background-size: cover;
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* ─── Top section (gradient area) ──────────────────────────── */
@@ -120,8 +180,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-6);
-  padding: var(--space-3) var(--space-4) 0;
+  gap: var(--dash-section-gap);
+  padding: 8px var(--dash-side-padding) 0;
+  position: relative;
+  z-index: 1;
 }
 
 /* ─── Sales hero ───────────────────────────────────────────── */
@@ -142,14 +204,14 @@
 }
 
 .dashboard-sales-amount {
-  font-size: 2rem;
-  font-weight: 600;
+  font-size: 2.25rem;
+  font-weight: 700;
   color: var(--dash-text-primary);
-  letter-spacing: 0.025em;
+  letter-spacing: -0.02em;
   line-height: 1;
 }
 
-/* ─── Outstanding hero cards ─────────────────────────────────── */
+/* ─── Outstanding hero cards (Figma: simple cards) ──────────── */
 
 .dashboard-hero {
   display: grid;
@@ -160,8 +222,8 @@
 
 .dashboard-hero-card {
   border: none;
-  border-radius: 24px;
-  padding: var(--space-6);
+  border-radius: 20px;
+  padding: 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -169,7 +231,8 @@
   transition: opacity var(--duration-fast) var(--ease-default);
   -webkit-tap-highlight-color: transparent;
   font-family: var(--font-primary);
-  min-height: 100px;
+  min-height: 90px;
+  text-align: left;
 }
 
 .dashboard-hero-card:active {
@@ -177,7 +240,7 @@
 }
 
 .dashboard-hero-card--collect {
-  background: linear-gradient(148deg, var(--dash-teal-start) 0%, var(--dash-teal-end) 100%);
+  background: linear-gradient(135deg, var(--dash-teal-start) 0%, var(--dash-teal-end) 100%);
   color: #fff;
 }
 
@@ -191,52 +254,47 @@
   cursor: default;
 }
 
-.dashboard-hero-content {
+.dashboard-hero-card-content {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
-}
-
-.dashboard-hero-amount-row {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-2);
-}
-
-.dashboard-hero-rupee {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  line-height: 1.5;
-  letter-spacing: -0.05em;
+  gap: 6px;
 }
 
 .dashboard-hero-amount {
   font-size: 1.25rem;
-  font-weight: 600;
-  letter-spacing: -0.05em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   line-height: 1;
-}
-
-.dashboard-hero-label-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
 }
 
 .dashboard-hero-label {
   font-size: 0.8125rem;
   font-weight: 500;
-  letter-spacing: -0.05em;
+  opacity: 0.85;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dashboard-hero-arrow {
+  display: inline-block;
+}
+
+.dashboard-hero-arrow--up {
+  transform: rotate(180deg);
 }
 
 .dashboard-hero-chevron {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  opacity: 0.6;
   flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.8);
 }
 
-/* ─── Action grid (4 columns) ──────────────────────────────── */
+.dashboard-hero-chevron--dark {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+/* ─── Action grid (4 columns, Figma rounded boxes) ──────────── */
 
 .dashboard-action-grid {
   display: grid;
@@ -275,10 +333,6 @@
   transition: transform var(--duration-fast) var(--ease-default);
 }
 
-.dashboard-action-icon-box svg {
-  color: var(--dash-text-primary);
-}
-
 .dashboard-action-label {
   font-size: 0.75rem;
   font-weight: 500;
@@ -292,15 +346,18 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  margin-top: var(--dash-section-gap);
+  position: relative;
+  z-index: 1;
 }
 
 .dashboard-alert-banner {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-6) var(--space-4);
+  padding: 20px var(--dash-side-padding);
   background: var(--dash-lime);
-  border-radius: 20px 20px 0 0;
+  border-radius: 24px 24px 0 0;
   border: none;
   cursor: pointer;
   font-family: var(--font-primary);
@@ -323,10 +380,6 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-}
-
-.dashboard-alert-icon svg {
-  color: var(--dash-text-primary);
 }
 
 .dashboard-alert-info {
@@ -353,13 +406,12 @@
   color: var(--dash-text-primary);
 }
 
-/* Old alert items (fallback for warning/danger alerts) */
+/* Alert items (warning/danger below banner) */
 .dashboard-alert-item {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--dash-side-padding);
   border: none;
   cursor: pointer;
   font-family: var(--font-primary);
@@ -390,21 +442,17 @@
   flex: 1;
 }
 
-/* ─── White card section (lower half) ──────────────────────── */
+/* ─── White drawer section (lower half) ──────────────────────── */
 
 .dashboard-white-section {
   background: var(--color-gray-0);
-  border-radius: 24px 24px 0 0;
-  padding: var(--space-6) var(--space-4) var(--space-8);
+  padding: var(--dash-section-gap) var(--dash-side-padding) 100px;
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--dash-section-gap);
   flex: 1;
-}
-
-/* When alerts exist, the alert banner acts as the transition */
-.dashboard-white-section--no-alerts {
-  margin-top: var(--space-4);
+  position: relative;
+  z-index: 1;
 }
 
 /* ─── Section headers ──────────────────────────────────────── */
@@ -434,7 +482,7 @@
   align-items: center;
   gap: 4px;
   min-height: 44px;
-  padding: 0 var(--space-2);
+  padding: 0;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -443,7 +491,7 @@
 .dashboard-starred {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-3);
 }
 
 .dashboard-starred-scroll {
@@ -535,7 +583,7 @@
 .dashboard-transactions {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-3);
 }
 
 .dashboard-txn-list {
@@ -709,93 +757,6 @@
   line-height: 1.5;
 }
 
-/* ─── Quick actions (legacy pill row — kept for backward compat) ── */
-
-.dashboard-quick-actions {
-  display: flex;
-  gap: var(--space-3);
-  overflow-x: auto;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-  padding: var(--space-1) 0;
-}
-
-.dashboard-quick-actions::-webkit-scrollbar {
-  display: none;
-}
-
-.dashboard-quick-action {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 0 var(--space-4);
-  height: 44px;
-  border-radius: var(--radius-full);
-  border: none;
-  color: var(--color-gray-0);
-  font-family: var(--font-primary);
-  font-size: 0.833rem;
-  font-weight: 600;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  white-space: nowrap;
-}
-
-.dashboard-quick-action-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-/* ─── Today snapshot (kept if needed) ──────────────────────── */
-
-.dashboard-today {
-  background: var(--color-gray-50);
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
-  display: flex;
-  align-items: stretch;
-}
-
-.dashboard-today-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  align-items: center;
-  text-align: center;
-}
-
-.dashboard-today-item:not(:last-child) {
-  border-right: 1px solid var(--color-gray-200);
-}
-
-.dashboard-today-label {
-  font-size: 0.694rem;
-  font-weight: 600;
-  color: var(--color-gray-400);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.dashboard-today-amount {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--color-gray-800);
-  letter-spacing: -0.01em;
-}
-
-.dashboard-today-amount--positive { color: var(--color-success-700); }
-.dashboard-today-amount--negative { color: var(--color-error-600); }
-.dashboard-today-amount--neutral { color: var(--color-gray-700); }
-
-.dashboard-today-sub {
-  font-size: 0.694rem;
-  color: var(--color-gray-400);
-}
-
 /* ─── Skeleton shimmer ──────────────────────────────────────── */
 
 .skeleton {
@@ -817,8 +778,8 @@
 /* ─── Tablet and above ──────────────────────────────────────── */
 
 @media (min-width: 768px) {
-  .dashboard-top-section {
-    padding: var(--space-4) var(--space-6) 0;
+  .dashboard-page {
+    --dash-side-padding: 24px;
   }
 
   .dashboard-sales-amount {
@@ -827,7 +788,7 @@
 
   .dashboard-hero-card {
     padding: var(--space-8);
-    min-height: 130px;
+    min-height: 110px;
   }
 
   .dashboard-hero-amount {
@@ -836,10 +797,6 @@
 
   .dashboard-action-grid {
     max-width: 400px;
-  }
-
-  .dashboard-white-section {
-    padding: var(--space-8) var(--space-6) var(--space-8);
   }
 
   .dashboard-starred-avatar {

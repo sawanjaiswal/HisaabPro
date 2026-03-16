@@ -1,7 +1,7 @@
 /** Dashboard — Recent transactions feed
  *
  * Figma: party initial avatar (colored circle), name, invoice ref + date,
- * amount, status text, "Add" payment pill for unpaid invoices.
+ * [Add] button left of amount, amount + status far right.
  * All amounts in PAISE.
  */
 
@@ -66,6 +66,7 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
         {items.map((item) => {
           const isUnpaid = item.status === 'unpaid' || item.status === 'partial'
           const isInvoice = item.type === 'sale_invoice' || item.type === 'purchase_invoice'
+          const showAdd = isUnpaid && isInvoice
 
           return (
             <div
@@ -91,7 +92,19 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
                 </div>
               </div>
 
-              {/* Amount + status */}
+              {/* Add payment pill — left of amount */}
+              {showAdd && (
+                <button
+                  className="dashboard-txn-add-btn"
+                  onClick={(e) => { e.stopPropagation(); onAddPayment(item) }}
+                  aria-label={`Record payment for ${item.partyName}`}
+                >
+                  <IndianRupee size={14} aria-hidden="true" />
+                  <span>Add</span>
+                </button>
+              )}
+
+              {/* Amount + status — always far right */}
               <div className="dashboard-txn-right">
                 <span className="dashboard-txn-amount">
                   - {formatCompactAmount(item.amount)}
@@ -105,18 +118,6 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
                   <span className="dashboard-txn-mode">{item.mode}</span>
                 )}
               </div>
-
-              {/* Add payment pill for unpaid invoices */}
-              {isUnpaid && isInvoice && (
-                <button
-                  className="dashboard-txn-add-btn"
-                  onClick={(e) => { e.stopPropagation(); onAddPayment(item) }}
-                  aria-label={`Record payment for ${item.partyName}`}
-                >
-                  <IndianRupee size={16} aria-hidden="true" />
-                  <span>Add</span>
-                </button>
-              )}
             </div>
           )
         })}

@@ -1,5 +1,5 @@
 import { api } from './api'
-import type { SendOtpResponse, VerifyOtpResponse, AuthUser } from '../features/auth/auth.types'
+import type { VerifyOtpResponse, AuthUser } from '../features/auth/auth.types'
 
 const TOKEN_KEY = 'accessToken'
 const REFRESH_KEY = 'refreshToken'
@@ -43,23 +43,33 @@ export function getCachedUser(): AuthUser | null {
   }
 }
 
-/** Send OTP to phone */
-export async function sendOtp(phone: string, signal?: AbortSignal) {
-  return api<SendOtpResponse>('/auth/send-otp', {
+/** Dev login with username + password */
+export async function devLogin(username: string, password: string, signal?: AbortSignal) {
+  return api<VerifyOtpResponse>('/auth/dev-login', {
     method: 'POST',
-    body: JSON.stringify({ phone }),
+    body: JSON.stringify({ username, password }),
     signal,
   })
 }
 
-/** Verify OTP and get tokens */
-export async function verifyOtp(phone: string, otp: string, signal?: AbortSignal) {
-  return api<VerifyOtpResponse>('/auth/verify-otp', {
-    method: 'POST',
-    body: JSON.stringify({ phone, otp }),
-    signal,
-  })
-}
+// --- OTP auth (commented out for dev, restore for production) ---
+// /** Send OTP to phone */
+// export async function sendOtp(phone: string, signal?: AbortSignal) {
+//   return api<SendOtpResponse>('/auth/send-otp', {
+//     method: 'POST',
+//     body: JSON.stringify({ phone }),
+//     signal,
+//   })
+// }
+//
+// /** Verify OTP and get tokens */
+// export async function verifyOtp(phone: string, otp: string, signal?: AbortSignal) {
+//   return api<VerifyOtpResponse>('/auth/verify-otp', {
+//     method: 'POST',
+//     body: JSON.stringify({ phone, otp }),
+//     signal,
+//   })
+// }
 
 /** Refresh access token */
 export async function refreshToken(signal?: AbortSignal) {

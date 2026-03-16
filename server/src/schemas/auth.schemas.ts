@@ -19,6 +19,11 @@ export const logoutSchema = z.object({
   refreshToken: z.string().optional(),
 })
 
+export const devLoginSchema = z.object({
+  username: z.string().min(1, 'Username is required'),
+  password: z.string().min(1, 'Password is required'),
+})
+
 export type SendOtpInput = z.infer<typeof sendOtpSchema>
 export type VerifyOtpInput = z.infer<typeof verifyOtpSchema>
 export type RefreshTokenInput = z.infer<typeof refreshTokenSchema>

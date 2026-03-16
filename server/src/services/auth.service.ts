@@ -3,6 +3,54 @@ import { generateOTP, verifyOTP, sendOTP, OTP_TTL_MS, MAX_ATTEMPTS, RESEND_COOLD
 import { generateTokens, verifyRefreshToken } from '../lib/jwt.js'
 import type { SendOtpInput, VerifyOtpInput } from '../schemas/auth.schemas.js'
 
+// Dev-only credentials (not for production)
+const DEV_CREDENTIALS: Record<string, { password: string; phone: string; name: string }> = {
+  admin: { password: 'admin123', phone: '9999999999', name: 'Dev Admin' },
+  demo: { password: 'demo123', phone: '9888888888', name: 'Demo User' },
+}
+
+/**
+ * Dev-only login with username + password.
+ * Auto-creates user if not exists.
+ */
+export async function devLogin(data: { username: string; password: string }) {
+  const { username, password } = data
+
+  const creds = DEV_CREDENTIALS[username]
+  if (!creds || creds.password !== password) {
+    return { verified: false, message: 'Invalid username or password' }
+  }
+
+  // Find or create user by phone
+  let user = await prisma.user.findUnique({
+    where: { phone: creds.phone },
+    select: { id: true, phone: true, name: true, email: true, isActive: true },
+  })
+
+  const isNewUser = !user
+
+  if (!user) {
+    user = await prisma.user.create({
+      data: { phone: creds.phone, name: creds.name },
+      select: { id: true, phone: true, name: true, email: true, isActive: true },
+    })
+  }
+
+  if (!user.isActive) {
+    return { verified: false, message: 'Account is deactivated' }
+  }
+
+  const tokens = generateTokens(user.id, user.phone)
+
+  return {
+    verified: true,
+    message: 'Login successful',
+    isNewUser,
+    user: { id: user.id, phone: user.phone, name: user.name, email: user.email },
+    tokens,
+  }
+}
+
 /**
  * Send OTP to phone number.
  * Creates OtpCode record. Rate-limits resend to 30s cooldown.

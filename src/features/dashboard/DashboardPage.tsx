@@ -1,8 +1,8 @@
 /** Dashboard — Home Page (lazy loaded)
  *
  * "Open app, see business" — instant value on first glance.
- * Layout: Sales Hero → Outstanding Cards → Action Grid →
- * Alerts → Starred Contacts → Recent Transactions.
+ * Layout: Header → Sales Hero → Outstanding Cards → Action Grid →
+ * Upgrade Banner → Starred Contacts → Recent Transactions.
  * 4 UI states: loading, error, empty (first-time), success.
  */
 
@@ -63,15 +63,14 @@ export default function DashboardPage() {
   const handleLowStockClick = () => navigate(ROUTES.REPORT_STOCK_SUMMARY)
   const handleOverdueClick = () => navigate(ROUTES.OUTSTANDING)
 
-  const hasAlerts = data
-    ? data.alerts.lowStockCount > 0 || data.alerts.overdueInvoiceCount > 0
-    : false
-
   return (
     <AppShell>
-      <DashboardHeader />
+      <DashboardHeader profilePhoto="/assets/profile-placeholder.png" />
 
       <div className="dashboard-page">
+        {/* Background pattern overlay */}
+        <div className="dashboard-bg-pattern" aria-hidden="true" />
+
         {/* Loading */}
         {status === 'loading' && <DashboardSkeleton />}
 
@@ -129,7 +128,7 @@ export default function DashboardPage() {
               <DashboardQuickActions actions={QUICK_ACTIONS} onAction={handleQuickAction} />
             </div>
 
-            {/* Alert banner */}
+            {/* Upgrade banner + alerts → white section */}
             <AlertStrip
               lowStockCount={data.alerts.lowStockCount}
               overdueInvoiceCount={data.alerts.overdueInvoiceCount}
@@ -137,8 +136,8 @@ export default function DashboardPage() {
               onOverdueClick={handleOverdueClick}
             />
 
-            {/* White card section */}
-            <div className={`dashboard-white-section${hasAlerts ? '' : ' dashboard-white-section--no-alerts'}`}>
+            {/* White drawer section */}
+            <div className="dashboard-white-section">
               <TopDebtors
                 debtors={data.topDebtors}
                 onViewAll={handleViewAllOutstanding}

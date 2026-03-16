@@ -111,7 +111,8 @@
   --z-toast: 70;
 
   /* Layout */
-  --bottom-nav-height: 64px;
+  --side-padding: 16px;
+  --bottom-nav-height: 90px;
 
   /* Toast (dark overlay style) */
   --toast-bg: #1a1a2e;
@@ -179,7 +180,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-3) var(--space-5);
+  padding: var(--space-3) var(--side-padding);
   background: var(--color-gray-50);
   position: sticky;
   top: 0;
@@ -235,48 +236,101 @@ body {
 
 /* === PAGE CONTAINER === */
 .page-container {
-  padding: var(--space-4) var(--space-5);
+  padding: var(--space-4) var(--side-padding);
   max-width: 1200px;
   margin: 0 auto;
 }
 
-/* === BOTTOM NAV — NexoWallet teal active style === */
+/* === BOTTOM NAV — Figma: white bar with circle cutout (boolean subtract) === */
+/* Figma values: bar 96px, subtract circle 88.2px diameter (41px radius scaled),
+   circle center 6px above bar top. Total frame 140px. */
 .bottom-nav {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  height: var(--bottom-nav-height);
-  background: var(--color-gray-0);
-  border-top: 1px solid var(--color-gray-100);
+  height: 90px;
+  background: transparent;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-around;
   z-index: var(--z-sticky);
-  padding-bottom: env(safe-area-inset-bottom);
+  padding: 0 8px;
+  padding-bottom: max(8px, env(safe-area-inset-bottom, 8px));
+  /* Shadow on parent follows the SVG shape including the wave notch */
+  filter: drop-shadow(0 -4px 12px rgba(0, 0, 0, 0.08));
+}
+
+/* SVG background — smooth wave notch with bezier curves */
+.bottom-nav-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bottom-nav-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .bottom-nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: var(--space-1) var(--space-2);
+  gap: 3px;
+  padding: 6px 12px;
   min-width: 48px;
   min-height: 48px;
   justify-content: center;
   color: var(--color-gray-400);
   text-decoration: none;
   transition: color var(--duration-fast) var(--ease-default);
+  position: relative;
+  z-index: 1;
 }
 
 .bottom-nav-item.active {
-  color: var(--color-primary-400);
+  color: var(--dash-teal-start, #1b6369);
 }
 
 .bottom-nav-label {
-  font-size: 0.694rem;
+  font-size: 0.6875rem;
   font-weight: 500;
+}
+
+/* FAB wrapper — centers the button inside the notch cutout */
+.bottom-nav-fab-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  position: relative;
+  z-index: 2;
+  align-self: flex-start;
+  /* Position FAB so its center aligns with the notch circle center (6px above bar top) */
+  margin-top: -18px;
+}
+
+/* Center FAB button — lime circle (Figma: 48x48) sitting inside the 82px notch */
+.bottom-nav-fab {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--dash-lime, #cfdf2e);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 14px rgba(207, 223, 46, 0.45);
+  transition: transform var(--duration-fast) var(--ease-default);
+  flex-shrink: 0;
+}
+
+.bottom-nav-fab:active {
+  transform: scale(0.93);
 }
 
 /* === BUTTONS — NexoWallet deep teal, rounded === */
