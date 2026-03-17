@@ -117,6 +117,16 @@
   color: var(--color-info-700);
 }
 
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .invoice-conversion-banner {
+  background: rgba(27, 99, 105, 0.15);
+}
+
+[data-theme="dark"] .invoice-conversion-banner--source {
+  background: rgba(59, 130, 246, 0.12);
+}
+
 /* ─── Tablet+ layout ─────────────────────────────────────────────────────── */
 
 @media (min-width: 768px) {

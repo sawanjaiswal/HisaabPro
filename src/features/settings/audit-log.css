@@ -41,7 +41,7 @@
   font-family: var(--font-primary);
   cursor: pointer;
   white-space: nowrap;
-  min-height: 36px;
+  min-height: 44px;
   transition: border-color 0.15s ease, background-color 0.15s ease;
   -webkit-tap-highlight-color: transparent;
 }

@@ -116,3 +116,21 @@
 @keyframes share-spin {
   to { transform: rotate(360deg); }
 }
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .share-action-row {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .share-action-row:active:not(:disabled) {
+  background: var(--color-gray-100);
+}
+
+[data-theme="dark"] .share-action-label {
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .share-action-icon--print {
+  background: var(--color-gray-200);
+}

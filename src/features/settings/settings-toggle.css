@@ -58,3 +58,14 @@
   outline: 2px solid var(--color-primary-500);
   outline-offset: 2px;
 }
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .settings-toggle-track {
+  background-color: var(--color-gray-500);
+}
+
+[data-theme="dark"] .settings-toggle-track::after {
+  background-color: var(--color-gray-100);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}

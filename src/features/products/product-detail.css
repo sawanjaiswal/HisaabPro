@@ -156,6 +156,28 @@
   margin-top: var(--space-3);
 }
 
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .product-info-row {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .stock-movement-row {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .stock-movement-type {
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .stock-movement-icon-in {
+  background: rgba(34, 197, 94, 0.12);
+}
+
+[data-theme="dark"] .stock-movement-icon-out {
+  background: rgba(239, 68, 68, 0.12);
+}
+
 /* Tablet+ layout */
 @media (min-width: 768px) {
   .product-detail-header {

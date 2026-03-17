@@ -36,6 +36,8 @@ import type {
   Gstr3bData,
   Gstr9Data,
   GstExportData,
+  TdsTcsFilters,
+  TdsTcsSummaryData,
 } from './report-tax.types'
 
 // ─── Invoice Report (Sale / Purchase) ─────────────────────────────────────────
@@ -194,6 +196,27 @@ export async function exportGstReturn(
       signal,
     }
   )
+}
+
+// ─── TDS / TCS Summary ─────────────────────────────────────────────────────────
+
+/**
+ * Fetch TDS/TCS summary for a date range.
+ *
+ * `type` controls which entries are returned:
+ *   - 'tds'  → only entries with tdsAmount > 0
+ *   - 'tcs'  → only entries with tcsAmount > 0
+ *   - 'all'  → all entries (default)
+ *
+ * `partyId` is optional — omit to get all parties.
+ * All amounts in paise, rates in basis points.
+ */
+export async function getTdsTcsSummary(
+  filters: TdsTcsFilters,
+  signal?: AbortSignal
+): Promise<TdsTcsSummaryData> {
+  const query = buildQueryString(filters as unknown as Record<string, unknown>)
+  return api<TdsTcsSummaryData>(`/reports/tds-tcs-summary?${query}`, { signal })
 }
 
 // ─── Export ────────────────────────────────────────────────────────────────────

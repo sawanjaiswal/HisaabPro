@@ -190,3 +190,34 @@
   align-self: center;
   margin-top: var(--space-2);
 }
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .party-txn-summary {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .party-txn-row {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .party-txn-row:hover {
+  background: var(--color-gray-50);
+}
+
+[data-theme="dark"] .party-txn-row:active {
+  background: var(--color-gray-100);
+}
+
+[data-theme="dark"] .party-txn-ref {
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .party-txn-icon--invoice {
+  background: rgba(27, 99, 105, 0.15);
+}
+
+[data-theme="dark"] .party-txn-icon--payment {
+  background: rgba(34, 197, 94, 0.12);
+}

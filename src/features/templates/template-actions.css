@@ -74,3 +74,23 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .template-actions {
+  background: var(--color-gray-0);
+  border-top-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .template-actions-reset {
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-400);
+}
+
+[data-theme="dark"] .template-actions-reset:hover {
+  background: var(--color-gray-100);
+}
+
+[data-theme="dark"] .template-actions-reset:active {
+  background: var(--color-gray-200);
+}

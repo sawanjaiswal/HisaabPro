@@ -46,6 +46,22 @@
   overflow: hidden;
 }
 
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .template-customize-page {
+  background: var(--color-gray-0);
+}
+
+[data-theme="dark"] .template-preview-panel {
+  background: var(--color-gray-50);
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .template-preview-invoice {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
+
 /* Tablet+ — side-by-side split layout (preview portion) */
 @media (min-width: 768px) {
   .template-customize-page {

@@ -8,22 +8,36 @@
 }
 
 html {
-  font-size: 14px;
+  font-size: 16px;
   -webkit-text-size-adjust: 100%;
 }
 
 @media (min-width: 1024px) {
-  html { font-size: 16px; }
+  html { font-size: 18px; }
 }
 
 body {
   font-family: var(--font-primary);
   color: var(--color-gray-800);
   /* Warm cream -> white gradient — HisaabPro signature background */
-  background: linear-gradient(180deg, #f8f7f4 0%, #faf9f6 40%, #fdfdfc 100%);
+  background: linear-gradient(180deg, var(--color-cream-start) 0%, var(--color-cream-mid) 40%, var(--color-cream-end) 100%);
   background-attachment: fixed;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+[data-theme="dark"] body {
+  background: var(--color-gray-0);
+}
+
+/* === GLOBAL FOCUS STYLES — keyboard accessibility === */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-primary-400);
+  outline-offset: 2px;
 }
 
 /* === APP SHELL === */

@@ -1,6 +1,7 @@
-/** Reports — Tax Summary, HSN Summary, Tax Ledger, and GST Returns types
+/** Reports — Tax Summary, HSN Summary, Tax Ledger, GST Returns, and TDS/TCS types
  *
  * All monetary amounts are in PAISE (integer).
+ * Tax rates are in BASIS POINTS (1800 = 18.00%).
  * Display conversion: formatAmount() from report.utils.
  */
 
@@ -112,6 +113,60 @@ export interface Gstr9Data {
   creditNotes: TaxTotals
   debitNotes: TaxTotals
 }
+
+// ─── TDS / TCS ────────────────────────────────────────────────────────────────
+
+/** A single invoice entry in the TDS/TCS report.
+ *
+ * Amounts in PAISE. Rates in BASIS POINTS (1800 = 18.00%).
+ * tdsRate / tcsRate will be 0 when the tax type is not applicable.
+ */
+export interface TdsTcsEntry {
+  id: string
+  documentNumber: string
+  documentDate: string
+  grandTotal: number     // paise — invoice total before TDS/TCS
+  tdsRate: number        // basis points (e.g. 200 = 2.00%)
+  tdsAmount: number      // paise
+  tcsRate: number        // basis points
+  tcsAmount: number      // paise
+  party: {
+    id: string
+    name: string
+  }
+}
+
+/** Aggregated totals for the TDS/TCS report response */
+export interface TdsTcsTotals {
+  totalInvoiceValue: number   // paise
+  totalTdsAmount: number      // paise
+  totalTcsAmount: number      // paise
+  invoiceCount: number
+}
+
+/** Full response shape from GET /api/reports/tds-tcs-summary */
+export interface TdsTcsSummaryData {
+  entries: TdsTcsEntry[]
+  totals: TdsTcsTotals
+  period: {
+    from: string
+    to: string
+  }
+}
+
+/** Filter state for the TDS/TCS report.
+ *
+ * type: 'tds' | 'tcs' | 'all' — passed to the API as the `type` param.
+ * partyId is optional — when set, filters to a single party's transactions.
+ */
+export interface TdsTcsFilters {
+  from: string
+  to: string
+  type: 'tds' | 'tcs' | 'all'
+  partyId?: string
+}
+
+// ─── GST Returns ──────────────────────────────────────────────────────────────
 
 /** GSTR-1 export response */
 export interface GstExportData {

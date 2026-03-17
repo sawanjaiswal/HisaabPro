@@ -218,6 +218,41 @@
   box-shadow: 0 0 0 2px var(--color-primary-400);
 }
 
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .template-controls-tabs {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .template-controls-tab {
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-400);
+}
+
+[data-theme="dark"] .template-controls-tab:active:not(.active) {
+  background: var(--color-gray-200);
+}
+
+[data-theme="dark"] .template-control-section {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .template-control-label {
+  color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .template-segmented-control {
+  background: var(--color-gray-200);
+}
+
+[data-theme="dark"] .template-segmented-btn.active {
+  background: var(--color-gray-50);
+}
+
+[data-theme="dark"] .template-color-swatch.active {
+  border-color: var(--color-gray-100);
+}
+
 /* Tablet+ — controls portion */
 @media (min-width: 768px) {
   /* Controls on the right, 50% width */

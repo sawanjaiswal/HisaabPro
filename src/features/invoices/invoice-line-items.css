@@ -222,6 +222,42 @@
   background: var(--color-primary-50);
 }
 
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .line-item-row {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .line-item-product-name {
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .line-item-field-value {
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .line-item-total {
+  border-top-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .line-item-total-amount {
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .add-item-btn {
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .discount-toggle-btn {
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .product-search-panel {
+  background: rgba(27, 99, 105, 0.1);
+  border-color: var(--color-primary-700);
+}
+
 /* Tablet+ layout */
 @media (min-width: 768px) {
   .line-item-fields {

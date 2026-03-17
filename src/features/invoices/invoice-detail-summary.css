@@ -210,6 +210,48 @@
   color: var(--color-gray-700);
 }
 
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .invoice-summary {
+  border-top-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .invoice-summary-value {
+  color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .invoice-summary-divider {
+  background: var(--color-gray-200);
+}
+
+[data-theme="dark"] .invoice-summary-grand-label {
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .invoice-summary-grand-value {
+  color: var(--color-gray-100);
+}
+
+[data-theme="dark"] .invoice-summary-balance--due {
+  background: rgba(239, 68, 68, 0.12);
+}
+
+[data-theme="dark"] .invoice-summary-balance--paid {
+  background: rgba(34, 197, 94, 0.12);
+}
+
+[data-theme="dark"] .invoice-profit-display {
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .invoice-transport-row {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .invoice-transport-value {
+  color: var(--color-gray-300);
+}
+
 /* ─── Tablet+ layout ─────────────────────────────────────────────────────── */
 
 @media (min-width: 768px) {

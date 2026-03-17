@@ -137,6 +137,33 @@
   flex-shrink: 0;
 }
 
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .invoice-line-item-row {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .invoice-line-item-index {
+  background: var(--color-gray-200);
+  color: var(--color-gray-400);
+}
+
+[data-theme="dark"] .invoice-line-item-name {
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .invoice-line-item-total {
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .invoice-charges-section {
+  border-top-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .invoice-charge-amount {
+  color: var(--color-gray-300);
+}
+
 /* ─── Tablet+ layout ─────────────────────────────────────────────────────── */
 
 @media (min-width: 768px) {

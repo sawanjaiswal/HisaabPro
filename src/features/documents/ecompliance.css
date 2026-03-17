@@ -1,0 +1,288 @@
+/* === E-Compliance Section — E-Invoice & E-Way Bill cards
+ *
+ * Mobile-first (375px). All colors via CSS variables.
+ * No hardcoded hex values.
+ */
+
+/* ─── Section wrapper ─────────────────────────────────────────────────────── */
+
+.ecompliance-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--side-padding);
+}
+
+.ecompliance-section-title {
+  font-size: 0.833rem;
+  font-weight: 600;
+  color: var(--color-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 var(--space-1);
+}
+
+/* ─── Compliance card ─────────────────────────────────────────────────────── */
+
+.compliance-card {
+  background: var(--color-gray-0);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.compliance-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.compliance-card-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.compliance-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  margin: 0;
+}
+
+.compliance-card-subtitle {
+  font-size: 0.833rem;
+  color: var(--color-gray-500);
+  margin: 0;
+}
+
+/* ─── Status badge ────────────────────────────────────────────────────────── */
+
+.compliance-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.compliance-badge-pending {
+  background: var(--color-warning-50);
+  color: var(--color-warning-700);
+}
+
+.compliance-badge-generated {
+  background: var(--color-success-50);
+  color: var(--color-success-700);
+}
+
+.compliance-badge-cancelled {
+  background: var(--color-error-50);
+  color: var(--color-error-700);
+}
+
+.compliance-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: currentColor;
+}
+
+/* ─── Detail rows (IRN, EWB number, dates) ────────────────────────────────── */
+
+.compliance-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-md);
+}
+
+.compliance-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.compliance-detail-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-gray-500);
+  flex-shrink: 0;
+}
+
+.compliance-detail-value {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-gray-700);
+  text-align: right;
+  word-break: break-all;
+  font-family: var(--font-mono);
+}
+
+/* ─── QR Code display ─────────────────────────────────────────────────────── */
+
+.compliance-qr-wrap {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-3);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-md);
+}
+
+.compliance-qr-wrap img {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─── Action buttons row ──────────────────────────────────────────────────── */
+
+.compliance-actions {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.compliance-actions .btn {
+  flex: 1;
+  min-width: 120px;
+}
+
+/* ─── Cancel reason form ──────────────────────────────────────────────────── */
+
+.compliance-cancel-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-error-50);
+  border: 1px solid var(--color-error-100);
+  border-radius: var(--radius-md);
+}
+
+.compliance-cancel-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-error-700);
+  margin: 0;
+}
+
+.compliance-cancel-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.compliance-cancel-actions .btn {
+  flex: 1;
+}
+
+/* ─── E-Way Bill generate form ────────────────────────────────────────────── */
+
+.ewb-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ewb-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.ewb-form-select {
+  width: 100%;
+  height: 52px;
+  padding: 0 var(--space-4);
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  color: var(--color-gray-800);
+  background: var(--color-gray-0);
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239C9A92' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-4) center;
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-default);
+}
+
+.ewb-form-select:focus {
+  border: 2px solid var(--color-primary-400);
+  outline: 2px solid var(--color-primary-400);
+  outline-offset: 2px;
+}
+
+/* ─── Part-B update form ──────────────────────────────────────────────────── */
+
+.partb-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-info-50);
+  border: 1px solid var(--color-info-100);
+  border-radius: var(--radius-md);
+}
+
+.partb-form-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-info-700);
+  margin: 0;
+}
+
+/* ─── Error message inline ────────────────────────────────────────────────── */
+
+.compliance-inline-error {
+  font-size: 0.833rem;
+  color: var(--color-error-600);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-error-50);
+  border-radius: var(--radius-sm);
+}
+
+/* ─── Cancelled notice ────────────────────────────────────────────────────── */
+
+.compliance-cancelled-notice {
+  font-size: 0.833rem;
+  color: var(--color-error-600);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.compliance-cancelled-reason {
+  color: var(--color-gray-500);
+  font-style: italic;
+}
+
+/* ─── Tablet+ adjustments ─────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .compliance-actions {
+    flex-wrap: nowrap;
+  }
+
+  .compliance-actions .btn {
+    flex: 0 0 auto;
+    min-width: 140px;
+  }
+
+  .ewb-form-row {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}

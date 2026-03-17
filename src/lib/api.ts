@@ -105,7 +105,7 @@ export async function api<T>(
   const timeoutId = setTimeout(() => controller.abort(), timeout)
 
   if (options.signal) {
-    options.signal.addEventListener('abort', () => controller.abort())
+    options.signal.addEventListener('abort', () => controller.abort(), { once: true })
   }
 
   let response: Response

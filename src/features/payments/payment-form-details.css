@@ -191,6 +191,43 @@
   gap: var(--space-3);
 }
 
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .payment-mode-item {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .payment-mode-item--active {
+  background: rgba(27, 99, 105, 0.15);
+}
+
+[data-theme="dark"] .payment-invoices-section {
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .payment-invoices-header {
+  background: var(--color-gray-50);
+  color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .payment-invoice-row {
+  border-top-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .payment-invoice-number {
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .payment-discount-section {
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .payment-discount-header {
+  background: var(--color-gray-50);
+  color: var(--color-gray-300);
+}
+
 /* ─── Tablet+ adjustments ────────────────────────────────────────────────── */
 
 @media (min-width: 768px) {

@@ -150,6 +150,25 @@
   background: var(--color-primary-200);
 }
 
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .party-info-row {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .party-address-line {
+  color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .party-quick-action-btn {
+  background: rgba(27, 99, 105, 0.12);
+  border-color: var(--color-primary-700);
+}
+
+[data-theme="dark"] .party-quick-action-btn:hover {
+  background: rgba(27, 99, 105, 0.2);
+}
+
 /* ─── Responsive ───────────────────────────────────────────────────────── */
 
 /* Tablet+ layout: avatar + info side by side in hero */

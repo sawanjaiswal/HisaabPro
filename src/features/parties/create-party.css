@@ -85,3 +85,10 @@
 .create-party-page .pill-tabs {
   margin-bottom: var(--space-5);
 }
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .create-party-actions {
+  background: var(--color-gray-50);
+  border-top-color: var(--color-gray-200);
+}

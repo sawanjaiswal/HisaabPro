@@ -148,7 +148,7 @@
   font-family: var(--font-primary);
   color: var(--color-secondary-700);
   cursor: pointer;
-  min-height: 36px;
+  min-height: 44px;
   transition: background var(--duration-fast) var(--ease-default);
   -webkit-tap-highlight-color: transparent;
 }
@@ -160,6 +160,30 @@
 .payment-quick-fill-label {
   font-size: 0.75rem;
   color: var(--color-gray-400);
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .payment-party-selected {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .payment-party-name {
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .payment-amount-wrapper {
+  background: var(--color-gray-50);
+}
+
+[data-theme="dark"] .payment-amount-input {
+  color: var(--color-gray-100);
+}
+
+[data-theme="dark"] .payment-quick-fill-btn {
+  background: rgba(27, 99, 105, 0.12);
+  border-color: var(--color-secondary-700);
 }
 
 /* ─── Tablet+ adjustments ────────────────────────────────────────────────── */

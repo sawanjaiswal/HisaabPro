@@ -79,6 +79,7 @@
 }
 
 .input:focus { border: 2px solid var(--color-primary-400); padding: 0 calc(var(--space-4) - 0.5px); }
+.input:focus-visible { outline: 2px solid var(--color-primary-400); outline-offset: 2px; }
 .input-with-icon { padding-left: 2.75rem; }
 .input-with-icon:focus { padding-left: calc(2.75rem - 0.5px); }
 .input-group-error .input { border: 2px solid var(--color-error-500); }

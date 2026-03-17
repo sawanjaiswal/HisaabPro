@@ -83,6 +83,28 @@
   to { transform: rotate(360deg); }
 }
 
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .invoice-actions {
+  background: var(--color-gray-50);
+  border-top-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .invoice-action-icon-btn {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-400);
+}
+
+[data-theme="dark"] .invoice-action-icon-btn:hover {
+  background: var(--color-gray-100);
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .invoice-export-capture {
+  background: var(--color-gray-50);
+}
+
 /* ─── Tablet+ layout ─────────────────────────────────────────────────────── */
 
 @media (min-width: 768px) {

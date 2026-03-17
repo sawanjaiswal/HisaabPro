@@ -1,0 +1,288 @@
+/* TDS/TCS Report — Summary cards, entry cards, date filters, type pills
+ *
+ * Mobile-first: base targets 320px, min-width queries for tablet/desktop.
+ * CSS variables only — no hardcoded hex, no rgba, no hardcoded sizes.
+ * Animations: CSS keyframes from report-shared-ui.css (reportFadeUp).
+ */
+
+/* ─── Date range filter row ─────────────────────────────────── */
+
+.tds-tcs-date-row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: var(--space-3);
+}
+
+.tds-tcs-date-input {
+  flex: 1;
+  min-width: 130px;
+  height: 44px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  background: var(--color-gray-0);
+  color: var(--color-gray-800);
+  font-size: 0.875rem;
+  font-family: var(--font-primary);
+  cursor: pointer;
+}
+
+.tds-tcs-date-input:focus {
+  outline: 2px solid var(--color-primary-300);
+  outline-offset: 2px;
+  border-color: var(--color-primary-400);
+}
+
+/* ─── Summary cards grid ────────────────────────────────────── */
+
+.tds-tcs-summary-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+  animation: reportFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.tds-tcs-metric-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
+}
+
+.tds-tcs-metric-card__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tds-tcs-metric-card__value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  font-variant-numeric: tabular-nums;
+}
+
+.tds-tcs-metric-card__value--tds {
+  color: var(--color-error-600);
+}
+
+.tds-tcs-metric-card__value--tcs {
+  color: var(--color-warning-600);
+}
+
+.tds-tcs-metric-card__value--count {
+  color: var(--color-primary-600);
+}
+
+/* ─── Entry card list ───────────────────────────────────────── */
+
+.tds-tcs-entry-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  animation: reportFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
+}
+
+.tds-tcs-entry-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
+}
+
+/* ─── Entry card header (doc number + date) ─────────────────── */
+
+.tds-tcs-entry-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.tds-tcs-entry-card__doc-number {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.tds-tcs-entry-card__date {
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+  flex-shrink: 0;
+}
+
+/* ─── Party name ────────────────────────────────────────────── */
+
+.tds-tcs-entry-card__party {
+  font-size: 0.875rem;
+  color: var(--color-gray-600);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─── Amounts block ─────────────────────────────────────────── */
+
+.tds-tcs-entry-card__amounts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-gray-100);
+}
+
+.tds-tcs-entry-card__amount-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: 24px;
+}
+
+.tds-tcs-entry-card__amount-label {
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+}
+
+.tds-tcs-entry-card__amount-label--tds {
+  color: var(--color-error-600);
+  font-weight: 500;
+}
+
+.tds-tcs-entry-card__amount-label--tcs {
+  color: var(--color-warning-600);
+  font-weight: 500;
+}
+
+.tds-tcs-entry-card__amount-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  font-variant-numeric: tabular-nums;
+}
+
+.tds-tcs-entry-card__amount-value--tds {
+  color: var(--color-error-600);
+}
+
+.tds-tcs-entry-card__amount-value--tcs {
+  color: var(--color-warning-600);
+}
+
+/* ─── Empty state ───────────────────────────────────────────── */
+
+.tds-tcs-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-10) var(--space-6);
+  text-align: center;
+}
+
+.tds-tcs-empty__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: var(--color-gray-50);
+  border-radius: var(--radius-full);
+  color: var(--color-gray-400);
+}
+
+.tds-tcs-empty__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  margin: 0;
+}
+
+.tds-tcs-empty__desc {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  margin: 0;
+  max-width: 280px;
+}
+
+/* ─── Section heading ───────────────────────────────────────── */
+
+.tds-tcs-section-heading {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  margin: 0 0 var(--space-2);
+}
+
+/* ─── Tablet+ (768px) ───────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .tds-tcs-summary-cards {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .tds-tcs-metric-card__value {
+    font-size: 1.125rem;
+  }
+
+  .tds-tcs-entry-card {
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .tds-tcs-entry-card__header {
+    flex: 1 1 180px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+
+  .tds-tcs-entry-card__party {
+    flex: 1 1 200px;
+  }
+
+  .tds-tcs-entry-card__amounts {
+    flex: 1 1 200px;
+    border-top: none;
+    border-left: 1px solid var(--color-gray-100);
+    padding-top: 0;
+    padding-left: var(--space-3);
+  }
+}
+
+/* ─── Dark theme ────────────────────────────────────────────── */
+
+[data-theme="dark"] .tds-tcs-metric-card,
+[data-theme="dark"] .tds-tcs-entry-card {
+  background: var(--color-gray-900);
+  border-color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .tds-tcs-empty__icon {
+  background: var(--color-gray-800);
+}
+
+/* ─── Reduced motion ────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .tds-tcs-summary-cards,
+  .tds-tcs-entry-list {
+    animation: none !important;
+  }
+}

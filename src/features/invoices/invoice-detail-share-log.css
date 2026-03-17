@@ -164,3 +164,33 @@
   flex-shrink: 0;
   margin-top: 4px;
 }
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .invoice-share-log-item {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .invoice-share-log-icon--print {
+  background: var(--color-gray-200);
+}
+
+[data-theme="dark"] .invoice-share-log-recipient {
+  color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .share-timeline-item {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .share-timeline-channel {
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .share-timeline-icon--print {
+  background: var(--color-gray-200);
+}
+
+[data-theme="dark"] .share-timeline-format {
+  background: var(--color-gray-200);
+}

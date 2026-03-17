@@ -71,3 +71,10 @@
   height: 44px;
   border-radius: var(--radius-md);
 }
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .outstanding-skeleton-card {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}

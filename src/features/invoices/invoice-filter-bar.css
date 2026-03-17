@@ -82,6 +82,19 @@
   font-weight: 600;
 }
 
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .invoice-type-pill {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-400);
+}
+
+[data-theme="dark"] .invoice-type-pill[aria-pressed='true'],
+[data-theme="dark"] .invoice-type-pill--active {
+  background: rgba(27, 99, 105, 0.15);
+}
+
 /* ─── Tablet+ adjustments ───────────────────────────────────── */
 
 @media (min-width: 768px) {
