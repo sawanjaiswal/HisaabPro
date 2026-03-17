@@ -3,6 +3,7 @@ import { UserCog, Ban, Trash2 } from 'lucide-react'
 import type { StaffMember } from '../settings.types'
 import { STAFF_STATUS_LABELS } from '../staff.constants'
 import { formatTimeAgo } from '../settings.utils'
+import { PartyAvatar } from '../../../components/ui/PartyAvatar'
 import '../staff-list.css'
 
 interface StaffCardProps {
@@ -10,15 +11,6 @@ interface StaffCardProps {
   onSuspend: (id: string) => void
   onRemove: (id: string) => void
   onChangeRole: (id: string) => void
-}
-
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .map((part) => part[0] ?? '')
-    .slice(0, 2)
-    .join('')
-    .toUpperCase()
 }
 
 export const StaffCard: React.FC<StaffCardProps> = ({ staff, onSuspend, onRemove, onChangeRole }) => {
@@ -32,12 +24,11 @@ export const StaffCard: React.FC<StaffCardProps> = ({ staff, onSuspend, onRemove
 
   return (
     <div className="staff-card">
-      <span
-        className={`staff-avatar${isSuspended ? ' staff-avatar--suspended' : ''}`}
-        aria-hidden="true"
-      >
-        {getInitials(staff.name)}
-      </span>
+      <PartyAvatar
+        name={staff.name}
+        size="md"
+        className={isSuspended ? 'staff-avatar--suspended' : ''}
+      />
 
       <span className="staff-info">
         <p className="staff-name">{staff.name}</p>

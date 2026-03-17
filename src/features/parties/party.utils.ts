@@ -1,7 +1,5 @@
 /** Party Management — Pure utility functions */
 
-import { AVATAR_COLORS } from './party.constants'
-
 /** Convert paise to rupees display: 500000 → "5,00,000" (Indian numbering) */
 export function paisaToRupees(paise: number): string {
   const rupees = Math.abs(paise) / 100
@@ -23,24 +21,6 @@ export function formatOutstanding(paise: number): { text: string; isReceivable: 
     text: `Rs ${paisaToRupees(paise)}`,
     isReceivable: paise > 0,
   }
-}
-
-/** Get initials from name: "Rahul Traders" → "RT", "Priya" → "PR" */
-export function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/)
-  if (parts.length >= 2) {
-    return (parts[0][0] + parts[1][0]).toUpperCase()
-  }
-  return name.slice(0, 2).toUpperCase()
-}
-
-/** Deterministic color from name for avatar */
-export function getAvatarColor(name: string): string {
-  let hash = 0
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash)
-  }
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length]
 }
 
 /** Extract PAN from GSTIN (chars 3-12) */

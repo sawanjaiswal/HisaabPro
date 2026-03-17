@@ -2,7 +2,8 @@ import React, { useRef, useCallback } from 'react'
 import { Check } from 'lucide-react'
 import type { PartySummary } from '../party.types'
 import { PARTY_TYPE_LABELS } from '../party.constants'
-import { getInitials, getAvatarColor, formatOutstanding, formatPhone, timeAgo } from '../party.utils'
+import { formatOutstanding, formatPhone, timeAgo } from '../party.utils'
+import { PartyAvatar } from '../../../components/ui/PartyAvatar'
 
 interface PartyCardProps {
   party: PartySummary
@@ -79,13 +80,7 @@ export const PartyCard: React.FC<PartyCardProps> = ({
           {isSelected && <Check size={16} />}
         </div>
       ) : (
-        <div
-          className="txn-avatar avatar"
-          style={{ backgroundColor: getAvatarColor(party.name) }}
-          aria-hidden="true"
-        >
-          {getInitials(party.name)}
-        </div>
+        <PartyAvatar name={party.name} size="sm" className="txn-avatar" />
       )}
 
       <div className="txn-info">

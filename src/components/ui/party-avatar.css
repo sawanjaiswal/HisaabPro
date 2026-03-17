@@ -1,0 +1,35 @@
+/* ============================================================
+   PartyAvatar — Shared avatar circle with initial letter
+   Sizes: sm (32px), md (44px), lg (56px)
+   Color set via inline style (stable pastel per name)
+   ============================================================ */
+
+.party-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  font-family: var(--font-primary);
+  font-weight: 700;
+  color: var(--color-gray-800);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.party-avatar--sm {
+  width: 32px;
+  height: 32px;
+  font-size: 0.8125rem;
+}
+
+.party-avatar--md {
+  width: 44px;
+  height: 44px;
+  font-size: 1rem;
+}
+
+.party-avatar--lg {
+  width: 56px;
+  height: 56px;
+  font-size: 1.25rem;
+}

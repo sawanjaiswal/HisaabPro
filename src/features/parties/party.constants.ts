@@ -22,15 +22,6 @@ export const SORT_OPTIONS = [
   { value: 'createdAt', label: 'Date Added' },
 ] as const
 
-export const AVATAR_COLORS = [
-  '#0A6375', '#0B4F5E', '#052D35',
-  '#B3BB3A', '#656921', '#4E521A',
-  '#22C55E', '#16A34A', '#15803D',
-  '#3B82F6', '#2563EB', '#1D4ED8',
-  '#F59E0B', '#D97706', '#B45309',
-  '#EF4444', '#DC2626', '#B91C1C',
-]
-
 export const DEFAULT_FILTERS: PartyFilters = {
   page: 1,
   limit: 20,

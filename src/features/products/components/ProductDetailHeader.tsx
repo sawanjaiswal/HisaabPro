@@ -3,13 +3,12 @@
 import React from 'react'
 import type { ProductDetail } from '../product.types'
 import {
-  getProductInitials,
-  getProductAvatarColor,
   formatProductPrice,
   formatStock,
   getStockStatus,
   getStockColor,
 } from '../product.utils'
+import { PartyAvatar } from '../../../components/ui/PartyAvatar'
 
 interface ProductDetailHeaderProps {
   product: ProductDetail
@@ -24,13 +23,7 @@ export const ProductDetailHeader: React.FC<ProductDetailHeaderProps> = ({ produc
 
   return (
     <div className="card-primary party-detail-header" role="region" aria-label="Product overview">
-      <div
-        className="party-detail-avatar avatar"
-        style={{ backgroundColor: getProductAvatarColor(product.name) }}
-        aria-hidden="true"
-      >
-        {getProductInitials(product.name)}
-      </div>
+      <PartyAvatar name={product.name} size="lg" className="party-detail-avatar" />
 
       <div className="party-detail-info">
         <h2 className="party-detail-name">{product.name}</h2>

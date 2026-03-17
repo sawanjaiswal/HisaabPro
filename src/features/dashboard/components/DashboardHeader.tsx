@@ -8,7 +8,7 @@ import React, { useState, useEffect } from 'react'
 import { Bell, Calculator, Sun, Moon } from 'lucide-react'
 import { useTheme } from '@/context/ThemeContext'
 import { APP_NAME } from '@/config/app.config'
-import { getInitials } from '../dashboard.utils'
+import { getInitial } from '../../../components/ui/PartyAvatar'
 
 interface DashboardHeaderProps {
   userName?: string | null
@@ -50,7 +50,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               />
             ) : (
               <span className="dashboard-header-avatar-text">
-                {getInitials(userName)}
+                {getInitial(userName)}
               </span>
             )}
           </div>

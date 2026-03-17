@@ -3,7 +3,8 @@
 import React, { useRef, useCallback } from 'react'
 import { Check } from 'lucide-react'
 import type { ProductSummary } from '../product.types'
-import { getProductInitials, getProductAvatarColor, formatProductPrice, formatStock, getStockStatus } from '../product.utils'
+import { formatProductPrice, formatStock, getStockStatus } from '../product.utils'
+import { PartyAvatar } from '../../../components/ui/PartyAvatar'
 
 interface ProductCardProps {
   product: ProductSummary
@@ -86,13 +87,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {isSelected && <Check size={16} />}
         </div>
       ) : (
-        <div
-          className="txn-avatar avatar"
-          style={{ backgroundColor: getProductAvatarColor(product.name) }}
-          aria-hidden="true"
-        >
-          {getProductInitials(product.name)}
-        </div>
+        <PartyAvatar name={product.name} size="sm" className="txn-avatar" />
       )}
 
       <div className="txn-info">

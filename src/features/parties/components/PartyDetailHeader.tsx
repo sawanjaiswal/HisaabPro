@@ -5,12 +5,11 @@ import type { PartyDetail } from '../party.types'
 import '../party-detail-header.css'
 import { PARTY_TYPE_LABELS } from '../party.constants'
 import {
-  getInitials,
-  getAvatarColor,
   formatOutstanding,
   formatPhone,
   formatAmount,
 } from '../party.utils'
+import { PartyAvatar } from '../../../components/ui/PartyAvatar'
 
 interface PartyDetailHeaderProps {
   party: PartyDetail
@@ -34,13 +33,7 @@ export const PartyDetailHeader: React.FC<PartyDetailHeaderProps> = ({ party }) =
 
   return (
     <div className="card-primary party-detail-header" role="region" aria-label="Party overview">
-      <div
-        className="party-detail-avatar avatar"
-        style={{ backgroundColor: getAvatarColor(party.name) }}
-        aria-hidden="true"
-      >
-        {getInitials(party.name)}
-      </div>
+      <PartyAvatar name={party.name} size="lg" className="party-detail-avatar" />
 
       <div className="party-detail-info">
         <h2 className="party-detail-name">{party.name}</h2>

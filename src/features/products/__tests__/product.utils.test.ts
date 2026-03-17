@@ -4,8 +4,6 @@ import {
   getStockStatus,
   generateSku,
   generateDefaultSku,
-  getProductInitials,
-  getProductAvatarColor,
   paiseToRupees,
   rupeesToPaise,
   stockValue,
@@ -14,6 +12,7 @@ import {
   inverseConversionFactor,
   priceForUnit,
 } from '../product.utils'
+import { getInitial, getAvatarColor } from '../../../components/ui/PartyAvatar'
 
 // ─── Stock formatting ────────────────────────────────────────────────────────
 
@@ -67,35 +66,30 @@ describe('generateDefaultSku', () => {
   })
 })
 
-// ─── Product initials ────────────────────────────────────────────────────────
+// ─── Initials (shared PartyAvatar) ───────────────────────────────────────────
 
-describe('getProductInitials', () => {
-  it('extracts two-word initials', () => {
-    expect(getProductInitials('Maggi Noodles')).toBe('MN')
+describe('getInitial', () => {
+  it('extracts first letter', () => {
+    expect(getInitial('Maggi Noodles')).toBe('M')
   })
 
-  it('falls back to first two chars for single word', () => {
-    expect(getProductInitials('Sugar')).toBe('SU')
-  })
-
-  it('handles single char name', () => {
-    expect(getProductInitials('A')).toBe('A ')
+  it('extracts first letter for single word', () => {
+    expect(getInitial('Sugar')).toBe('S')
   })
 })
 
-// ─── Avatar color ────────────────────────────────────────────────────────────
+// ─── Avatar color (shared PartyAvatar) ───────────────────────────────────────
 
-describe('getProductAvatarColor', () => {
+describe('getAvatarColor', () => {
   it('returns deterministic color for same name', () => {
-    const color1 = getProductAvatarColor('Rice Bag')
-    const color2 = getProductAvatarColor('Rice Bag')
+    const color1 = getAvatarColor('Rice Bag')
+    const color2 = getAvatarColor('Rice Bag')
     expect(color1).toBe(color2)
   })
 
   it('returns different colors for different names', () => {
-    const c1 = getProductAvatarColor('Product A')
-    const c2 = getProductAvatarColor('Product B')
-    // Not guaranteed different, but very likely
+    const c1 = getAvatarColor('Product A')
+    const c2 = getAvatarColor('Product B')
     expect(typeof c1).toBe('string')
     expect(typeof c2).toBe('string')
   })

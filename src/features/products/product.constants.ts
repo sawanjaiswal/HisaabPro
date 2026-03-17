@@ -133,29 +133,6 @@ export const DEFAULT_PRODUCT_FILTERS: ProductFilters = {
   sortOrder: 'asc',
 }
 
-// ─── Category avatar colors (maps to design system CSS vars) ──────────────────
-// Used for deterministic product avatar color assignment.
-
-export const PRODUCT_AVATAR_COLORS: string[] = [
-  'var(--color-primary-400)',
-  'var(--color-primary-500)',
-  'var(--color-primary-600)',
-  'var(--color-secondary-400)',
-  'var(--color-secondary-500)',
-  'var(--color-secondary-600)',
-  'var(--color-success-500)',
-  'var(--color-success-600)',
-  'var(--color-success-700)',
-  'var(--color-info-500)',
-  'var(--color-info-600)',
-  'var(--color-info-700)',
-  'var(--color-warning-500)',
-  'var(--color-warning-600)',
-  'var(--color-warning-700)',
-  'var(--color-error-500)',
-  'var(--color-error-600)',
-  'var(--color-error-700)',
-]
 
 // ─── Stock status color mapping (CSS var strings) ──────────────────────────────
 

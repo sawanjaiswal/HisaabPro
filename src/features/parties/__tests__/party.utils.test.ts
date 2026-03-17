@@ -3,14 +3,13 @@ import {
   paisaToRupees,
   formatAmount,
   formatOutstanding,
-  getInitials,
-  getAvatarColor,
   extractPanFromGstin,
   rupeesToPaise,
   paiseToRupeesNum,
   formatPhone,
   timeAgo,
 } from '../party.utils'
+import { getInitial, getAvatarColor } from '../../../components/ui/PartyAvatar'
 
 // ─── Currency formatting ─────────────────────────────────────────────────────
 
@@ -57,19 +56,24 @@ describe('formatOutstanding', () => {
   })
 })
 
-// ─── Initials ────────────────────────────────────────────────────────────────
+// ─── Initials (shared PartyAvatar) ───────────────────────────────────────────
 
-describe('getInitials', () => {
-  it('extracts two-word initials', () => {
-    expect(getInitials('Rahul Traders')).toBe('RT')
+describe('getInitial', () => {
+  it('extracts first letter', () => {
+    expect(getInitial('Rahul Traders')).toBe('R')
   })
 
-  it('takes first two chars for single word', () => {
-    expect(getInitials('Priya')).toBe('PR')
+  it('extracts first letter for single word', () => {
+    expect(getInitial('Priya')).toBe('P')
+  })
+
+  it('returns U for empty/null', () => {
+    expect(getInitial(null)).toBe('U')
+    expect(getInitial('')).toBe('U')
   })
 })
 
-// ─── Avatar color ────────────────────────────────────────────────────────────
+// ─── Avatar color (shared PartyAvatar) ───────────────────────────────────────
 
 describe('getAvatarColor', () => {
   it('is deterministic', () => {

@@ -5,7 +5,6 @@
  */
 
 import {
-  PRODUCT_AVATAR_COLORS,
   SKU_PREFIX,
   SKU_SEPARATOR,
   SKU_PADDING,
@@ -100,34 +99,6 @@ export function generateSku(prefix: string, counter: number): string {
  */
 export function generateDefaultSku(counter: number): string {
   return generateSku(SKU_PREFIX, counter)
-}
-
-// ─── Product avatar ───────────────────────────────────────────────────────────
-
-/**
- * Get first-two-character initials for the product avatar.
- * "Maggi Noodles" → "MN"
- * "Sugar"         → "SU"
- * "A"             → "A "  (padded to 2)
- */
-export function getProductInitials(name: string): string {
-  const parts = name.trim().split(/\s+/)
-  if (parts.length >= 2 && parts[0].length > 0 && parts[1].length > 0) {
-    return (parts[0][0] + parts[1][0]).toUpperCase()
-  }
-  return name.slice(0, 2).toUpperCase().padEnd(2, ' ')
-}
-
-/**
- * Deterministic CSS-var color from product name hash.
- * Same name always produces the same color across sessions.
- */
-export function getProductAvatarColor(name: string): string {
-  let hash = 0
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash)
-  }
-  return PRODUCT_AVATAR_COLORS[Math.abs(hash) % PRODUCT_AVATAR_COLORS.length]
 }
 
 // ─── Paise ↔ rupees conversion ────────────────────────────────────────────────

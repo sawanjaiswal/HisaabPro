@@ -4,7 +4,7 @@
  * All monetary params/return values in PAISE unless noted.
  */
 
-import type { HomeDashboardData } from './dashboard.types'
+import type { HomeDashboardData, ActivityType } from './dashboard.types'
 
 // ─── Currency formatting ──────────────────────────────────────────────────────
 
@@ -70,15 +70,31 @@ export function formatDate(iso: string): string {
 
 // ─── Name formatting ─────────────────────────────────────────────────────────
 
-/** Extract first letter of name. Fallback: "U" */
-export function getInitials(name?: string | null): string {
-  if (!name) return 'U'
-  return name.trim()[0]?.toUpperCase() ?? 'U'
-}
-
 /** Extract the first word from a name for compact display */
 export function getFirstName(name: string): string {
   return name.trim().split(/\s+/)[0] ?? name
+}
+
+// ─── Transaction sign/direction ──────────────────────────────────────────────
+
+/**
+ * Is this transaction type money coming IN to the business?
+ * sale_invoice  → you sold, money owed TO you → inflow
+ * payment_in    → customer paid you → inflow
+ * purchase_invoice → you bought, money you OWE → outflow
+ * payment_out   → you paid supplier → outflow
+ */
+export function isInflowType(type: ActivityType): boolean {
+  return type === 'sale_invoice' || type === 'payment_in'
+}
+
+/**
+ * Format transaction amount with correct sign prefix.
+ * Inflow: "+ ₹1.5K"  Outflow: "- ₹1.5K"
+ */
+export function formatSignedAmount(paise: number, type: ActivityType): string {
+  const prefix = isInflowType(type) ? '+ ' : '- '
+  return prefix + formatCompactAmount(paise)
 }
 
 // ─── Empty state detection ────────────────────────────────────────────────────

@@ -70,27 +70,11 @@
 }
 
 .dashboard-starred-avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius-full);
   border: 3px solid var(--color-gray-0);
   box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 1rem;
-  color: var(--color-gray-0);
-  flex-shrink: 0;
-  overflow: hidden;
 }
 
-/* Rotating avatar colors — warm palette */
-.dashboard-starred-avatar--0 { background: var(--color-error-500); }
-.dashboard-starred-avatar--1 { background: var(--color-primary-300); }
-.dashboard-starred-avatar--2 { background: var(--color-warning-500); }
-.dashboard-starred-avatar--3 { background: var(--color-success-500); }
-.dashboard-starred-avatar--4 { background: var(--color-secondary-300); }
+/* Avatar colors now handled by shared PartyAvatar component */
 
 .dashboard-starred-add {
   width: 56px;
@@ -146,7 +130,6 @@
   .dashboard-starred-avatar {
     width: 64px;
     height: 64px;
-    font-size: 1.125rem;
   }
 
   .dashboard-starred-item {

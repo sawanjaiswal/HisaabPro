@@ -7,7 +7,8 @@
 
 import React from 'react'
 import { ChevronRight, Plus } from 'lucide-react'
-import { getInitials, getFirstName, formatCompactAmount } from '../dashboard.utils'
+import { getFirstName, formatCompactAmount } from '../dashboard.utils'
+import { PartyAvatar } from '../../../components/ui/PartyAvatar'
 import type { TopDebtor } from '../dashboard.types'
 
 interface TopDebtorsProps {
@@ -16,8 +17,6 @@ interface TopDebtorsProps {
   onDebtorClick: (partyId: string) => void
   onSendReminder: (debtor: TopDebtor) => void
 }
-
-const AVATAR_COLORS = 5
 
 export const TopDebtors: React.FC<TopDebtorsProps> = ({
   debtors,
@@ -53,7 +52,7 @@ export const TopDebtors: React.FC<TopDebtorsProps> = ({
           <span className="dashboard-starred-name">Add</span>
         </div>
 
-        {debtors.map((debtor, index) => (
+        {debtors.map((debtor) => (
           <button
             key={debtor.partyId}
             className="dashboard-starred-item"
@@ -61,9 +60,7 @@ export const TopDebtors: React.FC<TopDebtorsProps> = ({
             onClick={() => onDebtorClick(debtor.partyId)}
             aria-label={`${debtor.name}`}
           >
-            <div className={`dashboard-starred-avatar dashboard-starred-avatar--${index % AVATAR_COLORS}`}>
-              {getInitials(debtor.name)}
-            </div>
+            <PartyAvatar name={debtor.name} size="lg" className="dashboard-starred-avatar" />
             <span className="dashboard-starred-name">{getFirstName(debtor.name)}</span>
             <span className="dashboard-starred-amount">{formatCompactAmount(debtor.outstanding)}</span>
           </button>

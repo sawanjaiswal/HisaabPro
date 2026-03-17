@@ -2,18 +2,32 @@
  *
  * Shows dashboard-loaded items by default.
  * On search: debounced API call to /dashboard/activity/search
- * (returns up to 200 results, 24h window, server-side filtered).
+ * (24h window, up to 200 results). Falls back to client-side
+ * filtering if backend is unavailable.
  * All amounts in PAISE.
  */
 
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { ChevronRight, IndianRupee, Search, X } from 'lucide-react'
-import { formatCompactAmount, getInitials, formatDate } from '../dashboard.utils'
+import { formatSignedAmount, isInflowType, formatDate, formatAmount, formatCompactAmount } from '../dashboard.utils'
+import { PartyAvatar } from '../../../components/ui/PartyAvatar'
 import { searchRecentActivity } from '../dashboard.service'
 import type { RecentActivityItem } from '../dashboard.types'
 
 const DEBOUNCE_MS = 300
 const SKELETON_COUNT = 4
+
+/** Client-side fallback when backend search is unavailable */
+function filterLocally(items: RecentActivityItem[], q: string): RecentActivityItem[] {
+  const lower = q.toLowerCase()
+  return items.filter((item) =>
+    item.partyName.toLowerCase().includes(lower) ||
+    item.reference.toLowerCase().includes(lower) ||
+    formatDate(item.date).toLowerCase().includes(lower) ||
+    formatAmount(item.amount).includes(lower) ||
+    formatCompactAmount(item.amount).includes(lower)
+  )
+}
 
 interface RecentActivityFeedProps {
   items: RecentActivityItem[]
@@ -56,9 +70,13 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
       })
       .catch((err) => {
         if (err instanceof DOMException && err.name === 'AbortError') return
-        if (!controller.signal.aborted) setSearching(false)
+        if (!controller.signal.aborted) {
+          // Backend unavailable — fall back to client-side filtering
+          setSearchResults(filterLocally(items, q.trim()))
+          setSearching(false)
+        }
       })
-  }, [])
+  }, [items])
 
   useEffect(() => {
     clearTimeout(timerRef.current)
@@ -183,9 +201,7 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
                 onClick={() => onItemClick(item)}
               >
                 <div className="dashboard-txn-avatar">
-                  <div className={`dashboard-txn-avatar-inner dashboard-txn-avatar-inner--${item.type}`}>
-                    {getInitials(item.partyName)}
-                  </div>
+                  <PartyAvatar name={item.partyName} size="sm" />
                 </div>
 
                 <div className="dashboard-txn-info">
@@ -209,8 +225,8 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
                 )}
 
                 <div className="dashboard-txn-right">
-                  <span className="dashboard-txn-amount">
-                    - {formatCompactAmount(item.amount)}
+                  <span className={`dashboard-txn-amount ${isInflowType(item.type) ? 'dashboard-txn-amount--in' : 'dashboard-txn-amount--out'}`}>
+                    {formatSignedAmount(item.amount, item.type)}
                   </span>
                   {item.status && (
                     <span className={`dashboard-txn-status dashboard-txn-status--${item.status}`}>
