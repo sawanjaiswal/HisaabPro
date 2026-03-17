@@ -9,13 +9,10 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
+import { formatPaise } from '@/lib/format'
 import { getDiscountReport } from './finance.service'
 import type { DiscountReportData } from './finance.types'
 import './report-finance.css'
-
-function formatPaise(p: number): string {
-  return (p / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR' })
-}
 
 function getMonthRange(): { from: string; to: string } {
   const now = new Date()
@@ -97,13 +94,13 @@ export default function DiscountReportPage() {
               <span className="finance-net-row__amount">{formatPaise(data?.totalDiscount ?? 0)}</span>
             </div>
             <div className="aging-table">
-              <table>
+              <table aria-label="Discount details by invoice">
                 <thead>
                   <tr>
-                    <th>Invoice</th>
-                    <th>Party</th>
-                    <th>Discount</th>
-                    <th>%</th>
+                    <th scope="col">Invoice</th>
+                    <th scope="col">Party</th>
+                    <th scope="col">Discount</th>
+                    <th scope="col">%</th>
                   </tr>
                 </thead>
                 <tbody>

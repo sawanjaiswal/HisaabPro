@@ -1,6 +1,16 @@
 import { CURRENCY } from '@/config/app.config'
 
 /** Format paise (integer) to Indian rupee display: Rs 1,00,000.00 */
+export function formatPaise(paise: number): string {
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(paise / 100)
+}
+
+/** @deprecated Use formatPaise instead */
 export function formatCurrency(paise: number): string {
   return new Intl.NumberFormat(CURRENCY.locale, {
     style: 'currency',

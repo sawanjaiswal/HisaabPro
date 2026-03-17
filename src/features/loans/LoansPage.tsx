@@ -16,6 +16,7 @@ import { Drawer } from '@/components/ui/Drawer'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
+import { formatPaise } from '@/lib/format'
 import { useLoans } from './useLoans'
 import { createLoan } from './loan.service'
 import type { Loan, LoanStatus, LoanType, CreateLoanInput } from './loan.types'
@@ -31,13 +32,9 @@ const STATUS_BG: Record<LoanStatus, string> = {
   ACTIVE: 'var(--color-info-bg-subtle)', CLOSED: 'var(--color-gray-100)', OVERDUE: 'var(--color-error-bg-subtle)',
 }
 
-function formatPaise(p: number): string {
-  return (p / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR' })
-}
-
 function LoanCard({ loan, onClick }: { loan: Loan; onClick: (id: string) => void }) {
   return (
-    <div className="loan-card" role="article" onClick={() => onClick(loan.id)} aria-label={`Loan: ${loan.partyName ?? 'Unknown'}`} tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && onClick(loan.id)}>
+    <div className="loan-card" role="button" onClick={() => onClick(loan.id)} aria-label={`Loan: ${loan.partyName ?? 'Unknown'}`} tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && onClick(loan.id)}>
       <div className="loan-card__header">
         <div>
           <div className="loan-card__party">{loan.partyName ?? 'Personal Loan'}</div>

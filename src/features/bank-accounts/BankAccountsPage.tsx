@@ -15,6 +15,7 @@ import { Drawer } from '@/components/ui/Drawer'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
+import { formatPaise } from '@/lib/format'
 import { useBankAccounts } from './useBankAccounts'
 import { createBankAccount } from './bank-account.service'
 import type { BankAccount, BankAccountType, CreateBankAccountInput } from './bank-account.types'
@@ -30,10 +31,6 @@ const ACCOUNT_TYPE_LABELS: Record<BankAccountType, string> = {
 function maskAccountNumber(num: string): string {
   if (num.length <= 4) return num
   return 'xxxx ' + num.slice(-4)
-}
-
-function formatPaise(paise: number): string {
-  return (paise / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR' })
 }
 
 function BankAccountCard({ account }: { account: BankAccount }) {

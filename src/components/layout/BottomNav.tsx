@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom'
+import { useRef, useState, useEffect } from 'react'
 import { LayoutDashboard, Users, FileText, Package } from 'lucide-react'
 import { ROUTES } from '@/config/routes.config'
 
@@ -12,22 +13,55 @@ const NAV_ITEMS_RIGHT = [
   { to: ROUTES.PRODUCTS, icon: Package, label: 'Items' },
 ] as const
 
+/** Build the nav bar path with a fixed 80px-wide notch centered horizontally */
+function buildNotchPath(w: number, h: number): string {
+  const cx = w / 2
+  const notch = 40 // half of 80px notch width
+  const depth = 34 // how deep the curve dips
+
+  const left = cx - notch
+  const right = cx + notch
+
+  return [
+    `M0,0`,
+    `H${left}`,
+    `C${left + 6},0 ${left + 9},4 ${left + 13},12`,
+    `C${left + 19},24 ${left + 27},${depth} ${cx},${depth}`,
+    `C${right - 27},${depth} ${right - 19},24 ${right - 13},12`,
+    `C${right - 9},4 ${right - 6},0 ${right},0`,
+    `H${w}`,
+    `V${h} H0 Z`,
+  ].join(' ')
+}
+
 export function BottomNav() {
   const navigate = useNavigate()
+  const navRef = useRef<HTMLElement>(null)
+  const [dims, setDims] = useState({ w: 375, h: 72 })
+
+  useEffect(() => {
+    function measure() {
+      if (!navRef.current) return
+      const { width, height } = navRef.current.getBoundingClientRect()
+      setDims({ w: Math.round(width), h: Math.round(height) })
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [])
 
   return (
-    <nav className="bottom-nav" aria-label="Main navigation">
-      {/* White bar with smooth wave notch — SVG path with bezier curves */}
+    <nav ref={navRef} className="bottom-nav" aria-label="Main navigation">
+      {/* White bar with fixed-size wave notch */}
       <div className="bottom-nav-bg" aria-hidden="true">
         <svg
           className="bottom-nav-svg"
-          viewBox="0 0 375 72"
-          preserveAspectRatio="none"
+          viewBox={`0 0 ${dims.w} ${dims.h}`}
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
             className="bottom-nav-svg-path"
-            d="M0,0 H148 C154,0 157,4 161,12 C167,24 175,34 187.5,34 C200,34 208,24 214,12 C218,4 221,0 227,0 H375 V72 H0 Z"
+            d={buildNotchPath(dims.w, dims.h)}
             fill="white"
           />
         </svg>

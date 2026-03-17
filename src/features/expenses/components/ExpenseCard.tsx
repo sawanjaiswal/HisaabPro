@@ -1,15 +1,12 @@
 /** ExpenseCard — Individual expense list item */
 
 import { Receipt } from 'lucide-react'
+import { formatPaise } from '@/lib/format'
 import { PAYMENT_MODE_LABELS } from '../expense.constants'
 import type { Expense } from '../expense.types'
 
 interface ExpenseCardProps {
   expense: Expense
-}
-
-function formatPaise(paise: number): string {
-  return (paise / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR' })
 }
 
 function formatDate(iso: string): string {

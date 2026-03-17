@@ -134,6 +134,14 @@
   margin-top: var(--space-1);
 }
 
+/* ── Detail page action button ────────────────────────────────────── */
+
+.loan-detail__action-btn {
+  margin-top: var(--space-4);
+  width: 100%;
+  justify-content: center;
+}
+
 /* ── Detail page ──────────────────────────────────────────────────── */
 
 .loan-detail__hero {
@@ -311,4 +319,29 @@
 
 @media (min-width: 1024px) {
   .loan-list { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+/* ── Dark Theme ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .loan-skeleton__card {
+  background: linear-gradient(90deg, var(--color-gray-100) 25%, var(--color-gray-200) 50%, var(--color-gray-100) 75%);
+  background-size: 200% 100%;
+}
+
+[data-theme="dark"] .loan-card {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(43, 51, 66, 0.3);
+}
+
+[data-theme="dark"] .loan-detail__hero {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(43, 51, 66, 0.3);
+}
+
+[data-theme="dark"] .loan-txn-card {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(43, 51, 66, 0.3);
+}
+
+[data-theme="dark"] .loan-drawer__input,
+[data-theme="dark"] .loan-drawer__select {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
 }

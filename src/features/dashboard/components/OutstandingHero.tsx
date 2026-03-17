@@ -42,7 +42,9 @@ export const OutstandingHero: React.FC<OutstandingHeroProps> = ({
             <ArrowDown size={14} aria-hidden="true" />
           </span>
         </div>
-        <ChevronRight size={20} aria-hidden="true" className="dashboard-hero-chevron" />
+        <div className="dashboard-hero-chevron" aria-hidden="true">
+          <div className="dashboard-hero-chevron-icon"><ChevronRight size={12} /></div>
+        </div>
       </button>
 
       {/* To Pay — lime */}
@@ -59,7 +61,9 @@ export const OutstandingHero: React.FC<OutstandingHeroProps> = ({
             <ArrowUp size={14} aria-hidden="true" />
           </span>
         </div>
-        <ChevronRight size={20} aria-hidden="true" className="dashboard-hero-chevron dashboard-hero-chevron--dark" />
+        <div className="dashboard-hero-chevron dashboard-hero-chevron--dark" aria-hidden="true">
+          <div className="dashboard-hero-chevron-icon"><ChevronRight size={12} /></div>
+        </div>
       </button>
     </div>
   )

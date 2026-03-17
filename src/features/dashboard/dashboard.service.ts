@@ -4,7 +4,7 @@
  */
 
 import { api } from '@/lib/api'
-import type { HomeDashboardData, DashboardStats, DashboardFilters } from './dashboard.types'
+import type { HomeDashboardData, DashboardStats, DashboardFilters, RecentActivityItem } from './dashboard.types'
 
 // ─── Home dashboard (single call) ──────────────────────────────────────────
 
@@ -14,6 +14,20 @@ import type { HomeDashboardData, DashboardStats, DashboardFilters } from './dash
  */
 export async function getHomeDashboard(signal?: AbortSignal): Promise<HomeDashboardData> {
   return api<HomeDashboardData>('/dashboard/home', { signal })
+}
+
+// ─── Recent activity search ─────────────────────────────────────────────────
+
+/**
+ * Search recent transactions (24h window, up to 200 results).
+ * Backend filters by party name, invoice reference, date, or amount.
+ */
+export async function searchRecentActivity(
+  query: string,
+  signal?: AbortSignal,
+): Promise<RecentActivityItem[]> {
+  const params = new URLSearchParams({ q: query, hours: '24', limit: '200' })
+  return api<RecentActivityItem[]>(`/dashboard/activity/search?${params}`, { signal })
 }
 
 // ─── Legacy stats endpoint (Reports page) ──────────────────────────────────

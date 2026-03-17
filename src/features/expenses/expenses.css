@@ -52,7 +52,7 @@
   font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
-  min-height: 36px;
+  min-height: 44px;
   transition: background var(--duration-fast) var(--ease-default),
               color var(--duration-fast) var(--ease-default),
               border-color var(--duration-fast) var(--ease-default);
@@ -309,3 +309,31 @@
 
 .expense-drawer__submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 .expense-drawer__submit-btn:hover:not(:disabled) { background: var(--color-warning-600); }
+
+/* ── Dark Theme ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .expense-skeleton__card {
+  background: linear-gradient(90deg, var(--color-gray-100) 25%, var(--color-gray-200) 50%, var(--color-gray-100) 75%);
+  background-size: 200% 100%;
+}
+
+[data-theme="dark"] .expense-filter-pill {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-500);
+}
+
+[data-theme="dark"] .expense-card {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(43, 51, 66, 0.3);
+}
+
+[data-theme="dark"] .expense-drawer__input,
+[data-theme="dark"] .expense-drawer__select {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .expense-pagination__btn {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}

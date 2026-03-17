@@ -16,6 +16,7 @@ import { Drawer } from '@/components/ui/Drawer'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
+import { formatPaise } from '@/lib/format'
 import { getLoanStatement, recordLoanTransaction } from './loan.service'
 import type { LoanStatement, LoanTransactionType, CreateLoanTransactionInput } from './loan.types'
 import './loans.css'
@@ -29,10 +30,6 @@ const TXN_AMOUNT_CLASS: Record<LoanTransactionType, string> = {
   REPAYMENT: 'loan-txn-card__amount--repayment',
   INTEREST: 'loan-txn-card__amount--interest',
   PENALTY: 'loan-txn-card__amount--interest',
-}
-
-function formatPaise(p: number): string {
-  return (p / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR' })
 }
 
 function formatDate(iso: string): string {
@@ -131,7 +128,7 @@ export default function LoanDetailPage() {
             {loan.emiAmount && <div><p className="loan-detail__label">EMI</p><p className="loan-detail__value">{formatPaise(loan.emiAmount)}/mo</p></div>}
           </div>
           {loan.status === 'ACTIVE' && (
-            <button type="button" className="loan-add-btn" style={{ marginTop: 'var(--space-4)', width: '100%', justifyContent: 'center' }} onClick={() => setDrawerOpen(true)} aria-label="Record loan payment">
+            <button type="button" className="loan-add-btn loan-detail__action-btn" onClick={() => setDrawerOpen(true)} aria-label="Record loan payment">
               <Plus size={14} aria-hidden="true" /> Record Transaction
             </button>
           )}

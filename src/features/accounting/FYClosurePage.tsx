@@ -9,13 +9,10 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
+import { formatPaise } from '@/lib/format'
 import { getFYClosures, closeFY, reopenFY } from '@/features/reports/finance.service'
 import type { FYClosure } from '@/features/reports/finance.types'
 import './accounting.css'
-
-function formatPaise(p: number): string {
-  return (p / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR' })
-}
 
 function fyLabel(fy: string): string {
   const s = 2000 + parseInt(fy.slice(0, 2), 10)

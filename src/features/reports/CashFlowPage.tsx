@@ -13,13 +13,10 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
+import { formatPaise } from '@/lib/format'
 import { getCashFlow } from './finance.service'
 import type { CashFlowData, CashFlowSection } from './finance.types'
 import './report-finance.css'
-
-function formatPaise(p: number): string {
-  return (p / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR' })
-}
 
 function CashFlowSectionCard({ section }: { section: CashFlowSection }) {
   const isPositive = section.netAmount >= 0

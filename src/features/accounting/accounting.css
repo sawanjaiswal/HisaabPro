@@ -599,9 +599,79 @@
   font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
-  min-height: 36px;
+  min-height: 44px;
   transition: background var(--duration-fast) var(--ease-default);
 }
 
 .fy-card__reopen-btn:hover { background: var(--color-warning-100); }
 .fy-card__reopen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Dark Theme ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .acc-group {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(43, 51, 66, 0.4);
+}
+
+[data-theme="dark"] .acc-group-header:active {
+  background: var(--color-gray-100);
+}
+
+[data-theme="dark"] .acc-group-count {
+  background: var(--color-gray-200);
+}
+
+[data-theme="dark"] .acc-list {
+  border-top-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .acc-row {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .je-card {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(43, 51, 66, 0.4);
+}
+
+[data-theme="dark"] .tb-table {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(43, 51, 66, 0.4);
+}
+
+[data-theme="dark"] .tb-th {
+  background: var(--color-gray-100);
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .tb-row {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .tb-row:hover {
+  background: var(--color-gray-100);
+}
+
+[data-theme="dark"] .tb-totals-row {
+  background: var(--color-gray-100);
+  border-top-color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .tb-date-input {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .fy-close-card {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(43, 51, 66, 0.3);
+}
+
+[data-theme="dark"] .fy-close-card__header {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .fy-close-card__input {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .fy-card {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(43, 51, 66, 0.4);
+}

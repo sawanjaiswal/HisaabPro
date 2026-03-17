@@ -181,21 +181,24 @@
 }
 
 .dashboard-hero-chevron {
-  opacity: 0.6;
   flex-shrink: 0;
-  color: var(--color-hero-text-secondary);
+  padding: 8px;
   background: rgba(255, 255, 255, 0.15);
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-radius: 9999px;
+  color: var(--color-gray-0);
 }
 
 .dashboard-hero-chevron--dark {
-  color: var(--color-hero-text-muted);
-  background: rgba(0, 0, 0, 0.08);
+  color: var(--color-dark-text);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-hero-chevron-icon {
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ─── Tablet and above ──────────────────────────────────────── */
@@ -256,11 +259,13 @@
 }
 
 [data-theme="dark"] .dashboard-hero-chevron {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 [data-theme="dark"] .dashboard-hero-chevron--dark {
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 [data-theme="dark"] .dashboard-hero-card--shimmer {

@@ -70,15 +70,10 @@ export function formatDate(iso: string): string {
 
 // ─── Name formatting ─────────────────────────────────────────────────────────
 
-/** Extract up to 2 initials from a name. Fallback: "U" */
+/** Extract first letter of name. Fallback: "U" */
 export function getInitials(name?: string | null): string {
   if (!name) return 'U'
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() ?? '')
-    .join('')
+  return name.trim()[0]?.toUpperCase() ?? 'U'
 }
 
 /** Extract the first word from a name for compact display */

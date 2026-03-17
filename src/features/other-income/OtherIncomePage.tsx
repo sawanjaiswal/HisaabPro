@@ -4,7 +4,7 @@
  * Category filter pills. Inline drawer to add entries.
  */
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { TrendingUp, Plus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -14,6 +14,7 @@ import { Drawer } from '@/components/ui/Drawer'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
+import { formatPaise } from '@/lib/format'
 import { useOtherIncome } from './useOtherIncome'
 import { createOtherIncome } from './other-income.service'
 import type { OtherIncome, OtherIncomePaymentMode, CreateOtherIncomeInput } from './other-income.types'
@@ -26,10 +27,6 @@ const PAYMENT_MODE_LABELS: Record<OtherIncomePaymentMode, string> = {
 }
 
 const COMMON_CATEGORIES = ['Interest', 'Rental', 'Commission', 'Refund', 'Dividend', 'Other']
-
-function formatPaise(paise: number): string {
-  return (paise / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR' })
-}
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -84,7 +81,10 @@ export default function OtherIncomePage() {
   }, [form, submitting, toast, refresh])
 
   const totalPages = Math.ceil(total / PAGE_LIMIT)
-  const knownCategories = Array.from(new Set([...COMMON_CATEGORIES, ...items.map((i) => i.category).filter(Boolean) as string[]]))
+  const knownCategories = useMemo(
+    () => Array.from(new Set([...COMMON_CATEGORIES, ...items.map((i) => i.category).filter(Boolean) as string[]])),
+    [items],
+  )
 
   if (status === 'loading') {
     return (

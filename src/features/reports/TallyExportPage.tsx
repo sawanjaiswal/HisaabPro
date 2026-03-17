@@ -57,8 +57,8 @@ export default function TallyExportPage() {
           <div className="finance-section__header">
             <span className="finance-section__title">Export to TallyPrime</span>
           </div>
-          <div className="finance-section__rows" style={{ padding: 'var(--space-5)' }}>
-            <p style={{ fontSize: '0.875rem', color: 'var(--color-gray-600)', margin: '0 0 var(--space-4) 0', lineHeight: 1.5 }}>
+          <div className="finance-section__rows tally-export__body">
+            <p className="tally-export__desc">
               Export your ledger accounts and journal entries as a Tally-compatible XML file. Import this into TallyPrime for accounting reconciliation.
             </p>
             <div className="finance-date-bar">
@@ -69,11 +69,10 @@ export default function TallyExportPage() {
             </div>
             <button
               type="button"
-              className="finance-date-bar__refresh-btn"
+              className="finance-date-bar__refresh-btn tally-export__download-btn"
               onClick={handleExport}
               disabled={exporting}
               aria-label="Download Tally XML"
-              style={{ width: '100%', justifyContent: 'center', marginTop: 'var(--space-3)', minHeight: '48px', fontWeight: 600 }}
             >
               {exporting ? 'Exporting...' : (
                 <><Download size={16} aria-hidden="true" /> Download XML</>
@@ -82,7 +81,7 @@ export default function TallyExportPage() {
           </div>
         </div>
 
-        <div className="finance-empty" style={{ paddingTop: 'var(--space-4)' }}>
+        <div className="finance-empty tally-export__info">
           <div className="finance-empty__icon" aria-hidden="true"><FileCode size={32} /></div>
           <p className="finance-empty__title">TallyPrime Compatible</p>
           <p className="finance-empty__desc">

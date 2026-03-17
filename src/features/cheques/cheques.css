@@ -181,6 +181,49 @@
   color: var(--color-info-700);
 }
 
+.cheque-card__type-badge--inline {
+  margin-left: var(--space-2);
+}
+
+.cheque-card__amount-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.cheque-card__actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.cheque-card__action-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  border: none;
+  background: var(--color-primary-500);
+  color: var(--color-gray-0);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+.cheque-card__action-btn:hover { background: var(--color-primary-600); }
+
+.cheque-card__action-btn--danger {
+  background: var(--color-error-600);
+}
+
+.cheque-card__action-btn--danger:hover { background: var(--color-error-700); }
+
 /* ── Empty state ──────────────────────────────────────────────────── */
 
 .cheque-empty {
@@ -296,4 +339,32 @@
 
 @media (min-width: 1024px) {
   .cheque-list { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+/* ── Dark Theme ──────────────────────────────────────────────── */
+
+[data-theme="dark"] .cheque-skeleton__card {
+  background: linear-gradient(90deg, var(--color-gray-100) 25%, var(--color-gray-200) 50%, var(--color-gray-100) 75%);
+  background-size: 200% 100%;
+}
+
+[data-theme="dark"] .cheque-filter-pill {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-500);
+}
+
+[data-theme="dark"] .cheque-card {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(43, 51, 66, 0.3);
+}
+
+[data-theme="dark"] .cheque-drawer__input,
+[data-theme="dark"] .cheque-drawer__select {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .cheque-pagination__btn {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
 }

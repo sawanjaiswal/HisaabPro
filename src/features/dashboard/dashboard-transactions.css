@@ -11,6 +11,104 @@
   gap: var(--space-3);
 }
 
+/* ─── Search bar ──────────────────────────────────────────── */
+
+.dashboard-txn-search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-3);
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-md);
+  min-height: 44px;
+  transition: border-color var(--duration-fast) var(--ease-default);
+}
+
+.dashboard-txn-search:focus-within {
+  border-color: var(--dash-teal-start);
+}
+
+.dashboard-txn-search-icon {
+  flex-shrink: 0;
+  color: var(--color-gray-400);
+}
+
+.dashboard-txn-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: var(--font-primary);
+  font-size: 0.875rem;
+  color: var(--dash-text-primary);
+  outline: none;
+  min-width: 0;
+  padding: 0;
+}
+
+.dashboard-txn-search-input::placeholder {
+  color: var(--color-gray-400);
+}
+
+.dashboard-txn-search-clear {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: var(--color-gray-200);
+  border-radius: 9999px;
+  color: var(--color-gray-500);
+  cursor: pointer;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dashboard-txn-search-clear:active {
+  background: var(--color-gray-300);
+}
+
+.dashboard-txn-search-count {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--dash-text-muted);
+  letter-spacing: 0.02em;
+}
+
+/* ─── Search skeleton rows ────────────────────────────────── */
+
+.dashboard-txn-row--skeleton {
+  pointer-events: none;
+  cursor: default;
+}
+
+.dashboard-txn-avatar-skel {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+}
+
+.dashboard-txn-name-skel {
+  width: 120px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+.dashboard-txn-meta-skel {
+  width: 80px;
+  height: 10px;
+  border-radius: 4px;
+  margin-top: 6px;
+}
+
+.dashboard-txn-amount-skel {
+  width: 64px;
+  height: 14px;
+  border-radius: 4px;
+}
+
 .dashboard-txn-list {
   display: flex;
   flex-direction: column;
@@ -120,7 +218,7 @@
 
 .dashboard-txn-amount {
   font-size: 1rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--dash-text-primary);
   letter-spacing: -0.02em;
   white-space: nowrap;
@@ -199,23 +297,17 @@
 .dashboard-txn-row[data-type="sale_invoice"],
 .dashboard-txn-row[data-type="payment_out"] {
   border-left: 4px solid var(--color-error-400);
-  padding-left: var(--space-3);
   margin-left: -4px;
-  border-radius: 4px 0 0 4px;
 }
 
 .dashboard-txn-row[data-type="purchase_invoice"] {
   border-left: 4px solid var(--color-info-400);
-  padding-left: var(--space-3);
   margin-left: -4px;
-  border-radius: 4px 0 0 4px;
 }
 
 .dashboard-txn-row[data-type="payment_in"] {
   border-left: 4px solid var(--color-success-400);
-  padding-left: var(--space-3);
   margin-left: -4px;
-  border-radius: 4px 0 0 4px;
 }
 
 .dashboard-txn-empty {
@@ -240,6 +332,20 @@
 }
 
 /* ─── Dark theme overrides ──────────────────────────────────── */
+
+[data-theme="dark"] .dashboard-txn-search {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .dashboard-txn-search:focus-within {
+  border-color: var(--color-primary-500);
+}
+
+[data-theme="dark"] .dashboard-txn-search-clear {
+  background: var(--color-gray-300);
+  color: var(--color-gray-600);
+}
 
 [data-theme="dark"] .dashboard-txn-row:not(:last-of-type) {
   border-bottom-color: var(--color-gray-200);

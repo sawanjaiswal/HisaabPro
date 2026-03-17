@@ -59,35 +59,6 @@
   letter-spacing: -0.01em;
 }
 
-/* Tinted icon backgrounds per action — gradient overlay for premium depth */
-.dashboard-action-item:nth-child(1) .dashboard-action-icon-box {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.5) 0%,
-    transparent 100%
-  ), var(--color-primary-50);
-}
-.dashboard-action-item:nth-child(2) .dashboard-action-icon-box {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.5) 0%,
-    transparent 100%
-  ), var(--color-info-50);
-}
-.dashboard-action-item:nth-child(3) .dashboard-action-icon-box {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.5) 0%,
-    transparent 100%
-  ), var(--color-success-50);
-}
-.dashboard-action-item:nth-child(4) .dashboard-action-icon-box {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.5) 0%,
-    transparent 100%
-  ), var(--color-gray-50);
-}
 
 /* ─── Tablet and above ──────────────────────────────────────── */
 
@@ -109,32 +80,3 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(43, 51, 66, 0.2);
 }
 
-/* Dark tinted action icon backgrounds — gradient overlay for depth */
-[data-theme="dark"] .dashboard-action-item:nth-child(1) .dashboard-action-icon-box {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.04) 0%,
-    transparent 100%
-  ), rgba(11, 79, 94, 0.2);
-}
-[data-theme="dark"] .dashboard-action-item:nth-child(2) .dashboard-action-icon-box {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.04) 0%,
-    transparent 100%
-  ), var(--color-info-bg-subtle);
-}
-[data-theme="dark"] .dashboard-action-item:nth-child(3) .dashboard-action-icon-box {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.04) 0%,
-    transparent 100%
-  ), var(--color-success-bg-subtle);
-}
-[data-theme="dark"] .dashboard-action-item:nth-child(4) .dashboard-action-icon-box {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.04) 0%,
-    transparent 100%
-  ), var(--color-gray-200);
-}

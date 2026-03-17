@@ -13,13 +13,10 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
+import { formatPaise } from '@/lib/format'
 import { getProfitLoss } from './finance.service'
 import type { ProfitLossData, ProfitLossSection } from './finance.types'
 import './report-finance.css'
-
-function formatPaise(p: number): string {
-  return (p / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR' })
-}
 
 function SectionCard({ section, amountClass }: { section: ProfitLossSection; amountClass?: string }) {
   return (

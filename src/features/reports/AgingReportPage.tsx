@@ -13,13 +13,10 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
+import { formatPaise } from '@/lib/format'
 import { getAgingReport } from './finance.service'
 import type { AgingReportData, AgingType } from './finance.types'
 import './report-finance.css'
-
-function formatPaise(p: number): string {
-  return (p / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR' })
-}
 
 export default function AgingReportPage() {
   const toast = useToast()
@@ -76,7 +73,7 @@ export default function AgingReportPage() {
           <button type="button" className={`aging-tab${agingType === 'PAYABLE' ? ' aging-tab--active' : ''}`} onClick={() => setAgingType('PAYABLE')} aria-pressed={agingType === 'PAYABLE'}>Payable</button>
         </div>
 
-        <button type="button" className="finance-date-bar__refresh-btn" onClick={refresh} style={{ marginBottom: 'var(--space-4)' }} aria-label="Refresh aging report">
+        <button type="button" className="finance-date-bar__refresh-btn aging-refresh-btn" onClick={refresh} aria-label="Refresh aging report">
           <RefreshCw size={14} aria-hidden="true" /> Refresh
         </button>
 

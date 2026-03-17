@@ -309,3 +309,93 @@
 
 .finance-empty__title { font-size: 1rem; font-weight: 600; color: var(--color-gray-800); margin: 0; }
 .finance-empty__desc { font-size: 0.875rem; color: var(--color-gray-500); margin: 0; max-width: 280px; line-height: 1.5; }
+
+/* ── Tally export ────────────────────────────────────────────────── */
+
+.tally-export__body { padding: var(--space-5); }
+
+.tally-export__desc {
+  font-size: 0.875rem;
+  color: var(--color-gray-600);
+  margin: 0 0 var(--space-4) 0;
+  line-height: 1.5;
+}
+
+.tally-export__download-btn {
+  width: 100%;
+  justify-content: center;
+  margin-top: var(--space-3);
+  min-height: 48px;
+  font-weight: 600;
+}
+
+.tally-export__info { padding-top: var(--space-4); }
+
+/* ── Aging refresh button ────────────────────────────────────────── */
+
+.aging-refresh-btn {
+  margin-bottom: var(--space-4);
+}
+
+/* ── Dark Theme ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .finance-skeleton__section {
+  background: linear-gradient(90deg, var(--color-gray-100) 25%, var(--color-gray-200) 50%, var(--color-gray-100) 75%);
+  background-size: 200% 100%;
+}
+
+[data-theme="dark"] .finance-section {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(43, 51, 66, 0.3);
+}
+
+[data-theme="dark"] .finance-section__header {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .finance-section__row {
+  border-bottom-color: var(--color-gray-100);
+}
+
+[data-theme="dark"] .finance-date-bar__input {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .finance-date-bar__refresh-btn {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .aging-table {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(43, 51, 66, 0.3);
+}
+
+[data-theme="dark"] .aging-table th {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .aging-table td {
+  border-bottom-color: var(--color-gray-100);
+}
+
+[data-theme="dark"] .aging-table tr.aging-table__total td {
+  background: var(--color-gray-100);
+}
+
+[data-theme="dark"] .aging-tab {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-500);
+}
+
+[data-theme="dark"] .profit-table {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(43, 51, 66, 0.3);
+}
+
+[data-theme="dark"] .profit-table th {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .profit-table td {
+  border-bottom-color: var(--color-gray-100);
+}
