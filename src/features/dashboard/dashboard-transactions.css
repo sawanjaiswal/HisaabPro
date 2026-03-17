@@ -39,6 +39,12 @@
   transform: scale(0.985);
 }
 
+.dashboard-txn-row:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
+}
+
 .dashboard-txn-avatar {
   width: 32px;
   height: 32px;
@@ -98,10 +104,10 @@
 }
 
 .dashboard-txn-meta-dot {
-  width: 6px;
-  height: 6px;
+  width: 3px;
+  height: 3px;
   border-radius: var(--radius-full);
-  background: var(--color-gray-200);
+  background: var(--color-gray-300);
   flex-shrink: 0;
 }
 
@@ -125,13 +131,13 @@
 }
 
 .dashboard-txn-status {
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  padding: 2px 6px;
+  padding: 2px 8px;
   border-radius: 4px;
-  line-height: 1.2;
+  line-height: 1.3;
 }
 
 .dashboard-txn-status--paid { color: var(--color-success-700); background: var(--color-success-50); }
@@ -139,9 +145,10 @@
 .dashboard-txn-status--unpaid { color: var(--color-error-700); background: var(--color-error-50); }
 
 .dashboard-txn-mode {
-  font-size: 0.694rem;
+  font-size: 0.6875rem;
   color: var(--dash-text-muted);
   text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 /* "Add" payment pill */
@@ -149,7 +156,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 6px;
+  padding: 6px 10px;
   border-radius: 40px;
   background: var(--dash-teal-10);
   border: none;
@@ -160,13 +167,15 @@
   color: var(--dash-teal-end);
   flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
-  transition: background var(--duration-fast) var(--ease-default);
-  min-height: 28px;
-  min-width: 28px;
+  transition: background var(--duration-fast) var(--ease-default),
+              transform var(--duration-fast) var(--ease-default);
+  min-height: 36px;
+  min-width: 36px;
 }
 
 .dashboard-txn-add-btn:active {
   background: rgba(22, 85, 90, 0.18);
+  transform: scale(0.93);
 }
 
 .dashboard-txn-add-btn svg {
@@ -244,3 +253,13 @@
 [data-theme="dark"] .dashboard-txn-row[data-type="payment_out"] { border-left-color: var(--color-error-500); }
 [data-theme="dark"] .dashboard-txn-row[data-type="purchase_invoice"] { border-left-color: var(--color-info-500); }
 [data-theme="dark"] .dashboard-txn-row[data-type="payment_in"] { border-left-color: var(--color-success-500); }
+
+/* ─── Reduced motion ────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-txn-row,
+  .dashboard-txn-add-btn,
+  .dashboard-hero-card {
+    transition: none;
+  }
+}

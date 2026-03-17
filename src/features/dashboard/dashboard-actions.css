@@ -32,6 +32,11 @@
   transform: scale(0.95);
 }
 
+.dashboard-action-item:focus-visible .dashboard-action-icon-box {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
 .dashboard-action-icon-box {
   width: 56px;
   height: 56px;

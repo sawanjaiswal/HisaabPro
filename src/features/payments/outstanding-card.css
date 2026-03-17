@@ -23,6 +23,12 @@
   transform: scale(0.985);
 }
 
+.outstanding-card:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-lg);
+}
+
 /* Overdue card gets a subtle red left border accent */
 .outstanding-card--overdue {
   border-left: 3px solid var(--color-error-400);
@@ -149,6 +155,12 @@
   transform: scale(0.97);
 }
 
+.outstanding-action-remind:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
 .outstanding-action-pay {
   flex: 1;
   display: inline-flex;
@@ -174,6 +186,12 @@
 .outstanding-action-pay:active {
   background: var(--color-primary-700);
   transform: scale(0.97);
+}
+
+.outstanding-action-pay:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
 }
 
 /* ─── Dark Theme ─────────────────────────────────────────────────────────── */

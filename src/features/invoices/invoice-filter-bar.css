@@ -74,6 +74,12 @@
   transform: scale(0.95);
 }
 
+.invoice-type-pill:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-full);
+}
+
 .invoice-type-pill[aria-pressed='true'],
 .invoice-type-pill--active {
   background: var(--color-primary-50);

@@ -27,7 +27,7 @@
   background: rgba(249, 249, 237, 0.98);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Left/right sides */
@@ -107,8 +107,8 @@
 }
 
 .dashboard-header-icon-btn {
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-full);
   background: rgba(255, 255, 255, 0.85);
   border: none;
@@ -119,12 +119,19 @@
   -webkit-tap-highlight-color: transparent;
   color: var(--dash-text-primary);
   flex-shrink: 0;
-  transition: background var(--duration-fast) var(--ease-default);
+  transition: background var(--duration-fast) var(--ease-default),
+              transform var(--duration-fast) var(--ease-default);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
 .dashboard-header-icon-btn:active {
   background: var(--color-gray-100);
+  transform: scale(0.92);
+}
+
+.dashboard-header-icon-btn:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
 }
 
 /* Hide floating calculator FAB on dashboard — it's in the header instead */

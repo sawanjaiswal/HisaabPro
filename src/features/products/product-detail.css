@@ -156,6 +156,12 @@
   margin-top: var(--space-3);
 }
 
+.product-adjust-btn:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
 /* ─── Dark Theme ─────────────────────────────────────────────────────────── */
 
 [data-theme="dark"] .product-info-row {

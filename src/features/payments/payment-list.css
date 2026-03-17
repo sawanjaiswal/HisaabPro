@@ -41,6 +41,12 @@
   transform: scale(0.985);
 }
 
+.payment-card:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
 /* Arrow icon badge: green down for IN, red up for OUT */
 .payment-card-arrow {
   width: 44px;

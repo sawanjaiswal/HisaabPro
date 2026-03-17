@@ -70,6 +70,12 @@
   transform: scale(0.95);
 }
 
+.report-filter-pill:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-full);
+}
+
 .report-filter-pill[aria-pressed='true'],
 .report-filter-pill--active {
   background: var(--color-primary-50);

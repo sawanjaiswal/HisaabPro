@@ -70,6 +70,12 @@
   transform: scale(0.99);
 }
 
+.template-card:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-lg);
+}
+
 /* Selected / currently-active card */
 .template-card.selected {
   border-color: var(--color-primary-400);
@@ -176,6 +182,12 @@
 .template-card-use-btn:active {
   background: var(--color-primary-100);
   color: var(--color-primary-600);
+}
+
+.template-card-use-btn:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 /* Tablet+ — 3-column grid */

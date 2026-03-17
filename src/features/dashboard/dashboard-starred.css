@@ -47,6 +47,12 @@
   transform: scale(0.93);
 }
 
+.dashboard-starred-item:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
 .dashboard-starred-avatar {
   width: 56px;
   height: 56px;
@@ -100,7 +106,7 @@
 }
 
 .dashboard-starred-amount {
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   color: var(--dash-teal-start);
   white-space: nowrap;

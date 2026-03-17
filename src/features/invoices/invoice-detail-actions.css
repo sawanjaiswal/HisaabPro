@@ -60,6 +60,12 @@
   color: var(--color-error-600);
 }
 
+.invoice-action-icon-btn:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
 /* ─── Image export ───────────────────────────────────────────────────────── */
 
 /* Wrapper captured by useImageExport — padding gives the PNG clean whitespace */

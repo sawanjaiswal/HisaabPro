@@ -57,6 +57,12 @@
   transform: scale(0.985);
 }
 
+.party-list-item .txn-row:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
 /* Breathing room between rows */
 .party-list-item + .party-list-item {
   margin-top: 2px;
