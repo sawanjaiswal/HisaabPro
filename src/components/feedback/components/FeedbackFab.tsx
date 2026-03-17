@@ -48,7 +48,7 @@ export const FeedbackFab: React.FC<FeedbackFabProps> = ({
       }}
     >
       {widgetState === 'capturing' ? (
-        <span style={{ fontSize: '10px', fontWeight: 600, lineHeight: 1 }}>...</span>
+        <span style={{ fontSize: '0.625rem', fontWeight: 600, lineHeight: 1 }}>...</span>
       ) : (
         <MessageSquarePlus size={20} strokeWidth={1.8} />
       )}

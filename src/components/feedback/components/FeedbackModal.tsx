@@ -7,16 +7,16 @@ import type { FeedbackModalProps } from '../feedback-widget.types';
 const SuccessView: React.FC = () => (
   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px', gap: '12px' }}>
     <CheckCircle size={48} color="#22c55e" strokeWidth={1.5} />
-    <p style={{ fontSize: '16px', fontWeight: 600, margin: 0 }}>Thanks for your feedback!</p>
-    <p style={{ fontSize: '13px', color: '#64748b', margin: 0, textAlign: 'center' }}>Your feedback helps us improve.</p>
+    <p style={{ fontSize: '1rem', fontWeight: 600, margin: 0 }}>Thanks for your feedback!</p>
+    <p style={{ fontSize: '0.8125rem', color: 'var(--color-gray-500)', margin: 0, textAlign: 'center' }}>Your feedback helps us improve.</p>
   </div>
 );
 
 const QueuedView: React.FC = () => (
   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px', gap: '12px' }}>
     <WifiOff size={48} color="#f59e0b" strokeWidth={1.5} />
-    <p style={{ fontSize: '16px', fontWeight: 600, margin: 0 }}>Saved locally</p>
-    <p style={{ fontSize: '13px', color: '#64748b', margin: 0, textAlign: 'center' }}>Will be sent when you&apos;re back online.</p>
+    <p style={{ fontSize: '1rem', fontWeight: 600, margin: 0 }}>Saved locally</p>
+    <p style={{ fontSize: '0.8125rem', color: 'var(--color-gray-500)', margin: 0, textAlign: 'center' }}>Will be sent when you&apos;re back online.</p>
   </div>
 );
 
@@ -59,7 +59,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
           <>
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px 12px', borderBottom: '1px solid #f1f5f9' }}>
-              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>Send Feedback</h3>
+              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>Send Feedback</h3>
               <button onClick={onClose} aria-label="Close feedback" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', color: '#94a3b8' }}>
                 <X size={20} />
               </button>
@@ -89,7 +89,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                       border: isActive ? 'none' : '1px solid #e2e8f0',
                       backgroundColor: isActive ? '#111' : 'transparent',
                       color: isActive ? '#fff' : '#475569',
-                      fontSize: '13px', fontWeight: isActive ? 600 : 400,
+                      fontSize: '0.8125rem', fontWeight: isActive ? 600 : 400,
                       cursor: 'pointer', transition: 'all 0.15s ease',
                     }}
                   >
@@ -114,7 +114,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                 rows={3}
                 style={{
                   width: '100%', border: '1px solid #e2e8f0', borderRadius: '10px',
-                  padding: '10px 14px', fontSize: '14px', outline: 'none',
+                  padding: '10px 14px', fontSize: '0.875rem', outline: 'none',
                   fontFamily: 'inherit', color: '#111', backgroundColor: '#f8fafc',
                   resize: 'vertical', lineHeight: '1.5', boxSizing: 'border-box',
                 }}
@@ -127,7 +127,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                   width: '100%', marginTop: '12px', padding: '12px',
                   borderRadius: '10px', border: 'none',
                   backgroundColor: widgetState === 'sending' ? '#94a3b8' : '#111',
-                  color: '#fff', fontSize: '14px', fontWeight: 600,
+                  color: '#fff', fontSize: '0.875rem', fontWeight: 600,
                   cursor: widgetState === 'sending' ? 'wait' : 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                 }}
