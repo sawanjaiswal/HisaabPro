@@ -36,7 +36,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
   return (
     <header className={`dashboard-header${isScrolled ? ' is-scrolled' : ''}`}>
-      {/* Left: profile avatar with + badge */}
+      {/* Left: profile avatar + theme toggle */}
       <div className="dashboard-header-side">
         <div className="dashboard-header-avatar" aria-label="Profile">
           <div className="dashboard-header-avatar-inner">
@@ -60,13 +60,6 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             </svg>
           </div>
         </div>
-      </div>
-
-      {/* Center: truly centered title */}
-      <h1 className="dashboard-header-title">{APP_NAME}</h1>
-
-      {/* Right: theme + calculator + bell */}
-      <div className="dashboard-header-side dashboard-header-side--right">
         <button
           className="dashboard-header-icon-btn"
           onClick={toggleTheme}
@@ -78,6 +71,13 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             <Moon size={18} aria-hidden="true" />
           )}
         </button>
+      </div>
+
+      {/* Center: absolutely centered title */}
+      <h1 className="dashboard-header-title">{APP_NAME}</h1>
+
+      {/* Right: calculator + bell */}
+      <div className="dashboard-header-side dashboard-header-side--right">
         <button
           className="dashboard-header-icon-btn"
           onClick={onCalculatorClick}

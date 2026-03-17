@@ -30,16 +30,17 @@
   box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
 }
 
-/* Left/right sides — equal width so title centers */
+/* Left/right sides */
 .dashboard-header-side {
   display: flex;
   align-items: center;
-  min-width: 88px;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
 }
 
 .dashboard-header-side--right {
   justify-content: flex-end;
-  gap: 8px;
 }
 
 .dashboard-header-avatar {
@@ -92,14 +93,17 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
-/* Title — flex: 1 centers it between equal-width sides */
+/* Title — absolutely centered regardless of side content widths */
 .dashboard-header-title {
-  flex: 1;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 1.125rem;
   font-weight: 700;
   color: var(--dash-text-primary);
   letter-spacing: 0.01em;
-  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 .dashboard-header-icon-btn {
