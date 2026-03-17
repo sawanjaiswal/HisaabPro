@@ -108,6 +108,9 @@ export default function ProductDetailPage() {
 
         {status === 'success' && product && (
           <>
+            <div role="status" aria-live="polite" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>
+              {product.name} details loaded
+            </div>
             <ProductDetailHeader product={product} />
 
             <div className="pill-tabs product-detail-tabs" role="tablist" aria-label="Product detail sections">

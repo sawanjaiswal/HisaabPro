@@ -12,6 +12,8 @@ import {
   FileText,
   ChevronRight,
   BarChart3,
+  Percent,
+  FileCode,
   type LucideProps,
 } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -33,6 +35,9 @@ const ICON_MAP: Record<string, IconComponent> = {
   Banknote,
   Receipt,
   FileText,
+  BarChart3,
+  Percent,
+  FileCode,
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────

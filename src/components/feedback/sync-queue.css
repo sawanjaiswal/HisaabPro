@@ -6,7 +6,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
+  padding: 4px 6px;
   border-radius: var(--radius-full);
   border: 1px solid var(--color-warning-200, #fed7aa);
   background: var(--color-warning-50, #fff7ed);
@@ -37,7 +37,10 @@
 }
 
 .sync-indicator-label {
+  display: none;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Spin animation for syncing state */
@@ -45,13 +48,13 @@
   animation: spin 0.75s linear infinite;
 }
 
-/* Hide label on very small screens */
-@media (max-width: 340px) {
+/* 341px+: show label and restore padding */
+@media (min-width: 341px) {
   .sync-indicator-label {
-    display: none;
+    display: inline;
   }
   .sync-indicator {
-    padding: 4px 6px;
+    padding: 4px 10px;
   }
 }
 

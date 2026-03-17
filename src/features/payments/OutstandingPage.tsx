@@ -146,7 +146,7 @@ function AgingChart({ aging }: { aging: OutstandingAging }) {
 
   return (
     <div className="outstanding-aging-chart" aria-label="Aging breakdown">
-      <h3 className="outstanding-aging-title">Aging Breakdown</h3>
+      <h2 className="outstanding-aging-title">Aging Breakdown</h2>
       <div className="outstanding-aging-bar" role="img" aria-label="Aging bar chart">
         {buckets.map((bucket) => {
           const pct = percentages[bucket]

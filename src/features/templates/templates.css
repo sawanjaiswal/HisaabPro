@@ -230,7 +230,7 @@
 }
 
 [data-theme="dark"] .template-card-badge {
-  background: rgba(27, 99, 105, 0.15);
+  background: var(--color-primary-bg-subtle-strong);
 }
 
 [data-theme="dark"] .template-section-title {

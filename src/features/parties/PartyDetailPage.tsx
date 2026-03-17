@@ -125,6 +125,9 @@ export default function PartyDetailPage() {
 
           {status === 'success' && party && (
             <>
+              <div role="status" aria-live="polite" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>
+                {party.name} details loaded
+              </div>
               <PartyDetailHeader party={party} />
 
               {/* Quick Actions — like MyBillBook */}

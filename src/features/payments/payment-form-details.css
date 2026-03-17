@@ -199,7 +199,7 @@
 }
 
 [data-theme="dark"] .payment-mode-item--active {
-  background: rgba(27, 99, 105, 0.15);
+  background: var(--color-primary-bg-subtle-strong);
 }
 
 [data-theme="dark"] .payment-invoices-section {

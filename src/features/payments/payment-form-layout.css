@@ -182,7 +182,7 @@
 }
 
 [data-theme="dark"] .payment-quick-fill-btn {
-  background: rgba(27, 99, 105, 0.12);
+  background: var(--color-primary-bg-subtle);
   border-color: var(--color-secondary-700);
 }
 

@@ -20,13 +20,17 @@ import type {
 
 // ─── Invoice detail page tabs ────────────────────────────────────────────────
 
-export type DetailTab = 'overview' | 'items' | 'share'
+export type DetailTab = 'overview' | 'items' | 'share' | 'compliance'
 
 export const DETAIL_TABS: { id: DetailTab; label: string }[] = [
   { id: 'overview', label: 'Overview' },
   { id: 'items', label: 'Items' },
   { id: 'share', label: 'Share' },
+  { id: 'compliance', label: 'Compliance' },
 ]
+
+/** Document types that support e-compliance (e-invoice + e-way bill) */
+export const ECOMPLIANCE_DOCUMENT_TYPES = new Set(['SALE_INVOICE', 'PURCHASE_INVOICE'])
 
 // ─── Invoice form section tabs ───────────────────────────────────────────────
 

@@ -11,7 +11,7 @@
 .login-page__card {
   width: 100%;
   max-width: 400px;
-  padding: var(--space-8);
+  padding: var(--space-6);
   background: var(--color-gray-0);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
@@ -167,10 +167,10 @@
 }
 
 .auth-otp__digit {
-  width: 48px;
-  height: 56px;
+  width: 40px;
+  height: 48px;
   text-align: center;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 600;
   border: 2px solid var(--color-gray-200);
   border-radius: var(--radius-md);
@@ -221,15 +221,15 @@
   box-shadow: 0 0 0 3px rgba(63, 174, 214, 0.15);
 }
 
-/* Mobile: ensure OTP inputs don't overflow on 320px */
-@media (max-width: 359px) {
+/* 360px+: larger OTP inputs and card padding */
+@media (min-width: 360px) {
   .auth-otp__digit {
-    width: 40px;
-    height: 48px;
-    font-size: 1.25rem;
+    width: 48px;
+    height: 56px;
+    font-size: 1.5rem;
   }
 
   .login-page__card {
-    padding: var(--space-6);
+    padding: var(--space-8);
   }
 }

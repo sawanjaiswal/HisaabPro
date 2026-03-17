@@ -143,9 +143,11 @@ export function PaymentDetailsSection({
           value={notes}
           onChange={(e) => onNotesChange(e.target.value)}
           aria-label="Payment notes"
+          aria-invalid={errors.notes ? true : undefined}
+          aria-describedby={errors.notes ? 'payment-notes-error' : undefined}
           maxLength={500}
         />
-        {errors.notes && <span className="field-error" role="alert">{errors.notes}</span>}
+        {errors.notes && <span id="payment-notes-error" className="field-error" role="alert">{errors.notes}</span>}
       </div>
     </div>
   )

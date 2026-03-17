@@ -155,5 +155,5 @@
 }
 
 [data-theme="dark"] .party-list-item.bulk-selected {
-  background: rgba(27, 99, 105, 0.12);
+  background: var(--color-primary-bg-subtle);
 }

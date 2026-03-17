@@ -83,7 +83,7 @@
 
 [data-theme="dark"] .payment-filter-pill[aria-pressed='true'],
 [data-theme="dark"] .payment-filter-pill--active {
-  background: rgba(27, 99, 105, 0.15);
+  background: var(--color-primary-bg-subtle-strong);
 }
 
 /* ─── Tablet+ adjustments ────────────────────────────────────── */

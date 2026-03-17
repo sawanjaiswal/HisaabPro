@@ -11,7 +11,7 @@
 .onboarding-page__card {
   width: 100%;
   max-width: 400px;
-  padding: var(--space-8);
+  padding: var(--space-6);
   background: var(--color-gray-0);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
@@ -42,7 +42,7 @@
 
 .onboarding-page__title {
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--color-gray-800);
   margin-bottom: var(--space-2);
@@ -174,14 +174,14 @@
   cursor: not-allowed;
 }
 
-/* Small phones: prevent card overflow at 320px */
-@media (max-width: 359px) {
+/* 360px+: larger padding and title */
+@media (min-width: 360px) {
   .onboarding-page__card {
-    padding: var(--space-6);
+    padding: var(--space-8);
   }
 
   .onboarding-page__title {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
   }
 }
 

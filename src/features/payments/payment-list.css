@@ -219,27 +219,27 @@
 }
 
 [data-theme="dark"] .payment-card-arrow--in {
-  background: rgba(34, 197, 94, 0.12);
+  background: var(--color-success-bg-subtle);
 }
 
 [data-theme="dark"] .payment-card-arrow--out {
-  background: rgba(239, 68, 68, 0.12);
+  background: var(--color-error-bg-subtle);
 }
 
 [data-theme="dark"] .payment-type-badge--in {
-  background: rgba(34, 197, 94, 0.12);
+  background: var(--color-success-bg-subtle);
 }
 
 [data-theme="dark"] .payment-type-badge--out {
-  background: rgba(239, 68, 68, 0.12);
+  background: var(--color-error-bg-subtle);
 }
 
 [data-theme="dark"] .payment-card-invoices {
-  background: rgba(27, 99, 105, 0.15);
+  background: var(--color-primary-bg-subtle-strong);
 }
 
 [data-theme="dark"] .payment-list-row.bulk-selected {
-  background: rgba(27, 99, 105, 0.12);
+  background: var(--color-primary-bg-subtle);
 }
 
 /* ─── Reduced motion ─────────────────────────────────────────── */

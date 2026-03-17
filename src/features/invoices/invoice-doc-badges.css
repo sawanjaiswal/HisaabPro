@@ -133,11 +133,11 @@
 /* ─── Dark Theme ────────────────────────────────────────────── */
 
 [data-theme="dark"] .doc-type-icon--sale-invoice {
-  background: rgba(27, 99, 105, 0.15);
+  background: var(--color-primary-bg-subtle-strong);
 }
 
 [data-theme="dark"] .doc-type-icon--purchase-invoice {
-  background: rgba(59, 130, 246, 0.12);
+  background: var(--color-info-bg-subtle);
 }
 
 [data-theme="dark"] .doc-type-icon--estimate {
@@ -145,11 +145,11 @@
 }
 
 [data-theme="dark"] .doc-type-icon--proforma {
-  background: rgba(245, 158, 11, 0.12);
+  background: var(--color-warning-bg-subtle);
 }
 
 [data-theme="dark"] .doc-type-icon--sale-order {
-  background: rgba(34, 197, 94, 0.12);
+  background: var(--color-success-bg-subtle);
 }
 
 [data-theme="dark"] .doc-type-icon--purchase-order {
@@ -161,11 +161,11 @@
 }
 
 [data-theme="dark"] .payment-status-indicator--paid {
-  background: rgba(34, 197, 94, 0.12);
+  background: var(--color-success-bg-subtle);
 }
 
 [data-theme="dark"] .payment-status-indicator--partial {
-  background: rgba(245, 158, 11, 0.12);
+  background: var(--color-warning-bg-subtle);
 }
 
 [data-theme="dark"] .payment-status-indicator--unpaid {
@@ -173,5 +173,5 @@
 }
 
 [data-theme="dark"] .payment-status-indicator--overdue {
-  background: rgba(239, 68, 68, 0.12);
+  background: var(--color-error-bg-subtle);
 }

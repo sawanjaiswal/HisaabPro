@@ -120,6 +120,12 @@ export default function ProductsPage() {
           />
         )}
 
+        {status === 'success' && data && (
+          <div role="status" aria-live="polite" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>
+            {data.products.length} {data.products.length === 1 ? 'product' : 'products'} found
+          </div>
+        )}
+
         {status === 'success' && data && data.products.length > 0 && (
           <div className="product-list stagger-list" role="list" aria-label="Products">
             {data.products.map((product) => (

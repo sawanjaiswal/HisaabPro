@@ -86,11 +86,11 @@
 .party-hero-chevron {
   opacity: 0.6;
   flex-shrink: 0;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--color-hero-text-secondary);
 }
 
 .party-hero-chevron--dark {
-  color: rgba(0, 0, 0, 0.4);
+  color: var(--color-hero-text-muted);
 }
 
 @media (min-width: 768px) {

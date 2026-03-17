@@ -1,4 +1,5 @@
 import { Suspense, lazy } from 'react'
+import type { ReactNode } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ROUTES } from '@/config/routes.config'
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary'
@@ -44,6 +45,7 @@ const DayBook = lazy(() => import('@/features/reports/DayBookPage'))
 const PaymentHistory = lazy(() => import('@/features/reports/PaymentHistoryPage'))
 const TaxSummary = lazy(() => import('@/features/reports/TaxSummaryPage'))
 const GstReturns = lazy(() => import('@/features/reports/GstReturnsPage'))
+const TdsTcsReport = lazy(() => import('@/features/reports/TdsTcsReportPage'))
 const Settings = lazy(() => import('@/features/settings/SettingsPage'))
 const Roles = lazy(() => import('@/features/settings/RolesPage'))
 const RoleBuilder = lazy(() => import('@/features/settings/RoleBuilderPage'))
@@ -57,10 +59,42 @@ const GstSettings = lazy(() => import('@/features/tax/GstSettingsPage'))
 const TaxCategories = lazy(() => import('@/features/tax/TaxCategoriesPage'))
 const CreateTaxCategory = lazy(() => import('@/features/tax/CreateTaxCategoryPage'))
 const EditTaxCategory = lazy(() => import('@/features/tax/EditTaxCategoryPage'))
+const CurrencySettings = lazy(() => import('@/features/settings/currency/CurrencySettingsPage'))
+const RecurringList = lazy(() => import('@/features/recurring/RecurringListPage'))
+const GstReconciliationList = lazy(() => import('@/features/gst-reconciliation/ReconciliationListPage'))
+const GstReconciliationDetail = lazy(() => import('@/features/gst-reconciliation/ReconciliationDetailPage'))
+const ChartOfAccounts = lazy(() => import('@/features/accounting/ChartOfAccountsPage'))
+const JournalEntries = lazy(() => import('@/features/accounting/JournalEntriesPage'))
+const TrialBalance = lazy(() => import('@/features/accounting/TrialBalancePage'))
+const BankAccounts = lazy(() => import('@/features/bank-accounts/BankAccountsPage'))
+const Expenses = lazy(() => import('@/features/expenses/ExpensesPage'))
+const OtherIncome = lazy(() => import('@/features/other-income/OtherIncomePage'))
+const Cheques = lazy(() => import('@/features/cheques/ChequesPage'))
+const Loans = lazy(() => import('@/features/loans/LoansPage'))
+const LoanDetail = lazy(() => import('@/features/loans/LoanDetailPage'))
+const ProfitLoss = lazy(() => import('@/features/reports/ProfitLossPage'))
+const BalanceSheet = lazy(() => import('@/features/reports/BalanceSheetPage'))
+const CashFlow = lazy(() => import('@/features/reports/CashFlowPage'))
+const AgingReport = lazy(() => import('@/features/reports/AgingReportPage'))
+const ProfitabilityReport = lazy(() => import('@/features/reports/ProfitabilityReportPage'))
+const DiscountReport = lazy(() => import('@/features/reports/DiscountReportPage'))
+const TallyExport = lazy(() => import('@/features/reports/TallyExportPage'))
+const FYClosure = lazy(() => import('@/features/accounting/FYClosurePage'))
 const NotFound = lazy(() => import('@/components/feedback/NotFoundPage'))
 
+/** Route-level ErrorBoundary + Suspense wrapper for individual pages */
+function PageRoute({ children }: { children: ReactNode }) {
+  return (
+    <ErrorBoundary>
+      <Suspense fallback={<Spinner fullScreen />}>
+        {children}
+      </Suspense>
+    </ErrorBoundary>
+  )
+}
+
 /** Redirect to login if not authenticated */
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+function ProtectedRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth()
   if (isLoading) return <Spinner fullScreen />
   if (!isAuthenticated) return <Navigate to={ROUTES.LOGIN} replace />
@@ -68,7 +102,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 /** Redirect to dashboard if already authenticated */
-function GuestRoute({ children }: { children: React.ReactNode }) {
+function GuestRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth()
   if (isLoading) return <Spinner fullScreen />
   if (isAuthenticated) return <Navigate to={ROUTES.DASHBOARD} replace />
@@ -80,61 +114,81 @@ export function App() {
 
   return (
     <ErrorBoundary>
-      <Suspense fallback={<div className="suspense-fallback"><Spinner fullScreen /></div>}>
-        <OfflineBanner />
-        <PageTransition>
-        <Routes>
-          <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.DASHBOARD} replace />} />
-          <Route path={ROUTES.LOGIN} element={<GuestRoute><Login /></GuestRoute>} />
-          <Route path={ROUTES.ONBOARDING} element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
-          <Route path={ROUTES.DASHBOARD} element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path={ROUTES.PARTIES} element={<ProtectedRoute><Parties /></ProtectedRoute>} />
-          <Route path={ROUTES.PARTY_NEW} element={<ProtectedRoute><CreateParty /></ProtectedRoute>} />
-          <Route path={ROUTES.PARTY_DETAIL} element={<ProtectedRoute><PartyDetail /></ProtectedRoute>} />
-          <Route path={ROUTES.PARTY_EDIT} element={<ProtectedRoute><EditParty /></ProtectedRoute>} />
-          <Route path={ROUTES.PRODUCTS} element={<ProtectedRoute><Products /></ProtectedRoute>} />
-          <Route path={ROUTES.PRODUCT_NEW} element={<ProtectedRoute><CreateProduct /></ProtectedRoute>} />
-          <Route path={ROUTES.PRODUCT_DETAIL} element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
-          <Route path={ROUTES.PRODUCT_EDIT} element={<ProtectedRoute><EditProduct /></ProtectedRoute>} />
-          <Route path={ROUTES.INVOICES} element={<ProtectedRoute><Invoices /></ProtectedRoute>} />
-          <Route path={ROUTES.INVOICE_CREATE} element={<ProtectedRoute><CreateInvoice /></ProtectedRoute>} />
-          <Route path={ROUTES.INVOICE_DETAIL} element={<ProtectedRoute><InvoiceDetail /></ProtectedRoute>} />
-          <Route path={ROUTES.INVOICE_EDIT} element={<ProtectedRoute><EditInvoice /></ProtectedRoute>} />
-          <Route path={ROUTES.TEMPLATES} element={<ProtectedRoute><TemplateGallery /></ProtectedRoute>} />
-          <Route path={ROUTES.TEMPLATE_EDIT} element={<ProtectedRoute><TemplateEditor /></ProtectedRoute>} />
-          <Route path={ROUTES.PAYMENTS} element={<ProtectedRoute><Payments /></ProtectedRoute>} />
-          <Route path={ROUTES.PAYMENT_NEW} element={<ProtectedRoute><RecordPayment /></ProtectedRoute>} />
-          <Route path={ROUTES.PAYMENT_DETAIL} element={<ProtectedRoute><PaymentDetail /></ProtectedRoute>} />
-          <Route path={ROUTES.PAYMENT_EDIT} element={<ProtectedRoute><EditPayment /></ProtectedRoute>} />
-          <Route path={ROUTES.OUTSTANDING} element={<ProtectedRoute><Outstanding /></ProtectedRoute>} />
-          <Route path={ROUTES.REPORTS} element={<ProtectedRoute><ReportsHub /></ProtectedRoute>} />
-          <Route path={ROUTES.REPORT_SALES} element={<ProtectedRoute><SaleReport /></ProtectedRoute>} />
-          <Route path={ROUTES.REPORT_PURCHASES} element={<ProtectedRoute><PurchaseReport /></ProtectedRoute>} />
-          <Route path={ROUTES.REPORT_PARTY_STATEMENT} element={<ProtectedRoute><PartyStatement /></ProtectedRoute>} />
-          <Route path={ROUTES.REPORT_STOCK_SUMMARY} element={<ProtectedRoute><StockSummary /></ProtectedRoute>} />
-          <Route path={ROUTES.REPORT_DAY_BOOK} element={<ProtectedRoute><DayBook /></ProtectedRoute>} />
-          <Route path={ROUTES.REPORT_PAYMENT_HISTORY} element={<ProtectedRoute><PaymentHistory /></ProtectedRoute>} />
-          <Route path={ROUTES.REPORT_TAX_SUMMARY} element={<ProtectedRoute><TaxSummary /></ProtectedRoute>} />
-          <Route path={ROUTES.REPORT_GST_RETURNS} element={<ProtectedRoute><GstReturns /></ProtectedRoute>} />
-          <Route path={ROUTES.SETTINGS} element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-          <Route path={ROUTES.SETTINGS_ROLES} element={<ProtectedRoute><Roles /></ProtectedRoute>} />
-          <Route path={ROUTES.SETTINGS_ROLE_NEW} element={<ProtectedRoute><RoleBuilder /></ProtectedRoute>} />
-          <Route path={ROUTES.SETTINGS_ROLE_EDIT} element={<ProtectedRoute><RoleBuilder /></ProtectedRoute>} />
-          <Route path={ROUTES.SETTINGS_STAFF} element={<ProtectedRoute><Staff /></ProtectedRoute>} />
-          <Route path={ROUTES.SETTINGS_STAFF_INVITE} element={<ProtectedRoute><StaffInvite /></ProtectedRoute>} />
-          <Route path={ROUTES.SETTINGS_SECURITY} element={<ProtectedRoute><PinSetup /></ProtectedRoute>} />
-          <Route path={ROUTES.SETTINGS_TRANSACTION_CONTROLS} element={<ProtectedRoute><TransactionControls /></ProtectedRoute>} />
-          <Route path={ROUTES.SETTINGS_AUDIT_LOG} element={<ProtectedRoute><AuditLog /></ProtectedRoute>} />
-          <Route path={ROUTES.SETTINGS_SHORTCUTS} element={<ProtectedRoute><Shortcuts /></ProtectedRoute>} />
-          <Route path={ROUTES.SETTINGS_PIN_SETUP} element={<ProtectedRoute><PinSetup /></ProtectedRoute>} />
-          <Route path={ROUTES.SETTINGS_GST} element={<ProtectedRoute><GstSettings /></ProtectedRoute>} />
-          <Route path={ROUTES.SETTINGS_TAX_RATES} element={<ProtectedRoute><TaxCategories /></ProtectedRoute>} />
-          <Route path={ROUTES.SETTINGS_TAX_RATE_NEW} element={<ProtectedRoute><CreateTaxCategory /></ProtectedRoute>} />
-          <Route path={ROUTES.SETTINGS_TAX_RATE_EDIT} element={<ProtectedRoute><EditTaxCategory /></ProtectedRoute>} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        </PageTransition>
-      </Suspense>
+      <OfflineBanner />
+      <PageTransition>
+      <Routes>
+        <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+        <Route path={ROUTES.LOGIN} element={<PageRoute><GuestRoute><Login /></GuestRoute></PageRoute>} />
+        <Route path={ROUTES.ONBOARDING} element={<PageRoute><ProtectedRoute><Onboarding /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.DASHBOARD} element={<PageRoute><ProtectedRoute><Dashboard /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PARTIES} element={<PageRoute><ProtectedRoute><Parties /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PARTY_NEW} element={<PageRoute><ProtectedRoute><CreateParty /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PARTY_DETAIL} element={<PageRoute><ProtectedRoute><PartyDetail /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PARTY_EDIT} element={<PageRoute><ProtectedRoute><EditParty /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PRODUCTS} element={<PageRoute><ProtectedRoute><Products /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PRODUCT_NEW} element={<PageRoute><ProtectedRoute><CreateProduct /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PRODUCT_DETAIL} element={<PageRoute><ProtectedRoute><ProductDetail /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PRODUCT_EDIT} element={<PageRoute><ProtectedRoute><EditProduct /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.INVOICES} element={<PageRoute><ProtectedRoute><Invoices /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.INVOICE_CREATE} element={<PageRoute><ProtectedRoute><CreateInvoice /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.INVOICE_DETAIL} element={<PageRoute><ProtectedRoute><InvoiceDetail /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.INVOICE_EDIT} element={<PageRoute><ProtectedRoute><EditInvoice /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.TEMPLATES} element={<PageRoute><ProtectedRoute><TemplateGallery /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.TEMPLATE_EDIT} element={<PageRoute><ProtectedRoute><TemplateEditor /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PAYMENTS} element={<PageRoute><ProtectedRoute><Payments /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PAYMENT_NEW} element={<PageRoute><ProtectedRoute><RecordPayment /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PAYMENT_DETAIL} element={<PageRoute><ProtectedRoute><PaymentDetail /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PAYMENT_EDIT} element={<PageRoute><ProtectedRoute><EditPayment /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.OUTSTANDING} element={<PageRoute><ProtectedRoute><Outstanding /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORTS} element={<PageRoute><ProtectedRoute><ReportsHub /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_SALES} element={<PageRoute><ProtectedRoute><SaleReport /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_PURCHASES} element={<PageRoute><ProtectedRoute><PurchaseReport /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_PARTY_STATEMENT} element={<PageRoute><ProtectedRoute><PartyStatement /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_STOCK_SUMMARY} element={<PageRoute><ProtectedRoute><StockSummary /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_DAY_BOOK} element={<PageRoute><ProtectedRoute><DayBook /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_PAYMENT_HISTORY} element={<PageRoute><ProtectedRoute><PaymentHistory /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_TAX_SUMMARY} element={<PageRoute><ProtectedRoute><TaxSummary /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_GST_RETURNS} element={<PageRoute><ProtectedRoute><GstReturns /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_TDS_TCS} element={<PageRoute><ProtectedRoute><TdsTcsReport /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS} element={<PageRoute><ProtectedRoute><Settings /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_ROLES} element={<PageRoute><ProtectedRoute><Roles /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_ROLE_NEW} element={<PageRoute><ProtectedRoute><RoleBuilder /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_ROLE_EDIT} element={<PageRoute><ProtectedRoute><RoleBuilder /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_STAFF} element={<PageRoute><ProtectedRoute><Staff /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_STAFF_INVITE} element={<PageRoute><ProtectedRoute><StaffInvite /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_SECURITY} element={<PageRoute><ProtectedRoute><PinSetup /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_TRANSACTION_CONTROLS} element={<PageRoute><ProtectedRoute><TransactionControls /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_AUDIT_LOG} element={<PageRoute><ProtectedRoute><AuditLog /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_SHORTCUTS} element={<PageRoute><ProtectedRoute><Shortcuts /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_PIN_SETUP} element={<PageRoute><ProtectedRoute><PinSetup /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_GST} element={<PageRoute><ProtectedRoute><GstSettings /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_TAX_RATES} element={<PageRoute><ProtectedRoute><TaxCategories /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_TAX_RATE_NEW} element={<PageRoute><ProtectedRoute><CreateTaxCategory /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_TAX_RATE_EDIT} element={<PageRoute><ProtectedRoute><EditTaxCategory /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_CURRENCY} element={<PageRoute><ProtectedRoute><CurrencySettings /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.RECURRING} element={<PageRoute><ProtectedRoute><RecurringList /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.GST_RECONCILIATION} element={<PageRoute><ProtectedRoute><GstReconciliationList /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.GST_RECONCILIATION_DETAIL} element={<PageRoute><ProtectedRoute><GstReconciliationDetail /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.CHART_OF_ACCOUNTS} element={<PageRoute><ProtectedRoute><ChartOfAccounts /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.JOURNAL_ENTRIES} element={<PageRoute><ProtectedRoute><JournalEntries /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.TRIAL_BALANCE} element={<PageRoute><ProtectedRoute><TrialBalance /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.BANK_ACCOUNTS} element={<PageRoute><ProtectedRoute><BankAccounts /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.EXPENSES} element={<PageRoute><ProtectedRoute><Expenses /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.OTHER_INCOME} element={<PageRoute><ProtectedRoute><OtherIncome /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.CHEQUES} element={<PageRoute><ProtectedRoute><Cheques /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.LOANS} element={<PageRoute><ProtectedRoute><Loans /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.LOAN_DETAIL} element={<PageRoute><ProtectedRoute><LoanDetail /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_PROFIT_LOSS} element={<PageRoute><ProtectedRoute><ProfitLoss /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_BALANCE_SHEET} element={<PageRoute><ProtectedRoute><BalanceSheet /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_CASH_FLOW} element={<PageRoute><ProtectedRoute><CashFlow /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_AGING} element={<PageRoute><ProtectedRoute><AgingReport /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_PROFITABILITY} element={<PageRoute><ProtectedRoute><ProfitabilityReport /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_DISCOUNTS} element={<PageRoute><ProtectedRoute><DiscountReport /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.TALLY_EXPORT} element={<PageRoute><ProtectedRoute><TallyExport /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.FY_CLOSURE} element={<PageRoute><ProtectedRoute><FYClosure /></ProtectedRoute></PageRoute>} />
+        <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
+      </Routes>
+      </PageTransition>
       <CalculatorOverlay />
       <ToastContainer />
       <SWUpdatePrompt />

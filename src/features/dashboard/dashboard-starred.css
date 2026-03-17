@@ -104,6 +104,9 @@
   font-weight: 600;
   color: var(--dash-teal-start);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
 }

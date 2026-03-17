@@ -153,6 +153,12 @@ export default function PaymentsPage() {
           />
         )}
 
+        {status === 'success' && data && (
+          <div role="status" aria-live="polite" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>
+            {data.payments.length} {data.payments.length === 1 ? 'payment' : 'payments'} found
+          </div>
+        )}
+
         {status === 'success' && data && data.payments.length > 0 && (
           <div className="payment-list stagger-list" role="list" aria-label="Payments">
             {data.payments.map((payment) => (

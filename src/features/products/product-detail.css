@@ -171,11 +171,11 @@
 }
 
 [data-theme="dark"] .stock-movement-icon-in {
-  background: rgba(34, 197, 94, 0.12);
+  background: var(--color-success-bg-subtle);
 }
 
 [data-theme="dark"] .stock-movement-icon-out {
-  background: rgba(239, 68, 68, 0.12);
+  background: var(--color-error-bg-subtle);
 }
 
 /* Tablet+ layout */

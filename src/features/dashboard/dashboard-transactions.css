@@ -119,6 +119,8 @@
   color: var(--dash-text-primary);
   letter-spacing: -0.02em;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-variant-numeric: tabular-nums;
 }
 

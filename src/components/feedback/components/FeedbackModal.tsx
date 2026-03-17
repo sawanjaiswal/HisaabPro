@@ -59,7 +59,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
           <>
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px 12px', borderBottom: '1px solid #f1f5f9' }}>
-              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>Send Feedback</h3>
+              <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>Send Feedback</h2>
               <button onClick={onClose} aria-label="Close feedback" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', color: '#94a3b8' }}>
                 <X size={20} />
               </button>
@@ -112,6 +112,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                 }}
                 placeholder="Describe the issue... (Enter to send)"
                 rows={3}
+                aria-label="Feedback description"
                 style={{
                   width: '100%', border: '1px solid #e2e8f0', borderRadius: '10px',
                   padding: '10px 14px', fontSize: '0.875rem', outline: 'none',

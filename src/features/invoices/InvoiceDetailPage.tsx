@@ -26,6 +26,9 @@ import { InvoiceOverviewPanel } from './components/InvoiceOverviewPanel'
 import { InvoiceItemsPanel } from './components/InvoiceItemsPanel'
 import { InvoiceSharePanel } from './components/InvoiceSharePanel'
 import { ShareInvoiceDrawer } from './components/ShareInvoiceDrawer'
+import { EComplianceSection } from '@/features/documents/components/EComplianceSection'
+import { ECOMPLIANCE_DOCUMENT_TYPES } from './invoice.constants'
+import type { EComplianceDocumentType } from '@/features/documents/ecompliance.types'
 import './invoice-detail-items.css'
 import './invoice-detail-summary.css'
 import './invoice-detail-share-log.css'
@@ -153,6 +156,9 @@ export default function InvoiceDetailPage() {
 
         {status === 'success' && document && (
           <>
+            <div role="status" aria-live="polite" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>
+              Invoice {document.documentNumber} loaded
+            </div>
             <div ref={previewRef} className="invoice-export-capture">
             <InvoiceDetailHeader document={document} />
 
@@ -175,6 +181,13 @@ export default function InvoiceDetailPage() {
               {activeTab === 'overview' && <InvoiceOverviewPanel document={document} />}
               {activeTab === 'items' && <InvoiceItemsPanel lineItems={document.lineItems} />}
               {activeTab === 'share' && <InvoiceSharePanel shareLogs={document.shareLogs} onShare={() => setShareOpen(true)} />}
+              {activeTab === 'compliance' && ECOMPLIANCE_DOCUMENT_TYPES.has(document.type) && (
+                <EComplianceSection
+                  documentId={documentId}
+                  documentType={document.type as EComplianceDocumentType}
+                  totalAmountPaise={document.grandTotal}
+                />
+              )}
             </div>
             </div>{/* /invoice-export-capture */}
           </>

@@ -15,7 +15,7 @@ interface HsnSummaryTableProps {
 export const HsnSummaryTable: React.FC<HsnSummaryTableProps> = ({ items }) => {
   return (
     <div className="hsn-summary" role="region" aria-label="HSN-wise tax summary">
-      <h3 className="hsn-summary__heading">HSN / SAC Summary</h3>
+      <h2 className="hsn-summary__heading">HSN / SAC Summary</h2>
 
       {/* Mobile: card list */}
       <div className="hsn-summary__cards" aria-hidden="false">

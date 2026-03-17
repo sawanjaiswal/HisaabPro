@@ -152,6 +152,12 @@ export default function InvoicesPage() {
           />
         )}
 
+        {status === 'success' && data && (
+          <div role="status" aria-live="polite" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>
+            {data.documents.length} {data.documents.length === 1 ? 'invoice' : 'invoices'} found
+          </div>
+        )}
+
         {status === 'success' && data && data.documents.length > 0 && (
           <div className="invoice-list stagger-list" role="list" aria-label="Invoices">
             {data.documents.map((doc) => (

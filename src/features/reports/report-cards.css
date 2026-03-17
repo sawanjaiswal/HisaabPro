@@ -187,23 +187,23 @@
 }
 
 [data-theme="dark"] .report-status-badge--paid {
-  background: rgba(34, 197, 94, 0.12);
+  background: var(--color-success-bg-subtle);
 }
 
 [data-theme="dark"] .report-status-badge--partial {
-  background: rgba(245, 158, 11, 0.12);
+  background: var(--color-warning-bg-subtle);
 }
 
 [data-theme="dark"] .stock-status-badge--in-stock {
-  background: rgba(34, 197, 94, 0.12);
+  background: var(--color-success-bg-subtle);
 }
 
 [data-theme="dark"] .stock-status-badge--low {
-  background: rgba(245, 158, 11, 0.12);
+  background: var(--color-warning-bg-subtle);
 }
 
 [data-theme="dark"] .stock-status-badge--out-of-stock {
-  background: rgba(239, 68, 68, 0.12);
+  background: var(--color-error-bg-subtle);
 }
 
 /* ─── Reduced motion ────────────────────────────────────────── */

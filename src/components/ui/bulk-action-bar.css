@@ -117,10 +117,15 @@
   background: rgba(239, 68, 68, 0.35);
 }
 
-/* Hide labels on very small screens, keep icons */
-@media (max-width: 374px) {
+/* Base: hide labels on small screens, keep icons */
+.bulk-bar-action-label {
+  display: none;
+}
+
+/* 375px+: show action labels */
+@media (min-width: 375px) {
   .bulk-bar-action-label {
-    display: none;
+    display: inline;
   }
 }
 

@@ -92,7 +92,7 @@
 
 [data-theme="dark"] .invoice-type-pill[aria-pressed='true'],
 [data-theme="dark"] .invoice-type-pill--active {
-  background: rgba(27, 99, 105, 0.15);
+  background: var(--color-primary-bg-subtle-strong);
 }
 
 /* ─── Tablet+ adjustments ───────────────────────────────────── */

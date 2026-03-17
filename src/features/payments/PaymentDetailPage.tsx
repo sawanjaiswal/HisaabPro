@@ -97,6 +97,9 @@ export default function PaymentDetailPage() {
         {/* Success */}
         {status === 'success' && payment && (
           <>
+            <div role="status" aria-live="polite" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>
+              Payment details loaded
+            </div>
             <PaymentDetailHero
               type={payment.type}
               partyName={payment.partyName}

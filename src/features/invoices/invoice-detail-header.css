@@ -120,11 +120,11 @@
 /* ─── Dark Theme ─────────────────────────────────────────────────────────── */
 
 [data-theme="dark"] .invoice-conversion-banner {
-  background: rgba(27, 99, 105, 0.15);
+  background: var(--color-primary-bg-subtle-strong);
 }
 
 [data-theme="dark"] .invoice-conversion-banner--source {
-  background: rgba(59, 130, 246, 0.12);
+  background: var(--color-info-bg-subtle);
 }
 
 /* ─── Tablet+ layout ─────────────────────────────────────────────────────── */

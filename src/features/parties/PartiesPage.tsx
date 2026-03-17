@@ -119,6 +119,12 @@ export default function PartiesPage() {
           />
         )}
 
+        {status === 'success' && data && (
+          <div role="status" aria-live="polite" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>
+            {data.parties.length} {data.parties.length === 1 ? 'party' : 'parties'} found
+          </div>
+        )}
+
         {status === 'success' && data && data.parties.length > 0 && (
           <div className="party-list stagger-list" role="list" aria-label="Parties">
             {data.parties.map((party) => (
