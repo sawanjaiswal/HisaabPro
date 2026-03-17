@@ -1,0 +1,106 @@
+/* HSN Summary — HSN code cards with tax breakdowns
+ *
+ * Mobile-first: base targets 320px, min-width queries for tablet/desktop.
+ * CSS variables only — no hardcoded hex, no inline sizes.
+ */
+
+/* ─── HSN Summary ───────────────────────────────────────────── */
+
+.hsn-summary {
+  margin-bottom: var(--space-5);
+}
+
+.hsn-summary__heading {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  margin-bottom: var(--space-3);
+}
+
+.hsn-summary__cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.hsn-summary__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
+}
+
+.hsn-summary__card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hsn-summary__code {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.hsn-summary__qty {
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+}
+
+.hsn-summary__card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hsn-summary__card-row--total {
+  border-top: 1px solid var(--color-gray-100);
+  padding-top: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.hsn-summary__field-label {
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+}
+
+.hsn-summary__field-value {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-gray-700);
+  font-variant-numeric: tabular-nums;
+}
+
+.hsn-summary__field-value--strong {
+  font-weight: 700;
+  color: var(--color-gray-800);
+}
+
+/* ─── Tablet+ (768px) ───────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .hsn-summary__cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+  }
+}
+
+/* ─── Desktop+ (1024px) ─────────────────────────────────────── */
+
+@media (min-width: 1024px) {
+  .hsn-summary__cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ─── Dark theme ────────────────────────────────────────────── */
+
+[data-theme="dark"] .hsn-summary__card {
+  background: var(--color-gray-900);
+  border-color: var(--color-gray-700);
+}

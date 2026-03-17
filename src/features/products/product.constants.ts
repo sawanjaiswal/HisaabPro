@@ -182,3 +182,13 @@ export const NOTES_MAX = 500
 export const CATEGORY_NAME_MAX = 100
 export const UNIT_NAME_MAX = 50
 export const UNIT_SYMBOL_MAX = 10
+
+// ─── Form section tabs (shared by Create + Edit pages) ──────────────────────
+
+export type ProductFormSectionId = 'basic' | 'stock' | 'extra'
+
+export const PRODUCT_FORM_SECTIONS: { id: ProductFormSectionId; label: string }[] = [
+  { id: 'basic', label: 'Basic Info' },
+  { id: 'stock', label: 'Stock' },
+  { id: 'extra', label: 'Extra' },
+]

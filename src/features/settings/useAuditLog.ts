@@ -9,7 +9,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
-import { getAuditLog } from './settings.service'
+import { getAuditLog } from './audit-log.service'
 import type { AuditLogEntry, AuditLogFilters, AuditAction } from './settings.types'
 
 type Status = 'loading' | 'error' | 'success'

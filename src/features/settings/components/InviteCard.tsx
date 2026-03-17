@@ -2,7 +2,7 @@ import React from 'react'
 import { Clock, RotateCcw } from 'lucide-react'
 import type { StaffInvite } from '../settings.types'
 import { formatTimeAgo } from '../settings.utils'
-import '../settings.css'
+import '../staff-invite.css'
 
 interface InviteCardProps {
   invite: StaffInvite

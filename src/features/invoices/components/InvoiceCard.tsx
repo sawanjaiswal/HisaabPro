@@ -1,12 +1,10 @@
 /** Invoice list row item — txn-row pattern with doc-type icon */
 
-import React from 'react'
+import React, { useRef, useCallback } from 'react'
+import { Check } from 'lucide-react'
 import type { DocumentSummary, PaymentStatus, DocumentType } from '../invoice.types'
-import {
-  formatInvoiceAmount,
-  formatInvoiceDate,
-  getPaymentStatus,
-} from '../invoice.utils'
+import { formatInvoiceAmount, formatInvoiceDate } from '../invoice-format.utils'
+import { getPaymentStatus } from '../invoice-document.utils'
 import {
   DOCUMENT_TYPE_LABELS,
   DOCUMENT_STATUS_LABELS,
@@ -17,7 +15,15 @@ import {
 interface InvoiceCardProps {
   document: DocumentSummary
   onClick: (id: string) => void
+  /** Fires on long-press (500ms hold) to enter bulk select mode */
+  onLongPress?: (id: string) => void
+  /** Whether this card is currently selected in bulk mode */
+  isSelected?: boolean
+  /** Whether bulk select mode is active */
+  isBulkMode?: boolean
 }
+
+const LONG_PRESS_MS = 500
 
 const DOC_TYPE_ICON_CLASS: Record<DocumentType, string> = {
   SALE_INVOICE:     'doc-type-icon doc-type-icon--sale-invoice',
@@ -41,7 +47,13 @@ const PAYMENT_STATUS_INDICATOR_CLASS: Record<PaymentStatus, string> = {
   UNPAID:  'payment-status-indicator payment-status-indicator--unpaid',
 }
 
-export const InvoiceCard: React.FC<InvoiceCardProps> = ({ document, onClick }) => {
+export const InvoiceCard: React.FC<InvoiceCardProps> = ({
+  document,
+  onClick,
+  onLongPress,
+  isSelected = false,
+  isBulkMode = false,
+}) => {
   const paymentStatus = getPaymentStatus(document.grandTotal, document.paidAmount)
   const paymentBadgeClass = PAYMENT_STATUS_INDICATOR_CLASS[paymentStatus]
   const statusBadgeClass = `badge ${STATUS_BADGE_VARIANTS[document.status]}`
@@ -50,24 +62,61 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({ document, onClick }) =
   const typeLabel = DOCUMENT_TYPE_LABELS[document.type]
   const statusLabel = DOCUMENT_STATUS_LABELS[document.status]
 
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const didLongPress = useRef(false)
+
+  const handlePointerDown = useCallback(() => {
+    if (!onLongPress) return
+    didLongPress.current = false
+    timerRef.current = setTimeout(() => {
+      didLongPress.current = true
+      onLongPress(document.id)
+    }, LONG_PRESS_MS)
+  }, [onLongPress, document.id])
+
+  const handlePointerUp = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+      timerRef.current = null
+    }
+  }, [])
+
+  const handleClick = useCallback(() => {
+    if (didLongPress.current) {
+      didLongPress.current = false
+      return
+    }
+    onClick(document.id)
+  }, [onClick, document.id])
+
   return (
     <div
-      className="txn-row invoice-list-item"
+      className={`txn-row invoice-list-item${isSelected ? ' txn-row--selected' : ''}`}
       role="button"
       tabIndex={0}
-      aria-label={`${typeLabel} ${document.documentNumber} for ${document.party.name}, ${formatInvoiceAmount(document.grandTotal)}`}
-      onClick={() => onClick(document.id)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') onClick(document.id)
-      }}
-      style={{ minHeight: '44px', cursor: 'pointer' }}
+      aria-label={`${isBulkMode ? (isSelected ? 'Deselect' : 'Select') : 'View details for'} ${typeLabel} ${document.documentNumber} for ${document.party.name}, ${formatInvoiceAmount(document.grandTotal)}`}
+      onClick={handleClick}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleClick() }}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
+      style={{ cursor: 'pointer' }}
     >
-      <div className={iconClass} aria-hidden="true">
-        {typeCode}
-      </div>
+      {isBulkMode ? (
+        <div
+          className={`bulk-check${isSelected ? ' bulk-check--active' : ''}`}
+          aria-hidden="true"
+        >
+          {isSelected && <Check size={16} />}
+        </div>
+      ) : (
+        <div className={iconClass} aria-hidden="true">
+          {typeCode}
+        </div>
+      )}
 
       <div className="txn-info">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+        <div className="invoice-card-header">
           <span className="txn-name">{document.party.name}</span>
           <span
             className={statusBadgeClass}
@@ -79,7 +128,7 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({ document, onClick }) =
         <span className="txn-date">{document.documentNumber} · {formatInvoiceDate(document.documentDate)}</span>
       </div>
 
-      <div style={{ textAlign: 'right', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 'var(--space-1)' }}>
+      <div className="invoice-card-right">
         <div className="txn-amount">{formatInvoiceAmount(document.grandTotal)}</div>
         <span
           className={paymentBadgeClass}

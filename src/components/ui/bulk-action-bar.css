@@ -1,0 +1,131 @@
+/* Bulk Action Bar — slides up from bottom when items selected */
+
+.bulk-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--side-padding);
+  min-height: 56px;
+  background: var(--color-primary-600);
+  color: var(--color-gray-0);
+  animation: bulk-bar-slide-up 0.2s ease-out;
+}
+
+@keyframes bulk-bar-slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.bulk-bar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.bulk-bar-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--color-gray-0);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--duration-fast) ease;
+}
+
+.bulk-bar-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.bulk-bar-count {
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.bulk-bar-select-all {
+  border: none;
+  background: none;
+  color: var(--color-secondary-300);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.bulk-bar-select-all:hover {
+  color: var(--color-secondary-200);
+}
+
+.bulk-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.bulk-bar-action {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  min-height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-gray-0);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--duration-fast) ease;
+}
+
+.bulk-bar-action:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.bulk-bar-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bulk-bar-action--danger {
+  border-color: var(--color-error-500);
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.bulk-bar-action--danger:hover {
+  background: rgba(239, 68, 68, 0.35);
+}
+
+/* Hide labels on very small screens, keep icons */
+@media (max-width: 374px) {
+  .bulk-bar-action-label {
+    display: none;
+  }
+}
+
+/* Tablet+ — more spacious */
+@media (min-width: 768px) {
+  .bulk-bar {
+    padding: var(--space-3) var(--space-6);
+  }
+}

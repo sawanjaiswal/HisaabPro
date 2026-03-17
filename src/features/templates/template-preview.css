@@ -1,0 +1,72 @@
+/* ============================================================
+ * Template Preview — page shell + live invoice preview panel
+ * Part of template customization page styles.
+ * ============================================================ */
+
+/* Full-height page shell — stacks preview on top, controls below on mobile */
+.template-customize-page {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--color-gray-50);
+}
+
+/* Top panel — live invoice preview */
+.template-preview-panel {
+  flex: 0 0 55%;
+  background: var(--color-gray-0);
+  border-bottom: 1px solid var(--color-gray-100);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.template-preview-panel::-webkit-scrollbar {
+  display: none;
+}
+
+/* Centers and constrains the mock invoice */
+.template-preview-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--space-4) var(--space-4) var(--space-6);
+  min-height: 100%;
+}
+
+/* The invoice card itself */
+.template-preview-invoice {
+  width: 100%;
+  max-width: 420px;
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+/* Tablet+ — side-by-side split layout (preview portion) */
+@media (min-width: 768px) {
+  .template-customize-page {
+    flex-direction: row;
+  }
+
+  /* Preview on the left, 50% width */
+  .template-preview-panel {
+    flex: 0 0 50%;
+    border-bottom: none;
+    border-right: 1px solid var(--color-gray-100);
+    min-height: 100dvh;
+  }
+
+  .template-preview-container {
+    padding: var(--space-6);
+    align-items: center;
+    min-height: 100dvh;
+  }
+
+  .template-preview-invoice {
+    max-width: 480px;
+  }
+}

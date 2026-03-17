@@ -18,6 +18,24 @@ import type {
   PaymentStatus,
 } from './invoice.types'
 
+// ─── Invoice detail page tabs ────────────────────────────────────────────────
+
+export type DetailTab = 'overview' | 'items' | 'share'
+
+export const DETAIL_TABS: { id: DetailTab; label: string }[] = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'items', label: 'Items' },
+  { id: 'share', label: 'Share' },
+]
+
+// ─── Invoice form section tabs ───────────────────────────────────────────────
+
+export const FORM_SECTIONS: { id: 'items' | 'details' | 'charges'; label: string }[] = [
+  { id: 'items', label: 'Items' },
+  { id: 'details', label: 'Details' },
+  { id: 'charges', label: 'Charges' },
+]
+
 // ─── Document type display labels ─────────────────────────────────────────────
 
 export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {

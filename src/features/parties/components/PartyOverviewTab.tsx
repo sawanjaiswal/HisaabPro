@@ -1,6 +1,7 @@
 /** Party Detail — Overview tab: contact, business, credit, notes */
 
 import React from 'react'
+import '../party-detail-header.css'
 import {
   Phone,
   Mail,

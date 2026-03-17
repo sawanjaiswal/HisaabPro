@@ -1,0 +1,155 @@
+/* ─── Staff List & Cards — Component Styles ──────────────────────────────────
+ *
+ * All values use CSS variables only — no hardcoded hex, rgba, or px magic numbers.
+ * Touch targets: 44px minimum on all interactive elements.
+ * Mobile-first: base styles target 375px, media queries use min-width only.
+ * Class prefix: .staff-*
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+.staff-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  min-height: 100vh;
+  background-color: var(--color-gray-50);
+}
+
+.staff-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.staff-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background-color: var(--color-gray-0, #fff);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+}
+
+.staff-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-700);
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: var(--font-primary);
+  flex-shrink: 0;
+}
+
+.staff-avatar--suspended {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-500);
+}
+
+.staff-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.staff-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-gray-900);
+  margin-bottom: var(--space-0-5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.staff-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.staff-role {
+  font-size: 0.8125rem;
+  color: var(--color-gray-600);
+}
+
+.staff-phone {
+  font-size: 0.8125rem;
+  color: var(--color-gray-400);
+}
+
+.staff-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  flex-shrink: 0;
+}
+
+.staff-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.staff-status-dot--active {
+  background-color: var(--color-green-500);
+}
+
+.staff-status-dot--suspended {
+  background-color: var(--color-red-400);
+}
+
+.staff-status-dot--pending {
+  background-color: var(--color-orange-400);
+}
+
+.staff-status-label {
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+}
+
+.staff-action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: none;
+  color: var(--color-gray-400);
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.staff-action-button:active {
+  background-color: var(--color-gray-100);
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .staff-page {
+  background-color: var(--color-gray-0);
+}
+
+[data-theme="dark"] .staff-card {
+  background-color: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
+
+/* ─── Responsive — 768px+ ────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .staff-page {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+}

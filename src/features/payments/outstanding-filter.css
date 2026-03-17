@@ -1,0 +1,98 @@
+/* Outstanding Filter — search bar, type pills, overdue toggle
+ *
+ * Used by OutstandingFilterBar.tsx.
+ * Horizontal scrollable filter pills with touch feedback.
+ */
+
+/* ─── Filter bar ─────────────────────────────────────────────────────────── */
+
+.outstanding-filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+/* Horizontal scrollable filter pills */
+.outstanding-filter-pills {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: var(--space-1);
+}
+
+.outstanding-filter-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.outstanding-filter-pill {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  color: var(--color-gray-600);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: var(--font-primary);
+  cursor: pointer;
+  min-height: 44px;
+  white-space: nowrap;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default),
+    color var(--duration-fast) var(--ease-default),
+    transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.outstanding-filter-pill:active {
+  transform: scale(0.95);
+}
+
+.outstanding-filter-pill:hover {
+  border-color: var(--color-primary-300);
+  color: var(--color-primary-500);
+}
+
+.outstanding-filter-pill[aria-pressed='true'],
+.outstanding-filter-pill--active {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-400);
+  color: var(--color-primary-500);
+  font-weight: 600;
+}
+
+/* ─── Tablet+ adjustments ────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  /* Filter bar goes horizontal on tablet */
+  .outstanding-filter-bar {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .outstanding-filter-bar .search-bar {
+    flex: 1;
+  }
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .outstanding-filter-pill {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}
+
+/* ─── Reduced Motion ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .outstanding-filter-pill:active {
+    transform: none !important;
+  }
+}

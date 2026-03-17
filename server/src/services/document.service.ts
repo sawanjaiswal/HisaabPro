@@ -27,10 +27,10 @@ const ALLOWED_CONVERSIONS: Record<string, string[]> = {
 
 // Types that affect stock
 const STOCK_DECREASE_TYPES = new Set(['SALE_INVOICE', 'DELIVERY_CHALLAN'])
-const STOCK_INCREASE_TYPES = new Set(['PURCHASE_INVOICE'])
+const STOCK_INCREASE_TYPES = new Set(['PURCHASE_INVOICE', 'CREDIT_NOTE']) // CN on sale = return → stock increases
 
 // Types that affect outstanding
-const AFFECTS_OUTSTANDING = new Set(['SALE_INVOICE', 'PURCHASE_INVOICE'])
+const AFFECTS_OUTSTANDING = new Set(['SALE_INVOICE', 'PURCHASE_INVOICE', 'CREDIT_NOTE', 'DEBIT_NOTE'])
 
 // === Shared select for list/detail ===
 
@@ -49,6 +49,12 @@ const DOCUMENT_LIST_SELECT = {
   totalProfit: true,
   paidAmount: true,
   balanceDue: true,
+  originalDocumentId: true,
+  totalTaxableValue: true,
+  totalCgst: true,
+  totalSgst: true,
+  totalIgst: true,
+  totalCess: true,
   createdAt: true,
   updatedAt: true,
   party: {
@@ -86,6 +92,24 @@ const DOCUMENT_DETAIL_SELECT = {
   vehicleNumber: true,
   driverName: true,
   transportNotes: true,
+  // GST Phase 2
+  placeOfSupply: true,
+  supplyType: true,
+  isReverseCharge: true,
+  isComposite: true,
+  totalTaxableValue: true,
+  totalCgst: true,
+  totalSgst: true,
+  totalIgst: true,
+  totalCess: true,
+  // TDS/TCS Phase 2B
+  tdsRate: true,
+  tdsAmount: true,
+  tcsRate: true,
+  tcsAmount: true,
+  // CN/DN
+  originalDocumentId: true,
+  creditDebitReason: true,
   sourceDocumentId: true,
   clientId: true,
   deletedAt: true,
@@ -111,6 +135,11 @@ const DOCUMENT_DETAIL_SELECT = {
       discountType: true, discountValue: true, discountAmount: true,
       lineTotal: true, purchasePrice: true, profit: true, profitPercent: true,
       stockBefore: true, stockAfter: true,
+      // GST Phase 2
+      taxCategoryId: true, hsnCode: true, sacCode: true,
+      taxableValue: true, cgstRate: true, cgstAmount: true,
+      sgstRate: true, sgstAmount: true, igstRate: true, igstAmount: true,
+      cessRate: true, cessAmount: true,
       product: {
         select: {
           id: true, name: true, sku: true, currentStock: true,
@@ -131,6 +160,13 @@ const DOCUMENT_DETAIL_SELECT = {
   },
   convertedTo: {
     select: { id: true, type: true, documentNumber: true },
+  },
+  originalDocument: {
+    select: { id: true, type: true, documentNumber: true, grandTotal: true },
+  },
+  creditDebitNotes: {
+    select: { id: true, type: true, documentNumber: true, grandTotal: true, documentDate: true, creditDebitReason: true },
+    orderBy: { documentDate: 'desc' as const },
   },
   shareLogs: {
     select: {
@@ -177,6 +213,22 @@ async function updateOutstanding(
   })
 }
 
+/** Calculate outstanding delta for a document type (positive = receivable, negative = payable) */
+function getOutstandingDelta(type: string, grandTotal: number): number {
+  switch (type) {
+    case 'SALE_INVOICE': return grandTotal      // party owes us
+    case 'PURCHASE_INVOICE': return -grandTotal  // we owe party
+    case 'CREDIT_NOTE': return -grandTotal       // reduces receivable
+    case 'DEBIT_NOTE': return grandTotal         // increases receivable
+    default: return 0
+  }
+}
+
+/** Reverse outstanding delta (negate the original effect) */
+function getOutstandingReverseDelta(type: string, grandTotal: number): number {
+  return -getOutstandingDelta(type, grandTotal)
+}
+
 // === CRUD ===
 
 export async function createDocument(
@@ -190,6 +242,23 @@ export async function createDocument(
     select: { id: true },
   })
   if (!party) throw notFoundError('Party')
+
+  // Validate originalDocumentId for Credit/Debit Notes
+  const isCreditDebitNote = data.type === 'CREDIT_NOTE' || data.type === 'DEBIT_NOTE'
+  if (isCreditDebitNote && data.originalDocumentId) {
+    const originalDoc = await prisma.document.findFirst({
+      where: { id: data.originalDocumentId, businessId, status: { in: ['SAVED', 'SHARED'] } },
+      select: { id: true, type: true },
+    })
+    if (!originalDoc) throw validationError('Original document not found or not in saved state')
+    // Credit notes should reference sale invoices, debit notes reference purchase invoices
+    if (data.type === 'CREDIT_NOTE' && originalDoc.type !== 'SALE_INVOICE') {
+      throw validationError('Credit notes can only reference sale invoices')
+    }
+    if (data.type === 'DEBIT_NOTE' && originalDoc.type !== 'PURCHASE_INVOICE') {
+      throw validationError('Debit notes can only reference purchase invoices')
+    }
+  }
 
   // Fetch product data for calculations
   const productIds = data.lineItems.map(li => li.productId)
@@ -206,17 +275,39 @@ export async function createDocument(
     }
   }
 
+  // Fetch TaxCategory data for GST calculations (cess rates come from here)
+  const taxCategoryIds = data.lineItems
+    .map(li => li.taxCategoryId)
+    .filter((id): id is string => !!id)
+  const taxCategories = taxCategoryIds.length > 0
+    ? await prisma.taxCategory.findMany({
+        where: { id: { in: taxCategoryIds }, businessId },
+        select: { id: true, cessRate: true, cessType: true },
+      })
+    : []
+  const taxCategoryMap = new Map(taxCategories.map(tc => [tc.id, tc]))
+
+  // Fetch business state code for inter-state determination
+  const business = await prisma.business.findUnique({
+    where: { id: businessId },
+    select: { stateCode: true, compositionScheme: true },
+  })
+
   const roundOffSetting = await getRoundOffSetting(businessId)
 
-  // Build calculation inputs
+  // Build calculation inputs — include GST fields when present
   const calcItems = data.lineItems.map(li => {
     const product = productMap.get(li.productId)!
+    const tc = li.taxCategoryId ? taxCategoryMap.get(li.taxCategoryId) : undefined
     return {
       quantity: li.quantity,
       rate: li.rate,
       discountType: li.discountType,
       discountValue: li.discountValue,
       purchasePrice: product.purchasePrice || 0,
+      gstRate: li.gstRate,
+      cessRate: tc?.cessRate ?? 0,
+      cessType: tc?.cessType ?? 'PERCENTAGE',
     }
   })
   const calcCharges = data.additionalCharges.map(c => ({
@@ -224,7 +315,12 @@ export async function createDocument(
     value: c.value,
   }))
 
-  const totals = calculateDocumentTotals(calcItems, calcCharges, roundOffSetting)
+  const isComposite = data.isComposite ?? business?.compositionScheme ?? false
+  const totals = calculateDocumentTotals(calcItems, calcCharges, roundOffSetting, {
+    businessStateCode: business?.stateCode ?? null,
+    placeOfSupply: data.placeOfSupply ?? null,
+    isComposite,
+  })
   const isSaving = data.status === 'SAVED'
 
   return prisma.$transaction(async (tx) => {
@@ -265,6 +361,23 @@ export async function createDocument(
         transportNotes: data.transportDetails?.transportNotes || null,
         createdBy: userId,
         clientId: data.clientId || null,
+        // Phase 2 — GST
+        placeOfSupply: data.placeOfSupply || null,
+        isReverseCharge: data.isReverseCharge || false,
+        isComposite,
+        totalTaxableValue: totals.totalTaxableValue,
+        totalCgst: totals.totalCgst,
+        totalSgst: totals.totalSgst,
+        totalIgst: totals.totalIgst,
+        totalCess: totals.totalCess,
+        // Phase 2 — Credit/Debit Note
+        originalDocumentId: data.originalDocumentId || null,
+        creditDebitReason: data.creditDebitReason || null,
+        // Phase 2B — TDS/TCS
+        tdsRate: data.tdsRate ?? 0,
+        tdsAmount: data.tdsAmount ?? 0,
+        tcsRate: data.tcsRate ?? 0,
+        tcsAmount: data.tcsAmount ?? 0,
       },
     })
 
@@ -287,6 +400,19 @@ export async function createDocument(
         profitPercent: calc.profitPercent,
         stockBefore: product.currentStock,
         stockAfter: product.currentStock, // updated below if stock affected
+        // GST Phase 2
+        taxCategoryId: li.taxCategoryId ?? null,
+        hsnCode: li.hsnCode ?? null,
+        sacCode: li.sacCode ?? null,
+        taxableValue: calc.taxableValue ?? 0,
+        cgstRate: calc.cgstRate ?? 0,
+        cgstAmount: calc.cgstAmount ?? 0,
+        sgstRate: calc.sgstRate ?? 0,
+        sgstAmount: calc.sgstAmount ?? 0,
+        igstRate: calc.igstRate ?? 0,
+        igstAmount: calc.igstAmount ?? 0,
+        cessRate: calc.cessRate ?? 0,
+        cessAmount: calc.cessAmount ?? 0,
       }
     })
     await tx.documentLineItem.createMany({ data: lineItemData })
@@ -335,9 +461,17 @@ export async function createDocument(
 
       // Outstanding effects
       if (AFFECTS_OUTSTANDING.has(data.type)) {
-        const outstandingDelta = data.type === 'SALE_INVOICE'
-          ? totals.grandTotal   // receivable
-          : -totals.grandTotal  // payable
+        let outstandingDelta: number
+        if (data.type === 'SALE_INVOICE') {
+          outstandingDelta = totals.grandTotal   // receivable (party owes us)
+        } else if (data.type === 'PURCHASE_INVOICE') {
+          outstandingDelta = -totals.grandTotal  // payable (we owe party)
+        } else if (data.type === 'CREDIT_NOTE') {
+          outstandingDelta = -totals.grandTotal  // reduces receivable (we owe party back)
+        } else {
+          // DEBIT_NOTE — increases receivable (party owes us more)
+          outstandingDelta = totals.grandTotal
+        }
         await updateOutstanding(tx, data.partyId, outstandingDelta)
       }
     }
@@ -427,6 +561,7 @@ export async function updateDocument(
     where: { id: documentId, businessId },
     select: {
       id: true, type: true, status: true, partyId: true, grandTotal: true,
+      placeOfSupply: true, isComposite: true,
       lineItems: { select: { productId: true, quantity: true } },
     },
   })
@@ -443,9 +578,7 @@ export async function updateDocument(
       await reverseForInvoice(tx, { businessId, invoiceId: documentId, userId })
     }
     if (wasSaved && AFFECTS_OUTSTANDING.has(existing.type)) {
-      const reverseDelta = existing.type === 'SALE_INVOICE'
-        ? -existing.grandTotal
-        : existing.grandTotal
+      const reverseDelta = getOutstandingReverseDelta(existing.type, existing.grandTotal)
       await updateOutstanding(tx, existing.partyId, reverseDelta)
     }
 
@@ -463,16 +596,46 @@ export async function updateDocument(
         if (!productMap.has(li.productId)) throw notFoundError(`Product ${li.productId}`)
       }
 
+      // Fetch TaxCategory cess data for line items
+      const taxCategoryIds = data.lineItems
+        .map(li => li.taxCategoryId)
+        .filter((id): id is string => !!id)
+      const taxCategories = taxCategoryIds.length > 0
+        ? await tx.taxCategory.findMany({
+            where: { id: { in: taxCategoryIds }, businessId },
+            select: { id: true, cessRate: true, cessType: true },
+          })
+        : []
+      const taxCategoryMap = new Map(taxCategories.map(tc => [tc.id, tc]))
+
+      // Fetch business state code
+      const biz = await tx.business.findUnique({
+        where: { id: businessId },
+        select: { stateCode: true, compositionScheme: true },
+      })
+
       const roundOffSetting = await getRoundOffSetting(businessId)
-      const calcItems = data.lineItems.map(li => ({
-        quantity: li.quantity,
-        rate: li.rate,
-        discountType: li.discountType,
-        discountValue: li.discountValue,
-        purchasePrice: productMap.get(li.productId)!.purchasePrice || 0,
-      }))
+      const placeOfSupply = data.placeOfSupply ?? existing.placeOfSupply ?? null
+      const isCompositeUpdate = data.isComposite ?? existing.isComposite ?? biz?.compositionScheme ?? false
+      const calcItems = data.lineItems.map(li => {
+        const tc = li.taxCategoryId ? taxCategoryMap.get(li.taxCategoryId) : undefined
+        return {
+          quantity: li.quantity,
+          rate: li.rate,
+          discountType: li.discountType,
+          discountValue: li.discountValue,
+          purchasePrice: productMap.get(li.productId)!.purchasePrice || 0,
+          gstRate: li.gstRate,
+          cessRate: tc?.cessRate ?? 0,
+          cessType: tc?.cessType ?? 'PERCENTAGE',
+        }
+      })
       const calcCharges = (data.additionalCharges || []).map(c => ({ type: c.type, value: c.value }))
-      totals = calculateDocumentTotals(calcItems, calcCharges, roundOffSetting)
+      totals = calculateDocumentTotals(calcItems, calcCharges, roundOffSetting, {
+        businessStateCode: biz?.stateCode ?? null,
+        placeOfSupply: placeOfSupply as string | null,
+        isComposite: isCompositeUpdate,
+      })
 
       // Replace line items
       await tx.documentLineItem.deleteMany({ where: { documentId } })
@@ -494,6 +657,19 @@ export async function updateDocument(
           profitPercent: calc.profitPercent,
           stockBefore: product.currentStock,
           stockAfter: product.currentStock,
+          // GST Phase 2
+          taxCategoryId: li.taxCategoryId ?? null,
+          hsnCode: li.hsnCode ?? null,
+          sacCode: li.sacCode ?? null,
+          taxableValue: calc.taxableValue ?? 0,
+          cgstRate: calc.cgstRate ?? 0,
+          cgstAmount: calc.cgstAmount ?? 0,
+          sgstRate: calc.sgstRate ?? 0,
+          sgstAmount: calc.sgstAmount ?? 0,
+          igstRate: calc.igstRate ?? 0,
+          igstAmount: calc.igstAmount ?? 0,
+          cessRate: calc.cessRate ?? 0,
+          cessAmount: calc.cessAmount ?? 0,
         }
       })
       await tx.documentLineItem.createMany({ data: lineItemData })
@@ -555,7 +731,22 @@ export async function updateDocument(
       updateData.totalProfit = totals.totalProfit
       updateData.profitPercent = totals.profitPercent
       updateData.balanceDue = totals.grandTotal // reset balance (payments will re-attach)
+      // GST Phase 2 totals
+      updateData.totalTaxableValue = totals.totalTaxableValue
+      updateData.totalCgst = totals.totalCgst
+      updateData.totalSgst = totals.totalSgst
+      updateData.totalIgst = totals.totalIgst
+      updateData.totalCess = totals.totalCess
     }
+    // Phase 2 — update GST flags if provided
+    if (data.placeOfSupply !== undefined) updateData.placeOfSupply = data.placeOfSupply
+    if (data.isReverseCharge !== undefined) updateData.isReverseCharge = data.isReverseCharge
+    if (data.isComposite !== undefined) updateData.isComposite = data.isComposite
+    // Phase 2B — TDS/TCS
+    if (data.tdsRate !== undefined) updateData.tdsRate = data.tdsRate
+    if (data.tdsAmount !== undefined) updateData.tdsAmount = data.tdsAmount
+    if (data.tcsRate !== undefined) updateData.tcsRate = data.tcsRate
+    if (data.tcsAmount !== undefined) updateData.tcsAmount = data.tcsAmount
 
     await tx.document.update({
       where: { id: documentId },
@@ -597,9 +788,7 @@ export async function updateDocument(
       }
 
       if (AFFECTS_OUTSTANDING.has(existing.type)) {
-        const outstandingDelta = existing.type === 'SALE_INVOICE'
-          ? effectiveGrandTotal
-          : -effectiveGrandTotal
+        const outstandingDelta = getOutstandingDelta(existing.type, effectiveGrandTotal)
         await updateOutstanding(tx, effectivePartyId, outstandingDelta)
       }
     }
@@ -639,9 +828,7 @@ export async function deleteDocument(businessId: string, documentId: string, use
         await reverseForInvoice(tx, { businessId, invoiceId: documentId, userId })
       }
       if (AFFECTS_OUTSTANDING.has(doc.type)) {
-        const reverseDelta = doc.type === 'SALE_INVOICE'
-          ? -doc.grandTotal
-          : doc.grandTotal
+        const reverseDelta = getOutstandingReverseDelta(doc.type, doc.grandTotal)
         await updateOutstanding(tx, doc.partyId, reverseDelta)
       }
     }
@@ -841,9 +1028,7 @@ export async function restoreDocument(businessId: string, documentId: string, us
 
     // Re-apply outstanding
     if (AFFECTS_OUTSTANDING.has(doc.type)) {
-      const outstandingDelta = doc.type === 'SALE_INVOICE'
-        ? doc.grandTotal
-        : -doc.grandTotal
+      const outstandingDelta = getOutstandingDelta(doc.type, doc.grandTotal)
       await updateOutstanding(tx, doc.partyId, outstandingDelta)
     }
 

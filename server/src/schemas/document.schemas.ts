@@ -12,6 +12,7 @@ import { z } from 'zod'
 const DOCUMENT_TYPES = [
   'SALE_INVOICE', 'PURCHASE_INVOICE', 'ESTIMATE', 'PROFORMA',
   'SALE_ORDER', 'PURCHASE_ORDER', 'DELIVERY_CHALLAN',
+  'CREDIT_NOTE', 'DEBIT_NOTE',
 ] as const
 
 const DOCUMENT_STATUSES = ['DRAFT', 'SAVED'] as const // Only these two are valid for create/update
@@ -32,6 +33,11 @@ const lineItemSchema = z.object({
   rate: z.number().int().min(0), // paise
   discountType: z.enum(DISCOUNT_TYPES).default('AMOUNT'),
   discountValue: z.number().int().min(0).default(0),
+  // Phase 2 — GST fields (optional, backward compatible)
+  taxCategoryId: z.string().optional(),
+  hsnCode: z.string().max(8).optional(),
+  sacCode: z.string().max(8).optional(),
+  gstRate: z.number().int().min(0).max(10000).optional(), // basis points
 })
 
 // === Additional Charge ===
@@ -67,6 +73,18 @@ export const createDocumentSchema = z.object({
   additionalCharges: z.array(additionalChargeSchema).max(10).default([]),
   transportDetails: transportDetailsSchema.nullable().optional(),
   clientId: z.string().optional(), // offline sync
+  // Phase 2 — GST document fields (optional, backward compatible)
+  placeOfSupply: z.string().length(2).optional(),
+  isReverseCharge: z.boolean().optional(),
+  isComposite: z.boolean().optional(),
+  // Credit/Debit Note — Phase 2
+  originalDocumentId: z.string().optional(),
+  creditDebitReason: z.string().max(500).optional(),
+  // Phase 2B — TDS/TCS (optional, for B2B invoices)
+  tdsRate: z.number().int().min(0).max(10000).optional(),   // basis points
+  tdsAmount: z.number().int().min(0).optional(),             // paise
+  tcsRate: z.number().int().min(0).max(10000).optional(),   // basis points
+  tcsAmount: z.number().int().min(0).optional(),             // paise
 })
 
 // === Update Document ===
@@ -84,6 +102,15 @@ export const updateDocumentSchema = z.object({
   lineItems: z.array(lineItemSchema).min(1).max(100).optional(),
   additionalCharges: z.array(additionalChargeSchema).max(10).optional(),
   transportDetails: transportDetailsSchema.nullable().optional(),
+  // Phase 2 — GST document fields (optional, backward compatible)
+  placeOfSupply: z.string().length(2).optional(),
+  isReverseCharge: z.boolean().optional(),
+  isComposite: z.boolean().optional(),
+  // Phase 2B — TDS/TCS (optional, for B2B invoices)
+  tdsRate: z.number().int().min(0).max(10000).optional(),   // basis points
+  tdsAmount: z.number().int().min(0).optional(),             // paise
+  tcsRate: z.number().int().min(0).max(10000).optional(),   // basis points
+  tcsAmount: z.number().int().min(0).optional(),             // paise
 })
 
 // === List Documents (query params) ===

@@ -7,6 +7,7 @@
 
 import React from 'react'
 import { AlertTriangle, Clock, ChevronRight } from 'lucide-react'
+import { SUBSCRIPTION_PRICE_LABEL } from '../dashboard.constants'
 
 interface AlertStripProps {
   lowStockCount: number
@@ -37,7 +38,7 @@ export const AlertStrip: React.FC<AlertStripProps> = ({
           <img src="/assets/icon-crown.svg" alt="" width={20} height={20} aria-hidden="true" />
         </div>
         <div className="dashboard-alert-info">
-          <div className="dashboard-alert-title">Get the best of the app in &#8377;299 only</div>
+          <div className="dashboard-alert-title">Get the best of the app in {SUBSCRIPTION_PRICE_LABEL} only</div>
           <div className="dashboard-alert-subtitle">Upgrade to unlock all features</div>
         </div>
         <div className="dashboard-alert-chevron">

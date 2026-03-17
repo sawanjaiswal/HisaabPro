@@ -209,6 +209,22 @@ export const REPORT_CATEGORIES: ReportCategory[] = [
     route:       ROUTES.REPORT_PAYMENT_HISTORY,
     color:       'var(--color-error-600)',
   },
+  {
+    id:          'tax_summary',
+    title:       'Tax Summary',
+    description: 'GST tax collected & payable',
+    icon:        'Receipt',
+    route:       ROUTES.REPORT_TAX_SUMMARY,
+    color:       'var(--color-brand-primary)',
+  },
+  {
+    id:          'gst_returns',
+    title:       'GST Returns',
+    description: 'GSTR-1, GSTR-3B, GSTR-9',
+    icon:        'FileText',
+    route:       ROUTES.REPORT_GST_RETURNS,
+    color:       'var(--color-brand-secondary)',
+  },
 ]
 
 // ─── Pagination defaults ──────────────────────────────────────────────────────

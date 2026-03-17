@@ -1,0 +1,175 @@
+/* Payment Form Layout — Page container, form wrapper, party selector, amount field
+ *
+ * Used by RecordPaymentPage and EditPaymentPage.
+ * Mobile-first: base styles target 320px, min-width queries add tablet+ layout.
+ */
+
+/* ─── Page container ─────────────────────────────────────────────────────── */
+
+.payment-form-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding-bottom: calc(var(--bottom-nav-height) + 80px); /* clearance for save bar */
+}
+
+/* ─── Form wrapper ───────────────────────────────────────────────────────── */
+
+.payment-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* ─── Party selector ─────────────────────────────────────────────────────── */
+
+.payment-party-selector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* When a party is selected — show avatar + name + outstanding */
+.payment-party-selected {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
+}
+
+.payment-party-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.payment-party-name {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--color-gray-800);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.payment-party-outstanding {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  margin-top: 2px;
+}
+
+.payment-party-change {
+  font-size: 0.8125rem;
+  color: var(--color-primary-500);
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-2);
+  min-height: 44px;
+  font-family: var(--font-primary);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ─── Amount field ───────────────────────────────────────────────────────── */
+
+.payment-amount-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Large rupee prefix + number display */
+.payment-amount-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--color-gray-0);
+  border: 2px solid var(--color-primary-400);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.payment-amount-prefix {
+  padding: 0 var(--space-3) 0 var(--space-4);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-gray-500);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.payment-amount-input {
+  flex: 1;
+  height: 64px;
+  padding: 0 var(--space-4) 0 0;
+  font-family: var(--font-primary);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-gray-900);
+  background: transparent;
+  border: none;
+  outline: none;
+  letter-spacing: -0.02em;
+  -moz-appearance: textfield;
+}
+
+.payment-amount-input::-webkit-outer-spin-button,
+.payment-amount-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.payment-amount-input::placeholder {
+  color: var(--color-gray-300);
+  font-weight: 400;
+}
+
+/* Quick-fill "Full Amount" button */
+.payment-quick-fill {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.payment-quick-fill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-secondary-50);
+  border: 1px solid var(--color-secondary-200);
+  border-radius: var(--radius-full);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-family: var(--font-primary);
+  color: var(--color-secondary-700);
+  cursor: pointer;
+  min-height: 36px;
+  transition: background var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.payment-quick-fill-btn:active {
+  background: var(--color-secondary-100);
+}
+
+.payment-quick-fill-label {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+}
+
+/* ─── Tablet+ adjustments ────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .payment-amount-input {
+    font-size: 2rem;
+  }
+
+  .payment-amount-prefix {
+    font-size: 2rem;
+  }
+}

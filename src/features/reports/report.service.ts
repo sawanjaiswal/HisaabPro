@@ -25,6 +25,18 @@ import type {
   PaymentHistoryResponse,
   ExportRequest,
 } from './report.types'
+import type {
+  TaxSummaryFilters,
+  TaxSummaryData,
+  HsnSummaryData,
+  TaxLedgerFilters,
+  TaxLedgerData,
+  GstReturnType,
+  Gstr1Data,
+  Gstr3bData,
+  Gstr9Data,
+  GstExportData,
+} from './report-tax.types'
 
 // ─── Invoice Report (Sale / Purchase) ─────────────────────────────────────────
 
@@ -108,6 +120,82 @@ export async function getPaymentHistory(
   return api<PaymentHistoryResponse>(`/reports/payments?${query}`, { signal })
 }
 
+// ─── Tax Summary ───────────────────────────────────────────────────────────────
+
+/**
+ * Fetch tax summary (sales, purchases, credit notes, debit notes) for a date range.
+ * Returns pre-aggregated tax breakdowns and net tax liability in paise.
+ */
+export async function getTaxSummary(
+  filters: TaxSummaryFilters,
+  signal?: AbortSignal
+): Promise<TaxSummaryData> {
+  const query = buildQueryString(filters as unknown as Record<string, unknown>)
+  return api<TaxSummaryData>(`/reports/tax-summary?${query}`, { signal })
+}
+
+/**
+ * Fetch HSN-wise tax summary for a date range.
+ * Each item contains quantity, taxable value, and component-wise tax totals.
+ */
+export async function getHsnSummary(
+  filters: TaxSummaryFilters,
+  signal?: AbortSignal
+): Promise<HsnSummaryData> {
+  const query = buildQueryString(filters as unknown as Record<string, unknown>)
+  return api<HsnSummaryData>(`/reports/hsn-summary?${query}`, { signal })
+}
+
+/**
+ * Fetch paginated tax ledger entries for a date range.
+ * Uses cursor-based pagination — pass cursor from previous response for next page.
+ */
+export async function getTaxLedger(
+  filters: TaxLedgerFilters,
+  signal?: AbortSignal
+): Promise<TaxLedgerData> {
+  const query = buildQueryString(filters as unknown as Record<string, unknown>)
+  return api<TaxLedgerData>(`/reports/tax-ledger?${query}`, { signal })
+}
+
+// ─── GST Returns ───────────────────────────────────────────────────────────────
+
+/**
+ * Fetch a specific GST return (GSTR-1, GSTR-3B, or GSTR-9) for a given period.
+ * Period format: "YYYY-MM" (e.g. "2026-03").
+ */
+export async function getGstReturn(
+  returnType: GstReturnType,
+  period: string,
+  signal?: AbortSignal
+): Promise<Gstr1Data | Gstr3bData | Gstr9Data> {
+  return api<Gstr1Data | Gstr3bData | Gstr9Data>(
+    `/gst/returns/${returnType}/${period}`,
+    { signal }
+  )
+}
+
+/**
+ * Export a GST return as JSON.
+ * Currently only GSTR-1 supports JSON export.
+ * Returns the export data and a suggested file name.
+ */
+export async function exportGstReturn(
+  returnType: GstReturnType,
+  period: string,
+  format: 'JSON',
+  signal?: AbortSignal
+): Promise<GstExportData> {
+  return api<GstExportData>(
+    `/gst/returns/${returnType}/${period}/export`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ format }),
+      signal,
+    }
+  )
+}
+
 // ─── Export ────────────────────────────────────────────────────────────────────
 
 /**
@@ -129,14 +217,11 @@ export async function exportReport(
   signal?: AbortSignal
 ): Promise<void> {
   const { API_URL } = await import('@/config/app.config')
-  const token = sessionStorage.getItem('accessToken')
 
   const response = await fetch(`${API_URL}/reports/export`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request),
     signal,
   })

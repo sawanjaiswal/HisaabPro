@@ -101,6 +101,7 @@ export async function createProduct(
         stockValidation: data.stockValidation,
         hsnCode: data.hsnCode ?? null,
         sacCode: data.sacCode ?? null,
+        taxCategoryId: data.taxCategoryId ?? null,
         description: data.description ?? null,
         status: data.status,
       },
@@ -429,6 +430,7 @@ export async function updateProduct(
         ...(data.stockValidation !== undefined && { stockValidation: data.stockValidation }),
         ...(data.hsnCode !== undefined && { hsnCode: data.hsnCode }),
         ...(data.sacCode !== undefined && { sacCode: data.sacCode }),
+        ...(data.taxCategoryId !== undefined && { taxCategoryId: data.taxCategoryId }),
         ...(data.description !== undefined && { description: data.description }),
         ...(data.status !== undefined && { status: data.status }),
       },
@@ -522,6 +524,7 @@ const productListSelect = {
   createdAt: true,
   category: { select: { id: true, name: true } },
   unit: { select: { id: true, name: true, symbol: true } },
+  taxCategory: { select: { id: true, name: true, rate: true } },
 } as const
 
 const productDetailSelect = {
@@ -544,6 +547,7 @@ const productDetailSelect = {
   updatedAt: true,
   category: { select: { id: true, name: true } },
   unit: { select: { id: true, name: true, symbol: true } },
+  taxCategory: { select: { id: true, name: true, rate: true } },
 } as const
 
 const stockMovementSelect = {

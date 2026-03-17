@@ -1,0 +1,210 @@
+/* ============================================================
+ * invoice-product-search.css
+ * Product search input, dropdown, results, and add button
+ * ============================================================ */
+
+/* === Product Search Input === */
+
+.product-search {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+.product-search-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.product-search-icon {
+  position: absolute;
+  left: var(--space-3);
+  color: var(--color-gray-400);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.product-search-field {
+  padding-left: calc(var(--space-3) + 16px + var(--space-2));
+  padding-right: calc(var(--space-3) + 24px);
+  width: 100%;
+}
+
+.product-search-clear {
+  position: absolute;
+  right: var(--space-3);
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-gray-400);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+}
+
+.product-search-clear:hover {
+  color: var(--color-gray-600);
+}
+
+.product-search-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  list-style: none;
+  margin: 0;
+  padding: var(--space-1) 0;
+  z-index: var(--z-dropdown, 100);
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.product-search-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+}
+
+.product-search-error {
+  color: var(--color-error-600);
+}
+
+.product-search-empty,
+.product-search-hint {
+  color: var(--color-gray-400);
+  font-style: italic;
+}
+
+.product-search-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--color-gray-200);
+  border-top-color: var(--color-primary-500);
+  border-radius: 50%;
+  animation: product-search-spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes product-search-spin {
+  to { transform: rotate(360deg); }
+}
+
+.product-search-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-gray-50);
+  min-height: 56px;
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+.product-search-result:last-child {
+  border-bottom: none;
+}
+
+.product-search-result:hover {
+  background: var(--color-gray-50);
+}
+
+.product-search-result--added {
+  opacity: 0.6;
+}
+
+.product-search-result-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.product-search-result-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-search-result-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.product-search-result-sku {
+  font-size: 0.6875rem;
+  color: var(--color-gray-400);
+  font-family: monospace;
+}
+
+.product-search-result-stock {
+  font-size: 0.6875rem;
+  color: var(--color-gray-500);
+}
+
+.product-search-result-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.product-search-result-price {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+}
+
+.product-search-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-primary-500);
+  background: none;
+  color: var(--color-primary-500);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-primary);
+  cursor: pointer;
+  min-height: 32px;
+  white-space: nowrap;
+  transition: all var(--duration-fast) var(--ease-default);
+}
+
+.product-search-add-btn:hover:not(:disabled) {
+  background: var(--color-primary-500);
+  color: var(--color-gray-0);
+}
+
+.product-search-add-btn--added {
+  border-color: var(--color-success-500);
+  color: var(--color-success-600);
+  cursor: default;
+  font-size: 0.6875rem;
+}
+
+/* ─── Dark Theme ────────────────────────────────────────────── */
+
+[data-theme="dark"] .product-search-dropdown {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}

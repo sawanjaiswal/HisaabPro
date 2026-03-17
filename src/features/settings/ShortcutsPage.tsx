@@ -2,9 +2,9 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ROUTES } from '@/config/routes.config'
-import { DEFAULT_SHORTCUTS, SHORTCUT_GROUPS } from './settings.constants'
+import { DEFAULT_SHORTCUTS, SHORTCUT_GROUPS } from './shortcut.constants'
 import { ShortcutsList } from './components/ShortcutsList'
-import './settings.css'
+import './shortcuts.css'
 
 export default function ShortcutsPage() {
   return (

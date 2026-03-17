@@ -1,0 +1,60 @@
+/* ─── Settings Toggle Switch — CSS-only Component ────────────────────────────
+ *
+ * Custom toggle switch (no library). Used across settings sub-features.
+ * All values use CSS variables — no hardcoded hex or px magic numbers.
+ * Touch target: 44x24px (width x height), meets minimum accessibility.
+ * Class prefix: .settings-toggle-*
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+.settings-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 44px;
+  height: 24px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.settings-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.settings-toggle-track {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background-color: var(--color-gray-300);
+  transition: background-color 0.2s ease;
+}
+
+.settings-toggle input:checked + .settings-toggle-track {
+  background-color: var(--color-primary-500);
+}
+
+.settings-toggle-track::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--color-gray-0, #fff);
+  box-shadow: 0 1px 3px var(--color-gray-400);
+  transition: transform 0.2s ease;
+}
+
+.settings-toggle input:checked + .settings-toggle-track::after {
+  transform: translateX(20px);
+}
+
+.settings-toggle:focus-within .settings-toggle-track {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}

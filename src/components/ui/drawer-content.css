@@ -1,0 +1,130 @@
+/* ═══════════════════════════════════════════════════════════════
+   Drawer Content — Header, Close Button, Body & Footer
+   Internal content areas of the drawer: title bar, scrollable
+   body, and sticky footer with responsive layout.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Header ────────────────────────────────────────────────── */
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5) var(--space-3);
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--color-gray-100);
+  min-height: 56px;
+}
+
+/* When there's a drag handle, reduce header top padding */
+.drawer-panel:has(.drawer-drag-handle) .drawer-header {
+  padding-top: var(--space-2);
+}
+
+.drawer-title {
+  font-family: var(--font-primary);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-gray-900);
+  line-height: 1.3;
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Titleless header — hide the border if no content */
+.drawer-header:empty {
+  display: none;
+}
+
+/* ── Close button ──────────────────────────────────────────── */
+
+.drawer-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-100);
+  color: var(--color-gray-600);
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: var(--space-3);
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    color var(--duration-fast) var(--ease-default);
+}
+
+.drawer-close:hover {
+  background: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+.drawer-close:active {
+  background: var(--color-gray-200);
+  transform: scale(0.93);
+}
+
+/* ── Body (scrollable) ─────────────────────────────────────── */
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--space-5);
+  /* iOS smooth momentum scroll */
+  -webkit-overflow-scrolling: touch;
+  /* Custom scrollbar — thin & warm */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gray-200) transparent;
+}
+
+.drawer-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.drawer-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.drawer-body::-webkit-scrollbar-thumb {
+  background: var(--color-gray-200);
+  border-radius: var(--radius-full);
+}
+
+/* ── Footer ────────────────────────────────────────────────── */
+
+.drawer-footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  padding-bottom: max(var(--space-4), env(safe-area-inset-bottom, var(--space-4)));
+  border-top: 1px solid var(--color-gray-100);
+  flex-shrink: 0;
+  background: var(--color-gray-0);
+}
+
+/* Footer buttons fill equally on mobile */
+.drawer-footer > * {
+  flex: 1;
+}
+
+/* On desktop, footer buttons are auto-width and right-aligned */
+@media (min-width: 768px) {
+  .drawer-footer {
+    justify-content: flex-end;
+  }
+
+  .drawer-footer > * {
+    flex: 0 0 auto;
+  }
+}

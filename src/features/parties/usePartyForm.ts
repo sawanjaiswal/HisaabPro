@@ -1,10 +1,10 @@
-/** Create Party — Form state hook */
+/** Create/Edit Party — Form state hook */
 
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/hooks/useToast'
 import { ROUTES } from '@/config/routes.config'
-import { createParty } from './party.service'
+import { createParty, updateParty } from './party.service'
 import {
   PHONE_REGEX,
   GSTIN_REGEX,
@@ -25,10 +25,18 @@ const INITIAL_FORM: PartyFormData = {
 
 type FormSection = 'basic' | 'business' | 'credit'
 
+export interface UsePartyFormOptions {
+  /** When set, form operates in edit mode — calls updateParty instead of createParty */
+  editId?: string
+  /** Pre-fill form with existing party data (edit mode) */
+  initialData?: PartyFormData
+}
+
 export interface UsePartyFormReturn {
   form: PartyFormData
   errors: Record<string, string>
   isSubmitting: boolean
+  isEditMode: boolean
   activeSection: FormSection
   setActiveSection: (section: FormSection) => void
   updateField: <K extends keyof PartyFormData>(key: K, value: PartyFormData[K]) => void
@@ -37,11 +45,14 @@ export interface UsePartyFormReturn {
   reset: () => void
 }
 
-export function usePartyForm(): UsePartyFormReturn {
+export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormReturn {
+  const { editId, initialData } = options
+  const isEditMode = Boolean(editId)
+
   const navigate = useNavigate()
   const toast = useToast()
 
-  const [form, setForm] = useState<PartyFormData>(INITIAL_FORM)
+  const [form, setForm] = useState<PartyFormData>(initialData ?? INITIAL_FORM)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [activeSection, setActiveSection] = useState<FormSection>('basic')
@@ -120,26 +131,33 @@ export function usePartyForm(): UsePartyFormReturn {
     }
 
     try {
-      await createParty(payload)
-      toast.success(`${form.name} added successfully`)
-      navigate(ROUTES.PARTIES)
+      if (isEditMode && editId) {
+        await updateParty(editId, payload)
+        toast.success(`${form.name} updated`)
+        navigate(`/parties/${editId}`)
+      } else {
+        await createParty(payload)
+        toast.success(`${form.name} added successfully`)
+        navigate(ROUTES.PARTIES)
+      }
     } catch {
-      toast.error('Failed to save party. Please try again.')
+      toast.error(isEditMode ? 'Failed to update party.' : 'Failed to save party. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
-  }, [form, isSubmitting, validate, toast, navigate])
+  }, [form, isSubmitting, validate, toast, navigate, isEditMode, editId])
 
   const reset = useCallback(() => {
-    setForm(INITIAL_FORM)
+    setForm(initialData ?? INITIAL_FORM)
     setErrors({})
     setActiveSection('basic')
-  }, [])
+  }, [initialData])
 
   return {
     form,
     errors,
     isSubmitting,
+    isEditMode,
     activeSection,
     setActiveSection,
     updateField,

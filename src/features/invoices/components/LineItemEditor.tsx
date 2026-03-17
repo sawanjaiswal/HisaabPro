@@ -3,12 +3,8 @@
 import React, { useCallback } from 'react'
 import { Trash2 } from 'lucide-react'
 import type { LineItemFormData, DiscountType } from '../invoice.types'
-import {
-  formatInvoiceAmount,
-  calculateLineTotal,
-  paiseToRupees,
-  rupeesToPaise,
-} from '../invoice.utils'
+import { formatInvoiceAmount, paiseToRupees, rupeesToPaise } from '../invoice-format.utils'
+import { calculateLineTotal } from '../invoice-calc.utils'
 import { DISCOUNT_TYPE_LABELS } from '../invoice.constants'
 
 interface LineItemEditorProps {

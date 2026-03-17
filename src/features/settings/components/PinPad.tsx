@@ -1,6 +1,6 @@
 import React from 'react'
 import { Fingerprint, Delete } from 'lucide-react'
-import '../settings.css'
+import '../pin-setup.css'
 
 interface PinPadProps {
   length: number

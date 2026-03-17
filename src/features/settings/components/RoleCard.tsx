@@ -1,7 +1,7 @@
 import React from 'react'
 import { Shield, ChevronRight } from 'lucide-react'
 import type { Role } from '../settings.types'
-import '../settings.css'
+import '../roles.css'
 
 interface RoleCardProps {
   role: Role

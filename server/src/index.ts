@@ -3,10 +3,12 @@ import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
 import compression from 'compression'
+import cookieParser from 'cookie-parser'
 import { sendSuccess } from './lib/response.js'
 import { errorHandler } from './middleware/errorHandler.js'
 import { performanceMonitoring } from './middleware/performance.js'
 import { apiRateLimiter } from './middleware/rate-limit.js'
+import { csrfProtection } from './middleware/csrf.js'
 import authRoutes from './routes/auth.js'
 import feedbackRoutes from './routes/feedback.js'
 import backupRoutes from './routes/backup.js'
@@ -23,27 +25,92 @@ import paymentRoutes from './routes/payments.js'
 import dashboardRoutes from './routes/dashboard.js'
 import reportRoutes from './routes/reports.js'
 import { businessSettingsRouter, userSettingsRouter, permissionsRouter } from './routes/settings.js'
+import referralRoutes from './routes/referral.js'
+import taxCategoryRoutes from './routes/tax-categories.js'
+import hsnRoutes from './routes/hsn.js'
+import gstinRoutes from './routes/gstin.js'
+import taxReportRoutes from './routes/tax-reports.js'
+import gstReturnRoutes from './routes/gst-returns.js'
+import tdsTcsRoutes from './routes/tds-tcs.js'
+import einvoiceRoutes from './routes/einvoice.js'
+import ewaybillRoutes from './routes/ewaybill.js'
+import adminRoutes from './routes/admin/index.js'
 import logger from './lib/logger.js'
 
 const app = express()
 const PORT = process.env.PORT || 4000
 
-// Security & parsing
-app.use(helmet())
-app.use(cors({ origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173'] }))
+// Validate required env vars in production
+if (process.env.NODE_ENV === 'production') {
+  const required = ['DATABASE_URL', 'JWT_SECRET', 'CORS_ORIGIN']
+  for (const key of required) {
+    if (!process.env[key]) {
+      logger.error(`FATAL: ${key} must be set in production`)
+      process.exit(1)
+    }
+  }
+}
+
+// Trust proxy (Render, Vercel, etc.) — needed for correct req.ip behind reverse proxy
+app.set('trust proxy', 1)
+
+// ---------------------------------------------------------------------------
+// Security headers — Feature #70
+// ---------------------------------------------------------------------------
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", 'data:', 'blob:'],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
+      frameAncestors: ["'none'"],
+    },
+  },
+  crossOriginOpenerPolicy: { policy: 'same-origin' },
+  crossOriginResourcePolicy: { policy: 'same-origin' },
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  hsts: process.env.NODE_ENV === 'production'
+    ? { maxAge: 31536000, includeSubDomains: true, preload: true }
+    : false,
+}))
+
+const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:5173',
+]
+app.use(cors({ origin: allowedOrigins, credentials: true }))
 app.use(compression())
 app.use(express.json({ limit: '10mb' }))
 
+// Parse cookies (required for httpOnly token + CSRF cookie reading)
+app.use(cookieParser())
+
+// ---------------------------------------------------------------------------
 // Infrastructure middleware
+// ---------------------------------------------------------------------------
 app.use(performanceMonitoring)
 app.use(apiRateLimiter)
 
+// CSRF protection on state-changing routes (skipped in dev, skipped for Bearer auth)
+app.use(csrfProtection)
+
+// ---------------------------------------------------------------------------
 // Health check
+// ---------------------------------------------------------------------------
 app.get('/api/health', (_req, res) => {
   sendSuccess(res, { status: 'ok', timestamp: new Date().toISOString() })
 })
 
+// ---------------------------------------------------------------------------
 // Routes
+// ---------------------------------------------------------------------------
 app.use('/api/auth', authRoutes)
 app.use('/api/feedback', feedbackRoutes)
 app.use('/api/backup', backupRoutes)
@@ -62,13 +129,29 @@ app.use('/api/reports', reportRoutes)
 app.use('/api/businesses', businessSettingsRouter)
 app.use('/api/users', userSettingsRouter)
 app.use('/api/permissions', permissionsRouter)
+app.use('/api/referral', referralRoutes)
+app.use('/api/tax-categories', taxCategoryRoutes)
+app.use('/api/hsn', hsnRoutes)
+app.use('/api/gstin', gstinRoutes)
+app.use('/api/reports', taxReportRoutes)
+app.use('/api/gst/returns', gstReturnRoutes)
+app.use('/api/reports', tdsTcsRoutes)
+app.use('/api/einvoice', einvoiceRoutes)
+app.use('/api/ewaybill', ewaybillRoutes)
 
-// 404
+// ---------------------------------------------------------------------------
+// Admin panel routes — separate JWT audience ('admin'), no CSRF
+// IMPORTANT: must be accessible without CSRF token (uses Bearer token only)
+// ---------------------------------------------------------------------------
+app.use('/api/admin', adminRoutes)
+
+// ---------------------------------------------------------------------------
+// 404 + global error handler
+// ---------------------------------------------------------------------------
 app.use((_req, res) => {
   res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Route not found' } })
 })
 
-// Global error handler (must be last)
 app.use(errorHandler)
 
 app.listen(PORT, () => {

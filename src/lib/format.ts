@@ -25,6 +25,18 @@ export function formatDate(date: Date | string): string {
   }).format(d)
 }
 
+/**
+ * Serialize a Date to local ISO date string "YYYY-MM-DD".
+ * Unlike Date.toISOString() which converts to UTC (shifting dates for IST+5:30),
+ * this uses local year/month/day components — timezone-safe for any locale.
+ */
+export function toLocalISODate(d: Date): string {
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 /** Format phone: +91 98765 43210 */
 export function formatPhone(phone: string): string {
   const digits = phone.replace(/\D/g, '')

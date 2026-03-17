@@ -1,7 +1,7 @@
 # Product Brief — HisaabPro
 
-> **Status:** Draft — Awaiting Approval
-> **Date:** 2026-03-14
+> **Status:** Approved — Building Phase 1
+> **Date:** 2026-03-16 (updated)
 > **Owner:** Sawan Jaiswal
 
 ---

@@ -2,6 +2,7 @@
 
 import React from 'react'
 import type { PartyDetail } from '../party.types'
+import '../party-detail-header.css'
 import { PARTY_TYPE_LABELS } from '../party.constants'
 import {
   getInitials,

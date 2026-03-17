@@ -1,0 +1,135 @@
+/* Invoice Detail — Header hero card + conversion banner
+ *
+ * Covers the top header section with doc-type icon, document number,
+ * party name, meta row, grand total block, and balance display.
+ * Also includes the "Converted from/to" banner.
+ * Mobile-first: base styles target 320px, min-width queries add tablet+ layout.
+ */
+
+/* ─── Header hero card ───────────────────────────────────────────────────── */
+
+/* Stacks vertically on mobile — type icon + doc number + party + amount */
+.invoice-detail-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+/* 52x52 doc-type icon in the header hero */
+.invoice-detail-type-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.375rem;
+}
+
+.invoice-detail-info {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Document number — large and prominent */
+.invoice-detail-number {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-gray-0);
+  line-height: 1.2;
+  margin-bottom: var(--space-1);
+}
+
+/* Party name below document number */
+.invoice-detail-party {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-gray-0);
+  opacity: 0.85;
+  margin-bottom: var(--space-2);
+}
+
+/* Row: date + status badge + payment status pill */
+.invoice-detail-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* Grand total block — pushed to bottom on mobile, to right on tablet */
+.invoice-detail-total-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
+.invoice-detail-total-label {
+  font-size: 0.75rem;
+  color: var(--color-gray-0);
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.invoice-detail-total-amount {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--color-gray-0);
+  line-height: 1;
+}
+
+/* Balance due — smaller, shown below grand total */
+.invoice-detail-balance {
+  font-size: 0.875rem;
+  color: var(--color-gray-0);
+  opacity: 0.75;
+  margin-top: var(--space-1);
+}
+
+.invoice-detail-balance--overdue {
+  color: var(--color-error-300);
+  opacity: 1;
+}
+
+/* ─── Conversion chain banner ─────────────────────────────────────────────── */
+
+/* "Converted from EST-2526-001" or "Converted to INV-2526-042" banner */
+.invoice-conversion-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-secondary-100);
+  color: var(--color-secondary-700);
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: var(--space-4);
+}
+
+.invoice-conversion-banner--source {
+  background: var(--color-info-50);
+  color: var(--color-info-700);
+}
+
+/* ─── Tablet+ layout ─────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  /* Header goes horizontal: icon + info on left, total block on right */
+  .invoice-detail-header {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .invoice-detail-total-block {
+    margin-top: 0;
+    margin-left: auto;
+    align-items: flex-end;
+    flex-shrink: 0;
+  }
+}

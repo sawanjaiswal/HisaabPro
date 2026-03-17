@@ -1,0 +1,106 @@
+/* Invoice Detail — Bottom action bar + image export
+ *
+ * Covers the sticky bottom action bar (Share / Convert / Delete buttons),
+ * icon-only secondary action buttons, image export capture wrapper,
+ * and the export spinner.
+ * Mobile-first: base styles target 320px, min-width queries add tablet+ layout.
+ */
+
+/* ─── Bottom action bar ──────────────────────────────────────────────────── */
+
+/* Sticky bar at the bottom: Share | Convert | Delete */
+.invoice-actions {
+  position: sticky;
+  bottom: var(--bottom-nav-height);
+  left: 0;
+  right: 0;
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-gray-50);
+  border-top: 1px solid var(--color-gray-100);
+  display: flex;
+  gap: var(--space-3);
+  z-index: var(--z-sticky);
+}
+
+/* Primary action (Share / Record Payment) fills most space */
+.invoice-actions .btn-primary {
+  flex: 1;
+}
+
+/* Icon-only buttons for secondary actions (convert, print, delete) */
+.invoice-action-icon-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  color: var(--color-gray-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 1.125rem;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    color var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.invoice-action-icon-btn:hover {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-300);
+  color: var(--color-gray-800);
+}
+
+.invoice-action-icon-btn--danger:hover {
+  background: var(--color-error-50);
+  border-color: var(--color-error-200);
+  color: var(--color-error-600);
+}
+
+/* ─── Image export ───────────────────────────────────────────────────────── */
+
+/* Wrapper captured by useImageExport — padding gives the PNG clean whitespace */
+.invoice-export-capture {
+  background: var(--color-gray-50);
+  padding-bottom: var(--space-4);
+}
+
+/* Inline spinner for the export button loading state */
+.export-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--color-gray-300);
+  border-top-color: var(--color-primary-500);
+  border-radius: var(--radius-full);
+  animation: export-spin 0.6s linear infinite;
+}
+
+@keyframes export-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Tablet+ layout ─────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  /* Action bar goes horizontal — all buttons in a row */
+  .invoice-actions {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* On desktop the action bar anchors to the bottom of the content area, not viewport */
+  .invoice-actions {
+    position: static;
+    border-top: none;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-gray-100);
+    background: var(--color-gray-0);
+    box-shadow: var(--shadow-sm);
+  }
+}

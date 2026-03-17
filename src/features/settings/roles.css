@@ -1,0 +1,148 @@
+/* ─── Roles List — Component Styles ────────────────────────────────────────────
+ *
+ * Role cards, badges, list layout.
+ * All values use CSS variables only.
+ * Touch targets: 44px minimum on all interactive elements.
+ * Mobile-first: base styles target 375px, media queries use min-width only.
+ * Class prefix: .roles-* / .role-card-* / .role-badge-*
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+.roles-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  min-height: 100vh;
+  background-color: var(--color-gray-50);
+}
+
+.roles-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.role-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background-color: var(--color-gray-0, #fff);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.role-card:active {
+  border-color: var(--color-primary-300);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.role-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-primary-50);
+  color: var(--color-primary-600);
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}
+
+.role-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.role-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+}
+
+.role-card-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-gray-900);
+}
+
+.role-badge-system {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-0-5) var(--space-2);
+  border-radius: var(--radius-full);
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-600);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.role-badge-default {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-0-5) var(--space-2);
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary-50);
+  color: var(--color-primary-700);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.role-card-description {
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+  line-height: 1.4;
+  margin-bottom: var(--space-2);
+}
+
+.role-card-meta {
+  font-size: 0.8125rem;
+  color: var(--color-gray-400);
+}
+
+.role-card-chevron {
+  color: var(--color-gray-400);
+  flex-shrink: 0;
+  margin-top: var(--space-1);
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .roles-page {
+  background-color: var(--color-gray-0);
+}
+
+[data-theme="dark"] .role-card {
+  background-color: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
+
+/* ─── Responsive — 768px+ ────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .roles-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+
+  .role-card {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .role-card-chevron {
+    display: none;
+  }
+}

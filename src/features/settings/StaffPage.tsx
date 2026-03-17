@@ -1,22 +1,27 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { UserPlus, Users } from 'lucide-react'
+import { UserPlus, Users, Check } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { Drawer } from '@/components/ui/Drawer'
 import { ROUTES } from '@/config/routes.config'
+import { FALLBACK_BUSINESS_ID } from '@/config/app.config'
+import { useAuth } from '@/context/AuthContext'
 import { useStaff } from './useStaff'
 import { StaffCard } from './components/StaffCard'
 import { InviteCard } from './components/InviteCard'
-import './settings.css'
-
-// TODO: get from auth context
-const BUSINESS_ID = 'business_1'
+import './staff-list.css'
+import './staff-invite.css'
 
 export default function StaffPage() {
   const navigate = useNavigate()
-  const { data, status, refresh, handleSuspend, handleRemove, handleResendInvite } = useStaff(BUSINESS_ID)
+  const { user } = useAuth()
+  const businessId = user?.businessId ?? FALLBACK_BUSINESS_ID
+  const { data, status, roles, refresh, handleSuspend, handleRemove, handleResendInvite, handleChangeRole } = useStaff(businessId)
+  const [roleTarget, setRoleTarget] = useState<{ staffId: string; staffName: string; currentRoleId: string } | null>(null)
 
   const inviteAction = (
     <button
@@ -80,7 +85,7 @@ export default function StaffPage() {
                         staff={member}
                         onSuspend={(id) => handleSuspend(id, member.name)}
                         onRemove={(id) => handleRemove(id, member.name)}
-                        onChangeRole={() => {/* role change handled per card */}}
+                        onChangeRole={() => setRoleTarget({ staffId: member.id, staffName: member.name, currentRoleId: member.role.id })}
                       />
                     ))}
                   </div>
@@ -104,6 +109,41 @@ export default function StaffPage() {
             )}
           </>
         )}
+
+        {/* Role change drawer */}
+        <Drawer
+          open={roleTarget !== null}
+          onClose={() => setRoleTarget(null)}
+          title={roleTarget ? `Change role for ${roleTarget.staffName}` : 'Change Role'}
+          size="sm"
+        >
+          <div className="staff-role-picker" role="listbox" aria-label="Select a role">
+            {roles.map((role) => (
+              <button
+                key={role.id}
+                type="button"
+                className={`staff-role-option${role.id === roleTarget?.currentRoleId ? ' staff-role-option--active' : ''}`}
+                onClick={() => {
+                  if (roleTarget && role.id !== roleTarget.currentRoleId) {
+                    handleChangeRole(roleTarget.staffId, roleTarget.staffName, role.id)
+                  }
+                  setRoleTarget(null)
+                }}
+                role="option"
+                aria-selected={role.id === roleTarget?.currentRoleId}
+                aria-label={`${role.name}${role.id === roleTarget?.currentRoleId ? ' (current)' : ''}`}
+              >
+                <span className="staff-role-option-info">
+                  <span className="staff-role-option-name">{role.name}</span>
+                  {role.description && <span className="staff-role-option-desc">{role.description}</span>}
+                </span>
+                {role.id === roleTarget?.currentRoleId && (
+                  <Check size={18} className="staff-role-option-check" aria-hidden="true" />
+                )}
+              </button>
+            ))}
+          </div>
+        </Drawer>
 
       </PageContainer>
     </AppShell>

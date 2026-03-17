@@ -1,0 +1,195 @@
+/* === BUTTONS — NexoWallet deep teal, rounded === */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-primary);
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-default);
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn:active:not(:disabled) { transform: scale(0.98); }
+
+.btn-sm { height: 36px; padding: 0 var(--space-3); font-size: 0.833rem; border-radius: var(--radius-sm); }
+.btn-md { height: 48px; padding: 0 var(--space-5); font-size: 1rem; }
+.btn-lg { height: 56px; padding: 0 var(--space-6); font-size: 1rem; border-radius: var(--radius-lg); }
+
+.btn-primary {
+  background: var(--color-primary-600);
+  color: var(--color-gray-0);
+}
+.btn-primary:hover:not(:disabled) { background: var(--color-primary-700); }
+.btn-primary:active:not(:disabled) { background: var(--color-primary-800); }
+
+.btn-accent {
+  background: var(--color-secondary-300);
+  color: var(--color-primary-700);
+}
+.btn-accent:hover:not(:disabled) { background: var(--color-secondary-400); }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-primary-500);
+  border: 1.5px solid var(--color-primary-100);
+}
+.btn-secondary:hover:not(:disabled) { background: var(--color-primary-50); }
+
+.btn-destructive {
+  background: var(--color-error-500);
+  color: var(--color-gray-0);
+}
+.btn-destructive:hover:not(:disabled) { background: var(--color-error-700); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-gray-600);
+}
+.btn-ghost:hover:not(:disabled) { background: var(--color-gray-100); }
+
+/* === INPUTS — NexoWallet style === */
+.input-group { display: flex; flex-direction: column; gap: var(--space-1); }
+
+.input-label {
+  font-size: 0.833rem;
+  font-weight: 500;
+  color: var(--color-gray-600);
+}
+
+.input-wrapper { position: relative; }
+
+.input {
+  width: 100%;
+  height: 52px;
+  padding: 0 var(--space-4);
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  color: var(--color-gray-800);
+  background: var(--color-gray-0);
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: border-color var(--duration-fast) var(--ease-default);
+}
+
+.input:focus { border: 2px solid var(--color-primary-400); padding: 0 calc(var(--space-4) - 0.5px); }
+.input-with-icon { padding-left: 2.75rem; }
+.input-with-icon:focus { padding-left: calc(2.75rem - 0.5px); }
+.input-group-error .input { border: 2px solid var(--color-error-500); }
+.input::placeholder { color: var(--color-gray-300); }
+.input-icon { position: absolute; left: var(--space-4); top: 50%; transform: translateY(-50%); color: var(--color-gray-400); pointer-events: none; }
+
+.input-error {
+  font-size: 0.833rem;
+  color: var(--color-error-500);
+}
+
+/* === CARDS — NexoWallet white on cream, very rounded === */
+.card {
+  background: var(--color-gray-0);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  box-shadow: 0 2px 12px rgba(26, 25, 23, 0.04), 0 1px 3px rgba(26, 25, 23, 0.03);
+}
+
+.card-elevated { box-shadow: var(--shadow-md); }
+.card-compact { padding: var(--space-3); border-radius: var(--radius-lg); }
+
+/* Accent card — the lime-yellow highlight cards */
+.card-accent {
+  background: var(--color-secondary-50);
+  border: 1px solid var(--color-secondary-200);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+}
+
+/* Primary card — deep teal gradient (matching dashboard hero cards) */
+.card-primary {
+  background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
+  color: var(--color-gray-0);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+}
+
+/* === ACTION GRID — NexoWallet icon squares === */
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-3);
+}
+
+.action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.action-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary-50);
+  color: var(--color-primary-400);
+  border-radius: var(--radius-md);
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+.action-item:active .action-icon { background: var(--color-primary-100); }
+
+.action-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-gray-600);
+}
+
+/* === PILL TABS — NexoWallet bottom nav style tabs === */
+.pill-tabs {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--space-1) 0;
+}
+
+.pill-tabs::-webkit-scrollbar { display: none; }
+
+.pill-tab {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  color: var(--color-gray-500);
+  font-size: 0.833rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+  min-height: 40px;
+}
+
+.pill-tab:active:not(.active) {
+  background: var(--color-gray-100);
+}
+
+.pill-tab.active {
+  background: var(--color-primary-600);
+  color: var(--color-gray-0);
+  border-color: var(--color-primary-600);
+  box-shadow: 0 2px 8px rgba(11, 79, 94, 0.2);
+}

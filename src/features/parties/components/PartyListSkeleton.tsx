@@ -10,7 +10,7 @@ export const PartyListSkeleton: React.FC = () => {
         <div
           key={`skeleton-party-${i}`}
           className="txn-row"
-          style={{ minHeight: '44px', pointerEvents: 'none' }}
+          style={{ pointerEvents: 'none' }}
           aria-hidden="true"
         >
           <Skeleton
@@ -19,12 +19,15 @@ export const PartyListSkeleton: React.FC = () => {
             borderRadius="50%"
           />
 
-          <div className="txn-info" style={{ gap: 'var(--space-2)' }}>
-            <Skeleton width="140px" height="1rem" />
+          <div className="txn-info">
+            <div className="party-card-header">
+              <Skeleton width="140px" height="1rem" />
+              <Skeleton width="60px" height="0.875rem" borderRadius="var(--radius-full)" />
+            </div>
             <Skeleton width="100px" height="0.75rem" />
           </div>
 
-          <div style={{ textAlign: 'right', flexShrink: 0 }}>
+          <div className="party-card-right">
             <Skeleton width="72px" height="1rem" />
           </div>
         </div>

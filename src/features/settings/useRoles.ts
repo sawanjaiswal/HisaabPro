@@ -7,7 +7,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
-import { getRoles } from './settings.service'
+import { getRoles } from './role.service'
 import type { Role } from './settings.types'
 
 type Status = 'loading' | 'error' | 'success'

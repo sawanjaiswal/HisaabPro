@@ -1,5 +1,6 @@
 /** Products — List page (lazy loaded) */
 
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Package } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -7,37 +8,94 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { BulkActionBar } from '@/components/ui/BulkActionBar'
+import { useBulkSelect } from '@/hooks/useBulkSelect'
+import { useToast } from '@/hooks/useToast'
 import { useProducts } from './useProducts'
 import { ProductSummaryBar } from './components/ProductSummaryBar'
 import { ProductFilterBar } from './components/ProductFilterBar'
 import { ProductCard } from './components/ProductCard'
 import { ProductListSkeleton } from './components/ProductListSkeleton'
+import { deleteProduct } from './product.service'
 import { ROUTES } from '@/config/routes.config'
+import type { BulkAction } from '@/components/ui/BulkActionBar'
 import './products.css'
 
 export default function ProductsPage() {
   const navigate = useNavigate()
+  const toast = useToast()
   const { data, status, filters, setSearch, setFilter, refresh } = useProducts()
+  const bulk = useBulkSelect()
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false)
 
-  const handleProductClick = (id: string) => navigate(`/products/${id}`)
+  const handleProductClick = (id: string) => {
+    if (bulk.isActive) {
+      bulk.toggle(id)
+    } else {
+      navigate(`/products/${id}`)
+    }
+  }
+
+  const handleLongPress = (id: string) => {
+    if (!bulk.isActive) {
+      bulk.toggle(id)
+    }
+  }
+
   const handleCategoryChange = (value: string | 'ALL') => {
     setFilter('categoryId', value === 'ALL' ? undefined : value)
   }
   const goToCreate = () => navigate(ROUTES.PRODUCT_NEW)
 
+  const handleBulkDelete = async () => {
+    const count = bulk.selectedCount
+    setIsBulkDeleting(true)
+    try {
+      const ids = Array.from(bulk.selectedIds)
+      await Promise.all(ids.map((id) => deleteProduct(id)))
+      toast.success(`${count} ${count === 1 ? 'product' : 'products'} deleted`)
+      bulk.clear()
+      refresh()
+    } catch {
+      toast.error('Failed to delete some products')
+    } finally {
+      setIsBulkDeleting(false)
+    }
+  }
+
+  const allProductIds = data?.products.map((p) => p.id) ?? []
+
+  const bulkActions: BulkAction[] = [
+    {
+      id: 'delete',
+      label: 'Delete',
+      icon: 'delete',
+      isDanger: true,
+      onClick: handleBulkDelete,
+    },
+    {
+      id: 'export',
+      label: 'Export',
+      icon: 'export',
+      onClick: () => toast.info('Export coming soon'),
+    },
+  ]
+
   return (
     <AppShell>
-      <Header title="Products" />
+      <Header title={bulk.isActive ? `${bulk.selectedCount} Selected` : 'Products'} />
 
       <PageContainer>
-        {status === 'success' && data && <ProductSummaryBar summary={data.summary} />}
+        {status === 'success' && data && !bulk.isActive && <ProductSummaryBar summary={data.summary} />}
 
-        <ProductFilterBar
-          search={filters.search}
-          onSearchChange={setSearch}
-          activeCategoryId={filters.categoryId ?? 'ALL'}
-          onCategoryChange={handleCategoryChange}
-        />
+        {!bulk.isActive && (
+          <ProductFilterBar
+            search={filters.search}
+            onSearchChange={setSearch}
+            activeCategoryId={filters.categoryId ?? 'ALL'}
+            onCategoryChange={handleCategoryChange}
+          />
+        )}
 
         {status === 'loading' && <ProductListSkeleton />}
 
@@ -63,10 +121,20 @@ export default function ProductsPage() {
         )}
 
         {status === 'success' && data && data.products.length > 0 && (
-          <div className="product-list" role="list" aria-label="Products">
+          <div className="product-list stagger-list" role="list" aria-label="Products">
             {data.products.map((product) => (
-              <div key={product.id} className="product-list-item" role="listitem">
-                <ProductCard product={product} onClick={handleProductClick} />
+              <div
+                key={product.id}
+                className={`product-list-item${bulk.isSelected(product.id) ? ' bulk-selected' : ''}`}
+                role="listitem"
+              >
+                <ProductCard
+                  product={product}
+                  onClick={handleProductClick}
+                  onLongPress={handleLongPress}
+                  isSelected={bulk.isSelected(product.id)}
+                  isBulkMode={bulk.isActive}
+                />
                 <div className="divider" aria-hidden="true" />
               </div>
             ))}
@@ -74,9 +142,20 @@ export default function ProductsPage() {
         )}
       </PageContainer>
 
-      <button className="fab" onClick={goToCreate} aria-label="Add new product">
-        <Plus size={24} aria-hidden="true" />
-      </button>
+      {!bulk.isActive && (
+        <button className="fab" onClick={goToCreate} aria-label="Add new product">
+          <Plus size={24} aria-hidden="true" />
+        </button>
+      )}
+
+      <BulkActionBar
+        selectedCount={bulk.selectedCount}
+        totalCount={allProductIds.length}
+        onSelectAll={() => bulk.selectAll(allProductIds)}
+        onClear={bulk.clear}
+        actions={bulkActions}
+        isProcessing={isBulkDeleting}
+      />
     </AppShell>
   )
 }

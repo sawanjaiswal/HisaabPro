@@ -1,30 +1,44 @@
 /** Settings — Calculator hook
  *
  * Pure UI state — no API calls.
- * Manages basic and GST calculation modes, expression history, and
- * visibility (bottom-sheet toggle).
- *
- * Key actions:
- *   pressKey(char)      — append digit or decimal point
- *   pressOperator(op)   — append operator (+, -, *, /)
- *   pressEquals()       — evaluate expression, push to history
- *   pressClear()        — reset all state (AC)
- *   pressBackspace()    — remove last character from display
- *   pressPercent()      — append % suffix to current number
- *   setGstRate(rate)    — set active GST rate
- *   toggleGstMode()     — toggle exclusive / inclusive
- *   pasteToField()      — write display value into focused input
- *   copyToClipboard()   — copy display value to clipboard
- *   toggle()            — open / close bottom sheet
+ * Thin composition: wires feedback, state transitions (from reducer),
+ * and settings persistence (from utils) into React callbacks.
  */
 
-import { useState, useCallback } from 'react'
-import { CALCULATOR_MAX_DIGITS, CALCULATOR_MAX_HISTORY } from './settings.constants'
-import { evaluateExpression, calculateGst } from './settings.utils'
-import type { CalculatorState, CalculatorMode, GstMode } from './settings.types'
+import { useState, useCallback, useRef } from 'react'
+import type { CalculatorState, CalculatorSettings } from './settings.types'
+import {
+  loadSettings,
+  saveSettings,
+  playClickSound,
+  triggerVibration,
+} from './calculator-settings.utils'
+import {
+  INITIAL_STATE,
+  reduceKeyPress,
+  reduceOperator,
+  reduceEquals,
+  reduceClear,
+  reduceBackspace,
+  reducePercent,
+  reduceSetGstRate,
+  reduceToggleGstMode,
+  reduceGT,
+  reduceMU,
+  reducePercentPreset,
+  reduceGstPreset,
+} from './calculator.reducer'
+
+// ─── Custom events — wired by payment flow when available ────────────────────
+
+export const CASH_IN_EVENT = 'calculator:cash-in'
+export const CASH_OUT_EVENT = 'calculator:cash-out'
+
+// ─── Return type ─────────────────────────────────────────────────────────────
 
 interface UseCalculatorReturn {
   state: CalculatorState
+  settings: CalculatorSettings
   isOpen: boolean
   toggle: () => void
   pressKey: (char: string) => void
@@ -35,187 +49,117 @@ interface UseCalculatorReturn {
   pressPercent: () => void
   setGstRate: (rate: number) => void
   toggleGstMode: () => void
+  pressGT: () => void
+  pressMU: () => void
+  applyPercentPreset: (percent: number, direction: 'add' | 'subtract') => void
+  applyGstPreset: (direction: 'add' | 'subtract') => void
+  cashIn: () => void
+  cashOut: () => void
   pasteToField: () => void
   copyToClipboard: () => void
+  toggleSound: () => void
+  toggleVibration: () => void
 }
 
-const INITIAL_STATE: CalculatorState = {
-  display: '0',
-  expression: '',
-  result: null,
-  history: [],
-  mode: 'basic',
-  gstRate: 18,
-  gstMode: 'exclusive',
-}
-
-/** Returns true if the last token in display ends with a digit or decimal */
-function endsWithOperand(display: string): boolean {
-  return /[\d.]$/.test(display)
-}
-
-/** Returns true if the display is the leading zero placeholder */
-function isZeroDisplay(display: string): boolean {
-  return display === '0'
-}
+// ─── Hook ────────────────────────────────────────────────────────────────────
 
 export function useCalculator(): UseCalculatorReturn {
   const [state, setState] = useState<CalculatorState>(INITIAL_STATE)
   const [isOpen, setIsOpen] = useState(false)
+  const [settings, setSettings] = useState<CalculatorSettings>(loadSettings)
+  const settingsRef = useRef(settings)
+  settingsRef.current = settings
 
-  const toggle = useCallback(() => {
-    setIsOpen((prev) => !prev)
+  const feedback = useCallback(() => {
+    if (settingsRef.current.keyboardSound) playClickSound()
+    if (settingsRef.current.keyboardVibration) triggerVibration()
   }, [])
 
-  // ─── Key press (digit or decimal) ───────────────────────────────────────────
+  const toggle = useCallback(() => setIsOpen((prev) => !prev), [])
+
+  // ─── Key / operator / equals / clear / backspace / percent ──────────────
 
   const pressKey = useCallback((char: string) => {
-    setState((prev) => {
-      // After a completed result, start a fresh expression
-      const startFresh = prev.result !== null
-
-      // Enforce max digits per number token (count digits only, not operators)
-      const currentNumber = prev.display.split(/[+\-*/]/).pop() ?? ''
-      const digitCount = (currentNumber.match(/\d/g) ?? []).length
-      if (char !== '.' && digitCount >= CALCULATOR_MAX_DIGITS) return prev
-
-      // Prevent duplicate decimal
-      if (char === '.' && currentNumber.includes('.')) return prev
-
-      let nextDisplay: string
-      if (startFresh) {
-        nextDisplay = char === '.' ? '0.' : char
-      } else if (isZeroDisplay(prev.display) && char !== '.') {
-        nextDisplay = char
-      } else {
-        nextDisplay = prev.display + char
-      }
-
-      return {
-        ...prev,
-        display: nextDisplay,
-        expression: startFresh ? nextDisplay : prev.expression,
-        result: null,
-      }
-    })
-  }, [])
-
-  // ─── Operator press ──────────────────────────────────────────────────────────
+    feedback()
+    setState((prev) => reduceKeyPress(prev, char))
+  }, [feedback])
 
   const pressOperator = useCallback((op: '+' | '-' | '*' | '/') => {
-    setState((prev) => {
-      // Replace trailing operator if already ends with one
-      if (!endsWithOperand(prev.display)) {
-        const replaced = prev.display.slice(0, -1) + op
-        return { ...prev, display: replaced, expression: replaced, result: null }
-      }
-
-      const next = prev.display + op
-      return { ...prev, display: next, expression: next, result: null }
-    })
-  }, [])
-
-  // ─── Equals ──────────────────────────────────────────────────────────────────
+    feedback()
+    setState((prev) => reduceOperator(prev, op))
+  }, [feedback])
 
   const pressEquals = useCallback(() => {
-    setState((prev) => {
-      const expr = prev.display
-
-      if (!endsWithOperand(expr)) return prev
-
-      if (prev.mode === 'gst') {
-        // In GST mode evaluate arithmetic first, then apply GST
-        const base = evaluateExpression(expr)
-        if (base === null || prev.gstRate === null) return prev
-
-        const { total } = calculateGst(base, prev.gstRate, prev.gstMode)
-        const historyEntry = { expression: `${expr} (GST ${prev.gstRate}%)`, result: total }
-
-        return {
-          ...prev,
-          display: String(total),
-          result: total,
-          history: [historyEntry, ...prev.history].slice(0, CALCULATOR_MAX_HISTORY),
-        }
-      }
-
-      // Basic mode
-      const result = evaluateExpression(expr)
-      if (result === null) return prev
-
-      const historyEntry = { expression: expr, result }
-
-      return {
-        ...prev,
-        display: String(result),
-        result,
-        history: [historyEntry, ...prev.history].slice(0, CALCULATOR_MAX_HISTORY),
-      }
-    })
-  }, [])
-
-  // ─── Clear (AC) ──────────────────────────────────────────────────────────────
+    feedback()
+    setState((prev) => reduceEquals(prev))
+  }, [feedback])
 
   const pressClear = useCallback(() => {
-    setState((prev) => ({
-      ...INITIAL_STATE,
-      mode: prev.mode,
-      gstRate: prev.gstRate,
-      gstMode: prev.gstMode,
-      history: prev.history,
-    }))
-  }, [])
-
-  // ─── Backspace ───────────────────────────────────────────────────────────────
+    feedback()
+    setState((prev) => reduceClear(prev))
+  }, [feedback])
 
   const pressBackspace = useCallback(() => {
-    setState((prev) => {
-      if (prev.result !== null) {
-        // Clear the finished result — same as AC
-        return {
-          ...prev,
-          display: '0',
-          expression: '',
-          result: null,
-        }
-      }
-
-      const next = prev.display.length <= 1 ? '0' : prev.display.slice(0, -1)
-      return { ...prev, display: next, expression: next }
-    })
-  }, [])
-
-  // ─── Percent suffix ──────────────────────────────────────────────────────────
+    feedback()
+    setState((prev) => reduceBackspace(prev))
+  }, [feedback])
 
   const pressPercent = useCallback(() => {
-    setState((prev) => {
-      if (!endsWithOperand(prev.display)) return prev
-      if (prev.display.endsWith('%')) return prev
-      const next = prev.display + '%'
-      return { ...prev, display: next, expression: next, result: null }
-    })
-  }, [])
+    feedback()
+    setState((prev) => reducePercent(prev))
+  }, [feedback])
 
-  // ─── GST rate ────────────────────────────────────────────────────────────────
+  // ─── GST / GT / MU / presets ────────────────────────────────────────────
 
   const setGstRate = useCallback((rate: number) => {
-    setState((prev) => ({
-      ...prev,
-      gstRate: rate,
-      mode: 'gst' as CalculatorMode,
-    }))
-  }, [])
-
-  // ─── GST mode toggle ─────────────────────────────────────────────────────────
+    feedback()
+    setState((prev) => reduceSetGstRate(prev, rate))
+  }, [feedback])
 
   const toggleGstMode = useCallback(() => {
-    setState((prev) => ({
-      ...prev,
-      gstMode: (prev.gstMode === 'exclusive' ? 'inclusive' : 'exclusive') as GstMode,
-    }))
-  }, [])
+    feedback()
+    setState((prev) => reduceToggleGstMode(prev))
+  }, [feedback])
 
-  // ─── Paste to focused input ───────────────────────────────────────────────────
+  const pressGT = useCallback(() => {
+    feedback()
+    setState((prev) => reduceGT(prev))
+  }, [feedback])
+
+  const pressMU = useCallback(() => {
+    feedback()
+    setState((prev) => reduceMU(prev))
+  }, [feedback])
+
+  const applyPercentPreset = useCallback((percent: number, direction: 'add' | 'subtract') => {
+    feedback()
+    setState((prev) => reducePercentPreset(prev, percent, direction))
+  }, [feedback])
+
+  const applyGstPreset = useCallback((direction: 'add' | 'subtract') => {
+    feedback()
+    setState((prev) => reduceGstPreset(prev, direction))
+  }, [feedback])
+
+  // ─── Cash IN / OUT ──────────────────────────────────────────────────────
+
+  const cashIn = useCallback(() => {
+    feedback()
+    const value = state.result !== null ? state.result : parseFloat(state.display)
+    if (!Number.isNaN(value) && value > 0) {
+      window.dispatchEvent(new CustomEvent(CASH_IN_EVENT, { detail: { amount: value } }))
+    }
+  }, [feedback, state.display, state.result])
+
+  const cashOut = useCallback(() => {
+    feedback()
+    const value = state.result !== null ? state.result : parseFloat(state.display)
+    if (!Number.isNaN(value) && value > 0) {
+      window.dispatchEvent(new CustomEvent(CASH_OUT_EVENT, { detail: { amount: value } }))
+    }
+  }, [feedback, state.display, state.result])
+
+  // ─── Clipboard / paste ──────────────────────────────────────────────────
 
   const pasteToField = useCallback(() => {
     const value = state.result !== null ? String(state.result) : state.display
@@ -232,28 +176,38 @@ export function useCalculator(): UseCalculatorReturn {
     }
   }, [state.display, state.result])
 
-  // ─── Copy to clipboard ───────────────────────────────────────────────────────
-
   const copyToClipboard = useCallback(() => {
     const value = state.result !== null ? String(state.result) : state.display
     navigator.clipboard.writeText(value).catch(() => {
-      // Clipboard write can be denied — fail silently; user sees display value
+      // fail silently
     })
   }, [state.display, state.result])
 
+  // ─── Settings toggles ──────────────────────────────────────────────────
+
+  const toggleSound = useCallback(() => {
+    setSettings((prev) => {
+      const next = { ...prev, keyboardSound: !prev.keyboardSound }
+      saveSettings(next)
+      return next
+    })
+  }, [])
+
+  const toggleVibration = useCallback(() => {
+    setSettings((prev) => {
+      const next = { ...prev, keyboardVibration: !prev.keyboardVibration }
+      saveSettings(next)
+      return next
+    })
+  }, [])
+
   return {
-    state,
-    isOpen,
-    toggle,
-    pressKey,
-    pressOperator,
-    pressEquals,
-    pressClear,
-    pressBackspace,
-    pressPercent,
-    setGstRate,
-    toggleGstMode,
-    pasteToField,
-    copyToClipboard,
+    state, settings, isOpen, toggle,
+    pressKey, pressOperator, pressEquals, pressClear,
+    pressBackspace, pressPercent,
+    setGstRate, toggleGstMode, pressGT, pressMU,
+    applyPercentPreset, applyGstPreset,
+    cashIn, cashOut, pasteToField, copyToClipboard,
+    toggleSound, toggleVibration,
   }
 }

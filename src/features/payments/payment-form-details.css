@@ -1,0 +1,201 @@
+/* Payment Form Details — Mode grid, invoice linking, discount, settlement summary
+ *
+ * Used by RecordPaymentPage and EditPaymentPage.
+ * Mobile-first: base styles target 320px, min-width queries add tablet+ layout.
+ */
+
+/* ─── Payment mode grid ──────────────────────────────────────────────────── */
+
+/* 2x4 icon grid for: Cash, UPI, Bank, Cheque, NEFT, RTGS, Card, Other */
+.payment-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-2);
+}
+
+.payment-mode-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  background: var(--color-gray-0);
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  min-height: 64px;
+  justify-content: center;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+  font-family: var(--font-primary);
+}
+
+.payment-mode-item:active {
+  background: var(--color-primary-50);
+}
+
+.payment-mode-item--active {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-400);
+}
+
+.payment-mode-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gray-500);
+}
+
+.payment-mode-item--active .payment-mode-icon {
+  color: var(--color-primary-500);
+}
+
+.payment-mode-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--color-gray-500);
+  text-align: center;
+}
+
+.payment-mode-item--active .payment-mode-label {
+  color: var(--color-primary-500);
+  font-weight: 600;
+}
+
+/* ─── Invoices section (expandable) ─────────────────────────────────────── */
+
+.payment-invoices-section {
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.payment-invoices-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-50);
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  font-family: var(--font-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.payment-invoices-header-count {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-primary-500);
+  background: var(--color-primary-50);
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-full);
+}
+
+.payment-invoices-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Individual invoice checkbox row */
+.payment-invoice-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-gray-100);
+  cursor: pointer;
+  min-height: 56px;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+.payment-invoice-row:hover {
+  background: var(--color-gray-50);
+}
+
+.payment-invoice-row--checked {
+  background: var(--color-primary-50);
+}
+
+.payment-invoice-checkbox {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-primary-500);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.payment-invoice-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.payment-invoice-number {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.payment-invoice-due {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  margin-top: 1px;
+}
+
+.payment-invoice-amount {
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--color-error-600);
+  flex-shrink: 0;
+}
+
+/* ─── Discount section (expandable) ─────────────────────────────────────── */
+
+.payment-discount-section {
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.payment-discount-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-50);
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  font-family: var(--font-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.payment-discount-body {
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ─── Tablet+ adjustments ────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  /* 4-column mode grid fits in one row on tablet */
+  .payment-mode-grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}

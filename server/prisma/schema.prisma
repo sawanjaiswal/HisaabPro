@@ -18,6 +18,26 @@ model User {
   pinHash       String?
   biometricEnabled Boolean @default(false)
   isActive      Boolean  @default(true)
+
+  // Account lockout — Feature #64
+  failedLoginAttempts Int       @default(0)
+  lastFailedLoginAt   DateTime?
+  accountLockedUntil  DateTime?
+
+  // Admin suspension — Feature #7
+  isSuspended        Boolean  @default(false)
+  suspendedAt        DateTime?
+  suspendedReason    String?
+
+  // Referral wallet — Feature #3
+  referredBy                String?
+  referralBalance           Decimal  @default(0) @db.Decimal(12, 2)
+  referralBalanceInReview   Decimal  @default(0) @db.Decimal(12, 2)
+  referralTotalEarned       Decimal  @default(0) @db.Decimal(12, 2)
+  referralFraudFlags        Int      @default(0)
+  walletFrozen              Boolean  @default(false)
+  lastReferralAt            DateTime?
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -35,7 +55,20 @@ model User {
   approvalsRequested ApprovalRequest[] @relation("ApprovalRequester")
   approvalsReviewed  ApprovalRequest[] @relation("ApprovalReviewer")
 
+  // Referral relations
+  referredByUser     User?    @relation("UserReferrals", fields: [referredBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  referredUsers      User[]   @relation("UserReferrals")
+  referralCode       ReferralCode?
+  referralRewardsAsReferrer ReferralReward[]     @relation("ReferralRewardsReferrer")
+  referralRewardsAsReferred ReferralReward[]     @relation("ReferralRewardsReferred")
+  referralEventsAsReferrer  ReferralEvent[]      @relation("ReferralEventsReferrer")
+  referralEventsAsReferred  ReferralEvent[]      @relation("ReferralEventsReferred")
+  referralWithdrawals       ReferralWithdrawal[]
+
   @@index([phone])
+  @@index([referredBy])
+  @@index([referralFraudFlags])
+  @@index([lastReferralAt])
 }
 
 model Business {
@@ -54,6 +87,14 @@ model Business {
   isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  // GST — Phase 2
+  gstin              String?
+  stateCode          String?  // 2-digit, extracted from GSTIN pos 0-1
+  compositionScheme  Boolean  @default(false)
+  eInvoiceEnabled    Boolean  @default(false)
+  eWayBillEnabled    Boolean  @default(false)
+  turnoverSlab       String?  // Tracks e-invoice threshold eligibility
 
   businessUsers    BusinessUser[]
   parties          Party[]
@@ -78,6 +119,9 @@ model Business {
   transactionLock  TransactionLockConfig?
   approvals        ApprovalRequest[]
   auditLogs        AuditLog[]
+  taxCategories    TaxCategory[]
+  gstReturns       GstReturn[]
+  recurringInvoices RecurringInvoice[]
 
   @@index([name])
 }
@@ -167,6 +211,10 @@ model Party {
   groupId           String?
   tags              String[] @default([])
   gstin             String?
+  stateCode         String?  // 2-digit, extracted from GSTIN pos 0-1
+  gstinVerified     Boolean  @default(false)
+  gstinVerifiedAt   DateTime?
+  compositionScheme Boolean  @default(false)
   pan               String?
   creditLimit       Int      @default(0) // in paise, 0 = no limit
   creditLimitMode   String   @default("WARN") // WARN, BLOCK
@@ -365,6 +413,7 @@ model Product {
   stockValidation String    @default("GLOBAL") // GLOBAL, WARN_ONLY, HARD_BLOCK
   hsnCode         String?
   sacCode         String?
+  taxCategoryId   String?  // FK → TaxCategory (default GST rate for this product)
   description     String?
   status          String    @default("ACTIVE") // ACTIVE, INACTIVE
   createdAt       DateTime  @default(now())
@@ -373,6 +422,7 @@ model Product {
   business          Business                @relation(fields: [businessId], references: [id], onDelete: Cascade)
   category          Category?               @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   unit              Unit                    @relation(fields: [unitId], references: [id], onDelete: Restrict)
+  taxCategory       TaxCategory?            @relation(fields: [taxCategoryId], references: [id], onDelete: SetNull)
   stockMovements    StockMovement[]
   customFieldValues ProductCustomFieldValue[]
   partyPricing      PartyPricing[]
@@ -474,6 +524,23 @@ model Document {
   roundOff               Int      @default(0)
   grandTotal             Int      @default(0)
 
+  // GST — Phase 2
+  placeOfSupply          String?  // 2-digit state code
+  supplyType             String   @default("B2B") // B2B, B2C_LARGE, B2C_SMALL, EXPORT, SEZ
+  isReverseCharge        Boolean  @default(false)
+  isComposite            Boolean  @default(false)
+  totalTaxableValue      Int      @default(0) // paise — sum of line taxableValues
+  totalCgst              Int      @default(0) // paise
+  totalSgst              Int      @default(0) // paise
+  totalIgst              Int      @default(0) // paise
+  totalCess              Int      @default(0) // paise
+
+  // TDS/TCS — Phase 2B (B2B invoice deductions)
+  tdsRate                Int      @default(0) // basis points
+  tdsAmount              Int      @default(0) // paise
+  tcsRate                Int      @default(0) // basis points
+  tcsAmount              Int      @default(0) // paise
+
   // Profit
   totalCost              Int      @default(0)
   totalProfit            Int      @default(0)
@@ -518,6 +585,20 @@ model Document {
   creator                User              @relation("DocumentCreator", fields: [createdBy], references: [id], onDelete: Restrict)
   updater                User?             @relation("DocumentUpdater", fields: [updatedBy], references: [id])
   deleter                User?             @relation("DocumentDeleter", fields: [deletedBy], references: [id])
+  // E-Compliance — Phase 2
+  eInvoice               EInvoice?
+  eWayBill               EWayBill?
+
+  // Recurring — Phase 2
+  recurringInvoiceId     String?
+  recurringInvoice       RecurringInvoice? @relation(fields: [recurringInvoiceId], references: [id], onDelete: SetNull)
+
+  // Credit/Debit Note link
+  originalDocumentId     String?
+  creditDebitReason      String?  @db.VarChar(500)
+  originalDocument       Document?  @relation("CreditDebitLink", fields: [originalDocumentId], references: [id], onDelete: SetNull)
+  creditDebitNotes       Document[] @relation("CreditDebitLink")
+
   lineItems              DocumentLineItem[]
   additionalCharges      DocumentAdditionalCharge[]
   shareLogs              DocumentShareLog[]
@@ -530,6 +611,8 @@ model Document {
   @@index([businessId, documentDate])
   @@index([permanentDeleteAt])
   @@index([clientId])
+  @@index([recurringInvoiceId])
+  @@index([originalDocumentId])
 }
 
 model DocumentLineItem {
@@ -544,6 +627,20 @@ model DocumentLineItem {
   discountValue  Int      @default(0) // paise for AMOUNT, basis points (x100) for PERCENTAGE
   discountAmount Int      @default(0) // calculated paise
   lineTotal      Int      @default(0) // (qty * rate) - discountAmount
+
+  // GST — Phase 2 (all amounts in PAISE, rates in BASIS POINTS)
+  taxCategoryId  String?
+  hsnCode        String?
+  sacCode        String?
+  taxableValue   Int      @default(0) // paise — equals lineTotal (taxable amount after discount)
+  cgstRate       Int      @default(0) // basis points (e.g. 900 = 9%)
+  cgstAmount     Int      @default(0) // paise
+  sgstRate       Int      @default(0) // basis points
+  sgstAmount     Int      @default(0) // paise
+  igstRate       Int      @default(0) // basis points (e.g. 1800 = 18%)
+  igstAmount     Int      @default(0) // paise
+  cessRate       Int      @default(0) // basis points
+  cessAmount     Int      @default(0) // paise
 
   // Snapshot at time of invoice
   purchasePrice  Int      @default(0)
@@ -869,6 +966,95 @@ model AuditLog {
   @@index([userId])
 }
 
+// === Referral & Earn — Feature #3 ===
+
+model ReferralCode {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  code              String   @unique
+  link              String
+  totalReferrals    Int      @default(0)
+  successfulRewards Int      @default(0)
+  totalEarned       Decimal  @default(0) @db.Decimal(12, 2)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([code])
+  @@index([userId])
+}
+
+model ReferralEvent {
+  id                String   @id @default(cuid())
+  referrerId        String
+  referredId        String
+  eventType         String   // signup, payment_success, refund_issued, reward_credited
+  eventData         Json?
+  ipAddress         String?
+  deviceFingerprint String?
+  userAgent         String?
+  isSuspicious      Boolean  @default(false)
+  suspiciousReason  String?
+  createdAt         DateTime @default(now())
+
+  referrer User @relation("ReferralEventsReferrer", fields: [referrerId], references: [id], onDelete: Cascade)
+  referred User @relation("ReferralEventsReferred", fields: [referredId], references: [id], onDelete: Cascade)
+
+  // Immutable — no updatedAt
+  @@index([referrerId, eventType])
+  @@index([referredId, eventType])
+  @@index([referrerId, isSuspicious])
+  @@index([isSuspicious, createdAt])
+  @@index([createdAt])
+}
+
+model ReferralReward {
+  id             String    @id @default(cuid())
+  referrerId     String
+  referredId     String
+  amount         Decimal   @db.Decimal(10, 2)
+  status         String    // in_review, approved, withdrawn, clawed_back
+  eligibleAt     DateTime?
+  approvedAt     DateTime?
+  withdrawnAt    DateTime?
+  clawedBackAt   DateTime?
+  clawBackReason String?
+  withdrawalId   String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  referrer   User                @relation("ReferralRewardsReferrer", fields: [referrerId], references: [id], onDelete: Cascade)
+  referred   User                @relation("ReferralRewardsReferred", fields: [referredId], references: [id], onDelete: Cascade)
+  withdrawal ReferralWithdrawal? @relation(fields: [withdrawalId], references: [id])
+
+  @@index([referrerId, status])
+  @@index([status, eligibleAt])
+}
+
+model ReferralWithdrawal {
+  id            String    @id @default(cuid())
+  userId        String
+  amount        Decimal   @db.Decimal(10, 2)
+  upiId         String
+  status        String    // pending, approved, rejected, failed, processing
+  statusReason  String?
+  autoApproved  Boolean   @default(false)
+  approvedBy    String?
+  approvedAt    DateTime?
+  processedAt   DateTime?
+  transactionId String?
+  failureReason String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rewards ReferralReward[]
+
+  @@index([userId, status])
+  @@index([status, createdAt])
+}
+
 model UserAppSettings {
   id                  String   @id @default(cuid())
   userId              String   @unique
@@ -885,4 +1071,208 @@ model UserAppSettings {
   updatedAt           DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// === Admin Panel ===
+
+enum AdminRole {
+  ADMIN
+  SUPER_ADMIN
+}
+
+/// Platform admin accounts — separate from regular User table
+model AdminUser {
+  id                   String    @id @default(cuid())
+  email                String    @unique
+  passwordHash         String
+  name                 String
+  role                 AdminRole @default(ADMIN)
+  isActive             Boolean   @default(true)
+  twoFactorEnabled     Boolean   @default(false)
+  twoFactorSecret      String?   // TOTP secret (encrypted at rest)
+
+  // Security tracking
+  lastLoginAt          DateTime?
+  failedLoginAttempts  Int       @default(0)
+  accountLockedUntil   DateTime?
+  lastFailedLoginAt    DateTime?
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  actions    AdminAction[]
+
+  @@index([email])
+  @@index([role, isActive])
+}
+
+/// Immutable audit trail — every admin action is recorded here
+model AdminAction {
+  id          String   @id @default(cuid())
+  adminId     String
+  action      String   // SUSPEND_USER, UNSUSPEND_USER, VIEW_USER, UPDATE_SETTINGS, LOGIN, LOGOUT
+  targetType  String?  // USER, BUSINESS, SETTINGS
+  targetId    String?
+  metadata    Json     @default("{}")
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  admin AdminUser @relation(fields: [adminId], references: [id], onDelete: Restrict)
+
+  // Immutable — no updatedAt
+  @@index([adminId, createdAt])
+  @@index([targetType, targetId])
+  @@index([createdAt])
+}
+
+/// User suspension records — tracks who suspended whom and why
+model UserSuspension {
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  suspendedBy String    // AdminUser.id
+  reason      String
+  notes       String?
+  suspendedAt DateTime  @default(now())
+  liftedAt    DateTime?
+  liftedBy    String?   // AdminUser.id
+  liftNotes   String?
+
+  @@index([userId])
+  @@index([suspendedBy])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Phase 2 — GST & Compliance
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/// Tax rate category — "GST 18%", "GST 5%", "Exempt", etc.
+model TaxCategory {
+  id           String   @id @default(cuid())
+  businessId   String
+  name         String   // "GST 18%", "GST 5%", "Exempt"
+  rate         Int      @default(0)  // basis points (1800 = 18.00%)
+  cessRate     Int      @default(0)  // basis points for additional cess
+  cessType     String   @default("PERCENTAGE") // PERCENTAGE, FIXED_PER_UNIT
+  hsnCode      String?  // Default HSN for this category
+  sacCode      String?  // Default SAC for this category
+  isDefault    Boolean  @default(false) // System-created defaults (0%, 5%, 12%, 18%, 28%)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  business Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  products Product[]
+
+  @@unique([businessId, name])
+  @@index([businessId, isActive])
+}
+
+/// Pre-seeded HSN/SAC code database (~12K records, read-only)
+model HsnCode {
+  code           String  @id // 4-8 digit HSN code
+  description    String
+  chapter        String? // 2-digit chapter (first 2 digits)
+  defaultRate    Int     @default(0) // basis points — default GST rate
+  cessApplicable Boolean @default(false)
+  cessRate       Int     @default(0) // basis points
+
+  @@index([chapter])
+  @@index([description])
+}
+
+/// E-Invoice record — IRN + QR from NIC IRP portal
+model EInvoice {
+  id             String   @id @default(cuid())
+  documentId     String   @unique
+  irn            String   @unique // 64-char hash from NIC
+  ackNumber      String   // Acknowledgement number
+  ackDate        DateTime
+  qrCodeData     String   @db.Text // Base64 or raw QR data
+  signedInvoice  Json     // Full signed invoice JSON from NIC
+  status         String   @default("GENERATED") // GENERATED, CANCELLED
+  cancelReason   String?
+  cancelledAt    DateTime?
+  rawResponse    Json?    // Full NIC response for debugging
+  createdAt      DateTime @default(now())
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Restrict)
+
+  @@index([status])
+}
+
+/// E-Way Bill record
+model EWayBill {
+  id              String   @id @default(cuid())
+  documentId      String   @unique
+  ewbNumber       String   @unique
+  ewbDate         DateTime
+  validUpto       DateTime
+  transportMode   String   @default("ROAD") // ROAD, RAIL, AIR, SHIP
+  transporterId   String?
+  transporterName String?
+  vehicleNumber   String?
+  vehicleType     String?  // REGULAR, ODC (over-dimensional cargo)
+  distance        Int      @default(0) // kilometers
+  fromPincode     String
+  toPincode       String
+  status          String   @default("ACTIVE") // ACTIVE, CANCELLED, EXTENDED
+  cancelReason    String?
+  cancelledAt     DateTime?
+  partBUpdates    Json     @default("[]") // Array of vehicle change records
+  createdAt       DateTime @default(now())
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Restrict)
+
+  @@index([documentId])
+  @@index([status])
+  @@index([ewbNumber])
+}
+
+/// GST return filing tracker
+model GstReturn {
+  id                String   @id @default(cuid())
+  businessId        String
+  period            String   // "2026-01" (YYYY-MM)
+  returnType        String   // GSTR1, GSTR3B, GSTR9
+  status            String   @default("DRAFT") // DRAFT, EXPORTED, FILED
+  filedAt           DateTime?
+  jsonData          Json?    // Exported JSON data
+  summary           Json?    // Aggregated summary (tax totals, counts)
+  invoiceCount      Int      @default(0)
+  totalTaxableValue Int      @default(0) // paise
+  totalTax          Int      @default(0) // paise
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, period, returnType])
+  @@index([businessId, returnType])
+}
+
+/// Recurring invoice template — auto-generates invoices on schedule
+model RecurringInvoice {
+  id                  String    @id @default(cuid())
+  businessId          String
+  templateDocumentId  String    // Source document used as template
+  partyId             String
+  frequency           String    // WEEKLY, MONTHLY, QUARTERLY, YEARLY
+  startDate           DateTime
+  endDate             DateTime?
+  nextRunDate         DateTime
+  dayOfMonth          Int?      // 1-28 for MONTHLY
+  dayOfWeek           Int?      // 0-6 for WEEKLY (0 = Sunday)
+  autoSend            Boolean   @default(false)
+  status              String    @default("ACTIVE") // ACTIVE, PAUSED, COMPLETED
+  generatedCount      Int       @default(0)
+  lastGeneratedAt     DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  business  Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  documents Document[]
+
+  @@index([businessId, status])
+  @@index([nextRunDate, status])
 }

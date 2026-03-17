@@ -5,6 +5,7 @@
  * card list, 4 UI states.
  */
 
+import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Banknote } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -18,10 +19,14 @@ import { OutstandingSummaryBar } from './components/OutstandingSummaryBar'
 import { OutstandingFilterBar } from './components/OutstandingFilterBar'
 import { OutstandingCard } from './components/OutstandingCard'
 import { OutstandingSkeleton } from './components/OutstandingSkeleton'
+import { ReminderDrawer } from './components/ReminderDrawer'
 import { AGING_BUCKET_LABELS, AGING_BUCKET_COLORS } from './payment.constants'
 import { getAgingPercentages, calculateAgingTotal } from './payment.utils'
-import type { OutstandingType, OutstandingSortBy, OutstandingAging } from './payment.types'
-import './outstanding.css'
+import type { OutstandingType, OutstandingSortBy, OutstandingAging, OutstandingParty } from './payment.types'
+import './outstanding-page.css'
+import './outstanding-card.css'
+import './outstanding-filter.css'
+import './outstanding-skeleton.css'
 
 export default function OutstandingPage() {
   const navigate = useNavigate()
@@ -47,9 +52,11 @@ export default function OutstandingPage() {
     setFilter('sortBy', sortBy)
   }
 
+  const [reminderTarget, setReminderTarget] = useState<OutstandingParty | null>(null)
+
   const handleRemind = (partyId: string) => {
-    // TODO: Open reminder bottom sheet / modal
-    void partyId
+    const party = data?.parties.find((p) => p.partyId === partyId) ?? null
+    setReminderTarget(party)
   }
 
   const handleRecordPayment = (partyId: string) => {
@@ -116,6 +123,14 @@ export default function OutstandingPage() {
             ))}
           </div>
         )}
+        {/* Reminder drawer */}
+        <ReminderDrawer
+          open={reminderTarget !== null}
+          onClose={() => setReminderTarget(null)}
+          partyName={reminderTarget?.partyName ?? ''}
+          partyPhone={reminderTarget?.partyPhone ?? ''}
+          outstanding={reminderTarget?.outstanding ?? 0}
+        />
       </PageContainer>
     </AppShell>
   )

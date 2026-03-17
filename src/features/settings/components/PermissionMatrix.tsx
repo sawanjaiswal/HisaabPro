@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { ChevronRight } from 'lucide-react'
 import type { PermissionModule } from '../settings.types'
 import { formatPermissionKey, getPermissionCount } from '../settings.utils'
-import '../settings.css'
+import '../role-builder.css'
 
 interface PermissionMatrixProps {
   modules: PermissionModule[]

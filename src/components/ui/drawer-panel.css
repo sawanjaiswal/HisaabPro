@@ -1,0 +1,198 @@
+/* ═══════════════════════════════════════════════════════════════
+   Drawer Panel — Animations, Backdrop & Panel Positioning
+   Keyframes, backdrop overlay, panel layout (mobile bottom sheet
+   + desktop centered modal), size variants, drag handle.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Keyframes ─────────────────────────────────────────────── */
+
+@keyframes drawer-backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes drawer-backdrop-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+/* Mobile: full slide from off-screen bottom */
+@keyframes drawer-slide-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+@keyframes drawer-slide-down-out {
+  from { transform: translateY(0); }
+  to   { transform: translateY(100%); }
+}
+
+/* Desktop: scale + fade */
+@keyframes drawer-modal-enter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes drawer-modal-exit {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+}
+
+/* ── Backdrop ──────────────────────────────────────────────── */
+
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 25, 23, 0.5);
+  z-index: var(--z-overlay);
+}
+
+.drawer-backdrop[data-state="open"] {
+  animation: drawer-backdrop-in var(--duration-normal) var(--ease-default) both;
+}
+
+.drawer-backdrop[data-state="closing"] {
+  animation: drawer-backdrop-out var(--duration-normal) var(--ease-default) both;
+}
+
+/* ── Panel — shared base ───────────────────────────────────── */
+
+.drawer-panel {
+  position: fixed;
+  background: var(--color-gray-0);
+  z-index: var(--z-modal);
+  display: flex;
+  flex-direction: column;
+  outline: none;
+}
+
+/* ── Mobile: bottom sheet ──────────────────────────────────── */
+
+.drawer-panel {
+  /* Mobile default */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-height: 90dvh;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  box-shadow: 0 -8px 32px rgba(26, 25, 23, 0.12), 0 -2px 8px rgba(26, 25, 23, 0.06);
+}
+
+.drawer-panel[data-state="open"] {
+  animation: drawer-slide-up var(--duration-slow) var(--ease-default) both;
+}
+
+.drawer-panel[data-state="closing"] {
+  animation: drawer-slide-down-out var(--duration-normal) var(--ease-default) both;
+}
+
+/* ── Desktop/Tablet: centered modal ───────────────────────── */
+
+@media (min-width: 768px) {
+  .drawer-panel {
+    /* Reset mobile positioning */
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    top: 50%;
+    width: var(--drawer-width, 520px);
+    max-width: 90vw;
+    max-height: 85vh;
+    border-radius: var(--radius-xl);
+    transform: translate(-50%, -50%);
+    box-shadow:
+      0 20px 60px rgba(26, 25, 23, 0.15),
+      0 8px 24px rgba(26, 25, 23, 0.08),
+      0 0 0 1px rgba(26, 25, 23, 0.04);
+  }
+
+  /* Override mobile slide animations with modal animations on desktop */
+  .drawer-panel[data-state="open"] {
+    animation: drawer-modal-enter var(--duration-normal) var(--ease-spring) both;
+  }
+
+  .drawer-panel[data-state="closing"] {
+    animation: drawer-modal-exit 150ms var(--ease-default) both;
+  }
+}
+
+/* Size variants — applied via CSS custom property */
+@media (min-width: 768px) {
+  .drawer-panel[data-size="sm"] { --drawer-width: 400px; }
+  .drawer-panel[data-size="md"] { --drawer-width: 520px; }
+  .drawer-panel[data-size="lg"] { --drawer-width: 640px; }
+}
+
+/* ── Drag handle (mobile only) ─────────────────────────────── */
+
+.drawer-drag-handle {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: var(--space-2);
+  padding-bottom: var(--space-1);
+  flex-shrink: 0;
+}
+
+.drawer-drag-handle::before {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-300);
+}
+
+/* Hide drag handle on desktop */
+@media (min-width: 768px) {
+  .drawer-drag-handle {
+    display: none;
+  }
+}
+
+/* ─── Dark Theme ──────────────────────────────────────────── */
+
+/* Backdrop — darker overlay in dark mode */
+[data-theme="dark"] .drawer-backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* Panel shadow — dark-adapted mobile bottom sheet */
+[data-theme="dark"] .drawer-panel {
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4), 0 -2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Panel shadow — dark-adapted desktop modal */
+@media (min-width: 768px) {
+  [data-theme="dark"] .drawer-panel {
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.5),
+      0 8px 24px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(43, 51, 66, 0.4);
+  }
+}
+
+/* ── Reduced motion ────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer-backdrop[data-state="open"],
+  .drawer-backdrop[data-state="closing"],
+  .drawer-panel[data-state="open"],
+  .drawer-panel[data-state="closing"] {
+    animation: none !important;
+    transition: none !important;
+  }
+}

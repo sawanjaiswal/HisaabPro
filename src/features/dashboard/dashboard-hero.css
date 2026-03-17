@@ -1,0 +1,177 @@
+/* ============================================================
+   Dashboard Hero — Sales summary + outstanding cards
+
+   Contains: sales hero (today's sale amount/count),
+   outstanding hero cards (collect/pay), spacing between
+   hero sections, and card animations.
+   ============================================================ */
+
+/* ─── Sales hero ───────────────────────────────────────────── */
+
+.dashboard-sales-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: var(--space-6) 0 var(--space-4);
+}
+
+.dashboard-sales-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--dash-text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dashboard-sales-amount {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--dash-text-primary);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  animation: dashAmountReveal 600ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
+}
+
+.dashboard-sales-count {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--dash-text-secondary);
+  letter-spacing: -0.01em;
+}
+
+/* ─── Outstanding hero cards (Figma: simple cards) ──────────── */
+
+/* Breathing room between hero and outstanding */
+.dashboard-sales-hero + .dashboard-hero {
+  margin-top: 4px;
+}
+
+/* More space before action grid */
+.dashboard-hero + .dashboard-action-grid {
+  margin-top: 8px;
+}
+
+.dashboard-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.dashboard-hero-card {
+  border: none;
+  border-radius: 20px;
+  padding: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform var(--duration-fast) cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+  font-family: var(--font-primary);
+  min-height: 90px;
+  text-align: left;
+}
+
+.dashboard-hero-card:active {
+  transform: scale(0.97);
+}
+
+.dashboard-hero-card--collect {
+  background: linear-gradient(135deg, var(--dash-teal-start) 0%, var(--dash-teal-end) 100%);
+  color: var(--color-gray-0);
+}
+
+.dashboard-hero-card--pay {
+  background: var(--dash-lime);
+  color: var(--color-dark-text);
+}
+
+.dashboard-hero-card--skeleton {
+  background: var(--color-gray-100);
+  cursor: default;
+}
+
+.dashboard-hero-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dashboard-hero-amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  animation: dashCardAmountIn 400ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both;
+}
+
+.dashboard-hero-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  opacity: 0.85;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dashboard-hero-arrow {
+  display: inline-block;
+}
+
+.dashboard-hero-arrow--up {
+  transform: rotate(180deg);
+}
+
+.dashboard-hero-chevron {
+  opacity: 0.6;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.dashboard-hero-chevron--dark {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+/* ─── Tablet and above ──────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .dashboard-sales-amount {
+    font-size: 2.75rem;
+  }
+
+  .dashboard-sales-count {
+    font-size: 0.875rem;
+  }
+
+  .dashboard-hero-card {
+    padding: var(--space-8);
+    min-height: 110px;
+  }
+
+  .dashboard-hero-amount {
+    font-size: 1.5rem;
+  }
+}
+
+/* ─── Desktop ────────────────────────────────────────────────── */
+
+@media (min-width: 1024px) {
+  .dashboard-hero-card:hover {
+    transform: scale(0.99);
+  }
+}
+
+/* ─── Dark theme overrides ──────────────────────────────────── */
+
+[data-theme="dark"] .dashboard-hero-card--collect {
+  background: linear-gradient(135deg, #1A5C7A 0%, #0E3A4E 100%);
+}
+
+[data-theme="dark"] .dashboard-hero-card--pay {
+  background: var(--color-lime-accent);
+  color: var(--color-dark-text);
+}

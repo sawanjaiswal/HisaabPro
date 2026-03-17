@@ -1,167 +1,5 @@
 import { ROUTES } from '@/config/routes.config'
-import type {
-  ApprovalStatus,
-  ApprovalType,
-  AuditAction,
-  DateFormat,
-  PermissionModule,
-  SettingsSection,
-  ShortcutConfig,
-  ShortcutGroup,
-  StaffStatus,
-} from './settings.types'
-
-// ─── Permission Modules (matches PRD §4B — 7 modules) ────────────────────────
-
-export const PERMISSION_MODULES: PermissionModule[] = [
-  {
-    key: 'invoicing',
-    label: 'Invoicing',
-    actions: [
-      { key: 'view',   label: 'View Invoices',   description: 'See invoice list and details' },
-      { key: 'create', label: 'Create Invoices',  description: 'Create new sale/purchase invoices' },
-      { key: 'edit',   label: 'Edit Invoices',    description: 'Modify saved invoices' },
-      { key: 'delete', label: 'Delete Invoices',  description: 'Delete invoices permanently' },
-      { key: 'share',  label: 'Share Invoices',   description: 'Share via WhatsApp / email / print' },
-    ],
-  },
-  {
-    key: 'inventory',
-    label: 'Inventory',
-    actions: [
-      { key: 'view',         label: 'View Stock',      description: 'See product list and stock levels' },
-      { key: 'create',       label: 'Add Products',    description: 'Create new products' },
-      { key: 'edit',         label: 'Edit Products',   description: 'Modify product details and pricing' },
-      { key: 'delete',       label: 'Delete Products', description: 'Remove products from inventory' },
-      { key: 'adjustStock',  label: 'Adjust Stock',    description: 'Manual stock in / stock out entries' },
-    ],
-  },
-  {
-    key: 'payments',
-    label: 'Payments',
-    actions: [
-      { key: 'view',   label: 'View Payments',    description: 'See payment history and outstanding' },
-      { key: 'record', label: 'Record Payment',   description: 'Add incoming or outgoing payments' },
-      { key: 'edit',   label: 'Edit Payment',     description: 'Modify saved payment records' },
-      { key: 'delete', label: 'Delete Payment',   description: 'Remove payment records' },
-    ],
-  },
-  {
-    key: 'parties',
-    label: 'Parties',
-    actions: [
-      { key: 'view',    label: 'View Parties',       description: 'See customer and supplier list' },
-      { key: 'create',  label: 'Add Parties',         description: 'Create new customers or suppliers' },
-      { key: 'edit',    label: 'Edit Parties',        description: 'Modify party details' },
-      { key: 'delete',  label: 'Delete Parties',      description: 'Remove parties' },
-      { key: 'import',  label: 'Import Contacts',     description: 'Bulk import from phone contacts' },
-    ],
-  },
-  {
-    key: 'reports',
-    label: 'Reports',
-    actions: [
-      { key: 'view',     label: 'View Reports',      description: 'Access sales, purchase and stock reports' },
-      { key: 'download', label: 'Download Reports',  description: 'Export reports as PDF or Excel' },
-      { key: 'share',    label: 'Share Reports',     description: 'Share reports via WhatsApp / email' },
-    ],
-  },
-  {
-    key: 'settings',
-    label: 'Settings',
-    actions: [
-      { key: 'view',        label: 'View Settings',    description: 'See app and business settings' },
-      { key: 'modify',      label: 'Modify Settings',  description: 'Change app and business configuration' },
-      { key: 'manageStaff', label: 'Manage Staff',     description: 'Invite, suspend or remove staff members' },
-    ],
-  },
-  {
-    key: 'fields',
-    label: 'Sensitive Fields',
-    actions: [
-      { key: 'viewPurchasePrice',   label: 'View Purchase Price',    description: 'See cost price of products' },
-      { key: 'viewProfitMargin',    label: 'View Profit Margin',     description: 'See gross margin on sales' },
-      { key: 'viewPartyPhone',      label: 'View Party Phone',       description: 'See customer / supplier phone numbers' },
-      { key: 'viewPartyOutstanding',label: 'View Party Outstanding', description: 'See how much a party owes or is owed' },
-    ],
-  },
-]
-
-// ─── System Roles ─────────────────────────────────────────────────────────────
-
-export const SYSTEM_ROLE_NAMES = ['Owner', 'Manager', 'Billing Staff', 'Viewer'] as const
-
-export type SystemRoleName = (typeof SYSTEM_ROLE_NAMES)[number]
-
-// ─── Approval Type Labels ─────────────────────────────────────────────────────
-
-export const APPROVAL_TYPE_LABELS: Record<ApprovalType, string> = {
-  EDIT_LOCKED_TRANSACTION: 'Edit Locked Transaction',
-  DELETE_TRANSACTION:      'Delete Transaction',
-  PRICE_OVERRIDE:          'Price Override',
-  DISCOUNT_OVERRIDE:       'Discount Override',
-}
-
-export const APPROVAL_STATUS_LABELS: Record<ApprovalStatus, string> = {
-  PENDING:  'Pending',
-  APPROVED: 'Approved',
-  DENIED:   'Denied',
-  EXPIRED:  'Expired',
-}
-
-export const APPROVAL_STATUS_COLORS: Record<ApprovalStatus, string> = {
-  PENDING:  'var(--color-warning-600)',
-  APPROVED: 'var(--color-success-600)',
-  DENIED:   'var(--color-error-600)',
-  EXPIRED:  'var(--color-neutral-400)',
-}
-
-// ─── Audit Log Labels ─────────────────────────────────────────────────────────
-
-export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
-  CREATE:            'Created',
-  UPDATE:            'Updated',
-  DELETE:            'Deleted',
-  RESTORE:           'Restored',
-  LOCK_OVERRIDE:     'Lock Overridden',
-  PIN_RESET:         'PIN Reset',
-  ROLE_CHANGE:       'Role Changed',
-  APPROVAL_REQUEST:  'Approval Requested',
-  APPROVAL_RESPONSE: 'Approval Responded',
-}
-
-export const AUDIT_ACTION_ICONS: Record<AuditAction, string> = {
-  CREATE:            'Plus',
-  UPDATE:            'Pencil',
-  DELETE:            'Trash2',
-  RESTORE:           'RotateCcw',
-  LOCK_OVERRIDE:     'LockOpen',
-  PIN_RESET:         'KeyRound',
-  ROLE_CHANGE:       'UserCog',
-  APPROVAL_REQUEST:  'ClipboardCheck',
-  APPROVAL_RESPONSE: 'MessageSquare',
-}
-
-export const AUDIT_ACTION_COLORS: Record<AuditAction, string> = {
-  CREATE:            'var(--color-success-600)',
-  UPDATE:            'var(--color-primary-600)',
-  DELETE:            'var(--color-error-600)',
-  RESTORE:           'var(--color-success-500)',
-  LOCK_OVERRIDE:     'var(--color-warning-600)',
-  PIN_RESET:         'var(--color-warning-500)',
-  ROLE_CHANGE:       'var(--color-primary-500)',
-  APPROVAL_REQUEST:  'var(--color-neutral-600)',
-  APPROVAL_RESPONSE: 'var(--color-neutral-500)',
-}
-
-export const AUDIT_ENTITY_LABELS: Record<string, string> = {
-  INVOICE: 'Invoice',
-  PAYMENT: 'Payment',
-  PRODUCT: 'Product',
-  PARTY:   'Party',
-  ROLE:    'Role',
-  SETTING: 'Setting',
-}
+import type { DateFormat, SettingsSection } from './settings.types'
 
 // ─── Date Format Labels ───────────────────────────────────────────────────────
 
@@ -172,20 +10,6 @@ export const DATE_FORMAT_LABELS: Record<DateFormat, string> = {
 }
 
 export const DATE_FORMATS: DateFormat[] = ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD']
-
-// ─── Staff Status Labels ──────────────────────────────────────────────────────
-
-export const STAFF_STATUS_LABELS: Record<StaffStatus, string> = {
-  ACTIVE:    'Active',
-  SUSPENDED: 'Suspended',
-  PENDING:   'Pending',
-}
-
-export const STAFF_STATUS_COLORS: Record<StaffStatus, string> = {
-  ACTIVE:    'var(--color-success-600)',
-  SUSPENDED: 'var(--color-error-600)',
-  PENDING:   'var(--color-warning-600)',
-}
 
 // ─── Lock Period Options ──────────────────────────────────────────────────────
 
@@ -208,38 +32,6 @@ export const WEAK_PINS: string[] = [
   '1234', '0000', '1111', '2222', '3333',
   '4444', '5555', '6666', '7777', '8888',
   '9999', '4321', '1122', '2580',
-]
-
-// ─── Calculator ───────────────────────────────────────────────────────────────
-
-export const GST_RATES = [5, 12, 18, 28] as const
-
-export type GstRate = (typeof GST_RATES)[number]
-
-export const CALCULATOR_MAX_DIGITS = 15
-export const CALCULATOR_MAX_HISTORY = 10
-
-// ─── Keyboard Shortcuts ───────────────────────────────────────────────────────
-
-export const DEFAULT_SHORTCUTS: Record<string, ShortcutConfig> = {
-  'billing.newInvoice':   { key: 'n',      ctrl: true,  label: 'New Invoice' },
-  'billing.save':         { key: 's',      ctrl: true,  label: 'Save' },
-  'billing.print':        { key: 'p',      ctrl: true,  label: 'Print' },
-  'billing.addLineItem':  { key: 'Enter',               label: 'Add Line Item' },
-  'billing.nextField':    { key: 'Tab',                 label: 'Next Field' },
-  'billing.cancel':       { key: 'Escape',              label: 'Cancel / Close' },
-  'global.search':        { key: 'k',      ctrl: true,  label: 'Search' },
-  'global.calculator':    { key: '.',      ctrl: true,  label: 'Toggle Calculator' },
-  'navigation.dashboard': { key: '1',      alt: true,   label: 'Go to Dashboard' },
-  'navigation.invoices':  { key: '2',      alt: true,   label: 'Go to Invoices' },
-  'navigation.parties':   { key: '3',      alt: true,   label: 'Go to Parties' },
-  'navigation.inventory': { key: '4',      alt: true,   label: 'Go to Inventory' },
-  'navigation.reports':   { key: '5',      alt: true,   label: 'Go to Reports' },
-}
-
-export const SHORTCUT_GROUPS: { id: ShortcutGroup; label: string }[] = [
-  { id: 'billing',    label: 'Billing' },
-  { id: 'navigation', label: 'Navigation' },
 ]
 
 // ─── Settings Hub Sections ────────────────────────────────────────────────────
@@ -311,6 +103,28 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     ],
   },
   {
+    id: 'gst',
+    title: 'GST & Tax',
+    items: [
+      {
+        id: 'gst-settings',
+        label: 'GST Settings',
+        description: 'GSTIN, state code, composition scheme',
+        icon: 'Receipt',
+        route: ROUTES.SETTINGS_GST,
+        type: 'navigation',
+      },
+      {
+        id: 'tax-rates',
+        label: 'Tax Rates',
+        description: 'Manage GST rate categories',
+        icon: 'Percent',
+        route: ROUTES.SETTINGS_TAX_RATES,
+        type: 'navigation',
+      },
+    ],
+  },
+  {
     id: 'transaction-controls',
     title: 'Transaction Controls',
     items: [
@@ -336,6 +150,20 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     id: 'display',
     title: 'Display',
     items: [
+      {
+        id: 'theme',
+        label: 'Dark Mode',
+        description: 'Switch between light and dark appearance',
+        icon: 'Moon',
+        type: 'toggle',
+      },
+      {
+        id: 'language',
+        label: 'Language',
+        description: 'Switch between English and Hindi',
+        icon: 'Languages',
+        type: 'select',
+      },
       {
         id: 'date-format',
         label: 'Date Format',

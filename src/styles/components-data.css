@@ -1,0 +1,116 @@
+/* === TRANSACTION ROW — NexoWallet style === */
+.txn-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+}
+
+.txn-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.txn-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.txn-name {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--color-gray-800);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.txn-date {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  margin-top: 2px;
+}
+
+.txn-amount {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.txn-amount-positive { color: var(--color-success-600); }
+.txn-amount-negative { color: var(--color-error-500); }
+
+.txn-category {
+  font-size: 0.694rem;
+  color: var(--color-gray-400);
+  text-align: right;
+  margin-top: 2px;
+}
+
+/* === BADGES — subtle pill with tinted background === */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px var(--space-2);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.badge-paid { background: var(--color-success-50); color: var(--color-success-700); }
+.badge-pending { background: var(--color-warning-50); color: var(--color-warning-700); }
+.badge-overdue { background: var(--color-error-50); color: var(--color-error-700); }
+.badge-draft { background: var(--color-gray-100); color: var(--color-gray-600); }
+.badge-info { background: var(--color-primary-50); color: var(--color-primary-500); }
+.badge-customer { background: var(--color-primary-50); color: var(--color-primary-500); }
+.badge-supplier { background: var(--color-secondary-50); color: var(--color-secondary-700); }
+
+/* === SECTION HEADER — "Recent Transactions" + "See All >" style === */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+}
+
+.section-link {
+  font-size: 0.833rem;
+  font-weight: 600;
+  color: var(--color-primary-400);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* === MONEY DISPLAY — NexoWallet hero numbers === */
+.money-hero {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-gray-900);
+  letter-spacing: -0.02em;
+}
+
+.money-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}

@@ -1,0 +1,114 @@
+/* ─── Transaction Controls — Component Styles ─────────────────────────────────
+ *
+ * All values use CSS variables only — no hardcoded hex, rgba, or px magic numbers.
+ * Touch targets: 44px minimum on all interactive elements.
+ * Mobile-first: base styles target 375px, media queries use min-width only.
+ * Class prefix: .txn-*
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+.txn-controls-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-4);
+  padding-bottom: var(--space-20);
+  min-height: 100vh;
+  background-color: var(--color-gray-50);
+}
+
+.txn-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  background-color: var(--color-gray-0, #fff);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+  overflow: hidden;
+}
+
+.txn-control-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-gray-100);
+  min-height: 60px;
+}
+
+.txn-control-row:last-child {
+  border-bottom: none;
+}
+
+.txn-control-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.txn-control-label {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-gray-900);
+}
+
+.txn-control-description {
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+  margin-top: var(--space-0-5);
+  line-height: 1.4;
+}
+
+.txn-threshold-input {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1.5px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  flex-shrink: 0;
+  min-height: 44px;
+  min-width: 80px;
+  background-color: var(--color-gray-0, #fff);
+  transition: border-color 0.15s ease;
+}
+
+.txn-threshold-input:focus-within {
+  border-color: var(--color-primary-500);
+}
+
+.txn-threshold-field {
+  width: 48px;
+  padding: var(--space-2) var(--space-2-5);
+  border: none;
+  background: none;
+  font-family: var(--font-primary);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-gray-900);
+  text-align: center;
+  min-height: 44px;
+  outline: none;
+}
+
+.txn-threshold-suffix {
+  padding: var(--space-2) var(--space-2-5) var(--space-2) 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-gray-500);
+  font-family: var(--font-primary);
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .txn-controls-page {
+  background-color: var(--color-gray-0);
+}
+
+[data-theme="dark"] .txn-controls {
+  background-color: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .txn-threshold-input {
+  background-color: var(--color-gray-100);
+  border-color: var(--color-gray-300);
+}

@@ -1,0 +1,194 @@
+/* GST Returns — Tab pills, period selector, return rows, net tax
+ *
+ * Mobile-first: base targets 320px, min-width queries for tablet/desktop.
+ * CSS variables only — no hardcoded hex, no inline sizes.
+ */
+
+/* ─── GST Return type tab pills ─────────────────────────────── */
+
+.gst-return-tabs {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.gst-return-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.gst-return-tab {
+  flex-shrink: 0;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  color: var(--color-gray-600);
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--font-primary);
+  cursor: pointer;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default),
+    color var(--duration-fast) var(--ease-default);
+}
+
+.gst-return-tab--active {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-400);
+  color: var(--color-primary-600);
+  font-weight: 600;
+}
+
+.gst-return-tab:hover:not(.gst-return-tab--active) {
+  border-color: var(--color-primary-200);
+  color: var(--color-primary-500);
+}
+
+/* ─── Period selector ───────────────────────────────────────── */
+
+.gst-period-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.gst-period-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-gray-600);
+  flex-shrink: 0;
+}
+
+.gst-period-input {
+  height: 44px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  background: var(--color-gray-0);
+  color: var(--color-gray-800);
+  font-size: 0.875rem;
+  font-family: var(--font-primary);
+  cursor: pointer;
+}
+
+.gst-period-input:focus {
+  outline: 2px solid var(--color-primary-300);
+  outline-offset: 2px;
+  border-color: var(--color-primary-400);
+}
+
+/* ─── GST Return content rows ───────────────────────────────── */
+
+.gst-return {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  animation: reportFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.gst-return__row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
+}
+
+.gst-return__row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gst-return__row-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+}
+
+.gst-return__row-count {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+}
+
+.gst-return__row-amounts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+}
+
+.gst-return__row-total {
+  font-weight: 600;
+  color: var(--color-gray-700);
+}
+
+.gst-return__net-tax {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  background: var(--color-primary-50);
+  border: 1px solid var(--color-primary-100);
+  border-radius: var(--radius-md);
+}
+
+.gst-return__net-tax-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary-600);
+}
+
+.gst-return__net-tax-value {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-primary-700);
+  font-variant-numeric: tabular-nums;
+}
+
+.gst-return__fy-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-gray-600);
+  margin-bottom: var(--space-1);
+}
+
+/* ─── Tablet+ (768px) ───────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .gst-return {
+    gap: var(--space-4);
+  }
+}
+
+/* ─── Dark theme ────────────────────────────────────────────── */
+
+[data-theme="dark"] .gst-return__row {
+  background: var(--color-gray-900);
+  border-color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .gst-return__net-tax {
+  background: color-mix(in srgb, var(--color-primary-500) 12%, transparent);
+  border-color: color-mix(in srgb, var(--color-primary-500) 30%, transparent);
+}
+
+/* ─── Reduced motion ────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .gst-return {
+    animation: none !important;
+  }
+}

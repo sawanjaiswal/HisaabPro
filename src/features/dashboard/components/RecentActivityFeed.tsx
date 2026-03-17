@@ -7,7 +7,7 @@
 
 import React from 'react'
 import { ChevronRight, IndianRupee } from 'lucide-react'
-import { formatCompactAmount } from '../dashboard.utils'
+import { formatCompactAmount, getInitials, formatDate } from '../dashboard.utils'
 import type { RecentActivityItem } from '../dashboard.types'
 
 interface RecentActivityFeedProps {
@@ -15,17 +15,6 @@ interface RecentActivityFeedProps {
   onItemClick: (item: RecentActivityItem) => void
   onAddPayment: (item: RecentActivityItem) => void
   onViewAll: () => void
-}
-
-function getInitial(name: string): string {
-  return (name.trim()[0] ?? '').toUpperCase()
-}
-
-function formatDate(iso: string): string {
-  if (!iso) return ''
-  const d = new Date(iso)
-  if (isNaN(d.getTime())) return ''
-  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
 }
 
 export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
@@ -72,13 +61,14 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
             <div
               key={item.id}
               className="dashboard-txn-row"
+              data-type={item.type}
               role="listitem"
               onClick={() => onItemClick(item)}
             >
               {/* Avatar */}
               <div className="dashboard-txn-avatar">
                 <div className={`dashboard-txn-avatar-inner dashboard-txn-avatar-inner--${item.type}`}>
-                  {getInitial(item.partyName)}
+                  {getInitials(item.partyName)}
                 </div>
               </div>
 

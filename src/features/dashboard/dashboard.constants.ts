@@ -54,10 +54,12 @@ export const ACTIVITY_TYPE_LABELS: Record<ActivityType, string> = {
 export const TOP_DEBTORS_LIMIT = 5
 export const RECENT_ACTIVITY_LIMIT = 10
 
-// ─── Today snapshot labels ──────────────────────────────────────────────────
+// ─── WhatsApp reminder ─────────────────────────────────────────────────────
 
-export const TODAY_LABELS = {
-  sales:    'Sales',
-  received: 'Received',
-  net:      'Net',
-} as const
+export function buildReminderMessage(name: string): string {
+  return `Hi ${name}, this is a reminder about your pending payment. Please settle at your earliest convenience.`
+}
+
+// ─── Subscription pricing ──────────────────────────────────────────────────
+
+export const SUBSCRIPTION_PRICE_LABEL = '\u20B9299'

@@ -20,7 +20,7 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
   onCategoryChange,
 }) => {
   return (
-    <div className="party-filter-bar">
+    <div className="product-filter-bar">
       <div className="search-bar">
         <Search size={18} aria-hidden="true" />
         <input

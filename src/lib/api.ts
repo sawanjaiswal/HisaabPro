@@ -1,9 +1,17 @@
 import { API_URL, TIMEOUTS } from '@/config/app.config'
+import { SYNC_MUTATION_METHODS, SYNC_EXCLUDED_PATHS } from './offline.constants'
+import { enqueue } from './offline'
 
 interface ApiOptions extends RequestInit {
   timeout?: number
   /** Skip the 401 refresh interceptor (used by refresh call itself) */
   _skipRefresh?: boolean
+  /** Offline queue control. Set false to disable queueing for this call. */
+  offlineQueue?: boolean
+  /** Human-readable entity type for queue UI (e.g. "party") */
+  entityType?: string
+  /** Human-readable label for queue UI (e.g. "Raju Traders") */
+  entityLabel?: string
 }
 
 interface ApiResponse<T> {
@@ -32,42 +40,31 @@ function flushRefreshQueue(error?: Error) {
 async function attemptTokenRefresh(): Promise<boolean> {
   if (isRefreshing) {
     await waitForRefresh()
-    return !!sessionStorage.getItem('accessToken')
+    return true
   }
 
   isRefreshing = true
-  const refreshToken = sessionStorage.getItem('refreshToken')
-
-  if (!refreshToken) {
-    isRefreshing = false
-    flushRefreshQueue(new Error('No refresh token'))
-    return false
-  }
 
   try {
     const response = await fetch(`${API_URL}/auth/refresh`, {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken }),
     })
 
-    const json = await response.json()
-
-    if (response.ok && json.success && json.data?.tokens) {
-      sessionStorage.setItem('accessToken', json.data.tokens.accessToken)
-      sessionStorage.setItem('refreshToken', json.data.tokens.refreshToken)
-      isRefreshing = false
-      flushRefreshQueue()
-      return true
+    if (response.ok) {
+      const json = await response.json()
+      if (json.success) {
+        isRefreshing = false
+        flushRefreshQueue()
+        return true
+      }
     }
 
-    // Refresh failed — clear auth and redirect to login
-    sessionStorage.removeItem('accessToken')
-    sessionStorage.removeItem('refreshToken')
+    // Refresh failed — clear cached user (let React Router handle redirect)
     sessionStorage.removeItem('cachedUser')
     isRefreshing = false
     flushRefreshQueue(new Error('Refresh failed'))
-    window.location.href = '/login'
     return false
   } catch {
     isRefreshing = false
@@ -79,14 +76,30 @@ async function attemptTokenRefresh(): Promise<boolean> {
 // ─── Main API wrapper ────────────────────────────────────────────────────────
 
 /**
- * Fetch wrapper with timeout, auth header, abort support,
+ * Fetch wrapper with timeout, cookie-based auth, abort support,
  * and automatic 401 token refresh with request queue.
+ *
+ * Auth tokens are stored in httpOnly cookies set by the server.
+ * Every request includes `credentials: 'include'` so cookies are sent
+ * automatically — no Authorization header needed.
  */
 export async function api<T>(
   path: string,
   options: ApiOptions = {}
 ): Promise<T> {
-  const { timeout = TIMEOUTS.fetchMs, _skipRefresh, ...fetchOptions } = options
+  const {
+    timeout = TIMEOUTS.fetchMs,
+    _skipRefresh,
+    offlineQueue: oq,
+    entityType,
+    entityLabel,
+    ...fetchOptions
+  } = options
+
+  const method = (fetchOptions.method ?? 'GET').toUpperCase()
+  const shouldQueue = oq !== false
+    && SYNC_MUTATION_METHODS.has(method)
+    && !SYNC_EXCLUDED_PATHS.some((p) => path.startsWith(p))
 
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), timeout)
@@ -95,23 +108,47 @@ export async function api<T>(
     options.signal.addEventListener('abort', () => controller.abort())
   }
 
-  const token = sessionStorage.getItem('accessToken')
+  let response: Response
+  try {
+    response = await fetch(`${API_URL}${path}`, {
+      ...fetchOptions,
+      credentials: 'include',
+      signal: controller.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        ...fetchOptions.headers,
+      },
+    })
+  } catch (err) {
+    clearTimeout(timeoutId)
 
-  const response = await fetch(`${API_URL}${path}`, {
-    ...fetchOptions,
-    signal: controller.signal,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...fetchOptions.headers,
-    },
-  }).finally(() => clearTimeout(timeoutId))
+    // Network error on a mutation → queue it offline
+    if (shouldQueue && isOfflineError(err)) {
+      const queued = await enqueue({
+        method: method as 'POST' | 'PUT' | 'PATCH' | 'DELETE',
+        path,
+        body: fetchOptions.body as string | null ?? null,
+        createdAt: Date.now(),
+        status: 'pending',
+        retryCount: 0,
+        errorMessage: null,
+        entityType: entityType ?? inferEntityType(path),
+        entityLabel: entityLabel ?? 'Offline change',
+      })
+      if (queued) {
+        // Return a synthetic empty response — caller treats it as success (optimistic)
+        return {} as T
+      }
+    }
+    throw err
+  } finally {
+    clearTimeout(timeoutId)
+  }
 
   // 401 interceptor — attempt token refresh, then retry the original request
   if (response.status === 401 && !_skipRefresh && !path.includes('/auth/')) {
     const refreshed = await attemptTokenRefresh()
     if (refreshed) {
-      // Retry with new token
       return api<T>(path, { ...options, _skipRefresh: true })
     }
     throw new ApiError('Session expired', 'UNAUTHORIZED', 401)
@@ -128,6 +165,22 @@ export async function api<T>(
   }
 
   return json.data
+}
+
+/** Detect network-level failures (no response at all) */
+function isOfflineError(err: unknown): boolean {
+  if (err instanceof TypeError) return true // fetch throws TypeError on network failure
+  if (!navigator.onLine) return true
+  return false
+}
+
+/** Best-effort entity type from API path (e.g. "/parties/abc" → "party") */
+function inferEntityType(path: string): string {
+  const segment = path.split('/').filter(Boolean)[0] ?? 'item'
+  // Singularise: "parties" → "party", "invoices" → "invoice"
+  if (segment.endsWith('ies')) return segment.slice(0, -3) + 'y'
+  if (segment.endsWith('s')) return segment.slice(0, -1)
+  return segment
 }
 
 export class ApiError extends Error {

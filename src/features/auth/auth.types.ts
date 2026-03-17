@@ -3,6 +3,8 @@ export interface AuthUser {
   phone: string
   name: string | null
   email: string | null
+  /** Primary business ID — populated after onboarding. Used by settings pages. */
+  businessId: string | null
 }
 
 export interface AuthTokens {

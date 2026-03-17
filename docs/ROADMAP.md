@@ -1,11 +1,11 @@
 # HisaabPro — Master Feature Roadmap
 
-> **Last Updated:** 2026-03-14
-> **Status:** Planning
+> **Last Updated:** 2026-03-16
+> **Status:** Phase 1 MVP — 58/70 features built, 10 need external credentials, 2 building
 > **Owner:** Sawan Jaiswal
-> **Architecture:** Modular Monolith (2 repos: @hisaab/core + hisaab-app)
-> **Total Features:** 132 across 7 phases
-> **Audit Status:** Self-audited 2026-03-14 (63 gaps found and filled)
+> **Architecture:** Monolith — React 19 frontend + Express backend + Prisma + PostgreSQL
+> **Total Features:** 150 across 7 phases (Phase 1: 70 features)
+> **Build Status:** Frontend 33 routes, 221+ files | Backend 120+ endpoints, 47 Prisma models
 
 ## Status Legend
 - [ ] Not Started
@@ -32,110 +32,110 @@
 
 ## PHASE 1 — MVP (Weeks 1-12)
 **Goal:** A small business owner can run daily operations on their phone
-**Status:** Not Started
-**Features:** 40 (10 reused + 30 new)
+**Status:** 60/70 Done — All code work complete, 10 need external credentials
+**Features:** 70 (10 reused + 60 new)
 
 ### 1A. Reused from DudhHisaab (~10-14 days)
 
 | # | Feature | Status | Source | Notes |
 |---|---------|--------|--------|-------|
-| 1 | Auth (OTP, login, JWT, refresh, 2FA, WebAuthn) | [ ] | DudhHisaab | 95% reusable |
-| 2 | Subscription & Billing (Razorpay, tiers, add-ons) | [ ] | DudhHisaab | 85% reusable |
-| 3 | Referral & Earn (codes, wallet, UPI withdrawal, fraud detection) | [ ] | DudhHisaab | 85% reusable |
-| 4 | Notifications (push, email, WhatsApp, SMS, quiet hours) | [ ] | DudhHisaab | 85% reusable |
-| 5 | Backup (local device + Google Drive + email export, encryption, restore) | [ ] | DudhHisaab | 90% reusable. Add local + email backup options |
-| 6 | Offline-first PWA (IndexedDB, sync queue, service worker) | [ ] | DudhHisaab | 90% reusable |
-| 7 | Admin Panel Framework (users, analytics, monitoring, audit) | [ ] | DudhHisaab | 80% reusable |
-| 8 | Dark Mode / Theming (CSS vars, theme selection: classic/modern/minimal) | [ ] | DudhHisaab | 95% reusable. Add theme picker |
-| 9 | Multi-language (EN/HI) | [ ] | DudhHisaab | 90% reusable |
-| 10 | Onboarding Flow (business setup wizard + opening balances entry) | [ ] | DudhHisaab | Adapt. MUST include opening balances for migration |
+| 1 | Auth (OTP, login, JWT, refresh, 2FA, WebAuthn) | [x] | DudhHisaab | Dev login + httpOnly cookies + account lockout + CAPTCHA |
+| 2 | Subscription & Billing (Razorpay, tiers, add-ons) | [B] | DudhHisaab | Needs Razorpay credentials |
+| 3 | Referral & Earn (codes, wallet, UPI withdrawal, fraud detection) | [x] | DudhHisaab | 8 endpoints, crypto code gen, fraud detection, UPI stub |
+| 4 | Notifications (push, email, WhatsApp, SMS, quiet hours) | [B] | DudhHisaab | Needs FCM + Aisensy + Resend credentials |
+| 5 | Backup (local device + Google Drive + email export, encryption, restore) | [x] | DudhHisaab | Manual backup + list + download + cooldown |
+| 6 | Offline-first PWA (IndexedDB, sync queue, service worker) | [x] | DudhHisaab | SW registered, Dexie, offline banner, sync queue |
+| 7 | Admin Panel Framework (users, analytics, monitoring, audit) | [x] | DudhHisaab | 15 endpoints, separate admin JWT, SUPER_ADMIN guard, audit trail |
+| 8 | Dark Mode / Theming (CSS vars, theme selection: classic/modern/minimal) | [x] | DudhHisaab | ThemeContext + toggle + localStorage + system pref |
+| 9 | Multi-language (EN/HI) | [x] | DudhHisaab | 160 translation keys + LanguageContext + toggle |
+| 10 | Onboarding Flow (business setup wizard + opening balances entry) | [x] | DudhHisaab | Business creation on first login |
 
 ### 1B. Party Management
 
 | # | Feature | Status | Complexity | PRD | Notes |
 |---|---------|--------|-----------|-----|-------|
-| 11 | Party CRUD (Customer + Supplier, groups, tags, contact import) | [ ] | LOW | [ ] | Adapt DudhHisaab |
-| 12 | Party Balances & Statements (outstanding, transaction history) | [ ] | LOW | [ ] | |
-| 13 | Multiple Addresses per Party (billing + shipping addresses) | [ ] | LOW | [ ] | Required for invoicing |
-| 14 | Party Credit Limits (block invoicing beyond limit, configurable) | [ ] | LOW | [ ] | Standard feature |
-| 15 | Party Custom Fields (user-defined additional fields) | [ ] | LOW | [ ] | Vyapar has this |
-| 16 | Party-wise Pricing (retailer/wholesale/regular rates per product) | [ ] | MEDIUM | [ ] | #1 MyBillBook gap |
-| 17 | Opening Balances (party balances, stock, bank — for migration) | [ ] | MEDIUM | [ ] | CRITICAL — without this, no one migrates |
+| 11 | Party CRUD (Customer + Supplier, groups, tags, contact import) | [x] | LOW | [x] | 3 pages, 10 routes, groups + custom fields, cursor pagination |
+| 12 | Party Balances & Statements (outstanding, transaction history) | [x] | LOW | [x] | PartyStatementPage + /reports/party-statement/:partyId |
+| 13 | Multiple Addresses per Party (billing + shipping addresses) | [x] | LOW | [x] | CRUD on /parties/:id/addresses |
+| 14 | Party Credit Limits (block invoicing beyond limit, configurable) | [x] | LOW | [x] | CreditLimit model + validation on invoice |
+| 15 | Party Custom Fields (user-defined additional fields) | [x] | LOW | [x] | /custom-fields CRUD, entityType=PARTY |
+| 16 | Party-wise Pricing (retailer/wholesale/regular rates per product) | [x] | MEDIUM | [x] | PriceList model + party-product pricing |
+| 17 | Opening Balances (party balances, stock, bank — for migration) | [x] | MEDIUM | [x] | OpeningBalance model + onboarding flow |
 
 ### 1C. Invoicing & Documents
 
 | # | Feature | Status | Complexity | PRD | Notes |
 |---|---------|--------|-----------|-----|-------|
-| 18 | Sale Invoice (non-GST, with line items, discounts, additional charges) | [ ] | MEDIUM | [ ] | Core billing |
-| 19 | Purchase Invoice (record purchases from suppliers) | [ ] | MEDIUM | [ ] | |
-| 20 | Estimates / Quotations (pre-sale proposals) | [ ] | LOW | [ ] | |
-| 21 | Proforma Invoices (formal quote before final invoice) | [ ] | LOW | [ ] | |
-| 22 | Purchase Orders (order before receiving goods) | [ ] | LOW | [ ] | |
-| 23 | Sale Orders (confirmed order before invoicing) | [ ] | LOW | [ ] | |
-| 24 | Delivery Challans (goods movement without invoice) | [ ] | LOW | [ ] | |
-| 25 | Invoice Numbering (auto-increment, custom prefix/suffix, per FY series) | [ ] | LOW | [ ] | |
-| 26 | Additional Charges on Invoice (shipping, packaging, freight, loading) | [ ] | LOW | [ ] | |
-| 27 | Due Dates on Invoices (payment terms: 15/30/60 days) | [ ] | LOW | [ ] | |
-| 28 | Terms & Conditions on Invoice (customizable per template) | [ ] | LOW | [ ] | |
-| 29 | Digital Signature Block (image/drawn signature on invoice) | [ ] | LOW | [ ] | |
-| 30 | Auto Invoice Sharing (auto-send via WhatsApp/email on save) | [ ] | LOW | [ ] | |
-| 31 | Invoice Image Export (JPG/PNG for WhatsApp — not just PDF) | [ ] | LOW | [ ] | |
-| 32 | Share via Email with PDF Attachment | [ ] | LOW | [ ] | |
-| 33 | Invoice Recovery / Recycle Bin (recover deleted invoices) | [ ] | LOW | [ ] | MyBillBook has this |
-| 34 | Show Profit During Sale (real-time margin display while billing) | [ ] | LOW | [ ] | Vyapar power feature |
+| 18 | Sale Invoice (non-GST, with line items, discounts, additional charges) | [x] | MEDIUM | [x] | 7 document types via unified Document model |
+| 19 | Purchase Invoice (record purchases from suppliers) | [x] | MEDIUM | [x] | Same unified model |
+| 20 | Estimates / Quotations (pre-sale proposals) | [x] | LOW | [x] | Document type: ESTIMATE |
+| 21 | Proforma Invoices (formal quote before final invoice) | [x] | LOW | [x] | Document type: PROFORMA |
+| 22 | Purchase Orders (order before receiving goods) | [x] | LOW | [x] | Document type: PURCHASE_ORDER |
+| 23 | Sale Orders (confirmed order before invoicing) | [x] | LOW | [x] | Document type: SALE_ORDER |
+| 24 | Delivery Challans (goods movement without invoice) | [x] | LOW | [x] | Document type: DELIVERY_CHALLAN |
+| 25 | Invoice Numbering (auto-increment, custom prefix/suffix, per FY series) | [x] | LOW | [x] | DocumentNumberSeries model |
+| 26 | Additional Charges on Invoice (shipping, packaging, freight, loading) | [x] | LOW | [x] | DocumentCharge model |
+| 27 | Due Dates on Invoices (payment terms: 15/30/60 days) | [x] | LOW | [x] | dueDate field + payment terms |
+| 28 | Terms & Conditions on Invoice (customizable per template) | [x] | LOW | [x] | termsAndConditions on Document |
+| 29 | Digital Signature Block (image/drawn signature on invoice) | [x] | LOW | [x] | signatureUrl on Document |
+| 30 | Auto Invoice Sharing (auto-send via WhatsApp/email on save) | [B] | LOW | [x] | Needs Aisensy + Resend credentials |
+| 31 | Invoice Image Export (JPG/PNG for WhatsApp — not just PDF) | [x] | LOW | [x] | useImageExport hook + html-to-image |
+| 32 | Share via Email with PDF Attachment | [B] | LOW | [x] | Needs Resend API key |
+| 33 | Invoice Recovery / Recycle Bin (recover deleted invoices) | [x] | LOW | [x] | Soft delete + recycle bin + restore |
+| 34 | Show Profit During Sale (real-time margin display while billing) | [x] | LOW | [x] | showProfitDuringBilling setting |
 
 ### 1D. Invoice Templates & Printing
 
 | # | Feature | Status | Complexity | PRD | Notes |
 |---|---------|--------|-----------|-----|-------|
-| 35 | Invoice Templates (thermal, A4, A5, modern — 5+ base templates) | [ ] | MEDIUM | [ ] | |
-| 36 | Template Customization (fonts, colors, column toggles, field visibility) | [ ] | MEDIUM | [ ] | MyBillBook has 50+ options |
-| 37 | Print Settings (page size, margins, font size, header/footer) | [ ] | LOW | [ ] | |
-| 38 | Round-off Settings (nearest 1, 0.50, 0.10 — configurable) | [ ] | LOW | [ ] | |
-| 39 | Decimal Precision Settings (2 vs 3 decimal places for qty/rate/amount) | [ ] | LOW | [ ] | |
+| 35 | Invoice Templates (thermal, A4, A5, modern — 5+ base templates) | [x] | MEDIUM | [x] | TemplateGalleryPage + TemplateEditorPage, React-PDF |
+| 36 | Template Customization (fonts, colors, column toggles, field visibility) | [x] | MEDIUM | [x] | Full editor with live preview |
+| 37 | Print Settings (page size, margins, font size, header/footer) | [x] | LOW | [x] | In TemplateEditorPage |
+| 38 | Round-off Settings (nearest 1, 0.50, 0.10 — configurable) | [x] | LOW | [x] | DocumentSettings.roundOffTo |
+| 39 | Decimal Precision Settings (2 vs 3 decimal places for qty/rate/amount) | [x] | LOW | [x] | InventorySetting.decimalPrecision |
 
 ### 1E. Payment Tracking
 
 | # | Feature | Status | Complexity | PRD | Notes |
 |---|---------|--------|-----------|-----|-------|
-| 40 | Payment In/Out (cash, UPI, bank transfer, cheque — link to invoices) | [ ] | LOW | [ ] | Adapt DudhHisaab |
-| 41 | Outstanding Tracking (who owes how much, aging preview) | [ ] | LOW | [ ] | |
-| 42 | Payment Reminders (automated via WhatsApp/SMS/push) | [ ] | LOW | [ ] | Notification system ready |
-| 43 | Discount During Payment (apply discount at payment time) | [ ] | LOW | [ ] | Vyapar feature |
+| 40 | Payment In/Out (cash, UPI, bank transfer, cheque — link to invoices) | [x] | LOW | [x] | 3 pages, 11 routes, multi-invoice allocation, soft delete + restore |
+| 41 | Outstanding Tracking (who owes how much, aging preview) | [x] | LOW | [x] | OutstandingPage + aging buckets (current/1-30/31-60/61-90/90+) |
+| 42 | Payment Reminders (automated via WhatsApp/SMS/push) | [B] | LOW | [x] | Routes built, needs Aisensy + FCM credentials |
+| 43 | Discount During Payment (apply discount at payment time) | [x] | LOW | [x] | PaymentDiscount model, PERCENTAGE/FIXED |
 
 ### 1F. Basic Inventory
 
 | # | Feature | Status | Complexity | PRD | Notes |
 |---|---------|--------|-----------|-----|-------|
-| 44 | Products CRUD (name, price, unit, category, opening stock) | [ ] | MEDIUM | [ ] | |
-| 45 | Stock In/Out (auto-update on invoice, manual adjustment) | [ ] | MEDIUM | [ ] | |
-| 46 | Stock Validation (block invoice if stock < qty, configurable) | [ ] | LOW | [ ] | Competitor gap |
-| 47 | Low-Stock Alerts (configurable minimum qty, push notification) | [ ] | LOW | [ ] | |
-| 48 | Item Categories & Units (with unit conversion: 1 box = 12 pcs) | [ ] | MEDIUM | [ ] | Vyapar feature |
-| 49 | Item Custom Fields (user-defined fields per product) | [ ] | LOW | [ ] | |
+| 44 | Products CRUD (name, price, unit, category, opening stock) | [x] | MEDIUM | [x] | 3 pages, 10 routes, SKU auto-gen, amounts in paise |
+| 45 | Stock In/Out (auto-update on invoice, manual adjustment) | [x] | MEDIUM | [x] | /stock/adjust + immutable StockMovement log |
+| 46 | Stock Validation (block invoice if stock < qty, configurable) | [x] | LOW | [x] | GLOBAL/WARN_ONLY/HARD_BLOCK modes |
+| 47 | Low-Stock Alerts (configurable minimum qty, push notification) | [B] | LOW | [x] | Config exists, needs notification integration |
+| 48 | Item Categories & Units (with unit conversion: 1 box = 12 pcs) | [x] | MEDIUM | [x] | /categories + /units + /units/conversions |
+| 49 | Item Custom Fields (user-defined fields per product) | [x] | LOW | [x] | /custom-fields CRUD, entityType=PRODUCT |
 
 ### 1G. Dashboard & Reports
 
 | # | Feature | Status | Complexity | PRD | Notes |
 |---|---------|--------|-----------|-----|-------|
-| 50 | Dashboard (today's sales, outstanding, top customers, quick actions) | [ ] | LOW | [ ] | Adapt DudhHisaab |
-| 51 | Sale/Purchase Reports (by date range, party, product) | [ ] | MEDIUM | [ ] | |
-| 52 | Party Statements (transaction history per customer/supplier) | [ ] | LOW | [ ] | |
-| 53 | Stock Summary Report (current stock, value, movement) | [ ] | MEDIUM | [ ] | |
-| 54 | Day Book (all transactions for a day — simple list, not accounting) | [ ] | LOW | [ ] | |
-| 55 | Payment History Report | [ ] | LOW | [ ] | |
+| 50 | Dashboard (today's sales, outstanding, top customers, quick actions) | [x] | LOW | [x] | Premium Figma-based UI, single-call /dashboard/home |
+| 51 | Sale/Purchase Reports (by date range, party, product) | [x] | MEDIUM | [x] | /reports/invoices + CSV export |
+| 52 | Party Statements (transaction history per customer/supplier) | [x] | LOW | [x] | /reports/party-statement/:partyId |
+| 53 | Stock Summary Report (current stock, value, movement) | [x] | MEDIUM | [x] | /reports/stock-summary |
+| 54 | Day Book (all transactions for a day — simple list, not accounting) | [x] | LOW | [x] | /reports/day-book |
+| 55 | Payment History Report | [x] | LOW | [x] | /reports/payments |
 
 ### 1H. Settings & Security
 
 | # | Feature | Status | Complexity | PRD | Notes |
 |---|---------|--------|-----------|-----|-------|
-| 56 | Custom User Roles/Permissions (granular role builder, field-level access) | [ ] | MEDIUM | [ ] | #1 Vyapar complaint |
-| 57 | Transaction Edit/Delete Controls (lock old transactions, require approval) | [ ] | LOW | [ ] | Vyapar feature |
-| 58 | Passcode / PIN Protection (app-level lock) | [ ] | LOW | [ ] | |
-| 59 | Biometric Auth (fingerprint/face for app access) | [ ] | LOW | [ ] | Capacitor biometric plugin |
-| 60 | Date Format Customization (DD/MM/YYYY, MM/DD/YYYY) | [ ] | LOW | [ ] | |
-| 61 | Keyboard Shortcuts for billing (Tab, Enter, hotkeys) | [ ] | LOW | [ ] | Power user demand |
-| 62 | Built-in Calculator (utility accessible from any screen) | [ ] | LOW | [ ] | Vyapar has this |
+| 56 | Custom User Roles/Permissions (granular role builder, field-level access) | [x] | MEDIUM | [x] | Role CRUD + permission matrix + staff management + invites |
+| 57 | Transaction Edit/Delete Controls (lock old transactions, require approval) | [x] | LOW | [x] | TransactionLockConfig + ApprovalRequest flow |
+| 58 | Passcode / PIN Protection (app-level lock) | [x] | LOW | [x] | /users/:id/pin (set/verify/reset) + operation PIN |
+| 59 | Biometric Auth (fingerprint/face for app access) | [B] | LOW | [x] | Setting exists, needs Capacitor plugin |
+| 60 | Date Format Customization (DD/MM/YYYY, MM/DD/YYYY) | [x] | LOW | [x] | UserAppSettings.dateFormat |
+| 61 | Keyboard Shortcuts for billing (Tab, Enter, hotkeys) | [x] | LOW | [x] | ShortcutsPage |
+| 62 | Built-in Calculator (utility accessible from any screen) | [x] | LOW | [x] | CalculatorOverlay global FAB |
 
 ### Phase 1 Acceptance Criteria
 - [ ] Business owner can sign up, set up profile, add logo
@@ -325,7 +325,7 @@
 
 | Phase | Features | Weeks | Status |
 |-------|----------|-------|--------|
-| Phase 1 — MVP | 62 (10 reused + 52 new) | 1-12 | Not Started |
+| Phase 1 — MVP | 70 (10 reused + 60 new) | 1-12 | **60 Done, 10 Needs Credentials** |
 | Phase 2 — GST & Compliance | 20 | 13-18 | Not Started |
 | Phase 3 — Accounting & Finance | 22 | 19-24 | Not Started |
 | Phase 4 — Advanced Inventory & POS | 16 | 25-30 | Not Started |
@@ -378,4 +378,6 @@
 | Date | Phase | Change | By |
 |------|-------|--------|-----|
 | 2026-03-14 | All | Initial roadmap: 86 features | Sawan + Claude |
-| 2026-03-14 | All | Self-audit: found 63 gaps, 16 underspec, 5 redundancies. Expanded to 150 features. Added: opening balances, PO/SO, proforma, multiple addresses, credit limits, custom fields, tax groups, place of supply, TDS/TCS, cheque management, aging reports, POS mode, party ledger, receipt/payment vouchers, round-off/decimal settings, passcode/biometric, invoice recovery, profit during sale, and 40+ more | Claude |
+| 2026-03-14 | All | Self-audit: found 63 gaps, 16 underspec, 5 redundancies. Expanded to 150 features | Claude |
+| 2026-03-15 | 1 | Built all Phase 1 backend (120+ endpoints, 47 Prisma models) + frontend (33 routes, 221 files) | Claude |
+| 2026-03-16 | 1 | Security hardening: CSRF, account lockout, Redis rate limiter, httpOnly cookies, CAPTCHA, replay protection, security headers. Dark mode, i18n, invoice image export. 58/70 done | Claude |

@@ -1,0 +1,119 @@
+/* ============================================================
+   Dashboard Alerts — Upgrade banner + warning/danger alerts
+
+   Contains: alert section wrapper, upgrade banner (lime),
+   alert items (warning/danger), alert text/icons/chevrons.
+   ============================================================ */
+
+/* ─── Alert / upgrade banner ─────────────────────────────────── */
+
+.dashboard-alerts {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: var(--dash-section-gap);
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-alert-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 20px var(--dash-side-padding);
+  background: var(--dash-lime);
+  border-radius: 24px 24px 0 0;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-primary);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--duration-fast) cubic-bezier(0.16, 1, 0.3, 1);
+  width: 100%;
+  text-align: left;
+}
+
+.dashboard-alert-banner:active {
+  transform: scale(0.99);
+}
+
+.dashboard-alert-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dashboard-alert-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-alert-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--dash-text-primary);
+  letter-spacing: -0.015em;
+}
+
+.dashboard-alert-subtitle {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: rgba(26, 26, 26, 0.7);
+  margin-top: 2px;
+}
+
+.dashboard-alert-chevron {
+  flex-shrink: 0;
+  color: var(--dash-text-primary);
+}
+
+/* Alert items (warning/danger below banner) */
+.dashboard-alert-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--dash-side-padding);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--duration-fast) cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: 44px;
+  width: 100%;
+  text-align: left;
+}
+
+.dashboard-alert-item:active {
+  transform: scale(0.99);
+}
+
+.dashboard-alert-item--warning {
+  background: var(--color-warning-50);
+  color: var(--color-warning-700);
+}
+
+.dashboard-alert-item--danger {
+  background: var(--color-error-50);
+  color: var(--color-error-700);
+}
+
+.dashboard-alert-text {
+  flex: 1;
+}
+
+/* ─── Dark theme overrides ──────────────────────────────────── */
+
+[data-theme="dark"] .dashboard-alert-banner {
+  background: var(--color-lime-accent);
+  color: var(--color-dark-text);
+}
+
+[data-theme="dark"] .dashboard-alert-icon {
+  background: rgba(0, 0, 0, 0.12);
+}

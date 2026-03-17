@@ -1,4 +1,5 @@
 import { SEO } from '../../components/layout/SEO'
+import { Turnstile } from '../../components/ui/Turnstile'
 import { APP_NAME } from '../../config/app.config'
 import { useLogin } from './useLogin'
 import './LoginPage.css'
@@ -8,6 +9,7 @@ export default function LoginPage() {
     username, setUsername,
     password, setPassword,
     loading, error,
+    captchaRequired, setCaptchaToken,
     handleLogin,
   } = useLogin()
 
@@ -63,10 +65,20 @@ export default function LoginPage() {
 
           {error && <p className="login-page__error">{error}</p>}
 
+          {captchaRequired && (
+            <div className="login-page__captcha">
+              <Turnstile
+                onVerify={setCaptchaToken}
+                onExpire={() => setCaptchaToken('')}
+              />
+            </div>
+          )}
+
           <button
             type="submit"
             className="login-page__submit"
             disabled={!isValid || loading}
+            aria-label="Sign in"
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>

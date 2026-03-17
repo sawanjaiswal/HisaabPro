@@ -1,0 +1,106 @@
+/* Offline Banner — Connection lost indicator
+ *
+ * Warm amber pill banner that slides in when offline.
+ * Includes retry button with spin animation.
+ * CSS-only animations. Mobile-first.
+ */
+
+/* ─── Offline Banner ─────────────────────────────────────────────────────── */
+
+.offline-banner {
+  padding: 0 var(--space-4);
+  margin-bottom: var(--space-3);
+  animation: slide-down var(--duration-normal) var(--ease-default);
+}
+
+.offline-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px var(--space-3);
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: var(--radius-md);
+}
+
+.offline-banner-icon {
+  flex-shrink: 0;
+  color: #ea580c;
+}
+
+.offline-banner-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.offline-banner-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #9a3412;
+}
+
+.offline-banner-subtitle {
+  font-size: 0.6875rem;
+  color: #c2410c;
+  margin-top: 1px;
+}
+
+.offline-banner-retry {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background: #fed7aa;
+  color: #9a3412;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-primary);
+  min-height: 28px;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity var(--duration-fast) var(--ease-default);
+}
+
+.offline-banner-retry:active {
+  transform: scale(0.95);
+}
+
+.offline-banner-spin {
+  animation: spin 0.75s linear infinite;
+}
+
+/* ─── Keyframe animations ────────────────────────────────────────────────── */
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Dark theme overrides ───────────────────────────────────────────────── */
+
+[data-theme="dark"] .offline-banner-content {
+  background: var(--color-warning-bg);
+  border-color: var(--color-warning-border);
+}
+
+[data-theme="dark"] .offline-banner-icon {
+  color: var(--color-warning-icon);
+}
+
+[data-theme="dark"] .offline-banner-title {
+  color: var(--color-warning-text);
+}
+
+[data-theme="dark"] .offline-banner-subtitle {
+  color: var(--color-warning-text);
+}
+
+[data-theme="dark"] .offline-banner-retry {
+  background: var(--color-warning-100);
+  color: var(--color-warning-text);
+}

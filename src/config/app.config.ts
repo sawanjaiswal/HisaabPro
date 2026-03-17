@@ -9,6 +9,21 @@ export const API_URL = import.meta.env.VITE_API_URL || '/api'
 export const APP_ENV = import.meta.env.VITE_APP_ENV || 'development'
 export const IS_DEV = APP_ENV === 'development'
 
+/**
+ * Auth mode — controls login flow.
+ *
+ * 'dev-login' → username/password (dev credentials: admin/admin123, demo/demo123)
+ * 'otp'       → phone number + OTP (production flow, needs MSG91 credentials)
+ *
+ * To enable OTP for production:
+ *   1. Set VITE_AUTH_MODE=otp in .env
+ *   2. Uncomment OTP routes in server/src/routes/auth.ts (lines 94-142)
+ *   3. Uncomment sendOtp/verifyOtp in src/lib/auth.ts (lines 68-85)
+ *   4. Configure MSG91_AUTH_KEY + MSG91_TEMPLATE_ID in server/.env
+ */
+export type AuthMode = 'dev-login' | 'otp'
+export const AUTH_MODE: AuthMode = (import.meta.env.VITE_AUTH_MODE as AuthMode) || 'dev-login'
+
 /** Currency config — all amounts stored in paise (integer) */
 export const CURRENCY = {
   code: 'INR',
@@ -22,6 +37,9 @@ export const PAGINATION = {
   defaultLimit: 20,
   maxLimit: 200,
 } as const
+
+/** Fallback business ID — used when auth context is not yet loaded */
+export const FALLBACK_BUSINESS_ID = 'business_1' as const
 
 /** Timeouts */
 export const TIMEOUTS = {

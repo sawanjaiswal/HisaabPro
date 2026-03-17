@@ -28,6 +28,7 @@ import {
 import { createBusinessSchema } from '../schemas/business.schemas.js'
 import * as settingsService from '../services/settings.service.js'
 import * as businessService from '../services/business.service.js'
+import * as gstService from '../services/gst-settings.service.js'
 
 // === Business-scoped routes ===
 
@@ -182,6 +183,22 @@ businessSettingsRouter.get('/:businessId/audit-log', asyncHandler(async (req, re
   const businessId = await resolveBusinessId(userId)
   const query = auditLogSchema.parse(req.query)
   const data = await settingsService.listAuditLog(businessId, query)
+  sendSuccess(res, data)
+}))
+
+// --- GST Settings ---
+
+businessSettingsRouter.get('/:businessId/gst-settings', asyncHandler(async (req, res) => {
+  const userId = req.user!.userId
+  await resolveBusinessId(userId)
+  const data = await gstService.getGstSettings(String(req.params.businessId))
+  sendSuccess(res, data)
+}))
+
+businessSettingsRouter.put('/:businessId/gst-settings', asyncHandler(async (req, res) => {
+  const userId = req.user!.userId
+  const businessId = await resolveBusinessId(userId)
+  const data = await gstService.updateGstSettings(businessId, req.body)
   sendSuccess(res, data)
 }))
 

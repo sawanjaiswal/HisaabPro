@@ -1,0 +1,229 @@
+/* Invoice Detail — Totals summary, profit display, notes/terms, transport
+ *
+ * Covers the summary rows (subtotal, discount, charges, round-off, grand total),
+ * balance due, profit display card, notes/terms text, and transport details
+ * (Delivery Challan only).
+ * Mobile-first: base styles target 320px, min-width queries add tablet+ layout.
+ */
+
+/* ─── Totals summary section ─────────────────────────────────────────────── */
+
+.invoice-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--color-gray-100);
+}
+
+.invoice-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.invoice-summary-label {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+}
+
+.invoice-summary-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+}
+
+/* Negative values — discount, round-off */
+.invoice-summary-value--negative {
+  color: var(--color-error-600);
+}
+
+/* Divider before grand total */
+.invoice-summary-divider {
+  height: 1px;
+  background: var(--color-gray-200);
+  margin: var(--space-2) 0;
+}
+
+/* Grand total row — visually dominant */
+.invoice-summary-grand-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+}
+
+.invoice-summary-grand-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+}
+
+.invoice-summary-grand-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-gray-900);
+}
+
+/* Balance due row (separate from summary — shows amount still owed) */
+.invoice-summary-balance {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-2);
+}
+
+.invoice-summary-balance--due {
+  background: var(--color-error-50);
+}
+
+.invoice-summary-balance--paid {
+  background: var(--color-success-50);
+}
+
+.invoice-summary-balance-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.invoice-summary-balance--due .invoice-summary-balance-label {
+  color: var(--color-error-700);
+}
+
+.invoice-summary-balance--paid .invoice-summary-balance-label {
+  color: var(--color-success-700);
+}
+
+.invoice-summary-balance-amount {
+  font-size: 1.0625rem;
+  font-weight: 700;
+}
+
+.invoice-summary-balance--due .invoice-summary-balance-amount {
+  color: var(--color-error-700);
+}
+
+.invoice-summary-balance--paid .invoice-summary-balance-amount {
+  color: var(--color-success-700);
+}
+
+/* ─── Profit display (role-gated) ────────────────────────────────────────── */
+
+/* Card shown below summary for users with profit-view role */
+.invoice-profit-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--color-gray-200);
+  margin-top: var(--space-3);
+}
+
+.invoice-profit-label {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+}
+
+.invoice-profit-value {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.invoice-profit-amount {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.invoice-profit-amount--positive {
+  color: var(--color-success-600);
+}
+
+.invoice-profit-amount--negative {
+  color: var(--color-error-600);
+}
+
+.invoice-profit-percent {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+}
+
+.invoice-profit-percent--positive {
+  background: var(--color-success-50);
+  color: var(--color-success-700);
+}
+
+.invoice-profit-percent--negative {
+  background: var(--color-error-50);
+  color: var(--color-error-700);
+}
+
+/* ─── Notes & Terms ──────────────────────────────────────────────────────── */
+
+.invoice-notes-text {
+  font-size: 0.875rem;
+  color: var(--color-gray-600);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.invoice-terms-text {
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* ─── Transport details (Delivery Challan only) ───────────────────────────── */
+
+.invoice-transport-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.invoice-transport-row:last-child {
+  border-bottom: none;
+}
+
+.invoice-transport-label {
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.invoice-transport-value {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-gray-700);
+}
+
+/* ─── Tablet+ layout ─────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  /* Summary collapses to a two-column card on tablet */
+  .invoice-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--space-8);
+  }
+
+  /* Grand total and balance span full width inside the grid */
+  .invoice-summary-divider,
+  .invoice-summary-grand-total,
+  .invoice-summary-balance {
+    grid-column: 1 / -1;
+  }
+}

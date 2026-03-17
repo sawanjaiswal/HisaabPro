@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { ApiError } from '../../lib/api'
 import * as authLib from '../../lib/auth'
 import { ROUTES } from '../../config/routes.config'
 
@@ -10,10 +11,23 @@ export function useLogin() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [captchaRequired, setCaptchaRequired] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState('')
 
   const navigate = useNavigate()
   const { setUser } = useAuth()
   const submitting = useRef(false)
+
+  // Reset captcha token whenever the user changes credentials
+  const handleSetUsername = useCallback((value: string) => {
+    setUsername(value)
+    setCaptchaToken('')
+  }, [])
+
+  const handleSetPassword = useCallback((value: string) => {
+    setPassword(value)
+    setCaptchaToken('')
+  }, [])
 
   const handleLogin = useCallback(async () => {
     if (submitting.current) return
@@ -22,26 +36,29 @@ export function useLogin() {
     setError('')
 
     try {
-      const result = await authLib.devLogin(username, password)
-      authLib.setTokens(result.tokens.accessToken, result.tokens.refreshToken)
+      const result = await authLib.devLogin(username, password, captchaToken || undefined)
+      // Server sets httpOnly cookies automatically — only cache user for offline-first
       authLib.setCachedUser(result.user)
       setUser(result.user)
       navigate(result.isNewUser ? ROUTES.ONBOARDING : ROUTES.DASHBOARD, { replace: true })
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed')
+      if (err instanceof ApiError && err.code === 'CAPTCHA_REQUIRED') {
+        setCaptchaRequired(true)
+        setError('Please complete the CAPTCHA below to continue.')
+      } else {
+        setError(err instanceof Error ? err.message : 'Login failed')
+      }
     } finally {
       setLoading(false)
       submitting.current = false
     }
-  }, [username, password, setUser, navigate])
+  }, [username, password, captchaToken, setUser, navigate])
 
   return {
-    username,
-    setUsername,
-    password,
-    setPassword,
-    loading,
-    error,
+    username, setUsername: handleSetUsername,
+    password, setPassword: handleSetPassword,
+    loading, error,
+    captchaRequired, captchaToken, setCaptchaToken,
     handleLogin,
   }
 }

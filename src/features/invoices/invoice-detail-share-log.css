@@ -1,0 +1,166 @@
+/* Invoice Detail — Share history log + share timeline
+ *
+ * Covers the share history log items (compact list view) and
+ * the share timeline (detailed view shown in the Share tab).
+ * Both are read-only displays of past share events.
+ * Mobile-first: base styles target 320px.
+ */
+
+/* ─── Share history log ──────────────────────────────────────────────────── */
+
+.invoice-share-log {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.invoice-share-log-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.invoice-share-log-item:last-child {
+  border-bottom: none;
+}
+
+/* Channel icon badge — 36x36 */
+.invoice-share-log-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.9375rem;
+}
+
+.invoice-share-log-icon--whatsapp {
+  background: var(--color-success-50);
+  color: var(--color-success-600);
+}
+
+.invoice-share-log-icon--email {
+  background: var(--color-info-50);
+  color: var(--color-info-600);
+}
+
+.invoice-share-log-icon--print {
+  background: var(--color-gray-100);
+  color: var(--color-gray-500);
+}
+
+.invoice-share-log-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.invoice-share-log-recipient {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-gray-700);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.invoice-share-log-time {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  margin-top: 2px;
+}
+
+.invoice-share-log-format {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-gray-400);
+  flex-shrink: 0;
+}
+
+/* ─── Share timeline (detailed view in Share tab) ─────────────────────────── */
+
+.share-timeline {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-2) 0;
+}
+
+.share-timeline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.share-timeline-item:last-child {
+  border-bottom: none;
+}
+
+/* 36x36 channel icon */
+.share-timeline-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.share-timeline-icon--whatsapp {
+  background: var(--color-success-50);
+  color: var(--color-success-600);
+}
+
+.share-timeline-icon--email {
+  background: var(--color-info-50);
+  color: var(--color-info-600);
+}
+
+.share-timeline-icon--print {
+  background: var(--color-gray-100);
+  color: var(--color-gray-500);
+}
+
+.share-timeline-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.share-timeline-channel {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  margin-bottom: 2px;
+}
+
+.share-timeline-recipient {
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.share-timeline-date {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+}
+
+.share-timeline-format {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--color-gray-100);
+  color: var(--color-gray-500);
+  align-self: flex-start;
+  flex-shrink: 0;
+  margin-top: 4px;
+}

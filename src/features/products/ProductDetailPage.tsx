@@ -1,8 +1,8 @@
 /** Product Detail — Page (lazy loaded) */
 
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { Pencil, MoreVertical, Package, Info } from 'lucide-react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { Pencil, Trash2, Package, Info } from 'lucide-react'
 import { ROUTES } from '@/config/routes.config'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -10,7 +10,10 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { useToast } from '@/hooks/useToast'
 import { useProductDetail } from './useProductDetail'
+import { deleteProduct } from './product.service'
 import { ProductDetailHeader } from './components/ProductDetailHeader'
 import { ProductStockTab } from './components/ProductStockTab'
 import { StockAdjustModal } from './components/StockAdjustModal'
@@ -28,25 +31,45 @@ const TABS: { id: DetailTab; label: string }[] = [
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const toast = useToast()
   const productId = id ?? ''
   const { product, status, activeTab, setActiveTab, refresh } = useProductDetail(productId)
 
   const [adjustModalOpen, setAdjustModalOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  const handleDelete = () => {
+    setIsDeleting(true)
+    deleteProduct(productId)
+      .then(() => {
+        toast.success('Product deactivated')
+        navigate(ROUTES.PRODUCTS)
+      })
+      .catch((err: unknown) => {
+        const message = err instanceof Error ? err.message : 'Failed to delete product'
+        toast.error(message)
+        setIsDeleting(false)
+        setDeleteOpen(false)
+      })
+  }
 
   const headerActions = (
     <>
-      <button className="btn btn-ghost btn-sm" aria-label="Edit product">
+      <button className="btn btn-ghost btn-sm" onClick={() => navigate(`/products/${productId}/edit`)} aria-label="Edit product">
         <Pencil size={18} aria-hidden="true" />
       </button>
-      <button className="btn btn-ghost btn-sm" aria-label="More options">
-        <MoreVertical size={18} aria-hidden="true" />
+      <button className="btn btn-ghost btn-sm" onClick={() => setDeleteOpen(true)} aria-label="Delete product">
+        <Trash2 size={18} aria-hidden="true" />
       </button>
     </>
   )
 
   return (
-    <AppShell>
-      <Header title="Product Detail" backTo={ROUTES.PRODUCTS} actions={headerActions} />
+    <>
+      <AppShell>
+        <Header title="Product Detail" backTo={ROUTES.PRODUCTS} actions={headerActions} />
 
       <PageContainer>
         {status === 'loading' && (
@@ -200,6 +223,16 @@ export default function ProductDetailPage() {
           </>
         )}
       </PageContainer>
-    </AppShell>
+      </AppShell>
+
+      <ConfirmDialog
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Product?"
+        description={`"${product?.name ?? 'This product'}" will be deactivated. It will no longer appear in new invoices. Products referenced by invoices cannot be permanently deleted.`}
+        isLoading={isDeleting}
+      />
+    </>
   )
 }

@@ -117,6 +117,11 @@
   text-align: center;
 }
 
+.login-page__captcha {
+  display: flex;
+  justify-content: center;
+}
+
 /* Phone Step (OTP — commented out for dev) */
 .auth-form {
   display: flex;
@@ -204,6 +209,16 @@
 .auth-otp__cooldown {
   font-size: 0.875rem;
   color: var(--color-gray-400);
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .login-page__input:focus {
+  box-shadow: 0 0 0 3px rgba(63, 174, 214, 0.15);
+}
+
+[data-theme="dark"] .auth-otp__digit:focus {
+  box-shadow: 0 0 0 3px rgba(63, 174, 214, 0.15);
 }
 
 /* Mobile: ensure OTP inputs don't overflow on 320px */

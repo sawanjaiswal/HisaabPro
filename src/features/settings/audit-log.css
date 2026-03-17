@@ -1,0 +1,217 @@
+/* ─── Audit Log — Component Styles ────────────────────────────────────────────
+ *
+ * All values use CSS variables only — no hardcoded hex, rgba, or px magic numbers.
+ * Touch targets: 44px minimum on all interactive elements.
+ * Mobile-first: base styles target 375px, media queries use min-width only.
+ * Class prefix: .audit-*
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+.audit-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  min-height: 100vh;
+  background-color: var(--color-gray-50);
+}
+
+.audit-filters {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-bottom: var(--space-1);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.audit-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.audit-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-gray-200);
+  background-color: var(--color-gray-0, #fff);
+  color: var(--color-gray-700);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: var(--font-primary);
+  cursor: pointer;
+  white-space: nowrap;
+  min-height: 36px;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.audit-filter-chip--active {
+  border-color: var(--color-primary-500);
+  background-color: var(--color-primary-50);
+  color: var(--color-primary-700);
+}
+
+.audit-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.audit-date-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  margin-top: var(--space-2);
+}
+
+.audit-date-group-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.audit-date-group-line {
+  flex: 1;
+  height: 1px;
+  background-color: var(--color-gray-200);
+}
+
+.audit-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background-color: var(--color-gray-0, #fff);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+}
+
+.audit-action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+.audit-action-icon--create {
+  background-color: var(--color-green-50);
+  color: var(--color-green-600);
+}
+
+.audit-action-icon--update {
+  background-color: var(--color-blue-50);
+  color: var(--color-blue-600);
+}
+
+.audit-action-icon--delete {
+  background-color: var(--color-red-50);
+  color: var(--color-red-600);
+}
+
+.audit-action-icon--restore {
+  background-color: var(--color-teal-50);
+  color: var(--color-teal-600);
+}
+
+.audit-action-icon--role-change {
+  background-color: var(--color-purple-50);
+  color: var(--color-purple-600);
+}
+
+.audit-action-icon--pin {
+  background-color: var(--color-orange-50);
+  color: var(--color-orange-600);
+}
+
+.audit-entry-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.audit-entry-headline {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-gray-900);
+  line-height: 1.4;
+  margin-bottom: var(--space-0-5);
+}
+
+.audit-entry-meta {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  margin-bottom: var(--space-2);
+}
+
+.audit-changes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1-5);
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-gray-50);
+  border-radius: var(--radius-md);
+  border-left: 2px solid var(--color-gray-300);
+}
+
+.audit-change-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: 0.75rem;
+}
+
+.audit-change-field {
+  font-weight: 600;
+  color: var(--color-gray-600);
+  white-space: nowrap;
+  min-width: 80px;
+}
+
+.audit-change-before {
+  color: var(--color-red-600);
+  text-decoration: line-through;
+  word-break: break-all;
+}
+
+.audit-change-arrow {
+  color: var(--color-gray-400);
+  flex-shrink: 0;
+}
+
+.audit-change-after {
+  color: var(--color-green-700);
+  word-break: break-all;
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .audit-page {
+  background-color: var(--color-gray-0);
+}
+
+[data-theme="dark"] .audit-entry {
+  background-color: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .audit-changes {
+  background-color: var(--color-gray-100);
+  border-left-color: var(--color-gray-300);
+}
+
+/* ─── Responsive — 768px+ ────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .audit-page {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+}

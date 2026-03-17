@@ -1,0 +1,108 @@
+/* === MODAL === */
+.modal {
+  border: none;
+  border-radius: var(--radius-xl);
+  padding: 0;
+  max-width: min(90vw, 480px);
+  width: 100%;
+  box-shadow: 0 20px 25px -5px rgba(26, 25, 23, 0.1);
+}
+
+.modal::backdrop { background: rgba(26, 25, 23, 0.5); }
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-5);
+  border-bottom: 1px solid var(--color-gray-100);
+}
+.modal-title { font-size: 1.125rem; font-weight: 600; }
+.modal-close {
+  background: none; border: none; cursor: pointer;
+  color: var(--color-gray-400); padding: var(--space-1);
+  min-width: 44px; min-height: 44px;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-body { padding: var(--space-5); }
+
+/* === CONFIRM DIALOG — alertdialog for destructive actions === */
+.confirm-dialog {
+  max-width: min(90vw, 360px);
+}
+
+.confirm-dialog-body {
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.confirm-dialog-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-gray-900);
+  line-height: 1.4;
+}
+
+.confirm-dialog-description {
+  font-size: 0.9375rem;
+  color: var(--color-gray-500);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.confirm-dialog-actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  margin-top: var(--space-2);
+}
+
+/* Cancel button — full height touch target (min 44px via btn-md) */
+.confirm-dialog-cancel {
+  border: 1.5px solid var(--color-gray-200);
+}
+
+/* === FAB — Teal gradient circle with glow === */
+.fab {
+  position: fixed;
+  bottom: calc(var(--bottom-nav-height) + var(--space-4));
+  right: var(--space-5);
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
+  color: var(--color-gray-0);
+  border: none;
+  box-shadow: 0 4px 14px rgba(15, 54, 56, 0.35), 0 2px 6px rgba(15, 54, 56, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: var(--z-overlay);
+  transition: all var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fab:active { transform: scale(0.93); }
+
+/* === INTERACTIVE FEEDBACK — Tap response for touchable elements === */
+.card[onclick],
+.card[role="button"],
+a.card,
+.txn-row[onclick],
+.txn-row[role="button"],
+a.txn-row {
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--duration-fast) var(--ease-default),
+              box-shadow var(--duration-fast) var(--ease-default);
+}
+
+.card[onclick]:active,
+.card[role="button"]:active,
+a.card:active,
+.txn-row[onclick]:active,
+.txn-row[role="button"]:active,
+a.txn-row:active {
+  transform: scale(0.98);
+}

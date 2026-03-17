@@ -127,3 +127,10 @@
 .create-product-page .pill-tabs {
   margin-bottom: var(--space-5);
 }
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+/* Toggle switch knob shadow — lighter in dark mode */
+[data-theme="dark"] .sku-toggle-switch::after {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}

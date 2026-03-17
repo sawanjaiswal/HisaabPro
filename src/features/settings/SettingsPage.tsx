@@ -20,6 +20,10 @@ import {
   Calendar,
   Keyboard,
   Calculator,
+  Moon,
+  Languages,
+  Receipt,
+  Percent,
 } from 'lucide-react'
 import type { LucideProps } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -27,12 +31,15 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { ROUTES } from '@/config/routes.config'
+import { useTheme } from '@/context/ThemeContext'
+import { useLanguage } from '@/context/LanguageContext'
 import { useAppSettings } from './useAppSettings'
 import { SettingsSection } from './components/SettingsSection'
 import { SettingsSkeleton } from './components/SettingsSkeleton'
 import { SETTINGS_SECTIONS, DATE_FORMATS } from './settings.constants'
 import type { SettingsItem, AppSettings, DateFormat, CalculatorPosition } from './settings.types'
 import './settings.css'
+import './settings-toggle.css'
 
 type IconComponent = React.FC<LucideProps>
 
@@ -49,6 +56,10 @@ const ICON_MAP: Record<string, IconComponent> = {
   Calendar,
   Keyboard,
   Calculator,
+  Moon,
+  Languages,
+  Receipt,
+  Percent,
 }
 
 function getNextDateFormat(current: DateFormat): DateFormat {
@@ -76,6 +87,8 @@ function getNextCalculatorPosition(current: CalculatorPosition): CalculatorPosit
 export default function SettingsPage() {
   const navigate = useNavigate()
   const { settings, status, updateSetting, refresh } = useAppSettings()
+  const { theme, toggleTheme } = useTheme()
+  const { language, setLanguage } = useLanguage()
 
   function handleItemClick(item: SettingsItem) {
     if (item.type === 'navigation' && item.route) {
@@ -84,6 +97,10 @@ export default function SettingsPage() {
     }
 
     if (item.type === 'toggle') {
+      if (item.id === 'theme') {
+        toggleTheme()
+        return
+      }
       if (item.id === 'pin') {
         updateSetting('pinEnabled', !settings.pinEnabled)
       } else if (item.id === 'biometric') {
@@ -101,6 +118,8 @@ export default function SettingsPage() {
       } else if (item.id === 'calculator-position') {
         const next = getNextCalculatorPosition(settings.calculatorPosition)
         updateSetting('calculatorPosition', next)
+      } else if (item.id === 'language') {
+        setLanguage(language === 'en' ? 'hi' : 'en')
       }
     }
   }
@@ -127,7 +146,7 @@ export default function SettingsPage() {
                 key={section.id}
                 section={section}
                 onItemClick={handleItemClick}
-                settings={settings}
+                settings={{ ...settings, theme, language }}
               />
             ))}
           </div>

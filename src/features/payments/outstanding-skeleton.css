@@ -1,0 +1,73 @@
+/* Outstanding Skeleton — loading placeholder cards
+ *
+ * Used by OutstandingSkeleton.tsx.
+ * Renders shimmer cards while outstanding data loads.
+ */
+
+/* ─── Skeleton loader ────────────────────────────────────────────────────── */
+
+.outstanding-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.outstanding-skeleton-card {
+  background: var(--color-gray-0);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-100);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.outstanding-skeleton-top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.outstanding-skeleton-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.outstanding-skeleton-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.outstanding-skeleton-line {
+  height: 14px;
+  border-radius: var(--radius-sm);
+}
+
+.outstanding-skeleton-line--short {
+  width: 40%;
+}
+
+.outstanding-skeleton-line--medium {
+  width: 60%;
+}
+
+.outstanding-skeleton-bar {
+  height: 6px;
+  width: 100%;
+  border-radius: var(--radius-full);
+}
+
+.outstanding-skeleton-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.outstanding-skeleton-btn {
+  flex: 1;
+  height: 44px;
+  border-radius: var(--radius-md);
+}

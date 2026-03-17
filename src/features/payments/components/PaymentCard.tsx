@@ -1,7 +1,7 @@
 /** Payment list row — direction arrow + party name + amount + type badge */
 
-import React from 'react'
-import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
+import React, { useRef, useCallback } from 'react'
+import { ArrowDownLeft, ArrowUpRight, Check } from 'lucide-react'
 import type { PaymentSummary } from '../payment.types'
 import { PAYMENT_TYPE_LABELS } from '../payment.constants'
 import { formatPaymentMode } from '../payment.utils'
@@ -9,7 +9,15 @@ import { formatPaymentMode } from '../payment.utils'
 interface PaymentCardProps {
   payment: PaymentSummary
   onClick: (id: string) => void
+  /** Fires on long-press (500ms hold) to enter bulk select mode */
+  onLongPress?: (id: string) => void
+  /** Whether this card is currently selected in bulk mode */
+  isSelected?: boolean
+  /** Whether bulk select mode is active */
+  isBulkMode?: boolean
 }
+
+const LONG_PRESS_MS = 500
 
 const INR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' })
 
@@ -25,7 +33,13 @@ function formatDate(isoDate: string): string {
   })
 }
 
-export const PaymentCard: React.FC<PaymentCardProps> = ({ payment, onClick }) => {
+export const PaymentCard: React.FC<PaymentCardProps> = ({
+  payment,
+  onClick,
+  onLongPress,
+  isSelected = false,
+  isBulkMode = false,
+}) => {
   const isIn = payment.type === 'PAYMENT_IN'
   const arrowClass = isIn ? 'payment-card-arrow payment-card-arrow--in' : 'payment-card-arrow payment-card-arrow--out'
   const amountClass = isIn ? 'payment-card-amount payment-card-amount--in' : 'payment-card-amount payment-card-amount--out'
@@ -35,24 +49,60 @@ export const PaymentCard: React.FC<PaymentCardProps> = ({ payment, onClick }) =>
     ? `${payment.allocationsCount} invoice${payment.allocationsCount > 1 ? 's' : ''}`
     : 'Advance'
 
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const didLongPress = useRef(false)
+
+  const handlePointerDown = useCallback(() => {
+    if (!onLongPress) return
+    didLongPress.current = false
+    timerRef.current = setTimeout(() => {
+      didLongPress.current = true
+      onLongPress(payment.id)
+    }, LONG_PRESS_MS)
+  }, [onLongPress, payment.id])
+
+  const handlePointerUp = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+      timerRef.current = null
+    }
+  }, [])
+
+  const handleClick = useCallback(() => {
+    if (didLongPress.current) {
+      didLongPress.current = false
+      return
+    }
+    onClick(payment.id)
+  }, [onClick, payment.id])
+
   return (
     <div
-      className="payment-card"
+      className={`payment-card${isSelected ? ' txn-row--selected' : ''}`}
       role="button"
       tabIndex={0}
-      aria-label={`${typeLabel} from ${payment.partyName}, ${formatAmount(payment.amount)}`}
-      onClick={() => onClick(payment.id)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') onClick(payment.id)
-      }}
-      style={{ minHeight: '44px', cursor: 'pointer' }}
+      aria-label={`${isBulkMode ? (isSelected ? 'Deselect' : 'Select') : 'View details for'} ${typeLabel} from ${payment.partyName}, ${formatAmount(payment.amount)}`}
+      onClick={handleClick}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleClick() }}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
     >
-      <div className={arrowClass} aria-hidden="true">
-        {isIn
-          ? <ArrowDownLeft size={20} />
-          : <ArrowUpRight size={20} />
-        }
-      </div>
+      {isBulkMode ? (
+        <div
+          className={`bulk-check${isSelected ? ' bulk-check--active' : ''}`}
+          aria-hidden="true"
+        >
+          {isSelected && <Check size={16} />}
+        </div>
+      ) : (
+        <div className={arrowClass} aria-hidden="true">
+          {isIn
+            ? <ArrowDownLeft size={20} />
+            : <ArrowUpRight size={20} />
+          }
+        </div>
+      )}
 
       <div className="payment-card-content">
         <div className="payment-card-party">{payment.partyName}</div>

@@ -7,6 +7,7 @@
 
 import React from 'react'
 import { ChevronRight, Plus } from 'lucide-react'
+import { getInitials, getFirstName, formatCompactAmount } from '../dashboard.utils'
 import type { TopDebtor } from '../dashboard.types'
 
 interface TopDebtorsProps {
@@ -14,19 +15,6 @@ interface TopDebtorsProps {
   onViewAll: () => void
   onDebtorClick: (partyId: string) => void
   onSendReminder: (debtor: TopDebtor) => void
-}
-
-function getInitials(name: string): string {
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((word) => word[0]?.toUpperCase() ?? '')
-    .join('')
-}
-
-function getFirstName(name: string): string {
-  return name.trim().split(/\s+/)[0] ?? name
 }
 
 const AVATAR_COLORS = 5
@@ -41,7 +29,7 @@ export const TopDebtors: React.FC<TopDebtorsProps> = ({
   return (
     <div className="dashboard-starred">
       <div className="dashboard-section-header">
-        <span className="dashboard-section-title">Starred</span>
+        <span className="dashboard-section-title">Who Owes You</span>
         <button
           className="dashboard-section-link"
           onClick={onViewAll}
@@ -77,6 +65,7 @@ export const TopDebtors: React.FC<TopDebtorsProps> = ({
               {getInitials(debtor.name)}
             </div>
             <span className="dashboard-starred-name">{getFirstName(debtor.name)}</span>
+            <span className="dashboard-starred-amount">{formatCompactAmount(debtor.outstanding)}</span>
           </button>
         ))}
       </div>

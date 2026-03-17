@@ -1,0 +1,180 @@
+/* ============================================================
+   Invoice List Items — Card layout, rows, monetary displays,
+   summary bar
+   Mobile-first: base = 320px → 768px tablet → 1024px desktop
+   ============================================================ */
+
+/* ─── Entrance animation (amount reveal) ─────────────────────── */
+
+@keyframes invoiceAmountReveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.88);
+    filter: blur(3px);
+  }
+  60% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+/* ─── Invoice card layout helpers ───────────────────────────── */
+
+/* Replaces inline styles from InvoiceCard.tsx */
+.invoice-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.invoice-card-right {
+  text-align: right;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+}
+
+/* ─── List items ────────────────────────────────────────────── */
+
+/* Hide trailing divider on last item */
+.invoice-list-row:last-child .divider {
+  display: none;
+}
+
+/* Premium touch feedback on rows */
+.invoice-list-row .txn-row {
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.invoice-list-row .txn-row:active {
+  transform: scale(0.985);
+}
+
+/* Bulk selection highlight */
+.invoice-list-row.bulk-selected {
+  background: var(--color-primary-50);
+  border-radius: var(--radius-md);
+}
+
+/* ─── Monetary displays — tabular numbers ───────────────────── */
+
+.invoice-hero-amount,
+.invoice-list-summary-amount,
+.txn-amount,
+.payment-status-indicator {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Bolder transaction amounts */
+.invoice-list-row .txn-amount {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--color-gray-900);
+}
+
+/* Dimmer meta text for better hierarchy */
+.invoice-list-row .txn-date {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  margin-top: 2px;
+}
+
+/* Breathing room between rows */
+.invoice-list-row + .invoice-list-row {
+  margin-top: 2px;
+}
+
+/* ─── List summary bar ──────────────────────────────────────── */
+
+.invoice-list-summary {
+  display: flex;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: var(--space-1);
+}
+
+.invoice-list-summary::-webkit-scrollbar {
+  display: none;
+}
+
+.invoice-list-summary-item {
+  flex: 1;
+  min-width: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background: var(--color-gray-0);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 3px rgba(26, 25, 23, 0.04), 0 1px 2px rgba(26, 25, 23, 0.02);
+}
+
+.invoice-list-summary-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--color-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.invoice-list-summary-amount {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  letter-spacing: -0.01em;
+}
+
+.invoice-list-summary-amount--due {
+  color: var(--color-error-600);
+}
+
+/* ─── Tablet+ adjustments ───────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .invoice-list-summary {
+    overflow-x: visible;
+  }
+}
+
+/* ─── Reduced motion ────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .invoice-hero,
+  .invoice-hero-amount {
+    animation: none !important;
+  }
+
+  .invoice-list-row .txn-row:active {
+    transform: none !important;
+  }
+}
+
+/* ─── Dark Theme ────────────────────────────────────────────── */
+
+[data-theme="dark"] .invoice-list-summary-item {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .invoice-list-row .txn-amount {
+  color: var(--color-gray-100);
+}
+
+[data-theme="dark"] .invoice-list-row .txn-date {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dark"] .invoice-list-row.bulk-selected {
+  background: rgba(27, 99, 105, 0.12);
+}

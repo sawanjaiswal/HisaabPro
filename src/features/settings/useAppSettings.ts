@@ -10,7 +10,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { DEFAULT_APP_SETTINGS } from './settings.constants'
-import { getAppSettings, updateAppSettings } from './settings.service'
+import { getAppSettings, updateAppSettings } from './app-settings.service'
 import type { AppSettings } from './settings.types'
 
 type Status = 'loading' | 'error' | 'success'

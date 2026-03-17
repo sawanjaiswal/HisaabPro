@@ -1,0 +1,159 @@
+/* Tax Summary — Date filters, summary cards, net liability
+ *
+ * Mobile-first: base targets 320px, min-width queries for tablet/desktop.
+ * CSS variables only — no hardcoded hex, no inline sizes.
+ */
+
+/* ─── Date range filter row ─────────────────────────────────── */
+
+.tax-date-row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+
+.tax-date-input {
+  flex: 1;
+  min-width: 130px;
+  height: 44px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  background: var(--color-gray-0);
+  color: var(--color-gray-800);
+  font-size: 0.875rem;
+  font-family: var(--font-primary);
+  cursor: pointer;
+}
+
+.tax-date-input:focus {
+  outline: 2px solid var(--color-primary-300);
+  outline-offset: 2px;
+  border-color: var(--color-primary-400);
+}
+
+/* ─── Tax Summary Cards ─────────────────────────────────────── */
+
+.tax-summary-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+  animation: reportFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.tax-summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
+}
+
+.tax-summary-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.tax-summary-card__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tax-summary-card__count {
+  font-size: 0.6875rem;
+  color: var(--color-gray-400);
+  flex-shrink: 0;
+}
+
+.tax-summary-card__total {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  font-variant-numeric: tabular-nums;
+}
+
+.tax-summary-card__total--positive {
+  color: var(--color-success-600);
+}
+
+.tax-summary-card__total--info {
+  color: var(--color-info-600);
+}
+
+.tax-summary-card__breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.6875rem;
+  color: var(--color-gray-500);
+}
+
+/* ─── Net Tax Liability highlight ───────────────────────────── */
+
+.tax-net-liability {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-primary-50);
+  border: 1px solid var(--color-primary-100);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-5);
+}
+
+.tax-net-liability__label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary-600);
+}
+
+.tax-net-liability__value {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-primary-700);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Tablet+ (768px) ───────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .tax-summary-cards {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .tax-summary-card__total {
+    font-size: 1.125rem;
+  }
+}
+
+/* ─── Dark theme ────────────────────────────────────────────── */
+
+[data-theme="dark"] .tax-summary-card {
+  background: var(--color-gray-900);
+  border-color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .tax-net-liability {
+  background: color-mix(in srgb, var(--color-primary-500) 12%, transparent);
+  border-color: color-mix(in srgb, var(--color-primary-500) 30%, transparent);
+}
+
+/* ─── Reduced motion ────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .tax-summary-cards {
+    animation: none !important;
+  }
+}

@@ -9,9 +9,9 @@ import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { getDocument } from './invoice.service'
 import type { DocumentDetail } from './invoice.types'
+import type { DetailTab } from './invoice.constants'
 
 type DetailStatus = 'loading' | 'error' | 'success'
-type DetailTab = 'overview' | 'items' | 'share'
 
 interface UseInvoiceDetailReturn {
   document: DocumentDetail | null

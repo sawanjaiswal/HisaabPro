@@ -1,7 +1,7 @@
 import React from 'react'
 import type { ShortcutConfig } from '../settings.types'
 import { formatShortcutKey } from '../settings.utils'
-import '../settings.css'
+import '../shortcuts.css'
 
 interface ShortcutsListProps {
   shortcuts: Record<string, ShortcutConfig>

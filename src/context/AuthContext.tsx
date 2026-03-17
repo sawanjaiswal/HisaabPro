@@ -17,34 +17,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // On mount: check for existing session
+  // On mount: check for existing session via cached user + server verification
   useEffect(() => {
     const controller = new AbortController()
 
     async function init() {
-      const token = authLib.getAccessToken()
-      if (!token) {
-        setIsLoading(false)
-        return
-      }
-
-      // Load cached user immediately (offline-first)
+      // Load cached user immediately (offline-first hint)
       const cached = authLib.getCachedUser()
       if (cached) {
         setUser(cached)
         setIsLoading(false)
       }
 
-      // Verify with server in background
+      // Verify with server — cookie sends auth token automatically
       try {
         const response = await authLib.getMe(controller.signal)
         setUser(response.user)
         authLib.setCachedUser(response.user)
       } catch {
         if (!cached) {
+          // No cached user AND server verification failed — not authenticated
           authLib.clearAuth()
           setUser(null)
         }
+        // If cached user exists but server fails (offline), keep showing cached user
       }
 
       setIsLoading(false)

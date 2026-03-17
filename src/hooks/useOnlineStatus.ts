@@ -13,15 +13,11 @@ const HEARTBEAT_TIMEOUT = 5_000;
 const CONSECUTIVE_FAILURES_THRESHOLD = 2;
 
 function getHealthUrl(): string {
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1' || /^(10|192\.168|172\.(1[6-9]|2\d|3[01]))\./.test(hostname)) {
-      return `http://${hostname}:4000/api/health`;
-    }
-    // TODO: Replace with production backend URL when deployed
-    return '/api/health';
-  }
-  return '/api/health';
+  // Use the configured API_URL from env (VITE_API_URL) — works in dev and production.
+  // In dev: VITE_API_URL = http://localhost:4000/api → /api/health
+  // In prod: VITE_API_URL = https://api.hisaabpro.in/api → /api/health
+  const base = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) || '/api';
+  return `${base}/health`;
 }
 
 const HEALTH_URL = getHealthUrl();

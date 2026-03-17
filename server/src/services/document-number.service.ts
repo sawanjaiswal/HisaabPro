@@ -17,6 +17,8 @@ const DEFAULT_PREFIXES: Record<string, string> = {
   SALE_ORDER: 'SO',
   PURCHASE_ORDER: 'PO',
   DELIVERY_CHALLAN: 'DC',
+  CREDIT_NOTE: 'CN',
+  DEBIT_NOTE: 'DN',
 }
 
 /**

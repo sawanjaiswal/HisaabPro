@@ -1,29 +1,16 @@
 import { api } from './api'
-import type { VerifyOtpResponse, AuthUser } from '../features/auth/auth.types'
+import type { AuthUser } from '../features/auth/auth.types'
 
-const TOKEN_KEY = 'accessToken'
-const REFRESH_KEY = 'refreshToken'
+/**
+ * Auth library — cookie-based authentication.
+ *
+ * Tokens (access + refresh) are stored in httpOnly cookies set by the server.
+ * The frontend cannot read or manage tokens directly.
+ * Only the cached user is stored in sessionStorage for offline-first UX.
+ */
 
-/** Store tokens in sessionStorage */
-export function setTokens(accessToken: string, refreshToken: string) {
-  sessionStorage.setItem(TOKEN_KEY, accessToken)
-  sessionStorage.setItem(REFRESH_KEY, refreshToken)
-}
-
-/** Get stored access token */
-export function getAccessToken(): string | null {
-  return sessionStorage.getItem(TOKEN_KEY)
-}
-
-/** Get stored refresh token */
-export function getRefreshToken(): string | null {
-  return sessionStorage.getItem(REFRESH_KEY)
-}
-
-/** Clear all auth data */
+/** Clear all client-side auth data (cached user only — cookies cleared by server) */
 export function clearAuth() {
-  sessionStorage.removeItem(TOKEN_KEY)
-  sessionStorage.removeItem(REFRESH_KEY)
   sessionStorage.removeItem('cachedUser')
 }
 
@@ -43,13 +30,39 @@ export function getCachedUser(): AuthUser | null {
   }
 }
 
-/** Dev login with username + password */
-export async function devLogin(username: string, password: string, signal?: AbortSignal) {
-  return api<VerifyOtpResponse>('/auth/dev-login', {
+/** Check if there's a cached session hint (user may still need server verification) */
+export function hasCachedSession(): boolean {
+  return sessionStorage.getItem('cachedUser') !== null
+}
+
+/** Dev login with username + password (and optional CAPTCHA token) */
+export async function devLogin(
+  username: string,
+  password: string,
+  captchaToken?: string,
+  signal?: AbortSignal,
+) {
+  const raw = await api<{
+    isNewUser: boolean
+    user: GetMeRawUser
+    tokens: { accessToken: string; refreshToken: string }
+  }>('/auth/dev-login', {
     method: 'POST',
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({ username, password, ...(captchaToken ? { captchaToken } : {}) }),
     signal,
   })
+  const businessId = raw.user.businessUsers?.[0]?.business?.id ?? null
+  return {
+    isNewUser: raw.isNewUser,
+    user: {
+      id: raw.user.id,
+      phone: raw.user.phone,
+      name: raw.user.name,
+      email: raw.user.email,
+      businessId,
+    } satisfies AuthUser,
+    tokens: raw.tokens,
+  }
 }
 
 // --- OTP auth (commented out for dev, restore for production) ---
@@ -71,24 +84,19 @@ export async function devLogin(username: string, password: string, signal?: Abor
 //   })
 // }
 
-/** Refresh access token */
+/** Refresh access token — cookies handle token transport automatically */
 export async function refreshToken(signal?: AbortSignal) {
-  const token = getRefreshToken()
-  if (!token) throw new Error('No refresh token')
   return api<{ tokens: { accessToken: string; refreshToken: string } }>('/auth/refresh', {
     method: 'POST',
-    body: JSON.stringify({ refreshToken: token }),
     signal,
   })
 }
 
-/** Logout — blacklist tokens server-side */
+/** Logout — server blacklists tokens and clears cookies */
 export async function logout() {
-  const token = getRefreshToken()
   try {
     await api('/auth/logout', {
       method: 'POST',
-      body: JSON.stringify({ refreshToken: token }),
     })
   } catch {
     // Logout should succeed client-side even if server fails
@@ -96,7 +104,26 @@ export async function logout() {
   clearAuth()
 }
 
-/** Get current user profile */
-export async function getMe(signal?: AbortSignal) {
-  return api<{ user: AuthUser }>('/auth/me', { signal })
+/** Raw shape returned by GET /auth/me — includes nested businessUsers */
+interface GetMeRawUser {
+  id: string
+  phone: string
+  name: string | null
+  email: string | null
+  businessUsers?: Array<{ business: { id: string } }>
+}
+
+/** Get current user profile and extract businessId from the first active business */
+export async function getMe(signal?: AbortSignal): Promise<{ user: AuthUser }> {
+  const raw = await api<{ user: GetMeRawUser }>('/auth/me', { signal })
+  const businessId = raw.user.businessUsers?.[0]?.business?.id ?? null
+  return {
+    user: {
+      id: raw.user.id,
+      phone: raw.user.phone,
+      name: raw.user.name,
+      email: raw.user.email,
+      businessId,
+    },
+  }
 }

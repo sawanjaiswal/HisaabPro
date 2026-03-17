@@ -1,0 +1,100 @@
+/* ============================================================
+   Dashboard Quick Actions — 4-column action grid
+
+   Contains: action grid layout, icon boxes with tinted
+   backgrounds, action labels, press states.
+   ============================================================ */
+
+/* ─── Action grid (4 columns, Figma rounded boxes) ──────────── */
+
+.dashboard-action-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 342px;
+}
+
+.dashboard-action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  font-family: var(--font-primary);
+  padding: 0;
+}
+
+.dashboard-action-item:active .dashboard-action-icon-box {
+  transform: scale(0.95);
+}
+
+.dashboard-action-icon-box {
+  width: 56px;
+  height: 56px;
+  background: var(--color-gray-0);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--dash-card-shadow);
+  transition: transform var(--duration-fast) cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow var(--duration-fast) var(--ease-default);
+}
+
+.dashboard-action-item:active .dashboard-action-icon-box {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.dashboard-action-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--dash-text-action);
+  white-space: nowrap;
+}
+
+/* Tinted icon backgrounds per action */
+.dashboard-action-item:nth-child(1) .dashboard-action-icon-box {
+  background: var(--color-primary-50);
+}
+.dashboard-action-item:nth-child(2) .dashboard-action-icon-box {
+  background: var(--color-info-50);
+}
+.dashboard-action-item:nth-child(3) .dashboard-action-icon-box {
+  background: var(--color-success-50);
+}
+.dashboard-action-item:nth-child(4) .dashboard-action-icon-box {
+  background: var(--color-gray-50);
+}
+
+/* ─── Tablet and above ──────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .dashboard-action-grid {
+    max-width: 400px;
+  }
+}
+
+/* ─── Dark theme overrides ──────────────────────────────────── */
+
+[data-theme="dark"] .dashboard-action-icon-box {
+  background: var(--color-gray-100);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(43, 51, 66, 0.3);
+}
+
+/* Dark tinted action icon backgrounds */
+[data-theme="dark"] .dashboard-action-item:nth-child(1) .dashboard-action-icon-box {
+  background: rgba(11, 79, 94, 0.2);
+}
+[data-theme="dark"] .dashboard-action-item:nth-child(2) .dashboard-action-icon-box {
+  background: rgba(59, 130, 246, 0.12);
+}
+[data-theme="dark"] .dashboard-action-item:nth-child(3) .dashboard-action-icon-box {
+  background: rgba(34, 197, 94, 0.12);
+}
+[data-theme="dark"] .dashboard-action-item:nth-child(4) .dashboard-action-icon-box {
+  background: var(--color-gray-200);
+}

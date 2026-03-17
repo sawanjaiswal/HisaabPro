@@ -1,0 +1,108 @@
+/* ============================================================
+   Invoice Filter Bar — Type pills and search bar
+   Mobile-first: base = 320px → 768px tablet → 1024px desktop
+   ============================================================ */
+
+/* ─── Entrance animation ────────────────────────────────────── */
+
+@keyframes invoiceFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Filter bar ────────────────────────────────────────────── */
+
+.invoice-filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  animation: invoiceFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 60ms both;
+}
+
+/* Horizontal scrollable row of document-type filter pills */
+.invoice-type-pills {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: var(--space-1);
+}
+
+.invoice-type-pills::-webkit-scrollbar {
+  display: none;
+}
+
+/* Individual type pill — min 44px touch target */
+.invoice-type-pill {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  color: var(--color-gray-600);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: var(--font-primary);
+  cursor: pointer;
+  min-height: 44px;
+  white-space: nowrap;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default),
+    color var(--duration-fast) var(--ease-default),
+    transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.invoice-type-pill:hover {
+  border-color: var(--color-primary-300);
+  color: var(--color-primary-500);
+}
+
+.invoice-type-pill:active {
+  transform: scale(0.95);
+}
+
+.invoice-type-pill[aria-pressed='true'],
+.invoice-type-pill--active {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-400);
+  color: var(--color-primary-500);
+  font-weight: 600;
+}
+
+/* ─── Tablet+ adjustments ───────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .invoice-filter-bar {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .invoice-filter-bar .input {
+    flex: 1;
+  }
+}
+
+/* ─── Reduced motion ────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .invoice-filter-bar {
+    animation: none !important;
+  }
+
+  .invoice-type-pill:active {
+    transform: none !important;
+  }
+}

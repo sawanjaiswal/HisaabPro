@@ -1,0 +1,122 @@
+/* Feedback State — Layout, text, buttons, actions
+ *
+ * Base layout for FeedbackState + shared button styles used by
+ * presets (EmptyState, ErrorState, NetworkError, NotFoundPage).
+ * CSS-only animations. Mobile-first.
+ */
+
+/* ─── Shared feedback button ─────────────────────────────────────────────── */
+
+.feedback-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 12px 28px;
+  border-radius: var(--radius-full);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-family: var(--font-primary);
+  cursor: pointer;
+  border: none;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    opacity var(--duration-fast) var(--ease-default),
+    transform var(--duration-fast) var(--ease-default);
+}
+
+.feedback-btn:active {
+  transform: scale(0.97);
+}
+
+.feedback-btn--primary {
+  background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
+  color: var(--color-gray-0);
+  box-shadow: 0 4px 14px rgba(15, 54, 56, 0.25);
+}
+
+.feedback-btn--primary:active {
+  opacity: 0.9;
+}
+
+.feedback-btn--ghost {
+  background: transparent;
+  color: var(--color-primary-500);
+  padding: 12px 20px;
+}
+
+.feedback-btn--ghost:active {
+  background: rgba(11, 79, 94, 0.05);
+}
+
+/* ─── FeedbackState base ─────────────────────────────────────────────────── */
+
+.feedback-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  gap: var(--space-4);
+}
+
+/* Large variant — full-page states like 404 */
+.feedback-state--lg {
+  justify-content: center;
+  min-height: 100dvh;
+  background: linear-gradient(180deg, #f8f7f4 0%, #faf9f6 40%, #fdfdfc 100%);
+  background-attachment: fixed;
+}
+
+/* ─── Text ───────────────────────────────────────────────────────────────── */
+
+.feedback-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  letter-spacing: -0.01em;
+}
+
+.feedback-title--lg {
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.feedback-description {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  max-width: 320px;
+  line-height: 1.5;
+}
+
+/* ─── Action area ────────────────────────────────────────────────────────── */
+
+.feedback-action {
+  margin-top: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ─── 404-specific extras ────────────────────────────────────────────────── */
+
+.feedback-404-code {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--color-gray-200);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-top: var(--space-2);
+}
+
+/* ─── Dark theme overrides ───────────────────────────────────────────────── */
+
+[data-theme="dark"] .feedback-state--lg {
+  background: linear-gradient(180deg, #0B0F15 0%, #0E1420 40%, #111827 100%);
+}
+
+[data-theme="dark"] .feedback-btn--ghost:active {
+  background: rgba(63, 174, 214, 0.08);
+}

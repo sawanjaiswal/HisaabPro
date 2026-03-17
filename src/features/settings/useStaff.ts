@@ -8,8 +8,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
-import { getStaff, suspendStaff, removeStaff, resendInvite } from './settings.service'
-import type { StaffMember, StaffInvite } from './settings.types'
+import { getStaff, suspendStaff, removeStaff, resendInvite, updateStaffRole } from './staff.service'
+import { getRoles } from './role.service'
+import type { StaffMember, StaffInvite, Role } from './settings.types'
 
 type Status = 'loading' | 'error' | 'success'
 
@@ -21,16 +22,19 @@ interface StaffData {
 interface UseStaffReturn {
   data: StaffData | null
   status: Status
+  roles: Role[]
   refresh: () => void
   handleSuspend: (staffId: string, staffName: string) => void
   handleRemove: (staffId: string, staffName: string) => void
   handleResendInvite: (inviteId: string) => void
+  handleChangeRole: (staffId: string, staffName: string, roleId: string) => void
 }
 
 export function useStaff(businessId: string): UseStaffReturn {
   const toast = useToast()
 
   const [data, setData] = useState<StaffData | null>(null)
+  const [roles, setRoles] = useState<Role[]>([])
   const [status, setStatus] = useState<Status>('loading')
   const [refreshKey, setRefreshKey] = useState(0)
 
@@ -40,9 +44,13 @@ export function useStaff(businessId: string): UseStaffReturn {
     const controller = new AbortController()
     setStatus('loading')
 
-    getStaff(businessId, controller.signal)
-      .then((response) => {
-        setData(response.data)
+    Promise.all([
+      getStaff(businessId, controller.signal),
+      getRoles(businessId, controller.signal),
+    ])
+      .then(([staffResponse, rolesResponse]) => {
+        setData(staffResponse.data)
+        setRoles(rolesResponse.data.roles)
         setStatus('success')
       })
       .catch((err: unknown) => {
@@ -99,12 +107,26 @@ export function useStaff(businessId: string): UseStaffReturn {
       })
   }, [businessId, refresh, toast])
 
+  const handleChangeRole = useCallback((staffId: string, staffName: string, roleId: string) => {
+    updateStaffRole(businessId, staffId, roleId)
+      .then((res) => {
+        toast.success(`${staffName} is now ${res.data.roleName}`)
+        refresh()
+      })
+      .catch((err: unknown) => {
+        const message = err instanceof ApiError ? err.message : 'Failed to change role'
+        toast.error(message)
+      })
+  }, [businessId, refresh, toast])
+
   return {
     data,
     status,
+    roles,
     refresh,
     handleSuspend,
     handleRemove,
     handleResendInvite,
+    handleChangeRole,
   }
 }

@@ -1,0 +1,110 @@
+/* === FEEDBACK === */
+.spinner { animation: spin 0.75s linear infinite; color: var(--color-primary-400); }
+.spinner-fullscreen {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100dvh;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--color-gray-100) 25%, var(--color-gray-50) 50%, var(--color-gray-100) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* Empty/Error states moved to components/feedback/feedback.css */
+
+/* === DIVIDER === */
+.divider {
+  height: 1px;
+  background: var(--color-gray-100);
+  border: none;
+}
+
+/* === AVATAR — rounded square initials (NexoWallet DNA) === */
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--color-gray-0);
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* === SEARCH BAR — elevated pill with subtle shadow === */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--color-gray-0);
+  border: 1.5px solid var(--color-gray-100);
+  border-radius: var(--radius-full);
+  padding: 0 var(--space-4);
+  height: 48px;
+  box-shadow: 0 1px 4px rgba(26, 25, 23, 0.03);
+  transition: border-color var(--duration-fast) var(--ease-default),
+              box-shadow var(--duration-fast) var(--ease-default);
+}
+
+.search-bar:focus-within {
+  border-color: var(--color-primary-300);
+  box-shadow: 0 0 0 3px rgba(11, 79, 94, 0.08);
+}
+
+.search-bar input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.9375rem;
+  color: var(--color-gray-800);
+  font-family: var(--font-primary);
+}
+
+.search-bar input::placeholder {
+  color: var(--color-gray-300);
+}
+
+/* === LIST STAGGER — cards cascade in sequentially === */
+@keyframes list-item-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-list > * {
+  animation: list-item-enter var(--duration-slow) var(--ease-default) both;
+}
+
+/* Stagger each child by 40ms — up to 12 visible items */
+.stagger-list > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-list > *:nth-child(2) { animation-delay: 40ms; }
+.stagger-list > *:nth-child(3) { animation-delay: 80ms; }
+.stagger-list > *:nth-child(4) { animation-delay: 120ms; }
+.stagger-list > *:nth-child(5) { animation-delay: 160ms; }
+.stagger-list > *:nth-child(6) { animation-delay: 200ms; }
+.stagger-list > *:nth-child(7) { animation-delay: 240ms; }
+.stagger-list > *:nth-child(8) { animation-delay: 280ms; }
+.stagger-list > *:nth-child(9) { animation-delay: 320ms; }
+.stagger-list > *:nth-child(10) { animation-delay: 360ms; }
+.stagger-list > *:nth-child(11) { animation-delay: 400ms; }
+.stagger-list > *:nth-child(12) { animation-delay: 440ms; }
+.stagger-list > *:nth-child(n+13) { animation-delay: 440ms; }
+
+/* === REDUCED MOTION === */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,235 @@
+/* === DARK THEME — Token overrides + component overrides === */
+
+[data-theme="dark"] {
+  --color-primary-50:  #0A2A33;
+  --color-primary-100: #0D3640;
+  --color-primary-200: #135162;
+  --color-primary-300: #1A7A93;
+  --color-primary-400: #2199B5;
+  --color-primary-500: #3FAED6;
+  --color-primary-600: #62C0E0;
+  --color-primary-700: #8AD2EA;
+  --color-primary-800: #B3E4F3;
+  --color-primary-900: #DCF2FA;
+
+  --color-secondary-50:  #2A2B14;
+  --color-secondary-100: #3A3E1A;
+  --color-secondary-200: #565B24;
+  --color-secondary-300: #8A9128;
+  --color-secondary-400: #B3BB3A;
+  --color-secondary-500: #D4DC4A;
+  --color-secondary-600: #E0EA65;
+  --color-secondary-700: #E8F088;
+  --color-secondary-800: #F0F5B0;
+  --color-secondary-900: #F8FAD8;
+
+  --color-success-50:  #0A2A1A;
+  --color-success-100: #0F3D26;
+  --color-success-500: #48C88A;
+  --color-success-600: #5DD89B;
+  --color-success-700: #7AE4AF;
+
+  --color-error-50:  #2A0F0F;
+  --color-error-100: #3D1515;
+  --color-error-500: #E05555;
+  --color-error-600: #E87070;
+  --color-error-700: #F09090;
+
+  --color-warning-50:  #2A2008;
+  --color-warning-100: #3D2F0C;
+  --color-warning-500: #F0B73A;
+  --color-warning-600: #F4C55A;
+  --color-warning-700: #F7D47A;
+
+  --color-info-50:  #0A1A2A;
+  --color-info-100: #0F253D;
+  --color-info-500: #5B9AEB;
+  --color-info-600: #78AEF0;
+  --color-info-700: #9AC3F5;
+
+  --color-gray-0:   #0B0F15;
+  --color-gray-50:  #141922;
+  --color-gray-100: #1A2030;
+  --color-gray-200: #232B3A;
+  --color-gray-300: #2B3342;
+  --color-gray-400: #6B717A;
+  --color-gray-500: #959BA6;
+  --color-gray-600: #B0B5BF;
+  --color-gray-700: #CDD0D6;
+  --color-gray-800: #E0E2E7;
+  --color-gray-900: #E8EAF0;
+
+  --color-lime-accent: #D4DC4A;
+
+  --gradient-teal-start: #0D3640;
+  --gradient-teal-end:   #0A2A33;
+  --gradient-coral-start: #B91C1C;
+  --gradient-coral-end:   #7F1D1D;
+  --gradient-amber-start: #B45309;
+  --gradient-amber-end:   #92400E;
+  --gradient-calc-start: #0a1a1e;
+  --gradient-calc-end:   #0d2429;
+
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(43, 51, 66, 0.5);
+  --shadow-md: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(43, 51, 66, 0.4);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(43, 51, 66, 0.3);
+
+  --toast-bg: #232B3A;
+  --toast-text: #E8EAF0;
+  --toast-progress-bg: rgba(255, 255, 255, 0.08);
+
+  --color-warning-bg: #2A2008;
+  --color-warning-border: #3D2F0C;
+  --color-warning-text: #F0B73A;
+  --color-warning-dark: #F4C55A;
+  --color-warning-icon: #F0B73A;
+  --color-error-bg: #2A0F0F;
+  --color-error-border: #3D1515;
+  --color-error-text: #E05555;
+  --color-error-dark: #E87070;
+  --color-error-icon: #E05555;
+  --color-info-bg: #0A1A2A;
+  --color-info-border: #0F253D;
+  --color-info-text: #5B9AEB;
+  --color-info-dark: #78AEF0;
+  --color-info-icon: #5B9AEB;
+
+  color-scheme: dark;
+}
+
+/* Dark theme body override */
+[data-theme="dark"] body {
+  background: #0B0F15;
+}
+
+/* Dark theme header — frosted dark glass */
+[data-theme="dark"] .header {
+  background: rgba(20, 25, 34, 0.92);
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Dark theme bottom nav */
+[data-theme="dark"] .bottom-nav {
+  background: rgba(20, 25, 34, 0.95);
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Dark theme bottom nav SVG fill */
+[data-theme="dark"] .bottom-nav-svg-path {
+  fill: #141922;
+}
+
+/* Dark theme bottom nav active items */
+[data-theme="dark"] .bottom-nav-item.active {
+  color: var(--color-primary-500);
+}
+
+[data-theme="dark"] .bottom-nav-item.active::after {
+  background: var(--color-primary-500);
+}
+
+/* Dark theme FAB */
+[data-theme="dark"] .bottom-nav-fab {
+  background: var(--color-lime-accent);
+  box-shadow: 0 4px 14px rgba(212, 220, 74, 0.3);
+}
+
+/* Dark theme cards */
+[data-theme="dark"] .card {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(43, 51, 66, 0.3);
+}
+
+/* Dark theme search bar */
+[data-theme="dark"] .search-bar {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+  box-shadow: none;
+}
+
+[data-theme="dark"] .search-bar:focus-within {
+  border-color: var(--color-primary-400);
+  box-shadow: 0 0 0 3px rgba(63, 174, 214, 0.15);
+}
+
+/* Dark theme inputs */
+[data-theme="dark"] .input {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dark"] .input:focus {
+  border-color: var(--color-primary-400);
+}
+
+/* Dark theme modal */
+[data-theme="dark"] .modal {
+  background: var(--color-gray-50);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .modal::backdrop {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="dark"] .modal-header {
+  border-bottom-color: var(--color-gray-200);
+}
+
+/* Dark theme pill tabs */
+[data-theme="dark"] .pill-tab {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-500);
+}
+
+[data-theme="dark"] .pill-tab.active {
+  background: var(--color-primary-500);
+  border-color: var(--color-primary-500);
+  box-shadow: 0 2px 8px rgba(63, 174, 214, 0.25);
+}
+
+/* Dark theme buttons */
+[data-theme="dark"] .btn-secondary {
+  border-color: var(--color-gray-200);
+  color: var(--color-primary-500);
+}
+
+[data-theme="dark"] .btn-secondary:hover:not(:disabled) {
+  background: var(--color-gray-100);
+}
+
+[data-theme="dark"] .btn-ghost:hover:not(:disabled) {
+  background: var(--color-gray-100);
+}
+
+/* Dark theme divider */
+[data-theme="dark"] .divider {
+  background: var(--color-gray-200);
+}
+
+/* Dark theme skeleton */
+[data-theme="dark"] .skeleton {
+  background: linear-gradient(90deg, var(--color-gray-100) 25%, var(--color-gray-200) 50%, var(--color-gray-100) 75%);
+  background-size: 200% 100%;
+}
+
+/* Dark theme action grid */
+[data-theme="dark"] .action-icon {
+  background: var(--color-gray-100);
+  color: var(--color-primary-500);
+}
+
+/* Dark theme confirm dialog */
+[data-theme="dark"] .confirm-dialog-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .confirm-dialog-description {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dark"] .confirm-dialog-cancel {
+  border-color: var(--color-gray-300);
+}

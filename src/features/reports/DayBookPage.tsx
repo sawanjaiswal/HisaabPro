@@ -8,19 +8,20 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { ROUTES } from '@/config/routes.config'
 import { useDayBook } from './hooks/useDayBook'
 import { exportReport } from './report.service'
-import { formatAmount } from './report.utils'
-import {
-  DAY_BOOK_TYPE_LABELS,
-  DAY_BOOK_TYPE_COLORS,
-} from './report.constants'
+import { DAY_BOOK_TYPE_LABELS } from './report.constants'
 import { ReportDateNavigator } from './components/ReportDateNavigator'
 import { ReportFilterPills } from './components/ReportFilterPills'
 import { ReportCardList } from './components/ReportCardList'
 import { ReportLoadMore } from './components/ReportLoadMore'
 import { ReportExportBar } from './components/ReportExportBar'
 import { ReportSkeleton } from './components/ReportSkeleton'
+import { DayBookSummaryBar } from './components/DayBookSummaryBar'
+import { DayBookTransactionCard } from './components/DayBookTransactionCard'
 import type { DayBookTransactionType } from './report.types'
-import './reports.css'
+import './report-shared.css'
+import './report-cards.css'
+import './report-shared-ui.css'
+import './report-day-book.css'
 
 // ─── Type filter options ───────────────────────────────────────────────────────
 
@@ -135,56 +136,7 @@ export default function DayBookPage() {
 
         {/* Day summary card */}
         {summary !== undefined && (
-          <div className="report-summary-bar" role="region" aria-label="Day totals">
-            <div className="report-summary-item">
-              <span className="report-summary-label">Sales</span>
-              <span className="report-summary-value report-summary-value--primary">
-                {formatAmount(summary.totalSales.amount)}
-              </span>
-              <span className="report-summary-count">
-                {summary.totalSales.count} txn
-              </span>
-            </div>
-            <div className="report-summary-item">
-              <span className="report-summary-label">Purchases</span>
-              <span className="report-summary-value">
-                {formatAmount(summary.totalPurchases.amount)}
-              </span>
-              <span className="report-summary-count">
-                {summary.totalPurchases.count} txn
-              </span>
-            </div>
-            <div className="report-summary-item">
-              <span className="report-summary-label">Pay In</span>
-              <span className="report-summary-value report-summary-value--positive">
-                {formatAmount(summary.paymentsIn.amount)}
-              </span>
-              <span className="report-summary-count">
-                {summary.paymentsIn.count} txn
-              </span>
-            </div>
-            <div className="report-summary-item">
-              <span className="report-summary-label">Pay Out</span>
-              <span className="report-summary-value report-summary-value--negative">
-                {formatAmount(summary.paymentsOut.amount)}
-              </span>
-              <span className="report-summary-count">
-                {summary.paymentsOut.count} txn
-              </span>
-            </div>
-            <div className="report-summary-item">
-              <span className="report-summary-label">Net Cash</span>
-              <span
-                className={
-                  summary.netCashFlow >= 0
-                    ? 'report-summary-value report-summary-value--positive'
-                    : 'report-summary-value report-summary-value--negative'
-                }
-              >
-                {formatAmount(summary.netCashFlow)}
-              </span>
-            </div>
-          </div>
+          <DayBookSummaryBar summary={summary} />
         )}
 
         {/* Empty state */}
@@ -208,32 +160,7 @@ export default function DayBookPage() {
         {hasTransactions && (
           <ReportCardList ariaLabel="Day book transactions">
             {transactions.map((txn) => (
-              <div key={txn.id} className="report-card" role="listitem">
-                <div className="report-card-header">
-                  <span className="report-daybook-time">{txn.time}</span>
-                  <span
-                    className="report-daybook-type"
-                    style={{ color: DAY_BOOK_TYPE_COLORS[txn.type] }}
-                  >
-                    {DAY_BOOK_TYPE_LABELS[txn.type]}
-                  </span>
-                </div>
-                <div className="report-card-body">
-                  <span>{txn.description}</span>
-                  {txn.partyName !== '' && (
-                    <span className="report-card-party">{txn.partyName}</span>
-                  )}
-                </div>
-                <div className="report-card-footer">
-                  <span className="report-card-amount">
-                    {formatAmount(txn.amount)}
-                  </span>
-                  {txn.reference !== '' && (
-                    <span className="report-card-ref">{txn.reference}</span>
-                  )}
-                </div>
-                <div className="report-divider" />
-              </div>
+              <DayBookTransactionCard key={txn.id} transaction={txn} />
             ))}
           </ReportCardList>
         )}

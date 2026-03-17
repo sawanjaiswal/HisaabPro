@@ -128,6 +128,13 @@ export function handleError(error: unknown): AppError {
     }
   }
 
+  // Zod validation errors
+  if (error instanceof Error && error.name === 'ZodError' && 'issues' in error) {
+    const issues = (error as { issues: Array<{ path: (string | number)[]; message: string }> }).issues
+    const message = issues.map(i => `${i.path.join('.')}: ${i.message}`).join(', ')
+    return validationError(message)
+  }
+
   if (error instanceof Error) {
     logger.error('Unhandled error:', error)
     const safeMessage = process.env.NODE_ENV === 'production'

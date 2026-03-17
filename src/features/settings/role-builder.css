@@ -1,0 +1,219 @@
+/* ─── Role Builder — Component Styles ──────────────────────────────────────────
+ *
+ * Permission matrix, template pills, save bar.
+ * All values use CSS variables only.
+ * Touch targets: 44px minimum on all interactive elements.
+ * Mobile-first: base styles target 375px, media queries use min-width only.
+ * Class prefix: .role-*
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+.role-builder {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-4);
+  padding-bottom: var(--space-24);
+  min-height: 100vh;
+  background-color: var(--color-gray-50);
+}
+
+.role-template-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.role-template-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-gray-200);
+  background-color: var(--color-gray-0, #fff);
+  color: var(--color-gray-700);
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--font-primary);
+  cursor: pointer;
+  min-height: 44px;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.role-template-pill:active,
+.role-template-pill--active {
+  border-color: var(--color-primary-500);
+  background-color: var(--color-primary-50);
+  color: var(--color-primary-700);
+}
+
+.role-permission-matrix {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.role-module {
+  background-color: var(--color-gray-0, #fff);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+  overflow: hidden;
+}
+
+.role-module-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  min-height: 52px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-primary);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.role-module-header:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: -2px;
+}
+
+.role-module-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.role-module-name {
+  flex: 1;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-gray-900);
+}
+
+.role-module-count {
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+}
+
+.role-module-chevron {
+  color: var(--color-gray-400);
+  transition: transform 0.2s ease;
+}
+
+.role-module-chevron--open {
+  transform: rotate(90deg);
+}
+
+.role-module-content {
+  border-top: 1px solid var(--color-gray-100);
+  padding: var(--space-1) 0;
+  animation: role-module-expand 0.15s ease;
+}
+
+@keyframes role-module-expand {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.role-permission-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2-5) var(--space-4) var(--space-2-5) var(--space-12);
+  min-height: 44px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-primary);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.role-permission-row:active {
+  background-color: var(--color-gray-50);
+}
+
+.role-permission-label {
+  flex: 1;
+  font-size: 0.875rem;
+  color: var(--color-gray-700);
+}
+
+.role-permission-description {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  margin-top: var(--space-0-5);
+}
+
+.role-save-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--space-3) var(--space-4);
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+  background-color: var(--color-gray-0, #fff);
+  border-top: 1px solid var(--color-gray-200);
+  z-index: 40;
+}
+
+.role-save-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 48px;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-primary-500);
+  color: var(--color-gray-0, #fff);
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.role-save-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.role-save-button:active:not(:disabled) {
+  background-color: var(--color-primary-600);
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .role-builder {
+  background-color: var(--color-gray-0);
+}
+
+[data-theme="dark"] .role-module {
+  background-color: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .role-permission-row:active {
+  background-color: var(--color-gray-100);
+}
+
+[data-theme="dark"] .role-save-bar {
+  background-color: var(--color-gray-50);
+  border-top-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .role-template-pill {
+  background-color: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-700);
+}

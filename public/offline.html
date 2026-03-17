@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f3638" />
+  <title>Offline — HisaabPro</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafb;
+      color: #1a2e30;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .offline-icon {
+      width: 64px; height: 64px;
+      margin-bottom: 1.5rem;
+      color: #6b8a8d;
+    }
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    p {
+      font-size: 0.9375rem;
+      color: #5a7a7d;
+      line-height: 1.5;
+      max-width: 320px;
+      margin-bottom: 1.5rem;
+    }
+    button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: #0f3638;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      min-height: 44px;
+      min-width: 44px;
+      transition: opacity 0.15s;
+    }
+    button:active { opacity: 0.8; }
+    @media (prefers-color-scheme: dark) {
+      body { background: #0a1a1c; color: #e0eaeb; }
+      p { color: #8aa8ab; }
+    }
+  </style>
+</head>
+<body>
+  <svg class="offline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M1 1l22 22"/>
+    <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/>
+    <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/>
+    <path d="M10.71 5.05A16 16 0 0 1 22.56 9"/>
+    <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/>
+    <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+    <circle cx="12" cy="20" r="1"/>
+  </svg>
+  <h1>You're offline</h1>
+  <p>Check your internet connection. Your queued changes will sync automatically when you're back online.</p>
+  <button onclick="window.location.reload()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+    Try Again
+  </button>
+</body>
+</html>

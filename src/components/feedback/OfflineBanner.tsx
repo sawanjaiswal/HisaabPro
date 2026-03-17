@@ -1,66 +1,56 @@
-/**
- * Offline Data Banner — adapted from DudhHisaab
- * Simplified: no syncStore/db deps yet (will be wired when offline sync is built)
+/** Offline Banner — Connection lost indicator + sync queue status
  *
- * States:
- * - Online → Hidden
- * - Offline → "You're offline. Showing cached data." + Retry button
+ * Warm amber pill banner that slides in when offline.
+ * Integrates SyncQueueIndicator to show pending offline operations.
+ * CSS-only animation, no Tailwind.
  */
 
-import { useState } from 'react';
-import { WifiOff, RefreshCw } from 'lucide-react';
-import { useOnlineStatus, checkOnlineNow } from '../../hooks/useOnlineStatus';
+import { useState } from 'react'
+import { WifiOff, RefreshCw } from 'lucide-react'
+import { useOnlineStatus, checkOnlineNow } from '../../hooks/useOnlineStatus'
+import { SyncQueueIndicator } from './SyncQueueIndicator'
+import './offline-banner.css'
 
 export function OfflineBanner() {
-  const isOnline = useOnlineStatus();
-  const [isChecking, setIsChecking] = useState(false);
+  const isOnline = useOnlineStatus()
+  const [isChecking, setIsChecking] = useState(false)
 
   const handleCheckConnection = async () => {
-    setIsChecking(true);
-    await checkOnlineNow();
-    setIsChecking(false);
-  };
+    setIsChecking(true)
+    await checkOnlineNow()
+    setIsChecking(false)
+  }
 
-  if (isOnline) return null;
+  // Always render SyncQueueIndicator — it handles its own visibility
+  // (shows even briefly after coming back online while queue processes)
+  if (isOnline) return <SyncQueueIndicator />
 
   return (
-    <div
-      role="status"
-      aria-live="polite"
-      className="rounded-lg px-3 py-2.5 mb-3 mx-4"
-      style={{
-        backgroundColor: 'var(--color-warning-bg, #fff7ed)',
-        border: '1px solid var(--color-warning-border, #fed7aa)',
-      }}
-    >
-      <div className="flex items-center gap-2.5">
-        <div className="flex-shrink-0" style={{ color: 'var(--color-warning-icon, #ea580c)' }}>
-          <WifiOff className="w-4 h-4" strokeWidth={2} />
+    <div role="status" aria-live="polite" className="offline-banner">
+      <div className="offline-banner-content">
+        <div className="offline-banner-icon" aria-hidden="true">
+          <WifiOff size={16} strokeWidth={2} />
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold" style={{ color: 'var(--color-warning-dark, #9a3412)' }}>
-            You're offline
-          </p>
-          <p className="text-[11px] mt-0.5" style={{ color: 'var(--color-warning-text, #c2410c)' }}>
-            Showing cached data.
-          </p>
+        <div className="offline-banner-text">
+          <span className="offline-banner-title">You're offline</span>
+          <span className="offline-banner-subtitle">Changes saved locally</span>
         </div>
+        <SyncQueueIndicator />
         <button
           onClick={handleCheckConnection}
           disabled={isChecking}
-          className="flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-colors active:scale-95"
-          style={{
-            backgroundColor: 'var(--color-warning-border, #fed7aa)',
-            color: 'var(--color-warning-dark, #9a3412)',
-            opacity: isChecking ? 0.65 : 1,
-            border: 'none',
-          }}
+          className="offline-banner-retry"
           aria-label="Check internet connection"
+          style={{ opacity: isChecking ? 0.65 : 1 }}
         >
-          <RefreshCw className={`w-3 h-3 ${isChecking ? 'animate-spin' : ''}`} strokeWidth={2.5} />
+          <RefreshCw
+            size={12}
+            strokeWidth={2.5}
+            className={isChecking ? 'offline-banner-spin' : ''}
+          />
           {isChecking ? 'Checking' : 'Retry'}
         </button>
       </div>
     </div>
-  );
+  )
 }

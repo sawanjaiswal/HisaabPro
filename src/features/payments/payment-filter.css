@@ -1,0 +1,101 @@
+/* ============================================================
+   Payment Filter Bar — Search + horizontal filter pills
+   Mobile-first: base = 320px → 768px tablet → 1024px desktop
+
+   Stacks vertically on mobile, goes horizontal on tablet+.
+   Scrollable pill row with 44px touch targets.
+   ============================================================ */
+
+/* ─── Filter bar ─────────────────────────────────────────────── */
+
+/* Stacks search + filter pills vertically on mobile */
+.payment-filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  animation: paymentFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 60ms both;
+}
+
+/* Horizontal scrollable row of filter pills */
+.payment-filter-pills {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: var(--space-1);
+}
+
+.payment-filter-pills::-webkit-scrollbar {
+  display: none;
+}
+
+/* Individual filter pill — min 44px touch target */
+.payment-filter-pill {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  color: var(--color-gray-600);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: var(--font-primary);
+  cursor: pointer;
+  min-height: 44px;
+  white-space: nowrap;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default),
+    color var(--duration-fast) var(--ease-default),
+    transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.payment-filter-pill:hover {
+  border-color: var(--color-primary-300);
+  color: var(--color-primary-500);
+}
+
+.payment-filter-pill:active {
+  transform: scale(0.95);
+}
+
+.payment-filter-pill[aria-pressed='true'],
+.payment-filter-pill--active {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-400);
+  color: var(--color-primary-500);
+  font-weight: 600;
+}
+
+/* ─── Tablet+ adjustments ────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  /* Filter bar goes horizontal on tablet */
+  .payment-filter-bar {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  /* Search input fills remaining space */
+  .payment-filter-bar .search-bar {
+    flex: 1;
+  }
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .payment-filter-bar {
+    animation: none !important;
+  }
+
+  .payment-filter-pill:active {
+    transform: none !important;
+  }
+}

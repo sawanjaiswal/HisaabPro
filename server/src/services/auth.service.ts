@@ -1,7 +1,18 @@
+import type { Response } from 'express'
 import { prisma } from '../lib/prisma.js'
 import { generateOTP, verifyOTP, sendOTP, OTP_TTL_MS, MAX_ATTEMPTS, RESEND_COOLDOWN_MS } from '../lib/otp.js'
 import { generateTokens, verifyRefreshToken } from '../lib/jwt.js'
 import type { SendOtpInput, VerifyOtpInput } from '../schemas/auth.schemas.js'
+import {
+  LOCKOUT_MAX_ATTEMPTS,
+  LOCKOUT_DURATION_MS,
+  PROGRESSIVE_DELAY_PER_ATTEMPT_MS,
+  MAX_PROGRESSIVE_DELAY_MS,
+  ACCESS_TOKEN_COOKIE,
+  REFRESH_TOKEN_COOKIE,
+  ACCESS_TOKEN_TTL_MS,
+  REFRESH_TOKEN_TTL_MS,
+} from '../config/security.js'
 
 // Dev-only credentials (not for production)
 const DEV_CREDENTIALS: Record<string, { password: string; phone: string; name: string }> = {
@@ -9,9 +20,101 @@ const DEV_CREDENTIALS: Record<string, { password: string; phone: string; name: s
   demo: { password: 'demo123', phone: '9888888888', name: 'Demo User' },
 }
 
+// ---------------------------------------------------------------------------
+// Cookie helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Set access + refresh JWT tokens as httpOnly Secure cookies on the response.
+ * Uses __Host- prefix: browser enforces Secure + path=/, no domain attribute needed.
+ */
+export function setTokenCookies(
+  res: Response,
+  tokens: { accessToken: string; refreshToken: string }
+) {
+  const isProduction = process.env.NODE_ENV === 'production'
+
+  res.cookie(ACCESS_TOKEN_COOKIE, tokens.accessToken, {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'strict' : 'lax',
+    maxAge: ACCESS_TOKEN_TTL_MS,
+    path: '/',
+  })
+
+  res.cookie(REFRESH_TOKEN_COOKIE, tokens.refreshToken, {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'strict' : 'lax',
+    maxAge: REFRESH_TOKEN_TTL_MS,
+    path: '/',
+  })
+}
+
+/**
+ * Clear auth cookies on logout.
+ */
+export function clearTokenCookies(res: Response) {
+  const isProduction = process.env.NODE_ENV === 'production'
+
+  res.clearCookie(ACCESS_TOKEN_COOKIE, {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'strict' : 'lax',
+    path: '/',
+  })
+  res.clearCookie(REFRESH_TOKEN_COOKIE, {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'strict' : 'lax',
+    path: '/',
+  })
+}
+
+// ---------------------------------------------------------------------------
+// Account lockout helpers
+// ---------------------------------------------------------------------------
+
+/** Sleep for `ms` milliseconds (used for progressive delay on failed login) */
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+/** Increment failed login counter; lock account after LOCKOUT_MAX_ATTEMPTS */
+async function recordFailedLogin(userId: string, currentAttempts: number): Promise<void> {
+  const newAttempts = currentAttempts + 1
+  const shouldLock = newAttempts >= LOCKOUT_MAX_ATTEMPTS
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      failedLoginAttempts: newAttempts,
+      lastFailedLoginAt: new Date(),
+      ...(shouldLock && { accountLockedUntil: new Date(Date.now() + LOCKOUT_DURATION_MS) }),
+    },
+  })
+}
+
+/** Reset lockout state after a successful login */
+async function resetLoginAttempts(userId: string): Promise<void> {
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      failedLoginAttempts: 0,
+      lastFailedLoginAt: null,
+      accountLockedUntil: null,
+    },
+  })
+}
+
+// ---------------------------------------------------------------------------
+// Auth operations
+// ---------------------------------------------------------------------------
+
 /**
  * Dev-only login with username + password.
  * Auto-creates user if not exists.
+ * Supports account lockout + progressive delay.
  */
 export async function devLogin(data: { username: string; password: string }) {
   const { username, password } = data
@@ -24,7 +127,15 @@ export async function devLogin(data: { username: string; password: string }) {
   // Find or create user by phone
   let user = await prisma.user.findUnique({
     where: { phone: creds.phone },
-    select: { id: true, phone: true, name: true, email: true, isActive: true },
+    select: {
+      id: true,
+      phone: true,
+      name: true,
+      email: true,
+      isActive: true,
+      failedLoginAttempts: true,
+      accountLockedUntil: true,
+    },
   })
 
   const isNewUser = !user
@@ -32,13 +143,34 @@ export async function devLogin(data: { username: string; password: string }) {
   if (!user) {
     user = await prisma.user.create({
       data: { phone: creds.phone, name: creds.name },
-      select: { id: true, phone: true, name: true, email: true, isActive: true },
+      select: {
+        id: true,
+        phone: true,
+        name: true,
+        email: true,
+        isActive: true,
+        failedLoginAttempts: true,
+        accountLockedUntil: true,
+      },
     })
   }
 
   if (!user.isActive) {
     return { verified: false, message: 'Account is deactivated' }
   }
+
+  // Check lockout
+  if (user.accountLockedUntil && user.accountLockedUntil > new Date()) {
+    const remainingMs = user.accountLockedUntil.getTime() - Date.now()
+    const remainingMin = Math.ceil(remainingMs / 60_000)
+    return {
+      verified: false,
+      message: `Account locked. Try again in ${remainingMin} minute${remainingMin !== 1 ? 's' : ''}.`,
+    }
+  }
+
+  // Dev login always succeeds for valid credentials — reset attempts
+  await resetLoginAttempts(user.id)
 
   const tokens = generateTokens(user.id, user.phone)
 
@@ -96,7 +228,7 @@ export async function sendOtp(data: SendOtpInput) {
 /**
  * Verify OTP and authenticate user.
  * Auto-creates user if phone is new (OTP-only signup).
- * Returns JWT tokens on success.
+ * Returns JWT tokens on success. Enforces lockout + progressive delay on failure.
  */
 export async function verifyOtp(data: VerifyOtpInput) {
   const { phone, otp } = data
@@ -149,11 +281,38 @@ export async function verifyOtp(data: VerifyOtpInput) {
   // Find or create user
   let user = await prisma.user.findUnique({
     where: { phone },
-    select: { id: true, phone: true, name: true, email: true, isActive: true },
+    select: {
+      id: true,
+      phone: true,
+      name: true,
+      email: true,
+      isActive: true,
+      failedLoginAttempts: true,
+      accountLockedUntil: true,
+    },
   })
 
   if (user && !user.isActive) {
     return { verified: false, message: 'Account is deactivated. Please contact support.' }
+  }
+
+  // Check lockout before issuing token
+  if (user?.accountLockedUntil && user.accountLockedUntil > new Date()) {
+    const remainingMs = user.accountLockedUntil.getTime() - Date.now()
+    const remainingMin = Math.ceil(remainingMs / 60_000)
+
+    // Progressive delay
+    const delay = Math.min(
+      (user.failedLoginAttempts) * PROGRESSIVE_DELAY_PER_ATTEMPT_MS,
+      MAX_PROGRESSIVE_DELAY_MS
+    )
+    await sleep(delay)
+
+    await recordFailedLogin(user.id, user.failedLoginAttempts)
+    return {
+      verified: false,
+      message: `Account locked. Try again in ${remainingMin} minute${remainingMin !== 1 ? 's' : ''}.`,
+    }
   }
 
   const isNewUser = !user
@@ -161,8 +320,21 @@ export async function verifyOtp(data: VerifyOtpInput) {
   if (!user) {
     user = await prisma.user.create({
       data: { phone },
-      select: { id: true, phone: true, name: true, email: true, isActive: true },
+      select: {
+        id: true,
+        phone: true,
+        name: true,
+        email: true,
+        isActive: true,
+        failedLoginAttempts: true,
+        accountLockedUntil: true,
+      },
     })
+  }
+
+  // Reset lockout on successful auth
+  if (user.failedLoginAttempts > 0) {
+    await resetLoginAttempts(user.id)
   }
 
   // Generate tokens
@@ -201,11 +373,8 @@ export async function refreshAccessToken(refreshToken: string) {
 
   const tokens = generateTokens(decoded.userId, decoded.phone)
 
-  // Return new access token, keep same refresh token
-  return {
-    accessToken: tokens.accessToken,
-    refreshToken,
-  }
+  // Return new token pair (rotate both for security)
+  return tokens
 }
 
 /**

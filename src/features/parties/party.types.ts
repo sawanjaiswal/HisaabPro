@@ -1,6 +1,8 @@
 /** Party Management — Type definitions */
 
-export type PartyType = 'CUSTOMER' | 'SUPPLIER' | 'BOTH'
+// Shared types re-exported from lib for backward compatibility within this feature
+export type { PartyType, PartySummary } from '@/lib/types/party.types'
+import type { PartyType, PartySummary } from '@/lib/types/party.types'
 export type CreditLimitMode = 'WARN' | 'BLOCK'
 export type AddressType = 'BILLING' | 'SHIPPING'
 export type BalanceType = 'RECEIVABLE' | 'PAYABLE'
@@ -46,20 +48,6 @@ export interface PartyPricingItem {
   defaultPrice: number
   customPrice: number
   minQty: number
-}
-
-/** Party summary in list view */
-export interface PartySummary {
-  id: string
-  name: string
-  phone?: string
-  type: PartyType
-  group?: { id: string; name: string }
-  tags: string[]
-  outstandingBalance: number // paise, positive = receivable
-  creditLimit: number
-  lastTransactionAt?: string
-  isActive: boolean
 }
 
 /** Full party detail */
@@ -110,6 +98,38 @@ export interface PartyFilters {
   isActive: boolean
   sortBy: 'name' | 'outstanding' | 'recentTransaction' | 'createdAt'
   sortOrder: 'asc' | 'desc'
+}
+
+/** Party transaction ledger entry — combined invoices + payments */
+export interface PartyTransaction {
+  id: string
+  date: string
+  type: 'INVOICE' | 'PAYMENT'
+  /** Document number (INV-001) or payment reference */
+  reference: string
+  /** Human-readable description */
+  description: string
+  /** Amount in paise — positive for debit (party owes more), negative for credit */
+  amount: number
+  /** Running balance in paise after this transaction */
+  runningBalance: number
+  /** Invoice/payment status */
+  status: string
+}
+
+export interface PartyTransactionListResponse {
+  transactions: PartyTransaction[]
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+  }
+  summary: {
+    totalDebit: number
+    totalCredit: number
+    closingBalance: number
+  }
 }
 
 /** Create/update party form data */

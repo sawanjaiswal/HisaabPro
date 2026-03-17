@@ -1,0 +1,213 @@
+/* Calculator Controls — GST Panel & Breakdown
+ *
+ * GST rate chips with sliding indicator, inclusive/exclusive
+ * toggle, and GST breakdown panel (base/gst/total).
+ *
+ * Design: HisaabApp design system tokens, 8pt grid spacing.
+ */
+
+/* ─── GST Rate Chips — individual buttons, NOT tabs ─────────────────────── */
+
+.calc-gst-panel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-3) var(--space-2);
+  flex-shrink: 0;
+}
+
+/* Container holds individual chip buttons + sliding indicator */
+.calc-gst-rate-bar {
+  flex: 1;
+  position: relative;
+  display: flex;
+  gap: var(--space-2);
+  min-height: 44px;
+}
+
+/* Sliding active indicator — behind active chip */
+.calc-gst-rate-indicator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(160deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
+  box-shadow: 0 2px 8px rgba(11, 79, 94, 0.25);
+  transition: left 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+              width 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 0;
+}
+
+/* Individual GST rate chip */
+.calc-gst-rate-btn {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  min-height: 44px;
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-lg);
+  background: var(--color-gray-0);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s ease;
+  padding: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.calc-gst-rate-btn:active {
+  transform: scale(0.95);
+}
+
+/* Active chip — no border (indicator provides bg) */
+.calc-gst-rate-btn--active {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.calc-gst-rate-value {
+  font-family: var(--font-primary);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-gray-700);
+  transition: color 0.2s ease;
+}
+
+.calc-gst-rate-suffix {
+  font-family: var(--font-primary);
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: var(--color-gray-400);
+  transition: color 0.2s ease;
+  margin-top: 1px;
+}
+
+.calc-gst-rate-btn--active .calc-gst-rate-value {
+  color: var(--color-gray-0);
+}
+
+.calc-gst-rate-btn--active .calc-gst-rate-suffix {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Inclusive/Exclusive toggle */
+.calc-gst-mode-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  color: var(--color-gray-500);
+  font-family: var(--font-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.calc-gst-mode-toggle--active {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-300);
+  color: var(--color-primary-700);
+  box-shadow: 0 1px 4px rgba(11, 79, 94, 0.12);
+}
+
+.calc-gst-mode-toggle:active {
+  transform: scale(0.95);
+}
+
+/* ─── GST Breakdown panel ───────────────────────────────────────────────── */
+
+.calculator-gst-breakdown {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin: 0 var(--space-3);
+  background: var(--color-gray-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.calculator-gst-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-2-5) var(--space-2);
+  background: var(--color-gray-0);
+}
+
+.calculator-gst-item--gst {
+  background: linear-gradient(180deg, rgba(11, 79, 94, 0.04) 0%, rgba(11, 79, 94, 0.01) 100%);
+}
+
+.calculator-gst-item-label {
+  font-size: 0.5625rem;
+  color: var(--color-gray-400);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.calculator-gst-item-value {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-gray-900);
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: baseline;
+  gap: 1px;
+}
+
+.calculator-gst-rupee {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--color-gray-400);
+}
+
+/* ─── Dark theme ────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .calc-gst-rate-btn {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .calc-gst-rate-btn--active {
+  background: transparent;
+  border-color: transparent;
+}
+
+[data-theme="dark"] .calc-gst-mode-toggle {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .calculator-gst-item {
+  background: var(--color-gray-100);
+}
+
+/* ─── Reduced motion ────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .calc-gst-rate-indicator {
+    transition: none !important;
+  }
+
+  .calc-gst-rate-btn:active,
+  .calc-gst-mode-toggle:active {
+    transform: none !important;
+  }
+}

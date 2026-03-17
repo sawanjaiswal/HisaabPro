@@ -1,0 +1,239 @@
+/* Report Shared UI — Group headers, load more, export bar, empty state
+ *
+ * Covers: collapsible group headers with chevron, load more button,
+ *         sticky export bar, and centered empty state.
+ * Mobile-first: base targets 320px, min-width queries for tablet.
+ * CSS variables only — no hex, no rgba, no hardcoded sizes.
+ */
+
+/* ─── Group header ──────────────────────────────────────────── */
+
+.report-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.report-group-header:active {
+  transform: scale(0.99);
+}
+
+.report-group-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+}
+
+.report-group-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+.report-group-count {
+  font-size: 0.75rem;
+  color: var(--color-gray-500);
+  font-weight: 500;
+}
+
+.report-group-total {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  font-variant-numeric: tabular-nums;
+}
+
+.report-group-chevron {
+  color: var(--color-gray-400);
+  transition: transform var(--duration-fast) var(--ease-default);
+  flex-shrink: 0;
+}
+
+.report-group-chevron--open {
+  transform: rotate(180deg);
+}
+
+.report-group-items {
+  padding-left: var(--space-2);
+}
+
+/* ─── Load more ─────────────────────────────────────────────── */
+
+.report-load-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  margin-top: var(--space-2);
+}
+
+.report-load-more-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-primary-300);
+  background: var(--color-gray-0);
+  color: var(--color-primary-500);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-primary);
+  cursor: pointer;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default);
+}
+
+.report-load-more-btn:hover {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-400);
+}
+
+.report-load-more-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Export bar ─────────────────────────────────────────────── */
+
+.report-export-bar {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-index-sticky, 10);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-0);
+  border-top: 1px solid var(--color-gray-100);
+  box-shadow: 0 -2px 8px color-mix(in srgb, var(--color-gray-900) 6%, transparent);
+}
+
+.report-export-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-gray-500);
+  white-space: nowrap;
+}
+
+.report-export-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.report-export-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  color: var(--color-gray-700);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-family: var(--font-primary);
+  cursor: pointer;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default);
+}
+
+.report-export-btn:hover {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-300);
+}
+
+.report-export-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Empty state ───────────────────────────────────────────── */
+
+.report-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+}
+
+.report-empty-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gray-400);
+}
+
+.report-empty-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+}
+
+.report-empty-desc {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+/* ─── Tablet+ (768px) ───────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .report-export-bar {
+    position: static;
+    border-top: none;
+    box-shadow: none;
+    padding: 0;
+    margin-top: var(--space-6);
+    border-top: 1px solid var(--color-gray-100);
+    padding-top: var(--space-4);
+  }
+}
+
+/* ─── Dark theme ────────────────────────────────────────────── */
+
+[data-theme="dark"] .report-export-bar {
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .report-group-label {
+  color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .report-group-total {
+  color: var(--color-gray-200);
+}
+
+/* ─── Reduced motion ────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .report-group-header:active {
+    transform: none !important;
+  }
+}

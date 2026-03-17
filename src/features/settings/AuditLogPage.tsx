@@ -6,14 +6,13 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ROUTES } from '@/config/routes.config'
+import { FALLBACK_BUSINESS_ID } from '@/config/app.config'
+import { useAuth } from '@/context/AuthContext'
 import { useAuditLog } from './useAuditLog'
 import { AuditLogEntry } from './components/AuditLogEntry'
-import { AUDIT_ACTION_LABELS, AUDIT_ENTITY_LABELS } from './settings.constants'
+import { AUDIT_ACTION_LABELS, AUDIT_ENTITY_LABELS } from './audit.constants'
 import type { AuditAction } from './settings.types'
-import './settings.css'
-
-// TODO: get from auth context
-const BUSINESS_ID = 'business_1'
+import './audit-log.css'
 
 const ACTION_FILTERS: Array<{ label: string; value: AuditAction | undefined }> = [
   { label: 'All', value: undefined },
@@ -55,7 +54,9 @@ interface DateGroup {
 }
 
 export default function AuditLogPage() {
-  const { data, status, filters, setFilter, loadMore, refresh } = useAuditLog(BUSINESS_ID)
+  const { user } = useAuth()
+  const businessId = user?.businessId ?? FALLBACK_BUSINESS_ID
+  const { data, status, filters, setFilter, loadMore, refresh } = useAuditLog(businessId)
 
   const dateGroups = useMemo<DateGroup[]>(() => {
     if (!data) return []

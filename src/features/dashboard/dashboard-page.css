@@ -1,0 +1,247 @@
+/* ============================================================
+   Dashboard Page — Base layout, tokens, animations, skeleton
+   Contains: page wrapper, tokens, entrance animations,
+   background pattern, sections, section headers, skeleton.
+   ============================================================ */
+
+/* ─── Dashboard-specific tokens ───────────────────────────── */
+.dashboard-page {
+  --dash-teal-start: var(--gradient-teal-start);
+  --dash-teal-end: var(--gradient-teal-end);
+  --dash-lime: var(--color-lime-accent);
+  --dash-lime-hover: var(--color-secondary-400);
+  --dash-text-primary: var(--color-gray-900);
+  --dash-text-secondary: var(--color-gray-600);
+  --dash-text-muted: var(--color-gray-500);
+  --dash-text-action: var(--color-gray-700);
+  --dash-error: var(--color-error-500);
+  --dash-teal-10: rgba(27, 99, 105, 0.1);
+  --dash-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.03);
+  --dash-avatar-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --dash-side-padding: 16px;
+  --dash-inner-padding: 24px;
+  --dash-section-gap: 24px;
+  /* Entrance animation */
+  --dash-stagger-base: 60ms;
+}
+
+/* ─── Staggered entrance animation ───────────────────────── */
+@keyframes dashFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hero amount dramatic entrance — scale from small + fade */
+@keyframes dashAmountReveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+    filter: blur(4px);
+  }
+  60% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Outstanding card amounts also animate */
+@keyframes dashCardAmountIn {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.dashboard-sales-hero,
+.dashboard-hero,
+.dashboard-action-grid,
+.dashboard-alerts,
+.dashboard-starred,
+.dashboard-transactions {
+  animation: dashFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dashboard-sales-hero   { animation-delay: calc(var(--dash-stagger-base) * 0); }
+.dashboard-hero         { animation-delay: calc(var(--dash-stagger-base) * 1); }
+.dashboard-action-grid  { animation-delay: calc(var(--dash-stagger-base) * 2); }
+.dashboard-alerts       { animation-delay: calc(var(--dash-stagger-base) * 3); }
+.dashboard-starred      { animation-delay: calc(var(--dash-stagger-base) * 4); }
+.dashboard-transactions { animation-delay: calc(var(--dash-stagger-base) * 5); }
+
+/* ─── Page wrapper with warm gradient ─────────────────────── */
+.dashboard-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background: linear-gradient(180deg, var(--color-cream-start) 0%, var(--color-cream-mid) 30%, var(--color-cream-end) 60%, var(--color-gray-0) 100%);
+  position: relative;
+}
+
+/* Background pattern overlay */
+.dashboard-bg-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 340px;
+  background: url('/assets/bg-pattern.png') no-repeat center top;
+  background-size: cover;
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── Top section (gradient area) ──────────────────────────── */
+
+.dashboard-top-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 8px var(--dash-side-padding) 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── White drawer section (lower half) ──────────────────────── */
+
+.dashboard-white-section {
+  background: var(--color-gray-0);
+  padding: var(--dash-section-gap) var(--dash-side-padding) 100px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--dash-section-gap);
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Section headers ──────────────────────────────────────── */
+
+.dashboard-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard-section-title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--dash-text-primary);
+  letter-spacing: -0.025em;
+}
+
+.dashboard-section-link {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--dash-teal-start);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-primary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ─── Skeleton shimmer ──────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-gray-100) 25%,
+    var(--color-gray-50) 50%,
+    var(--color-gray-100) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ─── Tablet and above ──────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .dashboard-page {
+    --dash-side-padding: 24px;
+  }
+}
+
+/* ─── Desktop ────────────────────────────────────────────────── */
+
+@media (min-width: 1024px) {
+  .dashboard-page {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+}
+
+/* ─── Dark theme overrides ──────────────────────────────────── */
+
+[data-theme="dark"] .dashboard-page {
+  --dash-teal-start: #3FAED6;
+  --dash-teal-end: #2199B5;
+  --dash-lime: var(--color-lime-accent);
+  --dash-lime-hover: #c8d43a;
+  --dash-text-primary: var(--color-gray-900);
+  --dash-text-secondary: var(--color-gray-500);
+  --dash-text-muted: var(--color-gray-400);
+  --dash-text-action: var(--color-gray-700);
+  --dash-error: var(--color-error-500);
+  --dash-teal-10: rgba(63, 174, 214, 0.12);
+  --dash-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(43, 51, 66, 0.3);
+  --dash-avatar-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(180deg, #0B0F15 0%, #0E1420 30%, #111827 60%, #141922 100%);
+}
+
+[data-theme="dark"] .dashboard-bg-pattern {
+  opacity: 0.04;
+}
+
+[data-theme="dark"] .dashboard-white-section {
+  background: var(--color-gray-50);
+}
+
+[data-theme="dark"] .dashboard-section-link {
+  color: var(--color-primary-500);
+}
+
+/* ─── Reduced motion ────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background: var(--color-gray-100);
+  }
+
+  .dashboard-sales-hero,
+  .dashboard-hero,
+  .dashboard-action-grid,
+  .dashboard-alerts,
+  .dashboard-starred,
+  .dashboard-transactions,
+  .dashboard-sales-amount,
+  .dashboard-hero-amount {
+    animation: none;
+  }
+}

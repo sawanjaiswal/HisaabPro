@@ -1,9 +1,9 @@
 import React from 'react'
 import { UserCog, Ban, Trash2 } from 'lucide-react'
 import type { StaffMember } from '../settings.types'
-import { STAFF_STATUS_LABELS } from '../settings.constants'
+import { STAFF_STATUS_LABELS } from '../staff.constants'
 import { formatTimeAgo } from '../settings.utils'
-import '../settings.css'
+import '../staff-list.css'
 
 interface StaffCardProps {
   staff: StaffMember

@@ -12,17 +12,20 @@ export const ProductListSkeleton: React.FC = () => {
         <div
           key={`skeleton-product-${i}`}
           className="txn-row"
-          style={{ minHeight: '44px', pointerEvents: 'none' }}
+          style={{ pointerEvents: 'none' }}
           aria-hidden="true"
         >
           <Skeleton width="44px" height="44px" borderRadius="var(--radius-md)" />
 
-          <div className="txn-info" style={{ gap: 'var(--space-2)' }}>
-            <Skeleton width="150px" height="1rem" />
+          <div className="txn-info">
+            <div className="product-card-header">
+              <Skeleton width="150px" height="1rem" />
+              <Skeleton width="60px" height="0.875rem" borderRadius="var(--radius-full)" />
+            </div>
             <Skeleton width="90px" height="0.75rem" />
           </div>
 
-          <div style={{ textAlign: 'right', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+          <div className="product-card-right">
             <Skeleton width="72px" height="1rem" />
             <Skeleton width="48px" height="0.75rem" />
           </div>

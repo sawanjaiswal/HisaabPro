@@ -97,8 +97,50 @@ export const exportReportSchema = z.object({
   }).optional(),
 })
 
+// === Tax / GST Reports — Phase 2 ===
+
+const GST_RETURN_TYPES = ['GSTR1', 'GSTR3B', 'GSTR9'] as const
+
+export const taxSummarySchema = z.object({
+  from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+})
+
+export const hsnSummarySchema = z.object({
+  from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+})
+
+export const taxLedgerSchema = z.object({
+  from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  cursor: z.string().optional(),
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+})
+
+export const gstReturnSchema = z.object({
+  returnType: z.enum(GST_RETURN_TYPES),
+  period: z.string().regex(/^\d{4}-\d{2}$/, 'Period must be YYYY-MM'),
+})
+
+export const gstReturnExportSchema = z.object({
+  returnType: z.enum(GST_RETURN_TYPES),
+  period: z.string().regex(/^\d{4}-\d{2}$/),
+  format: z.enum(['JSON', 'CSV']).default('JSON'),
+})
+
+// === TDS/TCS Summary Report ===
+
+export const tdsTcsSummarySchema = z.object({
+  from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'from must be YYYY-MM-DD'),
+  to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'to must be YYYY-MM-DD'),
+  partyId: z.string().optional(),
+  type: z.enum(['tds', 'tcs', 'all']).default('all'),
+})
+
 // === Inferred types ===
 
+export type TdsTcsSummaryQuery = z.infer<typeof tdsTcsSummarySchema>
 export type DashboardStatsQuery = z.infer<typeof dashboardStatsSchema>
 export type InvoiceReportQuery = z.infer<typeof invoiceReportSchema>
 export type PartyStatementQuery = z.infer<typeof partyStatementSchema>
@@ -106,3 +148,8 @@ export type StockSummaryQuery = z.infer<typeof stockSummarySchema>
 export type DayBookQuery = z.infer<typeof dayBookSchema>
 export type PaymentHistoryQuery = z.infer<typeof paymentHistorySchema>
 export type ExportReportQuery = z.infer<typeof exportReportSchema>
+export type TaxSummaryQuery = z.infer<typeof taxSummarySchema>
+export type HsnSummaryQuery = z.infer<typeof hsnSummarySchema>
+export type TaxLedgerQuery = z.infer<typeof taxLedgerSchema>
+export type GstReturnQuery = z.infer<typeof gstReturnSchema>
+export type GstReturnExportQuery = z.infer<typeof gstReturnExportSchema>

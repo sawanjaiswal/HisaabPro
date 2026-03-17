@@ -12,9 +12,10 @@ import { AppShell } from '@/components/layout/AppShell'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { ROUTES } from '@/config/routes.config'
+import { CALCULATOR_TOGGLE_EVENT } from '@/config/events.config'
 import { useHomeDashboard } from './useDashboard'
 import { isHomeDashboardEmpty, formatCompactAmount } from './dashboard.utils'
-import { QUICK_ACTIONS } from './dashboard.constants'
+import { QUICK_ACTIONS, buildReminderMessage } from './dashboard.constants'
 import { DashboardHeader } from './components/DashboardHeader'
 import { OutstandingHero } from './components/OutstandingHero'
 import { DashboardQuickActions } from './components/DashboardQuickActions'
@@ -23,7 +24,13 @@ import { TopDebtors } from './components/TopDebtors'
 import { RecentActivityFeed } from './components/RecentActivityFeed'
 import { DashboardSkeleton } from './components/DashboardSkeleton'
 import type { RecentActivityItem, TopDebtor } from './dashboard.types'
-import './dashboard.css'
+import './dashboard-page.css'
+import './dashboard-header.css'
+import './dashboard-hero.css'
+import './dashboard-actions.css'
+import './dashboard-alerts.css'
+import './dashboard-starred.css'
+import './dashboard-transactions.css'
 
 export default function DashboardPage() {
   const navigate = useNavigate()
@@ -54,7 +61,7 @@ export default function DashboardPage() {
   const handleViewAllOutstanding = () => navigate(ROUTES.OUTSTANDING)
 
   const handleSendReminder = (debtor: TopDebtor) => {
-    const message = `Hi ${debtor.name}, this is a reminder about your pending payment. Please settle at your earliest convenience.`
+    const message = buildReminderMessage(debtor.name)
     const phone = debtor.phone.replace(/\D/g, '')
     const fullPhone = phone.length === 10 ? `91${phone}` : phone
     window.open(`https://wa.me/${fullPhone}?text=${encodeURIComponent(message)}`, '_blank')
@@ -62,10 +69,14 @@ export default function DashboardPage() {
 
   const handleLowStockClick = () => navigate(ROUTES.REPORT_STOCK_SUMMARY)
   const handleOverdueClick = () => navigate(ROUTES.OUTSTANDING)
+  const handleCalculatorClick = () => window.dispatchEvent(new Event(CALCULATOR_TOGGLE_EVENT))
 
   return (
     <AppShell>
-      <DashboardHeader profilePhoto="/assets/profile-placeholder.png" />
+      <DashboardHeader
+        profilePhoto="/assets/profile-placeholder.png"
+        onCalculatorClick={handleCalculatorClick}
+      />
 
       <div className="dashboard-page">
         {/* Background pattern overlay */}
@@ -114,6 +125,11 @@ export default function DashboardPage() {
                 <span className="dashboard-sales-amount">
                   {formatCompactAmount(data.today.salesAmount)}
                 </span>
+                {data.today.salesCount > 0 && (
+                  <span className="dashboard-sales-count">
+                    {data.today.salesCount} {data.today.salesCount === 1 ? 'invoice' : 'invoices'}
+                  </span>
+                )}
               </div>
 
               <OutstandingHero

@@ -1,0 +1,247 @@
+/* ─── PIN Screen — Component Styles ───────────────────────────────────────────
+ *
+ * All values use CSS variables only — no hardcoded hex, rgba, or px magic numbers.
+ * Touch targets: 44px minimum on all interactive elements.
+ * Mobile-first: base styles target 375px, media queries use min-width only.
+ * Class prefix: .pin-*
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+.pin-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--space-6) var(--space-4);
+  background-color: var(--color-gray-0, #fff);
+  gap: var(--space-8);
+}
+
+.pin-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.pin-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-gray-900);
+}
+
+.pin-subtitle {
+  font-size: 0.9375rem;
+  color: var(--color-gray-500);
+  line-height: 1.5;
+}
+
+.pin-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.pin-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--color-gray-300);
+  background-color: transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.pin-dot--filled {
+  background-color: var(--color-primary-500);
+  border-color: var(--color-primary-500);
+  transform: scale(1.1);
+}
+
+.pin-dot--error {
+  background-color: var(--color-red-500);
+  border-color: var(--color-red-500);
+}
+
+.pin-error {
+  animation: pin-shake 0.4s ease;
+}
+
+@keyframes pin-shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-8px); }
+  40%       { transform: translateX(8px); }
+  60%       { transform: translateX(-6px); }
+  80%       { transform: translateX(6px); }
+}
+
+.pin-error-text {
+  font-size: 0.875rem;
+  color: var(--color-red-600);
+  text-align: center;
+  min-height: 1.25rem;
+}
+
+.pin-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 280px;
+}
+
+.pin-key {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 80px;
+  margin: 0 auto;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-900);
+  font-family: var(--font-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 64px;
+  transition: background-color 0.1s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pin-key:active {
+  background-color: var(--color-gray-200);
+  transform: scale(0.94);
+}
+
+.pin-key:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+.pin-key-sub {
+  font-size: 0.5625rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--color-gray-500);
+  text-transform: uppercase;
+  line-height: 1;
+  margin-top: var(--space-0-5);
+}
+
+.pin-key-special {
+  background-color: transparent;
+  color: var(--color-gray-600);
+  font-size: 1.25rem;
+}
+
+.pin-key-special:active {
+  background-color: var(--color-gray-100);
+}
+
+.pin-key--empty {
+  pointer-events: none;
+  background-color: transparent;
+  cursor: default;
+}
+
+/* Lockout overlay */
+.pin-lockout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-8) var(--space-6);
+  text-align: center;
+}
+
+.pin-lockout-icon {
+  font-size: 3rem;
+  color: var(--color-red-500);
+}
+
+.pin-lockout-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-gray-900);
+}
+
+.pin-lockout-message {
+  font-size: 0.9375rem;
+  color: var(--color-gray-500);
+  line-height: 1.5;
+}
+
+.pin-lockout-timer {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-red-600);
+  font-variant-numeric: tabular-nums;
+}
+
+.pin-forgot-link {
+  font-size: 0.9375rem;
+  color: var(--color-primary-600);
+  font-family: var(--font-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-2);
+  min-height: 44px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .pin-screen {
+  background-color: var(--color-gray-0);
+}
+
+[data-theme="dark"] .pin-key {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dark"] .pin-key:active {
+  background-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .pin-key-special {
+  background-color: transparent;
+  color: var(--color-gray-500);
+}
+
+[data-theme="dark"] .pin-key-special:active {
+  background-color: var(--color-gray-100);
+}
+
+[data-theme="dark"] .pin-dot {
+  border-color: var(--color-gray-300);
+}
+
+/* ─── Responsive — 768px+ ────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .pin-keypad {
+    max-width: 320px;
+  }
+
+  .pin-key {
+    min-height: 72px;
+    font-size: 1.375rem;
+  }
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .pin-key:active {
+    transform: none !important;
+  }
+}

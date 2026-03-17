@@ -1,0 +1,144 @@
+/* Calculator Display & Settings Panel
+ *
+ * Settings dropdown panel (sound/vibration toggles),
+ * main display area (expression, result, MU indicator).
+ *
+ * Design: HisaabApp design system tokens, 8pt grid spacing.
+ */
+
+/* ─── Entrance animation for settings ───────────────────────────────────── */
+
+@keyframes calc-settings-slide {
+  from { opacity: 0; max-height: 0; }
+  to   { opacity: 1; max-height: 120px; }
+}
+
+/* ─── Settings panel ────────────────────────────────────────────────────── */
+
+.calculator-settings-panel {
+  display: flex;
+  flex-direction: column;
+  margin: 0 var(--space-4);
+  background: var(--color-gray-0);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-100);
+  overflow: hidden;
+  animation: calc-settings-slide 0.15s ease;
+}
+
+.calculator-settings-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  background: none;
+  width: 100%;
+  font-family: var(--font-primary);
+  cursor: pointer;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+  color: var(--color-gray-600);
+}
+
+.calculator-settings-row + .calculator-settings-row {
+  border-top: 1px solid var(--color-gray-100);
+}
+
+.calculator-settings-label {
+  flex: 1;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-gray-700);
+}
+
+.calculator-settings-toggle {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  background: var(--color-gray-300);
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.calculator-settings-toggle--on {
+  background: var(--color-primary-500);
+}
+
+.calculator-settings-toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-gray-0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+}
+
+.calculator-settings-toggle--on .calculator-settings-toggle-knob {
+  transform: translateX(18px);
+}
+
+/* ─── Display — grows to absorb extra space ─────────────────────────────── */
+
+.calculator-display {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-5);
+  margin: 0 var(--space-3);
+  background: linear-gradient(160deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
+  border-radius: var(--radius-xl);
+  min-height: 88px;
+  max-height: 160px;
+  flex: 1;
+}
+
+.calculator-expression {
+  font-size: 0.875rem;
+  color: var(--color-primary-300);
+  font-family: var(--font-primary);
+  word-break: break-all;
+  text-align: right;
+  opacity: 0.7;
+}
+
+.calculator-result {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-gray-0);
+  font-family: var(--font-primary);
+  font-variant-numeric: tabular-nums;
+  word-break: break-all;
+  text-align: right;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.calculator-mu-indicator {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-secondary-400);
+  letter-spacing: 0.04em;
+}
+
+/* ─── Dark theme ────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .calculator-settings-panel {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}
+
+/* ─── Reduced motion ────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .calculator-settings-panel {
+    animation: none !important;
+  }
+}

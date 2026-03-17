@@ -1,27 +1,20 @@
 /** Dashboard — Custom header (Figma design)
  *
  * Profile photo (left) with "+" badge + truly centered app name +
- * calculator & bell icons (right).
+ * theme toggle, calculator & bell icons (right).
  */
 
 import React, { useState, useEffect } from 'react'
-import { Bell, Calculator } from 'lucide-react'
+import { Bell, Calculator, Sun, Moon } from 'lucide-react'
+import { useTheme } from '@/context/ThemeContext'
+import { APP_NAME } from '@/config/app.config'
+import { getInitials } from '../dashboard.utils'
 
 interface DashboardHeaderProps {
   userName?: string | null
   profilePhoto?: string | null
   onNotificationsClick?: () => void
   onCalculatorClick?: () => void
-}
-
-function getInitials(name?: string | null): string {
-  if (!name) return 'U'
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() ?? '')
-    .join('')
 }
 
 export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
@@ -31,6 +24,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   onCalculatorClick,
 }) => {
   const [isScrolled, setIsScrolled] = useState(false)
+  const { theme, toggleTheme } = useTheme()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -69,10 +63,21 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
       </div>
 
       {/* Center: truly centered title */}
-      <h1 className="dashboard-header-title">HisaabPro</h1>
+      <h1 className="dashboard-header-title">{APP_NAME}</h1>
 
-      {/* Right: calculator + bell */}
+      {/* Right: theme + calculator + bell */}
       <div className="dashboard-header-side dashboard-header-side--right">
+        <button
+          className="dashboard-header-icon-btn"
+          onClick={toggleTheme}
+          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          {theme === 'dark' ? (
+            <Sun size={18} aria-hidden="true" />
+          ) : (
+            <Moon size={18} aria-hidden="true" />
+          )}
+        </button>
         <button
           className="dashboard-header-icon-btn"
           onClick={onCalculatorClick}

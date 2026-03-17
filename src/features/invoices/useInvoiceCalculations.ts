@@ -6,12 +6,9 @@
  */
 
 import { useMemo } from 'react'
-import {
-  calculateInvoiceTotals,
-  calculateLineTotal,
-  calculateLineProfit,
-} from './invoice.utils'
-import type { InvoiceTotals, LineItemCalc, ChargeCalc } from './invoice.utils'
+import { calculateLineTotal } from './invoice-calc.utils'
+import type { InvoiceTotals, LineItemCalc, ChargeCalc } from './invoice-calc.utils'
+import { calculateInvoiceTotals, calculateLineProfit } from './invoice-totals.utils'
 import type { RoundOffSetting } from './invoice.types'
 
 // ─── Per-line calculation result ──────────────────────────────────────────────

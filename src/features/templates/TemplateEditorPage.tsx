@@ -12,7 +12,9 @@ import { useTemplateForm } from './useTemplateForm'
 import { TemplatePreviewPanel } from './components/TemplatePreviewPanel'
 import { TemplateControlPanel } from './components/TemplateControlPanel'
 import type { TemplateConfig, PrintSettings } from './template.types'
-import './template-customize.css'
+import './template-preview.css'
+import './template-controls.css'
+import './template-actions.css'
 
 export default function TemplateEditorPage() {
   const {

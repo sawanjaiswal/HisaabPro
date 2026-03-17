@@ -2,11 +2,8 @@
 
 import React from 'react'
 import type { DocumentDetail, DocumentType, PaymentStatus } from '../invoice.types'
-import {
-  formatInvoiceAmount,
-  formatInvoiceDate,
-  getPaymentStatus,
-} from '../invoice.utils'
+import { formatInvoiceAmount, formatInvoiceDate } from '../invoice-format.utils'
+import { getPaymentStatus } from '../invoice-document.utils'
 import {
   DOCUMENT_TYPE_LABELS,
   DOCUMENT_STATUS_LABELS,
@@ -14,6 +11,7 @@ import {
   PAYMENT_STATUS_BADGE,
   DOCUMENT_TYPE_CODES,
 } from '../invoice.constants'
+import '../invoice-detail-header.css'
 
 interface InvoiceDetailHeaderProps {
   document: DocumentDetail

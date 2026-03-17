@@ -1,0 +1,175 @@
+/* ============================================================
+   Payment Hero — Summary card pair (Money In / Money Out)
+   Mobile-first: base = 320px → 768px tablet → 1024px desktop
+
+   Entrance animation, page container, hero net summary,
+   and tinted gradient cards with scale touch feedback.
+   ============================================================ */
+
+/* ─── Entrance animation ────────────────────────────────────── */
+
+@keyframes paymentFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Page container ────────────────────────────────────────── */
+
+.payment-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/* ─── Hero card pair (Money In / Money Out) ─────────────────── */
+
+.payment-hero {
+  margin-bottom: var(--space-4);
+  animation: paymentFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.payment-hero-net {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--color-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--space-3);
+}
+
+.payment-hero-net strong {
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.payment-hero-net--positive {
+  color: var(--color-success-600);
+}
+
+.payment-hero-net--negative {
+  color: var(--color-error-600);
+}
+
+.payment-hero-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.payment-hero-card {
+  border: none;
+  border-radius: 20px;
+  padding: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+  font-family: var(--font-primary);
+  min-height: 90px;
+  text-align: left;
+}
+
+.payment-hero-card:active {
+  transform: scale(0.97);
+}
+
+/* Money In — teal gradient */
+.payment-hero-card--in {
+  background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
+  color: var(--color-gray-0);
+  animation: paymentFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
+}
+
+/* Money Out — lime */
+.payment-hero-card--out {
+  background: var(--color-lime-accent);
+  color: var(--color-dark-text);
+  animation: paymentFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 140ms both;
+}
+
+.payment-hero-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.payment-hero-amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.payment-hero-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  opacity: 0.85;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.payment-hero-chevron {
+  opacity: 0.6;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.payment-hero-chevron--dark {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+/* ─── Tablet+ adjustments ────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  /* Hero cards grow on larger screens */
+  .payment-hero-card {
+    padding: var(--space-8);
+    min-height: 110px;
+  }
+
+  .payment-hero-amount {
+    font-size: 1.5rem;
+  }
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────────── */
+
+/* Hero card gradients — teal gradient needs dark-adapted stops */
+[data-theme="dark"] .payment-hero-card--in {
+  background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
+}
+
+/* Lime card text — dark text on lime needs to stay dark */
+[data-theme="dark"] .payment-hero-card--out {
+  color: var(--color-dark-text);
+}
+
+[data-theme="dark"] .payment-hero-net {
+  color: var(--color-gray-400);
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .payment-hero,
+  .payment-hero-card--in,
+  .payment-hero-card--out {
+    animation: none !important;
+  }
+
+  .payment-hero-card:active {
+    transform: none !important;
+  }
+}

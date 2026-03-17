@@ -6,6 +6,7 @@
  * Currency: always accepts paise (integer), displays via Intl.NumberFormat.
  */
 
+import { toLocalISODate } from '@/lib/format'
 import type { DateRangePreset } from './report.types'
 
 // ─── Formatter instances ──────────────────────────────────────────────────────
@@ -69,9 +70,9 @@ export function formatDayLabel(iso: string): string {
 
 // ─── Date range computation ───────────────────────────────────────────────────
 
-/** Serialize a Date to an ISO date string: "YYYY-MM-DD" */
+/** Serialize a Date to a local ISO date string: "YYYY-MM-DD" */
 function toISO(d: Date): string {
-  return d.toISOString().slice(0, 10)
+  return toLocalISODate(d)
 }
 
 /**

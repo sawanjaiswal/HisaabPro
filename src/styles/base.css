@@ -1,0 +1,70 @@
+/* === BASE RESETS + BODY + APP SHELL + PAGE TRANSITIONS === */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html {
+  font-size: 14px;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (min-width: 1024px) {
+  html { font-size: 16px; }
+}
+
+body {
+  font-family: var(--font-primary);
+  color: var(--color-gray-800);
+  /* Warm cream -> white gradient — HisaabPro signature background */
+  background: linear-gradient(180deg, #f8f7f4 0%, #faf9f6 40%, #fdfdfc 100%);
+  background-attachment: fixed;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* === APP SHELL === */
+.app-shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-shell-content {
+  flex: 1;
+  padding-bottom: var(--bottom-nav-height);
+}
+
+/* === PAGE TRANSITIONS — smooth mount animation === */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Standalone pages (login, onboarding, 404) without AppShell */
+.page-enter {
+  animation: page-enter var(--duration-slow) var(--ease-default) both;
+}
+
+/* Suspense loading fade — prevents flash of spinner */
+.suspense-fallback {
+  animation: page-enter 400ms var(--ease-default) both;
+  animation-delay: 150ms;
+  opacity: 0;
+}
+
+/* === PAGE CONTAINER === */
+.page-container {
+  padding: var(--space-4) var(--side-padding);
+  max-width: 1200px;
+  margin: 0 auto;
+}

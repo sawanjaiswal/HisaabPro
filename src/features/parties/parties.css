@@ -1,14 +1,159 @@
-/* Party Management — Feature styles */
+/* ============================================================
+   Party Management — Feature styles
+   Mobile-first: base = 320px → 768px tablet → 1024px desktop
 
-/* Filter bar spacing */
+   Premium polish: staggered entrance, touch feedback,
+   tabular numbers, avatar colors, badge tints.
+   ============================================================ */
+
+/* ─── Entrance animation ────────────────────────────────────── */
+
+@keyframes partyFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Filter bar ────────────────────────────────────────────── */
+
 .party-filter-bar {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
   margin-bottom: var(--space-4);
+  animation: partyFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 60ms both;
 }
 
-/* Party list items */
+/* ─── Party card layout helpers ─────────────────────────────── */
+
+.party-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.party-card-right {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ─── List items ────────────────────────────────────────────── */
+
 .party-list-item:last-child .divider {
   display: none;
+}
+
+/* Premium touch feedback on rows */
+.party-list-item .txn-row {
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.party-list-item .txn-row:active {
+  transform: scale(0.985);
+}
+
+/* Breathing room between rows */
+.party-list-item + .party-list-item {
+  margin-top: 2px;
+}
+
+/* Bolder amounts with tabular nums */
+.party-list-item .txn-amount {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-gray-900);
+}
+
+/* Dimmer meta text */
+.party-list-item .txn-date {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  margin-top: 2px;
+}
+
+/* Last transaction time — subtle */
+.party-list-item .txn-category {
+  font-size: 0.6875rem;
+  color: var(--color-gray-400);
+  margin-top: 2px;
+}
+
+/* ─── Avatar styles ─────────────────────────────────────────── */
+
+.party-list-item .avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-gray-0);
+  letter-spacing: 0.02em;
+}
+
+/* ─── Bulk selection ────────────────────────────────────────── */
+
+.party-list-item.bulk-selected {
+  background: var(--color-primary-50);
+  border-radius: var(--radius-md);
+}
+
+.bulk-check {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition:
+    background var(--duration-fast) ease,
+    border-color var(--duration-fast) ease;
+}
+
+.bulk-check--active {
+  background: var(--color-primary-500);
+  border-color: var(--color-primary-500);
+  color: var(--color-gray-0);
+}
+
+.txn-row--selected {
+  background: var(--color-primary-50);
+}
+
+/* ─── Reduced motion ────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .party-filter-bar {
+    animation: none !important;
+  }
+
+  .party-list-item .txn-row:active {
+    transform: none !important;
+  }
+}
+
+/* ─── Dark Theme ────────────────────────────────────────────── */
+
+[data-theme="dark"] .party-list-item .txn-date {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dark"] .party-list-item .txn-category {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dark"] .party-list-item.bulk-selected {
+  background: rgba(27, 99, 105, 0.12);
 }

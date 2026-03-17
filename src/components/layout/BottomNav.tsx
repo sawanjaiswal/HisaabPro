@@ -26,6 +26,7 @@ export function BottomNav() {
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
+            className="bottom-nav-svg-path"
             d="M0,0 H148 C154,0 157,4 161,12 C167,24 175,34 187.5,34 C200,34 208,24 214,12 C218,4 221,0 227,0 H375 V72 H0 Z"
             fill="white"
           />

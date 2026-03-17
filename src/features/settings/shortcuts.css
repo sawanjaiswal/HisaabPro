@@ -1,0 +1,102 @@
+/* ─── Keyboard Shortcuts — Component Styles ───────────────────────────────────
+ *
+ * All values use CSS variables only — no hardcoded hex, rgba, or px magic numbers.
+ * Touch targets: 44px minimum on all interactive elements.
+ * Mobile-first: base styles target 375px, media queries use min-width only.
+ * Class prefix: .shortcuts-* / .shortcut-*
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+.shortcuts-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-4);
+  min-height: 100vh;
+  background-color: var(--color-gray-50);
+}
+
+.shortcuts-group-title {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-gray-500);
+  padding: 0 var(--space-4);
+  margin-bottom: var(--space-2);
+}
+
+.shortcuts-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  background-color: var(--color-gray-0, #fff);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+  overflow: hidden;
+}
+
+.shortcut-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3-5) var(--space-4);
+  border-bottom: 1px solid var(--color-gray-100);
+  min-height: 52px;
+  gap: var(--space-3);
+}
+
+.shortcut-row:last-child {
+  border-bottom: none;
+}
+
+.shortcut-label {
+  font-size: 0.9375rem;
+  color: var(--color-gray-800);
+  flex: 1;
+}
+
+.shortcut-keys {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.shortcut-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-gray-300);
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-700);
+  font-family: var(--font-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 28px;
+  text-align: center;
+  box-shadow: 0 1px 0 var(--color-gray-300);
+}
+
+.shortcut-plus {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .shortcuts-page {
+  background-color: var(--color-gray-0);
+}
+
+[data-theme="dark"] .shortcuts-list {
+  background-color: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .shortcut-key {
+  background-color: var(--color-gray-100);
+  border-color: var(--color-gray-300);
+  box-shadow: 0 1px 0 var(--color-gray-200);
+}

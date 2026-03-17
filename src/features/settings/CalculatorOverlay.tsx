@@ -1,10 +1,16 @@
+import { useEffect } from 'react'
 import { Calculator } from 'lucide-react'
 import type { CalculatorPosition } from './settings.types'
 import { useCalculator } from './useCalculator'
 import { CalculatorSheet } from './components/CalculatorSheet'
-import './settings.css'
+import './calculator.css'
+
+import { CALCULATOR_TOGGLE_EVENT } from '@/config/events.config'
 
 const VALID_OPERATORS = new Set(['+', '-', '*', '/'])
+
+// Re-export for backward compatibility
+export { CALCULATOR_TOGGLE_EVENT }
 
 interface CalculatorOverlayProps {
   /** Derived from app settings — controls which side of the screen the FAB appears */
@@ -16,6 +22,7 @@ export function CalculatorOverlay({
 }: CalculatorOverlayProps) {
   const {
     state,
+    settings,
     isOpen,
     toggle,
     pressKey,
@@ -26,15 +33,25 @@ export function CalculatorOverlay({
     pressPercent,
     setGstRate,
     toggleGstMode,
+    pressGT,
+    pressMU,
+    applyPercentPreset,
+    applyGstPreset,
+    cashIn,
+    cashOut,
     pasteToField,
     copyToClipboard,
+    toggleSound,
+    toggleVibration,
   } = useCalculator()
 
-  /**
-   * `CalculatorSheet.onPressOperator` is typed `(op: string) => void` to keep
-   * the component generic, but `useCalculator.pressOperator` accepts only the
-   * four arithmetic operators.  We validate here at the boundary.
-   */
+  // Listen for external toggle events (from dashboard header, etc.)
+  useEffect(() => {
+    const handler = () => toggle()
+    window.addEventListener(CALCULATOR_TOGGLE_EVENT, handler)
+    return () => window.removeEventListener(CALCULATOR_TOGGLE_EVENT, handler)
+  }, [toggle])
+
   const handlePressOperator = (op: string): void => {
     if (VALID_OPERATORS.has(op)) {
       pressOperatorRaw(op as '+' | '-' | '*' | '/')
@@ -58,18 +75,12 @@ export function CalculatorOverlay({
         <Calculator size={24} aria-hidden="true" />
       </button>
 
-      {/* Overlay + bottom sheet — only when open */}
+      {/* Full-height calculator — only when open */}
       {isOpen && (
-        <div
-          className="calculator-overlay"
-          role="presentation"
-          onClick={(e) => {
-            // Close when clicking the backdrop (not the sheet itself)
-            if (e.target === e.currentTarget) toggle()
-          }}
-        >
+        <div className="calculator-overlay" role="presentation">
           <CalculatorSheet
             state={state}
+            settings={settings}
             onPressKey={pressKey}
             onPressOperator={handlePressOperator}
             onPressEquals={pressEquals}
@@ -78,8 +89,16 @@ export function CalculatorOverlay({
             onPressPercent={pressPercent}
             onSetGstRate={setGstRate}
             onToggleGstMode={toggleGstMode}
+            onPressGT={pressGT}
+            onPressMU={pressMU}
+            onApplyPercentPreset={applyPercentPreset}
+            onApplyGstPreset={applyGstPreset}
+            onCashIn={cashIn}
+            onCashOut={cashOut}
             onPaste={pasteToField}
             onCopy={copyToClipboard}
+            onToggleSound={toggleSound}
+            onToggleVibration={toggleVibration}
             onClose={toggle}
           />
         </div>

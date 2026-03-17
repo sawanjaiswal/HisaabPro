@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { FileText, Phone, User } from 'lucide-react'
+import { FileText } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -13,74 +13,15 @@ import { usePartyStatement } from './hooks/usePartyStatement'
 import { ReportLoadMore } from './components/ReportLoadMore'
 import { ReportExportBar } from './components/ReportExportBar'
 import { ReportSkeleton } from './components/ReportSkeleton'
-import { STATEMENT_TYPE_LABELS, STATEMENT_TYPE_COLORS } from './report.constants'
+import { StatementRow } from './components/StatementRow'
+import { StatementSummaryCards } from './components/StatementSummaryCards'
 import { exportReport } from './report.service'
-import { formatAmount, formatReportDate } from './report.utils'
 import type { ExportFormat } from './report.types'
 import type { StatementTransaction } from './report.types'
-import './reports.css'
-
-// ─── Transaction Row ───────────────────────────────────────────────────────────
-
-interface StatementRowProps {
-  txn: StatementTransaction
-  onNavigate: (referenceId: string, type: StatementTransaction['type']) => void
-}
-
-function StatementRow({ txn, onNavigate }: StatementRowProps) {
-  const typeColor = STATEMENT_TYPE_COLORS[txn.type]
-  const isReceivable = txn.runningBalance >= 0
-
-  return (
-    <div
-      className="report-statement-row"
-      role="listitem"
-      onClick={() => onNavigate(txn.referenceId, txn.type)}
-      style={{ cursor: 'pointer' }}
-      aria-label={`${STATEMENT_TYPE_LABELS[txn.type]}: ${txn.description}`}
-    >
-      <div
-        className="report-statement-type-dot"
-        style={{ background: typeColor }}
-        aria-hidden="true"
-      />
-      <div className="report-statement-meta">
-        <div className="report-statement-description">{txn.description}</div>
-        <div
-          className="report-statement-reference"
-          style={{ color: typeColor }}
-        >
-          {STATEMENT_TYPE_LABELS[txn.type]} · {txn.reference}
-        </div>
-        <div className="report-statement-date">{formatReportDate(txn.date)}</div>
-      </div>
-      <div className="report-statement-amounts">
-        {txn.debit > 0 ? (
-          <span className="report-statement-debit">{formatAmount(txn.debit)}</span>
-        ) : (
-          <span className="report-statement-debit" style={{ opacity: 0.3 }}>—</span>
-        )}
-        {txn.credit > 0 ? (
-          <span className="report-statement-credit">{formatAmount(txn.credit)}</span>
-        ) : (
-          <span className="report-statement-credit" style={{ opacity: 0.3 }}>—</span>
-        )}
-        <span
-          className={`report-statement-balance ${
-            isReceivable
-              ? 'report-statement-balance--receivable'
-              : 'report-statement-balance--payable'
-          }`}
-        >
-          {formatAmount(Math.abs(txn.runningBalance))}
-        </span>
-      </div>
-      <div className="report-divider" />
-    </div>
-  )
-}
-
-// ─── Page ──────────────────────────────────────────────────────────────────────
+import './report-shared.css'
+import './report-cards.css'
+import './report-shared-ui.css'
+import './report-party-statement.css'
 
 export default function PartyStatementPage() {
   const { partyId = '' } = useParams<{ partyId: string }>()
@@ -143,72 +84,12 @@ export default function PartyStatementPage() {
         {/* Success */}
         {status === 'success' && statement && party && (
           <>
-            {/* Party header card */}
-            <div className="report-summary-bar" style={{ marginBottom: 'var(--space-4)' }}>
-              <div className="report-summary-item" style={{ flex: 2 }}>
-                <span className="report-summary-label">
-                  <User size={12} aria-hidden="true" style={{ display: 'inline', marginRight: 4 }} />
-                  {party.type === 'customer' ? 'Customer' : 'Supplier'}
-                </span>
-                <span className="report-summary-value">{party.name}</span>
-                {party.phone && (
-                  <span className="report-summary-count">
-                    <Phone size={11} aria-hidden="true" style={{ display: 'inline', marginRight: 2 }} />
-                    {party.phone}
-                  </span>
-                )}
-              </div>
-
-              {/* Opening balance */}
-              <div className="report-summary-item">
-                <span className="report-summary-label">Opening</span>
-                <span
-                  className={`report-summary-value ${
-                    statement.openingBalance.type === 'receivable'
-                      ? 'report-summary-value--positive'
-                      : 'report-summary-value--negative'
-                  }`}
-                >
-                  {formatAmount(statement.openingBalance.amount)}
-                </span>
-                <span className="report-summary-count">
-                  {statement.openingBalance.type === 'receivable' ? 'Receivable' : 'Payable'}
-                </span>
-              </div>
-
-              {/* Closing balance */}
-              <div className="report-summary-item">
-                <span className="report-summary-label">Closing</span>
-                <span
-                  className={`report-summary-value ${
-                    statement.closingBalance.type === 'receivable'
-                      ? 'report-summary-value--positive'
-                      : 'report-summary-value--negative'
-                  }`}
-                >
-                  {formatAmount(statement.closingBalance.amount)}
-                </span>
-                <span className="report-summary-count">
-                  {statement.closingBalance.type === 'receivable' ? 'Receivable' : 'Payable'}
-                </span>
-              </div>
-            </div>
-
-            {/* Totals bar */}
-            <div className="report-summary-bar" style={{ marginBottom: 'var(--space-4)' }}>
-              <div className="report-summary-item">
-                <span className="report-summary-label">Total Debit</span>
-                <span className="report-summary-value report-summary-value--negative">
-                  {formatAmount(statement.totals.totalDebit)}
-                </span>
-              </div>
-              <div className="report-summary-item">
-                <span className="report-summary-label">Total Credit</span>
-                <span className="report-summary-value report-summary-value--positive">
-                  {formatAmount(statement.totals.totalCredit)}
-                </span>
-              </div>
-            </div>
+            <StatementSummaryCards
+              party={party}
+              openingBalance={statement.openingBalance}
+              closingBalance={statement.closingBalance}
+              totals={statement.totals}
+            />
 
             {/* Transaction list */}
             {statement.transactions.length === 0 ? (

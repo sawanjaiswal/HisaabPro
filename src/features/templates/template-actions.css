@@ -1,0 +1,76 @@
+/* ============================================================
+ * Template Actions — sticky save/reset bar at page bottom
+ * Part of template customization page styles.
+ * ============================================================ */
+
+/* Sticky save/reset bar at page bottom */
+.template-actions {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-0);
+  border-top: 1px solid var(--color-gray-100);
+  z-index: var(--z-sticky);
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+}
+
+/* Reset button — secondary ghost style */
+.template-actions-reset {
+  flex: 0 0 auto;
+  height: 48px;
+  padding: 0 var(--space-4);
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-gray-600);
+  font-family: var(--font-primary);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-default);
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.template-actions-reset:hover {
+  background: var(--color-gray-100);
+}
+
+.template-actions-reset:active {
+  background: var(--color-gray-200);
+}
+
+/* Save button — primary, fills remaining width */
+.template-actions-save {
+  flex: 1;
+  height: 48px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-600);
+  color: var(--color-gray-0);
+  font-family: var(--font-primary);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.template-actions-save:hover:not(:disabled) {
+  background: var(--color-primary-700);
+}
+
+.template-actions-save:active:not(:disabled) {
+  background: var(--color-primary-800);
+  transform: scale(0.98);
+}
+
+.template-actions-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

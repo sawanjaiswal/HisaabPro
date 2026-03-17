@@ -36,6 +36,8 @@ tsconfig.tsbuildinfo
 
 # Playwright
 .playwright-mcp/
+test-results/
+playwright-report/
 
 # Server (redundant with above but explicit)
 server/node_modules/

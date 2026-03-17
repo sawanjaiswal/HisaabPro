@@ -12,9 +12,9 @@ import {
 } from 'lucide-react'
 import type { LucideProps } from 'lucide-react'
 import type { AuditLogEntry as AuditLogEntryType, AuditAction } from '../settings.types'
-import { AUDIT_ACTION_LABELS, AUDIT_ACTION_COLORS, AUDIT_ENTITY_LABELS } from '../settings.constants'
+import { AUDIT_ACTION_LABELS, AUDIT_ACTION_COLORS, AUDIT_ENTITY_LABELS } from '../audit.constants'
 import { formatTimeAgo } from '../settings.utils'
-import '../settings.css'
+import '../audit-log.css'
 
 interface AuditLogEntryProps {
   entry: AuditLogEntryType

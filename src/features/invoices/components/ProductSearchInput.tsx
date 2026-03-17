@@ -1,12 +1,12 @@
 /** Product Search Input — inline search + tap-to-add for invoice line items */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { Search, X, Plus, Package } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import { useDebounce } from '@/hooks/useDebounce'
-import { getProducts } from '@/features/products/product.service'
-import type { ProductSummary } from '@/features/products/product.types'
-import { paiseToRupees } from '../invoice.utils'
-import { formatCurrency } from '@/lib/format'
+import { getProducts } from '@/lib/services/product.service'
+import type { ProductSummary } from '@/lib/types/product.types'
+import { paiseToRupees } from '../invoice-format.utils'
+import { ProductSearchDropdown } from './ProductSearchDropdown'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -173,88 +173,14 @@ export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
 
       {/* ── Dropdown ─────────────────────────────────────────────────────── */}
       {showDropdown && (
-        <ul
-          className="product-search-dropdown"
-          role="listbox"
-          aria-label="Product search results"
-        >
-          {isLoading && (
-            <li className="product-search-status" role="status" aria-live="polite">
-              <span className="product-search-spinner" aria-hidden="true" />
-              Searching...
-            </li>
-          )}
-
-          {!isLoading && fetchError && (
-            <li className="product-search-status product-search-error" role="alert">
-              Failed to load products. Try again.
-            </li>
-          )}
-
-          {!isLoading && !fetchError && debouncedQuery.trim().length > 0 && results.length === 0 && (
-            <li className="product-search-status product-search-empty">
-              No products found for "{debouncedQuery}"
-            </li>
-          )}
-
-          {!isLoading && !fetchError && debouncedQuery.trim().length === 0 && (
-            <li className="product-search-status product-search-hint">
-              <Package size={14} aria-hidden="true" />
-              Type to search products
-            </li>
-          )}
-
-          {!isLoading && results.map((product) => {
-            const isAdded = addedProductIds.includes(product.id)
-            const stockLabel =
-              product.currentStock <= 0
-                ? 'Out of stock'
-                : `${product.currentStock} ${product.unit.symbol}`
-
-            return (
-              <li
-                key={product.id}
-                className={`product-search-result${isAdded ? ' product-search-result--added' : ''}`}
-                role="option"
-                aria-selected={isAdded}
-                aria-label={`${product.name}, price ${formatCurrency(product.salePrice)}, stock: ${stockLabel}${isAdded ? ', already added' : ''}`}
-              >
-                <div className="product-search-result-info">
-                  <div className="product-search-result-name">{product.name}</div>
-                  <div className="product-search-result-meta">
-                    {product.sku && (
-                      <span className="product-search-result-sku">{product.sku}</span>
-                    )}
-                    <span className="product-search-result-stock">
-                      {stockLabel}
-                    </span>
-                  </div>
-                </div>
-                <div className="product-search-result-right">
-                  <span className="product-search-result-price">
-                    {formatCurrency(product.salePrice)}
-                  </span>
-                  <button
-                    type="button"
-                    className={`product-search-add-btn${isAdded ? ' product-search-add-btn--added' : ''}`}
-                    onClick={() => !isAdded && handleAdd(product)}
-                    disabled={isAdded}
-                    aria-label={isAdded ? `${product.name} already added` : `Add ${product.name}`}
-                  >
-                    {isAdded ? (
-                      'Added'
-                    ) : (
-                      <>
-                        <Plus size={14} aria-hidden="true" />
-                        Add
-                      </>
-                    )}
-                  </button>
-                </div>
-              </li>
-            )
-          })}
-        </ul>
+        <ProductSearchDropdown
+          results={results}
+          isLoading={isLoading}
+          fetchError={fetchError}
+          debouncedQuery={debouncedQuery}
+          addedProductIds={addedProductIds}
+          onAdd={handleAdd}
+        />
       )}
     </div>
   )

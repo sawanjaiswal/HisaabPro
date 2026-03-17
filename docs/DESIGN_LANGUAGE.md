@@ -1,6 +1,7 @@
 # HisaabPro Design Language
 
-> Extracted from Figma dashboard design. Apply consistently across all pages.
+> Extracted from Figma dashboard design. Applied consistently across ALL pages.
+> For page-level patterns and templates, see `PAGE_DESIGN_GUIDE.md`.
 
 ## Color Palette
 

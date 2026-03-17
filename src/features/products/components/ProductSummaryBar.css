@@ -1,52 +1,140 @@
-.product-summary-bar {
+/* Products — Hero card pair (Stock Value / Low Stock Alert)
+ * Teal gradient for value, amber for alert, lime for safe.
+ * Premium: entrance animation, scale touch, tabular nums.
+ */
+
+.product-hero {
   margin-bottom: var(--space-4);
+  animation: productFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.product-summary-count {
-  font-size: 0.833rem;
+.product-hero-count {
+  font-size: 0.6875rem;
   font-weight: 500;
-  color: var(--color-primary-200);
-  margin-bottom: var(--space-4);
+  color: var(--color-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--space-3);
 }
 
-.product-summary-grid {
-  display: flex;
-  justify-content: space-between;
+.product-hero-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: var(--space-3);
-  text-align: center;
 }
 
-.product-summary-col {
-  flex: 1;
+.product-hero-card {
+  border: none;
+  border-radius: 20px;
+  padding: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+  font-family: var(--font-primary);
+  min-height: 90px;
+  text-align: left;
+}
+
+.product-hero-card:active {
+  transform: scale(0.97);
+}
+
+.product-hero-card--value {
+  background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
+  color: var(--color-gray-0);
+  animation: productFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
+}
+
+.product-hero-card--alert {
+  background: linear-gradient(135deg, var(--gradient-amber-start) 0%, var(--gradient-amber-end) 100%);
+  color: var(--color-gray-0);
+  animation: productFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 140ms both;
+}
+
+.product-hero-card--safe {
+  background: var(--color-lime-accent);
+  color: var(--color-dark-text);
+}
+
+.product-hero-card-content {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 6px;
+}
+
+.product-hero-amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.product-hero-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  opacity: 0.85;
+  display: flex;
   align-items: center;
+  gap: 4px;
 }
 
-.product-summary-label {
-  color: var(--color-primary-200);
+.product-hero-chevron {
+  opacity: 0.6;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.8);
 }
 
-.product-summary-total {
-  color: var(--color-gray-0);
-  font-size: 1.25rem;
+.product-hero-chevron--dark {
+  color: rgba(0, 0, 0, 0.4);
 }
 
-.product-summary-low {
-  color: var(--color-warning-500);
-  font-size: 1.25rem;
-}
-
-.product-summary-value {
-  color: var(--color-success-500);
-  font-size: 1.25rem;
+.product-hero-card--safe .product-hero-chevron {
+  color: rgba(0, 0, 0, 0.4);
 }
 
 @media (min-width: 768px) {
-  .product-summary-total,
-  .product-summary-low,
-  .product-summary-value {
-    font-size: 1.75rem;
+  .product-hero-card {
+    padding: var(--space-8);
+    min-height: 110px;
   }
+
+  .product-hero-amount {
+    font-size: 1.5rem;
+  }
+}
+
+/* ─── Reduced motion ────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .product-hero,
+  .product-hero-card--value,
+  .product-hero-card--alert {
+    animation: none !important;
+  }
+
+  .product-hero-card:active {
+    transform: none !important;
+  }
+}
+
+/* ─── Dark Theme ────────────────────────────────────────────── */
+
+[data-theme="dark"] .product-hero-count {
+  color: var(--color-gray-400);
+}
+
+[data-theme="dark"] .product-hero-card--value {
+  background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
+}
+
+[data-theme="dark"] .product-hero-card--alert {
+  background: linear-gradient(135deg, var(--gradient-amber-start) 0%, var(--gradient-amber-end) 100%);
+}
+
+[data-theme="dark"] .product-hero-card--safe {
+  color: var(--color-dark-text);
 }

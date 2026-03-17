@@ -1,7 +1,7 @@
 /** Invoices — List Page (lazy loaded)
  *
  * Follows PartiesPage.tsx pattern: summary bar, filter bar,
- * card list, 4 UI states, FAB for create.
+ * card list, 4 UI states, FAB for create, bulk select.
  */
 
 import { useState } from 'react'
@@ -12,26 +12,49 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { BulkActionBar } from '@/components/ui/BulkActionBar'
+import { useBulkSelect } from '@/hooks/useBulkSelect'
+import { useToast } from '@/hooks/useToast'
 import { useInvoices } from './useInvoices'
 import { InvoiceSummaryBar } from './components/InvoiceSummaryBar'
 import { InvoiceFilterBar } from './components/InvoiceFilterBar'
 import { InvoiceCard } from './components/InvoiceCard'
 import { InvoiceListSkeleton } from './components/InvoiceListSkeleton'
+import { deleteDocument } from './invoice.service'
 import { ROUTES } from '@/config/routes.config'
 import { DOCUMENT_TYPE_LABELS } from './invoice.constants'
 import type { DocumentType, DocumentStatus } from './invoice.types'
-import './invoices.css'
+import type { BulkAction } from '@/components/ui/BulkActionBar'
+import './invoice-filter-bar.css'
+import './invoice-list-items.css'
+import './invoice-doc-badges.css'
 
 export default function InvoicesPage() {
   const navigate = useNavigate()
+  const toast = useToast()
   const [activeType, setActiveType] = useState<DocumentType | 'ALL'>('ALL')
   const [activeStatus, setActiveStatus] = useState<DocumentStatus | 'ALL'>('ALL')
+  const bulk = useBulkSelect()
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false)
 
   const { data, status, filters, setSearch, setFilter, refresh } = useInvoices({
     type: activeType === 'ALL' ? 'SALE_INVOICE' : activeType,
   })
 
-  const handleDocClick = (id: string) => navigate(`/invoices/${id}`)
+  const handleDocClick = (id: string) => {
+    if (bulk.isActive) {
+      bulk.toggle(id)
+    } else {
+      navigate(`/invoices/${id}`)
+    }
+  }
+
+  const handleLongPress = (id: string) => {
+    if (!bulk.isActive) {
+      bulk.toggle(id)
+    }
+  }
+
   const goToCreate = () => navigate(ROUTES.INVOICE_CREATE)
 
   const handleTypeChange = (type: DocumentType | 'ALL') => {
@@ -50,23 +73,61 @@ export default function InvoicesPage() {
     }
   }
 
+  const handleBulkDelete = async () => {
+    const count = bulk.selectedCount
+    setIsBulkDeleting(true)
+    try {
+      const ids = Array.from(bulk.selectedIds)
+      await Promise.all(ids.map((id) => deleteDocument(id)))
+      toast.success(`${count} ${count === 1 ? 'invoice' : 'invoices'} deleted`)
+      bulk.clear()
+      refresh()
+    } catch {
+      toast.error('Failed to delete some invoices')
+    } finally {
+      setIsBulkDeleting(false)
+    }
+  }
+
+  const allDocIds = data?.documents.map((d) => d.id) ?? []
+
+  const bulkActions: BulkAction[] = [
+    {
+      id: 'delete',
+      label: 'Delete',
+      icon: 'delete',
+      isDanger: true,
+      onClick: handleBulkDelete,
+    },
+    {
+      id: 'export',
+      label: 'Export',
+      icon: 'export',
+      onClick: () => toast.info('Export coming soon'),
+    },
+  ]
+
   const typeLabel = activeType === 'ALL' ? 'Invoices' : DOCUMENT_TYPE_LABELS[activeType]
 
   return (
     <AppShell>
-      <Header title={typeLabel} />
+      <Header title={bulk.isActive ? `${bulk.selectedCount} Selected` : typeLabel} />
 
       <PageContainer>
-        {status === 'success' && data && <InvoiceSummaryBar summary={data.summary} />}
+        {status === 'success' && data && !bulk.isActive && (
+          <InvoiceSummaryBar summary={data.summary} />
+        )}
 
-        <InvoiceFilterBar
-          search={filters.search ?? ''}
-          onSearchChange={setSearch}
-          activeType={activeType}
-          onTypeChange={handleTypeChange}
-          activeStatus={activeStatus}
-          onStatusChange={handleStatusChange}
-        />
+        {!bulk.isActive && (
+          <InvoiceFilterBar
+            search={filters.search ?? ''}
+            onSearchChange={setSearch}
+            activeType={activeType}
+            onTypeChange={handleTypeChange}
+            activeStatus={activeStatus}
+            onStatusChange={handleStatusChange}
+          />
+        )}
 
         {status === 'loading' && <InvoiceListSkeleton />}
 
@@ -92,10 +153,26 @@ export default function InvoicesPage() {
         )}
 
         {status === 'success' && data && data.documents.length > 0 && (
-          <div className="invoice-list" role="list" aria-label="Invoices">
+          <div className="invoice-list stagger-list" role="list" aria-label="Invoices">
             {data.documents.map((doc) => (
-              <div key={doc.id} className="invoice-list-row" role="listitem">
-                <InvoiceCard document={doc} onClick={handleDocClick} />
+              <div
+                key={doc.id}
+                className={`invoice-list-row${bulk.isSelected(doc.id) ? ' bulk-selected' : ''}`}
+                role="listitem"
+                onClick={(e) => {
+                  if (bulk.isActive) {
+                    e.stopPropagation()
+                    bulk.toggle(doc.id)
+                  }
+                }}
+              >
+                <InvoiceCard
+                  document={doc}
+                  onClick={handleDocClick}
+                  onLongPress={handleLongPress}
+                  isSelected={bulk.isSelected(doc.id)}
+                  isBulkMode={bulk.isActive}
+                />
                 <div className="divider" aria-hidden="true" />
               </div>
             ))}
@@ -103,9 +180,20 @@ export default function InvoicesPage() {
         )}
       </PageContainer>
 
-      <button className="fab" onClick={goToCreate} aria-label="Create new invoice">
-        <Plus size={24} aria-hidden="true" />
-      </button>
+      {!bulk.isActive && (
+        <button className="fab" onClick={goToCreate} aria-label="Create new invoice">
+          <Plus size={24} aria-hidden="true" />
+        </button>
+      )}
+
+      <BulkActionBar
+        selectedCount={bulk.selectedCount}
+        totalCount={allDocIds.length}
+        onSelectAll={() => bulk.selectAll(allDocIds)}
+        onClear={bulk.clear}
+        actions={bulkActions}
+        isProcessing={isBulkDeleting}
+      />
     </AppShell>
   )
 }

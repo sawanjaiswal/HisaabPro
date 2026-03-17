@@ -1,0 +1,244 @@
+/* ============================================================
+   Dashboard Transactions — Recent activity feed list
+   Contains: transaction rows, avatars, amounts, status pills,
+   add-payment button, type-coded left borders, empty state.
+   ============================================================ */
+
+/* ─── Recent transactions ──────────────────────────────────── */
+.dashboard-transactions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.dashboard-txn-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-txn-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-primary);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--duration-fast) cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dashboard-txn-row:not(:last-of-type) {
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.dashboard-txn-row:active {
+  transform: scale(0.985);
+}
+
+.dashboard-txn-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.dashboard-txn-avatar-inner {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--color-gray-0);
+}
+
+/* Avatar colors by type */
+.dashboard-txn-avatar-inner--sale_invoice,
+.dashboard-txn-avatar-inner--payment_out { background: var(--color-error-500); }
+.dashboard-txn-avatar-inner--purchase_invoice { background: var(--color-info-500); }
+.dashboard-txn-avatar-inner--payment_in { background: var(--dash-teal-start); }
+.dashboard-txn-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-txn-name {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--dash-text-primary);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+}
+
+.dashboard-txn-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.8125rem;
+  color: var(--color-gray-400);
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+}
+
+.dashboard-txn-meta-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-200);
+  flex-shrink: 0;
+}
+
+.dashboard-txn-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.dashboard-txn-amount {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--dash-text-primary);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.dashboard-txn-status {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1.2;
+}
+
+.dashboard-txn-status--paid { color: var(--color-success-700); background: var(--color-success-50); }
+.dashboard-txn-status--partial { color: var(--color-warning-700); background: var(--color-warning-50); }
+.dashboard-txn-status--unpaid { color: var(--color-error-700); background: var(--color-error-50); }
+
+.dashboard-txn-mode {
+  font-size: 0.694rem;
+  color: var(--dash-text-muted);
+  text-transform: uppercase;
+}
+
+/* "Add" payment pill */
+.dashboard-txn-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 40px;
+  background: var(--dash-teal-10);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-primary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--dash-teal-end);
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--duration-fast) var(--ease-default);
+  min-height: 28px;
+  min-width: 28px;
+}
+
+.dashboard-txn-add-btn:active {
+  background: rgba(22, 85, 90, 0.18);
+}
+
+.dashboard-txn-add-btn svg {
+  flex-shrink: 0;
+}
+
+/* Transaction type color-coded left border */
+.dashboard-txn-row[data-type="sale_invoice"],
+.dashboard-txn-row[data-type="payment_out"] {
+  border-left: 3px solid var(--color-error-400);
+  padding-left: var(--space-3);
+  margin-left: -3px;
+}
+
+.dashboard-txn-row[data-type="purchase_invoice"] {
+  border-left: 3px solid var(--color-info-400);
+  padding-left: var(--space-3);
+  margin-left: -3px;
+}
+
+.dashboard-txn-row[data-type="payment_in"] {
+  border-left: 3px solid var(--color-success-400);
+  padding-left: var(--space-3);
+  margin-left: -3px;
+}
+
+.dashboard-txn-empty {
+  padding: var(--space-6) var(--space-4);
+  text-align: center;
+  color: var(--dash-text-muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* ─── Desktop ────────────────────────────────────────────────── */
+
+@media (min-width: 1024px) {
+  .dashboard-txn-row:hover {
+    background: var(--color-gray-50);
+    border-radius: var(--radius-sm);
+  }
+
+  .dashboard-txn-add-btn:hover {
+    background: rgba(22, 85, 90, 0.15);
+  }
+}
+
+/* ─── Dark theme overrides ──────────────────────────────────── */
+
+[data-theme="dark"] .dashboard-txn-row:not(:last-of-type) {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .dashboard-txn-avatar {
+  background: var(--color-gray-100);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .dashboard-txn-add-btn {
+  background: rgba(63, 174, 214, 0.12);
+  color: var(--color-primary-500);
+}
+
+[data-theme="dark"] .dashboard-txn-add-btn:active {
+  background: rgba(63, 174, 214, 0.2);
+}
+
+/* Dark status pills */
+[data-theme="dark"] .dashboard-txn-status--paid { background: rgba(34, 197, 94, 0.15); color: var(--color-success-500); }
+[data-theme="dark"] .dashboard-txn-status--partial { background: rgba(245, 158, 11, 0.15); color: var(--color-warning-500); }
+[data-theme="dark"] .dashboard-txn-status--unpaid { background: rgba(239, 68, 68, 0.15); color: var(--color-error-500); }
+
+/* Dark left border colors */
+[data-theme="dark"] .dashboard-txn-row[data-type="sale_invoice"],
+[data-theme="dark"] .dashboard-txn-row[data-type="payment_out"] { border-left-color: var(--color-error-500); }
+[data-theme="dark"] .dashboard-txn-row[data-type="purchase_invoice"] { border-left-color: var(--color-info-500); }
+[data-theme="dark"] .dashboard-txn-row[data-type="payment_in"] { border-left-color: var(--color-success-500); }

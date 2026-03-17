@@ -1,0 +1,80 @@
+# Render Blueprint — HisaabPro Backend
+# Docs: https://docs.render.com/blueprint-spec
+
+services:
+  - type: web
+    name: hisaabpro-api
+    runtime: node
+    plan: starter
+    region: singapore  # Closest to India
+
+    # Server lives in server/ subdirectory of the monorepo
+    rootDir: server
+
+    # Build: install deps, generate Prisma client, compile TypeScript
+    buildCommand: npm install && npx prisma generate && npm run build
+
+    # Start the compiled JS
+    startCommand: npm run start
+
+    # Health check — Express serves GET /api/health
+    healthCheckPath: /api/health
+
+    # Auto-deploy on push to main
+    autoDeploy: true
+
+    # Environment variables — set actual values in Render dashboard
+    envVars:
+      # Database (Neon PostgreSQL)
+      - key: DATABASE_URL
+        sync: false  # Set manually — contains connection string with pooler
+
+      # Auth — JWT
+      - key: JWT_SECRET
+        generateValue: true  # Render generates a random 256-bit secret
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+
+      # App config
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "4000"
+      - key: CORS_ORIGIN
+        sync: false  # Set to frontend URL (e.g., https://app.hisaabpro.in)
+
+      # Encryption (for sensitive fields at rest)
+      - key: ENCRYPTION_KEY
+        generateValue: true
+
+      # External services — set in dashboard
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: AISENSY_API_KEY
+        sync: false
+      - key: MSG91_AUTH_KEY
+        sync: false
+      - key: MSG91_TEMPLATE_ID
+        sync: false
+      - key: TURNSTILE_SECRET_KEY
+        sync: false
+
+      # Optional — Redis for distributed rate limiting
+      - key: REDIS_URL
+        sync: false
+
+      # Referral config
+      - key: FRONTEND_URL
+        sync: false
+      - key: REFERRAL_REWARD_AMOUNT
+        value: "100"
+      - key: REFERRAL_REVIEW_WINDOW_DAYS
+        value: "7"
+
+      # Logging
+      - key: LOG_LEVEL
+        value: info

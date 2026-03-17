@@ -1,18 +1,13 @@
 /** Party Search Input — debounced dropdown for invoice form party selection */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { Search, X, ChevronDown } from 'lucide-react'
 import { useDebounce } from '@/hooks/useDebounce'
-import { getParties } from '@/features/parties/party.service'
-import type { PartySummary, PartyType } from '@/features/parties/party.types'
+import { getParties } from '@/lib/services/party.service'
+import type { PartySummary } from '@/lib/types/party.types'
+import { PartySearchField } from './PartySearchField'
+import { PartySearchDropdown } from './PartySearchDropdown'
 
 // ─── Constants ───────────────────────────────────────────────────────────────
-
-const PARTY_TYPE_LABELS: Record<PartyType, string> = {
-  CUSTOMER: 'Customer',
-  SUPPLIER: 'Supplier',
-  BOTH: 'Both',
-}
 
 const SEARCH_LIMIT = 5
 
@@ -146,6 +141,11 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
     [],
   )
 
+  const handleClearQuery = useCallback(() => {
+    setQuery('')
+    setResults([])
+  }, [])
+
   // ─── Derived state ────────────────────────────────────────────────────────
 
   const isSelected = Boolean(value && selectedName)
@@ -160,7 +160,6 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
       </label>
 
       {isSelected ? (
-        // ── Selected state ─────────────────────────────────────────────────
         <div className="party-selector-selected" role="status" aria-label={`Selected: ${selectedName}`}>
           <div className="party-selector-info">
             <div className="party-selector-name">{selectedName}</div>
@@ -175,109 +174,25 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
           </button>
         </div>
       ) : (
-        // ── Search input ───────────────────────────────────────────────────
-        <div className="party-search-input-wrap">
-          <Search
-            className="party-search-icon"
-            size={16}
-            aria-hidden="true"
-          />
-          <input
-            id="party-search-input"
-            ref={inputRef}
-            type="text"
-            className="input party-search-field"
-            placeholder="Search party name or phone..."
-            value={query}
-            onChange={handleInputChange}
-            onFocus={handleInputFocus}
-            onKeyDown={handleKeyDown}
-            autoComplete="off"
-            aria-label="Search customer or supplier"
-            aria-expanded={showDropdown}
-            aria-haspopup="listbox"
-            aria-autocomplete="list"
-            style={{ minHeight: '44px' }}
-          />
-          {query.length > 0 && (
-            <button
-              type="button"
-              className="party-search-clear"
-              onClick={() => {
-                setQuery('')
-                setResults([])
-              }}
-              aria-label="Clear search"
-            >
-              <X size={14} aria-hidden="true" />
-            </button>
-          )}
-          {query.length === 0 && (
-            <ChevronDown
-              className="party-search-chevron"
-              size={14}
-              aria-hidden="true"
-            />
-          )}
-        </div>
+        <PartySearchField
+          inputRef={inputRef}
+          query={query}
+          showDropdown={showDropdown}
+          onQueryChange={handleInputChange}
+          onFocus={handleInputFocus}
+          onKeyDown={handleKeyDown}
+          onClear={handleClearQuery}
+        />
       )}
 
-      {/* ── Dropdown ───────────────────────────────────────────────────── */}
       {showDropdown && (
-        <ul
-          className="party-search-dropdown"
-          role="listbox"
-          aria-label="Party search results"
-        >
-          {isLoading && (
-            <li className="party-search-status" role="status" aria-live="polite">
-              <span className="party-search-spinner" aria-hidden="true" />
-              Searching...
-            </li>
-          )}
-
-          {!isLoading && fetchError && (
-            <li className="party-search-status party-search-error" role="alert">
-              Failed to load parties. Try again.
-            </li>
-          )}
-
-          {!isLoading && !fetchError && debouncedQuery.trim().length > 0 && results.length === 0 && (
-            <li className="party-search-status party-search-empty">
-              No parties found for "{debouncedQuery}"
-            </li>
-          )}
-
-          {!isLoading && !fetchError && debouncedQuery.trim().length === 0 && (
-            <li className="party-search-status party-search-hint">
-              Type to search parties
-            </li>
-          )}
-
-          {!isLoading && results.map((party) => (
-            <li
-              key={party.id}
-              className="party-search-result"
-              role="option"
-              aria-selected={false}
-              onClick={() => handleSelect(party)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') handleSelect(party)
-              }}
-              tabIndex={0}
-            >
-              <div className="party-search-result-name">{party.name}</div>
-              <div className="party-search-result-meta">
-                {party.phone && (
-                  <span className="party-search-result-phone">{party.phone}</span>
-                )}
-                <span className={`party-search-type-badge party-search-type-badge--${party.type.toLowerCase()}`}>
-                  {PARTY_TYPE_LABELS[party.type]}
-                </span>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <PartySearchDropdown
+          results={results}
+          isLoading={isLoading}
+          fetchError={fetchError}
+          debouncedQuery={debouncedQuery}
+          onSelect={handleSelect}
+        />
       )}
 
       {error && (

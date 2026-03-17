@@ -1,7 +1,7 @@
 /** Create Invoice — sticky bottom totals + save actions */
 
 import React from 'react'
-import { formatInvoiceAmount } from '../invoice.utils'
+import { formatInvoiceAmount } from '../invoice-format.utils'
 
 interface InvoiceTotalsBarProps {
   subtotal: number

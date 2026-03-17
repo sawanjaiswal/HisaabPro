@@ -1,52 +1,163 @@
-.invoice-summary-bar-card {
+/* Invoices — Hero card pair (Received / Due)
+ * Teal gradient for received, warm coral for due amount.
+ * When no dues: lime card replaces coral.
+ * Premium: entrance animation, scale touch feedback, tabular nums.
+ */
+
+.invoice-hero {
   margin-bottom: var(--space-4);
+  animation: invoiceFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.invoice-summary-bar-heading {
-  font-size: 0.833rem;
+.invoice-hero-total {
+  font-size: 0.6875rem;
   font-weight: 500;
-  color: var(--color-primary-200);
-  margin-bottom: var(--space-4);
+  color: var(--color-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--space-3);
 }
 
-.invoice-summary-bar-grid {
-  display: flex;
-  justify-content: space-between;
+.invoice-hero-total strong {
+  font-weight: 700;
+  color: var(--color-gray-800);
+  font-size: 0.875rem;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.invoice-hero-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: var(--space-3);
-  text-align: center;
 }
 
-.invoice-summary-bar-col {
-  flex: 1;
+.invoice-hero-card {
+  border: none;
+  border-radius: 20px;
+  padding: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+  font-family: var(--font-primary);
+  min-height: 90px;
+  text-align: left;
+}
+
+.invoice-hero-card:active {
+  transform: scale(0.97);
+}
+
+/* Received — teal gradient */
+.invoice-hero-card--received {
+  background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
+  color: var(--color-gray-0);
+  animation: invoiceFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
+}
+
+/* Due — warm coral gradient */
+.invoice-hero-card--due {
+  background: linear-gradient(135deg, var(--gradient-coral-start) 0%, var(--gradient-coral-end) 100%);
+  color: var(--color-gray-0);
+  animation: invoiceFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 140ms both;
+}
+
+/* All paid — lime card (celebration state) */
+.invoice-hero-card--clear {
+  background: var(--color-lime-accent);
+  color: var(--color-dark-text);
+}
+
+.invoice-hero-card-content {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
-  align-items: center;
+  gap: 6px;
 }
 
-.invoice-summary-bar-label {
-  color: var(--color-primary-200);
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.invoice-summary-bar-amount {
-  color: var(--color-gray-0);
-  font-size: 1.125rem;
+.invoice-hero-amount {
+  font-size: 1.25rem;
   font-weight: 700;
-  line-height: 1.2;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  animation: invoiceAmountReveal 500ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both;
 }
 
-.invoice-summary-bar-amount--received {
-  color: var(--color-success-500);
+.invoice-hero-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  opacity: 0.85;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.invoice-summary-bar-amount--due {
-  color: var(--color-error-300);
+.invoice-hero-chevron {
+  opacity: 0.6;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.invoice-hero-chevron--dark {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Clear state uses dark chevron on lime */
+.invoice-hero-card--clear .invoice-hero-chevron {
+  color: rgba(0, 0, 0, 0.4);
 }
 
 @media (min-width: 768px) {
-  .invoice-summary-bar-amount {
+  .invoice-hero-card {
+    padding: var(--space-8);
+    min-height: 110px;
+  }
+
+  .invoice-hero-amount {
     font-size: 1.5rem;
   }
+}
+
+/* ─── Reduced motion ────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .invoice-hero,
+  .invoice-hero-card--received,
+  .invoice-hero-card--due,
+  .invoice-hero-amount {
+    animation: none !important;
+  }
+
+  .invoice-hero-card:active {
+    transform: none !important;
+  }
+}
+
+/* ─── Dark Theme ────────────────────────────────────────────── */
+
+[data-theme="dark"] .invoice-hero-total {
+  color: var(--color-gray-400);
+}
+
+[data-theme="dark"] .invoice-hero-total strong {
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .invoice-hero-card--received {
+  background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
+}
+
+[data-theme="dark"] .invoice-hero-card--due {
+  background: linear-gradient(135deg, var(--gradient-coral-start) 0%, var(--gradient-coral-end) 100%);
+}
+
+[data-theme="dark"] .invoice-hero-card--clear {
+  color: var(--color-dark-text);
+}
+
+[data-theme="dark"] .invoice-hero-chevron--dark {
+  color: rgba(255, 255, 255, 0.6);
 }

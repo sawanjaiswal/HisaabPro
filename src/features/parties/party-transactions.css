@@ -1,0 +1,192 @@
+/* ─── Party Transactions Tab ───────────────────────────────────────────────
+   Styles for the transaction summary bar, transaction list rows,
+   icon badges, info columns, amount display, and load-more button.
+   Used by: PartyTransactionsTab
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Tab wrapper */
+.party-txn-tab {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Summary bar: Debit / Credit / Balance */
+.party-txn-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-100);
+}
+
+.party-txn-summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.party-txn-summary-label {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.party-txn-summary-value {
+  font-size: 0.875rem;
+  font-weight: 700;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
+}
+
+.party-txn-summary-value small {
+  font-size: 0.667rem;
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+.party-txn-summary-value--debit {
+  color: var(--color-error-500);
+}
+
+.party-txn-summary-value--credit {
+  color: var(--color-success-500);
+}
+
+/* ─── Transaction List ─────────────────────────────────────────────────── */
+
+.party-txn-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Transaction row — clickable card */
+.party-txn-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-gray-100);
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background 0.1s ease;
+}
+
+.party-txn-row:first-child {
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.party-txn-row:last-child {
+  border-bottom: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.party-txn-row:only-child {
+  border-radius: var(--radius-lg);
+}
+
+.party-txn-row:hover {
+  background: var(--color-gray-50);
+}
+
+.party-txn-row:active {
+  background: var(--color-gray-100);
+}
+
+/* ─── Transaction Icon ─────────────────────────────────────────────────── */
+
+.party-txn-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.party-txn-icon--invoice {
+  background: var(--color-primary-100);
+  color: var(--color-primary-600);
+}
+
+.party-txn-icon--payment {
+  background: var(--color-success-100);
+  color: var(--color-success-600);
+}
+
+/* ─── Transaction Info Column ──────────────────────────────────────────── */
+
+.party-txn-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.party-txn-ref {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.party-txn-desc {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.party-txn-date {
+  font-size: 0.75rem;
+  color: var(--color-gray-300);
+}
+
+/* ─── Transaction Amounts ──────────────────────────────────────────────── */
+
+.party-txn-amounts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.party-txn-amount {
+  font-size: 0.875rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.party-txn-amount--debit {
+  color: var(--color-error-500);
+}
+
+.party-txn-amount--credit {
+  color: var(--color-success-500);
+}
+
+.party-txn-balance {
+  font-size: 0.667rem;
+  color: var(--color-gray-300);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Load more button */
+.party-txn-load-more {
+  align-self: center;
+  margin-top: var(--space-2);
+}

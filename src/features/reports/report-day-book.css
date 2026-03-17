@@ -1,0 +1,69 @@
+/* Report Day Book — Styles for the day book date navigator
+ *
+ * Covers: date navigation bar with prev/next buttons.
+ * Mobile-first: base targets 320px.
+ * CSS variables only — no hex, no rgba, no hardcoded sizes.
+ */
+
+/* ─── Date navigator ────────────────────────────────────────── */
+
+.report-date-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+}
+
+.report-date-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  color: var(--color-gray-600);
+  cursor: pointer;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default);
+}
+
+.report-date-nav-btn:hover {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-300);
+}
+
+.report-date-nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.report-date-nav-label {
+  flex: 1;
+  text-align: center;
+}
+
+.report-date-nav-primary {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+}
+
+.report-date-nav-secondary {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-gray-500);
+  margin-top: 2px;
+}
+
+/* ─── Dark theme ────────────────────────────────────────────── */
+
+[data-theme="dark"] .report-date-nav-primary {
+  color: var(--color-gray-200);
+}

@@ -10,6 +10,7 @@ import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
 import { resolveBusinessId } from '../lib/business.js'
 import { idempotencyCheck } from '../middleware/idempotency.js'
+import { replayProtection } from '../middleware/replay-protection.js'
 import {
   createDocumentSchema,
   updateDocumentSchema,
@@ -76,6 +77,7 @@ router.post(
 /** POST /api/documents — Create document */
 router.post(
   '/',
+  replayProtection,
   idempotencyCheck(),
   validate(createDocumentSchema),
   asyncHandler(async (req, res) => {
@@ -88,6 +90,7 @@ router.post(
 /** PUT /api/documents/:id — Update document */
 router.put(
   '/:id',
+  replayProtection,
   validate(updateDocumentSchema),
   asyncHandler(async (req, res) => {
     const businessId = await resolveBusinessId(req.user!.userId)
@@ -101,6 +104,7 @@ router.put(
 /** DELETE /api/documents/:id — Soft delete to recycle bin */
 router.delete(
   '/:id',
+  replayProtection,
   asyncHandler(async (req, res) => {
     const businessId = await resolveBusinessId(req.user!.userId)
     const result = await documentService.deleteDocument(
@@ -117,6 +121,7 @@ router.delete(
 /** POST /api/documents/:id/convert — Convert to target type */
 router.post(
   '/:id/convert',
+  replayProtection,
   idempotencyCheck(),
   validate(convertDocumentSchema),
   asyncHandler(async (req, res) => {
@@ -147,6 +152,7 @@ router.post(
 /** DELETE /api/documents/:id/permanent — Hard delete */
 router.delete(
   '/:id/permanent',
+  replayProtection,
   asyncHandler(async (req, res) => {
     const businessId = await resolveBusinessId(req.user!.userId)
     await documentService.permanentDeleteDocument(businessId, String(req.params.id))
@@ -157,6 +163,7 @@ router.delete(
 /** DELETE /api/documents/recycle-bin — Empty entire bin */
 router.delete(
   '/recycle-bin',
+  replayProtection,
   asyncHandler(async (req, res) => {
     const businessId = await resolveBusinessId(req.user!.userId)
     const result = await documentService.emptyRecycleBin(businessId)
@@ -171,6 +178,7 @@ router.delete(
 /** POST /api/documents/:id/share/whatsapp */
 router.post(
   '/:id/share/whatsapp',
+  replayProtection,
   validate(shareWhatsAppSchema),
   asyncHandler(async (req, res) => {
     const businessId = await resolveBusinessId(req.user!.userId)
@@ -213,6 +221,7 @@ router.post(
 /** POST /api/documents/:id/share/email */
 router.post(
   '/:id/share/email',
+  replayProtection,
   validate(shareEmailSchema),
   asyncHandler(async (req, res) => {
     const businessId = await resolveBusinessId(req.user!.userId)

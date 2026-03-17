@@ -9,6 +9,7 @@ import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
 import { resolveBusinessId } from '../lib/business.js'
 import { idempotencyCheck } from '../middleware/idempotency.js'
+import { replayProtection } from '../middleware/replay-protection.js'
 import {
   createPaymentSchema,
   updatePaymentSchema,
@@ -54,6 +55,7 @@ router.get(
 /** POST /api/payments — Record payment */
 router.post(
   '/',
+  replayProtection,
   idempotencyCheck(),
   validate(createPaymentSchema),
   asyncHandler(async (req, res) => {
@@ -66,6 +68,7 @@ router.post(
 /** PUT /api/payments/:id — Update payment */
 router.put(
   '/:id',
+  replayProtection,
   validate(updatePaymentSchema),
   asyncHandler(async (req, res) => {
     const businessId = await resolveBusinessId(req.user!.userId)
@@ -79,6 +82,7 @@ router.put(
 /** DELETE /api/payments/:id — Soft delete payment */
 router.delete(
   '/:id',
+  replayProtection,
   asyncHandler(async (req, res) => {
     const businessId = await resolveBusinessId(req.user!.userId)
     const result = await paymentService.deletePayment(
@@ -107,6 +111,7 @@ router.post(
 /** PUT /api/payments/:id/allocations — Update payment allocations */
 router.put(
   '/:id/allocations',
+  replayProtection,
   validate(updateAllocationsSchema),
   asyncHandler(async (req, res) => {
     const businessId = await resolveBusinessId(req.user!.userId)
@@ -149,6 +154,7 @@ router.get(
 /** POST /api/payments/reminders/send — Send a reminder */
 router.post(
   '/reminders/send',
+  replayProtection,
   validate(sendReminderSchema),
   asyncHandler(async (req, res) => {
     const businessId = await resolveBusinessId(req.user!.userId)
@@ -160,6 +166,7 @@ router.post(
 /** POST /api/payments/reminders/send-bulk — Send bulk reminders */
 router.post(
   '/reminders/send-bulk',
+  replayProtection,
   validate(sendBulkRemindersSchema),
   asyncHandler(async (req, res) => {
     const businessId = await resolveBusinessId(req.user!.userId)
@@ -192,6 +199,7 @@ router.get(
 /** PUT /api/payments/reminders/config — Update reminder config */
 router.put(
   '/reminders/config',
+  replayProtection,
   validate(updateReminderConfigSchema),
   asyncHandler(async (req, res) => {
     const businessId = await resolveBusinessId(req.user!.userId)

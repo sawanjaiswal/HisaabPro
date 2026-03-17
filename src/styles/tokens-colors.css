@@ -1,0 +1,118 @@
+/* === DESIGN SYSTEM TOKENS — Color Palette === */
+/* Deep Teal + Lime-Yellow palette, warm cream backgrounds */
+/* Extracted from NexoWallet by InksStudio (ui8.net) */
+
+:root {
+  /* Primary (Deep Teal) — trust, professionalism */
+  --color-primary-50:  #E7EFF1;
+  --color-primary-100: #DAEBEA;
+  --color-primary-200: #A8D4D4;
+  --color-primary-300: #5AACAB;
+  --color-primary-400: #0A6375;
+  --color-primary-500: #0B4F5E; /* PRIMARY BRAND */
+  --color-primary-600: #052D35;
+  --color-primary-700: #042329;
+  --color-primary-800: #031B20;
+  --color-primary-900: #021418;
+
+  /* Secondary (Lime-Yellow) — energy, CTAs, highlights */
+  --color-secondary-50:  #FCFDED;
+  --color-secondary-100: #FAFCE4;
+  --color-secondary-200: #F0F3A8;
+  --color-secondary-300: #E0EA49; /* ACCENT */
+  --color-secondary-400: #C8D232;
+  --color-secondary-500: #B3BB3A;
+  --color-secondary-600: #8A9128;
+  --color-secondary-700: #656921;
+  --color-secondary-800: #4E521A;
+  --color-secondary-900: #3A3E14;
+
+  /* Success (Green — payments received, profit) */
+  --color-success-50:  #ECFDF5;
+  --color-success-100: #D1FAE5;
+  --color-success-500: #22C55E;
+  --color-success-600: #16A34A;
+  --color-success-700: #15803D;
+
+  /* Error (Red — overdue, failed, delete) */
+  --color-error-50:  #FEF2F2;
+  --color-error-100: #FEE2E2;
+  --color-error-500: #EF4444;
+  --color-error-600: #DC2626;
+  --color-error-700: #B91C1C;
+
+  /* Warning (Amber — due soon, pending) */
+  --color-warning-50:  #FFFBEB;
+  --color-warning-100: #FEF3C7;
+  --color-warning-500: #F59E0B;
+  --color-warning-600: #D97706;
+  --color-warning-700: #B45309;
+
+  /* Info (Blue) */
+  --color-info-50:  #EFF6FF;
+  --color-info-100: #DBEAFE;
+  --color-info-500: #3B82F6;
+  --color-info-600: #2563EB;
+  --color-info-700: #1D4ED8;
+
+  /* Neutrals — warm-tinted (not cool gray) */
+  --color-gray-0:   #FFFFFF;
+  --color-gray-50:  #F8F7F4;  /* warm cream page bg — NexoWallet signature */
+  --color-gray-100: #F0EFEB;  /* card borders, dividers */
+  --color-gray-200: #E2E0DA;  /* disabled borders */
+  --color-gray-300: #C5C3BB;  /* placeholder text */
+  --color-gray-400: #9C9A92;  /* secondary icons */
+  --color-gray-500: #7A7870;  /* secondary text */
+  --color-gray-600: #5A584F;  /* body text */
+  --color-gray-700: #3D3B35;  /* strong text */
+  --color-gray-800: #2A2824;  /* headings */
+  --color-gray-900: #1A1917;  /* near-black */
+
+  /* Accent — Figma lime */
+  --color-lime-accent: #cfdf2e;
+
+  /* Dark-on-lime text (safe/clear/all-paid states) */
+  --color-dark-text: #111827;
+  /* WhatsApp brand green */
+  --color-whatsapp: #25D366;
+
+  /* Gradient hero cards — teal (collect/received/stock-value) */
+  --gradient-teal-start: #1b6369;
+  --gradient-teal-end:   #123e42;
+  /* Gradient hero cards — coral/red (due/overdue) */
+  --gradient-coral-start: #ef5350;
+  --gradient-coral-end:   #c62828;
+  /* Gradient hero cards — amber (low-stock alert) */
+  --gradient-amber-start: #f59e0b;
+  --gradient-amber-end:   #d97706;
+  /* Calculator dark display */
+  --gradient-calc-start: #0B4F5E;
+  --gradient-calc-end:   #0a3d4a;
+
+  /* Warm cream page gradient (dashboard, landing) */
+  --color-cream-start: #f9f9ed;
+  --color-cream-mid: #fafaef;
+  --color-cream-end: #fdfdfd;
+
+  /* Toast (dark overlay style) */
+  --toast-bg: #1a1a2e;
+  --toast-text: #e2e8f0;
+  --toast-progress-bg: rgba(255, 255, 255, 0.1);
+
+  /* Offline banner colors */
+  --color-warning-bg: #FFFBEB;
+  --color-warning-border: #FEF3C7;
+  --color-warning-text: #D97706;
+  --color-warning-dark: #92400E;
+  --color-warning-icon: #F59E0B;
+  --color-error-bg: #FEF2F2;
+  --color-error-border: #FEE2E2;
+  --color-error-text: #DC2626;
+  --color-error-dark: #991B1B;
+  --color-error-icon: #EF4444;
+  --color-info-bg: #EFF6FF;
+  --color-info-border: #DBEAFE;
+  --color-info-text: #2563EB;
+  --color-info-dark: #1E40AF;
+  --color-info-icon: #3B82F6;
+}

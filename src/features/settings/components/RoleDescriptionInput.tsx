@@ -1,0 +1,37 @@
+/** Settings — Role description textarea (optional field) */
+
+interface RoleDescriptionInputProps {
+  value: string
+  onChange: (value: string) => void
+}
+
+const LABEL_STYLE: React.CSSProperties = {
+  fontSize: '0.75rem',
+  fontWeight: 600,
+  color: 'var(--color-gray-600)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.06em',
+}
+
+export function RoleDescriptionInput({ value, onChange }: RoleDescriptionInputProps) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+      <label htmlFor="role-description" style={LABEL_STYLE}>
+        Description{' '}
+        <span style={{ fontWeight: 400, textTransform: 'none', color: 'var(--color-gray-400)' }}>
+          (optional)
+        </span>
+      </label>
+      <textarea
+        id="role-description"
+        className="input"
+        placeholder="Describe what this role can do..."
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        rows={3}
+        maxLength={200}
+        style={{ resize: 'vertical', minHeight: '80px' }}
+      />
+    </div>
+  )
+}

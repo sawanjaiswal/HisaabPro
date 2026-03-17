@@ -1,4 +1,4 @@
-/** Create Product — Form state hook
+/** Create/Edit Product — Form state hook
  *
  * Mirrors usePartyForm.ts exactly. Manages form state, per-field
  * validation, 3-section pill navigation, and paise conversion on submit.
@@ -8,7 +8,7 @@ import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/hooks/useToast'
 import { ROUTES } from '@/config/routes.config'
-import { createProduct } from './product.service'
+import { createProduct, updateProduct } from './product.service'
 
 import type { ProductFormData, ProductStatus, StockValidationMode } from './product.types'
 
@@ -30,10 +30,18 @@ const INITIAL_FORM: ProductFormData = {
   status: 'ACTIVE',
 }
 
+export interface UseProductFormOptions {
+  /** When set, form operates in edit mode — calls updateProduct instead of createProduct */
+  editId?: string
+  /** Pre-fill form with existing product data (edit mode) */
+  initialData?: ProductFormData
+}
+
 export interface UseProductFormReturn {
   form: ProductFormData
   errors: Record<string, string>
   isSubmitting: boolean
+  isEditMode: boolean
   activeSection: FormSection
   setActiveSection: (section: FormSection) => void
   updateField: <K extends keyof ProductFormData>(key: K, value: ProductFormData[K]) => void
@@ -42,11 +50,14 @@ export interface UseProductFormReturn {
   reset: () => void
 }
 
-export function useProductForm(): UseProductFormReturn {
+export function useProductForm(options: UseProductFormOptions = {}): UseProductFormReturn {
+  const { editId, initialData } = options
+  const isEditMode = Boolean(editId)
+
   const navigate = useNavigate()
   const toast = useToast()
 
-  const [form, setForm] = useState<ProductFormData>(INITIAL_FORM)
+  const [form, setForm] = useState<ProductFormData>(initialData ?? INITIAL_FORM)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [activeSection, setActiveSection] = useState<FormSection>('basic')
@@ -108,27 +119,36 @@ export function useProductForm(): UseProductFormReturn {
     setIsSubmitting(true)
 
     try {
-      // Form already stores prices in paise (ProductFormBasic multiplies by 100 on input)
-      await createProduct(form)
-      toast.success(`${form.name} added`)
-      navigate(ROUTES.PRODUCTS)
+      if (isEditMode && editId) {
+        // openingStock and autoGenerateSku cannot be changed after creation
+        const { openingStock: _os, autoGenerateSku: _ag, ...editPayload } = form
+        await updateProduct(editId, editPayload)
+        toast.success(`${form.name} updated`)
+        navigate(`/products/${editId}`)
+      } else {
+        // Form already stores prices in paise (ProductFormBasic multiplies by 100 on input)
+        await createProduct(form)
+        toast.success(`${form.name} added`)
+        navigate(ROUTES.PRODUCTS)
+      }
     } catch {
-      toast.error('Failed to save product. Please try again.')
+      toast.error(isEditMode ? 'Failed to update product.' : 'Failed to save product. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
-  }, [form, isSubmitting, validate, toast, navigate])
+  }, [form, isSubmitting, validate, toast, navigate, isEditMode, editId])
 
   const reset = useCallback(() => {
-    setForm(INITIAL_FORM)
+    setForm(initialData ?? INITIAL_FORM)
     setErrors({})
     setActiveSection('basic')
-  }, [])
+  }, [initialData])
 
   return {
     form,
     errors,
     isSubmitting,
+    isEditMode,
     activeSection,
     setActiveSection,
     updateField,

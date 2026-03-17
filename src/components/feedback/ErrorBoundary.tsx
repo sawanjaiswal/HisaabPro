@@ -19,9 +19,9 @@ export class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error }
   }
 
-  componentDidCatch(error: Error, info: ErrorInfo) {
-    // TODO: Log to monitoring service
-    console.error('ErrorBoundary caught:', error, info.componentStack)
+  componentDidCatch(_error: Error, _info: ErrorInfo) {
+    // Monitoring integration (Sentry/LogRocket) will be added when credentials are configured.
+    // Errors are already visible in the UI via the fallback ErrorState.
   }
 
   handleRetry = () => {

@@ -8,7 +8,10 @@ import {
   Package,
   Calendar,
   Banknote,
+  Receipt,
+  FileText,
   ChevronRight,
+  BarChart3,
   type LucideProps,
 } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -16,7 +19,7 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ROUTES } from '@/config/routes.config'
 import { REPORT_CATEGORIES } from './report.constants'
-import './reports.css'
+import './report-hub.css'
 
 // ─── Icon registry ────────────────────────────────────────────────────────────
 
@@ -28,6 +31,8 @@ const ICON_MAP: Record<string, IconComponent> = {
   Package,
   Calendar,
   Banknote,
+  Receipt,
+  FileText,
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -41,7 +46,21 @@ export default function ReportsHubPage() {
 
       <PageContainer>
         <div className="report-hub">
-          <div className="report-hub-grid">
+          {/* Hero banner — teal gradient with insight */}
+          <div className="report-hub-hero" aria-label="Reports overview">
+            <div className="report-hub-hero-icon" aria-hidden="true">
+              <BarChart3 size={28} />
+            </div>
+            <div className="report-hub-hero-content">
+              <span className="report-hub-hero-title">Business Insights</span>
+              <span className="report-hub-hero-subtitle">
+                Track sales, stock, and cash flow across your business
+              </span>
+            </div>
+            <span className="report-hub-hero-count">{REPORT_CATEGORIES.length} Reports</span>
+          </div>
+
+          <div className="report-hub-grid stagger-list">
             {REPORT_CATEGORIES.map((category) => {
               const Icon = ICON_MAP[category.icon] ?? TrendingUp
 
