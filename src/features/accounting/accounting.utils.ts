@@ -5,23 +5,19 @@ import { ACCOUNT_TYPE_ORDER } from './accounting.constants'
 
 // ─── Currency formatting ───────────────────────────────────────────────────────
 
-const INR_FORMATTER = new Intl.NumberFormat('en-IN', {
-  style: 'currency',
-  currency: 'INR',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-})
-
-/** Convert paise to rupees string: 125050 → "₹1,250.50" */
-export function formatPaise(paise: number): string {
-  return INR_FORMATTER.format(paise / 100)
-}
+export { formatPaise } from '@/lib/format'
 
 /** Format with sign for balance (negative = red) */
 export function formatBalance(paise: number): string {
   const abs = Math.abs(paise)
   const sign = paise < 0 ? '-' : ''
-  return sign + INR_FORMATTER.format(abs / 100)
+  const formatted = new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(abs / 100)
+  return sign + formatted
 }
 
 // ─── Date utilities ────────────────────────────────────────────────────────────

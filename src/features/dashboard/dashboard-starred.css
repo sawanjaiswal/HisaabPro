@@ -1,9 +1,9 @@
 /* ============================================================
    Dashboard Starred Contacts — Horizontal scroll avatar strip
 
-   Contains: starred section wrapper, horizontal scroll,
-   avatar circles with rotating colors, add button,
-   contact name/amount labels.
+   Contains: starred section wrapper, horizontal scroll with
+   gradient fade masks, avatar circles with rotating colors,
+   dashed add button, contact name/amount badge labels.
    ============================================================ */
 
 /* ─── Starred contacts (horizontal scroll) ─────────────────── */
@@ -21,6 +21,22 @@
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   padding: var(--space-1) 0;
+
+  /* Fade masks on left/right edges to indicate scrollability */
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 4%,
+    black 96%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 4%,
+    black 96%,
+    transparent 100%
+  );
 }
 
 .dashboard-starred-scroll::-webkit-scrollbar {
@@ -31,7 +47,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   flex-shrink: 0;
   width: 56px;
   border: none;
@@ -57,12 +73,12 @@
   width: 56px;
   height: 56px;
   border-radius: var(--radius-full);
-  border: 2px solid var(--color-gray-0);
-  box-shadow: var(--dash-avatar-shadow);
+  border: 3px solid var(--color-gray-0);
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 1rem;
   color: var(--color-gray-0);
   flex-shrink: 0;
@@ -80,23 +96,27 @@
   width: 56px;
   height: 56px;
   border-radius: var(--radius-full);
-  background: var(--color-gray-100);
+  background: transparent;
+  border: 2px dashed var(--color-gray-200);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: none;
   cursor: pointer;
+  color: var(--color-gray-400);
   -webkit-tap-highlight-color: transparent;
+  transition: border-color var(--duration-fast) var(--ease-default),
+              color var(--duration-fast) var(--ease-default);
 }
 
 .dashboard-starred-add:active {
-  background: var(--color-gray-200);
+  border-color: var(--color-gray-300);
+  color: var(--color-gray-500);
 }
 
 .dashboard-starred-name {
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--dash-text-secondary);
   white-space: nowrap;
   overflow: hidden;
@@ -115,6 +135,9 @@
   max-width: 100%;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
+  background: var(--dash-teal-10);
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
 }
 
 /* ─── Tablet and above ──────────────────────────────────────── */
@@ -146,11 +169,13 @@
 /* ─── Dark theme overrides ──────────────────────────────────── */
 
 [data-theme="dark"] .dashboard-starred-add {
-  background: var(--color-gray-200);
+  border-color: var(--color-gray-400);
+  color: var(--color-gray-500);
 }
 
 [data-theme="dark"] .dashboard-starred-add:active {
-  background: var(--color-gray-300);
+  border-color: var(--color-gray-500);
+  color: var(--color-gray-600);
 }
 
 [data-theme="dark"] .dashboard-starred-name {
@@ -159,8 +184,10 @@
 
 [data-theme="dark"] .dashboard-starred-amount {
   color: var(--color-primary-500);
+  background: rgba(63, 174, 214, 0.12);
 }
 
 [data-theme="dark"] .dashboard-starred-avatar {
   border-color: var(--color-gray-100);
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.3);
 }

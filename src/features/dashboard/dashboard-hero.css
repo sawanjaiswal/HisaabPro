@@ -20,17 +20,29 @@
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--dash-text-muted);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
+/* Decorative line between label and amount */
+.dashboard-sales-hero .dashboard-sales-label::after {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 2px;
+  background: var(--dash-teal-start);
+  border-radius: 1px;
+  margin: 8px auto 0;
+}
+
 .dashboard-sales-amount {
-  font-size: 2.5rem;
+  font-size: 3rem;
   font-weight: 800;
   color: var(--dash-text-primary);
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
   line-height: 1;
   font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
   animation: dashAmountReveal 600ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
 }
 
@@ -62,7 +74,7 @@
 
 .dashboard-hero-card {
   border: none;
-  border-radius: 20px;
+  border-radius: 24px;
   padding: 20px;
   cursor: pointer;
   display: flex;
@@ -71,8 +83,21 @@
   transition: transform var(--duration-fast) cubic-bezier(0.16, 1, 0.3, 1);
   -webkit-tap-highlight-color: transparent;
   font-family: var(--font-primary);
-  min-height: 90px;
+  min-height: 100px;
   text-align: left;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Subtle gradient overlay for depth */
+.dashboard-hero-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+  pointer-events: none;
+  border-radius: inherit;
 }
 
 .dashboard-hero-card:active {
@@ -98,6 +123,28 @@
   background: var(--color-gray-100);
   cursor: default;
   pointer-events: none;
+  box-shadow: none;
+}
+
+.dashboard-hero-card--skeleton::before {
+  display: none;
+}
+
+/* Shimmer animation for skeleton cards */
+.dashboard-hero-card--shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-gray-100) 25%,
+    var(--color-gray-50) 50%,
+    var(--color-gray-100) 75%
+  );
+  background-size: 200% 100%;
+  animation: dashHeroShimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes dashHeroShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .dashboard-hero-card-content {
@@ -107,18 +154,19 @@
 }
 
 .dashboard-hero-amount {
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   line-height: 1;
   font-variant-numeric: tabular-nums;
   animation: dashCardAmountIn 400ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both;
 }
 
 .dashboard-hero-label {
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   font-weight: 500;
   opacity: 0.85;
+  letter-spacing: 0.04em;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -136,17 +184,25 @@
   opacity: 0.6;
   flex-shrink: 0;
   color: var(--color-hero-text-secondary);
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .dashboard-hero-chevron--dark {
   color: var(--color-hero-text-muted);
+  background: rgba(0, 0, 0, 0.08);
 }
 
 /* ─── Tablet and above ──────────────────────────────────────── */
 
 @media (min-width: 768px) {
   .dashboard-sales-amount {
-    font-size: 2.75rem;
+    font-size: 3.25rem;
   }
 
   .dashboard-sales-count {
@@ -155,7 +211,7 @@
 
   .dashboard-hero-card {
     padding: var(--space-8);
-    min-height: 110px;
+    min-height: 120px;
   }
 
   .dashboard-hero-amount {
@@ -180,4 +236,40 @@
 [data-theme="dark"] .dashboard-hero-card--pay {
   background: var(--color-lime-accent);
   color: var(--color-dark-text);
+}
+
+[data-theme="dark"] .dashboard-hero-card {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .dashboard-hero-card::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 50%);
+}
+
+[data-theme="dark"] .dashboard-sales-amount {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .dashboard-sales-hero .dashboard-sales-label::after {
+  background: var(--dash-teal-start);
+  opacity: 0.7;
+}
+
+[data-theme="dark"] .dashboard-hero-chevron {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .dashboard-hero-chevron--dark {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .dashboard-hero-card--shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-gray-200) 25%,
+    var(--color-gray-100) 50%,
+    var(--color-gray-200) 75%
+  );
+  background-size: 200% 100%;
+  animation: dashHeroShimmer 1.5s ease-in-out infinite;
 }

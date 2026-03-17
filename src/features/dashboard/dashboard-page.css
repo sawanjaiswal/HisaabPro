@@ -21,8 +21,8 @@
   --dash-side-padding: 16px;
   --dash-inner-padding: 24px;
   --dash-section-gap: 24px;
-  /* Entrance animation */
-  --dash-stagger-base: 60ms;
+  /* Entrance animation — slower stagger for premium feel */
+  --dash-stagger-base: 80ms;
 }
 
 /* ─── Staggered entrance animation ───────────────────────── */
@@ -83,25 +83,33 @@
 .dashboard-starred      { animation-delay: calc(var(--dash-stagger-base) * 4); }
 .dashboard-transactions { animation-delay: calc(var(--dash-stagger-base) * 5); }
 
-/* ─── Page wrapper with warm gradient ─────────────────────── */
+/* ─── Page wrapper with rich warm-to-cool gradient ───────── */
 .dashboard-page {
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  background: linear-gradient(180deg, var(--color-cream-start) 0%, var(--color-cream-mid) 30%, var(--color-cream-end) 60%, var(--color-gray-0) 100%);
+  background:
+    linear-gradient(
+      180deg,
+      var(--color-cream-start) 0%,
+      var(--color-cream-mid) 20%,
+      var(--color-primary-50) 45%,
+      var(--color-cream-end) 65%,
+      var(--color-gray-0) 100%
+    );
   position: relative;
 }
 
-/* Background pattern overlay */
+/* Background pattern overlay — subtle, restrained */
 .dashboard-bg-pattern {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 340px;
+  height: 280px;
   background: url('/assets/bg-pattern.png') no-repeat center top;
   background-size: cover;
-  opacity: 0.12;
+  opacity: 0.08;
   pointer-events: none;
   z-index: 0;
 }
@@ -112,8 +120,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  padding: 8px var(--dash-side-padding) 0;
+  gap: var(--space-6);
+  padding: var(--space-5) var(--dash-side-padding) 0;
   position: relative;
   z-index: 1;
 }
@@ -129,6 +137,8 @@
   flex: 1;
   position: relative;
   z-index: 1;
+  border-radius: var(--space-6) var(--space-6) 0 0;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 /* ─── Section headers ──────────────────────────────────────── */
@@ -141,9 +151,23 @@
 
 .dashboard-section-title {
   font-size: 1.0625rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--dash-text-primary);
   letter-spacing: -0.025em;
+  position: relative;
+  padding-bottom: var(--space-1);
+}
+
+.dashboard-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 24px;
+  height: 2px;
+  background: var(--dash-teal-start);
+  border-radius: var(--radius-full);
+  opacity: 0.5;
 }
 
 .dashboard-section-link {
@@ -158,19 +182,27 @@
   align-items: center;
   gap: 4px;
   min-height: 44px;
-  padding: 0;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
   -webkit-tap-highlight-color: transparent;
-  transition: opacity var(--duration-fast) var(--ease-default);
+  transition:
+    opacity var(--duration-fast) var(--ease-default),
+    background var(--duration-normal) var(--ease-default);
+}
+
+.dashboard-section-link:hover {
+  background: var(--dash-teal-10);
 }
 
 .dashboard-section-link:active {
   opacity: 0.7;
+  background: var(--dash-teal-10);
 }
 
 .dashboard-section-link:focus-visible {
   outline: 2px solid var(--color-primary-500);
   outline-offset: 2px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-full);
 }
 
 /* ─── Skeleton shimmer ──────────────────────────────────────── */
@@ -222,7 +254,14 @@
   --dash-teal-10: rgba(63, 174, 214, 0.12);
   --dash-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(43, 51, 66, 0.3);
   --dash-avatar-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-  background: linear-gradient(180deg, #0B0F15 0%, #0E1420 30%, #111827 60%, #141922 100%);
+  background: linear-gradient(
+    180deg,
+    #0B0F15 0%,
+    #0E1420 20%,
+    #0D1A24 45%,
+    #111827 65%,
+    #141922 100%
+  );
 }
 
 [data-theme="dark"] .dashboard-bg-pattern {
@@ -231,10 +270,24 @@
 
 [data-theme="dark"] .dashboard-white-section {
   background: var(--color-gray-50);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .dashboard-section-title::after {
+  background: var(--color-primary-500);
+  opacity: 0.4;
 }
 
 [data-theme="dark"] .dashboard-section-link {
   color: var(--color-primary-500);
+}
+
+[data-theme="dark"] .dashboard-section-link:hover {
+  background: rgba(63, 174, 214, 0.1);
+}
+
+[data-theme="dark"] .dashboard-section-link:active {
+  background: rgba(63, 174, 214, 0.1);
 }
 
 /* ─── Reduced motion ────────────────────────────────────────── */
