@@ -34,6 +34,17 @@ import gstReturnRoutes from './routes/gst-returns.js'
 import tdsTcsRoutes from './routes/tds-tcs.js'
 import einvoiceRoutes from './routes/einvoice.js'
 import ewaybillRoutes from './routes/ewaybill.js'
+import recurringRoutes from './routes/recurring.js'
+import currencyRoutes from './routes/currency.js'
+import reconciliationRoutes from './routes/reconciliation.js'
+import accountingRoutes from './routes/accounting.js'
+import bankRoutes from './routes/bank.js'
+import expenseRoutes from './routes/expenses.js'
+import otherIncomeRoutes from './routes/other-income.js'
+import chequeRoutes from './routes/cheques.js'
+import financialReportRoutes from './routes/financial-reports.js'
+import loanRoutes from './routes/loans.js'
+import fyClosureRoutes from './routes/fy-closure.js'
 import adminRoutes from './routes/admin/index.js'
 import logger from './lib/logger.js'
 
@@ -135,9 +146,22 @@ app.use('/api/hsn', hsnRoutes)
 app.use('/api/gstin', gstinRoutes)
 app.use('/api/reports', taxReportRoutes)
 app.use('/api/gst/returns', gstReturnRoutes)
+app.use('/api/gst/reconciliation', reconciliationRoutes)
 app.use('/api/reports', tdsTcsRoutes)
 app.use('/api/einvoice', einvoiceRoutes)
 app.use('/api/ewaybill', ewaybillRoutes)
+app.use('/api/recurring', recurringRoutes)
+app.use('/api/currency', currencyRoutes)
+
+// Phase 3 — Accounting & Finance
+app.use('/api/accounting', accountingRoutes)
+app.use('/api/bank-accounts', bankRoutes)
+app.use('/api/expenses', expenseRoutes)
+app.use('/api/other-income', otherIncomeRoutes)
+app.use('/api/cheques', chequeRoutes)
+app.use('/api/reports/financial', financialReportRoutes)
+app.use('/api/loans', loanRoutes)
+app.use('/api/fy-closure', fyClosureRoutes)
 
 // ---------------------------------------------------------------------------
 // Admin panel routes — separate JWT audience ('admin'), no CSRF

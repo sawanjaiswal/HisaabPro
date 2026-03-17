@@ -1,6 +1,6 @@
 # Feature Map: HisaabPro
 
-Last updated: 2026-03-17 | Total: 70 | Done: 60 | Needs Integration: 10 | Partial: 0 | Not Started: 0
+Last updated: 2026-03-17 | Total: 90 | Done: 80 | Needs Integration: 10 | Partial: 0 | Not Started: 0
 
 > **Phase 1 MVP**: Frontend (33 routes, 221 files) + Backend (120+ endpoints, 47 Prisma models) built and wired. SSOT cleanup done (CSS variables, config constants). PWA complete (SW + manifest + cache strategies). Remaining: unit tests, OTP activation, external integrations, staging deploy.
 
@@ -123,13 +123,38 @@ Last updated: 2026-03-17 | Total: 70 | Done: 60 | Needs Integration: 10 | Partia
 | 69 | Request Signing / Replay Protection | Done | P2 | — | `replay-protection.ts` middleware · Nonce + timestamp (5min window) · In-memory store with auto-eviction · Wired on payment + document mutations |
 | 70 | Security Headers Hardening | Done | P1 | — | Helmet with full CSP directives · HSTS (prod) · CORP · COOP · Referrer-Policy · X-Frame via frameAncestors:'none' |
 
+## 2. Phase 2 — GST & Compliance
+
+| # | Feature | Status | Priority | Notes |
+|---|---------|--------|----------|-------|
+| 63 | GST Invoice Engine (CGST/SGST/IGST auto-calc) | Done | P0 | `tax-calc.ts` + `document-calc.ts` · Place of supply determines IGST vs CGST+SGST · Amounts in paise, rates in basis points |
+| 64 | Tax Categories / Tax Groups | Done | P0 | `TaxCategory` model · 0%/5%/12%/18%/28% defaults · Cess support (% or fixed/unit) |
+| 65 | Place of Supply | Done | P0 | `placeOfSupply` on Document · 2-digit state codes · Determines inter/intra-state |
+| 66 | GSTR-1 Export (JSON for filing) | Done | P1 | `gst-return.service.ts` · B2B/B2CL/B2CS/CDNR/CDNUR categories · JSON export |
+| 67 | GSTR-1 Auto-Reconciliation | Done | P1 | `reconciliation.service.ts` · Upload GSTR data → match against books · 4 statuses: Matched/Mismatched/Missing/Extra |
+| 68 | GSTR-3B Report | Done | P1 | Outward supplies (RCM/non-RCM split) + ITC + CN adjustment + net payable |
+| 69 | GSTR-9 Annual Return | Done | P1 | Full FY summary: sales/purchases/CN/DN with tax breakup |
+| 70 | Tax Summary + HSN Summary + Tax Ledger | Done | P1 | FE: TaxSummaryPage + GstReturnsPage · 3 report endpoints |
+| 71 | E-Invoicing (IRN generation, QR code) | Done | P0 | `einvoice.service.ts` · NIC IRP sandbox mock · 64-char IRN · QR code · 24h cancel · FE: EInvoiceCard in document detail |
+| 72 | E-Way Bill (auto-generate, transport details) | Done | P0 | `ewaybill.service.ts` · Rs 50K threshold · Part-B updates · 24h cancel · FE: EWayBillCard with generate form |
+| 73 | Reverse Charge Mechanism | Done | P1 | `isReverseCharge` on Document · GSTR-3B RCM split |
+| 74 | Composite Scheme Support | Done | P1 | `composition.service.ts` · Flat rates by business type · "Bill of Supply" label · No tax breakup |
+| 75 | Additional Cess | Done | P1 | `cessRate`/`cessAmount` on line items · PERCENTAGE or FIXED_PER_UNIT · Flows through to GSTR |
+| 76 | HSN Auto-fill | Done | P2 | `HsnCode` model (12K pre-seeded) · `/api/hsn/search` · Auto-carry per product |
+| 77 | TDS/TCS Support | Done | P1 | `tds-tcs.service.ts` · tdsRate/tdsAmount/tcsRate/tcsAmount on Document · FE: TdsTcsReportPage |
+| 78 | GSTIN Verification | Done | P1 | `/api/gstin/verify` · Party GSTIN validation |
+| 79 | Tax Reports | Done | P1 | Tax Summary, HSN Summary, Tax Ledger · FE: 2 pages + report hub cards |
+| 80 | Credit Notes / Debit Notes | Done | P0 | CN/DN in document service · Stock effects (CN = return) · Outstanding effects · Bi-directional linking |
+| 81 | Multi-currency Support | Done | P2 | `ExchangeRate` model · `currency.service.ts` · Rate * 10000 precision · INR base · 11 currencies · FE: CurrencySettingsPage (building) |
+| 82 | Recurring Invoices | Done | P2 | `RecurringInvoice` model · `recurring.service.ts` · 4 frequencies · Template cloning · Scheduler · FE: RecurringListPage (building) |
+
 ## Status Summary
 
 | Status | Count | Details |
 |--------|-------|---------|
-| **Done** | 60 | FE + BE built and wired |
+| **Done** | 80 | Phase 1 (60) + Phase 2 GST (20) |
 | **Needs Integration** | 10 | Code exists, needs external service credentials |
-| **Not Started** | 0 | All feature code written |
+| **Not Started** | 0 | All Phase 1 + Phase 2 feature code written |
 
 ## Priority Summary
 
@@ -179,27 +204,29 @@ Last updated: 2026-03-17 | Total: 70 | Done: 60 | Needs Integration: 10 | Partia
 ```
 Frontend (React 19 + Vite)          Backend (Express + Prisma)
 ─────────────────────────           ──────────────────────────
-33 routes · 221 source files        120+ endpoints · 20 route modules
-Tailwind CSS 4 + CSS variables      47 Prisma models · PostgreSQL
+38+ routes · 280+ source files      150+ endpoints · 28 route modules
+Tailwind CSS 4 + CSS variables      55+ Prisma models · PostgreSQL
 React-PDF (client-side)             JWT auth (httpOnly cookies)
 Dexie (IndexedDB queue)             Rate limiting (4 tiers)
 Capacitor 8 (mobile)                CSRF + CAPTCHA + Audit log
 Offline banner + sync UI            Multi-tenant (businessId isolation)
+                                    GST engine (CGST/SGST/IGST/Cess)
+                                    E-Invoice + E-Way Bill (NIC sandbox)
 ```
 
 ## Next Steps (Priority Order)
 
 ### Ship-blocking
-1. ~~**Service Worker + PWA manifest**~~ ✅ Done — SW (workbox) + manifest + cache strategies + offline fallback
+1. ~~**Service Worker + PWA manifest**~~ Done
 2. **Unit tests (Vitest)** — 219+ tests passing (utils). Expanding to hooks, validation, services.
-3. **Enable OTP auth flow** — code ready + commented. Set `VITE_AUTH_MODE=otp` + uncomment routes when ready.
+3. **Enable OTP auth flow** — code ready. Set `VITE_AUTH_MODE=otp` + uncomment routes.
 
 ### Production readiness
-4. **Staging deploy** — Vercel (FE) + Render (BE) + Neon (DB). Deploy configs created (vercel.json, render.yaml, Dockerfile).
-5. **External credentials** — Razorpay, FCM, Aisensy, Resend, MSG91, Turnstile. Config only, no code changes.
-6. **E2E test coverage** — expand from 4 basic suites to per-feature journeys on 4 viewports.
+4. **Staging deploy** — Vercel (FE) + Render (BE) + Neon (DB).
+5. **External credentials** — Razorpay, FCM, Aisensy, Resend, MSG91, Turnstile.
+6. **E2E test coverage** — expand from 4 basic suites to per-feature journeys.
 
-### Post-launch
-7. **Analytics** — Plausible or Mixpanel for user behavior tracking.
-8. **Performance monitoring** — Sentry or LogRocket for error tracking.
-9. **Phase 2: GST** — Tax calculations, GSTIN, e-invoicing (separate PRD needed).
+### Next phases
+7. ~~**Phase 2: GST**~~ Done — 20 features (tax engine, GSTR-1/3B/9, e-invoice, e-way bill, TDS/TCS, CN/DN, multi-currency, recurring)
+8. ~~**Phase 3: Accounting & Finance**~~ Done — 22 features (double-entry ledger, journal entries, trial balance, P&L, balance sheet, cash flow, bank accounts, expenses, other income, cheques, loans, aging reports, profitability, discounts, Tally export, FY closure)
+9. **Phase 4: Advanced Inventory & POS** — Barcode, batch tracking, multi-godown, POS mode (16 features)

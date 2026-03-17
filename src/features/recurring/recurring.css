@@ -1,0 +1,425 @@
+/* ── Recurring Invoices — Feature Styles ─────────────────────────────────── */
+/* Mobile-first (375px base). All values from design tokens — no hardcoded hex. */
+
+/* ── Skeleton loader ───────────────────────────────────────────────────── */
+
+.recurring-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+}
+
+.recurring-skeleton__card {
+  height: 110px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(
+    90deg,
+    var(--color-gray-100) 25%,
+    var(--color-gray-50) 50%,
+    var(--color-gray-100) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Filter pills ──────────────────────────────────────────────────────── */
+
+.recurring-filter-pills {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-bottom: var(--space-1);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: var(--space-4);
+}
+
+.recurring-filter-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.recurring-filter-pill {
+  flex-shrink: 0;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  color: var(--color-gray-600);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background var(--duration-fast) var(--ease-default),
+              color var(--duration-fast) var(--ease-default),
+              border-color var(--duration-fast) var(--ease-default);
+}
+
+.recurring-filter-pill--active {
+  background: var(--color-primary-500);
+  color: var(--color-gray-0);
+  border-color: var(--color-primary-500);
+}
+
+/* ── Action bar ───────────────────────────────────────────────────────── */
+
+.recurring-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+  gap: var(--space-2);
+}
+
+.recurring-count {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  font-weight: 500;
+}
+
+.recurring-action-bar__buttons {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────── */
+
+.recurring-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+  transition: opacity var(--duration-fast) var(--ease-default),
+              background var(--duration-fast) var(--ease-default);
+}
+
+.recurring-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.recurring-btn--primary {
+  background: var(--color-primary-500);
+  color: var(--color-gray-0);
+}
+
+.recurring-btn--primary:hover:not(:disabled) {
+  background: var(--color-primary-600);
+}
+
+.recurring-btn--secondary {
+  background: var(--color-gray-100);
+  color: var(--color-gray-700);
+  border: 1.5px solid var(--color-gray-200);
+}
+
+.recurring-btn--secondary:hover:not(:disabled) {
+  background: var(--color-gray-200);
+}
+
+/* ── Card list ────────────────────────────────────────────────────────── */
+
+.recurring-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ── Recurring card ───────────────────────────────────────────────────── */
+
+.recurring-card {
+  background: var(--color-gray-0);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4) var(--space-5);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.recurring-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.recurring-card__title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.recurring-card__frequency {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.recurring-card__party {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  margin: 0;
+}
+
+.recurring-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.recurring-card__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+}
+
+/* ── Card actions ─────────────────────────────────────────────────────── */
+
+.recurring-card__actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.recurring-card__action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1.5px solid transparent;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background var(--duration-fast) var(--ease-default),
+              border-color var(--duration-fast) var(--ease-default);
+}
+
+.recurring-card__action-btn--pause {
+  background: var(--color-warning-bg-subtle);
+  color: var(--color-warning-700);
+  border-color: var(--color-warning-100);
+}
+
+.recurring-card__action-btn--pause:hover {
+  background: var(--color-warning-100);
+}
+
+.recurring-card__action-btn--resume {
+  background: var(--color-success-bg-subtle);
+  color: var(--color-success-700);
+  border-color: var(--color-success-100);
+}
+
+.recurring-card__action-btn--resume:hover {
+  background: var(--color-success-100);
+}
+
+.recurring-card__action-btn--delete {
+  background: var(--color-error-bg-subtle);
+  color: var(--color-error-600);
+  border-color: var(--color-error-100);
+}
+
+.recurring-card__action-btn--delete:hover {
+  background: var(--color-error-100);
+}
+
+/* ── Empty state ──────────────────────────────────────────────────────── */
+
+.recurring-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+  gap: var(--space-3);
+}
+
+.recurring-empty__icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-xl);
+  background: var(--color-primary-bg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary-400);
+}
+
+.recurring-empty__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  margin: 0;
+}
+
+.recurring-empty__desc {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  margin: 0;
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+/* ── Pagination ───────────────────────────────────────────────────────── */
+
+.recurring-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.recurring-pagination__info {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  font-weight: 500;
+}
+
+/* ── Create drawer form ───────────────────────────────────────────────── */
+
+.recurring-drawer__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.recurring-drawer__error {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-error-bg);
+  color: var(--color-error-700);
+  font-size: 0.875rem;
+  margin: 0;
+  border: 1px solid var(--color-error-border);
+}
+
+.recurring-drawer__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.recurring-drawer__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-gray-700);
+}
+
+.recurring-drawer__input,
+.recurring-drawer__select {
+  height: 48px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  font-size: 1rem;
+  color: var(--color-gray-800);
+  font-family: var(--font-primary);
+  outline: none;
+  transition: border-color var(--duration-fast) var(--ease-default);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.recurring-drawer__input:focus,
+.recurring-drawer__select:focus {
+  border-color: var(--color-primary-400);
+}
+
+.recurring-drawer__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.recurring-drawer__toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.recurring-drawer__toggle input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--color-primary-500);
+  flex-shrink: 0;
+}
+
+.recurring-drawer__toggle-label {
+  font-size: 0.9375rem;
+  color: var(--color-gray-700);
+  font-weight: 500;
+}
+
+.recurring-drawer__submit-btn {
+  width: 100%;
+  height: 52px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: var(--color-primary-500);
+  color: var(--color-gray-0);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-primary);
+  transition: background var(--duration-fast) var(--ease-default),
+              opacity var(--duration-fast) var(--ease-default);
+}
+
+.recurring-drawer__submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.recurring-drawer__submit-btn:hover:not(:disabled) {
+  background: var(--color-primary-600);
+}
+
+/* ── Tablet (768px+) ──────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .recurring-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .recurring-empty {
+    padding: var(--space-8);
+  }
+}
+
+/* ── Desktop (1024px+) ────────────────────────────────────────────────── */
+
+@media (min-width: 1024px) {
+  .recurring-list {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}

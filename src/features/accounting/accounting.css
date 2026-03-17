@@ -1,0 +1,607 @@
+/* === ACCOUNTING — Shared styles for all accounting pages === */
+
+/* ─── Page wrapper ─────────────────────────────────────────────────────────── */
+
+.acc-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ─── Account group section ────────────────────────────────────────────────── */
+
+.acc-group {
+  background: var(--color-gray-0);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.acc-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-4) var(--space-4);
+  background: transparent;
+  border: none;
+  border-left: 4px solid transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 52px;
+  transition: background var(--duration-fast) var(--ease-default);
+  text-align: left;
+}
+
+.acc-group-header:active {
+  background: var(--color-gray-50);
+}
+
+.acc-group-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.acc-group-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.acc-group-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.acc-group-count {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-gray-400);
+  background: var(--color-gray-100);
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+}
+
+.acc-group-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-gray-500);
+}
+
+.acc-group-balance {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+}
+
+/* ─── Account list ──────────────────────────────────────────────────────────── */
+
+.acc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-gray-100);
+}
+
+.acc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-gray-100);
+  gap: var(--space-3);
+  min-height: 52px;
+}
+
+.acc-row:last-child {
+  border-bottom: none;
+}
+
+.acc-row-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: 1;
+  min-width: 0;
+}
+
+.acc-code-badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 3px 7px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+.acc-row-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.acc-row-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-gray-700);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.acc-row-sub {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+}
+
+.acc-row-balance {
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ─── Journal Entry cards ────────────────────────────────────────────────────── */
+
+.je-filters {
+  margin-bottom: var(--space-3);
+}
+
+.je-count {
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+  margin-bottom: var(--space-3);
+}
+
+.je-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.je-card {
+  background: var(--color-gray-0);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.je-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.je-card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.je-type-badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.je-entry-num {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-gray-600);
+  font-family: var(--font-mono);
+}
+
+.je-status-badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.je-card-body {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.je-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.je-date {
+  font-size: 0.8125rem;
+  color: var(--color-gray-600);
+}
+
+.je-narration {
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.je-card-amounts {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.je-amount-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.je-amount-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-gray-400);
+  width: 14px;
+  text-align: right;
+}
+
+.je-amount-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  font-feature-settings: 'tnum';
+}
+
+.je-load-more {
+  width: 100%;
+  margin-top: var(--space-4);
+}
+
+/* ─── Trial balance ──────────────────────────────────────────────────────────── */
+
+.tb-date-input {
+  height: 36px;
+  padding: 0 var(--space-3);
+  font-family: var(--font-primary);
+  font-size: 0.875rem;
+  color: var(--color-gray-700);
+  background: var(--color-gray-0);
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: border-color var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tb-date-input:focus {
+  border-color: var(--color-primary-400);
+  outline: 2px solid var(--color-primary-400);
+  outline-offset: 2px;
+}
+
+.tb-balance-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  margin-bottom: var(--space-4);
+  width: fit-content;
+}
+
+.tb-balance-chip.balanced {
+  background: var(--color-success-bg-subtle);
+  color: var(--color-success-700);
+}
+
+.tb-balance-chip.unbalanced {
+  background: var(--color-error-bg-subtle);
+  color: var(--color-error-700);
+}
+
+.tb-balance-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.tb-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.tb-table {
+  width: 100%;
+  min-width: 480px;
+  border-collapse: collapse;
+  background: var(--color-gray-0);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.tb-th {
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-gray-500);
+  text-align: left;
+  background: var(--color-gray-50);
+  border-bottom: 1px solid var(--color-gray-100);
+  white-space: nowrap;
+}
+
+.tb-th-num {
+  text-align: right;
+}
+
+.tb-row {
+  border-bottom: 1px solid var(--color-gray-100);
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+.tb-row:last-child {
+  border-bottom: none;
+}
+
+.tb-row:hover {
+  background: var(--color-gray-50);
+}
+
+.tb-td {
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.875rem;
+  vertical-align: middle;
+}
+
+.tb-code {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-primary-500);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tb-name {
+  color: var(--color-gray-700);
+}
+
+.tb-name-text {
+  display: block;
+}
+
+.tb-subtype {
+  display: block;
+  font-size: 0.6875rem;
+  color: var(--color-gray-400);
+}
+
+.tb-num {
+  text-align: right;
+  font-feature-settings: 'tnum';
+  white-space: nowrap;
+}
+
+.tb-debit {
+  color: var(--color-gray-700);
+}
+
+.tb-credit {
+  color: var(--color-gray-700);
+}
+
+.tb-totals-row {
+  background: var(--color-gray-50);
+  border-top: 2px solid var(--color-gray-200);
+}
+
+.tb-totals-label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  padding: var(--space-4);
+}
+
+.tb-total {
+  font-weight: 700;
+  color: var(--color-gray-900);
+  font-size: 0.9375rem;
+}
+
+/* ─── Spacing utility ────────────────────────────────────────────────────────── */
+
+.mb-3 { margin-bottom: var(--space-3); }
+
+/* ─── Responsive ─────────────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .acc-page {
+    gap: var(--space-4);
+  }
+
+  .acc-group-header {
+    padding: var(--space-5);
+  }
+
+  .acc-row {
+    padding: var(--space-4) var(--space-5);
+  }
+
+  .je-card {
+    padding: var(--space-5);
+  }
+
+  .tb-table {
+    min-width: 0;
+  }
+}
+
+/* ─── FY Closure ──────────────────────────────────────────────────────────── */
+
+.fy-close-card {
+  background: var(--color-gray-0);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  margin-bottom: var(--space-4);
+}
+
+.fy-close-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.fy-close-card__body {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+}
+
+.fy-close-card__input {
+  flex: 1;
+  height: 44px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  font-size: 1rem;
+  font-family: var(--font-mono, monospace);
+  color: var(--color-gray-800);
+  text-align: center;
+  letter-spacing: 0.1em;
+  outline: none;
+}
+
+.fy-close-card__input:focus { border-color: var(--color-primary-400); }
+
+.fy-close-card__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--color-primary-500);
+  color: var(--color-gray-0);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+  white-space: nowrap;
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+.fy-close-card__btn:hover { background: var(--color-primary-600); }
+.fy-close-card__btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.fy-close-card__note {
+  padding: var(--space-2) var(--space-5) var(--space-4);
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+  margin: 0;
+}
+
+.fy-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.fy-card {
+  background: var(--color-gray-0);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-4);
+  border-left: 4px solid var(--color-gray-300);
+}
+
+.fy-card--closed { border-left-color: var(--color-success-500); }
+.fy-card--reopened { border-left-color: var(--color-warning-500); }
+
+.fy-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.fy-card__fy {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.fy-card__status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.fy-card__status--closed { background: var(--color-success-bg-subtle); color: var(--color-success-700); }
+.fy-card__status--reopened { background: var(--color-warning-bg-subtle); color: var(--color-warning-700); }
+
+.fy-card__details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.fy-card__detail {
+  font-size: 0.8125rem;
+  color: var(--color-gray-600);
+}
+
+.fy-card__reopen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-warning-400);
+  background: var(--color-warning-bg-subtle);
+  color: var(--color-warning-700);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  min-height: 36px;
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+.fy-card__reopen-btn:hover { background: var(--color-warning-100); }
+.fy-card__reopen-btn:disabled { opacity: 0.5; cursor: not-allowed; }

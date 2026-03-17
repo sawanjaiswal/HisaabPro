@@ -1,0 +1,125 @@
+/** Balance Sheet Report Page
+ *
+ * Assets / Liabilities / Equity sections with as-of date.
+ * 4 UI states.
+ */
+
+import { useState, useEffect, useCallback } from 'react'
+import { RefreshCw, BarChart3 } from 'lucide-react'
+import { AppShell } from '@/components/layout/AppShell'
+import { Header } from '@/components/layout/Header'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { ErrorState } from '@/components/feedback/ErrorState'
+import { useToast } from '@/hooks/useToast'
+import { ApiError } from '@/lib/api'
+import { ROUTES } from '@/config/routes.config'
+import { getBalanceSheet } from './finance.service'
+import type { BalanceSheetData, BalanceSheetSection } from './finance.types'
+import './report-finance.css'
+
+function formatPaise(p: number): string {
+  return (p / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR' })
+}
+
+function SectionCard({ section }: { section: BalanceSheetSection }) {
+  return (
+    <div className="finance-section">
+      <div className="finance-section__header">
+        <span className="finance-section__title">{section.label}</span>
+        <span className="finance-section__total">{formatPaise(section.total)}</span>
+      </div>
+      {section.items.length > 0 && (
+        <div className="finance-section__rows">
+          {section.items.map((item) => (
+            <div key={item.label} className="finance-section__row">
+              <span className="finance-section__row-label">{item.label}</span>
+              <span className="finance-section__row-amount">{formatPaise(item.amount)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default function BalanceSheetPage() {
+  const toast = useToast()
+  const [asOf, setAsOf] = useState(() => new Date().toISOString().split('T')[0])
+  const [data, setData] = useState<BalanceSheetData | null>(null)
+  const [fetchStatus, setFetchStatus] = useState<'loading' | 'error' | 'success'>('loading')
+  const [refreshKey, setRefreshKey] = useState(0)
+
+  useEffect(() => {
+    const controller = new AbortController()
+    setFetchStatus('loading')
+    getBalanceSheet(asOf, controller.signal)
+      .then((d) => { setData(d); setFetchStatus('success') })
+      .catch((err: unknown) => {
+        if (err instanceof Error && err.name === 'AbortError') return
+        setFetchStatus('error')
+        toast.error(err instanceof ApiError ? err.message : 'Failed to load balance sheet')
+      })
+    return () => controller.abort()
+  }, [asOf, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
+
+  if (fetchStatus === 'loading') {
+    return (
+      <AppShell>
+        <Header title="Balance Sheet" backTo={ROUTES.REPORTS} />
+        <PageContainer>
+          <div className="finance-skeleton" aria-busy="true">
+            {['sk-1', 'sk-2', 'sk-3'].map((k) => <div key={k} className="finance-skeleton__section" />)}
+          </div>
+        </PageContainer>
+      </AppShell>
+    )
+  }
+
+  if (fetchStatus === 'error') {
+    return (
+      <AppShell>
+        <Header title="Balance Sheet" backTo={ROUTES.REPORTS} />
+        <PageContainer>
+          <ErrorState title="Could not load balance sheet" message="Check your connection and try again." onRetry={refresh} />
+        </PageContainer>
+      </AppShell>
+    )
+  }
+
+  return (
+    <AppShell>
+      <Header title="Balance Sheet" backTo={ROUTES.REPORTS} />
+      <PageContainer>
+        <div className="finance-date-bar">
+          <span className="finance-date-bar__label">As of</span>
+          <input type="date" className="finance-date-bar__input" value={asOf} onChange={(e) => setAsOf(e.target.value)} aria-label="As of date" />
+          <button type="button" className="finance-date-bar__refresh-btn" onClick={refresh} aria-label="Refresh balance sheet">
+            <RefreshCw size={14} aria-hidden="true" />
+          </button>
+        </div>
+
+        {!data && (
+          <div className="finance-empty">
+            <div className="finance-empty__icon" aria-hidden="true"><BarChart3 size={32} /></div>
+            <p className="finance-empty__title">No data for this date</p>
+            <p className="finance-empty__desc">Try a different date.</p>
+          </div>
+        )}
+
+        {data && (
+          <>
+            <SectionCard section={data.assets} />
+            <SectionCard section={data.liabilities} />
+            <SectionCard section={data.equity} />
+            <div className="finance-net-row">
+              <span className="finance-net-row__label">Total Assets</span>
+              <span className="finance-net-row__amount">{formatPaise(data.assets.total)}</span>
+            </div>
+          </>
+        )}
+      </PageContainer>
+    </AppShell>
+  )
+}

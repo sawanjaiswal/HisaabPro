@@ -1,0 +1,300 @@
+/* ── Bank Accounts — Feature Styles ─────────────────────────────────── */
+/* Mobile-first (375px base). All values from design tokens. */
+
+/* ── Skeleton ──────────────────────────────────────────────────────── */
+
+.bank-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+}
+
+.bank-skeleton__card {
+  height: 120px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(
+    90deg,
+    var(--color-gray-100) 25%,
+    var(--color-gray-50) 50%,
+    var(--color-gray-100) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Action bar ───────────────────────────────────────────────────── */
+
+.bank-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.bank-count {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  font-weight: 500;
+}
+
+/* ── Add button ───────────────────────────────────────────────────── */
+
+.bank-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  border: none;
+  background: var(--color-primary-500);
+  color: var(--color-gray-0);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+.bank-add-btn:hover {
+  background: var(--color-primary-600);
+}
+
+/* ── Card list ────────────────────────────────────────────────────── */
+
+.bank-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ── Account card ─────────────────────────────────────────────────── */
+
+.bank-card {
+  background: var(--color-gray-0);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4) var(--space-5);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.bank-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.bank-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1;
+  min-width: 0;
+}
+
+.bank-card__name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bank-card__number {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  font-family: monospace;
+}
+
+.bank-card__type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--color-info-bg-subtle);
+  color: var(--color-info-700);
+  flex-shrink: 0;
+}
+
+.bank-card__type-badge--default {
+  background: var(--color-primary-bg-subtle);
+  color: var(--color-primary-700);
+}
+
+.bank-card__balance {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-gray-900);
+}
+
+.bank-card__balance--negative {
+  color: var(--color-error-600);
+}
+
+/* ── Empty state ──────────────────────────────────────────────────── */
+
+.bank-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+  gap: var(--space-3);
+}
+
+.bank-empty__icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-xl);
+  background: var(--color-primary-bg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary-400);
+}
+
+.bank-empty__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  margin: 0;
+}
+
+.bank-empty__desc {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  margin: 0;
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+/* ── Drawer form ──────────────────────────────────────────────────── */
+
+.bank-drawer__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.bank-drawer__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.bank-drawer__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-gray-700);
+}
+
+.bank-drawer__input,
+.bank-drawer__select {
+  height: 48px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  font-size: 1rem;
+  color: var(--color-gray-800);
+  font-family: var(--font-primary);
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color var(--duration-fast) var(--ease-default);
+}
+
+.bank-drawer__input:focus,
+.bank-drawer__select:focus {
+  border-color: var(--color-primary-400);
+}
+
+.bank-drawer__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.bank-drawer__toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.bank-drawer__toggle input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--color-primary-500);
+  flex-shrink: 0;
+}
+
+.bank-drawer__toggle-label {
+  font-size: 0.9375rem;
+  color: var(--color-gray-700);
+  font-weight: 500;
+}
+
+.bank-drawer__error {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-error-bg);
+  color: var(--color-error-700);
+  font-size: 0.875rem;
+  margin: 0;
+  border: 1px solid var(--color-error-border);
+}
+
+.bank-drawer__submit-btn {
+  width: 100%;
+  height: 52px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: var(--color-primary-500);
+  color: var(--color-gray-0);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-primary);
+  transition: background var(--duration-fast) var(--ease-default),
+              opacity var(--duration-fast) var(--ease-default);
+}
+
+.bank-drawer__submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.bank-drawer__submit-btn:hover:not(:disabled) {
+  background: var(--color-primary-600);
+}
+
+/* ── Tablet (768px+) ──────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .bank-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ── Desktop (1024px+) ────────────────────────────────────────────── */
+
+@media (min-width: 1024px) {
+  .bank-list {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}

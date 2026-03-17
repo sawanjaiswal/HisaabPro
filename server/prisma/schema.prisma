@@ -65,6 +65,10 @@ model User {
   referralEventsAsReferred  ReferralEvent[]      @relation("ReferralEventsReferred")
   referralWithdrawals       ReferralWithdrawal[]
 
+  // Phase 3 — Accounting
+  expensesCreated    Expense[]       @relation("ExpenseCreator")
+  otherIncomesCreated OtherIncome[]  @relation("OtherIncomeCreator")
+
   @@index([phone])
   @@index([referredBy])
   @@index([referralFraudFlags])
@@ -120,8 +124,21 @@ model Business {
   approvals        ApprovalRequest[]
   auditLogs        AuditLog[]
   taxCategories    TaxCategory[]
-  gstReturns       GstReturn[]
-  recurringInvoices RecurringInvoice[]
+  gstReturns            GstReturn[]
+  gstReconciliations    GstReconciliation[]
+  recurringInvoices     RecurringInvoice[]
+  exchangeRates    ExchangeRate[]
+
+  // Phase 3 — Accounting
+  ledgerAccounts        LedgerAccount[]
+  journalEntries        JournalEntry[]
+  bankAccounts          BankAccount[]
+  expenses              Expense[]
+  expenseCategories     ExpenseCategory[]
+  otherIncomes          OtherIncome[]
+  cheques               Cheque[]
+  loanAccounts          LoanAccount[]
+  fyClosures            FinancialYearClosure[]
 
   @@index([name])
 }
@@ -540,6 +557,11 @@ model Document {
   tdsAmount              Int      @default(0) // paise
   tcsRate                Int      @default(0) // basis points
   tcsAmount              Int      @default(0) // paise
+
+  // Multi-currency — Phase 2E
+  currencyCode           String   @default("INR") @db.VarChar(3)
+  exchangeRate           Int      @default(100)   // rate * 100 (1 USD = 8400 means Rs 84.00)
+  foreignCurrencyTotal   Int      @default(0)     // amount in foreign currency minor units
 
   // Profit
   totalCost              Int      @default(0)
@@ -1251,6 +1273,70 @@ model GstReturn {
   @@index([businessId, returnType])
 }
 
+// ─── GSTR-1 Reconciliation — Phase 2E ───────────────────────────────────────
+
+model GstReconciliation {
+  id                  String   @id @default(cuid())
+  businessId          String
+  period              String   // YYYY-MM
+  reconType           String   // GSTR1_VS_BOOKS, GSTR2A_VS_BOOKS, GSTR2B_VS_BOOKS
+  status              String   @default("DRAFT") // DRAFT, IN_PROGRESS, COMPLETED
+
+  // Summary counts
+  totalInvoices       Int      @default(0)
+  matchedCount        Int      @default(0)
+  mismatchedCount     Int      @default(0)
+  missingInGstrCount  Int      @default(0)
+  extraInGstrCount    Int      @default(0)
+
+  // Summary amounts (paise)
+  totalBookValue      Int      @default(0)
+  totalGstrValue      Int      @default(0)
+  differenceValue     Int      @default(0)
+
+  // The uploaded GSTR data (JSON blob)
+  gstrData            Json?
+
+  completedAt         DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  business            Business                 @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  entries             GstReconciliationEntry[]
+
+  @@unique([businessId, period, reconType])
+  @@index([businessId, period])
+}
+
+model GstReconciliationEntry {
+  id                  String   @id @default(cuid())
+  reconciliationId    String
+
+  // Our system data
+  documentId          String?
+  documentNumber      String?
+  documentDate        DateTime?
+  partyGstin          String?  @db.VarChar(15)
+  partyName           String?
+  bookTaxableValue    Int      @default(0) // paise
+  bookTaxAmount       Int      @default(0) // paise
+
+  // GSTR portal data
+  gstrInvoiceNumber   String?
+  gstrInvoiceDate     DateTime?
+  gstrTaxableValue    Int      @default(0) // paise
+  gstrTaxAmount       Int      @default(0) // paise
+
+  // Reconciliation result
+  matchStatus         String   // MATCHED, MISMATCHED, MISSING_IN_GSTR, EXTRA_IN_GSTR
+  taxableValueDiff    Int      @default(0) // paise (book - gstr)
+  taxAmountDiff       Int      @default(0) // paise
+
+  reconciliation      GstReconciliation @relation(fields: [reconciliationId], references: [id], onDelete: Cascade)
+
+  @@index([reconciliationId, matchStatus])
+}
+
 /// Recurring invoice template — auto-generates invoices on schedule
 model RecurringInvoice {
   id                  String    @id @default(cuid())
@@ -1275,4 +1361,327 @@ model RecurringInvoice {
 
   @@index([businessId, status])
   @@index([nextRunDate, status])
+}
+
+// ---------------------------------------------------------------------------
+// Multi-Currency — Phase 2E
+// ---------------------------------------------------------------------------
+
+model ExchangeRate {
+  id           String   @id @default(cuid())
+  businessId   String
+  fromCurrency String   @db.VarChar(3)
+  toCurrency   String   @default("INR") @db.VarChar(3)
+  rate         Int      // rate * 10000 (e.g., 1 USD = 84.5678 INR → 845678)
+  effectiveDate DateTime
+  source       String   @default("MANUAL") // MANUAL, API
+  createdAt    DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, fromCurrency, toCurrency, effectiveDate])
+  @@index([businessId, fromCurrency, effectiveDate])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Phase 3 — Accounting & Finance
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/// Ledger Account — Chart of Accounts node
+/// Every account belongs to one of: ASSET, LIABILITY, EQUITY, INCOME, EXPENSE
+/// Sub-types give finer classification (BANK, CASH, RECEIVABLE, PAYABLE, etc.)
+model LedgerAccount {
+  id            String   @id @default(cuid())
+  businessId    String
+  code          String   // "1000", "2000", etc. — user-visible account code
+  name          String   // "Cash in Hand", "Sales", "HDFC Current A/c"
+  type          String   // ASSET, LIABILITY, EQUITY, INCOME, EXPENSE
+  subType       String?  // BANK, CASH, RECEIVABLE, PAYABLE, TAX, INVENTORY, FIXED_ASSET, CAPITAL, REVENUE, PURCHASE, DIRECT_EXPENSE, INDIRECT_EXPENSE, LOAN
+  parentId      String?  // For tree hierarchy
+  description   String?
+  isSystem      Boolean  @default(false) // System-created (cannot delete)
+  isActive      Boolean  @default(true)
+  // Running balance (paise) — updated on each journal entry post
+  // Positive = debit-normal for ASSET/EXPENSE, credit-normal for LIABILITY/EQUITY/INCOME
+  balance       Int      @default(0)
+  // Link to bank account (if subType=BANK)
+  bankAccountId String?  @unique
+  // Link to party (if subType=RECEIVABLE or PAYABLE)
+  partyId       String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  business      Business        @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  parent        LedgerAccount?  @relation("AccountHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children      LedgerAccount[] @relation("AccountHierarchy")
+  bankAccount   BankAccount?    @relation(fields: [bankAccountId], references: [id], onDelete: SetNull)
+  journalLines  JournalEntryLine[]
+
+  @@unique([businessId, code])
+  @@index([businessId, type, isActive])
+  @@index([businessId, subType])
+  @@index([parentId])
+  @@index([partyId])
+}
+
+/// Journal Entry — the atomic unit of double-entry accounting
+/// Every financial event (invoice, payment, expense, adjustment) creates one
+model JournalEntry {
+  id              String    @id @default(cuid())
+  businessId      String
+  entryNumber     String    // Auto-generated: "JE-2526-001"
+  date            DateTime
+  narration       String?   @db.Text
+  type            String    // SALES, PURCHASE, RECEIPT, PAYMENT, CONTRA, JOURNAL, EXPENSE, CREDIT_NOTE, DEBIT_NOTE, OPENING
+  status          String    @default("DRAFT") // DRAFT, POSTED, VOID
+  // Source reference — what created this entry
+  sourceType      String?   // DOCUMENT, PAYMENT, EXPENSE, MANUAL, OPENING, FY_CLOSURE
+  sourceId        String?   // ID of the source record
+  sourceNumber    String?   // Human-readable ref (INV-2526-001, PAY-001)
+  // Totals (paise) — must be equal for valid entry
+  totalDebit      Int       @default(0)
+  totalCredit     Int       @default(0)
+  // Void info
+  voidedAt        DateTime?
+  voidedBy        String?
+  voidReason      String?
+  // Audit
+  createdBy       String
+  postedAt        DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  business  Business            @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  lines     JournalEntryLine[]
+
+  @@unique([businessId, entryNumber])
+  @@index([businessId, date])
+  @@index([businessId, type])
+  @@index([businessId, status])
+  @@index([sourceType, sourceId])
+}
+
+/// Journal Entry Line — individual debit or credit within an entry
+model JournalEntryLine {
+  id              String   @id @default(cuid())
+  journalEntryId  String
+  accountId       String
+  debit           Int      @default(0) // paise — one of debit/credit must be > 0
+  credit          Int      @default(0) // paise
+  narration       String?  // Line-level note
+  partyId         String?  // For receivable/payable tracking
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  journalEntry  JournalEntry  @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
+  account       LedgerAccount @relation(fields: [accountId], references: [id], onDelete: Restrict)
+
+  @@index([journalEntryId])
+  @@index([accountId])
+  @@index([partyId])
+}
+
+/// Bank Account — linked to a LedgerAccount with subType=BANK
+model BankAccount {
+  id              String    @id @default(cuid())
+  businessId      String
+  bankName        String
+  accountNumber   String
+  ifscCode        String?
+  branchName      String?
+  accountType     String    @default("CURRENT") // CURRENT, SAVINGS, OD, CC
+  openingBalance  Int       @default(0) // paise
+  currentBalance  Int       @default(0) // paise (updated on transactions)
+  isDefault       Boolean   @default(false)
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  business        Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  ledgerAccount   LedgerAccount?
+  cheques         Cheque[]
+
+  @@unique([businessId, accountNumber])
+  @@index([businessId, isActive])
+}
+
+/// Expense record — with category, receipt, and journal entry auto-posting
+model Expense {
+  id              String    @id @default(cuid())
+  businessId      String
+  categoryId      String
+  amount          Int       // paise
+  date            DateTime
+  paymentMode     String    // CASH, UPI, BANK_TRANSFER, CHEQUE, CREDIT_CARD, OTHER
+  bankAccountId   String?   // if paid from bank
+  partyId         String?   // vendor/supplier
+  referenceNumber String?   @db.VarChar(100)
+  notes           String?   @db.Text
+  receiptUrl      String?   // attached receipt image
+  isRecurring     Boolean   @default(false)
+  // GST on expense
+  gstApplicable   Boolean   @default(false)
+  gstRate         Int       @default(0) // basis points
+  gstAmount       Int       @default(0) // paise
+  // Journal entry link
+  journalEntryId  String?   @unique
+  // Soft delete
+  isDeleted       Boolean   @default(false)
+  deletedAt       DateTime?
+  createdBy       String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  business        Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  category        ExpenseCategory  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  createdByUser   User             @relation("ExpenseCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+
+  @@index([businessId, date])
+  @@index([businessId, categoryId])
+  @@index([businessId, isDeleted])
+}
+
+/// Expense Category — user-configurable with system defaults
+model ExpenseCategory {
+  id          String   @id @default(cuid())
+  businessId  String
+  name        String
+  icon        String?  // emoji or icon name
+  color       String   @default("#6B7280")
+  isSystem    Boolean  @default(false) // Rent, Salary, Utilities, etc.
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  business  Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  expenses  Expense[]
+
+  @@unique([businessId, name])
+  @@index([businessId, isActive])
+}
+
+/// Other Income — interest, rent, misc income that's not from sales
+model OtherIncome {
+  id              String    @id @default(cuid())
+  businessId      String
+  category        String    // INTEREST, RENT, COMMISSION, DISCOUNT_RECEIVED, MISCELLANEOUS
+  amount          Int       // paise
+  date            DateTime
+  paymentMode     String    // CASH, UPI, BANK_TRANSFER, CHEQUE, OTHER
+  bankAccountId   String?
+  partyId         String?
+  referenceNumber String?   @db.VarChar(100)
+  notes           String?   @db.Text
+  journalEntryId  String?   @unique
+  isDeleted       Boolean   @default(false)
+  deletedAt       DateTime?
+  createdBy       String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  business        Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  createdByUser   User      @relation("OtherIncomeCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+
+  @@index([businessId, date])
+  @@index([businessId, category])
+  @@index([businessId, isDeleted])
+}
+
+/// Cheque — issued or received, with clearance tracking
+model Cheque {
+  id              String    @id @default(cuid())
+  businessId      String
+  type            String    // ISSUED, RECEIVED
+  chequeNumber    String
+  bankAccountId   String
+  partyId         String?
+  amount          Int       // paise
+  date            DateTime  // cheque date
+  status          String    @default("PENDING") // PENDING, CLEARED, BOUNCED, CANCELLED, RETURNED
+  clearanceDate   DateTime?
+  bouncedAt       DateTime?
+  bounceCharges   Int       @default(0) // paise
+  bounceReason    String?
+  referenceNumber String?   @db.VarChar(100)
+  notes           String?
+  journalEntryId  String?   @unique
+  isDeleted       Boolean   @default(false)
+  deletedAt       DateTime?
+  createdBy       String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  business      Business    @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  bankAccount   BankAccount @relation(fields: [bankAccountId], references: [id], onDelete: Restrict)
+
+  @@index([businessId, status])
+  @@index([businessId, type])
+  @@index([businessId, date])
+  @@index([bankAccountId])
+}
+
+/// Loan Account — track loans given/taken with EMI and interest
+model LoanAccount {
+  id              String    @id @default(cuid())
+  businessId      String
+  type            String    // LOAN_GIVEN, LOAN_TAKEN
+  partyId         String?
+  loanName        String
+  principalAmount Int       // paise
+  interestRate    Int       @default(0) // basis points annual (1200 = 12%)
+  tenure          Int?      // months
+  emiAmount       Int?      // paise (monthly EMI)
+  startDate       DateTime
+  endDate         DateTime?
+  outstandingAmount Int     @default(0) // paise — remaining principal
+  totalInterestPaid Int     @default(0) // paise
+  status          String    @default("ACTIVE") // ACTIVE, CLOSED, DEFAULTED
+  journalEntryId  String?   @unique // opening entry
+  notes           String?   @db.Text
+  createdBy       String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  business        Business          @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  transactions    LoanTransaction[]
+
+  @@index([businessId, type, status])
+}
+
+/// Loan Transaction — EMI payment, interest charge, prepayment
+model LoanTransaction {
+  id              String    @id @default(cuid())
+  loanAccountId   String
+  type            String    // EMI, INTEREST, PREPAYMENT, DISBURSEMENT, CLOSURE
+  amount          Int       // paise (total)
+  principalAmount Int       @default(0) // paise (principal portion)
+  interestAmount  Int       @default(0) // paise (interest portion)
+  date            DateTime
+  journalEntryId  String?   @unique
+  notes           String?
+  createdAt       DateTime  @default(now())
+
+  loanAccount     LoanAccount @relation(fields: [loanAccountId], references: [id], onDelete: Cascade)
+
+  @@index([loanAccountId, date])
+}
+
+/// Financial Year Closure record
+model FinancialYearClosure {
+  id              String    @id @default(cuid())
+  businessId      String
+  financialYear   String    // "2526" = April 2025 – March 2026
+  closedAt        DateTime
+  closedBy        String
+  retainedEarnings Int      @default(0) // paise — P&L carried to Balance Sheet
+  journalEntryId  String?   @unique // closing entry
+  status          String    @default("CLOSED") // CLOSED, REOPENED
+  notes           String?   @db.Text
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  business        Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, financialYear])
 }
