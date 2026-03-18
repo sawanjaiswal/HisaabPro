@@ -1,6 +1,6 @@
 # Feature Map: HisaabPro
 
-Last updated: 2026-03-18 | Total: 98 | Done: 86 | Needs Integration: 10 | Not Started: 2
+Last updated: 2026-03-18 | Total: 95 | Done: 90 | Needs Integration: 8 | Not Started: 5
 
 > **Phase 1 MVP**: Frontend (33 routes, 221 files) + Backend (120+ endpoints, 47 Prisma models) built and wired. SSOT cleanup done (CSS variables, config constants). PWA complete (SW + manifest + cache strategies). Remaining: unit tests, OTP activation, external integrations, staging deploy.
 
@@ -163,13 +163,25 @@ Last updated: 2026-03-18 | Total: 98 | Done: 86 | Needs Integration: 10 | Not St
 | 89 | Smart Greetings (WhatsApp templates) | Done | P3 | 12 templates for Indian festivals + business. Template grid → customize message → pick recipient → WhatsApp deep link. Route: `/greetings`. Accessible from More hub |
 | 90 | Categorized Feature Discovery ("For You") | Done | P3 | More page reorganized into 5 categories: Efficiency, Money & Payments, Accounting & Tax, Marketing & CRM, Tools. Each item has label + description. Staggered section animations |
 
+## Phase 6: BillBook User Requests (Competitive Parity)
+
+> From BillBook Play Store feature request analysis. Users switching from BillBook expect these.
+
+| # | Feature | Status | Priority | Notes |
+|---|---------|--------|----------|-------|
+| 91 | Custom Units (user-defined: Bags, Cans, Hours, variable box sizes) | Not Started | P0 | Blocks wholesalers, service workers, bulk suppliers. Need: add custom unit CRUD, variable box sizes (e.g. "Box of 6" vs "Box of 10"), decimal support for unit prices |
+| 92 | Payment Status Stamps on Invoice PDF | Not Started | P1 | Clear stamp/label on generated invoice: "Paid", "Unpaid", "Cash", "Credit", "Advance Payment". Helps customers track outstanding without confusion |
+| 93 | Vehicle Number & Udyam Aadhar on Invoice | Not Started | P1 | Vehicle Number field for transport/logistics. Udyam Aadhar field (>15 digits) for MSME compliance. Total Quantity (Qty) summary row |
+| 94 | PDF Quality Enhancement | Not Started | P1 | Larger font sizes on exported PDFs (currently too small on print). Sharper logo/stamp/signature rendering. Better resolution for uploaded images |
+| 95 | Duplicate Bill Copy Labels | Not Started | P2 | Auto-generate "Customer Copy" and "Duplicate Copy" labels on printout. Standard accounting requirement for traditional bookkeeping |
+
 ## Status Summary
 
 | Status | Count | Details |
 |--------|-------|---------|
 | **Done** | 90 | Phase 1 (60) + Phase 2 GST (20) + Phase 5 Growth (10) |
 | **Needs Integration** | 0 | All features wired |
-| **Not Started** | 0 | All planned features complete |
+| **Not Started** | 5 | Phase 6 BillBook competitive parity |
 
 ## Priority Summary
 
@@ -245,4 +257,5 @@ Offline banner + sync UI            Multi-tenant (businessId isolation)
 7. ~~**Phase 2: GST**~~ Done — 20 features (tax engine, GSTR-1/3B/9, e-invoice, e-way bill, TDS/TCS, CN/DN, multi-currency, recurring)
 8. ~~**Phase 3: Accounting & Finance**~~ Done — 22 features (double-entry ledger, journal entries, trial balance, P&L, balance sheet, cash flow, bank accounts, expenses, other income, cheques, loans, aging reports, profitability, discounts, Tally export, FY closure)
 9. **Phase 4: Advanced Inventory & POS** — Barcode, batch tracking, multi-godown, POS mode (16 features)
-10. **Phase 5: Growth & Competitive Features** — BillBook-inspired gaps + feature discovery (8 features)
+10. ~~**Phase 5: Growth & Competitive Features**~~ Done — BillBook-inspired gaps + feature discovery (10 features)
+11. **Phase 6: BillBook User Requests** — Custom units, payment stamps, vehicle/Udyam fields, PDF quality, duplicate copies (5 features)
