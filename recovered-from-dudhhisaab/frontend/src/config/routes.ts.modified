@@ -1,0 +1,142 @@
+/**
+ * SSOT for all client-side route paths.
+ * Always import from here — never hardcode route strings in components.
+ *
+ * Usage:
+ *   import { ROUTES } from '../config/routes';
+ *   navigate(ROUTES.dashboard);
+ *   <Link to={ROUTES.customers.list}>Customers</Link>
+ */
+
+export const ROUTES = {
+  /** App root — redirects to dashboard */
+  root: '/',
+
+  // ── Auth ─────────────────────────────────────────────────────────────
+  login: '/login',
+  register: '/register',
+  registerNoWhatsApp: '/register-no-whatsapp',
+  verifyOtp: '/verify-otp',
+  setPassword: '/set-password',
+  forgotPassword: '/forgot-password',
+  interestRegistered: '/interest-registered',
+
+  // ── Onboarding ───────────────────────────────────────────────────────
+  onboarding: '/onboarding',
+  onboardingProfile: '/onboarding-profile',
+  onboardingSupplierSuccess: '/onboarding/supplier-success',
+  welcome: '/welcome',
+
+  // ── Core App ─────────────────────────────────────────────────────────
+  dashboard: '/dashboard',
+
+  customers: {
+    list: '/customers',
+    new: '/customers/new',
+    statement: (id: string) => `/customers/${id}/statement`,
+  },
+
+  suppliers: {
+    list: '/suppliers',
+    new: '/suppliers/new',
+    statement: (id: string) => `/suppliers/${id}/statement`,
+  },
+
+  dailyEntry: '/daily-entry',
+  manageEntries: '/manage-entries',
+  bulkEntry: '/bulk-entry',
+  import: '/import',
+
+  // ── Delivery ─────────────────────────────────────────────────────────
+  deliveryMode: '/delivery-mode',
+  deliveryRoute: '/delivery-route',
+  deliveryRoutePreview: '/delivery-route-preview',
+  deliveryActive: '/delivery-active',
+  deliverySummary: '/delivery-summary',
+  deliveryHistory: '/delivery-history',
+
+  // ── Payments & Orders ────────────────────────────────────────────────
+  payments: {
+    list: '/payments',
+    new: '/payments/new',
+  },
+  orders: '/orders',
+
+  // ── Statements ──────────────────────────────────────────────────
+  monthlyStatements: '/statements/monthly',
+
+  // ── Payment Reminders ─────────────────────────────────────────
+  paymentReminders: '/payment-reminders',
+
+  // ── Analytics & Reports ──────────────────────────────────────────────
+  analytics: '/analytics',
+  reports: {
+    root: '/reports',
+    reconciliation: '/reports/reconciliation',
+    paymentReconciliation: '/reports/payment-reconciliation',
+  },
+  qualityReports: '/quality-reports',
+
+  // ── Products ──────────────────────────────────────────────────────────
+  products: '/products',
+  supplierProducts: '/supplier-products',
+
+  // ── Multi-Business ───────────────────────────────────────────────────
+  business: {
+    list: '/business',
+    create: '/business/new',
+    settings: (id: string) => `/business/${id}/settings`,
+    joinRequests: (id: string) => `/business/${id}/join-requests`,
+  },
+  joinBusiness: '/join-business',
+
+  // ── Team Management ─────────────────────────────────────────────────
+  team: {
+    list: '/team',
+    new: '/team/new',
+    detail: (id: string) => `/team/${id}`,
+  },
+
+  /** Public marketing page for Team Management feature */
+  teamFeature: '/features/team-management',
+
+  /** Public page — team member sets PIN via invite link */
+  teamInvite: (token: string) => `/team-invite/${token}`,
+
+  /** Public page — worker phone + PIN login */
+  workerLogin: '/worker-login',
+
+  /** Worker pages — auth required, worker-only */
+  workerDashboard: '/worker',
+  workerEntry: '/worker/entry',
+  workerPayments: '/worker/payments',
+  workerProfile: '/worker/profile',
+
+  // ── Account & Settings ───────────────────────────────────────────────
+  profile: '/profile',
+  settings: '/settings',
+  deleteAccount: '/delete-account',
+  faq: '/faq',
+  feedback: '/feedback',
+  myQr: '/my-qr',
+  referrals: '/referrals',
+  doodhCoins: '/doodh-coins',
+
+  // ── Public Portal ────────────────────────────────────────────────────
+  /** Customer/Supplier self-serve portal — no login required */
+  portal: (token: string) => `/s/${token}`,
+
+  /** Public monthly statement — shared via WhatsApp, no login required */
+  statementView: (token: string) => `/stmt/${token}`,
+
+  // ── Legal / Public ───────────────────────────────────────────────────
+  privacyPolicy: '/privacy-policy',
+
+  // ── Subscription & Pricing ───────────────────────────────────────────
+  pricing: '/pricing',
+  subscription: {
+    plans: '/subscription/plans',
+    checkout: '/subscription/checkout',
+    manage: '/subscription/manage',
+  },
+} as const;

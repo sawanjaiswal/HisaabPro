@@ -1,0 +1,160 @@
+/**
+ * Rate Limiting Middleware
+ * Protects endpoints from brute force attacks and abuse
+ */
+
+import type { Request } from 'express';
+import rateLimit from 'express-rate-limit';
+import logger from '../utils/logger';
+
+/** Normalize IPv6-mapped IPv4 addresses to plain IPv4 (prevents ERR_ERL_KEY_GEN_IPV6) */
+function normalizeIp(req: Request): string {
+  const ip = req.ip ?? '';
+  return ip.replace(/^::ffff:/, '') || 'unknown';
+}
+
+// SECURITY: DISABLE_RATE_LIMIT must NEVER be true in production
+const isTestMode = process.env.DISABLE_RATE_LIMIT === 'true';
+if (isTestMode && process.env.NODE_ENV === 'production') {
+  logger.error('CRITICAL SECURITY: DISABLE_RATE_LIMIT=true in production! Rate limiting is disabled!');
+  throw new Error('FATAL: DISABLE_RATE_LIMIT must not be true in production');
+}
+
+/**
+ * Strict rate limiter for authentication endpoints
+ * 5 attempts per 15 minutes per IP
+ */
+export const authRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: isTestMode ? 10000 : 5, // Effectively unlimited in test mode
+  message: {
+    error: 'Too many authentication attempts. Please try again later.',
+    retryAfter: 15,
+  },
+  standardHeaders: true, // Return rate limit info in RateLimit-* headers
+  legacyHeaders: false, // Disable X-RateLimit-* headers
+  skipSuccessfulRequests: false,
+  skipFailedRequests: false,
+});
+
+/**
+ * Moderate rate limiter for OTP endpoints
+ * 3 attempts per 10 minutes per IP
+ */
+export const otpRateLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: isTestMode ? 10000 : 3, // Effectively unlimited in test mode
+  message: {
+    error: 'Too many OTP requests. Please try again later.',
+    retryAfter: 10,
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+/**
+ * General API rate limiter
+ * 500 requests per 15 minutes per IP (milk entry workflows need ~40 req per session)
+ */
+export const apiRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: isTestMode ? 10000 : 500, // Effectively unlimited in test mode
+  message: {
+    error: 'Too many requests. Please slow down.',
+    retryAfter: 15,
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => {
+    // Skip rate limiting for health check endpoints
+    return req.path === '/health' || req.path === '/api/health';
+  },
+});
+
+/**
+ * Password reset rate limiter
+ * 3 attempts per hour per IP
+ */
+export const passwordResetRateLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3, // 3 requests per window
+  message: {
+    error: 'Too many password reset attempts. Please try again later.',
+    retryAfter: 60,
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+/**
+ * Webhook rate limiter
+ * 30 requests per minute per IP (webhook providers send bursts)
+ */
+export const webhookRateLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: isTestMode ? 10000 : 30,
+  message: {
+    error: 'Too many webhook requests',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+/**
+ * Per-user write rate limiter
+ * 60 writes per minute per authenticated user (POST/PUT/DELETE)
+ * Catches rapid-fire offline queue replays that the IP-based limiters miss
+ * (multiple users can share an IP on mobile networks)
+ */
+export const userWriteRateLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: isTestMode ? 10000 : 60,
+  message: {
+    error: 'Too many write requests. Please slow down.',
+    retryAfter: 1,
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => {
+    // Key by authenticated userId (falls back to normalized IP if not authenticated)
+    return (req as any).user?.userId || normalizeIp(req);
+  },
+  skip: (req) => {
+    // Only apply to write operations
+    return req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS';
+  },
+});
+
+/**
+ * Global rate limiter for ALL API endpoints
+ * 300 requests per minute per IP (DDoS protection — raised to support milk entry sessions)
+ * Applied before all routes for security
+ */
+export const globalRateLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: isTestMode ? 10000 : 300, // Effectively unlimited in test mode
+  message: {
+    error: 'Too many requests, please try again later',
+    code: 'RATE_LIMIT_EXCEEDED',
+  },
+  standardHeaders: true, // Return RateLimit-Limit, RateLimit-Remaining headers
+  legacyHeaders: false, // Disable X-RateLimit-* headers
+  skip: (req) => {
+    // Skip for health check endpoints only
+    return req.path === '/' || req.path === '/health';
+  },
+});
+
+/**
+ * Per-business rate limiter (500 req/min per businessId).
+ * Prevents one business from monopolizing shared infrastructure.
+ * Apply AFTER authMiddleware so businessId is available.
+ */
+export const perBusinessRateLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: isTestMode ? 10000 : 500,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req: any) => req.user?.businessId ?? req.user?.userId ?? req.ip ?? 'unknown',
+  message: { success: false, error: { code: 'RATE_LIMIT', message: 'Too many requests for this business.' } },
+});

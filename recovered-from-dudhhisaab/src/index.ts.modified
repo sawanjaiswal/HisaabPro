@@ -1,0 +1,631 @@
+import 'dotenv/config';
+
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import compression from 'compression';
+import cookieParser from 'cookie-parser';
+import mongoSanitize from 'express-mongo-sanitize';
+import { initializeSentry } from './utils/sentry';
+initializeSentry();
+import { APP_NAME, APP_VERSION } from './config/branding';
+import { FEATURES, getEnabledFeatures } from './config/features';
+import { BODY_LIMIT_DEFAULT, BODY_LIMIT_FEEDBACK, BODY_LIMIT_BACKUP_RESTORE } from './config/limits';
+import { errorHandler } from './middleware/error-handler.middleware';
+import { apiRateLimiter, globalRateLimiter, webhookRateLimiter, userWriteRateLimiter } from './middleware/rate-limit.middleware';
+import { checkBlockedIP } from './middleware/ip-block.middleware';
+import { performanceMonitoring } from './middleware/performance.middleware';
+import { metricsMiddleware } from './middleware/metrics.middleware';
+import { csrfProtection } from './middleware/csrf.middleware';
+import * as whatsappService from './services/whatsapp/whatsapp.service';
+import { initializeWhatsAppService } from './services/notifications/whatsapp.service';
+import type { WhatsAppConfig } from './services/notifications/whatsapp.service';
+import { prisma } from './db';
+import logger from './utils/logger';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger';
+
+// Import routes
+import authRoutes from './routes/auth.routes';
+import supplierRoutes from './routes/supplier.routes';
+import supplierCenterRoutes from './routes/supplier-center.routes';
+import customerRoutes from './routes/customer.routes';
+import productRoutes from './routes/product.routes';
+import supplierProductRoutes from './routes/supplier-product.routes';
+import paymentRoutes from './routes/payment.routes';
+import dashboardRoutes from './routes/dashboard.routes';
+import userRoutes from './routes/user.routes';
+import adminRoutes from './routes/admin.routes';
+import registrationRoutes from './routes/registration.routes';
+import setupRoutes from './routes/setup.routes';
+import importRoutes from './routes/import.routes';
+import exportRoutes from './routes/export.routes';
+import backupRoutes from './modules/backup/backup.routes';
+import googleDriveRoutes from './routes/google-drive.route';
+import referralRoutes from './modules/referral/referral.routes';
+import deliveryHistoryRoutes from './routes/delivery-history.routes';
+import deliverySessionRoutes from './routes/delivery-session.routes';
+import analyticsRoutes from './routes/analytics.routes';
+import posRoutes from './routes/pos.routes';
+import webhookRoutes from './routes/webhook.routes';
+import whatsappWebhookRoutes from './routes/webhooks.routes';
+import upiRoutes from './routes/upi.routes';
+import reportsRoutes from './routes/reports.routes';
+import subscriptionRoutes from './routes/subscription.routes';
+import qualityRoutes from './routes/quality.routes';
+import adminSubscriptionRoutes from './routes/admin/subscription-plan.routes';
+import adminBillingRoutes from './routes/admin/billing.routes';
+import subscriptionWebhookRoutes from './routes/webhook.routes.subscription';
+import pushRoutes from './routes/push.routes';
+import metricsRoutes from './routes/metrics.routes';
+import feedbackRoutes from './routes/feedback.routes';
+import testRoutes from './routes/test.routes';
+import accountActivityRoutes from './routes/account-activity.routes';
+import milkmanHolidayRoutes from './routes/milkman-holiday.routes';
+import billingRoutes from './routes/billing.routes';
+import competitorRoutes from './modules/competitor-intelligence/competitor.routes';
+import coinsRoutes from './modules/coins/coins.routes';
+import coinsAdminRoutes from './modules/coins/coins.admin.routes';
+import adminNotificationRoutes from './routes/admin/notification.routes';
+import syncRoutes from './routes/sync.routes';
+import { syncLastSyncedAt } from './middleware/sync.middleware';
+import shareRoutes from './routes/share.routes';
+import portalRoutes from './routes/portal.routes';
+import routeRoutes from './routes/route.routes';
+import statementRoutes from './routes/statement.routes';
+import teamRoutes from './routes/team.routes';
+import teamAuthRoutes from './routes/team-auth.routes';
+import teamSelfRoutes from './routes/team-self.routes';
+import businessRoutes from './routes/business.routes';
+
+// Import backup scheduler
+import { initializeBackupSchedulers } from './modules/backup/backup.scheduler';
+
+// Import referral scheduler
+import { initializeReferralSchedulers } from './modules/referral/referral.scheduler';
+
+// Import analytics scheduler
+import { initializeAnalyticsSchedulers } from './services/analytics.scheduler';
+
+// Import notification scheduler
+import { initializeNotificationSchedulers } from './services/notifications/notification.scheduler';
+
+// Import billing scheduler
+import { initializeBillingSchedulers } from './schedulers/billing.scheduler';
+
+// Import competitor intelligence scheduler
+import { initializeCompetitorSchedulers } from './modules/competitor-intelligence/competitor.scheduler';
+
+// Import notification queue (initializes automatically)
+import './queues/notification-queue';
+import { closeQueue } from './queues/notification-queue';
+
+// Import Razorpay startup validation
+import { validateRazorpayOnStartup } from './services/payment/razorpay/razorpay.startup';
+
+// Import billing config service
+import { seedBillingConfig } from './services/billing-config.service';
+import { seedNotificationConfig } from './services/notification-config.service';
+import { syncSupplierLimits } from './services/subscription/sync-supplier-limits';
+import { rehydrateSuspendedUsers, cleanupExpiredTokens } from './services/tokenBlacklist';
+
+const app = express();
+
+// SECURITY: Trust the first proxy (Render, Railway, etc.)
+// This ensures req.ip returns the real client IP, not the proxy's IP
+// Required for rate limiting and IP whitelisting to work correctly behind a reverse proxy
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
+// SECURITY: Serve security.txt for responsible disclosure
+app.use(express.static('public'));
+
+// ============================================
+// MIDDLEWARE
+// ============================================
+
+// SECURITY FIX: No wildcard fallback for CORS
+const corsOrigin = process.env.CORS_ORIGIN;
+if (!corsOrigin) {
+  throw new Error('FATAL: CORS_ORIGIN environment variable is required');
+}
+app.use(cors({
+  origin: corsOrigin.split(',').map(origin => origin.trim()),
+  credentials: true,
+  maxAge: 86400, // Cache preflight responses for 24 hours (avoids extra OPTIONS round-trip)
+}));
+
+// SECURITY: Add security headers with Helmet
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'", 'https://challenges.cloudflare.com'],
+      imgSrc: ["'self'", 'data:', 'https:'],
+      connectSrc: ["'self'", 'https://challenges.cloudflare.com'],
+      frameSrc: ['https://challenges.cloudflare.com'],
+    },
+  },
+  crossOriginEmbedderPolicy: false, // Allow embedding for integrations
+  crossOriginOpenerPolicy: { policy: 'same-origin' },
+}));
+
+// SECURITY: Permissions-Policy header
+app.use((_req, res, next) => {
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
+  next();
+});
+
+// PERFORMANCE: Enable gzip/deflate compression (optimized)
+app.use(compression({
+  level: 6, // Balance between speed and compression (0-9)
+  threshold: 1024, // Only compress responses > 1KB
+  filter: (req: express.Request, res: express.Response) => {
+    // Don't compress if no-transform cache-control is set
+    if (req.headers['cache-control']?.includes('no-transform')) {
+      return false;
+    }
+    // Compress JSON, text, and other compressible content
+    return compression.filter(req, res);
+  }
+}));
+
+// SECURITY: Request size limits (prevent DoS)
+// Feedback routes need larger limit for base64 screenshot uploads (up to 10MB)
+// Must be mounted BEFORE the global 2MB parser so it parses first
+app.use('/api/feedback', express.json({ limit: BODY_LIMIT_FEEDBACK }));
+// Backup restore needs larger limit for full data import
+app.use('/api/user/restore', express.json({ limit: BODY_LIMIT_BACKUP_RESTORE }));
+// Global limit covers all other legitimate use cases (CSV imports, QR data, etc.)
+// Capture rawBody for webhook HMAC signature verification (Razorpay requires raw bytes)
+app.use(express.json({
+  limit: BODY_LIMIT_DEFAULT,
+  verify: (req: any, _res, buf) => {
+    req.rawBody = buf.toString('utf8');
+  },
+}));
+app.use(express.urlencoded({ extended: true, limit: BODY_LIMIT_DEFAULT }));
+
+// SECURITY: Cookie parser (required for CSRF protection)
+app.use(cookieParser());
+
+// SECURITY: Sanitize user input (prevent NoSQL injection)
+app.use(mongoSanitize());
+
+// SECURITY: Enforce pagination limits to prevent memory exhaustion
+const MAX_PAGE_SIZE = 100;
+app.use((req, _res, next) => {
+  if (req.query.limit) {
+    const limit = parseInt(req.query.limit as string);
+    if (isNaN(limit) || limit < 1) {
+      req.query.limit = '20';
+    } else if (limit > MAX_PAGE_SIZE) {
+      req.query.limit = String(MAX_PAGE_SIZE);
+    }
+  }
+  next();
+});
+
+// PERFORMANCE: Track request/response times
+app.use(performanceMonitoring);
+
+// METRICS: Collect performance metrics
+app.use(metricsMiddleware);
+
+// ============================================
+// IP BLOCKING (persistent, checked before rate limiter)
+// ============================================
+app.use(checkBlockedIP);
+
+// ============================================
+// RATE LIMITING
+// ============================================
+// Apply global rate limiter for DDoS protection (300 req/min per IP)
+app.use(globalRateLimiter);
+// Per-user write rate limiter (60 writes/min per authenticated user)
+app.use(userWriteRateLimiter);
+
+// ============================================
+// CSRF PROTECTION
+// ============================================
+// SECURITY: CSRF protection (double-submit cookie pattern)
+// Protects state-changing operations from cross-site request forgery
+app.use(csrfProtection);
+// Per-route rate limiters (apiRateLimiter) applied below
+
+// ============================================
+// HEALTH CHECK (PUBLIC)
+// ============================================
+
+app.get('/', async (_req, res) => {
+  try {
+    // Check database connection
+    await prisma.$queryRaw`SELECT 1`;
+    const dbStatus = 'connected';
+
+    res.json({
+      status: 'ok',
+      message: `${APP_NAME} API Running!`,
+      version: APP_VERSION,
+      timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+      timezone: 'IST (Asia/Kolkata)',
+      environment: process.env.NODE_ENV || 'development',
+      database: {
+        status: dbStatus,
+        type: 'PostgreSQL',
+      },
+      features: {
+        enabled: getEnabledFeatures(),
+        total: Object.keys(FEATURES).length,
+      },
+      endpoints: {
+        auth: '/api/auth/*',
+        customers: '/api/customers',
+        suppliers: '/api/suppliers',
+        deliveries: '/api/deliveries',
+        payments: '/api/payments',
+        dashboard: '/api/dashboard/*',
+        backup: '/api/backup/*',
+        reports: '/api/reports/*',
+      },
+    });
+  } catch (error) {
+    res.status(503).json({
+      status: 'error',
+      message: 'Service unavailable',
+      error: process.env.NODE_ENV === 'development' ? String(error) : undefined,
+    });
+  }
+});
+
+// Fast liveness check (no database query - for Render health check)
+// This responds instantly without any external dependencies
+app.get('/live', (_req, res) => {
+  res.status(200).json({ status: 'alive', timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) });
+});
+
+// ============================================
+// API DOCUMENTATION (PUBLIC — dev + production)
+// ============================================
+// Helmet sets a strict CSP that blocks Swagger's inline scripts/styles.
+// Override the CSP only for the /api-docs route so the rest of the app
+// is unaffected.
+app.use(
+  '/api-docs',
+  (_req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.setHeader(
+      'Content-Security-Policy',
+      "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:;"
+    );
+    next();
+  },
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'DudhHisaab API Docs',
+  })
+);
+
+// Comprehensive health check endpoint with database connectivity
+app.get('/health', async (_req, res) => {
+  const health = {
+    status: 'ok',
+    timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+    timezone: 'IST (Asia/Kolkata)',
+    uptime: process.uptime(),
+    version: '2.0.0',
+    environment: process.env.NODE_ENV || 'development',
+    database: {
+      status: 'unknown',
+      latency: 0,
+    },
+    memory: {
+      used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+      total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
+      unit: 'MB',
+    },
+  };
+
+  try {
+    // Check database connectivity and measure latency
+    const start = Date.now();
+    await prisma.$queryRaw`SELECT 1`;
+    const latency = Date.now() - start;
+
+    health.database.status = 'connected';
+    health.database.latency = latency;
+
+    // Cache-Control header for health checks
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.json(health);
+  } catch (error) {
+    logger.error('Health check failed - database disconnected', { error });
+    health.status = 'error';
+    health.database.status = 'disconnected';
+    res.status(503).json(health);
+  }
+});
+
+// ============================================
+// TEST-ONLY ROUTES (NODE_ENV === 'test')
+// ============================================
+// testRoutes is an empty router when NODE_ENV !== 'test' (defense-in-depth)
+if (process.env.NODE_ENV === 'test') {
+  app.use('/api/test', testRoutes);
+}
+
+// ============================================
+// PUBLIC ROUTES
+// ============================================
+
+app.use('/api/auth', authRoutes);
+app.use('/api/registrations', registrationRoutes);
+app.use('/api/setup', setupRoutes);
+
+// Webhook routes (public but signature verified + rate limited)
+app.use('/api/webhooks', webhookRateLimiter, webhookRoutes);
+app.use('/api/webhooks', webhookRateLimiter, whatsappWebhookRoutes); // WhatsApp delivery status webhooks
+app.use('/api/webhook', webhookRateLimiter, subscriptionWebhookRoutes); // Subscription webhooks
+
+// Customer/Supplier self-serve portal (public, token-authenticated, rate limited internally)
+app.use('/api/portal', portalRoutes);
+
+// Team member auth (public — phone + PIN login, invite PIN setup)
+app.use('/api/team-auth', apiRateLimiter, teamAuthRoutes);
+
+// ============================================
+// PROTECTED ROUTES (REQUIRE AUTHENTICATION)
+// ============================================
+
+// Auto-update lastSyncedAt on all authenticated API calls (debounced 60s)
+app.use('/api', syncLastSyncedAt);
+
+// Sync heartbeat (lightweight — separate from other user routes)
+app.use('/api/sync', apiRateLimiter, syncRoutes);
+
+// Protected routes (have auth middleware and rate limiting built-in)
+app.use('/api/suppliers', apiRateLimiter, supplierRoutes);
+app.use('/api/supplier-centers', apiRateLimiter, supplierCenterRoutes);
+app.use('/api/customers', apiRateLimiter, customerRoutes);
+app.use('/api/products', apiRateLimiter, productRoutes);
+app.use('/api/supplier-products', apiRateLimiter, supplierProductRoutes);
+app.use('/api/payments', apiRateLimiter, paymentRoutes);
+app.use('/api/dashboard', apiRateLimiter, dashboardRoutes);
+app.use('/api/user/google-drive', apiRateLimiter, googleDriveRoutes); // must be before /api/user
+app.use('/api/user', apiRateLimiter, userRoutes);
+app.use('/api/user/activity', apiRateLimiter, accountActivityRoutes); // Account activity log
+app.use('/api/admin', apiRateLimiter, adminRoutes);
+app.use('/api/metrics', apiRateLimiter, metricsRoutes);
+app.use('/api/import', apiRateLimiter, importRoutes); // Import has additional rate limiting per endpoint
+app.use('/api/export', apiRateLimiter, exportRoutes);
+app.use('/api/backup', apiRateLimiter, backupRoutes);
+app.use('/api/referral', apiRateLimiter, referralRoutes);
+app.use('/api/delivery-history', apiRateLimiter, deliveryHistoryRoutes);
+app.use('/api/delivery-sessions', apiRateLimiter, deliverySessionRoutes);
+app.use('/api/route', apiRateLimiter, routeRoutes);
+app.use('/api/analytics', apiRateLimiter, analyticsRoutes);
+app.use('/api/pos', apiRateLimiter, posRoutes);
+app.use('/api/upi', apiRateLimiter, upiRoutes);
+app.use('/api/reports', apiRateLimiter, reportsRoutes);
+app.use('/api/subscription', apiRateLimiter, subscriptionRoutes);
+app.use('/api/quality', apiRateLimiter, qualityRoutes);
+app.use('/api/admin/subscription', apiRateLimiter, adminSubscriptionRoutes);
+app.use('/api/admin/billing', apiRateLimiter, adminBillingRoutes);
+app.use('/api/push', apiRateLimiter, pushRoutes); // Push notification management
+app.use('/api/feedback', apiRateLimiter, feedbackRoutes); // User feedback and support
+app.use('/api/milkman-holidays', apiRateLimiter, milkmanHolidayRoutes); // Milkman shift-aware holidays
+app.use('/api/billing', apiRateLimiter, billingRoutes); // User-facing billing (packs, usage, limits, mode)
+app.use('/api/admin/competitor', apiRateLimiter, competitorRoutes);
+app.use('/api/coins', apiRateLimiter, coinsRoutes);
+app.use('/api/admin/coins', apiRateLimiter, coinsAdminRoutes);
+app.use('/api/admin/notifications', apiRateLimiter, adminNotificationRoutes);
+app.use('/api/share', shareRoutes); // Temp PDF hosting for WhatsApp sharing (public GET, auth POST)
+app.use('/api/statements', apiRateLimiter, statementRoutes); // Monthly statement tokens + auto-send settings (auth + public)
+app.use('/api/team', apiRateLimiter, teamRoutes); // Team management (owner only — auth middleware + ownerOnly inside)
+app.use('/api/team-self', apiRateLimiter, teamSelfRoutes); // Worker self-service (auth middleware + requireTeamMember inside)
+app.use('/api/business', apiRateLimiter, businessRoutes); // Multi-business management (auth inside)
+
+// ============================================
+// 404 HANDLER
+// ============================================
+
+app.use((_req, res) => {
+  res.status(404).json({
+    success: false,
+    error: {
+      code: 'NOT_FOUND',
+      message: 'Endpoint not found',
+    },
+  });
+});
+
+// ============================================
+// ERROR HANDLERS (Must be last)
+// ============================================
+
+// General error handler (Sentry captures errors via logger integration)
+app.use(errorHandler);
+
+// ============================================
+// START SERVER
+// ============================================
+
+const PORT = process.env.PORT || 4001; // Default to 4001 (not 3000)
+
+const server = app.listen(PORT, async () => {
+  logger.info('🚀 DudhHisaab API Server v2.0');
+  logger.info(`📍 Running on: http://localhost:${PORT}`);
+  logger.info('🗄️  Database: Connected');
+
+  if (PORT !== 4001) {
+    logger.warn(`⚠️  WARNING: Backend should run on port 4001, currently on ${PORT}`);
+  }
+
+  // Initialize WhatsApp services
+  whatsappService.initializeTwilio();
+
+  // Initialize notification WhatsApp service if configured
+  if (process.env.WHATSAPP_PROVIDER && process.env.WHATSAPP_API_KEY) {
+    try {
+      const config: WhatsAppConfig = {
+        provider: process.env.WHATSAPP_PROVIDER as 'aisensy' | 'interakt' | 'twilio' | 'meta',
+        apiKey: process.env.WHATSAPP_API_KEY,
+        apiUrl: process.env.WHATSAPP_API_URL || '',
+        campaignName: process.env.WHATSAPP_CAMPAIGN_NAME,
+        accountSid: process.env.TWILIO_ACCOUNT_SID,
+        fromNumber: process.env.TWILIO_WHATSAPP_NUMBER,
+      };
+
+      initializeWhatsAppService(config);
+      logger.info('✅ WhatsApp notification service initialized');
+    } catch (error: any) {
+      logger.warn('⚠️  WhatsApp notification service failed to initialize:', error.message);
+    }
+  } else {
+    logger.warn('⚠️  WhatsApp notification service not configured. Set WHATSAPP_PROVIDER and WHATSAPP_API_KEY in .env');
+  }
+
+  logger.info('📱 WhatsApp services initialized');
+
+  // Initialize backup schedulers
+  initializeBackupSchedulers();
+  logger.info('💾 Backup schedulers initialized');
+
+  // Initialize referral schedulers
+  initializeReferralSchedulers();
+  logger.info('🎁 Referral schedulers initialized');
+
+  // Initialize analytics schedulers
+  initializeAnalyticsSchedulers();
+  logger.info('📊 Analytics schedulers initialized');
+
+  // Initialize notification schedulers
+  initializeNotificationSchedulers();
+  logger.info('📅 Notification schedulers initialized');
+
+  // Initialize billing schedulers
+  initializeBillingSchedulers();
+  logger.info('Billing schedulers initialized');
+
+  // Initialize competitor intelligence schedulers
+  initializeCompetitorSchedulers();
+  logger.info('🕵️ Competitor intelligence schedulers initialized');
+
+  // SECURITY FIX #6: Validate Razorpay configuration on startup
+  await validateRazorpayOnStartup();
+  logger.info('💳 Razorpay validation complete');
+
+  // Seed billing config defaults
+  await seedBillingConfig();
+  logger.info('Billing config initialized');
+
+  // Seed notification config defaults
+  await seedNotificationConfig();
+  logger.info('Notification config initialized');
+
+  // One-time: sync maxSuppliers = maxCustomers for all plans
+  await syncSupplierLimits();
+  logger.info('Supplier limits synced with customer limits');
+
+  // Rehydrate suspended users + blacklisted token hashes, then clean up expired DB rows
+  rehydrateSuspendedUsers().then(() => cleanupExpiredTokens()).catch(() => {});
+
+  logger.info('🔐 Authentication:');
+  logger.info('   POST   /api/auth/register');
+  logger.info('   POST   /api/auth/verify-otp');
+  logger.info('   POST   /api/auth/login');
+  logger.info('   POST   /api/auth/forgot-password');
+  logger.info('   POST   /api/auth/reset-password');
+  logger.info('👥 Customers (Protected):');
+  logger.info('   GET    /api/customers');
+  logger.info('   POST   /api/customers');
+  logger.info('   GET    /api/customers/:id');
+  logger.info('   PUT    /api/customers/:id');
+  logger.info('🏭 Suppliers (Protected):');
+  logger.info('   GET    /api/suppliers');
+  logger.info('   POST   /api/suppliers');
+  logger.info('   GET    /api/suppliers/:id');
+  logger.info('   PUT    /api/suppliers/:id');
+  logger.info('📍 Supplier Centers (Protected):');
+  logger.info('   GET    /api/supplier-centers');
+  logger.info('   POST   /api/supplier-centers');
+  logger.info('   GET    /api/supplier-centers/:id');
+  logger.info('   PUT    /api/supplier-centers/:id');
+  logger.info('   DELETE /api/supplier-centers/:id');
+  logger.info('📦 Deliveries (Protected):');
+  logger.info('   GET    /api/deliveries');
+  logger.info('   POST   /api/deliveries');
+  logger.info('   PUT    /api/deliveries/:id');
+  logger.info('💰 Payments (Protected):');
+  logger.info('   GET    /api/payments');
+  logger.info('   POST   /api/payments');
+  logger.info('📊 Dashboard (Protected):');
+  logger.info('   GET    /api/dashboard/today');
+  logger.info('   GET    /api/dashboard/monthly?month=2026-01');
+  logger.info('   GET    /api/dashboard/stats');
+  logger.info('   GET    /api/dashboard/trend?days=7');
+  logger.info('💾 Backup & Restore (Protected):');
+  logger.info('   POST   /api/backup/manual');
+  logger.info('   GET    /api/backup/list');
+  logger.info('   GET    /api/backup/preview/:id');
+  logger.info('   POST   /api/backup/restore');
+  logger.info('   POST   /api/backup/undo-restore');
+  logger.info('   GET    /api/backup/cooldown-status');
+  logger.info('🎁 Referral & Earn (Protected):');
+  logger.info('   POST   /api/referral/apply-code');
+  logger.info('   GET    /api/referral/my-code');
+  logger.info('   GET    /api/referral/my-referrals');
+  logger.info('   GET    /api/referral/wallet');
+  logger.info('   POST   /api/referral/withdraw');
+  logger.info('   GET    /api/referral/withdrawals');
+  logger.info('📅 Delivery History Calendar (Protected):');
+  logger.info('   GET    /api/delivery-history/customer/:id?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&milkType=ALL');
+  logger.info('   GET    /api/delivery-history/supplier/:id?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&milkType=ALL');
+  logger.info('📊 App Metrics & Analytics (Protected):');
+  logger.info('   POST   /api/analytics/session/start');
+  logger.info('   POST   /api/analytics/session/end');
+  logger.info('   POST   /api/analytics/track');
+  logger.info('   GET    /api/analytics/overview (Admin)');
+  logger.info('   GET    /api/analytics/features (Admin)');
+  logger.info('   GET    /api/analytics/daily-active-users (Admin)');
+  logger.info('🛒 Point of Sale (Protected):');
+  logger.info('   POST   /api/pos/sale');
+  logger.info('   GET    /api/pos/recent');
+  logger.info('   GET    /api/pos/stats');
+  logger.info('✅ Server ready! All routes protected with JWT auth.');
+  logger.info('💡 Tip: Start with /api/auth/register to create account');
+});
+
+// SECURITY: Request timeout to prevent Slow Loris attacks
+// 30s for headers, 60s for entire request
+server.headersTimeout = 30000;
+server.requestTimeout = 60000;
+server.keepAliveTimeout = 65000; // Slightly above requestTimeout
+
+// Global error handlers — catch unhandled errors from schedulers, queues, etc.
+process.on('unhandledRejection', (reason: unknown) => {
+  logger.error('Unhandled Promise Rejection', { reason: reason instanceof Error ? reason.stack : String(reason) });
+});
+
+process.on('uncaughtException', (error: Error) => {
+  logger.error('Uncaught Exception — shutting down', { error: error.stack });
+  // Give logger time to flush, then exit
+  setTimeout(() => process.exit(1), 1000);
+});
+
+// Graceful shutdown (single handler — queue, server, DB in correct order)
+process.on('SIGTERM', async () => {
+  logger.info('SIGTERM received, shutting down gracefully');
+  // 1. Stop accepting new requests
+  server.close(() => {
+    logger.info('HTTP server closed');
+  });
+  // 2. Close Bull queue (finish in-flight jobs, disconnect Redis)
+  try { await closeQueue(); } catch { /* queue may not be connected */ }
+  // 3. Disconnect database
+  await prisma.$disconnect();
+  logger.info('Database disconnected');
+  process.exit(0);
+});

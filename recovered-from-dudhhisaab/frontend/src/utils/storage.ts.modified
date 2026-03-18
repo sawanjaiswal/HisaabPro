@@ -1,0 +1,173 @@
+/**
+ * localStorage Abstraction Layer
+ *
+ * Centralises all localStorage access so that keys are defined once,
+ * access is typed, and the security-sensitive auth tokens are never
+ * scattered as raw string literals across the codebase.
+ *
+ * Usage:
+ *   import { storage } from '../utils/storage';
+ *   storage.getAccessToken();
+ *   storage.setAccessToken(token);
+ *   storage.clearAuth();
+ */
+
+import { APP_STORE_PREFIX } from '../config/branding';
+
+const THEME_KEY = `${APP_STORE_PREFIX}-theme`;
+
+// ---------------------------------------------------------------------------
+// Auth tokens (security-sensitive - highest priority for abstraction)
+// ---------------------------------------------------------------------------
+
+export const storage = {
+  // --- Access token ---
+  getAccessToken: (): string | null => localStorage.getItem('accessToken'),
+  setAccessToken: (token: string): void => localStorage.setItem('accessToken', token),
+  removeAccessToken: (): void => localStorage.removeItem('accessToken'),
+
+  // --- Refresh token ---
+  getRefreshToken: (): string | null => localStorage.getItem('refreshToken'),
+  setRefreshToken: (token: string): void => localStorage.setItem('refreshToken', token),
+  removeRefreshToken: (): void => localStorage.removeItem('refreshToken'),
+
+  // --- Cached user data (for offline-first auth) ---
+  getCachedUser: (): string | null => localStorage.getItem('cachedUser'),
+  setCachedUser: (userJson: string): void => localStorage.setItem('cachedUser', userJson),
+  removeCachedUser: (): void => localStorage.removeItem('cachedUser'),
+
+  // --- Convenience: clear both auth tokens at once ---
+  clearAuth: (): void => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('cachedUser');
+  },
+
+  // --- Convenience: save both tokens at once (after login / OTP verify) ---
+  setTokens: (accessToken: string, refreshToken: string): void => {
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+  },
+
+  // ---------------------------------------------------------------------------
+  // UI / User preferences
+  // ---------------------------------------------------------------------------
+
+  // Theme: 'dark' | 'light'
+  getTheme: (): string | null => localStorage.getItem(THEME_KEY),
+  setTheme: (theme: 'dark' | 'light'): void => localStorage.setItem(THEME_KEY, theme),
+  removeTheme: (): void => localStorage.removeItem(THEME_KEY),
+
+  // Font size: 'small' | 'normal' | 'large' | 'xlarge'
+  getFontSize: (): string | null => localStorage.getItem('fontSize'),
+  setFontSize: (size: string): void => localStorage.setItem('fontSize', size),
+
+  // Language: 'en' | 'hi'
+  getLanguage: (): string | null => localStorage.getItem('language'),
+  setLanguage: (lang: string): void => localStorage.setItem('language', lang),
+
+  // ---------------------------------------------------------------------------
+  // Onboarding & prompts
+  // ---------------------------------------------------------------------------
+
+  getOnboardingSeen: (): boolean => localStorage.getItem('onboarding_seen') === 'true',
+  setOnboardingSeen: (): void => localStorage.setItem('onboarding_seen', 'true'),
+
+  // Onboarding profile completion
+  getOnboardingProfileDone: (): boolean => localStorage.getItem('onboarding_profile_done') === 'true',
+  setOnboardingProfileDone: (): void => localStorage.setItem('onboarding_profile_done', 'true'),
+
+  // Setup steps dismissed
+  getSetupDismissed: (): boolean => localStorage.getItem('setup_dismissed') === 'true',
+  setSetupDismissed: (): void => localStorage.setItem('setup_dismissed', 'true'),
+
+  // Push notification prompt: stores today's date string to skip for the day
+  getNotificationPromptDismissed: (): string | null =>
+    localStorage.getItem('notificationPromptDismissed'),
+  setNotificationPromptDismissed: (dateStr: string): void =>
+    localStorage.setItem('notificationPromptDismissed', dateStr),
+
+  // WhatsApp contact banner dismiss
+  getWhatsAppDismissed: (): boolean => localStorage.getItem('whatsapp_dismissed') === 'true',
+  setWhatsAppDismissed: (): void => localStorage.setItem('whatsapp_dismissed', 'true'),
+
+  // ---------------------------------------------------------------------------
+  // Login "remember me"
+  // ---------------------------------------------------------------------------
+
+  getRememberedPhone: (): string | null => localStorage.getItem('rememberedPhone'),
+  setRememberedPhone: (phone: string): void => localStorage.setItem('rememberedPhone', phone),
+  removeRememberedPhone: (): void => localStorage.removeItem('rememberedPhone'),
+
+  // ---------------------------------------------------------------------------
+  // Referral
+  // ---------------------------------------------------------------------------
+
+  getReferralCode: (): string | null => localStorage.getItem('referralCode'),
+  setReferralCode: (code: string): void => localStorage.setItem('referralCode', code),
+  removeReferralCode: (): void => localStorage.removeItem('referralCode'),
+
+  // ---------------------------------------------------------------------------
+  // Search history
+  // ---------------------------------------------------------------------------
+
+  getSupplierSearchHistory: (): string | null => localStorage.getItem('supplier_search_history'),
+  setSupplierSearchHistory: (json: string): void =>
+    localStorage.setItem('supplier_search_history', json),
+
+  // ---------------------------------------------------------------------------
+  // WhatsApp version preference (key defined in whatsapp-preference.service.ts)
+  // ---------------------------------------------------------------------------
+
+  getWhatsAppVersionPreference: (): string | null =>
+    localStorage.getItem('whatsapp_version_preference'),
+  setWhatsAppVersionPreference: (versionId: string): void =>
+    localStorage.setItem('whatsapp_version_preference', versionId),
+  removeWhatsAppVersionPreference: (): void =>
+    localStorage.removeItem('whatsapp_version_preference'),
+
+  // ---------------------------------------------------------------------------
+  // Dynamic-key helpers (bulk entry drafts, filter presets, backups)
+  // Kept as helpers with typed key construction to avoid magic strings.
+  // ---------------------------------------------------------------------------
+
+  // Bulk entry drafts  — key: `bulk-entry-draft-${entityType}`
+  getBulkEntryDraft: (entityType: string): string | null =>
+    localStorage.getItem(`bulk-entry-draft-${entityType}`),
+  setBulkEntryDraft: (entityType: string, json: string): void =>
+    localStorage.setItem(`bulk-entry-draft-${entityType}`, json),
+  removeBulkEntryDraft: (entityType: string): void =>
+    localStorage.removeItem(`bulk-entry-draft-${entityType}`),
+
+  // Filter presets  — key: `filter_presets_${storageKey}`
+  getFilterPresets: (storageKey: string): string | null =>
+    localStorage.getItem(`filter_presets_${storageKey}`),
+  setFilterPresets: (storageKey: string, json: string): void =>
+    localStorage.setItem(`filter_presets_${storageKey}`, json),
+
+  // Default filters  — key: `default_filters_${storageKey}`
+  getDefaultFilters: (storageKey: string): string | null =>
+    localStorage.getItem(`default_filters_${storageKey}`),
+  setDefaultFilters: (storageKey: string, json: string): void =>
+    localStorage.setItem(`default_filters_${storageKey}`, json),
+  removeDefaultFilters: (storageKey: string): void =>
+    localStorage.removeItem(`default_filters_${storageKey}`),
+  hasDefaultFilters: (storageKey: string): boolean =>
+    localStorage.getItem(`default_filters_${storageKey}`) !== null,
+
+  // Backup snapshots  — key: `dudhhisaab-backup-${timestamp}`
+  setBackup: (timestamp: number, json: string): void =>
+    localStorage.setItem(`dudhhisaab-backup-${timestamp}`, json),
+
+  // ---------------------------------------------------------------------------
+  // Multi-business: active business + business list
+  // ---------------------------------------------------------------------------
+
+  getBusinessId: (): string | null => localStorage.getItem('activeBusinessId'),
+  setBusinessId: (id: string): void => localStorage.setItem('activeBusinessId', id),
+  removeBusinessId: (): void => localStorage.removeItem('activeBusinessId'),
+
+  getBusinesses: (): string | null => localStorage.getItem('cachedBusinesses'),
+  setBusinesses: (json: string): void => localStorage.setItem('cachedBusinesses', json),
+  removeBusinesses: (): void => localStorage.removeItem('cachedBusinesses'),
+};

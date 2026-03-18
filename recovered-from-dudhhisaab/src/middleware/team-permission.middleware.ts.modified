@@ -1,0 +1,247 @@
+/**
+ * Team Permission Middleware
+ * Enforces permission presets and entity-level access control for team members.
+ * Owner requests pass through unchanged.
+ */
+
+import type { Request, Response, NextFunction } from 'express';
+import { prisma } from '../db';
+
+// ── Permission Definitions ───────────────────────────────────────
+
+type Permission =
+  | 'milk_out:create'
+  | 'milk_in:create'
+  | 'payment:create'
+  | 'payment:view'
+  | 'product_entry:create'
+  | 'customer:view'
+  | 'customer:create'
+  | 'supplier:view'
+  | 'reports:view'
+  | 'delivery:use'
+  | 'entries:edit'
+  | 'entries:delete'
+  | 'settings:manage'
+  | 'export:use'
+  | 'team:manage';
+
+const PRESET_PERMISSIONS: Record<string, Set<Permission>> = {
+  // ── Existing presets (backward-compatible) ────────────────────
+  DELIVERY_ONLY: new Set([
+    'milk_out:create',
+    'customer:view',
+    'delivery:use',
+  ]),
+  DELIVERY_PAYMENTS: new Set([
+    'milk_out:create',
+    'customer:view',
+    'delivery:use',
+    'payment:create',
+    'payment:view',
+  ]),
+  AREA_MANAGER: new Set([
+    'milk_out:create',
+    'milk_in:create',
+    'customer:view',
+    'customer:create',
+    'supplier:view',
+    'delivery:use',
+    'payment:create',
+    'payment:view',
+    'product_entry:create',
+    'reports:view',
+  ]),
+  CUSTOM: new Set<Permission>([]),
+  // ── New 7+1 role templates ────────────────────────────────────
+  // PARTNER: full access except team management config
+  PARTNER: new Set<Permission>([
+    'milk_out:create', 'milk_in:create', 'payment:create', 'payment:view',
+    'product_entry:create', 'customer:view', 'customer:create', 'supplier:view',
+    'reports:view', 'delivery:use', 'entries:edit', 'export:use',
+  ]),
+  // SALESMAN: customer-facing, sales, limited payments
+  SALESMAN: new Set<Permission>([
+    'customer:view', 'customer:create', 'milk_out:create', 'payment:create',
+    'payment:view', 'product_entry:create', 'delivery:use',
+  ]),
+  // STOCK_MANAGER: inventory, milk intake, reporting
+  STOCK_MANAGER: new Set<Permission>([
+    'milk_in:create', 'product_entry:create', 'supplier:view', 'reports:view', 'export:use',
+  ]),
+  // ACCOUNTANT: reports and export only, no operations (no staff limit deduction)
+  ACCOUNTANT: new Set<Permission>([
+    'reports:view', 'export:use', 'payment:view',
+  ]),
+};
+
+// ── Check Permission ─────────────────────────────────────────────
+
+/**
+ * Middleware factory: checks if the team member has the required permission.
+ * Owner requests (no teamMemberId) pass through.
+ */
+export function requirePermission(permission: Permission) {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // Owner has all permissions
+      if (!req.user?.teamMemberId) {
+        return next();
+      }
+
+      // Block deactivated workers even if JWT is still valid
+      const member = await prisma.teamMember.findUnique({
+        where: { id: req.user.teamMemberId },
+        select: { isActive: true },
+      });
+
+      if (!member || !member.isActive) {
+        return res.status(401).json({
+          success: false,
+          error: { code: 'ACCOUNT_DEACTIVATED', message: 'Your account has been deactivated' },
+        });
+      }
+
+      const preset = req.user.permissionPreset || 'DELIVERY_ONLY';
+      const permissions = PRESET_PERMISSIONS[preset];
+
+      if (!permissions || !permissions.has(permission)) {
+        return res.status(403).json({
+          success: false,
+          error: {
+            code: 'INSUFFICIENT_PERMISSIONS',
+            message: 'You do not have permission to perform this action',
+          },
+        });
+      }
+
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
+}
+
+// ── Owner Only ───────────────────────────────────────────────────
+
+/**
+ * Blocks all team members — owner only.
+ * Use for: settings, team management, export, delete operations.
+ */
+export function ownerOnly(req: Request, res: Response, next: NextFunction) {
+  if (req.user?.teamMemberId) {
+    return res.status(403).json({
+      success: false,
+      error: {
+        code: 'OWNER_ONLY',
+        message: 'Only the business owner can perform this action',
+      },
+    });
+  }
+  next();
+}
+
+// ── Assignment Check ─────────────────────────────────────────────
+
+/**
+ * Middleware factory: verifies the team member is assigned to the entity.
+ * Reads entityId from req.params[paramName] and entityType from the argument.
+ * Owner requests pass through.
+ */
+export function checkAssignment(entityType: 'customer' | 'supplier', paramName = 'id') {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    // Owner has full access
+    if (!req.user?.teamMemberId) {
+      return next();
+    }
+
+    const entityId = req.params[paramName];
+    if (!entityId) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'MISSING_ENTITY_ID', message: 'Entity ID is required' },
+      });
+    }
+
+    const assignment = await prisma.teamMemberAssignment.findUnique({
+      where: {
+        teamMemberId_entityType_entityId: {
+          teamMemberId: req.user.teamMemberId,
+          entityType,
+          entityId,
+        },
+      },
+    });
+
+    if (!assignment) {
+      return res.status(403).json({
+        success: false,
+        error: {
+          code: 'NOT_ASSIGNED',
+          message: `You are not assigned to this ${entityType}`,
+        },
+      });
+    }
+
+    next();
+  };
+}
+
+// ── Filter Assigned Entities ─────────────────────────────────────
+
+/**
+ * Helper: get assigned entity IDs for a team member.
+ * Used by list endpoints to filter results.
+ * Returns null for owners (meaning "all entities").
+ */
+export async function getAssignedEntityIds(
+  req: Request,
+  entityType: 'customer' | 'supplier'
+): Promise<string[] | null> {
+  if (!req.user?.teamMemberId) {
+    return null; // Owner sees all
+  }
+
+  const assignments = await prisma.teamMemberAssignment.findMany({
+    where: {
+      teamMemberId: req.user.teamMemberId,
+      entityType,
+    },
+    select: { entityId: true },
+  });
+
+  return assignments.map((a) => a.entityId);
+}
+
+// ── Attach Actor Info ────────────────────────────────────────────
+
+/**
+ * Helper: returns actorId and actorName for entry creation.
+ * null values for owner (no actor).
+ * Resolves name from DB once per request (cached on req).
+ */
+export async function getActorInfo(req: Request): Promise<{ actorId: string | null; actorName: string | null }> {
+  if (!req.user?.teamMemberId) {
+    return { actorId: null, actorName: null };
+  }
+
+  // Cache on request to avoid repeated DB lookups
+  if ((req as any)._actorInfo) {
+    return (req as any)._actorInfo;
+  }
+
+  const member = await prisma.teamMember.findUnique({
+    where: { id: req.user.teamMemberId },
+    select: { name: true },
+  });
+
+  const info = {
+    actorId: req.user.teamMemberId,
+    actorName: member?.name || null,
+  };
+
+  (req as any)._actorInfo = info;
+  return info;
+}
+
+

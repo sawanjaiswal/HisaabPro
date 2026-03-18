@@ -1,0 +1,798 @@
+import type { DeliveryStatus } from '@shared/stats/enums';
+
+/** SSOT for customer/supplier entity discrimination */
+export type EntityType = 'customer' | 'supplier';
+
+export interface User {
+  id: string;
+  phone: string;
+  name?: string;
+  email?: string | null;
+  emailVerified?: boolean;
+  isVerified: boolean;
+  avatarUrl?: string | null;
+  upiBusinessName?: string | null;
+  defaultCowRate?: number | null;
+  defaultBuffaloRate?: number | null;
+  customerReferralRewardAmount?: number | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  user?: User;
+  tokens?: {
+    accessToken: string;
+    refreshToken: string;
+  };
+}
+
+export interface Customer {
+  id: string;
+  name: string;
+  phone: string;
+  address?: string;
+  sellRate?: number;  // Legacy single rate (backward compatible)
+  rate?: number;      // Display rate (resolved from sellRate/cowRate/buffaloRate for UI)
+  cowRate?: number;    // Rate for cow milk
+  buffaloRate?: number; // Rate for buffalo milk
+  defaultQuantity?: number;
+  billingCycle?: 'WEEKLY' | 'MONTHLY' | 'TEN_DAYS' | 'FIFTEEN_DAYS' | 'CUSTOM';
+  billingStartDay?: number; // 0-6 for Sunday-Saturday
+  customBillingDays?: number;
+  nextBillingDate?: string; // YYYY-MM-DD
+  outstandingBalance: number;
+  isArchived: boolean;
+  latitude?: number | null;
+  longitude?: number | null;
+  locationAddress?: string | null;
+  locationAccuracy?: number | null;
+  locationCapturedAt?: string | null;
+  locationSource?: string | null;
+  deliveryOrder?: number | null;
+  revision?: number;
+  createdAt: string;
+  updatedAt: string;
+  // Referral system
+  referredById?: string | null;
+  referredBy?: { id: string; name: string; phone: string } | null;
+  referrals?: { id: string; name: string }[];
+  _count?: { referrals?: number; Referrals?: number; MilkOutEntry?: number; Payment?: number; ProductEntry?: number };
+  isLocked?: boolean;
+  lockedAt?: string | null;
+  // Portal sharing
+  portalToken?: string | null;
+  portalSmsStatus?: 'unsent' | 'sent' | 'failed';
+  // Optional nested relations (only included when fetched with getById)
+  MilkOutEntry?: MilkOutEntry[];
+  Payment?: Payment[];
+  ProductEntry?: ProductEntry[];
+}
+
+export interface SupplierCenter {
+  id: string;
+  name: string;
+  address?: string;
+  location?: string;
+  phone?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type RateType = 'FIXED' | 'FAT_BASED';
+
+export interface Supplier {
+  id: string;
+  name: string;
+  phone: string;
+  address?: string;
+  purchaseRate?: number; // Legacy single rate (backward compatible)
+  cowRate?: number;       // Rate for cow milk
+  buffaloRate?: number;   // Rate for buffalo milk
+  outstandingBalance: number;
+  isPinned: boolean;
+  isArchived: boolean;
+  centerId?: string | null;
+  center?: SupplierCenter | null;
+  // Quality-based pricing (Phase 2.5)
+  rateType: RateType;             // Pricing model (legacy, global)
+  baseFatPercent?: number;        // Base FAT % for calculation (legacy)
+  fatRateAdjustment?: number;     // ₹ adjustment per 1% FAT (legacy)
+  // Per-milk-type pricing (new)
+  cowRateType?: RateType;         // FIXED or FAT_BASED for cow
+  buffaloRateType?: RateType;     // FIXED or FAT_BASED for buffalo
+  cowFatPercent?: number;         // FAT% for cow (e.g., 6.0)
+  cowRatePerFat?: number;         // ₹/FAT for cow (e.g., 9.5)
+  buffaloFatPercent?: number;     // FAT% for buffalo (e.g., 6.0)
+  buffaloRatePerFat?: number;     // ₹/FAT for buffalo (e.g., 11.5)
+  // Portal sharing
+  portalToken?: string | null;
+  portalSmsStatus?: 'unsent' | 'sent' | 'failed';
+  // Relations (populated when fetching by ID)
+  MilkInEntry?: MilkInEntry[];    // Recent milk purchases
+  Payment?: Payment[];             // Recent payments to supplier
+  _count?: { MilkInEntry?: number; Payment?: number };
+  _milkStats?: { avgFat: number | null; avgSnf: number | null; avgClr: number | null; totalQuantity: number };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ProductCategory = 'DAIRY' | 'BEVERAGES' | 'SNACKS' | 'OTHERS';
+
+export interface Product {
+  id: string;
+  name: string;
+  unit: 'kg' | 'L' | 'piece';
+  price: number;
+  icon: string;
+  category: ProductCategory;
+  isActive: boolean;
+  isArchived: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProductEntry {
+  id: string;
+  customerId: string;
+  customer?: {
+    id: string;
+    name: string;
+    phone: string;
+    outstandingBalance: number;
+  };
+  productId: string;
+  product?: {
+    id: string;
+    name: string;
+    unit: string;
+    price: number;
+    icon: string;
+  };
+  date: string; // YYYY-MM-DD
+  quantity: number;
+  price: number;
+  totalCost: number;
+  unit: string;
+  status: 'pending' | 'confirmed' | 'delivered' | 'cancelled';
+  deliveredAt?: string;
+  reminderSet: boolean;
+  reminderSentAt?: string;
+  billedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SupplierProduct {
+  id: string;
+  name: string;
+  unit: 'kg' | 'L' | 'piece';
+  price: number;
+  icon: string;
+  category: ProductCategory;
+  isActive: boolean;
+  isArchived: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SupplierProductEntry {
+  id: string;
+  supplierId: string;
+  supplier?: {
+    id: string;
+    name: string;
+    phone: string;
+    outstandingBalance: number;
+  };
+  supplierProductId: string;
+  supplierProduct?: {
+    id: string;
+    name: string;
+    unit: string;
+    price: number;
+    icon: string;
+  };
+  date: string;
+  quantity: number;
+  price: number;
+  totalCost: number;
+  unit: string;
+  note?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MilkOutEntry {
+  id: string;
+  customerId: string;
+  customer?: {
+    name: string;
+    phone: string;
+  };
+  date: string;
+  quantity: number;
+  sellRate?: number;
+  totalRevenue?: number;
+  milkType?: 'COW' | 'BUFFALO';
+  session?: 'MORNING' | 'EVENING';
+  wasSkipped: boolean;
+  note?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface MilkInEntry {
+  id: string;
+  supplierId: string;
+  supplier?: {
+    name: string;
+    phone: string;
+  };
+  date: string;
+  quantity: number;
+  purchaseRate: number;
+  totalCost: number;
+  milkType?: 'COW' | 'BUFFALO';
+  session?: 'MORNING' | 'EVENING';
+  note?: string;
+  // Quality metrics (Phase 2.5)
+  fatPercent?: number;     // FAT % (2.5-15.0)
+  snfPercent?: number;     // SNF % (7.0-10.0)
+  clrPercent?: number;     // CLR (20-40)
+  calculatedRate?: number; // Actual rate used (FAT-based)
+  rateType?: RateType;     // How rate was calculated
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Payment {
+  id: string;
+  entityType: EntityType;
+  entityId: string;
+  customerId?: string;
+  customer?: {
+    name: string;
+    phone: string;
+    outstandingBalance?: number;
+  };
+  supplierId?: string;
+  supplier?: {
+    name: string;
+    phone: string;
+    outstandingBalance?: number;
+  };
+  amount: number;
+  date: string;
+  mode: 'cash' | 'upi' | 'bank' | 'other';
+  direction: 'received' | 'paid';
+  note?: string;
+  proofImageUrl?: string;
+  upiTransactionId?: string;
+  revision?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Holiday {
+  id: string;
+  customerId: string;
+  customer?: {
+    id: string;
+    name: string;
+    phone: string;
+  };
+  startDate: string; // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
+  note?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ShiftSession = 'MORNING' | 'EVENING';
+
+export interface MilkmanHoliday {
+  id: string;
+  userId: string;
+  startDate: string;  // YYYY-MM-DD
+  startShift: ShiftSession;
+  endDate: string;    // YYYY-MM-DD
+  endShift: ShiftSession;
+  reason?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MilkmanHolidayCheck {
+  onHoliday: boolean;
+  holiday?: {
+    id: string;
+    reason: string | null;
+  };
+}
+
+export interface DashboardSummary {
+  milkIn: {
+    quantity: number;
+    cost: number;
+  };
+  milkOut: {
+    quantity: number;
+    revenue: number;
+  };
+  profit: number;
+  cashflow: {
+    received: number;
+    paid: number;
+    net: number;
+  };
+  deliveredCount?: number;
+  skippedCount?: number;
+}
+
+export interface MonthlyAnalytics {
+  month: string;
+  milkIn: {
+    quantity: number;
+    cost: number;
+  };
+  milkOut: {
+    quantity: number;
+    revenue: number;
+  };
+  profit: number;
+  paymentsReceived: number;
+  topCustomers: Array<{
+    name: string;
+    quantity: number;
+    revenue: number;
+  }>;
+}
+
+export interface BusinessStats {
+  customers: {
+    total: number;
+    active: number;
+  };
+  suppliers: {
+    total: number;
+    active: number;
+  };
+  balances: {
+    totalReceivable: number;
+    totalPayable: number;
+    netPosition: number;
+  };
+}
+
+// Reconciliation Report Types
+export interface ReconciliationReport {
+  summary: {
+    totalDeliveryValue: number;
+    totalPaymentsReceived: number;
+    netOutstanding: number;
+    customersCount: number;
+    customersWithDiscrepancies: number;
+  };
+  customers: CustomerReconciliation[];
+}
+
+export interface CustomerReconciliation {
+  customerId: string;
+  customerName: string;
+  customerPhone: string;
+  deliveries: {
+    milkCount: number;
+    milkValue: number;
+    productsCount: number;
+    productsValue: number;
+    totalValue: number;
+  };
+  payments: {
+    count: number;
+    totalAmount: number;
+  };
+  reconciliation: {
+    difference: number;
+    status: 'balanced' | 'outstanding' | 'overpaid';
+    discrepancyPercentage: number;
+  };
+}
+
+// Daily Entry Types
+export type ShiftType = 'morning' | 'evening' | 'manual';
+
+export interface DailyEntryCustomer {
+  id: string;
+  name: string;
+  phone: string;
+  defaultQuantity?: number;
+  sellRate?: number;
+  quantity?: number;
+  skipped?: boolean;
+  delivered?: boolean;
+}
+
+export interface DailyEntry {
+  id: string;
+  customerId: string;
+  date: string;
+  shift: 'morning' | 'evening';
+  quantity: number;
+  skipped: boolean;
+}
+
+// FAQ Types
+export interface FAQItem {
+  id: string;
+  question: string;
+  answer: string;
+  category: string;
+}
+
+// Onboarding Types
+export interface OnboardingStep {
+  id: number;
+  title: string;
+  description: string;
+  icon: string;
+  completed: boolean;
+}
+
+// Error Types — getErrorMessage is in utils/error.ts (SSOT)
+
+// Referral & Earn Types
+export interface ReferralCode {
+  code: string;
+  link: string;
+  totalReferrals: number;
+  successfulReferrals: number;
+}
+
+export interface ReferralWallet {
+  available: number;
+  inReview: number;
+  totalEarned: number;
+  isFrozen: boolean;
+  nextWithdrawalDate?: string; // ISO date string
+}
+
+export type ReferralStatus = 'signed_up' | 'trial' | 'paid' | 'free_plan';
+
+export interface ReferredUser {
+  id: string;
+  name: string;
+  phone: string;
+  status: ReferralStatus;
+  earnedAmount: number;
+  signedUpAt: string;
+}
+
+export interface ReferralWithdrawal {
+  id: string;
+  amount: number;
+  upiId: string;
+  status: 'pending' | 'approved' | 'rejected' | 'processing';
+  requestedAt: string;
+  processedAt?: string;
+  note?: string;
+}
+
+// Delivery History Types
+export interface DeliveryHistoryResponse {
+  customerId: string;
+  customerName: string;
+  weekStart: string;
+  weekEnd: string;
+  weekSummary: {
+    totalLitres: number;
+    totalAmount: number;
+    totalDays: number;
+    paidDays: number;
+    unpaidDays: number;
+  };
+  dailyData: DailyData[];
+}
+
+export interface DailyData {
+  date: string;
+  dayOfWeek: number;
+  shifts: {
+    morning: ShiftData;
+    evening: ShiftData;
+  };
+  dayTotal: { quantity: number; amount: number };
+  payment: {
+    isPaid: boolean;
+    paidAmount: number;
+    paymentId?: string;
+    paymentDate?: string;
+  };
+  hasDelivery: boolean;
+}
+
+export interface ShiftData {
+  cow: { quantity: number; rate: number; amount: number };
+  buffalo: { quantity: number; rate: number; amount: number };
+}
+
+// Subscription & Pricing Types
+export type SubscriptionTier = 'free' | 'pro' | 'pro_max' | 'business';
+export type SubscriptionDuration = 'monthly' | 'quarterly' | 'yearly' | 'lifetime';
+export type SubscriptionStatus = 'active' | 'cancelled' | 'expired' | 'pending' | 'halted' | 'paused';
+export type TransactionType = 'PURCHASE' | 'UPGRADE' | 'DOWNGRADE' | 'RENEWAL' | 'REFUND';
+
+export interface SubscriptionFeatures {
+  analytics: boolean;
+  backups: boolean;
+  bulkOperations: boolean;
+  apiAccess: boolean;
+  prioritySupport: boolean;
+  maxCustomers: number;
+  maxSuppliers: number;
+  maxStorage: number; // in MB
+  posMode?: boolean;
+  whatsappIntegration?: boolean;
+  deliveryTracking?: boolean;
+  pdfExport?: boolean;
+  multiUser?: boolean;
+}
+
+export interface SubscriptionPricing {
+  id: string;
+  planId: string;
+  duration: SubscriptionDuration;
+  price: number;
+  discount: number;
+  isActive: boolean;
+}
+
+export interface SubscriptionPlan {
+  id: string;
+  name: string;
+  displayName: string;
+  description?: string;
+  features: SubscriptionFeatures;
+  sortOrder: number;
+  isActive: boolean;
+  isPopular: boolean;
+  pricingOptions: SubscriptionPricing[];
+}
+
+export interface UserSubscription {
+  id: string;
+  userId: string;
+  planId: string;
+  plan: SubscriptionPlan;
+  status: SubscriptionStatus;
+  startDate: string;
+  endDate: string;
+  autoRenew: boolean;
+  currentPeriodStart: string;
+  currentPeriodEnd: string;
+  razorpaySubscriptionId?: string;
+  nextBillingAt?: string;
+  paymentMethod?: string;
+  cancelledAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BillingTransaction {
+  id: string;
+  userId: string;
+  planId: string;
+  plan?: SubscriptionPlan;
+  type: TransactionType;
+  amount: number;
+  razorpayOrderId: string;
+  razorpayPaymentId?: string;
+  status: 'pending' | 'completed' | 'failed' | 'refunded';
+  paidAt?: string;
+  refundedAt?: string;
+  createdAt: string;
+}
+
+export interface BillingHistory {
+  total: number;
+  page: number;
+  limit: number;
+  transactions: BillingTransaction[];
+}
+
+export interface UsageStats {
+  customers: {
+    current: number;
+    limit: number;
+    percentage: number;
+  };
+  suppliers: {
+    current: number;
+    limit: number;
+    percentage: number;
+  };
+  storage: {
+    current: number;
+    limit: number;
+    percentage: number;
+  };
+}
+
+export interface ProratedCalculation {
+  oldPlan: string;
+  newPlan: string;
+  oldMonthlyPrice: number;
+  newMonthlyPrice: number;
+  daysRemaining: number;
+  totalDays: number;
+  proratedAmount: number;
+  fullPrice: number;
+  discount: number;
+}
+
+export interface SubscriptionData {
+  tier: SubscriptionTier;
+  tierName: string;
+  features: SubscriptionFeatures;
+  customerLimit: number;
+  currentCustomers: number;
+  canAddCustomers: boolean;
+  supplierLimit: number;
+  currentSuppliers: number;
+  canAddSuppliers: boolean;
+  isTrial: boolean;
+  trialUsed: boolean;
+  daysRemaining?: number;
+  expiresAt?: string;
+  isActive: boolean;
+  autoRenew?: boolean;
+  paymentMethod?: string | null;
+  nextBillingAt?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  status?: string;
+  price?: number;
+}
+
+export interface PricingPlan {
+  tier: SubscriptionTier;
+  name: string;
+  price: string;
+  period: string;
+  features: string[];
+  highlighted?: boolean;
+  popular?: boolean;
+}
+
+// Multi-Business Types
+export interface BusinessSummary {
+  id: string;
+  name: string;
+  type: string;
+  joinCode: string;
+  sortOrder: number;
+  createdAt: string;
+  dataUserId: string;
+  isActive?: boolean;
+}
+
+export interface BusinessJoinRequest {
+  id: string;
+  businessId: string;
+  userId: string;
+  status: 'pending' | 'approved' | 'rejected';
+  role: string;
+  createdAt: string;
+}
+
+// Delivery Mode Types
+export interface DeliverySessionStop {
+  customerId: string;
+  customerName: string;
+  customerPhone: string;
+  customerAddress?: string;
+  latitude?: number;
+  longitude?: number;
+  order: number; // Sequence in optimized route
+  status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'SKIPPED';
+  distanceFromStart: number; // meters
+  eta: number; // minutes
+  arrivalTime?: string; // ISO timestamp when marked as in-progress
+  completionTime?: string; // ISO timestamp when marked as completed
+  skipReason?: string;
+  deliveryId?: string; // Reference to MilkOutEntry if delivery was recorded
+  milkQuantity?: number;
+  milkType?: 'COW' | 'BUFFALO';
+  milkRevenue?: number;
+}
+
+export interface DeliverySession {
+  id: string;
+  date: string; // YYYY-MM-DD
+  startTime: string; // ISO timestamp
+  endTime?: string; // ISO timestamp
+  status: 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+  shift?: string;
+  stops: DeliverySessionStop[];
+  stats: {
+    totalStops: number;
+    completedStops: number;
+    skippedStops: number;
+    pendingStops: number;
+    totalDistance: number; // meters
+    totalDuration: number; // minutes
+    totalMilkDelivered?: number;
+    totalRevenue?: number;
+    totalCowMilk?: number;
+    totalBuffaloMilk?: number;
+    optimizedDistance?: number;
+    naiveDistance?: number;
+    distanceSaved?: number;
+    fuelSaved?: number;
+  };
+  startLocation: {
+    latitude: number;
+    longitude: number;
+  };
+  endLocation?: {
+    latitude: number;
+    longitude: number;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DeliverySessionCreateInput {
+  date: string;
+  startTime: string;
+  stops: DeliverySessionStop[];
+  startLocation: {
+    latitude: number;
+    longitude: number;
+  };
+}
+
+export interface SubscriptionAddon {
+  id: string;
+  name: string;
+  displayName: string;
+  description?: string;
+  price: number;
+  features: Record<string, unknown>;
+  isActive: boolean;
+  sortOrder: number;
+  userAddon: { id: string; isActive: boolean; expiresAt?: string } | null;
+  alreadyInPlan: boolean;
+}
+
+export interface PriceAnnouncement {
+  id: string;
+  planId: string;
+  planName: string;
+  currentPrice: number;
+  newMonthlyPrice: number;
+  effectiveDate: string;
+  message?: string;
+}
+
+export interface DeliverySessionUpdateInput {
+  endTime?: string;
+  status?: DeliveryStatus;
+  stops?: DeliverySessionStop[];
+  endLocation?: {
+    latitude: number;
+    longitude: number;
+  };
+  totalMilkDelivered?: number;
+  totalRevenue?: number;
+  totalCowMilk?: number;
+  totalBuffaloMilk?: number;
+  totalDistance?: number;
+  duration?: number;
+  optimizedDistance?: number;
+  naiveDistance?: number;
+  distanceSaved?: number;
+  fuelSaved?: number;
+}

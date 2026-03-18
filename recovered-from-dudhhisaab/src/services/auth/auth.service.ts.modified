@@ -1,0 +1,890 @@
+/**
+ * Authentication Service
+ * Handles user registration, login, password management
+ * Simplified: JWT-only (no session table, no database lookups per request)
+ */
+
+import { prisma } from '../../db';
+import jwt from 'jsonwebtoken';
+import { hashPassword, verifyPassword } from '../../utils/password';
+import { sendOTP, generateOTP, verifyOTP, hashOTP } from './otp.service';
+import { blacklistUser, unblacklistUser } from '../tokenBlacklist';
+import { generateReferralCodeForUser } from '../../modules/referral/referral.service';
+import { sanitizeText } from '../../utils/sanitize';
+import { PHONE_REGEX } from '../../utils/constants';
+import logger from '../../utils/logger';
+import { logActivity } from '../security/account-activity.service';
+import { config } from '../../config';
+
+// SECURITY FIX: No fallback - fail fast if JWT_SECRET missing
+if (!process.env.JWT_SECRET) {
+  throw new Error('FATAL: JWT_SECRET environment variable is required');
+}
+const JWT_SECRET: string = process.env.JWT_SECRET; // Type-safe after check
+const JWT_EXPIRES_IN: string = config.jwt.accessExpiry; // Sourced from config SSOT (env JWT_ACCESS_EXPIRY, default 4h)
+const REFRESH_TOKEN_EXPIRES_IN: string = '30d';
+const SKIP_OTP_IN_DEV = process.env.SKIP_OTP_IN_DEV === 'true';
+
+// ============================================
+// INTERFACES
+// ============================================
+
+export interface RegisterRequest {
+  phone: string;
+  password?: string;
+  name: string;
+}
+
+export interface LoginRequest {
+  phone: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  user?: {
+    id: string;
+    phone: string;
+    name?: string;
+    email?: string;
+    emailVerified?: boolean;
+    role?: string;
+    upiBusinessName?: string;
+    defaultCowRate?: number;
+    defaultBuffaloRate?: number;
+    avatarUrl?: string | null;
+  };
+  tokens?: {
+    accessToken: string;
+    refreshToken: string;
+  };
+  requiresOTP?: boolean;
+}
+
+// ============================================
+// REGISTRATION
+// ============================================
+
+/**
+ * Step 1: Register new user (sends OTP)
+ * OTP-based registration: Password is optional, will be set after OTP verification
+ */
+export async function registerUser(data: RegisterRequest): Promise<AuthResponse> {
+  logger.info('AUTH_EVENT', { event: 'REGISTER_ATTEMPT', phone: data.phone });
+  try {
+    if (!PHONE_REGEX.test(data.phone)) {
+      return {
+        success: false,
+        message: 'Invalid phone number. Must be 10 digits starting with 6-9',
+      };
+    }
+
+    // Validate name
+    if (!data.name || data.name.trim().length < 2) {
+      return {
+        success: false,
+        message: 'Name must be at least 2 characters',
+      };
+    }
+
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { phone: data.phone },
+    });
+
+    // If user exists and is verified, reject registration
+    if (existingUser && existingUser.isVerified) {
+      return {
+        success: false,
+        message: 'Phone number already registered',
+      };
+    }
+
+    // Generate a temporary secure password for OTP-only registration
+    // User can set their own password later from profile settings
+    // SECURITY FIX: Use crypto.randomBytes for temp passwords instead of Math.random
+    const crypto = await import('crypto');
+    const tempPassword = data.password && data.password.length >= 6
+      ? data.password
+      : `Temp${crypto.randomBytes(8).toString('base64url')}!Aa1`;
+
+    const hashedPassword = await hashPassword(tempPassword);
+
+    // OTP is always required for registration — only skip in dev mode
+    const skipOTP = process.env.SKIP_OTP_IN_DEV === 'true';
+
+    // Generate OTP (only if not skipping)
+    const otp = skipOTP ? '000000' : generateOTP();
+
+    let user;
+
+    if (existingUser && !existingUser.isVerified) {
+      // User exists but not verified - update their details
+      user = await prisma.user.update({
+        where: { phone: data.phone },
+        data: {
+          password: hashedPassword,
+          name: sanitizeText(data.name),
+          isVerified: skipOTP, // Auto-verify if skipping OTP
+          otpCode: skipOTP ? null : hashOTP(otp), // SECURITY: store SHA-256 hash, never raw OTP
+          otpExpiry: skipOTP ? null : new Date(Date.now() + 5 * 60 * 1000), // 5 minutes
+        },
+      });
+    } else {
+      // New user - create registration
+      user = await prisma.user.create({
+        data: {
+          phone: data.phone,
+          password: hashedPassword,
+          name: sanitizeText(data.name),
+          isVerified: skipOTP, // Auto-verify if skipping OTP
+          otpCode: skipOTP ? null : hashOTP(otp), // SECURITY: store SHA-256 hash, never raw OTP
+          otpExpiry: skipOTP ? null : new Date(Date.now() + 5 * 60 * 1000), // 5 minutes
+        },
+      });
+    }
+
+    // If skipping OTP, return success with tokens immediately
+    if (skipOTP) {
+      const tokens = generateTokens(user.id, user.phone, user.role);
+
+      logger.info('AUTH_EVENT', { event: 'AUTO_VERIFIED', phone: data.phone, reason: 'dev-mode' });
+
+      // Generate referral code
+      try {
+        await generateReferralCodeForUser(user.id, user.name || 'User');
+      } catch (error) {
+        logger.error('Failed to generate referral code:', error);
+      }
+
+      // Log account activity
+      await logActivity(user.id, 'REGISTER', undefined, { method: 'dev-mode' });
+
+      return {
+        success: true,
+        message: 'Registration successful (dev mode - OTP skipped)',
+        tokens,
+        user: {
+          id: user.id,
+          phone: user.phone,
+          name: user.name || undefined,
+          role: user.role,
+        },
+      };
+    }
+
+    logger.info('AUTH_EVENT', { event: 'OTP_SENT', phone: data.phone });
+
+    // Send OTP via SMS (MSG91 Flow API)
+    const otpSent = await sendOTP(data.phone, otp);
+
+    if (!otpSent && process.env.NODE_ENV === 'production') {
+      return {
+        success: false,
+        message: 'Failed to send OTP. Please try again.',
+      };
+    }
+
+    // SECURITY FIX: Log OTP server-side only, never in response
+    if (process.env.NODE_ENV !== 'production') {
+      logger.info(`[DEV ONLY] OTP for ${data.phone}: ${otp}`);
+    }
+
+    return {
+      success: true,
+      message: `OTP sent to ${data.phone} via SMS`,
+      requiresOTP: true,
+      user: {
+        id: user.id,
+        phone: user.phone,
+      },
+    };
+  } catch (error: any) {
+    logger.error('Registration error:', error);
+    return {
+      success: false,
+      message: 'Registration failed. Please try again.',
+    };
+  }
+}
+
+/**
+ * Resend OTP
+ * @param phone - Phone number
+ * @param method - 'sms' (only method supported)
+ */
+export async function resendOTP(phone: string, method: string = 'sms'): Promise<AuthResponse> {
+  try {
+    // Find user
+    const user = await prisma.user.findUnique({
+      where: { phone },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        message: 'User not found. Please register first.',
+      };
+    }
+
+    // Check if already verified
+    if (user.isVerified) {
+      return {
+        success: false,
+        message: 'Account already verified. Please login.',
+      };
+    }
+
+    // Check if OTP was recently sent (rate limiting)
+    if (user.otpExpiry) {
+      const timeSinceLastOTP = Date.now() - new Date(user.otpExpiry).getTime() + 5 * 60 * 1000; // OTP expires in 5 mins
+      if (timeSinceLastOTP < 30000) { // 30 seconds cooldown
+        return {
+          success: false,
+          message: 'Please wait before requesting a new OTP.',
+        };
+      }
+    }
+
+    // Generate new OTP
+    const newOtp = generateOTP();
+
+    // Update user with new OTP — store SHA-256 hash, never raw OTP
+    await prisma.user.update({
+      where: { phone },
+      data: {
+        otpCode: hashOTP(newOtp),
+        otpExpiry: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes
+      },
+    });
+
+    // Send OTP via SMS (MSG91 Flow API)
+    const otpSent = await sendOTP(phone, newOtp);
+
+    if (!otpSent && process.env.NODE_ENV === 'production') {
+      return {
+        success: false,
+        message: 'Failed to send OTP via SMS. Please try again.',
+      };
+    }
+
+    // SECURITY FIX: Log OTP server-side only, never in response
+    if (process.env.NODE_ENV !== 'production') {
+      logger.info(`[DEV ONLY] OTP for ${phone}: ${newOtp}`);
+    }
+
+    return {
+      success: true,
+      message: `OTP sent to ${phone} via SMS`,
+      requiresOTP: true,
+    };
+  } catch (error: any) {
+    logger.error('Resend OTP error:', error);
+    return {
+      success: false,
+      message: 'Failed to resend OTP. Please try again.',
+    };
+  }
+}
+
+/**
+ * Step 2: Verify OTP and complete registration
+ */
+export async function verifyRegistrationOTP(
+  phone: string,
+  otp: string
+): Promise<AuthResponse> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { phone },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        message: 'User not found',
+      };
+    }
+
+    if (user.isVerified) {
+      return {
+        success: false,
+        message: 'User already verified',
+      };
+    }
+
+    // DEV MODE: Skip OTP verification entirely
+    if (SKIP_OTP_IN_DEV) {
+      logger.info(`🔓 [DEV MODE] Skipping OTP verification for ${phone}`);
+
+      // Mark user as verified
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          isVerified: true,
+          otpCode: null,
+          otpExpiry: null,
+        },
+      });
+
+
+      // Generate tokens directly (no session table)
+      const tokens = generateTokens(user.id, user.phone, user.role);
+
+      return {
+        success: true,
+        message: 'Registration successful (dev mode - OTP skipped)',
+        user: {
+          id: user.id,
+          phone: user.phone,
+          name: user.name || undefined,
+          role: user.role,
+          upiBusinessName: user.upiBusinessName || undefined,
+          defaultCowRate: user.defaultCowRate || undefined,
+          defaultBuffaloRate: user.defaultBuffaloRate || undefined,
+          avatarUrl: user.avatarUrl ?? null,
+        },
+        tokens,
+      };
+    }
+
+    // PRODUCTION: Normal OTP validation
+    if (!user.otpCode || !user.otpExpiry) {
+      return {
+        success: false,
+        message: 'No OTP found. Please request a new one.',
+      };
+    }
+
+    // Check expiry
+    if (new Date() > user.otpExpiry) {
+      // SECURITY: Clear expired OTP to prevent reuse
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { otpCode: null, otpExpiry: null },
+      });
+      return {
+        success: false,
+        message: 'OTP expired. Please request a new one.',
+      };
+    }
+
+    // SECURITY: Use constant-time comparison to prevent timing attacks
+    if (!verifyOTP(user.otpCode, otp)) {
+      logger.info('AUTH_EVENT', { event: 'OTP_VERIFY_FAIL', phone });
+      // SECURITY FIX: Track failed OTP attempts to prevent brute force
+      // After 5 failed attempts, invalidate the OTP entirely
+      const failedAttempts = (user.failedLoginAttempts || 0) + 1;
+      const updateData: any = { failedLoginAttempts: failedAttempts };
+      if (failedAttempts >= 5) {
+        updateData.otpCode = null;
+        updateData.otpExpiry = null;
+        logger.warn(`OTP invalidated after ${failedAttempts} failed attempts for phone ${phone}`);
+      }
+      await prisma.user.update({
+        where: { id: user.id },
+        data: updateData,
+      });
+
+      if (failedAttempts >= 5) {
+        return {
+          success: false,
+          message: 'Too many failed attempts. Please request a new OTP.',
+        };
+      }
+      return {
+        success: false,
+        message: 'Invalid OTP',
+      };
+    }
+
+    logger.info('AUTH_EVENT', { event: 'OTP_VERIFY_SUCCESS', phone });
+
+    // Mark user as verified, clear OTP, and reset failed attempts
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        isVerified: true,
+        otpCode: null,
+        otpExpiry: null,
+        failedLoginAttempts: 0,
+      },
+    });
+
+    // ============================================
+    // AUTO-GENERATE REFERRAL CODE
+    // ============================================
+    try {
+      await generateReferralCodeForUser(user.id, user.name || 'User');
+      logger.info(`✅ Referral code generated for user ${user.id}`);
+    } catch (error) {
+      logger.error('Failed to generate referral code:', error);
+      // Don't fail registration if referral code generation fails
+    }
+
+    // Generate tokens directly (no session table)
+    const tokens = generateTokens(user.id, user.phone, user.role);
+
+    // Log account activity (fire-and-forget)
+    await logActivity(user.id, 'REGISTER', undefined, { method: 'password' });
+
+    return {
+      success: true,
+      message: 'Registration successful',
+      user: {
+        id: user.id,
+        phone: user.phone,
+        name: user.name || undefined,
+        role: user.role,
+        upiBusinessName: user.upiBusinessName || undefined,
+        defaultCowRate: user.defaultCowRate || undefined,
+        defaultBuffaloRate: user.defaultBuffaloRate || undefined,
+        avatarUrl: user.avatarUrl ?? null,
+      },
+      tokens,
+    };
+  } catch (error: any) {
+    logger.error('OTP verification error:', error);
+    return {
+      success: false,
+      message: 'Verification failed',
+    };
+  }
+}
+
+// ============================================
+// LOGIN
+// ============================================
+
+/**
+ * Login with phone and password
+ */
+export async function loginUser(data: LoginRequest): Promise<AuthResponse> {
+  logger.info('AUTH_EVENT', { event: 'LOGIN_ATTEMPT', phone: data.phone });
+  try {
+    // Find user
+    const user = await prisma.user.findUnique({
+      where: { phone: data.phone },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        message: 'Invalid phone number or password',
+      };
+    }
+
+    // Check if account is locked
+    if (user.accountLockedUntil && new Date() < user.accountLockedUntil) {
+      return {
+        success: false,
+        message: 'Account is locked due to too many failed login attempts. Try again later.',
+      };
+    }
+
+    // Reset lock if time has passed
+    if (user.accountLockedUntil && new Date() >= user.accountLockedUntil) {
+      await resetFailedLoginAttempts(user.id);
+    }
+
+    // Check if verified
+    if (!user.isVerified) {
+      return {
+        success: false,
+        message: 'Account not verified. Please complete registration.',
+      };
+    }
+
+    // Check if suspended
+    if (user.isSuspended) {
+      return {
+        success: false,
+        message: 'Your account has been suspended. Please contact support.',
+      };
+    }
+
+    // Verify password
+    const isValidPassword = await verifyPassword(data.password, user.password);
+
+    if (!isValidPassword) {
+      logger.info('AUTH_EVENT', { event: 'LOGIN_FAIL', phone: data.phone, reason: 'invalid_password' });
+      // Increment failed login attempts
+      const failedAttempts = user.failedLoginAttempts + 1;
+      const shouldLock = failedAttempts >= 5;
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          failedLoginAttempts: failedAttempts,
+          lastFailedLoginAt: new Date(),
+          accountLockedUntil: shouldLock ? new Date(Date.now() + 30 * 60 * 1000) : null, // 30 minutes
+        },
+      });
+
+      return {
+        success: false,
+        message: 'Invalid phone number or password',
+      };
+    }
+
+    logger.info('AUTH_EVENT', { event: 'LOGIN_SUCCESS', phone: data.phone });
+
+    // ── Admin 2FA check ───────────────────────────────────────────
+    // If this is an admin/super_admin login and they have 2FA enabled,
+    // issue a short-lived temp token instead of full auth tokens.
+    if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
+      const totp = await prisma.adminTOTP.findUnique({
+        where: { userId: user.id },
+        select: { isEnabled: true },
+      });
+
+      if (totp?.isEnabled) {
+        // Issue a 5-minute temp token — carries enough info to complete the 2FA step
+        const tempToken = jwt.sign(
+          { userId: user.id, phone: user.phone, role: user.role, type: 'admin_2fa_pending' },
+          JWT_SECRET,
+          { algorithm: 'HS256', expiresIn: '5m' } as jwt.SignOptions
+        );
+
+        logger.info('AUTH_EVENT', {
+          event: 'ADMIN_2FA_REQUIRED',
+          phone: data.phone,
+          userId: user.id,
+        });
+
+        return {
+          success: true,
+          requiresTwoFactor: true,
+          tempToken,
+          message: '2FA verification required',
+        } as unknown as AuthResponse;
+      }
+    }
+    // ─────────────────────────────────────────────────────────────
+
+    // Reset failed login attempts and update last login time in a single DB call
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        failedLoginAttempts: 0,
+        lastFailedLoginAt: null,
+        accountLockedUntil: null,
+        lastLoginAt: new Date(),
+      },
+    });
+
+    // Generate tokens directly (no session table, multi-device enabled)
+    const tokens = generateTokens(user.id, user.phone, user.role);
+
+    // Remove from in-memory blacklist so new tokens work immediately.
+    // Covers the "logout everywhere → fresh login" scenario.
+    // DB isSuspended was already checked above; if suspended, we never reach here.
+    unblacklistUser(user.id);
+
+    // Log account activity (fire-and-forget)
+    await logActivity(user.id, 'LOGIN', undefined, { method: 'password' });
+
+    return {
+      success: true,
+      message: 'Login successful',
+      user: {
+        id: user.id,
+        phone: user.phone,
+        name: user.name || undefined,
+        email: user.email || undefined,
+        emailVerified: user.emailVerified || undefined,
+        role: user.role,
+        upiBusinessName: user.upiBusinessName || undefined,
+        defaultCowRate: user.defaultCowRate || undefined,
+        defaultBuffaloRate: user.defaultBuffaloRate || undefined,
+        avatarUrl: user.avatarUrl ?? null,
+      },
+      tokens,
+    };
+  } catch (error: any) {
+    logger.error('Login error:', error);
+    return {
+      success: false,
+      message: 'Login failed',
+    };
+  }
+}
+
+// ============================================
+// FORGOT PASSWORD
+// ============================================
+
+/**
+ * Step 1: Request password reset (sends OTP)
+ */
+export async function forgotPassword(phone: string): Promise<AuthResponse> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { phone },
+    });
+
+    if (!user) {
+      // Don't reveal if user exists (security)
+      return {
+        success: true,
+        message: 'If this phone number is registered, you will receive an OTP',
+        requiresOTP: true,
+      };
+    }
+
+    // Generate OTP
+    const otp = generateOTP();
+
+    // Store OTP — store SHA-256 hash, never raw OTP
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        otpCode: hashOTP(otp),
+        otpExpiry: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes
+      },
+    });
+
+    // Send OTP
+    const smsSent = await sendOTP(phone, otp);
+
+    // SECURITY FIX: Log OTP server-side only, never in response
+    if (process.env.NODE_ENV !== 'production') {
+      logger.info(`[DEV ONLY] OTP for ${phone}: ${otp}`);
+    }
+
+    if (!smsSent) {
+      logger.error(`Failed to send OTP SMS to ${phone}`);
+      return {
+        success: false,
+        message: 'Failed to send OTP. Please try again.',
+      };
+    }
+
+    return {
+      success: true,
+      message: `OTP sent to ${phone}`,
+      requiresOTP: true,
+    };
+  } catch (error: any) {
+    logger.error('Forgot password error:', error);
+    return {
+      success: false,
+      message: 'Failed to send OTP',
+    };
+  }
+}
+
+/**
+ * Step 2: Reset password with OTP
+ */
+export async function resetPassword(
+  phone: string,
+  otp: string,
+  newPassword: string
+): Promise<AuthResponse> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { phone },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        message: 'User not found',
+      };
+    }
+
+    // Verify OTP
+    if (!user.otpCode || !user.otpExpiry) {
+      return {
+        success: false,
+        message: 'No OTP found. Please request password reset again.',
+      };
+    }
+
+    if (new Date() > user.otpExpiry) {
+      // SECURITY: Clear expired OTP to prevent reuse
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { otpCode: null, otpExpiry: null },
+      });
+      return {
+        success: false,
+        message: 'OTP expired. Please request a new one.',
+      };
+    }
+
+    // SECURITY: Use constant-time comparison to prevent timing attacks
+    if (!verifyOTP(user.otpCode, otp)) {
+      // SECURITY FIX: Track failed OTP attempts for password reset too
+      const failedAttempts = (user.failedLoginAttempts || 0) + 1;
+      const updateData: any = { failedLoginAttempts: failedAttempts };
+      if (failedAttempts >= 5) {
+        updateData.otpCode = null;
+        updateData.otpExpiry = null;
+        logger.warn(`Password reset OTP invalidated after ${failedAttempts} failed attempts for phone ${phone}`);
+      }
+      await prisma.user.update({
+        where: { id: user.id },
+        data: updateData,
+      });
+
+      if (failedAttempts >= 5) {
+        return {
+          success: false,
+          message: 'Too many failed attempts. Please request a new OTP.',
+        };
+      }
+      return {
+        success: false,
+        message: 'Invalid OTP',
+      };
+    }
+
+    // Validate new password
+    if (!newPassword || newPassword.length < 8) {
+      return {
+        success: false,
+        message: 'Password must be at least 8 characters',
+      };
+    }
+
+    const hashedPassword = await hashPassword(newPassword);
+
+    // Update password and reset failed attempts
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        otpCode: null,
+        otpExpiry: null,
+        failedLoginAttempts: 0,
+        accountLockedUntil: null,
+      },
+    });
+
+    // SECURITY: Force re-login on all devices after password change
+    blacklistUser(user.id);
+
+    // Log account activity (fire-and-forget)
+    await logActivity(user.id, 'PASSWORD_CHANGE', undefined, { method: 'otp_reset' });
+
+    return {
+      success: true,
+      message: 'Password reset successful. You can now login.',
+    };
+  } catch (error: any) {
+    logger.error('Reset password error:', error);
+    return {
+      success: false,
+      message: 'Password reset failed',
+    };
+  }
+}
+
+// ============================================
+// TOKEN MANAGEMENT
+// ============================================
+
+/**
+ * Helper: Reset failed login attempts
+ */
+async function resetFailedLoginAttempts(userId: string) {
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      failedLoginAttempts: 0,
+      lastFailedLoginAt: null,
+      accountLockedUntil: null,
+    },
+  });
+}
+
+/**
+ * Generate access and refresh tokens with role
+ * SECURITY: Explicit HS256 algorithm to prevent 'none' algorithm attacks
+ */
+export function generateTokens(userId: string, phone: string, role: string = 'USER', businessId?: string) {
+  // Shorter expiry for admin tokens
+  const accessTokenExpiry: string | number = role === 'USER' ? JWT_EXPIRES_IN : '4h';
+  const accessPayload = businessId
+    ? { userId, phone, role, businessId, type: 'access' }
+    : { userId, phone, role, type: 'access' };
+  const accessToken = jwt.sign(
+    accessPayload,
+    JWT_SECRET,
+    { algorithm: 'HS256', expiresIn: accessTokenExpiry } as jwt.SignOptions
+  );
+
+  const refreshPayload = businessId
+    ? { userId, phone, role, businessId, type: 'refresh' }
+    : { userId, phone, role, type: 'refresh' };
+  const refreshToken = jwt.sign(
+    refreshPayload,
+    JWT_SECRET,
+    { algorithm: 'HS256', expiresIn: REFRESH_TOKEN_EXPIRES_IN } as jwt.SignOptions
+  );
+
+  return { accessToken, refreshToken };
+}
+
+/**
+ * Refresh access token (simple JWT-based, no session table)
+ * SECURITY FIX: Now checks if user is suspended/deleted before issuing new tokens
+ */
+export async function refreshAccessToken(refreshToken: string): Promise<AuthResponse> {
+  try {
+    // SECURITY: Verify with explicit algorithm to prevent 'none' algorithm attacks
+    const decoded = jwt.verify(refreshToken, JWT_SECRET, { algorithms: ['HS256'] }) as {
+      userId: string;
+      phone: string;
+      role?: string;
+      type?: string;
+    };
+
+    // SECURITY: Ensure this is actually a refresh token, not an access token
+    if (decoded.type && decoded.type !== 'refresh') {
+      return {
+        success: false,
+        message: 'Invalid token type. Expected refresh token.',
+      };
+    }
+
+    // SECURITY FIX: Check if user is still active (not suspended/deleted)
+    // This prevents suspended users from refreshing tokens
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: { isSuspended: true, isVerified: true },
+    });
+
+    if (!user || user.isSuspended || !user.isVerified) {
+      return {
+        success: false,
+        message: 'Account is suspended or inactive. Please contact support.',
+      };
+    }
+
+    // Generate new access token
+    const accessTokenExpiry: string | number = decoded.role === 'USER' ? JWT_EXPIRES_IN : '4h';
+    const newAccessToken = jwt.sign(
+      { userId: decoded.userId, phone: decoded.phone, role: decoded.role || 'USER', type: 'access' },
+      JWT_SECRET,
+      { algorithm: 'HS256', expiresIn: accessTokenExpiry } as jwt.SignOptions
+    );
+
+    return {
+      success: true,
+      message: 'Token refreshed',
+      tokens: {
+        accessToken: newAccessToken,
+        refreshToken: refreshToken, // Keep same refresh token
+      },
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: 'Invalid or expired refresh token',
+    };
+  }
+}

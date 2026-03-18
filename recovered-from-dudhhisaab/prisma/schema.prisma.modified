@@ -1,0 +1,1641 @@
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AdminAction {
+  id         String   @id @default(cuid(2))
+  createdAt  DateTime @default(now())
+  adminId    String
+  action     String
+  targetType String?
+  targetId   String?
+  metadata   Json?
+  ipAddress  String?
+  userAgent  String?
+  User       User     @relation(fields: [adminId], references: [id])
+
+  @@index([action])
+  @@index([adminId, createdAt])
+}
+
+model AuditLog {
+  id           String    @id @default(cuid(2))
+  createdAt    DateTime  @default(now())
+  userId       String
+  entityType   String
+  entityId     String
+  action       String
+  oldValue     Json?
+  newValue     Json
+  deviceInfo   String?
+  reason       String?
+  isSuspicious Boolean   @default(false)
+  reviewedAt   DateTime?
+  reviewedBy   String?
+  reviewNotes  String?
+  User         User      @relation(fields: [userId], references: [id])
+
+  @@index([createdAt])
+  @@index([isSuspicious, reviewedAt])
+  @@index([userId, entityType, entityId])
+}
+
+model Customer {
+  id                     String                   @id @default(cuid(2))
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+  revision               Int                      @default(1)
+  syncedAt               DateTime?
+  isDeleted              Boolean                  @default(false)
+  userId                 String
+  name                   String
+  phone                  String
+  address                String?
+  sellRate               Decimal?                 @db.Decimal(10, 2)
+  defaultQuantity        Float?
+  outstandingBalance     Decimal                  @default(0) @db.Decimal(12, 2)
+  isArchived             Boolean                  @default(false)
+  latitude               Float?
+  longitude              Float?
+  locationAddress        String?
+  locationCapturedAt     DateTime?
+  locationAccuracy       Float?
+  locationSource         String?                  // 'GPS' | 'MANUAL'
+  billingCycle           BillingCycle             @default(MONTHLY)
+  billingStartDay        Int?
+  buffaloRate            Decimal?                 @db.Decimal(10, 2)
+  cowRate                Decimal?                 @db.Decimal(10, 2)
+  customBillingDays      Int?
+  nextBillingDate        String?
+  whatsappOptOut         Boolean                  @default(false)
+  smsOptOut              Boolean                  @default(false)
+  smsOptOutAt            DateTime?
+  optOutAt               DateTime?
+  optOutReason           String?
+  optOutMethod           String?
+  portalToken            String?                  @unique
+  portalSmsStatus        String                   @default("unsent") // 'unsent' | 'sent' | 'failed'
+  referredById           String?
+  deliveryOrder          Int?
+  isLocked               Boolean                  @default(false)
+  lockedAt               DateTime?
+  User                   User                     @relation(fields: [userId], references: [id])
+  Holiday                Holiday[]
+  MilkOutEntry           MilkOutEntry[]
+  NotificationLog        NotificationLog[]
+  Payment                Payment[]
+  ProductEntry           ProductEntry[]
+  delivery_session_stops delivery_session_stops[]
+  ReferredBy             Customer?                @relation("CustomerReferral", fields: [referredById], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  Referrals              Customer[]               @relation("CustomerReferral")
+
+  @@index([userId, isDeleted, isArchived])
+  @@index([userId, phone])
+  @@index([referredById])
+  @@index([userId, deliveryOrder])
+}
+
+model DayRecord {
+  id             String    @id
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime
+  revision       Int       @default(1)
+  syncedAt       DateTime?
+  isDeleted      Boolean   @default(false)
+  userId         String
+  date           String
+  isClosed       Boolean   @default(false)
+  closedAt       DateTime?
+  totalMilkIn    Float     @default(0)
+  totalMilkOut   Float     @default(0)
+  deliveredCount Int       @default(0)
+  skippedCount   Int       @default(0)
+  totalRevenue   Decimal?  @db.Decimal(12, 2)
+  totalCost      Decimal?  @db.Decimal(12, 2)
+  profit         Decimal?  @db.Decimal(12, 2)
+  User           User      @relation(fields: [userId], references: [id])
+
+  @@unique([userId, date])
+  @@index([userId, date])
+}
+
+model Feedback {
+  id            String    @id
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  userId        String
+  message       String
+  screenshot    String?
+  deviceInfo    Json
+  screenName    String
+  severity      String?
+  adminResponse      String?
+  adminNote          String?
+  solutionScreenshot String?
+  respondedAt        DateTime?
+  respondedBy        String?
+  status             String    @default("pending")
+  User          User      @relation(fields: [userId], references: [id])
+
+  @@index([status])
+  @@index([userId, createdAt])
+}
+
+model Holiday {
+  id         String   @id @default(cuid(2))
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  isDeleted  Boolean  @default(false)
+  userId     String
+  customerId String
+  startDate  String
+  endDate    String
+  note       String?
+  Customer   Customer @relation(fields: [customerId], references: [id])
+  User       User     @relation(fields: [userId], references: [id])
+
+  @@index([startDate, endDate])
+  @@index([userId, customerId])
+}
+
+model MilkmanHoliday {
+  id         String   @id @default(cuid(2))
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  isDeleted  Boolean  @default(false)
+  userId     String
+  startDate  String // YYYY-MM-DD
+  startShift Session // MORNING or EVENING
+  endDate    String // YYYY-MM-DD
+  endShift   Session // MORNING or EVENING
+  reason     String?
+  User       User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, startDate, endDate])
+}
+
+model MilkInEntry {
+  id             String    @id @default(cuid(2))
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  revision       Int       @default(1)
+  syncedAt       DateTime?
+  isDeleted      Boolean   @default(false)
+  userId         String
+  date           String
+  supplierId     String
+  quantity       Float
+  purchaseRate   Decimal?  @db.Decimal(10, 2)
+  totalCost      Decimal?  @db.Decimal(12, 2)
+  note           String?
+  isLocked       Boolean   @default(false)
+  lockedAt       DateTime?
+  unlockReason   String?
+  milkType       MilkType  @default(COW)
+  session        Session   @default(MORNING)
+  calculatedRate Decimal?  @db.Decimal(10, 2)
+  clrPercent     Float?
+  fatPercent     Float?
+  rateType       RateType  @default(FIXED)
+  snfPercent     Float?
+  actorId        String?   // TeamMember.id who created (null = owner)
+  actorName      String?   // Denormalized name for display
+  Supplier       Supplier  @relation(fields: [supplierId], references: [id])
+  User           User      @relation(fields: [userId], references: [id])
+
+  @@unique([userId, date, supplierId, session, milkType])
+  @@index([date, fatPercent])
+  @@index([fatPercent])
+  @@index([userId, date, isDeleted]) // Composite index for 5-10x faster date range queries
+}
+
+model MilkOutEntry {
+  id                 String    @id @default(cuid(2))
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  revision           Int       @default(1)
+  syncedAt           DateTime?
+  isDeleted          Boolean   @default(false)
+  userId             String
+  date               String
+  customerId         String
+  quantity           Float
+  sellRate           Decimal?  @db.Decimal(10, 2)
+  totalRevenue       Decimal?  @db.Decimal(12, 2)
+  wasSkipped         Boolean   @default(false)
+  note               String?
+  isLocked           Boolean   @default(false)
+  lockedAt           DateTime?
+  unlockReason       String?
+  notificationSent   Boolean   @default(false)
+  notificationSentAt DateTime?
+  milkType           MilkType  @default(COW)
+  session            Session   @default(MORNING)
+  actorId            String?   // TeamMember.id who created (null = owner)
+  actorName          String?   // Denormalized name for display
+  Customer           Customer  @relation(fields: [customerId], references: [id])
+  User               User      @relation(fields: [userId], references: [id])
+
+  @@unique([userId, date, customerId, session, milkType])
+  @@index([userId, date, isDeleted]) // Composite index for 5-10x faster date range queries
+  @@index([userId, date, wasSkipped]) // Filter delivered vs skipped entries
+}
+
+model Payment {
+  id                 String    @id @default(cuid(2))
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  revision           Int       @default(1)
+  syncedAt           DateTime?
+  isDeleted          Boolean   @default(false)
+  userId             String
+  entityType         String
+  entityId           String
+  customerId         String?
+  supplierId         String?
+  amount             Decimal   @db.Decimal(12, 2)
+  date               String
+  mode               String
+  direction          String
+  note               String?
+  proofImageUrl      String?
+  upiTransactionId   String?
+  isLocked           Boolean   @default(false)
+  lockedAt           DateTime?
+  unlockReason       String?
+  notificationSent   Boolean   @default(false)
+  notificationSentAt DateTime?
+  actorId            String?   // TeamMember.id who created (null = owner)
+  actorName          String?   // Denormalized name for display
+  Customer           Customer? @relation(fields: [customerId], references: [id])
+  Supplier           Supplier? @relation(fields: [supplierId], references: [id])
+  User               User      @relation(fields: [userId], references: [id])
+
+  @@index([date, entityType])
+  @@index([userId, date, isDeleted]) // Composite index for 5-10x faster date range queries
+  @@index([userId, date, direction]) // Payment reports filtered by received/sent
+  @@index([userId, entityType, entityId])
+}
+
+model Product {
+  id           String          @id @default(cuid(2))
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  isDeleted    Boolean         @default(false)
+  userId       String
+  name         String
+  unit         String
+  price        Decimal         @db.Decimal(10, 2)
+  icon         String          @default("📦")
+  isActive     Boolean         @default(true)
+  isArchived   Boolean         @default(false)
+  category     ProductCategory @default(DAIRY)
+  User         User            @relation(fields: [userId], references: [id])
+  ProductEntry ProductEntry[]
+
+  @@index([userId, category])
+  @@index([userId, isDeleted, isArchived])
+}
+
+model ProductEntry {
+  id             String    @id @default(cuid(2))
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  isDeleted      Boolean   @default(false)
+  userId         String
+  customerId     String
+  productId      String
+  date           String
+  quantity       Float
+  price          Decimal   @db.Decimal(10, 2)
+  totalCost      Decimal   @db.Decimal(12, 2)
+  unit           String
+  status         String    @default("pending")
+  deliveredAt    DateTime?
+  reminderSet    Boolean   @default(false)
+  reminderSentAt DateTime?
+  billedAt       DateTime?
+  actorId        String?   // TeamMember.id who created (null = owner)
+  actorName      String?   // Denormalized name for display
+  Customer       Customer  @relation(fields: [customerId], references: [id])
+  Product        Product   @relation(fields: [productId], references: [id])
+  User           User      @relation(fields: [userId], references: [id])
+
+  @@unique([userId, customerId, date, productId])
+  @@index([customerId, date])
+  @@index([status])
+  @@index([userId, date])
+}
+
+model Supplier {
+  id                 String          @id @default(cuid(2))
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  revision           Int             @default(1)
+  syncedAt           DateTime?
+  isDeleted          Boolean         @default(false)
+  userId             String
+  name               String
+  phone              String?
+  address            String?
+  purchaseRate       Decimal?        @db.Decimal(10, 2)
+  outstandingBalance Decimal         @default(0) @db.Decimal(12, 2)
+  isPinned           Boolean         @default(false)
+  isArchived         Boolean         @default(false)
+  buffaloRate        Decimal?        @db.Decimal(10, 2)
+  cowRate            Decimal?        @db.Decimal(10, 2)
+  centerId           String?
+  baseFatPercent     Float?
+  fatRateAdjustment  Float?
+  rateType           RateType        @default(FIXED)
+  cowRateType        RateType        @default(FIXED)
+  buffaloRateType    RateType        @default(FIXED)
+  cowFatPercent      Float?
+  cowRatePerFat      Decimal?        @db.Decimal(10, 2)
+  buffaloFatPercent  Float?
+  buffaloRatePerFat  Decimal?        @db.Decimal(10, 2)
+  portalToken          String?                @unique
+  portalSmsStatus      String                 @default("unsent") // 'unsent' | 'sent' | 'failed'
+  MilkInEntry          MilkInEntry[]
+  Payment              Payment[]
+  SupplierProductEntry SupplierProductEntry[]
+  SupplierCenter       SupplierCenter?        @relation(fields: [centerId], references: [id])
+  User                 User                   @relation(fields: [userId], references: [id])
+
+  @@index([centerId])
+  @@index([rateType])
+  @@index([userId, isDeleted, isArchived]) // Supplier list filters (matches Customer pattern)
+  @@index([userId, centerId, isDeleted]) // Center-filtered supplier queries
+  @@index([userId, isPinned, isDeleted])
+  @@index([userId, phone])
+}
+
+model SupplierCenter {
+  id        String     @id @default(cuid(2))
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  isDeleted Boolean    @default(false)
+  userId    String
+  name      String
+  address   String?
+  location  String?
+  phone     String?
+  Supplier  Supplier[]
+  User      User       @relation(fields: [userId], references: [id])
+
+  @@index([userId, isDeleted])
+}
+
+model SupplierProduct {
+  id                   String                 @id @default(cuid(2))
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  isDeleted            Boolean                @default(false)
+  userId               String
+  name                 String
+  unit                 String
+  price                Decimal                @db.Decimal(10, 2)
+  icon                 String                 @default("📦")
+  isActive             Boolean                @default(true)
+  isArchived           Boolean                @default(false)
+  category             ProductCategory        @default(OTHERS)
+  User                 User                   @relation(fields: [userId], references: [id])
+  SupplierProductEntry SupplierProductEntry[]
+
+  @@index([userId, category])
+  @@index([userId, isDeleted, isArchived])
+}
+
+model SupplierProductEntry {
+  id                String          @id @default(cuid(2))
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  isDeleted         Boolean         @default(false)
+  userId            String
+  supplierId        String
+  supplierProductId String
+  date              String
+  quantity          Float
+  price             Decimal         @db.Decimal(10, 2)
+  totalCost         Decimal         @db.Decimal(12, 2)
+  unit              String
+  note              String?
+  actorId           String?         // TeamMember.id who created (null = owner)
+  actorName         String?         // Denormalized name for display
+  Supplier          Supplier        @relation(fields: [supplierId], references: [id])
+  SupplierProduct   SupplierProduct @relation(fields: [supplierProductId], references: [id])
+  User              User            @relation(fields: [userId], references: [id])
+
+  @@unique([userId, supplierId, date, supplierProductId])
+  @@index([supplierId, date])
+  @@index([userId, date])
+}
+
+model User {
+  name                                               String?
+  phone                                              String                   @unique
+  otpCode                                            String?
+  otpExpiry                                          DateTime?
+  id                                                 String                   @id @default(cuid(2))
+  password                                           String
+  isVerified                                         Boolean                  @default(false)
+  role                                               UserRole                 @default(USER)
+  adminNotes                                         String?
+  isSuspended                                        Boolean                  @default(false)
+  suspendedAt                                        DateTime?
+  suspendedReason                                    String?
+  suspendedBy                                        String?
+  failedLoginAttempts                                Int                      @default(0)
+  lastFailedLoginAt                                  DateTime?
+  accountLockedUntil                                 DateTime?
+  createdAt                                          DateTime                 @default(now())
+  updatedAt                                          DateTime                 @updatedAt
+  lastLoginAt                                        DateTime?
+  whatsappNotifications                              Boolean                  @default(true)
+  smsNotifications                                   Boolean                  @default(false)
+  deviceFingerprint                                  String?
+  ipAddress                                          String?
+  lastReferralAt                                     DateTime?
+  referralBalance                                    Decimal                  @default(0) @db.Decimal(12, 2)
+  referralBalanceInReview                            Decimal                  @default(0) @db.Decimal(12, 2)
+  referralFraudFlags                                 Int                      @default(0)
+  referralTotalEarned                                Decimal                  @default(0) @db.Decimal(12, 2)
+  referredBy                                         String?
+  walletFrozen                                       Boolean                  @default(false)
+  isSubscriptionActive                               Boolean                  @default(true)
+  subscriptionEndDate                                DateTime?
+  subscriptionStartDate                              DateTime?
+  subscriptionTier                                   String                   @default("free")
+  billingMode                                        String?
+  acceptsCashPayments                                Boolean                  @default(true)
+  acceptsUpiPayments                                 Boolean                  @default(true)
+  upiBusinessName                                    String?
+  upiEnabled                                         Boolean                  @default(false)
+  upiId                                              String?
+  upiLastUpdatedAt                                   DateTime?
+  upiPreferredApp                                    String?
+  upiQrCodeUrl                                       String?
+  upiVerified                                        Boolean                  @default(false)
+  lastNotificationSent                               DateTime?
+  notificationLanguage                               String                   @default("en")
+  notificationOptInAt                                DateTime?
+  notifyDailySummary                                 Boolean                  @default(true)
+  notifyDeliveryCreated                              Boolean                  @default(true)
+  notifyHolidayConfirm                               Boolean                  @default(true)
+  notifyLowStock                                     Boolean                  @default(true)
+  notifyNewCustomer                                  Boolean                  @default(true)
+  notifyPaymentReceived                              Boolean                  @default(true)
+  notifyPaymentReminder                              Boolean                  @default(true)
+  notifyWeeklySummary                                Boolean                  @default(false)
+  quietHoursEnabled                                  Boolean                  @default(false)
+  quietHoursEnd                                      String?
+  quietHoursStart                                    String?
+  defaultCowRate                                     Float?
+  defaultBuffaloRate                                 Float?
+  customerReferralRewardAmount                       Decimal                  @default(20) @db.Decimal(10, 2)
+  email                                              String?                  @unique
+  emailVerified                                      Boolean                  @default(false)
+  emailVerifyToken                                   String?
+  emailVerifyExpiry                                  DateTime?
+  doodhCoins                                         Int                      @default(0)
+  doodhCoinsLifetime                                 Int                      @default(0)
+  lastSyncedAt                                       DateTime?
+  dairyName                                          String?
+  dairyLatitude                                      Float?
+  dairyLongitude                                     Float?
+  dairyAddress                                       String?
+  dairyLocationAccuracy                              Float?
+  dairyLocationCapturedAt                            DateTime?
+  homeLatitude                                       Float?
+  homeLongitude                                      Float?
+  homeAddress                                        String?
+  homeLocationAccuracy                               Float?
+  homeLocationCapturedAt                             DateTime?
+  AdminAction                                        AdminAction[]
+  DoodhCoinTransaction                               DoodhCoinTransaction[]
+  AuditLog                                           AuditLog[]
+  Customer                                           Customer[]
+  DayRecord                                          DayRecord[]
+  Feedback                                           Feedback[]
+  Holiday                                            Holiday[]
+  MilkmanHoliday                                     MilkmanHoliday[]
+  MilkInEntry                                        MilkInEntry[]
+  MilkOutEntry                                       MilkOutEntry[]
+  NotificationLog                                    NotificationLog[]
+  Payment                                            Payment[]
+  Product                                            Product[]
+  ProductEntry                                       ProductEntry[]
+  Supplier                                           Supplier[]
+  SupplierCenter                                     SupplierCenter[]
+  SupplierProduct                                    SupplierProduct[]
+  SupplierProductEntry                               SupplierProductEntry[]
+  User_User_referredByToUser                         User?                    @relation("User_referredByToUser", fields: [referredBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  other_User_User_referredByToUser                   User[]                   @relation("User_referredByToUser")
+  User_User_suspendedByToUser                        User?                    @relation("User_suspendedByToUser", fields: [suspendedBy], references: [id])
+  other_User_User_suspendedByToUser                  User[]                   @relation("User_suspendedByToUser")
+  backup_jobs                                        backup_jobs[]
+  backups                                            backups[]
+  billing_history                                    billing_history[]
+  delivery_sessions                                  delivery_sessions[]
+  feature_usage                                      feature_usage[]
+  referral_codes                                     referral_codes?
+  referral_events_referral_events_referredIdToUser   referral_events[]        @relation("referral_events_referredIdToUser")
+  referral_events_referral_events_referrerIdToUser   referral_events[]        @relation("referral_events_referrerIdToUser")
+  referral_rewards_referral_rewards_referredIdToUser referral_rewards[]       @relation("referral_rewards_referredIdToUser")
+  referral_rewards_referral_rewards_referrerIdToUser referral_rewards[]       @relation("referral_rewards_referrerIdToUser")
+  referral_withdrawals                               referral_withdrawals[]
+  user_sessions                                      user_sessions[]
+  user_subscriptions                                 user_subscriptions[]
+  user_pack_subscriptions                            user_pack_subscription[]
+  usage_billings                                     usage_billing[]
+  customer_overflow                                  customer_overflow?
+  user_addons                                        user_addons[]
+  login_history                                      login_history[]
+  SmsLog                                             SmsLog[]
+  PushSubscription                                   PushSubscription[]
+  PushNotification                                   PushNotification[]
+  AdminTOTP                                          AdminTOTP?
+  AccountActivity                                    AccountActivity[]
+  WebAuthnCredential                                 WebAuthnCredential[]
+  googleDriveRefreshToken    String?    // AES-256-GCM encrypted
+  googleDriveConnectedAt     DateTime?
+  googleDriveEmail           String?
+  googleDriveFolderId        String?
+  trialUsed                  Boolean    @default(false)
+  autoSendStatements         Boolean    @default(false)
+  statementSendDay           Int        @default(1) // 1-28, day of month
+  StatementToken             StatementToken[]
+  TeamMembers                TeamMember[]           @relation("TeamOwner")
+  avatarUrl                  String?                // Base64 data URL (max 50KB compressed)
+  blacklisted_tokens         blacklisted_tokens[]
+  lastActiveBusinessId       String?                // FK → Business.id (currently active business)
+  isShadowAccount            Boolean                @default(false)  // Auto-created for 2nd+ businesses
+  BusinessOwned              Business[]             @relation("BusinessOwner")
+  BusinessData               Business?              @relation("BusinessDataUser")
+
+  @@index([lastLoginAt])
+  @@index([lastReferralAt])
+  @@index([referralFraudFlags])
+  @@index([referredBy])
+  @@index([role])
+  @@index([subscriptionEndDate])
+  @@index([subscriptionTier])
+  @@index([whatsappNotifications, notifyDailySummary, isSuspended]) // Notification scheduler cron query
+}
+
+model IdempotencyLog {
+  key       String   @id
+  userId    String
+  response  Json
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model StatementToken {
+  id         String    @id @default(cuid(2))
+  token      String    @unique
+  userId     String
+  entityId   String    // customerId or supplierId
+  entityType String    // 'customer' | 'supplier'
+  month      String    // 'YYYY-MM'
+  expiresAt  DateTime
+  viewedAt   DateTime?
+  sentAt     DateTime?
+  createdAt  DateTime  @default(now())
+  user       User      @relation(fields: [userId], references: [id])
+
+  @@index([token])
+  @@index([userId, month])
+  @@index([expiresAt])
+}
+
+model backup_jobs {
+  id               String   @id @default(cuid(2))
+  createdAt        DateTime @default(now())
+  userId           String
+  type             String
+  fileName         String
+  fileSize         Int
+  checksum         String
+  source           String   @default("server")
+  status           String
+  previewAvailable Boolean  @default(false)
+  errorMessage     String?
+  googleDriveSyncStatus   String?    // 'pending' | 'synced' | 'failed' | 'skipped'
+  googleDriveFileId       String?
+  googleDriveSyncError    String?
+  googleDriveSyncAttempts Int        @default(0)
+
+  // Incremental backup support
+  isIncremental     Boolean  @default(false)
+  parentBackupId    String?
+  incrementalNumber Int?     // 1-6 position in chain (null for full backups)
+
+  User             User          @relation(fields: [userId], references: [id])
+  parentBackup     backup_jobs?  @relation("BackupChain", fields: [parentBackupId], references: [id])
+  childBackups     backup_jobs[] @relation("BackupChain")
+
+  @@index([type, createdAt])
+  @@index([userId, createdAt])
+  @@index([parentBackupId])
+}
+
+model backups {
+  id            String   @id
+  createdAt     DateTime @default(now())
+  userId        String
+  encryptedData String
+  dataHash      String
+  backupSize    Int
+  User          User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+}
+
+model billing_history {
+  id                   String               @id @default(cuid(2))
+  userId               String
+  subscriptionId       String?
+  addonId              String?
+  type                 String
+  amount               Decimal              @db.Decimal(12, 2)
+  currency             String               @default("INR")
+  paymentGateway       String?
+  transactionId        String?              @unique
+  paymentStatus        String
+  refundAmount         Decimal?             @db.Decimal(12, 2)
+  refundReason         String?
+  refundedAt           DateTime?
+  metadata             Json?
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  user_subscriptions   user_subscriptions?  @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  subscription_addons  subscription_addons? @relation(fields: [addonId], references: [id])
+  User                 User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([transactionId])
+  @@index([userId])
+}
+
+model billing_config {
+  id        String   @id @default(cuid(2))
+  key       String   @unique
+  value     String
+  type      String   @default("string")
+  label     String?
+  category  String   @default("general")
+  updatedAt DateTime @updatedAt
+  updatedBy String?
+
+  @@index([category])
+}
+
+model notification_config {
+  id        String   @id @default(cuid(2))
+  key       String   @unique
+  value     String
+  type      String   @default("string")
+  label     String?
+  category  String   @default("general")
+  updatedAt DateTime @updatedAt
+  updatedBy String?
+
+  @@index([category])
+}
+
+model customer_pack {
+  id             String   @id @default(cuid(2))
+  name           String
+  customerCount  Int
+  price          Decimal  @db.Decimal(10, 2)
+  razorpayPlanId String?
+  isActive       Boolean  @default(true)
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user_pack_subscriptions user_pack_subscription[]
+}
+
+model user_pack_subscription {
+  id                     String    @id @default(cuid(2))
+  userId                 String
+  packId                 String
+  status                 String    @default("ACTIVE")
+  razorpaySubscriptionId String?
+  startDate              DateTime  @default(now())
+  endDate                DateTime?
+  autoRenew              Boolean   @default(true)
+  cancelledAt            DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  User User          @relation(fields: [userId], references: [id])
+  pack customer_pack @relation(fields: [packId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+}
+
+model usage_billing {
+  id                  String    @id @default(cuid(2))
+  userId              String
+  billingMonth        String
+  activeCustomerCount Int
+  includedCustomers   Int
+  extraCustomers      Int
+  ratePerCustomer     Decimal   @db.Decimal(10, 2)
+  totalAmount         Decimal   @db.Decimal(10, 2)
+  status              String    @default("PENDING")
+  razorpayInvoiceId   String?
+  paidAt              DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  User User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, billingMonth])
+  @@index([status])
+  @@index([billingMonth])
+}
+
+model customer_overflow {
+  id                String   @id @default(cuid(2))
+  userId            String   @unique
+  overflowStartDate DateTime @default(now())
+  graceExpiresAt    DateTime
+  overflowCount     Int      @default(0)
+  isEnforced        Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  User User @relation(fields: [userId], references: [id])
+}
+
+model bulk_operations {
+  id          String   @id
+  createdAt   DateTime @default(now())
+  operationId String   @unique
+  userId      String
+  entityType  String
+  action      String
+  recordIds   String[]
+  undone      Boolean  @default(false)
+  expiresAt   DateTime
+
+  @@index([expiresAt])
+  @@index([operationId, userId])
+}
+
+model daily_active_users {
+  id                 String   @id
+  createdAt          DateTime @default(now())
+  date               String   @unique
+  totalUsers         Int      @default(0)
+  newUsers           Int      @default(0)
+  returningUsers     Int      @default(0)
+  subscriptionTier   String   @default("all")
+  avgSessionDuration Int      @default(0)
+  totalSessions      Int      @default(0)
+  avgActionsPerUser  Float    @default(0)
+  topFeatures        Json?
+
+  @@index([date])
+  @@index([date, subscriptionTier])
+}
+
+model delivery_session_stops {
+  id                  String             @id
+  session_id          String
+  customerId          String
+  customer_name       String
+  customer_phone      String
+  customer_address    String?
+  latitude            Float?
+  longitude           Float?
+  order               Int
+  status              DeliveryStopStatus @default(PENDING)
+  distance_from_start Int                @default(0)
+  eta                 Int                @default(0)
+  arrival_time        DateTime?
+  completion_time     DateTime?
+  skip_reason         String?
+  delivery_id         String?
+  milk_quantity       Float?
+  milk_type           String?
+  milk_revenue        Decimal?           @db.Decimal(10, 2)
+  created_at          DateTime           @default(now())
+  updated_at          DateTime
+  Customer            Customer           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  delivery_sessions   delivery_sessions  @relation(fields: [session_id], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([session_id, order])
+}
+
+model delivery_sessions {
+  id                     String                   @id
+  userId                 String
+  date                   String
+  start_time             DateTime
+  end_time               DateTime?
+  status                 DeliverySessionStatus    @default(IN_PROGRESS)
+  start_latitude         Float
+  start_longitude        Float
+  end_latitude           Float?
+  end_longitude          Float?
+  total_stops            Int                      @default(0)
+  completed_stops        Int                      @default(0)
+  skipped_stops          Int                      @default(0)
+  pending_stops          Int                      @default(0)
+  total_distance         Int                      @default(0)
+  total_duration         Int                      @default(0)
+  route_polyline         Json?
+  optimized_distance     Int?
+  naive_distance         Int?
+  return_to_dairy        Boolean                  @default(false)
+  shift                  String?
+  total_milk_delivered   Float?
+  total_revenue          Decimal?                 @db.Decimal(12, 2)
+  total_cow_milk         Float?
+  total_buffalo_milk     Float?
+  distance_saved         Int?
+  time_saved             Int?
+  fuel_saved             Float?
+  actorId                String?                  // TeamMember.id who ran session (null = owner)
+  actorName              String?                  // Denormalized name for display
+  created_at             DateTime                 @default(now())
+  updated_at             DateTime
+  delivery_session_stops delivery_session_stops[]
+  User                   User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([date, status])
+  @@index([userId, date])
+  @@index([userId, status])
+}
+
+model feature_usage {
+  id        String   @id
+  createdAt DateTime @default(now())
+  userId    String
+  feature   String
+  action    String
+  timestamp DateTime @default(now())
+  metadata  Json?
+  device    String?
+  sessionId String?
+  User      User     @relation(fields: [userId], references: [id])
+
+  @@index([feature, timestamp])
+  @@index([userId, feature, timestamp])
+  @@index([userId, timestamp])
+}
+
+model no_whatsapp_registrations {
+  id        String   @id @default(cuid(2))
+  name      String
+  phone     String   @unique
+  status    String   @default("pending")
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([phone])
+  @@index([status, createdAt])
+}
+
+model NotificationLog {
+  id             String    @id @default(cuid(2))
+  userId         String
+  recipientPhone String
+  recipientName  String
+  messageType    String
+  messageContent String    @db.Text
+  provider       String
+  status         String
+  messageId      String?
+  errorMessage   String?
+  cost           Decimal?  @db.Decimal(10, 2)
+  sentAt         DateTime  @default(now())
+  deliveredAt    DateTime?
+  readAt         DateTime?
+  entryId        String?
+  customerId     String?
+  Customer       Customer? @relation(fields: [customerId], references: [id])
+  User           User      @relation(fields: [userId], references: [id])
+
+  @@index([userId, sentAt])
+  @@index([status])
+  @@index([customerId])
+}
+
+model payout_transactions {
+  id                    String               @id
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime
+  withdrawalId          String               @unique
+  razorpayPayoutId      String               @unique
+  razorpayOrderId       String?
+  razorpayFundAccountId String?
+  amount                Decimal              @db.Decimal(12, 2)
+  currency              String               @default("INR")
+  upiId                 String
+  status                String
+  mode                  String               @default("UPI")
+  purpose               String               @default("refund")
+  narration             String?
+  referenceId           String               @unique
+  queuedAt              DateTime?
+  processingAt          DateTime?
+  processedAt           DateTime?
+  failedAt              DateTime?
+  reversedAt            DateTime?
+  cancelledAt           DateTime?
+  utr                   String?
+  bankStatusCode        String?
+  bankResponseCode      String?
+  failureReason         String?
+  fees                  Decimal              @default(0) @db.Decimal(10, 2)
+  tax                   Decimal              @default(0) @db.Decimal(10, 2)
+  webhookReceivedAt     DateTime?
+  retryCount            Int                  @default(0)
+  lastRetriedAt         DateTime?
+  rawResponse           Json?
+  errorCode             String?
+  errorDescription      String?
+  errorSource           String?
+  ipAddress             String?
+  userAgent             String?
+  idempotencyKey        String?              @unique
+  isIdempotent          Boolean              @default(false)
+  referral_withdrawals  referral_withdrawals @relation(fields: [withdrawalId], references: [id])
+
+  @@index([idempotencyKey])
+  @@index([razorpayPayoutId])
+  @@index([referenceId])
+  @@index([status, createdAt])
+  @@index([utr])
+  @@index([withdrawalId])
+}
+
+model referral_codes {
+  id                String   @id @default(cuid(2))
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  userId            String   @unique
+  code              String   @unique
+  link              String
+  totalReferrals    Int      @default(0)
+  successfulRewards Int      @default(0)
+  totalEarned       Decimal  @default(0) @db.Decimal(12, 2)
+  User              User     @relation(fields: [userId], references: [id])
+
+  @@index([code])
+  @@index([userId])
+}
+
+model referral_events {
+  id                                    String   @id @default(cuid(2))
+  createdAt                             DateTime @default(now())
+  referrerId                            String
+  referredId                            String
+  eventType                             String
+  eventData                             Json?
+  ipAddress                             String?
+  deviceFingerprint                     String?
+  userAgent                             String?
+  isSuspicious                          Boolean  @default(false)
+  suspiciousReason                      String?
+  User_referral_events_referredIdToUser User     @relation("referral_events_referredIdToUser", fields: [referredId], references: [id])
+  User_referral_events_referrerIdToUser User     @relation("referral_events_referrerIdToUser", fields: [referrerId], references: [id])
+
+  @@index([createdAt])
+  @@index([isSuspicious])
+  @@index([referredId, eventType])
+  @@index([referrerId, eventType])
+  @@index([referrerId, isSuspicious]) // Admin referral detail page query
+}
+
+model referral_rewards {
+  id                                     String                @id @default(cuid(2))
+  createdAt                              DateTime              @default(now())
+  updatedAt                              DateTime              @updatedAt
+  referrerId                             String
+  referredId                             String
+  amount                                 Decimal               @db.Decimal(10, 2)
+  status                                 String
+  eligibleAt                             DateTime?
+  approvedAt                             DateTime?
+  withdrawnAt                            DateTime?
+  clawedBackAt                           DateTime?
+  clawBackReason                         String?
+  withdrawalId                           String?
+  User_referral_rewards_referredIdToUser User                  @relation("referral_rewards_referredIdToUser", fields: [referredId], references: [id])
+  User_referral_rewards_referrerIdToUser User                  @relation("referral_rewards_referrerIdToUser", fields: [referrerId], references: [id])
+  referral_withdrawals                   referral_withdrawals? @relation(fields: [withdrawalId], references: [id])
+
+  @@index([referrerId, status])
+  @@index([status, eligibleAt])
+}
+
+model referral_withdrawals {
+  id                  String               @id @default(cuid(2))
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  userId              String
+  amount              Decimal              @db.Decimal(10, 2)
+  upiId               String
+  status              String
+  statusReason        String?
+  autoApproved        Boolean              @default(false)
+  approvedBy          String?
+  approvedAt          DateTime?
+  processedAt         DateTime?
+  transactionId       String?
+  failureReason       String?
+  payout_transactions payout_transactions?
+  referral_rewards    referral_rewards[]
+  User                User                 @relation(fields: [userId], references: [id])
+
+  @@index([status, createdAt])
+  @@index([userId, status])
+}
+
+model subscription_plans {
+  id                   String                 @id @default(cuid(2))
+  name                 String                 @unique
+  displayName          String
+  description          String?
+  features             Json
+  isActive             Boolean                @default(true)
+  isPopular            Boolean                @default(false)
+  sortOrder            Int                    @default(0)
+  customerLimit        Int                    @default(0)
+  usageRatePerCustomer Decimal?               @db.Decimal(10, 2)
+  allowUsageBilling    Boolean                @default(false)
+  allowPacks           Boolean                @default(false)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  subscription_pricing       subscription_pricing[]
+  user_subscriptions         user_subscriptions[]
+  plan_price_announcements   plan_price_announcements[]
+
+  @@index([isActive, sortOrder])
+}
+
+model subscription_pricing {
+  id                 String               @id @default(cuid(2))
+  planId             String
+  duration           String
+  durationMonths     Int
+  price              Decimal              @db.Decimal(10, 2)
+  discountPercent    Decimal              @default(0) @db.Decimal(5, 2)
+  razorpayPlanId     String?              @unique
+  isActive           Boolean              @default(true)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  subscription_plans subscription_plans   @relation(fields: [planId], references: [id], onDelete: Cascade)
+  user_subscriptions user_subscriptions[]
+
+  @@unique([planId, duration])
+  @@index([planId, isActive])
+}
+
+model user_sessions {
+  id           String    @id
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime
+  userId       String
+  loginAt      DateTime
+  logoutAt     DateTime?
+  duration     Int?
+  device       String?
+  browser      String?
+  os           String?
+  ipAddress    String?
+  pagesVisited String[]
+  actionsCount Int       @default(0)
+  endReason    String?
+  User         User      @relation(fields: [userId], references: [id])
+
+  @@index([loginAt])
+  @@index([userId, createdAt])
+  @@index([userId, loginAt])
+}
+
+model user_subscriptions {
+  id                      String                @id @default(cuid(2))
+  userId                  String
+  planId                  String
+  pricingId               String?
+  status                  String
+  startDate               DateTime
+  endDate                 DateTime?
+  autoRenew               Boolean               @default(true)
+  isTrial                 Boolean               @default(false)
+  trialEndsAt             DateTime?
+  razorpaySubscriptionId  String?               @unique
+  razorpayPlanId          String?
+  nextBillingAt           DateTime?
+  paymentMethod           String?
+  cancelledAt             DateTime?
+  cancellationReason      String?
+  createdAt               DateTime              @default(now())
+  updatedAt               DateTime              @updatedAt
+  billing_history         billing_history[]
+  subscription_plans      subscription_plans    @relation(fields: [planId], references: [id])
+  subscription_pricing    subscription_pricing? @relation(fields: [pricingId], references: [id])
+  User                    User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status, endDate])
+  @@index([isTrial, trialEndsAt])
+  @@index([userId, status])
+  @@index([razorpaySubscriptionId])
+}
+
+model webhook_events {
+  id              String    @id
+  payload         Json
+  processed       Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  eventType       String
+  processedAt     DateTime?
+  processingError String?
+  razorpayEventId String    @unique
+  retryCount      Int       @default(0)
+  updatedAt       DateTime
+
+  @@index([eventType, createdAt])
+  @@index([processed, createdAt])
+  @@index([razorpayEventId])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid(2))
+  userId    String
+  endpoint  String   @unique
+  keys      Json // { p256dh, auth }
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model PushNotification {
+  id          String    @id @default(cuid(2))
+  userId      String
+  title       String
+  body        String
+  icon        String?
+  badge       String?
+  data        Json? // Custom payload
+  actions     Json? // Action buttons
+  sentAt      DateTime  @default(now())
+  deliveredAt DateTime?
+  clickedAt   DateTime?
+  status      String // sent, delivered, clicked, failed
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([sentAt])
+  @@index([status])
+}
+
+model PortalPushSubscription {
+  id          String   @id @default(cuid(2))
+  portalToken String                          // links to Customer.portalToken or Supplier.portalToken
+  entityType  String                          // "customer" | "supplier"
+  endpoint    String   @unique                // browser push endpoint
+  keys        Json                            // { p256dh, auth }
+  userAgent   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([portalToken])
+  @@map("portal_push_subscriptions")
+}
+
+model DoodhCoinTransaction {
+  id          String   @id @default(cuid(2))
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String   // "earned" | "redeemed"
+  amount      Int      // always positive
+  reason      String   // "ad_watch" | "redeem_day" | "redeem_week" | "redeem_month" | "admin_grant"
+  description String?
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("doodh_coin_transactions")
+}
+
+enum BillingCycle {
+  WEEKLY
+  MONTHLY
+  TEN_DAYS
+  FIFTEEN_DAYS
+  CUSTOM
+}
+
+enum DeliverySessionStatus {
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum DeliveryStopStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  SKIPPED
+}
+
+enum MilkType {
+  COW
+  BUFFALO
+}
+
+enum ProductCategory {
+  DAIRY
+  BEVERAGES
+  SNACKS
+  OTHERS
+}
+
+enum RateType {
+  FIXED
+  FAT_BASED
+}
+
+enum Session {
+  MORNING
+  EVENING
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+// ============================================
+// TEAM MANAGEMENT ENUMS
+// ============================================
+
+enum TeamMemberRole {
+  WORKER
+  MANAGER
+}
+
+enum PermissionPreset {
+  DELIVERY_ONLY
+  DELIVERY_PAYMENTS
+  AREA_MANAGER
+  CUSTOM
+  PARTNER
+  SALESMAN
+  STOCK_MANAGER
+  ACCOUNTANT
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+}
+
+// ============================================
+// TEAM MANAGEMENT MODELS
+// ============================================
+
+/// Team member working under a dairy owner (worker/manager)
+/// Auth: phone + PIN (not a User record — lighter model)
+/// Data access: uses owner's userId for all queries (organizational userId pattern)
+model TeamMember {
+  id               String           @id @default(cuid(2))
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  ownerId          String           // FK → User.id (the dairy owner)
+  phone            String           // Worker's phone number
+  name             String
+  pinHash          String?          // bcrypt hashed 4-6 digit PIN (null until set via invite)
+  role             TeamMemberRole   @default(WORKER)
+  permissionPreset PermissionPreset @default(DELIVERY_ONLY)
+  customPermissions Json?           // Only if preset = CUSTOM
+  isActive         Boolean          @default(true)
+  inviteStatus     InviteStatus     @default(PENDING)
+  inviteToken      String?          @unique // For first-time PIN setup
+  inviteExpiresAt  DateTime?
+  lastLoginAt      DateTime?
+  lastActiveAt     DateTime?
+  failedPinAttempts Int             @default(0)
+  pinLockedUntil   DateTime?
+
+  Owner            User             @relation("TeamOwner", fields: [ownerId], references: [id])
+  Assignments      TeamMemberAssignment[]
+
+  @@unique([ownerId, phone])        // No duplicate phones per owner
+  @@index([phone])                  // Fast login lookup
+  @@index([ownerId, isActive])      // List active members
+  @@index([inviteToken])            // Invite lookup
+}
+
+/// Assigns a team member to specific customers/suppliers
+/// Workers can only see/act on assigned entities
+model TeamMemberAssignment {
+  id           String     @id @default(cuid(2))
+  createdAt    DateTime   @default(now())
+  teamMemberId String     // FK → TeamMember.id
+  entityType   String     // 'customer' | 'supplier'
+  entityId     String     // FK → Customer.id or Supplier.id
+  assignedBy   String     // userId of person who assigned
+
+  TeamMember   TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+
+  @@unique([teamMemberId, entityType, entityId]) // No duplicate assignments
+  @@index([teamMemberId])
+  @@index([entityId, entityType])
+}
+
+// ============================================
+// COMPETITOR INTELLIGENCE MODULE
+// ============================================
+
+model CompetitorApp {
+  id             String   @id @default(cuid(2))
+  name           String   @unique
+  googlePlayUrl  String?
+  appStoreUrl    String?
+  otherUrls      Json?    // [{ label: string, url: string }]
+  category       String?  @default("dairy")
+  country        String?  @default("IN")
+  notes          String?
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  reviews        CompetitorReview[]
+
+  @@index([name])
+}
+
+model CompetitorReview {
+  id               String         @id @default(cuid(2))
+  competitorName   String
+  reviewSource     String         @default("competitor") // "competitor" | "self"
+  rating           Int
+  rawText          String
+  rawTextHash      String?        // SHA-256 of rawText for dedup
+  structuredData   Json?
+  sourceUrl        String?        // exact URL where review was found
+  reviewerName     String?        // reviewer display name (from scraper)
+  reviewDate       String?        // original review date from store
+  competitorAppId  String?
+  competitorApp    CompetitorApp? @relation(fields: [competitorAppId], references: [id])
+  createdAt        DateTime       @default(now())
+
+  @@index([competitorName])
+  @@index([rating])
+  @@index([reviewSource])
+  @@index([competitorAppId])
+  @@index([rawTextHash])
+}
+
+// ============================================
+// SECURITY MODELS
+// ============================================
+
+model BlockedIP {
+  id        String    @id @default(cuid(2))
+  ipAddress String    @unique
+  reason    String
+  blockedAt DateTime  @default(now())
+  expiresAt DateTime? // null = permanent
+  blockedBy String? // admin userId or "auto"
+  hitCount  Int       @default(0)
+
+  @@index([expiresAt])
+}
+
+model AdminTOTP {
+  id          String   @id @default(cuid(2))
+  userId      String   @unique
+  secret      String
+  isEnabled   Boolean  @default(false)
+  backupCodes String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  User        User     @relation(fields: [userId], references: [id])
+}
+
+model AccountActivity {
+  id        String   @id @default(cuid(2))
+  userId    String
+  action    String // LOGIN, LOGOUT, PASSWORD_CHANGE, BACKUP_CREATE, DATA_EXPORT
+  ipAddress String?
+  userAgent String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+  User      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([action, createdAt])
+}
+
+model WebAuthnCredential {
+  id           String    @id @default(cuid(2))
+  userId       String
+  credentialId String    @unique  // base64url-encoded credential ID from browser
+  publicKey    String    // base64url-encoded SPKI public key
+  algorithm    Int       // COSE algorithm ID: -7 (ES256) or -257 (RS256)
+  signCount    Int       @default(0)
+  deviceName   String?   // e.g., "Pixel 8", "iPhone 15"
+  createdAt    DateTime  @default(now())
+  lastUsedAt   DateTime?
+
+  User         User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model blacklisted_tokens {
+  id        String   @id @default(cuid(2))
+  tokenHash String   @unique // SHA-256 hash of the JWT
+  userId    String?
+  reason    String?  // LOGOUT, LOGOUT_ALL, PASSWORD_CHANGE, ACCOUNT_DELETED
+  expiresAt DateTime // When the token naturally expires (for cleanup)
+  createdAt DateTime @default(now())
+
+  User      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+  @@index([userId])
+}
+
+model subscription_addons {
+  id              String          @id @default(cuid(2))
+  name            String          @unique
+  displayName     String
+  description     String?
+  price           Decimal         @db.Decimal(10, 2)
+  features        Json
+  isActive        Boolean         @default(true)
+  sortOrder       Int             @default(0)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  user_addons     user_addons[]
+  billing_history billing_history[]
+
+  @@index([isActive, sortOrder])
+}
+
+model user_addons {
+  id                  String              @id @default(cuid(2))
+  userId              String
+  addonId             String
+  expiresAt           DateTime?
+  isActive            Boolean             @default(true)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  User                User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription_addons subscription_addons @relation(fields: [addonId], references: [id])
+
+  @@unique([userId, addonId])
+  @@index([userId, isActive])
+}
+
+model plan_price_announcements {
+  id                 String             @id @default(cuid(2))
+  planId             String
+  newMonthlyPrice    Decimal            @db.Decimal(10, 2)
+  effectiveDate      DateTime
+  message            String?
+  createdAt          DateTime           @default(now())
+  subscription_plans subscription_plans @relation(fields: [planId], references: [id])
+
+  @@index([planId])
+  @@index([effectiveDate])
+}
+
+model login_history {
+  id          String   @id @default(cuid(2))
+  userId      String
+  deviceType  String   // WEB | ANDROID | IOS
+  deviceModel String?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([createdAt])
+}
+
+model SmsLog {
+  id             String   @id @default(cuid(2))
+  userId         String
+  recipientPhone String
+  recipientType  String   // 'customer' | 'supplier'
+  recipientId    String
+  templateId     String
+  message        String
+  status         String   // 'sent' | 'failed'
+  provider       String?  // 'msg91' | 'sandbox'
+  providerMsgId  String?
+  cost           Decimal? @db.Decimal(10, 2)
+  errorMessage   String?
+  createdAt      DateTime @default(now())
+
+  User User @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([recipientPhone])
+  @@index([status])
+}
+
+model PortalDispute {
+  id          String   @id @default(cuid(2))
+  portalToken String
+  entityType  String
+  entryType   String
+  entryId     String
+  entryDate   String
+  reason      String
+  note        String?
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([portalToken])
+  @@index([entryId])
+  @@map("portal_disputes")
+}
+
+// ============================================
+// MULTI-BUSINESS MODELS
+// ============================================
+
+/// A distinct business/dairy operation owned by a User.
+/// First business: dataUserId = owner's User.id (no schema migration needed for existing data).
+/// Additional businesses: dataUserId = auto-created shadow User.id (data isolation via userId pattern).
+/// All routes use req.user.userId (= dataUserId at login/switch time) for data queries — zero route changes.
+model Business {
+  id                String    @id @default(cuid(2))
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  /// The primary account holder who created and manages this business
+  ownerId           String                    // FK → User.id
+  /// The shadow userId used for all data queries for this business
+  /// = ownerId for first business; = shadow User.id for additional businesses
+  dataUserId        String    @unique         // FK → User.id
+
+  name              String
+  type              String    @default("dairy") // dairy | farm | shop | other
+  joinCode          String    @unique          // 6-char alphanumeric for staff invite
+  joinCodeExpiresAt DateTime?
+  isActive          Boolean   @default(true)
+  logoUrl           String?                   // Base64 data URL (max 50KB)
+  sortOrder         Int       @default(0)     // Display ordering in business switcher
+
+  Owner             User      @relation("BusinessOwner", fields: [ownerId], references: [id])
+  DataUser          User      @relation("BusinessDataUser", fields: [dataUserId], references: [id])
+  JoinRequests      BusinessJoinRequest[]
+
+  @@index([ownerId])
+  @@index([joinCode])
+}
+
+/// Staff who joined a business via 6-char code (User accounts, not PIN-auth TeamMembers)
+model BusinessJoinRequest {
+  id          String           @id @default(cuid(2))
+  createdAt   DateTime         @default(now())
+  businessId  String
+  userId      String           // FK → User.id (staff member joining)
+  status      String           @default("pending")  // pending | approved | rejected
+  role        PermissionPreset @default(DELIVERY_ONLY)
+  approvedBy  String?
+  approvedAt  DateTime?
+  rejectedAt  DateTime?
+
+  Business    Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, userId])
+  @@index([userId, status])
+  @@index([businessId, status])
+}

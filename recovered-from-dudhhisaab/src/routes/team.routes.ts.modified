@@ -1,0 +1,331 @@
+/**
+ * Team Management Routes (Owner Only)
+ * CRUD for team members, assignments, activity
+ */
+
+import { Router } from 'express';
+import { authMiddleware } from '../middleware/auth.middleware';
+import { ownerOnly } from '../middleware/team-permission.middleware';
+import { asyncHandler } from '../middleware/error-handler.middleware';
+import { validate } from '../middleware/validate.middleware';
+import { FRONTEND_URL } from '../config/branding';
+import {
+  addTeamMemberSchema,
+  updateTeamMemberSchema,
+  deactivateTeamMemberSchema,
+  assignEntitiesSchema,
+  unassignEntitiesSchema,
+} from '../schemas/team.schemas';
+import {
+  addTeamMember,
+  listTeamMembers,
+  getTeamMemberDetail,
+  updateTeamMember,
+  deactivateTeamMember,
+  resetTeamMemberPin,
+  assignEntities,
+  unassignEntities,
+  getAssignments,
+  getWorkerActivity,
+  getTeamSummary,
+  cancelInvite,
+  resendInvite,
+  TeamError,
+} from '../services/team/team.service';
+import { blacklistToken } from '../services/tokenBlacklist';
+import {
+  getDailySummary,
+  getVolumeReconciliation,
+  getPaymentGap,
+} from '../services/team/team-analytics.service';
+import { getUserSubscriptionInfo } from '../services/subscription.service';
+import { getWorkerLimit, isUnlimited } from '../config/subscription-defaults';
+import { prisma } from '../db';
+
+const router = Router();
+
+/** Validate date query params — rejects non-YYYY-MM-DD strings silently */
+function parseDateParam(raw: unknown): string | undefined {
+  if (!raw || typeof raw !== 'string') return undefined;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return undefined;
+  return raw;
+}
+
+// All team management routes require auth + owner only
+router.use(authMiddleware);
+router.use(ownerOnly);
+
+// ── CRUD ─────────────────────────────────────────────────────────
+
+// POST /api/team — Add team member
+router.post(
+  '/',
+  validate(addTeamMemberSchema),
+  asyncHandler(async (req, res) => {
+    try {
+      const userId = req.user!.userId;
+
+      // Subscription gating: check worker limit
+      const subInfo = await getUserSubscriptionInfo(userId);
+      const limit = getWorkerLimit(subInfo.tierName || subInfo.tier);
+      if (!isUnlimited(limit)) {
+        const activeCount = await prisma.teamMember.count({ where: { ownerId: userId, isActive: true } });
+        if (activeCount >= limit) {
+          return res.status(403).json({
+            success: false,
+            error: {
+              code: 'WORKER_LIMIT',
+              message: `Your ${subInfo.tierName || subInfo.tier} plan allows up to ${limit} worker${limit > 1 ? 's' : ''}. Upgrade to add more.`,
+              currentPlan: subInfo.tierName || subInfo.tier,
+              limit,
+              current: activeCount,
+            },
+          });
+        }
+      }
+
+      const result = await addTeamMember(userId, req.body);
+
+      // Build invite URL for WhatsApp sharing
+      const inviteUrl = `${FRONTEND_URL}/team-invite/${result.inviteToken}`;
+
+      res.status(201).json({
+        success: true,
+        data: {
+          member: result.member,
+          inviteUrl,
+          isReactivation: result.isReactivation,
+        },
+      });
+    } catch (error) {
+      if (error instanceof TeamError) {
+        return res.status(error.statusCode).json({
+          success: false,
+          error: { code: error.code, message: error.message },
+        });
+      }
+      throw error;
+    }
+  })
+);
+
+// GET /api/team — List all team members
+router.get(
+  '/',
+  asyncHandler(async (req, res) => {
+    const members = await listTeamMembers(req.user!.userId);
+    res.json({ success: true, data: members });
+  })
+);
+
+// GET /api/team/summary — All workers' summary for today
+router.get(
+  '/summary',
+  asyncHandler(async (req, res) => {
+    const date = parseDateParam(req.query.date);
+    const summary = await getTeamSummary(req.user!.userId, date);
+    res.json({ success: true, data: summary });
+  })
+);
+
+// ── Analytics ────────────────────────────────────────────────────
+
+// GET /api/team/daily-summary — Per-worker breakdown for a date
+router.get(
+  '/daily-summary',
+  asyncHandler(async (req, res) => {
+    const date = parseDateParam(req.query.date);
+    const summary = await getDailySummary(req.user!.userId, date);
+    res.json({ success: true, data: summary });
+  })
+);
+
+// GET /api/team/volume-reconciliation — Milk in vs distributed
+router.get(
+  '/volume-reconciliation',
+  asyncHandler(async (req, res) => {
+    const date = parseDateParam(req.query.date);
+    const data = await getVolumeReconciliation(req.user!.userId, date);
+    res.json({ success: true, data });
+  })
+);
+
+// GET /api/team/payment-gap — Expected vs collected for worker entries
+router.get(
+  '/payment-gap',
+  asyncHandler(async (req, res) => {
+    const date = parseDateParam(req.query.date);
+    const data = await getPaymentGap(req.user!.userId, date);
+    res.json({ success: true, data });
+  })
+);
+
+// GET /api/team/:id — Team member detail
+router.get(
+  '/:id',
+  asyncHandler(async (req, res) => {
+    try {
+      const detail = await getTeamMemberDetail(req.params.id, req.user!.userId);
+      res.json({ success: true, data: detail });
+    } catch (error) {
+      if (error instanceof TeamError) {
+        return res.status(error.statusCode).json({
+          success: false,
+          error: { code: error.code, message: error.message },
+        });
+      }
+      throw error;
+    }
+  })
+);
+
+// PATCH /api/team/:id — Update team member
+router.patch(
+  '/:id',
+  validate(updateTeamMemberSchema),
+  asyncHandler(async (req, res) => {
+    try {
+      const updated = await updateTeamMember(req.params.id, req.user!.userId, req.body);
+      res.json({ success: true, data: updated });
+    } catch (error) {
+      if (error instanceof TeamError) {
+        return res.status(error.statusCode).json({
+          success: false,
+          error: { code: error.code, message: error.message },
+        });
+      }
+      throw error;
+    }
+  })
+);
+
+// DELETE /api/team/:id — Soft-deactivate
+router.delete(
+  '/:id',
+  validate(deactivateTeamMemberSchema),
+  asyncHandler(async (req, res) => {
+    try {
+      const reassignTo = req.body?.reassignTo as string | undefined;
+      const result = await deactivateTeamMember(req.params.id, req.user!.userId, reassignTo);
+      res.json({ success: true, data: result });
+    } catch (error) {
+      if (error instanceof TeamError) {
+        return res.status(error.statusCode).json({
+          success: false,
+          error: { code: error.code, message: error.message },
+        });
+      }
+      throw error;
+    }
+  })
+);
+
+// POST /api/team/:id/reset-pin — Force PIN reset
+router.post(
+  '/:id/reset-pin',
+  asyncHandler(async (req, res) => {
+    try {
+      const result = await resetTeamMemberPin(req.params.id, req.user!.userId);
+
+      const inviteUrl = `${FRONTEND_URL}/team-invite/${result.inviteToken}`;
+
+      res.json({ success: true, data: { inviteUrl } });
+    } catch (error) {
+      if (error instanceof TeamError) {
+        return res.status(error.statusCode).json({
+          success: false,
+          error: { code: error.code, message: error.message },
+        });
+      }
+      throw error;
+    }
+  })
+);
+
+// ── Assignments ──────────────────────────────────────────────────
+
+// POST /api/team/:id/assign — Assign entities
+router.post(
+  '/:id/assign',
+  validate(assignEntitiesSchema),
+  asyncHandler(async (req, res) => {
+    const { entityIds, entityType } = req.body;
+    const result = await assignEntities(req.params.id, entityType, entityIds, req.user!.userId);
+    res.json({ success: true, data: { assigned: result.count } });
+  })
+);
+
+// DELETE /api/team/:id/assign — Unassign entities
+router.delete(
+  '/:id/assign',
+  validate(unassignEntitiesSchema),
+  asyncHandler(async (req, res) => {
+    const { entityIds, entityType } = req.body;
+    const result = await unassignEntities(req.params.id, entityType, entityIds, req.user!.userId);
+    res.json({ success: true, data: { unassigned: result.count } });
+  })
+);
+
+// GET /api/team/:id/assignments — List assignments
+router.get(
+  '/:id/assignments',
+  asyncHandler(async (req, res) => {
+    const assignments = await getAssignments(req.params.id, req.user!.userId);
+    res.json({ success: true, data: assignments });
+  })
+);
+
+// ── Activity ─────────────────────────────────────────────────────
+
+// GET /api/team/:id/activity — Today's entries by worker
+router.get(
+  '/:id/activity',
+  asyncHandler(async (req, res) => {
+    const date = parseDateParam(req.query.date);
+    const activity = await getWorkerActivity(req.params.id, req.user!.userId, date);
+    res.json({ success: true, data: activity });
+  })
+);
+
+// ── Invite Management ─────────────────────────────────────────────
+
+// POST /api/team/:id/cancel-invite — cancel pending invite
+router.post(
+  '/:id/cancel-invite',
+  asyncHandler(async (req, res) => {
+    try {
+      const result = await cancelInvite(req.params.id, req.user!.userId);
+      res.json({ success: true, data: result });
+    } catch (error) {
+      if (error instanceof TeamError) {
+        return res.status(error.statusCode).json({
+          success: false,
+          error: { code: error.code, message: error.message },
+        });
+      }
+      throw error;
+    }
+  })
+);
+
+// POST /api/team/:id/resend-invite — resend / regenerate invite link
+router.post(
+  '/:id/resend-invite',
+  asyncHandler(async (req, res) => {
+    try {
+      const result = await resendInvite(req.params.id, req.user!.userId);
+      const inviteUrl = `${FRONTEND_URL}/team-invite/${result.inviteToken}`;
+      res.json({ success: true, data: { inviteUrl } });
+    } catch (error) {
+      if (error instanceof TeamError) {
+        return res.status(error.statusCode).json({
+          success: false,
+          error: { code: error.code, message: error.message },
+        });
+      }
+      throw error;
+    }
+  })
+);
+
+export default router;
