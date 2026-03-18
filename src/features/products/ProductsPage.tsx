@@ -85,9 +85,13 @@ export default function ProductsPage() {
     <AppShell>
       <Header title={bulk.isActive ? `${bulk.selectedCount} Selected` : 'Products'} />
 
-      <PageContainer>
-        {status === 'success' && data && !bulk.isActive && <ProductSummaryBar summary={data.summary} />}
+      {status === 'success' && data && !bulk.isActive && (
+        <div className="page-hero">
+          <ProductSummaryBar summary={data.summary} />
+        </div>
+      )}
 
+      <PageContainer>
         {!bulk.isActive && (
           <ProductFilterBar
             search={filters.search}

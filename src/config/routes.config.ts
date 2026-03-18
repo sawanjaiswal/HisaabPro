@@ -5,6 +5,7 @@ export const ROUTES = {
   LOGIN: '/login',
   ONBOARDING: '/onboarding',
   DASHBOARD: '/dashboard',
+  MORE: '/more',
   PARTIES: '/parties',
   PARTY_NEW: '/parties/new',
   PARTY_DETAIL: '/parties/:id',

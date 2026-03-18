@@ -24,20 +24,21 @@ const MOCK_INVOICE_REPORT = {
 const MOCK_STOCK_SUMMARY = {
   summary: {
     totalProducts: 0,
-    totalStockValue: 0,
+    totalStockValueAtPurchase: 0,
+    totalStockValueAtSale: 0,
     lowStockCount: 0,
     outOfStockCount: 0,
   },
   items: [],
-  categories: [],
 }
 
 const MOCK_PAYMENT_HISTORY = {
   summary: {
-    totalIn: 0,
-    totalOut: 0,
-    netFlow: 0,
-    totalCount: 0,
+    totalReceived: 0,
+    totalPaid: 0,
+    net: 0,
+    countIn: 0,
+    countOut: 0,
   },
   items: [],
   groups: [],
@@ -76,10 +77,7 @@ test.describe('Reports Hub', () => {
 
 test.describe('Sales Report', () => {
   test('renders with date range filter', async ({ authedPage: page }) => {
-    await mockApiGet(page, 'reports/invoices**', {
-      ...MOCK_INVOICE_REPORT,
-    })
-    // Also mock the meta wrapper expected by the hook
+    // api() unwraps { success, data } — hook receives data which must be InvoiceReportResponse
     await page.route('**/api/reports/invoices**', async (route) => {
       if (route.request().method() === 'GET') {
         await route.fulfill({
@@ -87,8 +85,11 @@ test.describe('Sales Report', () => {
           contentType: 'application/json',
           body: JSON.stringify({
             success: true,
-            data: MOCK_INVOICE_REPORT,
-            meta: MOCK_META,
+            data: {
+              success: true,
+              data: MOCK_INVOICE_REPORT,
+              meta: MOCK_META,
+            },
           }),
         })
       } else {
@@ -100,10 +101,10 @@ test.describe('Sales Report', () => {
     await page.waitForLoadState('domcontentloaded')
 
     // Header
-    await expect(page.getByText('Sales Report')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Sales Report' })).toBeVisible()
 
     // Date range filter pills should be present
-    await expect(page.getByLabel('Date range filter')).toBeVisible()
+    await expect(page.getByRole('group', { name: 'Date range filter' })).toBeVisible()
   })
 })
 
@@ -116,8 +117,11 @@ test.describe('Day Book', () => {
           contentType: 'application/json',
           body: JSON.stringify({
             success: true,
-            data: MOCK_DAY_BOOK,
-            meta: MOCK_META,
+            data: {
+              success: true,
+              data: MOCK_DAY_BOOK,
+              meta: MOCK_META,
+            },
           }),
         })
       } else {
@@ -129,7 +133,7 @@ test.describe('Day Book', () => {
     await page.waitForLoadState('domcontentloaded')
 
     // Header title
-    await expect(page.getByText('Day Book')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Day Book' })).toBeVisible()
   })
 })
 
@@ -142,8 +146,11 @@ test.describe('Stock Summary', () => {
           contentType: 'application/json',
           body: JSON.stringify({
             success: true,
-            data: MOCK_STOCK_SUMMARY,
-            meta: MOCK_META,
+            data: {
+              success: true,
+              data: MOCK_STOCK_SUMMARY,
+              meta: MOCK_META,
+            },
           }),
         })
       } else {
@@ -155,7 +162,7 @@ test.describe('Stock Summary', () => {
     await page.waitForLoadState('domcontentloaded')
 
     // Header title
-    await expect(page.getByText('Stock Summary')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Stock Summary' })).toBeVisible()
   })
 })
 
@@ -168,8 +175,11 @@ test.describe('Payment History', () => {
           contentType: 'application/json',
           body: JSON.stringify({
             success: true,
-            data: MOCK_PAYMENT_HISTORY,
-            meta: MOCK_META,
+            data: {
+              success: true,
+              data: MOCK_PAYMENT_HISTORY,
+              meta: MOCK_META,
+            },
           }),
         })
       } else {
@@ -181,6 +191,6 @@ test.describe('Payment History', () => {
     await page.waitForLoadState('domcontentloaded')
 
     // Header title
-    await expect(page.getByText('Payment History')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Payment History' })).toBeVisible()
   })
 })

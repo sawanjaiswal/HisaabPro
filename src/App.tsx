@@ -80,6 +80,7 @@ const ProfitabilityReport = lazy(() => import('@/features/reports/ProfitabilityR
 const DiscountReport = lazy(() => import('@/features/reports/DiscountReportPage'))
 const TallyExport = lazy(() => import('@/features/reports/TallyExportPage'))
 const FYClosure = lazy(() => import('@/features/accounting/FYClosurePage'))
+const More = lazy(() => import('@/features/more/MorePage'))
 const NotFound = lazy(() => import('@/components/feedback/NotFoundPage'))
 
 /** Route-level ErrorBoundary + Suspense wrapper for individual pages */
@@ -186,6 +187,7 @@ export function App() {
         <Route path={ROUTES.REPORT_DISCOUNTS} element={<PageRoute><ProtectedRoute><DiscountReport /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.TALLY_EXPORT} element={<PageRoute><ProtectedRoute><TallyExport /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.FY_CLOSURE} element={<PageRoute><ProtectedRoute><FYClosure /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.MORE} element={<PageRoute><ProtectedRoute><More /></ProtectedRoute></PageRoute>} />
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
       </Routes>
       </PageTransition>

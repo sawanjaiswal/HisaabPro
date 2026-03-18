@@ -96,8 +96,8 @@ test.describe('Products List Page', () => {
     await expect(page.getByText('No products yet')).toBeVisible()
     await expect(page.getByText('Add your first product to start managing inventory')).toBeVisible()
 
-    // Empty state has an Add Product CTA
-    const addBtn = page.getByRole('button', { name: /add.*product/i })
+    // Empty state has an Add Product CTA (use exact aria-label to avoid matching FAB)
+    const addBtn = page.getByRole('button', { name: 'Add first product' })
     await expect(addBtn).toBeVisible()
   })
 
@@ -119,8 +119,8 @@ test.describe('Product Detail Page', () => {
     await page.goto('/products/prod_1')
     await page.waitForLoadState('domcontentloaded')
 
-    // Product name
-    await expect(page.getByText('Cement 50kg')).toBeVisible()
+    // Product name (use heading to avoid matching the aria-live status announcement)
+    await expect(page.getByRole('heading', { name: 'Cement 50kg' })).toBeVisible()
 
     // Category visible in overview tab (default)
     await expect(page.getByText('Building Materials')).toBeVisible()

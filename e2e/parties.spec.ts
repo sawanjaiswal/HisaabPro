@@ -134,7 +134,7 @@ test.describe('Parties List Page', () => {
     await expect(page.getByText('Add your first customer or supplier')).toBeVisible()
 
     // Empty state has an Add Party CTA
-    const addBtn = page.getByRole('button', { name: /add.*party/i })
+    const addBtn = page.getByRole('button', { name: 'Add first party' })
     await expect(addBtn).toBeVisible()
   })
 
@@ -251,18 +251,17 @@ test.describe('Create Party Page', () => {
     await saveBtn.click()
 
     // Error message should appear for the name field
-    // The Input component renders error text — look for validation feedback
-    const nameInput = page.getByLabel('Party Name')
-    const nameGroup = nameInput.locator('..')
-    await expect(nameGroup.locator('[class*="error"], [role="alert"]').first()).toBeVisible()
+    // The Input component renders a <p role="alert" class="input-error"> as sibling of input-wrapper
+    await expect(page.locator('#party-name-error')).toBeVisible()
   })
 
   test('can fill and submit the form successfully', async ({ authedPage: page }) => {
     await mockApiGet(page, 'party-groups**', [])
     await mockApiGet(page, 'custom-fields**', [])
+    // Register POST mock before GET mock so POST doesn't get consumed by GET's route.continue()
     await mockApiPost(page, 'parties', MOCK_CREATED_PARTY)
-    // Mock the parties list for redirect after create
-    await mockApiGet(page, 'parties**', MOCK_PARTIES_RESPONSE)
+    // Mock the parties list for redirect after create — use exact pattern to avoid conflict
+    await mockApiGet(page, 'parties?**', MOCK_PARTIES_RESPONSE)
 
     await page.goto('/parties/new')
     await page.waitForLoadState('domcontentloaded')
@@ -292,15 +291,15 @@ test.describe('Party Detail Page', () => {
     await page.goto('/parties/party_1')
     await page.waitForLoadState('domcontentloaded')
 
-    // Party name
-    await expect(page.getByText('Sharma Electronics')).toBeVisible()
-
-    // Phone number (formatted or raw)
-    await expect(page.getByText(/987/)).toBeVisible()
+    // Party name (use heading to avoid matching the aria-live status announcement)
+    await expect(page.getByRole('heading', { name: 'Sharma Electronics' })).toBeVisible()
 
     // Balance region exists with outstanding info
     const balanceRegion = page.locator('[aria-label="Party overview"]')
     await expect(balanceRegion).toBeVisible()
+
+    // Phone number (formatted or raw) — scoped to party overview to avoid matching user profile
+    await expect(balanceRegion.getByText(/987/)).toBeVisible()
 
     // Type badge
     await expect(page.getByText(/customer/i).first()).toBeVisible()
@@ -332,10 +331,10 @@ test.describe('Party Detail Page', () => {
     await page.goto('/parties/party_1')
     await page.waitForLoadState('domcontentloaded')
 
-    // Header has a back link/button pointing to /parties
-    const backLink = page.locator('a[href="/parties"], button[aria-label*="back" i]').first()
-    await expect(backLink).toBeVisible()
-    await backLink.click()
+    // Header has a back button (aria-label="Go back")
+    const backBtn = page.getByRole('button', { name: 'Go back' })
+    await expect(backBtn).toBeVisible()
+    await backBtn.click()
 
     await expect(page).toHaveURL(/\/parties$/)
   })

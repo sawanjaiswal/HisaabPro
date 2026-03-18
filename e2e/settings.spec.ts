@@ -40,10 +40,11 @@ test.describe('Settings Hub', () => {
     await page.waitForLoadState('domcontentloaded')
 
     // Header title
-    await expect(page.getByText('Settings')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible()
 
     // Setting sections should be visible (Security is the first section)
-    await expect(page.getByText('Security')).toBeVisible()
+    // Use .first() — "Security" appears as section title and may match multiple elements
+    await expect(page.getByText('Security').first()).toBeVisible()
   })
 
   test('no horizontal scroll on 375px', async ({ authedPage: page }) => {
@@ -71,12 +72,18 @@ test.describe('Settings Hub', () => {
 
 test.describe('Roles Page', () => {
   test('renders roles page', async ({ authedPage: page }) => {
+    // api() unwraps outer { success, data } — hook receives data as RolesListResponse
+    // RolesListResponse = { success, data: { roles: [] } }
+    // Server envelope: { success, data: RolesListResponse }
     await page.route('**/api/businesses/*/roles**', (route) => {
       if (route.request().method() === 'GET') {
         route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({ success: true, data: MOCK_ROLES_RESPONSE }),
+          body: JSON.stringify({
+            success: true,
+            data: { success: true, data: MOCK_ROLES_RESPONSE },
+          }),
         })
       } else {
         route.continue()
@@ -86,20 +93,24 @@ test.describe('Roles Page', () => {
     await page.goto('/settings/roles')
     await page.waitForLoadState('domcontentloaded')
 
-    // Header title
-    await expect(page.getByText('Roles')).toBeVisible()
+    // Header title — use level: 1 to match only the h1, not error state h3
+    await expect(page.getByRole('heading', { name: 'Roles', level: 1 })).toBeVisible()
   })
 })
 
 test.describe('Staff Page', () => {
   test('renders staff page', async ({ authedPage: page }) => {
     // Staff page also fetches roles for the role-change drawer
+    // api() unwraps outer { success, data } — hooks receive data as typed response
     await page.route('**/api/businesses/*/staff**', (route) => {
       if (route.request().method() === 'GET') {
         route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({ success: true, data: MOCK_STAFF_RESPONSE }),
+          body: JSON.stringify({
+            success: true,
+            data: { success: true, data: MOCK_STAFF_RESPONSE },
+          }),
         })
       } else {
         route.continue()
@@ -110,7 +121,10 @@ test.describe('Staff Page', () => {
         route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({ success: true, data: MOCK_ROLES_RESPONSE }),
+          body: JSON.stringify({
+            success: true,
+            data: { success: true, data: MOCK_ROLES_RESPONSE },
+          }),
         })
       } else {
         route.continue()
@@ -120,8 +134,8 @@ test.describe('Staff Page', () => {
     await page.goto('/settings/staff')
     await page.waitForLoadState('domcontentloaded')
 
-    // Header title
-    await expect(page.getByText('Staff')).toBeVisible()
+    // Header title — use level: 1 to match only the h1, not error state h3
+    await expect(page.getByRole('heading', { name: 'Staff', level: 1 })).toBeVisible()
   })
 })
 
@@ -134,8 +148,8 @@ test.describe('Security Page', () => {
     const body = page.locator('body')
     await expect(body).not.toBeEmpty()
 
-    // Should show PIN-related content
-    await expect(page.getByText(/pin/i)).toBeVisible()
+    // Should show PIN-related content — PinPad renders <h2>Enter a new PIN</h2>
+    await expect(page.getByRole('heading', { name: /PIN/, level: 2 })).toBeVisible()
   })
 })
 

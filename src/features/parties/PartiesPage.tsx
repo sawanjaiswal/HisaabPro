@@ -84,9 +84,13 @@ export default function PartiesPage() {
     <AppShell>
       <Header title={bulk.isActive ? `${bulk.selectedCount} Selected` : 'Parties'} />
 
-      <PageContainer>
-        {status === 'success' && data && !bulk.isActive && <PartySummaryBar summary={data.summary} />}
+      {status === 'success' && data && !bulk.isActive && (
+        <div className="page-hero">
+          <PartySummaryBar summary={data.summary} />
+        </div>
+      )}
 
+      <PageContainer>
         {!bulk.isActive && (
           <PartyFilterBar
             search={filters.search}

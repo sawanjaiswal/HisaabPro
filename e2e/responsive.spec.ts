@@ -58,6 +58,10 @@ for (const vp of mobileViewports) {
 
     test('bottom nav visible on mobile (if authenticated)', async ({ page }) => {
       await page.goto('/dashboard')
+      await page.waitForLoadState('domcontentloaded')
+
+      // Wait for any auth redirect to settle
+      await page.waitForTimeout(1000)
 
       const url = page.url()
       if (url.includes('/login')) {

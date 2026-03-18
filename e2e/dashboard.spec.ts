@@ -42,11 +42,12 @@ test.describe('Dashboard Page', () => {
     // Today's Sale label visible
     await expect(page.getByText("Today's Sale")).toBeVisible()
 
-    // Quick action buttons visible
-    await expect(page.getByText('Create')).toBeVisible()
-    await expect(page.getByText('Send')).toBeVisible()
-    await expect(page.getByText('Pay')).toBeVisible()
-    await expect(page.getByText('More')).toBeVisible()
+    // Quick action buttons visible (scoped to Quick actions grid to avoid bottom nav duplicates)
+    const quickActions = page.getByRole('list', { name: 'Quick actions' })
+    await expect(quickActions.getByText('Create')).toBeVisible()
+    await expect(quickActions.getByText('Send')).toBeVisible()
+    await expect(quickActions.getByText('Pay')).toBeVisible()
+    await expect(quickActions.getByRole('listitem', { name: 'More' })).toBeVisible()
   })
 
   test('shows quick action buttons', async ({ authedPage: page }) => {
@@ -54,16 +55,12 @@ test.describe('Dashboard Page', () => {
     await page.goto('/dashboard')
     await page.waitForLoadState('domcontentloaded')
 
-    // All 4 quick actions from dashboard.constants.ts
-    const createAction = page.getByText('Create')
-    const sendAction = page.getByText('Send')
-    const payAction = page.getByText('Pay')
-    const moreAction = page.getByText('More')
-
-    await expect(createAction).toBeVisible()
-    await expect(sendAction).toBeVisible()
-    await expect(payAction).toBeVisible()
-    await expect(moreAction).toBeVisible()
+    // All 4 quick actions from dashboard.constants.ts (scoped to Quick actions grid)
+    const quickActions = page.getByRole('list', { name: 'Quick actions' })
+    await expect(quickActions.getByText('Create')).toBeVisible()
+    await expect(quickActions.getByText('Send')).toBeVisible()
+    await expect(quickActions.getByText('Pay')).toBeVisible()
+    await expect(quickActions.getByRole('listitem', { name: 'More' })).toBeVisible()
   })
 })
 

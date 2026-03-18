@@ -221,7 +221,8 @@ test.describe('Invoices — List Page', () => {
     await mockDocumentsList(authedPage)
     await authedPage.goto('/invoices')
 
-    const fab = authedPage.getByLabel('Create new invoice')
+    // Two elements have aria-label="Create new invoice" (page FAB + bottom nav FAB)
+    const fab = authedPage.locator('.fab[aria-label="Create new invoice"]')
     await expect(fab).toBeVisible()
   })
 
@@ -269,15 +270,14 @@ test.describe('Invoices — Detail Page', () => {
     await mockDocumentDetail(authedPage)
     await authedPage.goto('/invoices/inv_1')
 
-    // Document number in the hero header
-    await expect(authedPage.getByText('INV-2526-001')).toBeVisible()
+    // Document number in the hero header (use heading role to avoid matching status announcement)
+    await expect(authedPage.getByRole('heading', { name: 'INV-2526-001' })).toBeVisible()
 
     // Party name
     await expect(authedPage.getByText('Sharma Electronics')).toBeVisible()
 
-    // Grand total — 1500000 paise = Rs 15,000.00
-    // The formatInvoiceAmount uses en-IN locale with INR currency
-    await expect(authedPage.getByText(/15,000/)).toBeVisible()
+    // Grand total — 1500000 paise = Rs 15,000.00 (multiple elements show this amount, use first)
+    await expect(authedPage.getByText(/15,000/).first()).toBeVisible()
   })
 
   test('shows status badge', async ({ authedPage }) => {
@@ -299,17 +299,16 @@ test.describe('Invoices — Detail Page', () => {
   })
 
   test('back button navigates to invoices list', async ({ authedPage }) => {
-    await mockDocumentDetail(authedPage)
+    // Register general mock first, then specific (Playwright matches last-registered first)
     await mockDocumentsList(authedPage)
+    await mockDocumentDetail(authedPage)
     await authedPage.goto('/invoices/inv_1')
 
-    // Header has a back link/button pointing to /invoices
-    const backButton = authedPage.getByRole('link', { name: /back/i }).or(
-      authedPage.getByLabel(/back/i),
-    )
-    await expect(backButton.first()).toBeVisible()
+    // Header has a back button with aria-label="Go back"
+    const backButton = authedPage.getByLabel('Go back')
+    await expect(backButton).toBeVisible()
 
-    await backButton.first().click()
+    await backButton.click()
     await expect(authedPage).toHaveURL(/\/invoices$/)
   })
 
@@ -322,8 +321,8 @@ test.describe('Invoices — Detail Page', () => {
     await expect(overviewTab).toBeVisible()
     await expect(overviewTab).toHaveAttribute('aria-selected', 'true')
 
-    // Grand Total label should be visible in overview
-    await expect(authedPage.getByText('Grand Total')).toBeVisible()
+    // Grand Total label should be visible (appears in header + overview panel, use first)
+    await expect(authedPage.getByText('Grand Total').first()).toBeVisible()
   })
 
   test('items tab shows line items', async ({ authedPage }) => {
@@ -366,8 +365,8 @@ for (const vp of MOBILE_VIEWPORTS) {
       await mockDocumentDetail(authedPage)
       await authedPage.goto('/invoices/inv_1')
 
-      // Wait for detail to render
-      await expect(authedPage.getByText('INV-2526-001')).toBeVisible()
+      // Wait for detail to render (use heading role to avoid matching status announcement)
+      await expect(authedPage.getByRole('heading', { name: 'INV-2526-001' })).toBeVisible()
 
       const scrollWidth = await authedPage.evaluate(() => document.documentElement.scrollWidth)
       const clientWidth = await authedPage.evaluate(() => document.documentElement.clientWidth)

@@ -113,11 +113,13 @@ export default function InvoicesPage() {
     <AppShell>
       <Header title={bulk.isActive ? `${bulk.selectedCount} Selected` : typeLabel} />
 
-      <PageContainer>
-        {status === 'success' && data && !bulk.isActive && (
+      {status === 'success' && data && !bulk.isActive && (
+        <div className="page-hero">
           <InvoiceSummaryBar summary={data.summary} />
-        )}
+        </div>
+      )}
 
+      <PageContainer>
         {!bulk.isActive && (
           <InvoiceFilterBar
             search={filters.search ?? ''}

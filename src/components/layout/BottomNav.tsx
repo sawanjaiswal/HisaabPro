@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useRef, useState, useEffect } from 'react'
-import { LayoutDashboard, Users, FileText, Package } from 'lucide-react'
+import { LayoutDashboard, Users, FileText, MoreHorizontal } from 'lucide-react'
 import { ROUTES } from '@/config/routes.config'
 
 const NAV_ITEMS_LEFT = [
@@ -10,7 +10,7 @@ const NAV_ITEMS_LEFT = [
 
 const NAV_ITEMS_RIGHT = [
   { to: ROUTES.INVOICES, icon: FileText, label: 'Invoices' },
-  { to: ROUTES.PRODUCTS, icon: Package, label: 'Items' },
+  { to: ROUTES.MORE, icon: MoreHorizontal, label: 'More' },
 ] as const
 
 /** Build the nav bar path with a fixed 80px-wide notch centered horizontally */

@@ -1,6 +1,6 @@
 # Feature Map: HisaabPro
 
-Last updated: 2026-03-17 | Total: 90 | Done: 80 | Needs Integration: 10 | Partial: 0 | Not Started: 0
+Last updated: 2026-03-18 | Total: 98 | Done: 80 | Needs Integration: 10 | Not Started: 8
 
 > **Phase 1 MVP**: Frontend (33 routes, 221 files) + Backend (120+ endpoints, 47 Prisma models) built and wired. SSOT cleanup done (CSS variables, config constants). PWA complete (SW + manifest + cache strategies). Remaining: unit tests, OTP activation, external integrations, staging deploy.
 
@@ -148,13 +148,28 @@ Last updated: 2026-03-17 | Total: 90 | Done: 80 | Needs Integration: 10 | Partia
 | 81 | Multi-currency Support | Done | P2 | `ExchangeRate` model · `currency.service.ts` · Rate * 10000 precision · INR base · 11 currencies · FE: CurrencySettingsPage (building) |
 | 82 | Recurring Invoices | Done | P2 | `RecurringInvoice` model · `recurring.service.ts` · 4 frequencies · Template cloning · Scheduler · FE: RecurringListPage (building) |
 
+## Phase 5: Growth & Competitive Features
+
+> Inspired by [BillBook competitor analysis](../docs/design-references/billbook/) — 10 feature gaps identified, 2 already done (#16 Party-wise Pricing, #33 Invoice Recycle Bin). 8 new features below.
+
+| # | Feature | Status | Priority | Notes |
+|---|---------|--------|----------|-------|
+| 83 | GST Autofill (GSTIN → party details) | Not Started | P1 | Enter GSTIN, auto-populate name/address/state from govt API. BillBook has yellow banner CTA. Needs GST API integration |
+| 84 | Bulk Add Parties from Contacts | Not Started | P2 | Import customers/suppliers from phone contacts. Multi-select picker → Customer/Supplier assignment. Needs Capacitor Contacts plugin |
+| 85 | Shared Ledgers | Not Started | P2 | Shared party ledger between businesses (multi-business collaboration). BillBook's "SharedLedgers" feature. Requires multi-tenant sharing model |
+| 86 | Bill Scanning (OCR → Items) | Not Started | P1 | Scan bill image/PDF → extract line items via OCR. BillBook uses "Scan & Add Item". Needs OCR service (Google Vision / Tesseract) |
+| 87 | Items Library (100K+ database) | Not Started | P2 | Pre-seeded product database for quick item creation. BillBook has "1 lakh+ items". Needs curated Indian product dataset |
+| 88 | Competitor Data Import | Not Started | P3 | Import from Vyapar, Tally, Busy, Marg, Miracle. Excel upload + app-specific parsers. BillBook supports all 5 |
+| 89 | Smart Greetings (WhatsApp templates) | Not Started | P3 | Festival/seasonal WhatsApp greeting templates to customers. BillBook's "Send Smart Greetings". Needs Aisensy template library |
+| 90 | Categorized Feature Discovery ("For You") | Not Started | P3 | Grouped feature grid with categories (Marketing, Accounting, Efficiency) instead of flat More grid. BillBook's "For You" page with purple hero + categorized cards |
+
 ## Status Summary
 
 | Status | Count | Details |
 |--------|-------|---------|
 | **Done** | 80 | Phase 1 (60) + Phase 2 GST (20) |
 | **Needs Integration** | 10 | Code exists, needs external service credentials |
-| **Not Started** | 0 | All Phase 1 + Phase 2 feature code written |
+| **Not Started** | 8 | Phase 5: Growth & Competitive Features (BillBook gaps) |
 
 ## Priority Summary
 
@@ -230,3 +245,4 @@ Offline banner + sync UI            Multi-tenant (businessId isolation)
 7. ~~**Phase 2: GST**~~ Done — 20 features (tax engine, GSTR-1/3B/9, e-invoice, e-way bill, TDS/TCS, CN/DN, multi-currency, recurring)
 8. ~~**Phase 3: Accounting & Finance**~~ Done — 22 features (double-entry ledger, journal entries, trial balance, P&L, balance sheet, cash flow, bank accounts, expenses, other income, cheques, loans, aging reports, profitability, discounts, Tally export, FY closure)
 9. **Phase 4: Advanced Inventory & POS** — Barcode, batch tracking, multi-godown, POS mode (16 features)
+10. **Phase 5: Growth & Competitive Features** — BillBook-inspired gaps + feature discovery (8 features)

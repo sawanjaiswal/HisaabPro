@@ -49,22 +49,23 @@ export default function ReportsHubPage() {
     <AppShell>
       <Header title="Reports" backTo={ROUTES.DASHBOARD} />
 
+      <div className="page-hero">
+        <div className="report-hub-hero" aria-label="Reports overview">
+          <div className="report-hub-hero-icon" aria-hidden="true">
+            <BarChart3 size={28} />
+          </div>
+          <div className="report-hub-hero-content">
+            <span className="report-hub-hero-title">Business Insights</span>
+            <span className="report-hub-hero-subtitle">
+              Track sales, stock, and cash flow across your business
+            </span>
+          </div>
+          <span className="report-hub-hero-count">{REPORT_CATEGORIES.length} Reports</span>
+        </div>
+      </div>
+
       <PageContainer>
         <div className="report-hub">
-          {/* Hero banner — teal gradient with insight */}
-          <div className="report-hub-hero" aria-label="Reports overview">
-            <div className="report-hub-hero-icon" aria-hidden="true">
-              <BarChart3 size={28} />
-            </div>
-            <div className="report-hub-hero-content">
-              <span className="report-hub-hero-title">Business Insights</span>
-              <span className="report-hub-hero-subtitle">
-                Track sales, stock, and cash flow across your business
-              </span>
-            </div>
-            <span className="report-hub-hero-count">{REPORT_CATEGORIES.length} Reports</span>
-          </div>
-
           <div className="report-hub-grid stagger-list">
             {REPORT_CATEGORIES.map((category) => {
               const Icon = ICON_MAP[category.icon] ?? TrendingUp

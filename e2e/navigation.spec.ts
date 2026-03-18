@@ -17,6 +17,9 @@ test.describe('Core Navigation', () => {
   test('bottom nav links are present on dashboard', async ({ page }) => {
     // Navigate to dashboard (will redirect to login if unauthenticated)
     await page.goto('/dashboard')
+    // Wait for client-side router to settle (may redirect to /login)
+    await page.waitForLoadState('domcontentloaded')
+    await page.waitForTimeout(500)
 
     // If redirected to login, we verify login page works instead
     const url = page.url()
@@ -36,6 +39,8 @@ test.describe('Core Navigation', () => {
 
   test('bottom nav links navigate to correct pages', async ({ page }) => {
     await page.goto('/dashboard')
+    await page.waitForLoadState('domcontentloaded')
+    await page.waitForTimeout(500)
 
     const url = page.url()
     if (url.includes('/login')) {
@@ -64,6 +69,8 @@ test.describe('Core Navigation', () => {
 
   test('page transitions show no blank screens', async ({ page }) => {
     await page.goto('/dashboard')
+    await page.waitForLoadState('domcontentloaded')
+    await page.waitForTimeout(500)
 
     const url = page.url()
     if (url.includes('/login')) return

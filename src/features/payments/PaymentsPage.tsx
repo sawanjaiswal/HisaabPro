@@ -110,11 +110,13 @@ export default function PaymentsPage() {
     <AppShell>
       <Header title={bulk.isActive ? `${bulk.selectedCount} Selected` : 'Payments'} />
 
-      <PageContainer>
-        {status === 'success' && data && !bulk.isActive && (
+      {status === 'success' && data && !bulk.isActive && (
+        <div className="page-hero">
           <PaymentSummaryBar summary={data.summary} />
-        )}
+        </div>
+      )}
 
+      <PageContainer>
         {!bulk.isActive && (
           <PaymentFilterBar
             search={filters.search ?? ''}
