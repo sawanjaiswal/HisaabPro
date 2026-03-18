@@ -41,6 +41,10 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  // Multi-business — last active business (auto-loaded on login)
+  lastActiveBusinessId  String?
+  lastActiveBusiness    Business? @relation("UserLastActiveBusiness", fields: [lastActiveBusinessId], references: [id], onDelete: SetNull)
+
   businessUsers  BusinessUser[]
   refreshTokens  RefreshToken[]
   stockMovements StockMovement[]
@@ -142,6 +146,8 @@ model Business {
   cheques               Cheque[]
   loanAccounts          LoanAccount[]
   fyClosures            FinancialYearClosure[]
+
+  usersLastActive  User[] @relation("UserLastActiveBusiness")
 
   @@index([name])
 }
@@ -920,7 +926,7 @@ model StaffInvite {
   businessId String
   name       String
   phone      String
-  roleId     String
+  roleId     String?
   code       String   @unique
   status     String   @default("PENDING") // PENDING, ACCEPTED, EXPIRED
   expiresAt  DateTime

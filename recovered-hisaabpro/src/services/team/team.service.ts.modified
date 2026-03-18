@@ -1,0 +1,585 @@
+/**
+ * Team Management Service
+ * CRUD for team members, assignments, activity summary
+ */
+
+import { prisma } from '../../db';
+import type { Prisma, TeamMemberRole, PermissionPreset } from '@prisma/client';
+import logger from '../../utils/logger';
+import { generateInviteToken, getInviteExpiry, hashPin } from './team-auth.service';
+import type { AddTeamMemberRequest, UpdateTeamMemberRequest } from '../../schemas/team.schemas';
+
+// ── Constants ────────────────────────────────────────────────────
+
+// TODO: Gate by subscription plan — read from subscription_plans.features JSON
+const DEFAULT_MAX_TEAM_MEMBERS = 0; // Free plan: 0 workers
+
+// Fields to never expose to frontend
+const SENSITIVE_FIELDS = ['pinHash', 'failedPinAttempts', 'pinLockedUntil', 'inviteToken'] as const;
+
+/** Strip credential fields from a TeamMember Prisma result before sending to client */
+function stripSensitiveFields<T extends Record<string, unknown>>(member: T) {
+  const m = member as T & { pinHash?: unknown; failedPinAttempts?: unknown; pinLockedUntil?: unknown; inviteToken?: unknown };
+  const { pinHash, failedPinAttempts, pinLockedUntil, inviteToken, ...safe } = m;
+  return safe as Omit<T, 'pinHash' | 'failedPinAttempts' | 'pinLockedUntil' | 'inviteToken'>;
+}
+
+// ── Add Team Member ──────────────────────────────────────────────
+
+export async function addTeamMember(
+  ownerId: string,
+  data: AddTeamMemberRequest
+) {
+  // Check if phone already exists for this owner
+  const existing = await prisma.teamMember.findUnique({
+    where: { ownerId_phone: { ownerId, phone: data.phone } },
+  });
+
+  if (existing) {
+    if (existing.isActive) {
+      throw new TeamError('DUPLICATE_PHONE', 'A team member with this phone already exists');
+    }
+    // Re-activate deactivated member
+    const inviteToken = generateInviteToken();
+    const updated = await prisma.$transaction(async (tx) => {
+      const m = await tx.teamMember.update({
+        where: { id: existing.id },
+        data: {
+          name: data.name,
+          role: data.role as TeamMemberRole,
+          permissionPreset: data.permissionPreset as PermissionPreset,
+          isActive: true,
+          inviteStatus: 'PENDING',
+          inviteToken,
+          inviteExpiresAt: getInviteExpiry(),
+          pinHash: null, // Force new PIN setup
+          failedPinAttempts: 0,
+          pinLockedUntil: null,
+        },
+      });
+      if (data.assignedCustomerIds?.length) {
+        await assignEntitiesInTx(tx, m.id, 'customer', data.assignedCustomerIds, ownerId);
+      }
+      if (data.assignedSupplierIds?.length) {
+        await assignEntitiesInTx(tx, m.id, 'supplier', data.assignedSupplierIds, ownerId);
+      }
+      return m;
+    });
+
+    logger.info('Team member re-activated', { memberId: updated.id, ownerId });
+    return { member: stripSensitiveFields(updated), inviteToken, isReactivation: true };
+  }
+
+  // Create new member
+  const inviteToken = generateInviteToken();
+  const member = await prisma.$transaction(async (tx) => {
+    const m = await tx.teamMember.create({
+      data: {
+        ownerId,
+        phone: data.phone,
+        name: data.name,
+        role: data.role as TeamMemberRole,
+        permissionPreset: data.permissionPreset as PermissionPreset,
+        inviteToken,
+        inviteExpiresAt: getInviteExpiry(),
+      },
+    });
+    if (data.assignedCustomerIds?.length) {
+      await assignEntitiesInTx(tx, m.id, 'customer', data.assignedCustomerIds, ownerId);
+    }
+    if (data.assignedSupplierIds?.length) {
+      await assignEntitiesInTx(tx, m.id, 'supplier', data.assignedSupplierIds, ownerId);
+    }
+    return m;
+  });
+
+  logger.info('Team member created', { memberId: member.id, ownerId });
+  return { member: stripSensitiveFields(member), inviteToken, isReactivation: false };
+}
+
+// ── List Team Members ────────────────────────────────────────────
+
+export async function listTeamMembers(ownerId: string) {
+  const members = await prisma.teamMember.findMany({
+    where: { ownerId, isActive: true },
+    orderBy: { createdAt: 'desc' },
+    take: 100,
+    include: {
+      _count: { select: { Assignments: true } },
+    },
+  });
+
+  return members.map((m) => ({
+    id: m.id,
+    name: m.name,
+    phone: m.phone,
+    role: m.role,
+    permissionPreset: m.permissionPreset,
+    inviteStatus: m.inviteStatus,
+    isActive: m.isActive,
+    lastLoginAt: m.lastLoginAt,
+    lastActiveAt: m.lastActiveAt,
+    assignmentCount: m._count.Assignments,
+    createdAt: m.createdAt,
+  }));
+}
+
+// ── Get Team Member Detail ───────────────────────────────────────
+
+export async function getTeamMemberDetail(memberId: string, ownerId: string) {
+  const member = await prisma.teamMember.findFirst({
+    where: { id: memberId, ownerId },
+    include: {
+      Assignments: {
+        orderBy: { createdAt: 'desc' },
+        take: 500,
+      },
+    },
+  });
+
+  if (!member) {
+    throw new TeamError('NOT_FOUND', 'Team member not found');
+  }
+
+  // Resolve entity names for assignments
+  const customerIds = member.Assignments
+    .filter((a) => a.entityType === 'customer')
+    .map((a) => a.entityId);
+  const supplierIds = member.Assignments
+    .filter((a) => a.entityType === 'supplier')
+    .map((a) => a.entityId);
+
+  const [customers, suppliers] = await Promise.all([
+    customerIds.length > 0
+      ? prisma.customer.findMany({
+          where: { id: { in: customerIds }, userId: ownerId, isDeleted: false },
+          select: { id: true, name: true, phone: true },
+        })
+      : [],
+    supplierIds.length > 0
+      ? prisma.supplier.findMany({
+          where: { id: { in: supplierIds }, userId: ownerId, isDeleted: false },
+          select: { id: true, name: true, phone: true },
+        })
+      : [],
+  ]);
+
+  // Strip sensitive fields — never leak credentials to frontend
+  const { pinHash, failedPinAttempts, pinLockedUntil, inviteToken, ...safeMember } = member;
+
+  return {
+    ...safeMember,
+    assignmentCount: member.Assignments.length,
+    assignedCustomers: customers,
+    assignedSuppliers: suppliers,
+  };
+}
+
+// ── Update Team Member ───────────────────────────────────────────
+
+export async function updateTeamMember(
+  memberId: string,
+  ownerId: string,
+  data: UpdateTeamMemberRequest
+) {
+  const member = await prisma.teamMember.findFirst({
+    where: { id: memberId, ownerId },
+  });
+
+  if (!member) {
+    throw new TeamError('NOT_FOUND', 'Team member not found');
+  }
+
+  const updateData: Prisma.TeamMemberUpdateInput = {};
+  if (data.name !== undefined) updateData.name = data.name;
+  if (data.role !== undefined) updateData.role = data.role as TeamMemberRole;
+  if (data.permissionPreset !== undefined) updateData.permissionPreset = data.permissionPreset as PermissionPreset;
+
+  const updated = await prisma.teamMember.update({
+    where: { id: memberId },
+    data: updateData,
+  });
+
+  logger.info('Team member updated', { memberId, ownerId, changes: Object.keys(data) });
+  return stripSensitiveFields(updated);
+}
+
+// ── Deactivate Team Member ───────────────────────────────────────
+
+export async function deactivateTeamMember(memberId: string, ownerId: string, reassignTo?: string) {
+  const member = await prisma.teamMember.findFirst({
+    where: { id: memberId, ownerId },
+    include: { _count: { select: { Assignments: true } } },
+  });
+
+  if (!member) {
+    throw new TeamError('NOT_FOUND', 'Team member not found');
+  }
+
+  const assignmentCount = member._count.Assignments;
+
+  // Transaction: deactivate + handle assignments
+  await prisma.$transaction(async (tx) => {
+    // Deactivate the member
+    await tx.teamMember.update({
+      where: { id: memberId },
+      data: {
+        isActive: false,
+        inviteToken: null,
+      },
+    });
+
+    if (assignmentCount > 0) {
+      if (reassignTo) {
+        // Verify target member exists and is active
+        const target = await tx.teamMember.findFirst({
+          where: { id: reassignTo, ownerId, isActive: true },
+        });
+        if (!target) {
+          throw new TeamError('NOT_FOUND', 'Reassignment target not found or inactive');
+        }
+
+        // Get current assignments
+        const assignments = await tx.teamMemberAssignment.findMany({
+          where: { teamMemberId: memberId },
+          select: { entityType: true, entityId: true },
+        });
+
+        // Batch reassign — createMany with skipDuplicates (no N+1)
+        if (assignments.length > 0) {
+          await tx.teamMemberAssignment.createMany({
+            data: assignments.map((a) => ({
+              teamMemberId: reassignTo,
+              entityType: a.entityType,
+              entityId: a.entityId,
+              assignedBy: ownerId,
+            })),
+            skipDuplicates: true,
+          });
+        }
+      }
+
+      // Delete old assignments regardless (either moved or orphaned)
+      await tx.teamMemberAssignment.deleteMany({
+        where: { teamMemberId: memberId },
+      });
+    }
+
+    // Note: Refresh tokens are JWT-based (stateless) — the auth middleware
+    // checks isActive on the TeamMember, so deactivation blocks further access.
+  });
+
+  logger.info('Team member deactivated', { memberId, ownerId, reassignTo, assignmentCount });
+
+  return {
+    deactivated: { id: member.id, name: member.name },
+    reassigned: reassignTo
+      ? { count: assignmentCount, toId: reassignTo }
+      : { count: 0, toId: null },
+  };
+}
+
+// ── Reset PIN ────────────────────────────────────────────────────
+
+export async function resetTeamMemberPin(memberId: string, ownerId: string) {
+  const member = await prisma.teamMember.findFirst({
+    where: { id: memberId, ownerId, isActive: true },
+  });
+
+  if (!member) {
+    throw new TeamError('NOT_FOUND', 'Team member not found or inactive');
+  }
+
+  const inviteToken = generateInviteToken();
+
+  await prisma.teamMember.update({
+    where: { id: memberId },
+    data: {
+      pinHash: null,
+      inviteStatus: 'PENDING',
+      inviteToken,
+      inviteExpiresAt: getInviteExpiry(),
+      failedPinAttempts: 0,
+      pinLockedUntil: null,
+    },
+  });
+
+  logger.info('Team member PIN reset', { memberId, ownerId });
+  return { inviteToken };
+}
+
+// ── Assignments ──────────────────────────────────────────────────
+
+/**
+ * Internal: assign entities within an existing transaction client.
+ * Does NOT verify member ownership — caller must ensure membership is valid.
+ */
+async function assignEntitiesInTx(
+  tx: Prisma.TransactionClient,
+  teamMemberId: string,
+  entityType: 'customer' | 'supplier',
+  entityIds: string[],
+  assignedBy: string
+) {
+  // Remove assignments for this member+entityType NOT in the new list
+  await tx.teamMemberAssignment.deleteMany({
+    where: {
+      teamMemberId,
+      entityType,
+      entityId: { notIn: entityIds },
+    },
+  });
+
+  // Batch-insert new assignments, skip existing ones
+  await tx.teamMemberAssignment.createMany({
+    data: entityIds.map((entityId) => ({
+      teamMemberId,
+      entityType,
+      entityId,
+      assignedBy,
+    })),
+    skipDuplicates: true,
+  });
+}
+
+export async function assignEntities(
+  teamMemberId: string,
+  entityType: 'customer' | 'supplier',
+  entityIds: string[],
+  assignedBy: string
+) {
+  // Verify team member belongs to this owner and is active
+  const member = await prisma.teamMember.findFirst({
+    where: { id: teamMemberId, ownerId: assignedBy, isActive: true },
+  });
+  if (!member) {
+    throw new TeamError('NOT_FOUND', 'Team member not found or inactive');
+  }
+
+  // Verify all entityIds belong to the owner
+  const validCount = entityType === 'customer'
+    ? await prisma.customer.count({ where: { id: { in: entityIds }, userId: assignedBy, isDeleted: false } })
+    : await prisma.supplier.count({ where: { id: { in: entityIds }, userId: assignedBy, isDeleted: false } });
+
+  if (validCount !== entityIds.length) {
+    throw new TeamError('INVALID_ENTITY', 'One or more entities not found', 400);
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await assignEntitiesInTx(tx, teamMemberId, entityType, entityIds, assignedBy);
+  });
+
+  logger.info('Entities assigned', { teamMemberId, entityType, count: entityIds.length });
+  return { count: entityIds.length };
+}
+
+export async function unassignEntities(
+  teamMemberId: string,
+  entityType: 'customer' | 'supplier',
+  entityIds: string[],
+  ownerId: string
+) {
+  // Verify team member belongs to this owner
+  const member = await prisma.teamMember.findFirst({
+    where: { id: teamMemberId, ownerId },
+  });
+  if (!member) {
+    throw new TeamError('NOT_FOUND', 'Team member not found');
+  }
+
+  const result = await prisma.teamMemberAssignment.deleteMany({
+    where: {
+      teamMemberId,
+      entityType,
+      entityId: { in: entityIds },
+    },
+  });
+
+  logger.info('Entities unassigned', { teamMemberId, entityType, count: result.count });
+  return result;
+}
+
+export async function getAssignments(teamMemberId: string, ownerId: string) {
+  // Verify team member belongs to this owner
+  const member = await prisma.teamMember.findFirst({
+    where: { id: teamMemberId, ownerId },
+  });
+  if (!member) {
+    throw new TeamError('NOT_FOUND', 'Team member not found');
+  }
+
+  return prisma.teamMemberAssignment.findMany({
+    where: { teamMemberId },
+    orderBy: { createdAt: 'desc' },
+    take: 500,
+  });
+}
+
+// ── Worker Activity Summary ──────────────────────────────────────
+
+export async function getWorkerActivity(
+  memberId: string,
+  ownerId: string,
+  date?: string
+) {
+  const targetDate = date || new Date().toISOString().slice(0, 10);
+
+  const [milkOut, milkIn, payments, productEntries] = await Promise.all([
+    prisma.milkOutEntry.findMany({
+      where: { userId: ownerId, actorId: memberId, date: targetDate, isDeleted: false },
+      include: { Customer: { select: { name: true } } },
+      orderBy: { createdAt: 'desc' },
+      take: 200,
+    }),
+    prisma.milkInEntry.findMany({
+      where: { userId: ownerId, actorId: memberId, date: targetDate, isDeleted: false },
+      include: { Supplier: { select: { name: true } } },
+      orderBy: { createdAt: 'desc' },
+      take: 200,
+    }),
+    prisma.payment.findMany({
+      where: { userId: ownerId, actorId: memberId, date: targetDate, isDeleted: false },
+      include: { Customer: { select: { name: true } } },
+      orderBy: { createdAt: 'desc' },
+      take: 200,
+    }),
+    prisma.productEntry.findMany({
+      where: { userId: ownerId, actorId: memberId, date: targetDate, isDeleted: false },
+      orderBy: { createdAt: 'desc' },
+      take: 200,
+    }),
+  ]);
+
+  return {
+    date: targetDate,
+    milkOut,
+    milkIn,
+    payments,
+    productEntries,
+    summary: {
+      deliveries: milkOut.filter((e) => !e.wasSkipped).length,
+      skipped: milkOut.filter((e) => e.wasSkipped).length,
+      totalMilkOut: milkOut.reduce((sum, e) => sum + (e.wasSkipped ? 0 : e.quantity), 0),
+      totalMilkIn: milkIn.reduce((sum, e) => sum + e.quantity, 0),
+      totalPayments: payments.reduce((sum, p) => sum + Number(p.amount), 0),
+      paymentCount: payments.length,
+      productEntryCount: productEntries.length,
+    },
+  };
+}
+
+export async function getTeamSummary(ownerId: string, date?: string) {
+  const targetDate = date || new Date().toISOString().slice(0, 10);
+
+  const members = await prisma.teamMember.findMany({
+    where: { ownerId, isActive: true },
+    select: { id: true, name: true, role: true, lastActiveAt: true },
+  });
+
+  const memberIds = members.map((m) => m.id);
+
+  if (memberIds.length === 0) {
+    return { date: targetDate, members: [] };
+  }
+
+  // Batch queries for all workers' activity
+  const [milkOutCounts, paymentCounts] = await Promise.all([
+    prisma.milkOutEntry.groupBy({
+      by: ['actorId'],
+      where: { userId: ownerId, actorId: { in: memberIds }, date: targetDate, isDeleted: false },
+      _count: true,
+    }),
+    prisma.payment.groupBy({
+      by: ['actorId'],
+      where: { userId: ownerId, actorId: { in: memberIds }, date: targetDate, isDeleted: false },
+      _count: true,
+    }),
+  ]);
+
+  const milkOutMap = new Map(milkOutCounts.map((m) => [m.actorId, m._count]));
+  const paymentMap = new Map(paymentCounts.map((p) => [p.actorId, p._count]));
+
+  return {
+    date: targetDate,
+    members: members.map((m) => ({
+      id: m.id,
+      name: m.name,
+      role: m.role,
+      lastActiveAt: m.lastActiveAt,
+      deliveries: milkOutMap.get(m.id) || 0,
+      payments: paymentMap.get(m.id) || 0,
+    })),
+  };
+}
+
+// ── Team Member Count Check ──────────────────────────────────────
+
+export async function getActiveTeamMemberCount(ownerId: string): Promise<number> {
+  return prisma.teamMember.count({
+    where: { ownerId, isActive: true },
+  });
+}
+
+// ── Invite Management ─────────────────────────────────────────────
+
+/**
+ * Cancel a pending invite — marks EXPIRED, clears token.
+ * Staff cannot join after cancellation; PIN already set → unaffected.
+ */
+export async function cancelInvite(memberId: string, ownerId: string) {
+  const member = await prisma.teamMember.findFirst({
+    where: { id: memberId, ownerId },
+    select: { inviteStatus: true },
+  });
+
+  if (!member) throw new TeamError('NOT_FOUND', 'Team member not found', 404);
+  if (member.inviteStatus !== 'PENDING') {
+    throw new TeamError('INVITE_NOT_PENDING', 'Invite is not in PENDING state');
+  }
+
+  await prisma.teamMember.update({
+    where: { id: memberId },
+    data: { inviteStatus: 'EXPIRED', inviteToken: null, inviteExpiresAt: null },
+  });
+
+  logger.info('Team invite cancelled', { memberId, ownerId });
+  return { cancelled: true };
+}
+
+/**
+ * Resend invite — regenerates token and resets to PENDING.
+ * Works for PENDING (refresh) or EXPIRED (reactivate invite).
+ */
+export async function resendInvite(memberId: string, ownerId: string): Promise<{ inviteToken: string }> {
+  const member = await prisma.teamMember.findFirst({
+    where: { id: memberId, ownerId, isActive: true },
+    select: { inviteStatus: true, pinHash: true },
+  });
+
+  if (!member) throw new TeamError('NOT_FOUND', 'Team member not found or inactive', 404);
+  if (member.pinHash) throw new TeamError('INVITE_ACCEPTED', 'Staff member already has a PIN set', 400);
+
+  const inviteToken = generateInviteToken();
+
+  await prisma.teamMember.update({
+    where: { id: memberId },
+    data: { inviteStatus: 'PENDING', inviteToken, inviteExpiresAt: getInviteExpiry() },
+  });
+
+  logger.info('Team invite resent', { memberId, ownerId });
+  return { inviteToken };
+}
+
+// ── Error Class ──────────────────────────────────────────────────
+
+export class TeamError extends Error {
+  code: string;
+  statusCode: number;
+
+  constructor(code: string, message: string, statusCode = 400) {
+    super(message);
+    this.code = code;
+    this.statusCode = statusCode;
+    this.name = 'TeamError';
+  }
+}

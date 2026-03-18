@@ -1,0 +1,85 @@
+// Re-export the axios instance and shared utilities
+export { api, setActivityCallback, sanitizeRequestData } from './client';
+export type { PaginationMeta, PaginatedResponse } from './client';
+
+// Auth
+export { authAPI } from './auth';
+
+// Customers & Supplier Centers
+export { customerAPI, supplierCenterAPI } from './customers';
+
+// Suppliers
+export { supplierAPI } from './suppliers';
+
+// Payments
+export { paymentAPI } from './payments';
+
+// Products & Product Entries
+export { productAPI, productEntryAPI } from './products';
+
+// Supplier Products & Supplier Product Entries
+export { supplierProductAPI, supplierProductEntryAPI } from './supplierProducts';
+
+// Delivery: history, milk-in, milk-out, sessions
+export { deliveryHistoryAPI, milkInAPI, deliveryAPI, deliverySessionAPI } from './delivery';
+
+// Holidays: customer holidays and milkman holidays
+export { holidayAPI, milkmanHolidayAPI } from './holidays';
+
+// Dashboard
+export { dashboardAPI } from './dashboard';
+
+// User
+export { userAPI } from './user';
+
+// Feedback
+export { feedbackAPI } from './feedback';
+
+// Import & Export
+export { importAPI, exportAPI } from './importExport';
+
+// Temp PDF share
+export { uploadTempPDF } from './share';
+export type {
+  ColumnMapping,
+  ValidationResult,
+  AnalyzeFileResult,
+  PreviewResult,
+  ExecuteImportResult,
+} from './importExport';
+
+// POS
+export { posAPI } from './pos';
+export type {
+  POSSaleItem,
+  POSSaleRequest,
+  POSSaleResponse,
+  POSRecentSale,
+  POSStats,
+} from './pos';
+
+// UPI
+export { upiAPI } from './upi';
+
+// Reports
+export { reportsAPI } from './reports';
+
+// Team Management
+export { teamAPI } from './team';
+
+// Multi-Business
+export { businessAPI } from './business';
+
+// Portal (public — no auth)
+export { portalAPI } from './portal';
+
+// Statements (public view + authenticated send)
+export { statementAPI } from './statements';
+export type { StatementData, SendStatementResponse } from './statements';
+
+// Route optimization (OSRM proxy)
+export { routeAPI } from './route';
+export type { OSRMOptimizeResponse, OSRMWaypoint, OSRMLeg, OSRMTrip } from './route';
+
+// Default export for backward compatibility
+export { default } from './client';

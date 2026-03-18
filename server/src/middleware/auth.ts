@@ -8,7 +8,7 @@ import { ACCESS_TOKEN_COOKIE } from '../config/security.js'
 declare global {
   namespace Express {
     interface Request {
-      user?: { userId: string; phone: string }
+      user?: { userId: string; phone: string; businessId: string }
     }
   }
 }
@@ -52,7 +52,7 @@ export function auth(req: Request, res: Response, next: NextFunction) {
       return
     }
 
-    req.user = { userId: payload.userId, phone: payload.phone }
+    req.user = { userId: payload.userId, phone: payload.phone, businessId: payload.businessId ?? '' }
     next()
   } catch (error: unknown) {
     const err = error as { name?: string }

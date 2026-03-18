@@ -71,3 +71,35 @@ export const CSRF_HEADER_NAME = 'x-csrf-token'
 
 /** CSRF cookie max-age (ms) — 24 hours */
 export const CSRF_COOKIE_TTL_MS = 24 * 60 * 60 * 1000
+
+// --- Multi-business ---
+
+/** Maximum active businesses per user */
+export const MAX_BUSINESSES = 10
+
+/** Invite code length in bytes (produces 6 hex chars) */
+export const INVITE_CODE_BYTES = 3
+
+/** Invite TTL (ms) — 48 hours */
+export const INVITE_TTL_MS = 48 * 60 * 60 * 1000
+
+/** Maximum pending invites per business */
+export const MAX_PENDING_INVITES = 20
+
+/** Business switching rate limit window (ms) */
+export const RATE_LIMIT_SWITCH_BUSINESS_WINDOW_MS = 60 * 1000
+
+/** Max business switches per user per window */
+export const RATE_LIMIT_SWITCH_BUSINESS_MAX = 10
+
+/** Business creation rate limit window (ms) — 1 hour */
+export const RATE_LIMIT_CREATE_BUSINESS_WINDOW_MS = 60 * 60 * 1000
+
+/** Max business creations per IP per window */
+export const RATE_LIMIT_CREATE_BUSINESS_MAX = 3
+
+/** Invite acceptance rate limit window (ms) */
+export const RATE_LIMIT_INVITE_WINDOW_MS = 60 * 1000
+
+/** Max invite acceptances per IP per window */
+export const RATE_LIMIT_INVITE_MAX = 5

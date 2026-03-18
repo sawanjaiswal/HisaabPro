@@ -11,6 +11,7 @@ export const createBusinessSchema = z.object({
   city: z.string().max(100).optional(),
   state: z.string().max(100).optional(),
   pincode: z.string().max(20).optional(),
+  cloneFromBusinessId: z.string().cuid().optional(),
 })
 
 // Inferred types

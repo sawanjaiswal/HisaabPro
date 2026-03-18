@@ -1,0 +1,285 @@
+import { createContext, useContext, useState, useEffect, useRef, useMemo } from 'react';
+import type { ReactNode } from 'react';
+import * as Sentry from '@sentry/react';
+import { authAPI, setActivityCallback } from '../services/api';
+import { storage } from '../utils/storage';
+import type { User, AuthResponse, BusinessSummary } from '../types';
+import { useBusinessState } from './useBusinessState';
+import { getErrorMessage } from '../utils/error';
+import { clearOfflineData } from '../hooks/useDataHydration';
+import { TIMINGS } from '../config/timings';
+
+interface AuthContextType {
+  user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (phone: string, password: string, captchaToken?: string) => Promise<void>;
+  register: (phone: string, password: string, name: string, captchaToken?: string) => Promise<AuthResponse>;
+  verifyOTP: (phone: string, otp: string) => Promise<void>;
+  logout: () => void;
+  showInactivityWarning: boolean;
+  resetInactivity: () => void;
+  currentBusinessId: string | null;
+  currentBusiness: BusinessSummary | null;
+  businesses: BusinessSummary[];
+  switchBusiness: (businessId: string) => Promise<void>;
+  refreshBusinesses: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Inactivity timeouts — sourced from TIMINGS SSOT
+const WARNING_TIMEOUT = TIMINGS.sessionWarning;
+const LOGOUT_TIMEOUT = TIMINGS.sessionLogout;
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showInactivityWarning, setShowInactivityWarning] = useState(false);
+
+  const {
+    businesses,
+    currentBusinessId,
+    currentBusiness,
+    refreshBusinesses,
+    switchBusiness,
+    clearBusinessState,
+  } = useBusinessState();
+
+  // Track last activity time IN MEMORY ONLY (not persisted)
+  const lastActivityAt = useRef<number>(Date.now());
+  const inactivityCheckInterval = useRef<NodeJS.Timeout | null>(null);
+  // Ref mirrors showInactivityWarning so setInterval callback always reads the latest value
+  const showInactivityWarningRef = useRef(false);
+
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const token = storage.getAccessToken();
+      if (!token) {
+        setIsLoading(false);
+        return;
+      }
+
+      // OFFLINE-FIRST: Load cached user immediately so app is usable without network
+      const cachedUserJson = storage.getCachedUser();
+      if (cachedUserJson) {
+        try {
+          const cachedUser = JSON.parse(cachedUserJson);
+          setUser(cachedUser);
+          setIsLoading(false); // App is usable NOW with cached data
+        } catch {
+          // Invalid cached data, continue to network fetch
+        }
+      }
+
+      // Verify with server in background (non-blocking if cached user loaded)
+      try {
+        const response = await authAPI.getProfile();
+        if (response.success && response.data) {
+          setUser(response.data);
+          // Update cache with fresh data
+          storage.setCachedUser(JSON.stringify(response.data));
+          // Load businesses in background (non-blocking)
+          refreshBusinesses();
+        } else {
+          // Keep cached user if available
+          if (!cachedUserJson) setUser(null);
+        }
+      } catch (error: unknown) {
+        if ((error as { response?: { status?: number } })?.response?.status === 401) {
+          // Token expired/invalid — clear auth
+          storage.clearAuth();
+          setUser(null);
+        }
+        // Network/timeout errors: keep cached user (already set above)
+      }
+
+      setIsLoading(false);
+    };
+
+    initializeAuth();
+  }, []);
+
+  const login = async (phone: string, password: string, captchaToken?: string) => {
+    try {
+      const response = await authAPI.login({ phone, password, captchaToken });
+      if (response.success && response.user) {
+        setUser(response.user);
+        // Cache user for offline-first auth
+        storage.setCachedUser(JSON.stringify(response.user));
+      } else {
+        throw new Error(response.message || 'Login failed');
+      }
+    } catch (error: unknown) {
+      const message = getErrorMessage(error) || 'Login failed';
+      throw new Error(message);
+    }
+  };
+
+  const register = async (phone: string, password: string, name: string, captchaToken?: string): Promise<AuthResponse> => {
+    try {
+      const response = await authAPI.register({
+        phone,
+        password: password || undefined, // Send undefined if empty
+        name,
+        captchaToken,
+      });
+      if (!response.success) {
+        throw new Error(response.message || 'Registration failed');
+      }
+      // If tokens returned (password-based auto-verification), set user state
+      if (response.tokens) {
+        storage.setAccessToken(response.tokens.accessToken);
+        storage.setRefreshToken(response.tokens.refreshToken);
+        if (response.user) {
+          setUser(response.user);
+        }
+      }
+      return response;
+    } catch (error: unknown) {
+      const message = getErrorMessage(error) || 'Registration failed';
+      throw new Error(message);
+    }
+  };
+
+  const verifyOTP = async (phone: string, otp: string) => {
+    try {
+      const response = await authAPI.verifyOTP({ phone, otp });
+      if (response.success && response.user) {
+        setUser(response.user);
+        // Cache user for offline-first auth
+        storage.setCachedUser(JSON.stringify(response.user));
+      } else {
+        throw new Error(response.message || 'OTP verification failed');
+      }
+    } catch (error: unknown) {
+      const message = getErrorMessage(error) || 'OTP verification failed';
+      throw new Error(message);
+    }
+  };
+
+  // Reset inactivity timer (called on user activity)
+  const resetInactivity = () => {
+    lastActivityAt.current = Date.now();
+    setShowInactivityWarning(false);
+  };
+
+  // Keep ref in sync with state so the interval callback always reads the latest value
+  useEffect(() => { showInactivityWarningRef.current = showInactivityWarning; }, [showInactivityWarning]);
+
+  // Check for inactivity and show warning/logout
+  const checkInactivity = () => {
+    if (!user) return; // Only check if user is logged in
+
+    const now = Date.now();
+    const idleTime = now - lastActivityAt.current;
+
+    if (idleTime >= LOGOUT_TIMEOUT) {
+      // 30 minutes idle - force logout
+      logout();
+    } else if (idleTime >= WARNING_TIMEOUT && !showInactivityWarningRef.current) {
+      // 25 minutes idle - show warning (read ref, not stale closure state)
+      setShowInactivityWarning(true);
+    }
+  };
+
+  const logout = () => {
+    // Clear inactivity timer
+    if (inactivityCheckInterval.current) {
+      clearInterval(inactivityCheckInterval.current);
+      inactivityCheckInterval.current = null;
+    }
+
+    // Clear auth state
+    authAPI.logout();
+    setUser(null);
+    setShowInactivityWarning(false);
+
+    // Clear offline data (IndexedDB) to prevent data leaking between users
+    clearOfflineData();
+    // Clear business state and cached business data
+    clearBusinessState();
+  };
+
+  // Sentry user context — set on login, clear on logout
+  useEffect(() => {
+    if (user) {
+      Sentry.setUser({ id: user.id, username: user.phone });
+    } else {
+      Sentry.setUser(null);
+    }
+  }, [user]);
+
+  // Set up activity tracking when user logs in
+  useEffect(() => {
+    if (!user) return;
+
+    // Reset activity on mount
+    resetInactivity();
+
+    // Set up API activity callback
+    setActivityCallback(() => {
+      lastActivityAt.current = Date.now();
+    });
+
+    // Track user interactions
+    const handleActivity = () => {
+      lastActivityAt.current = Date.now();
+      setShowInactivityWarning(false);
+    };
+
+    // Listen for user activity
+    const events = ['mousedown', 'keydown', 'touchstart', 'scroll'];
+    events.forEach((event) => {
+      window.addEventListener(event, handleActivity, { passive: true });
+    });
+
+    // Start inactivity check interval
+    inactivityCheckInterval.current = setInterval(checkInactivity, TIMINGS.inactivityCheck);
+
+    // Cleanup
+    return () => {
+      events.forEach((event) => {
+        window.removeEventListener(event, handleActivity);
+      });
+      if (inactivityCheckInterval.current) {
+        clearInterval(inactivityCheckInterval.current);
+      }
+    };
+  }, [user]);
+
+  // Memoize provider value to prevent cascading re-renders of all consumers
+  const value = useMemo(() => ({
+    user,
+    setUser,
+    isAuthenticated: !!user,
+    isLoading,
+    login,
+    register,
+    verifyOTP,
+    logout,
+    showInactivityWarning,
+    resetInactivity,
+    currentBusinessId,
+    currentBusiness,
+    businesses,
+    switchBusiness,
+    refreshBusinesses,
+  }), [user, setUser, isLoading, login, register, verifyOTP, logout, showInactivityWarning,
+    resetInactivity, currentBusinessId, currentBusiness, businesses, switchBusiness, refreshBusinesses]);
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}

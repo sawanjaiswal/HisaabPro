@@ -72,6 +72,24 @@ export function clearTokenCookies(res: Response) {
 }
 
 // ---------------------------------------------------------------------------
+// Business resolution helper
+// ---------------------------------------------------------------------------
+
+/**
+ * Resolve the active businessId for a user.
+ * Finds the first active BusinessUser membership.
+ * Returns '' if the user has no active business.
+ */
+async function resolveUserBusinessId(userId: string): Promise<string> {
+  const bu = await prisma.businessUser.findFirst({
+    where: { userId, isActive: true, status: 'ACTIVE' },
+    select: { businessId: true },
+    orderBy: { joinedAt: 'asc' },
+  })
+  return bu?.businessId ?? ''
+}
+
+// ---------------------------------------------------------------------------
 // Account lockout helpers
 // ---------------------------------------------------------------------------
 
@@ -172,7 +190,8 @@ export async function devLogin(data: { username: string; password: string }) {
   // Dev login always succeeds for valid credentials — reset attempts
   await resetLoginAttempts(user.id)
 
-  const tokens = generateTokens(user.id, user.phone)
+  const businessId = await resolveUserBusinessId(user.id)
+  const tokens = generateTokens(user.id, user.phone, businessId)
 
   return {
     verified: true,
@@ -337,8 +356,9 @@ export async function verifyOtp(data: VerifyOtpInput) {
     await resetLoginAttempts(user.id)
   }
 
-  // Generate tokens
-  const tokens = generateTokens(user.id, user.phone)
+  // Generate tokens with active businessId
+  const businessId = await resolveUserBusinessId(user.id)
+  const tokens = generateTokens(user.id, user.phone, businessId)
 
   return {
     verified: true,
@@ -357,6 +377,7 @@ export async function verifyOtp(data: VerifyOtpInput) {
 /**
  * Refresh access token using a valid refresh token.
  * Checks user is still active before issuing new access token.
+ * Re-resolves businessId to ensure membership is still valid.
  */
 export async function refreshAccessToken(refreshToken: string) {
   const decoded = verifyRefreshToken(refreshToken)
@@ -371,7 +392,9 @@ export async function refreshAccessToken(refreshToken: string) {
     return null
   }
 
-  const tokens = generateTokens(decoded.userId, decoded.phone)
+  // Re-resolve businessId in case user was removed from business
+  const businessId = await resolveUserBusinessId(decoded.userId)
+  const tokens = generateTokens(decoded.userId, decoded.phone, businessId)
 
   // Return new token pair (rotate both for security)
   return tokens

@@ -11,19 +11,20 @@ const REFRESH_TOKEN_EXPIRY = '30d'
 export interface TokenPayload {
   userId: string
   phone: string
+  businessId: string  // active business — '' if user has no business yet
   type: 'access' | 'refresh'
 }
 
 /** Generate access + refresh token pair */
-export function generateTokens(userId: string, phone: string) {
+export function generateTokens(userId: string, phone: string, businessId = '') {
   const accessToken = jwt.sign(
-    { userId, phone, type: 'access' } satisfies TokenPayload,
+    { userId, phone, businessId, type: 'access' } satisfies TokenPayload,
     JWT_SECRET,
     { algorithm: 'HS256', expiresIn: ACCESS_TOKEN_EXPIRY } as jwt.SignOptions
   )
 
   const refreshToken = jwt.sign(
-    { userId, phone, type: 'refresh' } satisfies TokenPayload,
+    { userId, phone, businessId, type: 'refresh' } satisfies TokenPayload,
     JWT_SECRET,
     { algorithm: 'HS256', expiresIn: REFRESH_TOKEN_EXPIRY } as jwt.SignOptions
   )

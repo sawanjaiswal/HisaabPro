@@ -1,0 +1,246 @@
+/* ─── BusinessAvatar ──────────────────────────────────────────────────────── */
+
+.business-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+  line-height: 1;
+  user-select: none;
+  flex-shrink: 0;
+  transition: opacity 0.15s ease;
+}
+
+.business-avatar--sm {
+  width: 2rem;       /* 32px */
+  height: 2rem;
+}
+
+.business-avatar--md {
+  width: 2.5rem;     /* 40px */
+  height: 2.5rem;
+}
+
+.business-avatar--lg {
+  width: 3.5rem;     /* 56px */
+  height: 3.5rem;
+}
+
+/* Button variant — min 44px touch target via padding */
+.business-avatar--btn {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  padding: 0;
+  min-width: 2.75rem;  /* 44px touch target */
+  min-height: 2.75rem;
+  background: transparent;
+}
+
+.business-avatar--btn:hover {
+  opacity: 0.85;
+}
+
+.business-avatar--btn:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.business-avatar__initial {
+  display: block;
+  line-height: 1;
+}
+
+/* ─── BusinessSwitcherDrawer ─────────────────────────────────────────────── */
+
+.business-switcher-drawer {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.business-switcher-drawer__header {
+  margin-bottom: 1rem;
+}
+
+.business-switcher-drawer__title {
+  font-size: 1.125rem;  /* 18px */
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* Business list */
+.business-switcher-drawer__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Individual row */
+.business-switcher-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 4.5rem;   /* 72px */
+  padding: 0 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.business-switcher-row:hover:not(:disabled) {
+  background: rgba(219, 234, 254, 0.3);
+}
+
+.business-switcher-row:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: -2px;
+  border-radius: 0.75rem;
+}
+
+.business-switcher-row:disabled {
+  cursor: default;
+}
+
+/* Active business row */
+.business-switcher-row--active {
+  background: rgba(219, 234, 254, 0.5);
+}
+
+.business-switcher-row__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.business-switcher-row__name {
+  font-size: 0.9375rem;   /* 15px */
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.business-switcher-row__type {
+  font-size: 0.75rem;   /* 12px */
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+.business-switcher-row__status {
+  width: 1.25rem;
+  height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.business-switcher-row__check {
+  color: var(--color-brand-secondary, #2563eb);
+}
+
+/* Spinner for switching state */
+.business-switcher-row__spinner {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--border-default, #dbeafe);
+  border-top-color: var(--color-brand-secondary, #2563eb);
+  border-radius: 9999px;
+  animation: business-spin 0.6s linear infinite;
+}
+
+@keyframes business-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Divider */
+.business-switcher-drawer__divider {
+  height: 1px;
+  background: var(--border-default, #dbeafe);
+  margin: 0.75rem 0;
+}
+
+/* Action buttons */
+.business-switcher-drawer__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.business-switcher-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 2.75rem;   /* 44px */
+  padding: 0 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.9375rem;   /* 15px */
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  line-height: 1;
+}
+
+.business-switcher-action:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.business-switcher-action:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Outline variant — "Add Business" */
+.business-switcher-action--outline {
+  background: transparent;
+  border: 1.5px solid var(--color-brand-secondary, #2563eb);
+  color: var(--color-brand-secondary, #2563eb);
+}
+
+.business-switcher-action--outline:hover:not(:disabled) {
+  background: rgba(37, 99, 235, 0.06);
+}
+
+/* Ghost variant — "Join Business" */
+.business-switcher-action--ghost {
+  background: transparent;
+  border: 1.5px solid var(--border-default, #dbeafe);
+  color: var(--text-secondary);
+}
+
+.business-switcher-action--ghost:hover:not(:disabled) {
+  background: var(--bg-tertiary, rgba(0, 0, 0, 0.04));
+}
+
+/* Footer note */
+.business-switcher-drawer__footer {
+  font-size: 0.75rem;   /* 12px */
+  color: var(--text-muted, #9CA3AF);
+  text-align: center;
+  margin-top: 0.75rem;
+  margin-bottom: 0;
+}
+
+/* Dark mode */
+[data-theme="dark"] .business-switcher-row--active { background: rgba(37, 99, 235, 0.15); }
+[data-theme="dark"] .business-switcher-row:hover:not(:disabled) { background: rgba(37, 99, 235, 0.08); }

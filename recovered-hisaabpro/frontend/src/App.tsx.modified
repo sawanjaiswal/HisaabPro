@@ -1,0 +1,1400 @@
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { TIMINGS } from './config/timings';
+import type { ReactNode } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useParams } from 'react-router-dom';
+import { ROUTES } from './config/routes';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { SpeedInsights } from '@vercel/speed-insights/react';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { RegistrationProvider } from './context/RegistrationContext';
+import { LanguageProvider } from './context/LanguageContext';
+import { NewToastContainer } from './components/feedback/NewToastContainer';
+import { InactivityWarningModal } from './components/modals/InactivityWarningModal';
+import { AppBlockerDrawer } from './components/modals/AppBlockerDrawer';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { RouteErrorBoundary } from './components/RouteErrorBoundary';
+import { AppHeader } from './components/layouts/AppHeader';
+import { MobileMenu } from './components/layouts/MobileMenu';
+import { DesktopSidebar } from './components/layouts/DesktopSidebar';
+import { BottomNav } from './components/navigation/BottomNav';
+import { DraggableFAB } from './components/navigation/DraggableFAB';
+import { useOnlineStatusWithCallbacks } from './hooks/useOnlineStatus';
+import { useToast } from './hooks/useToast';
+import { useLanguage } from './hooks/useLanguage';
+import { useTheme } from './shared/useTheme';
+import { usePWAInstall } from './hooks/usePWAInstall';
+import { useSubscription } from './hooks/useSubscription';
+
+// Create QueryClient instance
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: TIMINGS.reactQueryStaleTime,
+    },
+  },
+});
+import {
+  LayoutDashboard,
+  Factory,
+  Users,
+  FileText,
+  Wallet,
+  BarChart3,
+  Package,
+  HelpCircle,
+  Settings,
+  MessageSquare,
+  Database,
+  Gift,
+  CreditCard,
+  ShoppingCart,
+  ClipboardList,
+  Navigation,
+  Activity,
+  Truck,
+  TrendingUp,
+  Coins,
+  UsersRound,
+} from 'lucide-react';
+
+// CODE SPLITTING: Lazy load all pages for better performance
+const Login = lazy(() => import('./pages/Login'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const Register = lazy(() => import('./pages/Register'));
+const RegisterNoWhatsApp = lazy(() => import('./pages/RegisterNoWhatsApp'));
+const VerifyOTP = lazy(() => import('./pages/VerifyOTP'));
+const SetPassword = lazy(() => import('./pages/SetPassword'));
+const InterestRegistered = lazy(() => import('./pages/InterestRegistered'));
+const Welcome = lazy(() => import('./pages/Welcome'));
+const AddSupplier = lazy(() => import('./pages/AddSupplier'));
+const AddCustomer = lazy(() => import('./pages/AddCustomer'));
+const AddPayment = lazy(() => import('./pages/AddPayment'));
+const SupplierSuccess = lazy(() => import('./pages/SupplierSuccess'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Suppliers = lazy(() => import('./pages/Suppliers'));
+const Customers = lazy(() => import('./pages/Customers'));
+const DailyEntry = lazy(() => import('./pages/DailyEntry'));
+const Payments = lazy(() => import('./pages/Payments'));
+const Reports = lazy(() => import('./pages/Reports'));
+const Products = lazy(() => import('./pages/Products'));
+const SupplierProducts = lazy(() => import('./pages/SupplierProducts'));
+const FAQ = lazy(() => import('./pages/FAQ'));
+const Profile = lazy(() => import('./pages/Profile'));
+const SettingsPage = lazy(() => import('./pages/Settings'));
+const ComponentLibrary = lazy(() => import('./pages/ComponentLibrary'));
+const CapacitorTest = lazy(() => import('./pages/CapacitorTest'));
+const DeliveryMode = lazy(() => import('./pages/DeliveryMode'));
+const DeliveryRoute = lazy(() => import('./pages/DeliveryRoute'));
+const DeliveryRoutePreview = lazy(() => import('./pages/DeliveryRoutePreview'));
+const DeliveryActive = lazy(() => import('./pages/DeliveryActive'));
+const DeliverySummary = lazy(() => import('./pages/DeliverySummary'));
+const DeliveryHistory = lazy(() => import('./pages/DeliveryHistory'));
+const Feedback = lazy(() => import('./pages/Feedback'));
+const Import = lazy(() => import('./pages/Import').then(m => ({ default: m.Import })));
+const BulkEntry = lazy(() => import('./pages/BulkEntry').then(m => ({ default: m.BulkEntry })));
+const BackupManagement = lazy(() => import('./pages/BackupManagement'));
+const ReferralEarnPage = lazy(() => import('./pages/ReferralEarn/ReferralEarnPage'));
+const PricingPage = lazy(() => import('./pages/Pricing/PricingPage').then(m => ({ default: m.PricingPage })));
+const POSPage = lazy(() => import('./pages/POS/POSPage'));
+const PaymentReconciliation = lazy(() => import('./pages/PaymentReconciliation'));
+const Onboarding = lazy(() => import('./pages/Onboarding'));
+const OnboardingProfile = lazy(() => import('./pages/OnboardingProfile'));
+const MyQRCode = lazy(() => import('./pages/MyQRCode'));
+const ReconciliationReport = lazy(() => import('./pages/ReconciliationReport'));
+const ManageEntries = lazy(() => import('./pages/ManageEntries'));
+const QualityReports = lazy(() => import('./pages/QualityReports'));
+const Analytics = lazy(() => import('./pages/Analytics'));
+const CustomerStatement = lazy(() => import('./pages/CustomerStatement'));
+const SupplierStatement = lazy(() => import('./pages/SupplierStatement'));
+const SubscriptionPlans = lazy(() => import('./pages/Subscription/SubscriptionPlans'));
+const CheckoutPage = lazy(() => import('./pages/Subscription/CheckoutPage'));
+const ManageSubscription = lazy(() => import('./pages/Subscription/ManageSubscription'));
+const DoodhCoins = lazy(() => import('./pages/DoodhCoins'));
+const Orders = lazy(() => import('./pages/Orders'));
+const MonthlyStatements = lazy(() => import('./pages/MonthlyStatements'));
+const PaymentReminders = lazy(() => import('./pages/PaymentReminders'));
+const DeleteAccount = lazy(() => import('./pages/DeleteAccount'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const Portal = lazy(() => import('./features/portal/Portal'));
+const StatementView = lazy(() => import('./pages/StatementView'));
+const Team = lazy(() => import('./pages/Team'));
+const AddTeamMember = lazy(() => import('./pages/AddTeamMember'));
+const TeamMemberDetail = lazy(() => import('./pages/TeamMemberDetail'));
+const WorkerLogin = lazy(() => import('./pages/WorkerLogin'));
+const TeamInvite = lazy(() => import('./pages/TeamInvite'));
+const WorkerDashboard = lazy(() => import('./pages/WorkerDashboard'));
+const WorkerEntry = lazy(() => import('./pages/WorkerEntry'));
+const WorkerPayments = lazy(() => import('./pages/WorkerPayments'));
+const WorkerProfile = lazy(() => import('./pages/WorkerProfile'));
+const TeamFeaturePage = lazy(() => import('./features/team/marketing/TeamFeaturePage'));
+const JoinBusiness = lazy(() => import('./pages/JoinBusiness/JoinBusiness'));
+const BusinessManagement = lazy(() => import('./pages/Business/BusinessManagement'));
+
+// Worker layout (small, always needed when worker is logged in)
+import { WorkerLayout } from './features/team/worker/components/WorkerLayout';
+
+// Keep these as regular imports (small components, always needed)
+import ScrollToTop from './components/layouts/ScrollToTop';
+import WhatsAppContact from './components/WhatsAppContact';
+import { ResponsiveModal } from './components/ui/ResponsiveModal';
+import { SwipeBackIndicator } from './components/navigation/SwipeBackIndicator';
+import { useSwipeBack } from './hooks/useSwipeBack';
+import { FeedbackWidget } from './components/ui/FeedbackWidget';
+import { storage } from './utils/storage';
+import { setupFeedbackSync } from './services/feedbackQueue';
+import { useDiscoveryStore } from './modules/interaction-discovery';
+import { useDataHydration, clearOfflineData } from './hooks/useDataHydration';
+import { OfflineDataBanner } from './components/feedback/OfflineDataBanner';
+import { DriveWarningBanner } from './components/ui/DriveWarningBanner';
+import { SyncRequiredLockout } from './components/feedback/SyncRequiredLockout';
+import { HydrationGate } from './components/feedback/HydrationGate';
+import { OverflowBanner, useOverflowReminder } from './components/subscription/OverflowBanner';
+import { PriceAnnouncementBanner } from './components/subscription/PriceAnnouncementBanner';
+import { PlanChangeDrawer } from './components/subscription/PlanChangeDrawer';
+import { FeatureGateDrawer } from './components/subscription/FeatureGateDrawer';
+import type { FeatureGateConfig } from './components/subscription/FeatureGateDrawer';
+import { useFeatureGate } from './hooks/useFeatureGate';
+import { useBilling } from './hooks/useBilling';
+import { useSyncDeadline } from './hooks/useSyncDeadline';
+
+// Register online listener once at module level to auto-sync queued feedback
+setupFeedbackSync();
+
+// Skeleton loading component for Suspense fallback (no spinners)
+const PageLoader = () => (
+  <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-primary)' }}>
+    {/* Skeleton header */}
+    <div
+      className="fixed top-0 left-0 right-0 border-b px-4 z-30 flex items-center justify-between"
+      style={{
+        backgroundColor: 'var(--nav-bg)',
+        borderColor: 'var(--border-secondary)',
+        paddingTop: 'calc(var(--safe-top) + 0.75rem)',
+        paddingBottom: '0.75rem',
+        minHeight: 'var(--page-top)',
+      }}
+    >
+      <div className="flex items-center gap-2">
+        <div className="w-7 h-7 rounded-lg animate-pulse" style={{ backgroundColor: 'var(--skeleton-base)' }} />
+        <div className="h-4 w-24 rounded animate-pulse" style={{ backgroundColor: 'var(--skeleton-base)' }} />
+      </div>
+      <div className="w-8 h-8 rounded-full animate-pulse" style={{ backgroundColor: 'var(--skeleton-base)' }} />
+    </div>
+    {/* Skeleton content */}
+    <div className="px-page pb-page max-w-lg mx-auto" style={{ paddingTop: 'calc(var(--page-top) + 0.5rem)' }}>
+      {/* Title skeleton */}
+      <div className="h-6 w-40 rounded-lg animate-pulse mt-2 mb-4" style={{ backgroundColor: 'var(--skeleton-base)' }} />
+      {/* Stats row skeleton */}
+      <div className="grid grid-cols-2 gap-3 mb-5">
+        {[0, 1].map(i => (
+          <div key={`skeleton-${i}`} className="rounded-xl p-4 animate-pulse" style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+            <div className="h-3 w-16 rounded mb-3" style={{ backgroundColor: 'var(--skeleton-base)' }} />
+            <div className="h-6 w-20 rounded" style={{ backgroundColor: 'var(--skeleton-base)' }} />
+          </div>
+        ))}
+      </div>
+      {/* List items skeleton */}
+      <div className="space-y-3">
+        {[0, 1, 2, 3].map(i => (
+          <div
+            key={`skeleton-${i}`}
+            className="rounded-xl p-4 flex items-center gap-3 animate-pulse"
+            style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--card-border)', animationDelay: `${i * 100}ms` }}
+          >
+            <div className="w-10 h-10 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--skeleton-base)' }} />
+            <div className="flex-1">
+              <div className="h-4 w-28 rounded mb-2" style={{ backgroundColor: 'var(--skeleton-base)' }} />
+              <div className="h-3 w-20 rounded" style={{ backgroundColor: 'var(--skeleton-base)' }} />
+            </div>
+            <div className="h-5 w-16 rounded" style={{ backgroundColor: 'var(--skeleton-base)' }} />
+          </div>
+        ))}
+      </div>
+    </div>
+    {/* Skeleton bottom nav */}
+    <div
+      className="fixed bottom-0 left-0 right-0 border-t px-2 py-2 flex justify-around"
+      style={{
+        backgroundColor: 'var(--nav-bg)',
+        borderColor: 'var(--border-secondary)',
+        paddingBottom: 'max(0.5rem, var(--safe-bottom))',
+      }}
+    >
+      {[0, 1, 2, 3, 4].map(i => (
+        <div key={`nav-${i}`} className="flex flex-col items-center gap-1">
+          <div className="w-5 h-5 rounded animate-pulse" style={{ backgroundColor: 'var(--skeleton-base)' }} />
+          <div className="w-8 h-2 rounded animate-pulse" style={{ backgroundColor: 'var(--skeleton-base)' }} />
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+function ProtectedRoute({ children }: { children: ReactNode }) {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
+
+  return isAuthenticated ? <>{children}</> : <Navigate to={ROUTES.login} />;
+}
+
+/** Route-level feature gate — shows FeatureGateDrawer and redirects back if feature not in plan */
+function FeatureRoute({ feature, children }: { feature: FeatureGateConfig; children: ReactNode }) {
+  const { features, isLoading } = useSubscription();
+  const { showFeatureGate } = useFeatureGate();
+  const navigate = useNavigate();
+  const gateShownRef = useRef(false);
+
+  useEffect(() => {
+    if (isLoading || gateShownRef.current) return;
+    const key = feature.featureKey as keyof typeof features;
+    if (!features[key]) {
+      gateShownRef.current = true;
+      showFeatureGate(feature);
+      navigate(-1);
+    }
+  }, [isLoading, features, feature, showFeatureGate, navigate]);
+
+  if (isLoading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  const key = feature.featureKey as keyof typeof features;
+  if (!features[key]) return null;
+  return <>{children}</>;
+}
+
+/** Global FeatureGate drawer — reads from Zustand store, renders from any component via useFeatureGate() */
+function FeatureGateGlobal() {
+  const { open, config, hideFeatureGate } = useFeatureGate();
+  return <FeatureGateDrawer open={open} config={config} onClose={hideFeatureGate} />;
+}
+
+/** Redirect old /ledger URLs to new /statement URLs */
+function LedgerRedirect({ to }: { to: 'customers' | 'suppliers' }) {
+  const { id } = useParams<{ id: string }>();
+  return <Navigate to={`/${to}/${id}/statement`} replace />;
+}
+
+/** Self-contained banner: reads useBilling internally so Layout doesn't need to depend on it */
+function OverflowBannerGlobal() {
+  const { limits } = useBilling();
+  const navigate = useNavigate();
+  if (!limits?.isInOverflow && !limits?.isEnforced) return null;
+  return (
+    <OverflowBanner
+      isEnforced={limits?.isEnforced ?? false}
+      graceDaysRemaining={limits?.graceDaysRemaining ?? null}
+      onUpgrade={() => navigate(ROUTES.subscription.plans)}
+    />
+  );
+}
+
+function Layout({ children }: { children: ReactNode }) {
+  const { logout, user } = useAuth();
+  const toast = useToast();
+  const { t } = useLanguage();
+  const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [hideBottomNav, setHideBottomNav] = useState(false);
+  const [quickActionsOpen, setQuickActionsOpen] = useState(false);
+  const { canInstall, promptInstall, dismissInstall } = usePWAInstall();
+  const { tier, tierName, isFree, planChange, dismissPlanChange } = useSubscription();
+  const location = window.location.pathname;
+
+  // Swipe-back gesture (iPhone-style)
+  const { isActive: swipeActive, progress: swipeProgress } = useSwipeBack({
+    enabled: true,
+    edgeWidth: 50,
+    threshold: 100,
+  });
+
+  // Online/offline status with toast notifications
+  const { isOnline } = useOnlineStatusWithCallbacks({
+    onOnline: () => {
+      toast.success(t.backOnline);
+    },
+    onOffline: () => {
+      toast.warning(t.youAreOffline);
+    },
+  });
+
+  // Offline-first: hydrate IndexedDB with server data on auth + reconnect
+  useDataHydration(!!user);
+
+  // Customer overflow reminder toast (fires once on load if in grace window)
+  useOverflowReminder();
+
+  // Sync deadline enforcement
+  const { syncExpired, isFirstTimeUser } = useSyncDeadline();
+  const [lockoutDismissed, setLockoutDismissed] = useState(false);
+
+  // Reset dismissal when sync status changes
+  useEffect(() => {
+    if (!syncExpired) setLockoutDismissed(false);
+  }, [syncExpired]);
+
+  // Watch for data-hide-bottom-nav attribute changes
+  useEffect(() => {
+    const checkBottomNav = () => {
+      // Check for modals/drawers or data-modal-open on body
+      const shouldHide =
+        document.querySelector('[data-hide-bottom-nav="true"]') !== null ||
+        document.body.hasAttribute('data-modal-open');
+      setHideBottomNav(shouldHide);
+    };
+
+    // Check immediately
+    checkBottomNav();
+
+    const observer = new MutationObserver(checkBottomNav);
+
+    // Observe document.body to catch all modals/drawers
+    // childList:true catches node removals (when modals unmount via return null)
+    // attributes:true catches attribute changes (data-modal-open on body)
+    observer.observe(document.body, {
+      childList: true,
+      attributes: true,
+      subtree: true,
+      attributeFilter: ['data-hide-bottom-nav', 'data-modal-open'],
+    });
+
+    return () => observer.disconnect();
+  }, [location]);
+
+  const isActive = (path: string) => location === path;
+
+  // Navigation sections - Grouped by purpose
+  const navSections = [
+    {
+      label: t.daily,
+      items: [
+        { path: ROUTES.dashboard, label: t.dashboard, icon: LayoutDashboard },
+        { path: ROUTES.dailyEntry, label: t.dailyEntry, icon: FileText },
+        { path: ROUTES.customers.list, label: t.customers, icon: Users },
+        { path: ROUTES.suppliers.list, label: t.suppliers, icon: Factory },
+        { path: ROUTES.payments.list, label: t.paymentsList, icon: Wallet },
+        { path: ROUTES.deliveryMode, label: t.deliveryMode, icon: Truck },
+      ],
+    },
+    {
+      label: t.business,
+      items: [
+        { path: ROUTES.products, label: t.products, icon: Package },
+        { path: ROUTES.orders, label: t.ordersPageTitle || 'Orders', icon: ClipboardList },
+        { path: ROUTES.team.list, label: t.teamMembers || 'Team', icon: UsersRound },
+        { path: '/backup', label: t.backup, icon: Database },
+      ],
+    },
+    {
+      label: t.more,
+      items: [
+        { path: '/referral-earn', label: t.referAndEarn, icon: Gift },
+        { path: ROUTES.pricing, label: t.upgrade, icon: CreditCard, planTier: isFree ? undefined : tier, planTierName: isFree ? undefined : tierName },
+        { path: ROUTES.feedback, label: t.feedback, icon: MessageSquare },
+        { path: ROUTES.faq, label: t.faq, icon: HelpCircle },
+        { path: ROUTES.settings, label: t.settings, icon: Settings },
+      ],
+    },
+    {
+      label: t.comingSoon,
+      items: [
+        { path: '#coins', label: t.doodhCoins || 'Doodh Coins', icon: Coins, comingSoon: true },
+        { path: '#pos', label: t.pos, icon: ShoppingCart, comingSoon: true },
+        { path: '#reports', label: t.reports, icon: BarChart3, comingSoon: true },
+        { path: '#analytics', label: t.analytics, icon: TrendingUp, comingSoon: true },
+        { path: '#quality-reports', label: t.qualityAnalytics || 'Quality Analytics', icon: Activity, comingSoon: true },
+        { path: '#track-routes', label: t.trackRoutes || 'Track Routes', icon: Navigation, comingSoon: true },
+      ],
+    },
+  ];
+
+  // Flat list for desktop sidebar and animation index
+  const navItems = navSections.flatMap(s => s.items);
+
+  return (
+    <div
+      className="min-h-screen flex transition-colors duration-200"
+      style={{
+        backgroundColor: 'var(--bg-secondary)',
+        paddingBottom: 'var(--page-bottom)',
+      }}
+    >
+      {/* Sync deadline lockout overlay */}
+      {(syncExpired || isFirstTimeUser) && !lockoutDismissed && (
+        <SyncRequiredLockout
+          isFirstTimeUser={isFirstTimeUser}
+          onDismiss={() => setLockoutDismissed(true)}
+        />
+      )}
+
+      {/* Swipe Back Indicator */}
+      <SwipeBackIndicator progress={swipeProgress} isActive={swipeActive} />
+
+      {/* Mobile Header - All Screen Sizes - Height: 56px (14 * 4px) */}
+      <AppHeader
+        userName={user?.name}
+        userInitial={user?.name?.charAt(0).toUpperCase()}
+        onMenuClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+      />
+
+      {/* Mobile Sidebar Menu */}
+      <MobileMenu
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        user={user}
+        navSections={navSections}
+        navItemsCount={navItems.length}
+        isActive={isActive}
+        onLogout={logout}
+        logoutLabel={t.logout}
+      />
+
+      {/* Sidebar - Hidden (Using Mobile Header Instead) */}
+      <DesktopSidebar
+        sidebarOpen={sidebarOpen}
+        onToggle={setSidebarOpen}
+        isOnline={isOnline}
+        navItems={navItems}
+        isActive={isActive}
+        user={user}
+        onLogout={logout}
+        logoutLabel={t.logout}
+        profileLabel={t.profile}
+        offlineLabel="You are offline"
+      />
+
+      {/* Main Content */}
+      <main
+        className={`flex-1 transition-all duration-300 max-w-full overflow-x-clip ${
+          sidebarOpen ? 'lg:ml-64' : 'lg:ml-20'
+        }`}
+        style={{
+          paddingTop: 'var(--page-top)',
+        }}
+      >
+        <HydrationGate />
+        <OfflineDataBanner />
+        <DriveWarningBanner />
+        <PriceAnnouncementBanner />
+        <OverflowBannerGlobal />
+        <div key={location} className="page-transition">
+          {children}
+        </div>
+      </main>
+
+      {/* WhatsApp Contact Button */}
+      <WhatsAppContact />
+
+      {/* FAB removed */}
+
+      {/* PWA Install Banner */}
+      {canInstall && !hideBottomNav && (
+        <div
+          className="fixed left-0 right-0 z-40 px-4 py-2 flex items-center gap-3 lg:hidden"
+          style={{
+            bottom: '72px',
+            backgroundColor: 'var(--brand-primary, #1e3a5f)',
+            color: 'var(--text-inverse)',
+          }}
+        >
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium truncate">{t.installApp || 'Install DudhHisaab App'}</p>
+            <p className="text-xs opacity-75 truncate">{t.installAppDesc || 'Quick access from home screen'}</p>
+          </div>
+          <button
+            onClick={promptInstall}
+            className="px-3 py-1.5 text-xs font-semibold rounded-lg shrink-0"
+            style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--brand-primary, #1e3a5f)' }}
+          >
+            {t.install || 'Install'}
+          </button>
+          <button
+            onClick={dismissInstall}
+            className="text-lg leading-none shrink-0"
+            style={{ color: 'var(--text-inverse)', opacity: 0.6 }}
+            aria-label="Dismiss"
+          >
+            &times;
+          </button>
+        </div>
+      )}
+
+      {/* Bottom Navigation - All Screen Sizes */}
+      <BottomNav
+        currentPath={location}
+        hidden={hideBottomNav}
+      />
+
+      {/* Quick Actions Drawer */}
+      <ResponsiveModal
+        open={quickActionsOpen}
+        onOpenChange={setQuickActionsOpen}
+        title={t.quickActions}
+      >
+        <div className="space-y-2">
+          {/* Start Smart Delivery */}
+          <button
+            onClick={() => {
+              navigate(ROUTES.deliveryMode);
+              setQuickActionsOpen(false);
+            }}
+            className="w-full flex items-center gap-4 p-4 rounded-xl transition-colors active:scale-[0.98]"
+            style={{ backgroundColor: 'var(--bg-secondary)' }}
+          >
+            <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--brand-primary)', color: 'var(--text-inverse)' }}>
+              <Truck className="w-5 h-5" strokeWidth={2} />
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{t.startDeliveryMode}</p>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--text-tertiary)' }}>{t.beginDailyEntries}</p>
+            </div>
+          </button>
+
+          {/* Add Payment */}
+          <button
+            onClick={() => {
+              navigate(ROUTES.payments.new);
+              setQuickActionsOpen(false);
+            }}
+            className="w-full flex items-center gap-4 p-4 rounded-xl transition-colors active:scale-[0.98]"
+            style={{ backgroundColor: 'var(--bg-secondary)' }}
+          >
+            <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--brand-primary)', color: 'var(--text-inverse)' }}>
+              <Wallet className="w-5 h-5" strokeWidth={2} />
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{t.addPayment}</p>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--text-tertiary)' }}>{t.recordPayment}</p>
+            </div>
+          </button>
+
+          {/* Add Customer */}
+          <button
+            onClick={() => {
+              navigate(ROUTES.customers.new);
+              setQuickActionsOpen(false);
+            }}
+            className="w-full flex items-center gap-4 p-4 rounded-xl transition-colors active:scale-[0.98]"
+            style={{ backgroundColor: 'var(--bg-secondary)' }}
+          >
+            <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--brand-primary)', color: 'var(--text-inverse)' }}>
+              <Users className="w-5 h-5" strokeWidth={2} />
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{t.addCustomer}</p>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--text-tertiary)' }}>{t.customerDesc}</p>
+            </div>
+          </button>
+
+          {/* Add Supplier */}
+          <button
+            onClick={() => {
+              navigate(ROUTES.suppliers.new);
+              setQuickActionsOpen(false);
+            }}
+            className="w-full flex items-center gap-4 p-4 rounded-xl transition-colors active:scale-[0.98]"
+            style={{ backgroundColor: 'var(--bg-secondary)' }}
+          >
+            <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--brand-primary)', color: 'var(--text-inverse)' }}>
+              <Factory className="w-5 h-5" strokeWidth={2} />
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{t.addSupplier}</p>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--text-tertiary)' }}>{t.addSupplierDesc}</p>
+            </div>
+          </button>
+        </div>
+      </ResponsiveModal>
+
+      {/* Plan Change Drawer — upgrade celebration or expiry notice */}
+      <PlanChangeDrawer planChange={planChange} onDismiss={dismissPlanChange} />
+    </div>
+  );
+}
+
+function App() {
+  // Initialize theme on app load - MUST be at root level
+  useTheme();
+
+  // Initialize interaction discovery coachmarks
+  useEffect(() => {
+    useDiscoveryStore.getState().initialize();
+  }, []);
+
+  // Initialize font size on app load
+  useEffect(() => {
+    const savedFontSize = storage.getFontSize();
+    if (savedFontSize && savedFontSize !== 'normal') {
+      document.documentElement.setAttribute('data-font-size', savedFontSize);
+    }
+  }, []);
+
+  // Prevent flash of unstyled content by adding preload class
+  useEffect(() => {
+    document.body.classList.add('preload');
+    setTimeout(() => {
+      document.body.classList.remove('preload');
+    }, TIMINGS.focusDelay);
+  }, []);
+
+  return (
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <LanguageProvider>
+            <ScrollToTop />
+            <NewToastContainer />
+            <AppBlockerDrawer />
+            <AuthProvider>
+              <InactivityWarningModal />
+              <FeatureGateGlobal />
+              <RegistrationProvider>
+              <Suspense fallback={<PageLoader />}>
+              <Routes>
+          {/* ── Auth routes ── */}
+          <Route path={ROUTES.onboarding} element={<RouteErrorBoundary routeName="auth"><Onboarding /></RouteErrorBoundary>} />
+          <Route path={ROUTES.login} element={<RouteErrorBoundary routeName="auth"><Login /></RouteErrorBoundary>} />
+          <Route path={ROUTES.forgotPassword} element={<RouteErrorBoundary routeName="auth"><ForgotPassword /></RouteErrorBoundary>} />
+          <Route path={ROUTES.register} element={<RouteErrorBoundary routeName="auth"><Register /></RouteErrorBoundary>} />
+          <Route path={ROUTES.registerNoWhatsApp} element={<RouteErrorBoundary routeName="auth"><RegisterNoWhatsApp /></RouteErrorBoundary>} />
+          <Route path={ROUTES.verifyOtp} element={<RouteErrorBoundary routeName="auth"><VerifyOTP /></RouteErrorBoundary>} />
+          <Route path={ROUTES.setPassword} element={<RouteErrorBoundary routeName="auth"><SetPassword /></RouteErrorBoundary>} />
+          <Route path="/capacitor-test" element={<CapacitorTest />} />
+
+          {/* ── Public legal routes (no auth required) ── */}
+          <Route path={ROUTES.privacyPolicy} element={<RouteErrorBoundary routeName="legal"><PrivacyPolicy /></RouteErrorBoundary>} />
+
+          {/* ── Public portal (customer/supplier self-serve — no auth) ── */}
+          <Route path="/s/:token" element={<RouteErrorBoundary routeName="portal"><Portal /></RouteErrorBoundary>} />
+
+          {/* ── Public statement view (WhatsApp shared link — no auth) ── */}
+          <Route path="/stmt/:token" element={<RouteErrorBoundary routeName="statement"><StatementView /></RouteErrorBoundary>} />
+
+          {/* ── Team worker auth (public — no login required) ── */}
+          <Route path="/worker-login" element={<RouteErrorBoundary routeName="worker-auth"><WorkerLogin /></RouteErrorBoundary>} />
+          <Route path="/team-invite/:token" element={<RouteErrorBoundary routeName="team-invite"><TeamInvite /></RouteErrorBoundary>} />
+
+          {/* ── Team feature marketing page (public) ── */}
+          <Route path={ROUTES.teamFeature} element={<RouteErrorBoundary routeName="team-feature"><TeamFeaturePage /></RouteErrorBoundary>} />
+
+          {/* ── Delivery routes ── */}
+          <Route
+            path={ROUTES.deliveryMode}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="delivery">
+                  <FeatureRoute feature={{ featureKey: 'deliveryTracking', featureName: 'Smart Delivery', requiredPlan: 'Pro' }}>
+                    <DeliveryMode />
+                  </FeatureRoute>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.deliveryRoutePreview}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="delivery">
+                  <FeatureRoute feature={{ featureKey: 'deliveryTracking', featureName: 'Smart Delivery', requiredPlan: 'Pro' }}>
+                    <DeliveryRoutePreview />
+                  </FeatureRoute>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.deliveryActive}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="delivery">
+                  <FeatureRoute feature={{ featureKey: 'deliveryTracking', featureName: 'Smart Delivery', requiredPlan: 'Pro' }}>
+                    <DeliveryActive />
+                  </FeatureRoute>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.deliverySummary}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="delivery">
+                  <FeatureRoute feature={{ featureKey: 'deliveryTracking', featureName: 'Smart Delivery', requiredPlan: 'Pro' }}>
+                    <DeliverySummary />
+                  </FeatureRoute>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.deliveryHistory}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="delivery">
+                  <FeatureRoute feature={{ featureKey: 'deliveryTracking', featureName: 'Smart Delivery', requiredPlan: 'Pro' }}>
+                    <Layout>
+                      <DeliveryHistory />
+                    </Layout>
+                  </FeatureRoute>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.deliveryRoute}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="delivery">
+                  <FeatureRoute feature={{ featureKey: 'deliveryTracking', featureName: 'Smart Delivery', requiredPlan: 'Pro' }}>
+                    <Layout>
+                      <DeliveryRoute />
+                    </Layout>
+                  </FeatureRoute>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route path={ROUTES.interestRegistered} element={<RouteErrorBoundary routeName="auth"><InterestRegistered /></RouteErrorBoundary>} />
+          <Route
+            path={ROUTES.welcome}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="onboarding">
+                  <Welcome />
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.onboardingProfile}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="onboarding">
+                  <OnboardingProfile />
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ── Add-entity routes (full-screen, no Layout) ── */}
+          <Route
+            path={ROUTES.suppliers.new}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="suppliers">
+                  <AddSupplier />
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.customers.new}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="customers">
+                  <AddCustomer />
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.onboardingSupplierSuccess}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="onboarding">
+                  <SupplierSuccess />
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ── Dashboard ── */}
+          <Route
+            path={ROUTES.dashboard}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="dashboard">
+                  <Layout>
+                    <Dashboard />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ── Suppliers & Customers ── */}
+          <Route
+            path={ROUTES.suppliers.list}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="suppliers">
+                  <Layout>
+                    <Suppliers />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/suppliers/:id/statement"
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="suppliers">
+                  <Layout>
+                    <SupplierStatement />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.customers.list}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="customers">
+                  <Layout>
+                    <Customers />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customers/:id/statement"
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="customers">
+                  <Layout>
+                    <CustomerStatement />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          {/* ── Monthly Statements ── */}
+          <Route
+            path={ROUTES.monthlyStatements}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="monthly-statements">
+                  <Layout>
+                    <MonthlyStatements />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          {/* ── Payment Reminders ── */}
+          <Route
+            path={ROUTES.paymentReminders}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="payment-reminders">
+                  <Layout>
+                    <PaymentReminders />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          {/* ── Team Management ── */}
+          <Route
+            path={ROUTES.team.list}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="team">
+                  <Layout>
+                    <Team />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.team.new}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="add-team-member">
+                  <Layout>
+                    <AddTeamMember />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/team/:id"
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="team-member-detail">
+                  <Layout>
+                    <TeamMemberDetail />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          {/* ── Multi-Business ── */}
+          <Route
+            path={ROUTES.joinBusiness}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="join-business">
+                  <JoinBusiness />
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.business.list}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="business-management">
+                  <Layout>
+                    <BusinessManagement />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.business.create}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="business-create">
+                  <Layout>
+                    <BusinessManagement />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          {/* ── Worker routes (auth required, worker-specific, no owner Layout) ── */}
+          <Route
+            path="/worker"
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="worker-dashboard">
+                  <WorkerLayout><WorkerDashboard /></WorkerLayout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/worker/entry"
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="worker-entry">
+                  <WorkerLayout><WorkerEntry /></WorkerLayout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/worker/payments"
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="worker-payments">
+                  <WorkerLayout><WorkerPayments /></WorkerLayout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/worker/profile"
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="worker-profile">
+                  <WorkerLayout><WorkerProfile /></WorkerLayout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          {/* ── Entry routes ── */}
+          <Route
+            path={ROUTES.dailyEntry}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="daily-entry">
+                  <Layout>
+                    <DailyEntry />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.manageEntries}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="daily-entry">
+                  <Layout>
+                    <ManageEntries />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          {/* ── Payment routes ── */}
+          <Route
+            path={ROUTES.payments.list}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="payments">
+                  <Layout>
+                    <Payments />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/add-payment"
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="payments">
+                  <Layout>
+                    <AddPayment />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          {/* ── Reports & Analytics routes ── */}
+          <Route
+            path={ROUTES.reports.root}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="reports">
+                  <Layout>
+                    <Reports />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.reports.paymentReconciliation}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="reports">
+                  <FeatureRoute feature={{ featureKey: 'analytics', featureName: 'Reports', requiredPlan: 'Pro' }}>
+                    <Layout>
+                      <PaymentReconciliation />
+                    </Layout>
+                  </FeatureRoute>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.reports.reconciliation}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="reports">
+                  <FeatureRoute feature={{ featureKey: 'analytics', featureName: 'Reports', requiredPlan: 'Pro' }}>
+                    <Layout>
+                      <ReconciliationReport />
+                    </Layout>
+                  </FeatureRoute>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.analytics}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="reports">
+                  <FeatureRoute feature={{ featureKey: 'analytics', featureName: 'Analytics', requiredPlan: 'Pro' }}>
+                    <Layout>
+                      <Analytics />
+                    </Layout>
+                  </FeatureRoute>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.qualityReports}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="reports">
+                  <FeatureRoute feature={{ featureKey: 'analytics', featureName: 'Quality Reports', requiredPlan: 'Pro' }}>
+                    <Layout>
+                      <QualityReports />
+                    </Layout>
+                  </FeatureRoute>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          {/* ── Products, Orders, Inventory routes ── */}
+          <Route
+            path={ROUTES.products}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="products">
+                  <Layout>
+                    <Products />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.supplierProducts}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="products">
+                  <Layout>
+                    <SupplierProducts />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.orders}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="products">
+                  <Layout>
+                    <Orders />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ── Settings, Profile, Help routes ── */}
+          <Route
+            path={ROUTES.faq}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="settings">
+                  <Layout>
+                    <FAQ />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.profile}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="settings">
+                  <Layout>
+                    <Profile />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.settings}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="settings">
+                  <Layout>
+                    <SettingsPage />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.deleteAccount}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="settings">
+                  <DeleteAccount />
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.feedback}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="settings">
+                  <Layout>
+                    <Feedback />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.import}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="settings">
+                  <Layout>
+                    <Import />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.bulkEntry}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="daily-entry">
+                  <Layout>
+                    <BulkEntry />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/backup"
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="settings">
+                  <FeatureRoute feature={{ featureKey: 'backups', featureName: 'Backups', requiredPlan: 'Pro' }}>
+                    <Layout>
+                      <BackupManagement />
+                    </Layout>
+                  </FeatureRoute>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/components"
+            element={
+              <ProtectedRoute>
+                <ComponentLibrary />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ── Misc / Monetisation routes ── */}
+          <Route
+            path="/coins"
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="misc">
+                  <Layout>
+                    <DoodhCoins />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/referral-earn"
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="misc">
+                  <Layout>
+                    <ReferralEarnPage />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.pricing}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="misc">
+                  <Layout>
+                    <PricingPage />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pos"
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="misc">
+                  <FeatureRoute feature={{ featureKey: 'posMode', featureName: 'POS Mode', requiredPlan: 'Pro' }}>
+                    <Layout>
+                      <POSPage />
+                    </Layout>
+                  </FeatureRoute>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.myQr}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="misc">
+                  <Layout>
+                    <MyQRCode />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.subscription.plans}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="subscription">
+                  <Layout>
+                    <SubscriptionPlans />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.subscription.checkout}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="subscription">
+                  <Layout>
+                    <CheckoutPage />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.subscription.manage}
+            element={
+              <ProtectedRoute>
+                <RouteErrorBoundary routeName="subscription">
+                  <Layout>
+                    <ManageSubscription />
+                  </Layout>
+                </RouteErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          {/* Onboarding slides temporarily disabled — always go to dashboard */}
+          <Route path="/" element={
+            <Navigate to={ROUTES.dashboard} />
+          } />
+          {/* Redirects for old /ledger URLs */}
+          <Route path="/customers/:id/ledger" element={<LedgerRedirect to="customers" />} />
+          <Route path="/suppliers/:id/ledger" element={<LedgerRedirect to="suppliers" />} />
+          <Route path="*" element={<RouteErrorBoundary routeName="not-found"><NotFound /></RouteErrorBoundary>} />
+          </Routes>
+              </Suspense>
+              </RegistrationProvider>
+              <FeedbackWidget />
+            </AuthProvider>
+          </LanguageProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+      <SpeedInsights />
+    </ErrorBoundary>
+  );
+}
+
+export default App;

@@ -1,0 +1,166 @@
+/* =========================================================
+   JoinBusiness page — mobile-first, CSS-variable driven
+   ========================================================= */
+
+.join-business-page {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem var(--page-px, 1rem);
+  background-color: var(--color-bg-app, #fafaf7);
+}
+
+.join-business-card {
+  width: 100%;
+  max-width: 24rem;
+  background-color: var(--color-bg-surface, #fff);
+  border-radius: 1rem;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 4px 24px rgba(30, 58, 95, 0.08);
+  position: relative;
+}
+
+/* ── Back button ─────────────────────────────────────────── */
+.join-business-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 50%;
+  border: none;
+  background-color: transparent;
+  color: var(--text-secondary, #6b7280);
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: background-color 0.15s;
+}
+
+.join-business-back:hover {
+  background-color: var(--bg-tertiary, #f3f4f6);
+}
+
+.join-business-back-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+.join-business-header {
+  margin-bottom: 2rem;
+}
+
+.join-business-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text-primary, #1f2937);
+  margin: 0 0 0.5rem;
+}
+
+.join-business-subtitle {
+  font-size: 0.9375rem;
+  color: var(--text-secondary, #6b7280);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Code input field ───────────────────────────────────── */
+.join-business-field {
+  margin-bottom: 1.5rem;
+}
+
+.join-business-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+  margin-bottom: 0.5rem;
+}
+
+.join-business-code-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: 'Courier New', Courier, monospace;
+  letter-spacing: 0.5rem;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 1rem 0.5rem;
+  border: 2px solid var(--input-border, #dbeafe);
+  border-radius: 0.75rem;
+  background-color: var(--input-bg, #f8faff);
+  color: var(--text-primary, #1f2937);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  min-height: 44px;
+}
+
+.join-business-code-input:focus {
+  border-color: var(--border-focus, #1e3a5f);
+  box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.12);
+}
+
+.join-business-code-input[aria-invalid='true'] {
+  border-color: var(--color-error, #dc2626);
+}
+
+.join-business-code-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.join-business-code-input::placeholder {
+  color: var(--text-muted, #9ca3af);
+  letter-spacing: 0.5rem;
+  font-weight: 400;
+}
+
+/* ── Error message ──────────────────────────────────────── */
+.join-business-error {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--color-error, #dc2626);
+  line-height: 1.4;
+}
+
+/* ── Success state ──────────────────────────────────────── */
+.join-business-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.5rem 0;
+  gap: 0.75rem;
+}
+
+.join-business-success-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  color: var(--color-success, #10b981);
+}
+
+.join-business-success-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary, #1f2937);
+  margin: 0;
+}
+
+.join-business-success-msg {
+  font-size: 0.9375rem;
+  color: var(--text-secondary, #6b7280);
+  margin: 0;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (min-width: 640px) {
+  .join-business-card {
+    padding: 2.5rem 2rem;
+  }
+}

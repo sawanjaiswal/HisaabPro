@@ -1,0 +1,136 @@
+import { useState, useEffect } from 'react';
+import { UserCircle, Menu, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { AppLogo } from '../ui/AppLogo';
+import { LanguageSelector } from '../navigation/LanguageSelector';
+import { SyncStatusBadge } from '../feedback/SyncStatusBadge';
+import { ROUTES } from '../../config/routes';
+import { Z } from '../../config/zIndexes';
+import { googleDriveService } from '../../services/googleDrive.service';
+import { TIMINGS } from '../../config/timings';
+import { useAuth } from '../../context/AuthContext';
+import { BusinessAvatar } from '../../features/business/BusinessAvatar';
+import { BusinessSwitcherDrawer } from '../../features/business/BusinessSwitcherDrawer';
+
+interface AppHeaderProps {
+  userName?: string;
+  userInitial?: string;
+  onMenuClick: () => void;
+}
+
+export function AppHeader({ userName, userInitial, onMenuClick }: AppHeaderProps) {
+  const [driveFailedAlert, setDriveFailedAlert] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const { currentBusiness } = useAuth();
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const checkDriveStatus = async () => {
+      try {
+        const status = await googleDriveService.getStatus();
+        if (!cancelled) {
+          setDriveFailedAlert(status.connected && status.lastSyncStatus === 'failed');
+        }
+      } catch {
+        // Do not show badge if API is unavailable
+      }
+    };
+
+    checkDriveStatus();
+
+    // Re-check every 5 minutes
+    const interval = setInterval(checkDriveStatus, TIMINGS.bannerPoll);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, []);
+
+  return (
+    <>
+    <header
+      className="fixed top-0 left-0 right-0 border-b px-4 flex items-center justify-between transition-colors duration-200"
+      style={{
+        backgroundColor: 'var(--nav-bg)',
+        borderColor: 'var(--border-secondary)',
+        paddingTop: 'calc(var(--safe-top) + 0.75rem)',
+        paddingBottom: '0.75rem',
+        minHeight: 'var(--page-top)',
+        zIndex: Z.fixedNav,
+      }}
+    >
+      {/* Left: Business Avatar + Logo */}
+      <div className="flex items-center gap-2">
+        <BusinessAvatar
+          business={currentBusiness}
+          size="sm"
+          onClick={() => setIsDrawerOpen(true)}
+        />
+        <Link to={ROUTES.dashboard} aria-label="Go to dashboard">
+          <AppLogo size="sm" variant="brand" showText />
+        </Link>
+      </div>
+
+      {/* Right: Sync Status + Language Selector + Profile Thumbnail with Hamburger */}
+      <div className="flex items-center gap-2 flex-shrink-0">
+        {/* TEMP: Welcome screen test link — remove after testing */}
+        <Link
+          to={ROUTES.welcome}
+          aria-label="Go to welcome screen"
+          className="w-8 h-8 flex items-center justify-center rounded-full"
+          style={{ backgroundColor: 'var(--bg-tertiary)' }}
+        >
+          <Sparkles className="w-4 h-4" style={{ color: 'var(--brand-primary)' }} />
+        </Link>
+        <SyncStatusBadge compact />
+        <LanguageSelector />
+        {/* Profile Thumbnail with Mini Hamburger - 40x40 touch area, 32x32 thumbnail */}
+        <button
+          onClick={onMenuClick}
+          className="relative flex-shrink-0 w-10 h-10 flex items-center justify-center p-1"
+          aria-label="Open menu"
+        >
+          {/* Drive failure alert dot - top-left of button area */}
+          {driveFailedAlert && (
+            <span
+              className="absolute top-0 left-0 w-2 h-2 rounded-full border"
+              style={{
+                backgroundColor: 'var(--color-warning)',
+                borderColor: 'var(--nav-bg)',
+                zIndex: Z.inComponent,
+              }}
+              aria-label="Google Drive backup failed"
+            />
+          )}
+          {/* Profile Picture or Initials - 32x32px */}
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center font-medium text-xs"
+            style={{
+              backgroundColor: 'var(--bg-tertiary)',
+              color: 'var(--text-primary)'
+            }}
+          >
+            {userInitial || <UserCircle className="w-5 h-5" style={{ color: 'var(--text-tertiary)' }} />}
+          </div>
+          {/* Mini Hamburger Badge at Bottom Right - Minimal design */}
+          <div
+            className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full flex items-center justify-center border"
+            style={{
+              backgroundColor: 'var(--brand-primary)',
+              borderColor: 'var(--nav-bg)'
+            }}
+          >
+            <Menu className="w-2 h-2" style={{ color: 'var(--text-inverse)' }} strokeWidth={2.5} />
+          </div>
+        </button>
+      </div>
+    </header>
+
+    <BusinessSwitcherDrawer
+      isOpen={isDrawerOpen}
+      onClose={() => setIsDrawerOpen(false)}
+    />
+    </>
+  );
+}

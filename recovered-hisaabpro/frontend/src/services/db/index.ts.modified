@@ -1,0 +1,249 @@
+/**
+ * IndexedDB Database Setup using Dexie
+ *
+ * Provides offline storage for all DudhHisaab entities:
+ * - Customers, Suppliers, Products
+ * - Milk entries (in/out)
+ * - Payments
+ * - Sync queue for offline changes
+ *
+ * Multi-business isolation: each business gets its own IndexedDB instance
+ * named `hisaab_db_{businessId}`. The exported `db` proxy reads
+ * `activeBusinessId` from localStorage on every property access, so all
+ * existing imports continue to work with zero changes.
+ */
+
+import Dexie from 'dexie';
+
+// Re-export all types so consumers can import from this module as before
+export type {
+  Customer,
+  Supplier,
+  Product,
+  MilkOutEntry,
+  MilkInEntry,
+  Payment,
+  LocalProductEntry,
+  SyncQueueItem,
+  PendingFeedback,
+  Metadata,
+} from './db.types';
+
+import type {
+  Customer,
+  Supplier,
+  Product,
+  MilkOutEntry,
+  MilkInEntry,
+  Payment,
+  LocalProductEntry,
+  SyncQueueItem,
+  PendingFeedback,
+  Metadata,
+} from './db.types';
+
+// ---------------------------------------------------------------------------
+// Database class
+// ---------------------------------------------------------------------------
+
+class DudhHisaabDB extends Dexie {
+  // Entity tables
+  customers!: Dexie.Table<Customer, string>;
+  suppliers!: Dexie.Table<Supplier, string>;
+  products!: Dexie.Table<Product, string>;
+  milkOut!: Dexie.Table<MilkOutEntry, string>;
+  milkIn!: Dexie.Table<MilkInEntry, string>;
+  payments!: Dexie.Table<Payment, string>;
+  productEntries!: Dexie.Table<LocalProductEntry, string>;
+
+  // System tables
+  syncQueue!: Dexie.Table<SyncQueueItem, number>;
+  pendingFeedback!: Dexie.Table<PendingFeedback, number>;
+  metadata!: Dexie.Table<Metadata, string>;
+
+  constructor(name: string = 'DudhHisaabDB') {
+    super(name);
+
+    this.version(1).stores({
+      customers: '&id, name, phone, isArchived, updatedAt',
+      suppliers: '&id, name, phone, isArchived, updatedAt',
+      products: '&id, name, isArchived, updatedAt',
+      milkOut: '&id, customerId, date, session, updatedAt',
+      milkIn: '&id, supplierId, date, session, updatedAt',
+      payments: '&id, entityId, entityType, date, direction, updatedAt',
+      syncQueue: '++queueId, entity, status, priority, timestamp',
+      metadata: '&key',
+    });
+
+    // v2: Add pendingFeedback table for offline feedback queue
+    this.version(2).stores({
+      pendingFeedback: '++id, createdAt',
+    });
+
+    // v3: Add type and metadata columns to pendingFeedback
+    this.version(3).stores({
+      pendingFeedback: '++id, createdAt, type',
+    }).upgrade((tx) => {
+      return tx.table('pendingFeedback').toCollection().modify((item) => {
+        if (item.type === undefined) item.type = 'bug';
+        if (item.metadata === undefined) item.metadata = {};
+      });
+    });
+
+    // v4: Remove boolean indexes (IndexedDB can't index booleans — silently fails with DataError),
+    // add compound indexes for offline query performance
+    this.version(4).stores({
+      customers: '&id, name, phone, updatedAt',
+      suppliers: '&id, name, phone, updatedAt',
+      products: '&id, name, updatedAt',
+      milkOut: '&id, customerId, date, [customerId+date], session, updatedAt',
+      milkIn: '&id, supplierId, date, [supplierId+date], session, updatedAt',
+      payments: '&id, entityId, entityType, date, direction, updatedAt',
+      syncQueue: '++queueId, entity, status, priority, timestamp',
+      pendingFeedback: '++id, createdAt, type',
+      metadata: '&key',
+    });
+
+    // v5: Add deliveryOrder index for custom delivery route sorting
+    this.version(5).stores({
+      customers: '&id, name, phone, updatedAt, deliveryOrder',
+    });
+
+    // v6: Add productEntries table for offline product entry queuing
+    this.version(6).stores({
+      productEntries: '&id, customerId, productId, date, status',
+    });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DB instance cache + factory
+// ---------------------------------------------------------------------------
+
+const dbCache = new Map<string, DudhHisaabDB>();
+
+/** Get (or create) the DB instance for a specific businessId. */
+export function getDB(businessId?: string): DudhHisaabDB {
+  const name = businessId ? `hisaab_db_${businessId}` : 'DudhHisaabDB';
+  if (!dbCache.has(name)) {
+    dbCache.set(name, new DudhHisaabDB(name));
+  }
+  return dbCache.get(name)!;
+}
+
+/**
+ * Close and evict a business DB from the cache.
+ * Call this on business switch so the next access opens a fresh connection.
+ */
+export function closeDB(businessId?: string): void {
+  const name = businessId ? `hisaab_db_${businessId}` : 'DudhHisaabDB';
+  const instance = dbCache.get(name);
+  if (instance) {
+    instance.close();
+    dbCache.delete(name);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Default export — Proxy that resolves to the active business DB
+// ---------------------------------------------------------------------------
+
+/**
+ * Default DB proxy — all existing `import { db }` consumers work unchanged.
+ * On every property access it reads `activeBusinessId` from localStorage and
+ * routes to the correct per-business IndexedDB instance via `getDB()`.
+ * On business switch, call `closeDB(oldBusinessId)` to evict the old instance.
+ */
+export const db: DudhHisaabDB = new Proxy({} as DudhHisaabDB, {
+  get(_target, prop: string) {
+    const businessId = localStorage.getItem('activeBusinessId') ?? undefined;
+    const instance = getDB(businessId);
+    const value = (instance as Record<string, unknown>)[prop];
+    return typeof value === 'function' ? (value as Function).bind(instance) : value;
+  },
+});
+
+// ---------------------------------------------------------------------------
+// Database utility functions
+// ---------------------------------------------------------------------------
+
+/** Initialize database metadata for a specific business (or the default DB). */
+export async function initializeDatabase(businessId?: string): Promise<void> {
+  const targetDb = getDB(businessId);
+  const initialized = await targetDb.metadata.get('initialized');
+  if (!initialized) {
+    await targetDb.metadata.add({ key: 'initialized', value: true });
+    await targetDb.metadata.add({ key: 'version', value: '1.0' });
+    await targetDb.metadata.add({ key: 'lastSync', value: null });
+  }
+}
+
+/** Clear all entity data for a specific business (or the default DB). */
+export async function clearDatabase(businessId?: string): Promise<void> {
+  const targetDb = getDB(businessId);
+  await Promise.all([
+    targetDb.customers.clear(),
+    targetDb.suppliers.clear(),
+    targetDb.products.clear(),
+    targetDb.milkOut.clear(),
+    targetDb.milkIn.clear(),
+    targetDb.payments.clear(),
+    targetDb.productEntries.clear(),
+    targetDb.syncQueue.clear(),
+  ]);
+  await targetDb.metadata.put({ key: 'lastSync', value: null });
+}
+
+/** Get record counts for the active business DB. */
+export async function getDatabaseStats(): Promise<{
+  customers: number;
+  suppliers: number;
+  products: number;
+  milkOut: number;
+  milkIn: number;
+  payments: number;
+  syncQueue: number;
+  lastSync: string | null;
+}> {
+  const [
+    customerCount,
+    supplierCount,
+    productCount,
+    milkOutCount,
+    milkInCount,
+    paymentCount,
+    syncQueueCount,
+    lastSyncMeta,
+  ] = await Promise.all([
+    db.customers.count(),
+    db.suppliers.count(),
+    db.products.count(),
+    db.milkOut.count(),
+    db.milkIn.count(),
+    db.payments.count(),
+    db.syncQueue.count(),
+    db.metadata.get('lastSync'),
+  ]);
+
+  return {
+    customers: customerCount,
+    suppliers: supplierCount,
+    products: productCount,
+    milkOut: milkOutCount,
+    milkIn: milkInCount,
+    payments: paymentCount,
+    syncQueue: syncQueueCount,
+    lastSync: (lastSyncMeta?.value as string | null) ?? null,
+  };
+}
+
+/** Stamp the active business DB with the current sync time. */
+export async function updateLastSync(): Promise<void> {
+  await db.metadata.put({ key: 'lastSync', value: new Date().toISOString() });
+}
+
+/** Read the last sync timestamp from the active business DB. */
+export async function getLastSync(): Promise<string | null> {
+  const meta = await db.metadata.get('lastSync');
+  return (meta?.value as string | null) ?? null;
+}
