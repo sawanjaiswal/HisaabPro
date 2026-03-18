@@ -6,10 +6,10 @@
  * Only the DIFFERENCES from default are specified — everything else inherits.
  */
 
-import type { BaseTemplate, TemplateConfig } from './template.types'
+import type { BaseTemplate, DeepPartial, TemplateConfig } from './template.types'
 
 /** Partial config overrides per additional base template (beyond the original 6) */
-export const TEMPLATE_CONFIG_OVERRIDES: Partial<Record<BaseTemplate, Partial<TemplateConfig>>> = {
+export const TEMPLATE_CONFIG_OVERRIDES: Partial<Record<BaseTemplate, DeepPartial<TemplateConfig>>> = {
 
   // ─── Modern Collection ───────────────────────────────────────────────────
 

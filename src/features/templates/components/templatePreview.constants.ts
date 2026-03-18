@@ -8,6 +8,7 @@ export const SAMPLE_BUSINESS = {
   name: 'Sharma Traders',
   phone: '+91 98765 43210',
   address: '12 Main Market, Lajpat Nagar, New Delhi 110024',
+  udyamNumber: 'UDYAM-MP-09-0012345',
 }
 
 export const SAMPLE_PARTY = {

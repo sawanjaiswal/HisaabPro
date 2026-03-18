@@ -86,3 +86,56 @@
     max-width: 480px;
   }
 }
+
+/* ─── Payment Status Stamp ─────────────────────────────────────────────── */
+
+.preview-stamp {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.preview-stamp--badge {
+  top: var(--space-4);
+  right: var(--space-4);
+  font-size: 0.75rem;
+  border: 2px solid;
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  transform: rotate(-12deg);
+  opacity: 0.85;
+}
+
+.preview-stamp--watermark {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-35deg);
+  font-weight: 900;
+  user-select: none;
+}
+
+/* ─── Copy Label ───────────────────────────────────────────────────────── */
+
+.preview-copy-label {
+  position: absolute;
+  top: 6px;
+  right: var(--space-3);
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-gray-400);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-xs);
+  padding: 2px 6px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+[data-theme="dark"] .preview-copy-label {
+  color: var(--color-gray-500);
+  border-color: var(--color-gray-600);
+}

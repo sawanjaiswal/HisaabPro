@@ -149,6 +149,7 @@ export default function CreateInvoicePage() {
             <InvoiceDetailsSection
               documentDate={form.documentDate}
               paymentTerms={form.paymentTerms}
+              vehicleNumber={form.vehicleNumber ?? ''}
               notes={form.notes ?? ''}
               termsAndConditions={form.termsAndConditions ?? ''}
               includeSignature={form.includeSignature}

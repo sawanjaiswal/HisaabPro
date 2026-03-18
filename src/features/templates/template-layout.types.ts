@@ -3,6 +3,11 @@
  * Part of the template types split. Re-exported from template.types.ts.
  */
 
+// ─── Utility types ───────────────────────────────────────────────────────────
+
+/** Recursively makes all properties optional — needed for partial config overrides */
+export type DeepPartial<T> = { [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K] }
+
 // ─── Base template ────────────────────────────────────────────────────────────
 
 /** Factory-shipped base templates. User-created templates derive from one. */
@@ -64,8 +69,17 @@ export type SignaturePosition = 'left' | 'right' | 'center'
 /** Supported font families (all loaded via @fontsource in the PDF renderer) */
 export type TemplateFontFamily = 'inter' | 'noto-sans' | 'roboto' | 'poppins'
 
-/** Relative font size scale */
-export type TemplateFontSize = 'small' | 'medium' | 'large'
+/** Relative font size scale (5 levels for granular control) */
+export type TemplateFontSize = 'xs' | 'small' | 'medium' | 'large' | 'xl'
+
+/** Line height / spacing scale */
+export type TemplateLineHeight = 'compact' | 'normal' | 'relaxed'
+
+/** Visual style for payment status stamp on invoice */
+export type StampStyle = 'badge' | 'watermark' | 'none'
+
+/** Copy label for multi-copy printing */
+export type CopyLabelMode = 'auto' | 'manual'
 
 // ─── Page / print ─────────────────────────────────────────────────────────────
 
@@ -93,6 +107,9 @@ export type RoundOffMethod = 'round' | 'floor' | 'ceil'
 export type RoundOffPrecision = '1' | '0.50' | '0.10' | 'none'
 
 // ─── Customisation tab ────────────────────────────────────────────────────────
+
+/** Default copy label names for multi-copy printing */
+export const DEFAULT_COPY_LABELS = ['ORIGINAL', 'DUPLICATE', 'TRIPLICATE'] as const
 
 /** Tabs shown in the template editor sidebar */
 export type CustomizationTab = 'layout' | 'columns' | 'fields' | 'style' | 'text' | 'print'

@@ -7,11 +7,15 @@ import type {
   PageSize,
   PageOrientation,
   PageMargins,
+  StampStyle,
+  CopyLabelMode,
 } from '../template.types'
 import {
   PAGE_SIZE_LABELS,
   ORIENTATION_LABELS,
   MARGINS_LABELS,
+  STAMP_STYLE_LABELS,
+  COPY_LABEL_MODE_LABELS,
   MAX_COPIES,
 } from '../template.constants'
 
@@ -109,6 +113,38 @@ export const PrintTab: React.FC<PrintTabProps> = ({ printSettings, onChange }) =
         ariaLabel="Show page numbers"
         onChange={(v) => onChange({ pageNumbers: v })}
       />
+    </Section>
+
+    <Section title="Stamp & Labels">
+      <ControlRow label="Payment Stamp">
+        <SegmentedControl<StampStyle>
+          value={printSettings.stampStyle}
+          options={['badge', 'watermark', 'none']}
+          labels={STAMP_STYLE_LABELS}
+          ariaLabel="Payment stamp style"
+          onChange={(v) => onChange({ stampStyle: v })}
+        />
+      </ControlRow>
+
+      <ToggleRow
+        label="Copy Labels"
+        sublabel="ORIGINAL / DUPLICATE / TRIPLICATE"
+        checked={printSettings.copyLabels}
+        ariaLabel="Enable copy labels"
+        onChange={(v) => onChange({ copyLabels: v })}
+      />
+
+      {printSettings.copyLabels && (
+        <ControlRow label="Label Mode">
+          <SegmentedControl<CopyLabelMode>
+            value={printSettings.copyLabelMode}
+            options={['auto', 'manual']}
+            labels={COPY_LABEL_MODE_LABELS}
+            ariaLabel="Copy label mode"
+            onChange={(v) => onChange({ copyLabelMode: v })}
+          />
+        </ControlRow>
+      )}
     </Section>
   </>
 )

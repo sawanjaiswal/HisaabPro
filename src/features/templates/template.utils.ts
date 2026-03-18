@@ -6,6 +6,7 @@
 
 import type {
   BaseTemplate,
+  DeepPartial,
   TemplateConfig,
   PrintSettings,
   TemplateColumnsConfig,
@@ -130,7 +131,7 @@ export function countVisibleColumns(columns: TemplateColumnsConfig): number {
  *   → full config with only accent overridden
  */
 export function mergeTemplateConfig(
-  partial: Partial<TemplateConfig>,
+  partial: DeepPartial<TemplateConfig>,
   base: TemplateConfig,
 ): TemplateConfig {
   return {
@@ -150,7 +151,7 @@ export function mergeTemplateConfig(
  * so a partial `{ visible: true }` without a `label` keeps the base label.
  */
 function mergeColumnsConfig(
-  partial: Partial<TemplateColumnsConfig> | undefined,
+  partial: DeepPartial<TemplateColumnsConfig> | undefined,
   base: TemplateColumnsConfig,
 ): TemplateColumnsConfig {
   if (partial === undefined) return { ...base }

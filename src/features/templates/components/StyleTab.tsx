@@ -6,10 +6,12 @@ import type {
   TemplateConfig,
   TemplateFontFamily,
   TemplateFontSize,
+  TemplateLineHeight,
 } from '../template.types'
 import {
   FONT_FAMILY_LABELS,
   FONT_SIZE_LABELS,
+  LINE_HEIGHT_LABELS,
   COLOR_PRESETS,
 } from '../template.constants'
 
@@ -40,10 +42,19 @@ export const StyleTab: React.FC<StyleTabProps> = ({ config, onChange }) => {
         <ControlRow label="Font Size">
           <SegmentedControl<TemplateFontSize>
             value={typography.fontSize}
-            options={['small', 'medium', 'large']}
+            options={['xs', 'small', 'medium', 'large', 'xl']}
             labels={FONT_SIZE_LABELS}
             ariaLabel="Font size"
             onChange={(v) => onChange({ typography: { ...typography, fontSize: v } })}
+          />
+        </ControlRow>
+        <ControlRow label="Line Height">
+          <SegmentedControl<TemplateLineHeight>
+            value={typography.lineHeight}
+            options={['compact', 'normal', 'relaxed']}
+            labels={LINE_HEIGHT_LABELS}
+            ariaLabel="Line height"
+            onChange={(v) => onChange({ typography: { ...typography, lineHeight: v } })}
           />
         </ControlRow>
       </Section>

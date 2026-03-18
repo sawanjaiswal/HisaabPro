@@ -45,7 +45,7 @@ export function useImageExport(
 
         const dataUrl = await toPng(targetRef.current, {
           quality: 1,
-          pixelRatio: 2, // retina — crisp on high-DPI screens
+          pixelRatio: 3, // high-DPI — sharp logos, stamps, and signatures
           backgroundColor: '#ffffff',
         })
 

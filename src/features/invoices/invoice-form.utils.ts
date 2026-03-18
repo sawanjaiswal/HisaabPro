@@ -23,6 +23,7 @@ export function buildInitialForm(type: DocumentType): DocumentFormData {
     shippingAddressId: null,
     notes: '',
     termsAndConditions: '',
+    vehicleNumber: '',
     includeSignature: false,
     lineItems: [],
     additionalCharges: [],

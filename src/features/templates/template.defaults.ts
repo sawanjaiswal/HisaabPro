@@ -75,12 +75,18 @@ const DEFAULT_FIELDS_CONFIG: TemplateFieldsConfig = {
   totalInWords:       true,
   qrCode:             false,
   watermark:          false,
+  // Status & compliance
+  paymentStatusStamp: true,
+  udyamNumber:        false,
+  totalQuantity:      true,
+  copyLabel:          false,
 }
 
 const DEFAULT_TYPOGRAPHY_CONFIG: TemplateTypographyConfig = {
   fontFamily:     'inter',
   fontSize:       'medium',
   headerFontSize: 'medium',
+  lineHeight:     'normal',
 }
 
 const DEFAULT_COLORS_CONFIG: TemplateColorsConfig = {
@@ -118,6 +124,10 @@ const A4_STANDARD: PrintSettings = {
   headerOnAllPages: true,
   pageNumbers:      true,
   itemsPerPage:     20,
+  stampStyle:       'badge',
+  copyLabels:       false,
+  copyLabelMode:    'auto',
+  copyLabelNames:   ['ORIGINAL', 'DUPLICATE', 'TRIPLICATE'],
 }
 
 /** A5 print settings — reused by compact templates */
@@ -129,6 +139,10 @@ const A5_STANDARD: PrintSettings = {
   headerOnAllPages: false,
   pageNumbers:      false,
   itemsPerPage:     15,
+  stampStyle:       'badge',
+  copyLabels:       false,
+  copyLabelMode:    'auto',
+  copyLabelNames:   ['ORIGINAL', 'DUPLICATE', 'TRIPLICATE'],
 }
 
 /** Default PrintSettings for each base template. */
@@ -141,6 +155,10 @@ export const DEFAULT_PRINT_SETTINGS: Record<BaseTemplate, PrintSettings> = {
     headerOnAllPages: false,
     pageNumbers:      false,
     itemsPerPage:     0,
+    stampStyle:       'none',
+    copyLabels:       false,
+    copyLabelMode:    'auto',
+    copyLabelNames:   ['ORIGINAL', 'DUPLICATE', 'TRIPLICATE'],
   },
   THERMAL_80MM: {
     pageSize:         'THERMAL_80MM',
@@ -150,6 +168,10 @@ export const DEFAULT_PRINT_SETTINGS: Record<BaseTemplate, PrintSettings> = {
     headerOnAllPages: false,
     pageNumbers:      false,
     itemsPerPage:     0,
+    stampStyle:       'none',
+    copyLabels:       false,
+    copyLabelMode:    'auto',
+    copyLabelNames:   ['ORIGINAL', 'DUPLICATE', 'TRIPLICATE'],
   },
   A4_CLASSIC:        { ...A4_STANDARD },
   A4_MODERN:         { ...A4_STANDARD },

@@ -30,6 +30,7 @@ function detailToFormData(detail: DocumentDetail): DocumentFormData {
     shippingAddressId: null,
     notes: detail.notes ?? '',
     termsAndConditions: detail.termsAndConditions ?? '',
+    vehicleNumber: detail.vehicleNumber ?? '',
     includeSignature: detail.includeSignature,
     lineItems: detail.lineItems.map((li) => ({
       productId: li.product.id,
@@ -215,6 +216,7 @@ function EditInvoiceForm({
             <InvoiceDetailsSection
               documentDate={form.documentDate}
               paymentTerms={form.paymentTerms}
+              vehicleNumber={form.vehicleNumber ?? ''}
               notes={form.notes ?? ''}
               termsAndConditions={form.termsAndConditions ?? ''}
               includeSignature={form.includeSignature}

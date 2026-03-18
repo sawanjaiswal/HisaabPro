@@ -87,6 +87,7 @@ const PublicLedger = lazy(() => import('@/features/shared-ledger/PublicLedgerPag
 const ItemsLibrary = lazy(() => import('@/features/items-library/ItemsLibraryPage'))
 const DataImport = lazy(() => import('@/features/data-import/DataImportPage'))
 const SmartGreetings = lazy(() => import('@/features/smart-greetings/SmartGreetingsPage'))
+const Landing = lazy(() => import('@/features/landing/LandingPage'))
 const NotFound = lazy(() => import('@/components/feedback/NotFoundPage'))
 
 /** Route-level ErrorBoundary + Suspense wrapper for individual pages */
@@ -124,7 +125,7 @@ export function App() {
       <OfflineBanner />
       <PageTransition>
       <Routes>
-        <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+        <Route path={ROUTES.HOME} element={<PageRoute><GuestRoute><Landing /></GuestRoute></PageRoute>} />
         <Route path={ROUTES.LOGIN} element={<PageRoute><GuestRoute><Login /></GuestRoute></PageRoute>} />
         <Route path={ROUTES.ONBOARDING} element={<PageRoute><ProtectedRoute><Onboarding /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.DASHBOARD} element={<PageRoute><ProtectedRoute><Dashboard /></ProtectedRoute></PageRoute>} />

@@ -43,6 +43,13 @@ export const FieldsTab: React.FC<FieldsTabProps> = ({ config, onChange }) => {
         <ToggleRow label="Transport Details" checked={f.transportDetails}   ariaLabel="Show transport details"  onChange={(v) => patchFields({ transportDetails: v })} />
       </Section>
 
+      <Section title="Status & Compliance">
+        <ToggleRow label="Payment Status Stamp" sublabel="PAID / PARTIAL / UNPAID badge on invoice"   checked={f.paymentStatusStamp}  ariaLabel="Show payment status stamp"    onChange={(v) => patchFields({ paymentStatusStamp: v })} />
+        <ToggleRow label="Udyam Number"         sublabel="MSME registration number in header"         checked={f.udyamNumber}         ariaLabel="Show Udyam number"            onChange={(v) => patchFields({ udyamNumber: v })} />
+        <ToggleRow label="Total Quantity"        sublabel="Sum of all line item quantities"            checked={f.totalQuantity}       ariaLabel="Show total quantity row"      onChange={(v) => patchFields({ totalQuantity: v })} />
+        <ToggleRow label="Copy Label"            sublabel="ORIGINAL / DUPLICATE on printout"           checked={f.copyLabel}           ariaLabel="Show copy label"              onChange={(v) => patchFields({ copyLabel: v })} />
+      </Section>
+
       <Section title="Footer">
         <ToggleRow label="Bank Details"        checked={f.bankDetails}          ariaLabel="Show bank details"          onChange={(v) => patchFields({ bankDetails: v })} />
         <ToggleRow label="Signature"           checked={f.signature}            ariaLabel="Show signature block"       onChange={(v) => patchFields({ signature: v })} />

@@ -1,18 +1,22 @@
 /** Live invoice mock-up — renders a simplified invoice preview using the template config */
 
 import React from 'react'
-import type { TemplateConfig } from '../template.types'
+import type { TemplateConfig, PrintSettings } from '../template.types'
 import { getVisibleColumns } from '../template.utils'
 import { PreviewInvoiceHeader } from './PreviewInvoiceHeader'
 import { PreviewBillTo } from './PreviewBillTo'
 import { PreviewLineItems } from './PreviewLineItems'
 import { PreviewTotalsSummary } from './PreviewTotalsSummary'
+import { PreviewPaymentStamp } from './PreviewPaymentStamp'
+import { PreviewCopyLabel } from './PreviewCopyLabel'
+import { SAMPLE_ITEMS } from './templatePreview.constants'
 
 interface TemplatePreviewPanelProps {
   config: TemplateConfig
+  printSettings?: PrintSettings
 }
 
-export const TemplatePreviewPanel: React.FC<TemplatePreviewPanelProps> = ({ config }) => {
+export const TemplatePreviewPanel: React.FC<TemplatePreviewPanelProps> = ({ config, printSettings }) => {
   const { colors, typography, layout, fields } = config
   const visibleColumns = getVisibleColumns(config.columns)
 
@@ -24,10 +28,22 @@ export const TemplatePreviewPanel: React.FC<TemplatePreviewPanelProps> = ({ conf
     padding: 'var(--space-4)',
   }
 
+  const fontSizeMap = { xs: '0.625rem', small: '0.75rem', medium: '0.875rem', large: '1rem', xl: '1.125rem' } as const
+  const thSizeMap = { xs: '0.5625rem', small: '0.6875rem', medium: '0.8125rem', large: '0.9375rem', xl: '1rem' } as const
+  const lineHeightMap = { compact: 1.3, normal: 1.5, relaxed: 1.7 } as const
+  const bodyFontSize = fontSizeMap[typography.fontSize]
+  const thFontSize = thSizeMap[typography.fontSize]
+  const lineHeight = lineHeightMap[typography.lineHeight]
+
+  const totalQty = fields.totalQuantity
+    ? SAMPLE_ITEMS.reduce((sum, item) => sum + item.qty, 0)
+    : 0
+
   const cellStyle: React.CSSProperties = {
     padding: '6px var(--space-2)',
     borderBottom: `1px solid ${borderColor}`,
-    fontSize: typography.fontSize === 'small' ? '0.75rem' : typography.fontSize === 'large' ? '0.9375rem' : '0.833rem',
+    fontSize: bodyFontSize,
+    lineHeight,
   }
 
   const thStyle: React.CSSProperties = {
@@ -35,7 +51,7 @@ export const TemplatePreviewPanel: React.FC<TemplatePreviewPanelProps> = ({ conf
     backgroundColor: colors.tableHeaderBg,
     color: colors.tableHeaderText,
     fontWeight: 700,
-    fontSize: typography.fontSize === 'small' ? '0.694rem' : '0.75rem',
+    fontSize: thFontSize,
     padding: '8px var(--space-2)',
   }
 
@@ -46,7 +62,20 @@ export const TemplatePreviewPanel: React.FC<TemplatePreviewPanelProps> = ({ conf
       role="region"
     >
       <div className="template-preview-container">
-        <div className="template-preview-invoice">
+        <div className="template-preview-invoice" style={{ position: 'relative', overflow: 'hidden' }}>
+
+          {/* Payment status stamp overlay */}
+          {fields.paymentStatusStamp && printSettings?.stampStyle !== 'none' && (
+            <PreviewPaymentStamp
+              status="PAID"
+              style={printSettings?.stampStyle ?? 'badge'}
+            />
+          )}
+
+          {/* Copy label */}
+          {fields.copyLabel && printSettings?.copyLabels && (
+            <PreviewCopyLabel label={printSettings.copyLabelNames?.[0] ?? 'ORIGINAL'} />
+          )}
 
           {/* Header text line (optional) */}
           {config.headerText && (
@@ -81,6 +110,24 @@ export const TemplatePreviewPanel: React.FC<TemplatePreviewPanelProps> = ({ conf
             cellStyle={cellStyle}
             thStyle={thStyle}
           />
+
+          {/* Total quantity row */}
+          {fields.totalQuantity && totalQty > 0 && (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                padding: '6px var(--space-4)',
+                fontSize: bodyFontSize,
+                fontWeight: 600,
+                color: 'var(--color-gray-600)',
+                borderBottom: `1px solid ${borderColor}`,
+              }}
+              aria-hidden="true"
+            >
+              Total Qty: {totalQty}
+            </div>
+          )}
 
           {/* Totals summary */}
           <PreviewTotalsSummary

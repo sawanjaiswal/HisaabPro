@@ -11,6 +11,7 @@ import type {
   SummaryPosition,
   TemplateFontFamily,
   TemplateFontSize,
+  TemplateLineHeight,
 } from './template-layout.types'
 
 // ─── Config sub-objects ───────────────────────────────────────────────────────
@@ -86,6 +87,11 @@ export interface TemplateFieldsConfig {
   totalInWords: boolean
   qrCode: boolean
   watermark: boolean
+  // Status & compliance
+  paymentStatusStamp: boolean
+  udyamNumber: boolean
+  totalQuantity: boolean
+  copyLabel: boolean
 }
 
 /** Typography section of TemplateConfig */
@@ -93,6 +99,7 @@ export interface TemplateTypographyConfig {
   fontFamily: TemplateFontFamily
   fontSize: TemplateFontSize
   headerFontSize: TemplateFontSize
+  lineHeight: TemplateLineHeight
 }
 
 /**

@@ -9,6 +9,7 @@ import type { DocumentFormData, PaymentTerms } from '../invoice.types'
 interface InvoiceDetailsSectionProps {
   documentDate: string
   paymentTerms: PaymentTerms | undefined
+  vehicleNumber: string
   notes: string
   termsAndConditions: string
   includeSignature: boolean
@@ -21,6 +22,7 @@ interface InvoiceDetailsSectionProps {
 export function InvoiceDetailsSection({
   documentDate,
   paymentTerms,
+  vehicleNumber,
   notes,
   termsAndConditions,
   includeSignature,
@@ -46,6 +48,21 @@ export function InvoiceDetailsSection({
         <PaymentTermsSelector
           value={paymentTerms ?? 'COD'}
           onChange={(terms: PaymentTerms) => onUpdateField('paymentTerms', terms)}
+        />
+      </div>
+
+      <div className="line-item-field">
+        <label className="label" htmlFor="invoice-vehicle">Vehicle Number</label>
+        <input
+          id="invoice-vehicle"
+          type="text"
+          className="input"
+          placeholder="MH 12 AB 1234"
+          value={vehicleNumber}
+          onChange={(e) => onUpdateField('vehicleNumber', e.target.value.toUpperCase())}
+          aria-label="Vehicle number"
+          maxLength={15}
+          style={{ minHeight: '44px', textTransform: 'uppercase' }}
         />
       </div>
 

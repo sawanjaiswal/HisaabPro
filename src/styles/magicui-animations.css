@@ -1,0 +1,45 @@
+/* MagicUI component animations — CSS only, no framer-motion */
+
+/* ─── Keyframes ─────────────────────────────────────────────────── */
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-100%); }
+}
+
+@keyframes marquee-vertical {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-100%); }
+}
+
+@keyframes shimmer-slide {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+
+@keyframes spin-around {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes shiny-text {
+  0%,
+  90%,
+  100% {
+    background-position: calc(-100% - var(--shiny-width, 100px)) 0;
+  }
+  30%,
+  60% {
+    background-position: calc(100% + var(--shiny-width, 100px)) 0;
+  }
+}
+
+/* ─── Tailwind v4 theme utilities ────────────────────────────────── */
+
+@theme {
+  --animate-marquee: marquee var(--duration, 40s) linear infinite;
+  --animate-marquee-vertical: marquee-vertical var(--duration, 40s) linear infinite;
+  --animate-shimmer-slide: shimmer-slide var(--speed, 3s) ease-in-out infinite;
+  --animate-spin-around: spin-around calc(var(--speed, 3s) * 2) linear infinite;
+  --animate-shiny-text: shiny-text 8s ease-in-out infinite;
+}

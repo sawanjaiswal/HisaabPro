@@ -141,6 +141,8 @@ export interface DocumentFormData {
   notes?: string
   termsAndConditions?: string
   includeSignature: boolean
+  /** Vehicle number for transport/logistics (all doc types) */
+  vehicleNumber?: string
   lineItems: LineItemFormData[]
   additionalCharges: AdditionalChargeFormData[]
   /** Only used for DELIVERY_CHALLAN */

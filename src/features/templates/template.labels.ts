@@ -9,6 +9,7 @@
 import type { DocumentType } from '../invoices/invoice.types'
 import type {
   BaseTemplate,
+  CopyLabelMode,
   CustomizationTab,
   HeaderStyle,
   ItemTableStyle,
@@ -18,9 +19,11 @@ import type {
   PageSize,
   RoundOffMethod,
   RoundOffPrecision,
+  StampStyle,
   SummaryPosition,
   TemplateFontFamily,
   TemplateFontSize,
+  TemplateLineHeight,
 } from './template.types'
 
 // --- Base template labels ----------------------------------------------------
@@ -170,9 +173,30 @@ export const FONT_FAMILY_LABELS: Record<TemplateFontFamily, string> = {
 }
 
 export const FONT_SIZE_LABELS: Record<TemplateFontSize, string> = {
+  xs:     'XS',
   small:  'Small',
   medium: 'Medium',
   large:  'Large',
+  xl:     'XL',
+}
+
+export const LINE_HEIGHT_LABELS: Record<TemplateLineHeight, string> = {
+  compact:  'Compact',
+  normal:   'Normal',
+  relaxed:  'Relaxed',
+}
+
+// --- Stamp & copy label labels -----------------------------------------------
+
+export const STAMP_STYLE_LABELS: Record<StampStyle, string> = {
+  badge:     'Badge',
+  watermark: 'Watermark',
+  none:      'None',
+}
+
+export const COPY_LABEL_MODE_LABELS: Record<CopyLabelMode, string> = {
+  auto:   'Auto',
+  manual: 'Manual',
 }
 
 // --- Print / page labels -----------------------------------------------------

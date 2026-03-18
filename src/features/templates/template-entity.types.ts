@@ -4,7 +4,7 @@
  */
 
 import type { DocumentType } from '../invoices/invoice.types'
-import type { BaseTemplate, PageMargins, PageOrientation, PageSize, RoundOffMethod, RoundOffPrecision } from './template-layout.types'
+import type { BaseTemplate, CopyLabelMode, PageMargins, PageOrientation, PageSize, RoundOffMethod, RoundOffPrecision, StampStyle } from './template-layout.types'
 import type { TemplateConfig } from './template-config.types'
 
 // ─── Print settings ───────────────────────────────────────────────────────────
@@ -25,6 +25,14 @@ export interface PrintSettings {
   pageNumbers: boolean
   /** Maximum line items per page before a page break is inserted (0 = auto) */
   itemsPerPage: number
+  /** Visual style for payment status stamp overlay */
+  stampStyle: StampStyle
+  /** Enable copy labels (ORIGINAL / DUPLICATE / TRIPLICATE) */
+  copyLabels: boolean
+  /** Auto-assign labels by print count, or let user pick manually */
+  copyLabelMode: CopyLabelMode
+  /** Custom label names (default: ORIGINAL, DUPLICATE, TRIPLICATE) */
+  copyLabelNames: string[]
 }
 
 // ─── Invoice template entity ──────────────────────────────────────────────────

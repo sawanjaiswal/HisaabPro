@@ -66,7 +66,7 @@ export default function TemplateEditorPage() {
 
       <div className="template-customize-page">
         <div className="template-preview-panel">
-          <TemplatePreviewPanel config={form.config} />
+          <TemplatePreviewPanel config={form.config} printSettings={form.printSettings} />
         </div>
 
         <div className="template-controls-panel">

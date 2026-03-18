@@ -39,6 +39,11 @@ export const PreviewInvoiceHeader: React.FC<PreviewInvoiceHeaderProps> = ({
             {SAMPLE_BUSINESS.address}
           </div>
         )}
+        {fields.udyamNumber && (
+          <div style={{ fontSize: '0.694rem', opacity: 0.75, marginTop: '2px' }}>
+            Udyam: {SAMPLE_BUSINESS.udyamNumber}
+          </div>
+        )}
       </div>
 
       <div style={{ textAlign: layout.headerStyle === 'side-by-side' ? 'right' : 'left' }}>

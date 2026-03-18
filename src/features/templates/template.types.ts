@@ -11,6 +11,8 @@
 
 export type {
   BaseTemplate,
+  CopyLabelMode,
+  DeepPartial,
   CustomizationTab,
   HeaderStyle,
   ItemTableStyle,
@@ -21,9 +23,11 @@ export type {
   RoundOffMethod,
   RoundOffPrecision,
   SignaturePosition,
+  StampStyle,
   SummaryPosition,
   TemplateFontFamily,
   TemplateFontSize,
+  TemplateLineHeight,
 } from './template-layout.types'
 
 export type {
