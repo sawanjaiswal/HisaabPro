@@ -87,6 +87,7 @@ const PublicLedger = lazy(() => import('@/features/shared-ledger/PublicLedgerPag
 const ItemsLibrary = lazy(() => import('@/features/items-library/ItemsLibraryPage'))
 const DataImport = lazy(() => import('@/features/data-import/DataImportPage'))
 const SmartGreetings = lazy(() => import('@/features/smart-greetings/SmartGreetingsPage'))
+const Units = lazy(() => import('@/features/units/UnitsPage'))
 const Landing = lazy(() => import('@/features/landing/LandingPage'))
 const NotFound = lazy(() => import('@/components/feedback/NotFoundPage'))
 
@@ -174,6 +175,7 @@ export function App() {
         <Route path={ROUTES.SETTINGS_TAX_RATE_NEW} element={<PageRoute><ProtectedRoute><CreateTaxCategory /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_TAX_RATE_EDIT} element={<PageRoute><ProtectedRoute><EditTaxCategory /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_CURRENCY} element={<PageRoute><ProtectedRoute><CurrencySettings /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_UNITS} element={<PageRoute><ProtectedRoute><Units /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.RECURRING} element={<PageRoute><ProtectedRoute><RecurringList /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.GST_RECONCILIATION} element={<PageRoute><ProtectedRoute><GstReconciliationList /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.GST_RECONCILIATION_DETAIL} element={<PageRoute><ProtectedRoute><GstReconciliationDetail /></ProtectedRoute></PageRoute>} />

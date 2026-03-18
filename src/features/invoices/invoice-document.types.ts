@@ -172,6 +172,8 @@ export interface DocumentDetail extends DocumentSummary {
   /** Document this was converted into */
   convertedTo: DocumentRef | null
   shareLogs: DocumentShareLog[]
+  /** Vehicle number for transport/logistics (all doc types) */
+  vehicleNumber: string | null
   /** Only present for DELIVERY_CHALLAN */
   transportDetails: TransportDetails | null
   /** Overall profit percent across the document */

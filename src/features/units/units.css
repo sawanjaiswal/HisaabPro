@@ -1,0 +1,125 @@
+/* Units page styles */
+
+.unit-search {
+  margin-bottom: var(--space-2);
+}
+
+.unit-summary {
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+  padding: var(--space-2) 0;
+}
+
+/* ─── Unit groups ──────────────────────────────────────────────────────── */
+
+.unit-groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-bottom: var(--space-6);
+}
+
+.unit-group__title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: var(--space-2) 0 var(--space-1);
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+/* ─── Unit list item ───────────────────────────────────────────────────── */
+
+.unit-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-gray-50);
+  gap: var(--space-3);
+}
+
+.unit-list-item__info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.unit-list-item__name {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-gray-900);
+}
+
+.unit-list-item__symbol {
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+  font-family: var(--font-mono, monospace);
+}
+
+.unit-list-item__count {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+}
+
+.unit-list-item__actions {
+  display: flex;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+/* ─── Category badge ───────────────────────────────────────────────────── */
+
+.unit-category-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-100);
+  color: var(--color-gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.unit-category-badge[data-category="WEIGHT"] { background: #FEF3C7; color: #92400E; }
+.unit-category-badge[data-category="VOLUME"] { background: #DBEAFE; color: #1E40AF; }
+.unit-category-badge[data-category="COUNT"]  { background: #D1FAE5; color: #065F46; }
+.unit-category-badge[data-category="LENGTH"] { background: #EDE9FE; color: #5B21B6; }
+.unit-category-badge[data-category="AREA"]   { background: #FCE7F3; color: #9D174D; }
+.unit-category-badge[data-category="SERVICE"]   { background: #FFF7ED; color: #9A3412; }
+.unit-category-badge[data-category="PACKAGING"] { background: #F0F9FF; color: #0C4A6E; }
+
+/* ─── Sheet form ───────────────────────────────────────────────────────── */
+
+.unit-sheet-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ─── Dark mode ────────────────────────────────────────────────────────── */
+
+@media (prefers-color-scheme: dark) {
+  .unit-group__title {
+    border-bottom-color: var(--color-gray-700);
+  }
+
+  .unit-list-item {
+    border-bottom-color: var(--color-gray-800);
+  }
+
+  .unit-list-item__name {
+    color: var(--color-gray-100);
+  }
+
+  .unit-category-badge {
+    background: var(--color-gray-700);
+    color: var(--color-gray-300);
+  }
+}

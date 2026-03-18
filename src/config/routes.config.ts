@@ -77,4 +77,5 @@ export const ROUTES = {
   ITEMS_LIBRARY: '/products/library',
   DATA_IMPORT: '/settings/import',
   SMART_GREETINGS: '/greetings',
+  SETTINGS_UNITS: '/settings/units',
 } as const

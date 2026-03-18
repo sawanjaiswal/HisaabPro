@@ -125,6 +125,20 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     ],
   },
   {
+    id: 'business',
+    title: 'Business',
+    items: [
+      {
+        id: 'units',
+        label: 'Units',
+        description: 'Manage measurement units (kg, pcs, box, etc.)',
+        icon: 'Ruler',
+        route: ROUTES.SETTINGS_UNITS,
+        type: 'navigation',
+      },
+    ],
+  },
+  {
     id: 'transaction-controls',
     title: 'Transaction Controls',
     items: [
