@@ -23,88 +23,80 @@ interface Feature197Props {
 const defaultFeatures: FeatureItem[] = [
   {
     id: 1,
-    title: "Ready-to-Use UI Blocks",
-    image: "/images/block/placeholder-1.svg",
+    title: "Is there a free trial?",
+    image: "",
     description:
-      "Browse through our extensive collection of pre-built UI blocks designed with shadcn/ui. Each block is carefully crafted to be responsive, accessible, and easily customizable. Simply copy and paste the code into your project.",
+      "Yes — 14 days with full access to any plan. No credit card required. Pick a plan after your trial ends, or cancel with no questions asked.",
   },
   {
     id: 2,
-    title: "Tailwind CSS & TypeScript",
-    image: "/images/block/placeholder-2.svg",
+    title: "Does it work without internet?",
+    image: "",
     description:
-      "Built with Tailwind CSS for rapid styling and TypeScript for type safety. Our blocks leverage the full power of Tailwind's utility classes while maintaining clean, type-safe code that integrates seamlessly with your Next.js projects.",
+      "100% offline. Create invoices, record payments, manage inventory — all without internet. Your data syncs automatically when you're back online. Zero data loss, ever.",
   },
   {
     id: 3,
-    title: "Dark Mode & Customization",
-    image: "/images/block/placeholder-3.svg",
+    title: "Is my data safe?",
+    image: "",
     description:
-      "Every block supports dark mode out of the box and can be customized to match your brand. Modify colors, spacing, and typography using Tailwind's configuration. The shadcn/ui theming system makes it easy to maintain consistency across your site.",
+      "Your data is encrypted end-to-end and backed up to the cloud. Even if you lose your phone, log in on any new device and everything is restored. We never sell your data.",
   },
   {
     id: 4,
-    title: "Accessibility First",
-    image: "/images/block/placeholder-4.svg",
+    title: "Can I share invoices on WhatsApp?",
+    image: "",
     description:
-      "All blocks are built with accessibility in mind, following WCAG guidelines. They include proper ARIA labels, keyboard navigation support, and semantic HTML structure. Ensure your website is usable by everyone without extra effort.",
+      "Yes! Generate a PDF invoice and share it on WhatsApp, Email, or print it — all in 2 taps from the invoice screen. Customers receive a professional PDF with your business branding.",
   },
   {
     id: 5,
-    title: "Modern Development Stack",
-    image: "/images/block/placeholder-5.svg",
+    title: "How is this different from Vyapar or MyBillBook?",
+    image: "",
     description:
-      "Built for modern web development with React 18, Next.js 14, and the latest shadcn/ui components. Take advantage of React Server Components, TypeScript strict mode, and other cutting-edge features while maintaining excellent performance.",
+      "HisaabPro works fully offline (not partially), has zero data loss by design, a modern premium UI, custom staff role builder, and faster WhatsApp support. Plus transparent pricing — no hidden charges.",
   },
 ];
 
 const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
   const [activeTabId, setActiveTabId] = useState<number | null>(1);
-  const [activeImage, setActiveImage] = useState(features[0].image);
 
   return (
-    <section className="py-32">
+    <section id="faq" className="py-32">
       <div className="container mx-auto">
-        <div className="mb-12 flex w-full items-start justify-between gap-12">
-          <div className="w-full md:w-1/2">
+        <div className="mb-12 text-center">
+          <h2 className="text-4xl font-semibold lg:text-5xl">
+            Frequently asked questions
+          </h2>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Everything you need to know before you start.
+          </p>
+        </div>
+        <div className="mb-12 flex w-full items-start justify-center gap-12">
+          <div className="w-full max-w-2xl">
             <Accordion type="single" className="w-full" defaultValue="item-1">
               {features.map((tab) => (
-                <AccordionItem key={tab.id} value={`item-${tab.id}`}>
+                <AccordionItem key={tab.id} value={`item-${tab.id}`} className="border-white/10">
                   <AccordionTrigger
                     onClick={() => {
-                      setActiveImage(tab.image);
                       setActiveTabId(tab.id);
                     }}
                     className="cursor-pointer py-5 !no-underline transition"
                   >
-                    <h6
+                    <span
                       className={`text-xl font-semibold ${tab.id === activeTabId ? "text-foreground" : "text-muted-foreground"}`}
                     >
                       {tab.title}
-                    </h6>
+                    </span>
                   </AccordionTrigger>
                   <AccordionContent>
                     <p className="mt-3 text-muted-foreground">
                       {tab.description}
                     </p>
-                    <div className="mt-4 md:hidden">
-                      <img
-                        src={tab.image}
-                        alt={tab.title}
-                        className="h-full max-h-80 w-full rounded-md object-cover"
-                      />
-                    </div>
                   </AccordionContent>
                 </AccordionItem>
               ))}
             </Accordion>
-          </div>
-          <div className="relative m-auto hidden w-1/2 overflow-hidden rounded-xl bg-muted md:block">
-            <img
-              src={activeImage}
-              alt="Feature preview"
-              className="aspect-[4/3] rounded-md object-cover pl-4"
-            />
           </div>
         </div>
       </div>

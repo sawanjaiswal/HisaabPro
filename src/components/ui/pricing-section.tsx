@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowRight, Check } from "lucide-react"
+import { ArrowRight, Check, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface Feature {
@@ -16,11 +16,15 @@ interface PricingTier {
     monthly: number
     yearly: number
   }
+  originalPrice: {
+    monthly: number
+    yearly: number
+  }
+  yearlySavings: number
   description: string
   features: Feature[]
   highlight?: boolean
   badge?: string
-  icon: React.ReactNode
 }
 
 interface PricingSectionProps {
@@ -30,31 +34,60 @@ interface PricingSectionProps {
 
 const defaultTiers: PricingTier[] = [
   {
-    name: "Basic",
-    price: { monthly: 9, yearly: 99 },
-    description: "For individuals and small projects",
-    icon: <Check className="w-5 h-5" />,
+    name: "Starter",
+    price: { monthly: 199, yearly: 1999 },
+    originalPrice: { monthly: 399, yearly: 3999 },
+    yearlySavings: 2000,
+    description: "Perfect for solo business owners",
+    highlight: false,
+    badge: undefined,
     features: [
-      { name: "Up to 5 projects", description: "Create and manage projects", included: true },
-      { name: "Basic analytics", description: "Track your performance", included: true },
-      { name: "24/7 support", description: "Get help when you need it", included: true },
-      { name: "Custom domains", description: "Use your own domain", included: false },
-      { name: "Advanced security", description: "Enterprise-grade security", included: false },
+      { name: "1 user", description: "Owner access only", included: true },
+      { name: "Unlimited invoices", description: "No cap on billing", included: true },
+      { name: "100% offline", description: "Works without internet", included: true },
+      { name: "WhatsApp sharing", description: "Send invoices instantly", included: true },
+      { name: "Basic reports", description: "Sales and payment summaries", included: true },
+      { name: "Staff roles", description: "Add team members", included: false },
+      { name: "Advanced reports", description: "Detailed analytics", included: false },
+      { name: "Custom branding", description: "Your logo on invoices", included: false },
     ],
   },
   {
     name: "Pro",
-    price: { monthly: 29, yearly: 299 },
-    description: "For teams and growing businesses",
+    price: { monthly: 499, yearly: 4999 },
+    originalPrice: { monthly: 799, yearly: 7999 },
+    yearlySavings: 3000,
+    description: "For growing businesses with a team",
     highlight: true,
     badge: "Most Popular",
-    icon: <ArrowRight className="w-5 h-5" />,
     features: [
-      { name: "Unlimited projects", description: "No limits on projects", included: true },
-      { name: "Advanced analytics", description: "Deep insights and reports", included: true },
-      { name: "Priority support", description: "Get help faster", included: true },
-      { name: "Custom domains", description: "Use your own domain", included: true },
-      { name: "Advanced security", description: "Enterprise-grade security", included: true },
+      { name: "3 users", description: "Owner + 2 staff members", included: true },
+      { name: "Unlimited invoices", description: "No cap on billing", included: true },
+      { name: "100% offline", description: "Works without internet", included: true },
+      { name: "WhatsApp sharing", description: "Send invoices instantly", included: true },
+      { name: "Advanced reports", description: "Detailed analytics & export", included: true },
+      { name: "4 preset staff roles", description: "Admin, Manager, Salesperson, Viewer", included: true },
+      { name: "Your logo on invoices", description: "Remove HisaabPro branding", included: true },
+      { name: "Custom role builder", description: "Fine-grained permissions", included: false },
+    ],
+  },
+  {
+    name: "Business",
+    price: { monthly: 999, yearly: 9999 },
+    originalPrice: { monthly: 1499, yearly: 14999 },
+    yearlySavings: 5000,
+    description: "For multi-location businesses",
+    highlight: false,
+    badge: "Best Value",
+    features: [
+      { name: "Unlimited users", description: "No team size limit", included: true },
+      { name: "Unlimited invoices", description: "No cap on billing", included: true },
+      { name: "100% offline", description: "Works without internet", included: true },
+      { name: "WhatsApp sharing", description: "Send invoices instantly", included: true },
+      { name: "Advanced reports + export", description: "PDF, Excel, share with CA", included: true },
+      { name: "Custom role builder", description: "Fine-grained permissions per user", included: true },
+      { name: "Your logo + custom domain", description: "Full white-label branding", included: true },
+      { name: "Priority WhatsApp support", description: "Response within 4 hours", included: true },
     ],
   },
 ]
@@ -91,6 +124,7 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
 
   return (
     <section
+      id="pricing"
       className={cn(
         "relative bg-background text-foreground",
         "py-12 px-4 md:py-24 lg:py-32",
@@ -98,11 +132,14 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
         className,
       )}
     >
-      <div className="w-full max-w-5xl mx-auto">
+      <div className="w-full max-w-6xl mx-auto">
         <div className="flex flex-col items-center gap-4 mb-12">
           <h2 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">
             Simple, transparent pricing
           </h2>
+          <p className="text-base text-zinc-500 dark:text-zinc-400">
+            Start with a 14-day free trial. No credit card required.
+          </p>
           <div className="inline-flex items-center p-1.5 bg-white dark:bg-zinc-800/50 rounded-full border border-zinc-200 dark:border-zinc-700 shadow-sm">
             {["Monthly", "Yearly"].map((period) => (
               <button
@@ -121,7 +158,7 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {tiers.map((tier) => (
             <div
               key={tier.name}
@@ -139,41 +176,43 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
                 "hover:translate-y-0 hover:shadow-lg",
               )}
             >
-              {tier.badge && tier.highlight && (
+              {tier.badge && (
                 <div className="absolute -top-4 left-6">
-                  <span className={cn("inline-flex items-center rounded-full", badgeStyles)}>{tier.badge}</span>
+                  <span className={cn("inline-flex items-center rounded-full", badgeStyles)}>
+                    {tier.badge}
+                  </span>
                 </div>
               )}
 
               <div className="p-8 flex-1">
-                <div className="flex items-center justify-between mb-4">
-                  <div
-                    className={cn(
-                      "p-3 rounded-xl",
-                      tier.highlight
-                        ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
-                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400",
-                    )}
-                  >
-                    {tier.icon}
-                  </div>
-                  <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                <div className="mb-4">
+                  <p className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
                     {tier.name}
-                  </h3>
+                  </p>
+                  <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                    {tier.description}
+                  </p>
                 </div>
 
                 <div className="mb-6">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-4xl font-bold text-zinc-900 dark:text-zinc-100">
-                      ${isYearly ? tier.price.yearly : tier.price.monthly}
-                    </span>
-                    <span className="text-sm text-zinc-500 dark:text-zinc-400">
-                      /{isYearly ? "year" : "month"}
+                  <div className="flex items-baseline gap-2 flex-wrap">
+                    <span className="line-through text-muted-foreground text-xl">
+                      ₹{isYearly ? tier.originalPrice.yearly : tier.originalPrice.monthly}
                     </span>
                   </div>
-                  <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                    {tier.description}
-                  </p>
+                  <div className="flex items-baseline gap-2 mt-0.5">
+                    <span className="text-4xl font-bold text-zinc-900 dark:text-zinc-100">
+                      ₹{isYearly ? tier.price.yearly : tier.price.monthly}
+                    </span>
+                    <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                      /{isYearly ? "yr" : "mo"}
+                    </span>
+                  </div>
+                  {isYearly && (
+                    <p className="mt-1.5 text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                      Save ₹{tier.yearlySavings}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-4">
@@ -181,16 +220,27 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
                     <div key={feature.name} className="flex gap-4">
                       <div
                         className={cn(
-                          "mt-1 p-0.5 rounded-full transition-colors duration-200",
+                          "mt-0.5 shrink-0 p-0.5 rounded-full transition-colors duration-200",
                           feature.included
                             ? "text-emerald-600 dark:text-emerald-400"
-                            : "text-zinc-400 dark:text-zinc-600",
+                            : "text-zinc-300 dark:text-zinc-600",
                         )}
                       >
-                        <Check className="w-4 h-4" />
+                        {feature.included ? (
+                          <Check className="w-4 h-4" />
+                        ) : (
+                          <X className="w-4 h-4" />
+                        )}
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                        <div
+                          className={cn(
+                            "text-sm font-medium",
+                            feature.included
+                              ? "text-zinc-900 dark:text-zinc-100"
+                              : "text-zinc-400 dark:text-zinc-500",
+                          )}
+                        >
                           {feature.name}
                         </div>
                         <div className="text-sm text-zinc-500 dark:text-zinc-400">
@@ -212,23 +262,21 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
                   )}
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
-                    {tier.highlight ? (
-                      <>
-                        Buy now
-                        <ArrowRight className="w-4 h-4" />
-                      </>
-                    ) : (
-                      <>
-                        Get started
-                        <ArrowRight className="w-4 h-4" />
-                      </>
-                    )}
+                    Start Free Trial
+                    <ArrowRight className="w-4 h-4" />
                   </span>
                 </button>
               </div>
             </div>
           ))}
         </div>
+
+        <p className="text-center text-sm text-muted-foreground mt-8">
+          Auto-renews. Cancel anytime from Settings. •{" "}
+          <a href="#" className="underline">
+            Have a coupon code?
+          </a>
+        </p>
       </div>
     </section>
   )

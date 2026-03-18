@@ -1,12 +1,12 @@
-import { Cpu, Lock, Sparkles, Zap } from 'lucide-react'
+import { Cpu, Lock, MessageCircle, Zap } from 'lucide-react'
 
 export function FeaturesSection7() {
     return (
-        <section className="overflow-hidden py-16 md:py-32">
+        <section id="features" className="overflow-hidden py-16 md:py-32">
             <div className="mx-auto max-w-5xl space-y-8 px-6 md:space-y-12">
                 <div className="relative z-10 max-w-2xl">
-                    <h2 className="text-4xl font-semibold lg:text-5xl">Built for Scaling teams</h2>
-                    <p className="mt-6 text-lg">Empower your team with workflows that adapt to your needs, whether you prefer git synchronization or a AI Agents interface.</p>
+                    <h2 className="text-4xl font-semibold lg:text-5xl">Everything your business needs</h2>
+                    <p className="mt-6 text-lg">From billing to payments, all in one app that works on any phone — even without internet.</p>
                 </div>
                 <div className="relative -mx-4 rounded-3xl p-3 md:-mx-12 lg:col-span-3">
                     <div className="[perspective:800px]">
@@ -23,31 +23,31 @@ export function FeaturesSection7() {
                 <div className="relative mx-auto grid grid-cols-2 gap-x-3 gap-y-6 sm:gap-8 lg:grid-cols-4">
                     <div className="space-y-3">
                         <div className="flex items-center gap-2">
-                            <Zap className="size-4" />
-                            <h3 className="text-sm font-medium">Faaast</h3>
+                            <Zap className="size-6 text-[#1e3a5f] dark:text-white" />
+                            <p className="text-sm font-semibold">10-Second Invoicing</p>
                         </div>
-                        <p className="text-muted-foreground text-sm">It supports an entire helping developers and innovate.</p>
+                        <p className="text-muted-foreground text-sm">Create and share professional invoices faster than writing by hand.</p>
                     </div>
                     <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                            <Cpu className="size-4" />
-                            <h3 className="text-sm font-medium">Powerful</h3>
+                            <Cpu className="size-6 text-[#1e3a5f] dark:text-white" />
+                            <p className="text-sm font-semibold">100% Offline</p>
                         </div>
-                        <p className="text-muted-foreground text-sm">It supports an entire helping developers and businesses.</p>
+                        <p className="text-muted-foreground text-sm">Bill, track payments, manage stock — all without internet. Syncs when you're back online.</p>
                     </div>
                     <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                            <Lock className="size-4" />
-                            <h3 className="text-sm font-medium">Security</h3>
+                            <MessageCircle className="size-6 text-[#1e3a5f] dark:text-white" />
+                            <p className="text-sm font-semibold">WhatsApp Sharing</p>
                         </div>
-                        <p className="text-muted-foreground text-sm">It supports an helping developers businesses innovate.</p>
+                        <p className="text-muted-foreground text-sm">Send PDF invoices to customers on WhatsApp in 2 taps.</p>
                     </div>
                     <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                            <Sparkles className="size-4" />
-                            <h3 className="text-sm font-medium">AI Powered</h3>
+                            <Lock className="size-6 text-[#1e3a5f] dark:text-white" />
+                            <p className="text-sm font-semibold">Your Data, Always Safe</p>
                         </div>
-                        <p className="text-muted-foreground text-sm">It supports an helping developers businesses innovate.</p>
+                        <p className="text-muted-foreground text-sm">Encrypted backups. Even if you lose your phone, your data is recoverable.</p>
                     </div>
                 </div>
             </div>

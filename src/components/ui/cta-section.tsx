@@ -1,4 +1,4 @@
-import { ArrowRightIcon, PlusIcon } from "lucide-react";
+import { ArrowRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 export function CallToAction() {
@@ -8,17 +8,17 @@ export function CallToAction() {
 
       <div className="space-y-1">
         <h2 className="text-center font-bold text-2xl">
-          Let your plans shape the future.
+          Start billing smarter today.
         </h2>
         <p className="text-center text-muted-foreground">
-          Start your free trial today. No credit card required.
+          14-day free trial. No credit card required. Cancel anytime.
         </p>
       </div>
 
       <div className="flex items-center justify-center gap-2">
-        <Button variant="ghost">Contact Sales</Button>
+        <Button variant="ghost">Contact Us</Button>
         <Button>
-          Get Started <ArrowRightIcon className="size-4 ml-1" />
+          Start Free Trial <ArrowRightIcon className="size-4 ml-1" />
         </Button>
       </div>
     </div>

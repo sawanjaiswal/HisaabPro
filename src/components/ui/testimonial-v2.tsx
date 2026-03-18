@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from "motion/react";
-import { Sun, Moon } from 'lucide-react';
 
 // --- Types ---
 interface Testimonial {
@@ -13,58 +12,58 @@ interface Testimonial {
 // --- Data ---
 const testimonials: Testimonial[] = [
   {
-    text: "This ERP revolutionized our operations, streamlining finance and inventory. The cloud-based platform keeps us productive, even remotely.",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150",
-    name: "Briana Patton",
-    role: "Operations Manager",
-  },
-  {
-    text: "Implementing this ERP was smooth and quick. The customizable, user-friendly interface made team training effortless.",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=150&h=150",
-    name: "Bilal Ahmed",
-    role: "IT Manager",
-  },
-  {
-    text: "The support team is exceptional, guiding us through setup and providing ongoing assistance, ensuring our satisfaction.",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150&h=150",
-    name: "Saman Malik",
-    role: "Customer Support Lead",
-  },
-  {
-    text: "This ERP's seamless integration enhanced our business operations and efficiency. Highly recommend for its intuitive interface.",
+    text: "Mera purana billing app internet ke bina kaam nahi karta tha. HisaabPro mein sab kuch offline hota hai. Ab bills kabhi nahi kho-te.",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150",
-    name: "Omar Raza",
-    role: "CEO",
+    name: "Rajesh Sharma",
+    role: "Kirana Store Owner, Indore",
   },
   {
-    text: "Its robust features and quick support have transformed our workflow, making us significantly more efficient.",
+    text: "I have 3 staff members and each one has their own login with limited access. Finally I know who did what and when.",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150",
+    name: "Priya Patel",
+    role: "Wholesale Trader, Ahmedabad",
+  },
+  {
+    text: "I send invoices on WhatsApp in 2 taps. My customers love getting professional PDFs instead of handwritten bills.",
+    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=150&h=150",
+    name: "Amit Gupta",
+    role: "Garment Shop Owner, Surat",
+  },
+  {
+    text: "Setting up took 2 minutes. I created my first invoice the same day. Very easy to use, even for someone not tech-savvy.",
+    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150&h=150",
+    name: "Sunita Verma",
+    role: "Stationery Shop, Jaipur",
+  },
+  {
+    text: "The payment tracking is excellent. I can see who owes me money and send reminders directly on WhatsApp. Collections have improved.",
     image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150&h=150",
-    name: "Zainab Hussain",
-    role: "Project Manager",
+    name: "Mohammed Irfan",
+    role: "Electronics Dealer, Hyderabad",
   },
   {
-    text: "The smooth implementation exceeded expectations. It streamlined processes, improving overall business performance.",
+    text: "Beautiful app. My customers think I hired a designer for my invoices. It is just HisaabPro templates. Very professional look.",
     image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=150&h=150",
-    name: "Aliza Khan",
-    role: "Business Analyst",
+    name: "Kavita Joshi",
+    role: "Boutique Owner, Pune",
   },
   {
-    text: "Our business functions improved with a user-friendly design and positive customer feedback.",
+    text: "Stock management is automatic. When I sell something, stock updates instantly. No more manual counting at end of day.",
     image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150&h=150",
-    name: "Farhan Siddiqui",
-    role: "Marketing Director",
+    name: "Vikram Singh",
+    role: "Hardware Store, Ludhiana",
   },
   {
-    text: "They delivered a solution that exceeded expectations, understanding our needs and enhancing our operations.",
+    text: "I was using paper registers for 5 years. Switching to HisaabPro was the best business decision. My CA is also happy now.",
     image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150&h=150",
-    name: "Sana Sheikh",
-    role: "Sales Manager",
+    name: "Neha Agarwal",
+    role: "Beauty Salon, Delhi",
   },
   {
-    text: "Using this ERP, our online presence and conversions significantly improved, boosting business performance.",
+    text: "End of month I download the PDF report and send to my CA. Everything is clean and organized. Saves me hours every month.",
     image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=150&h=150",
-    name: "Hassan Ali",
-    role: "E-commerce Manager",
+    name: "Deepak Tiwari",
+    role: "Auto Parts Shop, Nagpur",
   },
 ];
 
@@ -149,6 +148,7 @@ const TestimonialsColumn = (props: {
 const TestimonialsSection = () => {
   return (
     <section
+      id="testimonials"
       aria-labelledby="testimonials-heading"
       className="bg-transparent py-24 relative overflow-hidden"
     >
@@ -171,10 +171,10 @@ const TestimonialsSection = () => {
           </div>
 
           <h2 id="testimonials-heading" className="text-4xl md:text-5xl font-extrabold tracking-tight mt-6 text-center text-neutral-900 dark:text-white transition-colors">
-            What our users say
+            Trusted by Indian businesses
           </h2>
           <p className="text-center mt-5 text-neutral-500 dark:text-neutral-400 text-lg leading-relaxed max-w-sm transition-colors">
-            Discover how thousands of teams streamline their operations with our platform.
+            See why business owners are switching to HisaabPro.
           </p>
         </div>
 

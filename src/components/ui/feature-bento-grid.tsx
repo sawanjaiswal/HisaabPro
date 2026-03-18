@@ -1,58 +1,56 @@
-import React, { useEffect, useRef } from "react"
+import React from "react"
 import { cn } from "@/lib/utils"
 import { motion } from "motion/react"
-import { Youtube } from "lucide-react"
 
 export function FeaturesSectionWithBentoGrid() {
   const features = [
     {
-      title: "Track issues effectively",
+      title: "Smart Invoicing",
       description:
-        "Track and manage your project issues with ease using our intuitive interface.",
+        "7 document types: Sale, Purchase, Estimate, Proforma, Challan, Credit Note, Debit Note. Auto-numbered, WhatsApp-ready.",
       skeleton: <SkeletonOne />,
       className:
-        "col-span-1 md:col-span-4 lg:col-span-4 border-b md:border-r dark:border-neutral-800",
+        "col-span-1 md:col-span-4 lg:col-span-4 border-b md:border-r border-neutral-200 dark:border-neutral-800",
     },
     {
-      title: "Capture pictures with AI",
+      title: "Payment Tracking",
       description:
-        "Capture stunning photos effortlessly using our advanced AI technology.",
+        "See who owes you at a glance. Send WhatsApp reminders in one tap.",
       skeleton: <SkeletonTwo />,
       className:
-        "col-span-1 md:col-span-2 lg:col-span-2 border-b dark:border-neutral-800",
+        "col-span-1 md:col-span-2 lg:col-span-2 border-b border-neutral-200 dark:border-neutral-800",
     },
     {
-      title: "Watch our AI on YouTube",
+      title: "Inventory Management",
       description:
-        "Whether its you or Tyler Durden, you can get to know about our product on YouTube",
+        "Real-time stock tracking with low stock alerts and party-wise pricing.",
       skeleton: <SkeletonThree />,
       className:
-        "col-span-1 md:col-span-3 lg:col-span-3 border-b md:border-r dark:border-neutral-800",
+        "col-span-1 md:col-span-3 lg:col-span-3 border-b md:border-r border-neutral-200 dark:border-neutral-800",
     },
     {
-      title: "Deploy in seconds",
+      title: "Reports & Insights",
       description:
-        "With our blazing fast, state of the art, cutting edge, we are so back cloud servies (read AWS) - you can deploy your model in seconds.",
+        "Sales reports, stock summary, party statements. Download PDF or share with your CA.",
       skeleton: <SkeletonFour />,
       className:
-        "col-span-1 md:col-span-3 lg:col-span-3 border-b md:border-none",
+        "col-span-1 md:col-span-3 lg:col-span-3 border-b md:border-none border-neutral-200 dark:border-neutral-800",
     },
   ]
   return (
     <div className="relative z-20 py-10 lg:py-40 max-w-7xl mx-auto">
       <div className="px-8">
         <h4 className="text-3xl lg:text-5xl lg:leading-tight max-w-5xl mx-auto text-center tracking-tight font-medium text-black dark:text-white">
-          Packed with thousands of features
+          One app, complete business control
         </h4>
 
         <p className="text-sm lg:text-base max-w-2xl my-4 mx-auto text-neutral-500 text-center font-normal dark:text-neutral-300">
-          From Image generation to video generation, Everything AI has APIs for
-          literally everything. It can even create this website copy for you.
+          Invoicing, inventory, payments, reports — all connected, all offline.
         </p>
       </div>
 
       <div className="relative">
-        <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-6 mt-12 xl:border rounded-md dark:border-neutral-800">
+        <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-6 mt-12 xl:border rounded-md border-neutral-200 dark:border-neutral-800">
           {features.map((feature) => (
             <FeatureCard key={feature.title} className={feature.className}>
               <FeatureTitle>{feature.title}</FeatureTitle>
@@ -108,8 +106,8 @@ export const SkeletonOne = () => {
       <div className="w-full p-5 mx-auto bg-white dark:bg-neutral-900 shadow-2xl group h-full">
         <div className="flex flex-1 w-full h-full flex-col space-y-2">
           <img
-            src="https://ui.aceternity.com/_next/image?url=%2Flinear.webp&w=1920&q=75"
-            alt="header"
+            src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200&h=800"
+            alt="Business invoicing dashboard"
             width={800}
             height={800}
             className="h-full w-full aspect-square object-cover object-left-top rounded-sm"
@@ -125,34 +123,29 @@ export const SkeletonOne = () => {
 
 export const SkeletonThree = () => {
   return (
-    <a
-      href="https://www.youtube.com/watch?v=RPa3_AD1_Vs"
-      target="__blank"
-      className="relative flex gap-10 h-full group/image"
-    >
+    <div className="relative flex gap-10 h-full">
       <div className="w-full mx-auto bg-transparent dark:bg-transparent group h-full">
         <div className="flex flex-1 w-full h-full flex-col space-y-2 relative">
-          <Youtube className="h-20 w-20 absolute z-10 inset-0 text-red-500 m-auto" />
           <img
-            src="https://assets.aceternity.com/fireship.jpg"
-            alt="header"
+            src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&q=80&w=800&h=800"
+            alt="Inventory management — store shelves"
             width={800}
             height={800}
-            className="h-full w-full aspect-square object-cover object-center rounded-sm blur-none group-hover/image:blur-md transition-all duration-200"
+            className="h-full w-full aspect-square object-cover object-center rounded-sm"
           />
         </div>
       </div>
-    </a>
+    </div>
   )
 }
 
 export const SkeletonTwo = () => {
   const images = [
-    "https://images.unsplash.com/photo-1517322048670-4fba75cbbb62?q=80&w=3000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1573790387438-4da905039392?q=80&w=3425&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1555400038-63f5ba517a47?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1554931670-4ebfabf6e7a9?q=80&w=3387&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1546484475-7f7bd55792da?q=80&w=2581&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&q=80&w=500&h=500",
+    "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=500&h=500",
+    "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=500&h=500",
+    "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&q=80&w=500&h=500",
+    "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&q=80&w=500&h=500",
   ]
 
   const imageVariants = {
@@ -183,7 +176,7 @@ export const SkeletonTwo = () => {
           >
             <img
               src={image}
-              alt="bali images"
+              alt="Payment tracking"
               width={500}
               height={500}
               className="rounded-lg h-20 w-20 md:h-40 md:w-40 object-cover flex-shrink-0"
@@ -205,7 +198,7 @@ export const SkeletonTwo = () => {
           >
             <img
               src={image}
-              alt="bali images"
+              alt="Payment tracking"
               width={500}
               height={500}
               className="rounded-lg h-20 w-20 md:h-40 md:w-40 object-cover flex-shrink-0"
@@ -222,101 +215,12 @@ export const SkeletonTwo = () => {
 
 export const SkeletonFour = () => {
   return (
-    <div className="h-60 md:h-60 flex flex-col items-center relative bg-transparent dark:bg-transparent mt-10">
-      <Globe className="absolute -right-10 md:-right-10 -bottom-80 md:-bottom-72" />
+    <div className="h-60 md:h-60 flex flex-col items-center relative bg-transparent dark:bg-transparent mt-10 overflow-hidden rounded-lg">
+      <img
+        src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800&h=500"
+        alt="Business reports and analytics"
+        className="w-full h-full object-cover object-top"
+      />
     </div>
-  )
-}
-
-export const Globe = ({ className }: { className?: string }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-
-  useEffect(() => {
-    if (!canvasRef.current) return
-
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
-
-    canvas.width = 1200
-    canvas.height = 1200
-    let animationId: number
-    let phi = 0
-
-    const draw = () => {
-      ctx.clearRect(0, 0, 1200, 1200)
-      const cx = 600
-      const cy = 600
-      const r = 400
-
-      // Globe base
-      const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, r)
-      gradient.addColorStop(0, "rgba(76, 76, 76, 0.3)")
-      gradient.addColorStop(0.7, "rgba(76, 76, 76, 0.15)")
-      gradient.addColorStop(1, "rgba(76, 76, 76, 0)")
-      ctx.beginPath()
-      ctx.arc(cx, cy, r, 0, Math.PI * 2)
-      ctx.fillStyle = gradient
-      ctx.fill()
-
-      // Grid lines
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.08)"
-      ctx.lineWidth = 1
-      for (let i = 0; i < 8; i++) {
-        const angle = (i / 8) * Math.PI + phi
-        ctx.beginPath()
-        ctx.ellipse(cx, cy, r * Math.abs(Math.cos(angle)), r, 0, 0, Math.PI * 2)
-        ctx.stroke()
-      }
-      for (let i = -3; i <= 3; i++) {
-        const y = cy + (i / 4) * r
-        const rx = Math.sqrt(r * r - (y - cy) * (y - cy))
-        if (rx > 0) {
-          ctx.beginPath()
-          ctx.ellipse(cx, y, rx, rx * 0.3, 0, 0, Math.PI * 2)
-          ctx.stroke()
-        }
-      }
-
-      // Marker dots
-      const markers = [
-        { x: 0.48, y: 0.42 },
-        { x: 0.52, y: 0.55 },
-      ]
-      markers.forEach((m) => {
-        ctx.beginPath()
-        ctx.arc(cx + (m.x - 0.5) * r * 2, cy + (m.y - 0.5) * r * 2, 6, 0, Math.PI * 2)
-        ctx.fillStyle = "rgba(26, 204, 255, 0.6)"
-        ctx.fill()
-
-        ctx.beginPath()
-        ctx.arc(cx + (m.x - 0.5) * r * 2, cy + (m.y - 0.5) * r * 2, 12, 0, Math.PI * 2)
-        ctx.fillStyle = "rgba(26, 204, 255, 0.15)"
-        ctx.fill()
-      })
-
-      // Glow
-      const glowGradient = ctx.createRadialGradient(cx, cy, r * 0.8, cx, cy, r * 1.2)
-      glowGradient.addColorStop(0, "rgba(255, 255, 255, 0)")
-      glowGradient.addColorStop(1, "rgba(255, 255, 255, 0.03)")
-      ctx.beginPath()
-      ctx.arc(cx, cy, r * 1.2, 0, Math.PI * 2)
-      ctx.fillStyle = glowGradient
-      ctx.fill()
-
-      phi += 0.002
-      animationId = requestAnimationFrame(draw)
-    }
-
-    draw()
-    return () => cancelAnimationFrame(animationId)
-  }, [])
-
-  return (
-    <canvas
-      ref={canvasRef}
-      style={{ width: 600, height: 600, maxWidth: "100%", aspectRatio: 1 }}
-      className={className}
-    />
   )
 }

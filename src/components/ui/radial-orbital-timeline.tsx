@@ -21,10 +21,10 @@ interface RadialOrbitalTimelineProps {
 const defaultTimelineData: TimelineItem[] = [
   {
     id: 1,
-    title: "Discovery",
-    date: "Q1 2024",
-    content: "Initial research and exploration phase",
-    category: "research",
+    title: "Download",
+    date: "30 seconds",
+    content: "Get HisaabPro from Play Store or App Store. Free 14-day trial, no credit card needed.",
+    category: "setup",
     icon: Zap,
     relatedIds: [2],
     status: "completed",
@@ -32,36 +32,36 @@ const defaultTimelineData: TimelineItem[] = [
   },
   {
     id: 2,
-    title: "Planning",
-    date: "Q2 2024",
-    content: "Strategic planning and roadmap definition",
-    category: "strategy",
+    title: "Setup",
+    date: "2 minutes",
+    content: "Add your business name, logo, and first customer. Everything you need to get started.",
+    category: "onboarding",
     icon: Link,
     relatedIds: [1, 3],
-    status: "in-progress",
-    energy: 75,
+    status: "completed",
+    energy: 80,
   },
   {
     id: 3,
-    title: "Development",
-    date: "Q3 2024",
-    content: "Core development and implementation",
-    category: "engineering",
+    title: "Start Billing",
+    date: "10 seconds",
+    content: "Create your first invoice and share it on WhatsApp. Professional PDF, instantly.",
+    category: "billing",
     icon: ArrowRight,
     relatedIds: [2, 4],
-    status: "pending",
-    energy: 60,
+    status: "in-progress",
+    energy: 70,
   },
   {
     id: 4,
-    title: "Launch",
-    date: "Q4 2024",
-    content: "Product launch and deployment",
-    category: "release",
+    title: "Grow",
+    date: "Day 1 onwards",
+    content: "Add staff, track payments, run reports. Your business, fully organized and always online.",
+    category: "growth",
     icon: Zap,
     relatedIds: [3],
     status: "pending",
-    energy: 50,
+    energy: 60,
   },
 ];
 
@@ -197,11 +197,16 @@ export function RadialOrbitalTimeline({
   };
 
   return (
-    <div
-      className="w-full h-screen flex flex-col items-center justify-center bg-black overflow-hidden"
-      ref={containerRef}
-      onClick={handleContainerClick}
-    >
+    <>
+      <div className="text-center py-12 px-6">
+        <h2 className="text-4xl font-semibold lg:text-5xl">How it works</h2>
+        <p className="mt-4 text-lg text-muted-foreground">From download to your first invoice in under 5 minutes.</p>
+      </div>
+      <div
+        className="w-full h-screen flex flex-col items-center justify-center bg-black overflow-hidden"
+        ref={containerRef}
+        onClick={handleContainerClick}
+      >
       <div className="relative w-full max-w-4xl h-full flex items-center justify-center">
         <div
           className="absolute w-full h-full flex items-center justify-center"
@@ -382,6 +387,7 @@ export function RadialOrbitalTimeline({
         </div>
       </div>
     </div>
+    </>
   );
 }
 

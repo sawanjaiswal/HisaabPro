@@ -100,6 +100,74 @@ body:has(.landing-root) .feedback-fab {
   line-height: 1.4;
 }
 
+/* === Pricing section — has light-bg cards, reset heading gradient === */
+.landing-root #pricing h2,
+.landing-root #pricing h3,
+.landing-root #pricing p {
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
+}
+
+/* === Light mode overrides (html without .dark class) === */
+html:not(.dark) .landing-root {
+  color: #1F2937 !important;
+  background: linear-gradient(to bottom, #e8f4ff, #eff6ff, #f8fafc) !important;
+}
+
+html:not(.dark) body:has(.landing-root) {
+  background: #e8f4ff !important;
+  color: #1F2937 !important;
+}
+
+/* Light mode heading gradient — black fade (mirrors white-fade in dark mode) */
+html:not(.dark) .landing-root h1,
+html:not(.dark) .landing-root h2,
+html:not(.dark) .landing-root h3,
+html:not(.dark) .landing-root h4,
+html:not(.dark) .landing-root h5,
+html:not(.dark) .landing-root h6 {
+  background: linear-gradient(to bottom, #0a0a0a, #1a1a1a, rgba(26, 26, 26, 0.6));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Light mode — reset pricing section (already done for dark, keep consistent) */
+html:not(.dark) .landing-root #pricing h2,
+html:not(.dark) .landing-root #pricing h3,
+html:not(.dark) .landing-root #pricing p {
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
+}
+
+/* Light mode — FAQ accordion: question text should be plain dark, not blue gradient */
+html:not(.dark) .landing-root #faq h6,
+.landing-root #faq h6 {
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
+  color: inherit;
+}
+
+/* Dark mode — FAQ pricing reset already done above; also reset dark #faq heading gradient */
+.landing-root #faq h2 {
+  background: linear-gradient(to bottom, #ffffff, #ffffff, rgba(255, 255, 255, 0.6));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+html:not(.dark) .landing-root #faq h2 {
+  background: linear-gradient(to bottom, #0a0a0a, #1a1a1a, rgba(26, 26, 26, 0.6));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 /* === Reduced Motion === */
 @media (prefers-reduced-motion: reduce) {
   .landing-root *,
