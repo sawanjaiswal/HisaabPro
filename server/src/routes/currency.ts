@@ -12,7 +12,6 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import {
   setExchangeRateSchema,
   listExchangeRatesSchema,
@@ -35,7 +34,7 @@ router.use(auth)
 router.post(
   '/exchange-rates',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const data = setExchangeRateSchema.parse(req.body)
     const rate = await setExchangeRate(businessId, data)
     sendSuccess(res, rate, 201)
@@ -46,7 +45,7 @@ router.post(
 router.get(
   '/exchange-rates',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const filters = listExchangeRatesSchema.parse(req.query)
     const result = await listExchangeRates(businessId, filters)
     sendSuccess(res, result)
@@ -57,7 +56,7 @@ router.get(
 router.get(
   '/exchange-rates/:code',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const fromCurrency = String(req.params.code).toUpperCase()
     const { date } = getExchangeRateSchema.parse(req.query)
     const rate = await getExchangeRate(businessId, fromCurrency, 'INR', date)
@@ -77,7 +76,7 @@ router.get(
 router.post(
   '/convert',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const input = convertAmountSchema.parse(req.body)
     const result = await convertAmount(businessId, input)
     sendSuccess(res, result)

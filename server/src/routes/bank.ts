@@ -8,7 +8,6 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import {
   createBankAccountSchema,
   updateBankAccountSchema,
@@ -25,7 +24,7 @@ router.post(
   '/',
   validate(createBankAccountSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const account = await bankService.createBankAccount(businessId, req.body)
     sendSuccess(res, account, 201)
   }),
@@ -35,7 +34,7 @@ router.post(
 router.get(
   '/',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = listBankAccountsSchema.parse(req.query)
     const result = await bankService.listBankAccounts(businessId, query)
     sendSuccess(res, result)
@@ -46,7 +45,7 @@ router.get(
 router.get(
   '/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const account = await bankService.getBankAccount(businessId, String(req.params.id))
     sendSuccess(res, account)
   }),
@@ -57,7 +56,7 @@ router.put(
   '/:id',
   validate(updateBankAccountSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const account = await bankService.updateBankAccount(
       businessId,
       String(req.params.id),
@@ -71,7 +70,7 @@ router.put(
 router.delete(
   '/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const result = await bankService.deleteBankAccount(businessId, String(req.params.id))
     sendSuccess(res, result)
   }),

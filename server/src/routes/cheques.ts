@@ -8,7 +8,6 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import {
   createChequeSchema,
   updateChequeStatusSchema,
@@ -25,7 +24,7 @@ router.post(
   '/',
   validate(createChequeSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const cheque = await chequeService.createCheque(businessId, req.user!.userId, req.body)
     sendSuccess(res, cheque, 201)
   }),
@@ -35,7 +34,7 @@ router.post(
 router.get(
   '/',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = listChequesSchema.parse(req.query)
     const result = await chequeService.listCheques(businessId, query)
     sendSuccess(res, result)
@@ -46,7 +45,7 @@ router.get(
 router.get(
   '/summary',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const summary = await chequeService.getChequeRegisterSummary(businessId)
     sendSuccess(res, summary)
   }),
@@ -56,7 +55,7 @@ router.get(
 router.get(
   '/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const cheque = await chequeService.getCheque(businessId, String(req.params.id))
     sendSuccess(res, cheque)
   }),
@@ -67,7 +66,7 @@ router.put(
   '/:id/status',
   validate(updateChequeStatusSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const cheque = await chequeService.updateChequeStatus(
       businessId,
       String(req.params.id),
@@ -81,7 +80,7 @@ router.put(
 router.delete(
   '/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const result = await chequeService.deleteCheque(businessId, String(req.params.id))
     sendSuccess(res, result)
   }),

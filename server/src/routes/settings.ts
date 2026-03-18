@@ -10,7 +10,6 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import { validationError } from '../lib/errors.js'
 import {
   createRoleSchema,
@@ -46,15 +45,12 @@ businessSettingsRouter.post('/', validate(createBusinessSchema), asyncHandler(as
 // --- Business Profile ---
 
 businessSettingsRouter.get('/:businessId', asyncHandler(async (req, res) => {
-  const userId = req.user!.userId
-  await resolveBusinessId(userId) // Verify user belongs to this business
   const business = await businessService.getBusiness(String(req.params.businessId))
   sendSuccess(res, business)
 }))
 
 businessSettingsRouter.put('/:businessId', asyncHandler(async (req, res) => {
-  const userId = req.user!.userId
-  const businessId = await resolveBusinessId(userId)
+  const businessId = req.user!.businessId
   const business = await businessService.updateBusiness(businessId, req.body)
   sendSuccess(res, business)
 }))
@@ -62,36 +58,31 @@ businessSettingsRouter.put('/:businessId', asyncHandler(async (req, res) => {
 // --- Roles ---
 
 businessSettingsRouter.get('/:businessId/roles', asyncHandler(async (req, res) => {
-  const userId = req.user!.userId
-  const businessId = await resolveBusinessId(userId)
+  const businessId = req.user!.businessId
   const roles = await settingsService.listRoles(businessId)
   sendSuccess(res, roles)
 }))
 
 businessSettingsRouter.get('/:businessId/roles/:roleId', asyncHandler(async (req, res) => {
-  const userId = req.user!.userId
-  const businessId = await resolveBusinessId(userId)
+  const businessId = req.user!.businessId
   const role = await settingsService.getRole(businessId, String(req.params.roleId))
   sendSuccess(res, role)
 }))
 
 businessSettingsRouter.post('/:businessId/roles', validate(createRoleSchema), asyncHandler(async (req, res) => {
-  const userId = req.user!.userId
-  const businessId = await resolveBusinessId(userId)
+  const businessId = req.user!.businessId
   const role = await settingsService.createRole(businessId, req.body)
   sendSuccess(res, role, 201)
 }))
 
 businessSettingsRouter.put('/:businessId/roles/:roleId', validate(updateRoleSchema), asyncHandler(async (req, res) => {
-  const userId = req.user!.userId
-  const businessId = await resolveBusinessId(userId)
+  const businessId = req.user!.businessId
   const role = await settingsService.updateRole(businessId, String(req.params.roleId), req.body)
   sendSuccess(res, role)
 }))
 
 businessSettingsRouter.delete('/:businessId/roles/:roleId', asyncHandler(async (req, res) => {
-  const userId = req.user!.userId
-  const businessId = await resolveBusinessId(userId)
+  const businessId = req.user!.businessId
   const reassignTo = req.query.reassignTo as string
   if (!reassignTo) throw validationError('reassignTo query param is required')
   const result = await settingsService.deleteRole(businessId, String(req.params.roleId), reassignTo)
@@ -101,44 +92,39 @@ businessSettingsRouter.delete('/:businessId/roles/:roleId', asyncHandler(async (
 // --- Staff ---
 
 businessSettingsRouter.get('/:businessId/staff', asyncHandler(async (req, res) => {
-  const userId = req.user!.userId
-  const businessId = await resolveBusinessId(userId)
+  const businessId = req.user!.businessId
   const data = await settingsService.listStaff(businessId)
   sendSuccess(res, data)
 }))
 
 businessSettingsRouter.post('/:businessId/staff/invite', validate(inviteStaffSchema), asyncHandler(async (req, res) => {
   const userId = req.user!.userId
-  const businessId = await resolveBusinessId(userId)
+  const businessId = req.user!.businessId
   const data = await settingsService.inviteStaff(businessId, userId, req.body)
   sendSuccess(res, data, 201)
 }))
 
 businessSettingsRouter.put('/:businessId/staff/:staffId', validate(updateStaffRoleSchema), asyncHandler(async (req, res) => {
-  const userId = req.user!.userId
-  const businessId = await resolveBusinessId(userId)
+  const businessId = req.user!.businessId
   const data = await settingsService.updateStaffRole(businessId, String(req.params.staffId), req.body)
   sendSuccess(res, data)
 }))
 
 businessSettingsRouter.post('/:businessId/staff/:staffId/suspend', asyncHandler(async (req, res) => {
-  const userId = req.user!.userId
-  const businessId = await resolveBusinessId(userId)
+  const businessId = req.user!.businessId
   const data = await settingsService.suspendStaff(businessId, String(req.params.staffId))
   sendSuccess(res, data)
 }))
 
 businessSettingsRouter.delete('/:businessId/staff/:staffId', asyncHandler(async (req, res) => {
-  const userId = req.user!.userId
-  const businessId = await resolveBusinessId(userId)
+  const businessId = req.user!.businessId
   const staffId = String(req.params.staffId)
   await settingsService.removeStaff(businessId, staffId)
   sendSuccess(res, { staffId, removedAt: new Date().toISOString() })
 }))
 
 businessSettingsRouter.post('/:businessId/staff/invite/:inviteId/resend', asyncHandler(async (req, res) => {
-  const userId = req.user!.userId
-  const businessId = await resolveBusinessId(userId)
+  const businessId = req.user!.businessId
   const data = await settingsService.resendInvite(businessId, String(req.params.inviteId))
   sendSuccess(res, data)
 }))
@@ -146,15 +132,13 @@ businessSettingsRouter.post('/:businessId/staff/invite/:inviteId/resend', asyncH
 // --- Transaction Lock ---
 
 businessSettingsRouter.get('/:businessId/settings/transaction-lock', asyncHandler(async (req, res) => {
-  const userId = req.user!.userId
-  const businessId = await resolveBusinessId(userId)
+  const businessId = req.user!.businessId
   const config = await settingsService.getTransactionLock(businessId)
   sendSuccess(res, config)
 }))
 
 businessSettingsRouter.put('/:businessId/settings/transaction-lock', validate(updateTransactionLockSchema), asyncHandler(async (req, res) => {
-  const userId = req.user!.userId
-  const businessId = await resolveBusinessId(userId)
+  const businessId = req.user!.businessId
   const config = await settingsService.updateTransactionLock(businessId, req.body)
   sendSuccess(res, config)
 }))
@@ -162,8 +146,7 @@ businessSettingsRouter.put('/:businessId/settings/transaction-lock', validate(up
 // --- Approvals ---
 
 businessSettingsRouter.get('/:businessId/approvals', asyncHandler(async (req, res) => {
-  const userId = req.user!.userId
-  const businessId = await resolveBusinessId(userId)
+  const businessId = req.user!.businessId
   const status = req.query.status as string | undefined
   const data = await settingsService.listApprovals(businessId, status)
   sendSuccess(res, data)
@@ -171,7 +154,7 @@ businessSettingsRouter.get('/:businessId/approvals', asyncHandler(async (req, re
 
 businessSettingsRouter.put('/:businessId/approvals/:approvalId', validate(reviewApprovalSchema), asyncHandler(async (req, res) => {
   const userId = req.user!.userId
-  const businessId = await resolveBusinessId(userId)
+  const businessId = req.user!.businessId
   const data = await settingsService.reviewApproval(businessId, String(req.params.approvalId), userId, req.body)
   sendSuccess(res, data)
 }))
@@ -179,8 +162,7 @@ businessSettingsRouter.put('/:businessId/approvals/:approvalId', validate(review
 // --- Audit Log ---
 
 businessSettingsRouter.get('/:businessId/audit-log', asyncHandler(async (req, res) => {
-  const userId = req.user!.userId
-  const businessId = await resolveBusinessId(userId)
+  const businessId = req.user!.businessId
   const query = auditLogSchema.parse(req.query)
   const data = await settingsService.listAuditLog(businessId, query)
   sendSuccess(res, data)
@@ -189,15 +171,12 @@ businessSettingsRouter.get('/:businessId/audit-log', asyncHandler(async (req, re
 // --- GST Settings ---
 
 businessSettingsRouter.get('/:businessId/gst-settings', asyncHandler(async (req, res) => {
-  const userId = req.user!.userId
-  await resolveBusinessId(userId)
   const data = await gstService.getGstSettings(String(req.params.businessId))
   sendSuccess(res, data)
 }))
 
 businessSettingsRouter.put('/:businessId/gst-settings', asyncHandler(async (req, res) => {
-  const userId = req.user!.userId
-  const businessId = await resolveBusinessId(userId)
+  const businessId = req.user!.businessId
   const data = await gstService.updateGstSettings(businessId, req.body)
   sendSuccess(res, data)
 }))
@@ -205,8 +184,7 @@ businessSettingsRouter.put('/:businessId/gst-settings', asyncHandler(async (req,
 // --- Operation PIN ---
 
 businessSettingsRouter.post('/:businessId/operation-pin', validate(setOperationPinSchema), asyncHandler(async (req, res) => {
-  const userId = req.user!.userId
-  const businessId = await resolveBusinessId(userId)
+  const businessId = req.user!.businessId
   const data = await settingsService.setOperationPin(businessId, req.body)
   sendSuccess(res, data)
 }))

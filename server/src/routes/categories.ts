@@ -7,7 +7,6 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import {
   createCategorySchema,
   updateCategorySchema,
@@ -23,7 +22,7 @@ router.use(auth)
 router.get(
   '/',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const categories = await categoryService.listCategories(businessId)
     sendSuccess(res, categories)
   })
@@ -34,7 +33,7 @@ router.post(
   '/',
   validate(createCategorySchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const category = await categoryService.createCategory(businessId, req.body)
     sendSuccess(res, { category }, 201)
   })
@@ -45,7 +44,7 @@ router.put(
   '/:id',
   validate(updateCategorySchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const categoryId = String(req.params.id)
     const category = await categoryService.updateCategory(businessId, categoryId, req.body)
     sendSuccess(res, { category })
@@ -57,7 +56,7 @@ router.delete(
   '/:id',
   validate(deleteCategorySchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const categoryId = String(req.params.id)
     const result = await categoryService.deleteCategory(businessId, categoryId, req.body.reassignTo)
     sendSuccess(res, result)

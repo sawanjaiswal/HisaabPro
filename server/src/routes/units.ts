@@ -7,7 +7,6 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import {
   createUnitSchema,
   updateUnitSchema,
@@ -28,7 +27,7 @@ router.use(auth)
 router.get(
   '/',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const units = await unitService.listUnits(businessId)
     sendSuccess(res, units)
   })
@@ -39,7 +38,7 @@ router.post(
   '/',
   validate(createUnitSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const unit = await unitService.createUnit(businessId, req.body)
     sendSuccess(res, { unit }, 201)
   })
@@ -50,7 +49,7 @@ router.put(
   '/:id',
   validate(updateUnitSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const unitId = String(req.params.id)
     const unit = await unitService.updateUnit(businessId, unitId, req.body)
     sendSuccess(res, { unit })
@@ -61,7 +60,7 @@ router.put(
 router.delete(
   '/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const unitId = String(req.params.id)
     const result = await unitService.deleteUnit(businessId, unitId)
     sendSuccess(res, result)
@@ -76,7 +75,7 @@ router.delete(
 router.get(
   '/conversions',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const conversions = await unitService.listConversions(businessId)
     sendSuccess(res, conversions)
   })
@@ -87,7 +86,7 @@ router.post(
   '/conversions',
   validate(createConversionSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const conversion = await unitService.createConversion(businessId, req.body)
     sendSuccess(res, { conversion }, 201)
   })
@@ -98,7 +97,7 @@ router.put(
   '/conversions/:id',
   validate(updateConversionSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const conversionId = String(req.params.id)
     const conversion = await unitService.updateConversion(businessId, conversionId, req.body)
     sendSuccess(res, { conversion })
@@ -109,7 +108,7 @@ router.put(
 router.delete(
   '/conversions/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const conversionId = String(req.params.id)
     const result = await unitService.deleteConversion(businessId, conversionId)
     sendSuccess(res, result)

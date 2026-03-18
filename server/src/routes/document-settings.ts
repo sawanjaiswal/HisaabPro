@@ -7,7 +7,6 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import {
   updateDocumentSettingsSchema,
   createTermsTemplateSchema,
@@ -29,7 +28,7 @@ router.use(auth)
 router.get(
   '/',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const settings = await settingsService.getDocumentSettings(businessId)
     sendSuccess(res, settings)
   })
@@ -40,7 +39,7 @@ router.put(
   '/',
   validate(updateDocumentSettingsSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const settings = await settingsService.updateDocumentSettings(businessId, req.body)
     sendSuccess(res, settings)
   })
@@ -54,7 +53,7 @@ router.put(
 router.get(
   '/signature',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const signature = await settingsService.getSignature(businessId)
     sendSuccess(res, signature)
   })
@@ -64,7 +63,7 @@ router.get(
 router.post(
   '/signature',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const signature = await settingsService.upsertSignature(businessId, req.body)
     sendSuccess(res, signature, 201)
   })
@@ -74,7 +73,7 @@ router.post(
 router.delete(
   '/signature',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     await settingsService.deleteSignature(businessId)
     res.status(204).end()
   })
@@ -88,7 +87,7 @@ router.delete(
 router.get(
   '/terms-templates',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const templates = await settingsService.listTermsTemplates(businessId)
     sendSuccess(res, templates)
   })
@@ -99,7 +98,7 @@ router.post(
   '/terms-templates',
   validate(createTermsTemplateSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const template = await settingsService.createTermsTemplate(businessId, req.body)
     sendSuccess(res, template, 201)
   })
@@ -110,7 +109,7 @@ router.put(
   '/terms-templates/:id',
   validate(updateTermsTemplateSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const template = await settingsService.updateTermsTemplate(
       businessId, String(req.params.id), req.body
     )
@@ -122,7 +121,7 @@ router.put(
 router.delete(
   '/terms-templates/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     await settingsService.deleteTermsTemplate(businessId, String(req.params.id))
     res.status(204).end()
   })
@@ -136,7 +135,7 @@ router.delete(
 router.get(
   '/number-series/:type/next',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const preview = await getNextNumberPreview(businessId, String(req.params.type))
     sendSuccess(res, preview)
   })
@@ -147,7 +146,7 @@ router.put(
   '/number-series/:type',
   validate(updateNumberSeriesSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const series = await settingsService.updateNumberSeries(
       businessId, String(req.params.type), req.body
     )

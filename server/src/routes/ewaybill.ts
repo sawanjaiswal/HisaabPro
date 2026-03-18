@@ -12,7 +12,6 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import {
   generateEWayBillSchema,
   cancelEWayBillSchema,
@@ -33,7 +32,7 @@ router.post(
   '/generate',
   validate(generateEWayBillSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const { documentId, ...transport } = req.body as GenerateEWayBillInput
     const eWayBill = await ewaybillService.generateEWayBill(businessId, documentId, transport)
     sendSuccess(res, eWayBill, 201)
@@ -45,7 +44,7 @@ router.post(
   '/cancel',
   validate(cancelEWayBillSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const { documentId, reason } = req.body as CancelEWayBillInput
     const eWayBill = await ewaybillService.cancelEWayBill(businessId, documentId, reason)
     sendSuccess(res, eWayBill)
@@ -57,7 +56,7 @@ router.put(
   '/update-partb',
   validate(updatePartBSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const { documentId, vehicleNumber, vehicleType } = req.body as UpdatePartBInput
     const eWayBill = await ewaybillService.updatePartB(businessId, documentId, {
       vehicleNumber,
@@ -71,7 +70,7 @@ router.put(
 router.get(
   '/:documentId',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const eWayBill = await ewaybillService.getEWayBill(businessId, String(req.params.documentId))
     sendSuccess(res, eWayBill)
   })

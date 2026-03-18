@@ -6,7 +6,6 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import { tdsTcsSummarySchema } from '../schemas/report.schemas.js'
 import { getTdsTcsReport } from '../services/tds-tcs.service.js'
 
@@ -18,7 +17,7 @@ router.use(auth)
 router.get(
   '/tds-tcs-summary',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = tdsTcsSummarySchema.parse(req.query)
     const result = await getTdsTcsReport(businessId, query)
     sendSuccess(res, result)

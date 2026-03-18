@@ -8,7 +8,6 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import {
   createLoanSchema,
   listLoansSchema,
@@ -25,7 +24,7 @@ router.post(
   '/',
   validate(createLoanSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const loan = await loanService.createLoanAccount(businessId, req.user!.userId, req.body)
     sendSuccess(res, loan, 201)
   }),
@@ -35,7 +34,7 @@ router.post(
 router.get(
   '/',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = listLoansSchema.parse(req.query)
     const result = await loanService.listLoanAccounts(businessId, query)
     sendSuccess(res, result)
@@ -46,7 +45,7 @@ router.get(
 router.get(
   '/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const loan = await loanService.getLoanAccount(businessId, String(req.params.id))
     sendSuccess(res, loan)
   }),
@@ -56,7 +55,7 @@ router.get(
 router.get(
   '/:id/statement',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const statement = await loanService.getLoanStatement(businessId, String(req.params.id))
     sendSuccess(res, statement)
   }),
@@ -67,7 +66,7 @@ router.post(
   '/:id/transactions',
   validate(recordLoanTransactionSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const transaction = await loanService.recordLoanTransaction(
       businessId,
       String(req.params.id),
@@ -81,7 +80,7 @@ router.post(
 router.post(
   '/:id/close',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const loan = await loanService.closeLoan(businessId, String(req.params.id))
     sendSuccess(res, loan)
   }),

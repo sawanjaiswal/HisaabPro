@@ -8,7 +8,6 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import {
   createCustomFieldSchema,
   updateCustomFieldSchema,
@@ -26,7 +25,7 @@ router.post(
   '/',
   validate(createCustomFieldSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const field = await partyService.createCustomField(businessId, req.body)
     sendSuccess(res, { field }, 201)
   })
@@ -39,7 +38,7 @@ router.post(
 router.get(
   '/',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const entityType = typeof req.query.entityType === 'string'
       ? req.query.entityType
       : undefined
@@ -55,7 +54,7 @@ router.put(
   '/:id',
   validate(updateCustomFieldSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const fieldId = String(req.params.id)
     const field = await partyService.updateCustomField(businessId, fieldId, req.body)
     sendSuccess(res, { field })
@@ -68,7 +67,7 @@ router.put(
 router.delete(
   '/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const fieldId = String(req.params.id)
     const result = await partyService.deleteCustomField(businessId, fieldId)
     sendSuccess(res, result)

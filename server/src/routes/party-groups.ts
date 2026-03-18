@@ -8,7 +8,6 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import {
   createGroupSchema,
   updateGroupSchema,
@@ -27,7 +26,7 @@ router.post(
   '/',
   validate(createGroupSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const group = await partyService.createGroup(businessId, req.body)
     sendSuccess(res, { group }, 201)
   })
@@ -39,7 +38,7 @@ router.post(
 router.get(
   '/',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const groups = await partyService.listGroups(businessId)
     sendSuccess(res, { groups })
   })
@@ -52,7 +51,7 @@ router.put(
   '/:id',
   validate(updateGroupSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const groupId = String(req.params.id)
     const group = await partyService.updateGroup(businessId, groupId, req.body)
     sendSuccess(res, { group })
@@ -67,7 +66,7 @@ router.delete(
   '/:id',
   validate(deleteGroupSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const groupId = String(req.params.id)
     const result = await partyService.deleteGroup(
       businessId,

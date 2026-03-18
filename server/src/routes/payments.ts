@@ -7,7 +7,6 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import { idempotencyCheck } from '../middleware/idempotency.js'
 import { replayProtection } from '../middleware/replay-protection.js'
 import {
@@ -35,7 +34,7 @@ router.use(auth)
 router.get(
   '/',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = listPaymentsSchema.parse(req.query)
     const result = await paymentService.listPayments(businessId, query)
     sendSuccess(res, result)
@@ -46,7 +45,7 @@ router.get(
 router.get(
   '/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const payment = await paymentService.getPayment(businessId, String(req.params.id))
     sendSuccess(res, payment)
   })
@@ -59,7 +58,7 @@ router.post(
   idempotencyCheck(),
   validate(createPaymentSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const payment = await paymentService.createPayment(businessId, req.user!.userId, req.body)
     sendSuccess(res, payment, 201)
   })
@@ -71,7 +70,7 @@ router.put(
   replayProtection,
   validate(updatePaymentSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const payment = await paymentService.updatePayment(
       businessId, String(req.params.id), req.user!.userId, req.body
     )
@@ -84,7 +83,7 @@ router.delete(
   '/:id',
   replayProtection,
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const result = await paymentService.deletePayment(
       businessId, String(req.params.id), req.user!.userId
     )
@@ -96,7 +95,7 @@ router.delete(
 router.post(
   '/:id/restore',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const payment = await paymentService.restorePayment(
       businessId, String(req.params.id), req.user!.userId
     )
@@ -114,7 +113,7 @@ router.put(
   replayProtection,
   validate(updateAllocationsSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const result = await paymentService.updateAllocations(
       businessId, String(req.params.id), req.body
     )
@@ -130,7 +129,7 @@ router.put(
 router.get(
   '/outstanding/list',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = listOutstandingSchema.parse(req.query)
     const result = await paymentService.listOutstanding(businessId, query)
     sendSuccess(res, result)
@@ -141,7 +140,7 @@ router.get(
 router.get(
   '/outstanding/:partyId',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const result = await paymentService.getPartyOutstanding(businessId, String(req.params.partyId))
     sendSuccess(res, result)
   })
@@ -157,7 +156,7 @@ router.post(
   replayProtection,
   validate(sendReminderSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const result = await paymentService.sendReminder(businessId, req.user!.userId, req.body)
     sendSuccess(res, result, 201)
   })
@@ -169,7 +168,7 @@ router.post(
   replayProtection,
   validate(sendBulkRemindersSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const result = await paymentService.sendBulkReminders(businessId, req.user!.userId, req.body)
     sendSuccess(res, result)
   })
@@ -179,7 +178,7 @@ router.post(
 router.get(
   '/reminders/list',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = listRemindersSchema.parse(req.query)
     const result = await paymentService.listReminders(businessId, query)
     sendSuccess(res, result)
@@ -190,7 +189,7 @@ router.get(
 router.get(
   '/reminders/config',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const config = await paymentService.getReminderConfig(businessId)
     sendSuccess(res, config)
   })
@@ -202,7 +201,7 @@ router.put(
   replayProtection,
   validate(updateReminderConfigSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const config = await paymentService.updateReminderConfig(businessId, req.body)
     sendSuccess(res, config)
   })

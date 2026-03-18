@@ -8,7 +8,6 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import {
   createPartySchema,
   updatePartySchema,
@@ -37,7 +36,7 @@ router.post(
   '/',
   validate(createPartySchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const party = await partyService.createParty(businessId, req.body)
     sendSuccess(res, { party }, 201)
   })
@@ -50,7 +49,7 @@ router.post(
 router.get(
   '/',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = listPartiesSchema.parse(req.query)
     const result = await partyService.listParties(businessId, query)
     sendSuccess(res, result)
@@ -64,7 +63,7 @@ router.get(
 router.get(
   '/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const partyId = String(req.params.id)
     const party = await partyService.getParty(businessId, partyId)
     sendSuccess(res, { party })
@@ -79,7 +78,7 @@ router.put(
   '/:id',
   validate(updatePartySchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const partyId = String(req.params.id)
     const party = await partyService.updateParty(businessId, partyId, req.body)
     sendSuccess(res, { party })
@@ -93,7 +92,7 @@ router.put(
 router.delete(
   '/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const partyId = String(req.params.id)
     const force = req.query.force === 'true'
     const result = await partyService.deleteParty(businessId, partyId, force)
@@ -113,7 +112,7 @@ router.post(
   '/:partyId/addresses',
   validate(createAddressSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const partyId = String(req.params.partyId)
     const address = await partyService.createAddress(businessId, partyId, req.body)
     sendSuccess(res, { address }, 201)
@@ -128,7 +127,7 @@ router.put(
   '/:partyId/addresses/:addressId',
   validate(updateAddressSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const partyId = String(req.params.partyId)
     const addressId = String(req.params.addressId)
     const address = await partyService.updateAddress(businessId, partyId, addressId, req.body)
@@ -143,7 +142,7 @@ router.put(
 router.delete(
   '/:partyId/addresses/:addressId',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const partyId = String(req.params.partyId)
     const addressId = String(req.params.addressId)
     const result = await partyService.deleteAddress(businessId, partyId, addressId)
@@ -163,7 +162,7 @@ router.put(
   '/:partyId/pricing',
   validate(setPricingSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const partyId = String(req.params.partyId)
     const pricing = await partyService.setPricing(businessId, partyId, req.body)
     sendSuccess(res, { pricing })
@@ -177,7 +176,7 @@ router.put(
 router.get(
   '/:partyId/pricing',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const partyId = String(req.params.partyId)
     const query = listPricingQuerySchema.parse(req.query)
     const result = await partyService.getPartyPricing(

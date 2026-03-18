@@ -6,7 +6,6 @@ import crypto from 'crypto'
 import { prisma } from '../lib/prisma.js'
 import { notFoundError, validationError, conflictError, unauthorizedError } from '../lib/errors.js'
 import { hashPassword, verifyPassword } from '../lib/password.js'
-import { blacklistUser } from '../lib/token-blacklist.js'
 import type {
   CreateRoleInput,
   UpdateRoleInput,
@@ -134,7 +133,7 @@ const SYSTEM_ROLES = [
   },
 ]
 
-async function ensureSystemRoles(businessId: string) {
+export async function ensureSystemRoles(businessId: string) {
   const existing = await prisma.role.count({ where: { businessId, isSystem: true } })
   if (existing >= SYSTEM_ROLES.length) return
 

@@ -9,7 +9,6 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import {
   periodQuerySchema,
   balanceSheetQuerySchema,
@@ -29,7 +28,7 @@ router.use(auth)
 router.get(
   '/profit-loss',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const { from, to } = periodQuerySchema.parse(req.query)
     const data = await reportService.getProfitAndLoss(businessId, from, to)
     sendSuccess(res, data)
@@ -40,7 +39,7 @@ router.get(
 router.get(
   '/balance-sheet',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const { asOf } = balanceSheetQuerySchema.parse(req.query)
     const data = await reportService.getBalanceSheet(businessId, asOf)
     sendSuccess(res, data)
@@ -51,7 +50,7 @@ router.get(
 router.get(
   '/cash-flow',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const { from, to } = cashFlowQuerySchema.parse(req.query)
     const data = await reportService.getCashFlowStatement(businessId, from, to)
     sendSuccess(res, data)
@@ -62,7 +61,7 @@ router.get(
 router.get(
   '/aging',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const { type, asOf } = agingQuerySchema.parse(req.query)
     const data = await reportService.getAgingReport(businessId, type, asOf)
     sendSuccess(res, data)
@@ -73,7 +72,7 @@ router.get(
 router.get(
   '/profitability',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const { from, to, groupBy } = profitabilityQuerySchema.parse(req.query)
     const data = await reportService.getProfitabilityReport(businessId, from, to, groupBy)
     sendSuccess(res, data)
@@ -84,7 +83,7 @@ router.get(
 router.get(
   '/discounts',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const { from, to } = discountQuerySchema.parse(req.query)
     const data = await reportService.getDiscountReport(businessId, from, to)
     sendSuccess(res, data)
@@ -98,7 +97,7 @@ router.get(
 router.get(
   '/tally-export',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const { from, to } = tallyExportQuerySchema.parse(req.query)
     const xml = await reportService.getTallyExport(businessId, from, to)
     res.setHeader('Content-Type', 'application/xml; charset=utf-8')

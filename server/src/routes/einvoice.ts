@@ -11,7 +11,6 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import { generateEInvoiceSchema, cancelEInvoiceSchema } from '../schemas/ecompliance.schemas.js'
 import * as einvoiceService from '../services/einvoice.service.js'
 
@@ -23,7 +22,7 @@ router.post(
   '/generate',
   validate(generateEInvoiceSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const { documentId } = req.body as { documentId: string }
     const eInvoice = await einvoiceService.generateIrn(businessId, documentId)
     sendSuccess(res, eInvoice, 201)
@@ -35,7 +34,7 @@ router.post(
   '/cancel',
   validate(cancelEInvoiceSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const { documentId, reason } = req.body as { documentId: string; reason: string }
     const eInvoice = await einvoiceService.cancelIrn(businessId, documentId, reason)
     sendSuccess(res, eInvoice)
@@ -46,7 +45,7 @@ router.post(
 router.get(
   '/:documentId',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const eInvoice = await einvoiceService.getEInvoice(businessId, String(req.params.documentId))
     sendSuccess(res, eInvoice)
   })

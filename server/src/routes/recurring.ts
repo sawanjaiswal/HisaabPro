@@ -8,7 +8,6 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import {
   createRecurringSchema,
   updateRecurringSchema,
@@ -25,7 +24,7 @@ router.post(
   '/',
   validate(createRecurringSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const recurring = await recurringService.createRecurring(businessId, req.user!.userId, req.body)
     sendSuccess(res, recurring, 201)
   })
@@ -35,7 +34,7 @@ router.post(
 router.get(
   '/',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = listRecurringSchema.parse(req.query)
     const result = await recurringService.listRecurring(businessId, query)
     sendSuccess(res, result)
@@ -46,7 +45,7 @@ router.get(
 router.post(
   '/generate',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const result = await recurringService.generateDueInvoices(businessId)
     sendSuccess(res, result)
   })
@@ -56,7 +55,7 @@ router.post(
 router.get(
   '/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const recurring = await recurringService.getRecurring(businessId, String(req.params.id))
     sendSuccess(res, recurring)
   })
@@ -67,7 +66,7 @@ router.put(
   '/:id',
   validate(updateRecurringSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const recurring = await recurringService.updateRecurring(
       businessId,
       String(req.params.id),
@@ -81,7 +80,7 @@ router.put(
 router.delete(
   '/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const result = await recurringService.deleteRecurring(businessId, String(req.params.id))
     sendSuccess(res, result)
   })

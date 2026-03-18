@@ -9,7 +9,6 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import * as fyClosureService from '../services/fy-closure.service.js'
 
 const router = Router()
@@ -27,7 +26,7 @@ router.post(
   '/',
   validate(closeFYSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const { financialYear } = req.body as z.infer<typeof closeFYSchema>
     const result = await fyClosureService.closeFY(businessId, req.user!.userId, financialYear)
     sendSuccess(res, result, 201)
@@ -38,7 +37,7 @@ router.post(
 router.get(
   '/',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const closures = await fyClosureService.getFYClosures(businessId)
     sendSuccess(res, closures)
   }),
@@ -48,7 +47,7 @@ router.get(
 router.post(
   '/:financialYear/reopen',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const financialYear = String(req.params.financialYear)
     const result = await fyClosureService.reopenFY(businessId, financialYear)
     sendSuccess(res, result)

@@ -8,7 +8,6 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import {
   createLedgerAccountSchema,
   updateLedgerAccountSchema,
@@ -33,7 +32,7 @@ router.post(
   '/accounts',
   validate(createLedgerAccountSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const account = await accountingService.createLedgerAccount(businessId, req.body)
     sendSuccess(res, account, 201)
   }),
@@ -43,7 +42,7 @@ router.post(
 router.get(
   '/accounts',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = listLedgerAccountsSchema.parse(req.query)
     const result = await accountingService.listLedgerAccounts(businessId, query)
     sendSuccess(res, result)
@@ -54,7 +53,7 @@ router.get(
 router.post(
   '/accounts/seed',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const result = await accountingService.seedDefaultAccounts(businessId)
     sendSuccess(res, result)
   }),
@@ -64,7 +63,7 @@ router.post(
 router.get(
   '/accounts/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const account = await accountingService.getLedgerAccount(businessId, String(req.params.id))
     sendSuccess(res, account)
   }),
@@ -75,7 +74,7 @@ router.put(
   '/accounts/:id',
   validate(updateLedgerAccountSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const account = await accountingService.updateLedgerAccount(
       businessId,
       String(req.params.id),
@@ -92,7 +91,7 @@ router.post(
   '/entries',
   validate(createJournalEntrySchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const entry = await accountingService.createJournalEntry(
       businessId,
       req.user!.userId,
@@ -106,7 +105,7 @@ router.post(
 router.get(
   '/entries',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = listJournalEntriesSchema.parse(req.query)
     const result = await accountingService.listJournalEntries(businessId, query)
     sendSuccess(res, result)
@@ -117,7 +116,7 @@ router.get(
 router.get(
   '/entries/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const entry = await accountingService.getJournalEntry(businessId, String(req.params.id))
     sendSuccess(res, entry)
   }),
@@ -127,7 +126,7 @@ router.get(
 router.post(
   '/entries/:id/post',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const entry = await accountingService.postJournalEntry(businessId, String(req.params.id))
     sendSuccess(res, entry)
   }),
@@ -138,7 +137,7 @@ router.post(
   '/entries/:id/void',
   validate(voidJournalEntrySchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const entry = await accountingService.voidJournalEntry(
       businessId,
       String(req.params.id),
@@ -155,7 +154,7 @@ router.post(
 router.get(
   '/reports/trial-balance',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = trialBalanceQuerySchema.parse(req.query)
     const result = await accountingService.getTrialBalance(businessId, query.asOf)
     sendSuccess(res, result)
@@ -166,7 +165,7 @@ router.get(
 router.get(
   '/reports/ledger/:accountId',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = ledgerReportQuerySchema.parse(req.query)
     const result = await accountingService.getLedgerReport(
       businessId,
@@ -182,7 +181,7 @@ router.get(
 router.get(
   '/reports/day-book',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = dayBookQuerySchema.parse(req.query)
     const result = await accountingService.getDayBook(businessId, query.date)
     sendSuccess(res, result)

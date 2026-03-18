@@ -6,7 +6,6 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import {
   invoiceReportSchema,
   partyStatementSchema,
@@ -25,7 +24,7 @@ router.use(auth)
 router.get(
   '/invoices',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = invoiceReportSchema.parse(req.query)
     const result = await reportService.getInvoiceReport(businessId, query)
     sendSuccess(res, result)
@@ -36,7 +35,7 @@ router.get(
 router.get(
   '/party-statement/:partyId',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = partyStatementSchema.parse(req.query)
     const result = await reportService.getPartyStatement(
       businessId, String(req.params.partyId), query
@@ -49,7 +48,7 @@ router.get(
 router.get(
   '/stock-summary',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = stockSummarySchema.parse(req.query)
     const result = await reportService.getStockSummary(businessId, query)
     sendSuccess(res, result)
@@ -60,7 +59,7 @@ router.get(
 router.get(
   '/day-book',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = dayBookSchema.parse(req.query)
     const result = await reportService.getDayBook(businessId, query)
     sendSuccess(res, result)
@@ -71,7 +70,7 @@ router.get(
 router.get(
   '/payments',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = paymentHistorySchema.parse(req.query)
     const result = await reportService.getPaymentHistory(businessId, query)
     sendSuccess(res, result)
@@ -82,7 +81,7 @@ router.get(
 router.post(
   '/export',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const body = exportReportSchema.parse(req.body)
     const result = await reportService.exportReport(
       businessId, body.reportType, body.filters

@@ -8,7 +8,6 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import {
   createExpenseCategorySchema,
   createExpenseSchema,
@@ -28,7 +27,7 @@ router.post(
   '/categories',
   validate(createExpenseCategorySchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const category = await expenseService.createExpenseCategory(businessId, req.body)
     sendSuccess(res, category, 201)
   }),
@@ -38,7 +37,7 @@ router.post(
 router.get(
   '/categories',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const categories = await expenseService.listExpenseCategories(businessId)
     sendSuccess(res, categories)
   }),
@@ -48,7 +47,7 @@ router.get(
 router.post(
   '/categories/seed',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const categories = await expenseService.seedDefaultCategories(businessId)
     sendSuccess(res, categories)
   }),
@@ -61,7 +60,7 @@ router.post(
   '/',
   validate(createExpenseSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const expense = await expenseService.createExpense(businessId, req.user!.userId, req.body)
     sendSuccess(res, expense, 201)
   }),
@@ -71,7 +70,7 @@ router.post(
 router.get(
   '/',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = listExpensesSchema.parse(req.query)
     const result = await expenseService.listExpenses(businessId, query)
     sendSuccess(res, result)
@@ -82,7 +81,7 @@ router.get(
 router.get(
   '/summary',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const from = req.query.from ? new Date(String(req.query.from)) : undefined
     const to = req.query.to ? new Date(String(req.query.to)) : undefined
     const summary = await expenseService.getExpenseSummary(businessId, from, to)
@@ -94,7 +93,7 @@ router.get(
 router.get(
   '/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const expense = await expenseService.getExpense(businessId, String(req.params.id))
     sendSuccess(res, expense)
   }),
@@ -105,7 +104,7 @@ router.put(
   '/:id',
   validate(updateExpenseSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const expense = await expenseService.updateExpense(
       businessId,
       String(req.params.id),
@@ -119,7 +118,7 @@ router.put(
 router.delete(
   '/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const result = await expenseService.deleteExpense(businessId, String(req.params.id))
     sendSuccess(res, result)
   }),

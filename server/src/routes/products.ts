@@ -9,7 +9,6 @@ import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
 import { prisma } from '../lib/prisma.js'
-import { resolveBusinessId } from '../lib/business.js'
 import {
   createProductSchema,
   updateProductSchema,
@@ -36,7 +35,7 @@ router.post(
   '/stock/validate',
   validate(stockValidateSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const result = await validateStockForInvoice(businessId, req.body.items)
     sendSuccess(res, result)
   })
@@ -47,7 +46,7 @@ router.post(
   '/',
   validate(createProductSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const product = await productService.createProduct(businessId, req.user!.userId, req.body)
     sendSuccess(res, { product }, 201)
   })
@@ -57,7 +56,7 @@ router.post(
 router.get(
   '/',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = listProductsSchema.parse(req.query)
     const result = await productService.listProducts(businessId, query)
     sendSuccess(res, result)
@@ -68,7 +67,7 @@ router.get(
 router.get(
   '/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const productId = String(req.params.id)
     const product = await productService.getProduct(businessId, productId)
     sendSuccess(res, { product })
@@ -80,7 +79,7 @@ router.put(
   '/:id',
   validate(updateProductSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const productId = String(req.params.id)
     const product = await productService.updateProduct(businessId, productId, req.body)
     sendSuccess(res, { product })
@@ -91,7 +90,7 @@ router.put(
 router.delete(
   '/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const productId = String(req.params.id)
     const result = await productService.deleteProduct(businessId, productId)
     sendSuccess(res, result)
@@ -108,7 +107,7 @@ router.post(
   idempotencyCheck(),
   validate(stockAdjustSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const productId = String(req.params.id)
     const data = req.body
 
@@ -144,7 +143,7 @@ router.post(
 router.get(
   '/:id/stock/movements',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const productId = String(req.params.id)
     const query = stockMovementQuerySchema.parse(req.query)
     const result = await productService.listStockMovements(businessId, productId, query)

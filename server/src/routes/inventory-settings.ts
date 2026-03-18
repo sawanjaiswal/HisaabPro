@@ -7,7 +7,6 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import { updateInventorySettingsSchema } from '../schemas/product.schemas.js'
 import * as settingsService from '../services/inventory-settings.service.js'
 
@@ -19,7 +18,7 @@ router.use(auth)
 router.get(
   '/',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const settings = await settingsService.getSettings(businessId)
     sendSuccess(res, settings)
   })
@@ -30,7 +29,7 @@ router.put(
   '/',
   validate(updateInventorySettingsSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const settings = await settingsService.updateSettings(businessId, req.body)
     sendSuccess(res, settings)
   })

@@ -6,7 +6,6 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import { gstReturnSchema, gstReturnExportSchema } from '../schemas/report.schemas.js'
 import * as gstService from '../services/gst-return.service.js'
 import * as gstSettings from '../services/gst-settings.service.js'
@@ -16,7 +15,7 @@ router.use(auth)
 
 /** GET /api/gst/returns/:returnType/:period — Generate return summary */
 router.get('/:returnType/:period', asyncHandler(async (req, res) => {
-  const businessId = await resolveBusinessId(req.user!.userId)
+  const businessId = req.user!.businessId
   const { returnType, period } = gstReturnSchema.parse(req.params)
 
   let result
@@ -34,7 +33,7 @@ router.get('/:returnType/:period', asyncHandler(async (req, res) => {
 
 /** POST /api/gst/returns/:returnType/:period/export — Export as JSON/CSV */
 router.post('/:returnType/:period/export', asyncHandler(async (req, res) => {
-  const businessId = await resolveBusinessId(req.user!.userId)
+  const businessId = req.user!.businessId
   const params = gstReturnSchema.parse(req.params)
   const { format } = gstReturnExportSchema.parse({ ...req.body, ...params })
 

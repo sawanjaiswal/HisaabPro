@@ -8,7 +8,6 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
-import { resolveBusinessId } from '../lib/business.js'
 import { idempotencyCheck } from '../middleware/idempotency.js'
 import { replayProtection } from '../middleware/replay-protection.js'
 import {
@@ -35,7 +34,7 @@ router.use(auth)
 router.get(
   '/',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = listDocumentsSchema.parse(req.query)
     const result = await documentService.listDocuments(businessId, query)
     sendSuccess(res, result)
@@ -46,7 +45,7 @@ router.get(
 router.get(
   '/recycle-bin',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const query = recycleBinSchema.parse(req.query)
     const result = await documentService.listRecycleBin(businessId, query)
     sendSuccess(res, result)
@@ -57,7 +56,7 @@ router.get(
 router.get(
   '/:id',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const doc = await documentService.getDocument(businessId, String(req.params.id))
     sendSuccess(res, doc)
   })
@@ -67,7 +66,7 @@ router.get(
 router.post(
   '/validate-stock',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const items = (req.body.items ?? []) as Array<{ productId: string; quantity: number; unitId: string }>
     const result = await validateStockForInvoice(businessId, items)
     sendSuccess(res, result)
@@ -81,7 +80,7 @@ router.post(
   idempotencyCheck(),
   validate(createDocumentSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const doc = await documentService.createDocument(businessId, req.user!.userId, req.body)
     sendSuccess(res, doc, 201)
   })
@@ -93,7 +92,7 @@ router.put(
   replayProtection,
   validate(updateDocumentSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const doc = await documentService.updateDocument(
       businessId, String(req.params.id), req.user!.userId, req.body
     )
@@ -106,7 +105,7 @@ router.delete(
   '/:id',
   replayProtection,
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const result = await documentService.deleteDocument(
       businessId, String(req.params.id), req.user!.userId
     )
@@ -125,7 +124,7 @@ router.post(
   idempotencyCheck(),
   validate(convertDocumentSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const doc = await documentService.convertDocument(
       businessId, String(req.params.id), req.user!.userId, req.body
     )
@@ -141,7 +140,7 @@ router.post(
 router.post(
   '/:id/restore',
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const doc = await documentService.restoreDocument(
       businessId, String(req.params.id), req.user!.userId
     )
@@ -154,7 +153,7 @@ router.delete(
   '/:id/permanent',
   replayProtection,
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     await documentService.permanentDeleteDocument(businessId, String(req.params.id))
     res.status(204).end()
   })
@@ -165,7 +164,7 @@ router.delete(
   '/recycle-bin',
   replayProtection,
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const result = await documentService.emptyRecycleBin(businessId)
     sendSuccess(res, result)
   })
@@ -181,7 +180,7 @@ router.post(
   replayProtection,
   validate(shareWhatsAppSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const documentId = String(req.params.id)
 
     // Verify document exists
@@ -224,7 +223,7 @@ router.post(
   replayProtection,
   validate(shareEmailSchema),
   asyncHandler(async (req, res) => {
-    const businessId = await resolveBusinessId(req.user!.userId)
+    const businessId = req.user!.businessId
     const documentId = String(req.params.id)
     const doc = await documentService.getDocument(businessId, documentId)
 
