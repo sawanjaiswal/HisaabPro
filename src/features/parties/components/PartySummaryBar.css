@@ -44,7 +44,7 @@
 
 .party-hero-card--collect {
   background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   animation: partyFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
 }
 

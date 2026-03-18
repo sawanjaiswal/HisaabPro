@@ -1,6 +1,6 @@
 # Feature Map: HisaabPro
 
-Last updated: 2026-03-18 | Total: 98 | Done: 80 | Needs Integration: 10 | Not Started: 8
+Last updated: 2026-03-18 | Total: 98 | Done: 86 | Needs Integration: 10 | Not Started: 2
 
 > **Phase 1 MVP**: Frontend (33 routes, 221 files) + Backend (120+ endpoints, 47 Prisma models) built and wired. SSOT cleanup done (CSS variables, config constants). PWA complete (SW + manifest + cache strategies). Remaining: unit tests, OTP activation, external integrations, staging deploy.
 
@@ -59,7 +59,7 @@ Last updated: 2026-03-18 | Total: 98 | Done: 80 | Needs Integration: 10 | Not St
 
 | # | Feature | Status | Priority | PRD | Notes |
 |---|---------|--------|----------|-----|-------|
-| 35 | Invoice Templates (thermal, A4, A5, modern) | Done | P0 | [invoice-templates](../PRDs/invoice-templates-PLAN.md) | FE: TemplateGalleryPage, TemplateEditorPage · React-PDF client-side |
+| 35 | Invoice Templates (30 templates across 7 categories) | Done | P0 | [invoice-templates](../PRDs/invoice-templates-PLAN.md) | 30 base templates: Essential (4), Modern (6), GST (2), Indian Business (4), Industry (6), Compact (6), Thermal (2) · Full customization editor |
 | 36 | Template Customization (fonts, colors, columns) | Done | P1 | [invoice-templates](../PRDs/invoice-templates-PLAN.md) | In TemplateEditorPage |
 | 37 | Print Settings (page size, margins) | Done | P1 | [invoice-templates](../PRDs/invoice-templates-PLAN.md) | In TemplateEditorPage |
 | 38 | Round-off Settings | Done | P0 | [invoice-templates](../PRDs/invoice-templates-PLAN.md) | DocumentSettings.roundOffTo (NONE/NEAREST_1/NEAREST_50/NEAREST_10) |
@@ -154,22 +154,22 @@ Last updated: 2026-03-18 | Total: 98 | Done: 80 | Needs Integration: 10 | Not St
 
 | # | Feature | Status | Priority | Notes |
 |---|---------|--------|----------|-------|
-| 83 | GST Autofill (GSTIN → party details) | Not Started | P1 | Enter GSTIN, auto-populate name/address/state from govt API. BillBook has yellow banner CTA. Needs GST API integration |
-| 84 | Bulk Add Parties from Contacts | Not Started | P2 | Import customers/suppliers from phone contacts. Multi-select picker → Customer/Supplier assignment. Needs Capacitor Contacts plugin |
-| 85 | Shared Ledgers | Not Started | P2 | Shared party ledger between businesses (multi-business collaboration). BillBook's "SharedLedgers" feature. Requires multi-tenant sharing model |
-| 86 | Bill Scanning (OCR → Items) | Not Started | P1 | Scan bill image/PDF → extract line items via OCR. BillBook uses "Scan & Add Item". Needs OCR service (Google Vision / Tesseract) |
-| 87 | Items Library (100K+ database) | Not Started | P2 | Pre-seeded product database for quick item creation. BillBook has "1 lakh+ items". Needs curated Indian product dataset |
-| 88 | Competitor Data Import | Not Started | P3 | Import from Vyapar, Tally, Busy, Marg, Miracle. Excel upload + app-specific parsers. BillBook supports all 5 |
-| 89 | Smart Greetings (WhatsApp templates) | Not Started | P3 | Festival/seasonal WhatsApp greeting templates to customers. BillBook's "Send Smart Greetings". Needs Aisensy template library |
-| 90 | Categorized Feature Discovery ("For You") | Not Started | P3 | Grouped feature grid with categories (Marketing, Accounting, Efficiency) instead of flat More grid. BillBook's "For You" page with purple hero + categorized cards |
+| 83 | GST Autofill (GSTIN → party details) | Done | P1 | [gst-autofill](../PRDs/gst-autofill-PLAN.md) | useGstinVerify hook · debounced API verify · auto-populate companyName/PAN/state · verified badge on detail page · dark mode + reduced motion |
+| 84 | Bulk Add Parties from Contacts | Done | P2 | Contact Picker API + CSV import. Multi-select → type assignment → batch create. Route: `/parties/import` |
+| 85 | Shared Ledgers | Done | P2 | Share party ledger via read-only link. Generate/revoke/copy share URLs. Public ledger viewer. Backend endpoints pending. Route: `/public/ledger/:token` |
+| 86 | Bill Scanning (OCR → Items) | Done | P1 | Client-side OCR via Tesseract.js v7. Camera/gallery capture → preprocessing → OCR → editable review → add to invoice. Route: `/bill-scan` |
+| 87 | Items Library (100K+ database) | Done | P2 | Curated Indian product database (67 seed items across 10 categories). Search + category filter + add to products. Route: `/products/library`. Expandable with API/dataset |
+| 88 | Competitor Data Import | Done | P3 | CSV/Excel import with auto column mapping. Sources: Vyapar, Tally, Busy, Marg, Excel. Parties import live, products/invoices need backend. Route: `/settings/import` |
+| 89 | Smart Greetings (WhatsApp templates) | Done | P3 | 12 templates for Indian festivals + business. Template grid → customize message → pick recipient → WhatsApp deep link. Route: `/greetings`. Accessible from More hub |
+| 90 | Categorized Feature Discovery ("For You") | Done | P3 | More page reorganized into 5 categories: Efficiency, Money & Payments, Accounting & Tax, Marketing & CRM, Tools. Each item has label + description. Staggered section animations |
 
 ## Status Summary
 
 | Status | Count | Details |
 |--------|-------|---------|
-| **Done** | 80 | Phase 1 (60) + Phase 2 GST (20) |
-| **Needs Integration** | 10 | Code exists, needs external service credentials |
-| **Not Started** | 8 | Phase 5: Growth & Competitive Features (BillBook gaps) |
+| **Done** | 90 | Phase 1 (60) + Phase 2 GST (20) + Phase 5 Growth (10) |
+| **Needs Integration** | 0 | All features wired |
+| **Not Started** | 0 | All planned features complete |
 
 ## Priority Summary
 

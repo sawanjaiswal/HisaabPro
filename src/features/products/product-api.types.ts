@@ -73,6 +73,10 @@ export interface ProductFormData {
   name: string
   sku?: string
   autoGenerateSku: boolean
+  /** Barcode value (e.g. EAN-13, CODE128) — optional */
+  barcode?: string
+  /** Barcode format — defaults to CODE128 */
+  barcodeFormat?: import('@/lib/types/product.types').BarcodeFormat
   categoryId?: string | null
   unitId: string
   /** Sale price in PAISE */

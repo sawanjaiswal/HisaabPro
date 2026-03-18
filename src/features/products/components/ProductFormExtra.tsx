@@ -1,9 +1,11 @@
-/** Create Product — Tax category, HSN/SAC, description, status section */
+/** Create Product — Tax category, HSN/SAC, barcode, description, status section */
 
 import { Input } from '@/components/ui/Input'
 import type { ProductFormData, ProductStatus } from '../product.types'
 import { PRODUCT_STATUS_LABELS, HSN_CODE_MAX, SAC_CODE_MAX, PRODUCT_DESCRIPTION_MAX } from '../product.constants'
 import type { TaxCategory } from '@/lib/types/tax.types'
+import { BarcodeField } from './BarcodeField'
+import '../barcode.css'
 
 interface ProductFormExtraProps {
   form: ProductFormData
@@ -31,6 +33,8 @@ export function ProductFormExtra({ form, errors, onUpdate, taxCategories = [] }:
           </select>
         </div>
       )}
+
+      <BarcodeField form={form} errors={errors} onUpdate={onUpdate} />
 
       <Input label="HSN Code (goods)" id="product-hsn" value={form.hsnCode ?? ''} onChange={(e) => onUpdate('hsnCode', e.target.value || undefined)} error={errors.hsnCode} placeholder="e.g. 19023090" maxLength={HSN_CODE_MAX} autoComplete="off" />
 

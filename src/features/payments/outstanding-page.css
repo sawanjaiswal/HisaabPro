@@ -53,7 +53,7 @@
   padding: var(--space-4);
   background: var(--color-primary-600);
   border-radius: var(--radius-lg);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   animation: outstandingFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 60ms both;
 }
 
@@ -80,7 +80,7 @@
 .outstanding-summary-card-amount {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }

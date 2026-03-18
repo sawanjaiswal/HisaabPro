@@ -195,7 +195,7 @@
 
 .aging-tab--active {
   background: var(--color-primary-500);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   border-color: var(--color-primary-500);
 }
 

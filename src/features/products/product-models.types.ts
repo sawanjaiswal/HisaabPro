@@ -105,6 +105,9 @@ export interface ProductDetail extends ProductSummary {
   updatedAt: string
 }
 
+// Re-export BarcodeFormat for convenience
+export type { BarcodeFormat } from '@/lib/types/product.types'
+
 // ─── Stock movement ──────────────────────────────────────────────────────────
 
 export interface StockMovement {

@@ -18,8 +18,10 @@ import { ProductDetailHeader } from './components/ProductDetailHeader'
 import { ProductStockTab } from './components/ProductStockTab'
 import { StockAdjustModal } from './components/StockAdjustModal'
 import { formatProductPrice } from './product.utils'
-import { PREDEFINED_CATEGORIES, PREDEFINED_UNITS, STOCK_VALIDATION_LABELS } from './product.constants'
+import { PREDEFINED_CATEGORIES, PREDEFINED_UNITS, STOCK_VALIDATION_LABELS, BARCODE_FORMAT_LABELS } from './product.constants'
+import { BarcodeDisplay } from './components/BarcodeDisplay'
 import './product-detail.css'
+import './barcode.css'
 
 type DetailTab = 'overview' | 'stock' | 'info'
 
@@ -108,7 +110,7 @@ export default function ProductDetailPage() {
 
         {status === 'success' && product && (
           <>
-            <div role="status" aria-live="polite" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>
+            <div role="status" aria-live="polite" className="sr-only">
               {product.name} details loaded
             </div>
             <ProductDetailHeader product={product} />
@@ -198,6 +200,18 @@ export default function ProductDetailPage() {
                     <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>SKU</span>
                     <span style={{ fontWeight: 500, fontFamily: 'monospace' }}>{product.sku}</span>
                   </div>
+                  {product.barcode && (
+                    <div className="product-info-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+                      <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem' }}>
+                        Barcode ({BARCODE_FORMAT_LABELS[product.barcodeFormat ?? 'CODE128']})
+                      </span>
+                      <BarcodeDisplay
+                        value={product.barcode}
+                        format={product.barcodeFormat ?? 'CODE128'}
+                        productName={product.name}
+                      />
+                    </div>
+                  )}
                   <div className="product-info-row">
                     <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>Status</span>
                     <span className={`badge ${product.status === 'ACTIVE' ? 'badge-paid' : 'badge-pending'}`}>

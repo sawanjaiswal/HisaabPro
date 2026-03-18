@@ -5,7 +5,7 @@
 
 // ─── Base template ────────────────────────────────────────────────────────────
 
-/** The 6 factory-shipped base templates. User-created templates derive from one. */
+/** Factory-shipped base templates. User-created templates derive from one. */
 export type BaseTemplate =
   | 'THERMAL_58MM'
   | 'THERMAL_80MM'
@@ -13,6 +13,34 @@ export type BaseTemplate =
   | 'A4_MODERN'
   | 'A5_COMPACT'
   | 'A4_DETAILED'
+  // Modern collection
+  | 'A4_ELEGANT'
+  | 'A4_MINIMAL'
+  | 'A4_BOLD'
+  | 'A4_CORPORATE'
+  | 'A4_PROFESSIONAL'
+  | 'A4_CREATIVE'
+  // Indian business collection
+  | 'A4_GST_STANDARD'
+  | 'A4_GST_DETAILED'
+  | 'A4_RETAIL'
+  | 'A4_WHOLESALE'
+  | 'A4_KIRANA'
+  | 'A4_MANUFACTURING'
+  // Industry templates
+  | 'A4_SERVICES'
+  | 'A4_FREELANCER'
+  | 'A4_MEDICAL'
+  | 'A4_RESTAURANT'
+  | 'A4_TRANSPORT'
+  | 'A4_CONSTRUCTION'
+  // Compact & receipt
+  | 'A5_RECEIPT'
+  | 'A5_PROFESSIONAL'
+  | 'A4_LETTERHEAD'
+  | 'A4_TWO_COLUMN'
+  | 'A4_COLORFUL'
+  | 'A4_DARK'
 
 // ─── Layout options ───────────────────────────────────────────────────────────
 

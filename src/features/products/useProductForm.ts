@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/hooks/useToast'
 import { ROUTES } from '@/config/routes.config'
 import { createProduct, updateProduct } from './product.service'
+import { validateBarcode } from './barcode.utils'
 
 import type { ProductFormData, ProductStatus, StockValidationMode } from './product.types'
 
@@ -106,6 +107,14 @@ export function useProductForm(options: UseProductFormOptions = {}): UseProductF
 
     if (!form.autoGenerateSku && form.sku !== undefined && form.sku.trim() === '') {
       next.sku = 'SKU is required when auto-generate is off'
+    }
+
+    // Barcode validation (optional field — only validate if filled)
+    if (form.barcode) {
+      const barcodeError = validateBarcode(form.barcode, form.barcodeFormat ?? 'CODE128')
+      if (barcodeError) {
+        next.barcode = barcodeError
+      }
     }
 
     setErrors(next)

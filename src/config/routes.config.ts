@@ -71,4 +71,10 @@ export const ROUTES = {
   REPORT_DISCOUNTS: '/reports/discounts',
   FY_CLOSURE: '/accounting/fy-closure',
   TALLY_EXPORT: '/accounting/tally-export',
+  BILL_SCAN: '/bill-scan',
+  BULK_IMPORT_PARTIES: '/parties/import',
+  PUBLIC_LEDGER: '/public/ledger/:token',
+  ITEMS_LIBRARY: '/products/library',
+  DATA_IMPORT: '/settings/import',
+  SMART_GREETINGS: '/greetings',
 } as const

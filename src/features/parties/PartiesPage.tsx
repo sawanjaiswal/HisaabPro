@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Users } from 'lucide-react'
+import { Plus, Users, Upload } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -82,7 +82,17 @@ export default function PartiesPage() {
 
   return (
     <AppShell>
-      <Header title={bulk.isActive ? `${bulk.selectedCount} Selected` : 'Parties'} />
+      <Header
+        title={bulk.isActive ? `${bulk.selectedCount} Selected` : 'Parties'}
+        actions={
+          !bulk.isActive ? (
+            <button className="btn btn-ghost btn-sm" onClick={() => navigate(ROUTES.BULK_IMPORT_PARTIES)} aria-label="Import parties">
+              <Upload size={18} aria-hidden="true" />
+              <span>Import</span>
+            </button>
+          ) : undefined
+        }
+      />
 
       {status === 'success' && data && !bulk.isActive && (
         <div className="page-hero">
@@ -124,12 +134,14 @@ export default function PartiesPage() {
         )}
 
         {status === 'success' && data && (
-          <div role="status" aria-live="polite" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>
+          <div role="status" aria-live="polite" className="sr-only">
             {data.parties.length} {data.parties.length === 1 ? 'party' : 'parties'} found
           </div>
         )}
 
         {status === 'success' && data && data.parties.length > 0 && (
+          <>
+          <h2 className="sr-only">Party list</h2>
           <div className="party-list stagger-list" role="list" aria-label="Parties">
             {data.parties.map((party) => (
               <div
@@ -148,6 +160,7 @@ export default function PartiesPage() {
               </div>
             ))}
           </div>
+          </>
         )}
       </PageContainer>
 

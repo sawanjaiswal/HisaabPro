@@ -83,6 +83,10 @@
   /* Accent — Figma lime */
   --color-lime-accent: #cfdf2e;
 
+  /* Inverse colors — always white/black regardless of theme (Figma: white-inverse, black-inverse) */
+  --color-white-inverse: #FFFFFF;
+  --color-black-inverse: #111827;
+
   /* Dark-on-lime text (safe/clear/all-paid states) */
   --color-dark-text: #111827;
   /* WhatsApp brand green */

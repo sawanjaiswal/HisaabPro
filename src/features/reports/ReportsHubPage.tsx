@@ -50,7 +50,7 @@ export default function ReportsHubPage() {
       <Header title="Reports" backTo={ROUTES.DASHBOARD} />
 
       <div className="page-hero">
-        <div className="report-hub-hero" aria-label="Reports overview">
+        <section className="report-hub-hero" aria-label="Reports overview">
           <div className="report-hub-hero-icon" aria-hidden="true">
             <BarChart3 size={28} />
           </div>
@@ -61,7 +61,7 @@ export default function ReportsHubPage() {
             </span>
           </div>
           <span className="report-hub-hero-count">{REPORT_CATEGORIES.length} Reports</span>
-        </div>
+        </section>
       </div>
 
       <PageContainer>

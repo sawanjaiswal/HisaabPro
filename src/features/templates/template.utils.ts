@@ -18,6 +18,7 @@ import {
   COLUMN_ORDER,
   TEMPLATE_NAME_MAX,
 } from './template.constants'
+import { TEMPLATE_CONFIG_OVERRIDES } from './template-gallery.configs'
 
 // ─── Config builders ──────────────────────────────────────────────────────────
 
@@ -32,39 +33,46 @@ import {
 export function buildDefaultConfig(baseTemplate: BaseTemplate): TemplateConfig {
   const isThermal = baseTemplate === 'THERMAL_58MM' || baseTemplate === 'THERMAL_80MM'
 
-  if (!isThermal) {
-    return { ...DEFAULT_TEMPLATE_CONFIG }
+  if (isThermal) {
+    // Thermal overrides: minimal table, no signatures, fewer footer blocks
+    return {
+      ...DEFAULT_TEMPLATE_CONFIG,
+      layout: {
+        ...DEFAULT_TEMPLATE_CONFIG.layout,
+        logoPosition:      'none',
+        headerStyle:       'minimal',
+        itemTableStyle:    'minimal',
+        summaryPosition:   'full-width',
+        signaturePosition: 'left',
+      },
+      columns: {
+        ...DEFAULT_TEMPLATE_CONFIG.columns,
+        serialNumber:   { visible: false, label: '#' },
+        unit:           { visible: false, label: 'Unit' },
+      },
+      fields: {
+        ...DEFAULT_TEMPLATE_CONFIG.fields,
+        businessEmail:    false,
+        businessPan:      false,
+        shippingAddress:  false,
+        bankDetails:      false,
+        signature:        false,
+        termsAndConditions: false,
+        qrCode:           false,
+        watermark:        false,
+        totalInWords:     false,
+      },
+    }
   }
 
-  // Thermal overrides: minimal table, no signatures, fewer footer blocks
-  return {
-    ...DEFAULT_TEMPLATE_CONFIG,
-    layout: {
-      ...DEFAULT_TEMPLATE_CONFIG.layout,
-      logoPosition:      'none',
-      headerStyle:       'minimal',
-      itemTableStyle:    'minimal',
-      summaryPosition:   'full-width',
-      signaturePosition: 'left',
-    },
-    columns: {
-      ...DEFAULT_TEMPLATE_CONFIG.columns,
-      serialNumber:   { visible: false, label: '#' },
-      unit:           { visible: false, label: 'Unit' },
-    },
-    fields: {
-      ...DEFAULT_TEMPLATE_CONFIG.fields,
-      businessEmail:    false,
-      businessPan:      false,
-      shippingAddress:  false,
-      bankDetails:      false,
-      signature:        false,
-      termsAndConditions: false,
-      qrCode:           false,
-      watermark:        false,
-      totalInWords:     false,
-    },
+  // Check for gallery config overrides (24 additional templates)
+  const override = TEMPLATE_CONFIG_OVERRIDES[baseTemplate]
+  if (override) {
+    return mergeTemplateConfig(override, DEFAULT_TEMPLATE_CONFIG)
   }
+
+  // Original 4 A4/A5 templates use default config as-is
+  return { ...DEFAULT_TEMPLATE_CONFIG }
 }
 
 /**

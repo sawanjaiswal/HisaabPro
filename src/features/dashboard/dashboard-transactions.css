@@ -109,6 +109,21 @@
   border-radius: 4px;
 }
 
+/* ─── Date group headers ─────────────────────────────────── */
+
+.dashboard-txn-date-header {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-gray-400);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: var(--space-3) 0 var(--space-1);
+}
+
+.dashboard-txn-date-header:first-child {
+  padding-top: 0;
+}
+
 .dashboard-txn-list {
   display: flex;
   flex-direction: column;
@@ -279,7 +294,7 @@
   font-family: var(--font-primary);
   font-size: 0.6875rem;
   font-weight: 600;
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
   transition: background var(--duration-fast) var(--ease-default),
@@ -347,6 +362,10 @@
   color: var(--color-gray-600);
 }
 
+[data-theme="dark"] .dashboard-txn-date-header {
+  color: var(--color-gray-500);
+}
+
 [data-theme="dark"] .dashboard-txn-row:not(:last-of-type) {
   border-bottom-color: var(--color-gray-200);
 }
@@ -357,7 +376,6 @@
 
 [data-theme="dark"] .dashboard-txn-add-btn {
   background: var(--dash-teal-start);
-  color: var(--color-gray-0);
 }
 
 [data-theme="dark"] .dashboard-txn-add-btn:active {

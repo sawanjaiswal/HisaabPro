@@ -9,7 +9,7 @@
   border: none;
   border-radius: var(--radius-full);
   background: var(--color-primary-500);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
@@ -172,7 +172,7 @@
   border: none;
   border-radius: var(--radius-full);
   background: var(--color-primary-500);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
@@ -292,7 +292,7 @@
 
 .set-rate-form__btn--primary {
   background: var(--color-primary-500);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
 }
 
 .set-rate-form__btn--primary:hover:not(:disabled) {

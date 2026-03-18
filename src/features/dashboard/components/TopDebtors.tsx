@@ -13,13 +13,14 @@ import type { TopDebtor } from '../dashboard.types'
 
 interface TopDebtorsProps {
   debtors: TopDebtor[]
+  totalOutstanding: number
   onViewAll: () => void
   onDebtorClick: (partyId: string) => void
-  onSendReminder: (debtor: TopDebtor) => void
 }
 
 export const TopDebtors: React.FC<TopDebtorsProps> = ({
   debtors,
+  totalOutstanding,
   onViewAll,
   onDebtorClick,
 }) => {
@@ -28,7 +29,12 @@ export const TopDebtors: React.FC<TopDebtorsProps> = ({
   return (
     <div className="dashboard-starred">
       <div className="dashboard-section-header">
-        <span className="dashboard-section-title">Who Owes You</span>
+        <div className="dashboard-section-title-group">
+          <span className="dashboard-section-title">Who Owes You</span>
+          <span className="dashboard-section-subtitle">
+            {debtors.length} {debtors.length === 1 ? 'party' : 'parties'} &middot; {formatCompactAmount(totalOutstanding)}
+          </span>
+        </div>
         <button
           className="dashboard-section-link"
           onClick={onViewAll}

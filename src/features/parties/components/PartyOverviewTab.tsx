@@ -9,6 +9,7 @@ import {
   FileText,
   CreditCard,
   StickyNote,
+  CheckCircle,
 } from 'lucide-react'
 import type { PartyDetail } from '../party.types'
 import { formatAmount } from '../party.utils'
@@ -75,11 +76,19 @@ export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => 
         <div className="card" aria-label="Business information">
           <h3 className="section-title" style={{ marginBottom: 'var(--space-3)' }}>Business</h3>
           {party.gstin && (
-            <InfoRow
-              icon={<FileText size={18} />}
-              label="GSTIN"
-              value={party.gstin}
-            />
+            <div>
+              <InfoRow
+                icon={<FileText size={18} />}
+                label="GSTIN"
+                value={party.gstin}
+              />
+              {party.gstinVerified && (
+                <span className="gstin-verified-badge">
+                  <CheckCircle size={12} aria-hidden="true" />
+                  Verified{party.gstinLegalName ? ` — ${party.gstinLegalName}` : ''}
+                </span>
+              )}
+            </div>
           )}
           {party.pan && (
             <InfoRow

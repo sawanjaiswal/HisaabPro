@@ -33,3 +33,9 @@
   height: 56px;
   font-size: 1.25rem;
 }
+
+/* Dark mode — muted pastel backgrounds, ensure text contrast */
+[data-theme="dark"] .party-avatar {
+  filter: brightness(0.7) saturate(1.2);
+  color: var(--color-white-inverse);
+}

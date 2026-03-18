@@ -56,6 +56,9 @@ export interface PartyDetail extends PartySummary {
   companyName?: string
   gstin?: string
   pan?: string
+  gstinVerified?: boolean
+  gstinLegalName?: string
+  gstinStatus?: string
   creditLimitMode: CreditLimitMode
   totalBusiness: number
   notes?: string
@@ -143,6 +146,9 @@ export interface PartyFormData {
   tags: string[]
   gstin?: string
   pan?: string
+  gstinVerified?: boolean
+  gstinLegalName?: string
+  gstinStatus?: string
   creditLimit: number
   creditLimitMode: CreditLimitMode
   notes?: string

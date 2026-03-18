@@ -41,6 +41,9 @@ function detailToFormData(detail: PartyDetail): PartyFormData {
     tags: detail.tags,
     gstin: detail.gstin,
     pan: detail.pan,
+    gstinVerified: detail.gstinVerified,
+    gstinLegalName: detail.gstinLegalName,
+    gstinStatus: detail.gstinStatus,
     creditLimit: detail.creditLimit / 100, // paise → rupees for form
     creditLimitMode: detail.creditLimitMode,
     notes: detail.notes,
@@ -120,6 +123,7 @@ function EditPartyForm({ partyId, initialData }: { partyId: string; initialData:
     setActiveSection,
     updateField,
     handleSubmit,
+    gstinVerify,
   } = usePartyForm({ editId: partyId, initialData })
 
   return (
@@ -152,7 +156,7 @@ function EditPartyForm({ partyId, initialData }: { partyId: string; initialData:
             <PartyFormBasic form={form} errors={errors} onUpdate={updateField} />
           )}
           {activeSection === 'business' && (
-            <PartyFormBusiness form={form} errors={errors} onUpdate={updateField} />
+            <PartyFormBusiness form={form} errors={errors} onUpdate={updateField} gstinVerify={gstinVerify} />
           )}
           {activeSection === 'credit' && (
             <PartyFormCredit form={form} errors={errors} onUpdate={updateField} />

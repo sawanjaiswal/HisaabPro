@@ -1,6 +1,6 @@
 /** Create/Edit Party — Form state hook */
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/hooks/useToast'
 import { ROUTES } from '@/config/routes.config'
@@ -10,6 +10,8 @@ import {
   GSTIN_REGEX,
 } from './party.constants'
 import { extractPanFromGstin, rupeesToPaise } from './party.utils'
+import { useGstinVerify } from './useGstinVerify'
+import type { UseGstinVerifyReturn } from './useGstinVerify'
 import type { PartyFormData, PartyType, CreditLimitMode, BalanceType } from './party.types'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -43,6 +45,7 @@ export interface UsePartyFormReturn {
   validate: () => boolean
   handleSubmit: () => Promise<void>
   reset: () => void
+  gstinVerify: UseGstinVerifyReturn
 }
 
 export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormReturn {
@@ -56,6 +59,26 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [activeSection, setActiveSection] = useState<FormSection>('basic')
+
+  const gstinVerify = useGstinVerify(
+    initialData?.gstinVerified,
+    initialData?.gstinLegalName,
+    initialData?.gstinStatus,
+  )
+
+  // Auto-populate companyName when GSTIN is verified
+  useEffect(() => {
+    if (gstinVerify.status === 'verified' && gstinVerify.result?.legalName) {
+      setForm(prev => ({
+        ...prev,
+        gstinVerified: true,
+        gstinLegalName: gstinVerify.result?.legalName,
+        gstinStatus: gstinVerify.result?.status,
+        // Only auto-fill companyName if empty or was previously auto-filled
+        companyName: prev.companyName ? prev.companyName : gstinVerify.result?.legalName,
+      }))
+    }
+  }, [gstinVerify.status, gstinVerify.result])
 
   const updateField = useCallback(<K extends keyof PartyFormData>(
     key: K,
@@ -72,8 +95,20 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
         }
       }
 
+      // Clear verification state when GSTIN changes
+      if (key === 'gstin') {
+        next.gstinVerified = false
+        next.gstinLegalName = undefined
+        next.gstinStatus = undefined
+      }
+
       return next
     })
+
+    // Trigger GSTIN verification on change
+    if (key === 'gstin' && typeof value === 'string') {
+      gstinVerify.onGstinChange(value)
+    }
 
     // Clear field error on change
     setErrors(prev => {
@@ -82,7 +117,7 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
       delete next[key as string]
       return next
     })
-  }, [])
+  }, [gstinVerify])
 
   const validate = useCallback((): boolean => {
     const next: Record<string, string> = {}
@@ -164,6 +199,7 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
     validate,
     handleSubmit,
     reset,
+    gstinVerify,
   }
 }
 

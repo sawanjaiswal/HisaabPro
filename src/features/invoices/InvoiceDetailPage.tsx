@@ -156,7 +156,7 @@ export default function InvoiceDetailPage() {
 
         {status === 'success' && document && (
           <>
-            <div role="status" aria-live="polite" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>
+            <div role="status" aria-live="polite" className="sr-only">
               Invoice {document.documentNumber} loaded
             </div>
             <div ref={previewRef} className="invoice-export-capture">

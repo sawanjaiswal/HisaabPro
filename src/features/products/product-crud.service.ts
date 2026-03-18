@@ -182,6 +182,24 @@ export async function getStockMovements(
  * Items may specify a non-base unit — server converts using UnitConversions.
  * Returns per-item OK / WARN / BLOCK status and an overall valid flag.
  */
+/**
+ * Look up a product by barcode value.
+ * Returns the product summary or null if not found.
+ */
+export async function getProductByBarcode(
+  barcode: string,
+  signal?: AbortSignal
+): Promise<ProductDetail | null> {
+  try {
+    return await api<ProductDetail>(
+      `/products/by-barcode/${encodeURIComponent(barcode)}`,
+      { signal }
+    )
+  } catch {
+    return null
+  }
+}
+
 export async function validateStock(
   items: StockValidateItem[],
   signal?: AbortSignal

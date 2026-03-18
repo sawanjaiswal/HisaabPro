@@ -112,7 +112,7 @@
 .calculator-result {
   font-size: 2.5rem;
   font-weight: 700;
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   font-family: var(--font-primary);
   font-variant-numeric: tabular-nums;
   word-break: break-all;

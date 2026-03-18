@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Package } from 'lucide-react'
+import { Plus, Package, ScanBarcode, BookOpen } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -16,7 +16,9 @@ import { ProductSummaryBar } from './components/ProductSummaryBar'
 import { ProductFilterBar } from './components/ProductFilterBar'
 import { ProductCard } from './components/ProductCard'
 import { ProductListSkeleton } from './components/ProductListSkeleton'
-import { deleteProduct } from './product.service'
+import { deleteProduct, getProductByBarcode } from './product.service'
+import { BarcodeScanner } from './components/BarcodeScanner'
+import './barcode.css'
 import { ROUTES } from '@/config/routes.config'
 import type { BulkAction } from '@/components/ui/BulkActionBar'
 import './products.css'
@@ -27,6 +29,17 @@ export default function ProductsPage() {
   const { data, status, filters, setSearch, setFilter, refresh } = useProducts()
   const bulk = useBulkSelect()
   const [isBulkDeleting, setIsBulkDeleting] = useState(false)
+  const [scannerOpen, setScannerOpen] = useState(false)
+
+  const handleBarcodeScan = async (value: string) => {
+    setScannerOpen(false)
+    const product = await getProductByBarcode(value)
+    if (product) {
+      navigate(`/products/${product.id}`)
+    } else {
+      toast.error(`No product found for barcode: ${value}`)
+    }
+  }
 
   const handleProductClick = (id: string) => {
     if (bulk.isActive) {
@@ -83,7 +96,21 @@ export default function ProductsPage() {
 
   return (
     <AppShell>
-      <Header title={bulk.isActive ? `${bulk.selectedCount} Selected` : 'Products'} />
+      <Header
+        title={bulk.isActive ? `${bulk.selectedCount} Selected` : 'Products'}
+        actions={
+          !bulk.isActive ? (
+            <>
+              <button className="btn btn-ghost btn-sm" onClick={() => navigate(ROUTES.ITEMS_LIBRARY)} aria-label="Items library">
+                <BookOpen size={18} aria-hidden="true" />
+              </button>
+              <button className="btn btn-ghost btn-sm" onClick={() => setScannerOpen(true)} aria-label="Scan barcode">
+                <ScanBarcode size={20} aria-hidden="true" />
+              </button>
+            </>
+          ) : undefined
+        }
+      />
 
       {status === 'success' && data && !bulk.isActive && (
         <div className="page-hero">
@@ -125,12 +152,14 @@ export default function ProductsPage() {
         )}
 
         {status === 'success' && data && (
-          <div role="status" aria-live="polite" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>
+          <div role="status" aria-live="polite" className="sr-only">
             {data.products.length} {data.products.length === 1 ? 'product' : 'products'} found
           </div>
         )}
 
         {status === 'success' && data && data.products.length > 0 && (
+          <>
+          <h2 className="sr-only">Product list</h2>
           <div className="product-list stagger-list" role="list" aria-label="Products">
             {data.products.map((product) => (
               <div
@@ -149,6 +178,7 @@ export default function ProductsPage() {
               </div>
             ))}
           </div>
+          </>
         )}
       </PageContainer>
 
@@ -166,6 +196,12 @@ export default function ProductsPage() {
         actions={bulkActions}
         isProcessing={isBulkDeleting}
       />
+      {scannerOpen && (
+        <BarcodeScanner
+          onScan={handleBarcodeScan}
+          onClose={() => setScannerOpen(false)}
+        />
+      )}
     </AppShell>
   )
 }

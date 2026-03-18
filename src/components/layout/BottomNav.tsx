@@ -62,7 +62,6 @@ export function BottomNav() {
           <path
             className="bottom-nav-svg-path"
             d={buildNotchPath(dims.w, dims.h)}
-            fill="white"
           />
         </svg>
       </div>
@@ -87,7 +86,7 @@ export function BottomNav() {
           aria-label="Create new invoice"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M12 5v14M5 12h14" stroke="#1A1A1A" strokeWidth="2.5" strokeLinecap="round"/>
+            <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
           </svg>
         </button>
       </div>

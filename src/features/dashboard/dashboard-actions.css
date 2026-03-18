@@ -80,3 +80,7 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(43, 51, 66, 0.2);
 }
 
+[data-theme="dark"] .dashboard-action-icon-box img {
+  filter: brightness(0) invert(1) opacity(0.85);
+}
+

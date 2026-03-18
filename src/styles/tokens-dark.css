@@ -71,6 +71,10 @@
   --color-hero-text-secondary: rgba(255, 255, 255, 0.8);
   --color-hero-text-muted: rgba(255, 255, 255, 0.5);
 
+  /* Inverse colors — intentionally NOT overridden (always same in both themes) */
+  --color-white-inverse: #FFFFFF;
+  --color-black-inverse: #111827;
+
   --color-lime-accent: #D4DC4A;
 
   --gradient-teal-start: #0D3640;
@@ -85,7 +89,19 @@
   --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
   --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(43, 51, 66, 0.5);
   --shadow-md: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(43, 51, 66, 0.4);
-  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(43, 51, 66, 0.3);
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(43, 51, 66, 0.3);
+  --shadow-avatar: 0 2px 6px rgba(0, 0, 0, 0.25);
+  --shadow-search: 0 1px 4px rgba(0, 0, 0, 0.15);
+  --shadow-nav-drop: 0 -4px 12px rgba(0, 0, 0, 0.25);
+  --shadow-fab: 0 4px 14px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.2);
+  --shadow-fab-lime: 0 4px 14px rgba(212, 220, 74, 0.3);
+  --shadow-pill-active: 0 2px 8px rgba(63, 174, 214, 0.25);
+  --shadow-modal: 0 20px 40px rgba(0, 0, 0, 0.5);
+  --shadow-drawer-inset: inset 0 2px 6px rgba(0, 0, 0, 0.12);
+  --shadow-focus-primary: 0 0 0 3px rgba(63, 174, 214, 0.15);
+  --backdrop-color: rgba(0, 0, 0, 0.7);
+  --header-glass-bg: rgba(20, 25, 34, 0.92);
+  --header-border-color: rgba(255, 255, 255, 0.06);
 
   --toast-bg: #232B3A;
   --toast-text: #E8EAF0;
@@ -115,17 +131,9 @@
   background: #0B0F15;
 }
 
-/* Dark theme header — frosted dark glass */
-[data-theme="dark"] .header {
-  background: rgba(20, 25, 34, 0.92);
-  border-bottom-color: rgba(255, 255, 255, 0.06);
-}
+/* Dark theme header — handled by --header-glass-bg and --header-border-color tokens */
 
-/* Dark theme bottom nav */
-[data-theme="dark"] .bottom-nav {
-  background: rgba(20, 25, 34, 0.95);
-  border-top-color: rgba(255, 255, 255, 0.06);
-}
+/* Dark theme bottom nav — filter handles shadow, SVG fill via variable */
 
 /* Dark theme bottom nav SVG fill */
 [data-theme="dark"] .bottom-nav-svg-path {
@@ -141,16 +149,13 @@
   background: var(--color-primary-500);
 }
 
-/* Dark theme FAB */
+/* Dark theme FAB — shadow handled by --shadow-fab-lime token */
 [data-theme="dark"] .bottom-nav-fab {
   background: var(--color-lime-accent);
-  box-shadow: 0 4px 14px rgba(212, 220, 74, 0.3);
+  box-shadow: var(--shadow-fab-lime);
 }
 
-/* Dark theme cards */
-[data-theme="dark"] .card {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(43, 51, 66, 0.3);
-}
+/* Dark theme cards — shadow handled by --shadow-card token */
 
 /* Dark theme search bar */
 [data-theme="dark"] .search-bar {
@@ -161,7 +166,7 @@
 
 [data-theme="dark"] .search-bar:focus-within {
   border-color: var(--color-primary-400);
-  box-shadow: 0 0 0 3px rgba(63, 174, 214, 0.15);
+  box-shadow: var(--shadow-focus-primary);
 }
 
 /* Dark theme inputs */
@@ -178,12 +183,10 @@
 /* Dark theme modal */
 [data-theme="dark"] .modal {
   background: var(--color-gray-50);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-modal);
 }
 
-[data-theme="dark"] .modal::backdrop {
-  background: rgba(0, 0, 0, 0.7);
-}
+/* Dark theme modal backdrop — handled by --backdrop-color token */
 
 [data-theme="dark"] .modal-header {
   border-bottom-color: var(--color-gray-200);
@@ -199,7 +202,7 @@
 [data-theme="dark"] .pill-tab.active {
   background: var(--color-primary-500);
   border-color: var(--color-primary-500);
-  box-shadow: 0 2px 8px rgba(63, 174, 214, 0.25);
+  box-shadow: var(--shadow-pill-active);
 }
 
 /* Dark theme buttons */
@@ -246,8 +249,8 @@
   border-color: var(--color-gray-300);
 }
 
-/* Dark theme page container — subtle dark drawer */
+/* Dark theme page container — background via --color-gray-0 token, shadow via --shadow-drawer-inset token */
 [data-theme="dark"] .page-container {
   background: var(--color-gray-50);
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-drawer-inset);
 }

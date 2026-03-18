@@ -81,6 +81,12 @@ const DiscountReport = lazy(() => import('@/features/reports/DiscountReportPage'
 const TallyExport = lazy(() => import('@/features/reports/TallyExportPage'))
 const FYClosure = lazy(() => import('@/features/accounting/FYClosurePage'))
 const More = lazy(() => import('@/features/more/MorePage'))
+const BillScan = lazy(() => import('@/features/bill-scan/BillScanPage'))
+const BulkImport = lazy(() => import('@/features/bulk-import/BulkImportPage'))
+const PublicLedger = lazy(() => import('@/features/shared-ledger/PublicLedgerPage'))
+const ItemsLibrary = lazy(() => import('@/features/items-library/ItemsLibraryPage'))
+const DataImport = lazy(() => import('@/features/data-import/DataImportPage'))
+const SmartGreetings = lazy(() => import('@/features/smart-greetings/SmartGreetingsPage'))
 const NotFound = lazy(() => import('@/components/feedback/NotFoundPage'))
 
 /** Route-level ErrorBoundary + Suspense wrapper for individual pages */
@@ -187,7 +193,13 @@ export function App() {
         <Route path={ROUTES.REPORT_DISCOUNTS} element={<PageRoute><ProtectedRoute><DiscountReport /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.TALLY_EXPORT} element={<PageRoute><ProtectedRoute><TallyExport /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.FY_CLOSURE} element={<PageRoute><ProtectedRoute><FYClosure /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.BILL_SCAN} element={<PageRoute><ProtectedRoute><BillScan /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.BULK_IMPORT_PARTIES} element={<PageRoute><ProtectedRoute><BulkImport /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.MORE} element={<PageRoute><ProtectedRoute><More /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.ITEMS_LIBRARY} element={<PageRoute><ProtectedRoute><ItemsLibrary /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.DATA_IMPORT} element={<PageRoute><ProtectedRoute><DataImport /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SMART_GREETINGS} element={<PageRoute><ProtectedRoute><SmartGreetings /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PUBLIC_LEDGER} element={<PageRoute><PublicLedger /></PageRoute>} />
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
       </Routes>
       </PageTransition>

@@ -175,7 +175,7 @@
   font-size: 0.8125rem;
   font-weight: 600;
   font-family: var(--font-primary);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   cursor: pointer;
   transition:
     background var(--duration-fast) var(--ease-default),

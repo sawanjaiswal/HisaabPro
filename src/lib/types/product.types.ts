@@ -2,11 +2,18 @@
 
 export type ProductStatus = 'ACTIVE' | 'INACTIVE'
 
+/** Supported barcode formats for product identification */
+export type BarcodeFormat = 'CODE128' | 'EAN13' | 'EAN8' | 'CODE39' | 'UPC'
+
 /** Product summary in list view */
 export interface ProductSummary {
   id: string
   name: string
   sku: string
+  /** Barcode value (scannable string) — optional */
+  barcode?: string
+  /** Barcode format — defaults to CODE128 */
+  barcodeFormat?: BarcodeFormat
   category: { id: string; name: string }
   unit: { id: string; name: string; symbol: string }
   /** Sale price in PAISE */

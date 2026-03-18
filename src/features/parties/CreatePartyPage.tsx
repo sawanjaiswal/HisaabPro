@@ -29,6 +29,7 @@ export default function CreatePartyPage() {
     updateField,
     handleSubmit,
     reset,
+    gstinVerify,
   } = usePartyForm()
 
   const handleSaveAndAddAnother = async () => {
@@ -67,7 +68,7 @@ export default function CreatePartyPage() {
             <PartyFormBasic form={form} errors={errors} onUpdate={updateField} />
           )}
           {activeSection === 'business' && (
-            <PartyFormBusiness form={form} errors={errors} onUpdate={updateField} />
+            <PartyFormBusiness form={form} errors={errors} onUpdate={updateField} gstinVerify={gstinVerify} />
           )}
           {activeSection === 'credit' && (
             <PartyFormCredit form={form} errors={errors} onUpdate={updateField} />

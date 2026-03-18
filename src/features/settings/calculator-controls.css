@@ -87,7 +87,7 @@
 }
 
 .calc-gst-rate-btn--active .calc-gst-rate-value {
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
 }
 
 .calc-gst-rate-btn--active .calc-gst-rate-suffix {

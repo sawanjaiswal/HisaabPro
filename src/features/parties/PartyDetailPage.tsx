@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Pencil, Trash2, MapPin, Users, FileText, Wallet, MessageSquare } from 'lucide-react'
+import { Pencil, Trash2, MapPin, Users, FileText, Wallet, MessageSquare, Share2 } from 'lucide-react'
 import { ROUTES } from '@/config/routes.config'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -17,6 +17,9 @@ import { deleteParty } from './party.service'
 import { PartyDetailHeader } from './components/PartyDetailHeader'
 import { PartyOverviewTab } from './components/PartyOverviewTab'
 import { PartyTransactionsTab } from './components/PartyTransactionsTab'
+import { ShareLedgerSheet } from '@/features/shared-ledger/components/ShareLedgerSheet'
+import { useShareLedger } from '@/features/shared-ledger/useShareLedger'
+import '@/features/shared-ledger/shared-ledger.css'
 import './party-detail-header.css'
 
 type DetailTab = 'overview' | 'transactions' | 'addresses'
@@ -37,6 +40,8 @@ export default function PartyDetailPage() {
 
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [shareOpen, setShareOpen] = useState(false)
+  const shareLedger = useShareLedger(partyId)
 
   const handleEdit = () => navigate(`/parties/${partyId}/edit`)
 
@@ -125,7 +130,7 @@ export default function PartyDetailPage() {
 
           {status === 'success' && party && (
             <>
-              <div role="status" aria-live="polite" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>
+              <div role="status" aria-live="polite" className="sr-only">
                 {party.name} details loaded
               </div>
               <PartyDetailHeader party={party} />
@@ -156,7 +161,27 @@ export default function PartyDetailPage() {
                   <MessageSquare size={18} aria-hidden="true" />
                   <span>Statement</span>
                 </button>
+                <button
+                  className="party-quick-action-btn"
+                  onClick={() => setShareOpen(true)}
+                  aria-label="Share ledger"
+                >
+                  <Share2 size={18} aria-hidden="true" />
+                  <span>Share</span>
+                </button>
               </div>
+
+              {shareOpen && (
+                <ShareLedgerSheet
+                  partyName={party.name}
+                  shares={shareLedger.shares}
+                  isCreating={shareLedger.isCreating}
+                  onCreate={shareLedger.createShare}
+                  onRevoke={shareLedger.revokeShare}
+                  onCopy={shareLedger.copyLink}
+                  onClose={() => setShareOpen(false)}
+                />
+              )}
 
               <div className="pill-tabs party-detail-tabs" role="tablist" aria-label="Party detail sections">
                 {TABS.map((tab) => (

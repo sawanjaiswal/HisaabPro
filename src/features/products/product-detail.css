@@ -19,7 +19,7 @@
   justify-content: center;
   font-weight: 700;
   font-size: 1.125rem;
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   flex-shrink: 0;
 }
 
@@ -31,7 +31,7 @@
 .product-detail-name {
   font-size: 1.375rem;
   font-weight: 700;
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   line-height: 1.2;
   margin-bottom: var(--space-1);
 }

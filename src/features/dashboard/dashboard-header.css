@@ -73,7 +73,7 @@
 .dashboard-header-avatar-text {
   font-size: 0.875rem;
   font-weight: 700;
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   letter-spacing: 0.02em;
 }
 

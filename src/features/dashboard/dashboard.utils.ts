@@ -68,6 +68,22 @@ export function formatDate(iso: string): string {
   })
 }
 
+// ─── Date grouping ──────────────────────────────────────────────────────────
+
+/** Get a human-readable date group label for a transaction */
+export function getDateGroup(iso: string): string {
+  const txnDate = new Date(iso)
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const yesterday = new Date(today)
+  yesterday.setDate(yesterday.getDate() - 1)
+  const txnDay = new Date(txnDate.getFullYear(), txnDate.getMonth(), txnDate.getDate())
+
+  if (txnDay.getTime() === today.getTime()) return 'Today'
+  if (txnDay.getTime() === yesterday.getTime()) return 'Yesterday'
+  return formatDate(iso)
+}
+
 // ─── Name formatting ─────────────────────────────────────────────────────────
 
 /** Extract the first word from a name for compact display */

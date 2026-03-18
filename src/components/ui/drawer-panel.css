@@ -55,7 +55,7 @@
 .drawer-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(26, 25, 23, 0.5);
+  background: var(--backdrop-color);
   z-index: var(--z-overlay);
 }
 
@@ -165,10 +165,7 @@
 
 /* ─── Dark Theme ──────────────────────────────────────────── */
 
-/* Backdrop — darker overlay in dark mode */
-[data-theme="dark"] .drawer-backdrop {
-  background: rgba(0, 0, 0, 0.6);
-}
+/* Backdrop — handled by --backdrop-color dark token */
 
 /* Panel shadow — dark-adapted mobile bottom sheet */
 [data-theme="dark"] .drawer-panel {

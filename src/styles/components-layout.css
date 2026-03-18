@@ -6,10 +6,10 @@
   justify-content: space-between;
   padding: var(--space-3) var(--side-padding);
   /* Frosted cream glass — matches dashboard header scroll state */
-  background: rgba(248, 247, 244, 0.92);
+  background: var(--header-glass-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid var(--header-border-color);
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
@@ -42,8 +42,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-full);
   border: none;
   background: transparent;
@@ -92,7 +92,7 @@
   padding: 0 8px;
   padding-bottom: max(6px, env(safe-area-inset-bottom, 6px));
   /* Shadow on parent follows the SVG shape including the wave notch */
-  filter: drop-shadow(0 -4px 12px rgba(0, 0, 0, 0.08));
+  filter: drop-shadow(var(--shadow-nav-drop));
 }
 
 /* SVG background — smooth wave notch with bezier curves */
@@ -106,6 +106,10 @@
   width: 100%;
   height: 100%;
   display: block;
+}
+
+.bottom-nav-svg-path {
+  fill: var(--color-gray-0);
 }
 
 .bottom-nav-item {
@@ -147,7 +151,7 @@
 }
 
 .bottom-nav-label {
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   font-weight: 500;
 }
 
@@ -170,13 +174,14 @@
   height: 48px;
   border-radius: 50%;
   background: var(--color-lime-accent);
+  color: var(--color-gray-900);
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  box-shadow: 0 4px 14px rgba(207, 223, 46, 0.45);
+  box-shadow: var(--shadow-fab-lime);
   transition: transform var(--duration-fast) var(--ease-default);
   flex-shrink: 0;
 }

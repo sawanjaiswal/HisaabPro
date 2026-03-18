@@ -1,0 +1,348 @@
+/* === SMART GREETINGS === */
+
+/* --- Template Grid --- */
+.greeting-templates {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Filter chips */
+.greeting-filter-chips {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.greeting-filter-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.greeting-chip {
+  flex-shrink: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  color: var(--color-gray-600);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-default);
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.greeting-chip:active {
+  transform: scale(0.95);
+}
+
+.greeting-chip.active {
+  background: var(--color-primary-500);
+  color: var(--color-gray-0);
+  border-color: var(--color-primary-500);
+}
+
+/* Template cards grid */
+.greeting-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+.greeting-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-3);
+  border: none;
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-default),
+              box-shadow var(--duration-fast) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+  min-height: 140px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.greeting-card:active {
+  transform: scale(0.96);
+}
+
+.greeting-card-emoji {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.greeting-card-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-0);
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.greeting-card-occasion {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Template Editor --- */
+.greeting-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.greeting-preview-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.greeting-preview-emoji {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.greeting-preview-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-gray-0);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.greeting-editor-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.greeting-editor-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+}
+
+.greeting-editor-textarea {
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-lg);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--color-gray-800);
+  background: var(--color-gray-0);
+  resize: vertical;
+  min-height: 160px;
+  font-family: inherit;
+  transition: border-color var(--duration-fast) var(--ease-default);
+}
+
+.greeting-editor-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary-400);
+  box-shadow: 0 0 0 3px var(--color-primary-50);
+}
+
+.greeting-editor-hint {
+  font-size: 0.75rem;
+  color: var(--color-gray-500);
+}
+
+.greeting-editor-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+}
+
+.greeting-editor-send {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+/* --- Recipient Picker --- */
+.greeting-recipients {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.greeting-recipients-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.greeting-recipients-search-icon {
+  position: absolute;
+  left: var(--space-3);
+  color: var(--color-gray-400);
+  pointer-events: none;
+}
+
+.greeting-recipients-search-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-3) var(--space-3) calc(var(--space-3) + 24px);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-lg);
+  font-size: 0.875rem;
+  color: var(--color-gray-800);
+  background: var(--color-gray-0);
+  transition: border-color var(--duration-fast) var(--ease-default);
+}
+
+.greeting-recipients-search-input:focus {
+  outline: none;
+  border-color: var(--color-primary-400);
+  box-shadow: 0 0 0 3px var(--color-primary-50);
+}
+
+.greeting-recipients-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.greeting-recipient-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-lg);
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+.greeting-recipient-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.greeting-recipient-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.greeting-recipient-phone {
+  font-size: 0.75rem;
+  color: var(--color-gray-500);
+}
+
+.greeting-recipients-loading,
+.greeting-recipients-empty {
+  text-align: center;
+  padding: var(--space-6);
+  color: var(--color-gray-500);
+  font-size: 0.875rem;
+}
+
+.greeting-recipients-back {
+  margin-top: var(--space-2);
+}
+
+/* --- Stagger animation --- */
+.greeting-grid .greeting-card,
+.greeting-recipients-list .greeting-recipient-row {
+  animation: page-enter var(--duration-slow) var(--ease-default) both;
+}
+
+.greeting-grid .greeting-card:nth-child(1) { animation-delay: 0ms; }
+.greeting-grid .greeting-card:nth-child(2) { animation-delay: 40ms; }
+.greeting-grid .greeting-card:nth-child(3) { animation-delay: 80ms; }
+.greeting-grid .greeting-card:nth-child(4) { animation-delay: 120ms; }
+.greeting-grid .greeting-card:nth-child(5) { animation-delay: 160ms; }
+.greeting-grid .greeting-card:nth-child(6) { animation-delay: 200ms; }
+.greeting-grid .greeting-card:nth-child(7) { animation-delay: 240ms; }
+.greeting-grid .greeting-card:nth-child(8) { animation-delay: 280ms; }
+.greeting-grid .greeting-card:nth-child(9) { animation-delay: 320ms; }
+.greeting-grid .greeting-card:nth-child(10) { animation-delay: 360ms; }
+.greeting-grid .greeting-card:nth-child(11) { animation-delay: 400ms; }
+.greeting-grid .greeting-card:nth-child(12) { animation-delay: 440ms; }
+
+/* --- Dark mode --- */
+[data-theme="dark"] .greeting-chip {
+  background: var(--color-gray-800);
+  border-color: var(--color-gray-700);
+  color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .greeting-chip.active {
+  background: var(--color-primary-500);
+  color: var(--color-gray-0);
+  border-color: var(--color-primary-500);
+}
+
+[data-theme="dark"] .greeting-editor-label {
+  color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .greeting-editor-textarea {
+  background: var(--color-gray-800);
+  border-color: var(--color-gray-700);
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .greeting-editor-textarea:focus {
+  border-color: var(--color-primary-400);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-500-rgb, 20, 184, 166), 0.15);
+}
+
+[data-theme="dark"] .greeting-editor-hint {
+  color: var(--color-gray-400);
+}
+
+[data-theme="dark"] .greeting-recipients-search-input {
+  background: var(--color-gray-800);
+  border-color: var(--color-gray-700);
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .greeting-recipient-row {
+  background: var(--color-gray-800);
+  border-color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .greeting-recipient-name {
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .greeting-recipient-phone {
+  color: var(--color-gray-400);
+}
+
+/* --- Reduced motion --- */
+@media (prefers-reduced-motion: reduce) {
+  .greeting-grid .greeting-card,
+  .greeting-recipients-list .greeting-recipient-row {
+    animation: none;
+  }
+
+  .greeting-card:active,
+  .greeting-chip:active {
+    transform: none;
+  }
+}

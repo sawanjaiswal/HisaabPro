@@ -7,11 +7,11 @@
  * All amounts in PAISE.
  */
 
-import React, { useState, useRef, useEffect, useCallback } from 'react'
-import { ChevronRight, IndianRupee, Search, X } from 'lucide-react'
-import { formatSignedAmount, isInflowType, formatDate, formatAmount, formatCompactAmount } from '../dashboard.utils'
-import { PartyAvatar } from '../../../components/ui/PartyAvatar'
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
+import { ChevronRight, Search, X } from 'lucide-react'
+import { formatDate, formatAmount, formatCompactAmount, getDateGroup } from '../dashboard.utils'
 import { searchRecentActivity } from '../dashboard.service'
+import { TxnRow } from './TxnRow'
 import type { RecentActivityItem } from '../dashboard.types'
 
 const DEBOUNCE_MS = 300
@@ -46,7 +46,7 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
   const [searchResults, setSearchResults] = useState<RecentActivityItem[] | null>(null)
   const [searching, setSearching] = useState(false)
   const abortRef = useRef<AbortController | null>(null)
-  const timerRef = useRef<ReturnType<typeof setTimeout>>(0 as unknown as ReturnType<typeof setTimeout>)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const doSearch = useCallback((q: string) => {
     abortRef.current?.abort()
@@ -79,7 +79,7 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
   }, [items])
 
   useEffect(() => {
-    clearTimeout(timerRef.current)
+    if (timerRef.current !== null) clearTimeout(timerRef.current)
     if (!query.trim()) {
       setSearchResults(null)
       setSearching(false)
@@ -87,7 +87,7 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
     }
     setSearching(true)
     timerRef.current = setTimeout(() => doSearch(query), DEBOUNCE_MS)
-    return () => clearTimeout(timerRef.current)
+    return () => { if (timerRef.current !== null) clearTimeout(timerRef.current) }
   }, [query, doSearch])
 
   useEffect(() => () => { abortRef.current?.abort() }, [])
@@ -101,6 +101,12 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
 
   const displayItems = searchResults ?? items
   const isSearchActive = query.trim().length > 0
+
+  // Group items by date (Today / Yesterday / date) — only when not searching
+  const groupedItems = useMemo(
+    () => (!isSearchActive ? buildDateGroups(displayItems) : null),
+    [isSearchActive, displayItems]
+  )
 
   if (items.length === 0 && !isSearchActive) {
     return (
@@ -187,61 +193,45 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
               <p>No transactions match &ldquo;{query}&rdquo;</p>
             </div>
           )}
-          {displayItems.map((item) => {
-            const isUnpaid = item.status === 'unpaid' || item.status === 'partial'
-            const isInvoice = item.type === 'sale_invoice' || item.type === 'purchase_invoice'
-            const showAdd = isUnpaid && isInvoice
-
-            return (
-              <div
-                key={item.id}
-                className="dashboard-txn-row"
-                data-type={item.type}
-                role="listitem"
-                onClick={() => onItemClick(item)}
-              >
-                <div className="dashboard-txn-avatar">
-                  <PartyAvatar name={item.partyName} size="sm" />
-                </div>
-
-                <div className="dashboard-txn-info">
-                  <span className="dashboard-txn-name">{item.partyName}</span>
-                  <div className="dashboard-txn-meta">
-                    <span>{item.reference}</span>
-                    <span className="dashboard-txn-meta-dot" aria-hidden="true" />
-                    <span>{formatDate(item.date)}</span>
+          {groupedItems
+            ? groupedItems.map((group) => (
+                <React.Fragment key={group.label}>
+                  <div className="dashboard-txn-date-header" role="separator">
+                    {group.label}
                   </div>
-                </div>
-
-                {showAdd && (
-                  <button
-                    className="dashboard-txn-add-btn"
-                    onClick={(e) => { e.stopPropagation(); onAddPayment(item) }}
-                    aria-label={`Record payment for ${item.partyName}`}
-                  >
-                    <IndianRupee size={14} aria-hidden="true" />
-                    <span>Add</span>
-                  </button>
-                )}
-
-                <div className="dashboard-txn-right">
-                  <span className={`dashboard-txn-amount ${isInflowType(item.type) ? 'dashboard-txn-amount--in' : 'dashboard-txn-amount--out'}`}>
-                    {formatSignedAmount(item.amount, item.type)}
-                  </span>
-                  {item.status && (
-                    <span className={`dashboard-txn-status dashboard-txn-status--${item.status}`}>
-                      {item.status === 'paid' ? 'PAID' : item.status === 'partial' ? 'PARTIAL' : 'UNPAID'}
-                    </span>
-                  )}
-                  {item.mode && (
-                    <span className="dashboard-txn-mode">{item.mode}</span>
-                  )}
-                </div>
-              </div>
-            )
-          })}
+                  {group.items.map((item) => (
+                    <TxnRow key={item.id} item={item} onItemClick={onItemClick} onAddPayment={onAddPayment} />
+                  ))}
+                </React.Fragment>
+              ))
+            : displayItems.map((item) => (
+                <TxnRow key={item.id} item={item} onItemClick={onItemClick} onAddPayment={onAddPayment} />
+              ))}
         </div>
       )}
     </div>
   )
 }
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
+interface DateGroup {
+  label: string
+  items: RecentActivityItem[]
+}
+
+function buildDateGroups(items: RecentActivityItem[]): DateGroup[] {
+  const groups: DateGroup[] = []
+  let currentLabel = ''
+  for (const item of items) {
+    const label = getDateGroup(item.date)
+    if (label !== currentLabel) {
+      groups.push({ label, items: [item] })
+      currentLabel = label
+    } else {
+      groups[groups.length - 1].items.push(item)
+    }
+  }
+  return groups
+}
+

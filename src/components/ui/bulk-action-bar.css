@@ -13,7 +13,7 @@
   padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
   min-height: 56px;
   background: var(--color-primary-600);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   animation: bulk-bar-slide-up 0.2s ease-out;
 }
 
@@ -44,7 +44,7 @@
   border: none;
   border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.15);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   cursor: pointer;
   flex-shrink: 0;
   transition: background var(--duration-fast) ease;
@@ -91,7 +91,7 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-full);
   background: rgba(255, 255, 255, 0.1);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;

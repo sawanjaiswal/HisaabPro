@@ -109,6 +109,28 @@ export const DEFAULT_TEMPLATE_CONFIG: TemplateConfig = {
 
 // --- Default print settings per base template --------------------------------
 
+/** Standard A4 print settings — reused by most templates */
+const A4_STANDARD: PrintSettings = {
+  pageSize:         'A4',
+  orientation:      'portrait',
+  margins:          'normal',
+  copies:           1,
+  headerOnAllPages: true,
+  pageNumbers:      true,
+  itemsPerPage:     20,
+}
+
+/** A5 print settings — reused by compact templates */
+const A5_STANDARD: PrintSettings = {
+  pageSize:         'A5',
+  orientation:      'portrait',
+  margins:          'narrow',
+  copies:           1,
+  headerOnAllPages: false,
+  pageNumbers:      false,
+  itemsPerPage:     15,
+}
+
 /** Default PrintSettings for each base template. */
 export const DEFAULT_PRINT_SETTINGS: Record<BaseTemplate, PrintSettings> = {
   THERMAL_58MM: {
@@ -129,42 +151,38 @@ export const DEFAULT_PRINT_SETTINGS: Record<BaseTemplate, PrintSettings> = {
     pageNumbers:      false,
     itemsPerPage:     0,
   },
-  A4_CLASSIC: {
-    pageSize:         'A4',
-    orientation:      'portrait',
-    margins:          'normal',
-    copies:           1,
-    headerOnAllPages: true,
-    pageNumbers:      true,
-    itemsPerPage:     20,
-  },
-  A4_MODERN: {
-    pageSize:         'A4',
-    orientation:      'portrait',
-    margins:          'normal',
-    copies:           1,
-    headerOnAllPages: true,
-    pageNumbers:      true,
-    itemsPerPage:     20,
-  },
-  A5_COMPACT: {
-    pageSize:         'A5',
-    orientation:      'portrait',
-    margins:          'narrow',
-    copies:           1,
-    headerOnAllPages: false,
-    pageNumbers:      false,
-    itemsPerPage:     15,
-  },
-  A4_DETAILED: {
-    pageSize:         'A4',
-    orientation:      'portrait',
-    margins:          'normal',
-    copies:           1,
-    headerOnAllPages: true,
-    pageNumbers:      true,
-    itemsPerPage:     15,
-  },
+  A4_CLASSIC:        { ...A4_STANDARD },
+  A4_MODERN:         { ...A4_STANDARD },
+  A5_COMPACT:        { ...A5_STANDARD },
+  A4_DETAILED:       { ...A4_STANDARD, itemsPerPage: 15 },
+  // Modern collection
+  A4_ELEGANT:        { ...A4_STANDARD },
+  A4_MINIMAL:        { ...A4_STANDARD },
+  A4_BOLD:           { ...A4_STANDARD },
+  A4_CORPORATE:      { ...A4_STANDARD },
+  A4_PROFESSIONAL:   { ...A4_STANDARD },
+  A4_CREATIVE:       { ...A4_STANDARD },
+  // Indian business
+  A4_GST_STANDARD:   { ...A4_STANDARD },
+  A4_GST_DETAILED:   { ...A4_STANDARD, itemsPerPage: 15 },
+  A4_RETAIL:         { ...A4_STANDARD },
+  A4_WHOLESALE:      { ...A4_STANDARD },
+  A4_KIRANA:         { ...A4_STANDARD },
+  A4_MANUFACTURING:  { ...A4_STANDARD, itemsPerPage: 15 },
+  // Industry
+  A4_SERVICES:       { ...A4_STANDARD },
+  A4_FREELANCER:     { ...A4_STANDARD },
+  A4_MEDICAL:        { ...A4_STANDARD, itemsPerPage: 15 },
+  A4_RESTAURANT:     { ...A4_STANDARD },
+  A4_TRANSPORT:      { ...A4_STANDARD },
+  A4_CONSTRUCTION:   { ...A4_STANDARD },
+  // Compact & special
+  A5_RECEIPT:        { ...A5_STANDARD },
+  A5_PROFESSIONAL:   { ...A5_STANDARD, pageNumbers: true },
+  A4_LETTERHEAD:     { ...A4_STANDARD },
+  A4_TWO_COLUMN:     { ...A4_STANDARD },
+  A4_COLORFUL:       { ...A4_STANDARD },
+  A4_DARK:           { ...A4_STANDARD },
 }
 
 // --- Default invoice settings ------------------------------------------------

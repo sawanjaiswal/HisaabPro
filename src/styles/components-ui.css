@@ -17,13 +17,13 @@
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn:active:not(:disabled) { transform: scale(0.98); }
 
-.btn-sm { height: 36px; padding: 0 var(--space-3); font-size: 0.833rem; border-radius: var(--radius-sm); }
+.btn-sm { height: 44px; padding: 0 var(--space-3); font-size: 0.833rem; border-radius: var(--radius-sm); }
 .btn-md { height: 48px; padding: 0 var(--space-5); font-size: 1rem; }
 .btn-lg { height: 56px; padding: 0 var(--space-6); font-size: 1rem; border-radius: var(--radius-lg); }
 
 .btn-primary {
   background: var(--color-primary-600);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
 }
 .btn-primary:hover:not(:disabled) { background: var(--color-primary-700); }
 .btn-primary:active:not(:disabled) { background: var(--color-primary-800); }
@@ -43,7 +43,7 @@
 
 .btn-destructive {
   background: var(--color-error-500);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
 }
 .btn-destructive:hover:not(:disabled) { background: var(--color-error-700); }
 
@@ -96,7 +96,7 @@
   background: var(--color-gray-0);
   border-radius: var(--radius-xl);
   padding: var(--space-5);
-  box-shadow: 0 2px 12px rgba(26, 25, 23, 0.04), 0 1px 3px rgba(26, 25, 23, 0.03);
+  box-shadow: var(--shadow-card);
 }
 
 .card-elevated { box-shadow: var(--shadow-md); }
@@ -113,7 +113,7 @@
 /* Primary card — deep teal gradient (matching dashboard hero cards) */
 .card-primary {
   background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   border-radius: var(--radius-xl);
   padding: var(--space-5);
 }
@@ -181,7 +181,7 @@
   cursor: pointer;
   transition: all var(--duration-fast) var(--ease-default);
   -webkit-tap-highlight-color: transparent;
-  min-height: 40px;
+  min-height: 44px;
 }
 
 .pill-tab:active:not(.active) {
@@ -190,7 +190,7 @@
 
 .pill-tab.active {
   background: var(--color-primary-600);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   border-color: var(--color-primary-600);
-  box-shadow: 0 2px 8px rgba(11, 79, 94, 0.2);
+  box-shadow: var(--shadow-pill-active);
 }

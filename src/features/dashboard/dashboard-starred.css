@@ -14,6 +14,19 @@
   gap: var(--space-3);
 }
 
+.dashboard-section-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dashboard-section-subtitle {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--dash-text-muted);
+  letter-spacing: -0.01em;
+}
+
 .dashboard-starred-scroll {
   display: flex;
   gap: var(--space-3);

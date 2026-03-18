@@ -43,7 +43,7 @@
 .calculator-fn-btn--cash-in {
   background: var(--color-primary-500);
   border-color: var(--color-primary-500);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
 }
 
 .calculator-fn-btn--cash-in:active {
@@ -53,7 +53,7 @@
 .calculator-fn-btn--cash-out {
   background: var(--color-error-500);
   border-color: var(--color-error-500);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
 }
 
 .calculator-fn-btn--cash-out:active {
@@ -177,7 +177,7 @@
 
 .calculator-key--equals {
   background: linear-gradient(160deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   font-size: 1.5rem;
   font-weight: 700;
   box-shadow: 0 2px 10px rgba(11, 79, 94, 0.3);

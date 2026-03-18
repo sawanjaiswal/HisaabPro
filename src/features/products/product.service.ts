@@ -18,6 +18,7 @@ export {
   adjustStock,
   getStockMovements,
   validateStock,
+  getProductByBarcode,
 } from './product-crud.service'
 
 export type { StockValidateItem } from './product-crud.service'

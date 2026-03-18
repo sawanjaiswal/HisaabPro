@@ -1,6 +1,6 @@
 /** Template Gallery — Page (lazy loaded)
  *
- * Lists user's custom templates and 6 base templates.
+ * Lists user's custom templates and 30 base templates organized by category.
  * Follows PartiesPage.tsx pattern: 4 UI states, FAB for create.
  */
 
@@ -19,13 +19,40 @@ import { TemplateGallerySkeleton } from './components/TemplateGallerySkeleton'
 import type { BaseTemplate } from './template.types'
 import './templates.css'
 
-const BASE_TEMPLATES: BaseTemplate[] = [
-  'THERMAL_58MM',
-  'THERMAL_80MM',
-  'A4_CLASSIC',
-  'A4_MODERN',
-  'A5_COMPACT',
-  'A4_DETAILED',
+interface TemplateCategory {
+  title: string
+  templates: BaseTemplate[]
+}
+
+const TEMPLATE_CATEGORIES: TemplateCategory[] = [
+  {
+    title: 'Essential',
+    templates: ['A4_CLASSIC', 'A4_MODERN', 'A4_DETAILED', 'A5_COMPACT'],
+  },
+  {
+    title: 'Modern',
+    templates: ['A4_ELEGANT', 'A4_MINIMAL', 'A4_BOLD', 'A4_CORPORATE', 'A4_PROFESSIONAL', 'A4_CREATIVE'],
+  },
+  {
+    title: 'GST & Tax',
+    templates: ['A4_GST_STANDARD', 'A4_GST_DETAILED'],
+  },
+  {
+    title: 'Indian Business',
+    templates: ['A4_RETAIL', 'A4_WHOLESALE', 'A4_KIRANA', 'A4_MANUFACTURING'],
+  },
+  {
+    title: 'Industry',
+    templates: ['A4_SERVICES', 'A4_FREELANCER', 'A4_MEDICAL', 'A4_RESTAURANT', 'A4_TRANSPORT', 'A4_CONSTRUCTION'],
+  },
+  {
+    title: 'Compact & Special',
+    templates: ['A5_RECEIPT', 'A5_PROFESSIONAL', 'A4_LETTERHEAD', 'A4_TWO_COLUMN', 'A4_COLORFUL', 'A4_DARK'],
+  },
+  {
+    title: 'Thermal Printing',
+    templates: ['THERMAL_58MM', 'THERMAL_80MM'],
+  },
 ]
 
 export default function TemplateGalleryPage() {
@@ -73,21 +100,23 @@ export default function TemplateGalleryPage() {
               <EmptyState
                 icon={<FileText size={40} aria-hidden="true" />}
                 title="No custom templates yet"
-                description="Choose a base template below to get started"
+                description="Choose a template below to get started"
               />
             )}
 
-            {/* Base templates */}
-            <section className="template-section">
-              <h2 className="template-section-title">Base Templates</h2>
-              <div className="template-grid" role="list" aria-label="Base templates">
-                {BASE_TEMPLATES.map((base) => (
-                  <div key={base} role="listitem">
-                    <BaseTemplateCard baseTemplate={base} onSelect={handleBaseSelect} />
-                  </div>
-                ))}
-              </div>
-            </section>
+            {/* Base templates by category */}
+            {TEMPLATE_CATEGORIES.map((category) => (
+              <section key={category.title} className="template-section">
+                <h2 className="template-section-title">{category.title}</h2>
+                <div className="template-grid" role="list" aria-label={`${category.title} templates`}>
+                  {category.templates.map((base) => (
+                    <div key={base} role="listitem">
+                      <BaseTemplateCard baseTemplate={base} onSelect={handleBaseSelect} />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ))}
           </>
         )}
       </PageContainer>

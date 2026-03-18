@@ -44,13 +44,13 @@
 
 .product-hero-card--value {
   background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   animation: productFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
 }
 
 .product-hero-card--alert {
   background: linear-gradient(135deg, var(--gradient-amber-start) 0%, var(--gradient-amber-end) 100%);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   animation: productFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 140ms both;
 }
 

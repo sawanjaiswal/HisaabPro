@@ -54,14 +54,14 @@
 /* Received — teal gradient */
 .invoice-hero-card--received {
   background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   animation: invoiceFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
 }
 
 /* Due — warm coral gradient */
 .invoice-hero-card--due {
   background: linear-gradient(135deg, var(--gradient-coral-start) 0%, var(--gradient-coral-end) 100%);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   animation: invoiceFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 140ms both;
 }
 

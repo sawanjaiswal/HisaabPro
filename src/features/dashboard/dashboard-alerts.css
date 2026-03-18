@@ -1,7 +1,7 @@
 /* ============================================================
    Dashboard Alerts — Upgrade banner + warning/danger alerts
 
-   Contains: alert section wrapper, upgrade banner (lime),
+   Contains: alert section wrapper, upgrade banner (teal gradient),
    alert items (warning/danger), alert text/icons/chevrons.
    ============================================================ */
 
@@ -21,7 +21,7 @@
   align-items: center;
   gap: var(--space-3);
   padding: 24px var(--dash-side-padding);
-  background: var(--dash-lime);
+  background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
   border-radius: 24px 24px 0 0;
   border: none;
   cursor: pointer;
@@ -53,7 +53,6 @@
 
 .dashboard-alert-banner:active {
   transform: scale(0.99);
-  background: var(--dash-lime);
   filter: brightness(0.92);
 }
 
@@ -61,7 +60,7 @@
   width: 44px;
   height: 44px;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -79,20 +78,20 @@
 .dashboard-alert-title {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--dash-text-primary);
+  color: var(--color-white-inverse);
   letter-spacing: -0.015em;
 }
 
 .dashboard-alert-subtitle {
   font-size: 0.8125rem;
   font-weight: 400;
-  color: var(--color-gray-600);
+  color: var(--color-hero-text-secondary);
   margin-top: 2px;
 }
 
 .dashboard-alert-chevron {
   flex-shrink: 0;
-  color: var(--dash-text-primary);
+  color: var(--color-white-inverse);
 }
 
 /* Alert items (warning/danger below banner) */
@@ -164,34 +163,28 @@
 /* ─── Dark theme overrides ──────────────────────────────────── */
 
 [data-theme="dark"] .dashboard-alert-banner {
-  background: var(--color-lime-accent);
-  color: var(--color-dark-text);
+  background: linear-gradient(135deg, #1A5C7A 0%, #0E3A4E 100%);
 }
 
 [data-theme="dark"] .dashboard-alert-banner::before {
   background: repeating-linear-gradient(
     45deg,
-    rgba(0, 0, 0, 0.02) 0px,
-    rgba(0, 0, 0, 0.02) 1px,
+    rgba(255, 255, 255, 0.01) 0px,
+    rgba(255, 255, 255, 0.01) 1px,
     transparent 1px,
     transparent 6px
   );
 }
 
 [data-theme="dark"] .dashboard-alert-banner:active {
-  background: var(--color-lime-accent);
   filter: brightness(0.92);
 }
 
 [data-theme="dark"] .dashboard-alert-icon {
-  background: rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.1);
   box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.16),
     0 1px 2px rgba(0, 0, 0, 0.08);
-}
-
-[data-theme="dark"] .dashboard-alert-subtitle {
-  color: var(--color-gray-500);
 }
 
 [data-theme="dark"] .dashboard-alert-item {
@@ -218,6 +211,10 @@
 [data-theme="dark"] .dashboard-alert-item--danger:active {
   background: var(--color-error-bg);
   filter: brightness(0.9);
+}
+
+.dashboard-alert-icon img {
+  filter: brightness(0) invert(1) opacity(0.9);
 }
 
 .dashboard-alert-banner:focus-visible {

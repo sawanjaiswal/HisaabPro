@@ -15,7 +15,7 @@ import { ROUTES } from '@/config/routes.config'
 import { CALCULATOR_TOGGLE_EVENT } from '@/config/events.config'
 import { useHomeDashboard } from './useDashboard'
 import { isHomeDashboardEmpty, formatCompactAmount } from './dashboard.utils'
-import { QUICK_ACTIONS, buildReminderMessage } from './dashboard.constants'
+import { QUICK_ACTIONS } from './dashboard.constants'
 import { DashboardHeader } from './components/DashboardHeader'
 import { OutstandingHero } from './components/OutstandingHero'
 import { DashboardQuickActions } from './components/DashboardQuickActions'
@@ -23,7 +23,7 @@ import { AlertStrip } from './components/AlertStrip'
 import { TopDebtors } from './components/TopDebtors'
 import { RecentActivityFeed } from './components/RecentActivityFeed'
 import { DashboardSkeleton } from './components/DashboardSkeleton'
-import type { RecentActivityItem, TopDebtor } from './dashboard.types'
+import type { RecentActivityItem } from './dashboard.types'
 import './dashboard-page.css'
 import './dashboard-header.css'
 import './dashboard-hero.css'
@@ -59,13 +59,6 @@ export default function DashboardPage() {
   }
 
   const handleViewAllOutstanding = () => navigate(ROUTES.OUTSTANDING)
-
-  const handleSendReminder = (debtor: TopDebtor) => {
-    const message = buildReminderMessage(debtor.name)
-    const phone = debtor.phone.replace(/\D/g, '')
-    const fullPhone = phone.length === 10 ? `91${phone}` : phone
-    window.open(`https://wa.me/${fullPhone}?text=${encodeURIComponent(message)}`, '_blank')
-  }
 
   const handleLowStockClick = () => navigate(ROUTES.REPORT_STOCK_SUMMARY)
   const handleOverdueClick = () => navigate(ROUTES.OUTSTANDING)
@@ -120,15 +113,25 @@ export default function DashboardPage() {
           <>
             {/* Gradient area */}
             <div className="dashboard-top-section">
-              <div className="dashboard-sales-hero">
+              <div className={`dashboard-sales-hero ${data.today.salesAmount === 0 ? 'dashboard-sales-hero--zero' : ''}`}>
                 <span className="dashboard-sales-label">Today&apos;s Sale</span>
-                <span className="dashboard-sales-amount">
-                  {formatCompactAmount(data.today.salesAmount)}
-                </span>
-                {data.today.salesCount > 0 && (
-                  <span className="dashboard-sales-count">
-                    {data.today.salesCount} {data.today.salesCount === 1 ? 'invoice' : 'invoices'}
-                  </span>
+                {data.today.salesAmount > 0 ? (
+                  <>
+                    <span className="dashboard-sales-amount">
+                      {formatCompactAmount(data.today.salesAmount)}
+                    </span>
+                    <span className="dashboard-sales-count">
+                      {data.today.salesCount} {data.today.salesCount === 1 ? 'invoice' : 'invoices'}
+                    </span>
+                  </>
+                ) : (
+                  <button
+                    className="dashboard-sales-cta"
+                    onClick={() => navigate(`${ROUTES.INVOICE_CREATE}?type=SALE`)}
+                    aria-label="Create your first invoice today"
+                  >
+                    Create your first invoice today &rarr;
+                  </button>
                 )}
               </div>
 
@@ -156,9 +159,9 @@ export default function DashboardPage() {
             <div className="dashboard-white-section">
               <TopDebtors
                 debtors={data.topDebtors}
+                totalOutstanding={data.outstanding.receivable.total}
                 onViewAll={handleViewAllOutstanding}
                 onDebtorClick={handleDebtorClick}
-                onSendReminder={handleSendReminder}
               />
 
               <RecentActivityFeed

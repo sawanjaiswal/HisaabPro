@@ -1,0 +1,412 @@
+/* ─── Bill Capture Input ──────────────────────────────────────────── */
+
+.bill-capture-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  gap: var(--space-4);
+}
+
+.bill-capture-illustration {
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary-50);
+  color: var(--color-primary-500);
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-2);
+}
+
+.bill-capture-title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+}
+
+.bill-capture-description {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+.bill-capture-buttons {
+  display: flex;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 320px;
+}
+
+.bill-capture-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.bill-capture-hint {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  margin-top: var(--space-2);
+}
+
+/* ─── Scan Progress ──────────────────────────────────────────────── */
+
+.scan-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-8) var(--space-4);
+}
+
+.scan-progress-preview {
+  position: relative;
+  width: 200px;
+  height: 260px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.scan-progress-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scan-progress-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  animation: scan-line 2s ease-in-out infinite;
+}
+
+@keyframes scan-line {
+  0% { background: linear-gradient(180deg, rgba(27, 99, 105, 0.3) 0%, transparent 20%, transparent 100%); }
+  50% { background: linear-gradient(180deg, transparent 0%, transparent 40%, rgba(27, 99, 105, 0.3) 50%, transparent 60%, transparent 100%); }
+  100% { background: linear-gradient(180deg, transparent 0%, transparent 80%, rgba(27, 99, 105, 0.3) 100%); }
+}
+
+.scan-progress-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 280px;
+}
+
+.scan-progress-bar-track {
+  width: 100%;
+  height: 6px;
+  background: var(--color-gray-100);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.scan-progress-bar-fill {
+  height: 100%;
+  background: var(--color-primary-500);
+  border-radius: var(--radius-full);
+  transition: width 0.3s var(--ease-default);
+}
+
+.scan-progress-label {
+  font-size: 0.875rem;
+  color: var(--color-gray-600);
+  font-weight: 500;
+}
+
+.scan-progress-percent {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+}
+
+/* ─── OCR Review ─────────────────────────────────────────────────── */
+
+.ocr-review {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.ocr-review-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.ocr-review-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.ocr-review-stat {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.ocr-review-stat-secondary {
+  font-weight: 400;
+  color: var(--color-gray-400);
+}
+
+.ocr-review-thumbnail {
+  width: 48px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-gray-100);
+  flex-shrink: 0;
+}
+
+/* Items list */
+.ocr-review-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ocr-review-item {
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+}
+
+.ocr-review-item-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.ocr-review-item-name {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  padding: var(--space-1) 0;
+  font-family: var(--font-primary);
+  min-width: 0;
+}
+
+.ocr-review-item-name:focus {
+  outline: none;
+  border-bottom: 2px solid var(--color-primary-500);
+}
+
+.ocr-review-item-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--color-gray-400);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ocr-review-item-delete:hover {
+  color: var(--color-error-500);
+  background: var(--color-error-50);
+}
+
+/* Confidence badges */
+.confidence-high { color: var(--color-success-600); }
+.confidence-medium { color: var(--color-warning-600); }
+.confidence-low { color: var(--color-error-500); }
+
+/* Field inputs row */
+.ocr-review-item-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.ocr-review-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ocr-review-field-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.ocr-review-field-input {
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  font-size: 0.875rem;
+  font-family: var(--font-primary);
+  color: var(--color-gray-800);
+  background: var(--color-gray-0);
+  text-align: right;
+  min-width: 0;
+}
+
+.ocr-review-field-input:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 2px var(--color-primary-100);
+}
+
+/* Totals */
+.ocr-review-totals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-gray-0);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-100);
+}
+
+.ocr-review-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--color-gray-600);
+}
+
+.ocr-review-total-value {
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.ocr-review-total-mismatch {
+  color: var(--color-warning-600);
+}
+
+/* Actions */
+.ocr-review-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+  padding-bottom: var(--space-8);
+}
+
+.ocr-review-actions .btn-primary {
+  width: 100%;
+}
+
+.ocr-review-actions .btn-ghost {
+  align-self: center;
+}
+
+/* Empty review */
+.ocr-review-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  color: var(--color-warning-600);
+}
+
+.ocr-review-empty p {
+  color: var(--color-gray-600);
+  font-size: 0.875rem;
+}
+
+/* ─── Error State ────────────────────────────────────────────────── */
+
+.bill-scan-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-4);
+  padding: var(--space-8) var(--space-4);
+}
+
+.bill-scan-error-icon {
+  color: var(--color-error-400);
+}
+
+.bill-scan-error-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+}
+
+.bill-scan-error-message {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────────────── */
+
+[data-theme="dark"] .bill-capture-illustration {
+  background: var(--color-primary-bg-subtle);
+}
+
+[data-theme="dark"] .bill-capture-title,
+[data-theme="dark"] .bill-scan-error-title {
+  color: var(--color-gray-800);
+}
+
+[data-theme="dark"] .ocr-review-item {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .ocr-review-item-name {
+  color: var(--color-gray-800);
+}
+
+[data-theme="dark"] .ocr-review-field-input {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dark"] .ocr-review-totals {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .ocr-review-total-value {
+  color: var(--color-gray-800);
+}
+
+[data-theme="dark"] .ocr-review-thumbnail {
+  border-color: var(--color-gray-200);
+}
+
+/* ─── Reduced Motion ─────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .scan-progress-overlay {
+    animation: none;
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  .scan-progress-bar-fill {
+    transition: none;
+  }
+}

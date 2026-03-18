@@ -6,7 +6,7 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, FileText } from 'lucide-react'
+import { Plus, FileText, Camera } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -111,7 +111,17 @@ export default function InvoicesPage() {
 
   return (
     <AppShell>
-      <Header title={bulk.isActive ? `${bulk.selectedCount} Selected` : typeLabel} />
+      <Header
+        title={bulk.isActive ? `${bulk.selectedCount} Selected` : typeLabel}
+        actions={
+          !bulk.isActive ? (
+            <button className="btn btn-ghost btn-sm" onClick={() => navigate(ROUTES.BILL_SCAN)} aria-label="Scan bill">
+              <Camera size={18} aria-hidden="true" />
+              <span>Scan</span>
+            </button>
+          ) : undefined
+        }
+      />
 
       {status === 'success' && data && !bulk.isActive && (
         <div className="page-hero">
@@ -155,12 +165,14 @@ export default function InvoicesPage() {
         )}
 
         {status === 'success' && data && (
-          <div role="status" aria-live="polite" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>
+          <div role="status" aria-live="polite" className="sr-only">
             {data.documents.length} {data.documents.length === 1 ? 'invoice' : 'invoices'} found
           </div>
         )}
 
         {status === 'success' && data && data.documents.length > 0 && (
+          <>
+          <h2 className="sr-only">Invoice list</h2>
           <div className="invoice-list stagger-list" role="list" aria-label="Invoices">
             {data.documents.map((doc) => (
               <div
@@ -185,6 +197,7 @@ export default function InvoicesPage() {
               </div>
             ))}
           </div>
+          </>
         )}
       </PageContainer>
 

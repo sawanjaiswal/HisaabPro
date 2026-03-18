@@ -1,0 +1,191 @@
+/* === FEEDBACK WIDGET — Modal + FAB === */
+
+/* ─── Backdrop ─────────────────────────────────────────────────────────────── */
+.feedback-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.6);
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+[data-theme="dark"] .feedback-backdrop {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+/* ─── Modal ────────────────────────────────────────────────────────────────── */
+.feedback-modal {
+  margin: auto 16px;
+  max-width: 480px;
+  width: 100%;
+  align-self: center;
+  background: var(--color-gray-0);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* ─── Header ───────────────────────────────────────────────────────────────── */
+.feedback-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.feedback-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-gray-900);
+}
+
+.feedback-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  color: var(--color-gray-400);
+}
+
+.feedback-close:hover {
+  color: var(--color-gray-600);
+}
+
+/* ─── Screenshot ───────────────────────────────────────────────────────────── */
+.feedback-screenshot-wrap {
+  padding: 12px 20px 0;
+}
+
+.feedback-screenshot {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
+  max-height: 200px;
+  object-fit: cover;
+}
+
+/* ─── Type pills ───────────────────────────────────────────────────────────── */
+.feedback-pills {
+  display: flex;
+  gap: 8px;
+  padding: 12px 20px 8px;
+}
+
+.feedback-pill {
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: transparent;
+  color: var(--color-gray-600);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-default);
+}
+
+.feedback-pill.active {
+  border-color: var(--color-gray-900);
+  background: var(--color-gray-900);
+  color: var(--color-white-inverse);
+  font-weight: 600;
+}
+
+/* ─── Textarea + Send ──────────────────────────────────────────────────────── */
+.feedback-body {
+  padding: 8px 20px 20px;
+}
+
+.feedback-textarea {
+  width: 100%;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 0.875rem;
+  outline: none;
+  font-family: inherit;
+  color: var(--color-gray-900);
+  background: var(--color-gray-50);
+  resize: vertical;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+
+.feedback-textarea:focus {
+  border-color: var(--color-primary-400);
+}
+
+.feedback-send {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--color-gray-900);
+  color: var(--color-white-inverse);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.feedback-send:disabled {
+  background: var(--color-gray-400);
+  cursor: wait;
+}
+
+/* ─── Success / Queued views ───────────────────────────────────────────────── */
+.feedback-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  gap: 12px;
+}
+
+.feedback-result-icon--success { color: var(--color-success-500); }
+.feedback-result-icon--queued { color: var(--color-warning-500); }
+
+.feedback-result-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--color-gray-900);
+}
+
+.feedback-result-desc {
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+  margin: 0;
+  text-align: center;
+}
+
+/* ─── FAB ──────────────────────────────────────────────────────────────────── */
+.feedback-fab {
+  border-radius: 50%;
+  background: var(--color-gray-900);
+  color: var(--color-white-inverse);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+@keyframes feedbackPulse {
+  0%   { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(0, 0, 0, 0.3); }
+  50%  { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3), 0 0 0 10px rgba(0, 0, 0, 0); }
+  100% { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(0, 0, 0, 0); }
+}

@@ -28,6 +28,8 @@ function detailToFormData(detail: ProductDetail): ProductFormData {
     openingStock: detail.currentStock,
     minStockLevel: detail.minStockLevel,
     stockValidation: detail.stockValidation,
+    barcode: detail.barcode ?? undefined,
+    barcodeFormat: detail.barcodeFormat ?? undefined,
     hsnCode: detail.hsnCode ?? '',
     sacCode: detail.sacCode ?? undefined,
     taxCategoryId: detail.taxCategory?.id ?? null,

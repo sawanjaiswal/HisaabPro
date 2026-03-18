@@ -53,6 +53,45 @@
   letter-spacing: -0.01em;
 }
 
+/* ─── Zero-sale compact state ─────────────────────────────── */
+
+.dashboard-sales-hero--zero {
+  padding: var(--space-4) 0 var(--space-2);
+  gap: 4px;
+}
+
+.dashboard-sales-hero--zero .dashboard-sales-label::after {
+  display: none;
+}
+
+.dashboard-sales-cta {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--dash-teal-start);
+  background: var(--dash-teal-10);
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 10px 20px;
+  cursor: pointer;
+  font-family: var(--font-primary);
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--duration-fast) var(--ease-default);
+  min-height: 44px;
+}
+
+.dashboard-sales-cta:active {
+  background: rgba(27, 99, 105, 0.15);
+}
+
+[data-theme="dark"] .dashboard-sales-cta {
+  color: var(--color-primary-400);
+  background: rgba(63, 174, 214, 0.12);
+}
+
+[data-theme="dark"] .dashboard-sales-cta:active {
+  background: rgba(63, 174, 214, 0.2);
+}
+
 /* ─── Outstanding hero cards (Figma: simple cards) ──────────── */
 
 /* Breathing room between hero and outstanding */
@@ -105,13 +144,13 @@
 }
 
 .dashboard-hero-card:focus-visible {
-  outline: 2px solid var(--color-gray-0);
+  outline: 2px solid var(--color-white-inverse);
   outline-offset: -2px;
 }
 
 .dashboard-hero-card--collect {
   background: linear-gradient(135deg, var(--dash-teal-start) 0%, var(--dash-teal-end) 100%);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
 }
 
 .dashboard-hero-card--pay {
@@ -185,7 +224,7 @@
   padding: 8px;
   background: rgba(255, 255, 255, 0.15);
   border-radius: 9999px;
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
 }
 
 .dashboard-hero-chevron--dark {

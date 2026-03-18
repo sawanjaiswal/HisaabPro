@@ -94,7 +94,7 @@
   border: none;
   border-radius: var(--radius-md);
   background: var(--color-primary-500);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   font-size: 1rem;
   font-weight: 600;
   font-family: var(--font-primary);

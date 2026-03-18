@@ -32,7 +32,7 @@
 
 .feedback-btn--primary {
   background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
-  color: var(--color-gray-0);
+  color: var(--color-white-inverse);
   box-shadow: 0 4px 14px rgba(15, 54, 56, 0.25);
 }
 

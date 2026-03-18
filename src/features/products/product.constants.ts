@@ -147,6 +147,30 @@ export const STOCK_STATUS_COLORS = {
 export const PRODUCT_LIST_PAGE_SIZE = 20
 export const STOCK_MOVEMENTS_PAGE_SIZE = 20
 
+// ─── Barcode config ──────────────────────────────────────────────────────
+
+import type { BarcodeFormat } from '@/lib/types/product.types'
+
+export const BARCODE_FORMAT_DEFAULT: BarcodeFormat = 'CODE128'
+
+export const BARCODE_FORMAT_OPTIONS: { value: BarcodeFormat; label: string; description: string }[] = [
+  { value: 'CODE128', label: 'Code 128',  description: 'Any characters — most versatile' },
+  { value: 'EAN13',   label: 'EAN-13',    description: '13 digits — retail standard (India)' },
+  { value: 'EAN8',    label: 'EAN-8',     description: '8 digits — small packages' },
+  { value: 'CODE39',  label: 'Code 39',   description: 'Alphanumeric — industrial use' },
+  { value: 'UPC',     label: 'UPC-A',     description: '12 digits — North American retail' },
+]
+
+export const BARCODE_FORMAT_LABELS: Record<BarcodeFormat, string> = {
+  CODE128: 'Code 128',
+  EAN13:   'EAN-13',
+  EAN8:    'EAN-8',
+  CODE39:  'Code 39',
+  UPC:     'UPC-A',
+}
+
+export const BARCODE_MAX_LENGTH = 48
+
 // ─── Description and field limits ─────────────────────────────────────────────
 
 export const PRODUCT_NAME_MAX = 200
