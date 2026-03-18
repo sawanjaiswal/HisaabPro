@@ -239,4 +239,3 @@ Full-screen
 - Sharp 8px radius on large cards (use 16-20px)
 - Default Inter weight 400 everywhere (use 600-700 for headings, 500 for labels)
 - Inline hex colors (always use CSS variables)
-- framer-motion (CSS only)

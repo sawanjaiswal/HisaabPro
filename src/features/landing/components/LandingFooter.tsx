@@ -1,56 +1,70 @@
-/** Footer — minimal with branding */
+/** Multi-column footer — dark theme */
 
-import { ArrowRight } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
-import { APP_NAME } from '@/config/app.config'
-import { ShimmerButton } from '@/components/magicui/shimmer-button'
-import { BlurFade } from '@/components/magicui/blur-fade'
-import { CTA_ROUTE } from '../landing.constants'
+import { APP_NAME, APP_TAGLINE } from '@/config/app.config'
+
+import { FOOTER_LINKS } from '../landing.constants.below'
+
+function LinkColumn({ title, links }: { title: string; links: ReadonlyArray<{ label: string; href: string }> }) {
+  return (
+    <div>
+      <h3 className="mb-3 text-[0.875rem] font-semibold text-white">{title}</h3>
+      <ul className="space-y-2.5">
+        {links.map((link) => (
+          <li key={link.label}>
+            <a
+              href={link.href}
+              className="text-[0.8125rem] text-gray-400 transition-colors hover:text-white"
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
 
 export function LandingFooter() {
-  const navigate = useNavigate()
   const year = new Date().getFullYear()
 
   return (
-    <>
-      {/* Bottom CTA */}
-      <section className="px-4 py-16 sm:py-24">
-        <BlurFade delay={0}>
-          <div className="mx-auto flex max-w-2xl flex-col items-center gap-6 rounded-3xl border border-neutral-100 bg-white p-8 text-center shadow-lg sm:p-12 dark:border-neutral-800 dark:bg-neutral-900">
-            <h2 className="text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl dark:text-white">
-              Ready to Go Pro?
-            </h2>
-            <p className="max-w-md text-neutral-500 dark:text-neutral-400">
-              Join thousands of Indian businesses billing smarter. Free to start, no credit card needed.
-            </p>
-            <ShimmerButton
-              background="var(--color-primary-500)"
-              shimmerColor="var(--color-secondary-300)"
-              className="px-8 py-3 text-base font-semibold"
-              onClick={() => navigate(CTA_ROUTE)}
-            >
-              Start Free Now
-              <ArrowRight size={18} className="ml-2" aria-hidden="true" />
-            </ShimmerButton>
-          </div>
-        </BlurFade>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-neutral-100 px-4 py-8 dark:border-neutral-800">
-        <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
-          <div>
-            <span className="text-lg font-bold text-neutral-900 dark:text-white">{APP_NAME}</span>
-            <p className="text-xs text-neutral-400">Made with pride in India</p>
-          </div>
-          <div className="flex gap-6 text-sm text-neutral-500">
-            <a href="#features" className="hover:text-neutral-900 dark:hover:text-white">Features</a>
-            <a href="#comparison" className="hover:text-neutral-900 dark:hover:text-white">Compare</a>
-            <a href="mailto:support@hisaabpro.in" className="hover:text-neutral-900 dark:hover:text-white">Contact</a>
-          </div>
-          <p className="text-xs text-neutral-400">&copy; {year} {APP_NAME}</p>
+    <footer className="border-t border-gray-800 bg-gray-950 px-4 py-12 sm:py-16">
+      <div className="mx-auto grid max-w-5xl gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Brand column */}
+        <div className="sm:col-span-2 lg:col-span-1">
+          <span className="text-[1.125rem] font-bold text-white">{APP_NAME}</span>
+          <p className="mt-2 max-w-[220px] text-[0.8125rem] leading-relaxed text-gray-400">
+            {APP_TAGLINE}
+          </p>
+          <p className="mt-3 text-[0.8125rem] text-gray-500">
+            Made with ❤️ in India
+          </p>
         </div>
-      </footer>
-    </>
+
+        {/* Link columns */}
+        <LinkColumn title="Product" links={FOOTER_LINKS.product} />
+        <LinkColumn title="Resources" links={FOOTER_LINKS.resources} />
+        <LinkColumn title="Company" links={FOOTER_LINKS.company} />
+      </div>
+
+      {/* Bottom bar */}
+      <div className="mx-auto mt-10 flex max-w-5xl flex-col items-center justify-between gap-4 border-t border-gray-800 pt-6 sm:flex-row">
+        <p className="text-[0.75rem] text-gray-500">
+          &copy; {year} {APP_NAME}. All rights reserved.
+        </p>
+        <div className="flex gap-4">
+          {FOOTER_LINKS.social.map((s) => (
+            <a
+              key={s.label}
+              href={s.href}
+              className="text-[0.8125rem] text-gray-500 transition-colors hover:text-white"
+              aria-label={s.label}
+            >
+              {s.label}
+            </a>
+          ))}
+        </div>
+      </div>
+    </footer>
   )
 }

@@ -1,33 +1,36 @@
 /* === BASE RESETS + BODY + APP SHELL + PAGE TRANSITIONS === */
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-}
+/* Wrapped in @layer base so Tailwind utility classes (mb-8, mt-4, etc.) can override */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+  }
 
-html {
-  font-size: 16px;
-  -webkit-text-size-adjust: 100%;
-}
+  html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+  }
 
-@media (min-width: 1024px) {
-  html { font-size: 18px; }
-}
+  @media (min-width: 1024px) {
+    html { font-size: 18px; }
+  }
 
-body {
-  font-family: var(--font-primary);
-  color: var(--color-gray-800);
-  /* Warm cream -> white gradient — HisaabPro signature background */
-  background: linear-gradient(180deg, var(--color-cream-start) 0%, var(--color-cream-mid) 40%, var(--color-cream-end) 100%);
-  background-attachment: fixed;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-}
+  body {
+    font-family: var(--font-primary);
+    color: var(--color-gray-800);
+    /* Warm cream -> white gradient — HisaabPro signature background */
+    background: linear-gradient(180deg, var(--color-cream-start) 0%, var(--color-cream-mid) 40%, var(--color-cream-end) 100%);
+    background-attachment: fixed;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
 
-[data-theme="dark"] body {
-  background: var(--color-gray-0);
+  [data-theme="dark"] body {
+    background: var(--color-gray-0);
+  }
 }
 
 /* === GLOBAL FOCUS STYLES — keyboard accessibility === */

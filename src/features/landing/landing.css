@@ -1,0 +1,112 @@
+/* === Landing Page — fully isolate from app global styles === */
+
+/* Override all inherited app styles so 21st.dev components render exactly as designed */
+.landing-root {
+  font-size: 16px !important;
+  font-family: 'Poppins', sans-serif;
+  line-height: normal;
+  color: white;
+  background: black;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Kill the body cream gradient when landing page is shown */
+body:has(.landing-root) {
+  background: black !important;
+  color: white !important;
+}
+
+/* Reset the desktop 18px font-size override */
+html:has(.landing-root) {
+  font-size: 16px !important;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === Testimonial Marquee === */
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes scroll-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+/* === Hide app-level overlays on landing page === */
+body:has(.landing-root) .calculator-overlay,
+body:has(.landing-root) .calculator-fab,
+body:has(.landing-root) .feedback-fab {
+  display: none !important;
+}
+
+/* === Standard Heading Styles — Poppins + gradient fade effect === */
+.landing-root h1,
+.landing-root h2,
+.landing-root h3,
+.landing-root h4,
+.landing-root h5,
+.landing-root h6 {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(to bottom, #ffffff, #ffffff, rgba(255, 255, 255, 0.6));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.03em;
+}
+
+.landing-root h1 {
+  font-size: 3.5rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.landing-root h2 {
+  font-size: 2.5rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.landing-root h3 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.landing-root h4 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.landing-root h5 {
+  font-size: 1.125rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.landing-root h6 {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* === Reduced Motion === */
+@media (prefers-reduced-motion: reduce) {
+  .landing-root *,
+  .landing-root *::before,
+  .landing-root *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

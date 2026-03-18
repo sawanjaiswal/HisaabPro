@@ -126,7 +126,7 @@ export function App() {
       <OfflineBanner />
       <PageTransition>
       <Routes>
-        <Route path={ROUTES.HOME} element={<PageRoute><GuestRoute><Landing /></GuestRoute></PageRoute>} />
+        <Route path={ROUTES.HOME} element={<ErrorBoundary><Suspense fallback={<div className="min-h-screen bg-black" />}><GuestRoute><Landing /></GuestRoute></Suspense></ErrorBoundary>} />
         <Route path={ROUTES.LOGIN} element={<PageRoute><GuestRoute><Login /></GuestRoute></PageRoute>} />
         <Route path={ROUTES.ONBOARDING} element={<PageRoute><ProtectedRoute><Onboarding /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.DASHBOARD} element={<PageRoute><ProtectedRoute><Dashboard /></ProtectedRoute></PageRoute>} />

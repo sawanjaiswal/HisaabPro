@@ -1,0 +1,20 @@
+# HisaabPro — hisaabpro.in
+# Billing, Inventory & Payments for Indian Businesses
+
+User-agent: *
+Allow: /
+Disallow: /app/
+Disallow: /api/
+Disallow: /auth/
+Disallow: /settings/
+Disallow: /dashboard/
+
+# Sitemaps
+Sitemap: https://hisaabpro.in/sitemap.xml
+
+# Crawl-delay for polite bots
+User-agent: Bingbot
+Crawl-delay: 1
+
+User-agent: Yandex
+Crawl-delay: 2

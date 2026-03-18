@@ -1,50 +1,69 @@
-/** Features grid — 8 features with blur-fade entrance */
+/** Features bento grid — varied card sizes, dark theme */
 
 import {
-  FileText, IndianRupee, Package, WifiOff,
-  BarChart3, MessageCircle, Users, Shield,
+  FileText, WifiOff, IndianRupee, Package,
+  BarChart3, MessageCircle, Users, Shield, Palette,
   type LucideIcon,
 } from 'lucide-react'
-import { BlurFade } from '@/components/magicui/blur-fade'
-import { FEATURES } from '../landing.constants'
+
+import { FEATURES, type LandingFeature } from '../landing.constants'
 
 const ICON_MAP: Record<string, LucideIcon> = {
-  FileText, IndianRupee, Package, WifiOff,
-  BarChart3, MessageCircle, Users, Shield,
+  FileText, WifiOff, IndianRupee, Package,
+  BarChart3, MessageCircle, Users, Shield, Palette,
 }
+
+const SIZE_CLASSES: Record<LandingFeature['size'], string> = {
+  large: 'col-span-1 sm:col-span-2 p-8',
+  medium: 'col-span-1 p-6',
+  small: 'col-span-1 p-5',
+}
+
+const ACCENT_GRADIENT =
+  'bg-gradient-to-br from-teal-500/10 via-transparent to-transparent'
 
 export function LandingFeatures() {
   return (
     <section id="features" className="px-4 py-16 sm:py-24">
-      <div className="mx-auto max-w-5xl">
-        <BlurFade delay={0}>
-          <div className="mb-12 text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl dark:text-white">
-              Everything You Need
-            </h2>
-            <p className="mx-auto mt-3 max-w-xl text-neutral-500 dark:text-neutral-400">
-              90+ features built for Indian MSMEs — from kirana shops to wholesale distributors
-            </p>
-          </div>
-        </BlurFade>
+      <div className="mx-auto max-w-6xl">
+        {/* Header */}
+        <div className="mb-12 text-center">
+          <span className="text-sm font-semibold uppercase tracking-widest text-teal-400">
+            Features
+          </span>
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            Everything your business needs
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-gray-400">
+            90+ features built for Indian MSMEs — from kirana shops to wholesale distributors
+          </p>
+        </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {FEATURES.map((f, i) => {
+        {/* Bento grid */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {FEATURES.map((f) => {
             const Icon = ICON_MAP[f.icon]
+            const isLarge = f.size === 'large'
+
             return (
-              <BlurFade key={f.id} delay={0.05 * i}>
-                <div className="group rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900">
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--color-primary-50)] text-[var(--color-primary-500)] transition-colors group-hover:bg-[var(--color-primary-500)] group-hover:text-white">
-                    {Icon && <Icon size={24} aria-hidden="true" />}
-                  </div>
-                  <h3 className="mb-1 text-base font-semibold text-neutral-900 dark:text-white">
-                    {f.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
-                    {f.description}
-                  </p>
+              <div
+                key={f.id}
+                className={`group rounded-2xl border border-gray-800 bg-gray-900 transition-all duration-300 hover:-translate-y-1 hover:border-gray-700 ${SIZE_CLASSES[f.size]} ${isLarge ? ACCENT_GRADIENT : ''}`}
+              >
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-teal-500/10 text-teal-400 transition-colors group-hover:bg-teal-500/20">
+                  {Icon && <Icon size={isLarge ? 28 : 24} aria-hidden="true" />}
                 </div>
-              </BlurFade>
+                <h3
+                  className={`mb-1 font-semibold text-white ${isLarge ? 'text-lg' : 'text-base'}`}
+                >
+                  {f.title}
+                </h3>
+                <p
+                  className={`leading-relaxed text-gray-400 ${isLarge ? 'text-base' : 'text-sm'}`}
+                >
+                  {f.description}
+                </p>
+              </div>
             )
           })}
         </div>

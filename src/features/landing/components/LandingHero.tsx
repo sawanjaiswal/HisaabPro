@@ -1,86 +1,131 @@
-/** Hero section — animated headline, stats, shimmer CTA */
+/** Hero section — dark SaaS template (wisedev/saa-s-template from 21st.dev) */
 
-import { ArrowRight, Sparkles } from 'lucide-react'
+import { memo } from 'react'
+import { ArrowRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { APP_TAGLINE } from '@/config/app.config'
-import { AnimatedShinyText } from '@/components/magicui/animated-shiny-text'
-import { ShimmerButton } from '@/components/magicui/shimmer-button'
-import { NumberTicker } from '@/components/magicui/number-ticker'
-import { BlurFade } from '@/components/magicui/blur-fade'
-import { CTA_ROUTE } from '../landing.constants'
 
-const STATS = [
-  { value: 90, suffix: '+', label: 'Features' },
-  { value: 7, suffix: '', label: 'Doc Types' },
-  { value: 100, suffix: '%', label: 'Offline' },
-  { value: 0, suffix: '', label: 'Data Loss', static: true },
-]
+import { HERO, CTA_ROUTE } from '../landing.constants'
 
-export function LandingHero() {
+export const LandingHero = memo(function LandingHero() {
   const navigate = useNavigate()
 
   return (
-    <section className="relative flex min-h-[85vh] flex-col items-center justify-center overflow-hidden px-4 py-16 text-center">
-      <BlurFade delay={0}>
-        <div className="mx-auto mb-6 flex w-fit items-center gap-2 rounded-full border border-neutral-200 bg-white/80 px-4 py-1.5 shadow-sm backdrop-blur-sm dark:border-neutral-700 dark:bg-neutral-900/80">
-          <Sparkles size={14} className="text-amber-500" aria-hidden="true" />
-          <AnimatedShinyText className="text-sm font-medium">
-            Free for Indian Businesses
-          </AnimatedShinyText>
+    <section
+      className="relative min-h-screen flex flex-col items-center justify-start px-6 py-20 md:py-24"
+      style={{ animation: 'fadeIn 0.6s ease-out' }}
+    >
+      {/* Announcement badge */}
+      <aside className="mb-8 inline-flex flex-wrap items-center justify-center gap-2 px-4 py-2 rounded-full border border-gray-700 bg-gray-800/50 backdrop-blur-sm max-w-full">
+        <span className="text-xs text-center whitespace-nowrap text-gray-400">
+          {HERO.badge}
+        </span>
+        <a
+          href="#features"
+          className="flex items-center gap-1 text-xs text-gray-400 hover:text-white transition-all active:scale-95 whitespace-nowrap"
+          aria-label="See all features"
+        >
+          Learn more
+          <ArrowRight size={12} />
+        </a>
+      </aside>
+
+      {/* Headline with gradient text */}
+      <h1
+        className="text-4xl md:text-5xl lg:text-6xl font-medium text-center max-w-3xl px-6 leading-tight mb-6"
+        style={{
+          background: 'linear-gradient(to bottom, #ffffff, #ffffff, rgba(255, 255, 255, 0.6))',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          letterSpacing: '-0.05em',
+        }}
+      >
+        {HERO.headline}
+        <br />
+        {HERO.headlineAccent}
+      </h1>
+
+      {/* Subtext */}
+      <p className="text-sm md:text-base text-center max-w-2xl px-6 mb-10 text-gray-400">
+        {HERO.subtext}
+      </p>
+
+      {/* CTA button — gradient white */}
+      <div className="flex items-center gap-4 relative z-10 mb-16">
+        <button
+          type="button"
+          className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 h-12 px-8 text-base bg-gradient-to-b from-white via-white/95 to-white/60 text-black hover:scale-105 active:scale-95"
+          onClick={() => navigate(CTA_ROUTE)}
+          aria-label="Get started with HisaabPro"
+        >
+          {HERO.cta}
+        </button>
+      </div>
+
+      {/* Dashboard mockup with glow */}
+      <div className="w-full max-w-5xl relative pb-20">
+        {/* Glow overlay */}
+        <div
+          className="absolute left-1/2 w-[90%] pointer-events-none z-0"
+          style={{ top: '-23%', transform: 'translateX(-50%)' }}
+          aria-hidden="true"
+        >
+          <img
+            src="https://i.postimg.cc/Ss6yShGy/glows.png"
+            alt=""
+            className="w-full h-auto"
+            loading="eager"
+          />
         </div>
-      </BlurFade>
 
-      <BlurFade delay={0.1}>
-        <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl md:text-6xl dark:text-white">
-          Run Your Business
-          <br />
-          <span className="bg-gradient-to-r from-[var(--color-primary-500)] to-[var(--color-primary-300)] bg-clip-text text-transparent">
-            Like a Pro
-          </span>
-        </h1>
-      </BlurFade>
-
-      <BlurFade delay={0.2}>
-        <p className="mx-auto mt-4 max-w-xl text-lg text-neutral-500 dark:text-neutral-400">
-          {APP_TAGLINE}. The only billing app that works{' '}
-          <strong className="text-neutral-700 dark:text-neutral-200">100% offline</strong> with zero data loss.
-        </p>
-      </BlurFade>
-
-      <BlurFade delay={0.3}>
-        <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row">
-          <ShimmerButton
-            background="var(--color-primary-500)"
-            shimmerColor="var(--color-secondary-300)"
-            className="px-8 py-3 text-base font-semibold"
-            onClick={() => navigate(CTA_ROUTE)}
-          >
-            Start Free
-            <ArrowRight size={18} className="ml-2" aria-hidden="true" />
-          </ShimmerButton>
-          <a
-            href="#features"
-            className="rounded-full border border-neutral-200 px-6 py-3 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
-          >
-            See Features
-          </a>
-        </div>
-      </BlurFade>
-
-      {/* Stats strip */}
-      <BlurFade delay={0.4}>
-        <div className="mt-16 grid grid-cols-4 gap-6 sm:gap-12">
-          {STATS.map((stat) => (
-            <div key={stat.label} className="flex flex-col items-center gap-1">
-              <span className="text-2xl font-bold text-neutral-900 sm:text-3xl dark:text-white">
-                {stat.static ? '0' : <NumberTicker value={stat.value} delay={0.5} />}
-                {stat.suffix}
-              </span>
-              <span className="text-xs font-medium text-neutral-500 sm:text-sm">{stat.label}</span>
+        {/* Dashboard placeholder — we'll replace with real screenshot */}
+        <div className="relative z-10">
+          <div className="w-full aspect-video rounded-lg shadow-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border border-gray-700/50 flex items-center justify-center overflow-hidden">
+            {/* Mock dashboard UI */}
+            <div className="w-full h-full p-4 md:p-8 flex flex-col gap-4">
+              {/* Top bar */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-teal-500/20 flex items-center justify-center">
+                    <div className="w-4 h-4 rounded bg-teal-500" />
+                  </div>
+                  <div className="h-3 w-24 rounded bg-gray-700" />
+                </div>
+                <div className="flex gap-2">
+                  <div className="h-8 w-20 rounded-md bg-gray-700/50" />
+                  <div className="h-8 w-8 rounded-md bg-gray-700/50" />
+                </div>
+              </div>
+              {/* Stats row */}
+              <div className="grid grid-cols-3 gap-3 mt-2">
+                <div className="rounded-lg bg-gray-800/80 border border-gray-700/30 p-3 md:p-4">
+                  <div className="h-2 w-16 rounded bg-gray-600 mb-2" />
+                  <div className="h-5 w-20 rounded bg-teal-500/30" />
+                </div>
+                <div className="rounded-lg bg-gray-800/80 border border-gray-700/30 p-3 md:p-4">
+                  <div className="h-2 w-16 rounded bg-gray-600 mb-2" />
+                  <div className="h-5 w-20 rounded bg-green-500/30" />
+                </div>
+                <div className="rounded-lg bg-gray-800/80 border border-gray-700/30 p-3 md:p-4">
+                  <div className="h-2 w-16 rounded bg-gray-600 mb-2" />
+                  <div className="h-5 w-20 rounded bg-amber-500/30" />
+                </div>
+              </div>
+              {/* Table rows */}
+              <div className="flex-1 rounded-lg bg-gray-800/50 border border-gray-700/30 p-3 md:p-4 flex flex-col gap-2">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="h-3 w-3 rounded-full bg-teal-500/40" />
+                    <div className="h-2 flex-1 rounded bg-gray-700/60" />
+                    <div className="h-2 w-16 rounded bg-gray-700/40" />
+                    <div className="h-5 w-14 rounded-md bg-green-500/20" />
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
+          </div>
         </div>
-      </BlurFade>
+      </div>
     </section>
   )
-}
+})

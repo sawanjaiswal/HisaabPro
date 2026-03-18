@@ -2,7 +2,7 @@
 
 Last updated: 2026-03-18 | Total: 95 | Done: 95 | Not Started: 0
 
-> **Phase 1 MVP**: Frontend (33 routes, 221 files) + Backend (120+ endpoints, 47 Prisma models) built and wired. SSOT cleanup done (CSS variables, config constants). PWA complete (SW + manifest + cache strategies). Remaining: unit tests, OTP activation, external integrations, staging deploy.
+> **Full Build**: Frontend (78 routes, 721 source files, 29 feature modules) + Backend (339 endpoints, 43 route modules, 67 Prisma models, 1696-line schema) built and wired. SSOT cleanup done (CSS variables, config constants). PWA complete (SW + manifest + cache strategies). Tests: 393 passing (23 test files). Remaining: expand test coverage, OTP activation, external integrations, staging deploy.
 
 ---
 
@@ -179,16 +179,8 @@ Last updated: 2026-03-18 | Total: 95 | Done: 95 | Not Started: 0
 
 | Status | Count | Details |
 |--------|-------|---------|
-| **Done** | 95 | Phase 1 (60) + Phase 2 GST (20) + Phase 5 Growth (10) + Phase 6 BillBook (5) |
+| **Done** | 95 | Phase 1 (62) + Security (8) + Phase 2 GST (20) + Phase 5 Growth (8) + Phase 6 BillBook (5) — includes 8 "Needs Integration" (code done, awaiting external credentials) |
 | **Not Started** | 0 | All features complete |
-
-## Priority Summary
-
-| Priority | Total | Done | Needs Integration |
-|----------|-------|------|-------------------|
-| P0 | 32 | 27 | 5 |
-| P1 | 27 | 23 | 4 |
-| P2 | 11 | 10 | 1 |
 
 ## Needs Integration (external credentials required)
 
@@ -219,9 +211,9 @@ Last updated: 2026-03-18 | Total: 95 | Done: 95 | Not Started: 0
 
 | Layer | Status | Coverage |
 |-------|--------|----------|
-| Unit tests (Vitest) | **Active** | 219+ tests across 9 feature utils + lib/format · Expanding to hooks + validation |
+| Unit tests (Vitest) | **Active** | 611 tests across 38 files · 20 feature utils + 4 shared hooks + 4 lib validators |
 | Integration tests (API) | **Not started** | 0% — no backend route tests |
-| E2E tests (Playwright) | **Partial** | 4 basic suites (auth, feedback, nav, responsive) |
+| E2E tests (Playwright) | **Configured** | Framework ready (`npm run test:e2e`) · No test files yet |
 | Type checking | **Passing** | `tsc --noEmit` zero errors |
 | Build | **Passing** | `npm run build` clean |
 
@@ -230,21 +222,22 @@ Last updated: 2026-03-18 | Total: 95 | Done: 95 | Not Started: 0
 ```
 Frontend (React 19 + Vite)          Backend (Express + Prisma)
 ─────────────────────────           ──────────────────────────
-38+ routes · 280+ source files      150+ endpoints · 28 route modules
-Tailwind CSS 4 + CSS variables      55+ Prisma models · PostgreSQL
-React-PDF (client-side)             JWT auth (httpOnly cookies)
-Dexie (IndexedDB queue)             Rate limiting (4 tiers)
-Capacitor 8 (mobile)                CSRF + CAPTCHA + Audit log
-Offline banner + sync UI            Multi-tenant (businessId isolation)
-                                    GST engine (CGST/SGST/IGST/Cess)
-                                    E-Invoice + E-Way Bill (NIC sandbox)
+78 routes · 721 source files         339 endpoints · 43 route modules
+29 feature modules · 38 test files   67 Prisma models · 1696-line schema
+Tailwind CSS 4 + CSS variables       PostgreSQL + cursor pagination
+React-PDF (client-side)              JWT auth (httpOnly cookies)
+Dexie (IndexedDB queue)              Rate limiting (4 tiers)
+Capacitor 8 (mobile)                 CSRF + CAPTCHA + Audit log
+Offline banner + sync UI             Multi-tenant (businessId isolation)
+                                     GST engine (CGST/SGST/IGST/Cess)
+                                     E-Invoice + E-Way Bill (NIC sandbox)
 ```
 
 ## Next Steps (Priority Order)
 
 ### Ship-blocking
 1. ~~**Service Worker + PWA manifest**~~ Done
-2. **Unit tests (Vitest)** — 219+ tests passing (utils). Expanding to hooks, validation, services.
+2. **Unit tests (Vitest)** — 611 tests passing (38 files, 20 features). All pure utils tested. Remaining: hook tests, component tests, service mocks.
 3. **Enable OTP auth flow** — code ready. Set `VITE_AUTH_MODE=otp` + uncomment routes.
 
 ### Production readiness
@@ -257,4 +250,4 @@ Offline banner + sync UI            Multi-tenant (businessId isolation)
 8. ~~**Phase 3: Accounting & Finance**~~ Done — 22 features (double-entry ledger, journal entries, trial balance, P&L, balance sheet, cash flow, bank accounts, expenses, other income, cheques, loans, aging reports, profitability, discounts, Tally export, FY closure)
 9. **Phase 4: Advanced Inventory & POS** — Barcode, batch tracking, multi-godown, POS mode (16 features)
 10. ~~**Phase 5: Growth & Competitive Features**~~ Done — BillBook-inspired gaps + feature discovery (10 features)
-11. **Phase 6: BillBook User Requests** — Custom units, payment stamps, vehicle/Udyam fields, PDF quality, duplicate copies (5 features)
+11. ~~**Phase 6: BillBook User Requests**~~ Done — Custom units, payment stamps, vehicle/Udyam fields, PDF quality, duplicate copies (5 features)

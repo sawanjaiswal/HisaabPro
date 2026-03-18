@@ -40,7 +40,7 @@
 - **Spacing:** Generous white space — breathable, not cramped
 - **Shadows:** Soft, subtle elevation — no harsh drop shadows
 - **Radius:** Rounded but not bubbly (8-12px for cards, 6-8px for inputs)
-- **Animations:** Subtle micro-interactions on key actions (invoice created, payment recorded) — CSS only, NO framer-motion
+- **Animations:** Subtle micro-interactions on key actions (invoice created, payment recorded) — CSS or motion (framer-motion)
 - **Data density:** Cards on mobile, tables on desktop — never cramped
 
 ### Mobile Constraints
@@ -254,6 +254,6 @@ config → lib → hooks → features → components
 - Don't skip offline support for any feature
 - Don't use floating point for money — paise (integer) only
 - Don't build desktop-first — mobile 375px first, always
-- Don't use framer-motion — CSS animations only
+- motion (framer-motion) is allowed for animations
 - Don't return unbounded lists — paginate everything
 - Don't skip any of the 4 UI states on any screen

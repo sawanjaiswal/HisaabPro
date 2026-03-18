@@ -218,4 +218,4 @@ border-bottom: 1px solid rgba(0, 0, 0, 0.04);
 - **Touch**: All interactive elements min 44x44px
 - **Transitions**: 200ms ease for hover/active states
 - **Header scroll**: Frosted glass appears at `scrollY > 16px`
-- **CSS only**: No framer-motion — all animations via CSS keyframes/transitions
+- **CSS + motion**: CSS keyframes/transitions for simple animations, motion (framer-motion) allowed for complex animations (layout, gestures, AnimatePresence)

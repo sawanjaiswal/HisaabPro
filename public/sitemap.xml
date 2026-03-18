@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- Landing page -->
+  <url>
+    <loc>https://hisaabpro.in/</loc>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://hisaabpro.in/" />
+    <xhtml:link rel="alternate" hreflang="hi-IN" href="https://hisaabpro.in/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hisaabpro.in/" />
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Pricing page -->
+  <url>
+    <loc>https://hisaabpro.in/pricing</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Features page -->
+  <url>
+    <loc>https://hisaabpro.in/features</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Contact / Support -->
+  <url>
+    <loc>https://hisaabpro.in/contact</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Privacy Policy -->
+  <url>
+    <loc>https://hisaabpro.in/privacy</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- Terms of Service -->
+  <url>
+    <loc>https://hisaabpro.in/terms</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+</urlset>
