@@ -1,9 +1,12 @@
 /** Create Product — Basic info section */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { Plus } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
 import type { ProductFormData, Category, Unit } from '../product.types'
-import { getCategories, getUnits } from '../product.service'
+import { getCategories, getUnits, createUnit } from '../product.service'
+import type { UnitInput } from '../unit.service'
+import { AddUnitSheet } from '@/features/units/components/AddUnitSheet'
 
 interface ProductFormBasicProps {
   form: ProductFormData
@@ -14,6 +17,18 @@ interface ProductFormBasicProps {
 export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicProps) {
   const [categories, setCategories] = useState<Category[]>([])
   const [units, setUnits] = useState<Unit[]>([])
+  const [addUnitOpen, setAddUnitOpen] = useState(false)
+
+  const handleCreateUnit = useCallback(async (data: UnitInput): Promise<Unit | null> => {
+    try {
+      const created = await createUnit(data)
+      setUnits((prev) => [...prev, created])
+      onUpdate('unitId', created.id)
+      return created
+    } catch {
+      return null
+    }
+  }, [onUpdate])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -110,21 +125,33 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
 
       <div className="input-group">
         <label htmlFor="product-unit" className="input-label">Unit</label>
-        <select
-          id="product-unit"
-          className="input"
-          value={form.unitId}
-          onChange={(e) => onUpdate('unitId', e.target.value)}
-          aria-label="Select product unit"
-          disabled={units.length === 0}
-        >
-          {units.length === 0 && (
-            <option value="">Loading...</option>
-          )}
-          {units.map((unit) => (
-            <option key={unit.id} value={unit.id}>{unit.name} ({unit.symbol})</option>
-          ))}
-        </select>
+        <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
+          <select
+            id="product-unit"
+            className="input"
+            value={form.unitId}
+            onChange={(e) => onUpdate('unitId', e.target.value)}
+            aria-label="Select product unit"
+            disabled={units.length === 0}
+            style={{ flex: 1 }}
+          >
+            {units.length === 0 && (
+              <option value="">Loading...</option>
+            )}
+            {units.map((unit) => (
+              <option key={unit.id} value={unit.id}>{unit.name} ({unit.symbol})</option>
+            ))}
+          </select>
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={() => setAddUnitOpen(true)}
+            aria-label="Add custom unit"
+            style={{ flexShrink: 0 }}
+          >
+            <Plus size={16} aria-hidden="true" />
+          </button>
+        </div>
         {errors.unitId && <p className="input-error" role="alert">{errors.unitId}</p>}
       </div>
 
@@ -166,6 +193,12 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
           />
         </div>
       </div>
+
+      <AddUnitSheet
+        open={addUnitOpen}
+        onClose={() => setAddUnitOpen(false)}
+        onSave={handleCreateUnit}
+      />
     </div>
   )
 }
