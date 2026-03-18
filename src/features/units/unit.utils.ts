@@ -1,18 +1,18 @@
 /** Units Feature — Pure utility functions */
 
-import type { Unit } from './unit.types'
-import type { UnitCategory } from './unit.types'
+import type { Unit, UnitCategory } from './unit.types'
 import { PREDEFINED_UNIT_CATEGORIES, UNIT_NAME_MAX, UNIT_SYMBOL_MAX } from './unit.constants'
 
-/** Infer category for a unit based on its symbol (predefined) or default to OTHER */
+/** Get category — uses API field if available, falls back to symbol inference */
 export function getUnitCategory(unit: Unit): UnitCategory {
+  if (unit.category) return unit.category
   if (unit.type === 'PREDEFINED') {
     return PREDEFINED_UNIT_CATEGORIES[unit.symbol] ?? 'OTHER'
   }
   return 'OTHER'
 }
 
-/** Group units by inferred category, preserving order */
+/** Group units by category, preserving order */
 export function groupUnitsByCategory(units: Unit[]): Map<UnitCategory, Unit[]> {
   const groups = new Map<UnitCategory, Unit[]>()
   for (const unit of units) {

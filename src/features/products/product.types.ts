@@ -34,6 +34,7 @@ export type {
   CreateCategoryData,
   DeleteCategoryData,
   Unit,
+  UnitCategory,
   CreateUnitData,
   UnitConversion,
   CreateUnitConversionData,

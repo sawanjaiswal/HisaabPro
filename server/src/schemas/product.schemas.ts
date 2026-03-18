@@ -115,14 +115,26 @@ export const deleteCategorySchema = z.object({
 
 // === Unit schemas ===
 
+const unitCategoryEnum = z.enum([
+  'WEIGHT', 'VOLUME', 'COUNT', 'LENGTH', 'AREA', 'SERVICE', 'PACKAGING', 'OTHER',
+])
+
 export const createUnitSchema = z.object({
   name: z.string().min(1, 'Unit name is required').max(50),
   symbol: z.string().min(1, 'Unit symbol is required').max(10),
+  category: unitCategoryEnum.optional(),
+  decimalAllowed: z.boolean().optional(),
+  baseUnitId: z.string().optional(),
+  baseUnitFactor: z.number().positive().optional(),
 })
 
 export const updateUnitSchema = z.object({
   name: z.string().min(1).max(50).optional(),
   symbol: z.string().min(1).max(10).optional(),
+  category: unitCategoryEnum.optional(),
+  decimalAllowed: z.boolean().optional(),
+  baseUnitId: z.string().nullable().optional(),
+  baseUnitFactor: z.number().positive().nullable().optional(),
 })
 
 // === Unit Conversion schemas ===

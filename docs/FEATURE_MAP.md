@@ -1,6 +1,6 @@
 # Feature Map: HisaabPro
 
-Last updated: 2026-03-18 | Total: 95 | Done: 90 | Needs Integration: 8 | Not Started: 5
+Last updated: 2026-03-18 | Total: 95 | Done: 95 | Not Started: 0
 
 > **Phase 1 MVP**: Frontend (33 routes, 221 files) + Backend (120+ endpoints, 47 Prisma models) built and wired. SSOT cleanup done (CSS variables, config constants). PWA complete (SW + manifest + cache strategies). Remaining: unit tests, OTP activation, external integrations, staging deploy.
 
@@ -169,19 +169,18 @@ Last updated: 2026-03-18 | Total: 95 | Done: 90 | Needs Integration: 8 | Not Sta
 
 | # | Feature | Status | Priority | Notes |
 |---|---------|--------|----------|-------|
-| 91 | Custom Units (user-defined: Bags, Cans, Hours, variable box sizes) | Not Started | P0 | Blocks wholesalers, service workers, bulk suppliers. Need: add custom unit CRUD, variable box sizes (e.g. "Box of 6" vs "Box of 10"), decimal support for unit prices |
-| 92 | Payment Status Stamps on Invoice PDF | Not Started | P1 | Clear stamp/label on generated invoice: "Paid", "Unpaid", "Cash", "Credit", "Advance Payment". Helps customers track outstanding without confusion |
-| 93 | Vehicle Number & Udyam Aadhar on Invoice | Not Started | P1 | Vehicle Number field for transport/logistics. Udyam Aadhar field (>15 digits) for MSME compliance. Total Quantity (Qty) summary row |
-| 94 | PDF Quality Enhancement | Not Started | P1 | Larger font sizes on exported PDFs (currently too small on print). Sharper logo/stamp/signature rendering. Better resolution for uploaded images |
-| 95 | Duplicate Bill Copy Labels | Not Started | P2 | Auto-generate "Customer Copy" and "Duplicate Copy" labels on printout. Standard accounting requirement for traditional bookkeeping |
+| 91 | Custom Units (user-defined: Bags, Cans, Hours, variable box sizes) | Done | P0 | UnitsPage + AddUnitSheet + category/decimalAllowed/baseUnit fields. Schema migration + backend service + Zod validation. Route /settings/units |
+| 92 | Payment Status Stamps on Invoice PDF | Done | P1 | PreviewPaymentStamp (badge/watermark/none). Template toggle + print settings. CSS for both styles |
+| 93 | Vehicle Number & Udyam Aadhar on Invoice | Done | P1 | Vehicle Number on invoice form (create+edit). Udyam in preview header. Total Quantity row in preview. Business schema udyamNumber field |
+| 94 | PDF Quality Enhancement | Done | P1 | 5-level font scale (xs→xl), 3-level line height, pixelRatio 3 for exports. DeepPartial type for gallery configs |
+| 95 | Duplicate Bill Copy Labels | Done | P2 | PreviewCopyLabel component. Print settings: copyLabels toggle, auto/manual mode, custom label names |
 
 ## Status Summary
 
 | Status | Count | Details |
 |--------|-------|---------|
-| **Done** | 90 | Phase 1 (60) + Phase 2 GST (20) + Phase 5 Growth (10) |
-| **Needs Integration** | 0 | All features wired |
-| **Not Started** | 5 | Phase 6 BillBook competitive parity |
+| **Done** | 95 | Phase 1 (60) + Phase 2 GST (20) + Phase 5 Growth (10) + Phase 6 BillBook (5) |
+| **Not Started** | 0 | All features complete |
 
 ## Priority Summary
 

@@ -35,17 +35,30 @@ export interface DeleteCategoryData {
 
 // ─── Unit ───────────────────────────────────────────────────────────────────
 
+export type UnitCategory =
+  | 'WEIGHT' | 'VOLUME' | 'COUNT' | 'LENGTH'
+  | 'AREA' | 'SERVICE' | 'PACKAGING' | 'OTHER'
+
 export interface Unit {
   id: string
   name: string
   symbol: string
   type: UnitType
+  category: UnitCategory
+  decimalAllowed: boolean
+  baseUnitId: string | null
+  baseUnitFactor: number | null
+  baseUnit: { id: string; name: string; symbol: string } | null
   productCount: number
 }
 
 export interface CreateUnitData {
   name: string
   symbol: string
+  category?: UnitCategory
+  decimalAllowed?: boolean
+  baseUnitId?: string
+  baseUnitFactor?: number
 }
 
 export interface UnitConversion {

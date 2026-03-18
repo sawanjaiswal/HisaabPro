@@ -92,6 +92,9 @@ model Business {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  // MSME compliance
+  udyamNumber        String?  // UDYAM-XX-XX-XXXXXXX format
+
   // GST — Phase 2
   gstin              String?
   stateCode          String?  // 2-digit, extracted from GSTIN pos 0-1
@@ -381,15 +384,21 @@ model Category {
 }
 
 model Unit {
-  id         String   @id @default(cuid())
-  businessId String
-  name       String
-  symbol     String
-  type       String   @default("CUSTOM") // PREDEFINED, CUSTOM
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id              String   @id @default(cuid())
+  businessId      String
+  name            String
+  symbol          String
+  type            String   @default("CUSTOM") // PREDEFINED, CUSTOM
+  category        String   @default("OTHER")  // WEIGHT, VOLUME, COUNT, LENGTH, AREA, SERVICE, PACKAGING, OTHER
+  decimalAllowed  Boolean  @default(true)      // false for pcs/box, true for kg/ltr
+  baseUnitId      String?                      // Self-ref: Box of 12 → pcs
+  baseUnitFactor  Float?                       // 1 box12 = 12 pcs
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   business        Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  baseUnit        Unit?            @relation("UnitBase", fields: [baseUnitId], references: [id], onDelete: SetNull)
+  derivedUnits    Unit[]           @relation("UnitBase")
   products        Product[]
   conversionsFrom UnitConversion[] @relation("FromUnit")
   conversionsTo   UnitConversion[] @relation("ToUnit")
