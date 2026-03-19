@@ -18,6 +18,7 @@ import {
   recycleBinSchema,
   shareWhatsAppSchema,
   shareEmailSchema,
+  validateStockSchema,
 } from '../schemas/document.schemas.js'
 import * as documentService from '../services/document.service.js'
 import { validateStockForInvoice } from '../services/stock.service.js'
@@ -65,9 +66,10 @@ router.get(
 /** POST /api/documents/validate-stock — Pre-save stock availability check */
 router.post(
   '/validate-stock',
+  validate(validateStockSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
-    const items = (req.body.items ?? []) as Array<{ productId: string; quantity: number; unitId: string }>
+    const { items } = req.body as { items: Array<{ productId: string; quantity: number; unitId: string }> }
     const result = await validateStockForInvoice(businessId, items)
     sendSuccess(res, result)
   })
