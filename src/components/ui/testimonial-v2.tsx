@@ -79,15 +79,9 @@ const TestimonialsColumn = (props: {
 }) => {
   return (
     <div className={props.className}>
-      <motion.ul
-        animate={{ translateY: "-50%" }}
-        transition={{
-          duration: props.duration || 10,
-          repeat: Infinity,
-          ease: "linear",
-          repeatType: "loop",
-        }}
-        className="flex flex-col gap-6 pb-6 bg-transparent transition-colors duration-300 list-none m-0 p-0"
+      <ul
+        className="testimonial-scroll flex flex-col gap-6 pb-6 bg-transparent transition-colors duration-300 list-none m-0 p-0"
+        style={{ ['--scroll-duration' as string]: `${props.duration || 10}s` }}
       >
         {[
           ...new Array(2).fill(0).map((_, index) => (
@@ -143,7 +137,7 @@ const TestimonialsColumn = (props: {
             </React.Fragment>
           )),
         ]}
-      </motion.ul>
+      </ul>
     </div>
   );
 };
@@ -189,7 +183,7 @@ const TestimonialsSection = () => {
         </div>
 
         <div
-          className="flex justify-center gap-6 mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)] max-h-[740px] overflow-hidden"
+          className="testimonial-scroll-container flex justify-center gap-6 mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)] max-h-[740px] overflow-hidden"
           role="region"
           aria-label="Scrolling Testimonials"
         >

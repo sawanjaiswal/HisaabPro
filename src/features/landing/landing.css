@@ -89,6 +89,9 @@
   --lp-testimonial-badge-border: #404040;
   --lp-testimonial-badge-text: #a3a3a3;
 
+  /* ---- Divider ---- */
+  --lp-divider: rgba(255, 255, 255, 0.1);
+
   /* ---- Section tint ---- */
   --lp-section-tint: rgba(255, 255, 255, 0.02);
 }
@@ -172,6 +175,9 @@ html:not(.dark) .landing-root {
   --lp-testimonial-badge-bg: rgba(243, 244, 246, 0.5);
   --lp-testimonial-badge-border: #d1d5db;
   --lp-testimonial-badge-text: #6b7280;
+
+  /* ---- Divider ---- */
+  --lp-divider: rgba(0, 0, 0, 0.08);
 
   /* ---- Section tint ---- */
   --lp-section-tint: rgba(0, 0, 0, 0.015);
@@ -261,10 +267,15 @@ html:has(.landing-root) {
 .lp-bg-elevated { background-color: var(--lp-bg-elevated); }
 .lp-bg-surface  { background-color: var(--lp-bg-surface); }
 
+/* Additional text */
+.lp-heading { color: var(--lp-text); font-weight: 700; }
+.lp-body    { color: var(--lp-text-body); }
+
 /* Borders */
 .lp-border      { border-color: var(--lp-border); }
 .lp-border-card { border-color: var(--lp-card-border); }
 .lp-border-subtle { border-color: var(--lp-border-subtle); }
+.lp-border-divider { border-color: var(--lp-divider); }
 
 /* CTA buttons */
 .lp-cta {
@@ -323,6 +334,24 @@ html:has(.landing-root) {
 @keyframes scroll-right {
   0%   { transform: translateX(-50%); }
   100% { transform: translateX(0); }
+}
+
+
+/* ============================================================
+   TESTIMONIAL SCROLL — CSS animation with hover-pause
+   ============================================================ */
+
+@keyframes testimonial-scroll-up {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+.testimonial-scroll {
+  animation: testimonial-scroll-up var(--scroll-duration, 15s) linear infinite;
+}
+
+.testimonial-scroll-container:hover .testimonial-scroll {
+  animation-play-state: paused;
 }
 
 

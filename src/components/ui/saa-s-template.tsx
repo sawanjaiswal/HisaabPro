@@ -211,7 +211,7 @@ const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
         Create professional invoices, manage inventory, track payments — works even without internet. Built for Indian businesses.
       </p>
 
-      <div className="flex items-center gap-4 relative z-10 mb-16">
+      <div id="hero-cta" className="flex items-center gap-4 relative z-10 mb-16">
         <Button
           type="button"
           variant="gradient"
