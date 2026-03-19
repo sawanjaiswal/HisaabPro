@@ -21,7 +21,7 @@
 }
 
 .dashboard-section-subtitle {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 500;
   color: var(--dash-text-muted);
   letter-spacing: -0.01em;
@@ -112,7 +112,7 @@
 }
 
 .dashboard-starred-name {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 600;
   color: var(--dash-text-secondary);
   white-space: nowrap;
@@ -123,7 +123,7 @@
 }
 
 .dashboard-starred-amount {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   color: var(--dash-teal-start);
   white-space: nowrap;

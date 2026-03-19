@@ -57,39 +57,60 @@ export function Footer() {
       className="md:rounded-t-6xl relative w-full max-w-6xl mx-auto flex flex-col items-center justify-center rounded-t-4xl border-t px-6 py-12 lg:py-16"
       style={{ borderColor: 'var(--lp-border)' }}
     >
-      <div className="grid w-full gap-8 xl:grid-cols-3 xl:gap-8">
-        <AnimatedContainer className="space-y-1">
+      <div
+        className="grid w-full gap-8 grid-cols-2 md:grid-cols-[2fr_1fr_1fr_1fr_1fr]"
+      >
+        {/* Brand column — 2fr */}
+        <AnimatedContainer className="flex flex-col gap-3">
           <p className="text-lg font-bold lp-text">HisaabPro</p>
-          <p className="text-sm lp-text-muted">
+          <div className="flex items-center gap-4">
+            {[
+              { Icon: InstagramIcon, label: 'Instagram' },
+              { Icon: YoutubeIcon, label: 'YouTube' },
+              { Icon: TwitterIcon, label: 'Twitter / X' },
+              { Icon: LinkedinIcon, label: 'LinkedIn' },
+            ].map(({ Icon, label }) => (
+              <a
+                key={label}
+                href="#"
+                aria-label={label}
+                className="transition-colors duration-200 lp-text-muted"
+                onMouseEnter={e => e.currentTarget.style.color = 'var(--lp-text)'}
+                onMouseLeave={e => e.currentTarget.style.color = ''}
+              >
+                <Icon className="size-4" />
+              </a>
+            ))}
+          </div>
+          <p className="text-sm lp-text-muted max-w-[220px]">
             Billing, inventory &amp; payments for Indian businesses.
           </p>
         </AnimatedContainer>
 
-        <div className="mt-10 grid grid-cols-2 gap-8 md:grid-cols-4 xl:col-span-2 xl:mt-0">
-          {footerLinks.map((section, index) => (
-            <AnimatedContainer key={section.label} delay={0.1 + index * 0.1}>
-              <div className="mb-10 md:mb-0">
-                <p className="text-xs font-semibold uppercase tracking-wider lp-text-muted" style={{ opacity: 0.6 }}>{section.label}</p>
-                <ul className="mt-4 space-y-2 text-sm lp-text-muted">
-                  {section.links.map((link) => (
-                    <li key={link.title}>
-                      <a
-                        href={link.href}
-                        className="inline-flex items-center transition-all duration-300 hover:opacity-100"
-                        style={{ color: 'var(--lp-text-muted)' }}
-                        onMouseEnter={e => e.currentTarget.style.color = 'var(--lp-text)'}
-                        onMouseLeave={e => e.currentTarget.style.color = 'var(--lp-text-muted)'}
-                      >
-                        {link.icon && <link.icon className="me-1 size-4" />}
-                        {link.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </AnimatedContainer>
-          ))}
-        </div>
+        {/* Link columns — 1fr each */}
+        {footerLinks.map((section, index) => (
+          <AnimatedContainer key={section.label} delay={0.1 + index * 0.1}>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider lp-text-muted" style={{ opacity: 0.6 }}>{section.label}</p>
+              <ul className="mt-4 space-y-2 text-sm lp-text-muted">
+                {section.links.map((link) => (
+                  <li key={link.title}>
+                    <a
+                      href={link.href}
+                      className="inline-flex items-center transition-all duration-300 hover:opacity-100"
+                      style={{ color: 'var(--lp-text-muted)' }}
+                      onMouseEnter={e => e.currentTarget.style.color = 'var(--lp-text)'}
+                      onMouseLeave={e => e.currentTarget.style.color = 'var(--lp-text-muted)'}
+                    >
+                      {link.icon && <link.icon className="me-1 size-4" />}
+                      {link.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </AnimatedContainer>
+        ))}
       </div>
 
       {/* Bottom bar */}
@@ -100,22 +121,20 @@ export function Footer() {
         <p className="text-xs lp-text-muted">
           &copy; {new Date().getFullYear()} HisaabPro. Made in India.
         </p>
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-6">
           {[
-            { Icon: InstagramIcon, label: 'Instagram' },
-            { Icon: YoutubeIcon, label: 'YouTube' },
-            { Icon: TwitterIcon, label: 'Twitter / X' },
-            { Icon: LinkedinIcon, label: 'LinkedIn' },
-          ].map(({ Icon, label }) => (
+            { title: 'Privacy Policy', href: '/privacy' },
+            { title: 'Terms of Service', href: '/terms' },
+            { title: 'Refund Policy', href: '/refund' },
+          ].map((link) => (
             <a
-              key={label}
-              href="#"
-              aria-label={label}
-              className="transition-colors duration-200 lp-text-muted"
+              key={link.title}
+              href={link.href}
+              className="text-xs transition-colors duration-200 lp-text-muted"
               onMouseEnter={e => e.currentTarget.style.color = 'var(--lp-text)'}
               onMouseLeave={e => e.currentTarget.style.color = ''}
             >
-              <Icon className="size-4" />
+              {link.title}
             </a>
           ))}
         </div>

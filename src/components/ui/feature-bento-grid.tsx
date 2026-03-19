@@ -1,6 +1,6 @@
 import React from "react"
 import { cn } from "@/lib/utils"
-import { motion } from "motion/react"
+import { Check, Send, Download, AlertTriangle, TrendingUp, Package } from "lucide-react"
 
 export function FeaturesSectionWithBentoGrid() {
   const features = [
@@ -40,9 +40,9 @@ export function FeaturesSectionWithBentoGrid() {
   return (
     <div className="relative z-20 py-10 lg:py-40 max-w-7xl mx-auto">
       <div className="px-8">
-        <h4 className="text-3xl lg:text-5xl lg:leading-tight max-w-5xl mx-auto text-center tracking-tight font-medium">
+        <h2 className="text-4xl font-semibold lg:text-5xl max-w-5xl mx-auto text-center">
           One app, complete business control
-        </h4>
+        </h2>
 
         <p className="text-sm lg:text-base max-w-2xl my-4 mx-auto text-center font-normal lp-text-body">
           Invoicing, inventory, payments, reports — all connected, all offline.
@@ -106,116 +106,337 @@ const FeatureDescription = ({ children }: { children?: React.ReactNode }) => {
   )
 }
 
+/* ─── Shared mockup wrapper with gradient fade ─── */
+const MockCard = ({ children, className }: { children: React.ReactNode; className?: string }) => (
+  <div
+    className={cn("rounded-lg border overflow-hidden", className)}
+    style={{
+      backgroundColor: 'var(--lp-bg-card)',
+      borderColor: 'var(--lp-card-border)',
+      boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+    }}
+  >
+    {children}
+  </div>
+)
+
+/* ─────────────────────────────────────────────────
+   SkeletonOne — Invoice Card (Smart Invoicing)
+   ───────────────────────────────────────────────── */
 export const SkeletonOne = () => {
   return (
     <div className="relative flex py-8 px-2 gap-10 h-full">
-      <div className="w-full p-5 mx-auto shadow-2xl group h-full lp-bg-card">
-        <div className="flex flex-1 w-full h-full flex-col space-y-2">
-          <img
-            src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=1200&h=800"
-            alt="Professional invoices and billing documents"
-            width={800}
-            height={800}
-            className="h-full w-full aspect-square object-cover object-left-top rounded-sm"
-          />
-        </div>
+      <div className="w-full mx-auto">
+        <MockCard>
+          {/* Invoice header */}
+          <div className="px-4 py-3 flex items-center justify-between border-b" style={{ borderColor: 'var(--lp-card-border)' }}>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold" style={{ color: 'var(--lp-text)', fontSize: '0.875rem' }}>
+                INV-1042
+              </span>
+              <span
+                className="px-2 py-0.5 rounded-full font-medium"
+                style={{
+                  fontSize: '0.6875rem',
+                  backgroundColor: 'color-mix(in srgb, var(--lp-mock-success) 15%, transparent)',
+                  color: 'var(--lp-mock-success)',
+                }}
+              >
+                Paid
+              </span>
+            </div>
+            <span style={{ color: 'var(--lp-text-muted)', fontSize: '0.75rem' }}>18 Mar 2026</span>
+          </div>
+
+          {/* Party name */}
+          <div className="px-4 py-2.5 border-b" style={{ borderColor: 'var(--lp-card-border)' }}>
+            <p style={{ color: 'var(--lp-text)', fontSize: '0.8125rem', fontWeight: 500 }}>Sharma Electronics</p>
+            <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.6875rem' }}>Lajpat Nagar, New Delhi</p>
+          </div>
+
+          {/* Line items */}
+          <div className="px-4 py-2" style={{ fontSize: '0.75rem' }}>
+            <div className="flex justify-between py-1.5" style={{ borderBottom: '1px dashed var(--lp-card-border)' }}>
+              <span style={{ color: 'var(--lp-text-body)' }}>LED Panel Light × 20</span>
+              <span style={{ color: 'var(--lp-text)', fontWeight: 500 }}>₹8,000</span>
+            </div>
+            <div className="flex justify-between py-1.5" style={{ borderBottom: '1px dashed var(--lp-card-border)' }}>
+              <span style={{ color: 'var(--lp-text-body)' }}>MCB Switch 32A × 15</span>
+              <span style={{ color: 'var(--lp-text)', fontWeight: 500 }}>₹2,250</span>
+            </div>
+            <div className="flex justify-between py-1.5" style={{ borderBottom: '1px dashed var(--lp-card-border)' }}>
+              <span style={{ color: 'var(--lp-text-body)' }}>Wire Bundle 1.5mm × 5</span>
+              <span style={{ color: 'var(--lp-text)', fontWeight: 500 }}>₹2,200</span>
+            </div>
+          </div>
+
+          {/* Total */}
+          <div className="px-4 py-2.5 flex justify-between items-center border-t" style={{ borderColor: 'var(--lp-card-border)' }}>
+            <span style={{ color: 'var(--lp-text-muted)', fontSize: '0.75rem', fontWeight: 500 }}>Total</span>
+            <span style={{ color: 'var(--lp-text)', fontSize: '1.125rem', fontWeight: 700 }}>₹12,450</span>
+          </div>
+
+          {/* Action buttons */}
+          <div className="px-4 py-3 flex gap-2 border-t" style={{ borderColor: 'var(--lp-card-border)' }}>
+            <div
+              className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md"
+              style={{
+                backgroundColor: 'var(--lp-whatsapp)',
+                color: 'var(--lp-whatsapp-text)',
+                fontSize: '0.6875rem',
+                fontWeight: 500,
+              }}
+            >
+              <Send size={11} /> WhatsApp
+            </div>
+            <div
+              className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md border"
+              style={{
+                borderColor: 'var(--lp-card-border)',
+                color: 'var(--lp-text-secondary)',
+                fontSize: '0.6875rem',
+                fontWeight: 500,
+              }}
+            >
+              <Download size={11} /> PDF
+            </div>
+          </div>
+        </MockCard>
       </div>
 
-      <div className="absolute bottom-0 z-40 inset-x-0 h-60 w-full pointer-events-none" style={{ background: `linear-gradient(to top, var(--lp-bg-fade), var(--lp-bg-fade), transparent)` }} />
-      <div className="absolute top-0 z-40 inset-x-0 h-60 w-full pointer-events-none" style={{ background: `linear-gradient(to bottom, var(--lp-bg-fade), transparent)` }} />
+      <div className="absolute bottom-0 z-40 inset-x-0 h-40 w-full pointer-events-none" style={{ background: `linear-gradient(to top, var(--lp-bg-fade), transparent)` }} />
     </div>
   )
 }
 
-export const SkeletonThree = () => {
-  return (
-    <div className="relative flex gap-10 h-full">
-      <div className="w-full mx-auto bg-transparent group h-full">
-        <div className="flex flex-1 w-full h-full flex-col space-y-2 relative">
-          <img
-            src="https://images.unsplash.com/photo-1604719312566-8912e9227c6a?auto=format&fit=crop&q=80&w=800&h=800"
-            alt="Indian shop inventory management"
-            width={800}
-            height={800}
-            className="h-full w-full aspect-square object-cover object-center rounded-sm"
-          />
-        </div>
-      </div>
-    </div>
-  )
-}
-
+/* ─────────────────────────────────────────────────
+   SkeletonTwo — Payment Outstanding Widget
+   ───────────────────────────────────────────────── */
 export const SkeletonTwo = () => {
-  const images = [
-    "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&q=80&w=500&h=500",
-    "https://images.unsplash.com/photo-1556742393-d75f468bfcb0?auto=format&fit=crop&q=80&w=500&h=500",
-    "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=500&h=500",
-    "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&q=80&w=500&h=500",
-    "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=500&h=500",
+  const parties = [
+    { name: "Gupta Traders", amount: "₹45,200", days: "32d" },
+    { name: "Patel & Sons", amount: "₹38,800", days: "18d" },
+    { name: "Verma Stores", amount: "₹22,100", days: "7d" },
+    { name: "Singh Enterprises", amount: "₹18,400", days: "45d" },
   ]
 
-  const imageVariants = {
-    whileHover: { scale: 1.1, rotate: 0, zIndex: 100 },
-    whileTap: { scale: 1.1, rotate: 0, zIndex: 100 },
-  }
   return (
-    <div className="relative flex flex-col items-start p-8 gap-10 h-full overflow-hidden">
-      <div className="flex flex-row -ml-20">
-        {images.map((image, idx) => (
-          <motion.div
-            variants={imageVariants}
-            key={"images-first" + idx}
-            style={{ rotate: Math.random() * 20 - 10 }}
-            whileHover="whileHover"
-            whileTap="whileTap"
-            className="rounded-xl -mr-4 mt-4 p-1 border flex-shrink-0 overflow-hidden lp-bg-card"
-            {...{ style: { rotate: `${Math.random() * 20 - 10}deg`, borderColor: 'var(--lp-card-img-border)' } } as any}
-          >
-            <img
-              src={image}
-              alt="Payment tracking for Indian businesses"
-              width={500}
-              height={500}
-              className="rounded-lg h-20 w-20 md:h-40 md:w-40 object-cover flex-shrink-0"
-            />
-          </motion.div>
-        ))}
-      </div>
-      <div className="flex flex-row">
-        {images.map((image, idx) => (
-          <motion.div
-            key={"images-second" + idx}
-            style={{ rotate: Math.random() * 20 - 10, borderColor: 'var(--lp-card-img-border)' }}
-            variants={imageVariants}
-            whileHover="whileHover"
-            whileTap="whileTap"
-            className="rounded-xl -mr-4 mt-4 p-1 border flex-shrink-0 overflow-hidden lp-bg-card"
-          >
-            <img
-              src={image}
-              alt="Payment tracking for Indian businesses"
-              width={500}
-              height={500}
-              className="rounded-lg h-20 w-20 md:h-40 md:w-40 object-cover flex-shrink-0"
-            />
-          </motion.div>
-        ))}
-      </div>
+    <div className="relative flex flex-col items-start py-8 gap-4 h-full overflow-hidden">
+      <MockCard className="w-full">
+        {/* Outstanding header */}
+        <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--lp-card-border)' }}>
+          <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.6875rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Total Outstanding
+          </p>
+          <div className="flex items-baseline gap-2 mt-1">
+            <span style={{ color: 'var(--lp-text)', fontSize: '1.5rem', fontWeight: 700 }}>₹1,24,500</span>
+            <span style={{ color: 'var(--lp-mock-warning)', fontSize: '0.6875rem', fontWeight: 500 }}>4 parties</span>
+          </div>
+        </div>
 
-      <div className="absolute left-0 z-[100] inset-y-0 w-20 h-full pointer-events-none" style={{ background: `linear-gradient(to right, var(--lp-bg-fade), transparent)` }} />
-      <div className="absolute right-0 z-[100] inset-y-0 w-20 h-full pointer-events-none" style={{ background: `linear-gradient(to left, var(--lp-bg-fade), transparent)` }} />
+        {/* Party list */}
+        <div>
+          {parties.map((p) => (
+            <div
+              key={p.name}
+              className="px-4 py-2.5 flex items-center justify-between border-b"
+              style={{ borderColor: 'var(--lp-card-border)' }}
+            >
+              <div>
+                <p style={{ color: 'var(--lp-text)', fontSize: '0.75rem', fontWeight: 500 }}>{p.name}</p>
+                <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.625rem' }}>{p.days} overdue</p>
+              </div>
+              <span style={{ color: 'var(--lp-mock-warning)', fontSize: '0.8125rem', fontWeight: 600 }}>{p.amount}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Payment modes bar */}
+        <div className="px-4 py-3">
+          <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.625rem', fontWeight: 500, marginBottom: 8 }}>
+            Received This Month
+          </p>
+          <div className="flex gap-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--lp-mock-bar-bg)' }}>
+            <div className="rounded-full" style={{ width: '45%', backgroundColor: 'var(--lp-accent)' }} />
+            <div className="rounded-full" style={{ width: '30%', backgroundColor: 'var(--lp-mock-success)' }} />
+            <div className="rounded-full" style={{ width: '15%', backgroundColor: 'var(--lp-text-muted)' }} />
+          </div>
+          <div className="flex gap-4 mt-2" style={{ fontSize: '0.5625rem', color: 'var(--lp-text-muted)' }}>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: 'var(--lp-accent)' }} /> UPI
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: 'var(--lp-mock-success)' }} /> Cash
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: 'var(--lp-text-muted)' }} /> Cheque
+            </span>
+          </div>
+        </div>
+      </MockCard>
+
+      <div className="absolute bottom-0 z-40 inset-x-0 h-20 w-full pointer-events-none" style={{ background: `linear-gradient(to top, var(--lp-bg-fade), transparent)` }} />
     </div>
   )
 }
 
-export const SkeletonFour = () => {
+/* ─────────────────────────────────────────────────
+   SkeletonThree — Inventory Stock Cards
+   ───────────────────────────────────────────────── */
+export const SkeletonThree = () => {
+  const products = [
+    { name: "Basmati Rice 5kg", qty: 250, unit: "bags", price: "₹425", status: "ok" },
+    { name: "Toor Dal 1kg", qty: 12, unit: "packs", price: "₹185", status: "low" },
+    { name: "Sugar 1kg", qty: 180, unit: "packs", price: "₹48", status: "ok" },
+    { name: "Aashirvaad Atta 10kg", qty: 8, unit: "bags", price: "₹510", status: "low" },
+  ]
+
   return (
-    <div className="h-60 md:h-60 flex flex-col items-center relative bg-transparent mt-10 overflow-hidden rounded-lg">
-      <img
-        src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800&h=500"
-        alt="Business reports and sales analytics dashboard"
-        className="w-full h-full object-cover object-top"
-      />
+    <div className="relative flex gap-10 h-full py-6">
+      <div className="w-full mx-auto">
+        <div className="grid grid-cols-2 gap-3">
+          {products.map((p) => (
+            <MockCard key={p.name} className="p-3">
+              <div className="flex items-start justify-between mb-2">
+                <Package size={14} style={{ color: 'var(--lp-text-muted)' }} />
+                {p.status === "low" && (
+                  <span
+                    className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full"
+                    style={{
+                      fontSize: '0.5625rem',
+                      fontWeight: 600,
+                      backgroundColor: 'color-mix(in srgb, var(--lp-mock-warning) 15%, transparent)',
+                      color: 'var(--lp-mock-warning)',
+                    }}
+                  >
+                    <AlertTriangle size={9} /> Low
+                  </span>
+                )}
+                {p.status === "ok" && (
+                  <span
+                    className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full"
+                    style={{
+                      fontSize: '0.5625rem',
+                      fontWeight: 600,
+                      backgroundColor: 'color-mix(in srgb, var(--lp-mock-success) 15%, transparent)',
+                      color: 'var(--lp-mock-success)',
+                    }}
+                  >
+                    <Check size={9} /> In Stock
+                  </span>
+                )}
+              </div>
+              <p style={{ color: 'var(--lp-text)', fontSize: '0.75rem', fontWeight: 600, lineHeight: 1.3 }}>{p.name}</p>
+              <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.625rem', marginTop: 2 }}>
+                {p.qty} {p.unit}
+              </p>
+              <div className="mt-2 pt-2 flex items-center justify-between" style={{ borderTop: '1px solid var(--lp-card-border)' }}>
+                <span style={{ color: 'var(--lp-text)', fontSize: '0.8125rem', fontWeight: 700 }}>{p.price}</span>
+                <span style={{ color: 'var(--lp-text-muted)', fontSize: '0.5625rem' }}>per {p.unit === "bags" ? "bag" : "pack"}</span>
+              </div>
+            </MockCard>
+          ))}
+        </div>
+      </div>
+
+      <div className="absolute bottom-0 z-40 inset-x-0 h-24 w-full pointer-events-none" style={{ background: `linear-gradient(to top, var(--lp-bg-fade), transparent)` }} />
+    </div>
+  )
+}
+
+/* ─────────────────────────────────────────────────
+   SkeletonFour — Sales Report & Chart
+   ───────────────────────────────────────────────── */
+export const SkeletonFour = () => {
+  const months = [
+    { label: "Oct", pct: 52 },
+    { label: "Nov", pct: 68 },
+    { label: "Dec", pct: 85 },
+    { label: "Jan", pct: 60 },
+    { label: "Feb", pct: 78 },
+    { label: "Mar", pct: 92 },
+  ]
+
+  const topParties = [
+    { name: "Sharma Electronics", amount: "₹1,85,000" },
+    { name: "Gupta Traders", amount: "₹1,24,000" },
+    { name: "Verma Stores", amount: "₹98,500" },
+  ]
+
+  return (
+    <div className="h-auto flex flex-col items-center relative bg-transparent mt-6 overflow-hidden">
+      <MockCard className="w-full">
+        {/* Revenue header */}
+        <div className="px-4 py-3 flex items-center justify-between border-b" style={{ borderColor: 'var(--lp-card-border)' }}>
+          <div>
+            <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.6875rem', fontWeight: 500 }}>Monthly Sales</p>
+            <div className="flex items-baseline gap-2 mt-0.5">
+              <span style={{ color: 'var(--lp-text)', fontSize: '1.25rem', fontWeight: 700 }}>₹2,85,000</span>
+              <span className="flex items-center gap-0.5" style={{ color: 'var(--lp-mock-success)', fontSize: '0.6875rem', fontWeight: 600 }}>
+                <TrendingUp size={12} /> 12%
+              </span>
+            </div>
+          </div>
+          <div
+            className="px-2 py-1 rounded-md"
+            style={{ backgroundColor: 'var(--lp-bg-elevated)', fontSize: '0.625rem', color: 'var(--lp-text-muted)' }}
+          >
+            Mar 2026
+          </div>
+        </div>
+
+        {/* Bar chart */}
+        <div className="px-4 py-4">
+          <div className="flex items-end justify-between gap-3" style={{ height: 120 }}>
+            {months.map((m) => {
+              const barHeight = Math.round((m.pct / 100) * 100)
+              return (
+                <div key={m.label} className="flex-1 flex flex-col items-center justify-end h-full">
+                  <div
+                    className="w-full rounded-t-md"
+                    style={{
+                      height: barHeight,
+                      backgroundColor: m.label === "Mar" ? 'var(--lp-accent)' : 'var(--lp-mock-bar-bg)',
+                      minHeight: 6,
+                    }}
+                  />
+                  <span className="mt-2" style={{ fontSize: '0.5625rem', color: 'var(--lp-text-muted)' }}>{m.label}</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Top parties */}
+        <div className="px-4 pb-3">
+          <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.625rem', fontWeight: 500, marginBottom: 6 }}>
+            Top Parties
+          </p>
+          {topParties.map((p, i) => (
+            <div
+              key={p.name}
+              className="flex items-center justify-between py-1.5"
+              style={{ borderTop: i > 0 ? '1px solid var(--lp-card-border)' : 'none' }}
+            >
+              <div className="flex items-center gap-2">
+                <span
+                  className="w-4 h-4 rounded-full flex items-center justify-center"
+                  style={{
+                    backgroundColor: 'var(--lp-bg-elevated)',
+                    fontSize: '0.5rem',
+                    color: 'var(--lp-text-muted)',
+                    fontWeight: 600,
+                  }}
+                >
+                  {i + 1}
+                </span>
+                <span style={{ color: 'var(--lp-text)', fontSize: '0.6875rem' }}>{p.name}</span>
+              </div>
+              <span style={{ color: 'var(--lp-text)', fontSize: '0.6875rem', fontWeight: 600 }}>{p.amount}</span>
+            </div>
+          ))}
+        </div>
+      </MockCard>
     </div>
   )
 }

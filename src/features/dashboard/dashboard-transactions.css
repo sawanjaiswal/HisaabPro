@@ -39,7 +39,7 @@
   border: none;
   background: transparent;
   font-family: var(--font-primary);
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   color: var(--dash-text-primary);
   outline: none;
   min-width: 0;
@@ -71,7 +71,7 @@
 }
 
 .dashboard-txn-search-count {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 500;
   color: var(--dash-text-muted);
   letter-spacing: 0.02em;
@@ -112,7 +112,7 @@
 /* ─── Date group headers ─────────────────────────────────── */
 
 .dashboard-txn-date-header {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   color: var(--color-gray-400);
   letter-spacing: 0.06em;
@@ -176,7 +176,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 700;
   color: var(--color-gray-800);
 }
@@ -191,7 +191,7 @@
 }
 
 .dashboard-txn-name {
-  font-size: 1rem;
+  font-size: var(--fs-base);
   font-weight: 500;
   color: var(--dash-text-primary);
   letter-spacing: -0.02em;
@@ -205,7 +205,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   color: var(--color-gray-400);
   letter-spacing: -0.01em;
   line-height: 1.4;
@@ -228,7 +228,7 @@
 }
 
 .dashboard-txn-amount {
-  font-size: 1rem;
+  font-size: var(--fs-base);
   font-weight: 700;
   letter-spacing: -0.02em;
   white-space: nowrap;
@@ -247,7 +247,7 @@
 }
 
 .dashboard-txn-status {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -275,7 +275,7 @@
 }
 
 .dashboard-txn-mode {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   color: var(--dash-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -292,7 +292,7 @@
   border: none;
   cursor: pointer;
   font-family: var(--font-primary);
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   color: var(--color-white-inverse);
   flex-shrink: 0;
@@ -329,7 +329,7 @@
   padding: 48px var(--space-4);
   text-align: center;
   color: var(--dash-text-muted);
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   line-height: 1.5;
 }
 

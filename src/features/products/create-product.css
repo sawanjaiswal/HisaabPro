@@ -23,7 +23,7 @@
   background: none;
   border: none;
   color: var(--color-primary-400);
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 500;
   font-family: var(--font-primary);
   text-align: center;
@@ -65,7 +65,7 @@
 .create-product-prefix {
   position: absolute;
   left: var(--space-4);
-  font-size: 1rem;
+  font-size: var(--fs-base);
   font-weight: 500;
   color: var(--color-gray-500);
   pointer-events: none;
@@ -85,7 +85,7 @@
 }
 
 .sku-toggle-label {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   color: var(--color-gray-600);
 }
 

@@ -47,7 +47,7 @@
   border: 1px solid var(--color-gray-200);
   background: var(--color-gray-0);
   color: var(--color-gray-600);
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 500;
   font-family: var(--font-primary);
   cursor: pointer;
@@ -116,7 +116,7 @@
 }
 
 .report-summary-label {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 500;
   color: var(--color-gray-500);
   text-transform: uppercase;
@@ -125,7 +125,7 @@
 }
 
 .report-summary-value {
-  font-size: 1rem;
+  font-size: var(--fs-base);
   font-weight: 700;
   color: var(--color-gray-800);
   letter-spacing: -0.01em;
@@ -145,7 +145,7 @@
 }
 
 .report-summary-count {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-400);
   margin-top: 2px;
 }
@@ -163,7 +163,7 @@
   }
 
   .report-summary-value {
-    font-size: 1.125rem;
+    font-size: var(--fs-xl);
   }
 }
 
@@ -171,7 +171,7 @@
 
 @media (min-width: 1024px) {
   .report-summary-value {
-    font-size: 1.25rem;
+    font-size: var(--fs-2xl);
   }
 }
 

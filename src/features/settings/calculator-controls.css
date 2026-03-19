@@ -71,7 +71,7 @@
 
 .calc-gst-rate-value {
   font-family: var(--font-primary);
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   font-weight: 700;
   color: var(--color-gray-700);
   transition: color 0.2s ease;
@@ -79,7 +79,7 @@
 
 .calc-gst-rate-suffix {
   font-family: var(--font-primary);
-  font-size: 0.625rem;
+  font-size: var(--fs-3xs);
   font-weight: 600;
   color: var(--color-gray-400);
   transition: color 0.2s ease;
@@ -107,7 +107,7 @@
   background: var(--color-gray-0);
   color: var(--color-gray-500);
   font-family: var(--font-primary);
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -155,7 +155,7 @@
 }
 
 .calculator-gst-item-label {
-  font-size: 0.5625rem;
+  font-size: var(--fs-3xs);
   color: var(--color-gray-400);
   font-weight: 700;
   text-transform: uppercase;
@@ -163,7 +163,7 @@
 }
 
 .calculator-gst-item-value {
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   font-weight: 700;
   color: var(--color-gray-900);
   font-variant-numeric: tabular-nums;
@@ -173,7 +173,7 @@
 }
 
 .calculator-gst-rupee {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 500;
   color: var(--color-gray-400);
 }

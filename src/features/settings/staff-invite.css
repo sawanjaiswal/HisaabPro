@@ -46,13 +46,13 @@
 }
 
 .staff-role-option-name {
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   font-weight: 600;
   color: var(--color-gray-800);
 }
 
 .staff-role-option-desc {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   color: var(--color-gray-500);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -84,7 +84,7 @@
   border-radius: 50%;
   background-color: var(--color-orange-100);
   color: var(--color-orange-600);
-  font-size: 1.125rem;
+  font-size: var(--fs-xl);
   flex-shrink: 0;
 }
 
@@ -94,14 +94,14 @@
 }
 
 .staff-invite-name {
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   font-weight: 600;
   color: var(--color-gray-800);
   margin-bottom: var(--space-0-5);
 }
 
 .staff-invite-expires {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   color: var(--color-orange-700);
 }
 
@@ -123,7 +123,7 @@
 }
 
 .staff-invite-form-title {
-  font-size: 1.0625rem;
+  font-size: var(--fs-lg);
   font-weight: 700;
   color: var(--color-gray-900);
 }

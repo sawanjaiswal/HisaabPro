@@ -14,13 +14,13 @@
 }
 
 .share-ledger-title {
-  font-size: 1.125rem;
+  font-size: var(--fs-xl);
   font-weight: 700;
   color: var(--color-gray-800);
 }
 
 .share-ledger-subtitle {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   color: var(--color-gray-500);
 }
 
@@ -37,7 +37,7 @@
 }
 
 .share-ledger-label {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 500;
   color: var(--color-gray-700);
   white-space: nowrap;
@@ -48,7 +48,7 @@
   padding: var(--space-2) var(--space-3);
   border: 1px solid var(--color-gray-200);
   border-radius: var(--radius-md);
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-family: var(--font-primary);
   color: var(--color-gray-800);
   background: var(--color-gray-0);
@@ -70,7 +70,7 @@
 }
 
 .share-ledger-list-title {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--color-gray-500);
   text-transform: uppercase;
@@ -100,7 +100,7 @@
 }
 
 .share-ledger-item-url {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 500;
   color: var(--color-primary-600);
   overflow: hidden;
@@ -111,7 +111,7 @@
 .share-ledger-item-meta {
   display: flex;
   gap: var(--space-3);
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   color: var(--color-gray-400);
 }
 
@@ -176,13 +176,13 @@
 }
 
 .public-ledger-business {
-  font-size: 1.25rem;
+  font-size: var(--fs-2xl);
   font-weight: 700;
   color: var(--color-gray-800);
 }
 
 .public-ledger-party {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   color: var(--color-gray-500);
   margin-top: var(--space-1);
 }
@@ -190,7 +190,7 @@
 .public-ledger-badge {
   display: inline-block;
   margin-top: var(--space-2);
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -219,14 +219,14 @@
 }
 
 .public-ledger-stat-label {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 500;
   color: var(--color-gray-400);
   text-transform: uppercase;
 }
 
 .public-ledger-stat-value {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 700;
   color: var(--color-gray-800);
 }
@@ -250,7 +250,7 @@
   gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
   background: var(--color-gray-50);
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   color: var(--color-gray-500);
   text-transform: uppercase;
@@ -262,7 +262,7 @@
   grid-template-columns: 70px 1fr 80px 80px 90px;
   gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   color: var(--color-gray-700);
   border-top: 1px solid var(--color-gray-50);
 }
@@ -278,13 +278,13 @@
 }
 
 .public-ledger-desc small {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   color: var(--color-gray-400);
 }
 
 .public-ledger-watermark {
   text-align: center;
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-300);
   padding: var(--space-4) 0;
 }
@@ -295,7 +295,7 @@
   .public-ledger-table-head,
   .public-ledger-table-row {
     grid-template-columns: 55px 1fr 65px 65px 75px;
-    font-size: 0.6875rem;
+    font-size: var(--fs-2xs);
   }
 
   .public-ledger-summary {

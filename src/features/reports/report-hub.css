@@ -60,20 +60,20 @@
 }
 
 .report-hub-hero-title {
-  font-size: 1rem;
+  font-size: var(--fs-base);
   font-weight: 700;
   letter-spacing: -0.01em;
 }
 
 .report-hub-hero-subtitle {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 500;
   opacity: 0.7;
   line-height: 1.4;
 }
 
 .report-hub-hero-count {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   background: rgba(255, 255, 255, 0.15);
   padding: 4px 10px;
@@ -146,14 +146,14 @@
 }
 
 .report-category-title {
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   font-weight: 600;
   color: var(--color-gray-800);
   line-height: 1.3;
 }
 
 .report-category-desc {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   color: var(--color-gray-500);
   line-height: 1.4;
   margin-top: var(--space-1);

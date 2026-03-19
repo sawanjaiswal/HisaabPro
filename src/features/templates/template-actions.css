@@ -29,7 +29,7 @@
   background: transparent;
   color: var(--color-gray-600);
   font-family: var(--font-primary);
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   font-weight: 600;
   cursor: pointer;
   transition: all var(--duration-fast) var(--ease-default);
@@ -54,7 +54,7 @@
   background: var(--color-primary-600);
   color: var(--color-white-inverse);
   font-family: var(--font-primary);
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   font-weight: 600;
   cursor: pointer;
   transition: background var(--duration-fast) var(--ease-default);

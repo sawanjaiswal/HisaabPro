@@ -50,14 +50,14 @@
 
 .report-date-nav-primary {
   display: block;
-  font-size: 1rem;
+  font-size: var(--fs-base);
   font-weight: 700;
   color: var(--color-gray-800);
 }
 
 .report-date-nav-secondary {
   display: block;
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-500);
   margin-top: 2px;
 }

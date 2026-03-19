@@ -100,10 +100,27 @@ const XIcon = ({ className = "", size = 24 }: { className?: string; size?: numbe
 // Navigation Component
 const Navigation = React.memo(({ isDark, onToggleTheme }: ThemeProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [scrolled, setScrolled] = React.useState(false);
+
+  React.useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
-    <header className="fixed top-0 w-full z-50 border-b lp-nav backdrop-blur-md">
-      <nav className="max-w-7xl mx-auto px-6 py-4">
+    <header
+      className="fixed top-0 w-full z-50 border-b lp-nav transition-all duration-300"
+      style={{
+        backdropFilter: scrolled ? 'blur(16px) saturate(180%)' : 'blur(8px)',
+        boxShadow: scrolled ? '0 4px 30px rgba(0,0,0,0.12)' : 'none',
+      }}
+    >
+      <nav
+        className="max-w-7xl mx-auto px-6 transition-all duration-300"
+        style={{ padding: scrolled ? '0.625rem 1.5rem' : '1rem 1.5rem' }}
+      >
         <div className="flex items-center justify-between">
           <div className="text-xl font-semibold lp-text-brand">HisaabPro</div>
 
@@ -180,11 +197,6 @@ const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
       className="relative min-h-screen flex flex-col items-center justify-start px-6 py-20 md:py-24"
       style={{ animation: "fadeIn 0.6s ease-out" }}
     >
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-        * { font-family: 'Poppins', sans-serif; }
-      `}</style>
-
       <aside
         className="mb-8 inline-flex flex-wrap items-center justify-center gap-2 px-4 py-2 rounded-full border backdrop-blur-sm max-w-full"
         style={{ borderColor: 'var(--lp-border-badge)', backgroundColor: 'var(--lp-bg-badge)' }}

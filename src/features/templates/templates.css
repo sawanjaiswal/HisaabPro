@@ -30,7 +30,7 @@
 
 /* Uppercase section label — "YOUR TEMPLATES" */
 .template-section-title {
-  font-size: 0.694rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   color: var(--color-gray-400);
   text-transform: uppercase;
@@ -109,7 +109,7 @@
   left: var(--space-2);
   background: var(--color-primary-600);
   color: var(--color-white-inverse);
-  font-size: 0.625rem;
+  font-size: var(--fs-3xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -127,7 +127,7 @@
 
 /* Template name — truncate on one line */
 .template-card-name {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   color: var(--color-gray-800);
   white-space: nowrap;
@@ -147,7 +147,7 @@
   display: inline-flex;
   align-items: center;
   padding: 2px var(--space-2);
-  font-size: 0.625rem;
+  font-size: var(--fs-3xs);
   font-weight: 600;
   border-radius: var(--radius-full);
   background: var(--color-primary-50);
@@ -167,7 +167,7 @@
   background: transparent;
   color: var(--color-primary-500);
   font-family: var(--font-primary);
-  font-size: 0.833rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   cursor: pointer;
   transition: background var(--duration-fast) var(--ease-default),
@@ -198,11 +198,11 @@
   }
 
   .template-card-name {
-    font-size: 0.9375rem;
+    font-size: var(--fs-df);
   }
 
   .template-card-badge {
-    font-size: 0.694rem;
+    font-size: var(--fs-2xs);
     padding: 2px var(--space-2);
   }
 

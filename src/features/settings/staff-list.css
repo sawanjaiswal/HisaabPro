@@ -40,7 +40,7 @@
   border-radius: 50%;
   background-color: var(--color-primary-100);
   color: var(--color-primary-700);
-  font-size: 1rem;
+  font-size: var(--fs-base);
   font-weight: 700;
   font-family: var(--font-primary);
   flex-shrink: 0;
@@ -57,7 +57,7 @@
 }
 
 .staff-name {
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   font-weight: 600;
   color: var(--color-gray-900);
   margin-bottom: var(--space-0-5);
@@ -74,12 +74,12 @@
 }
 
 .staff-role {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   color: var(--color-gray-600);
 }
 
 .staff-phone {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   color: var(--color-gray-400);
 }
 
@@ -110,7 +110,7 @@
 }
 
 .staff-status-label {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   color: var(--color-gray-500);
 }
 

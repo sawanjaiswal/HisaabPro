@@ -11,7 +11,7 @@
   border: 1px solid var(--color-warning-200);
   background: var(--color-warning-50);
   color: var(--color-warning-700);
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   font-family: var(--font-primary);
   cursor: pointer;
@@ -71,7 +71,7 @@
 }
 
 .sync-drawer-empty p {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 500;
 }
 
@@ -137,7 +137,7 @@
 }
 
 .sync-drawer-item-label {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--color-gray-800);
   overflow: hidden;
@@ -150,7 +150,7 @@
   flex-shrink: 0;
   padding: 1px 6px;
   border-radius: var(--radius-full);
-  font-size: 0.625rem;
+  font-size: var(--fs-3xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -181,7 +181,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   color: var(--color-gray-500);
 }
 
@@ -200,7 +200,7 @@
 /* Error message */
 .sync-drawer-item-error {
   margin-top: 4px;
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   color: var(--color-error-600);
   line-height: 1.4;
 }

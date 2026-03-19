@@ -27,7 +27,7 @@
 }
 
 .report-group-label {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   color: var(--color-gray-700);
 }
@@ -40,13 +40,13 @@
 }
 
 .report-group-count {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-500);
   font-weight: 500;
 }
 
 .report-group-total {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 700;
   color: var(--color-gray-800);
   font-variant-numeric: tabular-nums;
@@ -85,7 +85,7 @@
   border: 1px solid var(--color-primary-300);
   background: var(--color-gray-0);
   color: var(--color-primary-500);
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   font-family: var(--font-primary);
   cursor: pointer;
@@ -124,7 +124,7 @@
 }
 
 .report-export-label {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 500;
   color: var(--color-gray-500);
   white-space: nowrap;
@@ -145,7 +145,7 @@
   border: 1px solid var(--color-gray-200);
   background: var(--color-gray-0);
   color: var(--color-gray-700);
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   font-family: var(--font-primary);
   cursor: pointer;
@@ -190,13 +190,13 @@
 }
 
 .report-empty-title {
-  font-size: 1rem;
+  font-size: var(--fs-base);
   font-weight: 600;
   color: var(--color-gray-700);
 }
 
 .report-empty-desc {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   color: var(--color-gray-500);
   max-width: 280px;
   line-height: 1.5;

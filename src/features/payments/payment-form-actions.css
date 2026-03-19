@@ -15,7 +15,7 @@
 
 .payment-settlement-title {
   padding: var(--space-3) var(--space-4);
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 600;
   color: var(--color-gray-500);
   text-transform: uppercase;
@@ -35,7 +35,7 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--space-2) var(--space-4);
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   color: var(--color-gray-600);
   border-bottom: 1px solid var(--color-gray-100);
 }
@@ -45,7 +45,7 @@
 }
 
 .payment-settlement-row--total {
-  font-size: 1rem;
+  font-size: var(--fs-base);
   font-weight: 700;
   color: var(--color-gray-800);
   padding: var(--space-3) var(--space-4);

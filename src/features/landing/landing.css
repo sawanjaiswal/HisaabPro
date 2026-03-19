@@ -94,6 +94,16 @@
 
   /* ---- Section tint ---- */
   --lp-section-tint: rgba(255, 255, 255, 0.02);
+
+  /* ---- UI Mockup elements ---- */
+  --lp-mock-success: #34d399;
+  --lp-mock-warning: #f97316;
+  --lp-mock-bar-bg: rgba(255, 255, 255, 0.08);
+  --lp-mock-row-hover: rgba(255, 255, 255, 0.04);
+
+  /* ---- WhatsApp ---- */
+  --lp-whatsapp: #25D366;
+  --lp-whatsapp-text: #ffffff;
 }
 
 /* === LIGHT THEME TOKENS === */
@@ -181,6 +191,16 @@ html:not(.dark) .landing-root {
 
   /* ---- Section tint ---- */
   --lp-section-tint: rgba(0, 0, 0, 0.015);
+
+  /* ---- UI Mockup elements ---- */
+  --lp-mock-success: #059669;
+  --lp-mock-warning: #ea580c;
+  --lp-mock-bar-bg: rgba(0, 0, 0, 0.06);
+  --lp-mock-row-hover: rgba(0, 0, 0, 0.03);
+
+  /* ---- WhatsApp ---- */
+  --lp-whatsapp: #25D366;
+  --lp-whatsapp-text: #ffffff;
 }
 
 
@@ -190,7 +210,7 @@ html:not(.dark) .landing-root {
 
 /* Override app global styles so landing renders in isolation */
 .landing-root {
-  font-size: 1rem !important;
+  font-size: var(--fs-base) !important;
   font-family: 'Poppins', sans-serif;
   line-height: normal;
   color: var(--lp-text);
@@ -204,7 +224,7 @@ body:has(.landing-root) {
 }
 
 html:has(.landing-root) {
-  font-size: 1rem !important;
+  font-size: var(--fs-base) !important;
 }
 
 
@@ -227,11 +247,11 @@ html:has(.landing-root) {
 }
 
 .landing-root h1 { font-size: 3.5rem; font-weight: 600; line-height: 1.1; }
-.landing-root h2 { font-size: 2.5rem; font-weight: 600; line-height: 1.15; }
-.landing-root h3 { font-size: 1.75rem; font-weight: 600; line-height: 1.2; }
-.landing-root h4 { font-size: 1.25rem; font-weight: 500; line-height: 1.3; }
-.landing-root h5 { font-size: 1.125rem; font-weight: 500; line-height: 1.4; }
-.landing-root h6 { font-size: 1rem; font-weight: 500; line-height: 1.4; }
+.landing-root h2 { font-size: var(--fs-5xl); font-weight: 600; line-height: 1.15; }
+.landing-root h3 { font-size: var(--fs-4xl); font-weight: 600; line-height: 1.2; }
+.landing-root h4 { font-size: var(--fs-2xl); font-weight: 500; line-height: 1.3; }
+.landing-root h5 { font-size: var(--fs-xl); font-weight: 500; line-height: 1.4; }
+.landing-root h6 { font-size: var(--fs-base); font-weight: 500; line-height: 1.4; }
 
 /* Reset heading gradient for sections with their own text colors */
 .landing-root .lp-heading-plain,

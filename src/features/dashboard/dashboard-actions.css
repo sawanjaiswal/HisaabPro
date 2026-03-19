@@ -52,7 +52,7 @@
 }
 
 .dashboard-action-label {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 500;
   color: var(--dash-text-primary);
   white-space: nowrap;

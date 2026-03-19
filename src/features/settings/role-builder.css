@@ -31,7 +31,7 @@
   border: 1.5px solid var(--color-gray-200);
   background-color: var(--color-gray-0);
   color: var(--color-gray-700);
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 500;
   font-family: var(--font-primary);
   cursor: pointer;
@@ -81,19 +81,19 @@
 }
 
 .role-module-icon {
-  font-size: 1rem;
+  font-size: var(--fs-base);
   flex-shrink: 0;
 }
 
 .role-module-name {
   flex: 1;
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   font-weight: 600;
   color: var(--color-gray-900);
 }
 
 .role-module-count {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   color: var(--color-gray-500);
 }
 
@@ -144,12 +144,12 @@
 
 .role-permission-label {
   flex: 1;
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   color: var(--color-gray-700);
 }
 
 .role-permission-description {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-400);
   margin-top: var(--space-0-5);
 }
@@ -176,7 +176,7 @@
   background-color: var(--color-primary-500);
   color: var(--color-gray-0);
   font-family: var(--font-primary);
-  font-size: 1rem;
+  font-size: var(--fs-base);
   font-weight: 600;
   border: none;
   cursor: pointer;

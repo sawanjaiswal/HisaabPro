@@ -57,7 +57,7 @@
 }
 
 .calculator-header-title {
-  font-size: 1.0625rem;
+  font-size: var(--fs-lg);
   font-weight: 700;
   color: var(--color-gray-800);
   font-family: var(--font-primary);
@@ -109,7 +109,7 @@
   background-color: var(--color-gray-0);
   color: var(--color-gray-700);
   font-family: var(--font-primary);
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.15s ease;
@@ -148,7 +148,7 @@
   border: none;
   cursor: pointer;
   z-index: var(--z-overlay);
-  font-size: 1.125rem;
+  font-size: var(--fs-xl);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   -webkit-tap-highlight-color: transparent;
 }

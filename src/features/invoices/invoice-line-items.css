@@ -31,7 +31,7 @@
 
 .line-item-product-name {
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   color: var(--color-gray-800);
   flex: 1;
   min-width: 0;
@@ -67,7 +67,7 @@
 }
 
 .line-item-field-label {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   color: var(--color-gray-400);
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -75,7 +75,7 @@
 
 .line-item-field-value {
   font-weight: 600;
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   color: var(--color-gray-800);
 }
 
@@ -88,18 +88,18 @@
 }
 
 .line-item-total-label {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-400);
 }
 
 .line-item-total-amount {
   font-weight: 700;
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   color: var(--color-gray-800);
 }
 
 .line-item-profit {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 500;
   padding: 2px var(--space-2);
   border-radius: var(--radius-sm);
@@ -127,7 +127,7 @@
   border: 2px dashed var(--color-gray-200);
   border-radius: var(--radius-md);
   color: var(--color-primary-500);
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 500;
   font-family: var(--font-primary);
   cursor: pointer;
@@ -151,7 +151,7 @@
   border: 1px solid var(--color-gray-200);
   border-radius: var(--radius-sm);
   padding: var(--space-1) var(--space-2);
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 500;
   font-family: var(--font-primary);
   color: var(--color-gray-500);
@@ -187,7 +187,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--color-warning-700);
 }
@@ -200,7 +200,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
 }
 
 .stock-warning-name {
@@ -209,7 +209,7 @@
 }
 
 .stock-warning-detail {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-500);
 }
 

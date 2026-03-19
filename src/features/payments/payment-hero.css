@@ -35,7 +35,7 @@
 }
 
 .payment-hero-net {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 500;
   color: var(--color-gray-500);
   text-transform: uppercase;
@@ -45,7 +45,7 @@
 
 .payment-hero-net strong {
   font-weight: 700;
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
 }
@@ -104,7 +104,7 @@
 }
 
 .payment-hero-amount {
-  font-size: 1.25rem;
+  font-size: var(--fs-2xl);
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1;
@@ -112,7 +112,7 @@
 }
 
 .payment-hero-label {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 500;
   opacity: 0.85;
   display: flex;
@@ -140,7 +140,7 @@
   }
 
   .payment-hero-amount {
-    font-size: 1.5rem;
+    font-size: var(--fs-4xl);
   }
 }
 

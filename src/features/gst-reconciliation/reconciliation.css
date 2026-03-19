@@ -34,7 +34,7 @@
 }
 
 .recon-count-card__value {
-  font-size: 1.75rem;
+  font-size: var(--fs-4xl);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
@@ -43,7 +43,7 @@
 }
 
 .recon-count-card__label {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -96,7 +96,7 @@
 }
 
 .recon-value-item__label {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 500;
   color: var(--color-gray-500);
   text-transform: uppercase;
@@ -104,7 +104,7 @@
 }
 
 .recon-value-item__amount {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 700;
   color: var(--color-gray-800);
   font-variant-numeric: tabular-nums;
@@ -121,7 +121,7 @@
   align-items: center;
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-full);
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -163,7 +163,7 @@
   border: 1px solid var(--color-gray-200);
   background: var(--color-gray-0);
   color: var(--color-gray-600);
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 500;
   font-family: var(--font-primary);
   cursor: pointer;
@@ -220,13 +220,13 @@
 }
 
 .recon-entry-card__doc {
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   font-weight: 600;
   color: var(--color-gray-800);
 }
 
 .recon-entry-card__date {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-500);
 }
 
@@ -237,13 +237,13 @@
 }
 
 .recon-entry-card__party-name {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 500;
   color: var(--color-gray-700);
 }
 
 .recon-entry-card__party-gstin {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-400);
   font-family: var(--font-mono, monospace);
 }
@@ -263,7 +263,7 @@
 }
 
 .recon-entry-card__col-head {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -283,12 +283,12 @@
 }
 
 .recon-entry-card__row-label {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   color: var(--color-gray-400);
 }
 
 .recon-entry-card__row-value {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   color: var(--color-gray-700);
   font-variant-numeric: tabular-nums;
@@ -304,7 +304,7 @@
 }
 
 .recon-entry-card__diff {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 600;
   color: var(--color-error-600);
   background: var(--color-error-50);
@@ -321,7 +321,7 @@
 }
 
 .recon-entry-count {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 500;
   color: var(--color-gray-500);
   margin-bottom: var(--space-2);
@@ -359,13 +359,13 @@
 }
 
 .recon-list-card__period {
-  font-size: 1rem;
+  font-size: var(--fs-base);
   font-weight: 700;
   color: var(--color-gray-800);
 }
 
 .recon-list-card__status {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   padding: 2px var(--space-2);
   border-radius: var(--radius-full);
@@ -378,7 +378,7 @@
 .recon-list-card__status--failed     { background: var(--color-error-50);   color: var(--color-error-700);   }
 
 .recon-list-card__type {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   color: var(--color-gray-500);
 }
 
@@ -389,7 +389,7 @@
 }
 
 .recon-list-card__count {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 500;
   padding: 2px var(--space-2);
   border-radius: var(--radius-sm);
@@ -399,7 +399,7 @@
 .recon-list-card__count--error   { background: var(--color-error-50);   color: var(--color-error-700);   }
 
 .recon-list-card__diff {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   color: var(--color-gray-500);
 }
 
@@ -415,7 +415,7 @@
 }
 
 .recon-new-form-panel__title {
-  font-size: 1rem;
+  font-size: var(--fs-base);
   font-weight: 600;
   color: var(--color-gray-800);
   margin-bottom: var(--space-4);
@@ -434,7 +434,7 @@
 }
 
 .recon-upload-form__label {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 500;
   color: var(--color-gray-700);
 }
@@ -445,7 +445,7 @@
   padding: 0 var(--space-3);
   border: 1px solid var(--color-gray-200);
   border-radius: var(--radius-sm);
-  font-size: 1rem;
+  font-size: var(--fs-base);
   font-family: var(--font-primary);
   color: var(--color-gray-800);
   background: var(--color-gray-0);
@@ -468,7 +468,7 @@
   border-radius: var(--radius-sm);
   background: var(--color-gray-50);
   color: var(--color-gray-700);
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 500;
   font-family: var(--font-primary);
   cursor: pointer;
@@ -496,7 +496,7 @@
   padding: var(--space-3);
   border: 1px solid var(--color-gray-200);
   border-radius: var(--radius-sm);
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-family: var(--font-mono, monospace);
   color: var(--color-gray-700);
   background: var(--color-gray-0);
@@ -513,7 +513,7 @@
 }
 
 .recon-upload-form__error {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   color: var(--color-error-600);
   background: var(--color-error-50);
   padding: var(--space-2) var(--space-3);
@@ -527,7 +527,7 @@
   color: var(--color-white-inverse);
   border: none;
   border-radius: var(--radius-sm);
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   font-weight: 600;
   font-family: var(--font-primary);
   cursor: pointer;
@@ -562,13 +562,13 @@
 }
 
 .recon-empty__title {
-  font-size: 1rem;
+  font-size: var(--fs-base);
   font-weight: 600;
   color: var(--color-gray-700);
 }
 
 .recon-empty__desc {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   color: var(--color-gray-500);
   max-width: 280px;
 }
@@ -581,7 +581,7 @@
   color: var(--color-white-inverse);
   border: none;
   border-radius: var(--radius-full);
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   font-weight: 600;
   font-family: var(--font-primary);
   cursor: pointer;
@@ -621,7 +621,7 @@
   border-radius: var(--radius-sm);
   background: var(--color-gray-0);
   color: var(--color-primary-500);
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   font-weight: 500;
   font-family: var(--font-primary);
   cursor: pointer;

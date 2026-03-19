@@ -30,7 +30,7 @@
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   color: var(--color-white-inverse);
   flex-shrink: 0;
   box-shadow: var(--shadow-avatar);
@@ -61,7 +61,7 @@
   border: none;
   outline: none;
   background: transparent;
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   color: var(--color-gray-800);
   font-family: var(--font-primary);
 }

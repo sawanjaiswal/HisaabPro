@@ -7,13 +7,13 @@
 }
 
 .data-import-title {
-  font-size: 1.25rem;
+  font-size: var(--fs-2xl);
   font-weight: 700;
   color: var(--color-gray-800);
 }
 
 .data-import-description {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   color: var(--color-gray-500);
   line-height: 1.5;
 }
@@ -26,7 +26,7 @@
 }
 
 .data-import-type-label {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   color: var(--color-gray-700);
 }
@@ -63,13 +63,13 @@
 }
 
 .data-import-source-name {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   color: var(--color-gray-800);
 }
 
 .data-import-source-desc {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-400);
 }
 
@@ -93,13 +93,13 @@
 }
 
 .mapping-section-title {
-  font-size: 1rem;
+  font-size: var(--fs-base);
   font-weight: 700;
   color: var(--color-gray-800);
 }
 
 .mapping-section-desc {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   color: var(--color-gray-500);
 }
 
@@ -117,7 +117,7 @@
 }
 
 .mapping-source {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 500;
   color: var(--color-gray-700);
   overflow: hidden;
@@ -127,14 +127,14 @@
 
 .mapping-arrow {
   color: var(--color-gray-300);
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
 }
 
 .mapping-target {
   padding: var(--space-2);
   border: 1px solid var(--color-gray-200);
   border-radius: var(--radius-sm);
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-family: var(--font-primary);
   color: var(--color-gray-800);
   background: var(--color-gray-0);
@@ -150,7 +150,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 500;
 }
 
@@ -175,7 +175,7 @@
   background: var(--color-gray-0);
   border: 1px solid var(--color-gray-100);
   border-radius: var(--radius-sm);
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
 }
 
 .mapping-preview-row.invalid {
@@ -194,13 +194,13 @@
 
 .mapping-preview-error {
   color: var(--color-error-500);
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   margin-left: auto;
 }
 
 .mapping-preview-more {
   text-align: center;
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-400);
   padding: var(--space-2);
 }
@@ -230,7 +230,7 @@
 }
 
 .data-import-error p {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   max-width: 280px;
 }
 

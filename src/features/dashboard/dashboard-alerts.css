@@ -76,14 +76,14 @@
 }
 
 .dashboard-alert-title {
-  font-size: 1rem;
+  font-size: var(--fs-base);
   font-weight: 700;
   color: var(--color-white-inverse);
   letter-spacing: -0.015em;
 }
 
 .dashboard-alert-subtitle {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 400;
   color: var(--color-hero-text-secondary);
   margin-top: 2px;
@@ -104,7 +104,7 @@
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   cursor: pointer;
   font-family: var(--font-primary);
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 500;
   -webkit-tap-highlight-color: transparent;
   transition:

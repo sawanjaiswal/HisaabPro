@@ -37,7 +37,7 @@
 
 .feedback-header h2 {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--fs-base);
   font-weight: 600;
   color: var(--color-gray-900);
 }
@@ -82,7 +82,7 @@
   border: 1px solid var(--color-gray-200);
   background: transparent;
   color: var(--color-gray-600);
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 400;
   cursor: pointer;
   transition: all var(--duration-fast) var(--ease-default);
@@ -105,7 +105,7 @@
   border: 1px solid var(--color-gray-200);
   border-radius: var(--radius-md);
   padding: 10px 14px;
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   outline: none;
   font-family: inherit;
   color: var(--color-gray-900);
@@ -127,7 +127,7 @@
   border: none;
   background: var(--color-gray-900);
   color: var(--color-white-inverse);
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -155,14 +155,14 @@
 .feedback-result-icon--queued { color: var(--color-warning-500); }
 
 .feedback-result-title {
-  font-size: 1rem;
+  font-size: var(--fs-base);
   font-weight: 600;
   margin: 0;
   color: var(--color-gray-900);
 }
 
 .feedback-result-desc {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   color: var(--color-gray-500);
   margin: 0;
   text-align: center;

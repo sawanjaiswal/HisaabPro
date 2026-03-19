@@ -22,13 +22,13 @@
 }
 
 .bill-capture-title {
-  font-size: 1.375rem;
+  font-size: var(--fs-3xl);
   font-weight: 700;
   color: var(--color-gray-800);
 }
 
 .bill-capture-description {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   color: var(--color-gray-500);
   max-width: 280px;
   line-height: 1.5;
@@ -50,7 +50,7 @@
 }
 
 .bill-capture-hint {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-400);
   margin-top: var(--space-2);
 }
@@ -117,13 +117,13 @@
 }
 
 .scan-progress-label {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   color: var(--color-gray-600);
   font-weight: 500;
 }
 
 .scan-progress-percent {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-400);
 }
 
@@ -149,7 +149,7 @@
 }
 
 .ocr-review-stat {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   color: var(--color-gray-800);
 }
@@ -193,7 +193,7 @@
   flex: 1;
   border: none;
   background: transparent;
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   color: var(--color-gray-800);
   padding: var(--space-1) 0;
@@ -245,7 +245,7 @@
 }
 
 .ocr-review-field-label {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 500;
   color: var(--color-gray-400);
   text-transform: uppercase;
@@ -256,7 +256,7 @@
   border: 1px solid var(--color-gray-100);
   border-radius: var(--radius-sm);
   padding: var(--space-2);
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-family: var(--font-primary);
   color: var(--color-gray-800);
   background: var(--color-gray-0);
@@ -285,7 +285,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   color: var(--color-gray-600);
 }
 
@@ -328,7 +328,7 @@
 
 .ocr-review-empty p {
   color: var(--color-gray-600);
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
 }
 
 /* ─── Error State ────────────────────────────────────────────────── */
@@ -347,13 +347,13 @@
 }
 
 .bill-scan-error-title {
-  font-size: 1.125rem;
+  font-size: var(--fs-xl);
   font-weight: 700;
   color: var(--color-gray-800);
 }
 
 .bill-scan-error-message {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   color: var(--color-gray-500);
   max-width: 280px;
   line-height: 1.5;

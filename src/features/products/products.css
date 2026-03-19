@@ -70,7 +70,7 @@
 
 /* Bolder amounts with tabular nums */
 .product-list-item .txn-amount {
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   font-weight: 700;
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
@@ -79,14 +79,14 @@
 
 /* Dimmer meta text */
 .product-list-item .txn-date {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-400);
   margin-top: 2px;
 }
 
 /* Stock quantity — subtle */
 .product-list-item .txn-category {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   color: var(--color-gray-400);
   font-variant-numeric: tabular-nums;
   margin-top: 2px;
@@ -102,7 +102,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 700;
   color: var(--color-white-inverse);
   letter-spacing: 0.02em;

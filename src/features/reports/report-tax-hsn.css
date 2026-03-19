@@ -11,7 +11,7 @@
 }
 
 .hsn-summary__heading {
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   font-weight: 600;
   color: var(--color-gray-700);
   margin-bottom: var(--space-3);
@@ -41,13 +41,13 @@
 }
 
 .hsn-summary__code {
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   font-weight: 600;
   color: var(--color-gray-800);
 }
 
 .hsn-summary__qty {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   color: var(--color-gray-500);
 }
 
@@ -64,12 +64,12 @@
 }
 
 .hsn-summary__field-label {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   color: var(--color-gray-500);
 }
 
 .hsn-summary__field-value {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 500;
   color: var(--color-gray-700);
   font-variant-numeric: tabular-nums;

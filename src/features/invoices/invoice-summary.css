@@ -57,12 +57,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   color: var(--color-gray-500);
 }
 
 .invoice-summary-row-total {
-  font-size: 1.125rem;
+  font-size: var(--fs-xl);
   font-weight: 700;
   color: var(--color-gray-800);
   padding-top: var(--space-2);
@@ -71,7 +71,7 @@
 }
 
 .invoice-summary-profit {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 500;
   margin-top: var(--space-1);
   text-align: right;
@@ -120,7 +120,7 @@
   width: 100%;
   cursor: pointer;
   font-family: var(--font-primary);
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   color: var(--color-gray-700);
   min-height: 44px;

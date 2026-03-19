@@ -35,7 +35,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
 }
 
 .invoice-share-log-icon--whatsapp {
@@ -59,7 +59,7 @@
 }
 
 .invoice-share-log-recipient {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 500;
   color: var(--color-gray-700);
   white-space: nowrap;
@@ -68,13 +68,13 @@
 }
 
 .invoice-share-log-time {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-400);
   margin-top: 2px;
 }
 
 .invoice-share-log-format {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 600;
   color: var(--color-gray-400);
   flex-shrink: 0;
@@ -133,14 +133,14 @@
 }
 
 .share-timeline-channel {
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   font-weight: 600;
   color: var(--color-gray-800);
   margin-bottom: 2px;
 }
 
 .share-timeline-recipient {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   color: var(--color-gray-500);
   white-space: nowrap;
   overflow: hidden;
@@ -149,12 +149,12 @@
 }
 
 .share-timeline-date {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-400);
 }
 
 .share-timeline-format {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   padding: 2px 6px;
   border-radius: var(--radius-sm);

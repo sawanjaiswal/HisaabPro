@@ -75,7 +75,7 @@
 
 /* Bolder transaction amounts */
 .invoice-list-row .txn-amount {
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--color-gray-900);
@@ -83,7 +83,7 @@
 
 /* Dimmer meta text for better hierarchy */
 .invoice-list-row .txn-date {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-400);
   margin-top: 2px;
 }
@@ -122,7 +122,7 @@
 }
 
 .invoice-list-summary-label {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 500;
   color: var(--color-gray-500);
   text-transform: uppercase;
@@ -130,7 +130,7 @@
 }
 
 .invoice-list-summary-amount {
-  font-size: 1rem;
+  font-size: var(--fs-base);
   font-weight: 700;
   color: var(--color-gray-800);
   letter-spacing: -0.01em;

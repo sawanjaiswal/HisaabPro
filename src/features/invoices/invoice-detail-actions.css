@@ -40,7 +40,7 @@
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
-  font-size: 1.125rem;
+  font-size: var(--fs-xl);
   transition:
     background var(--duration-fast) var(--ease-default),
     color var(--duration-fast) var(--ease-default),

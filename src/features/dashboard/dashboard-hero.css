@@ -17,7 +17,7 @@
 }
 
 .dashboard-sales-label {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 500;
   color: var(--dash-text-muted);
   letter-spacing: 0.1em;
@@ -36,7 +36,7 @@
 }
 
 .dashboard-sales-amount {
-  font-size: 3rem;
+  font-size: var(--fs-6xl);
   font-weight: 800;
   color: var(--dash-text-primary);
   letter-spacing: -0.04em;
@@ -47,7 +47,7 @@
 }
 
 .dashboard-sales-count {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 400;
   color: var(--dash-text-secondary);
   letter-spacing: -0.01em;
@@ -65,7 +65,7 @@
 }
 
 .dashboard-sales-cta {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 500;
   color: var(--dash-teal-start);
   background: var(--dash-teal-10);
@@ -193,7 +193,7 @@
 }
 
 .dashboard-hero-amount {
-  font-size: 1.375rem;
+  font-size: var(--fs-3xl);
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1;
@@ -202,7 +202,7 @@
 }
 
 .dashboard-hero-label {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 500;
   opacity: 0.85;
   letter-spacing: 0.04em;
@@ -248,7 +248,7 @@
   }
 
   .dashboard-sales-count {
-    font-size: 0.875rem;
+    font-size: var(--fs-md);
   }
 
   .dashboard-hero-card {
@@ -257,7 +257,7 @@
   }
 
   .dashboard-hero-amount {
-    font-size: 1.5rem;
+    font-size: var(--fs-4xl);
   }
 }
 

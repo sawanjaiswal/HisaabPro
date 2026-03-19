@@ -14,7 +14,7 @@
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   flex-shrink: 0;
 }
 
@@ -25,7 +25,7 @@
 
 .txn-name {
   font-weight: 600;
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   color: var(--color-gray-800);
   white-space: nowrap;
   overflow: hidden;
@@ -33,14 +33,14 @@
 }
 
 .txn-date {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-400);
   margin-top: 2px;
 }
 
 .txn-amount {
   font-weight: 600;
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   text-align: right;
   flex-shrink: 0;
 }
@@ -49,7 +49,7 @@
 .txn-amount-negative { color: var(--color-error-500); }
 
 .txn-category {
-  font-size: 0.694rem;
+  font-size: var(--fs-2xs);
   color: var(--color-gray-400);
   text-align: right;
   margin-top: 2px;
@@ -60,7 +60,7 @@
   display: inline-flex;
   align-items: center;
   padding: 3px var(--space-2);
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   border-radius: var(--radius-full);
   letter-spacing: 0.02em;
@@ -84,13 +84,13 @@
 }
 
 .section-title {
-  font-size: 1.125rem;
+  font-size: var(--fs-xl);
   font-weight: 700;
   color: var(--color-gray-800);
 }
 
 .section-link {
-  font-size: 0.833rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--color-primary-400);
   text-decoration: none;
@@ -101,14 +101,14 @@
 
 /* === MONEY DISPLAY — NexoWallet hero numbers === */
 .money-hero {
-  font-size: 2rem;
+  font-size: var(--fs-5xl);
   font-weight: 700;
   color: var(--color-gray-900);
   letter-spacing: -0.02em;
 }
 
 .money-label {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 500;
   color: var(--color-gray-400);
   text-transform: uppercase;

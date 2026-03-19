@@ -10,7 +10,7 @@
   box-shadow: var(--shadow-md);
   z-index: var(--z-toast);
   text-decoration: none;
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 500;
 }
 
@@ -79,7 +79,7 @@
 }
 
 .header-title {
-  font-size: 1.25rem;
+  font-size: var(--fs-2xl);
   font-weight: 700;
   color: var(--color-gray-900);
   white-space: nowrap;
@@ -177,7 +177,7 @@
 }
 
 .bottom-nav-label {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 500;
 }
 

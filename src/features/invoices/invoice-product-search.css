@@ -73,7 +73,7 @@
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-3) var(--space-4);
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   color: var(--color-gray-500);
 }
 
@@ -134,7 +134,7 @@
 }
 
 .product-search-result-name {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   color: var(--color-gray-800);
   overflow: hidden;
@@ -149,13 +149,13 @@
 }
 
 .product-search-result-sku {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   color: var(--color-gray-400);
   font-family: monospace;
 }
 
 .product-search-result-stock {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   color: var(--color-gray-500);
 }
 
@@ -168,7 +168,7 @@
 }
 
 .product-search-result-price {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 700;
   color: var(--color-gray-800);
 }
@@ -182,7 +182,7 @@
   border: 1px solid var(--color-primary-500);
   background: none;
   color: var(--color-primary-500);
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 600;
   font-family: var(--font-primary);
   cursor: pointer;
@@ -200,7 +200,7 @@
   border-color: var(--color-success-500);
   color: var(--color-success-600);
   cursor: default;
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
 }
 
 /* ─── Dark Theme ────────────────────────────────────────────── */

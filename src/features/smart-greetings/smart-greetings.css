@@ -28,7 +28,7 @@
   border: 1px solid var(--color-gray-200);
   background: var(--color-gray-0);
   color: var(--color-gray-600);
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 500;
   cursor: pointer;
   transition: all var(--duration-fast) var(--ease-default);
@@ -75,12 +75,12 @@
 }
 
 .greeting-card-emoji {
-  font-size: 2rem;
+  font-size: var(--fs-5xl);
   line-height: 1;
 }
 
 .greeting-card-name {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   color: var(--color-gray-0);
   text-align: center;
@@ -88,7 +88,7 @@
 }
 
 .greeting-card-occasion {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   font-weight: 500;
   color: rgba(255, 255, 255, 0.85);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
@@ -111,12 +111,12 @@
 }
 
 .greeting-preview-emoji {
-  font-size: 2rem;
+  font-size: var(--fs-5xl);
   line-height: 1;
 }
 
 .greeting-preview-name {
-  font-size: 1.125rem;
+  font-size: var(--fs-xl);
   font-weight: 600;
   color: var(--color-gray-0);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
@@ -129,7 +129,7 @@
 }
 
 .greeting-editor-label {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   color: var(--color-gray-700);
 }
@@ -139,7 +139,7 @@
   padding: var(--space-3);
   border: 1px solid var(--color-gray-200);
   border-radius: var(--radius-lg);
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   line-height: 1.6;
   color: var(--color-gray-800);
   background: var(--color-gray-0);
@@ -156,7 +156,7 @@
 }
 
 .greeting-editor-hint {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-500);
 }
 
@@ -199,7 +199,7 @@
   padding: var(--space-3) var(--space-3) var(--space-3) calc(var(--space-3) + 24px);
   border: 1px solid var(--color-gray-200);
   border-radius: var(--radius-lg);
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   color: var(--color-gray-800);
   background: var(--color-gray-0);
   transition: border-color var(--duration-fast) var(--ease-default);
@@ -239,7 +239,7 @@
 }
 
 .greeting-recipient-name {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   color: var(--color-gray-800);
   white-space: nowrap;
@@ -248,7 +248,7 @@
 }
 
 .greeting-recipient-phone {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-500);
 }
 
@@ -257,7 +257,7 @@
   text-align: center;
   padding: var(--space-6);
   color: var(--color-gray-500);
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
 }
 
 .greeting-recipients-back {

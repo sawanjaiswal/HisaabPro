@@ -70,7 +70,7 @@
 }
 
 .outstanding-summary-card-label {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 500;
   color: var(--color-primary-200);
   text-transform: uppercase;
@@ -78,7 +78,7 @@
 }
 
 .outstanding-summary-card-amount {
-  font-size: 1.25rem;
+  font-size: var(--fs-2xl);
   font-weight: 700;
   color: var(--color-white-inverse);
   letter-spacing: -0.02em;
@@ -94,7 +94,7 @@
 }
 
 .outstanding-summary-card-count {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   color: var(--color-primary-200);
 }
 
@@ -111,7 +111,7 @@
 }
 
 .outstanding-aging-title {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   color: var(--color-gray-700);
   margin-bottom: var(--space-3);
@@ -160,7 +160,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-1);
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   color: var(--color-gray-500);
 }
 
@@ -198,7 +198,7 @@
   }
 
   .outstanding-summary-card-amount {
-    font-size: 1.5rem;
+    font-size: var(--fs-4xl);
   }
 
   /* Two-column card grid on tablet */

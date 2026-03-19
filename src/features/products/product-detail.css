@@ -18,7 +18,7 @@
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 1.125rem;
+  font-size: var(--fs-xl);
   color: var(--color-white-inverse);
   flex-shrink: 0;
 }
@@ -29,7 +29,7 @@
 }
 
 .product-detail-name {
-  font-size: 1.375rem;
+  font-size: var(--fs-3xl);
   font-weight: 700;
   color: var(--color-white-inverse);
   line-height: 1.2;
@@ -37,7 +37,7 @@
 }
 
 .product-detail-sku {
-  font-size: 0.833rem;
+  font-size: var(--fs-sm);
   opacity: 0.7;
   margin-bottom: var(--space-2);
 }
@@ -126,25 +126,25 @@
 
 .stock-movement-type {
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   color: var(--color-gray-800);
 }
 
 .stock-movement-date {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-400);
   margin-top: 2px;
 }
 
 .stock-movement-qty {
   font-weight: 600;
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   text-align: right;
   flex-shrink: 0;
 }
 
 .stock-movement-balance {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-400);
   text-align: right;
   margin-top: 2px;

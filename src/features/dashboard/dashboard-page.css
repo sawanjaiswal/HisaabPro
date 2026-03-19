@@ -147,7 +147,7 @@
 }
 
 .dashboard-section-title {
-  font-size: 1.0625rem;
+  font-size: var(--fs-lg);
   font-weight: 700;
   color: var(--dash-text-primary);
   letter-spacing: -0.025em;
@@ -168,7 +168,7 @@
 }
 
 .dashboard-section-link {
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 500;
   color: var(--dash-teal-start);
   background: none;

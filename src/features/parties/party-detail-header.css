@@ -22,7 +22,7 @@
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 1.125rem;
+  font-size: var(--fs-xl);
   color: var(--color-white-inverse);
   flex-shrink: 0;
 }
@@ -35,7 +35,7 @@
 
 /* Large white party name */
 .party-detail-name {
-  font-size: 1.375rem;
+  font-size: var(--fs-3xl);
   font-weight: 700;
   color: var(--color-white-inverse);
   line-height: 1.2;
@@ -96,7 +96,7 @@
 }
 
 .party-address-label {
-  font-size: 0.833rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--color-primary-400);
   display: flex;
@@ -115,7 +115,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 500;
   color: var(--color-success-600);
   padding-left: calc(18px + var(--space-3) + var(--space-3));
@@ -149,7 +149,7 @@
   border: 1px solid var(--color-primary-200);
   background: var(--color-primary-50);
   color: var(--color-primary-600);
-  font-size: 0.833rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   white-space: nowrap;
   min-height: 40px;

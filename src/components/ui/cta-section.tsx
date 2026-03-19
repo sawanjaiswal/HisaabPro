@@ -55,10 +55,10 @@ export function CallToAction() {
 
       {/* CTA buttons */}
       <div className="flex items-center justify-center gap-3">
-        <button className="lp-btn-ghost inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all h-12 px-6 py-2 cursor-pointer">
+        <button type="button" className="lp-btn-ghost inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all h-12 px-6 py-2 cursor-pointer">
           Contact Us
         </button>
-        <button className="lp-cta inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all h-12 px-6 py-2 cursor-pointer">
+        <button type="button" className="lp-cta inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all h-12 px-6 py-2 cursor-pointer">
           Start Free Trial <ArrowRightIcon className="size-4 ml-1" />
         </button>
       </div>

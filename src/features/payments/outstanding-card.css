@@ -48,7 +48,7 @@
 
 .outstanding-card-party {
   font-weight: 600;
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   color: var(--color-gray-800);
   white-space: nowrap;
   overflow: hidden;
@@ -56,7 +56,7 @@
 }
 
 .outstanding-card-days {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-400);
   margin-top: 1px;
 }
@@ -68,7 +68,7 @@
 
 .outstanding-card-amount {
   font-weight: 700;
-  font-size: 1.0625rem;
+  font-size: var(--fs-lg);
   color: var(--color-gray-800);
   flex-shrink: 0;
   letter-spacing: -0.01em;
@@ -111,7 +111,7 @@
 }
 
 .outstanding-progress-label {
-  font-size: 0.6875rem;
+  font-size: var(--fs-2xs);
   color: var(--color-gray-400);
 }
 
@@ -139,7 +139,7 @@
   background: transparent;
   border: 1.5px solid var(--color-gray-200);
   border-radius: var(--radius-md);
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   font-family: var(--font-primary);
   color: var(--color-gray-700);
@@ -172,7 +172,7 @@
   background: var(--color-primary-600);
   border: none;
   border-radius: var(--radius-md);
-  font-size: 0.8125rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   font-family: var(--font-primary);
   color: var(--color-white-inverse);

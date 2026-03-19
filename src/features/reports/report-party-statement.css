@@ -30,7 +30,7 @@
 }
 
 .report-statement-description {
-  font-size: 0.9375rem;
+  font-size: var(--fs-df);
   font-weight: 500;
   color: var(--color-gray-800);
   white-space: nowrap;
@@ -39,14 +39,14 @@
 }
 
 .report-statement-reference {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-primary-500);
   font-weight: 500;
   margin-top: 2px;
 }
 
 .report-statement-date {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--color-gray-400);
   margin-top: 2px;
 }
@@ -62,14 +62,14 @@
 }
 
 .report-statement-debit {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   color: var(--color-error-600);
   font-variant-numeric: tabular-nums;
 }
 
 .report-statement-credit {
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   color: var(--color-success-600);
   font-variant-numeric: tabular-nums;
@@ -82,7 +82,7 @@
   align-items: center;
   padding: 2px var(--space-2);
   border-radius: var(--radius-full);
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 600;
   line-height: 1.4;
 }
