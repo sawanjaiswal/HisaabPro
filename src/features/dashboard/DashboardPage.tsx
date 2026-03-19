@@ -67,7 +67,6 @@ export default function DashboardPage() {
   return (
     <AppShell>
       <DashboardHeader
-        profilePhoto="/assets/profile-placeholder.png"
         onCalculatorClick={handleCalculatorClick}
       />
 

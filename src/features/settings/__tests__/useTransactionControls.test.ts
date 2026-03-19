@@ -9,8 +9,6 @@ vi.mock('@/context/AuthContext', () => ({
   useAuth: () => ({ user: { id: 'u1', businessId: 'biz-1' } }),
 }))
 
-vi.mock('@/config/app.config', () => ({ FALLBACK_BUSINESS_ID: 'fallback-biz' }))
-
 vi.mock('@/lib/api', () => ({
   ApiError: class extends Error {
     code: string; status: number

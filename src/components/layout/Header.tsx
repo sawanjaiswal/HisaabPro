@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft } from 'lucide-react'
 import { APP_NAME } from '@/config/app.config'
+import { BusinessAvatar } from '@/features/business/BusinessAvatar'
 
 interface HeaderProps {
   title?: string
@@ -9,10 +10,14 @@ interface HeaderProps {
   backTo?: string
   /** Right-side action buttons (edit, more, etc.) */
   actions?: ReactNode
+  /** Show business avatar (default true on root pages, false on sub-pages with back) */
+  showBusinessAvatar?: boolean
 }
 
-export function Header({ title = APP_NAME, backTo, actions }: HeaderProps) {
+export function Header({ title = APP_NAME, backTo, actions, showBusinessAvatar }: HeaderProps) {
   const navigate = useNavigate()
+  // Show avatar on root pages (no back button), unless explicitly overridden
+  const shouldShowAvatar = showBusinessAvatar ?? (backTo === undefined)
 
   const handleBack = () => {
     if (backTo) {
@@ -25,6 +30,7 @@ export function Header({ title = APP_NAME, backTo, actions }: HeaderProps) {
   return (
     <header className="header">
       <div className="header-leading">
+        {shouldShowAvatar && <BusinessAvatar />}
         {backTo !== undefined && (
           <button
             type="button"

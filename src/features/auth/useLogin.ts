@@ -15,7 +15,7 @@ export function useLogin() {
   const [captchaToken, setCaptchaToken] = useState('')
 
   const navigate = useNavigate()
-  const { setUser } = useAuth()
+  const { setUser, setBusinesses } = useAuth()
   const submitting = useRef(false)
 
   // Reset captcha token whenever the user changes credentials
@@ -39,7 +39,9 @@ export function useLogin() {
       const result = await authLib.devLogin(username, password, captchaToken || undefined)
       // Server sets httpOnly cookies automatically — only cache user for offline-first
       authLib.setCachedUser(result.user)
+      authLib.setCachedBusinesses(result.businesses)
       setUser(result.user)
+      setBusinesses(result.businesses)
       navigate(result.isNewUser ? ROUTES.ONBOARDING : ROUTES.DASHBOARD, { replace: true })
     } catch (err) {
       if (err instanceof ApiError && err.code === 'CAPTCHA_REQUIRED') {
@@ -52,7 +54,7 @@ export function useLogin() {
       setLoading(false)
       submitting.current = false
     }
-  }, [username, password, captchaToken, setUser, navigate])
+  }, [username, password, captchaToken, setUser, setBusinesses, navigate])
 
   return {
     username, setUsername: handleSetUsername,

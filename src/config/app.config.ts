@@ -38,9 +38,6 @@ export const PAGINATION = {
   maxLimit: 200,
 } as const
 
-/** Fallback business ID — used when auth context is not yet loaded */
-export const FALLBACK_BUSINESS_ID = 'business_1' as const
-
 /** Timeouts */
 export const TIMEOUTS = {
   fetchMs: 10_000,

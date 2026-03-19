@@ -9,6 +9,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { sensitiveMutationLimiter } from '../middleware/rate-limit.js'
 import { sendSuccess } from '../lib/response.js'
 import { validationError } from '../lib/errors.js'
 import {
@@ -24,9 +25,12 @@ import {
   verifyPinSchema,
   setOperationPinSchema,
 } from '../schemas/settings.schemas.js'
+import { joinBusinessSchema } from '../schemas/auth.schemas.js'
 import { createBusinessSchema } from '../schemas/business.schemas.js'
+import { requireOwner } from '../middleware/permission.js'
 import * as settingsService from '../services/settings.service.js'
 import * as businessService from '../services/business.service.js'
+import * as authService from '../services/auth.service.js'
 import * as gstService from '../services/gst-settings.service.js'
 
 // === Business-scoped routes ===
@@ -40,6 +44,21 @@ businessSettingsRouter.post('/', validate(createBusinessSchema), asyncHandler(as
   const userId = req.user!.userId
   const business = await businessService.createBusiness(userId, req.body)
   sendSuccess(res, { business }, 201)
+}))
+
+// --- List User's Businesses ---
+
+businessSettingsRouter.get('/', asyncHandler(async (req, res) => {
+  const businesses = await authService.listUserBusinesses(req.user!.userId)
+  sendSuccess(res, { businesses })
+}))
+
+// --- Join Business via Invite Code ---
+
+businessSettingsRouter.post('/join', sensitiveMutationLimiter, validate(joinBusinessSchema), asyncHandler(async (req, res) => {
+  const { userId, phone } = req.user!
+  const result = await settingsService.joinBusiness(userId, phone, req.body.code)
+  sendSuccess(res, result, 201)
 }))
 
 // --- Business Profile ---
@@ -97,7 +116,7 @@ businessSettingsRouter.get('/:businessId/staff', asyncHandler(async (req, res) =
   sendSuccess(res, data)
 }))
 
-businessSettingsRouter.post('/:businessId/staff/invite', validate(inviteStaffSchema), asyncHandler(async (req, res) => {
+businessSettingsRouter.post('/:businessId/staff/invite', requireOwner(), sensitiveMutationLimiter, validate(inviteStaffSchema), asyncHandler(async (req, res) => {
   const userId = req.user!.userId
   const businessId = req.user!.businessId
   const data = await settingsService.inviteStaff(businessId, userId, req.body)
@@ -110,22 +129,28 @@ businessSettingsRouter.put('/:businessId/staff/:staffId', validate(updateStaffRo
   sendSuccess(res, data)
 }))
 
-businessSettingsRouter.post('/:businessId/staff/:staffId/suspend', asyncHandler(async (req, res) => {
+businessSettingsRouter.post('/:businessId/staff/:staffId/suspend', requireOwner(), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const data = await settingsService.suspendStaff(businessId, String(req.params.staffId))
   sendSuccess(res, data)
 }))
 
-businessSettingsRouter.delete('/:businessId/staff/:staffId', asyncHandler(async (req, res) => {
+businessSettingsRouter.delete('/:businessId/staff/:staffId', requireOwner(), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const staffId = String(req.params.staffId)
   await settingsService.removeStaff(businessId, staffId)
   sendSuccess(res, { staffId, removedAt: new Date().toISOString() })
 }))
 
-businessSettingsRouter.post('/:businessId/staff/invite/:inviteId/resend', asyncHandler(async (req, res) => {
+businessSettingsRouter.post('/:businessId/staff/invite/:inviteId/resend', requireOwner(), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const data = await settingsService.resendInvite(businessId, String(req.params.inviteId))
+  sendSuccess(res, data)
+}))
+
+businessSettingsRouter.delete('/:businessId/staff/invite/:inviteId', requireOwner(), asyncHandler(async (req, res) => {
+  const businessId = req.user!.businessId
+  const data = await settingsService.cancelInvite(businessId, String(req.params.inviteId))
   sendSuccess(res, data)
 }))
 

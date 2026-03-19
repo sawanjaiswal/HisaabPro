@@ -5,7 +5,7 @@ import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { authRateLimiter } from '../middleware/rate-limit.js'
 import { captchaGuard, recordFailedAttempt } from '../middleware/captcha.js'
-import { logoutSchema, devLoginSchema } from '../schemas/auth.schemas.js'
+import { logoutSchema, devLoginSchema, switchBusinessSchema } from '../schemas/auth.schemas.js'
 import { sendSuccess, sendError } from '../lib/response.js'
 import { isBlacklisted, blacklistToken } from '../lib/token-blacklist.js'
 import { decodeToken } from '../lib/jwt.js'
@@ -79,10 +79,15 @@ router.post(
     // Set tokens as httpOnly cookies
     authService.setTokenCookies(res, result.tokens!)
 
+    // Fetch businesses for the user (same shape as /me)
+    const meData = await authService.getMe(result.user!.id)
+
     sendSuccess(res, {
       isNewUser: result.isNewUser,
       user: result.user,
       tokens: result.tokens,
+      businesses: meData?.businesses ?? [],
+      activeBusiness: meData?.activeBusiness ?? null,
     }, result.isNewUser as boolean ? 201 : 200)
   })
 )
@@ -133,10 +138,13 @@ router.post(
 //
 //     authService.setTokenCookies(res, result.tokens!)
 //
+//     const meData = await authService.getMe(result.user!.id)
 //     sendSuccess(res, {
 //       isNewUser: result.isNewUser,
 //       user: result.user,
 //       tokens: result.tokens,
+//       businesses: meData?.businesses ?? [],
+//       activeBusiness: meData?.activeBusiness ?? null,
 //     }, result.isNewUser as boolean ? 201 : 200)
 //   })
 // )
@@ -235,23 +243,69 @@ router.post(
 )
 
 // ---------------------------------------------------------------------------
+// Switch business
+// ---------------------------------------------------------------------------
+
+/**
+ * POST /api/auth/switch-business
+ * Switch to a different business. Issues new JWT, rotates cookies.
+ */
+router.post(
+  '/switch-business',
+  auth,
+  authRateLimiter,
+  validate(switchBusinessSchema),
+  asyncHandler(async (req, res) => {
+    const { userId, phone, businessId: currentBusinessId } = req.user!
+    const { businessId: targetBusinessId } = req.body
+
+    if (targetBusinessId === currentBusinessId) {
+      sendError(res, 'Already on this business', 'ALREADY_ACTIVE', 400)
+      return
+    }
+
+    // Blacklist old access token
+    const rawAccessToken =
+      (req.cookies?.[ACCESS_TOKEN_COOKIE] as string | undefined) ??
+      req.headers.authorization?.slice(7)
+    if (rawAccessToken) {
+      const decoded = decodeToken(rawAccessToken)
+      const ttl = decoded?.exp ? decoded.exp * 1000 - Date.now() : 15 * 60 * 1000
+      if (ttl > 0) blacklistToken(rawAccessToken, ttl)
+    }
+
+    const result = await authService.switchBusiness(userId, phone, targetBusinessId)
+
+    authService.setTokenCookies(res, result.tokens)
+
+    logger.info('auth.business_switched', {
+      userId,
+      from: currentBusinessId,
+      to: targetBusinessId,
+    })
+
+    sendSuccess(res, { tokens: result.tokens, business: result.business })
+  })
+)
+
+// ---------------------------------------------------------------------------
 // Current user
 // ---------------------------------------------------------------------------
 
 /**
  * GET /api/auth/me
- * Get current user profile.
+ * Get current user profile with businesses list and active business.
  */
 router.get(
   '/me',
   auth,
   asyncHandler(async (req, res) => {
-    const user = await authService.getMe(req.user!.userId)
-    if (!user) {
+    const data = await authService.getMe(req.user!.userId, req.user!.businessId)
+    if (!data) {
       sendError(res, 'User not found', 'NOT_FOUND', 404)
       return
     }
-    sendSuccess(res, { user })
+    sendSuccess(res, data)
   })
 )
 

@@ -8,7 +8,6 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { Button } from '@/components/ui/Button'
 import { ROUTES } from '@/config/routes.config'
-import { FALLBACK_BUSINESS_ID } from '@/config/app.config'
 import { useAuth } from '@/context/AuthContext'
 import { useTaxCategoryDetail } from './useTaxCategoryDetail'
 import { useTaxCategoryForm } from './useTaxCategoryForm'
@@ -18,7 +17,7 @@ import './tax-category-form.css'
 export default function EditTaxCategoryPage() {
   const { id } = useParams<{ id: string }>()
   const { user } = useAuth()
-  const businessId = user?.businessId ?? FALLBACK_BUSINESS_ID
+  const businessId = user?.businessId ?? ''
   const { category, status, refresh } = useTaxCategoryDetail(id!)
 
   if (status === 'loading') {

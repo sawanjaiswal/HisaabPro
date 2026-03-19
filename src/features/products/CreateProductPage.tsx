@@ -5,7 +5,6 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { Button } from '@/components/ui/Button'
 import { ROUTES } from '@/config/routes.config'
-import { FALLBACK_BUSINESS_ID } from '@/config/app.config'
 import { useAuth } from '@/context/AuthContext'
 import { useProductForm } from './useProductForm'
 import { useTaxCategories } from '@/hooks/useTaxCategories'
@@ -17,7 +16,7 @@ import './create-product.css'
 
 export default function CreateProductPage() {
   const { user } = useAuth()
-  const businessId = user?.businessId ?? FALLBACK_BUSINESS_ID
+  const businessId = user?.businessId ?? ''
   const { categories: taxCategories } = useTaxCategories(businessId)
   const { form, errors, isSubmitting, activeSection, setActiveSection, updateField, handleSubmit, reset } = useProductForm()
 

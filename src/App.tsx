@@ -88,6 +88,7 @@ const ItemsLibrary = lazy(() => import('@/features/items-library/ItemsLibraryPag
 const DataImport = lazy(() => import('@/features/data-import/DataImportPage'))
 const SmartGreetings = lazy(() => import('@/features/smart-greetings/SmartGreetingsPage'))
 const Units = lazy(() => import('@/features/units/UnitsPage'))
+const JoinBusiness = lazy(() => import('@/features/business/JoinBusinessPage'))
 const Landing = lazy(() => import('@/features/landing/LandingPage'))
 const NotFound = lazy(() => import('@/components/feedback/NotFoundPage'))
 
@@ -202,6 +203,7 @@ export function App() {
         <Route path={ROUTES.ITEMS_LIBRARY} element={<PageRoute><ProtectedRoute><ItemsLibrary /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.DATA_IMPORT} element={<PageRoute><ProtectedRoute><DataImport /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SMART_GREETINGS} element={<PageRoute><ProtectedRoute><SmartGreetings /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.JOIN_BUSINESS} element={<PageRoute><ProtectedRoute><JoinBusiness /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PUBLIC_LEDGER} element={<PageRoute><PublicLedger /></PageRoute>} />
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
       </Routes>

@@ -6,6 +6,8 @@ import crypto from 'crypto'
 import { prisma } from '../lib/prisma.js'
 import { notFoundError, validationError, conflictError, unauthorizedError } from '../lib/errors.js'
 import { hashPassword, verifyPassword } from '../lib/password.js'
+import { blacklistUser } from '../lib/token-blacklist.js'
+import { INVITE_CODE_BYTES, INVITE_TTL_MS, MAX_PENDING_INVITES } from '../config/security.js'
 import type {
   CreateRoleInput,
   UpdateRoleInput,
@@ -92,43 +94,93 @@ export function getPermissionMatrix() {
 
 // === System Roles (lazy-seeded per business) ===
 
-const SYSTEM_ROLES = [
+const ALL_PERMISSIONS = PERMISSION_MATRIX.flatMap(m =>
+  m.actions.map(a => `${m.key}.${a.key}`)
+)
+
+const SYSTEM_ROLES: Array<{
+  name: string; isSystem: boolean; priority: number
+  permissions: string[]; isDefault?: boolean
+}> = [
   {
     name: 'Owner',
     isSystem: true,
     priority: 100,
-    permissions: PERMISSION_MATRIX.flatMap(m =>
-      m.actions.map(a => `${m.key}.${a.key}`)
-    ),
+    permissions: ALL_PERMISSIONS,
+  },
+  {
+    name: 'Partner',
+    isSystem: true,
+    priority: 90,
+    permissions: ALL_PERMISSIONS.filter(p => p !== 'settings.manageStaff'),
   },
   {
     name: 'Manager',
     isSystem: true,
-    priority: 50,
-    permissions: PERMISSION_MATRIX.flatMap(m =>
-      m.actions.map(a => `${m.key}.${a.key}`)
-    ).filter(p => !p.startsWith('settings.manageStaff')),
+    priority: 70,
+    permissions: ALL_PERMISSIONS.filter(p =>
+      !['settings.manageStaff', 'settings.modify'].includes(p)
+    ),
   },
   {
-    name: 'Billing Staff',
+    name: 'Salesman',
     isSystem: true,
-    priority: 20,
+    priority: 50,
     permissions: [
       'invoicing.view', 'invoicing.create', 'invoicing.edit', 'invoicing.share',
-      'inventory.view',
-      'payments.view', 'payments.record',
       'parties.view',
+      'payments.view', 'payments.record',
       'reports.view',
+      'fields.viewPartyPhone',
     ],
   },
   {
-    name: 'Viewer',
+    name: 'Cashier',
+    isSystem: true,
+    priority: 40,
+    permissions: [
+      'payments.view', 'payments.record',
+      'parties.view',
+      'invoicing.view',
+      'fields.viewPartyPhone', 'fields.viewPartyOutstanding',
+    ],
+  },
+  {
+    name: 'Stock Manager',
+    isSystem: true,
+    priority: 50,
+    permissions: [
+      'inventory.view', 'inventory.create', 'inventory.edit', 'inventory.adjustStock',
+      'invoicing.view',
+      'parties.view',
+      'reports.view',
+      'fields.viewPurchasePrice',
+    ],
+  },
+  {
+    name: 'Delivery Boy',
+    isSystem: true,
+    priority: 30,
+    permissions: [
+      'invoicing.view', 'invoicing.share',
+      'parties.view',
+      'payments.view', 'payments.record',
+      'fields.viewPartyPhone',
+    ],
+  },
+  {
+    name: 'Accountant',
     isSystem: true,
     isDefault: true,
-    priority: 10,
+    priority: 60,
     permissions: [
-      'invoicing.view', 'inventory.view', 'payments.view',
-      'parties.view', 'reports.view',
+      'invoicing.view',
+      'inventory.view',
+      'payments.view',
+      'parties.view',
+      'reports.view', 'reports.download',
+      'fields.viewPurchasePrice', 'fields.viewProfitMargin',
+      'fields.viewPartyOutstanding',
     ],
   },
 ]
@@ -144,7 +196,7 @@ export async function ensureSystemRoles(businessId: string) {
         businessId,
         name: role.name,
         isSystem: true,
-        isDefault: role.isDefault || false,
+        isDefault: role.isDefault ?? false,
         priority: role.priority,
         permissions: role.permissions,
       },
@@ -152,6 +204,7 @@ export async function ensureSystemRoles(businessId: string) {
     })
   }
 }
+
 
 // === Roles ===
 
@@ -306,9 +359,17 @@ export async function inviteStaff(
     if (existingBU) throw conflictError('User is already a staff member')
   }
 
-  // Generate invite code
-  const code = crypto.randomBytes(4).toString('hex').toUpperCase()
-  const expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000) // 48 hours
+  // Check max pending invites
+  const pendingCount = await prisma.staffInvite.count({
+    where: { businessId, status: 'PENDING' },
+  })
+  if (pendingCount >= MAX_PENDING_INVITES) {
+    throw validationError(`Maximum ${MAX_PENDING_INVITES} pending invites reached`)
+  }
+
+  // Generate invite code (6 hex chars from 3 bytes)
+  const code = crypto.randomBytes(INVITE_CODE_BYTES).toString('hex').toUpperCase()
+  const expiresAt = new Date(Date.now() + INVITE_TTL_MS)
 
   const invite = await prisma.staffInvite.create({
     data: {
@@ -327,6 +388,82 @@ export async function inviteStaff(
   })
 
   return { invite }
+}
+
+/**
+ * Accept a staff invite and join a business.
+ * Validates: code exists, not expired, phone matches, not already member.
+ */
+export async function joinBusiness(userId: string, phone: string, code: string) {
+  const invite = await prisma.staffInvite.findUnique({
+    where: { code },
+    select: {
+      id: true, businessId: true, phone: true, roleId: true,
+      status: true, expiresAt: true, name: true,
+      business: { select: { id: true, name: true, businessType: true } },
+    },
+  })
+
+  if (!invite) throw notFoundError('Invite code')
+  if (invite.status !== 'PENDING') throw validationError('This invite has already been used')
+  if (invite.expiresAt < new Date()) {
+    throw validationError('This invite has expired. Ask the business owner to send a new one.')
+  }
+  if (invite.phone !== phone) {
+    throw validationError('This invite was sent to a different phone number')
+  }
+
+  // Check not already a member
+  const existing = await prisma.businessUser.findUnique({
+    where: { userId_businessId: { userId, businessId: invite.businessId } },
+    select: { id: true },
+  })
+  if (existing) throw conflictError('You are already a member of this business')
+
+  // Create BusinessUser + mark invite accepted in transaction
+  const businessUser = await prisma.$transaction(async (tx) => {
+    const bu = await tx.businessUser.create({
+      data: {
+        userId,
+        businessId: invite.businessId,
+        role: 'staff',
+        roleId: invite.roleId,
+        status: 'ACTIVE',
+        isActive: true,
+      },
+      select: {
+        id: true, role: true, status: true,
+        roleRef: { select: { id: true, name: true } },
+      },
+    })
+
+    await tx.staffInvite.update({
+      where: { id: invite.id },
+      data: { status: 'ACCEPTED' },
+    })
+
+    return bu
+  })
+
+  return { businessUser, business: invite.business }
+}
+
+/**
+ * Cancel a pending staff invite.
+ */
+export async function cancelInvite(businessId: string, inviteId: string) {
+  const invite = await prisma.staffInvite.findFirst({
+    where: { id: inviteId, businessId, status: 'PENDING' },
+    select: { id: true },
+  })
+  if (!invite) throw notFoundError('Invite')
+
+  await prisma.staffInvite.update({
+    where: { id: inviteId },
+    data: { status: 'CANCELLED' },
+  })
+
+  return { message: 'Invite cancelled' }
 }
 
 export async function updateStaffRole(
@@ -354,10 +491,13 @@ export async function updateStaffRole(
 export async function suspendStaff(businessId: string, staffId: string) {
   const bu = await prisma.businessUser.findFirst({
     where: { id: staffId, businessId },
-    select: { id: true, role: true },
+    select: { id: true, role: true, userId: true },
   })
   if (!bu) throw notFoundError('Staff member')
   if (bu.role === 'owner') throw validationError('Cannot suspend owner')
+
+  // Immediately blacklist user's tokens so they can't continue
+  blacklistUser(bu.userId)
 
   return prisma.businessUser.update({
     where: { id: staffId },
@@ -369,10 +509,13 @@ export async function suspendStaff(businessId: string, staffId: string) {
 export async function removeStaff(businessId: string, staffId: string) {
   const bu = await prisma.businessUser.findFirst({
     where: { id: staffId, businessId },
-    select: { id: true, role: true },
+    select: { id: true, role: true, userId: true },
   })
   if (!bu) throw notFoundError('Staff member')
   if (bu.role === 'owner') throw validationError('Cannot remove owner')
+
+  // Immediately blacklist user's tokens
+  blacklistUser(bu.userId)
 
   await prisma.businessUser.delete({ where: { id: staffId } })
 }
@@ -380,19 +523,20 @@ export async function removeStaff(businessId: string, staffId: string) {
 export async function resendInvite(businessId: string, inviteId: string) {
   const invite = await prisma.staffInvite.findFirst({
     where: { id: inviteId, businessId, status: 'PENDING' },
-    select: { id: true, expiresAt: true },
+    select: { id: true },
   })
   if (!invite) throw notFoundError('Invite')
-  if (invite.expiresAt < new Date()) throw validationError('Invite has expired — create a new one')
 
-  const newExpiry = new Date(Date.now() + 48 * 60 * 60 * 1000)
+  // Generate new code + reset expiry (even if expired)
+  const newCode = crypto.randomBytes(INVITE_CODE_BYTES).toString('hex').toUpperCase()
+  const newExpiry = new Date(Date.now() + INVITE_TTL_MS)
   const updated = await prisma.staffInvite.update({
     where: { id: inviteId },
-    data: { expiresAt: newExpiry },
-    select: { id: true, expiresAt: true },
+    data: { code: newCode, expiresAt: newExpiry },
+    select: { id: true, code: true, expiresAt: true },
   })
 
-  return { inviteId: updated.id, expiresAt: updated.expiresAt.toISOString() }
+  return { invite: updated }
 }
 
 // === Transaction Lock ===

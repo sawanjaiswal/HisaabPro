@@ -15,7 +15,6 @@ import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { ROUTES } from '@/config/routes.config'
-import { FALLBACK_BUSINESS_ID } from '@/config/app.config'
 import { useAuth } from '@/context/AuthContext'
 import { useRoles } from './useRoles'
 import { RoleCard } from './components/RoleCard'
@@ -49,7 +48,7 @@ function RolesListSkeleton() {
 export default function RolesPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
-  const businessId = user?.businessId ?? FALLBACK_BUSINESS_ID
+  const businessId = user?.businessId ?? ''
   const { roles, status, refresh } = useRoles(businessId)
 
   function handleRoleClick(id: string) {

@@ -12,7 +12,6 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { ROUTES } from '@/config/routes.config'
-import { FALLBACK_BUSINESS_ID } from '@/config/app.config'
 import { useAuth } from '@/context/AuthContext'
 import { INDIAN_STATES } from './tax.constants'
 import { useGstSettings } from './useGstSettings'
@@ -24,7 +23,7 @@ import './gst-settings.css'
 export default function GstSettingsPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
-  const businessId = user?.businessId ?? FALLBACK_BUSINESS_ID
+  const businessId = user?.businessId ?? ''
   const { settings, status, refresh, updateGst } = useGstSettings(businessId)
   const stateName = settings.stateCode ? INDIAN_STATES[settings.stateCode] ?? 'Unknown' : null
 

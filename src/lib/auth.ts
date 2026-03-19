@@ -1,5 +1,5 @@
 import { api } from './api'
-import type { AuthUser } from '../features/auth/auth.types'
+import type { AuthUser, BusinessSummary } from '../features/auth/auth.types'
 
 /**
  * Auth library — cookie-based authentication.
@@ -12,6 +12,7 @@ import type { AuthUser } from '../features/auth/auth.types'
 /** Clear all client-side auth data (cached user only — cookies cleared by server) */
 export function clearAuth() {
   sessionStorage.removeItem('cachedUser')
+  sessionStorage.removeItem('cachedBusinesses')
 }
 
 /** Cache user for offline access */
@@ -22,6 +23,22 @@ export function setCachedUser(user: AuthUser) {
 /** Get cached user */
 export function getCachedUser(): AuthUser | null {
   const cached = sessionStorage.getItem('cachedUser')
+  if (!cached) return null
+  try {
+    return JSON.parse(cached)
+  } catch {
+    return null
+  }
+}
+
+/** Cache businesses list */
+export function setCachedBusinesses(businesses: BusinessSummary[]) {
+  sessionStorage.setItem('cachedBusinesses', JSON.stringify(businesses))
+}
+
+/** Get cached businesses */
+export function getCachedBusinesses(): BusinessSummary[] | null {
+  const cached = sessionStorage.getItem('cachedBusinesses')
   if (!cached) return null
   try {
     return JSON.parse(cached)
@@ -44,23 +61,20 @@ export async function devLogin(
 ) {
   const raw = await api<{
     isNewUser: boolean
-    user: GetMeRawUser
+    user: { id: string; phone: string; name: string | null; email: string | null }
+    businesses: BusinessSummary[]
+    activeBusiness: BusinessSummary | null
     tokens: { accessToken: string; refreshToken: string }
   }>('/auth/dev-login', {
     method: 'POST',
     body: JSON.stringify({ username, password, ...(captchaToken ? { captchaToken } : {}) }),
     signal,
   })
-  const businessId = raw.user.businessUsers?.[0]?.business?.id ?? null
+  const businessId = raw.activeBusiness?.id ?? raw.businesses[0]?.id ?? null
   return {
     isNewUser: raw.isNewUser,
-    user: {
-      id: raw.user.id,
-      phone: raw.user.phone,
-      name: raw.user.name,
-      email: raw.user.email,
-      businessId,
-    } satisfies AuthUser,
+    user: { ...raw.user, businessId } satisfies AuthUser,
+    businesses: raw.businesses ?? [],
     tokens: raw.tokens,
   }
 }
@@ -104,26 +118,43 @@ export async function logout() {
   clearAuth()
 }
 
-/** Raw shape returned by GET /auth/me — includes nested businessUsers */
-interface GetMeRawUser {
-  id: string
-  phone: string
-  name: string | null
-  email: string | null
-  businessUsers?: Array<{ business: { id: string } }>
+/** Get current user profile with businesses list */
+export async function getMe(signal?: AbortSignal): Promise<{
+  user: AuthUser
+  businesses: BusinessSummary[]
+}> {
+  const raw = await api<{
+    user: { id: string; phone: string; name: string | null; email: string | null }
+    businesses: BusinessSummary[]
+    activeBusiness: BusinessSummary | null
+  }>('/auth/me', { signal })
+  const businessId = raw.activeBusiness?.id ?? raw.businesses[0]?.id ?? null
+  return {
+    user: { ...raw.user, businessId },
+    businesses: raw.businesses ?? [],
+  }
 }
 
-/** Get current user profile and extract businessId from the first active business */
-export async function getMe(signal?: AbortSignal): Promise<{ user: AuthUser }> {
-  const raw = await api<{ user: GetMeRawUser }>('/auth/me', { signal })
-  const businessId = raw.user.businessUsers?.[0]?.business?.id ?? null
-  return {
-    user: {
-      id: raw.user.id,
-      phone: raw.user.phone,
-      name: raw.user.name,
-      email: raw.user.email,
-      businessId,
-    },
-  }
+/** Switch active business — returns new business info */
+export async function switchBusiness(businessId: string, signal?: AbortSignal) {
+  return api<{
+    tokens: { accessToken: string; refreshToken: string }
+    business: { id: string; name: string; businessType: string }
+  }>('/auth/switch-business', {
+    method: 'POST',
+    body: JSON.stringify({ businessId }),
+    signal,
+  })
+}
+
+/** Join a business via invite code */
+export async function joinBusiness(code: string, signal?: AbortSignal) {
+  return api<{
+    businessUser: { id: string; role: string; status: string }
+    business: { id: string; name: string; businessType: string }
+  }>('/businesses/join', {
+    method: 'POST',
+    body: JSON.stringify({ code }),
+    signal,
+  })
 }

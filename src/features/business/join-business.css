@@ -1,0 +1,124 @@
+.join-business-page {
+  min-height: 100vh;
+  background: var(--color-background, #F9FAFB);
+}
+
+.join-business-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem 1.5rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.join-business-icon-container {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--color-primary-50, #EFF6FF);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.join-business-icon {
+  color: var(--color-primary, #3B82F6);
+}
+
+.join-business-heading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text, #111);
+  margin: 0 0 0.5rem;
+}
+
+.join-business-subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-muted, #6B7280);
+  margin: 0 0 2rem;
+  text-align: center;
+}
+
+.join-business-input {
+  width: 100%;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.5rem;
+  padding: 0.75rem;
+  border: 2px solid var(--color-border, #E5E7EB);
+  border-radius: 0.75rem;
+  background: var(--color-surface, #fff);
+  color: var(--color-text, #111);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.join-business-input:focus {
+  border-color: var(--color-primary, #3B82F6);
+}
+
+.join-business-input::placeholder {
+  color: var(--color-text-muted, #D1D5DB);
+  letter-spacing: 0.75rem;
+}
+
+.join-business-error {
+  font-size: 0.8125rem;
+  color: var(--color-error, #EF4444);
+  margin: 0.75rem 0 0;
+  text-align: center;
+}
+
+.join-business-btn {
+  width: 100%;
+  padding: 0.875rem;
+  margin-top: 1.5rem;
+  border: none;
+  border-radius: 0.75rem;
+  background: var(--color-primary, #3B82F6);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.join-business-btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.join-business-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Success state */
+.join-business-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: 2rem;
+}
+
+.join-business-success-icon {
+  color: var(--color-success, #22C55E);
+  margin-bottom: 1rem;
+}
+
+.join-business-success-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text, #111);
+  margin: 0 0 0.5rem;
+}
+
+.join-business-success-subtitle {
+  font-size: 0.9375rem;
+  color: var(--color-text-muted, #6B7280);
+  margin: 0 0 2rem;
+  text-transform: capitalize;
+}

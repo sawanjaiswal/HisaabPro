@@ -5,7 +5,6 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { Button } from '@/components/ui/Button'
 import { ROUTES } from '@/config/routes.config'
-import { FALLBACK_BUSINESS_ID } from '@/config/app.config'
 import { useAuth } from '@/context/AuthContext'
 import { useTaxCategoryForm } from './useTaxCategoryForm'
 import { TaxCategoryFormFields } from './components/TaxCategoryFormFields'
@@ -13,7 +12,7 @@ import './tax-category-form.css'
 
 export default function CreateTaxCategoryPage() {
   const { user } = useAuth()
-  const businessId = user?.businessId ?? FALLBACK_BUSINESS_ID
+  const businessId = user?.businessId ?? ''
   const { form, errors, isSubmitting, updateField, handleSubmit } = useTaxCategoryForm({ businessId })
 
   return (

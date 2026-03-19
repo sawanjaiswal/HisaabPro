@@ -25,7 +25,17 @@ export const devLoginSchema = z.object({
   captchaToken: z.string().optional(),
 })
 
+export const switchBusinessSchema = z.object({
+  businessId: z.string().min(1, 'Business ID is required'),
+})
+
+export const joinBusinessSchema = z.object({
+  code: z.string().length(6, 'Invite code must be 6 characters').regex(/^[A-Z0-9]{6}$/, 'Invite code must be alphanumeric uppercase'),
+})
+
 export type SendOtpInput = z.infer<typeof sendOtpSchema>
 export type VerifyOtpInput = z.infer<typeof verifyOtpSchema>
 export type RefreshTokenInput = z.infer<typeof refreshTokenSchema>
 export type LogoutInput = z.infer<typeof logoutSchema>
+export type SwitchBusinessInput = z.infer<typeof switchBusinessSchema>
+export type JoinBusinessInput = z.infer<typeof joinBusinessSchema>

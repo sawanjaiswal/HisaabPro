@@ -1,21 +1,27 @@
-import { createContext, useContext, useState, useEffect, useMemo } from 'react'
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react'
 import type { ReactNode } from 'react'
-import type { AuthUser } from '../features/auth/auth.types'
+import type { AuthUser, BusinessSummary } from '../features/auth/auth.types'
 import * as authLib from '../lib/auth'
 
 interface AuthContextType {
   user: AuthUser | null
+  businesses: BusinessSummary[]
   isAuthenticated: boolean
   isLoading: boolean
+  isSwitching: boolean
   setUser: (user: AuthUser | null) => void
+  setBusinesses: (businesses: BusinessSummary[]) => void
   handleLogout: () => void
+  switchBusiness: (businessId: string) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
+  const [businesses, setBusinesses] = useState<BusinessSummary[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isSwitching, setIsSwitching] = useState(false)
 
   // On mount: check for existing session via cached user + server verification
   useEffect(() => {
@@ -24,8 +30,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async function init() {
       // Load cached user immediately (offline-first hint)
       const cached = authLib.getCachedUser()
+      const cachedBiz = authLib.getCachedBusinesses()
       if (cached) {
         setUser(cached)
+        if (cachedBiz) setBusinesses(cachedBiz)
         setIsLoading(false)
       }
 
@@ -33,14 +41,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const response = await authLib.getMe(controller.signal)
         setUser(response.user)
+        setBusinesses(response.businesses)
         authLib.setCachedUser(response.user)
+        authLib.setCachedBusinesses(response.businesses)
       } catch {
         if (!cached) {
-          // No cached user AND server verification failed — not authenticated
           authLib.clearAuth()
           setUser(null)
+          setBusinesses([])
         }
-        // If cached user exists but server fails (offline), keep showing cached user
       }
 
       setIsLoading(false)
@@ -50,20 +59,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => controller.abort()
   }, [])
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     authLib.logout()
     setUser(null)
-  }
+    setBusinesses([])
+  }, [])
+
+  const switchBusiness = useCallback(async (businessId: string) => {
+    if (isSwitching) return
+    setIsSwitching(true)
+    try {
+      const result = await authLib.switchBusiness(businessId)
+      // Update user with new businessId
+      setUser(prev => prev ? { ...prev, businessId: result.business.id } : null)
+      authLib.setCachedUser({
+        ...user!,
+        businessId: result.business.id,
+      })
+      // Force reload to clear all business-scoped state
+      window.location.reload()
+    } catch {
+      setIsSwitching(false)
+    }
+  }, [isSwitching, user])
 
   const value = useMemo(
     () => ({
       user,
+      businesses,
       isAuthenticated: !!user,
       isLoading,
+      isSwitching,
       setUser,
+      setBusinesses,
       handleLogout,
+      switchBusiness,
     }),
-    [user, isLoading]
+    [user, businesses, isLoading, isSwitching, handleLogout, switchBusiness]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

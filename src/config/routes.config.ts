@@ -78,4 +78,6 @@ export const ROUTES = {
   DATA_IMPORT: '/settings/import',
   SMART_GREETINGS: '/greetings',
   SETTINGS_UNITS: '/settings/units',
+  SETTINGS_PERMISSIONS: '/settings/permissions',
+  JOIN_BUSINESS: '/join',
 } as const

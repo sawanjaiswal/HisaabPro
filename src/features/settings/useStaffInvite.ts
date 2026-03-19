@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { FALLBACK_BUSINESS_ID, APP_NAME } from '@/config/app.config'
+import { APP_NAME } from '@/config/app.config'
 import { useAuth } from '@/context/AuthContext'
 import { inviteStaff } from './staff.service'
 import { getRoles } from './role.service'
@@ -20,7 +20,7 @@ interface SuccessState {
 
 export function useStaffInvite() {
   const { user } = useAuth()
-  const businessId = user?.businessId ?? FALLBACK_BUSINESS_ID
+  const businessId = user?.businessId ?? ''
 
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')

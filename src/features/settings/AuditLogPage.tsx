@@ -6,7 +6,6 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ROUTES } from '@/config/routes.config'
-import { FALLBACK_BUSINESS_ID } from '@/config/app.config'
 import { useAuth } from '@/context/AuthContext'
 import { useAuditLog } from './useAuditLog'
 import { AuditLogEntry } from './components/AuditLogEntry'
@@ -55,7 +54,7 @@ interface DateGroup {
 
 export default function AuditLogPage() {
   const { user } = useAuth()
-  const businessId = user?.businessId ?? FALLBACK_BUSINESS_ID
+  const businessId = user?.businessId ?? ''
   const { data, status, filters, setFilter, loadMore, refresh } = useAuditLog(businessId)
 
   const dateGroups = useMemo<DateGroup[]>(() => {

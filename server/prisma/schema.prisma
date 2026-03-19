@@ -928,7 +928,7 @@ model StaffInvite {
   phone      String
   roleId     String?
   code       String   @unique
-  status     String   @default("PENDING") // PENDING, ACCEPTED, EXPIRED
+  status     String   @default("PENDING") // PENDING, ACCEPTED, EXPIRED, CANCELLED
   expiresAt  DateTime
   invitedBy  String
   createdAt  DateTime @default(now())

@@ -15,7 +15,6 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { ROUTES } from '@/config/routes.config'
-import { FALLBACK_BUSINESS_ID } from '@/config/app.config'
 import { useAuth } from '@/context/AuthContext'
 import { useRoleBuilder, useRoleBuilderPage } from './useRoleBuilder'
 import { BuilderSkeleton } from './components/BuilderSkeleton'
@@ -111,7 +110,7 @@ function BuilderForm({ roleId, role, systemRoles, businessId }: BuilderFormProps
 export default function RoleBuilderPage() {
   const { id: roleId } = useParams<{ id: string }>()
   const { user } = useAuth()
-  const businessId = user?.businessId ?? FALLBACK_BUSINESS_ID
+  const businessId = user?.businessId ?? ''
 
   const { fetchStatus, fetchError, role, systemRoles, retry } =
     useRoleBuilderPage({ roleId, businessId })

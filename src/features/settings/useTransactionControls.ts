@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { FALLBACK_BUSINESS_ID } from '@/config/app.config'
 import { useAuth } from '@/context/AuthContext'
 import { getTransactionLockConfig, updateTransactionLockConfig } from './security.service'
 import { useToast } from '@/hooks/useToast'
@@ -11,7 +10,7 @@ const DEBOUNCE_MS = 500
 
 export function useTransactionControls() {
   const { user } = useAuth()
-  const businessId = user?.businessId ?? FALLBACK_BUSINESS_ID
+  const businessId = user?.businessId ?? ''
   const toast = useToast()
 
   const [config, setConfig] = useState<TransactionLockConfig>(DEFAULT_TRANSACTION_LOCK_CONFIG)

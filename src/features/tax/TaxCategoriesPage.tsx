@@ -13,7 +13,6 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { ROUTES } from '@/config/routes.config'
-import { FALLBACK_BUSINESS_ID } from '@/config/app.config'
 import { useAuth } from '@/context/AuthContext'
 import { useTaxCategories } from './useTaxCategories'
 import { TaxCategoryCard } from './components/TaxCategoryCard'
@@ -23,7 +22,7 @@ import './tax-categories.css'
 export default function TaxCategoriesPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
-  const businessId = user?.businessId ?? FALLBACK_BUSINESS_ID
+  const businessId = user?.businessId ?? ''
   const { categories, status, refresh, seedDefaults } = useTaxCategories(businessId)
 
   return (
