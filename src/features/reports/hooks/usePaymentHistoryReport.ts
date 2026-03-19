@@ -54,15 +54,16 @@ export function usePaymentHistoryReport(): UsePaymentHistoryReportReturn {
 
   useEffect(() => {
     const controller = new AbortController()
+    const appendMode = isLoadMore.current
 
-    if (!isLoadMore.current) {
+    if (!appendMode) {
       setStatus('loading')
     }
 
     getPaymentHistory(filters, controller.signal)
       .then((response: PaymentHistoryResponse) => {
         setData((prev) => {
-          if (!isLoadMore.current || prev === null) return response
+          if (!appendMode || prev === null) return response
           const prevItems = prev.data.items ?? []
           const nextItems = response.data.items ?? []
           const prevGroups = prev.data.groups ?? []

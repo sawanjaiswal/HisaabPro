@@ -48,15 +48,16 @@ export function useStockSummary(): UseStockSummaryReturn {
 
   useEffect(() => {
     const controller = new AbortController()
+    const appendMode = isLoadMore.current
 
-    if (!isLoadMore.current) {
+    if (!appendMode) {
       setStatus('loading')
     }
 
     getStockSummary(filters, controller.signal)
       .then((response: StockSummaryResponse) => {
         setData((prev) => {
-          if (!isLoadMore.current || prev === null) return response
+          if (!appendMode || prev === null) return response
           return {
             ...response,
             data: {

@@ -1,6 +1,6 @@
 /** useJournalEntries — Paginated journal entries with type/status filters */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { getJournalEntries } from './accounting.service'
@@ -33,25 +33,26 @@ export function useJournalEntries(): UseJournalEntriesReturn {
   const [total, setTotal] = useState(0)
   const [status, setStatus] = useState<Status>('loading')
   const [refreshKey, setRefreshKey] = useState(0)
-  const [isLoadMore, setIsLoadMore] = useState(false)
+  const isLoadMore = useRef(false)
 
   useEffect(() => {
     const controller = new AbortController()
-    if (!isLoadMore) setStatus('loading')
+    const appendMode = isLoadMore.current
+    if (!appendMode) setStatus('loading')
 
     getJournalEntries(filters, controller.signal)
       .then((res) => {
         setEntries((prev) =>
-          isLoadMore ? [...prev, ...res.items] : res.items
+          appendMode ? [...prev, ...res.items] : res.items
         )
         setTotal(res.total)
         setStatus('success')
-        setIsLoadMore(false)
+        isLoadMore.current = false
       })
       .catch((err: unknown) => {
         if (err instanceof Error && err.name === 'AbortError') return
         setStatus('error')
-        setIsLoadMore(false)
+        isLoadMore.current = false
         const message = err instanceof ApiError ? err.message : 'Failed to load entries'
         toast.error(message)
       })
@@ -60,22 +61,22 @@ export function useJournalEntries(): UseJournalEntriesReturn {
   }, [filters, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const setTypeFilter = useCallback((type: JournalEntryType | undefined) => {
-    setIsLoadMore(false)
+    isLoadMore.current = false
     setFilters((prev) => ({ ...prev, type, page: 1 }))
   }, [])
 
   const setStatusFilter = useCallback((s: EntryStatus | undefined) => {
-    setIsLoadMore(false)
+    isLoadMore.current = false
     setFilters((prev) => ({ ...prev, status: s, page: 1 }))
   }, [])
 
   const loadMore = useCallback(() => {
-    setIsLoadMore(true)
+    isLoadMore.current = true
     setFilters((prev) => ({ ...prev, page: (prev.page ?? 1) + 1 }))
   }, [])
 
   const refresh = useCallback(() => {
-    setIsLoadMore(false)
+    isLoadMore.current = false
     setFilters((prev) => ({ ...prev, page: 1 }))
     setRefreshKey((k) => k + 1)
   }, [])

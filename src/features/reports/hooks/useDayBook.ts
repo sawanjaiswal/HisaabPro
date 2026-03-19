@@ -50,15 +50,16 @@ export function useDayBook(): UseDayBookReturn {
 
   useEffect(() => {
     const controller = new AbortController()
+    const appendMode = isLoadMore.current
 
-    if (!isLoadMore.current) {
+    if (!appendMode) {
       setStatus('loading')
     }
 
     getDayBook(filters, controller.signal)
       .then((response: DayBookResponse) => {
         setData((prev) => {
-          if (!isLoadMore.current || prev === null) return response
+          if (!appendMode || prev === null) return response
           return {
             ...response,
             data: {

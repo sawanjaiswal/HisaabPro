@@ -54,7 +54,9 @@ export function initServiceWorker(): void {
     onRegisteredSW(_swUrl, registration) {
       if (!registration) return
 
-      // Check for updates every 60 minutes
+      // Check for updates every 60 minutes.
+      // Intentional app-lifetime interval — not a leak. SW registration is a
+      // singleton called once from main.tsx; the interval runs until page unload.
       setInterval(() => {
         registration.update()
       }, 60 * 60 * 1000)
