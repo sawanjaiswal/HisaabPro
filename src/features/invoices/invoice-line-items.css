@@ -254,7 +254,7 @@
 }
 
 [data-theme="dark"] .product-search-panel {
-  background: rgba(27, 99, 105, 0.1);
+  background: var(--overlay-primary-10);
   border-color: var(--color-primary-700);
 }
 

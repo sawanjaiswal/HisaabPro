@@ -82,14 +82,14 @@
 .scan-progress-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--backdrop-medium);
   animation: scan-line 2s ease-in-out infinite;
 }
 
 @keyframes scan-line {
-  0% { background: linear-gradient(180deg, rgba(27, 99, 105, 0.3) 0%, transparent 20%, transparent 100%); }
-  50% { background: linear-gradient(180deg, transparent 0%, transparent 40%, rgba(27, 99, 105, 0.3) 50%, transparent 60%, transparent 100%); }
-  100% { background: linear-gradient(180deg, transparent 0%, transparent 80%, rgba(27, 99, 105, 0.3) 100%); }
+  0% { background: linear-gradient(180deg, var(--overlay-primary-scan) 0%, transparent 20%, transparent 100%); }
+  50% { background: linear-gradient(180deg, transparent 0%, transparent 40%, var(--overlay-primary-scan) 50%, transparent 60%, transparent 100%); }
+  100% { background: linear-gradient(180deg, transparent 0%, transparent 80%, var(--overlay-primary-scan) 100%); }
 }
 
 .scan-progress-info {
@@ -403,7 +403,7 @@
 @media (prefers-reduced-motion: reduce) {
   .scan-progress-overlay {
     animation: none;
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--backdrop-medium);
   }
 
   .scan-progress-bar-fill {

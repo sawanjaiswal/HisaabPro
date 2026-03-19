@@ -259,19 +259,19 @@
 .dashboard-txn-status--paid {
   color: var(--color-success-700);
   background: var(--color-success-50);
-  border: 1px solid rgba(34, 197, 94, 0.2);
+  border: 1px solid var(--overlay-success-20);
 }
 
 .dashboard-txn-status--partial {
   color: var(--color-warning-700);
   background: var(--color-warning-50);
-  border: 1px solid rgba(245, 158, 11, 0.2);
+  border: 1px solid var(--overlay-warning-pending-20);
 }
 
 .dashboard-txn-status--unpaid {
   color: var(--color-error-700);
   background: var(--color-error-50);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  border: 1px solid var(--overlay-error-20);
 }
 
 .dashboard-txn-mode {
@@ -384,21 +384,21 @@
 
 /* Dark status pills */
 [data-theme="dark"] .dashboard-txn-status--paid {
-  background: rgba(34, 197, 94, 0.15);
+  background: var(--overlay-success-15);
   color: var(--color-success-500);
-  border-color: rgba(34, 197, 94, 0.25);
+  border-color: var(--overlay-success-25);
 }
 
 [data-theme="dark"] .dashboard-txn-status--partial {
-  background: rgba(245, 158, 11, 0.15);
+  background: var(--overlay-warning-pending-25);
   color: var(--color-warning-500);
-  border-color: rgba(245, 158, 11, 0.25);
+  border-color: var(--overlay-warning-pending-25);
 }
 
 [data-theme="dark"] .dashboard-txn-status--unpaid {
-  background: rgba(239, 68, 68, 0.15);
+  background: var(--overlay-error-10);
   color: var(--color-error-500);
-  border-color: rgba(239, 68, 68, 0.25);
+  border-color: var(--overlay-error-25);
 }
 
 /* Dark left border colors — green = inflow, red = outflow */

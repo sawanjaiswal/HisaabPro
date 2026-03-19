@@ -88,7 +88,7 @@
   width: 100%;
   max-height: 90dvh;
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  box-shadow: 0 -8px 32px rgba(26, 25, 23, 0.12), 0 -2px 8px rgba(26, 25, 23, 0.06);
+  box-shadow: var(--shadow-drawer-bottom);
 }
 
 .drawer-panel[data-state="open"] {
@@ -113,10 +113,7 @@
     max-height: 85vh;
     border-radius: var(--radius-xl);
     transform: translate(-50%, -50%);
-    box-shadow:
-      0 20px 60px rgba(26, 25, 23, 0.15),
-      0 8px 24px rgba(26, 25, 23, 0.08),
-      0 0 0 1px rgba(26, 25, 23, 0.04);
+    box-shadow: var(--shadow-drawer-desktop);
   }
 
   /* Override mobile slide animations with modal animations on desktop */
@@ -169,16 +166,13 @@
 
 /* Panel shadow — dark-adapted mobile bottom sheet */
 [data-theme="dark"] .drawer-panel {
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4), 0 -2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-drawer-bottom);
 }
 
 /* Panel shadow — dark-adapted desktop modal */
 @media (min-width: 768px) {
   [data-theme="dark"] .drawer-panel {
-    box-shadow:
-      0 20px 60px rgba(0, 0, 0, 0.5),
-      0 8px 24px rgba(0, 0, 0, 0.4),
-      0 0 0 1px rgba(43, 51, 66, 0.4);
+    box-shadow: var(--shadow-drawer-desktop);
   }
 }
 

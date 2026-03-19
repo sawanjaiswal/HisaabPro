@@ -116,7 +116,7 @@
   background: var(--color-gray-0);
   border-radius: var(--radius-full);
   transition: transform var(--duration-fast) var(--ease-default);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-toggle-knob);
 }
 
 .sku-toggle-switch.active::after {
@@ -132,5 +132,5 @@
 
 /* Toggle switch knob shadow — lighter in dark mode */
 [data-theme="dark"] .sku-toggle-switch::after {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-toggle-knob);
 }

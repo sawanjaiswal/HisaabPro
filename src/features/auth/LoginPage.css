@@ -24,7 +24,7 @@
 
 .login-page__title {
   font-family: var(--font-display);
-  font-size: 1.875rem;
+  font-size: var(--fs-3-5xl);
   font-weight: 700;
   color: var(--color-primary-600);
   margin-bottom: var(--space-2);
@@ -214,11 +214,11 @@
 /* ─── Dark Theme ─────────────────────────────────────────────────────────── */
 
 [data-theme="dark"] .login-page__input:focus {
-  box-shadow: 0 0 0 3px rgba(63, 174, 214, 0.15);
+  box-shadow: var(--shadow-focus-accent);
 }
 
 [data-theme="dark"] .auth-otp__digit:focus {
-  box-shadow: 0 0 0 3px rgba(63, 174, 214, 0.15);
+  box-shadow: var(--shadow-focus-accent);
 }
 
 /* 360px+: larger OTP inputs and card padding */

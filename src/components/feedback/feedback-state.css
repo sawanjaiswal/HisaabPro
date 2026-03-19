@@ -33,7 +33,7 @@
 .feedback-btn--primary {
   background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
   color: var(--color-white-inverse);
-  box-shadow: 0 4px 14px rgba(15, 54, 56, 0.25);
+  box-shadow: var(--shadow-teal-btn);
 }
 
 .feedback-btn--primary:active {
@@ -47,7 +47,7 @@
 }
 
 .feedback-btn--ghost:active {
-  background: rgba(11, 79, 94, 0.05);
+  background: var(--overlay-teal-05);
 }
 
 /* ─── FeedbackState base ─────────────────────────────────────────────────── */
@@ -118,5 +118,5 @@
 }
 
 [data-theme="dark"] .feedback-btn--ghost:active {
-  background: rgba(63, 174, 214, 0.08);
+  background: var(--overlay-accent-dark-08);
 }

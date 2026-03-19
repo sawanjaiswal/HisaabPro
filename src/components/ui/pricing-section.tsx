@@ -38,7 +38,7 @@ const defaultTiers: PricingTier[] = [
     price: { monthly: 199, yearly: 1999 },
     originalPrice: { monthly: 399, yearly: 3999 },
     yearlySavings: 2000,
-    description: "Perfect for solo business owners",
+    description: "Everything a solo owner needs to look professional",
     highlight: false,
     badge: undefined,
     features: [
@@ -57,7 +57,7 @@ const defaultTiers: PricingTier[] = [
     price: { monthly: 499, yearly: 4999 },
     originalPrice: { monthly: 799, yearly: 7999 },
     yearlySavings: 3000,
-    description: "For growing businesses with a team",
+    description: "For businesses ready to add staff and grow",
     highlight: true,
     badge: "Most Popular",
     features: [
@@ -76,7 +76,7 @@ const defaultTiers: PricingTier[] = [
     price: { monthly: 999, yearly: 9999 },
     originalPrice: { monthly: 1499, yearly: 14999 },
     yearlySavings: 5000,
-    description: "For multi-location businesses",
+    description: "Unlimited everything — for serious operations",
     highlight: false,
     badge: "Best Value",
     features: [

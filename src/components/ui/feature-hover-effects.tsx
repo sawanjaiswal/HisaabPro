@@ -6,13 +6,13 @@ export function FeaturesSectionWithHoverEffects() {
     {
       title: "1. Download",
       description:
-        "Get HisaabPro from Play Store or App Store. Takes 30 seconds. 14-day free trial — no credit card needed.",
+        "Get HisaabPro from Play Store or App Store. 30 seconds to install, 14 days free — no credit card.",
       icon: <Download />,
     },
     {
       title: "2. Setup",
       description:
-        "Add your business name, logo, and first customer. Everything ready in under 2 minutes.",
+        "Add your business name, logo, and first customer. You're ready to bill in under 2 minutes.",
       icon: <Settings />,
     },
     {
@@ -24,7 +24,7 @@ export function FeaturesSectionWithHoverEffects() {
     {
       title: "4. Grow",
       description:
-        "Add staff, track payments, run reports. Your entire business — organized, offline, always available.",
+        "Add staff, track payments, generate reports. Your entire business — organized, offline, always in your pocket.",
       icon: <TrendingUp />,
     },
   ];
@@ -32,7 +32,7 @@ export function FeaturesSectionWithHoverEffects() {
     <section className="py-16 md:py-24">
       <div className="text-center mb-12 px-6">
         <h2 className="text-4xl font-semibold lg:text-5xl">How it works</h2>
-        <p className="mt-4 text-lg lp-text-muted">From download to your first invoice in under 5 minutes.</p>
+        <p className="mt-4 text-lg lp-text-muted">Download to first invoice in under 5 minutes. Seriously.</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 relative z-10 max-w-7xl mx-auto">
         {features.map((feature, index) => (

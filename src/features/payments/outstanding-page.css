@@ -227,7 +227,7 @@
 }
 
 [data-theme="dark"] .outstanding-summary-card {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-overlay-fab);
 }
 
 /* ─── Reduced Motion ─────────────────────────────────────────────────────── */

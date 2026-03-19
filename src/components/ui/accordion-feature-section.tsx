@@ -26,35 +26,35 @@ const defaultFeatures: FeatureItem[] = [
     title: "Is there a free trial?",
     image: "",
     description:
-      "Yes — 14 days with full access to any plan. No credit card required. Pick a plan after your trial ends, or cancel with no questions asked.",
+      "Yes — 14 days, full access, any plan. No credit card required. Keep going after the trial or cancel — no questions asked.",
   },
   {
     id: 2,
     title: "Does it work without internet?",
     image: "",
     description:
-      "100% offline. Create invoices, record payments, manage inventory — all without internet. Your data syncs automatically when you're back online. Zero data loss, ever.",
+      "100%. Create invoices, record payments, manage inventory — all without internet. Your data syncs automatically when you reconnect. Zero data loss, guaranteed.",
   },
   {
     id: 3,
     title: "Is my data safe?",
     image: "",
     description:
-      "Your data is encrypted end-to-end and backed up to the cloud. Even if you lose your phone, log in on any new device and everything is restored. We never sell your data.",
+      "Encrypted end-to-end and backed up to the cloud automatically. Lose your phone? Log in on a new device — everything is restored. We never share or sell your data.",
   },
   {
     id: 4,
     title: "Can I share invoices on WhatsApp?",
     image: "",
     description:
-      "Yes! Generate a PDF invoice and share it on WhatsApp, Email, or print it — all in 2 taps from the invoice screen. Customers receive a professional PDF with your business branding.",
+      "Absolutely. Generate a PDF and share it on WhatsApp, Email, or print — 2 taps from the invoice screen. Your customers get a professional PDF with your business name, logo, and branding.",
   },
   {
     id: 5,
     title: "How is this different from Vyapar or MyBillBook?",
     image: "",
     description:
-      "HisaabPro works fully offline (not partially), has zero data loss by design, a modern premium UI, custom staff role builder, and faster WhatsApp support. Plus transparent pricing — no hidden charges.",
+      "HisaabPro works fully offline (not partially), guarantees zero data loss, has a modern premium UI that your customers will notice, a custom staff role builder, and real WhatsApp support that replies in hours — not months. Plus transparent pricing with no hidden charges.",
   },
 ];
 
@@ -66,7 +66,7 @@ const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
       <div className="container mx-auto">
         <div className="mb-12 text-center">
           <h2 className="text-4xl font-semibold lg:text-5xl" style={{ color: 'var(--lp-text)' }}>
-            Frequently asked questions
+            Got questions?
           </h2>
           <p className="mt-4 text-lg lp-text-muted">
             Everything you need to know before you start.

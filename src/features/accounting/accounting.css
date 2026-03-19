@@ -609,7 +609,7 @@
 /* ── Dark Theme ──────────────────────────────────────────────────── */
 
 [data-theme="dark"] .acc-group {
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(43, 51, 66, 0.4);
+  box-shadow: var(--shadow-card-dark-sm);
 }
 
 [data-theme="dark"] .acc-group-header:active {
@@ -629,11 +629,11 @@
 }
 
 [data-theme="dark"] .je-card {
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(43, 51, 66, 0.4);
+  box-shadow: var(--shadow-card-dark-sm);
 }
 
 [data-theme="dark"] .tb-table {
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(43, 51, 66, 0.4);
+  box-shadow: var(--shadow-card-dark-sm);
 }
 
 [data-theme="dark"] .tb-th {
@@ -660,7 +660,7 @@
 }
 
 [data-theme="dark"] .fy-close-card {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(43, 51, 66, 0.3);
+  box-shadow: var(--shadow-card-dark);
 }
 
 [data-theme="dark"] .fy-close-card__header {
@@ -673,5 +673,5 @@
 }
 
 [data-theme="dark"] .fy-card {
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(43, 51, 66, 0.4);
+  box-shadow: var(--shadow-card-dark-sm);
 }

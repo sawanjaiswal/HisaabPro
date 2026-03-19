@@ -136,7 +136,7 @@ const Navigation = React.memo(({ isDark, onToggleTheme }: ThemeProps) => {
               type="button"
               onClick={onToggleTheme}
               aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-              className="flex items-center justify-center w-9 h-9 rounded-full lp-text-secondary transition-all"
+              className="flex items-center justify-center w-9 h-9 rounded-full lp-text-secondary transition-all cursor-pointer"
               style={{ backgroundColor: 'transparent' }}
               onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--lp-bg-elevated)'}
               onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
@@ -153,13 +153,13 @@ const Navigation = React.memo(({ isDark, onToggleTheme }: ThemeProps) => {
               type="button"
               onClick={onToggleTheme}
               aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-              className="flex items-center justify-center w-9 h-9 rounded-full lp-text-secondary transition-all"
+              className="flex items-center justify-center w-9 h-9 rounded-full lp-text-secondary transition-all cursor-pointer"
             >
               {isDark ? <Sun size={16} /> : <Moon size={16} />}
             </button>
             <button
               type="button"
-              className="lp-text"
+              className="lp-text cursor-pointer"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -216,11 +216,11 @@ const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
 
       {/* h1 gradient controlled by landing.css tokens */}
       <h1 className="text-center max-w-3xl px-6 leading-tight mb-6 font-medium">
-        Billing App That Never<br />Goes Offline
+        Your Entire Business.<br />In Your Pocket.
       </h1>
 
       <p className="text-sm md:text-base text-center max-w-2xl px-6 mb-10 lp-text-muted">
-        Create GST invoices, manage inventory, track payments, and send bills on WhatsApp — works even without internet. Trusted by 10,000+ Indian businesses.
+        Invoices, inventory, payments, WhatsApp sharing — all offline, all from your phone. No WiFi? No problem.
       </p>
 
       <div id="hero-cta" className="flex items-center gap-4 relative z-10 mb-16">

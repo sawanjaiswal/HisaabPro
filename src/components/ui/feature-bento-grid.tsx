@@ -7,7 +7,7 @@ export function FeaturesSectionWithBentoGrid() {
     {
       title: "Smart Invoicing",
       description:
-        "7 document types: Sale, Purchase, Estimate, Proforma, Challan, Credit Note, Debit Note. Auto-numbered, WhatsApp-ready. Your CA will love the organized records.",
+        "Sale, Purchase, Estimate, Proforma, Challan, Credit Note, Debit Note — 7 document types, auto-numbered, WhatsApp-ready. Your CA will thank you.",
       skeleton: <SkeletonOne />,
       className:
         "col-span-1 md:col-span-4 lg:col-span-4 border-b md:border-r",
@@ -15,7 +15,7 @@ export function FeaturesSectionWithBentoGrid() {
     {
       title: "Payment Tracking",
       description:
-        "See who owes you at a glance. Send WhatsApp reminders in one tap. Track cash, UPI, cheque, and bank transfer \u2014 all in one place.",
+        "See who owes you at a glance. Send WhatsApp reminders in one tap. Cash, UPI, cheque, bank transfer \u2014 every rupee tracked.",
       skeleton: <SkeletonTwo />,
       className:
         "col-span-1 md:col-span-2 lg:col-span-2 border-b",
@@ -23,7 +23,7 @@ export function FeaturesSectionWithBentoGrid() {
     {
       title: "Inventory Management",
       description:
-        "Real-time stock tracking with low stock alerts, party-wise pricing, and automatic updates on every sale. No more end-of-day counting.",
+        "Real-time stock with low-stock alerts and party-wise pricing. Every sale auto-updates inventory. No more end-of-day counting.",
       skeleton: <SkeletonThree />,
       className:
         "col-span-1 md:col-span-3 lg:col-span-3 border-b md:border-r",
@@ -31,7 +31,7 @@ export function FeaturesSectionWithBentoGrid() {
     {
       title: "Reports & Insights",
       description:
-        "Sales reports, stock summary, party statements, and profit/loss \u2014 all with one tap. Download PDF or share directly with your CA on WhatsApp.",
+        "Sales, stock, party statements, profit/loss \u2014 one tap each. Download the PDF or share it with your CA on WhatsApp.",
       skeleton: <SkeletonFour />,
       className:
         "col-span-1 md:col-span-3 lg:col-span-3 border-b md:border-none",
@@ -298,7 +298,7 @@ export const SkeletonThree = () => {
           {products.map((p) => (
             <MockCard key={p.name} className="p-3">
               <div className="flex items-start justify-between mb-2">
-                <Package size={14} style={{ color: 'var(--lp-text-muted)' }} />
+                <Package size={14} style={{ color: 'var(--lp-text-muted)' }} aria-hidden="true" />
                 {p.status === "low" && (
                   <span
                     className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full"

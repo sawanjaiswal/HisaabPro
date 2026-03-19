@@ -67,7 +67,7 @@
               box-shadow var(--duration-fast) var(--ease-default);
   -webkit-tap-highlight-color: transparent;
   min-height: 140px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-subtle);
 }
 
 .greeting-card:active {
@@ -84,14 +84,14 @@
   font-weight: 600;
   color: var(--color-gray-0);
   text-align: center;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  text-shadow: var(--shadow-text-dark);
 }
 
 .greeting-card-occasion {
   font-size: var(--fs-2xs);
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.85);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  color: var(--overlay-white-85);
+  text-shadow: var(--shadow-badge-subtle);
 }
 
 /* --- Template Editor --- */
@@ -107,7 +107,7 @@
   gap: var(--space-3);
   padding: var(--space-4);
   border-radius: var(--radius-xl);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-subtle);
 }
 
 .greeting-preview-emoji {
@@ -119,7 +119,7 @@
   font-size: var(--fs-xl);
   font-weight: 600;
   color: var(--color-gray-0);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  text-shadow: var(--shadow-text-dark);
 }
 
 .greeting-editor-field {

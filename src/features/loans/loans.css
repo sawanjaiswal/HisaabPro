@@ -329,15 +329,15 @@
 }
 
 [data-theme="dark"] .loan-card {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(43, 51, 66, 0.3);
+  box-shadow: var(--shadow-card-dark);
 }
 
 [data-theme="dark"] .loan-detail__hero {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(43, 51, 66, 0.3);
+  box-shadow: var(--shadow-card-dark);
 }
 
 [data-theme="dark"] .loan-txn-card {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(43, 51, 66, 0.3);
+  box-shadow: var(--shadow-card-dark);
 }
 
 [data-theme="dark"] .loan-drawer__input,

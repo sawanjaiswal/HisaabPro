@@ -73,7 +73,7 @@
   border-top: 1px solid var(--color-gray-100);
   padding: var(--space-3) var(--space-5);
   z-index: var(--z-sticky);
-  box-shadow: 0 -2px 8px rgba(26, 25, 23, 0.06);
+  box-shadow: var(--shadow-bar-top);
   padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
 }
 
@@ -95,5 +95,5 @@
 
 /* Save bar shadow — swap warm rgba for dark-adapted shadow */
 [data-theme="dark"] .payment-save-bar {
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-bar-bottom);
 }

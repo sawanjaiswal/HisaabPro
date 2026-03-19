@@ -32,7 +32,7 @@
   bottom: 0;
   border-radius: var(--radius-lg);
   background: linear-gradient(160deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
-  box-shadow: 0 2px 8px rgba(11, 79, 94, 0.25);
+  box-shadow: var(--shadow-teal-indicator);
   transition: left 0.25s cubic-bezier(0.22, 1, 0.36, 1),
               width 0.25s cubic-bezier(0.22, 1, 0.36, 1);
   z-index: 0;
@@ -55,7 +55,7 @@
   -webkit-tap-highlight-color: transparent;
   transition: all 0.2s ease;
   padding: 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-key-btn);
 }
 
 .calc-gst-rate-btn:active {
@@ -91,7 +91,7 @@
 }
 
 .calc-gst-rate-btn--active .calc-gst-rate-suffix {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--overlay-white-70);
 }
 
 /* Inclusive/Exclusive toggle */
@@ -114,14 +114,14 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: all 0.15s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-key-btn);
 }
 
 .calc-gst-mode-toggle--active {
   background: var(--color-primary-50);
   border-color: var(--color-primary-300);
   color: var(--color-primary-700);
-  box-shadow: 0 1px 4px rgba(11, 79, 94, 0.12);
+  box-shadow: var(--shadow-teal-gst-mode);
 }
 
 .calc-gst-mode-toggle:active {
@@ -151,7 +151,7 @@
 }
 
 .calculator-gst-item--gst {
-  background: linear-gradient(180deg, rgba(11, 79, 94, 0.04) 0%, rgba(11, 79, 94, 0.01) 100%);
+  background: linear-gradient(180deg, var(--overlay-teal-04) 0%, var(--overlay-teal-01) 100%);
 }
 
 .calculator-gst-item-label {

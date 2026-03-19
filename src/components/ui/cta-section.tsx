@@ -45,11 +45,10 @@ export function CallToAction() {
       {/* Heading */}
       <div className="space-y-3 text-center">
         <h2 className="font-bold">
-          Your kirana store deserves software that never sleeps
+          Your business deserves billing that never stops
         </h2>
         <p className="text-base lp-text-body max-w-xl mx-auto">
-          Join 10,000+ Indian business owners who save 2+ hours daily on billing.
-          14-day free trial, no credit card.
+          Join 10,000+ Indian business owners who save 2+ hours daily on billing, inventory &amp; payments. 14-day free trial, no credit card.
         </p>
       </div>
 

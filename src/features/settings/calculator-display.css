@@ -75,7 +75,7 @@
   height: 18px;
   border-radius: 50%;
   background: var(--color-gray-0);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-toggle-knob-sm);
   transition: transform 0.2s ease;
 }
 

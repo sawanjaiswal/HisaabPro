@@ -84,7 +84,7 @@
 
 .dashboard-starred-avatar {
   border: 3px solid var(--color-gray-0);
-  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-avatar-subtle);
 }
 
 /* Avatar colors now handled by shared PartyAvatar component */
@@ -180,10 +180,10 @@
 
 [data-theme="dark"] .dashboard-starred-amount {
   color: var(--color-primary-500);
-  background: rgba(63, 174, 214, 0.12);
+  background: var(--overlay-accent-dark-12);
 }
 
 [data-theme="dark"] .dashboard-starred-avatar {
   border-color: var(--color-gray-100);
-  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-avatar-subtle);
 }

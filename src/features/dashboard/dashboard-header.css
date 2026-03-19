@@ -24,7 +24,7 @@
 
 /* Scrolled state — filled background so content doesn't show through */
 .dashboard-header.is-scrolled {
-  background: rgba(249, 249, 237, 0.98);
+  background: var(--dashboard-scrolled-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   box-shadow: var(--shadow-sm);
@@ -56,7 +56,7 @@
   border-radius: var(--radius-full);
   background: linear-gradient(135deg, var(--dash-teal-start) 0%, var(--dash-teal-end) 100%);
   border: 2.5px solid var(--color-gray-0);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-avatar-subtle);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -90,7 +90,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-badge-subtle);
 }
 
 /* Title — absolutely centered regardless of side content widths */
@@ -110,7 +110,7 @@
   width: 44px;
   height: 44px;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--overlay-white-85);
   border: none;
   display: flex;
   align-items: center;
@@ -121,7 +121,7 @@
   flex-shrink: 0;
   transition: background var(--duration-fast) var(--ease-default),
               transform var(--duration-fast) var(--ease-default);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-icon-btn-light);
 }
 
 .dashboard-header-icon-btn:active {
@@ -151,10 +151,10 @@
 }
 
 [data-theme="dark"] .dashboard-header.is-scrolled {
-  background: rgba(20, 25, 34, 0.95);
+  background: var(--header-glass-bg-dark);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-bar-bottom);
 }
 
 [data-theme="dark"] .dashboard-header-avatar-inner {
@@ -166,9 +166,9 @@
 }
 
 [data-theme="dark"] .dashboard-header-icon-btn {
-  background: rgba(26, 32, 48, 0.85);
+  background: var(--header-icon-btn-bg-dark);
   color: var(--color-gray-700);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(43, 51, 66, 0.3);
+  box-shadow: var(--shadow-icon-btn-light);
 }
 
 [data-theme="dark"] .dashboard-header-icon-btn:active {

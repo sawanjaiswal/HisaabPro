@@ -43,7 +43,7 @@
   height: 32px;
   border: none;
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--overlay-white-15);
   color: var(--color-white-inverse);
   cursor: pointer;
   flex-shrink: 0;
@@ -51,7 +51,7 @@
 }
 
 .bulk-bar-close:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--overlay-white-25);
 }
 
 .bulk-bar-count {
@@ -88,9 +88,9 @@
   gap: var(--space-1);
   padding: var(--space-2) var(--space-3);
   min-height: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--overlay-white-20);
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--overlay-white-10);
   color: var(--color-white-inverse);
   font-size: var(--fs-xs);
   font-weight: 600;
@@ -100,7 +100,7 @@
 }
 
 .bulk-bar-action:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--overlay-white-20);
 }
 
 .bulk-bar-action:disabled {
@@ -110,11 +110,11 @@
 
 .bulk-bar-action--danger {
   border-color: var(--color-error-500);
-  background: rgba(239, 68, 68, 0.2);
+  background: var(--overlay-error-20);
 }
 
 .bulk-bar-action--danger:hover {
-  background: rgba(239, 68, 68, 0.35);
+  background: var(--overlay-error-35);
 }
 
 /* Base: hide labels on small screens, keep icons */

@@ -193,10 +193,10 @@ const TestimonialsSection = () => {
           </div>
 
           <h2 id="testimonials-heading" className="text-4xl md:text-5xl font-extrabold tracking-tight mt-6 text-center">
-            Trusted by Indian businesses
+            Loved by 10,000+ business owners
           </h2>
           <p className="text-center mt-5 text-lg leading-relaxed max-w-sm lp-text-muted">
-            See why business owners are switching to HisaabPro.
+            From kirana stores to wholesalers — hear why they switched.
           </p>
         </motion.div>
 

@@ -59,7 +59,7 @@
   justify-content: center;
   border-radius: var(--radius-lg);
   color: var(--color-primary-500);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-subtle);
   background: var(--icon-bg);
   margin-bottom: var(--space-1);
 }
@@ -93,7 +93,7 @@
 [data-theme="dark"] .more-grid-icon {
   --icon-bg: var(--color-gray-100);
   color: var(--color-primary-400);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-subtle);
 }
 
 [data-theme="dark"] .more-grid-label {

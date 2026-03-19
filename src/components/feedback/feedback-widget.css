@@ -6,12 +6,12 @@
   inset: 0;
   display: flex;
   flex-direction: column;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--backdrop-feedback);
   padding-top: env(safe-area-inset-top, 0px);
 }
 
 [data-theme="dark"] .feedback-backdrop {
-  background: rgba(0, 0, 0, 0.75);
+  background: var(--backdrop-feedback);
 }
 
 /* ─── Modal ────────────────────────────────────────────────────────────────── */
@@ -23,7 +23,7 @@
   background: var(--color-gray-0);
   border-radius: var(--radius-xl);
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-overlay-toast);
 }
 
 /* ─── Header ───────────────────────────────────────────────────────────────── */
@@ -177,7 +177,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-overlay-fab);
   -webkit-tap-highlight-color: transparent;
   touch-action: none;
   user-select: none;
@@ -185,7 +185,7 @@
 }
 
 @keyframes feedbackPulse {
-  0%   { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(0, 0, 0, 0.3); }
-  50%  { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3), 0 0 0 10px rgba(0, 0, 0, 0); }
-  100% { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(0, 0, 0, 0); }
+  0%   { box-shadow: var(--shadow-overlay-fab), 0 0 0 0 var(--backdrop-medium); }
+  50%  { box-shadow: var(--shadow-overlay-fab), 0 0 0 10px transparent; }
+  100% { box-shadow: var(--shadow-overlay-fab), 0 0 0 0 transparent; }
 }
