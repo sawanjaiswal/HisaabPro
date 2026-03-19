@@ -80,4 +80,6 @@ export const ROUTES = {
   SETTINGS_UNITS: '/settings/units',
   SETTINGS_PERMISSIONS: '/settings/permissions',
   JOIN_BUSINESS: '/join',
+  ADMIN_COUPONS: '/admin/coupons',
+  ADMIN_COUPON_DETAIL: '/admin/coupons/:id',
 } as const

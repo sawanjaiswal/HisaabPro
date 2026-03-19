@@ -8,6 +8,8 @@ import {
   RATE_LIMIT_OTP_MAX,
   RATE_LIMIT_SENSITIVE_WINDOW_MS,
   RATE_LIMIT_SENSITIVE_MAX,
+  RATE_LIMIT_COUPON_VALIDATE_WINDOW_MS,
+  RATE_LIMIT_COUPON_VALIDATE_MAX,
 } from '../config/security.js'
 import logger from '../lib/logger.js'
 
@@ -216,4 +218,13 @@ export const sensitiveMutationLimiter = createRateLimiter({
   message: 'Too many mutating requests. Please slow down.',
   keyFn: (req) => `rl:user:${req.user?.userId ?? req.ip ?? 'unknown'}`,
   eventName: 'rate_limit.sensitive_hit',
+})
+
+/** 10 req/min per authenticated user — coupon code validation (brute-force prevention) */
+export const couponValidateRateLimiter = createRateLimiter({
+  windowMs: RATE_LIMIT_COUPON_VALIDATE_WINDOW_MS,
+  max: RATE_LIMIT_COUPON_VALIDATE_MAX,
+  message: 'Too many coupon validation attempts. Please try again later.',
+  keyFn: (req) => `rl:coupon:${req.user?.userId ?? req.ip ?? 'unknown'}`,
+  eventName: 'rate_limit.coupon_validate_hit',
 })

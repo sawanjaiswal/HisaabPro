@@ -103,3 +103,11 @@ export const RATE_LIMIT_INVITE_WINDOW_MS = 60 * 1000
 
 /** Max invite acceptances per IP per window */
 export const RATE_LIMIT_INVITE_MAX = 5
+
+// --- Coupon validation ---
+
+/** Coupon validate rate limit window (ms) — 1 minute */
+export const RATE_LIMIT_COUPON_VALIDATE_WINDOW_MS = 60 * 1000
+
+/** Max coupon validation attempts per user per window */
+export const RATE_LIMIT_COUPON_VALIDATE_MAX = 10

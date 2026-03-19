@@ -22,6 +22,13 @@
  *
  *   GET    /api/admin/settings            — all settings
  *   PUT    /api/admin/settings/:key       — update setting (SUPER_ADMIN)
+ *
+ *   POST   /api/admin/coupons             — create coupon (SUPER_ADMIN)
+ *   POST   /api/admin/coupons/bulk        — bulk generate (SUPER_ADMIN)
+ *   GET    /api/admin/coupons             — list coupons
+ *   GET    /api/admin/coupons/:id         — coupon detail
+ *   PATCH  /api/admin/coupons/:id         — update coupon (SUPER_ADMIN)
+ *   DELETE /api/admin/coupons/:id         — deactivate (SUPER_ADMIN)
  */
 
 import { Router } from 'express'
@@ -30,6 +37,7 @@ import adminUsersRoutes from './admin-users.js'
 import adminBusinessesRoutes from './admin-businesses.js'
 import adminDashboardRoutes from './admin-dashboard.js'
 import adminSettingsRoutes from './admin-settings.js'
+import adminCouponsRoutes from './admin-coupons.js'
 
 const router = Router()
 
@@ -38,5 +46,6 @@ router.use('/users', adminUsersRoutes)
 router.use('/businesses', adminBusinessesRoutes)
 router.use('/dashboard', adminDashboardRoutes)
 router.use('/settings', adminSettingsRoutes)
+router.use('/coupons', adminCouponsRoutes)
 
 export default router

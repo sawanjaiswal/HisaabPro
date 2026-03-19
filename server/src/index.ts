@@ -45,6 +45,7 @@ import chequeRoutes from './routes/cheques.js'
 import financialReportRoutes from './routes/financial-reports.js'
 import loanRoutes from './routes/loans.js'
 import fyClosureRoutes from './routes/fy-closure.js'
+import couponRoutes from './routes/coupons.js'
 import adminRoutes from './routes/admin/index.js'
 import logger from './lib/logger.js'
 
@@ -152,6 +153,9 @@ app.use('/api/einvoice', einvoiceRoutes)
 app.use('/api/ewaybill', ewaybillRoutes)
 app.use('/api/recurring', recurringRoutes)
 app.use('/api/currency', currencyRoutes)
+
+// Coupon / Discount Code System
+app.use('/api/coupons', couponRoutes)
 
 // Phase 3 — Accounting & Finance
 app.use('/api/accounting', accountingRoutes)

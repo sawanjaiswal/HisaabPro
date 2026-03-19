@@ -90,6 +90,8 @@ const SmartGreetings = lazy(() => import('@/features/smart-greetings/SmartGreeti
 const Units = lazy(() => import('@/features/units/UnitsPage'))
 const JoinBusiness = lazy(() => import('@/features/business/JoinBusinessPage'))
 const Landing = lazy(() => import('@/features/landing/LandingPage'))
+const AdminCoupons = lazy(() => import('@/features/admin/coupons/CouponsPage'))
+const AdminCouponDetail = lazy(() => import('@/features/admin/coupons/CouponDetailPage'))
 const NotFound = lazy(() => import('@/components/feedback/NotFoundPage'))
 
 /** Route-level ErrorBoundary + Suspense wrapper for individual pages */
@@ -204,6 +206,8 @@ export function App() {
         <Route path={ROUTES.DATA_IMPORT} element={<PageRoute><ProtectedRoute><DataImport /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SMART_GREETINGS} element={<PageRoute><ProtectedRoute><SmartGreetings /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.JOIN_BUSINESS} element={<PageRoute><ProtectedRoute><JoinBusiness /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.ADMIN_COUPONS} element={<PageRoute><ProtectedRoute><AdminCoupons /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.ADMIN_COUPON_DETAIL} element={<PageRoute><ProtectedRoute><AdminCouponDetail /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PUBLIC_LEDGER} element={<PageRoute><PublicLedger /></PageRoute>} />
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
       </Routes>
