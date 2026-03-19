@@ -1,55 +1,211 @@
-/* === Landing Page — fully isolate from app global styles === */
+/* ============================================================
+   LANDING PAGE DESIGN SYSTEM — Single Source of Truth (SSOT)
+   ============================================================
+   All landing page colors defined HERE. Components consume
+   var(--lp-*) tokens only. No hardcoded colors in components.
 
-/* Override all inherited app styles so 21st.dev components render exactly as designed */
+   Dark = default (landing starts dark). Light = html:not(.dark).
+   Tailwind's dark: variant uses @media prefers-color-scheme in v4,
+   so we DON'T use dark: classes — we use CSS variables instead.
+   ============================================================ */
+
+/* === DARK THEME TOKENS (default) === */
 .landing-root {
-  font-size: 16px !important;
+  /* ---- Page ---- */
+  --lp-bg: #000000;
+  --lp-bg-surface: #0a0a0a;
+  --lp-bg-card: #171717;
+  --lp-bg-elevated: #262626;
+  --lp-bg-nav: rgba(0, 0, 0, 0.8);
+  --lp-bg-mobile-menu: rgba(0, 0, 0, 0.95);
+  --lp-bg-badge: rgba(38, 38, 38, 0.5);
+  --lp-bg-fade: #000000;
+
+  /* ---- Text ---- */
+  --lp-text: #ffffff;
+  --lp-text-secondary: rgba(255, 255, 255, 0.6);
+  --lp-text-muted: #a3a3a3;
+  --lp-text-body: #d4d4d4;
+  --lp-text-inverted: #000000;
+
+  /* ---- Headings (gradient) ---- */
+  --lp-heading-from: #ffffff;
+  --lp-heading-mid: #ffffff;
+  --lp-heading-to: rgba(255, 255, 255, 0.6);
+
+  /* ---- Brand / CTA ---- */
+  --lp-brand: #ffffff;
+  --lp-cta-bg: #ffffff;
+  --lp-cta-text: #000000;
+  --lp-cta-hover-bg: #f3f4f6;
+  --lp-accent: #3b82f6;
+
+  /* ---- Borders ---- */
+  --lp-border: #262626;
+  --lp-border-subtle: rgba(255, 255, 255, 0.1);
+  --lp-border-badge: #404040;
+  --lp-card-border: #262626;
+  --lp-card-img-border: #404040;
+
+  /* ---- Icons ---- */
+  --lp-icon: #a3a3a3;
+
+  /* ---- Hover effects ---- */
+  --lp-hover-from: #262626;
+  --lp-hover-bar: #404040;
+  --lp-hover-bar-active: #3b82f6;
+
+  /* ---- Avatar ---- */
+  --lp-avatar-ring: #262626;
+
+  /* ---- Pricing toggle ---- */
+  --lp-toggle-track-bg: rgba(38, 38, 38, 0.5);
+  --lp-toggle-track-border: #404040;
+  --lp-toggle-active-bg: #f5f5f5;
+  --lp-toggle-active-text: #171717;
+  --lp-toggle-inactive-text: #a3a3a3;
+
+  /* ---- Pricing cards ---- */
+  --lp-price-card-bg: rgba(38, 38, 38, 0.5);
+  --lp-price-card-border: #404040;
+  --lp-price-highlight-from: rgba(163, 163, 163, 0.15);
+  --lp-price-highlight-border: rgba(163, 163, 163, 0.2);
+  --lp-price-badge-bg: #f5f5f5;
+  --lp-price-badge-text: #171717;
+  --lp-price-btn-bg: #171717;
+  --lp-price-btn-text: #f5f5f5;
+  --lp-price-btn-border: #262626;
+  --lp-price-btn-hover-bg: #262626;
+  --lp-price-btn-hl-bg: #f5f5f5;
+  --lp-price-btn-hl-text: #171717;
+  --lp-price-btn-hl-hover-bg: #d4d4d4;
+  --lp-price-included: #f5f5f5;
+  --lp-price-excluded: #525252;
+  --lp-price-desc: #a3a3a3;
+  --lp-price-save: #34d399;
+
+  /* ---- Testimonial ---- */
+  --lp-testimonial-badge-bg: rgba(38, 38, 38, 0.5);
+  --lp-testimonial-badge-border: #404040;
+  --lp-testimonial-badge-text: #a3a3a3;
+
+  /* ---- Section tint ---- */
+  --lp-section-tint: rgba(255, 255, 255, 0.02);
+}
+
+/* === LIGHT THEME TOKENS === */
+html:not(.dark) .landing-root {
+  /* ---- Page ---- */
+  --lp-bg: #f0f7ff;
+  --lp-bg-surface: #f8fafc;
+  --lp-bg-card: #ffffff;
+  --lp-bg-elevated: #f3f4f6;
+  --lp-bg-nav: rgba(255, 255, 255, 0.92);
+  --lp-bg-mobile-menu: rgba(255, 255, 255, 0.95);
+  --lp-bg-badge: rgba(243, 244, 246, 0.7);
+  --lp-bg-fade: #f0f7ff;
+
+  /* ---- Text ---- */
+  --lp-text: #111827;
+  --lp-text-secondary: #4b5563;
+  --lp-text-muted: #6b7280;
+  --lp-text-body: #374151;
+  --lp-text-inverted: #ffffff;
+
+  /* ---- Headings (gradient) ---- */
+  --lp-heading-from: #0a0a0a;
+  --lp-heading-mid: #1a1a1a;
+  --lp-heading-to: rgba(26, 26, 26, 0.6);
+
+  /* ---- Brand / CTA ---- */
+  --lp-brand: #1e3a5f;
+  --lp-cta-bg: #1e3a5f;
+  --lp-cta-text: #ffffff;
+  --lp-cta-hover-bg: #2563eb;
+  --lp-accent: #2563eb;
+
+  /* ---- Borders ---- */
+  --lp-border: #e5e7eb;
+  --lp-border-subtle: rgba(0, 0, 0, 0.06);
+  --lp-border-badge: #d1d5db;
+  --lp-card-border: #e5e7eb;
+  --lp-card-img-border: #f3f4f6;
+
+  /* ---- Icons ---- */
+  --lp-icon: #4b5563;
+
+  /* ---- Hover effects ---- */
+  --lp-hover-from: #f3f4f6;
+  --lp-hover-bar: #d1d5db;
+  --lp-hover-bar-active: #2563eb;
+
+  /* ---- Avatar ---- */
+  --lp-avatar-ring: #f3f4f6;
+
+  /* ---- Pricing toggle ---- */
+  --lp-toggle-track-bg: #ffffff;
+  --lp-toggle-track-border: #e5e7eb;
+  --lp-toggle-active-bg: #111827;
+  --lp-toggle-active-text: #ffffff;
+  --lp-toggle-inactive-text: #6b7280;
+
+  /* ---- Pricing cards ---- */
+  --lp-price-card-bg: #ffffff;
+  --lp-price-card-border: #e5e7eb;
+  --lp-price-highlight-from: rgba(30, 58, 95, 0.06);
+  --lp-price-highlight-border: rgba(30, 58, 95, 0.25);
+  --lp-price-badge-bg: #111827;
+  --lp-price-badge-text: #ffffff;
+  --lp-price-btn-bg: #ffffff;
+  --lp-price-btn-text: #111827;
+  --lp-price-btn-border: #e5e7eb;
+  --lp-price-btn-hover-bg: #f9fafb;
+  --lp-price-btn-hl-bg: #111827;
+  --lp-price-btn-hl-text: #ffffff;
+  --lp-price-btn-hl-hover-bg: #1f2937;
+  --lp-price-included: #111827;
+  --lp-price-excluded: #9ca3af;
+  --lp-price-desc: #6b7280;
+  --lp-price-save: #059669;
+
+  /* ---- Testimonial ---- */
+  --lp-testimonial-badge-bg: rgba(243, 244, 246, 0.5);
+  --lp-testimonial-badge-border: #d1d5db;
+  --lp-testimonial-badge-text: #6b7280;
+
+  /* ---- Section tint ---- */
+  --lp-section-tint: rgba(0, 0, 0, 0.015);
+}
+
+
+/* ============================================================
+   BASE STYLES — applied via tokens
+   ============================================================ */
+
+/* Override app global styles so landing renders in isolation */
+.landing-root {
+  font-size: 1rem !important;
   font-family: 'Poppins', sans-serif;
   line-height: normal;
-  color: white;
-  background: black;
+  color: var(--lp-text);
+  background: var(--lp-bg);
   -webkit-font-smoothing: antialiased;
 }
 
-/* Kill the body cream gradient when landing page is shown */
 body:has(.landing-root) {
-  background: black !important;
-  color: white !important;
+  background: var(--lp-bg) !important;
+  color: var(--lp-text) !important;
 }
 
-/* Reset the desktop 18px font-size override */
 html:has(.landing-root) {
-  font-size: 16px !important;
+  font-size: 1rem !important;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+/* ============================================================
+   HEADING GRADIENT — Poppins + gradient fade
+   ============================================================ */
 
-/* === Testimonial Marquee === */
-@keyframes scroll-left {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-@keyframes scroll-right {
-  0% { transform: translateX(-50%); }
-  100% { transform: translateX(0); }
-}
-
-/* === Hide app-level overlays on landing page === */
-body:has(.landing-root) .calculator-overlay,
-body:has(.landing-root) .calculator-fab,
-body:has(.landing-root) .feedback-fab {
-  display: none !important;
-}
-
-/* === Standard Heading Styles — Poppins + gradient fade effect === */
 .landing-root h1,
 .landing-root h2,
 .landing-root h3,
@@ -57,118 +213,134 @@ body:has(.landing-root) .feedback-fab {
 .landing-root h5,
 .landing-root h6 {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(to bottom, #ffffff, #ffffff, rgba(255, 255, 255, 0.6));
+  background: linear-gradient(to bottom, var(--lp-heading-from), var(--lp-heading-mid), var(--lp-heading-to));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: -0.03em;
 }
 
-.landing-root h1 {
-  font-size: 3.5rem;
-  font-weight: 600;
-  line-height: 1.1;
-}
+.landing-root h1 { font-size: 3.5rem; font-weight: 600; line-height: 1.1; }
+.landing-root h2 { font-size: 2.5rem; font-weight: 600; line-height: 1.15; }
+.landing-root h3 { font-size: 1.75rem; font-weight: 600; line-height: 1.2; }
+.landing-root h4 { font-size: 1.25rem; font-weight: 500; line-height: 1.3; }
+.landing-root h5 { font-size: 1.125rem; font-weight: 500; line-height: 1.4; }
+.landing-root h6 { font-size: 1rem; font-weight: 500; line-height: 1.4; }
 
-.landing-root h2 {
-  font-size: 2.5rem;
-  font-weight: 600;
-  line-height: 1.15;
-}
-
-.landing-root h3 {
-  font-size: 1.75rem;
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-.landing-root h4 {
-  font-size: 1.25rem;
-  font-weight: 500;
-  line-height: 1.3;
-}
-
-.landing-root h5 {
-  font-size: 1.125rem;
-  font-weight: 500;
-  line-height: 1.4;
-}
-
-.landing-root h6 {
-  font-size: 1rem;
-  font-weight: 500;
-  line-height: 1.4;
-}
-
-/* === Pricing section — has light-bg cards, reset heading gradient === */
-.landing-root #pricing h2,
-.landing-root #pricing h3,
-.landing-root #pricing p {
+/* Reset heading gradient for sections with their own text colors */
+.landing-root .lp-heading-plain,
+.landing-root .lp-heading-plain h1,
+.landing-root .lp-heading-plain h2,
+.landing-root .lp-heading-plain h3,
+.landing-root .lp-heading-plain h4,
+.landing-root .lp-heading-plain h5,
+.landing-root .lp-heading-plain h6 {
   background: none;
   -webkit-background-clip: unset;
   -webkit-text-fill-color: unset;
   background-clip: unset;
+  color: var(--lp-text);
 }
 
-/* === Light mode overrides (html without .dark class) === */
-html:not(.dark) .landing-root {
-  color: #1F2937 !important;
-  background: linear-gradient(to bottom, #e8f4ff, #eff6ff, #f8fafc) !important;
+
+/* ============================================================
+   UTILITY CLASSES — powered by tokens
+   ============================================================ */
+
+/* Text */
+.lp-text          { color: var(--lp-text); }
+.lp-text-secondary { color: var(--lp-text-secondary); }
+.lp-text-muted     { color: var(--lp-text-muted); }
+.lp-text-body      { color: var(--lp-text-body); }
+.lp-text-brand     { color: var(--lp-brand); }
+.lp-text-inverted  { color: var(--lp-text-inverted); }
+
+/* Backgrounds */
+.lp-bg          { background-color: var(--lp-bg); }
+.lp-bg-card     { background-color: var(--lp-bg-card); }
+.lp-bg-elevated { background-color: var(--lp-bg-elevated); }
+.lp-bg-surface  { background-color: var(--lp-bg-surface); }
+
+/* Borders */
+.lp-border      { border-color: var(--lp-border); }
+.lp-border-card { border-color: var(--lp-card-border); }
+.lp-border-subtle { border-color: var(--lp-border-subtle); }
+
+/* CTA buttons */
+.lp-cta {
+  background-color: var(--lp-cta-bg);
+  color: var(--lp-cta-text);
+}
+.lp-cta:hover {
+  background-color: var(--lp-cta-hover-bg);
 }
 
-html:not(.dark) body:has(.landing-root) {
-  background: #e8f4ff !important;
-  color: #1F2937 !important;
+/* Ghost button */
+.lp-btn-ghost {
+  color: var(--lp-text-secondary);
+  background: transparent;
+}
+.lp-btn-ghost:hover {
+  background-color: var(--lp-bg-elevated);
+  color: var(--lp-text);
 }
 
-/* Light mode heading gradient — black fade (mirrors white-fade in dark mode) */
-html:not(.dark) .landing-root h1,
-html:not(.dark) .landing-root h2,
-html:not(.dark) .landing-root h3,
-html:not(.dark) .landing-root h4,
-html:not(.dark) .landing-root h5,
-html:not(.dark) .landing-root h6 {
-  background: linear-gradient(to bottom, #0a0a0a, #1a1a1a, rgba(26, 26, 26, 0.6));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* Nav */
+.lp-nav {
+  background: var(--lp-bg-nav);
+  border-color: var(--lp-border-subtle);
+}
+.lp-mobile-menu {
+  background: var(--lp-bg-mobile-menu);
+  border-color: var(--lp-border-subtle);
 }
 
-/* Light mode — reset pricing section (already done for dark, keep consistent) */
-html:not(.dark) .landing-root #pricing h2,
-html:not(.dark) .landing-root #pricing h3,
-html:not(.dark) .landing-root #pricing p {
-  background: none;
-  -webkit-background-clip: unset;
-  -webkit-text-fill-color: unset;
-  background-clip: unset;
+/* Section tint (alternating sections) */
+.landing-section-tinted {
+  background-color: var(--lp-section-tint);
 }
 
-/* Light mode — FAQ accordion: question text should be plain dark, not blue gradient */
-html:not(.dark) .landing-root #faq h6,
-.landing-root #faq h6 {
-  background: none;
-  -webkit-background-clip: unset;
-  -webkit-text-fill-color: unset;
-  background-clip: unset;
-  color: inherit;
+
+/* ============================================================
+   KEYFRAMES
+   ============================================================ */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Dark mode — FAQ pricing reset already done above; also reset dark #faq heading gradient */
-.landing-root #faq h2 {
-  background: linear-gradient(to bottom, #ffffff, #ffffff, rgba(255, 255, 255, 0.6));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-html:not(.dark) .landing-root #faq h2 {
-  background: linear-gradient(to bottom, #0a0a0a, #1a1a1a, rgba(26, 26, 26, 0.6));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* === Reduced Motion === */
+@keyframes scroll-left {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes scroll-right {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+
+/* ============================================================
+   HIDE APP-LEVEL OVERLAYS
+   ============================================================ */
+
+body:has(.landing-root) .calculator-overlay,
+body:has(.landing-root) .calculator-fab,
+body:has(.landing-root) .feedback-fab {
+  display: none !important;
+}
+
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+
 @media (prefers-reduced-motion: reduce) {
   .landing-root *,
   .landing-root *::before,
