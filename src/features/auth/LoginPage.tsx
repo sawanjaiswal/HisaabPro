@@ -1,6 +1,6 @@
 import { SEO } from '../../components/layout/SEO'
 import { Turnstile } from '../../components/ui/Turnstile'
-import { APP_NAME } from '../../config/app.config'
+import { APP_NAME, IS_DEV } from '../../config/app.config'
 import { useLogin } from './useLogin'
 import './LoginPage.css'
 
@@ -83,9 +83,11 @@ export default function LoginPage() {
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
 
-          <p className="login-page__hint">
-            Dev accounts: admin / admin123 or demo / demo123
-          </p>
+          {IS_DEV && (
+            <p className="login-page__hint">
+              Dev accounts: admin / admin123 or demo / demo123
+            </p>
+          )}
         </form>
       </div>
     </div>

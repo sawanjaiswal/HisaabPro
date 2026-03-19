@@ -10,7 +10,7 @@ import { Router } from 'express'
 import { auth } from '../middleware/auth.js'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
-import { couponValidateRateLimiter } from '../middleware/rate-limit.js'
+import { couponValidateRateLimiter, couponIpRateLimiter } from '../middleware/rate-limit.js'
 import {
   validateCouponSchema,
   applyCouponSchema,
@@ -32,11 +32,12 @@ router.use(auth)
 
 router.post(
   '/validate',
+  couponIpRateLimiter,
   couponValidateRateLimiter,
   validate(validateCouponSchema),
   asyncHandler(async (req, res) => {
     const userId = req.user!.userId
-    const result = await validateCoupon(userId, req.body)
+    const result = await validateCoupon(userId, req.body, req.ip)
 
     if (!result.valid) {
       res.status(400).json({
@@ -54,11 +55,12 @@ router.post(
 
 router.post(
   '/apply',
+  couponIpRateLimiter,
   couponValidateRateLimiter,
   validate(applyCouponSchema),
   asyncHandler(async (req, res) => {
     const userId = req.user!.userId
-    const result = await applyCoupon(userId, req.body)
+    const result = await applyCoupon(userId, req.body, req.ip)
     sendSuccess(res, result, 201)
   })
 )
@@ -67,10 +69,11 @@ router.post(
 
 router.delete(
   '/remove',
+  couponIpRateLimiter,
   validate(removeCouponSchema),
   asyncHandler(async (req, res) => {
     const userId = req.user!.userId
-    const result = await removeRedemption(userId, req.body.redemptionId)
+    const result = await removeRedemption(userId, req.body.redemptionId, req.ip)
     sendSuccess(res, result)
   })
 )

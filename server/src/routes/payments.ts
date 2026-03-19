@@ -141,7 +141,14 @@ router.get(
   '/outstanding/:partyId',
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
-    const result = await paymentService.getPartyOutstanding(businessId, String(req.params.partyId))
+    const cursor = req.query.cursor ? String(req.query.cursor) : undefined
+    const limit = req.query.limit ? Math.min(Number(req.query.limit), 100) : 20
+    const result = await paymentService.getPartyOutstanding(
+      businessId,
+      String(req.params.partyId),
+      cursor,
+      limit
+    )
     sendSuccess(res, result)
   })
 )

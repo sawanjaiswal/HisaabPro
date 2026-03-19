@@ -27,6 +27,7 @@ import type {
 async function requireParty(businessId: string, partyId: string) {
   const party = await prisma.party.findFirst({
     where: { id: partyId, businessId },
+    select: { id: true },
   })
   if (!party) throw notFoundError('Party')
   return party
@@ -194,9 +195,9 @@ export async function listParties(businessId: string, filters: ListPartiesQuery)
     [sortBy]: sortOrder,
   }
 
-  // Parallel: data + count + summary stats + type counts
+  // Parallel: data + count + summary stats + type counts (single groupBy replaces 3 count queries)
   const baseWhere: Prisma.PartyWhereInput = { businessId, isActive }
-  const [parties, total, receivableAgg, payableAgg, customersCount, suppliersCount, bothCount] = await Promise.all([
+  const [parties, total, receivableAgg, payableAgg, typeCounts] = await Promise.all([
     prisma.party.findMany({
       where,
       orderBy,
@@ -234,10 +235,17 @@ export async function listParties(businessId: string, filters: ListPartiesQuery)
       where: { ...baseWhere, outstandingBalance: { lt: 0 } },
       _sum: { outstandingBalance: true },
     }),
-    prisma.party.count({ where: { ...baseWhere, type: 'CUSTOMER' } }),
-    prisma.party.count({ where: { ...baseWhere, type: 'SUPPLIER' } }),
-    prisma.party.count({ where: { ...baseWhere, type: 'BOTH' } }),
+    // Single groupBy replaces 3 separate count queries
+    prisma.party.groupBy({
+      by: ['type'],
+      where: baseWhere,
+      _count: true,
+    }),
   ])
+
+  const customersCount = typeCounts.find((t) => t.type === 'CUSTOMER')?._count ?? 0
+  const suppliersCount = typeCounts.find((t) => t.type === 'SUPPLIER')?._count ?? 0
+  const bothCount = typeCounts.find((t) => t.type === 'BOTH')?._count ?? 0
 
   const totalReceivable = receivableAgg._sum.outstandingBalance ?? 0
   const totalPayable = Math.abs(payableAgg._sum.outstandingBalance ?? 0)

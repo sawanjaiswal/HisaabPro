@@ -3,6 +3,10 @@
 import { useState } from "react"
 import { ArrowRight, Check, X } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { motion, useReducedMotion } from "motion/react"
+import { LP_APP } from "@/config/landing-links.config"
+
+const EASE_OUT: [number, number, number, number] = [0.25, 1, 0.5, 1]
 
 interface Feature {
   name: string
@@ -94,6 +98,7 @@ const defaultTiers: PricingTier[] = [
 
 function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps) {
   const [isYearly, setIsYearly] = useState(false)
+  const reducedMotion = useReducedMotion()
 
   return (
     <section
@@ -106,7 +111,13 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
       )}
     >
       <div className="w-full max-w-6xl mx-auto">
-        <div className="flex flex-col items-center gap-4 mb-12">
+        <motion.div
+          initial={reducedMotion ? false : { opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.6, ease: EASE_OUT }}
+          className="flex flex-col items-center gap-4 mb-12"
+        >
           <h2 className="text-3xl font-bold" style={{ color: 'var(--lp-text)' }}>
             Simple, transparent pricing
           </h2>
@@ -135,17 +146,24 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
               </button>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {tiers.map((tier) => (
-            <div
+          {tiers.map((tier, i) => (
+            <motion.div
               key={tier.name}
+              initial={reducedMotion ? false : { opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              whileHover={reducedMotion ? undefined : { y: -6, transition: { duration: 0.25, ease: EASE_OUT } }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.6, delay: i * 0.12, ease: EASE_OUT }}
+            >
+            <div
               className={cn(
                 "relative group backdrop-blur-sm",
                 "rounded-3xl transition-all duration-300",
                 "flex flex-col border",
-                "hover:translate-y-0 hover:shadow-lg",
+                "hover:shadow-lg",
               )}
               style={{
                 backgroundColor: tier.highlight ? 'transparent' : 'var(--lp-price-card-bg)',
@@ -233,29 +251,32 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
               </div>
 
               <div className="p-8 pt-0 mt-auto">
-                <button
-                  className="w-full relative transition-all duration-300 rounded-lg flex items-center justify-center h-12 cursor-pointer"
-                  style={{
-                    backgroundColor: tier.highlight ? 'var(--lp-price-btn-hl-bg)' : 'var(--lp-price-btn-bg)',
-                    color: tier.highlight ? 'var(--lp-price-btn-hl-text)' : 'var(--lp-price-btn-text)',
-                    border: tier.highlight ? 'none' : `1px solid var(--lp-price-btn-border)`,
-                    fontWeight: tier.highlight ? 600 : 500,
-                    fontSize: tier.highlight ? '1rem' : '0.875rem',
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.backgroundColor = tier.highlight ? 'var(--lp-price-btn-hl-hover-bg)' : 'var(--lp-price-btn-hover-bg)'
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.backgroundColor = tier.highlight ? 'var(--lp-price-btn-hl-bg)' : 'var(--lp-price-btn-bg)'
-                  }}
-                >
-                  <span className="relative z-10 flex items-center justify-center gap-2">
-                    Start Free Trial
-                    <ArrowRight className="w-4 h-4" />
-                  </span>
-                </button>
+                <a href={LP_APP.REGISTER} className="block">
+                  <button
+                    className="w-full relative transition-all duration-300 rounded-lg flex items-center justify-center h-12 cursor-pointer"
+                    style={{
+                      backgroundColor: tier.highlight ? 'var(--lp-price-btn-hl-bg)' : 'var(--lp-price-btn-bg)',
+                      color: tier.highlight ? 'var(--lp-price-btn-hl-text)' : 'var(--lp-price-btn-text)',
+                      border: tier.highlight ? 'none' : `1px solid var(--lp-price-btn-border)`,
+                      fontWeight: tier.highlight ? 600 : 500,
+                      fontSize: tier.highlight ? '1rem' : '0.875rem',
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.backgroundColor = tier.highlight ? 'var(--lp-price-btn-hl-hover-bg)' : 'var(--lp-price-btn-hover-bg)'
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.backgroundColor = tier.highlight ? 'var(--lp-price-btn-hl-bg)' : 'var(--lp-price-btn-bg)'
+                    }}
+                  >
+                    <span className="relative z-10 flex items-center justify-center gap-2">
+                      Start Free Trial
+                      <ArrowRight className="w-4 h-4" />
+                    </span>
+                  </button>
+                </a>
               </div>
             </div>
+          </motion.div>
           ))}
         </div>
 

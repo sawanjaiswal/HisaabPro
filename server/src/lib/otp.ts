@@ -1,9 +1,12 @@
 import crypto from 'crypto'
+import bcrypt from 'bcryptjs'
 
 const OTP_LENGTH = 6
 const OTP_TTL_MS = 5 * 60 * 1000 // 5 minutes
 const MAX_ATTEMPTS = 5
 const RESEND_COOLDOWN_MS = 30 * 1000 // 30 seconds
+/** Lower rounds for OTP — short-lived, speed matters more than brute-force resistance */
+const OTP_BCRYPT_ROUNDS = 6
 
 export { OTP_LENGTH, OTP_TTL_MS, MAX_ATTEMPTS, RESEND_COOLDOWN_MS }
 
@@ -14,12 +17,14 @@ export function generateOTP(): string {
   return crypto.randomInt(min, max + 1).toString()
 }
 
-/** Constant-time OTP comparison to prevent timing attacks */
-export function verifyOTP(stored: string, provided: string): boolean {
-  if (stored.length !== provided.length) return false
-  const a = Buffer.from(stored, 'utf8')
-  const b = Buffer.from(provided, 'utf8')
-  return crypto.timingSafeEqual(a, b)
+/** Hash OTP before storing in database — never store plaintext */
+export function hashOTP(otp: string): Promise<string> {
+  return bcrypt.hash(otp, OTP_BCRYPT_ROUNDS)
+}
+
+/** Verify provided OTP against stored hash (bcrypt.compare is constant-time) */
+export function verifyOTP(storedHash: string, provided: string): Promise<boolean> {
+  return bcrypt.compare(provided, storedHash)
 }
 
 /** Send OTP via MSG91 Flow API. Returns true if sent successfully. */
@@ -29,10 +34,13 @@ export async function sendOTP(phone: string, otp: string): Promise<boolean> {
 
   if (!authKey || !templateId) {
     if (process.env.NODE_ENV !== 'production') {
-      console.log(`[DEV] OTP for ${phone}: ${otp}`)
+      // Use structured logger — never console.log secrets
+      const { default: logger } = await import('./logger.js')
+      logger.debug('otp.dev_generated', { phone, otp })
       return true
     }
-    console.error('MSG91 credentials not configured')
+    const { default: logger } = await import('./logger.js')
+    logger.error('MSG91 credentials not configured')
     return false
   }
 
@@ -53,7 +61,8 @@ export async function sendOTP(phone: string, otp: string): Promise<boolean> {
     const data = (await response.json()) as { type?: string }
     return data.type === 'success'
   } catch (error) {
-    console.error('MSG91 SMS send failed:', error)
+    const { default: logger } = await import('./logger.js')
+    logger.error('MSG91 SMS send failed', { error })
     return false
   }
 }

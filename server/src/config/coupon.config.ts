@@ -32,7 +32,8 @@ export const BULK_MAX_COUNT = 500
 
 /** Characters used in generated suffix (no ambiguous I/O/0/1) */
 export const SUFFIX_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-export const SUFFIX_LENGTH = 4
+/** Entropy: 6 chars from 31-char alphabet = 31^6 ≈ 887M combos per prefix */
+export const SUFFIX_LENGTH = 6
 
 // ─── Pagination ──────────────────────────────────────────────────────────
 
@@ -51,3 +52,17 @@ export const SEARCH_MAX_LENGTH = 100
 
 export const COUPON_STATUSES = ['ACTIVE', 'EXPIRED', 'EXHAUSTED', 'DEACTIVATED', 'SCHEDULED'] as const
 export type CouponStatus = (typeof COUPON_STATUSES)[number]
+
+// ─── Fraud Prevention ───────────────────────────────────────────────────
+
+/** Window for tracking failed validation attempts (ms) — 15 minutes */
+export const FRAUD_WINDOW_MS = 15 * 60 * 1000
+
+/** Max failed validations before user is locked out of coupon validation */
+export const FRAUD_MAX_FAILED_ATTEMPTS = 10
+
+/** Distinct codes threshold — log warning when user tries this many different codes */
+export const FRAUD_VELOCITY_THRESHOLD = 5
+
+/** Max coupon removes per user in fraud window — cycling detection */
+export const FRAUD_MAX_REMOVES = 5

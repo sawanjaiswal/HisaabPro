@@ -13,6 +13,9 @@
  */
 
 import { prisma } from '../lib/prisma.js'
+import logger from '../lib/logger.js'
+
+const REPORT_ROW_LIMIT = 5000
 
 // ─── Internal types ────────────────────────────────────────────────────────────
 
@@ -34,57 +37,35 @@ async function getAccountMovements(
   dateLte: Date,
   accountTypes: string[],
 ): Promise<AccountNetMovement[]> {
-  const lines = await prisma.journalEntryLine.findMany({
+  const aggregated = await prisma.journalEntryLine.groupBy({
+    by: ['accountId'],
     where: {
-      journalEntry: {
-        businessId,
-        status: 'POSTED',
-        date: { gte: dateGte, lte: dateLte },
-      },
-      account: {
-        type: { in: accountTypes },
-        isActive: true,
-      },
+      journalEntry: { businessId, status: 'POSTED', date: { gte: dateGte, lte: dateLte } },
+      account: { type: { in: accountTypes }, isActive: true },
     },
-    select: {
-      debit: true,
-      credit: true,
-      account: {
-        select: { id: true, name: true, type: true, subType: true },
-      },
-    },
+    _sum: { debit: true, credit: true },
   })
 
-  // Aggregate by account
-  const map = new Map<
-    string,
-    { accountName: string; accountType: string; accountSubType: string | null; debit: number; credit: number }
-  >()
+  const accountIds = aggregated.map((a) => a.accountId)
+  const accounts = await prisma.ledgerAccount.findMany({
+    where: { id: { in: accountIds } },
+    select: { id: true, name: true, type: true, subType: true },
+  })
+  const accountMap = new Map(accounts.map((a) => [a.id, a]))
 
-  for (const line of lines) {
-    const existing = map.get(line.account.id)
-    if (existing) {
-      existing.debit += line.debit
-      existing.credit += line.credit
-    } else {
-      map.set(line.account.id, {
-        accountName: line.account.name,
-        accountType: line.account.type,
-        accountSubType: line.account.subType,
-        debit: line.debit,
-        credit: line.credit,
-      })
-    }
-  }
-
-  return Array.from(map.entries()).map(([accountId, v]) => ({
-    accountId,
-    accountName: v.accountName,
-    accountType: v.accountType,
-    accountSubType: v.accountSubType,
-    netDebit: v.debit,
-    netCredit: v.credit,
-  }))
+  return aggregated
+    .filter((agg) => accountMap.has(agg.accountId))
+    .map((agg) => {
+      const account = accountMap.get(agg.accountId)!
+      return {
+        accountId: agg.accountId,
+        accountName: account.name,
+        accountType: account.type,
+        accountSubType: account.subType,
+        netDebit: Number(agg._sum.debit ?? 0),
+        netCredit: Number(agg._sum.credit ?? 0),
+      }
+    })
 }
 
 /**
@@ -95,7 +76,8 @@ async function getBalancesAsOf(
   businessId: string,
   asOf: Date,
 ): Promise<Map<string, { name: string; type: string; subType: string | null; netBalance: number }>> {
-  const lines = await prisma.journalEntryLine.findMany({
+  const aggregated = await prisma.journalEntryLine.groupBy({
+    by: ['accountId'],
     where: {
       journalEntry: {
         businessId,
@@ -103,51 +85,35 @@ async function getBalancesAsOf(
         date: { lte: asOf },
       },
     },
-    select: {
-      debit: true,
-      credit: true,
-      account: {
-        select: { id: true, name: true, type: true, subType: true },
-      },
-    },
+    _sum: { debit: true, credit: true },
   })
 
-  const map = new Map<
-    string,
-    { name: string; type: string; subType: string | null; totalDebit: number; totalCredit: number }
-  >()
+  const accountIds = aggregated.map((a) => a.accountId)
+  const accounts = await prisma.ledgerAccount.findMany({
+    where: { id: { in: accountIds } },
+    select: { id: true, name: true, type: true, subType: true },
+  })
+  const accountMap = new Map(accounts.map((a) => [a.id, a]))
 
-  for (const line of lines) {
-    const existing = map.get(line.account.id)
-    if (existing) {
-      existing.totalDebit += line.debit
-      existing.totalCredit += line.credit
-    } else {
-      map.set(line.account.id, {
-        name: line.account.name,
-        type: line.account.type,
-        subType: line.account.subType,
-        totalDebit: line.debit,
-        totalCredit: line.credit,
-      })
-    }
-  }
+  const result = new Map<string, { name: string; type: string; subType: string | null; netBalance: number }>()
 
-  const result = new Map<
-    string,
-    { name: string; type: string; subType: string | null; netBalance: number }
-  >()
+  for (const agg of aggregated) {
+    const account = accountMap.get(agg.accountId)
+    if (!account) continue
 
-  for (const [id, v] of map.entries()) {
+    const totalDebit = Number(agg._sum.debit ?? 0)
+    const totalCredit = Number(agg._sum.credit ?? 0)
+
     let netBalance: number
-    if (v.type === 'ASSET' || v.type === 'EXPENSE') {
+    if (account.type === 'ASSET' || account.type === 'EXPENSE') {
       // Debit-normal: positive = debit balance
-      netBalance = v.totalDebit - v.totalCredit
+      netBalance = totalDebit - totalCredit
     } else {
       // Credit-normal: positive = credit balance
-      netBalance = v.totalCredit - v.totalDebit
+      netBalance = totalCredit - totalDebit
     }
-    result.set(id, { name: v.name, type: v.type, subType: v.subType, netBalance })
+
+    result.set(agg.accountId, { name: account.name, type: account.type, subType: account.subType, netBalance })
   }
 
   return result
@@ -318,12 +284,12 @@ export async function getBalanceSheet(businessId: string, asOf: Date) {
 // ─── Cash Flow Statement ──────────────────────────────────────────────────────
 
 export async function getCashFlowStatement(businessId: string, from: Date, to: Date) {
-  // Compute P&L for the period to get net profit
-  const pnl = await getProfitAndLoss(businessId, from, to)
-
-  // Get account balances as of `from` (opening) and `to` (closing)
-  const openingBalances = await getBalancesAsOf(businessId, new Date(from.getTime() - 1))
-  const closingBalances = await getBalancesAsOf(businessId, to)
+  // Compute P&L + opening/closing balances in parallel — all three are independent
+  const [pnl, openingBalances, closingBalances] = await Promise.all([
+    getProfitAndLoss(businessId, from, to),
+    getBalancesAsOf(businessId, new Date(from.getTime() - 1)),
+    getBalancesAsOf(businessId, to),
+  ])
 
   // Opening and closing cash = CASH + BANK subtype accounts
   let openingCash = 0
@@ -438,7 +404,12 @@ export async function getAgingReport(
       dueDate: true,
       party: { select: { id: true, name: true } },
     },
+    take: REPORT_ROW_LIMIT,
   })
+
+  if (docs.length === REPORT_ROW_LIMIT) {
+    logger.warn('getAgingReport: result set capped at limit', { businessId, type, limit: REPORT_ROW_LIMIT })
+  }
 
   type AgingBuckets = {
     current: number
@@ -549,7 +520,12 @@ export async function getProfitabilityReport(
         totalProfit: true,
         party: { select: { id: true, name: true } },
       },
+      take: REPORT_ROW_LIMIT,
     })
+
+    if (docs.length === REPORT_ROW_LIMIT) {
+      logger.warn('getProfitabilityReport(PARTY): result set capped at limit', { businessId, limit: REPORT_ROW_LIMIT })
+    }
 
     const partyMap = new Map<
       string,
@@ -598,7 +574,12 @@ export async function getProfitabilityReport(
         quantity: true,
         product: { select: { id: true, name: true } },
       },
+      take: REPORT_ROW_LIMIT,
     })
+
+    if (lineItems.length === REPORT_ROW_LIMIT) {
+      logger.warn('getProfitabilityReport(PRODUCT): result set capped at limit', { businessId, limit: REPORT_ROW_LIMIT })
+    }
 
     const productMap = new Map<
       string,
@@ -648,7 +629,12 @@ export async function getProfitabilityReport(
         totalProfit: true,
         profitPercent: true,
       },
+      take: REPORT_ROW_LIMIT,
     })
+
+    if (docs.length === REPORT_ROW_LIMIT) {
+      logger.warn('getProfitabilityReport(DOCUMENT): result set capped at limit', { businessId, limit: REPORT_ROW_LIMIT })
+    }
 
     for (const doc of docs) {
       items.push({
@@ -701,7 +687,12 @@ export async function getDiscountReport(businessId: string, from: Date, to: Date
       partyId: true,
       party: { select: { id: true, name: true } },
     },
+    take: REPORT_ROW_LIMIT,
   })
+
+  if (docs.length === REPORT_ROW_LIMIT) {
+    logger.warn('getDiscountReport: result set capped at limit', { businessId, limit: REPORT_ROW_LIMIT })
+  }
 
   const totalDiscount = docs.reduce((s, d) => s + d.totalDiscount, 0)
 

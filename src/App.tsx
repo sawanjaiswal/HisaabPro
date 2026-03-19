@@ -7,11 +7,16 @@ import { Spinner } from '@/components/feedback/Spinner'
 import { ToastContainer } from '@/components/feedback/ToastContainer'
 import { OfflineBanner } from '@/components/feedback/OfflineBanner'
 import { SWUpdatePrompt } from '@/components/feedback/SWUpdatePrompt'
-import { FeedbackWidget } from '@/components/feedback/FeedbackWidget'
 import { PageTransition } from '@/components/layout/PageTransition'
 import { useAuth } from '@/context/AuthContext'
 import { useRoutePreload } from '@/hooks/useRoutePreload'
-import { CalculatorOverlay } from '@/features/settings/CalculatorOverlay'
+
+const CalculatorOverlay = lazy(() =>
+  import('@/features/settings/CalculatorOverlay').then((m) => ({ default: m.CalculatorOverlay }))
+)
+const FeedbackWidget = lazy(() =>
+  import('@/components/feedback/FeedbackWidget').then((m) => ({ default: m.FeedbackWidget }))
+)
 
 /** Lazy-loaded pages — split per route for small bundles */
 const Login = lazy(() => import('@/features/auth/LoginPage'))
@@ -212,10 +217,10 @@ export function App() {
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
       </Routes>
       </PageTransition>
-      <CalculatorOverlay />
+      <Suspense fallback={null}><CalculatorOverlay /></Suspense>
       <ToastContainer />
       <SWUpdatePrompt />
-      <FeedbackWidget />
+      <Suspense fallback={null}><FeedbackWidget /></Suspense>
     </ErrorBoundary>
   )
 }

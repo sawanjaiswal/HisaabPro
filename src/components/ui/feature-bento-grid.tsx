@@ -1,6 +1,9 @@
 import React from "react"
 import { cn } from "@/lib/utils"
 import { Check, Send, Download, AlertTriangle, TrendingUp, Package } from "lucide-react"
+import { motion, useReducedMotion } from "motion/react"
+
+const EASE_OUT: [number, number, number, number] = [0.25, 1, 0.5, 1]
 
 export function FeaturesSectionWithBentoGrid() {
   const features = [
@@ -37,9 +40,17 @@ export function FeaturesSectionWithBentoGrid() {
         "col-span-1 md:col-span-3 lg:col-span-3 border-b md:border-none",
     },
   ]
+  const reducedMotion = useReducedMotion()
+
   return (
     <div className="relative z-20 py-10 lg:py-40 max-w-7xl mx-auto">
-      <div className="px-8">
+      <motion.div
+        initial={reducedMotion ? false : { opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: 0.6, ease: EASE_OUT }}
+        className="px-8"
+      >
         <h2 className="text-4xl font-semibold lg:text-5xl max-w-5xl mx-auto text-center">
           One app, complete business control
         </h2>
@@ -47,19 +58,29 @@ export function FeaturesSectionWithBentoGrid() {
         <p className="text-sm lg:text-base max-w-2xl my-4 mx-auto text-center font-normal lp-text-body">
           Invoicing, inventory, payments, reports — all connected, all offline.
         </p>
-      </div>
+      </motion.div>
 
       <div className="relative">
         <div
           className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-6 mt-12 xl:border rounded-md"
           style={{ borderColor: 'var(--lp-card-border)' }}
         >
-          {features.map((feature) => (
-            <FeatureCard key={feature.title} className={feature.className}>
-              <FeatureTitle>{feature.title}</FeatureTitle>
-              <FeatureDescription>{feature.description}</FeatureDescription>
-              <div className="h-full w-full">{feature.skeleton}</div>
-            </FeatureCard>
+          {features.map((feature, i) => (
+            <motion.div
+              key={feature.title}
+              initial={reducedMotion ? false : { opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.6, delay: i * 0.12, ease: EASE_OUT }}
+              className={feature.className}
+              style={{ borderColor: 'var(--lp-card-border)' }}
+            >
+              <div className="p-4 sm:p-8 relative overflow-hidden">
+                <FeatureTitle>{feature.title}</FeatureTitle>
+                <FeatureDescription>{feature.description}</FeatureDescription>
+                <div className="h-full w-full">{feature.skeleton}</div>
+              </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -67,22 +88,6 @@ export function FeaturesSectionWithBentoGrid() {
   )
 }
 
-const FeatureCard = ({
-  children,
-  className,
-}: {
-  children?: React.ReactNode
-  className?: string
-}) => {
-  return (
-    <div
-      className={cn(`p-4 sm:p-8 relative overflow-hidden`, className)}
-      style={{ borderColor: 'var(--lp-card-border)' }}
-    >
-      {children}
-    </div>
-  )
-}
 
 const FeatureTitle = ({ children }: { children?: React.ReactNode }) => {
   return (

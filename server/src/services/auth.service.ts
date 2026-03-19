@@ -1,6 +1,6 @@
 import type { Response } from 'express'
 import { prisma } from '../lib/prisma.js'
-import { generateOTP, verifyOTP, sendOTP, OTP_TTL_MS, MAX_ATTEMPTS, RESEND_COOLDOWN_MS } from '../lib/otp.js'
+import { generateOTP, hashOTP, verifyOTP, sendOTP, OTP_TTL_MS, MAX_ATTEMPTS, RESEND_COOLDOWN_MS } from '../lib/otp.js'
 import { generateTokens, verifyRefreshToken } from '../lib/jwt.js'
 import { unauthorizedError } from '../lib/errors.js'
 import type { SendOtpInput, VerifyOtpInput } from '../schemas/auth.schemas.js'
@@ -150,8 +150,13 @@ async function resetLoginAttempts(userId: string): Promise<void> {
  * Dev-only login with username + password.
  * Auto-creates user if not exists.
  * Supports account lockout + progressive delay.
+ * BLOCKED in production — only available when NODE_ENV !== 'production'.
  */
 export async function devLogin(data: { username: string; password: string }) {
+  if (process.env.NODE_ENV === 'production') {
+    return { verified: false, message: 'Dev login is not available in production' }
+  }
+
   const { username, password } = data
 
   const creds = DEV_CREDENTIALS[username]
@@ -241,12 +246,13 @@ export async function sendOtp(data: SendOtpInput) {
   }
 
   const otp = generateOTP()
+  const otpHash = await hashOTP(otp)
 
-  // Create OTP record
+  // Store hashed OTP — never store plaintext in DB
   await prisma.otpCode.create({
     data: {
       phone,
-      code: otp,
+      code: otpHash,
       expiresAt: new Date(Date.now() + OTP_TTL_MS),
     },
   })
@@ -297,8 +303,8 @@ export async function verifyOtp(data: VerifyOtpInput) {
     return { verified: false, message: 'Too many failed attempts. Please request a new OTP.' }
   }
 
-  // Constant-time comparison
-  if (!verifyOTP(otpRecord.code, otp)) {
+  // Constant-time comparison (bcrypt.compare)
+  if (!(await verifyOTP(otpRecord.code, otp))) {
     await prisma.otpCode.update({
       where: { id: otpRecord.id },
       data: { attempts: { increment: 1 } },

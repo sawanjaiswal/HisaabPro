@@ -13,6 +13,7 @@ import type { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import { prisma } from '../lib/prisma.js'
 import { sendError } from '../lib/response.js'
+import { isBlacklisted } from '../lib/token-blacklist.js'
 import logger from '../lib/logger.js'
 import type { AdminRole } from '@prisma/client'
 
@@ -108,6 +109,12 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction) {
   }
 
   const token = authHeader.slice(7)
+
+  // Reject blacklisted tokens (logout, rotation)
+  if (isBlacklisted(token)) {
+    sendError(res, 'Token has been revoked', 'TOKEN_REVOKED', 401)
+    return
+  }
 
   let decoded: AdminTokenPayload
   try {

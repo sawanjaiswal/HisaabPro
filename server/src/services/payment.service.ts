@@ -135,16 +135,16 @@ export async function createPayment(
         })),
       })
 
-      // Update invoice balanceDue and paidAmount
-      for (const alloc of data.allocations) {
-        await tx.document.update({
+      // Update invoice balanceDue and paidAmount (parallel — each invoiceId is distinct)
+      await Promise.all(data.allocations.map(alloc =>
+        tx.document.update({
           where: { id: alloc.invoiceId },
           data: {
             paidAmount: { increment: alloc.amount },
             balanceDue: { decrement: alloc.amount },
           },
         })
-      }
+      ))
     }
 
     // Create discount
@@ -253,17 +253,14 @@ export async function listPayments(businessId: string, query: ListPaymentsQuery)
     prisma.payment.count({ where }),
   ])
 
-  // Separate IN/OUT totals
-  const [inAgg, outAgg] = await Promise.all([
-    prisma.payment.aggregate({
-      where: { ...where, type: 'PAYMENT_IN' },
-      _sum: { amount: true },
-    }),
-    prisma.payment.aggregate({
-      where: { ...where, type: 'PAYMENT_OUT' },
-      _sum: { amount: true },
-    }),
-  ])
+  // Single groupBy replaces two separate aggregate calls
+  const typeAgg = await prisma.payment.groupBy({
+    by: ['type'],
+    where,
+    _sum: { amount: true },
+  })
+  const totalIn = typeAgg.find(t => t.type === 'PAYMENT_IN')?._sum.amount || 0
+  const totalOut = typeAgg.find(t => t.type === 'PAYMENT_OUT')?._sum.amount || 0
 
   return {
     payments: payments.map(p => ({
@@ -289,9 +286,9 @@ export async function listPayments(businessId: string, query: ListPaymentsQuery)
       totalPages: Math.ceil(total / limit),
     },
     summary: {
-      totalIn: inAgg._sum.amount || 0,
-      totalOut: outAgg._sum.amount || 0,
-      net: (inAgg._sum.amount || 0) - (outAgg._sum.amount || 0),
+      totalIn,
+      totalOut,
+      net: totalIn - totalOut,
     },
   }
 }
@@ -352,16 +349,16 @@ export async function deletePayment(businessId: string, paymentId: string, userI
   if (!payment) throw notFoundError('Payment')
 
   return prisma.$transaction(async (tx) => {
-    // Reverse allocations
-    for (const alloc of payment.allocations) {
-      await tx.document.update({
+    // Reverse allocations (parallel — each invoiceId is distinct)
+    await Promise.all(payment.allocations.map(alloc =>
+      tx.document.update({
         where: { id: alloc.invoiceId },
         data: {
           paidAmount: { decrement: alloc.amount },
           balanceDue: { increment: alloc.amount },
         },
       })
-    }
+    ))
 
     // Reverse outstanding
     const discountAmount = payment.discount?.calculatedAmount || 0
@@ -400,16 +397,16 @@ export async function restorePayment(businessId: string, paymentId: string, user
   if (!payment) throw notFoundError('Payment')
 
   return prisma.$transaction(async (tx) => {
-    // Re-apply allocations
-    for (const alloc of payment.allocations) {
-      await tx.document.update({
+    // Re-apply allocations (parallel — each invoiceId is distinct)
+    await Promise.all(payment.allocations.map(alloc =>
+      tx.document.update({
         where: { id: alloc.invoiceId },
         data: {
           paidAmount: { increment: alloc.amount },
           balanceDue: { decrement: alloc.amount },
         },
       })
-    }
+    ))
 
     // Re-apply outstanding
     const discountAmount = payment.discount?.calculatedAmount || 0
@@ -460,16 +457,16 @@ export async function updateAllocations(
   }
 
   return prisma.$transaction(async (tx) => {
-    // Reverse existing allocations
-    for (const alloc of payment.allocations) {
-      await tx.document.update({
+    // Reverse existing allocations (parallel — each invoiceId is distinct)
+    await Promise.all(payment.allocations.map(alloc =>
+      tx.document.update({
         where: { id: alloc.invoiceId },
         data: {
           paidAmount: { decrement: alloc.amount },
           balanceDue: { increment: alloc.amount },
         },
       })
-    }
+    ))
     await tx.paymentAllocation.deleteMany({ where: { paymentId } })
 
     // Apply new allocations
@@ -482,15 +479,16 @@ export async function updateAllocations(
         })),
       })
 
-      for (const alloc of data.allocations) {
-        await tx.document.update({
+      // Update invoice balances (parallel — each invoiceId is distinct)
+      await Promise.all(data.allocations.map(alloc =>
+        tx.document.update({
           where: { id: alloc.invoiceId },
           data: {
             paidAmount: { increment: alloc.amount },
             balanceDue: { decrement: alloc.amount },
           },
         })
-      }
+      ))
     }
 
     return tx.payment.findUniqueOrThrow({
@@ -587,7 +585,12 @@ export async function listOutstanding(businessId: string, query: ListOutstanding
   }
 }
 
-export async function getPartyOutstanding(businessId: string, partyId: string) {
+export async function getPartyOutstanding(
+  businessId: string,
+  partyId: string,
+  cursor?: string,
+  limit = 20
+) {
   const party = await prisma.party.findFirst({
     where: { id: partyId, businessId },
     select: {
@@ -596,7 +599,7 @@ export async function getPartyOutstanding(businessId: string, partyId: string) {
   })
   if (!party) throw notFoundError('Party')
 
-  // Get outstanding invoices
+  // Get outstanding invoices with cursor-based pagination
   const invoices = await prisma.document.findMany({
     where: {
       businessId,
@@ -609,14 +612,19 @@ export async function getPartyOutstanding(businessId: string, partyId: string) {
       dueDate: true, grandTotal: true, paidAmount: true, balanceDue: true, type: true,
     },
     orderBy: { documentDate: 'desc' },
-    take: 100,
+    ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+    take: limit + 1,
   })
+
+  const hasMore = invoices.length > limit
+  const page = hasMore ? invoices.slice(0, limit) : invoices
+  const nextCursor = hasMore ? page[page.length - 1]?.id : undefined
 
   return {
     partyId: party.id,
     partyName: party.name,
     outstanding: Math.abs(party.outstandingBalance),
-    invoices: invoices.map(inv => ({
+    invoices: page.map(inv => ({
       id: inv.id,
       number: inv.documentNumber,
       date: inv.documentDate,
@@ -628,6 +636,7 @@ export async function getPartyOutstanding(businessId: string, partyId: string) {
         ? Math.max(0, Math.floor((Date.now() - inv.dueDate.getTime()) / (1000 * 60 * 60 * 24)))
         : 0,
     })),
+    pagination: { hasMore, nextCursor },
   }
 }
 
@@ -678,33 +687,37 @@ export async function sendBulkReminders(
   })
   const partyMap = new Map(parties.map(p => [p.id, p]))
 
-  const results: Array<{ partyId: string; status: 'sent' | 'failed'; error?: string }> = []
+  // Partition into valid (found) and invalid (not found) party IDs
+  const validPartyIds = data.partyIds.filter(id => partyMap.has(id))
+  const invalidPartyIds = data.partyIds.filter(id => !partyMap.has(id))
 
-  for (const partyId of data.partyIds) {
-    const party = partyMap.get(partyId)
-    if (!party) {
-      results.push({ partyId, status: 'failed', error: 'Party not found' })
-      continue
-    }
+  const now = new Date()
 
-    const defaultMessage = `Hi ${party.name}, this is a reminder about your outstanding payment.`
-    await prisma.paymentReminder.create({
-      data: {
-        businessId,
-        partyId,
-        channel: data.channel,
-        status: 'SENT',
-        message: data.message || defaultMessage,
-        sentAt: new Date(),
-        isAutomatic: false,
-      },
+  if (validPartyIds.length > 0) {
+    await prisma.paymentReminder.createMany({
+      data: validPartyIds.map(partyId => {
+        const party = partyMap.get(partyId)!
+        return {
+          businessId,
+          partyId,
+          channel: data.channel,
+          status: 'SENT',
+          message: data.message || `Hi ${party.name}, this is a reminder about your outstanding payment.`,
+          sentAt: now,
+          isAutomatic: false,
+        }
+      }),
     })
-    results.push({ partyId, status: 'sent' })
   }
 
+  const results: Array<{ partyId: string; status: 'sent' | 'failed'; error?: string }> = [
+    ...validPartyIds.map(partyId => ({ partyId, status: 'sent' as const })),
+    ...invalidPartyIds.map(partyId => ({ partyId, status: 'failed' as const, error: 'Party not found' })),
+  ]
+
   return {
-    sent: results.filter(r => r.status === 'sent').length,
-    failed: results.filter(r => r.status === 'failed').length,
+    sent: validPartyIds.length,
+    failed: invalidPartyIds.length,
     results,
   }
 }

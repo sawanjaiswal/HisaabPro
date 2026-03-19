@@ -46,7 +46,7 @@ export function PublicLedgerView({ data }: PublicLedgerViewProps) {
           <span role="columnheader">Balance</span>
         </div>
         {data.transactions.map((tx, i) => (
-          <div key={i} className="public-ledger-table-row" role="row">
+          <div key={`${tx.date}-${tx.reference}-${i}`} className="public-ledger-table-row" role="row">
             <span role="cell">{new Date(tx.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</span>
             <span role="cell" className="public-ledger-desc">
               <span>{tx.description}</span>

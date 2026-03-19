@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { useInView, useReducedMotion } from "motion/react";
+import { motion, useInView, useReducedMotion } from "motion/react";
+
+const EASE_OUT: [number, number, number, number] = [0.25, 1, 0.5, 1];
 
 interface Stat {
   prefix?: string;
@@ -41,12 +43,19 @@ function useCountUp(target: number, active: boolean, duration = 1500) {
   return count;
 }
 
-function StatItem({ stat, active }: { stat: Stat; active: boolean }) {
+function StatItem({ stat, active, index }: { stat: Stat; active: boolean; index: number }) {
   const count = useCountUp(stat.value, active);
   const display = stat.value === 4.8 ? count.toFixed(1) : count.toLocaleString("en-IN");
+  const reducedMotion = useReducedMotion();
 
   return (
-    <div className="flex flex-col items-center gap-1 text-center">
+    <motion.div
+      initial={reducedMotion ? false : { opacity: 0, y: 15 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: index * 0.1, ease: EASE_OUT }}
+      className="flex flex-col items-center gap-1 text-center"
+    >
       {stat.isStars && (
         <span className="text-amber-500 text-sm leading-none mb-0.5" aria-hidden="true">
           ★★★★★
@@ -56,7 +65,7 @@ function StatItem({ stat, active }: { stat: Stat; active: boolean }) {
         {stat.prefix ?? ""}{display}{stat.suffix}
       </span>
       <span className="text-sm lp-body">{stat.label}</span>
-    </div>
+    </motion.div>
   );
 }
 
@@ -73,7 +82,7 @@ export function SocialProofBar() {
         <div className="hidden md:flex items-center justify-center gap-10">
           {STATS.map((stat, i) => (
             <div key={stat.label} className="flex items-center gap-10">
-              <StatItem stat={stat} active={active} />
+              <StatItem stat={stat} active={active} index={i} />
               {i < STATS.length - 1 && (
                 <div className="w-px h-8" style={{ background: 'var(--lp-divider)' }} aria-hidden="true" />
               )}
@@ -83,8 +92,8 @@ export function SocialProofBar() {
 
         {/* Mobile: 2x2 grid, no dividers */}
         <div className="grid grid-cols-2 gap-6 md:hidden">
-          {STATS.map((stat) => (
-            <StatItem key={stat.label} stat={stat} active={active} />
+          {STATS.map((stat, i) => (
+            <StatItem key={stat.label} stat={stat} active={active} index={i} />
           ))}
         </div>
       </div>

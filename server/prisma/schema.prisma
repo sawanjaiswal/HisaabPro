@@ -651,6 +651,7 @@ model Document {
   @@index([clientId])
   @@index([recurringInvoiceId])
   @@index([originalDocumentId])
+  @@index([businessId, type, status, documentDate])
 }
 
 model DocumentLineItem {
@@ -828,6 +829,7 @@ model Payment {
   @@index([businessId, type])
   @@index([businessId, mode])
   @@index([businessId, isDeleted])
+  @@index([businessId, type, isDeleted, date])
 }
 
 model PaymentAllocation {

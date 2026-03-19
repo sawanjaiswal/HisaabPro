@@ -2,6 +2,7 @@
 
 import { useState, useLayoutEffect, useEffect } from 'react'
 import { LandingSEO } from './components/LandingSEO'
+import { LP_SECTIONS } from '@/config/landing-links.config'
 
 import SaaSHero from '@/components/ui/saa-s-template'
 import { SocialProofBar } from '@/components/ui/social-proof-bar'
@@ -78,8 +79,9 @@ export default function LandingPage() {
         <Feature197 />
       </div>
 
-      {/* 9. Final CTA */}
-      <div id="final-cta" style={{ paddingBottom: '5rem' }}>
+      {/* 9. Final CTA + Download anchor */}
+      <div id={LP_SECTIONS.FINAL_CTA} style={{ paddingBottom: '5rem' }}>
+        <div id={LP_SECTIONS.DOWNLOAD} />
         <CallToAction />
       </div>
 

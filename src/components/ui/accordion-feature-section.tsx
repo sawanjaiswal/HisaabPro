@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
 
 import {
   Accordion,
@@ -8,6 +9,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+
+const EASE_OUT: [number, number, number, number] = [0.25, 1, 0.5, 1];
 
 interface FeatureItem {
   id: number;
@@ -60,19 +63,32 @@ const defaultFeatures: FeatureItem[] = [
 
 const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
   const [activeTabId, setActiveTabId] = useState<number | null>(1);
+  const reducedMotion = useReducedMotion();
 
   return (
     <section id="faq" className="py-32 lp-heading-plain">
       <div className="container mx-auto">
-        <div className="mb-12 text-center">
+        <motion.div
+          initial={reducedMotion ? false : { opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.6, ease: EASE_OUT }}
+          className="mb-12 text-center"
+        >
           <h2 className="text-4xl font-semibold lg:text-5xl" style={{ color: 'var(--lp-text)' }}>
             Got questions?
           </h2>
           <p className="mt-4 text-lg lp-text-muted">
             Everything you need to know before you start.
           </p>
-        </div>
-        <div className="mb-12 flex w-full items-start justify-center gap-12">
+        </motion.div>
+        <motion.div
+          initial={reducedMotion ? false : { opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.6, delay: 0.15, ease: EASE_OUT }}
+          className="mb-12 flex w-full items-start justify-center gap-12"
+        >
           <div className="w-full max-w-2xl">
             <Accordion type="single" className="w-full" defaultValue="item-1">
               {features.map((tab) => (
@@ -105,7 +121,7 @@ const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
               ))}
             </Accordion>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

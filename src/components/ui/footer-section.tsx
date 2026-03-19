@@ -3,6 +3,7 @@ import React from 'react';
 import type { ComponentProps, ReactNode } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { InstagramIcon, LinkedinIcon, TwitterIcon, YoutubeIcon } from 'lucide-react';
+import { LP_SECTIONS, LP_SOCIAL, LP_LEGAL, LP_EXTERNAL, hash } from '@/config/landing-links.config';
 
 interface FooterLink {
   title: string;
@@ -19,34 +20,34 @@ const footerLinks: FooterSection[] = [
   {
     label: 'Product',
     links: [
-      { title: 'Features', href: '#features' },
-      { title: 'Pricing', href: '#pricing' },
-      { title: 'Download', href: '#download' },
+      { title: 'Features', href: hash(LP_SECTIONS.FEATURES) },
+      { title: 'Pricing', href: hash(LP_SECTIONS.PRICING) },
+      { title: 'Download', href: hash(LP_SECTIONS.DOWNLOAD) },
     ],
   },
   {
     label: 'Company',
     links: [
-      { title: 'About Us', href: '/about' },
-      { title: 'Privacy Policy', href: '/privacy' },
-      { title: 'Terms of Service', href: '/terms' },
+      { title: 'About Us', href: LP_LEGAL.ABOUT },
+      { title: 'Privacy Policy', href: LP_LEGAL.PRIVACY },
+      { title: 'Terms of Service', href: LP_LEGAL.TERMS },
     ],
   },
   {
     label: 'Support',
     links: [
-      { title: 'Help Center', href: '/help' },
-      { title: 'WhatsApp Support', href: '#' },
-      { title: 'FAQs', href: '#faq' },
+      { title: 'Help Center', href: LP_LEGAL.HELP },
+      { title: 'WhatsApp Support', href: LP_EXTERNAL.WHATSAPP_SUPPORT },
+      { title: 'FAQs', href: hash(LP_SECTIONS.FAQ) },
     ],
   },
   {
     label: 'Follow Us',
     links: [
-      { title: 'Instagram', href: '#', icon: InstagramIcon },
-      { title: 'YouTube', href: '#', icon: YoutubeIcon },
-      { title: 'Twitter / X', href: '#', icon: TwitterIcon },
-      { title: 'LinkedIn', href: '#', icon: LinkedinIcon },
+      { title: 'Instagram', href: LP_SOCIAL.INSTAGRAM, icon: InstagramIcon },
+      { title: 'YouTube', href: LP_SOCIAL.YOUTUBE, icon: YoutubeIcon },
+      { title: 'Twitter / X', href: LP_SOCIAL.TWITTER, icon: TwitterIcon },
+      { title: 'LinkedIn', href: LP_SOCIAL.LINKEDIN, icon: LinkedinIcon },
     ],
   },
 ];
@@ -65,14 +66,16 @@ export function Footer() {
           <p className="text-lg font-bold lp-text">HisaabPro</p>
           <div className="flex items-center gap-4">
             {[
-              { Icon: InstagramIcon, label: 'Instagram' },
-              { Icon: YoutubeIcon, label: 'YouTube' },
-              { Icon: TwitterIcon, label: 'Twitter / X' },
-              { Icon: LinkedinIcon, label: 'LinkedIn' },
-            ].map(({ Icon, label }) => (
+              { Icon: InstagramIcon, label: 'Instagram', href: LP_SOCIAL.INSTAGRAM },
+              { Icon: YoutubeIcon, label: 'YouTube', href: LP_SOCIAL.YOUTUBE },
+              { Icon: TwitterIcon, label: 'Twitter / X', href: LP_SOCIAL.TWITTER },
+              { Icon: LinkedinIcon, label: 'LinkedIn', href: LP_SOCIAL.LINKEDIN },
+            ].map(({ Icon, label, href }) => (
               <a
                 key={label}
-                href="#"
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label={label}
                 className="transition-colors duration-200 lp-text-muted"
                 onMouseEnter={e => e.currentTarget.style.color = 'var(--lp-text)'}
@@ -123,9 +126,9 @@ export function Footer() {
         </p>
         <div className="flex items-center gap-6">
           {[
-            { title: 'Privacy Policy', href: '/privacy' },
-            { title: 'Terms of Service', href: '/terms' },
-            { title: 'Refund Policy', href: '/refund' },
+            { title: 'Privacy Policy', href: LP_LEGAL.PRIVACY },
+            { title: 'Terms of Service', href: LP_LEGAL.TERMS },
+            { title: 'Refund Policy', href: LP_LEGAL.REFUND },
           ].map((link) => (
             <a
               key={link.title}

@@ -1,7 +1,11 @@
 import { cn } from "@/lib/utils";
 import { Download, Settings, FileText, TrendingUp } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
+
+const EASE_OUT: [number, number, number, number] = [0.25, 1, 0.5, 1];
 
 export function FeaturesSectionWithHoverEffects() {
+  const reducedMotion = useReducedMotion();
   const features = [
     {
       title: "1. Download",
@@ -30,13 +34,19 @@ export function FeaturesSectionWithHoverEffects() {
   ];
   return (
     <section className="py-16 md:py-24">
-      <div className="text-center mb-12 px-6">
+      <motion.div
+        initial={reducedMotion ? false : { opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: 0.6, ease: EASE_OUT }}
+        className="text-center mb-12 px-6"
+      >
         <h2 className="text-4xl font-semibold lg:text-5xl">How it works</h2>
         <p className="mt-4 text-lg lp-text-muted">Download to first invoice in under 5 minutes. Seriously.</p>
-      </div>
+      </motion.div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 relative z-10 max-w-7xl mx-auto">
         {features.map((feature, index) => (
-          <Feature key={feature.title} {...feature} index={index} />
+          <Feature key={feature.title} {...feature} index={index} reducedMotion={reducedMotion} />
         ))}
       </div>
     </section>
@@ -48,14 +58,20 @@ const Feature = ({
   description,
   icon,
   index,
+  reducedMotion,
 }: {
   title: string;
   description: string;
   icon: React.ReactNode;
   index: number;
+  reducedMotion: boolean | null;
 }) => {
   return (
-    <div
+    <motion.div
+      initial={reducedMotion ? false : { opacity: 0, y: 25 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.5, delay: index * 0.1, ease: EASE_OUT }}
       className={cn(
         "flex flex-col lg:border-r py-10 relative group/feature",
         index === 0 && "lg:border-l"
@@ -89,6 +105,6 @@ const Feature = ({
       <p className="text-sm max-w-xs relative z-10 px-10 lp-text-body">
         {description}
       </p>
-    </div>
+    </motion.div>
   );
 };

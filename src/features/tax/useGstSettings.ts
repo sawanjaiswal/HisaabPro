@@ -29,7 +29,7 @@ export function useGstSettings(businessId: string) {
     if (!businessId) return
     const controller = new AbortController()
     setStatus('loading')
-    api<GstSettings>(`/businesses/${businessId}/gst-settings`)
+    api<GstSettings>(`/businesses/${businessId}/gst-settings`, { signal: controller.signal })
       .then((data) => { setSettings(data); setStatus('success') })
       .catch((err: unknown) => {
         if (err instanceof Error && err.name === 'AbortError') return

@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
+import { LP_SECTIONS, LP_APP } from '@/config/landing-links.config';
 
 export function StickyMobileCTA() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const sentinelIds = ['hero-cta', 'final-cta'];
+    const sentinelIds = [LP_SECTIONS.HERO_CTA, LP_SECTIONS.FINAL_CTA];
     const inViewSet = new Set<string>();
 
     const observer = new IntersectionObserver(
@@ -62,10 +63,12 @@ export function StickyMobileCTA() {
               <p className="font-semibold text-sm lp-text">Start free trial</p>
               <p className="text-xs lp-text-muted">14 days, no card</p>
             </div>
-            <button className="lp-cta flex items-center gap-1.5 rounded-lg px-5 py-2.5 font-semibold text-sm transition-colors cursor-pointer">
-              Get started
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            <a href={LP_APP.REGISTER}>
+              <button className="lp-cta flex items-center gap-1.5 rounded-lg px-5 py-2.5 font-semibold text-sm transition-colors cursor-pointer">
+                Get started
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </a>
           </div>
         </motion.div>
       )}

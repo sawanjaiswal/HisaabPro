@@ -1,5 +1,7 @@
 import React from "react";
 import { Sun, Moon } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
+import { LP_SECTIONS, LP_APP, hash } from "@/config/landing-links.config";
 
 interface ThemeProps {
   isDark: boolean;
@@ -125,10 +127,10 @@ const Navigation = React.memo(({ isDark, onToggleTheme }: ThemeProps) => {
           <div className="text-xl font-semibold lp-text-brand">HisaabPro</div>
 
           <div className="hidden md:flex items-center justify-center gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <a href="#features" className="text-sm lp-text-secondary hover:opacity-100 transition-colors">Features</a>
-            <a href="#pricing" className="text-sm lp-text-secondary hover:opacity-100 transition-colors">Pricing</a>
-            <a href="#faq" className="text-sm lp-text-secondary hover:opacity-100 transition-colors">FAQ</a>
-            <a href="#download" className="text-sm lp-text-secondary hover:opacity-100 transition-colors">Download</a>
+            <a href={hash(LP_SECTIONS.FEATURES)} className="text-sm lp-text-secondary hover:opacity-100 transition-colors">Features</a>
+            <a href={hash(LP_SECTIONS.PRICING)} className="text-sm lp-text-secondary hover:opacity-100 transition-colors">Pricing</a>
+            <a href={hash(LP_SECTIONS.FAQ)} className="text-sm lp-text-secondary hover:opacity-100 transition-colors">FAQ</a>
+            <a href={hash(LP_SECTIONS.DOWNLOAD)} className="text-sm lp-text-secondary hover:opacity-100 transition-colors">Download</a>
           </div>
 
           <div className="hidden md:flex items-center gap-3">
@@ -143,9 +145,11 @@ const Navigation = React.memo(({ isDark, onToggleTheme }: ThemeProps) => {
             >
               {isDark ? <Sun size={16} /> : <Moon size={16} />}
             </button>
-            <Button type="button" variant="default" size="sm">
-              Start Free Trial
-            </Button>
+            <a href={LP_APP.REGISTER}>
+              <Button type="button" variant="default" size="sm">
+                Start Free Trial
+              </Button>
+            </a>
           </div>
 
           <div className="md:hidden flex items-center gap-2">
@@ -172,14 +176,16 @@ const Navigation = React.memo(({ isDark, onToggleTheme }: ThemeProps) => {
       {mobileMenuOpen && (
         <div className="md:hidden lp-mobile-menu backdrop-blur-md border-t animate-[slideDown_0.3s_ease-out]">
           <div className="px-6 py-4 flex flex-col gap-4">
-            <a href="#features" className="text-sm lp-text-secondary py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>Features</a>
-            <a href="#pricing" className="text-sm lp-text-secondary py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>Pricing</a>
-            <a href="#faq" className="text-sm lp-text-secondary py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>FAQ</a>
-            <a href="#download" className="text-sm lp-text-secondary py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>Download</a>
+            <a href={hash(LP_SECTIONS.FEATURES)} className="text-sm lp-text-secondary py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>Features</a>
+            <a href={hash(LP_SECTIONS.PRICING)} className="text-sm lp-text-secondary py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>Pricing</a>
+            <a href={hash(LP_SECTIONS.FAQ)} className="text-sm lp-text-secondary py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>FAQ</a>
+            <a href={hash(LP_SECTIONS.DOWNLOAD)} className="text-sm lp-text-secondary py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>Download</a>
             <div className="flex flex-col gap-2 pt-4 border-t" style={{ borderColor: 'var(--lp-border-subtle)' }}>
-              <Button type="button" variant="default" size="sm">
-                Start Free Trial
-              </Button>
+              <a href={LP_APP.REGISTER}>
+                <Button type="button" variant="default" size="sm">
+                  Start Free Trial
+                </Button>
+              </a>
             </div>
           </div>
         </div>
@@ -190,14 +196,22 @@ const Navigation = React.memo(({ isDark, onToggleTheme }: ThemeProps) => {
 
 Navigation.displayName = "Navigation";
 
+// Shared easing — ease-out-quart (smooth, refined deceleration)
+const EASE_OUT: [number, number, number, number] = [0.25, 1, 0.5, 1];
+
 // Hero Component
 const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
+  const reducedMotion = useReducedMotion();
+  const fade = (delay: number, y = 30) => ({
+    initial: reducedMotion ? false : ({ opacity: 0, y } as const),
+    animate: { opacity: 1, y: 0 } as const,
+    transition: { duration: 0.6, delay, ease: EASE_OUT },
+  });
+
   return (
-    <section
-      className="relative min-h-screen flex flex-col items-center justify-start px-6 py-20 md:py-24"
-      style={{ animation: "fadeIn 0.6s ease-out" }}
-    >
-      <aside
+    <section className="relative min-h-screen flex flex-col items-center justify-start px-6 py-20 md:py-24">
+      <motion.aside
+        {...fade(0.1, 20)}
         className="mb-8 inline-flex flex-wrap items-center justify-center gap-2 px-4 py-2 rounded-full border backdrop-blur-sm max-w-full"
         style={{ borderColor: 'var(--lp-border-badge)', backgroundColor: 'var(--lp-bg-badge)' }}
       >
@@ -205,37 +219,44 @@ const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
           Launch offer — save up to ₹5,000/yr on yearly plans
         </span>
         <a
-          href="#pricing"
+          href={hash(LP_SECTIONS.PRICING)}
           className="flex items-center gap-1 text-xs lp-text-muted transition-all active:scale-95 whitespace-nowrap"
           aria-label="View pricing plans"
         >
           View pricing
           <ArrowRight size={12} />
         </a>
-      </aside>
+      </motion.aside>
 
       {/* h1 gradient controlled by landing.css tokens */}
-      <h1 className="text-center max-w-3xl px-6 leading-tight mb-6 font-medium">
+      <motion.h1 {...fade(0.2)} className="text-center max-w-3xl px-6 leading-tight mb-6 font-medium">
         Your Entire Business.<br />In Your Pocket.
-      </h1>
+      </motion.h1>
 
-      <p className="text-sm md:text-base text-center max-w-2xl px-6 mb-10 lp-text-muted">
+      <motion.p {...fade(0.3)} className="text-sm md:text-base text-center max-w-2xl px-6 mb-10 lp-text-muted">
         Invoices, inventory, payments, WhatsApp sharing — all offline, all from your phone. No WiFi? No problem.
-      </p>
+      </motion.p>
 
-      <div id="hero-cta" className="flex items-center gap-4 relative z-10 mb-16">
-        <Button
-          type="button"
-          variant="gradient"
-          size="lg"
-          className="rounded-lg flex items-center justify-center"
-          aria-label="Start your 14-day free trial"
-        >
-          Start 14-Day Free Trial
-        </Button>
-      </div>
+      <motion.div {...fade(0.4, 20)} id={LP_SECTIONS.HERO_CTA} className="flex items-center gap-4 relative z-10 mb-16">
+        <a href={LP_APP.REGISTER}>
+          <Button
+            type="button"
+            variant="gradient"
+            size="lg"
+            className="rounded-lg flex items-center justify-center"
+            aria-label="Start your 14-day free trial"
+          >
+            Start 14-Day Free Trial
+          </Button>
+        </a>
+      </motion.div>
 
-      <div className="w-full max-w-5xl relative pb-20">
+      <motion.div
+        initial={reducedMotion ? false : { opacity: 0, scale: 0.96, y: 40 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.5, ease: EASE_OUT }}
+        className="w-full max-w-5xl relative pb-20"
+      >
         {isDark && (
           <div
             className="absolute left-1/2 w-[90%] pointer-events-none z-0"
@@ -259,7 +280,7 @@ const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
             loading="eager"
           />
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 });

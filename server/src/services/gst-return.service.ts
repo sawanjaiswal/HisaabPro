@@ -35,9 +35,11 @@ export async function generateGstr1(businessId: string, period: string) {
   const range = parsePeriod(period)
   const baseWhere = savedDocWhere(businessId, range, ['SALE_INVOICE', 'CREDIT_NOTE', 'DEBIT_NOTE'])
 
-  // Fetch all saved sale invoices + credit/debit notes with party + line items
+  // Fetch saved sale invoices + credit/debit notes with party + line items
+  // Safety cap at 10000 to prevent OOM on large datasets (tax reports still get full month data)
   const docs = await prisma.document.findMany({
     where: baseWhere,
+    take: 10000,
     select: {
       id: true, type: true, documentNumber: true, documentDate: true,
       supplyType: true, placeOfSupply: true, isReverseCharge: true,

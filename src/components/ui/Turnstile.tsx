@@ -61,14 +61,19 @@ export function Turnstile({ onVerify, onExpire }: TurnstileProps) {
     }
 
     // Turnstile may already be loaded (e.g. hot reload) — render immediately
+    let scriptEl: HTMLScriptElement | null = null
     if (window.turnstile) {
       renderWidget()
     } else {
-      const script = document.getElementById(SCRIPT_ID) as HTMLScriptElement
-      script.addEventListener('load', renderWidget)
+      scriptEl = document.getElementById(SCRIPT_ID) as HTMLScriptElement
+      scriptEl.addEventListener('load', renderWidget)
     }
 
     return () => {
+      // Remove listener to prevent firing on unmounted component
+      if (scriptEl) {
+        scriptEl.removeEventListener('load', renderWidget)
+      }
       if (widgetIdRef.current && window.turnstile) {
         window.turnstile.remove(widgetIdRef.current)
         widgetIdRef.current = null

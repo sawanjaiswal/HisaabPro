@@ -17,6 +17,7 @@ import {
   DETAIL_REDEMPTIONS_LIMIT,
 } from '../config/coupon.config.js'
 import type { CouponStatus } from '../config/coupon.config.js'
+import { couponFraudTracker } from './coupon-fraud.js'
 import type {
   CreateCouponInput,
   UpdateCouponInput,
@@ -304,37 +305,49 @@ export async function deactivateCoupon(couponId: string) {
 
 // ─── User: Validate ──────────────────────────────────────────────────────
 
-export async function validateCoupon(userId: string, data: ValidateCouponInput) {
+export async function validateCoupon(userId: string, data: ValidateCouponInput, ip?: string) {
+  // Fraud: check if user is locked out from too many failed attempts
+  if (couponFraudTracker.isLockedOut(userId)) {
+    logger.warn('coupon.validate_blocked', { userId, reason: 'lockout', ip })
+    return { valid: false, error: { code: 'COUPON_RATE_LIMITED', message: 'Too many failed attempts. Please try again later.' } }
+  }
+
   const coupon = await prisma.coupon.findUnique({ where: { code: data.code } })
 
   // Don't reveal if code exists — generic error
   if (!coupon) {
+    couponFraudTracker.recordFailedValidation(userId, data.code, ip)
+    logger.warn('coupon.validate_failed', { userId, code: data.code, reason: 'not_found', ip })
     return { valid: false, error: COUPON_ERRORS.NOT_FOUND }
   }
 
   const status = computeStatus(coupon)
 
-  if (status === 'DEACTIVATED') {
-    return { valid: false, error: COUPON_ERRORS.INACTIVE }
-  }
-  if (status === 'EXPIRED') {
-    return { valid: false, error: COUPON_ERRORS.EXPIRED }
-  }
-  if (status === 'EXHAUSTED') {
-    return { valid: false, error: COUPON_ERRORS.EXHAUSTED }
-  }
-  if (status === 'SCHEDULED') {
-    return { valid: false, error: COUPON_ERRORS.NOT_STARTED }
+  if (status !== 'ACTIVE') {
+    const errorMap: Record<string, typeof COUPON_ERRORS[keyof typeof COUPON_ERRORS]> = {
+      DEACTIVATED: COUPON_ERRORS.INACTIVE,
+      EXPIRED: COUPON_ERRORS.EXPIRED,
+      EXHAUSTED: COUPON_ERRORS.EXHAUSTED,
+      SCHEDULED: COUPON_ERRORS.NOT_STARTED,
+    }
+    const error = errorMap[status] ?? COUPON_ERRORS.INACTIVE
+    couponFraudTracker.recordFailedValidation(userId, data.code, ip)
+    logger.warn('coupon.validate_failed', { userId, code: data.code, reason: status.toLowerCase(), ip })
+    return { valid: false, error }
   }
 
   // Check plan filter
   if (data.planId && coupon.planFilter.length > 0 && !coupon.planFilter.includes(data.planId)) {
+    couponFraudTracker.recordFailedValidation(userId, data.code, ip)
+    logger.warn('coupon.validate_failed', { userId, code: data.code, reason: 'plan_mismatch', ip })
     return { valid: false, error: COUPON_ERRORS.PLAN_MISMATCH }
   }
 
-  // Fix #5: Check minPurchaseAmount
+  // Check minPurchaseAmount
   if (coupon.minPurchaseAmount !== null && data.planAmountPaise !== undefined) {
     if (data.planAmountPaise < coupon.minPurchaseAmount) {
+      couponFraudTracker.recordFailedValidation(userId, data.code, ip)
+      logger.warn('coupon.validate_failed', { userId, code: data.code, reason: 'min_amount', ip })
       return { valid: false, error: COUPON_ERRORS.MIN_AMOUNT }
     }
   }
@@ -344,10 +357,12 @@ export async function validateCoupon(userId: string, data: ValidateCouponInput) 
     where: { couponId: coupon.id, userId },
   })
   if (userRedemptions >= coupon.maxUsesPerUser) {
+    couponFraudTracker.recordFailedValidation(userId, data.code, ip)
+    logger.warn('coupon.validate_failed', { userId, code: data.code, reason: 'already_used', ip })
     return { valid: false, error: COUPON_ERRORS.ALREADY_USED }
   }
 
-  // Fix #1: Calculate discount preview using actual plan amount
+  // Calculate discount preview using actual plan amount
   const subtotal = data.planAmountPaise ?? 0
   const discountPreview = subtotal > 0 ? calculateDiscount(coupon.discountType, coupon.discountValue, subtotal) : 0
 
@@ -368,7 +383,7 @@ export async function validateCoupon(userId: string, data: ValidateCouponInput) 
 
 // ─── User: Apply ─────────────────────────────────────────────────────────
 
-export async function applyCoupon(userId: string, data: ApplyCouponInput) {
+export async function applyCoupon(userId: string, data: ApplyCouponInput, ip?: string) {
   const coupon = await prisma.coupon.findUnique({ where: { code: data.code } })
   if (!coupon) throw validationError(COUPON_ERRORS.NOT_FOUND.message)
 
@@ -418,7 +433,7 @@ export async function applyCoupon(userId: string, data: ApplyCouponInput) {
     const subtotal = data.planAmountPaise ?? 0
     const discountApplied = subtotal > 0 ? calculateDiscount(coupon.discountType, coupon.discountValue, subtotal) : 0
 
-    // Create redemption record
+    // Create redemption record with IP for audit trail
     const redemption = await tx.couponRedemption.create({
       data: {
         couponId: coupon.id,
@@ -426,7 +441,7 @@ export async function applyCoupon(userId: string, data: ApplyCouponInput) {
         discountApplied,
         planId: data.planId ?? null,
         razorpaySubscriptionId: data.razorpaySubscriptionId ?? null,
-        metadata: {} as object,
+        metadata: { ip: ip ?? 'unknown' } as object,
       },
     })
 
@@ -448,7 +463,13 @@ export async function applyCoupon(userId: string, data: ApplyCouponInput) {
 
 // ─── User: Remove ────────────────────────────────────────────────────────
 
-export async function removeRedemption(userId: string, redemptionId: string) {
+export async function removeRedemption(userId: string, redemptionId: string, ip?: string) {
+  // Fraud: cycling detection — block users who repeatedly apply/remove coupons
+  if (couponFraudTracker.isCycling(userId)) {
+    logger.warn('coupon.remove_blocked', { userId, reason: 'cycling', ip })
+    throw validationError('Too many coupon changes. Please try again later.')
+  }
+
   const redemption = await prisma.couponRedemption.findUnique({
     where: { id: redemptionId },
   })
@@ -456,7 +477,10 @@ export async function removeRedemption(userId: string, redemptionId: string) {
   if (!redemption) throw notFoundError('Coupon redemption')
   if (redemption.userId !== userId) throw notFoundError('Coupon redemption')
 
-  // Fix #3: Guard against negative usageCount with updateMany + gt check
+  // Track remove for cycling detection
+  couponFraudTracker.recordRemove(userId, ip)
+
+  // Guard against negative usageCount with updateMany + gt check
   await prisma.$transaction(async (tx) => {
     const updated = await tx.coupon.updateMany({
       where: { id: redemption.couponId, usageCount: { gt: 0 } },

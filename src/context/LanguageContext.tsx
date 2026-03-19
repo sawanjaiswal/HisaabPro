@@ -31,10 +31,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   // Cross-tab sync: listen for storage events from other tabs/windows
   useEffect(() => {
-    const handleStorageChange = () => {
-      const saved = localStorage.getItem('language')
-      if (saved === 'en' || saved === 'hi') {
-        setLanguageState(saved)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'language' && (e.newValue === 'en' || e.newValue === 'hi')) {
+        setLanguageState(e.newValue)
       }
     }
 

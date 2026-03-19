@@ -118,8 +118,12 @@ export async function captchaGuard(
     }
   } catch (err) {
     logger.error('captcha.verify_error', { ip, err })
-    // On network error, fail open — don't block legitimate users
-    next()
+    // Fail closed — block request when CAPTCHA service is unreachable
+    res.status(503).json({
+      success: false,
+      captchaRequired: true,
+      error: { code: 'CAPTCHA_UNAVAILABLE', message: 'CAPTCHA verification service is temporarily unavailable. Please try again.' },
+    })
     return
   }
 

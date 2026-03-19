@@ -25,6 +25,8 @@ interface AdjustStockParams {
   referenceNumber?: string
   userId: string
   movementDate?: Date
+  /** Pre-fetched business-level validation mode. Avoids extra DB hit when GLOBAL. */
+  cachedBusinessValidationMode?: 'WARN_ONLY' | 'HARD_BLOCK'
 }
 
 /**
@@ -57,7 +59,8 @@ export async function adjustStock(
     const validationMode = await resolveValidationMode(
       tx,
       products[0].stock_validation,
-      params.businessId
+      params.businessId,
+      params.cachedBusinessValidationMode
     )
 
     if (validationMode === 'HARD_BLOCK' && newStock < 0) {
@@ -121,14 +124,22 @@ export async function adjustStock(
   return { movement, previousStock: currentStock, newStock }
 }
 
-/** Resolve effective stock validation mode (product → business fallback) */
+/**
+ * Resolve effective stock validation mode (product → business fallback).
+ * Accepts an optional pre-fetched cachedMode to skip the DB call.
+ */
 async function resolveValidationMode(
   tx: TxClient,
   productMode: string,
-  businessId: string
+  businessId: string,
+  cachedMode?: 'WARN_ONLY' | 'HARD_BLOCK'
 ): Promise<'WARN_ONLY' | 'HARD_BLOCK'> {
   if (productMode !== 'GLOBAL') {
     return productMode as 'WARN_ONLY' | 'HARD_BLOCK'
+  }
+
+  if (cachedMode !== undefined) {
+    return cachedMode
   }
 
   const setting = await tx.inventorySetting.findUnique({
@@ -158,6 +169,14 @@ export async function deductForSaleInvoice(
     userId: string
   }
 ) {
+  // Fetch business-level validation mode once — avoids N DB hits when products use GLOBAL mode
+  const invSetting = await tx.inventorySetting.findUnique({
+    where: { businessId: params.businessId },
+    select: { stockValidationMode: true },
+  })
+  const cachedBusinessValidationMode =
+    (invSetting?.stockValidationMode as 'WARN_ONLY' | 'HARD_BLOCK') ?? 'WARN_ONLY'
+
   const results = []
   for (const item of params.items) {
     const result = await adjustStock(tx, {
@@ -169,6 +188,7 @@ export async function deductForSaleInvoice(
       referenceId: params.invoiceId,
       referenceNumber: params.invoiceNumber,
       userId: params.userId,
+      cachedBusinessValidationMode,
     })
     results.push(result.movement)
   }
@@ -186,6 +206,14 @@ export async function addForPurchaseInvoice(
     userId: string
   }
 ) {
+  // Fetch business-level validation mode once — avoids N DB hits when products use GLOBAL mode
+  const invSetting = await tx.inventorySetting.findUnique({
+    where: { businessId: params.businessId },
+    select: { stockValidationMode: true },
+  })
+  const cachedBusinessValidationMode =
+    (invSetting?.stockValidationMode as 'WARN_ONLY' | 'HARD_BLOCK') ?? 'WARN_ONLY'
+
   const results = []
   for (const item of params.items) {
     const result = await adjustStock(tx, {
@@ -197,6 +225,7 @@ export async function addForPurchaseInvoice(
       referenceId: params.invoiceId,
       referenceNumber: params.invoiceNumber,
       userId: params.userId,
+      cachedBusinessValidationMode,
     })
     results.push(result.movement)
   }
@@ -245,20 +274,58 @@ export async function validateStockForInvoice(
   businessId: string,
   items: InvoiceStockItem[]
 ) {
+  // --- Batch query 1: all products in one round-trip ---
+  const productIds = items.map((i) => i.productId)
+  const productRows = await prisma.product.findMany({
+    where: { id: { in: productIds }, businessId },
+    select: {
+      id: true,
+      name: true,
+      currentStock: true,
+      stockValidation: true,
+      unit: { select: { name: true, symbol: true } },
+    },
+  })
+  const productMap = new Map(productRows.map((p) => [p.id, p]))
+
+  // --- Batch query 2: business validation mode once ---
+  const setting = await prisma.inventorySetting.findUnique({
+    where: { businessId },
+    select: { stockValidationMode: true },
+  })
+  const businessMode = (setting?.stockValidationMode as 'WARN_ONLY' | 'HARD_BLOCK') ?? 'WARN_ONLY'
+
+  // --- Batch query 3: all unit conversions in one round-trip ---
+  // Collect unique (fromUnitId, toUnitId) pairs where unit differs from product
+  const conversionPairs: Array<{ fromUnitId: string; toUnitId: string }> = []
+  for (const item of items) {
+    const product = productMap.get(item.productId)
+    // product.id is used as toUnitId in the original code (unit base lookup)
+    if (product && item.unitId !== product.id) {
+      conversionPairs.push({ fromUnitId: item.unitId, toUnitId: product.id })
+    }
+  }
+
+  const conversionMap = new Map<string, number>()
+  if (conversionPairs.length > 0) {
+    const conversions = await prisma.unitConversion.findMany({
+      where: {
+        businessId,
+        OR: conversionPairs,
+      },
+      select: { fromUnitId: true, toUnitId: true, factor: true },
+    })
+    for (const c of conversions) {
+      conversionMap.set(`${c.fromUnitId}:${c.toUnitId}`, Number(c.factor))
+    }
+  }
+
+  // --- Loop using Maps (O(1) lookups, zero additional queries) ---
   const results = []
   let allValid = true
 
   for (const item of items) {
-    const product = await prisma.product.findFirst({
-      where: { id: item.productId, businessId },
-      select: {
-        id: true,
-        name: true,
-        currentStock: true,
-        stockValidation: true,
-        unit: { select: { name: true, symbol: true } },
-      },
-    })
+    const product = productMap.get(item.productId)
 
     if (!product) {
       results.push({
@@ -278,27 +345,22 @@ export async function validateStockForInvoice(
     // Convert quantity if unit differs from product's base unit
     let baseQty = item.quantity
     if (item.unitId !== product.id) {
-      const conversion = await prisma.unitConversion.findFirst({
-        where: {
-          businessId,
-          fromUnitId: item.unitId,
-          toUnitId: product.id,
-        },
-        select: { factor: true },
-      })
-      if (conversion) {
-        baseQty = item.quantity * conversion.factor
+      const factor = conversionMap.get(`${item.unitId}:${product.id}`)
+      if (factor !== undefined) {
+        baseQty = item.quantity * factor
       }
     }
 
-    const deficit = baseQty - product.currentStock
+    const currentStock = Number(product.currentStock)
+    const deficit = baseQty - currentStock
+
     if (deficit <= 0) {
       results.push({
         productId: product.id,
         productName: product.name,
         requestedQty: baseQty,
         requestedUnit: product.unit.symbol,
-        currentStock: product.currentStock,
+        currentStock,
         deficit: 0,
         validation: 'OK' as const,
         message: null,
@@ -306,15 +368,9 @@ export async function validateStockForInvoice(
       continue
     }
 
-    // Resolve validation mode
-    const setting = await prisma.inventorySetting.findUnique({
-      where: { businessId },
-      select: { stockValidationMode: true },
-    })
-    const businessMode = setting?.stockValidationMode ?? 'WARN_ONLY'
-    const effectiveMode = product.stockValidation === 'GLOBAL'
-      ? businessMode
-      : product.stockValidation
+    // Resolve effective validation mode using cached business mode
+    const effectiveMode =
+      product.stockValidation === 'GLOBAL' ? businessMode : product.stockValidation
 
     const validation = effectiveMode === 'HARD_BLOCK' ? 'BLOCK' : 'WARN'
     if (validation === 'BLOCK') allValid = false
@@ -324,10 +380,10 @@ export async function validateStockForInvoice(
       productName: product.name,
       requestedQty: baseQty,
       requestedUnit: product.unit.symbol,
-      currentStock: product.currentStock,
+      currentStock,
       deficit,
       validation,
-      message: `Only ${product.currentStock} ${product.unit.symbol} available, ${baseQty} requested`,
+      message: `Only ${currentStock} ${product.unit.symbol} available, ${baseQty} requested`,
     })
   }
 
