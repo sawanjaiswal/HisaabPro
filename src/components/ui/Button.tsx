@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import { Spinner } from '@/components/feedback/Spinner'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'destructive' | 'ghost'
+  variant?: 'primary' | 'secondary' | 'accent' | 'destructive' | 'ghost'
   size?: 'sm' | 'md' | 'lg'
   loading?: boolean
   children: ReactNode

@@ -34,6 +34,7 @@
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   padding-bottom: var(--space-1);
+  padding-right: var(--space-4);
 }
 
 .invoice-type-pills::-webkit-scrollbar {

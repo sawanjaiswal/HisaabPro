@@ -71,7 +71,6 @@ export function BottomNav() {
           key={to}
           to={to}
           className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}
-          aria-label={label}
         >
           <Icon size={22} aria-hidden="true" />
           <span className="bottom-nav-label">{label}</span>
@@ -96,7 +95,6 @@ export function BottomNav() {
           key={to}
           to={to}
           className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}
-          aria-label={label}
         >
           <Icon size={22} aria-hidden="true" />
           <span className="bottom-nav-label">{label}</span>

@@ -1,5 +1,5 @@
 /**
- * Prisma singleton — adapted from DudhHisaab
+ * Prisma singleton — adapted from HisaabPro
  * Connection pooling (10) + slow query logging
  */
 

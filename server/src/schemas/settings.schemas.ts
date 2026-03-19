@@ -27,9 +27,11 @@ export const updateRoleSchema = z.object({
 
 // === Staff ===
 
+const phoneRegex = /^[6-9]\d{9}$/
+
 export const inviteStaffSchema = z.object({
   name: z.string().min(1).max(100),
-  phone: z.string().min(10).max(15),
+  phone: z.string().regex(phoneRegex, 'Valid 10-digit Indian mobile number required'),
   roleId: z.string().min(1),
 })
 
@@ -91,6 +93,18 @@ export const verifyPinSchema = z.object({
 export const setOperationPinSchema = z.object({
   currentPin: z.string().min(4).max(6).optional(),
   newPin: z.string().min(4).max(6),
+})
+
+// === GST Settings ===
+
+const GSTIN_REGEX = /^\d{2}[A-Z]{5}\d{4}[A-Z]\d[Z][A-Z\d]$/
+
+export const updateGstSettingsSchema = z.object({
+  gstin: z.string().regex(GSTIN_REGEX, 'Invalid GSTIN format').nullable().optional(),
+  stateCode: z.string().length(2, 'State code must be 2 digits').regex(/^\d{2}$/).nullable().optional(),
+  compositionScheme: z.boolean().optional(),
+  eInvoiceEnabled: z.boolean().optional(),
+  eWayBillEnabled: z.boolean().optional(),
 })
 
 // === Inferred types ===

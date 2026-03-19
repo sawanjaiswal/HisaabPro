@@ -1,5 +1,5 @@
 /**
- * Centralized Error Handling — adapted from DudhHisaab
+ * Centralized Error Handling — adapted from HisaabPro
  * AppError class, error codes, factory functions, Prisma error normalization
  */
 

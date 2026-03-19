@@ -1,5 +1,5 @@
 /**
- * Idempotency middleware — adapted from DudhHisaab
+ * Idempotency middleware — adapted from HisaabPro
  * Prevents duplicate creates from offline sync retries (2G/3G networks).
  * Client sends X-Idempotency-Key header; server deduplicates.
  *

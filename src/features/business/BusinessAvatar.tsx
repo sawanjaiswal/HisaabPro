@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useAuth } from '@/context/AuthContext'
 import { getBusinessInitials, getBusinessColor } from './business.utils'
 import { BusinessSwitcher } from './components/BusinessSwitcher'
@@ -30,7 +31,7 @@ export function BusinessAvatar() {
           className={`business-avatar${isSwitching ? ' business-avatar--switching' : ''}`}
           style={{ background: color }}
           onClick={handleTap}
-          aria-label={`Active business: ${activeBusiness.name}${hasMultiple ? '. Tap to switch.' : ''}`}
+          aria-label={`${activeBusiness.name}${hasMultiple ? '. Switch business' : ''}`}
         >
           {initials}
         </button>
@@ -46,8 +47,9 @@ export function BusinessAvatar() {
         )}
       </div>
 
-      {showSwitcher && (
-        <BusinessSwitcher onClose={() => setShowSwitcher(false)} />
+      {showSwitcher && createPortal(
+        <BusinessSwitcher onClose={() => setShowSwitcher(false)} />,
+        document.body
       )}
     </>
   )

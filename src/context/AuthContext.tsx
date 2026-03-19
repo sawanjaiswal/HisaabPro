@@ -9,6 +9,7 @@ interface AuthContextType {
   isAuthenticated: boolean
   isLoading: boolean
   isSwitching: boolean
+  switchingBusinessId: string | null
   setUser: (user: AuthUser | null) => void
   setBusinesses: (businesses: BusinessSummary[]) => void
   handleLogout: () => void
@@ -21,7 +22,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [businesses, setBusinesses] = useState<BusinessSummary[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [isSwitching, setIsSwitching] = useState(false)
+  const [switchingBusinessId, setSwitchingBusinessId] = useState<string | null>(null)
+  const isSwitching = switchingBusinessId !== null
 
   // On mount: check for existing session via cached user + server verification
   useEffect(() => {
@@ -66,22 +68,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const switchBusiness = useCallback(async (businessId: string) => {
-    if (isSwitching) return
-    setIsSwitching(true)
+    if (switchingBusinessId) return
+    setSwitchingBusinessId(businessId)
     try {
       const result = await authLib.switchBusiness(businessId)
-      // Update user with new businessId
-      setUser(prev => prev ? { ...prev, businessId: result.business.id } : null)
-      authLib.setCachedUser({
-        ...user!,
-        businessId: result.business.id,
-      })
-      // Force reload to clear all business-scoped state
-      window.location.reload()
-    } catch {
-      setIsSwitching(false)
+      // Update cached user with new businessId before redirect
+      const currentUser = authLib.getCachedUser()
+      if (currentUser) {
+        authLib.setCachedUser({ ...currentUser, businessId: result.business.id })
+      }
+      // Navigate to dashboard — reload clears all business-scoped caches
+      window.location.href = '/'
+    } catch (err) {
+      setSwitchingBusinessId(null)
+      throw err
     }
-  }, [isSwitching, user])
+  }, [switchingBusinessId])
 
   const value = useMemo(
     () => ({
@@ -90,12 +92,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: !!user,
       isLoading,
       isSwitching,
+      switchingBusinessId,
       setUser,
       setBusinesses,
       handleLogout,
       switchBusiness,
     }),
-    [user, businesses, isLoading, isSwitching, handleLogout, switchBusiness]
+    [user, businesses, isLoading, isSwitching, switchingBusinessId, handleLogout, switchBusiness]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

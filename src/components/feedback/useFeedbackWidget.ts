@@ -15,7 +15,7 @@ function getInitialFabPos(): FabPosition {
       };
     }
   } catch { /* ignore */ }
-  return { x: window.innerWidth - FAB_SIZE - 16, y: window.innerHeight - 80 - FAB_SIZE };
+  return { x: window.innerWidth - FAB_SIZE - 16, y: window.innerHeight - 150 - FAB_SIZE };
 }
 
 export function useFeedbackWidget() {

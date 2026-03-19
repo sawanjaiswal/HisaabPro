@@ -1,6 +1,6 @@
 /**
  * Referral & Earn — Zod validation schemas
- * Adapted from DudhHisaab referral.schemas.ts
+ * Adapted from HisaabPro referral.schemas.ts
  */
 
 import { z } from 'zod'

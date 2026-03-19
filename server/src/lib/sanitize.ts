@@ -1,5 +1,5 @@
 /**
- * XSS prevention — direct copy from DudhHisaab
+ * XSS prevention — direct copy from HisaabPro
  * Escapes HTML entities while preserving Unicode (Hindi, emojis, ₹)
  */
 

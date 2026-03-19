@@ -1,6 +1,6 @@
 .join-business-page {
   min-height: 100vh;
-  background: var(--color-background, #F9FAFB);
+  background: var(--color-background);
 }
 
 .join-business-content {
@@ -16,7 +16,7 @@
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: var(--color-primary-50, #EFF6FF);
+  background: var(--color-primary-50);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -24,19 +24,19 @@
 }
 
 .join-business-icon {
-  color: var(--color-primary, #3B82F6);
+  color: var(--color-primary);
 }
 
 .join-business-heading {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--color-text, #111);
+  color: var(--color-text);
   margin: 0 0 0.5rem;
 }
 
 .join-business-subtitle {
   font-size: 0.875rem;
-  color: var(--color-text-muted, #6B7280);
+  color: var(--color-text-muted);
   margin: 0 0 2rem;
   text-align: center;
 }
@@ -48,26 +48,26 @@
   font-weight: 700;
   letter-spacing: 0.5rem;
   padding: 0.75rem;
-  border: 2px solid var(--color-border, #E5E7EB);
+  border: 2px solid var(--color-border);
   border-radius: 0.75rem;
-  background: var(--color-surface, #fff);
-  color: var(--color-text, #111);
+  background: var(--color-surface);
+  color: var(--color-text);
   outline: none;
   transition: border-color 0.2s;
 }
 
 .join-business-input:focus {
-  border-color: var(--color-primary, #3B82F6);
+  border-color: var(--color-primary);
 }
 
 .join-business-input::placeholder {
-  color: var(--color-text-muted, #D1D5DB);
+  color: var(--color-text-muted);
   letter-spacing: 0.75rem;
 }
 
 .join-business-error {
   font-size: 0.8125rem;
-  color: var(--color-error, #EF4444);
+  color: var(--color-error);
   margin: 0.75rem 0 0;
   text-align: center;
 }
@@ -78,7 +78,7 @@
   margin-top: 1.5rem;
   border: none;
   border-radius: 0.75rem;
-  background: var(--color-primary, #3B82F6);
+  background: var(--color-primary);
   color: white;
   font-size: 1rem;
   font-weight: 600;
@@ -105,20 +105,20 @@
 }
 
 .join-business-success-icon {
-  color: var(--color-success, #22C55E);
+  color: var(--color-success);
   margin-bottom: 1rem;
 }
 
 .join-business-success-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--color-text, #111);
+  color: var(--color-text);
   margin: 0 0 0.5rem;
 }
 
 .join-business-success-subtitle {
   font-size: 0.9375rem;
-  color: var(--color-text-muted, #6B7280);
+  color: var(--color-text-muted);
   margin: 0 0 2rem;
   text-transform: capitalize;
 }

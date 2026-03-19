@@ -8,7 +8,10 @@ interface AppShellProps {
 export function AppShell({ children }: AppShellProps) {
   return (
     <div className="app-shell">
-      <div className="app-shell-content">{children}</div>
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+      <div id="main-content" className="app-shell-content">{children}</div>
       <BottomNav />
     </div>
   )

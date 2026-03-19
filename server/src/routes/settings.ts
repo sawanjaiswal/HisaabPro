@@ -24,9 +24,10 @@ import {
   setPinSchema,
   verifyPinSchema,
   setOperationPinSchema,
+  updateGstSettingsSchema,
 } from '../schemas/settings.schemas.js'
 import { joinBusinessSchema } from '../schemas/auth.schemas.js'
-import { createBusinessSchema } from '../schemas/business.schemas.js'
+import { createBusinessSchema, updateBusinessSchema } from '../schemas/business.schemas.js'
 import { requireOwner } from '../middleware/permission.js'
 import * as settingsService from '../services/settings.service.js'
 import * as businessService from '../services/business.service.js'
@@ -64,11 +65,13 @@ businessSettingsRouter.post('/join', sensitiveMutationLimiter, validate(joinBusi
 // --- Business Profile ---
 
 businessSettingsRouter.get('/:businessId', asyncHandler(async (req, res) => {
-  const business = await businessService.getBusiness(String(req.params.businessId))
+  // Use JWT businessId — user can only view their active business profile
+  const businessId = req.user!.businessId
+  const business = await businessService.getBusiness(businessId)
   sendSuccess(res, business)
 }))
 
-businessSettingsRouter.put('/:businessId', asyncHandler(async (req, res) => {
+businessSettingsRouter.put('/:businessId', requireOwner(), validate(updateBusinessSchema), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const business = await businessService.updateBusiness(businessId, req.body)
   sendSuccess(res, business)
@@ -88,19 +91,19 @@ businessSettingsRouter.get('/:businessId/roles/:roleId', asyncHandler(async (req
   sendSuccess(res, role)
 }))
 
-businessSettingsRouter.post('/:businessId/roles', validate(createRoleSchema), asyncHandler(async (req, res) => {
+businessSettingsRouter.post('/:businessId/roles', requireOwner(), validate(createRoleSchema), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const role = await settingsService.createRole(businessId, req.body)
   sendSuccess(res, role, 201)
 }))
 
-businessSettingsRouter.put('/:businessId/roles/:roleId', validate(updateRoleSchema), asyncHandler(async (req, res) => {
+businessSettingsRouter.put('/:businessId/roles/:roleId', requireOwner(), validate(updateRoleSchema), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const role = await settingsService.updateRole(businessId, String(req.params.roleId), req.body)
   sendSuccess(res, role)
 }))
 
-businessSettingsRouter.delete('/:businessId/roles/:roleId', asyncHandler(async (req, res) => {
+businessSettingsRouter.delete('/:businessId/roles/:roleId', requireOwner(), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const reassignTo = req.query.reassignTo as string
   if (!reassignTo) throw validationError('reassignTo query param is required')
@@ -123,7 +126,7 @@ businessSettingsRouter.post('/:businessId/staff/invite', requireOwner(), sensiti
   sendSuccess(res, data, 201)
 }))
 
-businessSettingsRouter.put('/:businessId/staff/:staffId', validate(updateStaffRoleSchema), asyncHandler(async (req, res) => {
+businessSettingsRouter.put('/:businessId/staff/:staffId', requireOwner(), validate(updateStaffRoleSchema), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const data = await settingsService.updateStaffRole(businessId, String(req.params.staffId), req.body)
   sendSuccess(res, data)
@@ -162,7 +165,7 @@ businessSettingsRouter.get('/:businessId/settings/transaction-lock', asyncHandle
   sendSuccess(res, config)
 }))
 
-businessSettingsRouter.put('/:businessId/settings/transaction-lock', validate(updateTransactionLockSchema), asyncHandler(async (req, res) => {
+businessSettingsRouter.put('/:businessId/settings/transaction-lock', requireOwner(), validate(updateTransactionLockSchema), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const config = await settingsService.updateTransactionLock(businessId, req.body)
   sendSuccess(res, config)
@@ -173,11 +176,13 @@ businessSettingsRouter.put('/:businessId/settings/transaction-lock', validate(up
 businessSettingsRouter.get('/:businessId/approvals', asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const status = req.query.status as string | undefined
-  const data = await settingsService.listApprovals(businessId, status)
+  const page = Number(req.query.page) || 1
+  const limit = Number(req.query.limit) || 50
+  const data = await settingsService.listApprovals(businessId, status, page, limit)
   sendSuccess(res, data)
 }))
 
-businessSettingsRouter.put('/:businessId/approvals/:approvalId', validate(reviewApprovalSchema), asyncHandler(async (req, res) => {
+businessSettingsRouter.put('/:businessId/approvals/:approvalId', requireOwner(), validate(reviewApprovalSchema), asyncHandler(async (req, res) => {
   const userId = req.user!.userId
   const businessId = req.user!.businessId
   const data = await settingsService.reviewApproval(businessId, String(req.params.approvalId), userId, req.body)
@@ -196,11 +201,12 @@ businessSettingsRouter.get('/:businessId/audit-log', asyncHandler(async (req, re
 // --- GST Settings ---
 
 businessSettingsRouter.get('/:businessId/gst-settings', asyncHandler(async (req, res) => {
-  const data = await gstService.getGstSettings(String(req.params.businessId))
+  const businessId = req.user!.businessId
+  const data = await gstService.getGstSettings(businessId)
   sendSuccess(res, data)
 }))
 
-businessSettingsRouter.put('/:businessId/gst-settings', asyncHandler(async (req, res) => {
+businessSettingsRouter.put('/:businessId/gst-settings', requireOwner(), validate(updateGstSettingsSchema), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const data = await gstService.updateGstSettings(businessId, req.body)
   sendSuccess(res, data)
@@ -208,7 +214,7 @@ businessSettingsRouter.put('/:businessId/gst-settings', asyncHandler(async (req,
 
 // --- Operation PIN ---
 
-businessSettingsRouter.post('/:businessId/operation-pin', validate(setOperationPinSchema), asyncHandler(async (req, res) => {
+businessSettingsRouter.post('/:businessId/operation-pin', requireOwner(), validate(setOperationPinSchema), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const data = await settingsService.setOperationPin(businessId, req.body)
   sendSuccess(res, data)

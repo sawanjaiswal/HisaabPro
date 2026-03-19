@@ -48,7 +48,7 @@ export function setTokenCookies(
     secure: isProduction,
     sameSite: isProduction ? 'strict' : 'lax',
     maxAge: REFRESH_TOKEN_TTL_MS,
-    path: '/',
+    path: '/api/auth',
   })
 }
 
@@ -68,7 +68,7 @@ export function clearTokenCookies(res: Response) {
     httpOnly: true,
     secure: isProduction,
     sameSite: isProduction ? 'strict' : 'lax',
-    path: '/',
+    path: '/api/auth',
   })
 }
 
@@ -214,7 +214,7 @@ export async function devLogin(data: { username: string; password: string }) {
     verified: true,
     message: 'Login successful',
     isNewUser,
-    user: { id: user.id, phone: user.phone, name: user.name, email: user.email },
+    user: { id: user.id, phone: user.phone, name: user.name },
     tokens,
   }
 }
@@ -381,12 +381,7 @@ export async function verifyOtp(data: VerifyOtpInput) {
     verified: true,
     message: 'OTP verified successfully',
     isNewUser,
-    user: {
-      id: user.id,
-      phone: user.phone,
-      name: user.name,
-      email: user.email,
-    },
+    user: { id: user.id, phone: user.phone, name: user.name },
     tokens,
   }
 }
@@ -462,7 +457,7 @@ export async function getMe(userId: string, activeBusinessId?: string) {
   const activeBusiness = businesses.find(b => b.id === currentBizId) ?? businesses[0] ?? null
 
   return {
-    user: { id: user.id, phone: user.phone, name: user.name, email: user.email },
+    user: { id: user.id, phone: user.phone, name: user.name },
     businesses,
     activeBusiness,
   }

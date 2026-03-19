@@ -1,6 +1,6 @@
 /**
  * In-memory token blacklist with auto-cleanup.
- * Adapted from DudhHisaab's tokenBlacklist.ts.
+ * Adapted from HisaabPro's tokenBlacklist.ts.
  * Tokens are blacklisted on logout and auto-removed after expiry.
  */
 

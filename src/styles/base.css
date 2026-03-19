@@ -83,6 +83,11 @@ textarea:focus-visible {
   animation: page-enter var(--duration-slow) var(--ease-default) both;
 }
 
+/* Landing page has fixed-position header — transform in page-enter breaks fixed positioning */
+.page-enter:has(.landing-root) {
+  animation: none;
+}
+
 /* Suspense loading fade — prevents flash of spinner */
 .suspense-fallback {
   animation: page-enter 400ms var(--ease-default) both;

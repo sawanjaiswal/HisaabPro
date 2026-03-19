@@ -82,6 +82,7 @@ router.post(
     // Fetch businesses for the user (same shape as /me)
     const meData = await authService.getMe(result.user!.id)
 
+    res.set('Cache-Control', 'no-store')
     sendSuccess(res, {
       isNewUser: result.isNewUser,
       user: result.user,
@@ -186,10 +187,15 @@ router.post(
         return
       }
 
+      // Blacklist the old refresh token to prevent replay
+      const decoded = decodeToken(refreshToken)
+      const ttl = decoded?.exp ? decoded.exp * 1000 - Date.now() : 7 * 24 * 60 * 60 * 1000
+      if (ttl > 0) blacklistToken(refreshToken, ttl)
+
       // Rotate both cookies
       authService.setTokenCookies(res, tokens)
 
-      // Also return in body for backward-compat
+      res.set('Cache-Control', 'no-store')
       sendSuccess(res, { tokens })
     } catch {
       sendError(res, 'Invalid or expired refresh token', 'REFRESH_FAILED', 401)
@@ -231,13 +237,14 @@ router.post(
       const refreshDecoded = decodeToken(refreshToken)
       const refreshTtl = refreshDecoded?.exp
         ? refreshDecoded.exp * 1000 - Date.now()
-        : 30 * 24 * 60 * 60 * 1000
+        : 7 * 24 * 60 * 60 * 1000
       if (refreshTtl > 0) blacklistToken(refreshToken, refreshTtl)
     }
 
     // Clear cookies
     authService.clearTokenCookies(res)
 
+    res.set('Cache-Control', 'no-store')
     sendSuccess(res, { message: 'Logged out successfully' })
   })
 )
@@ -278,6 +285,7 @@ router.post(
 
     authService.setTokenCookies(res, result.tokens)
 
+    res.set('Cache-Control', 'no-store')
     logger.info('auth.business_switched', {
       userId,
       from: currentBusinessId,
@@ -305,6 +313,7 @@ router.get(
       sendError(res, 'User not found', 'NOT_FOUND', 404)
       return
     }
+    res.set('Cache-Control', 'no-store')
     sendSuccess(res, data)
   })
 )

@@ -1,54 +1,19 @@
-import { useState, useRef, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useEffect, useRef } from 'react'
 import { Building2, CheckCircle } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { ROUTES } from '@/config/routes.config'
-import * as authLib from '@/lib/auth'
-import { ApiError } from '@/lib/api'
+import { useJoinBusiness } from './useJoinBusiness'
 import './join-business.css'
 
 export default function JoinBusinessPage() {
-  const [searchParams] = useSearchParams()
-  const [code, setCode] = useState(searchParams.get('code') ?? '')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState<{ businessName: string; roleName: string } | null>(null)
-  const submitting = useRef(false)
+  const { code, loading, error, success, handleCodeChange, handleSubmit } = useJoinBusiness()
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     inputRef.current?.focus()
   }, [])
 
-  const handleCodeChange = (value: string) => {
-    // Only allow alphanumeric uppercase, max 6 chars
-    const cleaned = value.replace(/[^A-Z0-9]/gi, '').toUpperCase().slice(0, 6)
-    setCode(cleaned)
-    setError('')
-  }
-
-  const handleSubmit = async () => {
-    if (submitting.current || code.length !== 6) return
-    submitting.current = true
-    setLoading(true)
-    setError('')
-
-    try {
-      const result = await authLib.joinBusiness(code)
-      setSuccess({
-        businessName: result.business.name,
-        roleName: result.businessUser.role,
-      })
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Failed to join business')
-    } finally {
-      setLoading(false)
-      submitting.current = false
-    }
-  }
-
   const handleGoToDashboard = () => {
-    // Reload to pick up new business context
     window.location.href = ROUTES.DASHBOARD
   }
 

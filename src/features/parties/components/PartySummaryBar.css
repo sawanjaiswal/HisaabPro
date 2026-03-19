@@ -26,7 +26,7 @@
 .party-hero-card {
   border: none;
   border-radius: 20px;
-  padding: 20px;
+  padding: var(--space-4);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -91,6 +91,22 @@
 
 .party-hero-chevron--dark {
   color: var(--color-hero-text-muted);
+}
+
+/* Small screens — tighter cards */
+@media (max-width: 359px) {
+  .party-hero-card {
+    padding: var(--space-3);
+    min-height: 80px;
+  }
+
+  .party-hero-amount {
+    font-size: 1.125rem;
+  }
+
+  .party-hero-label {
+    font-size: 0.75rem;
+  }
 }
 
 @media (min-width: 768px) {

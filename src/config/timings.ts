@@ -1,6 +1,6 @@
 /**
  * SSOT for UI timing/delay constants (in milliseconds).
- * Adapted from DudhHisaab — removed dairy-specific timings.
+ * Adapted from HisaabPro — removed dairy-specific timings.
  *
  * Usage:
  *   import { TIMINGS } from '../config/timings';

@@ -1,5 +1,5 @@
 /**
- * Feedback routes — adapted from DudhHisaab
+ * Feedback routes — adapted from HisaabPro
  * Submit feedback, get user's feedback. Admin routes deferred.
  */
 

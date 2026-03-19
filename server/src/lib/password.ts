@@ -1,5 +1,5 @@
 /**
- * Password hashing — direct copy from DudhHisaab
+ * Password hashing — direct copy from HisaabPro
  */
 
 import bcrypt from 'bcryptjs'

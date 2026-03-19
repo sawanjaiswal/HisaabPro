@@ -6,22 +6,19 @@
 
 /* ─── Dashboard-specific tokens ───────────────────────────── */
 .dashboard-page {
+  /* Color aliases — intentionally different from globals (dark mode overrides below change these) */
   --dash-teal-start: var(--gradient-teal-start);
   --dash-teal-end: var(--gradient-teal-end);
   --dash-lime: var(--color-lime-accent);
-  --dash-lime-hover: var(--color-secondary-400);
   --dash-text-primary: var(--color-gray-900);
   --dash-text-secondary: var(--color-gray-600);
   --dash-text-muted: var(--color-gray-500);
-  --dash-text-action: var(--color-gray-700);
-  --dash-error: var(--color-error-500);
   --dash-teal-10: rgba(27, 99, 105, 0.1);
   --dash-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.03);
   --dash-avatar-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --dash-side-padding: 16px;
-  --dash-inner-padding: 24px;
-  --dash-section-gap: 24px;
-  /* Entrance animation — slower stagger for premium feel */
+  /* Spacing — use global tokens directly */
+  --dash-side-padding: var(--side-padding);
+  --dash-section-gap: var(--space-6);
   --dash-stagger-base: 80ms;
 }
 
@@ -205,7 +202,7 @@
   border-radius: var(--radius-full);
 }
 
-/* ─── Skeleton shimmer ──────────────────────────────────────── */
+/* ─── Skeleton shimmer — keyframe defined in animations.css ── */
 .skeleton {
   background: linear-gradient(
     90deg,
@@ -215,11 +212,6 @@
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
 }
 
 /* ─── Tablet and above ──────────────────────────────────────── */
@@ -245,12 +237,9 @@
   --dash-teal-start: #3FAED6;
   --dash-teal-end: #2199B5;
   --dash-lime: var(--color-lime-accent);
-  --dash-lime-hover: #c8d43a;
   --dash-text-primary: var(--color-gray-900);
   --dash-text-secondary: var(--color-gray-500);
   --dash-text-muted: var(--color-gray-400);
-  --dash-text-action: var(--color-gray-700);
-  --dash-error: var(--color-error-500);
   --dash-teal-10: rgba(63, 174, 214, 0.12);
   --dash-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(43, 51, 66, 0.3);
   --dash-avatar-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);

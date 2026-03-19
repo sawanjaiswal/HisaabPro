@@ -1,6 +1,6 @@
 /**
  * Referral & Earn Routes — Feature #3
- * Adapted from DudhHisaab referral.routes.ts
+ * Adapted from HisaabPro referral.routes.ts
  *
  * All authenticated routes require JWT via auth middleware.
  * POST endpoints are rate-limited (10 req / 15 min) to prevent abuse.

@@ -1,6 +1,6 @@
 /**
  * SSOT for z-index stacking layers.
- * Adapted from DudhHisaab — removed map-specific layers.
+ * Adapted from HisaabPro — removed map-specific layers.
  *
  * Usage:
  *   import { Z } from '../config/zIndexes';

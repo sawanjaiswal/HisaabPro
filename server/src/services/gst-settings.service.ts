@@ -34,9 +34,18 @@ export async function updateGstSettings(
   businessId: string,
   data: Partial<GstSettingsData>,
 ): Promise<GstSettingsData> {
+  // Destructure only allowed GST fields — prevent mass assignment
+  const { gstin, stateCode, compositionScheme, eInvoiceEnabled, eWayBillEnabled } = data
+  const safeData: Partial<GstSettingsData> = {}
+  if (gstin !== undefined) safeData.gstin = gstin
+  if (stateCode !== undefined) safeData.stateCode = stateCode
+  if (compositionScheme !== undefined) safeData.compositionScheme = compositionScheme
+  if (eInvoiceEnabled !== undefined) safeData.eInvoiceEnabled = eInvoiceEnabled
+  if (eWayBillEnabled !== undefined) safeData.eWayBillEnabled = eWayBillEnabled
+
   const biz = await prisma.business.update({
     where: { id: businessId },
-    data,
+    data: safeData,
     select: GST_SELECT,
   })
   return biz

@@ -1,6 +1,6 @@
 /**
  * Network Detection — Dual-Signal Approach
- * Adapted from DudhHisaab — changed health URL for HisaabPro
+ * Adapted from HisaabPro — changed health URL for HisaabPro
  *
  * Browser events for instant feedback + periodic HEAD /health heartbeat for accuracy.
  */

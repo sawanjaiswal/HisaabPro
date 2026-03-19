@@ -1,5 +1,5 @@
 /**
- * IST date utilities — direct copy from DudhHisaab
+ * IST date utilities — direct copy from HisaabPro
  * Server runs in UTC; these helpers convert to IST for business logic
  */
 

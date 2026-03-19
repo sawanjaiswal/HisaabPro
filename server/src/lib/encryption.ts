@@ -1,5 +1,5 @@
 /**
- * AES-256-GCM encryption — direct copy from DudhHisaab
+ * AES-256-GCM encryption — direct copy from HisaabPro
  * Format: "iv:authTag:ciphertext" (all hex)
  * Key: ENCRYPTION_KEY env var (exactly 32 ASCII chars = 256 bits)
  */

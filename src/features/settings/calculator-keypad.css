@@ -3,7 +3,7 @@
  * GT/MU/Cash function buttons, percentage preset rows (+/-),
  * standard 4-column keypad (digits, operators, clear, equals).
  *
- * Design: HisaabApp design system tokens, 8pt grid spacing.
+ * Design: HisaabPro design system tokens, 8pt grid spacing.
  */
 
 /* ─── Function row: GT, MU, Cash IN, Cash OUT ───────────────────────────── */
@@ -194,7 +194,7 @@
 }
 
 .calculator-key--clear:active {
-  background: var(--color-error-200, #fecaca);
+  background: var(--color-error-200);
 }
 
 .calculator-key--zero {

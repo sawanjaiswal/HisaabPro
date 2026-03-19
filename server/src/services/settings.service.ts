@@ -237,7 +237,15 @@ export async function getRole(businessId: string, roleId: string) {
   return role
 }
 
+const VALID_PERMISSIONS = new Set(ALL_PERMISSIONS)
+
 export async function createRole(businessId: string, data: CreateRoleInput) {
+  // Validate permission strings against known matrix
+  const invalid = data.permissions.filter(p => !VALID_PERMISSIONS.has(p))
+  if (invalid.length > 0) {
+    throw validationError(`Invalid permissions: ${invalid.join(', ')}`)
+  }
+
   if (data.isDefault) {
     await prisma.role.updateMany({
       where: { businessId, isDefault: true },
@@ -268,6 +276,13 @@ export async function updateRole(businessId: string, roleId: string, data: Updat
   })
   if (!role) throw notFoundError('Role')
   if (role.isSystem) throw validationError('Cannot modify system roles')
+
+  if (data.permissions) {
+    const invalid = data.permissions.filter(p => !VALID_PERMISSIONS.has(p))
+    if (invalid.length > 0) {
+      throw validationError(`Invalid permissions: ${invalid.join(', ')}`)
+    }
+  }
 
   if (data.isDefault) {
     await prisma.role.updateMany({
@@ -367,6 +382,15 @@ export async function inviteStaff(
     throw validationError(`Maximum ${MAX_PENDING_INVITES} pending invites reached`)
   }
 
+  // Validate roleId exists in this business
+  if (data.roleId) {
+    const role = await prisma.role.findFirst({
+      where: { id: data.roleId, businessId },
+      select: { id: true },
+    })
+    if (!role) throw notFoundError('Role')
+  }
+
   // Generate invite code (6 hex chars from 3 bytes)
   const code = crypto.randomBytes(INVITE_CODE_BYTES).toString('hex').toUpperCase()
   const expiresAt = new Date(Date.now() + INVITE_TTL_MS)
@@ -413,16 +437,34 @@ export async function joinBusiness(userId: string, phone: string, code: string) 
     throw validationError('This invite was sent to a different phone number')
   }
 
-  // Check not already a member
-  const existing = await prisma.businessUser.findUnique({
-    where: { userId_businessId: { userId, businessId: invite.businessId } },
-    select: { id: true },
-  })
-  if (existing) throw conflictError('You are already a member of this business')
-
-  // Create BusinessUser + mark invite accepted in transaction
+  // Entire acceptance inside a single transaction to prevent race conditions
   const businessUser = await prisma.$transaction(async (tx) => {
-    const bu = await tx.businessUser.create({
+    // Re-check status inside transaction (prevents concurrent acceptance)
+    const freshInvite = await tx.staffInvite.update({
+      where: { id: invite.id, status: 'PENDING' },
+      data: { status: 'ACCEPTED' },
+      select: { id: true },
+    }).catch(() => null)
+
+    if (!freshInvite) throw validationError('This invite has already been used')
+
+    // Check not already a member (inside transaction)
+    const existing = await tx.businessUser.findUnique({
+      where: { userId_businessId: { userId, businessId: invite.businessId } },
+      select: { id: true },
+    })
+    if (existing) throw conflictError('You are already a member of this business')
+
+    // Validate roleId exists if provided
+    if (invite.roleId) {
+      const role = await tx.role.findFirst({
+        where: { id: invite.roleId, businessId: invite.businessId },
+        select: { id: true },
+      })
+      if (!role) throw validationError('The assigned role no longer exists')
+    }
+
+    return tx.businessUser.create({
       data: {
         userId,
         businessId: invite.businessId,
@@ -436,13 +478,6 @@ export async function joinBusiness(userId: string, phone: string, code: string) 
         roleRef: { select: { id: true, name: true } },
       },
     })
-
-    await tx.staffInvite.update({
-      where: { id: invite.id },
-      data: { status: 'ACCEPTED' },
-    })
-
-    return bu
   })
 
   return { businessUser, business: invite.business }
@@ -575,22 +610,39 @@ export async function updateTransactionLock(businessId: string, data: UpdateTran
 
 // === Approvals ===
 
-export async function listApprovals(businessId: string, status?: string) {
+export async function listApprovals(
+  businessId: string,
+  status?: string,
+  page = 1,
+  limit = 50,
+) {
   const where: Record<string, unknown> = { businessId }
   if (status) where.status = status
 
-  return prisma.approvalRequest.findMany({
-    where,
-    select: {
-      id: true, type: true, entityType: true, entityId: true,
-      requestedChanges: true, status: true, reviewedAt: true,
-      reviewNote: true, expiresAt: true, createdAt: true,
-      requester: { select: { id: true, name: true } },
-      reviewer: { select: { id: true, name: true } },
-    },
-    orderBy: { createdAt: 'desc' },
-    take: 50,
-  })
+  const safePage = Math.max(1, page)
+  const safeLimit = Math.min(Math.max(1, limit), 200)
+
+  const [entries, total] = await Promise.all([
+    prisma.approvalRequest.findMany({
+      where,
+      select: {
+        id: true, type: true, entityType: true, entityId: true,
+        requestedChanges: true, status: true, reviewedAt: true,
+        reviewNote: true, expiresAt: true, createdAt: true,
+        requester: { select: { id: true, name: true } },
+        reviewer: { select: { id: true, name: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      skip: (safePage - 1) * safeLimit,
+      take: safeLimit,
+    }),
+    prisma.approvalRequest.count({ where }),
+  ])
+
+  return {
+    entries,
+    pagination: { page: safePage, limit: safeLimit, total, totalPages: Math.ceil(total / safeLimit) },
+  }
 }
 
 export async function reviewApproval(

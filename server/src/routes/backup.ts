@@ -1,5 +1,5 @@
 /**
- * Backup routes — adapted from DudhHisaab
+ * Backup routes — adapted from HisaabPro
  * Manual backup, list, download, cooldown status.
  * Restore deferred until offline sync is built.
  */

@@ -1,5 +1,5 @@
 /**
- * Toast Notification Hook — direct from DudhHisaab
+ * Toast Notification Hook — direct from HisaabPro
  * Global toast state management using Zustand
  */
 

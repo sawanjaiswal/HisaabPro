@@ -1,6 +1,6 @@
 /**
  * Referral & Earn Service — Feature #3
- * Adapted from DudhHisaab referral module (stripped: milk fields, Sentry, branding strings)
+ * Adapted from HisaabPro referral module (stripped: milk fields, Sentry, branding strings)
  *
  * Covers:
  *   - Code generation (collision-safe, crypto-based)

@@ -83,8 +83,8 @@
 .input-with-icon { padding-left: 2.75rem; }
 .input-with-icon:focus { padding-left: calc(2.75rem - 0.5px); }
 .input-group-error .input { border: 2px solid var(--color-error-500); }
-.input::placeholder { color: var(--color-gray-300); }
-.input-icon { position: absolute; left: var(--space-4); top: 50%; transform: translateY(-50%); color: var(--color-gray-400); pointer-events: none; }
+.input::placeholder { color: var(--color-gray-400); }
+.input-icon { position: absolute; left: var(--space-4); top: 50%; transform: translateY(-50%); color: var(--color-gray-500); pointer-events: none; }
 
 .input-error {
   font-size: 0.833rem;
@@ -101,6 +101,18 @@
 
 .card-elevated { box-shadow: var(--shadow-md); }
 .card-compact { padding: var(--space-3); border-radius: var(--radius-lg); }
+
+/* Clickable cards — keyboard focus indicator */
+.card[role="button"]:focus-visible,
+.card-accent[role="button"]:focus-visible,
+.card-primary[role="button"]:focus-visible {
+  outline: 2px solid var(--color-primary-400);
+  outline-offset: 2px;
+}
+
+/* Interactive card press feedback */
+.card[role="button"] { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.card[role="button"]:active { transform: scale(0.98); }
 
 /* Accent card — the lime-yellow highlight cards */
 .card-accent {
@@ -164,7 +176,7 @@
   overflow-x: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
-  padding: var(--space-1) 0;
+  padding: var(--space-1) var(--space-4) var(--space-1) 0;
 }
 
 .pill-tabs::-webkit-scrollbar { display: none; }

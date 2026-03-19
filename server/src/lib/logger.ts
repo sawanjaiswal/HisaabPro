@@ -1,5 +1,5 @@
 /**
- * Structured Logging with Winston — adapted from DudhHisaab
+ * Structured Logging with Winston — adapted from HisaabPro
  */
 
 import winston from 'winston'

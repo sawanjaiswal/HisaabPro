@@ -1,5 +1,5 @@
 /**
- * Centralized error handler middleware — adapted from DudhHisaab
+ * Centralized error handler middleware — adapted from HisaabPro
  */
 
 import type { Request, Response, NextFunction } from 'express'

@@ -1,5 +1,5 @@
 /**
- * Performance monitoring — direct copy from DudhHisaab
+ * Performance monitoring — direct copy from HisaabPro
  * Logs slow requests (>1s) and adds X-Response-Time header
  */
 

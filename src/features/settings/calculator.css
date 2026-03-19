@@ -3,7 +3,7 @@
  * Overlay, sheet container, header, bottom actions, FAB,
  * and their dark/reduced-motion overrides.
  *
- * Design: HisaabApp design system tokens, 8pt grid spacing.
+ * Design: HisaabPro design system tokens, 8pt grid spacing.
  */
 
 /* ─── Entrance animations ───────────────────────────────────────────────── */
@@ -23,7 +23,7 @@
 .calculator-overlay {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  z-index: var(--z-modal);
   display: flex;
   flex-direction: column;
   animation: calc-fade-in 0.25s var(--ease-default);
@@ -135,20 +135,20 @@
 
 .calculator-fab {
   position: fixed;
-  bottom: calc(var(--bottom-nav-height) + var(--space-4));
+  bottom: calc(var(--bottom-nav-height) + var(--space-3));
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background-color: var(--color-primary-500);
   color: var(--color-white-inverse);
   box-shadow: 0 4px 12px var(--color-primary-300);
   border: none;
   cursor: pointer;
-  z-index: 30;
-  font-size: 1.25rem;
+  z-index: var(--z-overlay);
+  font-size: 1.125rem;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   -webkit-tap-highlight-color: transparent;
 }

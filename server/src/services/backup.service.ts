@@ -1,5 +1,5 @@
 /**
- * Backup Service — adapted from DudhHisaab
+ * Backup Service — adapted from HisaabPro
  * Simplified skeleton: JSON export/import of user data.
  * Tables backed up will expand as features are built.
  *
