@@ -11,9 +11,11 @@ vi.mock('../dashboard.service', () => ({
 beforeEach(() => { vi.clearAllMocks() })
 
 const MOCK_DATA = {
-  todayCollection: 50000,
-  totalOutstanding: 120000,
-  activeCustomers: 12,
+  outstanding: { receivable: { total: 120000, partyCount: 12 }, payable: { total: 0, partyCount: 0 } },
+  today: { salesCount: 5, salesAmount: 50000, paymentsReceivedCount: 3, paymentsReceivedAmount: 30000, paymentsMadeAmount: 0, netCashFlow: 30000 },
+  recentActivity: [],
+  alerts: { lowStockCount: 0, overdueInvoiceCount: 0, overdueAmount: 0 },
+  topDebtors: [],
 }
 
 describe('useHomeDashboard', () => {
@@ -45,10 +47,11 @@ describe('useHomeDashboard', () => {
     const { result } = renderHook(() => useHomeDashboard())
 
     await waitFor(() => expect(result.current.status).toBe('success'))
-    mockGetHomeDashboard.mockResolvedValue({ ...MOCK_DATA, activeCustomers: 20 })
+    const updatedData = { ...MOCK_DATA, outstanding: { ...MOCK_DATA.outstanding, receivable: { total: 200000, partyCount: 20 } } }
+    mockGetHomeDashboard.mockResolvedValue(updatedData)
 
     result.current.refresh()
-    await waitFor(() => expect(result.current.data?.activeCustomers).toBe(20))
+    await waitFor(() => expect(result.current.data?.outstanding.receivable.partyCount).toBe(20))
   })
 
   it('ignores AbortError', async () => {

@@ -30,7 +30,7 @@ describe('useRoles', () => {
   })
 
   it('does not fetch when businessId is empty', async () => {
-    const { result } = renderHook(() => useRoles(''))
+    renderHook(() => useRoles(''))
     await new Promise((r) => setTimeout(r, 50))
     expect(mockGetRoles).not.toHaveBeenCalled()
   })
@@ -55,7 +55,7 @@ describe('useRoles', () => {
   it('shows ApiError message on error', async () => {
     const { ApiError } = await import('@/lib/api')
     mockGetRoles.mockRejectedValue(new ApiError('Forbidden', 'FORBIDDEN', 403))
-    const { result } = renderHook(() => useRoles('biz-1'))
+    renderHook(() => useRoles('biz-1'))
 
     await waitFor(() => expect(mockToast.error).toHaveBeenCalledWith('Forbidden'))
   })

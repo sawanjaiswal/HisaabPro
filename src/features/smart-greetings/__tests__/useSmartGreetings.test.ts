@@ -5,7 +5,9 @@ import { useSmartGreetings } from '../useSmartGreetings'
 const mockToast = { success: vi.fn(), error: vi.fn(), info: vi.fn() }
 vi.mock('@/hooks/useToast', () => ({ useToast: () => mockToast }))
 
-const MOCK_TEMPLATES = [
+import type { GreetingTemplate } from '../smart-greetings.types'
+
+const MOCK_TEMPLATES: GreetingTemplate[] = [
   { id: 't1', name: 'Diwali Wish', occasion: 'DIWALI', message: 'Happy Diwali {{name}}!', gradient: '#f00', emoji: '🪔' },
   { id: 't2', name: 'Holi Wish', occasion: 'HOLI', message: 'Happy Holi {{name}}!', gradient: '#0f0', emoji: '🎨' },
 ]

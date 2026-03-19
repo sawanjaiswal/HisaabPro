@@ -51,7 +51,7 @@ describe('useTemplates', () => {
   it('shows ApiError message on error', async () => {
     const { ApiError } = await import('@/lib/api')
     mockGetTemplates.mockRejectedValue(new ApiError('Custom msg', 'ERR', 500))
-    const { result } = renderHook(() => useTemplates())
+    renderHook(() => useTemplates())
 
     await waitFor(() => expect(mockToast.error).toHaveBeenCalledWith('Custom msg'))
   })

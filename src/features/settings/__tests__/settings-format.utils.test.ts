@@ -68,20 +68,20 @@ describe('formatTimeAgo', () => {
 
 describe('formatShortcutKey', () => {
   it('formats Ctrl + key', () => {
-    expect(formatShortcutKey({ key: 'n', ctrl: true })).toBe('Ctrl + N')
+    expect(formatShortcutKey({ key: 'n', ctrl: true, label: 'New' })).toBe('Ctrl + N')
   })
 
   it('formats multiple modifiers', () => {
-    expect(formatShortcutKey({ key: 's', ctrl: true, shift: true })).toBe('Ctrl + Shift + S')
+    expect(formatShortcutKey({ key: 's', ctrl: true, shift: true, label: 'Save' })).toBe('Ctrl + Shift + S')
   })
 
   it('formats special keys', () => {
-    expect(formatShortcutKey({ key: 'Enter' })).toBe('Enter')
-    expect(formatShortcutKey({ key: 'Escape' })).toBe('Esc')
-    expect(formatShortcutKey({ key: ' ' })).toBe('Space')
+    expect(formatShortcutKey({ key: 'Enter', label: 'Submit' })).toBe('Enter')
+    expect(formatShortcutKey({ key: 'Escape', label: 'Close' })).toBe('Esc')
+    expect(formatShortcutKey({ key: ' ', label: 'Toggle' })).toBe('Space')
   })
 
   it('formats plain key without modifiers', () => {
-    expect(formatShortcutKey({ key: 'f' })).toBe('F')
+    expect(formatShortcutKey({ key: 'f', label: 'Find' })).toBe('F')
   })
 })

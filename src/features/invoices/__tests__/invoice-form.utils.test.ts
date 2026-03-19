@@ -50,7 +50,7 @@ describe('validateInvoiceForm', () => {
     termsAndConditions: '',
     vehicleNumber: '',
     includeSignature: false,
-    lineItems: [{ productId: 'p1', productName: 'Test', quantity: 2, rate: 10000, discountType: 'PERCENTAGE', discountValue: 0 }],
+    lineItems: [{ productId: 'p1', quantity: 2, rate: 10000, discountType: 'PERCENTAGE', discountValue: 0 }],
     additionalCharges: [],
     transportDetails: null,
   }

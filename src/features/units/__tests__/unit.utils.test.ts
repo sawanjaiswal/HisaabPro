@@ -6,7 +6,7 @@ import {
   validateUnitName,
   validateUnitSymbol,
 } from '../unit.utils'
-import type { Unit } from '../unit.types'
+import type { Unit, UnitCategory } from '../unit.types'
 
 // ─── Test helpers ─────────────────────────────────────────────────────────────
 
@@ -16,7 +16,7 @@ function makeUnit(overrides: Partial<Unit> = {}): Unit {
     name: 'kilogram',
     symbol: 'kg',
     type: 'PREDEFINED',
-    category: null as unknown as string,
+    category: 'OTHER' as UnitCategory,
     decimalAllowed: true,
     baseUnitId: null,
     baseUnitFactor: null,
@@ -34,18 +34,18 @@ describe('getUnitCategory', () => {
   })
 
   it('infers category from symbol for predefined units', () => {
-    expect(getUnitCategory(makeUnit({ symbol: 'kg', category: null as unknown as string }))).toBe('WEIGHT')
-    expect(getUnitCategory(makeUnit({ symbol: 'ltr', category: null as unknown as string }))).toBe('VOLUME')
-    expect(getUnitCategory(makeUnit({ symbol: 'pcs', category: null as unknown as string }))).toBe('COUNT')
-    expect(getUnitCategory(makeUnit({ symbol: 'box', category: null as unknown as string }))).toBe('PACKAGING')
+    expect(getUnitCategory(makeUnit({ symbol: 'kg', category: null as unknown as UnitCategory }))).toBe('WEIGHT')
+    expect(getUnitCategory(makeUnit({ symbol: 'ltr', category: null as unknown as UnitCategory }))).toBe('VOLUME')
+    expect(getUnitCategory(makeUnit({ symbol: 'pcs', category: null as unknown as UnitCategory }))).toBe('COUNT')
+    expect(getUnitCategory(makeUnit({ symbol: 'box', category: null as unknown as UnitCategory }))).toBe('PACKAGING')
   })
 
   it('returns OTHER for unknown predefined symbols', () => {
-    expect(getUnitCategory(makeUnit({ symbol: 'xyz', category: null as unknown as string }))).toBe('OTHER')
+    expect(getUnitCategory(makeUnit({ symbol: 'xyz', category: null as unknown as UnitCategory }))).toBe('OTHER')
   })
 
   it('returns OTHER for custom units without category', () => {
-    expect(getUnitCategory(makeUnit({ type: 'CUSTOM', symbol: 'abc', category: null as unknown as string }))).toBe('OTHER')
+    expect(getUnitCategory(makeUnit({ type: 'CUSTOM', symbol: 'abc', category: null as unknown as UnitCategory }))).toBe('OTHER')
   })
 })
 

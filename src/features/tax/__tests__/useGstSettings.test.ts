@@ -40,7 +40,7 @@ describe('useGstSettings', () => {
   })
 
   it('skips fetch for empty businessId', () => {
-    const { result } = renderHook(() => useGstSettings(''))
+    renderHook(() => useGstSettings(''))
     expect(mockApi).not.toHaveBeenCalled()
   })
 

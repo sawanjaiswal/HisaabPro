@@ -49,8 +49,8 @@ describe('calculateDiscount', () => {
 describe('autoAllocateFIFO', () => {
   it('allocates to invoices in order', () => {
     const invoices = [
-      { invoiceId: 'a', invoiceDue: 10000, amount: 0, invoiceNumber: '', invoiceDate: '' },
-      { invoiceId: 'b', invoiceDue: 8000, amount: 0, invoiceNumber: '', invoiceDate: '' },
+      { invoiceId: 'a', invoiceDue: 10000, amount: 0, invoiceNumber: '', selected: true },
+      { invoiceId: 'b', invoiceDue: 8000, amount: 0, invoiceNumber: '', selected: true },
     ]
     const result = autoAllocateFIFO(15000, invoices)
     expect(result[0].amount).toBe(10000)
@@ -59,8 +59,8 @@ describe('autoAllocateFIFO', () => {
 
   it('zeroes out invoices beyond payment amount', () => {
     const invoices = [
-      { invoiceId: 'a', invoiceDue: 10000, amount: 0, invoiceNumber: '', invoiceDate: '' },
-      { invoiceId: 'b', invoiceDue: 8000, amount: 0, invoiceNumber: '', invoiceDate: '' },
+      { invoiceId: 'a', invoiceDue: 10000, amount: 0, invoiceNumber: '', selected: true },
+      { invoiceId: 'b', invoiceDue: 8000, amount: 0, invoiceNumber: '', selected: true },
     ]
     const result = autoAllocateFIFO(5000, invoices)
     expect(result[0].amount).toBe(5000)
@@ -69,7 +69,7 @@ describe('autoAllocateFIFO', () => {
 
   it('handles exact amount', () => {
     const invoices = [
-      { invoiceId: 'a', invoiceDue: 5000, amount: 0, invoiceNumber: '', invoiceDate: '' },
+      { invoiceId: 'a', invoiceDue: 5000, amount: 0, invoiceNumber: '', selected: true },
     ]
     const result = autoAllocateFIFO(5000, invoices)
     expect(result[0].amount).toBe(5000)
@@ -85,22 +85,22 @@ describe('autoAllocateFIFO', () => {
 describe('calculateUnallocatedAmount', () => {
   it('returns unallocated portion', () => {
     const allocs = [
-      { invoiceId: 'a', invoiceDue: 10000, amount: 10000, invoiceNumber: '', invoiceDate: '' },
-      { invoiceId: 'b', invoiceDue: 8000, amount: 3000, invoiceNumber: '', invoiceDate: '' },
+      { invoiceId: 'a', invoiceDue: 10000, amount: 10000, invoiceNumber: '', selected: true },
+      { invoiceId: 'b', invoiceDue: 8000, amount: 3000, invoiceNumber: '', selected: true },
     ]
     expect(calculateUnallocatedAmount(15000, allocs)).toBe(2000)
   })
 
   it('returns 0 when fully allocated', () => {
     const allocs = [
-      { invoiceId: 'a', invoiceDue: 10000, amount: 10000, invoiceNumber: '', invoiceDate: '' },
+      { invoiceId: 'a', invoiceDue: 10000, amount: 10000, invoiceNumber: '', selected: true },
     ]
     expect(calculateUnallocatedAmount(10000, allocs)).toBe(0)
   })
 
   it('never returns negative', () => {
     const allocs = [
-      { invoiceId: 'a', invoiceDue: 10000, amount: 15000, invoiceNumber: '', invoiceDate: '' },
+      { invoiceId: 'a', invoiceDue: 10000, amount: 15000, invoiceNumber: '', selected: true },
     ]
     expect(calculateUnallocatedAmount(10000, allocs)).toBe(0)
   })
@@ -115,14 +115,14 @@ describe('calculateSettlement', () => {
   })
 
   it('includes fixed discount in total settled', () => {
-    const result = calculateSettlement(900000, { type: 'FIXED', value: 100000, reason: null })
+    const result = calculateSettlement(900000, { type: 'FIXED', value: 100000, calculatedAmount: 100000, reason: '' })
     expect(result.payment).toBe(900000)
     expect(result.discount).toBe(100000)
     expect(result.totalSettled).toBe(1000000)
   })
 
   it('calculates percentage discount', () => {
-    const result = calculateSettlement(1000000, { type: 'PERCENTAGE', value: 10, reason: null })
+    const result = calculateSettlement(1000000, { type: 'PERCENTAGE', value: 10, calculatedAmount: 100000, reason: '' })
     expect(result.discount).toBe(100000)
     expect(result.totalSettled).toBe(1100000)
   })

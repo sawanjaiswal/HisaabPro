@@ -49,7 +49,7 @@ describe('useLoans', () => {
   it('shows ApiError message on error', async () => {
     const { ApiError } = await import('@/lib/api')
     mockListLoans.mockRejectedValue(new ApiError('Unauthorized', 'AUTH', 401))
-    const { result } = renderHook(() => useLoans())
+    renderHook(() => useLoans())
 
     await waitFor(() => expect(mockToast.error).toHaveBeenCalledWith('Unauthorized'))
   })

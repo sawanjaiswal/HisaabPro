@@ -1,6 +1,6 @@
 import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { renderHook, waitFor, act } from '@testing-library/react'
+import { renderHook, act } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
 const mockToast = { success: vi.fn(), error: vi.fn(), info: vi.fn() }

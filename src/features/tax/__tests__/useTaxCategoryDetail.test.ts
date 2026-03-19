@@ -40,7 +40,7 @@ describe('useTaxCategoryDetail', () => {
   })
 
   it('skips fetch for empty id', () => {
-    const { result } = renderHook(() => useTaxCategoryDetail(''))
+    renderHook(() => useTaxCategoryDetail(''))
     expect(mockApi).not.toHaveBeenCalled()
   })
 

@@ -27,7 +27,7 @@ describe('useEWayBillActions', () => {
 
   it('generateEwb calls service and updates state', async () => {
     mockGenerateEWB.mockResolvedValue(MOCK_RESULT)
-    const input = { vehicleNumber: 'MH12AB1234', vehicleType: 'REGULAR' as const, transportMode: 'ROAD' as const }
+    const input = { vehicleNumber: 'MH12AB1234', vehicleType: 'REGULAR' as const, transportMode: 'ROAD' as const, distance: 150, fromPincode: '400001', toPincode: '411001' }
     const { result } = renderHook(() => useEWayBillActions('doc-1', onUpdate))
     await act(async () => { await result.current.generateEwb(input) })
     expect(mockGenerateEWB).toHaveBeenCalledWith({ ...input, documentId: 'doc-1' })

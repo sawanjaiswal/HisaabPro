@@ -44,8 +44,7 @@ describe('useTaxCategoryForm', () => {
       () => useTaxCategoryForm({ businessId: 'biz-1' }),
       { wrapper },
     )
-    let valid = false
-    act(() => { valid = result.current.handleSubmit() as unknown as boolean })
+    act(() => { result.current.handleSubmit() })
     expect(result.current.errors.name).toBe('Name is required')
   })
 

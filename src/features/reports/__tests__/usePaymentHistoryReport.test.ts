@@ -49,9 +49,9 @@ describe('usePaymentHistoryReport', () => {
   it('setFilter updates filters and re-fetches', async () => {
     const { result } = renderHook(() => usePaymentHistoryReport())
     await waitFor(() => expect(result.current.status).toBe('success'))
-    act(() => result.current.setFilter('direction', 'in'))
+    act(() => result.current.setFilter('type', 'in'))
     await waitFor(() => expect(mockGetPaymentHistory).toHaveBeenCalledWith(
-      expect.objectContaining({ direction: 'in' }),
+      expect.objectContaining({ type: 'in' }),
       expect.any(AbortSignal),
     ))
   })

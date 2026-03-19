@@ -49,7 +49,7 @@ describe('useShareLedger', () => {
     const { result } = renderHook(() => useShareLedger('p1'))
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
-    const created = await act(() => result.current.createShare({ expiresInDays: 7 }))
+    const created = await act(() => result.current.createShare({ expiryDays: 7 }))
     expect(created).toEqual(newShare)
     expect(mockToast.success).toHaveBeenCalledWith('Share link copied!')
   })
@@ -61,7 +61,7 @@ describe('useShareLedger', () => {
     const { result } = renderHook(() => useShareLedger('p1'))
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
-    const created = await act(() => result.current.createShare({ expiresInDays: 7 }))
+    const created = await act(() => result.current.createShare({ expiryDays: 7 }))
     expect(created).toBeNull()
     expect(mockToast.error).toHaveBeenCalledWith('Failed to create share link')
   })

@@ -65,7 +65,7 @@ describe('useCurrencySettings', () => {
     const { result } = renderHook(() => useCurrencySettings())
     await waitFor(() => expect(result.current.status).toBe('success'))
 
-    await act(() => result.current.setRate({ fromCurrency: 'USD', rate: 850000 }))
+    await act(() => result.current.setRate({ fromCurrency: 'USD', rate: 850000, effectiveDate: '2026-03-19' }))
     expect(result.current.rates[0]).toEqual(newEntry)
     expect(mockToast.success).toHaveBeenCalled()
   })

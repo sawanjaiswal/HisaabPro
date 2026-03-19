@@ -49,6 +49,10 @@ describe('useRoleBuilder', () => {
       permissions: ['invoicing.view', 'invoicing.create'],
       isDefault: true,
       isSystem: false,
+      priority: 1,
+      staffCount: 3,
+      createdAt: '2026-01-01T00:00:00Z',
+      updatedAt: '2026-01-01T00:00:00Z',
     }
     const { result } = renderHook(
       () => useRoleBuilder({ businessId: BIZ_ID, role }),
@@ -108,9 +112,14 @@ describe('useRoleBuilder', () => {
     const template = {
       id: 'sys-1',
       name: 'Viewer',
+      description: null,
       permissions: ['invoicing.view', 'inventory.view', 'payments.view'],
       isSystem: true,
       isDefault: false,
+      priority: 0,
+      staffCount: 0,
+      createdAt: '2026-01-01T00:00:00Z',
+      updatedAt: '2026-01-01T00:00:00Z',
     }
     const { result } = renderHook(() => useRoleBuilder({ businessId: BIZ_ID }), { wrapper })
 
@@ -153,9 +162,14 @@ describe('useRoleBuilder', () => {
     const role = {
       id: 'role-1',
       name: 'Staff',
+      description: null,
       permissions: ['invoicing.view'],
       isSystem: false,
       isDefault: false,
+      priority: 2,
+      staffCount: 1,
+      createdAt: '2026-01-01T00:00:00Z',
+      updatedAt: '2026-01-01T00:00:00Z',
     }
     const { result } = renderHook(
       () => useRoleBuilder({ businessId: BIZ_ID, role }),

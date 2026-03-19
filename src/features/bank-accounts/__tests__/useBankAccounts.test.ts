@@ -49,7 +49,7 @@ describe('useBankAccounts', () => {
   it('shows ApiError message on error', async () => {
     const { ApiError } = await import('@/lib/api')
     mockListBankAccounts.mockRejectedValue(new ApiError('DB down', 'DB_ERR', 500))
-    const { result } = renderHook(() => useBankAccounts())
+    renderHook(() => useBankAccounts())
 
     await waitFor(() => expect(mockToast.error).toHaveBeenCalledWith('DB down'))
   })
