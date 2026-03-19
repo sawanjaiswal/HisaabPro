@@ -46,17 +46,13 @@ export async function generateNextNumber(
   const financialYear = getFinancialYear(documentDate)
 
   // Try atomic increment first
-  const updated = await tx.$queryRawUnsafe<
+  const updated = await tx.$queryRaw<
     Array<{ current_sequence: number; prefix: string; separator: string; padding_digits: number; suffix: string }>
-  >(
-    `UPDATE "DocumentNumberSeries"
-     SET "currentSequence" = "currentSequence" + 1, "updatedAt" = NOW()
-     WHERE "businessId" = $1 AND "documentType" = $2 AND "financialYear" = $3
-     RETURNING "currentSequence" as current_sequence, prefix, separator, "paddingDigits" as padding_digits, suffix`,
-    businessId,
-    documentType,
-    financialYear
-  )
+  >`
+    UPDATE "DocumentNumberSeries"
+    SET "currentSequence" = "currentSequence" + 1, "updatedAt" = NOW()
+    WHERE "businessId" = ${businessId} AND "documentType" = ${documentType} AND "financialYear" = ${financialYear}
+    RETURNING "currentSequence" as current_sequence, prefix, separator, "paddingDigits" as padding_digits, suffix`
 
   let sequence: number
   let prefix: string

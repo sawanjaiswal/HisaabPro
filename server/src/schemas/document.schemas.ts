@@ -198,6 +198,16 @@ export const updateTermsTemplateSchema = z.object({
   appliesTo: z.array(z.enum(DOCUMENT_TYPES)).optional(),
 })
 
+// === Validate Stock ===
+
+export const validateStockSchema = z.object({
+  items: z.array(z.object({
+    productId: z.string().uuid(),
+    quantity: z.number().positive(),
+    unitId: z.string().uuid(),
+  })).min(1).max(100),
+})
+
 // === Inferred types ===
 
 export type CreateDocumentInput = z.infer<typeof createDocumentSchema>

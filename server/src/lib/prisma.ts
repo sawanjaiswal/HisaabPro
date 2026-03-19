@@ -9,7 +9,10 @@ import logger from './logger.js'
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }
 
 function getDatabaseUrl(): string {
-  const baseUrl = process.env.DATABASE_URL || ''
+  const baseUrl = process.env.DATABASE_URL
+  if (!baseUrl) {
+    throw new Error('FATAL: DATABASE_URL environment variable is required')
+  }
   if (baseUrl.includes('connection_limit')) return baseUrl
   const separator = baseUrl.includes('?') ? '&' : '?'
   return `${baseUrl}${separator}connection_limit=10&pool_timeout=30`

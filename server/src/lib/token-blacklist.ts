@@ -2,6 +2,11 @@
  * In-memory token blacklist with auto-cleanup.
  * Adapted from HisaabPro's tokenBlacklist.ts.
  * Tokens are blacklisted on logout and auto-removed after expiry.
+ *
+ * LIMITATION: In-memory only — blacklisted tokens are lost on server restart
+ * and not shared across multiple instances. For multi-instance deployments,
+ * replace with Redis: set REDIS_URL env var and use the RedisStore from
+ * rate-limit.ts as a pattern. Short JWT expiry (15min) mitigates the risk.
  */
 
 const blacklistedTokens = new Map<string, number>() // token → expiresAt (ms)
