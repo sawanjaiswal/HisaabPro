@@ -35,13 +35,11 @@ async function generateSku(businessId: string): Promise<string> {
     update: {},
   })
 
-  const rows = await prisma.$queryRawUnsafe<Array<{ sku_prefix: string; sku_next_counter: number }>>(
-    `UPDATE "InventorySetting"
-     SET "skuNextCounter" = "skuNextCounter" + 1, "updatedAt" = NOW()
-     WHERE "businessId" = $1
-     RETURNING "skuPrefix" as sku_prefix, "skuNextCounter" as sku_next_counter`,
-    businessId
-  )
+  const rows = await prisma.$queryRaw<Array<{ sku_prefix: string; sku_next_counter: number }>>`
+    UPDATE "InventorySetting"
+    SET "skuNextCounter" = "skuNextCounter" + 1, "updatedAt" = NOW()
+    WHERE "businessId" = ${businessId}
+    RETURNING "skuPrefix" as sku_prefix, "skuNextCounter" as sku_next_counter`
 
   // rows[0].sku_next_counter is the value AFTER increment; use counter - 1 as the claimed value
   const prefix = rows[0].sku_prefix ?? 'PRD'
@@ -176,19 +174,15 @@ export async function listProducts(businessId: string, filters: ListProductsQuer
     }),
     prisma.product.count({ where }),
     // Use raw SQL for accurate low-stock count (column comparison)
-    prisma.$queryRawUnsafe<[{ count: bigint }]>(
-      `SELECT COUNT(*) as count FROM "Product"
-       WHERE "businessId" = $1 AND status = 'ACTIVE'
-       AND "minStockLevel" > 0 AND "currentStock" < "minStockLevel"`,
-      businessId
-    ),
+    prisma.$queryRaw<[{ count: bigint }]>`
+      SELECT COUNT(*) as count FROM "Product"
+      WHERE "businessId" = ${businessId} AND status = 'ACTIVE'
+      AND "minStockLevel" > 0 AND "currentStock" < "minStockLevel"`,
     prisma.product.count({ where: { businessId, status: 'ACTIVE' } }),
     // Total stock value: sum(currentStock * purchasePrice) in paise
-    prisma.$queryRawUnsafe<[{ value: number }]>(
-      `SELECT COALESCE(SUM("currentStock" * COALESCE("purchasePrice", "salePrice")), 0)::float as value
-       FROM "Product" WHERE "businessId" = $1 AND status = 'ACTIVE'`,
-      businessId
-    ),
+    prisma.$queryRaw<[{ value: number }]>`
+      SELECT COALESCE(SUM("currentStock" * COALESCE("purchasePrice", "salePrice")), 0)::float as value
+      FROM "Product" WHERE "businessId" = ${businessId} AND status = 'ACTIVE'`,
   ])
 
   return {
@@ -268,18 +262,14 @@ async function listLowStockProducts(businessId: string, filters: LowStockFilters
       `SELECT COUNT(*) as count FROM "Product" p WHERE ${whereClause}`,
       ...countParams
     ),
-    prisma.$queryRawUnsafe<[{ count: bigint }]>(
-      `SELECT COUNT(*) as count FROM "Product"
-       WHERE "businessId" = $1 AND status = 'ACTIVE'
-       AND "minStockLevel" > 0 AND "currentStock" < "minStockLevel"`,
-      businessId
-    ),
+    prisma.$queryRaw<[{ count: bigint }]>`
+      SELECT COUNT(*) as count FROM "Product"
+      WHERE "businessId" = ${businessId} AND status = 'ACTIVE'
+      AND "minStockLevel" > 0 AND "currentStock" < "minStockLevel"`,
     prisma.product.count({ where: { businessId, status: 'ACTIVE' } }),
-    prisma.$queryRawUnsafe<[{ value: number }]>(
-      `SELECT COALESCE(SUM("currentStock" * COALESCE("purchasePrice", "salePrice")), 0)::float as value
-       FROM "Product" WHERE "businessId" = $1 AND status = 'ACTIVE'`,
-      businessId
-    ),
+    prisma.$queryRaw<[{ value: number }]>`
+      SELECT COALESCE(SUM("currentStock" * COALESCE("purchasePrice", "salePrice")), 0)::float as value
+      FROM "Product" WHERE "businessId" = ${businessId} AND status = 'ACTIVE'`,
   ])
 
   const total = Number(countResult[0]?.count ?? 0)

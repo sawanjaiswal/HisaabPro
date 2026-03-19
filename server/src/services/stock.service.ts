@@ -38,16 +38,12 @@ export async function adjustStock(
   params: AdjustStockParams
 ) {
   // Step 1: Lock the product row
-  const products = await tx.$queryRawUnsafe<
+  const products = await tx.$queryRaw<
     Array<{ id: string; name: string; current_stock: number; min_stock_level: number; stock_validation: string; business_id: string }>
-  >(
-    `SELECT id, name, "currentStock" as current_stock, "minStockLevel" as min_stock_level, "stockValidation" as stock_validation, "businessId" as business_id
+  >`SELECT id, name, "currentStock" as current_stock, "minStockLevel" as min_stock_level, "stockValidation" as stock_validation, "businessId" as business_id
      FROM "Product"
-     WHERE id = $1 AND "businessId" = $2
-     FOR UPDATE`,
-    params.productId,
-    params.businessId
-  )
+     WHERE id = ${params.productId} AND "businessId" = ${params.businessId}
+     FOR UPDATE`
 
   if (!products[0]) throw notFoundError('Product')
 

@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from 'express'
 import { verifyAccessToken } from '../lib/jwt.js'
 import { isBlacklisted, isUserBlacklisted } from '../lib/token-blacklist.js'
 import { sendError } from '../lib/response.js'
+import { prisma } from '../lib/prisma.js'
 import { ACCESS_TOKEN_COOKIE } from '../config/security.js'
 
 // Extend Express Request to include user
@@ -19,6 +20,9 @@ declare global {
  * Token resolution order (backward-compatible for migration period):
  *   1. httpOnly cookie (__Host-at) — preferred, set by login/refresh endpoints
  *   2. Authorization: Bearer <token> — legacy support while frontend migrates
+ *
+ * SECURITY: Checks isSuspended from DB on every request to handle
+ * suspension without waiting for JWT expiry. (C3 fix)
  */
 export function auth(req: Request, res: Response, next: NextFunction) {
   // 1. Try cookie first
@@ -46,14 +50,30 @@ export function auth(req: Request, res: Response, next: NextFunction) {
   try {
     const payload = verifyAccessToken(token)
 
-    // Block suspended/deleted users
+    // Block suspended/deleted users (in-memory fast path)
     if (isUserBlacklisted(payload.userId)) {
       sendError(res, 'Account has been deactivated', 'ACCOUNT_DEACTIVATED', 401)
       return
     }
 
-    req.user = { userId: payload.userId, phone: payload.phone, businessId: payload.businessId ?? '' }
-    next()
+    // DB verification: check isSuspended flag (survives server restart)
+    prisma.user.findUnique({
+      where: { id: payload.userId },
+      select: { isSuspended: true, isActive: true },
+    }).then((user) => {
+      if (!user || !user.isActive) {
+        sendError(res, 'Account not found or inactive', 'ACCOUNT_DEACTIVATED', 401)
+        return
+      }
+      if (user.isSuspended) {
+        sendError(res, 'Account has been suspended', 'ACCOUNT_SUSPENDED', 403)
+        return
+      }
+      req.user = { userId: payload.userId, phone: payload.phone, businessId: payload.businessId ?? '' }
+      next()
+    }).catch(() => {
+      sendError(res, 'Authentication failed', 'UNAUTHORIZED', 401)
+    })
   } catch (error: unknown) {
     const err = error as { name?: string }
     if (err.name === 'TokenExpiredError') {

@@ -99,7 +99,7 @@ const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || [
 ]
 app.use(cors({ origin: allowedOrigins, credentials: true }))
 app.use(compression())
-app.use(express.json({ limit: '10mb' }))
+app.use(express.json({ limit: '2mb' }))
 
 // Parse cookies (required for httpOnly token + CSRF cookie reading)
 app.use(cookieParser())

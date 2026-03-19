@@ -13,6 +13,7 @@
 import crypto from 'crypto'
 import { prisma } from '../lib/prisma.js'
 import logger from '../lib/logger.js'
+import { encrypt, decrypt } from '../lib/encryption.js'
 import type { ReferralCode } from '@prisma/client'
 
 // ============================================================
@@ -103,10 +104,10 @@ export async function getReferralCode(userId: string): Promise<ReferralCode | nu
  */
 export async function resolveCode(
   code: string
-): Promise<(ReferralCode & { user: { id: string; name: string | null; phone: string } }) | null> {
+): Promise<(ReferralCode & { user: { id: string; name: string | null } }) | null> {
   return prisma.referralCode.findFirst({
     where: { code: { equals: code, mode: 'insensitive' } },
-    include: { user: { select: { id: true, name: true, phone: true } } },
+    include: { user: { select: { id: true, name: true } } },
   })
 }
 
@@ -459,8 +460,11 @@ export async function requestWithdrawal(
 
   const status = autoApproved ? 'approved' : 'pending'
 
+  // Encrypt UPI ID at rest (PII protection)
+  const encryptedUpiId = process.env.ENCRYPTION_KEY ? encrypt(upiId) : upiId
+
   const withdrawal = await prisma.referralWithdrawal.create({
-    data: { userId, amount, upiId, status, autoApproved },
+    data: { userId, amount, upiId: encryptedUpiId, status, autoApproved },
   })
 
   if (autoApproved) {
@@ -518,15 +522,27 @@ export async function listWithdrawals(
   ])
 
   return {
-    items: rows.map((w) => ({
+    items: rows.map((w) => {
+      // Decrypt UPI ID if encrypted, then mask for display
+      let rawUpi = w.upiId
+      try {
+        if (process.env.ENCRYPTION_KEY && rawUpi.includes(':')) {
+          rawUpi = decrypt(rawUpi)
+        }
+      } catch { /* not encrypted — use as-is */ }
+
+      return {
       id: w.id,
       amount: Number(w.amount),
-      upiId: w.upiId,
+      // Mask UPI ID: show first 3 + last 4 chars
+      upiId: rawUpi.length > 7
+        ? `${rawUpi.slice(0, 3)}****${rawUpi.slice(-4)}`
+        : '****',
       status: w.status,
       requestedAt: w.createdAt.toISOString(),
       processedAt: w.processedAt?.toISOString() ?? null,
       autoApproved: w.autoApproved,
-    })),
+    }}),
     pagination: { page, limit, total, pages: Math.ceil(total / limit) },
   }
 }
