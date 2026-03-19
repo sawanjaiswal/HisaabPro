@@ -124,7 +124,7 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
               <button
                 key={period}
                 onClick={() => setIsYearly(period === "Yearly")}
-                className="px-8 py-2.5 text-sm font-medium rounded-full transition-all duration-300"
+                className="px-8 py-2.5 text-sm font-medium rounded-full transition-all duration-300 cursor-pointer"
                 style={{
                   backgroundColor: (period === "Yearly") === isYearly ? 'var(--lp-toggle-active-bg)' : 'transparent',
                   color: (period === "Yearly") === isYearly ? 'var(--lp-toggle-active-text)' : 'var(--lp-toggle-inactive-text)',
@@ -234,7 +234,7 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
 
               <div className="p-8 pt-0 mt-auto">
                 <button
-                  className="w-full relative transition-all duration-300 rounded-lg flex items-center justify-center h-12"
+                  className="w-full relative transition-all duration-300 rounded-lg flex items-center justify-center h-12 cursor-pointer"
                   style={{
                     backgroundColor: tier.highlight ? 'var(--lp-price-btn-hl-bg)' : 'var(--lp-price-btn-bg)',
                     color: tier.highlight ? 'var(--lp-price-btn-hl-text)' : 'var(--lp-price-btn-text)',

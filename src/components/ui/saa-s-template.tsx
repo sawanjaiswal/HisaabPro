@@ -15,7 +15,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ variant = "default", size = "default", className = "", children, ...props }, ref) => {
-    const baseStyles = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
+    const baseStyles = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer";
 
     const sizes = {
       default: "h-10 px-4 py-2 text-sm",
@@ -208,7 +208,7 @@ const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
       </h1>
 
       <p className="text-sm md:text-base text-center max-w-2xl px-6 mb-10 lp-text-muted">
-        Create professional invoices, manage inventory, track payments — works even without internet. Built for Indian businesses.
+        Create GST invoices, manage inventory, track payments, and send bills on WhatsApp — works even without internet. Trusted by 10,000+ Indian businesses.
       </p>
 
       <div id="hero-cta" className="flex items-center gap-4 relative z-10 mb-16">

@@ -9,15 +9,16 @@ export function FeaturesSection7() {
                     <p className="mt-6 text-lg lp-text-body">From billing to payments, all in one app that works on any phone — even without internet.</p>
                 </div>
                 <div className="relative -mx-4 rounded-3xl p-3 md:-mx-12 lg:col-span-3">
-                    <div className="[perspective:800px]">
-                        <div className="[transform:skewY(-2deg)skewX(-2deg)rotateX(6deg)]">
-                            <div className="aspect-[88/36] relative">
-                                <div className="z-1 -inset-[4.25rem] absolute" style={{ backgroundImage: `radial-gradient(at 75% 25%, transparent, var(--lp-bg) 75%)` }} />
-                                <img src="https://tailark.com/_next/image?url=%2Fmail-upper.png&w=3840&q=75" className="absolute inset-0 z-10" alt="payments illustration" width={2797} height={1137} />
-                                <img src="https://tailark.com/_next/image?url=%2Fmail-back.png&w=3840&q=75" className="lp-dark-only" alt="payments illustration dark" width={2797} height={1137} />
-                                <img src="https://tailark.com/_next/image?url=%2Fmail-back-light.png&w=3840&q=75" className="lp-light-only" alt="payments illustration light" width={2797} height={1137} />
-                            </div>
-                        </div>
+                    <div className="aspect-[16/9] relative overflow-hidden rounded-2xl border" style={{ borderColor: 'color-mix(in srgb, var(--lp-text) 10%, transparent)' }}>
+                        <div className="z-1 inset-0 absolute" style={{ backgroundImage: `radial-gradient(at 75% 25%, transparent, var(--lp-bg) 75%)` }} />
+                        <img
+                            src="https://i.postimg.cc/SKcdVTr1/Dashboard2.png"
+                            className="absolute inset-0 h-full w-full object-cover object-top"
+                            alt="HisaabPro billing dashboard showing invoices, payments and business overview"
+                            loading="lazy"
+                            width={1920}
+                            height={1080}
+                        />
                     </div>
                 </div>
                 <div className="relative mx-auto grid grid-cols-2 gap-x-3 gap-y-6 sm:gap-8 lg:grid-cols-4">
@@ -26,28 +27,28 @@ export function FeaturesSection7() {
                             <Zap className="size-6" style={{ color: 'var(--lp-brand)' }} />
                             <p className="text-sm font-semibold lp-text">10-Second Invoicing</p>
                         </div>
-                        <p className="text-sm lp-text-muted">Create and share professional invoices faster than writing by hand.</p>
+                        <p className="text-sm lp-text-muted">Create GST-ready invoices in 10 seconds. Add items, apply discounts, share on WhatsApp — all faster than pen and paper.</p>
                     </div>
                     <div className="space-y-2">
                         <div className="flex items-center gap-2">
                             <Cpu className="size-6" style={{ color: 'var(--lp-brand)' }} />
                             <p className="text-sm font-semibold lp-text">100% Offline</p>
                         </div>
-                        <p className="text-sm lp-text-muted">Bill, track payments, manage stock — all without internet. Syncs when you're back online.</p>
+                        <p className="text-sm lp-text-muted">Bill customers in a village, at a mela, or during a power cut. Everything works without internet. Syncs when you're back online.</p>
                     </div>
                     <div className="space-y-2">
                         <div className="flex items-center gap-2">
                             <MessageCircle className="size-6" style={{ color: 'var(--lp-brand)' }} />
                             <p className="text-sm font-semibold lp-text">WhatsApp Sharing</p>
                         </div>
-                        <p className="text-sm lp-text-muted">Send PDF invoices to customers on WhatsApp in 2 taps.</p>
+                        <p className="text-sm lp-text-muted">Share professional PDF invoices on WhatsApp in 2 taps. Your customers get a branded bill instantly — no app download needed.</p>
                     </div>
                     <div className="space-y-2">
                         <div className="flex items-center gap-2">
                             <Lock className="size-6" style={{ color: 'var(--lp-brand)' }} />
                             <p className="text-sm font-semibold lp-text">Your Data, Always Safe</p>
                         </div>
-                        <p className="text-sm lp-text-muted">Encrypted backups. Even if you lose your phone, your data is recoverable.</p>
+                        <p className="text-sm lp-text-muted">Bank-grade encryption protects your business data. Even if you lose your phone, restore everything on a new device in minutes.</p>
                     </div>
                 </div>
             </div>

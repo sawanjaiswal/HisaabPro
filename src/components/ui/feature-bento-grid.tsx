@@ -7,7 +7,7 @@ export function FeaturesSectionWithBentoGrid() {
     {
       title: "Smart Invoicing",
       description:
-        "7 document types: Sale, Purchase, Estimate, Proforma, Challan, Credit Note, Debit Note. Auto-numbered, WhatsApp-ready.",
+        "7 document types: Sale, Purchase, Estimate, Proforma, Challan, Credit Note, Debit Note. Auto-numbered, WhatsApp-ready. Your CA will love the organized records.",
       skeleton: <SkeletonOne />,
       className:
         "col-span-1 md:col-span-4 lg:col-span-4 border-b md:border-r",
@@ -15,7 +15,7 @@ export function FeaturesSectionWithBentoGrid() {
     {
       title: "Payment Tracking",
       description:
-        "See who owes you at a glance. Send WhatsApp reminders in one tap.",
+        "See who owes you at a glance. Send WhatsApp reminders in one tap. Track cash, UPI, cheque, and bank transfer \u2014 all in one place.",
       skeleton: <SkeletonTwo />,
       className:
         "col-span-1 md:col-span-2 lg:col-span-2 border-b",
@@ -23,7 +23,7 @@ export function FeaturesSectionWithBentoGrid() {
     {
       title: "Inventory Management",
       description:
-        "Real-time stock tracking with low stock alerts and party-wise pricing.",
+        "Real-time stock tracking with low stock alerts, party-wise pricing, and automatic updates on every sale. No more end-of-day counting.",
       skeleton: <SkeletonThree />,
       className:
         "col-span-1 md:col-span-3 lg:col-span-3 border-b md:border-r",
@@ -31,7 +31,7 @@ export function FeaturesSectionWithBentoGrid() {
     {
       title: "Reports & Insights",
       description:
-        "Sales reports, stock summary, party statements. Download PDF or share with your CA.",
+        "Sales reports, stock summary, party statements, and profit/loss \u2014 all with one tap. Download PDF or share directly with your CA on WhatsApp.",
       skeleton: <SkeletonFour />,
       className:
         "col-span-1 md:col-span-3 lg:col-span-3 border-b md:border-none",
@@ -112,8 +112,8 @@ export const SkeletonOne = () => {
       <div className="w-full p-5 mx-auto shadow-2xl group h-full lp-bg-card">
         <div className="flex flex-1 w-full h-full flex-col space-y-2">
           <img
-            src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200&h=800"
-            alt="Business invoicing dashboard"
+            src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=1200&h=800"
+            alt="Professional invoices and billing documents"
             width={800}
             height={800}
             className="h-full w-full aspect-square object-cover object-left-top rounded-sm"
@@ -133,8 +133,8 @@ export const SkeletonThree = () => {
       <div className="w-full mx-auto bg-transparent group h-full">
         <div className="flex flex-1 w-full h-full flex-col space-y-2 relative">
           <img
-            src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&q=80&w=800&h=800"
-            alt="Inventory management — store shelves"
+            src="https://images.unsplash.com/photo-1604719312566-8912e9227c6a?auto=format&fit=crop&q=80&w=800&h=800"
+            alt="Indian shop inventory management"
             width={800}
             height={800}
             className="h-full w-full aspect-square object-cover object-center rounded-sm"
@@ -148,10 +148,10 @@ export const SkeletonThree = () => {
 export const SkeletonTwo = () => {
   const images = [
     "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&q=80&w=500&h=500",
-    "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=500&h=500",
+    "https://images.unsplash.com/photo-1556742393-d75f468bfcb0?auto=format&fit=crop&q=80&w=500&h=500",
     "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=500&h=500",
-    "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&q=80&w=500&h=500",
-    "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&q=80&w=500&h=500",
+    "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&q=80&w=500&h=500",
+    "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=500&h=500",
   ]
 
   const imageVariants = {
@@ -173,7 +173,7 @@ export const SkeletonTwo = () => {
           >
             <img
               src={image}
-              alt="Payment tracking"
+              alt="Payment tracking for Indian businesses"
               width={500}
               height={500}
               className="rounded-lg h-20 w-20 md:h-40 md:w-40 object-cover flex-shrink-0"
@@ -193,7 +193,7 @@ export const SkeletonTwo = () => {
           >
             <img
               src={image}
-              alt="Payment tracking"
+              alt="Payment tracking for Indian businesses"
               width={500}
               height={500}
               className="rounded-lg h-20 w-20 md:h-40 md:w-40 object-cover flex-shrink-0"
@@ -213,7 +213,7 @@ export const SkeletonFour = () => {
     <div className="h-60 md:h-60 flex flex-col items-center relative bg-transparent mt-10 overflow-hidden rounded-lg">
       <img
         src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800&h=500"
-        alt="Business reports and analytics"
+        alt="Business reports and sales analytics dashboard"
         className="w-full h-full object-cover object-top"
       />
     </div>
