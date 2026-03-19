@@ -16,12 +16,17 @@ export function useApi<T>(path: string | null): UseApiResult<T> {
   const [status, setStatus] = useState<Status>(path ? 'loading' : 'idle')
   const [error, setError] = useState<ApiError | null>(null)
   const fetchId = useRef(0)
+  const controllerRef = useRef<AbortController | null>(null)
 
   const fetchData = useCallback(() => {
     if (!path) return
 
+    // Abort any in-flight request
+    controllerRef.current?.abort()
+
     const id = ++fetchId.current
     const controller = new AbortController()
+    controllerRef.current = controller
     setStatus('loading')
     setError(null)
 
@@ -38,13 +43,14 @@ export function useApi<T>(path: string | null): UseApiResult<T> {
           setStatus('error')
         }
       })
-
-    return () => controller.abort()
   }, [path])
 
   useEffect(() => {
-    const cleanup = fetchData()
-    return cleanup
+    fetchData()
+    return () => {
+      controllerRef.current?.abort()
+      controllerRef.current = null
+    }
   }, [fetchData])
 
   return { data, status, error, refetch: fetchData }

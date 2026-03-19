@@ -60,20 +60,23 @@ export function useInvoiceReport({
   const [status, setStatus] = useState<Status>('loading')
   const [refreshKey, setRefreshKey] = useState(0)
 
-  // Track whether we are appending (load-more) or replacing (filter change)
+  // Track whether we are appending (load-more) or replacing (filter change).
+  // Use a ref + capture pattern: ref stores intent, effect captures it as local
+  // variable so the callback references the value at fetch-time, not at resolve-time.
   const isLoadMore = useRef(false)
 
   useEffect(() => {
     const controller = new AbortController()
+    const appendMode = isLoadMore.current
 
-    if (!isLoadMore.current) {
+    if (!appendMode) {
       setStatus('loading')
     }
 
     getInvoiceReport(filters, controller.signal)
       .then((response: InvoiceReportResponse) => {
         setData((prev) => {
-          if (!isLoadMore.current || prev === null) return response
+          if (!appendMode || prev === null) return response
           // Merge paginated results — append items or groups
           const prevItems = prev.data.items ?? []
           const nextItems = response.data.items ?? []
