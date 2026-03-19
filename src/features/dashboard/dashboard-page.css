@@ -13,7 +13,7 @@
   --dash-text-primary: var(--color-gray-900);
   --dash-text-secondary: var(--color-gray-600);
   --dash-text-muted: var(--color-gray-500);
-  --dash-teal-10: rgba(27, 99, 105, 0.1);
+  --dash-teal-10: var(--overlay-primary-10);
   --dash-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.03);
   --dash-avatar-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   /* Spacing — use global tokens directly */
@@ -135,7 +135,7 @@
   position: relative;
   z-index: 1;
   border-radius: var(--space-6) var(--space-6) 0 0;
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-drawer-inset);
 }
 
 /* ─── Section headers ──────────────────────────────────────── */
@@ -240,9 +240,9 @@
   --dash-text-primary: var(--color-gray-900);
   --dash-text-secondary: var(--color-gray-500);
   --dash-text-muted: var(--color-gray-400);
-  --dash-teal-10: rgba(63, 174, 214, 0.12);
-  --dash-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(43, 51, 66, 0.3);
-  --dash-avatar-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --dash-teal-10: var(--overlay-accent-dark-12);
+  --dash-card-shadow: var(--shadow-card-dark);
+  --dash-avatar-shadow: var(--shadow-avatar-subtle);
   background: linear-gradient(
     180deg,
     #0B0F15 0%,
@@ -259,7 +259,7 @@
 
 [data-theme="dark"] .dashboard-white-section {
   background: var(--color-gray-50);
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-drawer-inset);
 }
 
 [data-theme="dark"] .dashboard-section-title::after {
@@ -272,11 +272,11 @@
 }
 
 [data-theme="dark"] .dashboard-section-link:hover {
-  background: rgba(63, 174, 214, 0.1);
+  background: var(--overlay-accent-dark-10);
 }
 
 [data-theme="dark"] .dashboard-section-link:active {
-  background: rgba(63, 174, 214, 0.1);
+  background: var(--overlay-accent-dark-10);
 }
 
 /* ─── Reduced motion ────────────────────────────────────────── */

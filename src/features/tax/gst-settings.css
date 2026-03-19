@@ -119,7 +119,7 @@
   border-radius: var(--radius-full);
   background-color: var(--color-gray-0);
   transition: transform 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-badge-subtle);
 }
 
 .gst-toggle-on .gst-toggle-thumb {

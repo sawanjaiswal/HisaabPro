@@ -188,7 +188,7 @@
 }
 
 [data-theme="dark"] .party-quick-action-btn:hover {
-  background: rgba(27, 99, 105, 0.2);
+  background: var(--overlay-primary-20);
 }
 
 /* ─── Responsive ───────────────────────────────────────────────────────── */

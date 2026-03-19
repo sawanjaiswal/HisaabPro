@@ -226,15 +226,15 @@
 /* ─── Dark Theme ────────────────────────────────────────────── */
 
 [data-theme="dark"] .template-card {
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(43, 51, 66, 0.3);
+  box-shadow: var(--shadow-card-dark-sm);
 }
 
 [data-theme="dark"] .template-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(43, 51, 66, 0.4);
+  box-shadow: var(--shadow-card-dark-hover);
 }
 
 [data-theme="dark"] .template-card.selected {
-  box-shadow: 0 0 0 3px rgba(27, 99, 105, 0.3);
+  box-shadow: var(--overlay-primary-ring-selected);
 }
 
 [data-theme="dark"] .template-card-name {

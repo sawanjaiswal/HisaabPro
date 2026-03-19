@@ -138,12 +138,12 @@
 
 [data-theme="dark"] .gstin-status--verified {
   color: var(--color-success-400);
-  background: rgba(34, 197, 94, 0.1);
+  background: var(--overlay-success-10);
 }
 
 [data-theme="dark"] .gstin-status--failed {
   color: var(--color-error-400);
-  background: rgba(239, 68, 68, 0.1);
+  background: var(--overlay-error-10);
 }
 
 [data-theme="dark"] .create-party-actions {

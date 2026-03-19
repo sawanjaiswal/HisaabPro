@@ -141,7 +141,7 @@
 }
 
 [data-theme="dark"] .doc-type-icon--estimate {
-  background: rgba(168, 85, 247, 0.12);
+  background: var(--overlay-purple-12);
 }
 
 [data-theme="dark"] .doc-type-icon--proforma {
@@ -153,11 +153,11 @@
 }
 
 [data-theme="dark"] .doc-type-icon--purchase-order {
-  background: rgba(59, 130, 246, 0.15);
+  background: var(--overlay-info-15);
 }
 
 [data-theme="dark"] .doc-type-icon--delivery-challan {
-  background: rgba(156, 163, 175, 0.12);
+  background: var(--overlay-neutral-12);
 }
 
 [data-theme="dark"] .payment-status-indicator--paid {
@@ -169,7 +169,7 @@
 }
 
 [data-theme="dark"] .payment-status-indicator--unpaid {
-  background: rgba(156, 163, 175, 0.12);
+  background: var(--overlay-neutral-12);
 }
 
 [data-theme="dark"] .payment-status-indicator--overdue {
