@@ -80,9 +80,7 @@ const TestimonialsColumn = (props: {
   return (
     <div className={props.className}>
       <motion.ul
-        animate={{
-          translateY: "-50%",
-        }}
+        animate={{ translateY: "-50%" }}
         transition={{
           duration: props.duration || 10,
           repeat: Infinity,
@@ -111,10 +109,14 @@ const TestimonialsColumn = (props: {
                     boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.12), 0 10px 10px -5px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.05)",
                     transition: { type: "spring", stiffness: 400, damping: 17 }
                   }}
-                  className="p-10 rounded-3xl border border-neutral-200 dark:border-neutral-800 shadow-lg shadow-black/5 max-w-xs w-full bg-white dark:bg-neutral-900 transition-all duration-300 cursor-default select-none group focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="p-10 rounded-3xl border shadow-lg shadow-black/5 max-w-xs w-full transition-all duration-300 cursor-default select-none group focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  style={{
+                    backgroundColor: 'var(--lp-bg-card)',
+                    borderColor: 'var(--lp-card-border)',
+                  }}
                 >
                   <blockquote className="m-0 p-0">
-                    <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed font-normal m-0 transition-colors duration-300">
+                    <p className="leading-relaxed font-normal m-0 transition-colors duration-300 lp-text-muted">
                       {text}
                     </p>
                     <footer className="flex items-center gap-3 mt-6">
@@ -123,13 +125,14 @@ const TestimonialsColumn = (props: {
                         height={40}
                         src={image}
                         alt={`Avatar of ${name}`}
-                        className="h-10 w-10 rounded-full object-cover ring-2 ring-neutral-100 dark:ring-neutral-800 group-hover:ring-primary/30 transition-all duration-300 ease-in-out"
+                        className="h-10 w-10 rounded-full object-cover ring-2 transition-all duration-300 ease-in-out"
+                        style={{ ['--tw-ring-color' as string]: 'var(--lp-avatar-ring)' }}
                       />
                       <div className="flex flex-col">
-                        <cite className="font-semibold not-italic tracking-tight leading-5 text-neutral-900 dark:text-white transition-colors duration-300">
+                        <cite className="font-semibold not-italic tracking-tight leading-5 transition-colors duration-300 lp-text">
                           {name}
                         </cite>
-                        <span className="text-sm leading-5 tracking-tight text-neutral-500 dark:text-neutral-500 mt-0.5 transition-colors duration-300">
+                        <span className="text-sm leading-5 tracking-tight mt-0.5 transition-colors duration-300 lp-text-muted">
                           {role}
                         </span>
                       </div>
@@ -165,15 +168,22 @@ const TestimonialsSection = () => {
       >
         <div className="flex flex-col items-center justify-center max-w-[540px] mx-auto mb-16">
           <div className="flex justify-center">
-            <div className="border border-neutral-300 dark:border-neutral-700 py-1 px-4 rounded-full text-xs font-semibold tracking-wide uppercase text-neutral-600 dark:text-neutral-400 bg-neutral-100/50 dark:bg-neutral-800/50 transition-colors">
+            <div
+              className="border py-1 px-4 rounded-full text-xs font-semibold tracking-wide uppercase transition-colors"
+              style={{
+                borderColor: 'var(--lp-testimonial-badge-border)',
+                color: 'var(--lp-testimonial-badge-text)',
+                backgroundColor: 'var(--lp-testimonial-badge-bg)',
+              }}
+            >
               Testimonials
             </div>
           </div>
 
-          <h2 id="testimonials-heading" className="text-4xl md:text-5xl font-extrabold tracking-tight mt-6 text-center text-neutral-900 dark:text-white transition-colors">
+          <h2 id="testimonials-heading" className="text-4xl md:text-5xl font-extrabold tracking-tight mt-6 text-center transition-colors">
             Trusted by Indian businesses
           </h2>
-          <p className="text-center mt-5 text-neutral-500 dark:text-neutral-400 text-lg leading-relaxed max-w-sm transition-colors">
+          <p className="text-center mt-5 text-lg leading-relaxed max-w-sm transition-colors lp-text-muted">
             See why business owners are switching to HisaabPro.
           </p>
         </div>

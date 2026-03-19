@@ -95,38 +95,11 @@ const defaultTiers: PricingTier[] = [
 function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps) {
   const [isYearly, setIsYearly] = useState(false)
 
-  const buttonStyles = {
-    default: cn(
-      "h-12 bg-white dark:bg-zinc-900",
-      "hover:bg-zinc-50 dark:hover:bg-zinc-800",
-      "text-zinc-900 dark:text-zinc-100",
-      "border border-zinc-200 dark:border-zinc-800",
-      "hover:border-zinc-300 dark:hover:border-zinc-700",
-      "shadow-sm hover:shadow-md",
-      "text-sm font-medium",
-    ),
-    highlight: cn(
-      "h-12 bg-zinc-900 dark:bg-zinc-100",
-      "hover:bg-zinc-800 dark:hover:bg-zinc-300",
-      "text-white dark:text-zinc-900",
-      "shadow-[0_1px_15px_rgba(0,0,0,0.1)]",
-      "hover:shadow-[0_1px_20px_rgba(0,0,0,0.15)]",
-      "font-semibold text-base",
-    ),
-  }
-
-  const badgeStyles = cn(
-    "px-4 py-1.5 text-sm font-medium",
-    "bg-zinc-900 dark:bg-zinc-100",
-    "text-white dark:text-zinc-900",
-    "border-none shadow-lg",
-  )
-
   return (
     <section
       id="pricing"
       className={cn(
-        "relative bg-background text-foreground",
+        "relative lp-heading-plain",
         "py-12 px-4 md:py-24 lg:py-32",
         "overflow-hidden",
         className,
@@ -134,23 +107,29 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
     >
       <div className="w-full max-w-6xl mx-auto">
         <div className="flex flex-col items-center gap-4 mb-12">
-          <h2 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">
+          <h2 className="text-3xl font-bold" style={{ color: 'var(--lp-text)' }}>
             Simple, transparent pricing
           </h2>
-          <p className="text-base text-zinc-500 dark:text-zinc-400">
+          <p className="text-base lp-text-muted">
             Start with a 14-day free trial. No credit card required.
           </p>
-          <div className="inline-flex items-center p-1.5 bg-white dark:bg-zinc-800/50 rounded-full border border-zinc-200 dark:border-zinc-700 shadow-sm">
+          <div
+            className="inline-flex items-center p-1.5 rounded-full border shadow-sm"
+            style={{
+              backgroundColor: 'var(--lp-toggle-track-bg)',
+              borderColor: 'var(--lp-toggle-track-border)',
+            }}
+          >
             {["Monthly", "Yearly"].map((period) => (
               <button
                 key={period}
                 onClick={() => setIsYearly(period === "Yearly")}
-                className={cn(
-                  "px-8 py-2.5 text-sm font-medium rounded-full transition-all duration-300",
-                  (period === "Yearly") === isYearly
-                    ? "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-lg"
-                    : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100",
-                )}
+                className="px-8 py-2.5 text-sm font-medium rounded-full transition-all duration-300"
+                style={{
+                  backgroundColor: (period === "Yearly") === isYearly ? 'var(--lp-toggle-active-bg)' : 'transparent',
+                  color: (period === "Yearly") === isYearly ? 'var(--lp-toggle-active-text)' : 'var(--lp-toggle-inactive-text)',
+                  boxShadow: (period === "Yearly") === isYearly ? '0 4px 6px -1px rgba(0,0,0,0.1)' : 'none',
+                }}
               >
                 {period}
               </button>
@@ -165,20 +144,25 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
               className={cn(
                 "relative group backdrop-blur-sm",
                 "rounded-3xl transition-all duration-300",
-                "flex flex-col",
-                tier.highlight
-                  ? "bg-gradient-to-b from-zinc-100/80 to-transparent dark:from-zinc-400/[0.15]"
-                  : "bg-white dark:bg-zinc-800/50",
-                "border",
-                tier.highlight
-                  ? "border-zinc-400/50 dark:border-zinc-400/20 shadow-xl"
-                  : "border-zinc-200 dark:border-zinc-700 shadow-md",
+                "flex flex-col border",
                 "hover:translate-y-0 hover:shadow-lg",
               )}
+              style={{
+                backgroundColor: tier.highlight ? 'transparent' : 'var(--lp-price-card-bg)',
+                backgroundImage: tier.highlight ? `linear-gradient(to bottom, var(--lp-price-highlight-from), transparent)` : undefined,
+                borderColor: tier.highlight ? 'var(--lp-price-highlight-border)' : 'var(--lp-price-card-border)',
+                boxShadow: tier.highlight ? '0 20px 25px -5px rgba(0,0,0,0.1)' : '0 4px 6px -1px rgba(0,0,0,0.05)',
+              }}
             >
               {tier.badge && (
                 <div className="absolute -top-4 left-6">
-                  <span className={cn("inline-flex items-center rounded-full", badgeStyles)}>
+                  <span
+                    className="inline-flex items-center rounded-full px-4 py-1.5 text-sm font-medium border-none shadow-lg"
+                    style={{
+                      backgroundColor: 'var(--lp-price-badge-bg)',
+                      color: 'var(--lp-price-badge-text)',
+                    }}
+                  >
                     {tier.badge}
                   </span>
                 </div>
@@ -186,30 +170,30 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
 
               <div className="p-8 flex-1">
                 <div className="mb-4">
-                  <p className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                  <p className="text-xl font-semibold" style={{ color: 'var(--lp-price-included)' }}>
                     {tier.name}
                   </p>
-                  <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                  <p className="mt-1 text-sm lp-text-muted">
                     {tier.description}
                   </p>
                 </div>
 
                 <div className="mb-6">
                   <div className="flex items-baseline gap-2 flex-wrap">
-                    <span className="line-through text-muted-foreground text-xl">
+                    <span className="line-through text-xl lp-text-muted">
                       ₹{isYearly ? tier.originalPrice.yearly : tier.originalPrice.monthly}
                     </span>
                   </div>
                   <div className="flex items-baseline gap-2 mt-0.5">
-                    <span className="text-4xl font-bold text-zinc-900 dark:text-zinc-100">
+                    <span className="text-4xl font-bold" style={{ color: 'var(--lp-price-included)' }}>
                       ₹{isYearly ? tier.price.yearly : tier.price.monthly}
                     </span>
-                    <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                    <span className="text-sm lp-text-muted">
                       /{isYearly ? "yr" : "mo"}
                     </span>
                   </div>
                   {isYearly && (
-                    <p className="mt-1.5 text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                    <p className="mt-1.5 text-sm font-medium" style={{ color: 'var(--lp-price-save)' }}>
                       Save ₹{tier.yearlySavings}
                     </p>
                   )}
@@ -219,12 +203,10 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
                   {tier.features.map((feature) => (
                     <div key={feature.name} className="flex gap-4">
                       <div
-                        className={cn(
-                          "mt-0.5 shrink-0 p-0.5 rounded-full transition-colors duration-200",
-                          feature.included
-                            ? "text-emerald-600 dark:text-emerald-400"
-                            : "text-zinc-300 dark:text-zinc-600",
-                        )}
+                        className="mt-0.5 shrink-0 p-0.5 rounded-full transition-colors duration-200"
+                        style={{
+                          color: feature.included ? 'var(--lp-price-save)' : 'var(--lp-price-excluded)',
+                        }}
                       >
                         {feature.included ? (
                           <Check className="w-4 h-4" />
@@ -234,16 +216,14 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
                       </div>
                       <div>
                         <div
-                          className={cn(
-                            "text-sm font-medium",
-                            feature.included
-                              ? "text-zinc-900 dark:text-zinc-100"
-                              : "text-zinc-400 dark:text-zinc-500",
-                          )}
+                          className="text-sm font-medium"
+                          style={{
+                            color: feature.included ? 'var(--lp-price-included)' : 'var(--lp-price-excluded)',
+                          }}
                         >
                           {feature.name}
                         </div>
-                        <div className="text-sm text-zinc-500 dark:text-zinc-400">
+                        <div className="text-sm" style={{ color: 'var(--lp-price-desc)' }}>
                           {feature.description}
                         </div>
                       </div>
@@ -254,12 +234,20 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
 
               <div className="p-8 pt-0 mt-auto">
                 <button
-                  className={cn(
-                    "w-full relative transition-all duration-300 rounded-lg flex items-center justify-center",
-                    tier.highlight
-                      ? buttonStyles.highlight
-                      : buttonStyles.default,
-                  )}
+                  className="w-full relative transition-all duration-300 rounded-lg flex items-center justify-center h-12"
+                  style={{
+                    backgroundColor: tier.highlight ? 'var(--lp-price-btn-hl-bg)' : 'var(--lp-price-btn-bg)',
+                    color: tier.highlight ? 'var(--lp-price-btn-hl-text)' : 'var(--lp-price-btn-text)',
+                    border: tier.highlight ? 'none' : `1px solid var(--lp-price-btn-border)`,
+                    fontWeight: tier.highlight ? 600 : 500,
+                    fontSize: tier.highlight ? '1rem' : '0.875rem',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.backgroundColor = tier.highlight ? 'var(--lp-price-btn-hl-hover-bg)' : 'var(--lp-price-btn-hover-bg)'
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.backgroundColor = tier.highlight ? 'var(--lp-price-btn-hl-bg)' : 'var(--lp-price-btn-bg)'
+                  }}
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
                     Start Free Trial
@@ -271,11 +259,8 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
           ))}
         </div>
 
-        <p className="text-center text-sm text-muted-foreground mt-8">
-          Auto-renews. Cancel anytime from Settings. •{" "}
-          <a href="#" className="underline">
-            Have a coupon code?
-          </a>
+        <p className="text-center text-sm lp-text-muted mt-8">
+          Auto-renews. Cancel anytime from Settings.
         </p>
       </div>
     </section>

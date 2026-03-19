@@ -10,7 +10,7 @@ export function FeaturesSectionWithBentoGrid() {
         "7 document types: Sale, Purchase, Estimate, Proforma, Challan, Credit Note, Debit Note. Auto-numbered, WhatsApp-ready.",
       skeleton: <SkeletonOne />,
       className:
-        "col-span-1 md:col-span-4 lg:col-span-4 border-b md:border-r border-neutral-200 dark:border-neutral-800",
+        "col-span-1 md:col-span-4 lg:col-span-4 border-b md:border-r",
     },
     {
       title: "Payment Tracking",
@@ -18,7 +18,7 @@ export function FeaturesSectionWithBentoGrid() {
         "See who owes you at a glance. Send WhatsApp reminders in one tap.",
       skeleton: <SkeletonTwo />,
       className:
-        "col-span-1 md:col-span-2 lg:col-span-2 border-b border-neutral-200 dark:border-neutral-800",
+        "col-span-1 md:col-span-2 lg:col-span-2 border-b",
     },
     {
       title: "Inventory Management",
@@ -26,7 +26,7 @@ export function FeaturesSectionWithBentoGrid() {
         "Real-time stock tracking with low stock alerts and party-wise pricing.",
       skeleton: <SkeletonThree />,
       className:
-        "col-span-1 md:col-span-3 lg:col-span-3 border-b md:border-r border-neutral-200 dark:border-neutral-800",
+        "col-span-1 md:col-span-3 lg:col-span-3 border-b md:border-r",
     },
     {
       title: "Reports & Insights",
@@ -34,23 +34,26 @@ export function FeaturesSectionWithBentoGrid() {
         "Sales reports, stock summary, party statements. Download PDF or share with your CA.",
       skeleton: <SkeletonFour />,
       className:
-        "col-span-1 md:col-span-3 lg:col-span-3 border-b md:border-none border-neutral-200 dark:border-neutral-800",
+        "col-span-1 md:col-span-3 lg:col-span-3 border-b md:border-none",
     },
   ]
   return (
     <div className="relative z-20 py-10 lg:py-40 max-w-7xl mx-auto">
       <div className="px-8">
-        <h4 className="text-3xl lg:text-5xl lg:leading-tight max-w-5xl mx-auto text-center tracking-tight font-medium text-black dark:text-white">
+        <h4 className="text-3xl lg:text-5xl lg:leading-tight max-w-5xl mx-auto text-center tracking-tight font-medium">
           One app, complete business control
         </h4>
 
-        <p className="text-sm lg:text-base max-w-2xl my-4 mx-auto text-neutral-500 text-center font-normal dark:text-neutral-300">
+        <p className="text-sm lg:text-base max-w-2xl my-4 mx-auto text-center font-normal lp-text-body">
           Invoicing, inventory, payments, reports — all connected, all offline.
         </p>
       </div>
 
       <div className="relative">
-        <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-6 mt-12 xl:border rounded-md border-neutral-200 dark:border-neutral-800">
+        <div
+          className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-6 mt-12 xl:border rounded-md"
+          style={{ borderColor: 'var(--lp-card-border)' }}
+        >
           {features.map((feature) => (
             <FeatureCard key={feature.title} className={feature.className}>
               <FeatureTitle>{feature.title}</FeatureTitle>
@@ -72,7 +75,10 @@ const FeatureCard = ({
   className?: string
 }) => {
   return (
-    <div className={cn(`p-4 sm:p-8 relative overflow-hidden`, className)}>
+    <div
+      className={cn(`p-4 sm:p-8 relative overflow-hidden`, className)}
+      style={{ borderColor: 'var(--lp-card-border)' }}
+    >
       {children}
     </div>
   )
@@ -80,7 +86,7 @@ const FeatureCard = ({
 
 const FeatureTitle = ({ children }: { children?: React.ReactNode }) => {
   return (
-    <p className="max-w-5xl mx-auto text-left tracking-tight text-black dark:text-white text-xl md:text-2xl md:leading-snug">
+    <p className="max-w-5xl mx-auto text-left tracking-tight text-xl md:text-2xl md:leading-snug lp-text">
       {children}
     </p>
   )
@@ -91,7 +97,7 @@ const FeatureDescription = ({ children }: { children?: React.ReactNode }) => {
     <p
       className={cn(
         "text-sm md:text-base max-w-4xl text-left mx-auto",
-        "text-neutral-500 text-center font-normal dark:text-neutral-300",
+        "text-center font-normal lp-text-muted",
         "text-left max-w-sm mx-0 md:text-sm my-2"
       )}
     >
@@ -103,7 +109,7 @@ const FeatureDescription = ({ children }: { children?: React.ReactNode }) => {
 export const SkeletonOne = () => {
   return (
     <div className="relative flex py-8 px-2 gap-10 h-full">
-      <div className="w-full p-5 mx-auto bg-white dark:bg-neutral-900 shadow-2xl group h-full">
+      <div className="w-full p-5 mx-auto shadow-2xl group h-full lp-bg-card">
         <div className="flex flex-1 w-full h-full flex-col space-y-2">
           <img
             src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200&h=800"
@@ -115,8 +121,8 @@ export const SkeletonOne = () => {
         </div>
       </div>
 
-      <div className="absolute bottom-0 z-40 inset-x-0 h-60 bg-gradient-to-t from-white dark:from-black via-white dark:via-black to-transparent w-full pointer-events-none" />
-      <div className="absolute top-0 z-40 inset-x-0 h-60 bg-gradient-to-b from-white dark:from-black via-transparent to-transparent w-full pointer-events-none" />
+      <div className="absolute bottom-0 z-40 inset-x-0 h-60 w-full pointer-events-none" style={{ background: `linear-gradient(to top, var(--lp-bg-fade), var(--lp-bg-fade), transparent)` }} />
+      <div className="absolute top-0 z-40 inset-x-0 h-60 w-full pointer-events-none" style={{ background: `linear-gradient(to bottom, var(--lp-bg-fade), transparent)` }} />
     </div>
   )
 }
@@ -124,7 +130,7 @@ export const SkeletonOne = () => {
 export const SkeletonThree = () => {
   return (
     <div className="relative flex gap-10 h-full">
-      <div className="w-full mx-auto bg-transparent dark:bg-transparent group h-full">
+      <div className="w-full mx-auto bg-transparent group h-full">
         <div className="flex flex-1 w-full h-full flex-col space-y-2 relative">
           <img
             src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&q=80&w=800&h=800"
@@ -149,16 +155,8 @@ export const SkeletonTwo = () => {
   ]
 
   const imageVariants = {
-    whileHover: {
-      scale: 1.1,
-      rotate: 0,
-      zIndex: 100,
-    },
-    whileTap: {
-      scale: 1.1,
-      rotate: 0,
-      zIndex: 100,
-    },
+    whileHover: { scale: 1.1, rotate: 0, zIndex: 100 },
+    whileTap: { scale: 1.1, rotate: 0, zIndex: 100 },
   }
   return (
     <div className="relative flex flex-col items-start p-8 gap-10 h-full overflow-hidden">
@@ -167,12 +165,11 @@ export const SkeletonTwo = () => {
           <motion.div
             variants={imageVariants}
             key={"images-first" + idx}
-            style={{
-              rotate: Math.random() * 20 - 10,
-            }}
+            style={{ rotate: Math.random() * 20 - 10 }}
             whileHover="whileHover"
             whileTap="whileTap"
-            className="rounded-xl -mr-4 mt-4 p-1 bg-white dark:bg-neutral-800 dark:border-neutral-700 border border-neutral-100 flex-shrink-0 overflow-hidden"
+            className="rounded-xl -mr-4 mt-4 p-1 border flex-shrink-0 overflow-hidden lp-bg-card"
+            {...{ style: { rotate: `${Math.random() * 20 - 10}deg`, borderColor: 'var(--lp-card-img-border)' } } as any}
           >
             <img
               src={image}
@@ -188,13 +185,11 @@ export const SkeletonTwo = () => {
         {images.map((image, idx) => (
           <motion.div
             key={"images-second" + idx}
-            style={{
-              rotate: Math.random() * 20 - 10,
-            }}
+            style={{ rotate: Math.random() * 20 - 10, borderColor: 'var(--lp-card-img-border)' }}
             variants={imageVariants}
             whileHover="whileHover"
             whileTap="whileTap"
-            className="rounded-xl -mr-4 mt-4 p-1 bg-white dark:bg-neutral-800 dark:border-neutral-700 border border-neutral-100 flex-shrink-0 overflow-hidden"
+            className="rounded-xl -mr-4 mt-4 p-1 border flex-shrink-0 overflow-hidden lp-bg-card"
           >
             <img
               src={image}
@@ -207,15 +202,15 @@ export const SkeletonTwo = () => {
         ))}
       </div>
 
-      <div className="absolute left-0 z-[100] inset-y-0 w-20 bg-gradient-to-r from-white dark:from-black to-transparent h-full pointer-events-none" />
-      <div className="absolute right-0 z-[100] inset-y-0 w-20 bg-gradient-to-l from-white dark:from-black to-transparent h-full pointer-events-none" />
+      <div className="absolute left-0 z-[100] inset-y-0 w-20 h-full pointer-events-none" style={{ background: `linear-gradient(to right, var(--lp-bg-fade), transparent)` }} />
+      <div className="absolute right-0 z-[100] inset-y-0 w-20 h-full pointer-events-none" style={{ background: `linear-gradient(to left, var(--lp-bg-fade), transparent)` }} />
     </div>
   )
 }
 
 export const SkeletonFour = () => {
   return (
-    <div className="h-60 md:h-60 flex flex-col items-center relative bg-transparent dark:bg-transparent mt-10 overflow-hidden rounded-lg">
+    <div className="h-60 md:h-60 flex flex-col items-center relative bg-transparent mt-10 overflow-hidden rounded-lg">
       <img
         src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800&h=500"
         alt="Business reports and analytics"

@@ -53,13 +53,14 @@ const footerLinks: FooterSection[] = [
 
 export function Footer() {
   return (
-    <footer className="md:rounded-t-6xl relative w-full max-w-6xl mx-auto flex flex-col items-center justify-center rounded-t-4xl border-t border-neutral-200 dark:border-white/10 bg-[radial-gradient(35%_128px_at_50%_0%,theme(backgroundColor.white/8%),transparent)] px-6 py-12 lg:py-16">
-      <div className="bg-foreground/20 absolute top-0 right-1/2 left-1/2 h-px w-1/3 -translate-x-1/2 -translate-y-1/2 rounded-full blur" />
-
+    <footer
+      className="md:rounded-t-6xl relative w-full max-w-6xl mx-auto flex flex-col items-center justify-center rounded-t-4xl border-t px-6 py-12 lg:py-16"
+      style={{ borderColor: 'var(--lp-border)' }}
+    >
       <div className="grid w-full gap-8 xl:grid-cols-3 xl:gap-8">
         <AnimatedContainer className="space-y-1">
-          <p className="text-lg font-bold">HisaabPro</p>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-lg font-bold lp-text">HisaabPro</p>
+          <p className="text-sm lp-text-muted">
             Billing, inventory &amp; payments for Indian businesses.
           </p>
         </AnimatedContainer>
@@ -68,14 +69,16 @@ export function Footer() {
           {footerLinks.map((section, index) => (
             <AnimatedContainer key={section.label} delay={0.1 + index * 0.1}>
               <div className="mb-10 md:mb-0">
-                {/* p tag (not h3) to avoid landing.css 1.75rem override */}
-                <p className="text-xs font-semibold uppercase tracking-wider opacity-50">{section.label}</p>
-                <ul className="text-muted-foreground mt-4 space-y-2 text-sm">
+                <p className="text-xs font-semibold uppercase tracking-wider lp-text-muted" style={{ opacity: 0.6 }}>{section.label}</p>
+                <ul className="mt-4 space-y-2 text-sm lp-text-muted">
                   {section.links.map((link) => (
                     <li key={link.title}>
                       <a
                         href={link.href}
-                        className="hover:text-foreground inline-flex items-center transition-all duration-300"
+                        className="inline-flex items-center transition-all duration-300 hover:opacity-100"
+                        style={{ color: 'var(--lp-text-muted)' }}
+                        onMouseEnter={e => e.currentTarget.style.color = 'var(--lp-text)'}
+                        onMouseLeave={e => e.currentTarget.style.color = 'var(--lp-text-muted)'}
                       >
                         {link.icon && <link.icon className="me-1 size-4" />}
                         {link.title}
@@ -89,24 +92,32 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Bottom bar: copyright + social icons */}
-      <div className="mt-12 w-full border-t border-neutral-200 dark:border-white/8 pt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs text-muted-foreground">
+      {/* Bottom bar */}
+      <div
+        className="mt-12 w-full border-t pt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+        style={{ borderColor: 'var(--lp-border-subtle)' }}
+      >
+        <p className="text-xs lp-text-muted">
           &copy; {new Date().getFullYear()} HisaabPro. Made in India.
         </p>
         <div className="flex items-center gap-5">
-          <a href="#" aria-label="Instagram" className="text-muted-foreground hover:text-foreground transition-colors duration-200">
-            <InstagramIcon className="size-4" />
-          </a>
-          <a href="#" aria-label="YouTube" className="text-muted-foreground hover:text-foreground transition-colors duration-200">
-            <YoutubeIcon className="size-4" />
-          </a>
-          <a href="#" aria-label="Twitter / X" className="text-muted-foreground hover:text-foreground transition-colors duration-200">
-            <TwitterIcon className="size-4" />
-          </a>
-          <a href="#" aria-label="LinkedIn" className="text-muted-foreground hover:text-foreground transition-colors duration-200">
-            <LinkedinIcon className="size-4" />
-          </a>
+          {[
+            { Icon: InstagramIcon, label: 'Instagram' },
+            { Icon: YoutubeIcon, label: 'YouTube' },
+            { Icon: TwitterIcon, label: 'Twitter / X' },
+            { Icon: LinkedinIcon, label: 'LinkedIn' },
+          ].map(({ Icon, label }) => (
+            <a
+              key={label}
+              href="#"
+              aria-label={label}
+              className="transition-colors duration-200 lp-text-muted"
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--lp-text)'}
+              onMouseLeave={e => e.currentTarget.style.color = ''}
+            >
+              <Icon className="size-4" />
+            </a>
+          ))}
         </div>
       </div>
     </footer>

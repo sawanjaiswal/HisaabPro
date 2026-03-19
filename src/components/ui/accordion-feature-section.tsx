@@ -62,13 +62,13 @@ const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
   const [activeTabId, setActiveTabId] = useState<number | null>(1);
 
   return (
-    <section id="faq" className="py-32">
+    <section id="faq" className="py-32 lp-heading-plain">
       <div className="container mx-auto">
         <div className="mb-12 text-center">
-          <h2 className="text-4xl font-semibold lg:text-5xl">
+          <h2 className="text-4xl font-semibold lg:text-5xl" style={{ color: 'var(--lp-text)' }}>
             Frequently asked questions
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
+          <p className="mt-4 text-lg lp-text-muted">
             Everything you need to know before you start.
           </p>
         </div>
@@ -76,7 +76,11 @@ const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
           <div className="w-full max-w-2xl">
             <Accordion type="single" className="w-full" defaultValue="item-1">
               {features.map((tab) => (
-                <AccordionItem key={tab.id} value={`item-${tab.id}`} className="border-white/10">
+                <AccordionItem
+                  key={tab.id}
+                  value={`item-${tab.id}`}
+                  style={{ borderColor: 'var(--lp-border-subtle)' }}
+                >
                   <AccordionTrigger
                     onClick={() => {
                       setActiveTabId(tab.id);
@@ -84,13 +88,16 @@ const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
                     className="cursor-pointer py-5 !no-underline transition"
                   >
                     <span
-                      className={`text-xl font-semibold ${tab.id === activeTabId ? "text-foreground" : "text-muted-foreground"}`}
+                      className="text-xl font-semibold"
+                      style={{
+                        color: tab.id === activeTabId ? 'var(--lp-text)' : 'var(--lp-text-muted)',
+                      }}
                     >
                       {tab.title}
                     </span>
                   </AccordionTrigger>
                   <AccordionContent>
-                    <p className="mt-3 text-muted-foreground">
+                    <p className="mt-3 lp-text-muted">
                       {tab.description}
                     </p>
                   </AccordionContent>
