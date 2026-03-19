@@ -327,6 +327,18 @@ html:has(.landing-root) {
 
 
 /* ============================================================
+   DARK/LIGHT VISIBILITY HELPERS
+   (Replaces Tailwind dark:block/dark:hidden which uses
+    @media prefers-color-scheme instead of .dark class)
+   ============================================================ */
+
+.landing-root .lp-dark-only  { display: none; }
+.dark .landing-root .lp-dark-only  { display: block; }
+.landing-root .lp-light-only { display: block; }
+.dark .landing-root .lp-light-only { display: none; }
+
+
+/* ============================================================
    HIDE APP-LEVEL OVERLAYS
    ============================================================ */
 

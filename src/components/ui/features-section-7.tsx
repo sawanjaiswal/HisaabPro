@@ -14,8 +14,8 @@ export function FeaturesSection7() {
                             <div className="aspect-[88/36] relative">
                                 <div className="z-1 -inset-[4.25rem] absolute" style={{ backgroundImage: `radial-gradient(at 75% 25%, transparent, var(--lp-bg) 75%)` }} />
                                 <img src="https://tailark.com/_next/image?url=%2Fmail-upper.png&w=3840&q=75" className="absolute inset-0 z-10" alt="payments illustration" width={2797} height={1137} />
-                                <img src="https://tailark.com/_next/image?url=%2Fmail-back.png&w=3840&q=75" className="hidden dark:block" alt="payments illustration dark" width={2797} height={1137} />
-                                <img src="https://tailark.com/_next/image?url=%2Fmail-back-light.png&w=3840&q=75" className="dark:hidden" alt="payments illustration light" width={2797} height={1137} />
+                                <img src="https://tailark.com/_next/image?url=%2Fmail-back.png&w=3840&q=75" className="lp-dark-only" alt="payments illustration dark" width={2797} height={1137} />
+                                <img src="https://tailark.com/_next/image?url=%2Fmail-back-light.png&w=3840&q=75" className="lp-light-only" alt="payments illustration light" width={2797} height={1137} />
                             </div>
                         </div>
                     </div>
