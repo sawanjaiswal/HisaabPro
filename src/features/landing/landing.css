@@ -11,95 +11,95 @@
 
 /* === DARK THEME TOKENS (default) === */
 .landing-root {
-  /* ---- Page ---- */
-  --lp-bg: #000000;
-  --lp-bg-surface: #0a0a0a;
-  --lp-bg-card: #171717;
-  --lp-bg-elevated: #262626;
-  --lp-bg-nav: rgba(0, 0, 0, 0.8);
-  --lp-bg-mobile-menu: rgba(0, 0, 0, 0.95);
-  --lp-bg-badge: rgba(38, 38, 38, 0.5);
-  --lp-bg-fade: #000000;
+  /* ---- Page (navy-tinted darks, not pure black) ---- */
+  --lp-bg: #060a12;
+  --lp-bg-surface: #0a0f1a;
+  --lp-bg-card: #111827;
+  --lp-bg-elevated: #1e293b;
+  --lp-bg-nav: rgba(6, 10, 18, 0.85);
+  --lp-bg-mobile-menu: rgba(6, 10, 18, 0.95);
+  --lp-bg-badge: rgba(30, 41, 59, 0.5);
+  --lp-bg-fade: #060a12;
 
-  /* ---- Text ---- */
-  --lp-text: #ffffff;
-  --lp-text-secondary: rgba(255, 255, 255, 0.6);
-  --lp-text-muted: #a3a3a3;
-  --lp-text-body: #d4d4d4;
-  --lp-text-inverted: #000000;
+  /* ---- Text (blue-tinted neutrals) ---- */
+  --lp-text: #f1f5f9;
+  --lp-text-secondary: rgba(203, 213, 225, 0.7);
+  --lp-text-muted: #94a3b8;
+  --lp-text-body: #cbd5e1;
+  --lp-text-inverted: #0f172a;
 
-  /* ---- Headings (gradient) ---- */
-  --lp-heading-from: #ffffff;
-  --lp-heading-mid: #ffffff;
-  --lp-heading-to: rgba(255, 255, 255, 0.6);
+  /* ---- Headings (gradient — higher contrast endpoint) ---- */
+  --lp-heading-from: #f8fafc;
+  --lp-heading-mid: #f1f5f9;
+  --lp-heading-to: rgba(203, 213, 225, 0.75);
 
   /* ---- Brand / CTA ---- */
-  --lp-brand: #ffffff;
-  --lp-cta-bg: #ffffff;
-  --lp-cta-text: #000000;
-  --lp-cta-hover-bg: #f3f4f6;
+  --lp-brand: #f1f5f9;
+  --lp-cta-bg: #f1f5f9;
+  --lp-cta-text: #0f172a;
+  --lp-cta-hover-bg: #e2e8f0;
   --lp-accent: #3b82f6;
 
   /* ---- Borders ---- */
-  --lp-border: #262626;
-  --lp-border-subtle: rgba(255, 255, 255, 0.1);
-  --lp-border-badge: #404040;
-  --lp-card-border: #262626;
-  --lp-card-img-border: #404040;
+  --lp-border: #1e293b;
+  --lp-border-subtle: rgba(148, 163, 184, 0.12);
+  --lp-border-badge: #334155;
+  --lp-card-border: #1e293b;
+  --lp-card-img-border: #334155;
 
   /* ---- Icons ---- */
-  --lp-icon: #a3a3a3;
+  --lp-icon: #94a3b8;
 
   /* ---- Hover effects ---- */
-  --lp-hover-from: #262626;
-  --lp-hover-bar: #404040;
+  --lp-hover-from: #1e293b;
+  --lp-hover-bar: #334155;
   --lp-hover-bar-active: #3b82f6;
 
   /* ---- Avatar ---- */
-  --lp-avatar-ring: #262626;
+  --lp-avatar-ring: #1e293b;
 
   /* ---- Pricing toggle ---- */
-  --lp-toggle-track-bg: rgba(38, 38, 38, 0.5);
-  --lp-toggle-track-border: #404040;
-  --lp-toggle-active-bg: #f5f5f5;
-  --lp-toggle-active-text: #171717;
-  --lp-toggle-inactive-text: #a3a3a3;
+  --lp-toggle-track-bg: rgba(30, 41, 59, 0.5);
+  --lp-toggle-track-border: #334155;
+  --lp-toggle-active-bg: #f1f5f9;
+  --lp-toggle-active-text: #0f172a;
+  --lp-toggle-inactive-text: #94a3b8;
 
   /* ---- Pricing cards ---- */
-  --lp-price-card-bg: rgba(38, 38, 38, 0.5);
-  --lp-price-card-border: #404040;
-  --lp-price-highlight-from: rgba(163, 163, 163, 0.15);
-  --lp-price-highlight-border: rgba(163, 163, 163, 0.2);
-  --lp-price-badge-bg: #f5f5f5;
-  --lp-price-badge-text: #171717;
-  --lp-price-btn-bg: #171717;
-  --lp-price-btn-text: #f5f5f5;
-  --lp-price-btn-border: #262626;
-  --lp-price-btn-hover-bg: #262626;
-  --lp-price-btn-hl-bg: #f5f5f5;
-  --lp-price-btn-hl-text: #171717;
-  --lp-price-btn-hl-hover-bg: #d4d4d4;
-  --lp-price-included: #f5f5f5;
-  --lp-price-excluded: #525252;
-  --lp-price-desc: #a3a3a3;
+  --lp-price-card-bg: rgba(30, 41, 59, 0.5);
+  --lp-price-card-border: #334155;
+  --lp-price-highlight-from: rgba(148, 163, 184, 0.1);
+  --lp-price-highlight-border: rgba(148, 163, 184, 0.2);
+  --lp-price-badge-bg: #f1f5f9;
+  --lp-price-badge-text: #0f172a;
+  --lp-price-btn-bg: #0f172a;
+  --lp-price-btn-text: #f1f5f9;
+  --lp-price-btn-border: #1e293b;
+  --lp-price-btn-hover-bg: #1e293b;
+  --lp-price-btn-hl-bg: #f1f5f9;
+  --lp-price-btn-hl-text: #0f172a;
+  --lp-price-btn-hl-hover-bg: #e2e8f0;
+  --lp-price-included: #f1f5f9;
+  --lp-price-excluded: #475569;
+  --lp-price-desc: #94a3b8;
   --lp-price-save: #34d399;
 
   /* ---- Testimonial ---- */
-  --lp-testimonial-badge-bg: rgba(38, 38, 38, 0.5);
-  --lp-testimonial-badge-border: #404040;
-  --lp-testimonial-badge-text: #a3a3a3;
+  --lp-testimonial-badge-bg: rgba(30, 41, 59, 0.5);
+  --lp-testimonial-badge-border: #334155;
+  --lp-testimonial-badge-text: #94a3b8;
 
   /* ---- Divider ---- */
-  --lp-divider: rgba(255, 255, 255, 0.1);
+  --lp-divider: rgba(148, 163, 184, 0.12);
 
-  /* ---- Section tint ---- */
-  --lp-section-tint: rgba(255, 255, 255, 0.02);
+  /* ---- Section tint (visible separation) ---- */
+  --lp-section-tint: rgba(148, 163, 184, 0.04);
 
   /* ---- UI Mockup elements ---- */
   --lp-mock-success: #34d399;
   --lp-mock-warning: #f97316;
-  --lp-mock-bar-bg: rgba(255, 255, 255, 0.08);
-  --lp-mock-row-hover: rgba(255, 255, 255, 0.04);
+  --lp-mock-bar-bg: rgba(148, 163, 184, 0.1);
+  --lp-mock-row-hover: rgba(148, 163, 184, 0.06);
 
   /* ---- WhatsApp ---- */
   --lp-whatsapp: #25D366;

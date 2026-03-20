@@ -42,12 +42,12 @@ const footerLinks: FooterSection[] = [
     ],
   },
   {
-    label: 'Follow Us',
+    label: 'Resources',
     links: [
-      { title: 'Instagram', href: LP_SOCIAL.INSTAGRAM, icon: InstagramIcon },
-      { title: 'YouTube', href: LP_SOCIAL.YOUTUBE, icon: YoutubeIcon },
-      { title: 'Twitter / X', href: LP_SOCIAL.TWITTER, icon: TwitterIcon },
-      { title: 'LinkedIn', href: LP_SOCIAL.LINKEDIN, icon: LinkedinIcon },
+      { title: 'Blog', href: '/blog' },
+      { title: 'Invoice Templates', href: '/templates' },
+      { title: 'GST Calculator', href: '/gst-calculator' },
+      { title: 'Business Ideas', href: '/ideas' },
     ],
   },
 ];

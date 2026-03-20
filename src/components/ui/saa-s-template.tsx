@@ -2,6 +2,7 @@ import React from "react";
 import { Sun, Moon } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { LP_SECTIONS, LP_APP, hash } from "@/config/landing-links.config";
+import { HeroDashboardMockup } from "@/components/ui/hero-dashboard-mockup";
 
 interface ThemeProps {
   isDark: boolean;
@@ -273,12 +274,7 @@ const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
         )}
 
         <div className="relative z-10">
-          <img
-            src="https://i.postimg.cc/SKcdVTr1/Dashboard2.png"
-            alt="HisaabPro dashboard preview"
-            className="w-full h-auto rounded-lg shadow-2xl"
-            loading="eager"
-          />
+          <HeroDashboardMockup />
         </div>
       </motion.div>
     </section>

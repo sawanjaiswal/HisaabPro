@@ -1,5 +1,6 @@
 import { Cpu, Lock, MessageCircle, Zap } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
+import { HeroDashboardMockup } from '@/components/ui/hero-dashboard-mockup'
 
 const EASE_OUT: [number, number, number, number] = [0.25, 1, 0.5, 1]
 
@@ -33,16 +34,8 @@ export function FeaturesSection7() {
                     transition={{ duration: 0.7, delay: 0.1, ease: EASE_OUT }}
                     className="relative -mx-4 rounded-3xl p-3 md:-mx-12 lg:col-span-3"
                 >
-                    <div className="aspect-[16/9] relative overflow-hidden rounded-2xl border" style={{ borderColor: 'color-mix(in srgb, var(--lp-text) 10%, transparent)' }}>
-                        <div className="z-1 inset-0 absolute" style={{ backgroundImage: `radial-gradient(at 75% 25%, transparent, var(--lp-bg) 75%)` }} />
-                        <img
-                            src="https://i.postimg.cc/SKcdVTr1/Dashboard2.png"
-                            className="absolute inset-0 h-full w-full object-cover object-top"
-                            alt="HisaabPro billing dashboard showing invoices, payments and business overview"
-                            loading="lazy"
-                            width={1920}
-                            height={1080}
-                        />
+                    <div className="relative overflow-hidden rounded-2xl">
+                        <HeroDashboardMockup />
                     </div>
                 </motion.div>
                 <div className="relative mx-auto grid grid-cols-2 gap-x-3 gap-y-6 sm:gap-8 lg:grid-cols-4">

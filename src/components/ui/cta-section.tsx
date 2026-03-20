@@ -4,13 +4,11 @@ import { LP_APP, LP_EXTERNAL } from "@/config/landing-links.config";
 
 const EASE_OUT: [number, number, number, number] = [0.25, 1, 0.5, 1];
 
-const AVATAR_URLS = [
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop&crop=faces",
-  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=64&h=64&fit=crop&crop=faces",
-  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=64&h=64&fit=crop&crop=faces",
-  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=64&h=64&fit=crop&crop=faces",
-  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop&crop=faces",
-];
+const AVATAR_NAMES = ["Rajesh S", "Priya P", "Amit G", "Sunita V", "Vikram S"];
+const AVATAR_COLORS = ["3b82f6", "8b5cf6", "ec4899", "f97316", "14b8a6"];
+const AVATAR_URLS = AVATAR_NAMES.map((name, i) =>
+  `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${AVATAR_COLORS[i]}&color=fff&size=64&bold=true&format=svg`
+);
 
 const TRUST_POINTS = [
   "No credit card needed",

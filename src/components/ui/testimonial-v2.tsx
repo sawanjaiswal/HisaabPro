@@ -10,58 +10,66 @@ interface Testimonial {
 }
 
 // --- Data ---
+// Avatar colors — warm, distinguishable palette for initials
+const AVATAR_COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f97316', '#14b8a6', '#eab308', '#ef4444', '#06b6d4', '#22c55e']
+
+function avatarUrl(name: string, index: number): string {
+  const bg = AVATAR_COLORS[index % AVATAR_COLORS.length].replace('#', '')
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${bg}&color=fff&size=150&bold=true&format=svg`
+}
+
 const testimonials: Testimonial[] = [
   {
     text: "Mera purana billing app internet ke bina kaam nahi karta tha. HisaabPro mein sab kuch offline hota hai. Ab bills kabhi nahi kho-te.",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150",
+    image: avatarUrl("Rajesh Sharma", 0),
     name: "Rajesh Sharma",
     role: "Kirana Store Owner, Indore",
   },
   {
     text: "I have 3 staff members and each one has their own login with limited access. Finally I know who did what and when.",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150",
+    image: avatarUrl("Priya Patel", 1),
     name: "Priya Patel",
     role: "Wholesale Trader, Ahmedabad",
   },
   {
     text: "I send invoices on WhatsApp in 2 taps. My customers love getting professional PDFs instead of handwritten bills.",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=150&h=150",
+    image: avatarUrl("Amit Gupta", 2),
     name: "Amit Gupta",
     role: "Garment Shop Owner, Surat",
   },
   {
     text: "Setting up took 2 minutes. I created my first invoice the same day. Very easy to use, even for someone not tech-savvy.",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150&h=150",
+    image: avatarUrl("Sunita Verma", 3),
     name: "Sunita Verma",
     role: "Stationery Shop, Jaipur",
   },
   {
     text: "The payment tracking is excellent. I can see who owes me money and send reminders directly on WhatsApp. Collections have improved.",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150&h=150",
+    image: avatarUrl("Mohammed Irfan", 4),
     name: "Mohammed Irfan",
     role: "Electronics Dealer, Hyderabad",
   },
   {
     text: "Beautiful app. My customers think I hired a designer for my invoices. It is just HisaabPro templates. Very professional look.",
-    image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=150&h=150",
+    image: avatarUrl("Kavita Joshi", 5),
     name: "Kavita Joshi",
     role: "Boutique Owner, Pune",
   },
   {
     text: "Stock management is automatic. When I sell something, stock updates instantly. No more manual counting at end of day.",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150&h=150",
+    image: avatarUrl("Vikram Singh", 6),
     name: "Vikram Singh",
     role: "Hardware Store, Ludhiana",
   },
   {
     text: "I was using paper registers for 5 years. Switching to HisaabPro was the best business decision. My CA is also happy now.",
-    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150&h=150",
+    image: avatarUrl("Neha Agarwal", 7),
     name: "Neha Agarwal",
     role: "Beauty Salon, Delhi",
   },
   {
     text: "End of month I download the PDF report and send to my CA. Everything is clean and organized. Saves me hours every month.",
-    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=150&h=150",
+    image: avatarUrl("Deepak Tiwari", 8),
     name: "Deepak Tiwari",
     role: "Auto Parts Shop, Nagpur",
   },
