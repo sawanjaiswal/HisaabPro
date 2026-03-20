@@ -22,6 +22,10 @@ import {
 } from '../schemas/document.schemas.js'
 import * as documentService from '../services/document.service.js'
 import { validateStockForInvoice } from '../services/stock.service.js'
+import logger from '../lib/logger.js'
+import { sendWhatsApp, sendEmail } from '../services/notification.service.js'
+import { renderInvoiceShareEmail } from '../lib/email-templates.js'
+import { generateInvoicePdf } from '../services/pdf.service.js'
 
 const router = Router()
 
@@ -173,7 +177,7 @@ router.delete(
 )
 
 // ============================================================
-// Sharing (stubs — full implementation in Phase 2 with PDF/image gen)
+// Sharing — WhatsApp (Aisensy) + Email (Resend)
 // ============================================================
 
 /** POST /api/documents/:id/share/whatsapp */
@@ -185,8 +189,14 @@ router.post(
     const businessId = req.user!.businessId
     const documentId = String(req.params.id)
 
-    // Verify document exists
+    // Verify document exists and get details for notification
     const doc = await documentService.getDocument(businessId, documentId)
+    const docData = doc as {
+      status: string
+      documentNumber: string
+      grandTotal: number
+      party: { name: string }
+    }
 
     // Create share log + update status atomically
     const { prisma } = await import('../lib/prisma.js')
@@ -204,7 +214,7 @@ router.post(
       })
 
       // Update document status to SHARED if currently SAVED
-      if ((doc as { status: string }).status === 'SAVED') {
+      if (docData.status === 'SAVED') {
         await tx.document.update({
           where: { id: documentId },
           data: { status: 'SHARED' },
@@ -214,10 +224,31 @@ router.post(
       return log
     })
 
+    // Attempt WhatsApp delivery — don't let failure crash the route
+    let deliveryResult: { success: boolean; error?: string } = { success: false }
+    try {
+      const amountRupees = (docData.grandTotal / 100).toFixed(2)
+      deliveryResult = await sendWhatsApp({
+        phone: req.body.recipientPhone,
+        templateName: 'invoice_share',
+        templateParams: [
+          docData.party.name,
+          docData.documentNumber,
+          amountRupees,
+        ],
+      })
+    } catch (err) {
+      logger.error('WhatsApp share delivery error', {
+        documentId,
+        error: err instanceof Error ? err.message : err,
+      })
+    }
+
     sendSuccess(res, {
       shareLogId: shareLog.id,
-      fileUrl: null, // PDF/image gen in Phase 2
+      fileUrl: null,
       fileSize: null,
+      delivered: deliveryResult.success,
       whatsappDeepLink: `https://wa.me/${req.body.recipientPhone}?text=${encodeURIComponent(req.body.message || '')}`,
     })
   })
@@ -232,9 +263,21 @@ router.post(
     const businessId = req.user!.businessId
     const documentId = String(req.params.id)
     const doc = await documentService.getDocument(businessId, documentId)
+    const docData = doc as {
+      status: string
+      documentNumber: string
+      grandTotal: number
+      party: { name: string }
+    }
+
+    // Fetch business name for email template
+    const { prisma } = await import('../lib/prisma.js')
+    const business = await prisma.business.findUniqueOrThrow({
+      where: { id: businessId },
+      select: { name: true },
+    })
 
     // Create share log + update status atomically
-    const { prisma } = await import('../lib/prisma.js')
     const shareLog = await prisma.$transaction(async (tx) => {
       const log = await tx.documentShareLog.create({
         data: {
@@ -248,7 +291,7 @@ router.post(
         select: { id: true, sentAt: true },
       })
 
-      if ((doc as { status: string }).status === 'SAVED') {
+      if (docData.status === 'SAVED') {
         await tx.document.update({
           where: { id: documentId },
           data: { status: 'SHARED' },
@@ -258,9 +301,41 @@ router.post(
       return log
     })
 
+    // Attempt email delivery — don't let failure crash the route
+    let emailId: string | undefined
+    try {
+      const amountRupees = (docData.grandTotal / 100).toFixed(2)
+      const html = req.body.body
+        ?? renderInvoiceShareEmail({
+          businessName: business.name,
+          partyName: docData.party.name,
+          invoiceNumber: docData.documentNumber,
+          amount: `Rs ${amountRupees}`,
+        })
+
+      // Attempt PDF attachment (returns null until server-side renderer is ready)
+      const pdfBuffer = await generateInvoicePdf(documentId, businessId)
+      const attachments = pdfBuffer
+        ? [{ filename: `${docData.documentNumber}.pdf`, content: pdfBuffer }]
+        : undefined
+
+      const emailResult = await sendEmail({
+        to: req.body.recipientEmail,
+        subject: req.body.subject,
+        html,
+        attachments,
+      })
+      emailId = emailResult.id
+    } catch (err) {
+      logger.error('Email share delivery error', {
+        documentId,
+        error: err instanceof Error ? err.message : err,
+      })
+    }
+
     sendSuccess(res, {
       shareLogId: shareLog.id,
-      emailId: null, // Email sending in Phase 2
+      emailId: emailId ?? null,
       sentAt: shareLog.sentAt,
     })
   })

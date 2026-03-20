@@ -69,6 +69,7 @@ model User {
   referralEventsAsReferred  ReferralEvent[]      @relation("ReferralEventsReferred")
   referralWithdrawals       ReferralWithdrawal[]
   couponRedemptions         CouponRedemption[]
+  webauthnCredentials       WebAuthnCredential[]
 
   // Phase 3 — Accounting
   expensesCreated    Expense[]       @relation("ExpenseCreator")
@@ -147,6 +148,8 @@ model Business {
   cheques               Cheque[]
   loanAccounts          LoanAccount[]
   fyClosures            FinancialYearClosure[]
+
+  stockAlerts      StockAlert[]
 
   usersLastActive  User[] @relation("UserLastActiveBusiness")
 
@@ -461,6 +464,7 @@ model Product {
   customFieldValues ProductCustomFieldValue[]
   partyPricing      PartyPricing[]
   documentLineItems DocumentLineItem[]
+  stockAlerts       StockAlert[]
 
   @@unique([businessId, sku])
   @@index([businessId, status])
@@ -1768,4 +1772,44 @@ model CouponRedemption {
   @@index([couponId])
   @@index([userId])
   @@index([couponId, userId])
+}
+
+// === WebAuthn / Biometric Auth — Feature #59 ===
+
+model WebAuthnCredential {
+  id           String    @id @default(cuid())
+  userId       String
+  credentialId String    @unique  // base64url-encoded credential ID from browser
+  publicKey    String    // base64url-encoded SPKI public key
+  algorithm    Int       // COSE algorithm ID: -7 (ES256) or -257 (RS256)
+  signCount    Int       @default(0)
+  deviceName   String?   // e.g., "Pixel 8", "iPhone 15"
+  createdAt    DateTime  @default(now())
+  lastUsedAt   DateTime?
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// === Stock Alerts — Feature #47 ===
+
+model StockAlert {
+  id             String    @id @default(cuid())
+  businessId     String
+  productId      String
+  alertType      String    @default("LOW_STOCK")  // LOW_STOCK, OUT_OF_STOCK
+  threshold      Float     // quantity that triggered the alert
+  currentQty     Float     // quantity at time of alert
+  status         String    @default("ACTIVE")     // ACTIVE, ACKNOWLEDGED, RESOLVED
+  acknowledgedAt DateTime?
+  acknowledgedBy String?
+  resolvedAt     DateTime?
+  createdAt      DateTime  @default(now())
+
+  business       Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  product        Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, status])
+  @@index([productId, status])
 }

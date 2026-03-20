@@ -12,6 +12,7 @@ import { SocialProofBar } from '@/components/ui/social-proof-bar'
 const LazyFeaturesSection7 = lazy(() => import('@/components/ui/features-section-7').then(m => ({ default: m.FeaturesSection7 })))
 const LazyBentoGrid = lazy(() => import('@/components/ui/feature-bento-grid').then(m => ({ default: m.FeaturesSectionWithBentoGrid })))
 const LazyHoverEffects = lazy(() => import('@/components/ui/feature-hover-effects').then(m => ({ default: m.FeaturesSectionWithHoverEffects })))
+const LazyInvoiceTemplates = lazy(() => import('@/components/ui/invoice-templates-section').then(m => ({ default: m.InvoiceTemplatesSection })))
 const LazyPricing = lazy(() => import('@/components/ui/pricing-section').then(m => ({ default: m.PricingSection })))
 const LazyTestimonials = lazy(() => import('@/components/ui/testimonial-v2').then(m => ({ default: m.TestimonialV2 })))
 const LazyFAQ = lazy(() => import('@/components/ui/accordion-feature-section').then(m => ({ default: m.Feature197 })))
@@ -79,31 +80,36 @@ export default function LandingPage() {
         </div>
       </Suspense>
 
-      {/* 5. How It Works — hover steps */}
+      {/* 5. Invoice Templates — customization showcase */}
+      <Suspense fallback={null}>
+        <LazyInvoiceTemplates />
+      </Suspense>
+
+      {/* 6. How It Works — hover steps */}
       <Suspense fallback={null}>
         <LazyHoverEffects />
       </Suspense>
 
-      {/* 6. Pricing — ₹INR, 3 tiers */}
+      {/* 7. Pricing — ₹INR, 3 tiers */}
       <Suspense fallback={null}>
         <div className="landing-section-tinted">
           <LazyPricing />
         </div>
       </Suspense>
 
-      {/* 7. Testimonials — Indian business owners */}
+      {/* 8. Testimonials — Indian business owners */}
       <Suspense fallback={null}>
         <LazyTestimonials />
       </Suspense>
 
-      {/* 8. FAQ — objection handling */}
+      {/* 9. FAQ — objection handling */}
       <Suspense fallback={null}>
         <div className="landing-section-tinted">
           <LazyFAQ />
         </div>
       </Suspense>
 
-      {/* 9. Final CTA + Download anchor */}
+      {/* 10. Final CTA + Download anchor */}
       <Suspense fallback={null}>
         <div id={LP_SECTIONS.FINAL_CTA} style={{ paddingBottom: '5rem' }}>
           <div id={LP_SECTIONS.DOWNLOAD} />

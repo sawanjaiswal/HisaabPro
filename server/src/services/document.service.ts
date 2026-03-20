@@ -5,7 +5,7 @@
 
 import { prisma } from '../lib/prisma.js'
 import { notFoundError, validationError } from '../lib/errors.js'
-import { deductForSaleInvoice, addForPurchaseInvoice, reverseForInvoice } from './stock.service.js'
+import { deductForSaleInvoice, addForPurchaseInvoice, reverseForInvoice, scheduleAlertChecks } from './stock.service.js'
 import { generateNextNumber } from './document-number.service.js'
 import { calculateDocumentTotals, calculateChargeAmount } from './document-calc.js'
 import logger from '../lib/logger.js'
@@ -323,7 +323,7 @@ export async function createDocument(
   })
   const isSaving = data.status === 'SAVED'
 
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     // Generate document number only when SAVING (not DRAFT)
     let numberData: { documentNumber: string; sequenceNumber: number; financialYear: string } | null = null
     if (isSaving) {
@@ -482,6 +482,14 @@ export async function createDocument(
       select: DOCUMENT_DETAIL_SELECT,
     })
   })
+
+  // Post-transaction: fire stock alert checks (never blocks response)
+  if (isSaving && (STOCK_DECREASE_TYPES.has(data.type) || STOCK_INCREASE_TYPES.has(data.type))) {
+    const productIds = data.lineItems.map(li => li.productId)
+    scheduleAlertChecks(businessId, productIds)
+  }
+
+  return result
 }
 
 export async function getDocument(businessId: string, documentId: string) {
@@ -572,7 +580,7 @@ export async function updateDocument(
   const wasSaved = existing.status === 'SAVED' || existing.status === 'SHARED'
   const willBeSaved = data.status === 'SAVED' || (wasSaved && !data.status)
 
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     // If status was SAVED and we're updating, reverse side effects first
     if (wasSaved && (STOCK_DECREASE_TYPES.has(existing.type) || STOCK_INCREASE_TYPES.has(existing.type))) {
       await reverseForInvoice(tx, { businessId, invoiceId: documentId, userId })
@@ -798,6 +806,16 @@ export async function updateDocument(
       select: DOCUMENT_DETAIL_SELECT,
     })
   })
+
+  // Post-transaction: fire stock alert checks for all affected products
+  const affectsStock = STOCK_DECREASE_TYPES.has(existing.type) || STOCK_INCREASE_TYPES.has(existing.type)
+  if (affectsStock) {
+    const oldProductIds = existing.lineItems.map(li => li.productId)
+    const newProductIds = data.lineItems ? data.lineItems.map(li => li.productId) : []
+    scheduleAlertChecks(businessId, [...oldProductIds, ...newProductIds])
+  }
+
+  return result
 }
 
 export async function deleteDocument(businessId: string, documentId: string, userId: string) {
@@ -821,7 +839,7 @@ export async function deleteDocument(businessId: string, documentId: string, use
   const retentionDays = settings?.recycleBinRetentionDays || 30
   const permanentDeleteAt = new Date(Date.now() + retentionDays * 24 * 60 * 60 * 1000)
 
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     // Reverse side effects
     if (wasSaved) {
       if (STOCK_DECREASE_TYPES.has(doc.type) || STOCK_INCREASE_TYPES.has(doc.type)) {
@@ -846,6 +864,14 @@ export async function deleteDocument(businessId: string, documentId: string, use
 
     return updated
   })
+
+  // Post-transaction: fire stock alert checks (stock reversed = may resolve alerts)
+  if (wasSaved && (STOCK_DECREASE_TYPES.has(doc.type) || STOCK_INCREASE_TYPES.has(doc.type))) {
+    const productIds = doc.lineItems.map(li => li.productId)
+    scheduleAlertChecks(businessId, productIds)
+  }
+
+  return result
 }
 
 // === Conversion ===
@@ -986,7 +1012,7 @@ export async function restoreDocument(businessId: string, documentId: string, us
   })
   if (!doc) throw notFoundError('Document')
 
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     // Restore to SAVED status
     await tx.document.update({
       where: { id: documentId },
@@ -1037,6 +1063,14 @@ export async function restoreDocument(businessId: string, documentId: string, us
       select: DOCUMENT_DETAIL_SELECT,
     })
   })
+
+  // Post-transaction: fire stock alert checks for restored document
+  if (STOCK_DECREASE_TYPES.has(doc.type) || STOCK_INCREASE_TYPES.has(doc.type)) {
+    const productIds = doc.lineItems.map(li => li.productId)
+    scheduleAlertChecks(businessId, productIds)
+  }
+
+  return result
 }
 
 export async function permanentDeleteDocument(businessId: string, documentId: string) {

@@ -5,6 +5,8 @@
 
 import { prisma } from '../lib/prisma.js'
 import { notFoundError, validationError } from '../lib/errors.js'
+import logger from '../lib/logger.js'
+import { sendWhatsApp } from './notification.service.js'
 import type {
   CreatePaymentInput,
   UpdatePaymentInput,
@@ -654,16 +656,18 @@ export async function sendReminder(
   if (!party) throw notFoundError('Party')
 
   const defaultMessage = `Hi ${party.name}, this is a reminder about your outstanding payment. Please make the payment at your earliest convenience.`
+  const message = data.message || defaultMessage
 
+  // Create reminder record with PENDING status, update after delivery attempt
   const reminder = await prisma.paymentReminder.create({
     data: {
       businessId,
       partyId: data.partyId,
       invoiceId: data.invoiceId || null,
       channel: data.channel,
-      status: 'SENT', // In MVP, we mark as sent immediately (actual sending in Phase 2)
-      message: data.message || defaultMessage,
-      sentAt: new Date(),
+      status: 'PENDING',
+      message,
+      sentAt: null,
       isAutomatic: false,
     },
     select: {
@@ -672,6 +676,52 @@ export async function sendReminder(
       party: { select: { id: true, name: true } },
     },
   })
+
+  // Attempt actual delivery — never let notification failure crash the route
+  try {
+    let delivered = false
+
+    if (data.channel === 'WHATSAPP' && party.phone) {
+      const result = await sendWhatsApp({
+        phone: party.phone,
+        templateName: 'payment_reminder',
+        templateParams: [party.name, message],
+      })
+      delivered = result.success
+      if (!result.success) {
+        logger.warn('Reminder WhatsApp delivery failed', {
+          reminderId: reminder.id, error: result.error,
+        })
+      }
+    } else if (data.channel === 'PUSH') {
+      // TODO: Look up device tokens for party (requires device token storage)
+      logger.info('Push reminder skipped — device token lookup not yet implemented', {
+        reminderId: reminder.id,
+      })
+    }
+
+    await prisma.paymentReminder.update({
+      where: { id: reminder.id },
+      data: {
+        status: delivered ? 'SENT' : 'FAILED',
+        sentAt: delivered ? new Date() : null,
+        failureReason: delivered ? null : 'Delivery attempt unsuccessful',
+      },
+    })
+
+    reminder.status = delivered ? 'SENT' : 'FAILED'
+    reminder.sentAt = delivered ? new Date() : null
+  } catch (err) {
+    logger.error('Reminder notification dispatch error', {
+      reminderId: reminder.id,
+      error: err instanceof Error ? err.message : err,
+    })
+    await prisma.paymentReminder.update({
+      where: { id: reminder.id },
+      data: { status: 'FAILED', failureReason: 'Notification dispatch error' },
+    })
+    reminder.status = 'FAILED'
+  }
 
   return reminder
 }
@@ -693,6 +743,7 @@ export async function sendBulkReminders(
 
   const now = new Date()
 
+  // Create all reminder records as PENDING
   if (validPartyIds.length > 0) {
     await prisma.paymentReminder.createMany({
       data: validPartyIds.map(partyId => {
@@ -701,23 +752,83 @@ export async function sendBulkReminders(
           businessId,
           partyId,
           channel: data.channel,
-          status: 'SENT',
+          status: 'PENDING',
           message: data.message || `Hi ${party.name}, this is a reminder about your outstanding payment.`,
-          sentAt: now,
+          sentAt: null,
           isAutomatic: false,
         }
       }),
     })
   }
 
+  // Attempt delivery for each valid party — fire-and-forget per party, don't block
   const results: Array<{ partyId: string; status: 'sent' | 'failed'; error?: string }> = [
-    ...validPartyIds.map(partyId => ({ partyId, status: 'sent' as const })),
     ...invalidPartyIds.map(partyId => ({ partyId, status: 'failed' as const, error: 'Party not found' })),
   ]
 
+  // Fetch the reminder records we just created to get their IDs
+  const reminders = validPartyIds.length > 0
+    ? await prisma.paymentReminder.findMany({
+        where: { businessId, partyId: { in: validPartyIds }, createdAt: { gte: now } },
+        select: { id: true, partyId: true, message: true },
+      })
+    : []
+  const reminderByParty = new Map(reminders.map(r => [r.partyId, r]))
+
+  const deliveryTasks = validPartyIds.map(async (partyId) => {
+    const party = partyMap.get(partyId)!
+    const reminder = reminderByParty.get(partyId)
+    try {
+      let delivered = false
+
+      if (data.channel === 'WHATSAPP' && party.phone) {
+        const result = await sendWhatsApp({
+          phone: party.phone,
+          templateName: 'payment_reminder',
+          templateParams: [party.name, reminder?.message ?? ''],
+        })
+        delivered = result.success
+      }
+
+      if (reminder) {
+        await prisma.paymentReminder.update({
+          where: { id: reminder.id },
+          data: {
+            status: delivered ? 'SENT' : 'FAILED',
+            sentAt: delivered ? new Date() : null,
+            failureReason: delivered ? null : 'Delivery unsuccessful',
+          },
+        })
+      }
+
+      results.push({
+        partyId,
+        status: delivered ? 'sent' : 'failed',
+        error: delivered ? undefined : 'Delivery unsuccessful',
+      })
+    } catch (err) {
+      logger.error('Bulk reminder delivery error', {
+        partyId,
+        error: err instanceof Error ? err.message : err,
+      })
+      if (reminder) {
+        await prisma.paymentReminder.update({
+          where: { id: reminder.id },
+          data: { status: 'FAILED', failureReason: 'Notification dispatch error' },
+        }).catch(() => { /* swallow update failure — already logged */ })
+      }
+      results.push({ partyId, status: 'failed', error: 'Notification dispatch error' })
+    }
+  })
+
+  await Promise.all(deliveryTasks)
+
+  const sentCount = results.filter(r => r.status === 'sent').length
+  const failedCount = results.filter(r => r.status === 'failed').length
+
   return {
-    sent: validPartyIds.length,
-    failed: invalidPartyIds.length,
+    sent: sentCount,
+    failed: failedCount,
     results,
   }
 }

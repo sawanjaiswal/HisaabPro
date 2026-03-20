@@ -111,7 +111,7 @@ const TestimonialsColumn = (props: {
                 key={`${index}-${i}`}
                 aria-hidden={index === 1 ? "true" : "false"}
                 tabIndex={index === 1 ? -1 : 0}
-                className="testimonial-card p-10 rounded-3xl border shadow-lg shadow-black/5 max-w-xs w-full cursor-default select-none focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="p-10 rounded-3xl border shadow-lg shadow-black/5 max-w-xs w-full cursor-default select-none focus:outline-none focus:ring-2 focus:ring-primary/30"
                 style={{
                   backgroundColor: 'var(--lp-bg-card)',
                   borderColor: 'var(--lp-card-border)',

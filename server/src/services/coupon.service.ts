@@ -455,10 +455,14 @@ export async function applyCoupon(userId: string, data: ApplyCouponInput, ip?: s
     discountApplied: result.discountApplied,
   })
 
-  // TODO: Link Razorpay offer when credentials available
-  const razorpayOfferLinked = false
+  // Link Razorpay offer if coupon has a razorpayOfferId
+  const couponWithOffer = await prisma.coupon.findUnique({
+    where: { code: data.code },
+    select: { razorpayOfferId: true },
+  })
+  const razorpayOfferLinked = Boolean(couponWithOffer?.razorpayOfferId)
 
-  return { redemption: result.redemption, razorpayOfferLinked }
+  return { redemption: result.redemption, razorpayOfferLinked, razorpayOfferId: couponWithOffer?.razorpayOfferId ?? null }
 }
 
 // ─── User: Remove ────────────────────────────────────────────────────────

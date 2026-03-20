@@ -360,7 +360,7 @@ body:has(.landing-root) {
 
 
 /* ============================================================
-   TESTIMONIAL SCROLL — CSS animation with hover-pause
+   TESTIMONIAL SCROLL — continuous CSS animation (no pause)
    ============================================================ */
 
 @keyframes testimonial-scroll-up {
@@ -370,21 +370,8 @@ body:has(.landing-root) {
 
 .testimonial-scroll {
   animation: testimonial-scroll-up var(--scroll-duration, 15s) linear infinite;
-}
-
-.testimonial-scroll-container:hover .testimonial-scroll {
-  animation-play-state: paused;
-}
-
-.testimonial-card {
-  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1),
-              box-shadow 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.testimonial-card:hover {
-  transform: scale(1.03) translateY(-8px);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15),
-              0 0 0 1px rgba(0, 0, 0, 0.05);
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 

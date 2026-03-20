@@ -19,6 +19,7 @@ import {
 } from '../schemas/product.schemas.js'
 import * as productService from '../services/product.service.js'
 import { adjustStock, validateStockForInvoice } from '../services/stock.service.js'
+import { checkAndCreateAlerts } from '../services/stock-alert.service.js'
 import { idempotencyCheck } from '../middleware/idempotency.js'
 
 const router = Router()
@@ -127,6 +128,9 @@ router.post(
         movementDate: data.date ? new Date(data.date) : undefined,
       })
     })
+
+    // Fire-and-forget stock alert check (never blocks the response)
+    checkAndCreateAlerts(businessId, productId).catch(() => {})
 
     sendSuccess(res, {
       movement: result.movement,

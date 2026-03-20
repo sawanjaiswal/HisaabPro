@@ -46,6 +46,9 @@ import financialReportRoutes from './routes/financial-reports.js'
 import loanRoutes from './routes/loans.js'
 import fyClosureRoutes from './routes/fy-closure.js'
 import couponRoutes from './routes/coupons.js'
+import biometricRoutes from './routes/biometric.js'
+import stockAlertRoutes from './routes/stock-alerts.js'
+import razorpayRoutes, { razorpayWebhookRouter } from './routes/razorpay.js'
 import adminRoutes from './routes/admin/index.js'
 import logger from './lib/logger.js'
 
@@ -99,6 +102,10 @@ const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || [
 ]
 app.use(cors({ origin: allowedOrigins, credentials: true }))
 app.use(compression())
+
+// Razorpay webhook needs raw body for signature verification — mount BEFORE express.json()
+app.use('/api/razorpay', razorpayWebhookRouter)
+
 app.use(express.json({ limit: '2mb' }))
 
 // Parse cookies (required for httpOnly token + CSRF cookie reading)
@@ -124,6 +131,7 @@ app.get('/api/health', (_req, res) => {
 // Routes
 // ---------------------------------------------------------------------------
 app.use('/api/auth', authRoutes)
+app.use('/api/auth/biometric', biometricRoutes)
 app.use('/api/feedback', feedbackRoutes)
 app.use('/api/backup', backupRoutes)
 app.use('/api/parties', partyRoutes)
@@ -156,6 +164,12 @@ app.use('/api/currency', currencyRoutes)
 
 // Coupon / Discount Code System
 app.use('/api/coupons', couponRoutes)
+
+// Stock Alerts — Feature #47
+app.use('/api/stock-alerts', stockAlertRoutes)
+
+// Razorpay Subscription & Billing (authenticated routes — webhook mounted earlier)
+app.use('/api/razorpay', razorpayRoutes)
 
 // Phase 3 — Accounting & Finance
 app.use('/api/accounting', accountingRoutes)

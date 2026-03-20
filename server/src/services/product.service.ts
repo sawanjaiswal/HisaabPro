@@ -6,7 +6,7 @@
 import { Prisma } from '@prisma/client'
 import { prisma } from '../lib/prisma.js'
 import { notFoundError, conflictError } from '../lib/errors.js'
-import { adjustStock } from './stock.service.js'
+import { adjustStock, scheduleAlertChecks } from './stock.service.js'
 import logger from '../lib/logger.js'
 import type {
   CreateProductInput,
@@ -83,7 +83,7 @@ export async function createProduct(
     sku = data.sku
   }
 
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     // Create product with currentStock=0, then use adjustStock for opening
     const product = await tx.product.create({
       data: {
@@ -129,13 +129,16 @@ export async function createProduct(
     }
 
     // Re-fetch with updated stock
-    const result = await tx.product.findUniqueOrThrow({
+    return tx.product.findUniqueOrThrow({
       where: { id: product.id },
       select: productDetailSelect,
     })
-
-    return result
   })
+
+  // Post-transaction: check low-stock alert for the new product
+  scheduleAlertChecks(businessId, [result.id])
+
+  return result
 }
 
 export async function listProducts(businessId: string, filters: ListProductsQuery) {

@@ -161,24 +161,36 @@ export const SkeletonOne = () => {
 
           {/* Line items */}
           <div className="px-4 py-2" style={{ fontSize: '0.75rem' }}>
-            <div className="flex justify-between py-1.5" style={{ borderBottom: '1px dashed var(--lp-card-border)' }}>
-              <span style={{ color: 'var(--lp-text-body)' }}>LED Panel Light × 20</span>
-              <span style={{ color: 'var(--lp-text)', fontWeight: 500 }}>₹8,000</span>
-            </div>
-            <div className="flex justify-between py-1.5" style={{ borderBottom: '1px dashed var(--lp-card-border)' }}>
-              <span style={{ color: 'var(--lp-text-body)' }}>MCB Switch 32A × 15</span>
-              <span style={{ color: 'var(--lp-text)', fontWeight: 500 }}>₹2,250</span>
-            </div>
-            <div className="flex justify-between py-1.5" style={{ borderBottom: '1px dashed var(--lp-card-border)' }}>
-              <span style={{ color: 'var(--lp-text-body)' }}>Wire Bundle 1.5mm × 5</span>
-              <span style={{ color: 'var(--lp-text)', fontWeight: 500 }}>₹2,200</span>
-            </div>
+            {[
+              { item: 'LED Panel Light × 20', amount: '₹8,000' },
+              { item: 'MCB Switch 32A × 15', amount: '₹2,250' },
+              { item: 'Wire Bundle 1.5mm × 5', amount: '₹2,200' },
+              { item: 'Ceiling Fan Capacitor × 50', amount: '₹3,500' },
+              { item: 'Switch Board 8-way × 10', amount: '₹4,200' },
+              { item: 'LED Bulb 12W × 100', amount: '₹7,500' },
+              { item: 'PVC Pipe 1" × 25', amount: '₹3,750' },
+            ].map((line) => (
+              <div key={line.item} className="flex justify-between py-1.5" style={{ borderBottom: '1px dashed var(--lp-card-border)' }}>
+                <span style={{ color: 'var(--lp-text-body)' }}>{line.item}</span>
+                <span style={{ color: 'var(--lp-text)', fontWeight: 500 }}>{line.amount}</span>
+              </div>
+            ))}
           </div>
 
-          {/* Total */}
+          {/* Subtotal + Tax + Total */}
+          <div className="px-4 py-2 border-t" style={{ borderColor: 'var(--lp-card-border)', fontSize: '0.75rem' }}>
+            <div className="flex justify-between py-1">
+              <span style={{ color: 'var(--lp-text-muted)' }}>Subtotal</span>
+              <span style={{ color: 'var(--lp-text)', fontWeight: 500 }}>₹31,400</span>
+            </div>
+            <div className="flex justify-between py-1">
+              <span style={{ color: 'var(--lp-text-muted)' }}>Discount (5%)</span>
+              <span style={{ color: 'var(--lp-mock-success)', fontWeight: 500 }}>-₹1,570</span>
+            </div>
+          </div>
           <div className="px-4 py-2.5 flex justify-between items-center border-t" style={{ borderColor: 'var(--lp-card-border)' }}>
             <span style={{ color: 'var(--lp-text-muted)', fontSize: '0.75rem', fontWeight: 500 }}>Total</span>
-            <span style={{ color: 'var(--lp-text)', fontSize: '1.125rem', fontWeight: 700 }}>₹12,450</span>
+            <span style={{ color: 'var(--lp-text)', fontSize: '1.125rem', fontWeight: 700 }}>₹29,830</span>
           </div>
 
           {/* Action buttons */}
@@ -290,10 +302,12 @@ export const SkeletonTwo = () => {
    ───────────────────────────────────────────────── */
 export const SkeletonThree = () => {
   const products = [
-    { name: "Basmati Rice 5kg", qty: 250, unit: "bags", price: "₹425", status: "ok" },
-    { name: "Toor Dal 1kg", qty: 12, unit: "packs", price: "₹185", status: "low" },
-    { name: "Sugar 1kg", qty: 180, unit: "packs", price: "₹48", status: "ok" },
-    { name: "Aashirvaad Atta 10kg", qty: 8, unit: "bags", price: "₹510", status: "low" },
+    { name: "Basmati Rice 5kg", qty: 250, unit: "bags", unitSingular: "bag", price: "₹425", status: "ok" },
+    { name: "Toor Dal 1kg", qty: 12, unit: "packs", unitSingular: "pack", price: "₹185", status: "low" },
+    { name: "Havells Wire 1.5mm", qty: 45, unit: "rolls", unitSingular: "roll", price: "₹1,850", status: "ok" },
+    { name: "Aashirvaad Atta 10kg", qty: 8, unit: "bags", unitSingular: "bag", price: "₹510", status: "low" },
+    { name: "Clinic Plus 175ml", qty: 320, unit: "pieces", unitSingular: "pc", price: "₹95", status: "ok" },
+    { name: "Amul Butter 500g", qty: 5, unit: "boxes", unitSingular: "box", price: "₹270", status: "low" },
   ]
 
   return (
@@ -337,7 +351,7 @@ export const SkeletonThree = () => {
               </p>
               <div className="mt-2 pt-2 flex items-center justify-between" style={{ borderTop: '1px solid var(--lp-card-border)' }}>
                 <span style={{ color: 'var(--lp-text)', fontSize: '0.8125rem', fontWeight: 700 }}>{p.price}</span>
-                <span style={{ color: 'var(--lp-text-muted)', fontSize: '0.5625rem' }}>per {p.unit === "bags" ? "bag" : "pack"}</span>
+                <span style={{ color: 'var(--lp-text-muted)', fontSize: '0.5625rem' }}>per {p.unitSingular}</span>
               </div>
             </MockCard>
           ))}

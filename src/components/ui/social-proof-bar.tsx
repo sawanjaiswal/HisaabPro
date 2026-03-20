@@ -56,12 +56,12 @@ function StatItem({ stat, active, index }: { stat: Stat; active: boolean; index:
       transition={{ duration: 0.5, delay: index * 0.1, ease: EASE_OUT }}
       className="flex flex-col items-center gap-1 text-center"
     >
-      {stat.isStars && (
-        <span className="text-amber-500 text-sm leading-none mb-0.5" aria-hidden="true">
-          ★★★★★
-        </span>
-      )}
-      <span className="text-2xl font-bold lp-heading tabular-nums">
+      <span className="text-2xl font-bold lp-heading tabular-nums flex items-center gap-1.5">
+        {stat.isStars && (
+          <span className="text-amber-500 text-base leading-none" aria-hidden="true">
+            ★★★★★
+          </span>
+        )}
         {stat.prefix ?? ""}{display}{stat.suffix}
       </span>
       <span className="text-sm lp-body">{stat.label}</span>

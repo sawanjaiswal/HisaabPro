@@ -8,6 +8,7 @@
 import type { PrismaClient } from '@prisma/client'
 import { prisma } from '../lib/prisma.js'
 import { notFoundError, insufficientStockError } from '../lib/errors.js'
+import { checkAndCreateAlerts } from './stock-alert.service.js'
 import logger from '../lib/logger.js'
 
 type TxClient = Parameters<Parameters<PrismaClient['$transaction']>[0]>[0]
@@ -263,6 +264,18 @@ export async function reverseForInvoice(
     results.push(result.movement)
   }
   return results
+}
+
+/**
+ * Fire stock alert checks for a list of products.
+ * Call AFTER a $transaction commits — never inside one.
+ * Failures are caught and logged; never blocks the caller.
+ */
+export function scheduleAlertChecks(businessId: string, productIds: string[]): void {
+  const unique = [...new Set(productIds)]
+  for (const productId of unique) {
+    checkAndCreateAlerts(businessId, productId).catch(() => {})
+  }
 }
 
 /** Validate stock availability before invoice save */

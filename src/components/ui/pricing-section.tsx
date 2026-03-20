@@ -29,6 +29,7 @@ interface PricingTier {
   features: Feature[]
   highlight?: boolean
   badge?: string
+  badgeColor?: string
 }
 
 interface PricingSectionProps {
@@ -64,6 +65,7 @@ const defaultTiers: PricingTier[] = [
     description: "For businesses ready to add staff and grow",
     highlight: true,
     badge: "Most Popular",
+    badgeColor: "#0ea5e9",
     features: [
       { name: "3 users", description: "Owner + 2 staff members", included: true },
       { name: "Unlimited invoices", description: "No cap on billing", included: true },
@@ -83,6 +85,7 @@ const defaultTiers: PricingTier[] = [
     description: "Unlimited everything — for serious operations",
     highlight: false,
     badge: "Best Value",
+    badgeColor: "#8b5cf6",
     features: [
       { name: "Unlimited users", description: "No team size limit", included: true },
       { name: "Unlimited invoices", description: "No cap on billing", included: true },
@@ -177,8 +180,8 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
                   <span
                     className="inline-flex items-center rounded-full px-4 py-1.5 text-sm font-medium border-none shadow-lg"
                     style={{
-                      backgroundColor: 'var(--lp-price-badge-bg)',
-                      color: 'var(--lp-price-badge-text)',
+                      backgroundColor: tier.badgeColor ?? 'var(--lp-price-badge-bg)',
+                      color: '#ffffff',
                     }}
                   >
                     {tier.badge}
