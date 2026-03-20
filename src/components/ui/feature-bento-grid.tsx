@@ -56,7 +56,7 @@ export function FeaturesSectionWithBentoGrid() {
         </h2>
 
         <p className="text-sm lg:text-base max-w-2xl my-4 mx-auto text-center font-normal lp-text-body">
-          Invoicing, inventory, payments, reports — all connected, all offline.
+          Invoicing, inventory, payments, reports — all connected, all in one app.
         </p>
       </motion.div>
 

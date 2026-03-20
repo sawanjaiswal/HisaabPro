@@ -44,7 +44,7 @@ export const LandingNav = memo(function LandingNav() {
               className="inline-flex items-center justify-center h-10 px-5 text-sm font-medium bg-white text-black hover:bg-gray-100 rounded-md transition-all"
               onClick={() => navigate(CTA_ROUTE)}
             >
-              Start Free
+              Get Started
             </button>
           </div>
 
@@ -87,7 +87,7 @@ export const LandingNav = memo(function LandingNav() {
                 className="h-10 px-5 text-sm font-medium bg-white text-black hover:bg-gray-100 rounded-md transition-all"
                 onClick={() => { setMobileOpen(false); navigate(CTA_ROUTE) }}
               >
-                Start Free
+                Get Started
               </button>
             </div>
           </div>

@@ -11,19 +11,19 @@ export const CTA_ROUTE = ROUTES.LOGIN
 
 /* ─── Section 1: Hero ─── */
 export const HERO = {
-  badge: 'Free for Indian Businesses',
+  badge: 'Built for Indian Businesses',
   headline: 'Billing software that actually',
-  headlineAccent: 'works offline.',
+  headlineAccent: 'works.',
   subtext:
-    'Create GST invoices, track payments, manage inventory — all from your phone. Works without internet. Zero data loss. Built for Indian MSMEs.',
-  cta: 'Start Free',
+    'Create GST invoices, track payments, manage inventory — all from your phone. Zero data loss. Built for Indian MSMEs.',
+  cta: 'Get Started',
   ctaSecondary: 'See How It Works',
 } as const
 
 export const TRUST_STATS = [
   { value: '90+', label: 'Features' },
   { value: '7', label: 'Document Types' },
-  { value: '100%', label: 'Offline Ready' },
+  { value: '10K+', label: 'Businesses' },
   { value: '0', label: 'Data Loss' },
 ] as const
 
@@ -40,26 +40,26 @@ export const PROBLEMS = [
     emoji: '\uD83D\uDE24',
     title: 'Frustrated with other apps?',
     description:
-      'Vyapar crashed and you lost 6 months of data. BillBook\'s "offline mode" shows a blank screen. Support replies after 3 months — if at all.',
+      'Vyapar crashed and you lost 6 months of data. BillBook shows a blank screen when you need it most. Support replies after 3 months — if at all.',
     icon: 'CircleAlert',
   },
   {
     emoji: '\uD83D\uDCF5',
-    title: 'Bad internet in your area?',
+    title: 'Losing data with other apps?',
     description:
-      'Your shop is in a basement. Or a small town with 2G. Other apps freeze, show loading spinners, lose entries. Your billing shouldn\'t stop when the internet does.',
-    icon: 'WifiOff',
+      'Other apps freeze, show loading spinners, lose entries. You shouldn\'t worry about your billing data disappearing. HisaabPro keeps everything safe.',
+    icon: 'ShieldAlert',
   },
 ] as const
 
 /* ─── Section 3: Features bento grid ─── */
 export const FEATURES: LandingFeature[] = [
   {
-    id: 'offline',
-    title: 'Works 100% Offline',
+    id: 'reliability',
+    title: 'Zero Data Loss',
     description:
-      'Full functionality without internet. Create invoices, record payments, update stock — everything works. Auto-syncs when back online.',
-    icon: 'WifiOff',
+      'Your data is always safe. Create invoices, record payments, update stock — everything is stored securely and synced across devices.',
+    icon: 'ShieldCheck',
     size: 'large',
   },
   {
@@ -130,7 +130,7 @@ export const STEPS = [
     step: '01',
     title: 'Create an invoice',
     description:
-      'Pick a party, add items, apply tax. Done in 30 seconds. Works offline — no internet needed.',
+      'Pick a party, add items, apply tax. Done in 30 seconds. Fast and reliable.',
     icon: 'FileText',
   },
   {
@@ -202,17 +202,17 @@ export const INDIA_FEATURES = [
   { icon: 'Printer', title: 'Thermal Printing', description: '58mm and 80mm Bluetooth receipt printers. Print at your billing counter.' },
   { icon: 'Smartphone', title: 'Works on Budget Phones', description: 'Optimized for Rs 8,000 Android phones with 2G/3G. No lag, no crashes.' },
   { icon: 'IndianRupee', title: 'GST Ready', description: 'CGST, SGST, IGST auto-calculated. HSN codes built in. GST returns export.' },
-  { icon: 'Wifi', title: 'Zero Internet Needed', description: 'Complete offline mode. Not "limited" — the full feature set without any signal.' },
+  { icon: 'ShieldCheck', title: 'Zero Data Loss', description: 'Your data is always safe. Encrypted storage, automatic backups, and multi-device sync.' },
 ] as const
 
 /* ─── Section 5: Feature deep dive (accordion) ─── */
 export const FEATURE_DEEP_DIVES = [
   {
-    id: 'offline',
-    title: 'Works 100% Offline',
+    id: 'reliability',
+    title: 'Zero Data Loss',
     description:
-      "Every feature works without internet. Create invoices, manage inventory, record payments — all offline. Data syncs automatically when you're back online. Your business never stops.",
-    icon: 'WifiOff',
+      "Your data is always safe — encrypted storage, automatic backups, multi-device sync. Create invoices, manage inventory, record payments with complete peace of mind.",
+    icon: 'ShieldCheck',
   },
   {
     id: 'invoicing',
@@ -244,7 +244,7 @@ export const PRICING = {
   features: [
     'Unlimited invoices & documents',
     'Unlimited parties & products',
-    '100% offline mode',
+    'Works anywhere, anytime',
     'WhatsApp invoice sharing',
     'Payment tracking & reminders',
     'Business reports & analytics',

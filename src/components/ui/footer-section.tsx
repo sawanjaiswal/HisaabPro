@@ -53,9 +53,9 @@ export function Footer() {
     >
       <div className="max-w-6xl mx-auto">
         {/* Main grid — brand left, 4 link columns right */}
-        <div className="grid gap-10 grid-cols-1 md:grid-cols-6">
+        <div className="grid gap-8 md:gap-10 grid-cols-2 md:grid-cols-6">
           {/* Brand column */}
-          <div className="md:col-span-2 flex flex-col gap-4">
+          <div className="col-span-2 flex flex-col gap-4">
             <p className="text-lg font-bold lp-text">HisaabPro</p>
             <p className="text-sm lp-text-muted max-w-[240px]">
               Billing, inventory &amp; payments for Indian businesses.

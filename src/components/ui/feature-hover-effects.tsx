@@ -10,7 +10,7 @@ export function FeaturesSectionWithHoverEffects() {
     {
       title: "1. Download",
       description:
-        "Get HisaabPro from Play Store or App Store. 30 seconds to install, 14 days free — no credit card.",
+        "Get HisaabPro from Play Store or App Store. 30 seconds to install, ready to bill in 2 minutes.",
       icon: <Download />,
     },
     {
@@ -28,7 +28,7 @@ export function FeaturesSectionWithHoverEffects() {
     {
       title: "4. Grow",
       description:
-        "Add staff, track payments, generate reports. Your entire business — organized, offline, always in your pocket.",
+        "Add staff, track payments, generate reports. Your entire business — organized, always in your pocket.",
       icon: <TrendingUp />,
     },
   ];
@@ -44,7 +44,7 @@ export function FeaturesSectionWithHoverEffects() {
         <h2 className="text-4xl font-semibold lg:text-5xl">How it works</h2>
         <p className="mt-4 text-lg lp-text-muted">Download to first invoice in under 5 minutes. Seriously.</p>
       </motion.div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 relative z-10 max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 relative z-10 max-w-7xl mx-auto px-6 lg:px-0">
         {features.map((feature, index) => (
           <Feature key={feature.title} {...feature} index={index} reducedMotion={reducedMotion} />
         ))}

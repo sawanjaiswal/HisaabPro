@@ -148,7 +148,7 @@ const Navigation = React.memo(({ isDark, onToggleTheme }: ThemeProps) => {
             </button>
             <a href={LP_APP.REGISTER}>
               <Button type="button" variant="default" size="sm">
-                Start Free Trial
+                Get Started
               </Button>
             </a>
           </div>
@@ -184,7 +184,7 @@ const Navigation = React.memo(({ isDark, onToggleTheme }: ThemeProps) => {
             <div className="flex flex-col gap-2 pt-4 border-t" style={{ borderColor: 'var(--lp-border-subtle)' }}>
               <a href={LP_APP.REGISTER}>
                 <Button type="button" variant="default" size="sm">
-                  Start Free Trial
+                  Get Started
                 </Button>
               </a>
             </div>
@@ -235,7 +235,7 @@ const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
       </motion.h1>
 
       <motion.p {...fade(0.3)} className="text-sm md:text-base text-center max-w-2xl px-6 mb-10 lp-text-muted">
-        Invoices, inventory, payments, WhatsApp sharing — all offline, all from your phone. No WiFi? No problem.
+        Invoices, inventory, payments, WhatsApp sharing — all from your phone. Built for Indian businesses.
       </motion.p>
 
       <motion.div {...fade(0.4, 20)} id={LP_SECTIONS.HERO_CTA} className="flex items-center gap-4 relative z-10 mb-16">
@@ -245,9 +245,9 @@ const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
             variant="gradient"
             size="lg"
             className="rounded-lg flex items-center justify-center"
-            aria-label="Start your 14-day free trial"
+            aria-label="Start your 14-day trial"
           >
-            Start 14-Day Free Trial
+            Start 14-Day Trial
           </Button>
         </a>
       </motion.div>

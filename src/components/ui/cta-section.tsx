@@ -11,7 +11,7 @@ const AVATAR_URLS = AVATAR_NAMES.map((name, i) =>
 );
 
 const TRUST_POINTS = [
-  "No credit card needed",
+  "14-day trial included",
   "Setup in 2 minutes",
   "Cancel anytime",
 ];
@@ -58,7 +58,7 @@ export function CallToAction() {
           Your business deserves billing that never stops
         </h2>
         <p className="text-base lp-text-body max-w-xl mx-auto">
-          Join 10,000+ Indian business owners who save 2+ hours daily on billing, inventory &amp; payments. 14-day free trial, no credit card.
+          Join 10,000+ Indian business owners who save 2+ hours daily on billing, inventory &amp; payments. 14-day trial, no credit card.
         </p>
       </motion.div>
 
@@ -71,7 +71,7 @@ export function CallToAction() {
         </a>
         <a href={LP_APP.REGISTER}>
           <button type="button" className="lp-cta inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all h-12 px-6 py-2 cursor-pointer">
-            Start Free Trial <ArrowRightIcon className="size-4 ml-1" />
+            Get Started <ArrowRightIcon className="size-4 ml-1" />
           </button>
         </a>
       </motion.div>

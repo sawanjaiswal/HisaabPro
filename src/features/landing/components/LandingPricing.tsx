@@ -18,7 +18,7 @@ export function LandingPricing() {
             Simple, transparent pricing
           </h2>
           <p className="mt-3 text-gray-400">
-            Start free. Upgrade when you&apos;re ready. No hidden fees.
+            14-day trial. Upgrade when you&apos;re ready. No hidden fees.
           </p>
         </div>
 

@@ -331,17 +331,17 @@ function TemplatePreviewModal({ template: t, onClose }: { template: TemplateData
         {/* ─── TOTALS ─── */}
         <div className="px-6 py-3" style={{ borderTop: `1px solid ${border}` }}>
           <div className="flex flex-col items-end gap-1" style={{ fontSize: '0.8125rem' }}>
-            <div className="flex justify-between w-48">
+            <div className="flex justify-between w-40 sm:w-48">
               <span style={{ color: '#9ca3af' }}>Subtotal</span>
               <span style={{ fontWeight: 500 }}>₹{subtotal.toLocaleString('en-IN')}</span>
             </div>
             {t.hasGst && (
               <>
-                <div className="flex justify-between w-48">
+                <div className="flex justify-between w-40 sm:w-48">
                   <span style={{ color: '#9ca3af' }}>CGST (9%)</span>
                   <span style={{ fontWeight: 500 }}>₹{Math.round(taxAmount / 2).toLocaleString('en-IN')}</span>
                 </div>
-                <div className="flex justify-between w-48">
+                <div className="flex justify-between w-40 sm:w-48">
                   <span style={{ color: '#9ca3af' }}>SGST (9%)</span>
                   <span style={{ fontWeight: 500 }}>₹{Math.round(taxAmount / 2).toLocaleString('en-IN')}</span>
                 </div>

@@ -49,7 +49,7 @@ const defaultTiers: PricingTier[] = [
     features: [
       { name: "1 user", description: "Owner access only", included: true },
       { name: "Unlimited invoices", description: "No cap on billing", included: true },
-      { name: "100% offline", description: "Works without internet", included: true },
+      { name: "Works anywhere", description: "No internet required", included: true },
       { name: "WhatsApp sharing", description: "Send invoices instantly", included: true },
       { name: "Basic reports", description: "Sales and payment summaries", included: true },
       { name: "Staff roles", description: "Add team members", included: false },
@@ -69,7 +69,7 @@ const defaultTiers: PricingTier[] = [
     features: [
       { name: "3 users", description: "Owner + 2 staff members", included: true },
       { name: "Unlimited invoices", description: "No cap on billing", included: true },
-      { name: "100% offline", description: "Works without internet", included: true },
+      { name: "Works anywhere", description: "No internet required", included: true },
       { name: "WhatsApp sharing", description: "Send invoices instantly", included: true },
       { name: "Advanced reports", description: "Detailed analytics & export", included: true },
       { name: "4 preset staff roles", description: "Admin, Manager, Salesperson, Viewer", included: true },
@@ -89,7 +89,7 @@ const defaultTiers: PricingTier[] = [
     features: [
       { name: "Unlimited users", description: "No team size limit", included: true },
       { name: "Unlimited invoices", description: "No cap on billing", included: true },
-      { name: "100% offline", description: "Works without internet", included: true },
+      { name: "Works anywhere", description: "No internet required", included: true },
       { name: "WhatsApp sharing", description: "Send invoices instantly", included: true },
       { name: "Advanced reports + export", description: "PDF, Excel, share with CA", included: true },
       { name: "Custom role builder", description: "Fine-grained permissions per user", included: true },
@@ -125,7 +125,7 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
             Simple, transparent pricing
           </h2>
           <p className="text-base lp-text-muted">
-            Start with a 14-day free trial. No credit card required.
+            Start with a 14-day trial. No credit card required.
           </p>
           <div
             className="inline-flex items-center p-1.5 rounded-full border shadow-sm"
@@ -138,7 +138,7 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
               <button
                 key={period}
                 onClick={() => setIsYearly(period === "Yearly")}
-                className="px-8 py-2.5 text-sm font-medium rounded-full transition-all duration-300 cursor-pointer"
+                className="px-5 sm:px-8 py-2.5 text-sm font-medium rounded-full transition-all duration-300 cursor-pointer"
                 style={{
                   backgroundColor: (period === "Yearly") === isYearly ? 'var(--lp-toggle-active-bg)' : 'transparent',
                   color: (period === "Yearly") === isYearly ? 'var(--lp-toggle-active-text)' : 'var(--lp-toggle-inactive-text)',
@@ -151,7 +151,7 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {tiers.map((tier, i) => (
             <motion.div
               key={tier.name}
@@ -189,7 +189,7 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
                 </div>
               )}
 
-              <div className="p-8 flex-1">
+              <div className="p-5 sm:p-8 flex-1">
                 <div className="mb-4">
                   <p className="text-xl font-semibold" style={{ color: 'var(--lp-price-included)' }}>
                     {tier.name}
@@ -253,7 +253,7 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
                 </div>
               </div>
 
-              <div className="p-8 pt-0 mt-auto">
+              <div className="p-5 sm:p-8 pt-0 mt-auto">
                 <a href={LP_APP.REGISTER} className="block">
                   <button
                     className="w-full relative transition-all duration-300 rounded-lg flex items-center justify-center h-12 cursor-pointer"
@@ -272,7 +272,7 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
                     }}
                   >
                     <span className="relative z-10 flex items-center justify-center gap-2">
-                      Start Free Trial
+                      Get Started
                       <ArrowRight className="w-4 h-4" />
                     </span>
                   </button>

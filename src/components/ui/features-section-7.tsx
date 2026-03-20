@@ -6,7 +6,7 @@ const EASE_OUT: [number, number, number, number] = [0.25, 1, 0.5, 1]
 
 const features = [
     { icon: Zap, title: '10-Second Invoicing', desc: 'Add items, apply discounts, generate a GST-ready PDF and share on WhatsApp — faster than writing it by hand.' },
-    { icon: Cpu, title: '100% Offline', desc: 'Bill customers in a village, at a mela, or during a power cut. Everything works without internet. Syncs when you\'re back online.' },
+    { icon: Cpu, title: 'Works Anywhere', desc: 'Bill customers in a village, at a mela, or during a power cut. Everything works on your phone. Syncs automatically in the background.' },
     { icon: MessageCircle, title: 'WhatsApp Sharing', desc: 'Two taps: generate PDF, send on WhatsApp. Your customers get a branded bill instantly — no app download needed on their side.' },
     { icon: Lock, title: 'Your Data, Always Safe', desc: 'Bank-grade encryption + automatic cloud backup. Lose your phone? Log in on a new one and everything is back in minutes.' },
 ]

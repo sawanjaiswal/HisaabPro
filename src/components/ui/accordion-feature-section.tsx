@@ -26,17 +26,17 @@ interface Feature197Props {
 const defaultFeatures: FeatureItem[] = [
   {
     id: 1,
-    title: "Is there a free trial?",
+    title: "How does the trial work?",
     image: "",
     description:
-      "Yes — 14 days, full access, any plan. No credit card required. Keep going after the trial or cancel — no questions asked.",
+      "14 days, full access, any plan. No credit card required. Keep going after the trial or cancel — no questions asked.",
   },
   {
     id: 2,
-    title: "Does it work without internet?",
+    title: "Does it need internet to work?",
     image: "",
     description:
-      "100%. Create invoices, record payments, manage inventory — all without internet. Your data syncs automatically when you reconnect. Zero data loss, guaranteed.",
+      "No. Create invoices, record payments, manage inventory — everything works on your phone. Your data syncs automatically in the background. Zero data loss, guaranteed.",
   },
   {
     id: 3,
@@ -57,7 +57,7 @@ const defaultFeatures: FeatureItem[] = [
     title: "How is this different from Vyapar or MyBillBook?",
     image: "",
     description:
-      "HisaabPro works fully offline (not partially), guarantees zero data loss, has a modern premium UI that your customers will notice, a custom staff role builder, and real WhatsApp support that replies in hours — not months. Plus transparent pricing with no hidden charges.",
+      "HisaabPro guarantees zero data loss, has a modern premium UI that your customers will notice, a custom staff role builder, and real WhatsApp support that replies in hours — not months. Plus transparent pricing with no hidden charges.",
   },
 ];
 
@@ -66,8 +66,8 @@ const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
   const reducedMotion = useReducedMotion();
 
   return (
-    <section id="faq" className="py-32 lp-heading-plain">
-      <div className="container mx-auto">
+    <section id="faq" className="py-16 md:py-32 px-6 lp-heading-plain">
+      <div className="max-w-3xl mx-auto">
         <motion.div
           initial={reducedMotion ? false : { opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -87,7 +87,7 @@ const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6, delay: 0.15, ease: EASE_OUT }}
-          className="mb-12 flex w-full items-start justify-center gap-12"
+          className="mb-12 flex w-full items-start justify-center"
         >
           <div className="w-full max-w-2xl">
             <Accordion type="single" className="w-full" defaultValue="item-1">
@@ -104,7 +104,7 @@ const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
                     className="cursor-pointer py-5 !no-underline transition"
                   >
                     <span
-                      className="text-xl font-semibold"
+                      className="text-base sm:text-xl font-semibold text-left"
                       style={{
                         color: tab.id === activeTabId ? 'var(--lp-text)' : 'var(--lp-text-muted)',
                       }}

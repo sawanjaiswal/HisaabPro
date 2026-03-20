@@ -1,19 +1,26 @@
 /**
  * Before/After Transformation Section
  *
- * Design strategy (from ui-ux-pro-max):
- * - Color contrast: muted/desaturated (before) vs vibrant (after)
- * - Large, readable mockups — one transformation at a time
- * - Tab-based navigation — user picks which transformation to view
- * - Specific metrics with dramatic visual contrast
- * - 45% higher conversion with visual proof of value
+ * Design: matches hero section's premium language —
+ * gradient headings, badge pills, staggered motion, card elevation,
+ * all --lp-* tokens, Poppins typography.
  */
 
 import { useState } from 'react'
 import { motion, useReducedMotion, AnimatePresence } from 'motion/react'
-import { FileText, Wallet, Package, ArrowRight, Clock, AlertTriangle, CheckCircle, TrendingUp } from 'lucide-react'
+import { FileText, Wallet, Package, ArrowRight, AlertTriangle, CheckCircle } from 'lucide-react'
 
 const EASE_OUT: [number, number, number, number] = [0.25, 1, 0.5, 1]
+
+/* ─── Reusable reveal helper (matches hero's fade pattern) ─── */
+function reveal(delay: number, y = 30) {
+  return {
+    initial: { opacity: 0, y } as const,
+    whileInView: { opacity: 1, y: 0 } as const,
+    viewport: { once: true, margin: '-80px' as const },
+    transition: { duration: 0.6, delay, ease: EASE_OUT },
+  }
+}
 
 /* ─── Tab data ─── */
 interface TabData {
@@ -31,7 +38,7 @@ interface TabData {
 /* ─── Before Photos (real photographs of manual bookkeeping) ─── */
 function BeforePhoto({ src, alt, caption }: { src: string; alt: string; caption: string }) {
   return (
-    <div className="rounded-xl w-full h-full overflow-hidden relative" style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', minHeight: 200 }}>
+    <div className="rounded-xl w-full h-full overflow-hidden relative" style={{ background: 'var(--lp-bg-card)', border: '1px solid var(--lp-card-border)', minHeight: 200 }}>
       <img
         src={src}
         alt={alt}
@@ -39,12 +46,12 @@ function BeforePhoto({ src, alt, caption }: { src: string; alt: string; caption:
         width={800}
         height={450}
         className="absolute inset-0 w-full h-full object-cover"
-        style={{ filter: 'sepia(0.2) saturate(0.7) brightness(0.85)' }}
+        style={{ filter: 'sepia(0.15) saturate(0.6) brightness(0.8)' }}
       />
-      <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%)' }} />
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 50%)' }} />
       <div className="absolute bottom-0 left-0 right-0 p-4 flex items-center gap-2">
-        <AlertTriangle size={14} style={{ color: '#cd853f' }} className="shrink-0" />
-        <span style={{ fontSize: '0.8125rem', color: '#d4c5a9', fontWeight: 500 }}>{caption}</span>
+        <AlertTriangle size={14} style={{ color: 'var(--lp-before-icon)' }} className="shrink-0" />
+        <span style={{ fontSize: '0.8125rem', color: 'var(--lp-text-body)', fontWeight: 500 }}>{caption}</span>
       </div>
     </div>
   )
@@ -53,7 +60,6 @@ function BeforePhoto({ src, alt, caption }: { src: string; alt: string; caption:
 function AfterInvoice() {
   return (
     <div className="rounded-xl w-full h-full overflow-hidden" style={{ background: 'var(--lp-bg-card)', border: '1px solid var(--lp-card-border)' }}>
-      {/* Accent bar */}
       <div className="h-1 w-full" style={{ background: 'var(--lp-accent)' }} />
       <div className="px-5 py-3 flex items-center justify-between border-b" style={{ borderColor: 'var(--lp-card-border)' }}>
         <div className="flex items-center gap-2">
@@ -207,57 +213,70 @@ export function BeforeAfterSection() {
   const reducedMotion = useReducedMotion()
   const tab = TABS[activeTab]
 
+  const r = (delay: number, y?: number) =>
+    reducedMotion ? {} : reveal(delay, y)
+
   return (
-    <section className="py-20 md:py-28 px-4">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <motion.div
-          initial={reducedMotion ? false : { opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.6, ease: EASE_OUT }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-4xl font-semibold lg:text-5xl" style={{ color: 'var(--lp-text)' }}>
-            See the transformation
+    <section className="py-20 md:py-28 px-6 landing-section-tinted">
+      <div className="max-w-5xl mx-auto">
+        {/* ── Section badge (hero badge style) ── */}
+        <motion.div {...r(0.1, 20)} className="flex justify-center mb-6">
+          <span
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs backdrop-blur-sm"
+            style={{
+              borderColor: 'var(--lp-border-badge)',
+              backgroundColor: 'var(--lp-bg-badge)',
+              border: '1px solid var(--lp-border-badge)',
+              color: 'var(--lp-text-muted)',
+            }}
+          >
+            See it in action
+            <ArrowRight size={12} />
+          </span>
+        </motion.div>
+
+        {/* ── Heading (hero gradient style) ── */}
+        <motion.div {...r(0.2)} className="text-center mb-10">
+          <h2 className="text-center max-w-3xl mx-auto leading-tight mb-4 font-medium lp-heading-plain">
+            <span className="text-3xl md:text-4xl lg:text-5xl">From Paper Chaos.</span>
+            <br />
+            <span className="text-3xl md:text-4xl lg:text-5xl">To Digital Clarity.</span>
           </h2>
-          <p className="mt-4 text-base lg:text-lg lp-text-muted max-w-xl mx-auto">
-            From paper chaos to digital clarity. Real features, real impact on your business.
+          <p className="text-sm md:text-base lp-text-muted max-w-xl mx-auto">
+            Real features, real impact — see how HisaabPro replaces manual work.
           </p>
         </motion.div>
 
-        {/* Tab Switcher */}
-        <motion.div
-          initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.5, delay: 0.1, ease: EASE_OUT }}
-          className="flex justify-center gap-2 mb-10"
-        >
-          {TABS.map((t, i) => {
-            const Icon = t.icon
-            const isActive = i === activeTab
-            return (
-              <button
-                key={t.id}
-                onClick={() => setActiveTab(i)}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-full cursor-pointer transition-all duration-200"
-                style={{
-                  background: isActive ? 'var(--lp-accent)' : 'var(--lp-bg-elevated)',
-                  color: isActive ? '#ffffff' : 'var(--lp-text-muted)',
-                  border: `1px solid ${isActive ? 'var(--lp-accent)' : 'var(--lp-card-border)'}`,
-                  fontWeight: isActive ? 600 : 400,
-                  fontSize: '0.875rem',
-                }}
-              >
-                <Icon size={16} />
-                {t.label}
-              </button>
-            )
-          })}
+        {/* ── Tab switcher (hero badge language) ── */}
+        <motion.div {...r(0.3, 20)} className="flex justify-center mb-10">
+          <div
+            className="inline-flex items-center gap-1 p-1 rounded-full"
+            style={{ background: 'var(--lp-bg-elevated)', border: '1px solid var(--lp-card-border)' }}
+          >
+            {TABS.map((t, i) => {
+              const Icon = t.icon
+              const isActive = i === activeTab
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => setActiveTab(i)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full cursor-pointer transition-all duration-200"
+                  style={{
+                    background: isActive ? 'var(--lp-cta-bg)' : 'transparent',
+                    color: isActive ? 'var(--lp-cta-text)' : 'var(--lp-text-muted)',
+                    fontWeight: isActive ? 600 : 400,
+                    fontSize: '0.875rem',
+                  }}
+                >
+                  <Icon size={15} />
+                  <span className="hidden sm:inline">{t.label}</span>
+                </button>
+              )
+            })}
+          </div>
         </motion.div>
 
-        {/* Content area */}
+        {/* ── Content area ── */}
         <AnimatePresence mode="wait">
           <motion.div
             key={tab.id}
@@ -266,44 +285,43 @@ export function BeforeAfterSection() {
             exit={reducedMotion ? undefined : { opacity: 0, y: -10 }}
             transition={{ duration: 0.35, ease: EASE_OUT }}
           >
-            {/* Metric banner */}
+            {/* ── Metric strip ── */}
             <div
-              className="rounded-xl mb-6 p-4 flex flex-col sm:flex-row items-center justify-between gap-4"
+              className="rounded-xl mb-8 py-3 px-5 flex items-center justify-center gap-4 sm:gap-6"
               style={{ background: 'var(--lp-bg-surface)', border: '1px solid var(--lp-card-border)' }}
             >
-              <p className="text-sm lp-text-muted">{tab.subtitle}</p>
+              <span className="text-sm lp-text-muted hidden sm:inline">{tab.subtitle}</span>
+              <span className="hidden sm:block w-px h-5" style={{ background: 'var(--lp-divider)' }} aria-hidden="true" />
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5">
-                  <Clock size={14} style={{ color: 'var(--lp-text-muted)' }} />
-                  <span className="line-through" style={{ color: 'var(--lp-text-muted)', fontSize: '1rem', opacity: 0.5 }}>{tab.metric.before}</span>
-                </div>
-                <ArrowRight size={16} style={{ color: 'var(--lp-accent)' }} />
-                <div className="flex items-center gap-1.5">
-                  <TrendingUp size={14} style={{ color: 'var(--lp-mock-success)' }} />
-                  <span style={{ color: 'var(--lp-mock-success)', fontSize: '1.25rem', fontWeight: 700 }}>{tab.metric.after}</span>
-                </div>
+                <span className="line-through lp-text-muted" style={{ fontSize: '0.875rem', opacity: 0.5 }}>{tab.metric.before}</span>
+                <ArrowRight size={14} style={{ color: 'var(--lp-accent)' }} />
+                <span style={{ color: 'var(--lp-mock-success)', fontSize: '1.125rem', fontWeight: 700 }}>{tab.metric.after}</span>
                 <span className="text-xs lp-text-muted">{tab.metric.unit}</span>
               </div>
             </div>
 
-            {/* Side-by-side comparison */}
+            {/* ── Side-by-side comparison ── */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* BEFORE column */}
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="px-2.5 py-1 rounded-md text-xs font-semibold" style={{ background: 'rgba(139, 69, 19, 0.15)', color: '#cd853f' }}>
+              <div
+                className="rounded-xl p-4 flex flex-col"
+                style={{ background: 'var(--lp-before-bg)', border: '1px solid var(--lp-card-border)' }}
+              >
+                <div className="flex items-center gap-2.5 mb-4">
+                  <span
+                    className="px-2.5 py-1 rounded-full text-xs font-semibold"
+                    style={{ background: 'var(--lp-before-badge-bg)', color: 'var(--lp-before-badge-text)' }}
+                  >
                     BEFORE
                   </span>
-                  <span className="text-sm" style={{ color: '#8b7355' }}>The old way</span>
+                  <span className="text-sm" style={{ color: 'var(--lp-text-muted)' }}>The old way</span>
                 </div>
-                {/* Mockup — flex-1 so photo fills same height as After UI */}
-                <div className="flex-1">{tab.beforeContent}</div>
-                {/* Pain points */}
-                <div className="mt-4 flex flex-col gap-2">
+                <div className="flex-1 mb-4">{tab.beforeContent}</div>
+                <div className="flex flex-col gap-2.5">
                   {tab.painPoints.map((point) => (
-                    <div key={point} className="flex items-start gap-2">
-                      <span className="mt-0.5 w-4 h-4 rounded-full flex items-center justify-center shrink-0" style={{ background: 'rgba(139, 69, 19, 0.15)' }}>
-                        <AlertTriangle size={10} style={{ color: '#cd853f' }} />
+                    <div key={point} className="flex items-start gap-2.5">
+                      <span className="mt-0.5 w-4 h-4 rounded-full flex items-center justify-center shrink-0" style={{ background: 'var(--lp-before-badge-bg)' }}>
+                        <AlertTriangle size={9} style={{ color: 'var(--lp-before-icon)' }} />
                       </span>
                       <span style={{ color: 'var(--lp-text-muted)', fontSize: '0.8125rem' }}>{point}</span>
                     </div>
@@ -312,21 +330,25 @@ export function BeforeAfterSection() {
               </div>
 
               {/* AFTER column */}
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="px-2.5 py-1 rounded-md text-xs font-semibold" style={{ background: 'color-mix(in srgb, var(--lp-mock-success) 15%, transparent)', color: 'var(--lp-mock-success)' }}>
+              <div
+                className="rounded-xl p-4 flex flex-col"
+                style={{ background: 'var(--lp-after-bg)', border: '1px solid var(--lp-card-border)' }}
+              >
+                <div className="flex items-center gap-2.5 mb-4">
+                  <span
+                    className="px-2.5 py-1 rounded-full text-xs font-semibold"
+                    style={{ background: 'color-mix(in srgb, var(--lp-mock-success) 15%, transparent)', color: 'var(--lp-mock-success)' }}
+                  >
                     AFTER
                   </span>
                   <span className="text-sm" style={{ color: 'var(--lp-mock-success)' }}>With HisaabPro</span>
                 </div>
-                {/* Mockup */}
-                <div className="flex-1">{tab.afterContent}</div>
-                {/* Gains */}
-                <div className="mt-4 flex flex-col gap-2">
+                <div className="flex-1 mb-4">{tab.afterContent}</div>
+                <div className="flex flex-col gap-2.5">
                   {tab.gains.map((point) => (
-                    <div key={point} className="flex items-start gap-2">
+                    <div key={point} className="flex items-start gap-2.5">
                       <span className="mt-0.5 w-4 h-4 rounded-full flex items-center justify-center shrink-0" style={{ background: 'color-mix(in srgb, var(--lp-mock-success) 15%, transparent)' }}>
-                        <CheckCircle size={10} style={{ color: 'var(--lp-mock-success)' }} />
+                        <CheckCircle size={9} style={{ color: 'var(--lp-mock-success)' }} />
                       </span>
                       <span style={{ color: 'var(--lp-text-body)', fontSize: '0.8125rem' }}>{point}</span>
                     </div>

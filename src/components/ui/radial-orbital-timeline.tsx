@@ -23,7 +23,7 @@ const defaultTimelineData: TimelineItem[] = [
     id: 1,
     title: "Download",
     date: "30 seconds",
-    content: "Get HisaabPro from Play Store or App Store. Free 14-day trial, no credit card needed.",
+    content: "Get HisaabPro from Play Store or App Store. 14-day trial, no credit card needed.",
     category: "setup",
     icon: Zap,
     relatedIds: [2],

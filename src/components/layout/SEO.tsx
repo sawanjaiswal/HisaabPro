@@ -46,7 +46,7 @@ const SOFTWARE_SCHEMA = {
       '@type': 'Offer',
       price: '0',
       priceCurrency: 'INR',
-      description: 'Free plan — basic billing features',
+      description: 'Trial plan — basic billing features',
     },
     {
       '@type': 'Offer',
@@ -60,7 +60,7 @@ const SOFTWARE_SCHEMA = {
       price: '2999',
       priceCurrency: 'INR',
       priceValidUntil: '2027-12-31',
-      description: 'Annual plan — all features, 2 months free',
+      description: 'Annual plan — all features, save 2 months',
     },
   ],
   aggregateRating: {
@@ -75,7 +75,7 @@ const SOFTWARE_SCHEMA = {
   image: `${BASE_URL}/og-image.png`,
   screenshot: `${BASE_URL}/og-image.png`,
   featureList:
-    'GST Invoicing, Inventory Management, Payment Tracking, Offline Billing, WhatsApp Sharing, UPI Payments, Thermal Printing, Multi-language Support',
+    'GST Invoicing, Inventory Management, Payment Tracking, WhatsApp Sharing, UPI Payments, Thermal Printing, Multi-language Support, Business Reports',
   inLanguage: ['en', 'hi'],
 }
 

@@ -5,16 +5,16 @@ import type { CompetitorRow, FeatureDeepDive } from './landing.types'
 /* ─── Section 5: Feature deep dive (accordion) ─── */
 export const FEATURE_DEEP_DIVES: FeatureDeepDive[] = [
   {
-    id: 'offline-deep',
-    title: 'Offline Mode',
-    subtitle: 'Your billing never stops — even with zero signal',
-    icon: 'WifiOff',
+    id: 'reliability-deep',
+    title: 'Zero Data Loss',
+    subtitle: 'Your business data is always safe and accessible',
+    icon: 'ShieldCheck',
     details: [
-      'Every feature works without internet — invoicing, payments, inventory, reports. Not a "limited" mode.',
+      'Every feature works reliably — invoicing, payments, inventory, reports. Built for real-world conditions.',
       'Data stored securely on device using encrypted local storage. Nothing lost if you close the app.',
-      'When internet returns, everything syncs automatically in the background. No manual upload needed.',
-      'Conflict resolution handles two staff members editing the same record offline.',
-      'Tested on 2G/3G networks and areas with zero connectivity — basements, rural towns, underground markets.',
+      'Automatic background sync keeps all your devices up to date. No manual upload needed.',
+      'Conflict resolution handles two staff members editing the same record simultaneously.',
+      'Optimized for 2G/3G networks and low-connectivity areas — basements, rural towns, underground markets.',
     ],
   },
   {
@@ -60,8 +60,8 @@ export const FEATURE_DEEP_DIVES: FeatureDeepDive[] = [
 
 /* ─── Section 8: Comparison ─── */
 export const COMPARISON: CompetitorRow[] = [
-  { feature: 'Works fully offline', us: true, vyapar: 'Limited', billbook: 'Limited' },
   { feature: 'Zero data loss guarantee', us: true, vyapar: false, billbook: false },
+  { feature: 'Works on slow networks', us: true, vyapar: 'Limited', billbook: 'Limited' },
   { feature: 'Modern 2025 UI', us: true, vyapar: false, billbook: 'Basic' },
   { feature: 'Custom staff role builder', us: true, vyapar: false, billbook: false },
   { feature: 'UPI QR on invoices', us: true, vyapar: true, billbook: true },
@@ -87,14 +87,14 @@ export const PRICING = {
     badge: 'Save \u20B9589',
   },
   freeTier: {
-    headline: 'Start free. Upgrade when ready.',
+    headline: 'Start your trial. Upgrade when ready.',
     description:
-      'Free plan includes 1 business, 50 invoices/month, and all core features. No credit card needed.',
+      '14-day trial includes 1 business, 50 invoices/month, and all core features. No credit card needed.',
   },
   features: [
     'Unlimited invoices & documents',
     '7 document types (invoice, quotation, PO, challan, credit/debit note, proforma)',
-    'Full offline mode with auto-sync',
+    'Works anywhere with auto-sync',
     'Inventory management with low-stock alerts',
     'Payment tracking & outstanding reports',
     'WhatsApp invoice sharing & reminders',
@@ -112,7 +112,7 @@ export const TESTIMONIALS = [
   {
     id: 't1',
     quote:
-      'Switched from Vyapar 3 months ago. The offline mode actually works — my shop is in a basement with no signal. Haven\'t lost a single bill since switching.',
+      'Switched from Vyapar 3 months ago. Haven\'t lost a single bill since. My shop is in a basement — other apps would crash, but HisaabPro just works.',
     name: 'Ramesh Gupta',
     role: 'Kirana Store Owner',
     location: 'Indore, MP',
@@ -152,7 +152,7 @@ export const TESTIMONIALS = [
   {
     id: 't6',
     quote:
-      'Our town has terrible internet. Other apps show loading screens all day. HisaabPro works like there is no internet needed. My delivery challans are always ready.',
+      'Our town has terrible internet. Other apps show loading screens all day. HisaabPro is fast and reliable — my delivery challans are always ready.',
     name: 'Meena Agarwal',
     role: 'Grain Wholesaler',
     location: 'Ratlam, MP',
@@ -163,8 +163,8 @@ export const TESTIMONIALS = [
 export const CTA = {
   headline: 'Start billing smarter today',
   subtext:
-    'Free for your first business. No credit card required. Set up in under 2 minutes.',
-  button: 'Start Free Now',
+    '14-day trial included. No credit card required. Set up in under 2 minutes.',
+  button: 'Get Started',
 } as const
 
 /* ─── Section 12: Footer ─── */

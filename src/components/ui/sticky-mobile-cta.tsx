@@ -60,8 +60,8 @@ export function StickyMobileCTA() {
         >
           <div className="flex items-center justify-between gap-3 px-4 py-3">
             <div>
-              <p className="font-semibold text-sm lp-text">Start free trial</p>
-              <p className="text-xs lp-text-muted">14 days, no card</p>
+              <p className="font-semibold text-sm lp-text">Try HisaabPro</p>
+              <p className="text-xs lp-text-muted">14-day trial, no card</p>
             </div>
             <a href={LP_APP.REGISTER}>
               <button className="lp-cta flex items-center gap-1.5 rounded-lg px-5 py-2.5 font-semibold text-sm transition-colors cursor-pointer">

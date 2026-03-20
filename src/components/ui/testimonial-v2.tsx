@@ -19,7 +19,7 @@ function avatarUrl(name: string, index: number): string {
 
 const testimonials: Testimonial[] = [
   {
-    text: "Mera purana billing app internet ke bina kaam nahi karta tha. HisaabPro mein sab kuch offline hota hai. Ab bills kabhi nahi kho-te.",
+    text: "Mera purana billing app bahut slow tha aur data kho jaata tha. HisaabPro mein sab kuch fast hai aur bills kabhi nahi kho-te.",
     image: avatarUrl("Rajesh Sharma", 0),
     name: "Rajesh Sharma",
     role: "Kirana Store Owner, Indore",
@@ -105,7 +105,7 @@ const TestimonialsColumn = (props: {
                 <li
                   key={`${index}-${i}`}
                   aria-hidden={index === 1 ? "true" : "false"}
-                  className="p-10 rounded-3xl border shadow-lg shadow-black/5 max-w-xs w-full select-none"
+                  className="p-6 sm:p-10 rounded-3xl border shadow-lg shadow-black/5 max-w-xs w-full select-none"
                   style={{
                     backgroundColor: 'var(--lp-bg-card)',
                     borderColor: 'var(--lp-card-border)',
@@ -163,7 +163,7 @@ const TestimonialsSection = () => {
         }}
         className="container px-4 z-10 mx-auto"
       >
-        <div className="flex flex-col items-center justify-center max-w-[540px] mx-auto mb-16">
+        <div className="flex flex-col items-center justify-center max-w-[540px] mx-auto mb-10 md:mb-16 px-6">
           <div className="flex justify-center">
             <div
               className="border py-1 px-4 rounded-full text-xs font-semibold tracking-wide uppercase"
