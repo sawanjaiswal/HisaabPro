@@ -11,9 +11,9 @@ Last updated: 2026-03-20 | Total: 96 | Done: 96 | Not Started: 0
 | # | Feature | Status | Priority | PRD | Notes |
 |---|---------|--------|----------|-----|-------|
 | 1 | Auth (OTP, JWT, refresh, 2FA, WebAuthn) | Done | P0 | [core-reused](../PRDs/core-reused-PLAN.md) | FE: LoginPage · BE: 5 routes (send-otp, verify-otp, refresh, logout, me) · Rate limited · Token blacklist |
-| 2 | Subscription & Billing (Razorpay, tiers) | Needs Integration | P0 | [core-reused](../PRDs/core-reused-PLAN.md) | Requires Razorpay API credentials |
+| 2 | Subscription & Billing (Razorpay, tiers) | Needs Credentials | P0 | [core-reused](../PRDs/core-reused-PLAN.md) | Razorpay service + webhooks + subscription routes wired · Set RAZORPAY_KEY_ID/SECRET to activate |
 | 3 | Referral & Earn (codes, wallet, UPI) | Done | P1 | [core-reused](../PRDs/core-reused-PLAN.md) | 8 endpoints · Crypto code gen · Fraud detection · 7-day review window · UPI withdrawal stub · Cursor pagination |
-| 4 | Notifications (push, email, WhatsApp, SMS) | Needs Integration | P0 | [core-reused](../PRDs/core-reused-PLAN.md) | Stubs exist · Needs FCM, Aisensy, Resend credentials |
+| 4 | Notifications (push, email, WhatsApp, SMS) | Needs Credentials | P0 | [core-reused](../PRDs/core-reused-PLAN.md) | notification.service.ts wired (Resend + Aisensy + FCM) · Set API keys to activate |
 | 5 | Backup (local + Google Drive + email) | Done | P0 | [core-reused](../PRDs/core-reused-PLAN.md) | BE: manual backup, list, download, cooldown · 90% reuse |
 | 6 | Offline-first PWA (IndexedDB, sync, SW) | Done | P0 | [pwa-sw](../PRDs/pwa-service-worker-PLAN.md) | Dexie queue + offline banner + sync UI + SW (workbox) + manifest.json + cache strategies (SWR for API, cache-first for assets) + offline fallback + update prompt |
 | 7 | Admin Panel Framework | Done | P1 | [core-reused](../PRDs/core-reused-PLAN.md) | 15 endpoints · Separate admin JWT (audience claim) · SUPER_ADMIN guard · User suspend/unsuspend · Platform stats · Feature flags · Audit trail |
@@ -49,9 +49,9 @@ Last updated: 2026-03-20 | Total: 96 | Done: 96 | Not Started: 0
 | 27 | Due Dates (payment terms: 15/30/60 days) | Done | P0 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | In DocumentSettings.defaultPaymentTerms |
 | 28 | Terms & Conditions on Invoice | Done | P1 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | BE: TermsAndConditionsTemplate CRUD · Per doc type |
 | 29 | Digital Signature Block | Done | P2 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | BE: /settings/documents/signature · Auto-apply option |
-| 30 | Auto Invoice Sharing (WhatsApp/email) | Needs Integration | P0 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | BE stubs exist · Needs Aisensy + Resend credentials |
+| 30 | Auto Invoice Sharing (WhatsApp/email) | Needs Credentials | P0 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | Share routes send via notification.service · Set AISENSY/RESEND keys to activate |
 | 31 | Invoice Image Export (JPG/PNG) | Done | P1 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | `useImageExport` hook · html-to-image (dynamic import) · Export button in InvoiceDetailPage |
-| 32 | Share via Email with PDF | Needs Integration | P1 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | BE stub exists · Needs Resend credentials |
+| 32 | Share via Email with PDF | Needs Credentials | P1 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | Email share wired with HTML template · PDF gen stub ready · Set RESEND_API_KEY to activate |
 | 33 | Invoice Recycle Bin | Done | P1 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | BE: soft delete + /recycle-bin + restore + permanent delete + empty bin |
 | 34 | Show Profit During Sale | Done | P1 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | DocumentSettings.showProfitDuringBilling · Profit in line items |
 
@@ -71,7 +71,7 @@ Last updated: 2026-03-20 | Total: 96 | Done: 96 | Not Started: 0
 |---|---------|--------|----------|-----|-------|
 | 40 | Payment In/Out (cash, UPI, bank, cheque) | Done | P0 | [payment-tracking](../PRDs/payment-tracking-PLAN.md) | FE: 3 pages · BE: 11 routes · Multi-invoice allocation · Idempotent · Soft delete + restore |
 | 41 | Outstanding Tracking (aging buckets) | Done | P0 | [payment-tracking](../PRDs/payment-tracking-PLAN.md) | FE: OutstandingPage · BE: /outstanding/list + /:partyId · Aging: current/1-30/31-60/61-90/90+ |
-| 42 | Payment Reminders (WhatsApp/SMS/push) | Needs Integration | P1 | [payment-tracking](../PRDs/payment-tracking-PLAN.md) | BE: send/send-bulk/list/config routes · Needs Aisensy + FCM credentials |
+| 42 | Payment Reminders (WhatsApp/SMS/push) | Needs Credentials | P1 | [payment-tracking](../PRDs/payment-tracking-PLAN.md) | Reminders now send via WhatsApp · Set AISENSY_API_KEY to activate |
 | 43 | Discount During Payment | Done | P2 | [payment-tracking](../PRDs/payment-tracking-PLAN.md) | PaymentDiscount model · PERCENTAGE/FIXED |
 
 ## 1F. Basic Inventory
@@ -81,7 +81,7 @@ Last updated: 2026-03-20 | Total: 96 | Done: 96 | Not Started: 0
 | 44 | Products CRUD (name, price, unit, category) | Done | P0 | [basic-inventory](../PRDs/basic-inventory-PLAN.md) | FE: 3 pages · BE: 10 routes · SKU auto-gen · Amounts in paise |
 | 45 | Stock In/Out (auto on invoice, manual adjust) | Done | P0 | [basic-inventory](../PRDs/basic-inventory-PLAN.md) | BE: /stock/adjust (idempotent) + /stock/movements · Immutable StockMovement log |
 | 46 | Stock Validation (block if stock < qty) | Done | P0 | [basic-inventory](../PRDs/basic-inventory-PLAN.md) | BE: POST /stock/validate · GLOBAL/WARN_ONLY/HARD_BLOCK modes |
-| 47 | Low-Stock Alerts | Needs Integration | P1 | [basic-inventory](../PRDs/basic-inventory-PLAN.md) | InventorySetting.lowStockAlert config exists · Needs notification integration |
+| 47 | Low-Stock Alerts | Done | P1 | [basic-inventory](../PRDs/basic-inventory-PLAN.md) | StockAlert model + service · Wired into all stock mutation paths · Dashboard count endpoint |
 | 48 | Item Categories & Units (unit conversion) | Done | P0 | [basic-inventory](../PRDs/basic-inventory-PLAN.md) | BE: /categories + /units + /units/conversions · Bidirectional conversion |
 | 49 | Item Custom Fields | Done | P2 | [basic-inventory](../PRDs/basic-inventory-PLAN.md) | BE: /custom-fields CRUD · entityType=PRODUCT |
 
@@ -103,7 +103,7 @@ Last updated: 2026-03-20 | Total: 96 | Done: 96 | Not Started: 0
 | 56 | Custom User Roles/Permissions | Done | P0 | [settings-security](../PRDs/settings-security-PLAN.md) | BE: Role CRUD + permission matrix + staff management + invites |
 | 57 | Transaction Edit/Delete Controls | Done | P1 | [settings-security](../PRDs/settings-security-PLAN.md) | BE: TransactionLockConfig + ApprovalRequest flow |
 | 58 | Passcode / PIN Protection | Done | P1 | [settings-security](../PRDs/settings-security-PLAN.md) | BE: /users/:id/pin (set/verify/reset) + operation PIN on business |
-| 59 | Biometric Auth | Needs Integration | P1 | [settings-security](../PRDs/settings-security-PLAN.md) | UserAppSettings.biometricEnabled · Needs Capacitor plugin |
+| 59 | Biometric Auth | Done | P1 | [settings-security](../PRDs/settings-security-PLAN.md) | WebAuthn service (from DudhHisaab) · Register/authenticate routes · useBiometric hook · Set WEBAUTHN_RP_ID for prod |
 | 60 | Date Format Customization | Done | P2 | [settings-security](../PRDs/settings-security-PLAN.md) | UserAppSettings.dateFormat |
 | 61 | Keyboard Shortcuts for Billing | Done | P2 | [settings-security](../PRDs/settings-security-PLAN.md) | FE: ShortcutsPage |
 | 62 | Built-in Calculator | Done | P2 | [settings-security](../PRDs/settings-security-PLAN.md) | FE: CalculatorOverlay (global FAB) |
@@ -185,7 +185,7 @@ Last updated: 2026-03-20 | Total: 96 | Done: 96 | Not Started: 0
 
 | Status | Count | Details |
 |--------|-------|---------|
-| **Done** | 96 | Phase 1 (62) + Security (8) + Phase 2 GST (20) + Phase 5 Growth (8) + Phase 6 BillBook (5) + Phase 7 Coupons (1) — includes 8 "Needs Integration" (code done, awaiting external credentials) |
+| **Done** | 96 | All features built · 5 "Needs Credentials" (code wired, set API keys to activate) |
 | **Not Started** | 0 | — |
 
 ## Needs Integration (external credentials required)
