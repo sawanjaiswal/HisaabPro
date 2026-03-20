@@ -5,6 +5,7 @@
 
 import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
+import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
 import {
@@ -18,10 +19,9 @@ const router = Router()
 router.use(auth)
 
 /** POST /api/gst/reconciliation — Start a new reconciliation (upload GSTR data) */
-router.post('/', asyncHandler(async (req, res) => {
+router.post('/', validate(startReconciliationSchema), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
-  const data = startReconciliationSchema.parse(req.body)
-  const reconciliation = await reconService.startReconciliation(businessId, data)
+  const reconciliation = await reconService.startReconciliation(businessId, req.body)
   sendSuccess(res, reconciliation, 201)
 }))
 

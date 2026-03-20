@@ -30,9 +30,9 @@ export function CallToAction() {
       {/* Trust signal — avatars + count */}
       <motion.div {...reveal(0)} className="flex items-center gap-3">
         <div className="flex -space-x-2">
-          {AVATAR_URLS.map((url, i) => (
+          {AVATAR_URLS.map((url) => (
             <img
-              key={i}
+              key={url}
               src={url}
               alt=""
               width={32}

@@ -25,7 +25,7 @@ interface TestResult {
   requests: number
   throughput: number // req/sec
   latencyP50: number
-  latencyP95: number
+  latencyP97: number
   latencyP99: number
   errors: number
   timeouts: number
@@ -54,15 +54,15 @@ async function runTest(name: string, opts: autocannon.Options): Promise<TestResu
     requests: result.requests.total,
     throughput: Math.round(result.requests.average),
     latencyP50: result.latency.p50,
-    latencyP95: result.latency.p95,
+    latencyP97: result.latency.p97_5,
     latencyP99: result.latency.p99,
     errors: result.errors,
     timeouts: result.timeouts,
-    pass: result.latency.p95 < 200 && result.errors === 0,
+    pass: result.latency.p97_5 < 200 && result.errors === 0,
   }
 
   console.log(`  Requests: ${r.requests} (${r.throughput}/sec)`)
-  console.log(`  Latency:  p50=${r.latencyP50}ms  p95=${r.latencyP95}ms  p99=${r.latencyP99}ms`)
+  console.log(`  Latency:  p50=${r.latencyP50}ms  p95=${r.latencyP97}ms  p99=${r.latencyP99}ms`)
   console.log(`  Errors:   ${r.errors}  Timeouts: ${r.timeouts}`)
   console.log(`  Status:   ${r.pass ? 'PASS' : 'FAIL'}`)
 
@@ -173,7 +173,7 @@ function printSummary() {
     'Test'.padEnd(maxName + 2) +
     'Req/s'.padStart(8) +
     'p50ms'.padStart(8) +
-    'p95ms'.padStart(8) +
+    'p97ms'.padStart(8) +
     'p99ms'.padStart(8) +
     'Errors'.padStart(8) +
     'Status'.padStart(8)
@@ -185,7 +185,7 @@ function printSummary() {
       r.name.padEnd(maxName + 2) +
       String(r.throughput).padStart(8) +
       String(r.latencyP50).padStart(8) +
-      String(r.latencyP95).padStart(8) +
+      String(r.latencyP97).padStart(8) +
       String(r.latencyP99).padStart(8) +
       String(r.errors).padStart(8) +
       (r.pass ? '  PASS' : '  FAIL').padStart(8)
@@ -196,13 +196,13 @@ function printSummary() {
   const failed = results.filter((r) => !r.pass).length
 
   console.log(`\nTotal: ${results.length} tests | ${passed} passed | ${failed} failed`)
-  console.log(`Threshold: p95 < 200ms, 0 errors\n`)
+  console.log(`Threshold: p97.5 < 200ms, 0 errors\n`)
 
   if (failed > 0) {
     console.log('FAILED tests need investigation:')
     for (const r of results.filter((r) => !r.pass)) {
       const reasons: string[] = []
-      if (r.latencyP95 >= 200) reasons.push(`p95=${r.latencyP95}ms (>200ms)`)
+      if (r.latencyP97 >= 200) reasons.push(`p95=${r.latencyP97}ms (>200ms)`)
       if (r.errors > 0) reasons.push(`${r.errors} errors`)
       console.log(`  - ${r.name}: ${reasons.join(', ')}`)
     }

@@ -7,10 +7,10 @@
  */
 
 import { Router } from 'express'
-import rateLimit from 'express-rate-limit'
 import { auth } from '../middleware/auth.js'
 import { validate } from '../middleware/validate.js'
 import { asyncHandler } from '../middleware/asyncHandler.js'
+import { createRateLimiter } from '../middleware/rate-limit.js'
 import { sendSuccess, sendError } from '../lib/response.js'
 import { AppError, ErrorCode } from '../lib/errors.js'
 import {
@@ -23,12 +23,11 @@ import { prisma } from '../lib/prisma.js'
 
 const router = Router()
 
-const postLimiter = rateLimit({
+const postLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10,
   message: 'Too many requests. Please try again later.',
-  standardHeaders: true,
-  legacyHeaders: false,
+  eventName: 'rate_limit.referral_post_hit',
 })
 
 // ============================================================

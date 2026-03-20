@@ -7,24 +7,11 @@
 import { prisma } from '../lib/prisma.js'
 import { conflictError, validationError } from '../lib/errors.js'
 import logger from '../lib/logger.js'
+import { DEFAULT_CATEGORIES } from '../config/defaults.js'
 import type { CreateBusinessInput } from '../schemas/business.schemas.js'
 import { ensureSystemRoles } from './settings.service.js'
 
 const MAX_BUSINESSES = 10
-
-// Default categories seeded for every new business
-const DEFAULT_CATEGORIES = [
-  { name: 'General',        color: '#6B7280', sortOrder: 0 },
-  { name: 'Electronics',    color: '#3B82F6', sortOrder: 1 },
-  { name: 'Grocery',        color: '#22C55E', sortOrder: 2 },
-  { name: 'Clothing',       color: '#A855F7', sortOrder: 3 },
-  { name: 'Hardware',       color: '#F97316', sortOrder: 4 },
-  { name: 'Stationery',     color: '#EAB308', sortOrder: 5 },
-  { name: 'Food & Beverage', color: '#EF4444', sortOrder: 6 },
-  { name: 'Health & Beauty', color: '#EC4899', sortOrder: 7 },
-  { name: 'Auto Parts',     color: '#6366F1', sortOrder: 8 },
-  { name: 'Other',          color: '#94A3B8', sortOrder: 9 },
-]
 
 export async function createBusiness(userId: string, data: CreateBusinessInput) {
   logger.info('Creating business', { userId, businessName: data.name })

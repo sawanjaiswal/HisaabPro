@@ -56,12 +56,12 @@ const SectionWithMockup: React.FC<SectionWithMockupProps> = ({
                         variants={itemVariants}
                     >
                          <div className="space-y-2 md:space-y-1">
-                            <h2 className="text-white text-3xl md:text-[40px] font-semibold leading-tight md:leading-[53px]">
+                            <h2 className="text-white text-3xl md:text-4xl font-semibold leading-tight">
                                 {title}
                             </h2>
                         </div>
 
-                        <p className="text-[#868f97] text-sm md:text-[15px] leading-6">
+                        <p className="text-gray-400 text-sm md:text-base leading-6">
                             {description}
                         </p>
                     </motion.div>

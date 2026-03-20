@@ -1,4 +1,5 @@
 import type { Response } from 'express'
+import { timingSafeEqual } from 'crypto'
 import { prisma } from '../lib/prisma.js'
 import { generateOTP, hashOTP, verifyOTP, sendOTP, OTP_TTL_MS, MAX_ATTEMPTS, RESEND_COOLDOWN_MS } from '../lib/otp.js'
 import { generateTokens, verifyRefreshToken } from '../lib/jwt.js'
@@ -160,7 +161,17 @@ export async function devLogin(data: { username: string; password: string }) {
   const { username, password } = data
 
   const creds = DEV_CREDENTIALS[username]
-  if (!creds || creds.password !== password) {
+  if (!creds) {
+    return { verified: false, message: 'Invalid username or password' }
+  }
+
+  // Constant-time comparison to prevent timing attacks
+  const expected = Buffer.from(creds.password)
+  const received = Buffer.from(password)
+  const passwordMatch =
+    expected.length === received.length &&
+    timingSafeEqual(expected, received)
+  if (!passwordMatch) {
     return { verified: false, message: 'Invalid username or password' }
   }
 

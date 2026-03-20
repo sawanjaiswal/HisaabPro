@@ -10,7 +10,6 @@
  * Skipped for:
  *   - Requests with Bearer token (API / mobile clients use JWT, not cookies)
  *   - Specific unauthenticated auth routes (csrf-token, send-otp, verify-otp, dev-login, refresh)
- *   - Feedback routes (public submission)
  *   - GET / HEAD / OPTIONS (safe methods)
  */
 
@@ -41,8 +40,6 @@ function safeCompare(a: string, b: string): boolean {
 export function csrfProtection(req: Request, res: Response, next: NextFunction) {
   if (req.headers.authorization?.startsWith('Bearer ')) return next()
   if (CSRF_EXEMPT_AUTH_PATHS.has(req.path)) return next()
-  if (req.path.startsWith('/api/feedback/')) return next()
-
   const method = req.method.toUpperCase()
 
   if (['GET', 'HEAD', 'OPTIONS'].includes(method)) {

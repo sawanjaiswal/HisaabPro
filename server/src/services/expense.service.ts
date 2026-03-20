@@ -68,6 +68,7 @@ export async function listExpenseCategories(businessId: string) {
   return prisma.expenseCategory.findMany({
     where: { businessId, isActive: true },
     orderBy: [{ isSystem: 'desc' }, { sortOrder: 'asc' }, { name: 'asc' }],
+    take: 200,
     select: {
       id: true,
       name: true,

@@ -69,6 +69,7 @@ export async function listUnits(businessId: string) {
   const units = await prisma.unit.findMany({
     where: { businessId },
     orderBy: { name: 'asc' },
+    take: 200,
     select: {
       id: true,
       name: true,

@@ -49,49 +49,51 @@ router.get('/csrf-token', (req, res) => {
 })
 
 // ---------------------------------------------------------------------------
-// Dev login
+// Dev login (non-production only)
 // ---------------------------------------------------------------------------
 
-/**
- * POST /api/auth/dev-login
- * Dev-only: login with username + password (no OTP needed).
- * Creates user if not exists. Sets httpOnly cookie tokens.
- * Also returns tokens in body for backward-compat during migration period.
- */
-router.post(
-  '/dev-login',
-  captchaGuard,
-  validate(devLoginSchema),
-  asyncHandler(async (req, res) => {
-    const result = await authService.devLogin(req.body)
+if (process.env.NODE_ENV !== 'production') {
+  /**
+   * POST /api/auth/dev-login
+   * Dev-only: login with username + password (no OTP needed).
+   * Creates user if not exists. Sets httpOnly cookie tokens.
+   * Route is NOT mounted in production.
+   */
+  router.post(
+    '/dev-login',
+    authRateLimiter,
+    captchaGuard,
+    validate(devLoginSchema),
+    asyncHandler(async (req, res) => {
+      const result = await authService.devLogin(req.body)
 
-    if (!result.verified) {
-      logger.warn('auth.login_failed', {
-        ip: req.ip,
-        username: req.body.username,
-        userAgent: req.headers['user-agent'],
-      })
-      recordFailedAttempt(req.ip ?? 'unknown')
-      sendError(res, result.message, 'LOGIN_FAILED', 400)
-      return
-    }
+      if (!result.verified) {
+        logger.warn('auth.login_failed', {
+          ip: req.ip,
+          username: req.body.username,
+          userAgent: req.headers['user-agent'],
+        })
+        recordFailedAttempt(req.ip ?? 'unknown')
+        sendError(res, result.message, 'LOGIN_FAILED', 400)
+        return
+      }
 
-    // Set tokens as httpOnly cookies
-    authService.setTokenCookies(res, result.tokens!)
+      // Set tokens as httpOnly cookies
+      authService.setTokenCookies(res, result.tokens!)
 
-    // Fetch businesses for the user (same shape as /me)
-    const meData = await authService.getMe(result.user!.id)
+      // Fetch businesses for the user (same shape as /me)
+      const meData = await authService.getMe(result.user!.id)
 
-    res.set('Cache-Control', 'no-store')
-    sendSuccess(res, {
-      isNewUser: result.isNewUser,
-      user: result.user,
-      tokens: result.tokens,
-      businesses: meData?.businesses ?? [],
-      activeBusiness: meData?.activeBusiness ?? null,
-    }, result.isNewUser as boolean ? 201 : 200)
-  })
-)
+      res.set('Cache-Control', 'no-store')
+      sendSuccess(res, {
+        isNewUser: result.isNewUser,
+        user: result.user,
+        businesses: meData?.businesses ?? [],
+        activeBusiness: meData?.activeBusiness ?? null,
+      }, result.isNewUser as boolean ? 201 : 200)
+    })
+  )
+}
 
 // ---------------------------------------------------------------------------
 // OTP-based auth (commented out for dev — restore for production)
@@ -196,7 +198,7 @@ router.post(
       authService.setTokenCookies(res, tokens)
 
       res.set('Cache-Control', 'no-store')
-      sendSuccess(res, { tokens })
+      sendSuccess(res, {})
     } catch {
       sendError(res, 'Invalid or expired refresh token', 'REFRESH_FAILED', 401)
     }
@@ -292,7 +294,7 @@ router.post(
       to: targetBusinessId,
     })
 
-    sendSuccess(res, { tokens: result.tokens, business: result.business })
+    sendSuccess(res, { business: result.business })
   })
 )
 

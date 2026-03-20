@@ -10,6 +10,7 @@
  * - Restore: atomic transaction, all-or-nothing
  */
 
+import crypto from 'crypto'
 import { prisma } from '../lib/prisma.js'
 import { notFoundError, validationError } from '../lib/errors.js'
 import logger from '../lib/logger.js'
@@ -42,7 +43,7 @@ interface BackupRecord {
 const backupStore = new Map<string, BackupRecord>()
 
 function generateId(): string {
-  return `bkp_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`
+  return `bkp_${Date.now()}_${crypto.randomUUID()}`
 }
 
 function getUserBackups(userId: string): BackupRecord[] {

@@ -55,7 +55,7 @@ export function ImportProgress({ progress, total, result, onDone, onGoToParties 
           {result.errors.length > 0 && (
             <div className="import-result-errors" role="list" aria-label="Import errors">
               {result.errors.slice(0, 10).map((err, i) => (
-                <div key={i} className="import-result-error-row" role="listitem">
+                <div key={`${err.name}-${i}`} className="import-result-error-row" role="listitem">
                   <span className="import-result-error-name">{err.name}</span>
                   <span className="import-result-error-reason">{err.reason}</span>
                 </div>

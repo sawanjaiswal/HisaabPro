@@ -23,7 +23,7 @@ export function HeroDashboardMockup() {
           <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-md text-xs" style={{ background: 'var(--lp-bg-elevated)', color: 'var(--lp-text-muted)' }}>
             <span>Sharma Electronics</span>
           </div>
-          <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold" style={{ background: 'var(--lp-accent)', color: '#fff' }}>
+          <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold" style={{ background: 'var(--lp-accent)', color: 'var(--lp-text-inverted)' }}>
             SE
           </div>
         </div>

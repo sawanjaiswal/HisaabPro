@@ -85,6 +85,7 @@ export async function listTermsTemplates(businessId: string) {
       createdAt: true, updatedAt: true,
     },
     orderBy: { createdAt: 'asc' },
+    take: 100,
   })
 }
 

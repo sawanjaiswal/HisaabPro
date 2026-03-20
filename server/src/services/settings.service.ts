@@ -220,6 +220,7 @@ export async function listRoles(businessId: string) {
       _count: { select: { businessUsers: true } },
     },
     orderBy: { priority: 'desc' },
+    take: 100,
   })
 }
 

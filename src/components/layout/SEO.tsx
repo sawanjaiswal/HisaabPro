@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async'
-import { APP_NAME, APP_TAGLINE, APP_DOMAIN } from '@/config/app.config'
+import { APP_NAME, APP_TAGLINE, APP_DOMAIN, THEME_COLOR } from '@/config/app.config'
 
 interface SEOProps {
   title?: string
@@ -135,7 +135,7 @@ export function SEO({
       <meta name="twitter:image:alt" content={`${APP_NAME} — ${APP_TAGLINE}`} />
 
       {/* Mobile */}
-      <meta name="theme-color" content="#0f3638" />
+      <meta name="theme-color" content={THEME_COLOR} />
       <meta name="mobile-web-app-capable" content="yes" />
       <meta name="format-detection" content="telephone=no" />
 

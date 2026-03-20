@@ -21,7 +21,7 @@ import {
   applyCoupon,
   removeRedemption,
 } from '../services/coupon.service.js'
-import { sendSuccess } from '../lib/response.js'
+import { sendSuccess, sendError } from '../lib/response.js'
 
 const router = Router()
 
@@ -40,10 +40,7 @@ router.post(
     const result = await validateCoupon(userId, req.body, req.ip)
 
     if (!result.valid) {
-      res.status(400).json({
-        success: false,
-        error: result.error,
-      })
+      sendError(res, result.error?.message ?? 'Invalid coupon', result.error?.code ?? 'INVALID_COUPON', 400)
       return
     }
 

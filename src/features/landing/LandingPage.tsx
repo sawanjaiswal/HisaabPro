@@ -1,20 +1,23 @@
 /** Landing Page — HisaabPro conversion flow: Hero → Social Proof → Features → How It Works → Pricing → Testimonials → FAQ → CTA */
 
-import { useState, useLayoutEffect, useEffect } from 'react'
+import { useState, useLayoutEffect, useEffect, lazy, Suspense } from 'react'
 import { LandingSEO } from './components/LandingSEO'
 import { LP_SECTIONS } from '@/config/landing-links.config'
 
+/* Above-the-fold — eagerly loaded */
 import SaaSHero from '@/components/ui/saa-s-template'
 import { SocialProofBar } from '@/components/ui/social-proof-bar'
-import { FeaturesSection7 } from '@/components/ui/features-section-7'
-import { FeaturesSectionWithBentoGrid } from '@/components/ui/feature-bento-grid'
-import { FeaturesSectionWithHoverEffects } from '@/components/ui/feature-hover-effects'
-import { PricingSection } from '@/components/ui/pricing-section'
-import { TestimonialV2 } from '@/components/ui/testimonial-v2'
-import { Feature197 } from '@/components/ui/accordion-feature-section'
-import { CallToAction } from '@/components/ui/cta-section'
-import { Footer } from '@/components/ui/footer-section'
-import { StickyMobileCTA } from '@/components/ui/sticky-mobile-cta'
+
+/* Below-the-fold — lazy loaded */
+const LazyFeaturesSection7 = lazy(() => import('@/components/ui/features-section-7').then(m => ({ default: m.FeaturesSection7 })))
+const LazyBentoGrid = lazy(() => import('@/components/ui/feature-bento-grid').then(m => ({ default: m.FeaturesSectionWithBentoGrid })))
+const LazyHoverEffects = lazy(() => import('@/components/ui/feature-hover-effects').then(m => ({ default: m.FeaturesSectionWithHoverEffects })))
+const LazyPricing = lazy(() => import('@/components/ui/pricing-section').then(m => ({ default: m.PricingSection })))
+const LazyTestimonials = lazy(() => import('@/components/ui/testimonial-v2').then(m => ({ default: m.TestimonialV2 })))
+const LazyFAQ = lazy(() => import('@/components/ui/accordion-feature-section').then(m => ({ default: m.Feature197 })))
+const LazyCTA = lazy(() => import('@/components/ui/cta-section').then(m => ({ default: m.CallToAction })))
+const LazyFooter = lazy(() => import('@/components/ui/footer-section').then(m => ({ default: m.Footer })))
+const LazyStickyMobileCTA = lazy(() => import('@/components/ui/sticky-mobile-cta').then(m => ({ default: m.StickyMobileCTA })))
 
 import './landing.css'
 
@@ -23,14 +26,23 @@ export default function LandingPage() {
 
   const toggleTheme = () => setIsDark(prev => !prev)
 
-  // Restore scroll position on mount
+  // Restore scroll position on mount + throttled scroll save
   useEffect(() => {
     const saved = sessionStorage.getItem('landing-scroll')
     if (saved) window.scrollTo({ top: parseInt(saved, 10), behavior: 'instant' })
 
-    const handleScroll = () => sessionStorage.setItem('landing-scroll', String(window.scrollY))
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
+    let ticking = false
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          sessionStorage.setItem('landing-scroll', String(window.scrollY))
+          ticking = false
+        })
+        ticking = true
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   // Toggle dark class on <html> — useLayoutEffect to avoid flash
@@ -56,40 +68,58 @@ export default function LandingPage() {
       <SocialProofBar />
 
       {/* 3. Key Features — 4 pillars */}
-      <FeaturesSection7 />
+      <Suspense fallback={null}>
+        <LazyFeaturesSection7 />
+      </Suspense>
 
       {/* 4. Feature Deep-Dive — bento grid */}
-      <div className="landing-section-tinted">
-        <FeaturesSectionWithBentoGrid />
-      </div>
+      <Suspense fallback={null}>
+        <div className="landing-section-tinted">
+          <LazyBentoGrid />
+        </div>
+      </Suspense>
 
       {/* 5. How It Works — hover steps */}
-      <FeaturesSectionWithHoverEffects />
+      <Suspense fallback={null}>
+        <LazyHoverEffects />
+      </Suspense>
 
       {/* 6. Pricing — ₹INR, 3 tiers */}
-      <div className="landing-section-tinted">
-        <PricingSection />
-      </div>
+      <Suspense fallback={null}>
+        <div className="landing-section-tinted">
+          <LazyPricing />
+        </div>
+      </Suspense>
 
       {/* 7. Testimonials — Indian business owners */}
-      <TestimonialV2 />
+      <Suspense fallback={null}>
+        <LazyTestimonials />
+      </Suspense>
 
       {/* 8. FAQ — objection handling */}
-      <div className="landing-section-tinted">
-        <Feature197 />
-      </div>
+      <Suspense fallback={null}>
+        <div className="landing-section-tinted">
+          <LazyFAQ />
+        </div>
+      </Suspense>
 
       {/* 9. Final CTA + Download anchor */}
-      <div id={LP_SECTIONS.FINAL_CTA} style={{ paddingBottom: '5rem' }}>
-        <div id={LP_SECTIONS.DOWNLOAD} />
-        <CallToAction />
-      </div>
+      <Suspense fallback={null}>
+        <div id={LP_SECTIONS.FINAL_CTA} style={{ paddingBottom: '5rem' }}>
+          <div id={LP_SECTIONS.DOWNLOAD} />
+          <LazyCTA />
+        </div>
+      </Suspense>
 
       {/* Footer */}
-      <Footer />
+      <Suspense fallback={null}>
+        <LazyFooter />
+      </Suspense>
 
       {/* Sticky mobile CTA — appears when hero/final CTA scroll out of view */}
-      <StickyMobileCTA />
+      <Suspense fallback={null}>
+        <LazyStickyMobileCTA />
+      </Suspense>
     </div>
   )
 }

@@ -188,27 +188,31 @@ router.post(
     // Verify document exists
     const doc = await documentService.getDocument(businessId, documentId)
 
-    // Create share log
+    // Create share log + update status atomically
     const { prisma } = await import('../lib/prisma.js')
-    const shareLog = await prisma.documentShareLog.create({
-      data: {
-        documentId,
-        channel: 'WHATSAPP',
-        format: req.body.format === 'IMAGE' ? 'JPG' : 'PDF',
-        recipientPhone: req.body.recipientPhone,
-        message: req.body.message || null,
-        sentBy: req.user!.userId,
-      },
-      select: { id: true, sentAt: true },
-    })
-
-    // Update document status to SHARED if currently SAVED
-    if ((doc as { status: string }).status === 'SAVED') {
-      await prisma.document.update({
-        where: { id: documentId },
-        data: { status: 'SHARED' },
+    const shareLog = await prisma.$transaction(async (tx) => {
+      const log = await tx.documentShareLog.create({
+        data: {
+          documentId,
+          channel: 'WHATSAPP',
+          format: req.body.format === 'IMAGE' ? 'JPG' : 'PDF',
+          recipientPhone: req.body.recipientPhone,
+          message: req.body.message || null,
+          sentBy: req.user!.userId,
+        },
+        select: { id: true, sentAt: true },
       })
-    }
+
+      // Update document status to SHARED if currently SAVED
+      if ((doc as { status: string }).status === 'SAVED') {
+        await tx.document.update({
+          where: { id: documentId },
+          data: { status: 'SHARED' },
+        })
+      }
+
+      return log
+    })
 
     sendSuccess(res, {
       shareLogId: shareLog.id,
@@ -229,25 +233,30 @@ router.post(
     const documentId = String(req.params.id)
     const doc = await documentService.getDocument(businessId, documentId)
 
+    // Create share log + update status atomically
     const { prisma } = await import('../lib/prisma.js')
-    const shareLog = await prisma.documentShareLog.create({
-      data: {
-        documentId,
-        channel: 'EMAIL',
-        format: 'PDF',
-        recipientEmail: req.body.recipientEmail,
-        message: req.body.body || null,
-        sentBy: req.user!.userId,
-      },
-      select: { id: true, sentAt: true },
-    })
-
-    if ((doc as { status: string }).status === 'SAVED') {
-      await prisma.document.update({
-        where: { id: documentId },
-        data: { status: 'SHARED' },
+    const shareLog = await prisma.$transaction(async (tx) => {
+      const log = await tx.documentShareLog.create({
+        data: {
+          documentId,
+          channel: 'EMAIL',
+          format: 'PDF',
+          recipientEmail: req.body.recipientEmail,
+          message: req.body.body || null,
+          sentBy: req.user!.userId,
+        },
+        select: { id: true, sentAt: true },
       })
-    }
+
+      if ((doc as { status: string }).status === 'SAVED') {
+        await tx.document.update({
+          where: { id: documentId },
+          data: { status: 'SHARED' },
+        })
+      }
+
+      return log
+    })
 
     sendSuccess(res, {
       shareLogId: shareLog.id,

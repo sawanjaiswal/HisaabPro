@@ -176,9 +176,9 @@ const Gallery4 = ({
           </CarouselContent>
         </Carousel>
         <div className="mt-8 flex justify-center gap-2">
-          {items.map((_, index) => (
+          {items.map((item, index) => (
             <button
-              key={index}
+              key={item.id}
               className={`h-2 w-2 rounded-full transition-colors ${
                 currentSlide === index ? "bg-primary" : "bg-primary/20"
               }`}

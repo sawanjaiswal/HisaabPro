@@ -223,6 +223,7 @@ model Feedback {
 
   @@index([userId])
   @@index([status])
+  @@index([userId, createdAt])
 }
 
 // === Party Management ===
@@ -652,6 +653,8 @@ model Document {
   @@index([recurringInvoiceId])
   @@index([originalDocumentId])
   @@index([businessId, type, status, documentDate])
+  @@index([businessId, dueDate])
+  @@index([businessId, balanceDue])
 }
 
 model DocumentLineItem {
@@ -1569,6 +1572,7 @@ model Expense {
   @@index([businessId, date])
   @@index([businessId, categoryId])
   @@index([businessId, isDeleted])
+  @@index([businessId, isDeleted, paymentMode])
 }
 
 /// Expense Category — user-configurable with system defaults

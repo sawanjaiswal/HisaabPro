@@ -10,6 +10,7 @@
 
 import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
+import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
 import {
@@ -33,10 +34,10 @@ router.use(auth)
 /** POST /api/currency/exchange-rates — Set or update an exchange rate */
 router.post(
   '/exchange-rates',
+  validate(setExchangeRateSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
-    const data = setExchangeRateSchema.parse(req.body)
-    const rate = await setExchangeRate(businessId, data)
+    const rate = await setExchangeRate(businessId, req.body)
     sendSuccess(res, rate, 201)
   }),
 )
@@ -75,10 +76,10 @@ router.get(
 /** POST /api/currency/convert — Convert amount between any two currencies */
 router.post(
   '/convert',
+  validate(convertAmountSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
-    const input = convertAmountSchema.parse(req.body)
-    const result = await convertAmount(businessId, input)
+    const result = await convertAmount(businessId, req.body)
     sendSuccess(res, result)
   }),
 )

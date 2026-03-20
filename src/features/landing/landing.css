@@ -208,9 +208,10 @@ html:not(.dark) .landing-root {
    BASE STYLES — applied via tokens
    ============================================================ */
 
-/* Smooth scroll for anchor links */
+/* Smooth scroll + root font size for anchor links */
 html:has(.landing-root) {
   scroll-behavior: smooth;
+  font-size: var(--fs-base) !important;
 }
 
 /* Override app global styles so landing renders in isolation */
@@ -226,10 +227,6 @@ html:has(.landing-root) {
 body:has(.landing-root) {
   background: var(--lp-bg) !important;
   color: var(--lp-text) !important;
-}
-
-html:has(.landing-root) {
-  font-size: var(--fs-base) !important;
 }
 
 

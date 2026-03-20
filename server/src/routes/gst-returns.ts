@@ -11,6 +11,12 @@ import * as gstService from '../services/gst-return.service.js'
 import * as gstSettings from '../services/gst-settings.service.js'
 
 const router = Router()
+
+/** Sanitize file name for Content-Disposition header (prevent header injection) */
+function sanitizeFileName(name: string): string {
+  return name.replace(/[^\w\s.-]/g, '_').slice(0, 100)
+}
+
 router.use(auth)
 
 /** GET /api/gst/returns/:returnType/:period — Generate return summary */
@@ -44,7 +50,8 @@ router.post('/:returnType/:period/export', asyncHandler(async (req, res) => {
     result.json.gstin = settings.gstin ?? ''
 
     res.setHeader('Content-Type', 'application/json')
-    res.setHeader('Content-Disposition', `attachment; filename="${result.fileName}"`)
+    res.setHeader('Content-Disposition', `attachment; filename="${sanitizeFileName(result.fileName)}"`)
+
     sendSuccess(res, result)
   } else if (params.returnType === 'GSTR3B') {
     const result = await gstService.generateGstr3b(businessId, params.period)

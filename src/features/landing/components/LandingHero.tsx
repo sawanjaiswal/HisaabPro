@@ -33,7 +33,7 @@ export const LandingHero = memo(function LandingHero() {
       <h1
         className="text-4xl md:text-5xl lg:text-6xl font-medium text-center max-w-3xl px-6 leading-tight mb-6"
         style={{
-          background: 'linear-gradient(to bottom, #ffffff, #ffffff, rgba(255, 255, 255, 0.6))',
+          background: 'linear-gradient(to bottom, var(--lp-heading-from), var(--lp-heading-mid), var(--lp-heading-to))',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',

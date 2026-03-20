@@ -268,7 +268,9 @@ const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
               src="https://i.postimg.cc/Ss6yShGy/glows.png"
               alt=""
               className="w-full h-auto"
-              loading="eager"
+              loading="lazy"
+              width={1920}
+              height={1080}
             />
           </div>
         )}

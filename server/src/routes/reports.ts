@@ -18,6 +18,11 @@ import * as reportService from '../services/report.service.js'
 
 const router = Router()
 
+/** Sanitize file name for Content-Disposition header (prevent header injection) */
+function sanitizeFileName(name: string): string {
+  return name.replace(/[^\w\s.-]/g, '_').slice(0, 100)
+}
+
 router.use(auth)
 
 /** GET /api/reports/invoices — Invoice report (sale/purchase) */
@@ -89,7 +94,8 @@ router.post(
     // For CSV, return as downloadable file
     if (body.format === 'CSV') {
       res.setHeader('Content-Type', 'text/csv; charset=utf-8')
-      res.setHeader('Content-Disposition', `attachment; filename="${result.fileName}"`)
+      res.setHeader('Content-Disposition', `attachment; filename="${sanitizeFileName(result.fileName)}"`)
+
       res.send(result.csv)
     } else {
       // PDF export — Phase 2

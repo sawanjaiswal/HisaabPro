@@ -5,24 +5,11 @@
 
 import { prisma } from '../lib/prisma.js'
 import { notFoundError, validationError, conflictError } from '../lib/errors.js'
+import { DEFAULT_CATEGORIES, DEFAULT_CATEGORY_COLOR } from '../config/defaults.js'
 import type {
   CreateCategoryInput,
   UpdateCategoryInput,
 } from '../schemas/product.schemas.js'
-
-// 10 predefined categories per PRD
-const PREDEFINED_CATEGORIES = [
-  { name: 'General', color: '#6B7280', sortOrder: 0 },
-  { name: 'Electronics', color: '#3B82F6', sortOrder: 1 },
-  { name: 'Grocery', color: '#22C55E', sortOrder: 2 },
-  { name: 'Clothing', color: '#A855F7', sortOrder: 3 },
-  { name: 'Hardware', color: '#F97316', sortOrder: 4 },
-  { name: 'Stationery', color: '#EAB308', sortOrder: 5 },
-  { name: 'Food & Beverage', color: '#EF4444', sortOrder: 6 },
-  { name: 'Health & Beauty', color: '#EC4899', sortOrder: 7 },
-  { name: 'Auto Parts', color: '#6366F1', sortOrder: 8 },
-  { name: 'Other', color: '#94A3B8', sortOrder: 9 },
-]
 
 /** Seed predefined categories for a business if none exist */
 async function ensurePredefinedCategories(businessId: string) {
@@ -30,7 +17,7 @@ async function ensurePredefinedCategories(businessId: string) {
   if (count > 0) return
 
   await prisma.category.createMany({
-    data: PREDEFINED_CATEGORIES.map((cat) => ({
+    data: DEFAULT_CATEGORIES.map((cat) => ({
       businessId,
       name: cat.name,
       type: 'PREDEFINED',
@@ -55,6 +42,7 @@ export async function listCategories(businessId: string) {
   const categories = await prisma.category.findMany({
     where: { businessId },
     orderBy: { sortOrder: 'asc' },
+    take: 200,
     select: {
       id: true,
       name: true,
@@ -96,7 +84,7 @@ export async function createCategory(businessId: string, data: CreateCategoryInp
         businessId,
         name: data.name,
         type: 'CUSTOM',
-        color: data.color ?? '#6B7280',
+        color: data.color ?? DEFAULT_CATEGORY_COLOR,
         sortOrder: data.sortOrder ?? (maxSort._max.sortOrder ?? 0) + 1,
       },
       select: {

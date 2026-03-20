@@ -261,6 +261,7 @@ export async function processEligibleRewards(): Promise<{ count: number }> {
       status: 'in_review',
       eligibleAt: { lte: new Date() },
     },
+    select: { id: true, referrerId: true, referredId: true, amount: true },
   })
 
   if (eligible.length === 0) return { count: 0 }

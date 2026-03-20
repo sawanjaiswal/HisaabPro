@@ -3,6 +3,12 @@ import type { ReactNode } from 'react'
 
 type Theme = 'light' | 'dark'
 
+/** Meta theme-color for mobile browser chrome, keyed by theme */
+const THEME_META_COLORS: Record<Theme, string> = {
+  dark: '#0B0F15',
+  light: '#F8F7F4',
+}
+
 interface ThemeContextType {
   theme: Theme
   setTheme: (theme: Theme) => void
@@ -25,7 +31,7 @@ function applyTheme(theme: Theme) {
   // Update meta theme-color for mobile browser chrome
   const meta = document.querySelector('meta[name="theme-color"]')
   if (meta) {
-    meta.setAttribute('content', theme === 'dark' ? '#0B0F15' : '#F8F7F4')
+    meta.setAttribute('content', THEME_META_COLORS[theme])
   }
 }
 

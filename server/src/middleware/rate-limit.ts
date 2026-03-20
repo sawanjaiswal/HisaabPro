@@ -148,7 +148,7 @@ interface RateLimiterOpts {
   eventName?: string
 }
 
-function createRateLimiter(opts: RateLimiterOpts) {
+export function createRateLimiter(opts: RateLimiterOpts) {
   return async (req: Request, res: Response, next: NextFunction) => {
     const store = await getStore()
     const key = opts.keyFn ? opts.keyFn(req) : `rl:${req.ip || 'unknown'}`

@@ -23,6 +23,7 @@ export async function listCategories(businessId: string, showInactive: boolean) 
   return prisma.taxCategory.findMany({
     where: { businessId, ...(showInactive ? {} : { isActive: true }) },
     orderBy: [{ isDefault: 'desc' }, { rate: 'asc' }, { name: 'asc' }],
+    take: 200,
     select: LIST_SELECT,
   })
 }

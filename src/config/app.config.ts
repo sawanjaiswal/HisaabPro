@@ -38,6 +38,9 @@ export const PAGINATION = {
   maxLimit: 200,
 } as const
 
+/** Theme color for mobile browsers (meta tag + PWA) */
+export const THEME_COLOR = '#0f3638' as const
+
 /** Timeouts */
 export const TIMEOUTS = {
   fetchMs: 10_000,
