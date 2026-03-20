@@ -1,8 +1,8 @@
 # Feature Map: HisaabPro
 
-Last updated: 2026-03-20 | Total: 113 | Done: 112 | Not Started: 1
+Last updated: 2026-03-20 | Total: 113 | Done: 113 | Not Started: 0
 
-> **Full Build**: Frontend (78 routes, 721 source files, 29 feature modules) + Backend (339 endpoints, 43 route modules, 67 Prisma models, 1696-line schema) built and wired. SSOT cleanup done (CSS variables, config constants). PWA complete (SW + manifest + cache strategies). Tests: 393 passing (23 test files). Remaining: expand test coverage, OTP activation, external integrations, staging deploy.
+> **Full Build**: Frontend (78 routes, 721 source files, 29 feature modules) + Backend (345 endpoints, 44 route modules, 68 Prisma models, 1920-line schema) built and wired. All 113 features done (113/113). SSOT cleanup done (CSS variables, config constants). PWA complete (SW + manifest + cache strategies). Tests: 611 passing (38 test files). Remaining: expand test coverage, OTP activation, external integrations, staging deploy.
 
 ---
 
@@ -182,7 +182,7 @@ Last updated: 2026-03-20 | Total: 113 | Done: 112 | Not Started: 1
 | 97 | Barcode Generation | Done | P1 | FE: BarcodeDisplay + BarcodeField + barcode.utils (5 formats) · BE: barcode/barcodeFormat in Product schema + GET /by-barcode/:code lookup · POST /label-data for batch labels |
 | 98 | Barcode Scanning | Done | P1 | FE: BarcodeScanner.tsx (BarcodeDetector API, camera, 5 formats) · BE: barcode lookup reused for POS · Integrated via onScan callback |
 | 99 | Batch Tracking | Done | P1 | Batch model (MFD, expiry, batchNumber, cost/sale price override) · batch.service.ts CRUD + expiring batches report · 6 API routes · Cursor pagination |
-| 100 | Serial Number Tracking | Not Started | P2 | Deferred — needs Batch model foundation (now done). SerialNumber model, per-unit tracking, serial assignment UI |
+| 100 | Serial Number Tracking | Done | P2 | SerialNumber model (status lifecycle: AVAILABLE→SOLD→RETURNED→DAMAGED→WARRANTY) · serial-number.service.ts CRUD + bulk create (200 max) + global lookup · 6 API routes · Batch/Godown/Document relations · Cursor pagination |
 | 101 | Multi-Godown (Warehouse) | Done | P1 | Godown + GodownStock + GodownTransfer models · godown.service.ts + godown-transfer.service.ts · CRUD + stock-by-location + inter-godown transfer (transactional) · Transfer history with cursor pagination |
 | 102 | Stock Adjustment (Advanced) | Done | P1 | FE: StockAdjustModal · BE: single + bulk adjust (POST /stock/bulk-adjust, transactional) · GET /:id/stock/history (paginated movements) · 6 reasons |
 | 103 | Label Printing | Done | P2 | POST /products/label-data (batch label data, max 200) · labelTemplate field on Product · FE label rendering ready |
@@ -206,8 +206,7 @@ Last updated: 2026-03-20 | Total: 113 | Done: 112 | Not Started: 1
 
 | Status | Count | Details |
 |--------|-------|---------|
-| **Done** | 112 | Phase 1-6 (96) + Phase 4 (15) + Coupons · 5 "Needs Credentials" (code wired, set API keys to activate) |
-| **Not Started** | 1 | Serial Number Tracking (#100) — deferred, needs per-unit model |
+| **Done** | 113 | Phase 1-6 (96) + Phase 4 (16) + Coupons · 5 "Needs Credentials" (code wired, set API keys to activate) |
 
 ## Needs Integration (external credentials required)
 
@@ -275,6 +274,6 @@ Offline banner + sync UI             Multi-tenant (businessId isolation)
 ### Next phases
 7. ~~**Phase 2: GST**~~ Done — 20 features (tax engine, GSTR-1/3B/9, e-invoice, e-way bill, TDS/TCS, CN/DN, multi-currency, recurring)
 8. ~~**Phase 3: Accounting & Finance**~~ Done — 22 features (double-entry ledger, journal entries, trial balance, P&L, balance sheet, cash flow, bank accounts, expenses, other income, cheques, loans, aging reports, profitability, discounts, Tally export, FY closure)
-9. ~~**Phase 4: Advanced Inventory & POS**~~ Done — 15/16 features (batch tracking, multi-godown, POS, bulk import/export, barcode, stock verification, labels, images, MOQ, reorder). Serial numbers deferred.
+9. ~~**Phase 4: Advanced Inventory & POS**~~ Done — 16/16 features (batch tracking, multi-godown, POS, bulk import/export, barcode, stock verification, labels, images, MOQ, reorder, serial numbers).
 10. ~~**Phase 5: Growth & Competitive Features**~~ Done — BillBook-inspired gaps + feature discovery (10 features)
 11. ~~**Phase 6: BillBook User Requests**~~ Done — Custom units, payment stamps, vehicle/Udyam fields, PDF quality, duplicate copies (5 features)

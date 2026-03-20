@@ -156,11 +156,12 @@ model Business {
   stockAlerts      StockAlert[]
   stockVerifications StockVerification[]
 
-  // Phase 4 — Batch Tracking + Multi-Godown
+  // Phase 4 — Batch Tracking + Multi-Godown + Serial Numbers
   batches          Batch[]
   godowns          Godown[]
   godownStocks     GodownStock[]
   godownTransfers  GodownTransfer[]
+  serialNumbers    SerialNumber[]
 
   usersLastActive  User[] @relation("UserLastActiveBusiness")
 
@@ -487,10 +488,11 @@ model Product {
   stockAlerts       StockAlert[]
   verificationItems StockVerificationItem[]
 
-  // Phase 4 — Batch Tracking + Multi-Godown
+  // Phase 4 — Batch Tracking + Multi-Godown + Serial Numbers
   batches           Batch[]
   godownStocks      GodownStock[]
   godownTransfers   GodownTransfer[]
+  serialNumbers     SerialNumber[]
 
   @@unique([businessId, sku])
   @@unique([businessId, barcode])
@@ -682,6 +684,7 @@ model Document {
   shareLogs              DocumentShareLog[]
   paymentAllocations     PaymentAllocation[]
   paymentReminders       PaymentReminder[]
+  serialNumbers          SerialNumber[]
 
   @@unique([businessId, type, documentNumber])
   @@index([businessId, type, status])
@@ -1887,6 +1890,35 @@ model StockVerificationItem {
   @@index([productId])
 }
 
+// === Phase 4 — Serial Number Tracking (#100) ===
+
+model SerialNumber {
+  id               String    @id @default(cuid())
+  businessId       String
+  productId        String
+  serialNumber     String
+  status           String    @default("AVAILABLE") // AVAILABLE, SOLD, RETURNED, DAMAGED, WARRANTY
+  batchId          String?
+  godownId         String?
+  soldInDocumentId String?
+  soldAt           DateTime?
+  notes            String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  business       Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  product        Product   @relation(fields: [productId], references: [id], onDelete: Restrict)
+  batch          Batch?    @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  godown         Godown?   @relation(fields: [godownId], references: [id], onDelete: SetNull)
+  soldInDocument Document? @relation(fields: [soldInDocumentId], references: [id], onDelete: SetNull)
+
+  @@unique([businessId, serialNumber])
+  @@index([businessId, productId, status])
+  @@index([businessId, status])
+  @@index([productId])
+  @@index([soldInDocumentId])
+}
+
 // === Phase 4 — Batch Tracking (#99 Batch Tracking + #105 Expiry Alerts) ===
 
 model Batch {
@@ -1909,6 +1941,7 @@ model Batch {
   stockMovements  StockMovement[]
   godownStocks    GodownStock[]
   godownTransfers GodownTransfer[]
+  serialNumbers   SerialNumber[]
 
   @@unique([businessId, productId, batchNumber])
   @@index([businessId, productId])
@@ -1933,6 +1966,7 @@ model Godown {
   stockMovements StockMovement[]
   transfersFrom  GodownTransfer[] @relation("TransferFrom")
   transfersTo    GodownTransfer[] @relation("TransferTo")
+  serialNumbers  SerialNumber[]
 
   @@unique([businessId, name])
   @@index([businessId, isDeleted])

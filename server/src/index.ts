@@ -51,6 +51,7 @@ import stockAlertRoutes from './routes/stock-alerts.js'
 import stockVerificationRoutes from './routes/stock-verification.js'
 import batchRoutes from './routes/batches.js'
 import godownRoutes from './routes/godowns.js'
+import serialNumberRoutes from './routes/serial-numbers.js'
 import razorpayRoutes, { razorpayWebhookRouter } from './routes/razorpay.js'
 import adminRoutes from './routes/admin/index.js'
 import logger from './lib/logger.js'
@@ -176,6 +177,7 @@ app.use('/api/stock-verification', stockVerificationRoutes)
 // batchRoutes handles /api/products/:productId/batches AND /api/batches/:id
 app.use('/api', batchRoutes)
 app.use('/api/godowns', godownRoutes)
+app.use('/api/serial-numbers', serialNumberRoutes)
 
 // Razorpay Subscription & Billing (authenticated routes — webhook mounted earlier)
 app.use('/api/razorpay', razorpayRoutes)
