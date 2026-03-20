@@ -1,6 +1,6 @@
 # Feature Map: HisaabPro
 
-Last updated: 2026-03-19 | Total: 96 | Done: 95 | Not Started: 1
+Last updated: 2026-03-20 | Total: 96 | Done: 96 | Not Started: 0
 
 > **Full Build**: Frontend (78 routes, 721 source files, 29 feature modules) + Backend (339 endpoints, 43 route modules, 67 Prisma models, 1696-line schema) built and wired. SSOT cleanup done (CSS variables, config constants). PWA complete (SW + manifest + cache strategies). Tests: 393 passing (23 test files). Remaining: expand test coverage, OTP activation, external integrations, staging deploy.
 
@@ -179,14 +179,14 @@ Last updated: 2026-03-19 | Total: 96 | Done: 95 | Not Started: 1
 
 | # | Feature | Status | Priority | Module | Notes |
 |---|---------|--------|----------|--------|-------|
-| 96 | Coupon / Discount Code System | Not Started | P2 | Payments & Subscriptions | Admin creates discount coupons (e.g., "LAUNCH20" = 20% off). Users apply at checkout. Discount applies for first billing cycle only — full price on renewal. Uses Razorpay Subscriptions coupon API. Scope: backend coupon CRUD API, admin UI to create/manage coupons, checkout coupon input field, Razorpay coupon integration. Deps: Razorpay Subscriptions setup (#2), Pricing/Checkout flow |
+| 96 | Coupon / Discount Code System | Done | P2 | Payments & Subscriptions | Admin coupon CRUD · User apply at checkout · First-cycle discount · Razorpay coupon integration |
 
 ## Status Summary
 
 | Status | Count | Details |
 |--------|-------|---------|
-| **Done** | 95 | Phase 1 (62) + Security (8) + Phase 2 GST (20) + Phase 5 Growth (8) + Phase 6 BillBook (5) — includes 8 "Needs Integration" (code done, awaiting external credentials) |
-| **Not Started** | 1 | Phase 7: Coupon / Discount Code System (P2) |
+| **Done** | 96 | Phase 1 (62) + Security (8) + Phase 2 GST (20) + Phase 5 Growth (8) + Phase 6 BillBook (5) + Phase 7 Coupons (1) — includes 8 "Needs Integration" (code done, awaiting external credentials) |
+| **Not Started** | 0 | — |
 
 ## Needs Integration (external credentials required)
 
