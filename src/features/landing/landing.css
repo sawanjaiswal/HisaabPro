@@ -360,19 +360,9 @@ body:has(.landing-root) {
 
 
 /* ============================================================
-   TESTIMONIAL SCROLL — continuous CSS animation (no pause)
+   TESTIMONIAL SCROLL — powered by framer-motion animate
+   (CSS class kept for potential fallback only)
    ============================================================ */
-
-@keyframes testimonial-scroll-up {
-  0%   { transform: translateY(0); }
-  100% { transform: translateY(-50%); }
-}
-
-.testimonial-scroll {
-  animation: testimonial-scroll-up var(--scroll-duration, 15s) linear infinite;
-  will-change: transform;
-  backface-visibility: hidden;
-}
 
 
 /* ============================================================
