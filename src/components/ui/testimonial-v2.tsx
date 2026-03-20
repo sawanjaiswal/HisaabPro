@@ -100,37 +100,18 @@ const TestimonialsColumn = (props: {
         ease: [0.16, 1, 0.3, 1],
       }}
     >
-      <motion.ul
+      <ul
         className="testimonial-scroll flex flex-col gap-6 pb-6 bg-transparent list-none m-0 p-0"
         style={{ ['--scroll-duration' as string]: `${props.duration || 10}s` }}
       >
         {[...Array(2)].map((_, index) => (
           <React.Fragment key={index}>
             {props.testimonials.map(({ text, image, name, role }, i) => (
-              <motion.li
+              <li
                 key={`${index}-${i}`}
                 aria-hidden={index === 1 ? "true" : "false"}
                 tabIndex={index === 1 ? -1 : 0}
-                initial={reducedMotion || index === 1 ? false : { opacity: 0, scale: 0.95, y: 20 }}
-                whileInView={index === 0 ? { opacity: 1, scale: 1, y: 0 } : undefined}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{
-                  duration: 0.5,
-                  delay: props.columnIndex * 0.1 + i * 0.08,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                whileHover={{
-                  scale: 1.03,
-                  y: -8,
-                  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05)",
-                  transition: { type: "spring", stiffness: 400, damping: 17 }
-                }}
-                whileFocus={{
-                  scale: 1.03,
-                  y: -8,
-                  transition: { type: "spring", stiffness: 400, damping: 17 }
-                }}
-                className="p-10 rounded-3xl border shadow-lg shadow-black/5 max-w-xs w-full cursor-default select-none group focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="testimonial-card p-10 rounded-3xl border shadow-lg shadow-black/5 max-w-xs w-full cursor-default select-none focus:outline-none focus:ring-2 focus:ring-primary/30"
                 style={{
                   backgroundColor: 'var(--lp-bg-card)',
                   borderColor: 'var(--lp-card-border)',
@@ -160,11 +141,11 @@ const TestimonialsColumn = (props: {
                     </div>
                   </footer>
                 </blockquote>
-              </motion.li>
+              </li>
             ))}
           </React.Fragment>
         ))}
-      </motion.ul>
+      </ul>
     </motion.div>
   );
 };

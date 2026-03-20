@@ -1,6 +1,6 @@
 import { Cpu, Lock, MessageCircle, Zap } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
-import { HeroDashboardMockup } from '@/components/ui/hero-dashboard-mockup'
+import { InvoicesMockup } from '@/components/ui/invoices-mockup'
 
 const EASE_OUT: [number, number, number, number] = [0.25, 1, 0.5, 1]
 
@@ -33,9 +33,16 @@ export function FeaturesSection7() {
                     viewport={{ once: true, margin: '-80px' }}
                     transition={{ duration: 0.7, delay: 0.1, ease: EASE_OUT }}
                     className="relative -mx-4 rounded-3xl p-3 md:-mx-12 lg:col-span-3"
+                    style={{ perspective: '1200px' }}
                 >
-                    <div className="relative overflow-hidden rounded-2xl">
-                        <HeroDashboardMockup />
+                    <div
+                        className="relative overflow-hidden rounded-2xl transition-transform duration-700 ease-out"
+                        style={{
+                            transform: 'rotateX(2deg) rotateY(-3deg)',
+                            transformOrigin: 'center center',
+                        }}
+                    >
+                        <InvoicesMockup />
                     </div>
                 </motion.div>
                 <div className="relative mx-auto grid grid-cols-2 gap-x-3 gap-y-6 sm:gap-8 lg:grid-cols-4">

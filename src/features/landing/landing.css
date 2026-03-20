@@ -70,8 +70,8 @@
   --lp-price-card-border: #334155;
   --lp-price-highlight-from: rgba(148, 163, 184, 0.1);
   --lp-price-highlight-border: rgba(148, 163, 184, 0.2);
-  --lp-price-badge-bg: #f1f5f9;
-  --lp-price-badge-text: #0f172a;
+  --lp-price-badge-bg: #0ea5e9;
+  --lp-price-badge-text: #ffffff;
   --lp-price-btn-bg: #0f172a;
   --lp-price-btn-text: #f1f5f9;
   --lp-price-btn-border: #1e293b;
@@ -167,7 +167,7 @@ html:not(.dark) .landing-root {
   --lp-price-card-border: #e5e7eb;
   --lp-price-highlight-from: rgba(30, 58, 95, 0.06);
   --lp-price-highlight-border: rgba(30, 58, 95, 0.25);
-  --lp-price-badge-bg: #111827;
+  --lp-price-badge-bg: #0ea5e9;
   --lp-price-badge-text: #ffffff;
   --lp-price-btn-bg: #ffffff;
   --lp-price-btn-text: #111827;
@@ -377,6 +377,62 @@ html:has(.landing-root) {
 
 .testimonial-scroll-container:hover .testimonial-scroll {
   animation-play-state: paused;
+}
+
+.testimonial-card {
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+              box-shadow 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.testimonial-card:hover {
+  transform: scale(1.03) translateY(-8px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15),
+              0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+
+/* ============================================================
+   FAQ ACCORDION — smooth open/close animation
+   ============================================================ */
+
+[data-slot="accordion-content"] {
+  transition: opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+[data-slot="accordion-content"][data-state="open"] {
+  opacity: 1;
+  animation: faq-slide-down 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+[data-slot="accordion-content"][data-state="closed"] {
+  opacity: 0;
+  animation: faq-slide-up 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@keyframes faq-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes faq-slide-up {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+[data-slot="accordion-trigger"] svg {
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 

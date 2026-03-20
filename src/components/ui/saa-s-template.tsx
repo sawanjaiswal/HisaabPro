@@ -260,8 +260,8 @@ const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
       >
         {isDark && (
           <div
-            className="absolute left-1/2 w-[90%] pointer-events-none z-0"
-            style={{ top: "-23%", transform: "translateX(-50%)" }}
+            className="absolute left-1/2 w-[120%] pointer-events-none z-0"
+            style={{ top: "-30%", transform: "translateX(-50%)" }}
             aria-hidden="true"
           >
             <img
