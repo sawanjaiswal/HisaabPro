@@ -76,7 +76,7 @@ export function SocialProofBar() {
   const active = reducedMotion ? true : isInView;
 
   return (
-    <div className="w-full border-y lp-border-divider landing-section-tinted">
+    <div className="w-full landing-section-tinted">
       <div ref={ref} className="max-w-7xl mx-auto px-6 py-8">
         {/* Desktop: horizontal row with dividers */}
         <div className="hidden md:flex items-center justify-center gap-10">

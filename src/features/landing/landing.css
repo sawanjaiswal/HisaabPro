@@ -104,6 +104,13 @@
   /* ---- WhatsApp ---- */
   --lp-whatsapp: #25D366;
   --lp-whatsapp-text: #ffffff;
+
+  /* ---- Before/After ---- */
+  --lp-before-bg: rgba(239, 68, 68, 0.05);
+  --lp-before-badge-text: #f87171;
+  --lp-before-badge-bg: rgba(239, 68, 68, 0.12);
+  --lp-before-icon: #f87171;
+  --lp-after-bg: rgba(34, 197, 94, 0.05);
 }
 
 /* === LIGHT THEME TOKENS === */
@@ -148,8 +155,8 @@ html:not(.dark) .landing-root {
   --lp-icon: #4b5563;
 
   /* ---- Hover effects ---- */
-  --lp-hover-from: #f3f4f6;
-  --lp-hover-bar: #d1d5db;
+  --lp-hover-from: #dbeafe;
+  --lp-hover-bar: #cbd5e1;
   --lp-hover-bar-active: #2563eb;
 
   /* ---- Avatar ---- */
@@ -201,6 +208,13 @@ html:not(.dark) .landing-root {
   /* ---- WhatsApp ---- */
   --lp-whatsapp: #25D366;
   --lp-whatsapp-text: #ffffff;
+
+  /* ---- Before/After ---- */
+  --lp-before-bg: rgba(239, 68, 68, 0.04);
+  --lp-before-badge-text: #dc2626;
+  --lp-before-badge-bg: rgba(239, 68, 68, 0.08);
+  --lp-before-icon: #dc2626;
+  --lp-after-bg: rgba(34, 197, 94, 0.04);
 }
 
 
@@ -366,47 +380,16 @@ body:has(.landing-root) {
 
 
 /* ============================================================
-   FAQ ACCORDION — smooth open/close animation
+   FAQ ACCORDION — uses Tailwind accordion-down/up from
+   animations.css. Only override chevron easing here.
    ============================================================ */
-
-[data-slot="accordion-content"] {
-  transition: opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-[data-slot="accordion-content"][data-state="open"] {
-  opacity: 1;
-  animation: faq-slide-down 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-[data-slot="accordion-content"][data-state="closed"] {
-  opacity: 0;
-  animation: faq-slide-up 0.2s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-@keyframes faq-slide-down {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes faq-slide-up {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-}
 
 [data-slot="accordion-trigger"] svg {
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+[data-slot="accordion-content"] {
+  will-change: height;
 }
 
 

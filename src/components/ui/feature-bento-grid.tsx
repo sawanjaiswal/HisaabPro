@@ -125,6 +125,48 @@ const MockCard = ({ children, className }: { children: React.ReactNode; classNam
   </div>
 )
 
+/* ─── Interactive row — highlights on hover/tap ─── */
+const InteractiveRow = ({ children, className, style }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) => (
+  <div
+    className={cn("transition-colors duration-200 cursor-default", className)}
+    style={style}
+    onMouseEnter={e => {
+      e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--lp-accent) 8%, transparent)'
+    }}
+    onMouseLeave={e => {
+      e.currentTarget.style.backgroundColor = style?.backgroundColor as string || 'transparent'
+    }}
+  >
+    {children}
+  </div>
+)
+
+/* ─── Interactive bar — lights up on hover ─── */
+const InteractiveBar = ({ height, isActive, label }: { height: number; isActive: boolean; label: string }) => (
+  <div className="flex-1 flex flex-col items-center justify-end h-full group/bar cursor-default">
+    <div
+      className="w-full rounded-t-md transition-all duration-200"
+      style={{
+        height,
+        backgroundColor: isActive ? 'var(--lp-accent)' : 'var(--lp-mock-bar-bg)',
+        minHeight: 6,
+      }}
+      onMouseEnter={e => {
+        if (!isActive) e.currentTarget.style.backgroundColor = 'var(--lp-accent)'
+        e.currentTarget.style.opacity = isActive ? '0.8' : '1'
+        e.currentTarget.style.transform = 'scaleY(1.08)'
+        e.currentTarget.style.transformOrigin = 'bottom'
+      }}
+      onMouseLeave={e => {
+        if (!isActive) e.currentTarget.style.backgroundColor = 'var(--lp-mock-bar-bg)'
+        e.currentTarget.style.opacity = '1'
+        e.currentTarget.style.transform = 'scaleY(1)'
+      }}
+    />
+    <span className="mt-2" style={{ fontSize: '0.5625rem', color: 'var(--lp-text-muted)' }}>{label}</span>
+  </div>
+)
+
 /* ─────────────────────────────────────────────────
    SkeletonOne — Invoice Card (Smart Invoicing)
    ───────────────────────────────────────────────── */
@@ -169,11 +211,14 @@ export const SkeletonOne = () => {
               { item: 'Switch Board 8-way × 10', amount: '₹4,200' },
               { item: 'LED Bulb 12W × 100', amount: '₹7,500' },
               { item: 'PVC Pipe 1" × 25', amount: '₹3,750' },
+              { item: 'Copper Wire 2.5mm × 10', amount: '₹5,500' },
+              { item: 'Junction Box 4-way × 30', amount: '₹1,800' },
+              { item: 'Ceiling Rose × 40', amount: '₹2,400' },
             ].map((line) => (
-              <div key={line.item} className="flex justify-between py-1.5" style={{ borderBottom: '1px dashed var(--lp-card-border)' }}>
+              <InteractiveRow key={line.item} className="flex justify-between py-1.5 px-1 -mx-1 rounded-sm" style={{ borderBottom: '1px dashed var(--lp-card-border)' }}>
                 <span style={{ color: 'var(--lp-text-body)' }}>{line.item}</span>
                 <span style={{ color: 'var(--lp-text)', fontWeight: 500 }}>{line.amount}</span>
-              </div>
+              </InteractiveRow>
             ))}
           </div>
 
@@ -196,23 +241,34 @@ export const SkeletonOne = () => {
           {/* Action buttons */}
           <div className="px-4 py-3 flex gap-2 border-t" style={{ borderColor: 'var(--lp-card-border)' }}>
             <div
-              className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md"
+              className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md cursor-pointer transition-opacity duration-200 hover:opacity-80 active:scale-95"
               style={{
                 backgroundColor: 'var(--lp-whatsapp)',
                 color: 'var(--lp-whatsapp-text)',
                 fontSize: '0.6875rem',
                 fontWeight: 500,
+                transition: 'opacity 0.2s, transform 0.15s',
               }}
+              onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
+              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
             >
               <Send size={11} /> WhatsApp
             </div>
             <div
-              className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md border"
+              className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md border cursor-pointer transition-colors duration-200"
               style={{
                 borderColor: 'var(--lp-card-border)',
                 color: 'var(--lp-text-secondary)',
                 fontSize: '0.6875rem',
                 fontWeight: 500,
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = 'var(--lp-accent)'
+                e.currentTarget.style.color = 'var(--lp-accent)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = 'var(--lp-card-border)'
+                e.currentTarget.style.color = 'var(--lp-text-secondary)'
               }}
             >
               <Download size={11} /> PDF
@@ -235,6 +291,12 @@ export const SkeletonTwo = () => {
     { name: "Patel & Sons", amount: "₹38,800", days: "18d" },
     { name: "Verma Stores", amount: "₹22,100", days: "7d" },
     { name: "Singh Enterprises", amount: "₹18,400", days: "45d" },
+    { name: "Jain Brothers", amount: "₹12,600", days: "14d" },
+  ]
+
+  const recentPayments = [
+    { party: "Sharma Electronics", amount: "₹12,000", mode: "UPI", date: "Today" },
+    { party: "Kapoor Hardware", amount: "₹8,500", mode: "Cash", date: "Yesterday" },
   ]
 
   return (
@@ -246,15 +308,15 @@ export const SkeletonTwo = () => {
             Total Outstanding
           </p>
           <div className="flex items-baseline gap-2 mt-1">
-            <span style={{ color: 'var(--lp-text)', fontSize: '1.5rem', fontWeight: 700 }}>₹1,24,500</span>
-            <span style={{ color: 'var(--lp-mock-warning)', fontSize: '0.6875rem', fontWeight: 500 }}>4 parties</span>
+            <span style={{ color: 'var(--lp-text)', fontSize: '1.5rem', fontWeight: 700 }}>₹1,37,100</span>
+            <span style={{ color: 'var(--lp-mock-warning)', fontSize: '0.6875rem', fontWeight: 500 }}>5 parties</span>
           </div>
         </div>
 
         {/* Party list */}
         <div>
           {parties.map((p) => (
-            <div
+            <InteractiveRow
               key={p.name}
               className="px-4 py-2.5 flex items-center justify-between border-b"
               style={{ borderColor: 'var(--lp-card-border)' }}
@@ -264,12 +326,32 @@ export const SkeletonTwo = () => {
                 <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.625rem' }}>{p.days} overdue</p>
               </div>
               <span style={{ color: 'var(--lp-mock-warning)', fontSize: '0.8125rem', fontWeight: 600 }}>{p.amount}</span>
-            </div>
+            </InteractiveRow>
+          ))}
+        </div>
+
+        {/* Recent Payments */}
+        <div className="px-4 py-3 border-t" style={{ borderColor: 'var(--lp-card-border)' }}>
+          <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.625rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>
+            Recent Payments
+          </p>
+          {recentPayments.map((p) => (
+            <InteractiveRow
+              key={p.party}
+              className="flex items-center justify-between py-2 px-1 -mx-1 rounded-sm"
+              style={{ borderTop: '1px solid var(--lp-card-border)' }}
+            >
+              <div>
+                <p style={{ color: 'var(--lp-text)', fontSize: '0.75rem', fontWeight: 500 }}>{p.party}</p>
+                <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.5625rem' }}>{p.date} · {p.mode}</p>
+              </div>
+              <span style={{ color: 'var(--lp-mock-success)', fontSize: '0.8125rem', fontWeight: 600 }}>+{p.amount}</span>
+            </InteractiveRow>
           ))}
         </div>
 
         {/* Payment modes bar */}
-        <div className="px-4 py-3">
+        <div className="px-4 py-3 border-t" style={{ borderColor: 'var(--lp-card-border)' }}>
           <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.625rem', fontWeight: 500, marginBottom: 8 }}>
             Received This Month
           </p>
@@ -292,7 +374,7 @@ export const SkeletonTwo = () => {
         </div>
       </MockCard>
 
-      <div className="absolute bottom-0 z-40 inset-x-0 h-20 w-full pointer-events-none" style={{ background: `linear-gradient(to top, var(--lp-bg-fade), transparent)` }} />
+      <div className="absolute bottom-0 z-40 inset-x-0 h-40 w-full pointer-events-none" style={{ background: `linear-gradient(to top, var(--lp-bg-fade), transparent)` }} />
     </div>
   )
 }
@@ -315,7 +397,25 @@ export const SkeletonThree = () => {
       <div className="w-full mx-auto">
         <div className="grid grid-cols-2 gap-3">
           {products.map((p) => (
-            <MockCard key={p.name} className="p-3">
+            <div
+              key={p.name}
+              className="rounded-lg border overflow-hidden p-3 cursor-default transition-all duration-200"
+              style={{
+                backgroundColor: 'var(--lp-bg-card)',
+                borderColor: 'var(--lp-card-border)',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = p.status === 'low' ? 'var(--lp-mock-warning)' : 'var(--lp-mock-success)'
+                e.currentTarget.style.boxShadow = p.status === 'low'
+                  ? '0 4px 16px color-mix(in srgb, var(--lp-mock-warning) 20%, transparent)'
+                  : '0 4px 16px color-mix(in srgb, var(--lp-mock-success) 20%, transparent)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = 'var(--lp-card-border)'
+                e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.08)'
+              }}
+            >
               <div className="flex items-start justify-between mb-2">
                 <Package size={14} style={{ color: 'var(--lp-text-muted)' }} aria-hidden="true" />
                 {p.status === "low" && (
@@ -353,7 +453,7 @@ export const SkeletonThree = () => {
                 <span style={{ color: 'var(--lp-text)', fontSize: '0.8125rem', fontWeight: 700 }}>{p.price}</span>
                 <span style={{ color: 'var(--lp-text-muted)', fontSize: '0.5625rem' }}>per {p.unitSingular}</span>
               </div>
-            </MockCard>
+            </div>
           ))}
         </div>
       </div>
@@ -407,34 +507,26 @@ export const SkeletonFour = () => {
         {/* Bar chart */}
         <div className="px-4 py-4">
           <div className="flex items-end justify-between gap-3" style={{ height: 120 }}>
-            {months.map((m) => {
-              const barHeight = Math.round((m.pct / 100) * 100)
-              return (
-                <div key={m.label} className="flex-1 flex flex-col items-center justify-end h-full">
-                  <div
-                    className="w-full rounded-t-md"
-                    style={{
-                      height: barHeight,
-                      backgroundColor: m.label === "Mar" ? 'var(--lp-accent)' : 'var(--lp-mock-bar-bg)',
-                      minHeight: 6,
-                    }}
-                  />
-                  <span className="mt-2" style={{ fontSize: '0.5625rem', color: 'var(--lp-text-muted)' }}>{m.label}</span>
-                </div>
-              )
-            })}
+            {months.map((m) => (
+              <InteractiveBar
+                key={m.label}
+                height={Math.round((m.pct / 100) * 100)}
+                isActive={m.label === "Mar"}
+                label={m.label}
+              />
+            ))}
           </div>
         </div>
 
         {/* Top parties */}
-        <div className="px-4 pb-3">
+        <div className="px-4 py-3 border-t" style={{ borderColor: 'var(--lp-card-border)' }}>
           <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.625rem', fontWeight: 500, marginBottom: 6 }}>
             Top Parties
           </p>
           {topParties.map((p, i) => (
-            <div
+            <InteractiveRow
               key={p.name}
-              className="flex items-center justify-between py-1.5"
+              className="flex items-center justify-between py-1.5 px-1 -mx-1 rounded-sm"
               style={{ borderTop: i > 0 ? '1px solid var(--lp-card-border)' : 'none' }}
             >
               <div className="flex items-center gap-2">
@@ -452,9 +544,10 @@ export const SkeletonFour = () => {
                 <span style={{ color: 'var(--lp-text)', fontSize: '0.6875rem' }}>{p.name}</span>
               </div>
               <span style={{ color: 'var(--lp-text)', fontSize: '0.6875rem', fontWeight: 600 }}>{p.amount}</span>
-            </div>
+            </InteractiveRow>
           ))}
         </div>
+
       </MockCard>
     </div>
   )

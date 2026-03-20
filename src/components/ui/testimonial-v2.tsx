@@ -102,23 +102,10 @@ const TestimonialsColumn = (props: {
           ...new Array(2).fill(0).map((_, index) => (
             <React.Fragment key={index}>
               {props.testimonials.map(({ text, image, name, role }, i) => (
-                <motion.li
+                <li
                   key={`${index}-${i}`}
                   aria-hidden={index === 1 ? "true" : "false"}
-                  tabIndex={index === 1 ? -1 : 0}
-                  whileHover={{
-                    scale: 1.03,
-                    y: -8,
-                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.12), 0 10px 10px -5px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.05)",
-                    transition: { type: "spring", stiffness: 400, damping: 17 }
-                  }}
-                  whileFocus={{
-                    scale: 1.03,
-                    y: -8,
-                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.12), 0 10px 10px -5px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.05)",
-                    transition: { type: "spring", stiffness: 400, damping: 17 }
-                  }}
-                  className="p-10 rounded-3xl border shadow-lg shadow-black/5 max-w-xs w-full transition-all duration-300 cursor-default select-none group focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="p-10 rounded-3xl border shadow-lg shadow-black/5 max-w-xs w-full select-none"
                   style={{
                     backgroundColor: 'var(--lp-bg-card)',
                     borderColor: 'var(--lp-card-border)',
@@ -148,7 +135,7 @@ const TestimonialsColumn = (props: {
                       </div>
                     </footer>
                   </blockquote>
-                </motion.li>
+                </li>
               ))}
             </React.Fragment>
           )),

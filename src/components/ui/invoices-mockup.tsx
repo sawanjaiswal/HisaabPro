@@ -1,6 +1,6 @@
 /** Invoices List Mockup — shows invoice management view for features section */
 
-import { FileText, Users, Package, BarChart3, IndianRupee, Search, Filter, Plus, Download, ChevronDown } from 'lucide-react'
+import { FileText, Users, Package, BarChart3, IndianRupee, Search, Filter, Plus, Download, ChevronDown, CreditCard, Wallet, TrendingUp, Settings } from 'lucide-react'
 
 const INVOICES = [
   { id: 'INV-1042', party: 'Sharma Electronics', date: '20 Mar', amount: '₹12,450', status: 'Paid', statusColor: 'var(--lp-mock-success)' },
@@ -8,6 +8,13 @@ const INVOICES = [
   { id: 'INV-1040', party: 'Patel & Sons', date: '18 Mar', amount: '₹15,600', status: 'Paid', statusColor: 'var(--lp-mock-success)' },
   { id: 'INV-1039', party: 'Verma Stores', date: '17 Mar', amount: '₹6,800', status: 'Overdue', statusColor: 'var(--lp-mock-error, #ef4444)' },
   { id: 'INV-1038', party: 'Singh Enterprises', date: '16 Mar', amount: '₹22,100', status: 'Paid', statusColor: 'var(--lp-mock-success)' },
+  { id: 'INV-1037', party: 'Jain Brothers', date: '15 Mar', amount: '₹4,500', status: 'Due', statusColor: 'var(--lp-mock-warning)' },
+  { id: 'INV-1036', party: 'Mehta & Co.', date: '14 Mar', amount: '₹31,200', status: 'Paid', statusColor: 'var(--lp-mock-success)' },
+  { id: 'INV-1035', party: 'Agarwal Textiles', date: '13 Mar', amount: '₹18,900', status: 'Paid', statusColor: 'var(--lp-mock-success)' },
+  { id: 'INV-1034', party: 'Reddy Pharma', date: '12 Mar', amount: '₹9,750', status: 'Due', statusColor: 'var(--lp-mock-warning)' },
+  { id: 'INV-1033', party: 'Kapoor Hardware', date: '11 Mar', amount: '₹14,300', status: 'Paid', statusColor: 'var(--lp-mock-success)' },
+  { id: 'INV-1032', party: 'Desai Provisions', date: '10 Mar', amount: '₹5,600', status: 'Overdue', statusColor: 'var(--lp-mock-error, #ef4444)' },
+  { id: 'INV-1031', party: 'Nair Electronics', date: '9 Mar', amount: '₹27,800', status: 'Paid', statusColor: 'var(--lp-mock-success)' },
 ]
 
 const TABS = [
@@ -47,32 +54,63 @@ export function InvoicesMockup() {
       <div className="flex">
         {/* Sidebar */}
         <div
-          className="hidden md:flex flex-col w-48 py-3 border-r shrink-0"
+          className="hidden md:flex flex-col w-48 py-3 border-r shrink-0 justify-between"
           style={{ borderColor: 'var(--lp-border-subtle)', background: 'var(--lp-bg-card)' }}
         >
-          {[
-            { icon: BarChart3, label: 'Dashboard', active: false },
-            { icon: FileText, label: 'Invoices', active: true },
-            { icon: Users, label: 'Parties', active: false },
-            { icon: Package, label: 'Products', active: false },
-          ].map(({ icon: Icon, label, active }) => (
-            <div
-              key={label}
-              className="flex items-center gap-2.5 px-4 py-2 mx-2 rounded-lg text-xs"
-              style={{
-                background: active ? 'var(--lp-bg-elevated)' : 'transparent',
-                color: active ? 'var(--lp-text)' : 'var(--lp-text-muted)',
-                fontWeight: active ? 600 : 400,
-              }}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              {label}
+          <div>
+            {[
+              { icon: BarChart3, label: 'Dashboard', active: false },
+              { icon: FileText, label: 'Invoices', active: true },
+              { icon: Users, label: 'Parties', active: false },
+              { icon: Package, label: 'Products', active: false },
+              { icon: CreditCard, label: 'Payments', active: false },
+              { icon: TrendingUp, label: 'Reports', active: false },
+              { icon: Wallet, label: 'Expenses', active: false },
+            ].map(({ icon: Icon, label, active }) => (
+              <div
+                key={label}
+                className="flex items-center gap-2.5 px-4 py-2 mx-2 rounded-lg text-xs"
+                style={{
+                  background: active ? 'var(--lp-bg-elevated)' : 'transparent',
+                  color: active ? 'var(--lp-text)' : 'var(--lp-text-muted)',
+                  fontWeight: active ? 600 : 400,
+                }}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                {label}
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 mx-2">
+            <div className="flex items-center gap-2.5 px-4 py-2 rounded-lg text-xs" style={{ color: 'var(--lp-text-muted)' }}>
+              <Settings className="w-3.5 h-3.5" />
+              Settings
             </div>
-          ))}
+          </div>
         </div>
 
         {/* Main content */}
-        <div className="flex-1 p-4 min-h-[280px] sm:min-h-[320px]">
+        <div className="flex-1 p-4">
+          {/* Summary cards */}
+          <div className="grid grid-cols-4 gap-3 mb-4">
+            {[
+              { label: 'This Month', value: '₹2,85,000', sub: '+12% vs last month', color: 'var(--lp-mock-success)' },
+              { label: 'Outstanding', value: '₹1,24,500', sub: '4 parties', color: 'var(--lp-mock-warning)' },
+              { label: 'Invoices', value: '1,247', sub: '+38 this month', color: 'var(--lp-accent)' },
+              { label: 'Avg. Invoice', value: '₹11,200', sub: 'per invoice', color: 'var(--lp-text-muted)' },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className="rounded-lg p-3 border"
+                style={{ borderColor: 'var(--lp-border-subtle)', background: 'var(--lp-bg-card)' }}
+              >
+                <p className="text-[0.5625rem] lp-text-muted">{stat.label}</p>
+                <p className="text-sm font-bold lp-text mt-0.5">{stat.value}</p>
+                <p className="text-[0.5625rem] mt-0.5" style={{ color: stat.color }}>{stat.sub}</p>
+              </div>
+            ))}
+          </div>
+
           {/* Header row */}
           <div className="flex items-center justify-between mb-3">
             <div>
@@ -177,6 +215,25 @@ export function InvoicesMockup() {
                 </span>
               </div>
             ))}
+          </div>
+
+          {/* Pagination */}
+          <div className="flex items-center justify-between mt-3">
+            <p className="text-[0.5625rem] lp-text-muted">Showing 1-12 of 1,247</p>
+            <div className="flex items-center gap-1">
+              {['1', '2', '3', '...', '104'].map((page, i) => (
+                <span
+                  key={i}
+                  className="w-6 h-6 flex items-center justify-center rounded text-[0.5625rem] font-medium"
+                  style={{
+                    background: page === '1' ? 'var(--lp-accent)' : 'transparent',
+                    color: page === '1' ? '#fff' : 'var(--lp-text-muted)',
+                  }}
+                >
+                  {page}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </div>

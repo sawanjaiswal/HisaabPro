@@ -25,16 +25,16 @@
 }
 
 @keyframes accordion-down {
-  from { height: 0; opacity: 0; }
-  to { height: var(--radix-accordion-content-height); opacity: 1; }
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
 }
 
 @keyframes accordion-up {
-  from { height: var(--radix-accordion-content-height); opacity: 1; }
-  to { height: 0; opacity: 0; }
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
 }
 
 @theme {
-  --animate-accordion-down: accordion-down 0.3s ease-out;
-  --animate-accordion-up: accordion-up 0.25s ease-in;
+  --animate-accordion-down: accordion-down 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  --animate-accordion-up: accordion-up 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
