@@ -48,6 +48,9 @@ import fyClosureRoutes from './routes/fy-closure.js'
 import couponRoutes from './routes/coupons.js'
 import biometricRoutes from './routes/biometric.js'
 import stockAlertRoutes from './routes/stock-alerts.js'
+import stockVerificationRoutes from './routes/stock-verification.js'
+import batchRoutes from './routes/batches.js'
+import godownRoutes from './routes/godowns.js'
 import razorpayRoutes, { razorpayWebhookRouter } from './routes/razorpay.js'
 import adminRoutes from './routes/admin/index.js'
 import logger from './lib/logger.js'
@@ -167,6 +170,12 @@ app.use('/api/coupons', couponRoutes)
 
 // Stock Alerts — Feature #47
 app.use('/api/stock-alerts', stockAlertRoutes)
+app.use('/api/stock-verification', stockVerificationRoutes)
+
+// Phase 4 — Batch Tracking + Multi-Godown
+// batchRoutes handles /api/products/:productId/batches AND /api/batches/:id
+app.use('/api', batchRoutes)
+app.use('/api/godowns', godownRoutes)
 
 // Razorpay Subscription & Billing (authenticated routes — webhook mounted earlier)
 app.use('/api/razorpay', razorpayRoutes)

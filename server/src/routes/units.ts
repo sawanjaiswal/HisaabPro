@@ -7,11 +7,14 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
+import { notFoundError } from '../lib/errors.js'
+import { prisma } from '../lib/prisma.js'
 import {
   createUnitSchema,
   updateUnitSchema,
   createConversionSchema,
   updateConversionSchema,
+  unitConvertSchema,
 } from '../schemas/product.schemas.js'
 import * as unitService from '../services/unit.service.js'
 
@@ -43,6 +46,76 @@ router.post(
     sendSuccess(res, { unit }, 201)
   })
 )
+
+// ============================================================
+// Unit Conversion Calculator (#107)
+// Static routes MUST come before /:id to avoid shadowing
+// ============================================================
+
+/**
+ * GET /api/units/convert?fromUnitId=X&toUnitId=Y&quantity=Z
+ * Convert a quantity between two units using stored UnitConversion records.
+ * Tries direct conversion first, then reverse (bidirectional).
+ */
+router.get(
+  '/convert',
+  asyncHandler(async (req, res) => {
+    const businessId = req.user!.businessId
+    const { fromUnitId, toUnitId, quantity } = unitConvertSchema.parse(req.query)
+
+    if (fromUnitId === toUnitId) {
+      // Same unit — trivial conversion
+      const unit = await prisma.unit.findFirst({
+        where: { id: fromUnitId, businessId },
+        select: { id: true, name: true, symbol: true },
+      })
+      if (!unit) throw notFoundError('Unit')
+      sendSuccess(res, {
+        fromQuantity: quantity,
+        toQuantity: quantity,
+        conversionRate: 1,
+        fromUnit: unit,
+        toUnit: unit,
+      })
+      return
+    }
+
+    // Try direct conversion, then reverse
+    const conversion = await prisma.unitConversion.findFirst({
+      where: {
+        businessId,
+        OR: [
+          { fromUnitId, toUnitId },
+          { fromUnitId: toUnitId, toUnitId: fromUnitId },
+        ],
+      },
+      include: {
+        fromUnit: { select: { id: true, name: true, symbol: true } },
+        toUnit: { select: { id: true, name: true, symbol: true } },
+      },
+    })
+
+    if (!conversion) throw notFoundError('No conversion exists between these units')
+
+    // Determine orientation: if the stored record is reversed, invert factor
+    const isReversed = conversion.fromUnitId === toUnitId
+    const factor = isReversed ? 1 / conversion.factor : conversion.factor
+    const fromUnit = isReversed ? conversion.toUnit : conversion.fromUnit
+    const toUnit = isReversed ? conversion.fromUnit : conversion.toUnit
+
+    sendSuccess(res, {
+      fromQuantity: quantity,
+      toQuantity: quantity * factor,
+      conversionRate: factor,
+      fromUnit,
+      toUnit,
+    })
+  })
+)
+
+// ============================================================
+// Unit Conversions
+// ============================================================
 
 /** PUT /api/units/:id — Update custom unit */
 router.put(

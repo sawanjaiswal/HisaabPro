@@ -1,6 +1,6 @@
 # Feature Map: HisaabPro
 
-Last updated: 2026-03-20 | Total: 96 | Done: 96 | Not Started: 0
+Last updated: 2026-03-20 | Total: 113 | Done: 112 | Not Started: 1
 
 > **Full Build**: Frontend (78 routes, 721 source files, 29 feature modules) + Backend (339 endpoints, 43 route modules, 67 Prisma models, 1696-line schema) built and wired. SSOT cleanup done (CSS variables, config constants). PWA complete (SW + manifest + cache strategies). Tests: 393 passing (23 test files). Remaining: expand test coverage, OTP activation, external integrations, staging deploy.
 
@@ -175,18 +175,39 @@ Last updated: 2026-03-20 | Total: 96 | Done: 96 | Not Started: 0
 | 94 | PDF Quality Enhancement | Done | P1 | 5-level font scale (xs→xl), 3-level line height, pixelRatio 3 for exports. DeepPartial type for gallery configs |
 | 95 | Duplicate Bill Copy Labels | Done | P2 | PreviewCopyLabel component. Print settings: copyLabels toggle, auto/manual mode, custom label names |
 
+## Phase 4: Advanced Inventory & POS
+
+| # | Feature | Status | Priority | Notes |
+|---|---------|--------|----------|-------|
+| 97 | Barcode Generation | Done | P1 | FE: BarcodeDisplay + BarcodeField + barcode.utils (5 formats) · BE: barcode/barcodeFormat in Product schema + GET /by-barcode/:code lookup · POST /label-data for batch labels |
+| 98 | Barcode Scanning | Done | P1 | FE: BarcodeScanner.tsx (BarcodeDetector API, camera, 5 formats) · BE: barcode lookup reused for POS · Integrated via onScan callback |
+| 99 | Batch Tracking | Done | P1 | Batch model (MFD, expiry, batchNumber, cost/sale price override) · batch.service.ts CRUD + expiring batches report · 6 API routes · Cursor pagination |
+| 100 | Serial Number Tracking | Not Started | P2 | Deferred — needs Batch model foundation (now done). SerialNumber model, per-unit tracking, serial assignment UI |
+| 101 | Multi-Godown (Warehouse) | Done | P1 | Godown + GodownStock + GodownTransfer models · godown.service.ts + godown-transfer.service.ts · CRUD + stock-by-location + inter-godown transfer (transactional) · Transfer history with cursor pagination |
+| 102 | Stock Adjustment (Advanced) | Done | P1 | FE: StockAdjustModal · BE: single + bulk adjust (POST /stock/bulk-adjust, transactional) · GET /:id/stock/history (paginated movements) · 6 reasons |
+| 103 | Label Printing | Done | P2 | POST /products/label-data (batch label data, max 200) · labelTemplate field on Product · FE label rendering ready |
+| 104 | Bulk Import/Export (Products) | Done | P1 | POST /products/bulk-import (max 500, per-row tx, partial success with error report) · GET /products/export (cursor paginated, max 1000) |
+| 105 | Expiry Alerts | Done | P1 | GET /batches/expiring?daysAhead=N · Uses Batch.expiryDate · Sorted by nearest expiry · Cursor pagination |
+| 106 | Reorder Points | Done | P1 | GET /products/reorder-list · Products where currentStock ≤ minStockLevel · Deficit-sorted · Cursor pagination |
+| 107 | Item Conversion (BOM) | Done | P2 | GET /units/convert?fromUnitId&toUnitId&quantity · Bidirectional lookup · UnitConversion model · BOM deferred to Phase 7 |
+| 108 | Item Images | Done | P2 | imageUrl + images[] (up to 5) on Product · POST /:id/images · DELETE /:id/images/:index · URL validation |
+| 109 | MOQ (Min Order Qty) | Done | P3 | moq field on Product · Validated on PURCHASE_ORDER creation (qty ≥ moq) · Zod-validated update |
+| 110 | POS Billing Mode | Done | P1 | POST /documents/quick-sale (creates invoice + payment in one tx, walk-in customer auto-create) · Barcode lookup via /by-barcode/:code |
+| 111 | Data Verification | Done | P2 | StockVerification + StockVerificationItem models · 6 endpoints: create → count → complete → adjust · Transactional stock adjustments · Discrepancy tracking |
+| 112 | Party Ledger | Done | P1 | FE: SharedLedger + PublicLedgerPage · BE: share token generation · Route: /public/ledger/:token · Fully wired |
+
 ## Phase 7: Planned Features
 
 | # | Feature | Status | Priority | Module | Notes |
 |---|---------|--------|----------|--------|-------|
-| 96 | Coupon / Discount Code System | Done | P2 | Payments & Subscriptions | Admin coupon CRUD · User apply at checkout · First-cycle discount · Razorpay coupon integration |
+| 113 | Coupon / Discount Code System | Done | P2 | Payments & Subscriptions | Admin coupon CRUD · User apply at checkout · First-cycle discount · Razorpay coupon integration |
 
 ## Status Summary
 
 | Status | Count | Details |
 |--------|-------|---------|
-| **Done** | 96 | All features built · 5 "Needs Credentials" (code wired, set API keys to activate) |
-| **Not Started** | 0 | — |
+| **Done** | 112 | Phase 1-6 (96) + Phase 4 (15) + Coupons · 5 "Needs Credentials" (code wired, set API keys to activate) |
+| **Not Started** | 1 | Serial Number Tracking (#100) — deferred, needs per-unit model |
 
 ## Needs Integration (external credentials required)
 
@@ -254,6 +275,6 @@ Offline banner + sync UI             Multi-tenant (businessId isolation)
 ### Next phases
 7. ~~**Phase 2: GST**~~ Done — 20 features (tax engine, GSTR-1/3B/9, e-invoice, e-way bill, TDS/TCS, CN/DN, multi-currency, recurring)
 8. ~~**Phase 3: Accounting & Finance**~~ Done — 22 features (double-entry ledger, journal entries, trial balance, P&L, balance sheet, cash flow, bank accounts, expenses, other income, cheques, loans, aging reports, profitability, discounts, Tally export, FY closure)
-9. **Phase 4: Advanced Inventory & POS** — Barcode, batch tracking, multi-godown, POS mode (16 features)
+9. ~~**Phase 4: Advanced Inventory & POS**~~ Done — 15/16 features (batch tracking, multi-godown, POS, bulk import/export, barcode, stock verification, labels, images, MOQ, reorder). Serial numbers deferred.
 10. ~~**Phase 5: Growth & Competitive Features**~~ Done — BillBook-inspired gaps + feature discovery (10 features)
 11. ~~**Phase 6: BillBook User Requests**~~ Done — Custom units, payment stamps, vehicle/Udyam fields, PDF quality, duplicate copies (5 features)

@@ -20,8 +20,11 @@ import {
   shareEmailSchema,
   validateStockSchema,
 } from '../schemas/document.schemas.js'
+import { quickSaleSchema } from '../schemas/product.schemas.js'
 import * as documentService from '../services/document.service.js'
 import { validateStockForInvoice } from '../services/stock.service.js'
+import { prisma } from '../lib/prisma.js'
+import { notFoundError } from '../lib/errors.js'
 import logger from '../lib/logger.js'
 import { sendWhatsApp, sendEmail } from '../services/notification.service.js'
 import { renderInvoiceShareEmail } from '../lib/email-templates.js'
@@ -79,6 +82,137 @@ router.post(
   })
 )
 
+/** POST /api/documents/quick-sale — Feature #110: POS one-shot sale + payment */
+router.post(
+  '/quick-sale',
+  idempotencyCheck(),
+  validate(quickSaleSchema),
+  asyncHandler(async (req, res) => {
+    const businessId = req.user!.businessId
+    const userId = req.user!.userId
+    const { items, paymentMode, amountPaid, partyId } = req.body as {
+      items: Array<{ productId: string; quantity: number; price?: number }>
+      paymentMode: string
+      amountPaid: number
+      partyId?: string
+    }
+
+    // Resolve party — use supplied or find/create walk-in customer
+    let resolvedPartyId: string
+    if (partyId) {
+      const party = await prisma.party.findFirst({
+        where: { id: partyId, businessId, isActive: true },
+        select: { id: true },
+      })
+      if (!party) throw notFoundError('Party')
+      resolvedPartyId = party.id
+    } else {
+      // Find or create a "Walk-in Customer" party for this business
+      const walkinParty = await prisma.party.upsert({
+        where: { businessId_phone: { businessId, phone: 'WALKIN' } },
+        create: {
+          businessId,
+          name: 'Walk-in Customer',
+          phone: 'WALKIN',
+          type: 'CUSTOMER',
+        },
+        update: {},
+        select: { id: true },
+      })
+      resolvedPartyId = walkinParty.id
+    }
+
+    // Resolve product prices for line items
+    const productIds = items.map((i) => i.productId)
+    const products = await prisma.product.findMany({
+      where: { id: { in: productIds }, businessId, status: 'ACTIVE' },
+      select: { id: true, salePrice: true, name: true },
+    })
+    const productMap = new Map(products.map((p) => [p.id, p]))
+
+    // Build line items using product salePrice as fallback
+    const lineItems = items.map((item) => {
+      const product = productMap.get(item.productId)
+      if (!product) throw notFoundError(`Product ${item.productId}`)
+      return {
+        productId: item.productId,
+        quantity: item.quantity,
+        rate: item.price ?? product.salePrice,
+        discountType: 'AMOUNT' as const,
+        discountValue: 0,
+      }
+    })
+
+    // Create invoice (SAVED = auto generates number + deducts stock)
+    const today = new Date().toISOString().split('T')[0]
+    const invoice = await documentService.createDocument(businessId, userId, {
+      type: 'SALE_INVOICE',
+      status: 'SAVED',
+      partyId: resolvedPartyId,
+      documentDate: today,
+      lineItems,
+      additionalCharges: [],
+      includeSignature: false,
+    })
+
+    const invoiceData = invoice as { id: string; grandTotal: number; balanceDue: number }
+
+    // Create payment record in same business scope
+    const payment = await prisma.$transaction(async (tx) => {
+      const pmt = await tx.payment.create({
+        data: {
+          businessId,
+          type: 'PAYMENT_IN',
+          partyId: resolvedPartyId,
+          amount: amountPaid,
+          date: new Date(),
+          mode: paymentMode,
+          createdBy: userId,
+        },
+        select: { id: true, amount: true, mode: true, date: true },
+      })
+
+      // Allocate payment to invoice (capped at grandTotal)
+      const allocationAmt = Math.min(amountPaid, invoiceData.grandTotal)
+      if (allocationAmt > 0) {
+        await tx.paymentAllocation.create({
+          data: {
+            paymentId: pmt.id,
+            invoiceId: invoiceData.id,
+            amount: allocationAmt,
+          },
+        })
+
+        // Update invoice paidAmount + balanceDue
+        await tx.document.update({
+          where: { id: invoiceData.id },
+          data: {
+            paidAmount: allocationAmt,
+            balanceDue: Math.max(0, invoiceData.grandTotal - allocationAmt),
+          },
+        })
+      }
+
+      return pmt
+    })
+
+    const changeAmount = Math.max(0, amountPaid - invoiceData.grandTotal)
+
+    sendSuccess(res, {
+      invoice: {
+        id: invoiceData.id,
+        grandTotal: invoiceData.grandTotal,
+      },
+      payment: {
+        id: payment.id,
+        amount: payment.amount,
+        mode: payment.mode,
+        changeAmount,
+      },
+    }, 201)
+  })
+)
+
 /** POST /api/documents — Create document */
 router.post(
   '/',
@@ -103,6 +237,17 @@ router.put(
       businessId, String(req.params.id), req.user!.userId, req.body
     )
     sendSuccess(res, doc)
+  })
+)
+
+/** DELETE /api/documents/recycle-bin — Empty entire bin (MUST be before /:id) */
+router.delete(
+  '/recycle-bin',
+  replayProtection,
+  asyncHandler(async (req, res) => {
+    const businessId = req.user!.businessId
+    const result = await documentService.emptyRecycleBin(businessId)
+    sendSuccess(res, result)
   })
 )
 
@@ -162,17 +307,6 @@ router.delete(
     const businessId = req.user!.businessId
     await documentService.permanentDeleteDocument(businessId, String(req.params.id))
     res.status(204).end()
-  })
-)
-
-/** DELETE /api/documents/recycle-bin — Empty entire bin */
-router.delete(
-  '/recycle-bin',
-  replayProtection,
-  asyncHandler(async (req, res) => {
-    const businessId = req.user!.businessId
-    const result = await documentService.emptyRecycleBin(businessId)
-    sendSuccess(res, result)
   })
 )
 

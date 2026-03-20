@@ -13,6 +13,8 @@ import type {
   UpdateProductInput,
   ListProductsQuery,
   StockMovementQuery,
+  StockHistoryQuery,
+  BulkStockAdjustInput,
 } from '../schemas/product.schemas.js'
 
 // === Helpers ===
@@ -101,6 +103,8 @@ export async function createProduct(
         sacCode: data.sacCode ?? null,
         taxCategoryId: data.taxCategoryId ?? null,
         description: data.description ?? null,
+        barcode: data.barcode ?? null,
+        barcodeFormat: data.barcodeFormat ?? null,
         status: data.status,
       },
       select: productDetailSelect,
@@ -425,6 +429,10 @@ export async function updateProduct(
         ...(data.sacCode !== undefined && { sacCode: data.sacCode }),
         ...(data.taxCategoryId !== undefined && { taxCategoryId: data.taxCategoryId }),
         ...(data.description !== undefined && { description: data.description }),
+        ...(data.barcode !== undefined && { barcode: data.barcode }),
+        ...(data.barcodeFormat !== undefined && { barcodeFormat: data.barcodeFormat }),
+        ...(data.moq !== undefined && { moq: data.moq }),
+        ...(data.labelTemplate !== undefined && { labelTemplate: data.labelTemplate }),
         ...(data.status !== undefined && { status: data.status }),
       },
       select: productDetailSelect,
@@ -509,6 +517,8 @@ const productListSelect = {
   id: true,
   name: true,
   sku: true,
+  barcode: true,
+  barcodeFormat: true,
   salePrice: true,
   purchasePrice: true,
   currentStock: true,
@@ -525,6 +535,8 @@ const productDetailSelect = {
   businessId: true,
   name: true,
   sku: true,
+  barcode: true,
+  barcodeFormat: true,
   categoryId: true,
   unitId: true,
   salePrice: true,
@@ -536,6 +548,13 @@ const productDetailSelect = {
   sacCode: true,
   description: true,
   status: true,
+  // Feature #108 — Images
+  imageUrl: true,
+  images: true,
+  // Feature #109 — MOQ
+  moq: true,
+  // Feature #103 — Label template
+  labelTemplate: true,
   createdAt: true,
   updatedAt: true,
   category: { select: { id: true, name: true } },
@@ -559,3 +578,113 @@ const stockMovementSelect = {
   createdAt: true,
   user: { select: { id: true, name: true } },
 } as const
+
+// === Barcode lookup ===
+
+/** Find a product by its barcode value, scoped to the business. */
+export async function findByBarcode(businessId: string, barcode: string) {
+  const product = await prisma.product.findFirst({
+    where: { businessId, barcode },
+    select: {
+      ...productDetailSelect,
+      customFieldValues: {
+        select: {
+          id: true,
+          fieldId: true,
+          value: true,
+          field: {
+            select: {
+              name: true,
+              fieldType: true,
+              showOnInvoice: true,
+              sortOrder: true,
+            },
+          },
+        },
+        orderBy: { field: { sortOrder: 'asc' } },
+      },
+    },
+  })
+  if (!product) throw notFoundError('Product')
+  return product
+}
+
+// === Stock history (cursor pagination) ===
+
+/** Paginated stock movement history for a product using cursor-based pagination. */
+export async function listStockHistory(
+  businessId: string,
+  productId: string,
+  query: StockHistoryQuery
+) {
+  await requireProduct(businessId, productId)
+
+  const { cursor, limit } = query
+
+  const movements = await prisma.stockMovement.findMany({
+    where: { productId, businessId },
+    orderBy: { createdAt: 'desc' },
+    take: limit + 1, // fetch one extra to determine if there's a next page
+    ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+    select: stockMovementSelect,
+  })
+
+  const hasMore = movements.length > limit
+  const items = hasMore ? movements.slice(0, limit) : movements
+  const nextCursor = hasMore ? items[items.length - 1].id : null
+
+  return { movements: items, pagination: { nextCursor, hasMore } }
+}
+
+// === Bulk stock adjustment ===
+
+/** Adjust stock for multiple products atomically inside a single transaction. */
+export async function bulkAdjustStock(
+  businessId: string,
+  userId: string,
+  input: BulkStockAdjustInput
+) {
+  const productIds = input.adjustments.map((a) => a.productId)
+
+  // Validate all products exist and belong to this business — single batch query
+  const products = await prisma.product.findMany({
+    where: { id: { in: productIds }, businessId },
+    select: { id: true, name: true },
+  })
+  const foundIds = new Set(products.map((p) => p.id))
+  const missing = productIds.filter((id) => !foundIds.has(id))
+  if (missing.length > 0) {
+    throw notFoundError(`Products not found: ${missing.join(', ')}`)
+  }
+
+  const results = await prisma.$transaction(async (tx) => {
+    const movements = []
+    for (const adj of input.adjustments) {
+      const quantity = adj.type === 'ADJUSTMENT_IN' ? adj.quantity : -adj.quantity
+      const result = await adjustStock(tx, {
+        productId: adj.productId,
+        businessId,
+        quantity,
+        type: adj.type,
+        reason: adj.reason,
+        customReason: adj.customReason,
+        notes: adj.note,
+        referenceType: 'ADJUSTMENT',
+        userId,
+      })
+      movements.push({
+        productId: adj.productId,
+        movement: result.movement,
+        previousStock: result.previousStock,
+        newStock: result.newStock,
+      })
+    }
+    return movements
+  })
+
+  // Fire alert checks post-transaction — fire-and-forget
+  scheduleAlertChecks(businessId, productIds)
+
+  logger.info('Bulk stock adjustment completed', { businessId, count: results.length })
+  return { results, count: results.length }
+}

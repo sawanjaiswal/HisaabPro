@@ -74,6 +74,10 @@ model User {
   // Phase 3 — Accounting
   expensesCreated    Expense[]       @relation("ExpenseCreator")
   otherIncomesCreated OtherIncome[]  @relation("OtherIncomeCreator")
+  stockVerifications StockVerification[]
+
+  // Phase 4 — Multi-Godown transfers
+  godownTransfers GodownTransfer[]
 
   @@index([phone])
   @@index([referredBy])
@@ -150,6 +154,13 @@ model Business {
   fyClosures            FinancialYearClosure[]
 
   stockAlerts      StockAlert[]
+  stockVerifications StockVerification[]
+
+  // Phase 4 — Batch Tracking + Multi-Godown
+  batches          Batch[]
+  godowns          Godown[]
+  godownStocks     GodownStock[]
+  godownTransfers  GodownTransfer[]
 
   usersLastActive  User[] @relation("UserLastActiveBusiness")
 
@@ -452,7 +463,16 @@ model Product {
   sacCode         String?
   taxCategoryId   String?  // FK → TaxCategory (default GST rate for this product)
   description     String?
+  barcode         String?   // optional barcode value (EAN13, CODE128, etc.)
+  barcodeFormat   String?   // CODE128, EAN13, EAN8, UPC, QR, CODE39
   status          String    @default("ACTIVE") // ACTIVE, INACTIVE
+  // Feature #108 — Item Images
+  imageUrl        String?   // primary image URL
+  images          String[]  @default([]) // up to 5 image URLs
+  // Feature #109 — MOQ (min order quantity)
+  moq             Int?
+  // Feature #103 — Label Printing
+  labelTemplate   String?   @default("standard") // "standard" | "compact" | "barcode-only"
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -465,8 +485,15 @@ model Product {
   partyPricing      PartyPricing[]
   documentLineItems DocumentLineItem[]
   stockAlerts       StockAlert[]
+  verificationItems StockVerificationItem[]
+
+  // Phase 4 — Batch Tracking + Multi-Godown
+  batches           Batch[]
+  godownStocks      GodownStock[]
+  godownTransfers   GodownTransfer[]
 
   @@unique([businessId, sku])
+  @@unique([businessId, barcode])
   @@index([businessId, status])
   @@index([businessId, categoryId])
   @@index([businessId, name])
@@ -490,14 +517,22 @@ model StockMovement {
   createdBy       String
   createdAt       DateTime @default(now())
 
-  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  product  Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
-  user     User     @relation(fields: [createdBy], references: [id], onDelete: Restrict)
+  // Phase 4 — Batch Tracking + Multi-Godown (nullable, backward-compatible)
+  batchId   String?
+  godownId  String?
+
+  business Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  product  Product   @relation(fields: [productId], references: [id], onDelete: Restrict)
+  user     User      @relation(fields: [createdBy], references: [id], onDelete: Restrict)
+  batch    Batch?    @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  godown   Godown?   @relation(fields: [godownId], references: [id], onDelete: SetNull)
 
   // Immutable — no updatedAt
   @@index([productId, createdAt])
   @@index([businessId, movementDate])
   @@index([referenceType, referenceId])
+  @@index([batchId])
+  @@index([godownId])
 }
 
 model ProductCustomFieldValue {
@@ -1812,4 +1847,136 @@ model StockAlert {
 
   @@index([businessId, status])
   @@index([productId, status])
+}
+
+
+// === Stock Verification — Feature #111 ===
+
+model StockVerification {
+  id          String   @id @default(cuid())
+  businessId  String
+  verifiedBy  String
+  status      String   @default("DRAFT") // DRAFT, IN_PROGRESS, COMPLETED
+  notes       String?
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  business Business               @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user     User                   @relation(fields: [verifiedBy], references: [id], onDelete: Restrict)
+  items    StockVerificationItem[]
+
+  @@index([businessId, status])
+  @@index([businessId, createdAt])
+}
+
+model StockVerificationItem {
+  id               String   @id @default(cuid())
+  verificationId   String
+  productId        String
+  systemQuantity   Float    // what the system says (at time of snapshot)
+  actualQuantity   Float?   // what was physically counted
+  discrepancy      Float?   // actualQuantity - systemQuantity
+  adjusted         Boolean  @default(false)
+  notes            String?
+
+  verification StockVerification @relation(fields: [verificationId], references: [id], onDelete: Cascade)
+  product      Product            @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@index([verificationId])
+  @@index([productId])
+}
+
+// === Phase 4 — Batch Tracking (#99 Batch Tracking + #105 Expiry Alerts) ===
+
+model Batch {
+  id                String    @id @default(cuid())
+  businessId        String
+  productId         String
+  batchNumber       String
+  manufacturingDate DateTime?
+  expiryDate        DateTime?
+  costPrice         Int?      // paise
+  salePrice         Int?      // paise — batch-specific override
+  currentStock      Float     @default(0)
+  notes             String?
+  isDeleted         Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  business        Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  product         Product          @relation(fields: [productId], references: [id], onDelete: Restrict)
+  stockMovements  StockMovement[]
+  godownStocks    GodownStock[]
+  godownTransfers GodownTransfer[]
+
+  @@unique([businessId, productId, batchNumber])
+  @@index([businessId, productId])
+  @@index([businessId, expiryDate])
+  @@index([productId, isDeleted])
+}
+
+// === Phase 4 — Multi-Godown (#101 Multi-Godown) ===
+
+model Godown {
+  id         String   @id @default(cuid())
+  businessId String
+  name       String
+  address    String?
+  isDefault  Boolean  @default(false)
+  isDeleted  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  business       Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  stockLocations GodownStock[]
+  stockMovements StockMovement[]
+  transfersFrom  GodownTransfer[] @relation("TransferFrom")
+  transfersTo    GodownTransfer[] @relation("TransferTo")
+
+  @@unique([businessId, name])
+  @@index([businessId, isDeleted])
+}
+
+model GodownStock {
+  id         String  @id @default(cuid())
+  businessId String
+  productId  String
+  godownId   String
+  batchId    String?
+  quantity   Float   @default(0)
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  godown   Godown   @relation(fields: [godownId], references: [id], onDelete: Restrict)
+  batch    Batch?   @relation(fields: [batchId], references: [id], onDelete: SetNull)
+
+  @@unique([productId, godownId, batchId])
+  @@index([businessId, godownId])
+  @@index([productId, godownId])
+}
+
+model GodownTransfer {
+  id            String   @id @default(cuid())
+  businessId    String
+  productId     String
+  batchId       String?
+  fromGodownId  String
+  toGodownId    String
+  quantity      Int
+  notes         String?
+  transferredBy String
+  createdAt     DateTime @default(now())
+
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  batch      Batch?   @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  fromGodown Godown   @relation("TransferFrom", fields: [fromGodownId], references: [id], onDelete: Restrict)
+  toGodown   Godown   @relation("TransferTo", fields: [toGodownId], references: [id], onDelete: Restrict)
+  user       User     @relation(fields: [transferredBy], references: [id], onDelete: Restrict)
+
+  @@index([businessId, createdAt])
+  @@index([productId])
+  @@index([fromGodownId])
+  @@index([toGodownId])
 }

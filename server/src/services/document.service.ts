@@ -260,11 +260,11 @@ export async function createDocument(
     }
   }
 
-  // Fetch product data for calculations
+  // Fetch product data for calculations (include moq for MOQ validation)
   const productIds = data.lineItems.map(li => li.productId)
   const products = await prisma.product.findMany({
     where: { id: { in: productIds }, businessId },
-    select: { id: true, purchasePrice: true, currentStock: true },
+    select: { id: true, name: true, purchasePrice: true, currentStock: true, moq: true },
   })
   const productMap = new Map(products.map(p => [p.id, p]))
 
@@ -272,6 +272,18 @@ export async function createDocument(
   for (const li of data.lineItems) {
     if (!productMap.has(li.productId)) {
       throw notFoundError(`Product ${li.productId}`)
+    }
+  }
+
+  // Feature #109 — MOQ validation for PURCHASE_ORDER
+  if (data.type === 'PURCHASE_ORDER') {
+    for (const li of data.lineItems) {
+      const product = productMap.get(li.productId)!
+      if (product.moq !== null && product.moq !== undefined && li.quantity < product.moq) {
+        throw validationError(
+          `Quantity for "${product.name}" is below minimum order quantity of ${product.moq}`
+        )
+      }
     }
   }
 
