@@ -1,0 +1,392 @@
+/* ============================================================
+   Godowns/Warehouses — Feature styles
+   Mobile-first: base = 320px → 768px tablet → 1024px desktop
+   ============================================================ */
+
+/* ─── Entrance animation ────────────────────────────────────── */
+
+@keyframes godownFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Godown card ────────────────────────────────────────────── */
+
+.godown-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 180ms ease;
+  animation: godownFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.godown-card:active {
+  transform: scale(0.985);
+}
+
+.godown-card:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+.godown-card__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary-bg-subtle);
+  color: var(--color-primary-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.godown-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.godown-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.godown-card__name {
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--color-gray-800);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.godown-card__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  background: var(--color-primary-bg-subtle);
+  color: var(--color-primary-500);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.godown-card__address {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: 2px;
+  font-size: var(--fs-xs);
+  color: var(--color-gray-500);
+}
+
+/* ─── Godown list ────────────────────────────────────────────── */
+
+.godown-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.godown-skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+/* ─── Detail page ────────────────────────────────────────────── */
+
+.godown-detail-actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.godown-btn-danger {
+  color: var(--color-error-500);
+}
+
+.godown-detail-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.godown-detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.godown-detail-address {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--color-gray-600);
+  line-height: 1.5;
+}
+
+.godown-section-title {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--color-gray-800);
+  margin-bottom: var(--space-3);
+}
+
+/* ─── Stock list ─────────────────────────────────────────────── */
+
+.godown-stock-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.godown-stock-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.godown-stock-row:last-child {
+  border-bottom: none;
+}
+
+.godown-stock-row__name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--fs-df);
+  font-weight: 500;
+  color: var(--color-gray-800);
+  min-width: 0;
+}
+
+.godown-stock-row__sku {
+  font-size: var(--fs-xs);
+  color: var(--color-gray-400);
+  font-weight: 400;
+}
+
+.godown-stock-row__qty {
+  font-size: var(--fs-df);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-gray-900);
+  flex-shrink: 0;
+  padding-left: var(--space-3);
+}
+
+/* ─── Transfer list ──────────────────────────────────────────── */
+
+.godown-transfer-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.godown-transfer-row {
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-md);
+  animation: godownFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.godown-transfer-row__product {
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--color-gray-800);
+  margin-bottom: 4px;
+}
+
+.godown-transfer-row__route {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--color-gray-600);
+  margin-bottom: 4px;
+}
+
+.godown-transfer-row__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.godown-transfer-row__qty {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-primary-500);
+}
+
+.godown-transfer-row__date {
+  font-size: var(--fs-xs);
+  color: var(--color-gray-400);
+}
+
+.godown-transfer-row__notes {
+  margin-top: 4px;
+  font-size: var(--fs-xs);
+  color: var(--color-gray-400);
+  font-style: italic;
+}
+
+/* ─── Form ───────────────────────────────────────────────────── */
+
+.godown-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.godown-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.godown-form__label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-gray-700);
+}
+
+.godown-form__input,
+.godown-form__textarea,
+.godown-form__select {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-base);
+  color: var(--color-gray-800);
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--duration-fast) ease,
+              box-shadow var(--duration-fast) ease;
+}
+
+.godown-form__input:focus,
+.godown-form__textarea:focus,
+.godown-form__select:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: var(--shadow-focus-primary);
+}
+
+.godown-form__input--error {
+  border-color: var(--color-error-500);
+}
+
+.godown-form__input--error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+}
+
+.godown-form__textarea {
+  resize: vertical;
+  min-height: 4.5rem;
+}
+
+.godown-form__select {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%237A7870' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-3) center;
+  padding-right: var(--space-8);
+}
+
+.godown-form__error {
+  font-size: var(--fs-xs);
+  color: var(--color-error-500);
+  margin: 0;
+}
+
+.godown-form__toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+}
+
+.godown-form__toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary-500);
+  cursor: pointer;
+}
+
+.godown-form__toggle-label {
+  font-size: var(--fs-df);
+  color: var(--color-gray-700);
+}
+
+.godown-form__submit {
+  margin-top: var(--space-2);
+  width: 100%;
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .godown-card,
+  .godown-transfer-row {
+    animation: none;
+  }
+
+  .godown-card:active {
+    transform: none;
+  }
+}
+
+/* ─── Dark theme ─────────────────────────────────────────────── */
+
+[data-theme="dark"] .godown-card {
+  background: var(--color-gray-900);
+  border-color: var(--overlay-dark-border-30);
+}
+
+[data-theme="dark"] .godown-card__name {
+  color: var(--color-gray-100);
+}
+
+[data-theme="dark"] .godown-transfer-row {
+  background: var(--color-gray-900);
+  border-color: var(--overlay-dark-border-30);
+}
+
+[data-theme="dark"] .godown-form__input,
+[data-theme="dark"] .godown-form__textarea,
+[data-theme="dark"] .godown-form__select {
+  background: var(--color-gray-900);
+  border-color: var(--overlay-dark-border-30);
+  color: var(--color-gray-100);
+}
+
+[data-theme="dark"] .godown-stock-row {
+  border-color: var(--overlay-dark-border-20);
+}
+
+[data-theme="dark"] .godown-stock-row__qty {
+  color: var(--color-gray-100);
+}

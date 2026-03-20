@@ -6,6 +6,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { X, Search, AlertTriangle } from 'lucide-react'
+import './barcode-scanner.css'
 
 interface BarcodeScannerProps {
   onScan: (value: string) => void

@@ -97,6 +97,24 @@ const JoinBusiness = lazy(() => import('@/features/business/JoinBusinessPage'))
 const Landing = lazy(() => import('@/features/landing/LandingPage'))
 const AdminCoupons = lazy(() => import('@/features/admin/coupons/CouponsPage'))
 const AdminCouponDetail = lazy(() => import('@/features/admin/coupons/CouponDetailPage'))
+
+// Phase 4 — Advanced Inventory
+const Batches = lazy(() => import('@/features/batches/BatchesPage'))
+const CreateBatch = lazy(() => import('@/features/batches/CreateBatchPage'))
+const BatchDetail = lazy(() => import('@/features/batches/BatchDetailPage'))
+const Godowns = lazy(() => import('@/features/godowns/GodownsPage'))
+const CreateGodown = lazy(() => import('@/features/godowns/CreateGodownPage'))
+const EditGodown = lazy(() => import('@/features/godowns/EditGodownPage'))
+const GodownDetail = lazy(() => import('@/features/godowns/GodownDetailPage'))
+const GodownTransfer = lazy(() => import('@/features/godowns/TransferPage'))
+const StockVerifications = lazy(() => import('@/features/stock-verification/VerificationsPage'))
+const VerificationDetail = lazy(() => import('@/features/stock-verification/VerificationDetailPage'))
+const Serials = lazy(() => import('@/features/serial-numbers/SerialsPage'))
+const CreateSerial = lazy(() => import('@/features/serial-numbers/CreateSerialPage'))
+const BulkCreateSerial = lazy(() => import('@/features/serial-numbers/BulkCreateSerialPage'))
+const SerialLookup = lazy(() => import('@/features/serial-numbers/SerialLookupPage'))
+const Pos = lazy(() => import('@/features/pos/PosPage'))
+
 const NotFound = lazy(() => import('@/components/feedback/NotFoundPage'))
 
 /** Route-level ErrorBoundary + Suspense wrapper for individual pages */
@@ -213,6 +231,24 @@ export function App() {
         <Route path={ROUTES.JOIN_BUSINESS} element={<PageRoute><ProtectedRoute><JoinBusiness /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.ADMIN_COUPONS} element={<PageRoute><ProtectedRoute><AdminCoupons /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.ADMIN_COUPON_DETAIL} element={<PageRoute><ProtectedRoute><AdminCouponDetail /></ProtectedRoute></PageRoute>} />
+
+        {/* Phase 4 — Advanced Inventory */}
+        <Route path={ROUTES.BATCH_NEW} element={<PageRoute><ProtectedRoute><CreateBatch /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.BATCHES} element={<PageRoute><ProtectedRoute><Batches /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.BATCH_DETAIL} element={<PageRoute><ProtectedRoute><BatchDetail /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.GODOWN_NEW} element={<PageRoute><ProtectedRoute><CreateGodown /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.GODOWN_EDIT} element={<PageRoute><ProtectedRoute><EditGodown /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.GODOWN_TRANSFER} element={<PageRoute><ProtectedRoute><GodownTransfer /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.GODOWNS} element={<PageRoute><ProtectedRoute><Godowns /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.GODOWN_DETAIL} element={<PageRoute><ProtectedRoute><GodownDetail /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.STOCK_VERIFICATION} element={<PageRoute><ProtectedRoute><StockVerifications /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.STOCK_VERIFICATION_DETAIL} element={<PageRoute><ProtectedRoute><VerificationDetail /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SERIAL_NEW} element={<PageRoute><ProtectedRoute><CreateSerial /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SERIAL_BULK} element={<PageRoute><ProtectedRoute><BulkCreateSerial /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SERIAL_NUMBERS} element={<PageRoute><ProtectedRoute><Serials /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SERIAL_LOOKUP} element={<PageRoute><ProtectedRoute><SerialLookup /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.POS} element={<PageRoute><ProtectedRoute><Pos /></ProtectedRoute></PageRoute>} />
+
         <Route path={ROUTES.PUBLIC_LEDGER} element={<PageRoute><PublicLedger /></PageRoute>} />
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
       </Routes>

@@ -82,4 +82,23 @@ export const ROUTES = {
   JOIN_BUSINESS: '/join',
   ADMIN_COUPONS: '/admin/coupons',
   ADMIN_COUPON_DETAIL: '/admin/coupons/:id',
+
+  // Phase 4 — Advanced Inventory
+  BATCHES: '/products/:productId/batches',
+  BATCH_NEW: '/products/:productId/batches/new',
+  BATCH_DETAIL: '/batches/:id',
+  GODOWNS: '/godowns',
+  GODOWN_NEW: '/godowns/new',
+  GODOWN_DETAIL: '/godowns/:id',
+  GODOWN_EDIT: '/godowns/:id/edit',
+  GODOWN_TRANSFER: '/godowns/transfer',
+  STOCK_VERIFICATION: '/stock-verification',
+  STOCK_VERIFICATION_DETAIL: '/stock-verification/:id',
+  SERIAL_NUMBERS: '/products/:productId/serials',
+  SERIAL_NEW: '/products/:productId/serials/new',
+  SERIAL_BULK: '/products/:productId/serials/bulk',
+  SERIAL_LOOKUP: '/serial-lookup',
+
+  // POS
+  POS: '/pos',
 } as const

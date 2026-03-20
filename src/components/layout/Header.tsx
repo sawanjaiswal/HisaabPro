@@ -6,8 +6,8 @@ import { BusinessAvatar } from '@/features/business/BusinessAvatar'
 
 interface HeaderProps {
   title?: string
-  /** Show a back arrow on the left — navigates to `backTo` path or calls history.back() */
-  backTo?: string
+  /** Show a back arrow on the left — navigates to `backTo` path, or history.back() when `true` */
+  backTo?: string | true
   /** Right-side action buttons (edit, more, etc.) */
   actions?: ReactNode
   /** Show business avatar (default true on root pages, false on sub-pages with back) */
@@ -20,7 +20,7 @@ export function Header({ title = APP_NAME, backTo, actions, showBusinessAvatar }
   const shouldShowAvatar = showBusinessAvatar ?? (backTo === undefined)
 
   const handleBack = () => {
-    if (backTo) {
+    if (typeof backTo === 'string' && backTo) {
       navigate(backTo)
     } else {
       navigate(-1)

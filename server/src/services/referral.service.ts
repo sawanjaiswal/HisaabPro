@@ -234,10 +234,6 @@ export async function handleSubscriptionPayment(params: {
         where: { id: user.referredBy },
         data: { referralBalanceInReview: { increment: REWARD_AMOUNT } },
       }),
-      prisma.referralCode.update({
-        where: { userId: user.referredBy },
-        data: { totalReferrals: { increment: 1 } },
-      }),
     ])
 
     logger.info(

@@ -32,7 +32,7 @@ router.get(
   '/list',
   auth,
   asyncHandler(async (req, res) => {
-    const backups = listBackups(req.user!.userId)
+    const backups = await listBackups(req.user!.userId)
     sendSuccess(res, backups)
   }),
 )
@@ -43,7 +43,7 @@ router.get(
   auth,
   asyncHandler(async (req, res) => {
     const backupId = req.params.backupId as string
-    const data = getBackupData(req.user!.userId, backupId)
+    const data = await getBackupData(req.user!.userId, backupId)
     sendSuccess(res, data)
   }),
 )
@@ -53,7 +53,7 @@ router.get(
   '/cooldown-status',
   auth,
   asyncHandler(async (req, res) => {
-    const status = getCooldownStatus(req.user!.userId)
+    const status = await getCooldownStatus(req.user!.userId)
     sendSuccess(res, status)
   }),
 )
