@@ -21,7 +21,7 @@ export function CallToAction() {
   const reveal = (delay: number, y = 25) => ({
     initial: reducedMotion ? false : ({ opacity: 0, y } as const),
     whileInView: { opacity: 1, y: 0 } as const,
-    viewport: { once: true, margin: '-20px' as const },
+    viewport: { once: true, amount: 0.15 as const },
     transition: { duration: 0.6, delay, ease: EASE_OUT },
   });
 

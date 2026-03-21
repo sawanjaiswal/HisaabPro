@@ -69,8 +69,8 @@ export function Footer() {
                   rel="noopener noreferrer"
                   aria-label={label}
                   className="transition-colors duration-200 lp-text-muted"
-                  onMouseEnter={e => e.currentTarget.style.color = 'var(--lp-text)'}
-                  onMouseLeave={e => e.currentTarget.style.color = ''}
+                  onPointerEnter={e => e.currentTarget.style.color = 'var(--lp-text)'}
+                  onPointerLeave={e => e.currentTarget.style.color = ''}
                 >
                   <Icon className="size-4" />
                 </a>
@@ -90,8 +90,8 @@ export function Footer() {
                     <a
                       href={link.href}
                       className="lp-text-muted transition-colors duration-200"
-                      onMouseEnter={e => e.currentTarget.style.color = 'var(--lp-text)'}
-                      onMouseLeave={e => e.currentTarget.style.color = ''}
+                      onPointerEnter={e => e.currentTarget.style.color = 'var(--lp-text)'}
+                      onPointerLeave={e => e.currentTarget.style.color = ''}
                     >
                       {link.title}
                     </a>
@@ -120,8 +120,8 @@ export function Footer() {
                 key={link.title}
                 href={link.href}
                 className="text-xs lp-text-muted transition-colors duration-200"
-                onMouseEnter={e => e.currentTarget.style.color = 'var(--lp-text)'}
-                onMouseLeave={e => e.currentTarget.style.color = ''}
+                onPointerEnter={e => e.currentTarget.style.color = 'var(--lp-text)'}
+                onPointerLeave={e => e.currentTarget.style.color = ''}
               >
                 {link.title}
               </a>

@@ -3,6 +3,7 @@ import { Sun, Moon } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { LP_SECTIONS, LP_APP, hash } from "@/config/landing-links.config";
 import { HeroDashboardMockup } from "@/components/ui/hero-dashboard-mockup";
+import { HeroPhoneMockup } from "@/components/ui/hero-phone-mockup";
 import { ScaledMockup } from "@/components/ui/scaled-mockup";
 
 interface ThemeProps {
@@ -142,8 +143,8 @@ const Navigation = React.memo(({ isDark, onToggleTheme }: ThemeProps) => {
               aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
               className="flex items-center justify-center w-9 h-9 rounded-full lp-text-secondary transition-all cursor-pointer"
               style={{ backgroundColor: 'transparent' }}
-              onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--lp-bg-elevated)'}
-              onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+              onPointerEnter={e => e.currentTarget.style.backgroundColor = 'var(--lp-bg-elevated)'}
+              onPointerLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
             >
               {isDark ? <Sun size={16} /> : <Moon size={16} />}
             </button>
@@ -231,7 +232,7 @@ const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
       </motion.aside>
 
       {/* h1 gradient controlled by landing.css tokens */}
-      <motion.h1 {...fade(0.2)} className="text-center max-w-3xl px-6 leading-tight mb-6 font-medium">
+      <motion.h1 {...fade(0.2)} className="text-center max-w-3xl px-6 leading-tight mb-6 font-medium" style={{ fontSize: '2.5rem' }}>
         Your Entire Business.<br />In Your Pocket.
       </motion.h1>
 
@@ -257,12 +258,12 @@ const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
         initial={reducedMotion ? false : { opacity: 0, scale: 0.96, y: 40 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.5, ease: EASE_OUT }}
-        className="w-full max-w-5xl relative pb-20 overflow-hidden"
+        className="w-full max-w-5xl relative pb-20 px-6"
       >
         {isDark && (
           <div
-            className="absolute left-1/2 w-[120%] pointer-events-none z-0"
-            style={{ top: "-30%", transform: "translateX(-50%)" }}
+            className="absolute left-1/2 w-[140%] lg:w-[120%] pointer-events-none z-0"
+            style={{ top: "-15%", transform: "translateX(-50%)" }}
             aria-hidden="true"
           >
             <img
@@ -276,10 +277,34 @@ const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
           </div>
         )}
 
-        <div className="relative z-10">
-          <ScaledMockup designWidth={900}>
-            <HeroDashboardMockup />
-          </ScaledMockup>
+        {/* Desktop: Dashboard + Phone side by side */}
+        <div className="relative z-10 hidden lg:flex items-start justify-center gap-8">
+          <div className="flex-1 min-w-0">
+            <ScaledMockup designWidth={900}>
+              <HeroDashboardMockup />
+            </ScaledMockup>
+          </div>
+          <motion.div
+            initial={reducedMotion ? false : { opacity: 0, x: 30, y: 20 }}
+            animate={{ opacity: 1, x: 0, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.8, ease: EASE_OUT }}
+            className="shrink-0"
+            style={{ marginRight: -16 }}
+          >
+            <HeroPhoneMockup />
+          </motion.div>
+        </div>
+
+        {/* Mobile/Tablet: Phone only, gradient fade at bottom */}
+        <div className="relative z-10 lg:hidden flex justify-center">
+          <div className="relative">
+            <HeroPhoneMockup className="w-[240px] sm:w-[280px]" />
+            {/* Gradient fade at bottom */}
+            <div
+              className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
+              style={{ background: 'linear-gradient(to top, var(--lp-bg), transparent)' }}
+            />
+          </div>
         </div>
       </motion.div>
     </section>

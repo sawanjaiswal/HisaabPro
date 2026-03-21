@@ -117,7 +117,7 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
         <motion.div
           initial={reducedMotion ? false : { opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-20px' }}
+          viewport={{ once: true, amount: 0.15 }}
           transition={{ duration: 0.6, ease: EASE_OUT }}
           className="flex flex-col items-center gap-4 mb-12"
         >
@@ -158,7 +158,7 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
               initial={reducedMotion ? false : { opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               whileHover={reducedMotion ? undefined : { y: -6, transition: { duration: 0.25, ease: EASE_OUT } }}
-              viewport={{ once: true, margin: '-20px' }}
+              viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.6, delay: i * 0.12, ease: EASE_OUT }}
             >
             <div
@@ -264,10 +264,10 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
                       fontWeight: tier.highlight ? 600 : 500,
                       fontSize: tier.highlight ? '1rem' : '0.875rem',
                     }}
-                    onMouseEnter={e => {
+                    onPointerEnter={e => {
                       e.currentTarget.style.backgroundColor = tier.highlight ? 'var(--lp-price-btn-hl-hover-bg)' : 'var(--lp-price-btn-hover-bg)'
                     }}
-                    onMouseLeave={e => {
+                    onPointerLeave={e => {
                       e.currentTarget.style.backgroundColor = tier.highlight ? 'var(--lp-price-btn-hl-bg)' : 'var(--lp-price-btn-bg)'
                     }}
                   >

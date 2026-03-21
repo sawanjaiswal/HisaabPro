@@ -37,7 +37,7 @@ export function FeaturesSectionWithHoverEffects() {
       <motion.div
         initial={reducedMotion ? false : { opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-20px' }}
+        viewport={{ once: true, amount: 0.15 }}
         transition={{ duration: 0.6, ease: EASE_OUT }}
         className="text-center mb-12 px-6"
       >
@@ -70,7 +70,7 @@ const Feature = ({
     <motion.div
       initial={reducedMotion ? false : { opacity: 0, y: 25 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-20px' }}
+      viewport={{ once: true, amount: 0.15 }}
       transition={{ duration: 0.5, delay: index * 0.1, ease: EASE_OUT }}
       className={cn(
         "flex flex-col lg:border-r py-10 relative group/feature",

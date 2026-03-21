@@ -181,8 +181,8 @@ function TemplatePreviewModal({ template: t, onClose }: { template: TemplateData
             backgroundColor: t.headerBg ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.05)',
             color: t.headerBg ? '#fff' : '#111827',
           }}
-          onMouseEnter={e => e.currentTarget.style.backgroundColor = t.headerBg ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.1)'}
-          onMouseLeave={e => e.currentTarget.style.backgroundColor = t.headerBg ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.05)'}
+          onPointerEnter={e => e.currentTarget.style.backgroundColor = t.headerBg ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.1)'}
+          onPointerLeave={e => e.currentTarget.style.backgroundColor = t.headerBg ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.05)'}
           aria-label="Close preview"
         >
           <X size={16} />
@@ -382,7 +382,7 @@ export function InvoiceTemplatesSection() {
   const fade = (delay: number, y = 25) => ({
     initial: reducedMotion ? false : ({ opacity: 0, y } as const),
     whileInView: { opacity: 1, y: 0 } as const,
-    viewport: { once: true, margin: '-20px' as const },
+    viewport: { once: true, amount: 0.15 as const },
     transition: { duration: 0.6, delay, ease: EASE_OUT },
   })
 
@@ -419,7 +419,7 @@ export function InvoiceTemplatesSection() {
               key={tpl.name}
               initial={reducedMotion ? false : { opacity: 0, y: 20, scale: 0.97 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: '-20px' }}
+              viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.5, delay: 0.1 + i * 0.08, ease: EASE_OUT }}
               className="group rounded-xl border overflow-hidden cursor-pointer"
               style={{
@@ -430,11 +430,11 @@ export function InvoiceTemplatesSection() {
               onClick={() => setSelectedTemplate(tpl)}
               whileHover={{ y: -4, scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onMouseEnter={e => {
+              onPointerEnter={e => {
                 e.currentTarget.style.borderColor = tpl.accent
                 e.currentTarget.style.boxShadow = `0 8px 24px ${tpl.accent}22`
               }}
-              onMouseLeave={e => {
+              onPointerLeave={e => {
                 e.currentTarget.style.borderColor = 'var(--lp-card-border)'
                 e.currentTarget.style.boxShadow = 'none'
               }}
@@ -592,7 +592,7 @@ export function InvoiceTemplatesSection() {
               key={h.title}
               initial={reducedMotion ? false : { opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-20px' }}
+              viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.5, delay: i * 0.1, ease: EASE_OUT }}
               className="flex flex-col gap-2"
             >

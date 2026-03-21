@@ -57,15 +57,18 @@ export function ScaledMockup({ designWidth, children, className = '' }: ScaledMo
         height: innerHeight * scale || 'auto',
       }}
     >
-      <div
-        ref={innerRef}
-        style={{
-          width: designWidth,
-          transformOrigin: 'top left',
-          transform: `scale(${scale})`,
-        }}
-      >
-        {children}
+      {/* Middle wrapper = actual rendered width, centered via margin auto */}
+      <div style={{ width: designWidth * scale, margin: '0 auto' }}>
+        <div
+          ref={innerRef}
+          style={{
+            width: designWidth,
+            transformOrigin: 'top left',
+            transform: `scale(${scale})`,
+          }}
+        >
+          {children}
+        </div>
       </div>
     </div>
   )

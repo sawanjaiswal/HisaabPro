@@ -47,7 +47,7 @@ export function FeaturesSectionWithBentoGrid() {
       <motion.div
         initial={reducedMotion ? false : { opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-20px' }}
+        viewport={{ once: true, amount: 0.15 }}
         transition={{ duration: 0.6, ease: EASE_OUT }}
         className="px-8"
       >
@@ -70,7 +70,7 @@ export function FeaturesSectionWithBentoGrid() {
               key={feature.title}
               initial={reducedMotion ? false : { opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-20px' }}
+              viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.6, delay: i * 0.12, ease: EASE_OUT }}
               className={feature.className}
               style={{ borderColor: 'var(--lp-card-border)' }}
@@ -130,10 +130,10 @@ const InteractiveRow = ({ children, className, style }: { children: React.ReactN
   <div
     className={cn("transition-colors duration-200 cursor-default", className)}
     style={style}
-    onMouseEnter={e => {
+    onPointerEnter={e => {
       e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--lp-accent) 8%, transparent)'
     }}
-    onMouseLeave={e => {
+    onPointerLeave={e => {
       e.currentTarget.style.backgroundColor = style?.backgroundColor as string || 'transparent'
     }}
   >
@@ -151,13 +151,13 @@ const InteractiveBar = ({ height, isActive, label }: { height: number; isActive:
         backgroundColor: isActive ? 'var(--lp-accent)' : 'var(--lp-mock-bar-bg)',
         minHeight: 6,
       }}
-      onMouseEnter={e => {
+      onPointerEnter={e => {
         if (!isActive) e.currentTarget.style.backgroundColor = 'var(--lp-accent)'
         e.currentTarget.style.opacity = isActive ? '0.8' : '1'
         e.currentTarget.style.transform = 'scaleY(1.08)'
         e.currentTarget.style.transformOrigin = 'bottom'
       }}
-      onMouseLeave={e => {
+      onPointerLeave={e => {
         if (!isActive) e.currentTarget.style.backgroundColor = 'var(--lp-mock-bar-bg)'
         e.currentTarget.style.opacity = '1'
         e.currentTarget.style.transform = 'scaleY(1)'
@@ -249,8 +249,8 @@ export const SkeletonOne = () => {
                 fontWeight: 500,
                 transition: 'opacity 0.2s, transform 0.15s',
               }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+              onPointerEnter={e => e.currentTarget.style.opacity = '0.85'}
+              onPointerLeave={e => e.currentTarget.style.opacity = '1'}
             >
               <Send size={11} /> WhatsApp
             </div>
@@ -262,11 +262,11 @@ export const SkeletonOne = () => {
                 fontSize: '0.6875rem',
                 fontWeight: 500,
               }}
-              onMouseEnter={e => {
+              onPointerEnter={e => {
                 e.currentTarget.style.borderColor = 'var(--lp-accent)'
                 e.currentTarget.style.color = 'var(--lp-accent)'
               }}
-              onMouseLeave={e => {
+              onPointerLeave={e => {
                 e.currentTarget.style.borderColor = 'var(--lp-card-border)'
                 e.currentTarget.style.color = 'var(--lp-text-secondary)'
               }}
@@ -405,13 +405,13 @@ export const SkeletonThree = () => {
                 borderColor: 'var(--lp-card-border)',
                 boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
               }}
-              onMouseEnter={e => {
+              onPointerEnter={e => {
                 e.currentTarget.style.borderColor = p.status === 'low' ? 'var(--lp-mock-warning)' : 'var(--lp-mock-success)'
                 e.currentTarget.style.boxShadow = p.status === 'low'
                   ? '0 4px 16px color-mix(in srgb, var(--lp-mock-warning) 20%, transparent)'
                   : '0 4px 16px color-mix(in srgb, var(--lp-mock-success) 20%, transparent)'
               }}
-              onMouseLeave={e => {
+              onPointerLeave={e => {
                 e.currentTarget.style.borderColor = 'var(--lp-card-border)'
                 e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.08)'
               }}
