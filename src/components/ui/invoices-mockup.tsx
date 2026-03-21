@@ -42,7 +42,7 @@ export function InvoicesMockup() {
           <span className="text-sm font-semibold lp-text">HisaabPro</span>
         </div>
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-md text-xs" style={{ background: 'var(--lp-bg-elevated)', color: 'var(--lp-text-muted)' }}>
+          <div className="flex items-center gap-2 px-3 py-1 rounded-md text-xs" style={{ background: 'var(--lp-bg-elevated)', color: 'var(--lp-text-muted)' }}>
             <span>Sharma Electronics</span>
           </div>
           <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold" style={{ background: 'var(--lp-accent)', color: 'var(--lp-text-inverted)' }}>
@@ -54,7 +54,7 @@ export function InvoicesMockup() {
       <div className="flex">
         {/* Sidebar */}
         <div
-          className="hidden md:flex flex-col w-48 py-3 border-r shrink-0 justify-between"
+          className="flex flex-col w-48 py-3 border-r shrink-0 justify-between"
           style={{ borderColor: 'var(--lp-border-subtle)', background: 'var(--lp-bg-card)' }}
         >
           <div>
@@ -119,7 +119,7 @@ export function InvoicesMockup() {
             </div>
             <div className="flex items-center gap-2">
               <div
-                className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[0.625rem] font-medium border"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[0.625rem] font-medium border"
                 style={{ borderColor: 'var(--lp-border-subtle)', color: 'var(--lp-text-muted)' }}
               >
                 <Download className="w-3 h-3" />
@@ -174,7 +174,7 @@ export function InvoicesMockup() {
               style={{ borderColor: 'var(--lp-border-subtle)', color: 'var(--lp-text-muted)' }}
             >
               <Filter className="w-3 h-3" />
-              <span className="hidden sm:inline">Filter</span>
+              <span>Filter</span>
               <ChevronDown className="w-2.5 h-2.5" />
             </div>
           </div>
@@ -186,7 +186,7 @@ export function InvoicesMockup() {
           >
             {/* Table header */}
             <div
-              className="hidden sm:grid grid-cols-[1fr_1.2fr_0.7fr_0.8fr_0.6fr] gap-2 px-3 py-1.5 text-[0.5625rem] font-semibold uppercase tracking-wider border-b"
+              className="grid grid-cols-[1fr_1.2fr_0.7fr_0.8fr_0.6fr] gap-2 px-3 py-1.5 text-[0.5625rem] font-semibold uppercase tracking-wider border-b"
               style={{ borderColor: 'var(--lp-border-subtle)', color: 'var(--lp-text-muted)', opacity: 0.7 }}
             >
               <span>Invoice</span>
@@ -198,14 +198,14 @@ export function InvoicesMockup() {
             {INVOICES.map((inv) => (
               <div
                 key={inv.id}
-                className="grid grid-cols-[1fr_auto] sm:grid-cols-[1fr_1.2fr_0.7fr_0.8fr_0.6fr] gap-2 items-center px-3 py-2 text-xs border-b last:border-b-0"
+                className="grid grid-cols-[1fr_1.2fr_0.7fr_0.8fr_0.6fr] gap-2 items-center px-3 py-2 text-xs border-b last:border-b-0"
                 style={{ borderColor: 'var(--lp-border-subtle)' }}
               >
                 <span className="font-medium lp-text">{inv.id}</span>
-                <span className="hidden sm:block lp-text-muted truncate">{inv.party}</span>
-                <span className="hidden sm:block text-[0.625rem] lp-text-muted">{inv.date}</span>
-                <span className="font-semibold lp-text sm:text-right">{inv.amount}</span>
-                <span className="sm:text-right">
+                <span className="block lp-text-muted truncate">{inv.party}</span>
+                <span className="block text-[0.625rem] lp-text-muted">{inv.date}</span>
+                <span className="font-semibold lp-text text-right">{inv.amount}</span>
+                <span className="text-right">
                   <span
                     className="text-[0.5625rem] px-1.5 py-0.5 rounded-full font-medium inline-block"
                     style={{ color: inv.statusColor, background: `color-mix(in srgb, ${inv.statusColor} 15%, transparent)` }}

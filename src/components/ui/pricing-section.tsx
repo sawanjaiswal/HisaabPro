@@ -117,7 +117,7 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
         <motion.div
           initial={reducedMotion ? false : { opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
+          viewport={{ once: true, margin: '-20px' }}
           transition={{ duration: 0.6, ease: EASE_OUT }}
           className="flex flex-col items-center gap-4 mb-12"
         >
@@ -158,7 +158,7 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
               initial={reducedMotion ? false : { opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               whileHover={reducedMotion ? undefined : { y: -6, transition: { duration: 0.25, ease: EASE_OUT } }}
-              viewport={{ once: true, margin: '-60px' }}
+              viewport={{ once: true, margin: '-20px' }}
               transition={{ duration: 0.6, delay: i * 0.12, ease: EASE_OUT }}
             >
             <div

@@ -10,6 +10,7 @@ export default defineConfig({
   reporter: [['html', { open: 'never' }]],
   use: {
     baseURL: 'http://localhost:5173',
+    browserName: 'webkit',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },

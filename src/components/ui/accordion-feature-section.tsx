@@ -71,7 +71,7 @@ const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
         <motion.div
           initial={reducedMotion ? false : { opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
+          viewport={{ once: true, margin: '-20px' }}
           transition={{ duration: 0.6, ease: EASE_OUT }}
           className="mb-12 text-center"
         >
@@ -85,7 +85,7 @@ const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
         <motion.div
           initial={reducedMotion ? false : { opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-60px' }}
+          viewport={{ once: true, margin: '-20px' }}
           transition={{ duration: 0.6, delay: 0.15, ease: EASE_OUT }}
           className="mb-12 flex w-full items-start justify-center"
         >

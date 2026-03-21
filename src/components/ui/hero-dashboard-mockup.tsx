@@ -20,7 +20,7 @@ export function HeroDashboardMockup() {
           <span className="text-sm font-semibold lp-text">HisaabPro</span>
         </div>
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-md text-xs" style={{ background: 'var(--lp-bg-elevated)', color: 'var(--lp-text-muted)' }}>
+          <div className="flex items-center gap-2 px-3 py-1 rounded-md text-xs" style={{ background: 'var(--lp-bg-elevated)', color: 'var(--lp-text-muted)' }}>
             <span>Sharma Electronics</span>
           </div>
           <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold" style={{ background: 'var(--lp-accent)', color: 'var(--lp-text-inverted)' }}>
@@ -32,7 +32,7 @@ export function HeroDashboardMockup() {
       <div className="flex">
         {/* Sidebar */}
         <div
-          className="hidden md:flex flex-col w-48 py-3 border-r shrink-0"
+          className="flex flex-col w-48 py-3 border-r shrink-0"
           style={{ borderColor: 'var(--lp-border-subtle)', background: 'var(--lp-bg-card)' }}
         >
           {[
@@ -68,7 +68,7 @@ export function HeroDashboardMockup() {
           </div>
 
           {/* Stat cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+          <div className="grid grid-cols-4 gap-3 mb-4">
             {[
               { label: "Today's Sales", value: '₹45,200', change: '+12%', up: true },
               { label: 'Invoices', value: '1,247', change: '+8', up: true },
@@ -113,10 +113,10 @@ export function HeroDashboardMockup() {
           </div>
 
           {/* Two-column layout: Invoices + Chart */}
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-4">
+          <div className="grid grid-cols-5 gap-4 mb-4">
             {/* Recent invoices — 3 cols */}
             <div
-              className="lg:col-span-3 rounded-lg border overflow-hidden"
+              className="col-span-3 rounded-lg border overflow-hidden"
               style={{ borderColor: 'var(--lp-border-subtle)', background: 'var(--lp-bg-card)' }}
             >
               <div className="flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: 'var(--lp-border-subtle)' }}>
@@ -155,7 +155,7 @@ export function HeroDashboardMockup() {
             </div>
 
             {/* Right column: Chart + Outstanding */}
-            <div className="lg:col-span-2 flex flex-col gap-4">
+            <div className="col-span-2 flex flex-col gap-4">
               {/* Weekly Sales Chart */}
               <div
                 className="rounded-lg border overflow-hidden"

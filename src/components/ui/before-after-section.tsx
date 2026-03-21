@@ -17,7 +17,7 @@ function reveal(delay: number, y = 30) {
   return {
     initial: { opacity: 0, y } as const,
     whileInView: { opacity: 1, y: 0 } as const,
-    viewport: { once: true, margin: '-80px' as const },
+    viewport: { once: true, margin: '-20px' as const },
     transition: { duration: 0.6, delay, ease: EASE_OUT },
   }
 }

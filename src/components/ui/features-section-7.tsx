@@ -1,6 +1,7 @@
 import { Cpu, Lock, MessageCircle, Zap } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import { InvoicesMockup } from '@/components/ui/invoices-mockup'
+import { ScaledMockup } from '@/components/ui/scaled-mockup'
 
 const EASE_OUT: [number, number, number, number] = [0.25, 1, 0.5, 1]
 
@@ -20,7 +21,7 @@ export function FeaturesSection7() {
                 <motion.div
                     initial={reducedMotion ? false : { opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-80px' }}
+                    viewport={{ once: true, margin: '-20px' }}
                     transition={{ duration: 0.6, ease: EASE_OUT }}
                     className="relative z-10 max-w-2xl"
                 >
@@ -30,7 +31,7 @@ export function FeaturesSection7() {
                 <motion.div
                     initial={reducedMotion ? false : { opacity: 0, scale: 0.97, y: 20 }}
                     whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-80px' }}
+                    viewport={{ once: true, margin: '-20px' }}
                     transition={{ duration: 0.7, delay: 0.1, ease: EASE_OUT }}
                     className="relative -mx-4 rounded-3xl p-3 md:-mx-12 lg:col-span-3"
                     style={{ perspective: '1200px' }}
@@ -42,7 +43,9 @@ export function FeaturesSection7() {
                             transformOrigin: 'center center',
                         }}
                     >
-                        <InvoicesMockup />
+                        <ScaledMockup designWidth={900}>
+                            <InvoicesMockup />
+                        </ScaledMockup>
                     </div>
                 </motion.div>
                 <div className="relative mx-auto grid grid-cols-2 gap-x-3 gap-y-6 sm:gap-8 lg:grid-cols-4">
@@ -51,7 +54,7 @@ export function FeaturesSection7() {
                             key={f.title}
                             initial={reducedMotion ? false : { opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, margin: '-60px' }}
+                            viewport={{ once: true, margin: '-20px' }}
                             transition={{ duration: 0.5, delay: i * 0.1, ease: EASE_OUT }}
                             className={i === 0 ? 'space-y-3' : 'space-y-2'}
                         >

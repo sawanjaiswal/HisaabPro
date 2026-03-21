@@ -382,7 +382,7 @@ export function InvoiceTemplatesSection() {
   const fade = (delay: number, y = 25) => ({
     initial: reducedMotion ? false : ({ opacity: 0, y } as const),
     whileInView: { opacity: 1, y: 0 } as const,
-    viewport: { once: true, margin: '-80px' as const },
+    viewport: { once: true, margin: '-20px' as const },
     transition: { duration: 0.6, delay, ease: EASE_OUT },
   })
 
@@ -419,7 +419,7 @@ export function InvoiceTemplatesSection() {
               key={tpl.name}
               initial={reducedMotion ? false : { opacity: 0, y: 20, scale: 0.97 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: '-60px' }}
+              viewport={{ once: true, margin: '-20px' }}
               transition={{ duration: 0.5, delay: 0.1 + i * 0.08, ease: EASE_OUT }}
               className="group rounded-xl border overflow-hidden cursor-pointer"
               style={{
@@ -592,7 +592,7 @@ export function InvoiceTemplatesSection() {
               key={h.title}
               initial={reducedMotion ? false : { opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
+              viewport={{ once: true, margin: '-20px' }}
               transition={{ duration: 0.5, delay: i * 0.1, ease: EASE_OUT }}
               className="flex flex-col gap-2"
             >

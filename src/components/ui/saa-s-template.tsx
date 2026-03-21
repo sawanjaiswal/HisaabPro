@@ -3,6 +3,7 @@ import { Sun, Moon } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { LP_SECTIONS, LP_APP, hash } from "@/config/landing-links.config";
 import { HeroDashboardMockup } from "@/components/ui/hero-dashboard-mockup";
+import { ScaledMockup } from "@/components/ui/scaled-mockup";
 
 interface ThemeProps {
   isDark: boolean;
@@ -210,7 +211,7 @@ const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
   });
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-start px-6 py-20 md:py-24">
+    <section className="relative min-h-screen flex flex-col items-center justify-start px-6 py-20 md:py-24 overflow-hidden">
       <motion.aside
         {...fade(0.1, 20)}
         className="mb-8 inline-flex flex-wrap items-center justify-center gap-2 px-4 py-2 rounded-full border backdrop-blur-sm max-w-full"
@@ -256,7 +257,7 @@ const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
         initial={reducedMotion ? false : { opacity: 0, scale: 0.96, y: 40 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.5, ease: EASE_OUT }}
-        className="w-full max-w-5xl relative pb-20"
+        className="w-full max-w-5xl relative pb-20 overflow-hidden"
       >
         {isDark && (
           <div
@@ -276,7 +277,9 @@ const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
         )}
 
         <div className="relative z-10">
-          <HeroDashboardMockup />
+          <ScaledMockup designWidth={900}>
+            <HeroDashboardMockup />
+          </ScaledMockup>
         </div>
       </motion.div>
     </section>

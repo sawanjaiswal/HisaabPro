@@ -47,7 +47,7 @@ export function FeaturesSectionWithBentoGrid() {
       <motion.div
         initial={reducedMotion ? false : { opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-80px' }}
+        viewport={{ once: true, margin: '-20px' }}
         transition={{ duration: 0.6, ease: EASE_OUT }}
         className="px-8"
       >
@@ -70,7 +70,7 @@ export function FeaturesSectionWithBentoGrid() {
               key={feature.title}
               initial={reducedMotion ? false : { opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
+              viewport={{ once: true, margin: '-20px' }}
               transition={{ duration: 0.6, delay: i * 0.12, ease: EASE_OUT }}
               className={feature.className}
               style={{ borderColor: 'var(--lp-card-border)' }}
