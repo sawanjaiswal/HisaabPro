@@ -258,7 +258,7 @@ const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
         initial={reducedMotion ? false : { opacity: 0, scale: 0.96, y: 40 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.5, ease: EASE_OUT }}
-        className="w-full max-w-5xl relative pb-20 px-6"
+        className="w-full max-w-5xl relative pb-6 lg:pb-20 px-6"
       >
         {isDark && (
           <div
