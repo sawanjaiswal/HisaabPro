@@ -139,3 +139,63 @@ export const test = base.extend<{ authedPage: Page }>({
 })
 
 export { expect }
+
+// ─── Phase 4 Mock Data ──────────────────────────────────────────────────────
+
+export const MOCK_PRODUCTS = [
+  { id: 'prod_001', name: 'Tata Salt 1kg', sku: 'SALT-001', salePrice: 2800, purchasePrice: 2200, unit: 'PCS', stock: 500, lowStockAlert: 50 },
+  { id: 'prod_002', name: 'Amul Butter 500g', sku: 'BTR-001', salePrice: 28000, purchasePrice: 24000, unit: 'PCS', stock: 100, lowStockAlert: 20 },
+  { id: 'prod_003', name: 'Samsung Galaxy A15', sku: 'SAM-A15', salePrice: 1399900, purchasePrice: 1200000, unit: 'PCS', stock: 10, lowStockAlert: 3 },
+  { id: 'prod_004', name: 'Parle-G Biscuit', sku: 'PLG-001', salePrice: 1000, purchasePrice: 800, unit: 'PKT', stock: 1000, lowStockAlert: 100 },
+  { id: 'prod_005', name: 'Notebook A4 100pg', sku: 'NB-001', salePrice: 5000, purchasePrice: 3500, unit: 'PCS', stock: 200, lowStockAlert: 30 },
+]
+
+export const MOCK_GODOWNS = [
+  { id: 'gdn_001', name: 'Main Warehouse', address: 'Industrial Area, Pune 411001', isDefault: true, stockValue: 1250000 },
+  { id: 'gdn_002', name: 'Shop Floor', address: 'MG Road, Pune 411005', isDefault: false, stockValue: 350000 },
+]
+
+export const MOCK_BATCHES = [
+  { id: 'bat_001', productId: 'prod_001', batchNumber: 'SALT-2026-A', manufacturingDate: '2026-01-15', expiryDate: '2027-01-15', costPrice: 2200, salePrice: 2800, quantity: 200 },
+  { id: 'bat_002', productId: 'prod_001', batchNumber: 'SALT-2026-B', manufacturingDate: '2026-02-01', expiryDate: '2027-02-01', costPrice: 2200, salePrice: 2800, quantity: 150 },
+  { id: 'bat_003', productId: 'prod_002', batchNumber: 'BTR-MAR26', manufacturingDate: '2026-03-01', expiryDate: '2026-09-01', costPrice: 24000, salePrice: 28000, quantity: 50 },
+]
+
+export const MOCK_SERIALS = [
+  { id: 'ser_001', productId: 'prod_003', serialNumber: 'IMEI-001-TEST', status: 'AVAILABLE' },
+  { id: 'ser_002', productId: 'prod_003', serialNumber: 'IMEI-002-TEST', status: 'AVAILABLE' },
+  { id: 'ser_003', productId: 'prod_003', serialNumber: 'IMEI-003-TEST', status: 'SOLD' },
+  { id: 'ser_004', productId: 'prod_003', serialNumber: 'IMEI-004-TEST', status: 'RETURNED' },
+  { id: 'ser_005', productId: 'prod_003', serialNumber: 'IMEI-005-TEST', status: 'DAMAGED' },
+]
+
+export const MOCK_VERIFICATION = {
+  id: 'ver_001',
+  name: 'Monthly Count March 2026',
+  status: 'IN_PROGRESS',
+  type: 'FULL',
+  createdAt: '2026-03-20T10:00:00Z',
+  items: [
+    { productId: 'prod_001', productName: 'Tata Salt 1kg', expectedQty: 500, countedQty: 498, discrepancy: -2 },
+    { productId: 'prod_002', productName: 'Amul Butter 500g', expectedQty: 100, countedQty: 100, discrepancy: 0 },
+    { productId: 'prod_004', productName: 'Parle-G Biscuit', expectedQty: 1000, countedQty: null, discrepancy: null },
+  ],
+  progress: { total: 5, counted: 2, percentage: 40 },
+}
+
+export const MOCK_POS_CART = [
+  { productId: 'prod_001', name: 'Tata Salt 1kg', quantity: 2, price: 2800, total: 5600 },
+  { productId: 'prod_004', name: 'Parle-G Biscuit', quantity: 5, price: 1000, total: 5000 },
+]
+
+export const MOCK_QUICK_SALE_RESULT = {
+  invoiceId: 'inv_pos_001',
+  invoiceNumber: 'POS-2026-0001',
+  items: MOCK_POS_CART,
+  subtotal: 10600,
+  total: 10600,
+  paymentMethod: 'CASH',
+  paidAmount: 10600,
+  change: 0,
+  createdAt: '2026-03-20T14:30:00Z',
+}
