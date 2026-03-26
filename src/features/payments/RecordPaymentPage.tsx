@@ -8,6 +8,7 @@ import { useSearchParams } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
+import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { usePaymentForm } from './usePaymentForm'
@@ -111,15 +112,16 @@ export default function RecordPaymentPage() {
       </PageContainer>
 
       <div className="payment-save-bar">
-        <button
+        <Button
           type="button"
-          className="btn btn-primary btn-lg payment-save-btn"
+          variant="primary"
+          size="lg"
+          loading={isSubmitting}
           onClick={handleSubmit}
-          disabled={isSubmitting}
           aria-label={isSubmitting ? t.savingPayment : t.savePayment}
         >
           {isSubmitting ? t.saving : t.savePaymentBtn}
-        </button>
+        </Button>
       </div>
     </AppShell>
   )

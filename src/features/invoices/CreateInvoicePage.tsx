@@ -11,6 +11,7 @@ import { Camera } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
+import { Button } from '@/components/ui/Button'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useInvoiceForm } from './useInvoiceForm'
@@ -101,10 +102,10 @@ export default function CreateInvoicePage() {
         title={t.newInvoice}
         backTo={ROUTES.INVOICES}
         actions={
-          <button className="btn btn-ghost btn-sm" onClick={() => nav(ROUTES.BILL_SCAN)} aria-label={t.scanBillAddItems}>
+          <Button variant="ghost" size="sm" onClick={() => nav(ROUTES.BILL_SCAN)} aria-label={t.scanBillAddItems}>
             <Camera size={18} aria-hidden="true" />
             <span>{t.scan}</span>
-          </button>
+          </Button>
         }
       />
 

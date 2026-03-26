@@ -9,6 +9,7 @@ import { FileText } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
+import { Button } from '@/components/ui/Button'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -126,9 +127,9 @@ export default function ReconciliationDetailPage() {
               ))}
             </div>
             {hasMoreEntries && (
-              <button type="button" className="recon-load-more" onClick={loadMoreEntries}>
+              <Button type="button" variant="secondary" size="md" className="recon-load-more" onClick={loadMoreEntries} aria-label={t.loadMore}>
                 {t.loadMore}
-              </button>
+              </Button>
             )}
           </>
         )}

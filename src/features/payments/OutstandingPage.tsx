@@ -21,7 +21,7 @@ import { OutstandingFilterBar } from './components/OutstandingFilterBar'
 import { OutstandingCard } from './components/OutstandingCard'
 import { OutstandingSkeleton } from './components/OutstandingSkeleton'
 import { ReminderDrawer } from './components/ReminderDrawer'
-import { AGING_BUCKET_LABELS, AGING_BUCKET_COLORS } from './payment.constants'
+import { AGING_BUCKET_LABELS } from './payment.constants'
 import { getAgingPercentages, calculateAgingTotal } from './payment.utils'
 import type { OutstandingType, OutstandingSortBy, OutstandingAging, OutstandingParty } from './payment.types'
 import './outstanding-page.css'
@@ -138,6 +138,15 @@ export default function OutstandingPage() {
   )
 }
 
+/** Map aging bucket keys to CSS modifier suffixes */
+const AGING_BUCKET_CSS: Record<string, string> = {
+  current:    'current',
+  days1to30:  '30',
+  days31to60: '60',
+  days61to90: '90',
+  days90plus: '90plus',
+}
+
 /** Aging bar chart — horizontal stacked bars */
 function AgingChart({ aging }: { aging: OutstandingAging }) {
   const { t } = useLanguage()
@@ -157,11 +166,8 @@ function AgingChart({ aging }: { aging: OutstandingAging }) {
           return (
             <div
               key={bucket}
-              className="outstanding-aging-segment"
-              style={{
-                width: `${pct}%`,
-                backgroundColor: AGING_BUCKET_COLORS[bucket],
-              }}
+              className={`outstanding-aging-segment outstanding-aging-segment--${AGING_BUCKET_CSS[bucket]}`}
+              style={{ width: `${pct}%` }}
               title={`${AGING_BUCKET_LABELS[bucket]}: ${pct}%`}
             />
           )
@@ -171,8 +177,7 @@ function AgingChart({ aging }: { aging: OutstandingAging }) {
         {buckets.map((bucket) => (
           <div key={bucket} className="outstanding-aging-legend-item">
             <span
-              className="outstanding-aging-dot"
-              style={{ backgroundColor: AGING_BUCKET_COLORS[bucket] }}
+              className={`outstanding-aging-dot outstanding-aging-legend-dot--${AGING_BUCKET_CSS[bucket]}`}
               aria-hidden="true"
             />
             <span className="outstanding-aging-label">{AGING_BUCKET_LABELS[bucket]}</span>

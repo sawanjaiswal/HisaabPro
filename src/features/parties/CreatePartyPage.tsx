@@ -88,15 +88,17 @@ export default function CreatePartyPage() {
         >
           {t.saveParty}
         </Button>
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="md"
           className="create-party-save-another"
           onClick={handleSaveAndAddAnother}
           disabled={isSubmitting}
           aria-label={t.saveAndAddAnotherLabel}
         >
           {t.saveAndAddAnother}
-        </button>
+        </Button>
       </div>
     </AppShell>
   )

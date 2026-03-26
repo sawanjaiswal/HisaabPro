@@ -202,5 +202,18 @@ export const enExt2 = {
   posBarcodeSearch:      'Barcode or product search',
   posClearSearch:        'Clear search',
   posOpenCamera:         'Open camera scanner',
+  posCash:               'Cash',
+  posUpi:                'UPI',
+  posCard:               'Card',
+  posOnlyXInStock:       'Only {count} in stock',
+  posMaxItems:           'Maximum {count} items per sale',
+  posAmountLessThanTotal:'Amount paid is less than total',
+  posSaleFailed:         'Sale failed',
+  posCartEmpty:          'Cart is empty',
+  posSearching:          'Searching...',
+  posInvalidQty:         'Invalid quantity for {name}',
+  posOnlyXInStockFor:    '{name}: only {count} in stock',
+  posDiscountExceeds:    'Discount exceeds total for {name}',
+  posMaxItemsAllowed:    'Maximum {count} items allowed',
 
 } as const

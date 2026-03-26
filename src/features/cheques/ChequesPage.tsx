@@ -10,6 +10,7 @@ import { CheckSquare, Plus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
+import { Button } from '@/components/ui/Button'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useToast } from '@/hooks/useToast'
@@ -85,9 +86,9 @@ export default function ChequesPage() {
 
         <div className="cheque-action-bar">
           <span className="cheque-count">{total} {total === 1 ? t.chequeCount : t.chequesCount}</span>
-          <button type="button" className="cheque-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.addCheque}>
+          <Button variant="primary" size="sm" className="cheque-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.addCheque}>
             <Plus size={14} aria-hidden="true" /> {t.addCheque}
-          </button>
+          </Button>
         </div>
 
         {items.length === 0 && (
@@ -95,7 +96,7 @@ export default function ChequesPage() {
             <div className="cheque-empty__icon" aria-hidden="true"><CheckSquare size={32} /></div>
             <p className="cheque-empty__title">{t.noChequesRecorded}</p>
             <p className="cheque-empty__desc">{t.chequesEmptyDesc}</p>
-            <button type="button" className="cheque-add-btn" onClick={() => setDrawerOpen(true)}><Plus size={14} aria-hidden="true" /> {t.addFirstCheque}</button>
+            <Button variant="primary" size="sm" className="cheque-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.addFirstCheque}><Plus size={14} aria-hidden="true" /> {t.addFirstCheque}</Button>
           </div>
         )}
 
@@ -107,9 +108,9 @@ export default function ChequesPage() {
 
         {totalPages > 1 && (
           <div className="cheque-pagination">
-            <button type="button" className="cheque-pagination__btn" onClick={() => setPage(page - 1)} disabled={page <= 1} aria-label={t.previousPage}>{t.previous}</button>
+            <Button type="button" variant="secondary" size="sm" className="cheque-pagination__btn" onClick={() => setPage(page - 1)} disabled={page <= 1} aria-label={t.previousPage}>{t.previous}</Button>
             <span className="cheque-pagination__info">{t.pageLabel} {page} {t.ofLabel} {totalPages}</span>
-            <button type="button" className="cheque-pagination__btn" onClick={() => setPage(page + 1)} disabled={page >= totalPages} aria-label={t.nextPage}>{t.next}</button>
+            <Button type="button" variant="secondary" size="sm" className="cheque-pagination__btn" onClick={() => setPage(page + 1)} disabled={page >= totalPages} aria-label={t.nextPage}>{t.next}</Button>
           </div>
         )}
       </PageContainer>

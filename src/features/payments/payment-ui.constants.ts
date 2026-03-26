@@ -38,9 +38,9 @@ export const AGING_BUCKET_LABELS = {
 // Defined as CSS variable strings so components never use raw hex.
 
 export const AGING_BUCKET_COLORS = {
-  current:    'var(--color-success)',
-  days1to30:  'var(--color-warning-light)',
-  days31to60: 'var(--color-warning)',
-  days61to90: 'var(--color-error-light)',
-  days90plus: 'var(--color-error)',
+  current:    'var(--color-success-500)',
+  days1to30:  'var(--color-secondary-300)',
+  days31to60: 'var(--color-warning-500)',
+  days61to90: 'var(--color-error-500)',
+  days90plus: 'var(--color-error-700)',
 } as const

@@ -202,5 +202,18 @@ export const hiExt2 = {
   posBarcodeSearch:      'बारकोड या प्रोडक्ट खोजें',
   posClearSearch:        'खोज साफ करें',
   posOpenCamera:         'कैमरा स्कैनर खोलें',
+  posCash:               'नकद',
+  posUpi:                'UPI',
+  posCard:               'कार्ड',
+  posOnlyXInStock:       'स्टॉक में केवल {count} हैं',
+  posMaxItems:           'अधिकतम {count} आइटम प्रति बिक्री',
+  posAmountLessThanTotal:'भुगतान राशि कुल से कम है',
+  posSaleFailed:         'बिक्री विफल',
+  posCartEmpty:          'कार्ट खाली है',
+  posSearching:          'खोजा जा रहा है...',
+  posInvalidQty:         '{name} के लिए अमान्य मात्रा',
+  posOnlyXInStockFor:    '{name}: स्टॉक में केवल {count}',
+  posDiscountExceeds:    '{name} के लिए छूट कुल से अधिक है',
+  posMaxItemsAllowed:    'अधिकतम {count} आइटम की अनुमति है',
 
 } as const

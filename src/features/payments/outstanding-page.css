@@ -149,6 +149,10 @@
   background: var(--color-error-500);
 }
 
+.outstanding-aging-segment--90plus {
+  background: var(--color-error-700);
+}
+
 /* Legend row */
 .outstanding-aging-legend {
   display: flex;
@@ -175,6 +179,7 @@
 .outstanding-aging-legend-dot--30 { background: var(--color-secondary-300); }
 .outstanding-aging-legend-dot--60 { background: var(--color-warning-500); }
 .outstanding-aging-legend-dot--90 { background: var(--color-error-500); }
+.outstanding-aging-legend-dot--90plus { background: var(--color-error-700); }
 
 /* ─── Outstanding list container ─────────────────────────────────────────── */
 

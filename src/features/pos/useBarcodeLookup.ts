@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { api } from '@/lib/api'
 import { useToast } from '@/hooks/useToast'
+import { useLanguage } from '@/hooks/useLanguage'
 
 import type { QuickProduct } from './pos.types'
 
@@ -13,6 +14,7 @@ export function useBarcodeLookup(onFound: (product: QuickProduct) => void) {
   const abortRef = useRef<AbortController | null>(null)
   const lastLookupRef = useRef(0)
   const toast = useToast()
+  const { t } = useLanguage()
 
   useEffect(() => {
     return () => abortRef.current?.abort()
@@ -36,7 +38,7 @@ export function useBarcodeLookup(onFound: (product: QuickProduct) => void) {
     } catch (err) {
       if (!ctrl.signal.aborted) {
         // TODO: structured log — barcode.lookup.failed {code, error}
-        toast.error(err instanceof Error ? err.message : 'Product not found')
+        toast.error(err instanceof Error ? err.message : t.productNotFound)
       }
     } finally {
       if (!ctrl.signal.aborted) setSearching(false)

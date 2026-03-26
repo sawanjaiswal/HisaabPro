@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useToast } from '@/hooks/useToast'
+import { useLanguage } from '@/hooks/useLanguage'
 import { MAX_CART_ITEMS, MAX_ITEM_QTY } from './pos.constants'
 
 import type { PosCartItem, PosStatus, QuickProduct } from './pos.types'
@@ -29,6 +30,9 @@ export function usePosCart() {
   const toast = useToast()
   const toastRef = useRef(toast)
   toastRef.current = toast
+  const { t } = useLanguage()
+  const tRef = useRef(t)
+  tRef.current = t
 
   useEffect(() => {
     try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(items)) } catch {}
@@ -39,7 +43,11 @@ export function usePosCart() {
       const existing = prev.find((i) => i.productId === product.id)
       if (existing) {
         if (existing.quantity >= product.stock) {
-          queueMicrotask(() => toastRef.current.warning(`Only ${product.stock} in stock`))
+          queueMicrotask(() =>
+            toastRef.current.warning(
+              tRef.current.posOnlyXInStock.replace('{count}', String(product.stock)),
+            ),
+          )
           return prev
         }
         return prev.map((i) =>
@@ -49,7 +57,11 @@ export function usePosCart() {
         )
       }
       if (prev.length >= MAX_CART_ITEMS) {
-        queueMicrotask(() => toastRef.current.warning(`Maximum ${MAX_CART_ITEMS} items per sale`))
+        queueMicrotask(() =>
+          toastRef.current.warning(
+            tRef.current.posMaxItems.replace('{count}', String(MAX_CART_ITEMS)),
+          ),
+        )
         return prev
       }
       return [...prev, {

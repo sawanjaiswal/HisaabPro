@@ -1,6 +1,7 @@
 /** POS Cart Summary — Sticky bottom bar with total + checkout CTA */
 
 import { ShoppingCart } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 import { formatPaise } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import { cartSubtotal, cartItemCount } from '../pos.utils'
@@ -29,14 +30,15 @@ export function CartSummary({ items, onCheckout }: CartSummaryProps) {
       </div>
       <div className="pos-cart-summary-right">
         <span className="pos-cart-summary-total">{formatPaise(total)}</span>
-        <button
-          type="button"
-          className="btn btn-primary pos-charge-btn"
+        <Button
+          variant="primary"
+          size="md"
+          className="pos-charge-btn"
           onClick={onCheckout}
           aria-label={`${t.posCharge} ${formatPaise(total)}`}
         >
           {t.posCharge} {formatPaise(total)}
-        </button>
+        </Button>
       </div>
     </div>
   )

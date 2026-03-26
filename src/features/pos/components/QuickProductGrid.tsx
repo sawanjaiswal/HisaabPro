@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Package } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 import { api } from '@/lib/api'
 import { formatPaise } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -55,13 +56,9 @@ export function QuickProductGrid({ onSelect }: QuickProductGridProps) {
       <div className="pos-empty" role="alert">
         <Package size={40} className="pos-empty-icon" aria-hidden="true" />
         <p className="pos-empty-text">{error}</p>
-        <button
-          type="button"
-          className="btn btn-secondary btn-sm"
-          onClick={retry}
-        >
+        <Button variant="secondary" size="sm" onClick={retry}>
           {t.retry}
-        </button>
+        </Button>
       </div>
     )
   }

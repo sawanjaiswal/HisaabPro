@@ -1,6 +1,7 @@
 /** POS Sale Receipt — Success view with summary + actions */
 
 import { CheckCircle, Plus, Share2, Printer } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 import { formatPaise, formatDate } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import { cartSubtotal, cartItemCount } from '../pos.utils'
@@ -48,25 +49,40 @@ export function SaleReceipt({ receipt, items, onNewSale }: SaleReceiptProps) {
       </div>
 
       <div className="pos-receipt-actions">
-        <button type="button" className="btn btn-secondary pos-receipt-action-btn" aria-label={t.posShareReceipt} disabled title={t.comingSoon}>
+        <Button
+          variant="secondary"
+          size="md"
+          className="pos-receipt-action-btn"
+          aria-label={t.posShareReceipt}
+          disabled
+          title={t.comingSoon}
+        >
           <Share2 size={16} aria-hidden="true" />
           {t.share}
-        </button>
-        <button type="button" className="btn btn-secondary pos-receipt-action-btn" aria-label={t.posPrintReceipt} disabled title={t.comingSoon}>
+        </Button>
+        <Button
+          variant="secondary"
+          size="md"
+          className="pos-receipt-action-btn"
+          aria-label={t.posPrintReceipt}
+          disabled
+          title={t.comingSoon}
+        >
           <Printer size={16} aria-hidden="true" />
           {t.print}
-        </button>
+        </Button>
       </div>
 
-      <button
-        type="button"
-        className="btn btn-primary pos-new-sale-btn"
+      <Button
+        variant="primary"
+        size="lg"
+        className="pos-new-sale-btn"
         onClick={onNewSale}
         aria-label={t.posStartNewSale}
       >
         <Plus size={18} aria-hidden="true" />
         {t.posNewSale}
-      </button>
+      </Button>
     </div>
   )
 }

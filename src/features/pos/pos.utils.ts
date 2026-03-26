@@ -23,20 +23,33 @@ export function cartItemCount(items: PosCartItem[]): number {
   return items.reduce((sum, item) => sum + item.quantity, 0)
 }
 
+/** Translation strings needed by validateCart */
+interface CartValidationLabels {
+  posCartEmpty: string
+  posMaxItemsAllowed: string
+  posInvalidQty: string
+  posOnlyXInStockFor: string
+  posDiscountExceeds: string
+}
+
 /** Validate cart before checkout. Returns error message or null. */
-export function validateCart(items: PosCartItem[]): string | null {
-  if (items.length === 0) return 'Cart is empty'
-  if (items.length > MAX_CART_ITEMS) return `Maximum ${MAX_CART_ITEMS} items allowed`
+export function validateCart(items: PosCartItem[], labels: CartValidationLabels): string | null {
+  if (items.length === 0) return labels.posCartEmpty
+  if (items.length > MAX_CART_ITEMS) {
+    return labels.posMaxItemsAllowed.replace('{count}', String(MAX_CART_ITEMS))
+  }
 
   for (const item of items) {
     if (item.quantity < 1 || item.quantity > MAX_ITEM_QTY) {
-      return `Invalid quantity for ${item.name}`
+      return labels.posInvalidQty.replace('{name}', item.name)
     }
     if (item.quantity > item.stock) {
-      return `${item.name}: only ${item.stock} in stock`
+      return labels.posOnlyXInStockFor
+        .replace('{name}', item.name)
+        .replace('{count}', String(item.stock))
     }
     if (item.discount > item.quantity * item.unitPrice) {
-      return `Discount exceeds total for ${item.name}`
+      return labels.posDiscountExceeds.replace('{name}', item.name)
     }
   }
   return null

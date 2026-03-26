@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from 'react'
 import { api } from '@/lib/api'
 import { useToast } from '@/hooks/useToast'
+import { useLanguage } from '@/hooks/useLanguage'
 import { buildPayload, cartSubtotal, validateCart } from './pos.utils'
 
 import type { PosCartItem, PaymentMode, QuickSaleResult, PosStatus } from './pos.types'
@@ -20,15 +21,16 @@ export function usePosCheckout() {
   const [receiptItems, setReceiptItems] = useState<PosCartItem[]>([])
   const submitRef = useRef(false)
   const toast = useToast()
+  const { t } = useLanguage()
 
   const submit = useCallback(async ({ items, paymentMode, amountPaid, setStatus }: CheckoutArgs) => {
     if (submitRef.current) return
-    const error = validateCart(items)
+    const error = validateCart(items, t)
     if (error) { toast.error(error); return }
 
     const total = cartSubtotal(items)
     if (amountPaid < total) {
-      toast.error('Amount paid is less than total')
+      toast.error(t.posAmountLessThanTotal)
       return
     }
 
@@ -51,13 +53,13 @@ export function usePosCheckout() {
       if (navigator.vibrate) navigator.vibrate([100, 50, 100])
     } catch (err) {
       setStatus('checkout')
-      const msg = err instanceof Error ? err.message : 'Sale failed'
+      const msg = err instanceof Error ? err.message : t.posSaleFailed
       toast.error(msg)
     } finally {
       setIsProcessing(false)
       submitRef.current = false
     }
-  }, [toast])
+  }, [toast, t])
 
   const resetReceipt = useCallback(() => {
     setReceipt(null)

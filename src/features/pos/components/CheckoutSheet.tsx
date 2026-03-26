@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { Banknote, Smartphone, CreditCard } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
+import { Button } from '@/components/ui/Button'
 import { formatPaise } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import { cartSubtotal } from '../pos.utils'
@@ -40,9 +41,10 @@ export function CheckoutSheet({ open, onClose, items, isProcessing, onConfirm }:
         <fieldset className="pos-payment-modes" aria-label={t.posPaymentMethod}>
           <legend className="pos-payment-legend">{t.posPaymentMethod}</legend>
           <div className="pos-payment-grid">
-            {PAYMENT_MODES.map(({ value, label, icon }) => {
+            {PAYMENT_MODES.map(({ value, labelKey, icon }) => {
               const Icon = ICONS[icon as keyof typeof ICONS]
               const isActive = mode === value
+              const label = t[labelKey as keyof typeof t] as string
               return (
                 <button
                   key={value}
@@ -59,15 +61,17 @@ export function CheckoutSheet({ open, onClose, items, isProcessing, onConfirm }:
           </div>
         </fieldset>
 
-        <button
-          type="button"
-          className="btn btn-primary pos-confirm-btn"
+        <Button
+          variant="primary"
+          size="lg"
+          className="pos-confirm-btn"
           onClick={handleConfirm}
-          disabled={isProcessing || items.length === 0}
+          disabled={items.length === 0}
+          loading={isProcessing}
           aria-label={isProcessing ? t.posProcessingSale : `${t.posConfirm} ${formatPaise(total)} ${mode}`}
         >
-          {isProcessing ? t.posProcessing : `${t.posConfirm} ${formatPaise(total)}`}
-        </button>
+          {`${t.posConfirm} ${formatPaise(total)}`}
+        </Button>
       </div>
     </Drawer>
   )
