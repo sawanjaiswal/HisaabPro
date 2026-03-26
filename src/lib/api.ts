@@ -53,8 +53,13 @@ async function attemptTokenRefresh(): Promise<boolean> {
     })
 
     if (response.ok) {
-      const json = await response.json()
-      if (json.success) {
+      let json: { success?: boolean } | null = null
+      try {
+        json = await response.json()
+      } catch {
+        // Malformed JSON from refresh endpoint — treat as failure
+      }
+      if (json?.success) {
         isRefreshing = false
         flushRefreshQueue()
         return true
@@ -154,7 +159,25 @@ export async function api<T>(
     throw new ApiError('Session expired', 'UNAUTHORIZED', 401)
   }
 
-  const json: ApiResponse<T> = await response.json()
+  // 204/205/304 have no body — synthesize success
+  const NO_BODY_STATUSES = new Set([204, 205, 304])
+  let json: ApiResponse<T>
+  if (NO_BODY_STATUSES.has(response.status)) {
+    json = { success: true, data: undefined as T }
+  } else {
+    try {
+      json = await response.json()
+    } catch {
+      const GATEWAY_ERRORS = new Set([502, 503, 504])
+      throw new ApiError(
+        GATEWAY_ERRORS.has(response.status)
+          ? 'Server is temporarily unavailable — please try again'
+          : 'Server returned an unexpected response. Please try again.',
+        'INVALID_RESPONSE',
+        response.status
+      )
+    }
+  }
 
   if (!response.ok || !json.success) {
     throw new ApiError(
