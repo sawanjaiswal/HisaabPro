@@ -7,6 +7,7 @@
 
 import React from 'react'
 import { ChevronRight, Plus } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { getFirstName, formatCompactAmount } from '../dashboard.utils'
 import { PartyAvatar } from '../../../components/ui/PartyAvatar'
 import type { TopDebtor } from '../dashboard.types'
@@ -24,15 +25,16 @@ export const TopDebtors: React.FC<TopDebtorsProps> = ({
   onViewAll,
   onDebtorClick,
 }) => {
+  const { t } = useLanguage()
   if (debtors.length === 0) return null
 
   return (
     <div className="dashboard-starred">
       <div className="dashboard-section-header">
         <div className="dashboard-section-title-group">
-          <span className="dashboard-section-title">Who Owes You</span>
+          <span className="dashboard-section-title">{t.whoOwesYou}</span>
           <span className="dashboard-section-subtitle">
-            {debtors.length} {debtors.length === 1 ? 'party' : 'parties'} &middot; {formatCompactAmount(totalOutstanding)}
+            {debtors.length} {debtors.length === 1 ? t.party : t.parties} &middot; {formatCompactAmount(totalOutstanding)}
           </span>
         </div>
         <button
@@ -40,7 +42,7 @@ export const TopDebtors: React.FC<TopDebtorsProps> = ({
           onClick={onViewAll}
           aria-label="View all outstanding receivables"
         >
-          See All
+          {t.seeAll}
           <ChevronRight size={16} aria-hidden="true" />
         </button>
       </div>
@@ -55,7 +57,7 @@ export const TopDebtors: React.FC<TopDebtorsProps> = ({
           >
             <Plus size={20} aria-hidden="true" />
           </button>
-          <span className="dashboard-starred-name">Add</span>
+          <span className="dashboard-starred-name">{t.add}</span>
         </div>
 
         {debtors.map((debtor) => (

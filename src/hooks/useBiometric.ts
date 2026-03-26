@@ -9,152 +9,20 @@
  */
 
 import { useState, useEffect, useCallback } from 'react'
+import type { ServerRegistrationOptions, ServerAuthenticationOptions, BiometricCredential, UseBiometricReturn } from './biometric.types'
+import {
+  isPlatformAuthAvailable, isLocallyEnrolled, getStoredCredential,
+  saveStoredCredential, removeStoredCredential,
+  base64UrlDecode, arrayBufferToBase64Url, apiFetch,
+} from './biometric.utils'
 
-// ── Feature detection ──────────────────────────────────────────
-
-function isWebAuthnAvailable(): boolean {
-  return !!(
-    typeof window !== 'undefined' &&
-    window.PublicKeyCredential &&
-    navigator.credentials
-  )
-}
-
-async function isPlatformAuthAvailable(): Promise<boolean> {
-  if (!isWebAuthnAvailable()) return false
-  try {
-    return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
-  } catch {
-    return false
-  }
-}
-
-// ── Local storage keys ─────────────────────────────────────────
-
-const KEY_CREDENTIAL_ID = 'hp_biometric_credential_id'
-const KEY_ENROLLED_PHONE = 'hp_biometric_phone'
-const KEY_ENROLLED = 'hp_biometric_enrolled'
-
-function getStoredCredential(): { credentialId: string; phone: string } | null {
-  const credentialId = localStorage.getItem(KEY_CREDENTIAL_ID)
-  const phone = localStorage.getItem(KEY_ENROLLED_PHONE)
-  if (!credentialId || !phone) return null
-  return { credentialId, phone }
-}
-
-function saveStoredCredential(credentialId: string, phone: string): void {
-  localStorage.setItem(KEY_CREDENTIAL_ID, credentialId)
-  localStorage.setItem(KEY_ENROLLED_PHONE, phone)
-  localStorage.setItem(KEY_ENROLLED, 'true')
-}
-
-function removeStoredCredential(): void {
-  localStorage.removeItem(KEY_CREDENTIAL_ID)
-  localStorage.removeItem(KEY_ENROLLED_PHONE)
-  localStorage.removeItem(KEY_ENROLLED)
-}
-
-function isLocallyEnrolled(): boolean {
-  return localStorage.getItem(KEY_ENROLLED) === 'true'
-}
-
-// ── Base64URL helpers ──────────────────────────────────────────
-
-function base64UrlDecode(base64url: string): ArrayBuffer {
-  const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/')
-  const padding = '='.repeat((4 - (base64.length % 4)) % 4)
-  const binary = atob(base64 + padding)
-  const bytes = new Uint8Array(binary.length)
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i)
-  }
-  return bytes.buffer
-}
-
-function arrayBufferToBase64Url(buffer: ArrayBuffer): string {
-  const bytes = new Uint8Array(buffer)
-  let binary = ''
-  for (let i = 0; i < bytes.byteLength; i++) {
-    binary += String.fromCharCode(bytes[i])
-  }
-  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
-}
-
-// ── Server option interfaces ───────────────────────────────────
-
-interface ServerRegistrationOptions {
-  challenge: string
-  rp: { id: string; name: string }
-  user: { id: string; name: string; displayName: string }
-  pubKeyCredParams: Array<{ type: 'public-key'; alg: number }>
-  authenticatorSelection?: {
-    authenticatorAttachment?: 'platform' | 'cross-platform'
-    userVerification?: 'required' | 'preferred' | 'discouraged'
-    residentKey?: 'required' | 'preferred' | 'discouraged'
-  }
-  timeout?: number
-  attestation?: 'none' | 'direct' | 'indirect'
-}
-
-interface ServerAuthenticationOptions {
-  challenge: string
-  rpId: string
-  timeout?: number
-  userVerification?: 'required' | 'preferred' | 'discouraged'
-  allowCredentials: Array<{
-    type: 'public-key'
-    id: string
-    transports?: string[]
-  }>
-}
-
-interface Credential {
-  id: string
-  credentialId: string
-  deviceName: string | null
-  createdAt: string
-  lastUsedAt: string | null
-}
-
-// ── API base URL ───────────────────────────────────────────────
-
-const API_BASE = '/api/auth/biometric'
-
-async function apiFetch<T>(path: string, opts?: RequestInit): Promise<{ success: boolean; data?: T }> {
-  const res = await fetch(`${API_BASE}${path}`, {
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    ...opts,
-  })
-  return res.json()
-}
-
-// ── Hook ───────────────────────────────────────────────────────
-
-export interface UseBiometricReturn {
-  /** True when the device hardware supports biometric authentication */
-  isSupported: boolean
-  /** True when the user has previously enrolled a credential on this device */
-  isRegistered: boolean
-  /** True while the initial availability check is in progress */
-  checking: boolean
-  /** Register a new biometric credential (call after password/OTP login) */
-  register: (phone: string, deviceName?: string) => Promise<boolean>
-  /** Authenticate with biometric (login flow) */
-  authenticate: () => Promise<{ success: boolean; user?: Record<string, unknown> }>
-  /** List of registered credentials */
-  credentials: Credential[]
-  /** Remove a specific credential by its DB id */
-  removeCredential: (id: string) => Promise<void>
-  /** Phone number of the enrolled credential (if any) */
-  enrolledPhone: string | null
-}
+export type { UseBiometricReturn } from './biometric.types'
 
 export function useBiometric(): UseBiometricReturn {
   const [isSupported, setIsSupported] = useState(false)
   const [isRegistered, setIsRegistered] = useState(false)
   const [checking, setChecking] = useState(true)
-  const [credentials, setCredentials] = useState<Credential[]>([])
+  const [credentials, setCredentials] = useState<BiometricCredential[]>([])
   const [enrolledPhone, setEnrolledPhone] = useState<string | null>(null)
 
   useEffect(() => {
@@ -323,7 +191,7 @@ export function useBiometric(): UseBiometricReturn {
     let cancelled = false
 
     const fetchCredentials = async () => {
-      const res = await apiFetch<Credential[]>('/credentials')
+      const res = await apiFetch<BiometricCredential[]>('/credentials')
       if (!cancelled && res.success && res.data) {
         setCredentials(res.data)
       }

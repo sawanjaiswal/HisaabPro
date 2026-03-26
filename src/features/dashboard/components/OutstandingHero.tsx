@@ -7,6 +7,7 @@
 
 import React from 'react'
 import { ChevronRight, ArrowDown, ArrowUp } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { formatCompactAmount } from '../dashboard.utils'
 
 interface OutstandingHeroProps {
@@ -26,6 +27,7 @@ export const OutstandingHero: React.FC<OutstandingHeroProps> = ({
   onCollectClick,
   onPayClick,
 }) => {
+  const { t } = useLanguage()
   return (
     <div className="dashboard-hero" role="list" aria-label="Outstanding summary">
       {/* To Collect — teal */}
@@ -38,7 +40,7 @@ export const OutstandingHero: React.FC<OutstandingHeroProps> = ({
         <div className="dashboard-hero-card-content">
           <span className="dashboard-hero-amount">{formatCompactAmount(receivableTotal)}</span>
           <span className="dashboard-hero-label">
-            To Collect
+            {t.toCollect}
             <ArrowDown size={14} aria-hidden="true" />
           </span>
         </div>
@@ -57,7 +59,7 @@ export const OutstandingHero: React.FC<OutstandingHeroProps> = ({
         <div className="dashboard-hero-card-content">
           <span className="dashboard-hero-amount">{formatCompactAmount(payableTotal)}</span>
           <span className="dashboard-hero-label">
-            To Pay
+            {t.toPay}
             <ArrowUp size={14} aria-hidden="true" />
           </span>
         </div>

@@ -7,6 +7,7 @@
 
 import React from 'react'
 import { AlertTriangle, Clock, ChevronRight } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { SUBSCRIPTION_PRICE_LABEL } from '../dashboard.constants'
 
 interface AlertStripProps {
@@ -24,6 +25,7 @@ export const AlertStrip: React.FC<AlertStripProps> = ({
   onOverdueClick,
   onUpgradeClick,
 }) => {
+  const { t } = useLanguage()
   const hasAlerts = lowStockCount > 0 || overdueInvoiceCount > 0
 
   return (
@@ -38,8 +40,8 @@ export const AlertStrip: React.FC<AlertStripProps> = ({
           <img src="/assets/icon-crown.svg" alt="" width={20} height={20} aria-hidden="true" />
         </div>
         <div className="dashboard-alert-info">
-          <div className="dashboard-alert-title">Get the best of the app in {SUBSCRIPTION_PRICE_LABEL} only</div>
-          <div className="dashboard-alert-subtitle">Upgrade to unlock all features</div>
+          <div className="dashboard-alert-title">{t.getAppBestPrice} {SUBSCRIPTION_PRICE_LABEL} {t.only}</div>
+          <div className="dashboard-alert-subtitle">{t.upgradePremium}</div>
         </div>
         <div className="dashboard-alert-chevron">
           <ChevronRight size={20} aria-hidden="true" />
@@ -53,11 +55,11 @@ export const AlertStrip: React.FC<AlertStripProps> = ({
             <button
               className="dashboard-alert-item dashboard-alert-item--danger"
               onClick={onOverdueClick}
-              aria-label={`${overdueInvoiceCount} ${overdueInvoiceCount === 1 ? 'invoice' : 'invoices'} overdue`}
+              aria-label={`${overdueInvoiceCount} ${overdueInvoiceCount === 1 ? t.invoice : t.invoices} ${t.overdue}`}
             >
               <Clock size={16} aria-hidden="true" />
               <span className="dashboard-alert-text">
-                {overdueInvoiceCount} {overdueInvoiceCount === 1 ? 'invoice' : 'invoices'} overdue
+                {overdueInvoiceCount} {overdueInvoiceCount === 1 ? t.invoice : t.invoices} {t.overdue}
               </span>
               <ChevronRight size={14} aria-hidden="true" />
             </button>
@@ -66,11 +68,11 @@ export const AlertStrip: React.FC<AlertStripProps> = ({
             <button
               className="dashboard-alert-item dashboard-alert-item--warning"
               onClick={onLowStockClick}
-              aria-label={`${lowStockCount} ${lowStockCount === 1 ? 'item' : 'items'} low on stock`}
+              aria-label={`${lowStockCount} ${lowStockCount === 1 ? t.item : t.items} ${t.lowOnStock}`}
             >
               <AlertTriangle size={16} aria-hidden="true" />
               <span className="dashboard-alert-text">
-                {lowStockCount} {lowStockCount === 1 ? 'item' : 'items'} low on stock
+                {lowStockCount} {lowStockCount === 1 ? t.item : t.items} {t.lowOnStock}
               </span>
               <ChevronRight size={14} aria-hidden="true" />
             </button>

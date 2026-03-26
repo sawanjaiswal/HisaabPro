@@ -9,8 +9,10 @@
 import { useNavigate } from 'react-router-dom'
 import { BarChart3 } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
+import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { CALCULATOR_TOGGLE_EVENT } from '@/config/events.config'
 import { useHomeDashboard } from './useDashboard'
@@ -34,6 +36,7 @@ import './dashboard-transactions.css'
 
 export default function DashboardPage() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const { data, status, refresh } = useHomeDashboard()
 
   const handleQuickAction = (route: string) => navigate(route)
@@ -80,8 +83,8 @@ export default function DashboardPage() {
         {/* Error */}
         {status === 'error' && (
           <ErrorState
-            title="Couldn't load dashboard"
-            message="Check your connection and pull to retry."
+            title={t.dashboardErrorTitle}
+            message={t.dashboardErrorMsg}
             onRetry={refresh}
           />
         )}
@@ -92,16 +95,16 @@ export default function DashboardPage() {
             <DashboardQuickActions actions={QUICK_ACTIONS} onAction={handleQuickAction} />
             <EmptyState
               icon={<BarChart3 size={48} aria-hidden="true" />}
-              title="Your dashboard is empty"
-              description="Create your first invoice to see your business summary here."
+              title={t.dashboardEmpty}
+              description={t.dashboardEmptyDesc}
               action={
-                <button
-                  className="btn btn-primary btn-md"
+                <Button
+                  variant="primary"
                   onClick={() => navigate(`${ROUTES.INVOICE_CREATE}?type=SALE`)}
-                  aria-label="Create first invoice"
+                  aria-label={t.createInvoice}
                 >
-                  Create Invoice
-                </button>
+                  {t.createInvoice}
+                </Button>
               }
             />
           </div>
@@ -113,14 +116,14 @@ export default function DashboardPage() {
             {/* Gradient area */}
             <div className="dashboard-top-section">
               <div className={`dashboard-sales-hero ${data.today.salesAmount === 0 ? 'dashboard-sales-hero--zero' : ''}`}>
-                <span className="dashboard-sales-label">Today&apos;s Sale</span>
+                <span className="dashboard-sales-label">{t.todaysSale}</span>
                 {data.today.salesAmount > 0 ? (
                   <>
                     <span className="dashboard-sales-amount">
                       {formatCompactAmount(data.today.salesAmount)}
                     </span>
                     <span className="dashboard-sales-count">
-                      {data.today.salesCount} {data.today.salesCount === 1 ? 'invoice' : 'invoices'}
+                      {data.today.salesCount} {data.today.salesCount === 1 ? t.invoice : t.invoices}
                     </span>
                   </>
                 ) : (
@@ -129,7 +132,7 @@ export default function DashboardPage() {
                     onClick={() => navigate(`${ROUTES.INVOICE_CREATE}?type=SALE`)}
                     aria-label="Create your first invoice today"
                   >
-                    Create your first invoice today &rarr;
+                    {t.createFirstInvoice} &rarr;
                   </button>
                 )}
               </div>

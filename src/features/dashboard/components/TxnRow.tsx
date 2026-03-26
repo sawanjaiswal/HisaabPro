@@ -1,6 +1,7 @@
 /** Dashboard — Single transaction row in the recent activity feed */
 
 import { IndianRupee } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { formatSignedAmount, isInflowType, formatDate } from '../dashboard.utils'
 import { PartyAvatar } from '../../../components/ui/PartyAvatar'
 import type { RecentActivityItem } from '../dashboard.types'
@@ -12,17 +13,19 @@ interface TxnRowProps {
 }
 
 export function TxnRow({ item, onItemClick, onAddPayment }: TxnRowProps) {
+  const { t } = useLanguage()
   const isUnpaid = item.status === 'unpaid' || item.status === 'partial'
   const isInvoice = item.type === 'sale_invoice' || item.type === 'purchase_invoice'
   const showAdd = isUnpaid && isInvoice
 
   return (
-    <button
+    <div
       className="dashboard-txn-row"
       data-type={item.type}
       role="listitem"
+      tabIndex={0}
       onClick={() => onItemClick(item)}
-      type="button"
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onItemClick(item) } }}
     >
       <div className="dashboard-txn-avatar">
         <PartyAvatar name={item.partyName} size="sm" />
@@ -42,7 +45,7 @@ export function TxnRow({ item, onItemClick, onAddPayment }: TxnRowProps) {
           aria-label={`Record payment for ${item.partyName}`}
         >
           <IndianRupee size={14} aria-hidden="true" />
-          <span>Add</span>
+          <span>{t.add}</span>
         </button>
       )}
       <div className="dashboard-txn-right">
@@ -51,13 +54,13 @@ export function TxnRow({ item, onItemClick, onAddPayment }: TxnRowProps) {
         </span>
         {item.status && (
           <span className={`dashboard-txn-status dashboard-txn-status--${item.status}`}>
-            {item.status === 'paid' ? 'PAID' : item.status === 'partial' ? 'PARTIAL' : 'UNPAID'}
+            {item.status === 'paid' ? t.paid : item.status === 'partial' ? t.partial : t.unpaid}
           </span>
         )}
         {item.mode && (
           <span className="dashboard-txn-mode">{item.mode}</span>
         )}
       </div>
-    </button>
+    </div>
   )
 }

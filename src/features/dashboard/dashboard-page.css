@@ -127,7 +127,7 @@
 
 .dashboard-white-section {
   background: var(--color-gray-0);
-  padding: var(--dash-section-gap) var(--dash-side-padding) 100px;
+  padding: var(--dash-section-gap) var(--dash-side-padding) calc(var(--bottom-nav-height) + 2rem);
   display: flex;
   flex-direction: column;
   gap: var(--dash-section-gap);
@@ -234,8 +234,8 @@
 /* ─── Dark theme overrides ──────────────────────────────────── */
 
 [data-theme="dark"] .dashboard-page {
-  --dash-teal-start: #3FAED6;
-  --dash-teal-end: #2199B5;
+  --dash-teal-start: var(--color-primary-500);
+  --dash-teal-end: var(--color-primary-400);
   --dash-lime: var(--color-lime-accent);
   --dash-text-primary: var(--color-gray-900);
   --dash-text-secondary: var(--color-gray-500);
@@ -245,11 +245,11 @@
   --dash-avatar-shadow: var(--shadow-avatar-subtle);
   background: linear-gradient(
     180deg,
-    #0B0F15 0%,
-    #0E1420 20%,
-    #0D1A24 45%,
-    #111827 65%,
-    #141922 100%
+    var(--color-gray-0) 0%,
+    var(--color-gray-50) 20%,
+    var(--color-primary-50) 45%,
+    var(--color-gray-50) 65%,
+    var(--color-gray-50) 100%
   );
 }
 

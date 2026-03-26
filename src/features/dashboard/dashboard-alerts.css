@@ -161,7 +161,7 @@
 /* ─── Dark theme overrides ──────────────────────────────────── */
 
 [data-theme="dark"] .dashboard-alert-banner {
-  background: linear-gradient(135deg, #1A5C7A 0%, #0E3A4E 100%);
+  background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
 }
 
 [data-theme="dark"] .dashboard-alert-banner::before {

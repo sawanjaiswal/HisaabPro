@@ -9,6 +9,7 @@
 
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { ChevronRight, Search, X } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { formatDate, formatAmount, formatCompactAmount, getDateGroup } from '../dashboard.utils'
 import { searchRecentActivity } from '../dashboard.service'
 import { TxnRow } from './TxnRow'
@@ -42,6 +43,7 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
   onAddPayment,
   onViewAll,
 }) => {
+  const { t } = useLanguage()
   const [query, setQuery] = useState('')
   const [searchResults, setSearchResults] = useState<RecentActivityItem[] | null>(null)
   const [searching, setSearching] = useState(false)
@@ -112,11 +114,11 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
     return (
       <div className="dashboard-transactions">
         <div className="dashboard-section-header">
-          <span className="dashboard-section-title">Recent Transactions</span>
+          <span className="dashboard-section-title">{t.recentTransactions}</span>
         </div>
         <div className="dashboard-txn-empty">
-          <p>No recent transactions yet.</p>
-          <p>Create an invoice to get started.</p>
+          <p>{t.noTxnYet}</p>
+          <p>{t.noTxnYetDesc}</p>
         </div>
       </div>
     )
@@ -125,13 +127,13 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
   return (
     <div className="dashboard-transactions">
       <div className="dashboard-section-header">
-        <span className="dashboard-section-title">Recent Transactions</span>
+        <span className="dashboard-section-title">{t.recentTransactions}</span>
         <button
           className="dashboard-section-link"
           onClick={onViewAll}
-          aria-label="View all transactions in day book"
+          aria-label={t.viewAll}
         >
-          See All
+          {t.seeAll}
           <ChevronRight size={16} aria-hidden="true" />
         </button>
       </div>
@@ -142,7 +144,7 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
         <input
           className="dashboard-txn-search-input"
           type="text"
-          placeholder="Search by name, invoice, date, amount..."
+          placeholder={t.searchByNameInvoice}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           aria-label="Search recent transactions"
@@ -161,7 +163,7 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
       {/* Result count when searching */}
       {isSearchActive && !searching && searchResults && (
         <span className="dashboard-txn-search-count">
-          {searchResults.length} {searchResults.length === 1 ? 'result' : 'results'}
+          {searchResults.length} {searchResults.length === 1 ? t.result : t.results}
         </span>
       )}
 
@@ -190,7 +192,7 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
         <div className="dashboard-txn-list" role="list" aria-label="Recent transactions">
           {displayItems.length === 0 && isSearchActive && (
             <div className="dashboard-txn-empty">
-              <p>No transactions match &ldquo;{query}&rdquo;</p>
+              <p>{t.noTxnMatch} &ldquo;{query}&rdquo;</p>
             </div>
           )}
           {groupedItems
