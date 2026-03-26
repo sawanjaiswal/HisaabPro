@@ -1,0 +1,9 @@
+# Files excluded from /garden and /health file-length enforcement
+# These are frozen/generated or structurally exempt.
+
+# Translation files — all base and ext files
+src/lib/translations.en.ts
+src/lib/translations.hi.ts
+src/lib/translations.en.ext*.ts
+src/lib/translations.hi.ext*.ts
+src/lib/translations.ts
