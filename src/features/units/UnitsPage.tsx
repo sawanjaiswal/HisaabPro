@@ -23,8 +23,10 @@ import { UNIT_CATEGORY_LABELS } from './unit.constants'
 import { groupUnitsByCategory } from './unit.utils'
 import type { Unit } from './unit.types'
 import './units.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export default function UnitsPage() {
+  const { t } = useLanguage()
   const {
     units,
     conversions,
@@ -73,7 +75,7 @@ export default function UnitsPage() {
   return (
     <AppShell>
       <Header
-        title="Units"
+        title={t.unit}
         backTo="/settings"
         actions={
           <button
@@ -99,7 +101,7 @@ export default function UnitsPage() {
 
         {status === 'error' && (
           <ErrorState
-            title="Couldn't load units"
+            title={t.couldntLoadUnits}
             message="Check your connection and try again."
             onRetry={refresh}
           />
@@ -129,10 +131,10 @@ export default function UnitsPage() {
                 <input
                   type="search"
                   className="input unit-search"
-                  placeholder="Search units..."
+                  placeholder={t.search}
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
-                  aria-label="Search units"
+                  aria-label={t.search}
                   style={{ minHeight: '44px', marginTop: 'var(--space-3)' }}
                 />
 
@@ -145,7 +147,7 @@ export default function UnitsPage() {
                 {filteredUnits.length === 0 ? (
                   <EmptyState
                     icon={<Ruler size={40} aria-hidden="true" />}
-                    title={searchInput ? 'No matching units' : 'No custom units yet'}
+                    title={searchInput ? t.noMatchingUnits : t.noCustomUnitsYet}
                     description={
                       searchInput
                         ? 'Try a different search term.'
@@ -186,8 +188,8 @@ export default function UnitsPage() {
                 {conversions.length === 0 ? (
                   <EmptyState
                     icon={<Ruler size={40} aria-hidden="true" />}
-                    title="No conversions yet"
-                    description="Set up unit conversions like 1 Box = 12 Pieces."
+                    title={t.noConversionsYet}
+                    description={t.setupConversions}
                   />
                 ) : (
                   <div className="unit-groups">

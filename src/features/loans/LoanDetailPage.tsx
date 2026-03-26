@@ -20,6 +20,7 @@ import { formatPaise } from '@/lib/format'
 import { getLoanStatement, recordLoanTransaction } from './loan.service'
 import type { LoanStatement, LoanTransactionType, CreateLoanTransactionInput } from './loan.types'
 import './loans.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 const TXN_TYPE_LABELS: Record<LoanTransactionType, string> = {
   DISBURSEMENT: 'Disbursement', REPAYMENT: 'Repayment', INTEREST: 'Interest', PENALTY: 'Penalty',
@@ -39,6 +40,7 @@ function formatDate(iso: string): string {
 const TODAY = new Date().toISOString().split('T')[0]
 
 export default function LoanDetailPage() {
+  const { t } = useLanguage()
   const { id } = useParams<{ id: string }>()
   const toast = useToast()
   const [statement, setStatement] = useState<LoanStatement | null>(null)
@@ -89,7 +91,7 @@ export default function LoanDetailPage() {
   if (fetchStatus === 'loading') {
     return (
       <AppShell>
-        <Header title="Loan Details" backTo={ROUTES.LOANS} />
+        <Header title={t.loans ?? "Loan Details"} backTo={ROUTES.LOANS} />
         <PageContainer>
           <div className="loan-skeleton" aria-busy="true">
             {['sk-1', 'sk-2', 'sk-3'].map((k) => <div key={k} className="loan-skeleton__card" />)}
@@ -102,9 +104,9 @@ export default function LoanDetailPage() {
   if (fetchStatus === 'error' || !statement) {
     return (
       <AppShell>
-        <Header title="Loan Details" backTo={ROUTES.LOANS} />
+        <Header title={t.loans ?? "Loan Details"} backTo={ROUTES.LOANS} />
         <PageContainer>
-          <ErrorState title="Could not load loan details" message="Check your connection and try again." onRetry={refresh} />
+          <ErrorState title={t.couldNotLoadLoans} message="Check your connection and try again." onRetry={refresh} />
         </PageContainer>
       </AppShell>
     )
@@ -117,29 +119,29 @@ export default function LoanDetailPage() {
       <Header title={loan.partyName ?? 'Loan Details'} backTo={ROUTES.LOANS} />
       <PageContainer>
         <div className="loan-detail__hero">
-          <p className="loan-detail__label">Outstanding Balance</p>
+          <p className="loan-detail__label">{t.outstandingBalance}</p>
           <p className="loan-detail__outstanding">{formatPaise(loan.outstandingAmount)}</p>
           <div className="loan-detail__grid">
-            <div><p className="loan-detail__label">Principal</p><p className="loan-detail__value">{formatPaise(loan.principalAmount)}</p></div>
-            <div><p className="loan-detail__label">Interest Rate</p><p className="loan-detail__value">{loan.interestRate}% p.a.</p></div>
-            <div><p className="loan-detail__label">Total Paid</p><p className="loan-detail__value">{formatPaise(totalPaid)}</p></div>
-            <div><p className="loan-detail__label">Total Interest</p><p className="loan-detail__value">{formatPaise(totalInterest)}</p></div>
-            <div><p className="loan-detail__label">Start Date</p><p className="loan-detail__value">{formatDate(loan.startDate)}</p></div>
-            {loan.emiAmount && <div><p className="loan-detail__label">EMI</p><p className="loan-detail__value">{formatPaise(loan.emiAmount)}/mo</p></div>}
+            <div><p className="loan-detail__label">{t.principal}</p><p className="loan-detail__value">{formatPaise(loan.principalAmount)}</p></div>
+            <div><p className="loan-detail__label">{t.interestRatePercent}</p><p className="loan-detail__value">{loan.interestRate}% p.a.</p></div>
+            <div><p className="loan-detail__label">{t.totalPaid}</p><p className="loan-detail__value">{formatPaise(totalPaid)}</p></div>
+            <div><p className="loan-detail__label">{t.totalInterest}</p><p className="loan-detail__value">{formatPaise(totalInterest)}</p></div>
+            <div><p className="loan-detail__label">{t.dateLabel}</p><p className="loan-detail__value">{formatDate(loan.startDate)}</p></div>
+            {loan.emiAmount && <div><p className="loan-detail__label">{t.emiColon}</p><p className="loan-detail__value">{formatPaise(loan.emiAmount)}/mo</p></div>}
           </div>
           {loan.status === 'ACTIVE' && (
-            <button type="button" className="loan-add-btn loan-detail__action-btn" onClick={() => setDrawerOpen(true)} aria-label="Record loan payment">
+            <button type="button" className="loan-add-btn loan-detail__action-btn" onClick={() => setDrawerOpen(true)} aria-label={t.recordTransaction}>
               <Plus size={14} aria-hidden="true" /> Record Transaction
             </button>
           )}
         </div>
 
-        <p className="loan-detail__section-title">Transaction History</p>
+        <p className="loan-detail__section-title">{t.transactionHistoryLoan}</p>
 
         {transactions.length === 0 && (
           <div className="loan-empty">
-            <p className="loan-empty__title">No transactions yet</p>
-            <p className="loan-empty__desc">Record payments and interest entries to track this loan.</p>
+            <p className="loan-empty__title">{t.noTxnYetLoan}</p>
+            <p className="loan-empty__desc">{t.recordPaymentsInterest}</p>
           </div>
         )}
 
@@ -160,31 +162,31 @@ export default function LoanDetailPage() {
         )}
       </PageContainer>
 
-      <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title="Record Transaction">
+      <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title={t.recordTransaction}>
         <form className="loan-drawer__form" onSubmit={handleSubmit}>
           {formError && <p className="loan-drawer__error" role="alert">{formError}</p>}
           <div className="loan-drawer__field">
-            <label className="loan-drawer__label" htmlFor="txnType">Transaction Type</label>
+            <label className="loan-drawer__label" htmlFor="txnType">{t.loanType}</label>
             <select id="txnType" className="loan-drawer__select" value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as LoanTransactionType }))}>
               {(Object.entries(TXN_TYPE_LABELS) as [LoanTransactionType, string][]).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
             </select>
           </div>
           <div className="loan-drawer__row">
             <div className="loan-drawer__field">
-              <label className="loan-drawer__label" htmlFor="txnAmount">Amount (₹)</label>
+              <label className="loan-drawer__label" htmlFor="txnAmount">{t.amountRsLabel}</label>
               <input id="txnAmount" type="number" min="0.01" step="0.01" required className="loan-drawer__input" value={form.amountRupees} onChange={(e) => setForm((f) => ({ ...f, amountRupees: e.target.value }))} placeholder="0.00" />
             </div>
             <div className="loan-drawer__field">
-              <label className="loan-drawer__label" htmlFor="txnDate">Date</label>
+              <label className="loan-drawer__label" htmlFor="txnDate">{t.dateLabel}</label>
               <input id="txnDate" type="date" required className="loan-drawer__input" value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
             </div>
           </div>
           <div className="loan-drawer__field">
-            <label className="loan-drawer__label" htmlFor="txnNotes">Notes (optional)</label>
+            <label className="loan-drawer__label" htmlFor="txnNotes">{t.notesOptional}</label>
             <input id="txnNotes" className="loan-drawer__input" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder="Payment details" />
           </div>
           <button type="submit" className="loan-drawer__submit-btn" disabled={submitting} aria-busy={submitting}>
-            {submitting ? 'Saving...' : 'Record Transaction'}
+            {submitting ? t.loading : t.recordTransaction}
           </button>
         </form>
       </Drawer>

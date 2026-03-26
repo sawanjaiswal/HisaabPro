@@ -2,6 +2,7 @@
 
 import React, { useCallback } from 'react'
 import { Trash2 } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { LineItemFormData, DiscountType } from '../invoice.types'
 import { formatInvoiceAmount, paiseToRupees, rupeesToPaise } from '../invoice-format.utils'
 import { calculateLineTotal } from '../invoice-calc.utils'
@@ -31,6 +32,7 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
   onRemove,
   showProfit,
 }) => {
+  const { t } = useLanguage()
   const handleQuantityChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const qty = parseFloat(e.target.value)
@@ -95,7 +97,7 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
           type="button"
           className="line-item-remove"
           onClick={() => onRemove(index)}
-          aria-label={`Remove ${item.productName} from line items`}
+          aria-label={`${item.productName} ${t.removeFromLineItems}`}
         >
           <Trash2 size={16} aria-hidden="true" />
         </button>
@@ -107,7 +109,7 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
             className="line-item-field-label"
             htmlFor={`line-qty-${index}`}
           >
-            Qty
+            {t.qty}
           </label>
           <input
             id={`line-qty-${index}`}
@@ -117,7 +119,7 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
             min={0.001}
             step={0.001}
             onChange={handleQuantityChange}
-            aria-label={`Quantity for ${item.productName}`}
+            aria-label={`${t.quantityFor} ${item.productName}`}
             style={{ minHeight: '44px' }}
           />
         </div>
@@ -127,7 +129,7 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
             className="line-item-field-label"
             htmlFor={`line-rate-${index}`}
           >
-            Rate (Rs)
+            {t.rateRs}
           </label>
           <input
             id={`line-rate-${index}`}
@@ -137,7 +139,7 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
             min={0}
             step={0.01}
             onChange={handleRateChange}
-            aria-label={`Rate in rupees for ${item.productName}`}
+            aria-label={`${t.rateInRupeesFor} ${item.productName}`}
             style={{ minHeight: '44px' }}
           />
         </div>
@@ -147,10 +149,10 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
             className="line-item-field-label"
             htmlFor={`line-discount-${index}`}
           >
-            Discount
+            {t.discount}
           </label>
           <div className="discount-toggle">
-            <div className="discount-toggle" role="group" aria-label={`Discount type for ${item.productName}`}>
+            <div className="discount-toggle" role="group" aria-label={`${t.discountTypeFor} ${item.productName}`}>
               {DISCOUNT_TYPES.map((type) => (
                 <button
                   key={type}
@@ -158,7 +160,7 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
                   className={`discount-toggle-btn${item.discountType === type ? ' active' : ''}`}
                   onClick={() => handleDiscountTypeToggle(type)}
                   aria-pressed={item.discountType === type}
-                  aria-label={`Set discount as ${type === 'AMOUNT' ? 'amount in rupees' : 'percentage'}`}
+                  aria-label={type === 'AMOUNT' ? t.setDiscountAsAmount : t.setDiscountAsPercentage}
                 >
                   {DISCOUNT_TYPE_LABELS[type]}
                 </button>
@@ -173,7 +175,7 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
               max={item.discountType === 'PERCENTAGE' ? 100 : undefined}
               step={item.discountType === 'PERCENTAGE' ? 0.01 : 0.01}
               onChange={handleDiscountValueChange}
-              aria-label={`Discount ${item.discountType === 'AMOUNT' ? 'amount in rupees' : 'percentage'} for ${item.productName}`}
+              aria-label={`${t.discount} ${item.discountType === 'AMOUNT' ? t.discountAmountFor : t.discountPercentFor} ${item.productName}`}
               style={{ minHeight: '44px' }}
             />
           </div>
@@ -181,7 +183,7 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
       </div>
 
       <div className="line-item-total">
-        <span className="line-item-total-label">Line Total</span>
+        <span className="line-item-total-label">{t.lineTotal}</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
           {showProfit && (
             <span className={profitClass}>

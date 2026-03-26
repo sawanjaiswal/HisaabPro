@@ -2,6 +2,7 @@ import { Phone } from 'lucide-react'
 import { Input } from '../../../components/ui/Input'
 import { Button } from '../../../components/ui/Button'
 import { PHONE_MAX_LENGTH, PHONE_REGEX } from '../auth.constants'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface PhoneStepProps {
   phone: string
@@ -12,6 +13,7 @@ interface PhoneStepProps {
 }
 
 export function PhoneStep({ phone, onPhoneChange, onSubmit, loading, error }: PhoneStepProps) {
+  const { t } = useLanguage()
   const isValid = PHONE_REGEX.test(phone)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,8 +31,8 @@ export function PhoneStep({ phone, onPhoneChange, onSubmit, loading, error }: Ph
       <div className="auth-form__field">
         <Input
           type="tel"
-          label="Phone Number"
-          placeholder="Enter 10-digit mobile number"
+          label={t.phone}
+          placeholder={t.enterPhoneNumber}
           value={phone}
           onChange={handleChange}
           disabled={loading}
@@ -38,7 +40,7 @@ export function PhoneStep({ phone, onPhoneChange, onSubmit, loading, error }: Ph
           inputMode="numeric"
           icon={<Phone size={18} />}
           error={error}
-          aria-label="Phone number"
+          aria-label={t.phone}
         />
       </div>
 

@@ -7,15 +7,18 @@
 import React from 'react'
 import { formatAmount } from '../report.utils'
 import type { HsnSummaryItem } from '../report-tax.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface HsnSummaryTableProps {
   items: HsnSummaryItem[]
 }
 
-export const HsnSummaryTable: React.FC<HsnSummaryTableProps> = ({ items }) => {
-  return (
-    <div className="hsn-summary" role="region" aria-label="HSN-wise tax summary">
-      <h2 className="hsn-summary__heading">HSN / SAC Summary</h2>
+export const HsnSummaryTable: React.FC<HsnSummaryTableProps> = ({
+  items }) => {
+  const { t } = useLanguage()
+    return (
+    <div className="hsn-summary" role="region" aria-label={t.hsnWiseTaxSummary}>
+      <h2 className="hsn-summary__heading">{t.hsnSacSummary}</h2>
 
       {/* Mobile: card list */}
       <div className="hsn-summary__cards" aria-hidden="false">
@@ -26,7 +29,7 @@ export const HsnSummaryTable: React.FC<HsnSummaryTableProps> = ({ items }) => {
               <span className="hsn-summary__qty">Qty: {item.quantity}</span>
             </div>
             <div className="hsn-summary__card-row">
-              <span className="hsn-summary__field-label">Taxable Value</span>
+              <span className="hsn-summary__field-label">{t.taxableValue}</span>
               <span className="hsn-summary__field-value">{formatAmount(item.taxableValue)}</span>
             </div>
             {item.cgst > 0 && (
@@ -48,7 +51,7 @@ export const HsnSummaryTable: React.FC<HsnSummaryTableProps> = ({ items }) => {
               </div>
             )}
             <div className="hsn-summary__card-row hsn-summary__card-row--total">
-              <span className="hsn-summary__field-label">Total Value</span>
+              <span className="hsn-summary__field-label">{t.totalValue}</span>
               <span className="hsn-summary__field-value hsn-summary__field-value--strong">
                 {formatAmount(item.totalValue)}
               </span>

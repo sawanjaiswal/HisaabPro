@@ -1,12 +1,14 @@
 /** Public Ledger View — Read-only ledger displayed to share recipients */
 
 import type { PublicLedgerData } from '../shared-ledger.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface PublicLedgerViewProps {
   data: PublicLedgerData
 }
 
 export function PublicLedgerView({ data }: PublicLedgerViewProps) {
+  const { t } = useLanguage()
   const formatAmount = (paise: number) =>
     `Rs ${(paise / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
 
@@ -14,22 +16,22 @@ export function PublicLedgerView({ data }: PublicLedgerViewProps) {
     <div className="public-ledger">
       <div className="public-ledger-header">
         <h1 className="public-ledger-business">{data.businessName}</h1>
-        <p className="public-ledger-party">Ledger for {data.partyName}</p>
-        <span className="public-ledger-badge">Read-only view</span>
+        <p className="public-ledger-party">{t.ledgerFor} {data.partyName}</p>
+        <span className="public-ledger-badge">{t.readOnlyView}</span>
       </div>
 
       {/* Summary */}
       <div className="public-ledger-summary">
         <div className="public-ledger-stat">
-          <span className="public-ledger-stat-label">Total Debit</span>
+          <span className="public-ledger-stat-label">{t.totalDebitLedger}</span>
           <span className="public-ledger-stat-value">{formatAmount(data.totalDebit)}</span>
         </div>
         <div className="public-ledger-stat">
-          <span className="public-ledger-stat-label">Total Credit</span>
+          <span className="public-ledger-stat-label">{t.totalCreditLedger}</span>
           <span className="public-ledger-stat-value">{formatAmount(data.totalCredit)}</span>
         </div>
         <div className="public-ledger-stat">
-          <span className="public-ledger-stat-label">Balance</span>
+          <span className="public-ledger-stat-label">{t.balanceLedger}</span>
           <span className="public-ledger-stat-value public-ledger-stat-balance">
             {formatAmount(data.closingBalance)}
           </span>
@@ -37,13 +39,13 @@ export function PublicLedgerView({ data }: PublicLedgerViewProps) {
       </div>
 
       {/* Transactions */}
-      <div className="public-ledger-table" role="table" aria-label="Transaction history">
+      <div className="public-ledger-table" role="table" aria-label={t.transactionHistory}>
         <div className="public-ledger-table-head" role="row">
-          <span role="columnheader">Date</span>
-          <span role="columnheader">Description</span>
-          <span role="columnheader">Debit</span>
-          <span role="columnheader">Credit</span>
-          <span role="columnheader">Balance</span>
+          <span role="columnheader">{t.dateColumn}</span>
+          <span role="columnheader">{t.descriptionColumn}</span>
+          <span role="columnheader">{t.debitColumn}</span>
+          <span role="columnheader">{t.creditColumn}</span>
+          <span role="columnheader">{t.balanceColumn}</span>
         </div>
         {data.transactions.map((tx, i) => (
           <div key={`${tx.date}-${tx.reference}-${i}`} className="public-ledger-table-row" role="row">
@@ -60,7 +62,7 @@ export function PublicLedgerView({ data }: PublicLedgerViewProps) {
       </div>
 
       <p className="public-ledger-watermark">
-        Shared via HisaabPro on {new Date(data.generatedAt).toLocaleDateString('en-IN')}
+        {t.sharedViaHisaabPro} {new Date(data.generatedAt).toLocaleDateString('en-IN')}
       </p>
     </div>
   )

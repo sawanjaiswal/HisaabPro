@@ -1,4 +1,4 @@
-import { Suspense, lazy } from 'react'
+import { Suspense } from 'react'
 import type { ReactNode } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ROUTES } from '@/config/routes.config'
@@ -10,112 +10,34 @@ import { SWUpdatePrompt } from '@/components/feedback/SWUpdatePrompt'
 import { PageTransition } from '@/components/layout/PageTransition'
 import { useAuth } from '@/context/AuthContext'
 import { useRoutePreload } from '@/hooks/useRoutePreload'
-
-const CalculatorOverlay = lazy(() =>
-  import('@/features/settings/CalculatorOverlay').then((m) => ({ default: m.CalculatorOverlay }))
-)
-const FeedbackWidget = lazy(() =>
-  import('@/components/feedback/FeedbackWidget').then((m) => ({ default: m.FeedbackWidget }))
-)
-
-/** Lazy-loaded pages — split per route for small bundles */
-const Login = lazy(() => import('@/features/auth/LoginPage'))
-const Onboarding = lazy(() => import('@/features/onboarding/OnboardingPage'))
-const Dashboard = lazy(() => import('@/features/dashboard/DashboardPage'))
-const Parties = lazy(() => import('@/features/parties/PartiesPage'))
-const CreateParty = lazy(() => import('@/features/parties/CreatePartyPage'))
-const PartyDetail = lazy(() => import('@/features/parties/PartyDetailPage'))
-const Products = lazy(() => import('@/features/products/ProductsPage'))
-const CreateProduct = lazy(() => import('@/features/products/CreateProductPage'))
-const ProductDetail = lazy(() => import('@/features/products/ProductDetailPage'))
-const Invoices = lazy(() => import('@/features/invoices/InvoicesPage'))
-const CreateInvoice = lazy(() => import('@/features/invoices/CreateInvoicePage'))
-const InvoiceDetail = lazy(() => import('@/features/invoices/InvoiceDetailPage'))
-const EditParty = lazy(() => import('@/features/parties/EditPartyPage'))
-const EditProduct = lazy(() => import('@/features/products/EditProductPage'))
-const EditInvoice = lazy(() => import('@/features/invoices/EditInvoicePage'))
-const TemplateGallery = lazy(() => import('@/features/templates/TemplateGalleryPage'))
-const TemplateEditor = lazy(() => import('@/features/templates/TemplateEditorPage'))
-const Payments = lazy(() => import('@/features/payments/PaymentsPage'))
-const RecordPayment = lazy(() => import('@/features/payments/RecordPaymentPage'))
-const PaymentDetail = lazy(() => import('@/features/payments/PaymentDetailPage'))
-const EditPayment = lazy(() => import('@/features/payments/EditPaymentPage'))
-const Outstanding = lazy(() => import('@/features/payments/OutstandingPage'))
-const ReportsHub = lazy(() => import('@/features/reports/ReportsHubPage'))
-const SaleReport = lazy(() => import('@/features/reports/InvoiceReportPage'))
-const PurchaseReport = lazy(() => import('@/features/reports/InvoiceReportPage'))
-const PartyStatement = lazy(() => import('@/features/reports/PartyStatementPage'))
-const StockSummary = lazy(() => import('@/features/reports/StockSummaryPage'))
-const DayBook = lazy(() => import('@/features/reports/DayBookPage'))
-const PaymentHistory = lazy(() => import('@/features/reports/PaymentHistoryPage'))
-const TaxSummary = lazy(() => import('@/features/reports/TaxSummaryPage'))
-const GstReturns = lazy(() => import('@/features/reports/GstReturnsPage'))
-const TdsTcsReport = lazy(() => import('@/features/reports/TdsTcsReportPage'))
-const Settings = lazy(() => import('@/features/settings/SettingsPage'))
-const Roles = lazy(() => import('@/features/settings/RolesPage'))
-const RoleBuilder = lazy(() => import('@/features/settings/RoleBuilderPage'))
-const Staff = lazy(() => import('@/features/settings/StaffPage'))
-const StaffInvite = lazy(() => import('@/features/settings/StaffInvitePage'))
-const TransactionControls = lazy(() => import('@/features/settings/TransactionControlsPage'))
-const AuditLog = lazy(() => import('@/features/settings/AuditLogPage'))
-const PinSetup = lazy(() => import('@/features/settings/PinSetupPage'))
-const Shortcuts = lazy(() => import('@/features/settings/ShortcutsPage'))
-const GstSettings = lazy(() => import('@/features/tax/GstSettingsPage'))
-const TaxCategories = lazy(() => import('@/features/tax/TaxCategoriesPage'))
-const CreateTaxCategory = lazy(() => import('@/features/tax/CreateTaxCategoryPage'))
-const EditTaxCategory = lazy(() => import('@/features/tax/EditTaxCategoryPage'))
-const CurrencySettings = lazy(() => import('@/features/settings/currency/CurrencySettingsPage'))
-const RecurringList = lazy(() => import('@/features/recurring/RecurringListPage'))
-const GstReconciliationList = lazy(() => import('@/features/gst-reconciliation/ReconciliationListPage'))
-const GstReconciliationDetail = lazy(() => import('@/features/gst-reconciliation/ReconciliationDetailPage'))
-const ChartOfAccounts = lazy(() => import('@/features/accounting/ChartOfAccountsPage'))
-const JournalEntries = lazy(() => import('@/features/accounting/JournalEntriesPage'))
-const TrialBalance = lazy(() => import('@/features/accounting/TrialBalancePage'))
-const BankAccounts = lazy(() => import('@/features/bank-accounts/BankAccountsPage'))
-const Expenses = lazy(() => import('@/features/expenses/ExpensesPage'))
-const OtherIncome = lazy(() => import('@/features/other-income/OtherIncomePage'))
-const Cheques = lazy(() => import('@/features/cheques/ChequesPage'))
-const Loans = lazy(() => import('@/features/loans/LoansPage'))
-const LoanDetail = lazy(() => import('@/features/loans/LoanDetailPage'))
-const ProfitLoss = lazy(() => import('@/features/reports/ProfitLossPage'))
-const BalanceSheet = lazy(() => import('@/features/reports/BalanceSheetPage'))
-const CashFlow = lazy(() => import('@/features/reports/CashFlowPage'))
-const AgingReport = lazy(() => import('@/features/reports/AgingReportPage'))
-const ProfitabilityReport = lazy(() => import('@/features/reports/ProfitabilityReportPage'))
-const DiscountReport = lazy(() => import('@/features/reports/DiscountReportPage'))
-const TallyExport = lazy(() => import('@/features/reports/TallyExportPage'))
-const FYClosure = lazy(() => import('@/features/accounting/FYClosurePage'))
-const More = lazy(() => import('@/features/more/MorePage'))
-const BillScan = lazy(() => import('@/features/bill-scan/BillScanPage'))
-const BulkImport = lazy(() => import('@/features/bulk-import/BulkImportPage'))
-const PublicLedger = lazy(() => import('@/features/shared-ledger/PublicLedgerPage'))
-const ItemsLibrary = lazy(() => import('@/features/items-library/ItemsLibraryPage'))
-const DataImport = lazy(() => import('@/features/data-import/DataImportPage'))
-const SmartGreetings = lazy(() => import('@/features/smart-greetings/SmartGreetingsPage'))
-const Units = lazy(() => import('@/features/units/UnitsPage'))
-const JoinBusiness = lazy(() => import('@/features/business/JoinBusinessPage'))
-const Landing = lazy(() => import('@/features/landing/LandingPage'))
-const AdminCoupons = lazy(() => import('@/features/admin/coupons/CouponsPage'))
-const AdminCouponDetail = lazy(() => import('@/features/admin/coupons/CouponDetailPage'))
-
-// Phase 4 — Advanced Inventory
-const Batches = lazy(() => import('@/features/batches/BatchesPage'))
-const CreateBatch = lazy(() => import('@/features/batches/CreateBatchPage'))
-const BatchDetail = lazy(() => import('@/features/batches/BatchDetailPage'))
-const Godowns = lazy(() => import('@/features/godowns/GodownsPage'))
-const CreateGodown = lazy(() => import('@/features/godowns/CreateGodownPage'))
-const EditGodown = lazy(() => import('@/features/godowns/EditGodownPage'))
-const GodownDetail = lazy(() => import('@/features/godowns/GodownDetailPage'))
-const GodownTransfer = lazy(() => import('@/features/godowns/TransferPage'))
-const StockVerifications = lazy(() => import('@/features/stock-verification/VerificationsPage'))
-const VerificationDetail = lazy(() => import('@/features/stock-verification/VerificationDetailPage'))
-const Serials = lazy(() => import('@/features/serial-numbers/SerialsPage'))
-const CreateSerial = lazy(() => import('@/features/serial-numbers/CreateSerialPage'))
-const BulkCreateSerial = lazy(() => import('@/features/serial-numbers/BulkCreateSerialPage'))
-const SerialLookup = lazy(() => import('@/features/serial-numbers/SerialLookupPage'))
-const Pos = lazy(() => import('@/features/pos/PosPage'))
-
-const NotFound = lazy(() => import('@/components/feedback/NotFoundPage'))
+import {
+  CalculatorOverlay, FeedbackWidget,
+  Login, Onboarding, Dashboard,
+  Parties, CreateParty, PartyDetail, EditParty,
+  Products, CreateProduct, ProductDetail, EditProduct,
+  Invoices, CreateInvoice, InvoiceDetail, EditInvoice,
+  TemplateGallery, TemplateEditor,
+  Payments, RecordPayment, PaymentDetail, EditPayment, Outstanding,
+  ReportsHub, SaleReport, PurchaseReport, PartyStatement, StockSummary,
+  DayBook, PaymentHistory, TaxSummary, GstReturns, TdsTcsReport,
+  Settings, Roles, RoleBuilder, Staff, StaffInvite,
+  TransactionControls, AuditLog, PinSetup, Shortcuts,
+  GstSettings, TaxCategories, CreateTaxCategory, EditTaxCategory,
+  CurrencySettings, RecurringList,
+  GstReconciliationList, GstReconciliationDetail,
+  ChartOfAccounts, JournalEntries, TrialBalance,
+  BankAccounts, Expenses, OtherIncome, Cheques, Loans, LoanDetail,
+  ProfitLoss, BalanceSheet, CashFlow, AgingReport, ProfitabilityReport,
+  DiscountReport, TallyExport, FYClosure,
+  More, BillScan, BulkImport, PublicLedger, ItemsLibrary, DataImport,
+  SmartGreetings, Units, JoinBusiness, Landing,
+  AdminCoupons, AdminCouponDetail,
+  Batches, CreateBatch, BatchDetail,
+  Godowns, CreateGodown, EditGodown, GodownDetail, GodownTransfer,
+  StockVerifications, VerificationDetail,
+  Serials, CreateSerial, BulkCreateSerial, SerialLookup, Pos,
+  NotFound,
+} from '@/app.routes'
 
 /** Route-level ErrorBoundary + Suspense wrapper for individual pages */
 function PageRoute({ children }: { children: ReactNode }) {

@@ -15,14 +15,16 @@ import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { ROUTES } from '@/config/routes.config'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useAuth } from '@/context/AuthContext'
 import { useRoles } from './useRoles'
 import { RoleCard } from './components/RoleCard'
 import './roles.css'
 
 function RolesListSkeleton() {
+  const { t } = useLanguage()
   return (
-    <div className="roles-list" aria-busy="true" aria-label="Loading roles">
+    <div className="roles-list" aria-busy="true" aria-label={t.loadingRolesLabel}>
       {Array.from({ length: 4 }, (_, i) => (
         <div key={`role-skeleton-${i}`} className="role-card" style={{ pointerEvents: 'none' }}>
           <Skeleton width="40px" height="40px" borderRadius="var(--radius-md)" />
@@ -47,6 +49,7 @@ function RolesListSkeleton() {
 
 export default function RolesPage() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const { user } = useAuth()
   const businessId = user?.businessId ?? ''
   const { roles, status, refresh } = useRoles(businessId)
@@ -57,7 +60,7 @@ export default function RolesPage() {
 
   return (
     <AppShell>
-      <Header title="Roles" backTo={ROUTES.SETTINGS} />
+      <Header title={t.roles} backTo={ROUTES.SETTINGS} />
 
       <PageContainer>
         <div className="roles-page">
@@ -65,8 +68,8 @@ export default function RolesPage() {
 
           {status === 'error' && (
             <ErrorState
-              title="Could not load roles"
-              message="Check your connection and try again."
+              title={t.couldNotLoadRoles}
+              message={t.checkConnectionRetry2}
               onRetry={refresh}
             />
           )}
@@ -74,22 +77,22 @@ export default function RolesPage() {
           {status === 'success' && roles.length === 0 && (
             <EmptyState
               icon={<Shield size={40} aria-hidden="true" />}
-              title="No custom roles"
-              description="System roles are always available. Create a custom role to fine-tune staff permissions."
+              title={t.noCustomRoles}
+              description={t.noCustomRolesDesc}
               action={
                 <button
                   className="btn btn-primary btn-md"
                   onClick={() => navigate(ROUTES.SETTINGS_ROLE_NEW)}
-                  aria-label="Create first custom role"
+                  aria-label={t.createFirstCustomRole}
                 >
-                  Create Role
+                  {t.createRole}
                 </button>
               }
             />
           )}
 
           {status === 'success' && roles.length > 0 && (
-            <div className="roles-list" role="list" aria-label="Roles">
+            <div className="roles-list" role="list" aria-label={t.roles}>
               {roles.map((role) => (
                 <div key={role.id} role="listitem">
                   <RoleCard role={role} onClick={handleRoleClick} />
@@ -103,7 +106,7 @@ export default function RolesPage() {
       <button
         className="fab"
         onClick={() => navigate(ROUTES.SETTINGS_ROLE_NEW)}
-        aria-label="Create new role"
+        aria-label={t.createNewRole}
       >
         <Plus size={24} aria-hidden="true" />
       </button>

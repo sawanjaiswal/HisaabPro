@@ -6,6 +6,7 @@ import type { Unit } from '../unit.types'
 import type { UnitInput } from '../../products/unit.service'
 import { validateUnitName, validateUnitSymbol } from '../unit.utils'
 import { UNIT_NAME_MAX, UNIT_SYMBOL_MAX } from '../unit.constants'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface AddUnitSheetProps {
   open: boolean
@@ -17,6 +18,7 @@ interface AddUnitSheetProps {
 }
 
 export function AddUnitSheet({ open, onClose, onSave, onUpdate, editUnit }: AddUnitSheetProps) {
+  const { t } = useLanguage()
   const [name, setName] = useState('')
   const [symbol, setSymbol] = useState('')
   const [errors, setErrors] = useState<{ name?: string; symbol?: string }>({})
@@ -63,7 +65,7 @@ export function AddUnitSheet({ open, onClose, onSave, onUpdate, editUnit }: AddU
     <Drawer
       open={open}
       onClose={onClose}
-      title={isEdit ? 'Edit Unit' : 'Add Custom Unit'}
+      title={isEdit ? t.editUnit : t.addCustomUnit}
       size="sm"
       footer={
         <button
@@ -72,20 +74,20 @@ export function AddUnitSheet({ open, onClose, onSave, onUpdate, editUnit }: AddU
           style={{ width: '100%' }}
           onClick={handleSubmit}
           disabled={isSaving}
-          aria-label={isEdit ? 'Save changes' : 'Create unit'}
+          aria-label={isEdit ? t.saveChanges : t.createUnit}
         >
-          {isSaving ? 'Saving...' : isEdit ? 'Save Changes' : 'Create Unit'}
+          {isSaving ? t.loading : isEdit ? t.saveChanges : t.createUnit}
         </button>
       }
     >
       <div className="unit-sheet-form">
         <div className="line-item-field">
-          <label className="label" htmlFor="unit-name">Unit Name</label>
+          <label className="label" htmlFor="unit-name">{t.unitNameLabel}</label>
           <input
             id="unit-name"
             type="text"
             className={`input${errors.name ? ' input--error' : ''}`}
-            placeholder="e.g., Box of 12, Hours"
+            placeholder={t.unitNamePlaceholder}
             value={name}
             onChange={(e) => setName(e.target.value)}
             onBlur={() => {
@@ -100,12 +102,12 @@ export function AddUnitSheet({ open, onClose, onSave, onUpdate, editUnit }: AddU
         </div>
 
         <div className="line-item-field">
-          <label className="label" htmlFor="unit-symbol">Symbol</label>
+          <label className="label" htmlFor="unit-symbol">{t.symbolLabel}</label>
           <input
             id="unit-symbol"
             type="text"
             className={`input${errors.symbol ? ' input--error' : ''}`}
-            placeholder="e.g., box12, hr"
+            placeholder={t.symbolPlaceholder}
             value={symbol}
             onChange={(e) => setSymbol(e.target.value)}
             onBlur={() => {

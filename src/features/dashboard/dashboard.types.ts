@@ -62,7 +62,6 @@ export interface TopDebtor {
 
 export interface QuickAction {
   id: string
-  label: string
   /** Lucide icon name */
   icon: string
   route: string

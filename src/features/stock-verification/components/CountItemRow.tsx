@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp, Save } from 'lucide-react'
 import type { VerificationItem, RecordCountData } from '../stock-verification.types'
 import { NOTES_MAX } from '../stock-verification.constants'
 import { formatDiscrepancy, getDiscrepancyColor } from '../stock-verification.utils'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface CountItemRowProps {
   item: VerificationItem
@@ -11,6 +12,7 @@ interface CountItemRowProps {
 }
 
 export function CountItemRow({ item, onSave, disabled }: CountItemRowProps) {
+  const { t } = useLanguage()
   const [qty, setQty] = useState(item.actualQuantity?.toString() ?? '')
   const [notes, setNotes] = useState(item.notes ?? '')
   const [showNotes, setShowNotes] = useState(false)
@@ -61,7 +63,7 @@ export function CountItemRow({ item, onSave, disabled }: CountItemRowProps) {
           type="button"
           className="sv-count-row__notes-toggle"
           onClick={() => setShowNotes(!showNotes)}
-          aria-label={showNotes ? 'Hide notes' : 'Add notes'}
+          aria-label={showNotes ? t.hideNotes : t.addNotes}
           aria-expanded={showNotes}
         >
           {showNotes ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -83,7 +85,7 @@ export function CountItemRow({ item, onSave, disabled }: CountItemRowProps) {
           className="sv-count-row__notes"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          placeholder="Add notes about this item..."
+          placeholder={t.itemNotes}
           maxLength={NOTES_MAX}
           rows={2}
           disabled={disabled}

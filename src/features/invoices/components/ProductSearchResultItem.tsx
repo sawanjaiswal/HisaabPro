@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { Plus } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { ProductSummary } from '@/lib/types/product.types'
 import { formatCurrency } from '@/lib/format'
 
@@ -20,9 +21,10 @@ export const ProductSearchResultItem: React.FC<ProductSearchResultItemProps> = (
   isAdded,
   onAdd,
 }) => {
+  const { t } = useLanguage()
   const stockLabel =
     product.currentStock <= 0
-      ? 'Out of stock'
+      ? t.outOfStockLabel
       : `${product.currentStock} ${product.unit.symbol}`
 
   return (
@@ -31,7 +33,7 @@ export const ProductSearchResultItem: React.FC<ProductSearchResultItemProps> = (
       className={`product-search-result${isAdded ? ' product-search-result--added' : ''}`}
       role="option"
       aria-selected={isAdded}
-      aria-label={`${product.name}, price ${formatCurrency(product.salePrice)}, stock: ${stockLabel}${isAdded ? ', already added' : ''}`}
+      aria-label={`${product.name}, ${formatCurrency(product.salePrice)}, ${t.stockLabel}: ${stockLabel}${isAdded ? `, ${t.alreadyAddedSuffix}` : ''}`}
     >
       <div className="product-search-result-info">
         <div className="product-search-result-name">{product.name}</div>
@@ -53,14 +55,14 @@ export const ProductSearchResultItem: React.FC<ProductSearchResultItemProps> = (
           className={`product-search-add-btn${isAdded ? ' product-search-add-btn--added' : ''}`}
           onClick={() => !isAdded && onAdd(product)}
           disabled={isAdded}
-          aria-label={isAdded ? `${product.name} already added` : `Add ${product.name}`}
+          aria-label={isAdded ? `${product.name} ${t.alreadyAddedSuffix}` : `${t.add} ${product.name}`}
         >
           {isAdded ? (
-            'Added'
+            t.addedLabel
           ) : (
             <>
               <Plus size={14} aria-hidden="true" />
-              Add
+              {t.add}
             </>
           )}
         </button>

@@ -5,10 +5,11 @@
  */
 
 import React from 'react'
-import type { QuickAction } from '../dashboard.types'
+import { useLanguage } from '@/hooks/useLanguage'
+import type { QuickActionConfig } from '../dashboard.constants'
 
 interface DashboardQuickActionsProps {
-  actions: QuickAction[]
+  actions: QuickActionConfig[]
   onAction: (route: string) => void
 }
 
@@ -23,14 +24,16 @@ export const DashboardQuickActions: React.FC<DashboardQuickActionsProps> = ({
   actions,
   onAction,
 }) => {
+  const { t } = useLanguage()
   return (
     <div
       className="dashboard-action-grid"
       role="list"
-      aria-label="Quick actions"
+      aria-label={t.quickActions}
     >
       {actions.map((action) => {
         const iconSrc = FIGMA_ICONS[action.id] ?? '/assets/icon-more.svg'
+        const label = t[action.labelKey]
 
         return (
           <button
@@ -38,12 +41,12 @@ export const DashboardQuickActions: React.FC<DashboardQuickActionsProps> = ({
             className="dashboard-action-item"
             role="listitem"
             onClick={() => onAction(action.route)}
-            aria-label={action.label}
+            aria-label={label}
           >
             <div className="dashboard-action-icon-box">
               <img src={iconSrc} alt="" width={24} height={24} aria-hidden="true" />
             </div>
-            <span className="dashboard-action-label">{action.label}</span>
+            <span className="dashboard-action-label">{label}</span>
           </button>
         )
       })}

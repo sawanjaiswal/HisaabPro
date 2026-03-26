@@ -1,14 +1,13 @@
 /** Parties — Hero card pair (To Collect / To Pay)
  *
- * Matches dashboard OutstandingHero pattern: teal card (collect) + lime card (pay).
- * Amount left-aligned, label below with arrow, chevron on right.
+ * Uses shared summary-hero CSS pattern.
  * All amounts in PAISE — formatted via paisaToRupees.
  */
 
 import React from 'react'
 import { ChevronRight, ArrowDownLeft, ArrowUpRight } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { paisaToRupees } from '../party.utils'
-import './PartySummaryBar.css'
 
 interface PartySummaryBarProps {
   summary: {
@@ -26,51 +25,52 @@ export const PartySummaryBar: React.FC<PartySummaryBarProps> = ({
   onCollectClick,
   onPayClick,
 }) => {
+  const { t } = useLanguage()
   const { totalReceivable, totalPayable, totalParties } = summary
 
   return (
-    <div className="party-hero" role="list" aria-label="Party outstanding summary">
-      <p className="party-hero-count">{totalParties} Parties</p>
+    <div className="summary-hero" role="list" aria-label={t.outstandingSummary}>
+      <p className="summary-hero-count">{totalParties} {totalParties === 1 ? t.party : t.parties}</p>
 
-      <div className="party-hero-cards">
+      <div className="summary-hero-cards">
         {/* To Collect — teal gradient */}
         <button
-          className="party-hero-card party-hero-card--collect"
+          className="summary-hero-card summary-hero-card--teal"
           role="listitem"
           onClick={onCollectClick}
-          aria-label={`To collect: Rs ${paisaToRupees(totalReceivable)} receivable`}
+          aria-label={`${t.toCollect}: ₹${paisaToRupees(totalReceivable)}`}
         >
-          <div className="party-hero-card-content">
-            <span className="party-hero-amount">
-              <span className="party-hero-rupee">Rs </span>
+          <div className="summary-hero-card-content">
+            <span className="summary-hero-amount">
+              <span className="summary-hero-rupee">₹</span>
               {paisaToRupees(totalReceivable)}
             </span>
-            <span className="party-hero-label">
-              To Collect
+            <span className="summary-hero-label">
+              {t.toCollect}
               <ArrowDownLeft size={14} aria-hidden="true" />
             </span>
           </div>
-          <ChevronRight size={20} aria-hidden="true" className="party-hero-chevron" />
+          <ChevronRight size={20} aria-hidden="true" className="summary-hero-chevron" />
         </button>
 
         {/* To Pay — lime */}
         <button
-          className="party-hero-card party-hero-card--pay"
+          className="summary-hero-card summary-hero-card--lime"
           role="listitem"
           onClick={onPayClick}
-          aria-label={`To pay: Rs ${paisaToRupees(totalPayable)} payable`}
+          aria-label={`${t.toPay}: ₹${paisaToRupees(totalPayable)}`}
         >
-          <div className="party-hero-card-content">
-            <span className="party-hero-amount">
-              <span className="party-hero-rupee">Rs </span>
+          <div className="summary-hero-card-content">
+            <span className="summary-hero-amount">
+              <span className="summary-hero-rupee">₹</span>
               {paisaToRupees(totalPayable)}
             </span>
-            <span className="party-hero-label">
-              To Pay
+            <span className="summary-hero-label">
+              {t.toPay}
               <ArrowUpRight size={14} aria-hidden="true" />
             </span>
           </div>
-          <ChevronRight size={20} aria-hidden="true" className="party-hero-chevron party-hero-chevron--dark" />
+          <ChevronRight size={20} aria-hidden="true" className="summary-hero-chevron summary-hero-chevron--dark" />
         </button>
       </div>
     </div>

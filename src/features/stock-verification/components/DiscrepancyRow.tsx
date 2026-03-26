@@ -1,18 +1,20 @@
 import type { VerificationItem } from '../stock-verification.types'
 import { formatDiscrepancy, getDiscrepancyColor } from '../stock-verification.utils'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface DiscrepancyRowProps {
   item: VerificationItem
 }
 
 export function DiscrepancyRow({ item }: DiscrepancyRowProps) {
+  const { t } = useLanguage()
   const unit = item.product?.unit?.symbol ?? 'pcs'
   const diffColor = getDiscrepancyColor(item.discrepancy)
 
   return (
     <div className="sv-discrepancy-row">
       <div className="sv-discrepancy-row__product">
-        <span className="sv-discrepancy-row__name">{item.product?.name ?? 'Unknown'}</span>
+        <span className="sv-discrepancy-row__name">{item.product?.name ?? t.unknown}</span>
         {item.product?.sku && <span className="sv-discrepancy-row__sku">{item.product.sku}</span>}
       </div>
       <div className="sv-discrepancy-row__values">

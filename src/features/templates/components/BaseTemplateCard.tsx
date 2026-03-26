@@ -1,6 +1,7 @@
 /** Base template card — shown in the "BASE TEMPLATES" section with a "Use This" CTA */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { BaseTemplate } from '../template.types'
 import { BASE_TEMPLATE_LABELS, BASE_TEMPLATE_DESCRIPTIONS } from '../template.constants'
 
@@ -23,6 +24,7 @@ function getAbbrev(base: BaseTemplate): string {
 }
 
 export const BaseTemplateCard: React.FC<BaseTemplateCardProps> = ({ baseTemplate, onSelect }) => {
+  const { t } = useLanguage()
   const label = BASE_TEMPLATE_LABELS[baseTemplate]
   const description = BASE_TEMPLATE_DESCRIPTIONS[baseTemplate]
   const abbrev = getAbbrev(baseTemplate)
@@ -63,7 +65,7 @@ export const BaseTemplateCard: React.FC<BaseTemplateCardProps> = ({ baseTemplate
         aria-label={`Use ${label} as base template`}
         onClick={() => onSelect(baseTemplate)}
       >
-        Use This
+        {t.useThisTemplate}
       </button>
     </div>
   )

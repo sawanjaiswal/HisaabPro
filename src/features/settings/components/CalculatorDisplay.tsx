@@ -1,14 +1,18 @@
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { CalculatorState } from '../settings.types'
 
 interface CalculatorDisplayProps {
   state: Pick<CalculatorState, 'display' | 'expression' | 'muBase'>
 }
 
-export const CalculatorDisplay: React.FC<CalculatorDisplayProps> = ({ state }) => (
-  <div className="calculator-display" aria-live="polite" aria-label={`Calculator display: ${state.display}`}>
+export const CalculatorDisplay: React.FC<CalculatorDisplayProps> = ({ state }) => {
+  const { t } = useLanguage()
+
+  return (
+  <div className="calculator-display" aria-live="polite" aria-label={`${t.calculatorDisplayLabel}: ${state.display}`}>
     {state.muBase !== null && (
-      <span className="calculator-mu-indicator" aria-hidden="true">MU: Enter margin %</span>
+      <span className="calculator-mu-indicator" aria-hidden="true">{t.muEnterMargin}</span>
     )}
     {state.expression && (
       <span className="calculator-expression" aria-hidden="true">{state.expression}</span>
@@ -16,3 +20,4 @@ export const CalculatorDisplay: React.FC<CalculatorDisplayProps> = ({ state }) =
     <span className="calculator-result">{state.display}</span>
   </div>
 )
+}

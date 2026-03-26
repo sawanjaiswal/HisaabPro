@@ -8,6 +8,7 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { Drawer } from '@/components/ui/Drawer'
 import { ROUTES } from '@/config/routes.config'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useAuth } from '@/context/AuthContext'
 import { useStaff } from './useStaff'
 import { StaffCard } from './components/StaffCard'
@@ -17,6 +18,7 @@ import './staff-invite.css'
 
 export default function StaffPage() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const { user } = useAuth()
   const businessId = user?.businessId ?? ''
   const { data, status, roles, refresh, handleSuspend, handleRemove, handleResendInvite, handleChangeRole } = useStaff(businessId)
@@ -27,7 +29,7 @@ export default function StaffPage() {
       type="button"
       className="staff-action-button"
       onClick={() => navigate(ROUTES.SETTINGS_STAFF_INVITE)}
-      aria-label="Invite staff member"
+      aria-label={t.inviteStaffMember}
       style={{ minWidth: 44, minHeight: 44 }}
     >
       <UserPlus size={20} aria-hidden="true" />
@@ -36,11 +38,11 @@ export default function StaffPage() {
 
   return (
     <AppShell>
-      <Header title="Staff" backTo={ROUTES.SETTINGS} actions={inviteAction} />
+      <Header title={t.staff} backTo={ROUTES.SETTINGS} actions={inviteAction} />
       <PageContainer className="staff-page">
 
         {status === 'loading' && (
-          <div className="staff-list" aria-busy="true" aria-label="Loading staff">
+          <div className="staff-list" aria-busy="true" aria-label={t.loadingStaffLabel}>
             {[1, 2, 3].map((n) => (
               <div key={n} className="staff-card" style={{ height: 72, opacity: 0.4, background: 'var(--color-gray-100)' }} />
             ))}
@@ -49,8 +51,8 @@ export default function StaffPage() {
 
         {status === 'error' && (
           <ErrorState
-            title="Could not load staff"
-            message="Check your connection and try again."
+            title={t.couldNotLoadStaff}
+            message={t.checkConnectionRetry2}
             onRetry={refresh}
           />
         )}
@@ -60,23 +62,23 @@ export default function StaffPage() {
             {data.staff.length === 0 && data.pending.length === 0 ? (
               <EmptyState
                 icon={<Users size={48} aria-hidden="true" />}
-                title="No staff members"
-                description="Invite your first team member to get started."
+                title={t.noStaffMembers}
+                description={t.inviteFirstTeamMember}
                 action={
                   <button
                     type="button"
                     className="btn btn-primary btn-md"
                     onClick={() => navigate(ROUTES.SETTINGS_STAFF_INVITE)}
-                    aria-label="Invite staff"
+                    aria-label={t.inviteStaffBtn}
                   >
-                    Invite Staff
+                    {t.inviteStaffBtn}
                   </button>
                 }
               />
             ) : (
               <>
                 <section>
-                  <p className="settings-section-title">Active Staff</p>
+                  <p className="settings-section-title">{t.activeStaffTitle}</p>
                   <div className="staff-list">
                     {data.staff.map((member) => (
                       <StaffCard
@@ -92,7 +94,7 @@ export default function StaffPage() {
 
                 {data.pending.length > 0 && (
                   <section>
-                    <p className="settings-section-title">Pending Invites</p>
+                    <p className="settings-section-title">{t.pendingInvitesTitle}</p>
                     <div className="staff-list">
                       {data.pending.map((invite) => (
                         <InviteCard
@@ -113,10 +115,10 @@ export default function StaffPage() {
         <Drawer
           open={roleTarget !== null}
           onClose={() => setRoleTarget(null)}
-          title={roleTarget ? `Change role for ${roleTarget.staffName}` : 'Change Role'}
+          title={roleTarget ? `${t.changeRoleFor} ${roleTarget.staffName}` : t.changeRoleTitle}
           size="sm"
         >
-          <div className="staff-role-picker" role="listbox" aria-label="Select a role">
+          <div className="staff-role-picker" role="listbox" aria-label={t.selectARole}>
             {roles.map((role) => (
               <button
                 key={role.id}
@@ -130,7 +132,7 @@ export default function StaffPage() {
                 }}
                 role="option"
                 aria-selected={role.id === roleTarget?.currentRoleId}
-                aria-label={`${role.name}${role.id === roleTarget?.currentRoleId ? ' (current)' : ''}`}
+                aria-label={`${role.name}${role.id === roleTarget?.currentRoleId ? ` (${t.currentRoleLabel})` : ''}`}
               >
                 <span className="staff-role-option-info">
                   <span className="staff-role-option-name">{role.name}</span>

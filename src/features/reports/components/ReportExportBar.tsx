@@ -7,6 +7,7 @@
 import React from 'react'
 import { FileText, FileSpreadsheet } from 'lucide-react'
 import type { ExportFormat } from '../report.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface ReportExportBarProps {
   onExport: (format: ExportFormat) => void
@@ -17,15 +18,16 @@ export const ReportExportBar: React.FC<ReportExportBarProps> = ({
   onExport,
   disabled = false,
 }) => {
-  return (
-    <div className="report-export-bar" role="toolbar" aria-label="Export report">
-      <span className="report-export-label">Export as</span>
+  const { t } = useLanguage()
+    return (
+    <div className="report-export-bar" role="toolbar" aria-label={t.exportReport}>
+      <span className="report-export-label">{t.exportAs}</span>
       <div className="report-export-actions">
         <button
           className="report-export-btn"
           onClick={() => onExport('CSV')}
           disabled={disabled}
-          aria-label="Export as CSV"
+          aria-label={t.exportAsCsv}
           type="button"
         >
           <FileSpreadsheet size={16} aria-hidden="true" />
@@ -35,7 +37,7 @@ export const ReportExportBar: React.FC<ReportExportBarProps> = ({
           className="report-export-btn"
           onClick={() => onExport('PDF')}
           disabled={disabled}
-          aria-label="Export as PDF (coming soon)"
+          aria-label={t.exportAsPdf}
           type="button"
         >
           <FileText size={16} aria-hidden="true" />

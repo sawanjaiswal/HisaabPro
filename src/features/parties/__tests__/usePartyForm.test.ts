@@ -211,53 +211,5 @@ describe('usePartyForm', () => {
     expect(result.current.isEditMode).toBe(true)
   })
 
-  // 7. handleSubmit
-  describe('handleSubmit', () => {
-    it('calls createParty and navigates on success', async () => {
-      mockCreateParty.mockResolvedValueOnce({ id: 'new-id' })
-      const { result } = renderHook(() => usePartyForm(), { wrapper })
-
-      act(() => {
-        result.current.updateField('name', 'Raju Traders')
-      })
-
-      await act(async () => {
-        await result.current.handleSubmit()
-      })
-
-      expect(mockCreateParty).toHaveBeenCalledTimes(1)
-      expect(mockToast.success).toHaveBeenCalledWith(
-        'Raju Traders added successfully',
-      )
-      expect(mockNavigate).toHaveBeenCalledWith('/parties')
-    })
-
-    it('shows error toast on failure', async () => {
-      mockCreateParty.mockRejectedValueOnce(new Error('Network error'))
-      const { result } = renderHook(() => usePartyForm(), { wrapper })
-
-      act(() => {
-        result.current.updateField('name', 'Raju Traders')
-      })
-
-      await act(async () => {
-        await result.current.handleSubmit()
-      })
-
-      expect(mockToast.error).toHaveBeenCalledWith(
-        'Failed to save party. Please try again.',
-      )
-    })
-
-    it('does not submit when validation fails', async () => {
-      const { result } = renderHook(() => usePartyForm(), { wrapper })
-
-      await act(async () => {
-        await result.current.handleSubmit()
-      })
-
-      expect(mockCreateParty).not.toHaveBeenCalled()
-      expect(result.current.errors.name).toBeTruthy()
-    })
-  })
+  // handleSubmit tests: see usePartyForm.submit.test.ts
 })

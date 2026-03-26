@@ -6,6 +6,7 @@
 
 import React from 'react'
 import { ChevronRight, ArrowDownLeft, Clock } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { formatInvoiceAmount } from '../invoice-format.utils'
 import type { DocumentListResponse } from '../invoice.types'
 import './InvoiceSummaryBar.css'
@@ -21,12 +22,13 @@ export const InvoiceSummaryBar: React.FC<InvoiceSummaryBarProps> = ({
   onReceivedClick,
   onDueClick,
 }) => {
+  const { t } = useLanguage()
   const { totalAmount, totalPaid, totalDue } = summary
 
   return (
-    <div className="invoice-hero" role="list" aria-label="Invoice summary">
+    <div className="invoice-hero" role="list" aria-label={t.invoiceSummaryAriaLabel}>
       <p className="invoice-hero-total">
-        Total: <strong>{formatInvoiceAmount(totalAmount)}</strong>
+        {t.totalColon} <strong>{formatInvoiceAmount(totalAmount)}</strong>
       </p>
 
       <div className="invoice-hero-cards">
@@ -35,12 +37,12 @@ export const InvoiceSummaryBar: React.FC<InvoiceSummaryBarProps> = ({
           className="invoice-hero-card invoice-hero-card--received"
           role="listitem"
           onClick={onReceivedClick}
-          aria-label={`Received: ${formatInvoiceAmount(totalPaid)}`}
+          aria-label={`${t.receivedLabel}: ${formatInvoiceAmount(totalPaid)}`}
         >
           <div className="invoice-hero-card-content">
             <span className="invoice-hero-amount">{formatInvoiceAmount(totalPaid)}</span>
             <span className="invoice-hero-label">
-              Received
+              {t.receivedLabel}
               <ArrowDownLeft size={14} aria-hidden="true" />
             </span>
           </div>
@@ -52,12 +54,12 @@ export const InvoiceSummaryBar: React.FC<InvoiceSummaryBarProps> = ({
           className={`invoice-hero-card invoice-hero-card--due${totalDue === 0 ? ' invoice-hero-card--clear' : ''}`}
           role="listitem"
           onClick={onDueClick}
-          aria-label={totalDue > 0 ? `Due: ${formatInvoiceAmount(totalDue)}` : 'No amount due'}
+          aria-label={totalDue > 0 ? `${t.dueLabel}: ${formatInvoiceAmount(totalDue)}` : t.noAmountDue}
         >
           <div className="invoice-hero-card-content">
             <span className="invoice-hero-amount">{formatInvoiceAmount(totalDue)}</span>
             <span className="invoice-hero-label">
-              {totalDue > 0 ? 'Due' : 'All Paid'}
+              {totalDue > 0 ? t.dueLabel : t.allPaidLabel}
               <Clock size={14} aria-hidden="true" />
             </span>
           </div>

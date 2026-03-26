@@ -1,4 +1,5 @@
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import {
   Plus,
   Pencil,
@@ -47,6 +48,7 @@ const ACTION_ICON_CLASS: Record<AuditAction, string> = {
 }
 
 export const AuditLogEntry: React.FC<AuditLogEntryProps> = ({ entry }) => {
+  const { t } = useLanguage()
   const Icon = ICON_MAP[entry.action]
   const iconClass = ACTION_ICON_CLASS[entry.action]
   const actionLabel = AUDIT_ACTION_LABELS[entry.action]
@@ -70,7 +72,7 @@ export const AuditLogEntry: React.FC<AuditLogEntryProps> = ({ entry }) => {
         <p className="audit-entry-meta">{formatTimeAgo(entry.createdAt)}</p>
 
         {entry.changes && entry.changes.length > 0 && (
-          <div className="audit-changes" role="list" aria-label="Changes">
+          <div className="audit-changes" role="list" aria-label={t.changesLabel}>
             {entry.changes.map((change) => (
               <div key={change.field} className="audit-change-row" role="listitem">
                 <span className="audit-change-field">{change.field}</span>
@@ -84,7 +86,7 @@ export const AuditLogEntry: React.FC<AuditLogEntryProps> = ({ entry }) => {
 
         {entry.reason && (
           <p className="audit-entry-meta" style={{ marginTop: 'var(--space-2)' }}>
-            Reason: {entry.reason}
+            {t.auditReasonPrefix}: {entry.reason}
           </p>
         )}
       </div>

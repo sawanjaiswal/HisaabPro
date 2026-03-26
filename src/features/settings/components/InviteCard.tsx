@@ -1,4 +1,5 @@
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { Clock, RotateCcw } from 'lucide-react'
 import type { StaffInvite } from '../settings.types'
 import { formatTimeAgo } from '../settings.utils'
@@ -10,6 +11,7 @@ interface InviteCardProps {
 }
 
 export const InviteCard: React.FC<InviteCardProps> = ({ invite, onResend }) => {
+  const { t } = useLanguage()
   const isExpired = invite.status === 'EXPIRED'
 
   return (
@@ -22,7 +24,7 @@ export const InviteCard: React.FC<InviteCardProps> = ({ invite, onResend }) => {
         <p className="staff-invite-name">{invite.name}</p>
         <span className="staff-phone">{invite.phone} &middot; {invite.roleName}</span>
         <p className="staff-invite-expires">
-          {isExpired ? 'Expired' : `Expires ${formatTimeAgo(invite.expiresAt)}`}
+          {isExpired ? t.expiredLabel : `${t.expiresLabel} ${formatTimeAgo(invite.expiresAt)}`}
         </p>
       </span>
 
@@ -30,7 +32,7 @@ export const InviteCard: React.FC<InviteCardProps> = ({ invite, onResend }) => {
         <button
           className="staff-action-button"
           onClick={() => onResend(invite.id)}
-          aria-label={`Resend invite to ${invite.name}`}
+          aria-label={`${t.resendInviteLabel} ${invite.name}`}
         >
           <RotateCcw size={18} aria-hidden="true" />
         </button>

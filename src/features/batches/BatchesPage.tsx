@@ -12,6 +12,7 @@ import { ROUTES } from '@/config/routes.config'
 import { useBatches } from './useBatches'
 import { BatchCard } from './components/BatchCard'
 import './batches.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 function BatchListSkeleton() {
   return (
@@ -31,6 +32,7 @@ function BatchListSkeleton() {
 }
 
 export default function BatchesPage() {
+  const { t } = useLanguage()
   const { productId } = useParams<{ productId: string }>()
   const navigate = useNavigate()
   const { batches, status, refetch, deleteBatch, isDeleting } = useBatches(productId)
@@ -48,14 +50,14 @@ export default function BatchesPage() {
   return (
     <AppShell>
       <Header
-        title="Batches"
+        title={t.batches}
         backTo={backPath}
         actions={
           status === 'success' && batches && batches.batches.length > 0 ? (
             <button
               className="btn btn-ghost btn-sm"
               onClick={goToCreate}
-              aria-label="Add new batch"
+              aria-label={t.addNewBatch}
             >
               <Plus size={20} aria-hidden="true" />
             </button>
@@ -68,8 +70,8 @@ export default function BatchesPage() {
 
         {status === 'error' && (
           <ErrorState
-            title="Could not load batches"
-            message="Check your connection and try again."
+            title={t.couldNotLoadBatches}
+            message={t.checkConnectionRetry2}
             onRetry={refetch}
           />
         )}
@@ -77,7 +79,7 @@ export default function BatchesPage() {
         {status === 'success' && batches && batches.batches.length === 0 && (
           <EmptyState
             icon={<Layers size={40} aria-hidden="true" />}
-            title="No batches yet"
+            title={t.noBatchesYet}
             description="Add your first batch to start tracking expiry and stock"
             action={
               <button
@@ -113,7 +115,7 @@ export default function BatchesPage() {
       </PageContainer>
 
       {status === 'success' && batches && batches.batches.length > 0 && (
-        <button className="fab" onClick={goToCreate} aria-label="Add new batch">
+        <button className="fab" onClick={goToCreate} aria-label={t.addNewBatch}>
           <Plus size={24} aria-hidden="true" />
         </button>
       )}

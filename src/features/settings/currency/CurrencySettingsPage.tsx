@@ -12,6 +12,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Drawer } from '@/components/ui/Drawer'
 import { ROUTES } from '@/config/routes.config'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useCurrencySettings } from './useCurrencySettings'
 import { CurrencyRateCard } from './components/CurrencyRateCard'
 import { SetRateForm } from './components/SetRateForm'
@@ -19,6 +20,7 @@ import { CurrencyRatesSkeleton } from './components/CurrencyRatesSkeleton'
 import './currency-settings.css'
 
 export default function CurrencySettingsPage() {
+  const { t } = useLanguage()
   const { currencies, rates, status, page, hasMore, setPage, setRate, refresh } =
     useCurrencySettings()
 
@@ -35,7 +37,7 @@ export default function CurrencySettingsPage() {
   if (status === 'loading') {
     return (
       <AppShell>
-        <Header title="Exchange Rates" backTo={ROUTES.SETTINGS} />
+        <Header title={t.exchangeRates} backTo={ROUTES.SETTINGS} />
         <PageContainer>
           <CurrencyRatesSkeleton />
         </PageContainer>
@@ -48,11 +50,11 @@ export default function CurrencySettingsPage() {
   if (status === 'error') {
     return (
       <AppShell>
-        <Header title="Exchange Rates" backTo={ROUTES.SETTINGS} />
+        <Header title={t.exchangeRates} backTo={ROUTES.SETTINGS} />
         <PageContainer>
           <ErrorState
-            title="Could not load exchange rates"
-            message="Check your connection and try again."
+            title={t.couldNotLoadExchangeRates}
+            message={t.checkConnectionRetry2}
             onRetry={refresh}
           />
         </PageContainer>
@@ -65,16 +67,16 @@ export default function CurrencySettingsPage() {
   return (
     <AppShell>
       <Header
-        title="Exchange Rates"
+        title={t.exchangeRates}
         backTo={ROUTES.SETTINGS}
         actions={
           <button
             type="button"
             className="currency-header-btn"
             onClick={() => setDrawerOpen(true)}
-            aria-label="Set exchange rate"
+            aria-label={t.setExchangeRateAria}
           >
-            Set Rate
+            {t.setRateLabel}
           </button>
         }
       />
@@ -85,22 +87,22 @@ export default function CurrencySettingsPage() {
             <div className="currency-empty__icon" aria-hidden="true">
               <DollarSign size={32} />
             </div>
-            <p className="currency-empty__title">No exchange rates set</p>
+            <p className="currency-empty__title">{t.noExchangeRates}</p>
             <p className="currency-empty__desc">
-              Set rates for foreign currencies to enable multi-currency billing.
+              {t.exchangeRatesEmptyDesc}
             </p>
             <button
               type="button"
               className="currency-empty__cta"
               onClick={() => setDrawerOpen(true)}
             >
-              Set Your First Rate
+              {t.setFirstRate}
             </button>
           </div>
         ) : (
           <>
             <p className="currency-section-label">
-              {rates.length} {rates.length === 1 ? 'rate' : 'rates'} configured
+              {rates.length} {rates.length === 1 ? t.rateWord : t.ratesWord} {t.configuredSuffix}
             </p>
 
             <div className="currency-rate-list">
@@ -116,19 +118,19 @@ export default function CurrencySettingsPage() {
                   className="currency-pagination__btn"
                   disabled={page === 1}
                   onClick={() => setPage(page - 1)}
-                  aria-label="Previous page"
+                  aria-label={t.previousPage}
                 >
-                  Previous
+                  {t.previous}
                 </button>
-                <span className="currency-pagination__info">Page {page}</span>
+                <span className="currency-pagination__info">{t.pageLabel} {page}</span>
                 <button
                   type="button"
                   className="currency-pagination__btn"
                   disabled={!hasMore}
                   onClick={() => setPage(page + 1)}
-                  aria-label="Next page"
+                  aria-label={t.nextPage}
                 >
-                  Next
+                  {t.next}
                 </button>
               </div>
             )}
@@ -139,7 +141,7 @@ export default function CurrencySettingsPage() {
       <Drawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        title="Set Exchange Rate"
+        title={t.setExchangeRate}
         size="sm"
       >
         <SetRateForm

@@ -1,6 +1,7 @@
 /** EInvoiceCard — IRN status, generate button, cancel (within 24h), QR display */
 
 import React, { useState } from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { formatDate } from '@/lib/format'
 import type { EInvoiceStatus } from '../ecompliance.types'
 import { ComplianceCancelForm } from './ComplianceCancelForm'
@@ -22,6 +23,7 @@ function isCancellableNow(ackDate: string | null): boolean {
 export const EInvoiceCard: React.FC<EInvoiceCardProps> = ({
   status, generating, cancelling, onGenerate, onCancel, error,
 }) => {
+  const { t } = useLanguage()
   const [showCancel, setShowCancel] = useState(false)
   const [actionError, setActionError] = useState('')
 
@@ -35,7 +37,7 @@ export const EInvoiceCard: React.FC<EInvoiceCardProps> = ({
     try {
       await onGenerate()
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : 'Failed to generate e-invoice')
+      setActionError(err instanceof Error ? err.message : t.failedGenerateEInvoice)
     }
   }
 
@@ -43,15 +45,15 @@ export const EInvoiceCard: React.FC<EInvoiceCardProps> = ({
     <div className="compliance-card">
       <div className="compliance-card-header">
         <div className="compliance-card-title-group">
-          <h2 className="compliance-card-title">E-Invoice (IRN)</h2>
-          <p className="compliance-card-subtitle">Required for B2B invoices above Rs 5 crore</p>
+          <h2 className="compliance-card-title">{t.eInvoiceIrn}</h2>
+          <p className="compliance-card-subtitle">{t.eInvoiceSubtitle}</p>
         </div>
         <span
           className={`compliance-badge ${isPending ? 'compliance-badge-pending' : isGenerated ? 'compliance-badge-generated' : 'compliance-badge-cancelled'}`}
-          aria-label={`E-invoice status: ${status?.status ?? 'PENDING'}`}
+          aria-label={`${t.eInvoiceStatusLabel} ${status?.status ?? 'PENDING'}`}
         >
           <span className="compliance-badge-dot" aria-hidden="true" />
-          {isPending ? 'Pending' : isGenerated ? 'Generated' : 'Cancelled'}
+          {isPending ? t.statusPending : isGenerated ? t.statusGenerated : t.statusCancelled}
         </span>
       </div>
 
@@ -60,18 +62,18 @@ export const EInvoiceCard: React.FC<EInvoiceCardProps> = ({
       )}
 
       {isGenerated && status && (
-        <div className="compliance-details" aria-label="E-invoice details">
+        <div className="compliance-details" aria-label={t.eInvoiceDetails}>
           <div className="compliance-detail-row">
-            <span className="compliance-detail-label">IRN</span>
+            <span className="compliance-detail-label">{t.irn}</span>
             <span className="compliance-detail-value">{status.irn}</span>
           </div>
           <div className="compliance-detail-row">
-            <span className="compliance-detail-label">Ack No.</span>
+            <span className="compliance-detail-label">{t.ackNo}</span>
             <span className="compliance-detail-value">{status.ackNumber}</span>
           </div>
           {status.ackDate && (
             <div className="compliance-detail-row">
-              <span className="compliance-detail-label">Ack Date</span>
+              <span className="compliance-detail-label">{t.ackDate}</span>
               <span className="compliance-detail-value">{formatDate(status.ackDate)}</span>
             </div>
           )}
@@ -80,23 +82,23 @@ export const EInvoiceCard: React.FC<EInvoiceCardProps> = ({
 
       {isGenerated && status?.qrCode && (
         <div className="compliance-qr-wrap">
-          <img src={status.qrCode} alt="E-invoice QR code" width={120} height={120} loading="lazy" />
+          <img src={status.qrCode} alt={t.eInvoiceQrAlt} width={120} height={120} loading="lazy" />
         </div>
       )}
 
       {isCancelled && (
         <div className="compliance-cancelled-notice" role="status">
-          <span>Cancelled on {status?.cancelledAt ? formatDate(status.cancelledAt) : '—'}</span>
+          <span>{t.cancelledOn} {status?.cancelledAt ? formatDate(status.cancelledAt) : '—'}</span>
           {status?.cancelReason && (
-            <span className="compliance-cancelled-reason">Reason: {status.cancelReason}</span>
+            <span className="compliance-cancelled-reason">{t.reasonLabel} {status.cancelReason}</span>
           )}
         </div>
       )}
 
       {showCancel && (
         <ComplianceCancelForm
-          title="Cancel E-Invoice"
-          placeholder="e.g. Wrong GSTIN, duplicate invoice"
+          title={t.cancelEInvoice}
+          placeholder={t.wrongGstinExample}
           cancelling={cancelling}
           onConfirm={async reason => { await onCancel(reason); setShowCancel(false) }}
           onDismiss={() => setShowCancel(false)}
@@ -108,13 +110,13 @@ export const EInvoiceCard: React.FC<EInvoiceCardProps> = ({
           {isPending && (
             <button type="button" className="btn btn-primary btn-md"
               onClick={handleGenerate} disabled={generating} aria-busy={generating}>
-              {generating ? 'Generating…' : 'Generate IRN'}
+              {generating ? t.generatingIrn : t.generateIrn}
             </button>
           )}
           {canCancel && (
             <button type="button" className="btn btn-secondary btn-md"
-              onClick={() => setShowCancel(true)} aria-label="Cancel this e-invoice">
-              Cancel IRN
+              onClick={() => setShowCancel(true)} aria-label={t.cancelEInvoiceAria}>
+              {t.cancelIrn}
             </button>
           )}
         </div>

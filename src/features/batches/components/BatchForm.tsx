@@ -3,6 +3,7 @@
 import { useBatchForm } from '../useBatchForm'
 import { BATCH_NUMBER_MAX, BATCH_NOTES_MAX } from '../batch.constants'
 import type { Batch } from '../batch.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface BatchFormProps {
   productId: string
@@ -11,6 +12,7 @@ interface BatchFormProps {
 }
 
 export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProps) {
+  const { t } = useLanguage()
   const { form, errors, isSubmitting, updateField, handleSubmit } = useBatchForm(
     productId,
     existingBatch
@@ -35,7 +37,7 @@ export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProp
           value={form.batchNumber}
           onChange={(e) => updateField('batchNumber', e.target.value)}
           maxLength={BATCH_NUMBER_MAX}
-          placeholder="e.g. BATCH-001"
+          placeholder={t.batchPlaceholder}
           autoFocus
         />
         {errors.batchNumber && (
@@ -133,7 +135,7 @@ export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProp
           value={form.notes}
           onChange={(e) => updateField('notes', e.target.value)}
           maxLength={BATCH_NOTES_MAX}
-          placeholder="Optional notes about this batch"
+          placeholder={t.batchNotes}
           rows={3}
         />
         {errors.notes && (

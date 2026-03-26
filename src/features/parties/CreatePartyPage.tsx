@@ -5,6 +5,7 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { Button } from '@/components/ui/Button'
 import { ROUTES } from '@/config/routes.config'
+import { useLanguage } from '@/hooks/useLanguage'
 import { usePartyForm } from './usePartyForm'
 import { PartyFormBasic } from './components/PartyFormBasic'
 import { PartyFormBusiness } from './components/PartyFormBusiness'
@@ -13,13 +14,14 @@ import './create-party.css'
 
 type SectionId = 'basic' | 'business' | 'credit'
 
-const SECTIONS: { id: SectionId; label: string }[] = [
-  { id: 'basic', label: 'Basic Info' },
-  { id: 'business', label: 'Business' },
-  { id: 'credit', label: 'Credit' },
-]
-
 export default function CreatePartyPage() {
+  const { t } = useLanguage()
+
+  const SECTIONS: { id: SectionId; label: string }[] = [
+    { id: 'basic', label: t.basicInfo },
+    { id: 'business', label: t.business2 },
+    { id: 'credit', label: t.credit },
+  ]
   const {
     form,
     errors,
@@ -40,10 +42,10 @@ export default function CreatePartyPage() {
 
   return (
     <AppShell>
-      <Header title="New Party" backTo={ROUTES.PARTIES} />
+      <Header title={t.newParty} backTo={ROUTES.PARTIES} />
 
       <PageContainer className="create-party-page">
-        <nav className="pill-tabs" role="tablist" aria-label="Form sections">
+        <nav className="pill-tabs" role="tablist" aria-label={t.formSections}>
           {SECTIONS.map(section => (
             <button
               key={section.id}
@@ -82,18 +84,18 @@ export default function CreatePartyPage() {
           size="lg"
           loading={isSubmitting}
           onClick={handleSubmit}
-          aria-label="Save party"
+          aria-label={t.savePartyLabel}
         >
-          Save Party
+          {t.saveParty}
         </Button>
         <button
           type="button"
           className="create-party-save-another"
           onClick={handleSaveAndAddAnother}
           disabled={isSubmitting}
-          aria-label="Save party and add another"
+          aria-label={t.saveAndAddAnotherLabel}
         >
-          Save &amp; Add Another
+          {t.saveAndAddAnother}
         </button>
       </div>
     </AppShell>

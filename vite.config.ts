@@ -87,11 +87,11 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000,
+    port: 5002,
     host: true, // expose on LAN for mobile testing
     proxy: {
       '/api': {
-        target: 'http://localhost:4000',
+        target: 'http://localhost:4002',
         changeOrigin: true,
       },
     },

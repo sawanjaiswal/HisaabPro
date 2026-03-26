@@ -3,6 +3,7 @@
  * Renders: date picker, payment terms, notes, T&C, signature toggle.
  */
 
+import { useLanguage } from '@/hooks/useLanguage'
 import { PaymentTermsSelector } from './PaymentTermsSelector'
 import type { DocumentFormData, PaymentTerms } from '../invoice.types'
 
@@ -28,23 +29,24 @@ export function InvoiceDetailsSection({
   includeSignature,
   onUpdateField,
 }: InvoiceDetailsSectionProps) {
+  const { t } = useLanguage()
   return (
     <div className="line-items-section">
       <div className="line-item-field">
-        <label className="label" htmlFor="invoice-date">Invoice Date</label>
+        <label className="label" htmlFor="invoice-date">{t.invoiceDateLabel}</label>
         <input
           id="invoice-date"
           type="date"
           className="input"
           value={documentDate}
           onChange={(e) => onUpdateField('documentDate', e.target.value)}
-          aria-label="Invoice date"
+          aria-label={t.invoiceDateAriaLabel}
           style={{ minHeight: '44px' }}
         />
       </div>
 
       <div className="line-item-field">
-        <label className="label">Payment Terms</label>
+        <label className="label">{t.paymentTermsLabel}</label>
         <PaymentTermsSelector
           value={paymentTerms ?? 'COD'}
           onChange={(terms: PaymentTerms) => onUpdateField('paymentTerms', terms)}
@@ -52,7 +54,7 @@ export function InvoiceDetailsSection({
       </div>
 
       <div className="line-item-field">
-        <label className="label" htmlFor="invoice-vehicle">Vehicle Number</label>
+        <label className="label" htmlFor="invoice-vehicle">{t.vehicleNumberLabel}</label>
         <input
           id="invoice-vehicle"
           type="text"
@@ -60,36 +62,36 @@ export function InvoiceDetailsSection({
           placeholder="MH 12 AB 1234"
           value={vehicleNumber}
           onChange={(e) => onUpdateField('vehicleNumber', e.target.value.toUpperCase())}
-          aria-label="Vehicle number"
+          aria-label={t.vehicleNumberLabel}
           maxLength={15}
           style={{ minHeight: '44px', textTransform: 'uppercase' }}
         />
       </div>
 
       <div className="line-item-field">
-        <label className="label" htmlFor="invoice-notes">Notes</label>
+        <label className="label" htmlFor="invoice-notes">{t.notesLabel}</label>
         <textarea
           id="invoice-notes"
           className="input"
           rows={3}
-          placeholder="Add a note for your customer..."
+          placeholder={t.addNoteForCustomer}
           value={notes}
           onChange={(e) => onUpdateField('notes', e.target.value)}
-          aria-label="Invoice notes"
+          aria-label={t.invoiceNotesAriaLabel}
           style={{ minHeight: '80px', resize: 'vertical' }}
         />
       </div>
 
       <div className="line-item-field">
-        <label className="label" htmlFor="invoice-terms">Terms &amp; Conditions</label>
+        <label className="label" htmlFor="invoice-terms">{t.termsConditionsLabel}</label>
         <textarea
           id="invoice-terms"
           className="input"
           rows={3}
-          placeholder="Payment terms, return policy..."
+          placeholder={t.paymentTermsReturnPolicy}
           value={termsAndConditions}
           onChange={(e) => onUpdateField('termsAndConditions', e.target.value)}
-          aria-label="Terms and conditions"
+          aria-label={t.termsConditionsAriaLabel}
           style={{ minHeight: '80px', resize: 'vertical' }}
         />
       </div>
@@ -99,9 +101,9 @@ export function InvoiceDetailsSection({
           type="checkbox"
           checked={includeSignature}
           onChange={(e) => onUpdateField('includeSignature', e.target.checked)}
-          aria-label="Include digital signature"
+          aria-label={t.includeDigitalSignatureAriaLabel}
         />
-        Include Digital Signature
+        {t.includeDigitalSignature}
       </label>
     </div>
   )

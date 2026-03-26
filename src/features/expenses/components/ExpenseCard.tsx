@@ -4,6 +4,7 @@ import { Receipt } from 'lucide-react'
 import { formatPaise } from '@/lib/format'
 import { PAYMENT_MODE_LABELS } from '../expense.constants'
 import type { Expense } from '../expense.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface ExpenseCardProps {
   expense: Expense
@@ -14,6 +15,7 @@ function formatDate(iso: string): string {
 }
 
 export function ExpenseCard({ expense }: ExpenseCardProps) {
+  const { t } = useLanguage()
   return (
     <div className="expense-card" role="article" aria-label={`Expense: ${formatPaise(expense.amount)}`}>
       <div className="expense-card__icon" aria-hidden="true">
@@ -21,7 +23,7 @@ export function ExpenseCard({ expense }: ExpenseCardProps) {
       </div>
       <div className="expense-card__info">
         <span className="expense-card__category">
-          {expense.categoryName ?? 'Uncategorised'}
+          {expense.categoryName ?? t.uncategorised}
         </span>
         {expense.notes && (
           <span className="expense-card__notes">{expense.notes}</span>

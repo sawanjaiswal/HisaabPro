@@ -5,7 +5,6 @@ import { formatPaise } from '@/lib/format'
 import { getExpiryStatus, formatExpiryDate, daysUntilExpiry } from '../batch.utils'
 import { EXPIRY_BADGE_CLASSES, EXPIRY_STATUS_LABELS } from '../batch.constants'
 import type { Batch } from '../batch.types'
-
 interface BatchDetailInfoProps {
   batch: Batch
 }

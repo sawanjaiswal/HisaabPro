@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import { Banknote, Smartphone, CreditCard } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
 import { formatPaise } from '@/lib/format'
+import { useLanguage } from '@/hooks/useLanguage'
 import { cartSubtotal } from '../pos.utils'
 import { PAYMENT_MODES } from '../pos.constants'
 
@@ -20,6 +21,7 @@ interface CheckoutSheetProps {
 }
 
 export function CheckoutSheet({ open, onClose, items, isProcessing, onConfirm }: CheckoutSheetProps) {
+  const { t } = useLanguage()
   const [mode, setMode] = useState<PaymentMode>('cash')
   const total = useMemo(() => cartSubtotal(items), [items])
 
@@ -28,15 +30,15 @@ export function CheckoutSheet({ open, onClose, items, isProcessing, onConfirm }:
   }
 
   return (
-    <Drawer open={open} onClose={onClose} title="Payment" size="sm">
+    <Drawer open={open} onClose={onClose} title={t.payments} size="sm">
       <div className="pos-checkout-body">
         <div className="pos-checkout-total">
-          <span className="pos-checkout-total-label">Total</span>
+          <span className="pos-checkout-total-label">{t.total}</span>
           <span className="pos-checkout-total-value">{formatPaise(total)}</span>
         </div>
 
-        <fieldset className="pos-payment-modes" aria-label="Payment method">
-          <legend className="pos-payment-legend">Payment Method</legend>
+        <fieldset className="pos-payment-modes" aria-label={t.posPaymentMethod}>
+          <legend className="pos-payment-legend">{t.posPaymentMethod}</legend>
           <div className="pos-payment-grid">
             {PAYMENT_MODES.map(({ value, label, icon }) => {
               const Icon = ICONS[icon as keyof typeof ICONS]
@@ -62,9 +64,9 @@ export function CheckoutSheet({ open, onClose, items, isProcessing, onConfirm }:
           className="btn btn-primary pos-confirm-btn"
           onClick={handleConfirm}
           disabled={isProcessing || items.length === 0}
-          aria-label={isProcessing ? 'Processing sale...' : `Confirm ${formatPaise(total)} ${mode} payment`}
+          aria-label={isProcessing ? t.posProcessingSale : `${t.posConfirm} ${formatPaise(total)} ${mode}`}
         >
-          {isProcessing ? 'Processing...' : `Confirm ${formatPaise(total)}`}
+          {isProcessing ? t.posProcessing : `${t.posConfirm} ${formatPaise(total)}`}
         </button>
       </div>
     </Drawer>

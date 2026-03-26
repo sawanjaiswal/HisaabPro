@@ -6,6 +6,7 @@
 
 import React from 'react'
 import { ChevronDown } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface ReportGroupHeaderProps {
   /** Primary group label, e.g. "March 2026" */
@@ -22,12 +23,13 @@ export const ReportGroupHeader: React.FC<ReportGroupHeaderProps> = ({
   isExpanded,
   onToggle,
 }) => {
+  const { t } = useLanguage()
   return (
     <button
       className="report-group-header"
       onClick={onToggle}
       aria-expanded={isExpanded}
-      aria-label={`${label}${subtitle ? ` — ${subtitle}` : ''}. ${isExpanded ? 'Collapse' : 'Expand'} group.`}
+      aria-label={`${label}${subtitle ? ` — ${subtitle}` : ''}. ${isExpanded ? t.collapseGroup : t.expandGroup} group.`}
       type="button"
     >
       <div>

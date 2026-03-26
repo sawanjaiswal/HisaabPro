@@ -12,6 +12,7 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
+import { useLanguage } from '@/hooks/useLanguage'
 import { usePaymentForm } from './usePaymentForm'
 import { getPayment } from './payment.service'
 import { PAYMENT_FORM_SECTION_LABELS } from './payment.constants'
@@ -32,6 +33,7 @@ const SECTIONS: { id: PaymentFormSection; label: string }[] = [
 
 export default function EditPaymentPage() {
   const { id } = useParams<{ id: string }>()
+  const { t } = useLanguage()
   const paymentId = id ?? ''
 
   const [loadStatus, setLoadStatus] = useState<'loading' | 'error' | 'ready'>('loading')
@@ -57,7 +59,7 @@ export default function EditPaymentPage() {
   if (loadStatus === 'loading') {
     return (
       <AppShell>
-        <Header title="Edit Payment" backTo={`/payments/${paymentId}`} />
+        <Header title={t.editPayment} backTo={`/payments/${paymentId}`} />
         <PageContainer>
           <Skeleton height="2.5rem" borderRadius="var(--radius-full)" />
           <div style={{ marginTop: 'var(--space-4)' }}>
@@ -71,11 +73,11 @@ export default function EditPaymentPage() {
   if (loadStatus === 'error' || !paymentDetail) {
     return (
       <AppShell>
-        <Header title="Edit Payment" backTo={`/payments/${paymentId}`} />
+        <Header title={t.editPayment} backTo={`/payments/${paymentId}`} />
         <PageContainer>
           <ErrorState
-            title="Could not load payment"
-            message="Check your connection and try again."
+            title={t.couldNotLoadPayment}
+            message={t.checkConnectionRetry}
             onRetry={() => window.location.reload()}
           />
         </PageContainer>
@@ -94,6 +96,7 @@ function EditPaymentForm({
   paymentId: string
   payment: PaymentDetail
 }) {
+  const { t } = useLanguage()
   const {
     form, errors, isSubmitting, activeSection, setActiveSection,
     updateField, updateMode, toggleAllocation, updateAllocationAmount,
@@ -105,10 +108,10 @@ function EditPaymentForm({
 
   return (
     <AppShell>
-      <Header title="Edit Payment" backTo={`/payments/${paymentId}`} />
+      <Header title={t.editPayment} backTo={`/payments/${paymentId}`} />
 
       <PageContainer>
-        <nav className="pill-tabs" role="tablist" aria-label="Payment form sections">
+        <nav className="pill-tabs" role="tablist" aria-label={t.paymentFormSections}>
           {SECTIONS.map((section) => (
             <button
               key={section.id}
@@ -177,9 +180,9 @@ function EditPaymentForm({
           className="btn btn-primary btn-lg payment-save-btn"
           onClick={handleSubmit}
           disabled={isSubmitting}
-          aria-label={isSubmitting ? 'Updating payment...' : 'Update payment'}
+          aria-label={isSubmitting ? t.updatingPayment : t.updatePaymentLabel}
         >
-          {isSubmitting ? 'Updating...' : 'Update Payment'}
+          {isSubmitting ? t.processing : t.updatePaymentBtn}
         </button>
       </div>
     </AppShell>

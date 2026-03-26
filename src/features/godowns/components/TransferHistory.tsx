@@ -2,6 +2,7 @@
 
 import { ArrowRight, Package } from 'lucide-react'
 import { useApi } from '@/hooks/useApi'
+import { useLanguage } from '@/hooks/useLanguage'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
@@ -10,13 +11,14 @@ import { GODOWN_PAGE_SIZE } from '../godown.constants'
 import type { TransferHistoryResponse } from '../godown.types'
 
 export function TransferHistory() {
+  const { t } = useLanguage()
   const { data, status, error, refetch } = useApi<TransferHistoryResponse>(
     `/godowns/transfers?limit=${GODOWN_PAGE_SIZE}`
   )
 
   if (status === 'loading' || status === 'idle') {
     return (
-      <div className="godown-transfer-list" aria-label="Loading transfers">
+      <div className="godown-transfer-list" aria-label={t.loadingTransfers}>
         <Skeleton height="4.5rem" count={4} />
       </div>
     )
@@ -25,8 +27,8 @@ export function TransferHistory() {
   if (status === 'error') {
     return (
       <ErrorState
-        title="Could not load transfers"
-        message={error?.message ?? 'Check your connection and try again.'}
+        title={t.couldNotLoadTransfers}
+        message={error?.message ?? t.checkConnectionRetry}
         onRetry={refetch}
       />
     )
@@ -36,38 +38,38 @@ export function TransferHistory() {
     return (
       <EmptyState
         icon={<Package size={40} aria-hidden="true" />}
-        title="No transfers yet"
-        description="Transfer stock between godowns to see history here"
+        title={t.noTransfersYet}
+        description={t.noTransfersDesc}
       />
     )
   }
 
   return (
-    <div className="godown-transfer-list" role="list" aria-label="Transfer history">
-      {data.transfers.map((t) => (
-        <div key={t.id} className="godown-transfer-row" role="listitem">
+    <div className="godown-transfer-list" role="list" aria-label={t.transferHistoryLabel}>
+      {data.transfers.map((tx) => (
+        <div key={tx.id} className="godown-transfer-row" role="listitem">
           <div className="godown-transfer-row__product">
-            {t.product?.name ?? 'Unknown product'}
+            {tx.product?.name ?? t.unknownProduct}
           </div>
           <div className="godown-transfer-row__route">
-            <span>{t.fromGodown?.name ?? '—'}</span>
+            <span>{tx.fromGodown?.name ?? '—'}</span>
             <ArrowRight size={14} aria-hidden="true" />
-            <span>{t.toGodown?.name ?? '—'}</span>
+            <span>{tx.toGodown?.name ?? '—'}</span>
           </div>
           <div className="godown-transfer-row__meta">
             <span className="godown-transfer-row__qty">
-              {formatStockQuantity(t.quantity)} units
+              {formatStockQuantity(tx.quantity)} {t.units2}
             </span>
             <span className="godown-transfer-row__date">
-              {new Date(t.createdAt).toLocaleDateString('en-IN', {
+              {new Date(tx.createdAt).toLocaleDateString('en-IN', {
                 day: 'numeric',
                 month: 'short',
                 year: 'numeric',
               })}
             </span>
           </div>
-          {t.notes && (
-            <div className="godown-transfer-row__notes">{t.notes}</div>
+          {tx.notes && (
+            <div className="godown-transfer-row__notes">{tx.notes}</div>
           )}
         </div>
       ))}

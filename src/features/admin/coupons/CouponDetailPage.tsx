@@ -17,10 +17,12 @@ import { STATUS_LABELS, STATUS_COLORS, DISCOUNT_TYPE_LABELS, APPLIES_TO_LABELS }
 import { formatDiscount, formatUsage, formatCouponDate, formatCouponDateTime, paiseToRupees } from './coupon.utils'
 import type { CouponDetail } from './coupon.types'
 import './coupon.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 type Status = 'loading' | 'error' | 'success'
 
 export default function CouponDetailPage() {
+  const { t } = useLanguage()
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const toast = useToast()
@@ -51,7 +53,7 @@ export default function CouponDetailPage() {
   if (status === 'loading') {
     return (
       <>
-        <Header title="Coupon Detail" />
+        <Header title={t.couponDetail} />
         <PageContainer>
           <div className="coupon-detail-skeleton" aria-busy="true">
             <Skeleton width="40%" height="1.5rem" />
@@ -66,11 +68,11 @@ export default function CouponDetailPage() {
   if (status === 'error' || !detail) {
     return (
       <>
-        <Header title="Coupon Detail" />
+        <Header title={t.couponDetail} />
         <PageContainer>
           <ErrorState
-            title="Couldn't load coupon"
-            message="This coupon may not exist."
+            title={t.couldntLoadCoupon}
+            message={t.couponMayNotExist}
             onRetry={() => navigate(0)}
           />
         </PageContainer>
@@ -125,35 +127,35 @@ export default function CouponDetailPage() {
         <section className="coupon-detail-stats">
           <div className="coupon-stat">
             <span className="coupon-stat-value">{stats.totalRedeemed}</span>
-            <span className="coupon-stat-label">Redeemed</span>
+            <span className="coupon-stat-label">{t.redeemed}</span>
           </div>
           <div className="coupon-stat">
             <span className="coupon-stat-value">{paiseToRupees(stats.totalDiscountGiven)}</span>
-            <span className="coupon-stat-label">Total Discount</span>
+            <span className="coupon-stat-label">{t.totalDiscount}</span>
           </div>
           <div className="coupon-stat">
             <span className="coupon-stat-value">{formatUsage(coupon.usageCount, coupon.maxUses)}</span>
-            <span className="coupon-stat-label">Usage</span>
+            <span className="coupon-stat-label">{t.usage}</span>
           </div>
         </section>
 
         {/* Details */}
         <section className="coupon-detail-info">
-          <h3 className="coupon-detail-section-title">Details</h3>
+          <h3 className="coupon-detail-section-title">{t.couponDetail}</h3>
           <dl className="coupon-detail-dl">
-            <dt>Valid From</dt>
+            <dt>{t.validFrom}</dt>
             <dd>{formatCouponDateTime(coupon.validFrom)}</dd>
-            <dt>Valid Until</dt>
-            <dd>{coupon.validUntil ? formatCouponDateTime(coupon.validUntil) : 'No expiry'}</dd>
-            <dt>Max Per User</dt>
+            <dt>{t.validUntilCoupon}</dt>
+            <dd>{coupon.validUntil ? formatCouponDateTime(coupon.validUntil) : t.noExpiry}</dd>
+            <dt>{t.maxPerUser}</dt>
             <dd>{coupon.maxUsesPerUser}</dd>
             {coupon.razorpayOfferId && (
               <>
-                <dt>Razorpay Offer</dt>
+                <dt>{t.razorpayOffer}</dt>
                 <dd>{coupon.razorpayOfferId}</dd>
               </>
             )}
-            <dt>Created</dt>
+            <dt>{t.created}</dt>
             <dd>{formatCouponDateTime(coupon.createdAt)}</dd>
           </dl>
         </section>
@@ -164,7 +166,7 @@ export default function CouponDetailPage() {
             Redemptions ({redemptions.length})
           </h3>
           {redemptions.length === 0 ? (
-            <p className="coupon-detail-empty">No redemptions yet.</p>
+            <p className="coupon-detail-empty">{t.noRedemptionsYet}</p>
           ) : (
             <div className="coupon-redemption-list">
               {redemptions.map((r) => (

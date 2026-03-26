@@ -5,6 +5,7 @@ import { ReportCardList } from './ReportCardList'
 import { ReportGroupHeader } from './ReportGroupHeader'
 import { InvoiceCard } from './InvoiceCard'
 import type { InvoiceReportGroup } from '../report.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface InvoiceReportGroupedProps {
   groups: InvoiceReportGroup[]
@@ -21,11 +22,12 @@ export function InvoiceReportGrouped({
   onToggleGroup,
   onInvoiceClick,
 }: InvoiceReportGroupedProps) {
+  const { t } = useLanguage()
   return (
     <div role="list" aria-label={`${title} grouped`}>
       {groups.map((group) => {
         const isExpanded = expandedGroups.has(group.key)
-        const subtitle = `${group.invoiceCount} invoices · ${formatAmount(group.totalAmount)}`
+        const subtitle = `${group.invoiceCount} ${t.invoicesGrouped} · ${formatAmount(group.totalAmount)}`
 
         return (
           <div key={group.key} role="listitem">
@@ -38,7 +40,7 @@ export function InvoiceReportGrouped({
 
             {isExpanded && (
               <div className="report-group-items">
-                <ReportCardList ariaLabel={`Invoices in ${group.label}`}>
+                <ReportCardList ariaLabel={`${t.invoicesInGroup} ${group.label}`}>
                   {group.items.map((item) => (
                     <InvoiceCard
                       key={item.id}

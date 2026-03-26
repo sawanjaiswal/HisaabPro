@@ -8,8 +8,10 @@ import { useToast } from '@/hooks/useToast'
 import { ROUTES } from '@/config/routes.config'
 import { BatchForm } from './components/BatchForm'
 import './batches.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export default function CreateBatchPage() {
+  const { t } = useLanguage()
   const { productId } = useParams<{ productId: string }>()
   const navigate = useNavigate()
   const toast = useToast()
@@ -27,7 +29,7 @@ export default function CreateBatchPage() {
 
   return (
     <AppShell>
-      <Header title="Add Batch" backTo={backPath} />
+      <Header title={t.addBatch} backTo={backPath} />
       <PageContainer>
         <BatchForm productId={productId} onSuccess={handleSuccess} />
       </PageContainer>

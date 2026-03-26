@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { ROUTES } from '@/config/routes.config'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useGodowns } from './useGodowns'
 import { GodownCard } from './components/GodownCard'
 import { TransferHistory } from './components/TransferHistory'
@@ -19,6 +20,7 @@ import './godowns.css'
 
 export default function GodownsPage() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const { data, status, refetch } = useGodowns()
   const [activeTab, setActiveTab] = useState<GodownTab>('godowns')
 
@@ -28,16 +30,16 @@ export default function GodownsPage() {
   return (
     <AppShell>
       <Header
-        title="Godowns"
+        title={t.godownsList}
         actions={
-          <button className="btn btn-ghost btn-sm" onClick={() => navigate(ROUTES.GODOWN_TRANSFER)} aria-label="Transfer stock">
-            Transfer
+          <button className="btn btn-ghost btn-sm" onClick={() => navigate(ROUTES.GODOWN_TRANSFER)} aria-label={t.transferStock}>
+            {t.transfer}
           </button>
         }
       />
 
       <PageContainer>
-        <nav className="pill-tabs" role="tablist" aria-label="Godown sections">
+        <nav className="pill-tabs" role="tablist" aria-label={t.godownSections}>
           {GODOWN_TABS.map((tab) => (
             <button
               key={tab.id}
@@ -64,8 +66,8 @@ export default function GodownsPage() {
 
               {status === 'error' && (
                 <ErrorState
-                  title="Could not load godowns"
-                  message="Check your connection and try again."
+                  title={t.couldNotLoadGodowns}
+                  message={t.checkConnectionRetry}
                   onRetry={refetch}
                 />
               )}
@@ -73,11 +75,11 @@ export default function GodownsPage() {
               {status === 'success' && data && data.godowns.length === 0 && (
                 <EmptyState
                   icon={<Warehouse size={40} aria-hidden="true" />}
-                  title="No godowns yet"
-                  description="Add your first warehouse or godown"
+                  title={t.noGodownsYet}
+                  description={t.addFirstGodownDesc}
                   action={
-                    <button className="btn btn-primary btn-md" onClick={goToCreate} aria-label="Add first godown">
-                      Add Godown
+                    <button className="btn btn-primary btn-md" onClick={goToCreate} aria-label={t.addFirstGodown}>
+                      {t.addGodown}
                     </button>
                   }
                 />
@@ -86,9 +88,9 @@ export default function GodownsPage() {
               {status === 'success' && data && data.godowns.length > 0 && (
                 <>
                   <div role="status" aria-live="polite" className="sr-only">
-                    {data.godowns.length} {data.godowns.length === 1 ? 'godown' : 'godowns'} found
+                    {data.godowns.length} {data.godowns.length === 1 ? t.godownFound : t.godownsFoundPlural} {t.found}
                   </div>
-                  <div className="godown-list stagger-list" role="list" aria-label="Godowns">
+                  <div className="godown-list stagger-list" role="list" aria-label={t.godownsList}>
                     {data.godowns.map((godown) => (
                       <div key={godown.id} className="godown-list-item" role="listitem">
                         <GodownCard godown={godown} onClick={handleCardClick} />
@@ -105,7 +107,7 @@ export default function GodownsPage() {
       </PageContainer>
 
       {activeTab === 'godowns' && (
-        <button className="fab" onClick={goToCreate} aria-label="Add new godown">
+        <button className="fab" onClick={goToCreate} aria-label={t.addNewGodown}>
           <Plus size={24} aria-hidden="true" />
         </button>
       )}

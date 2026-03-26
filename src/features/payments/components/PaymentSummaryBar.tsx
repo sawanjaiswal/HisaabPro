@@ -1,11 +1,12 @@
 /** Payment list — Hero card pair (Money In / Money Out)
  *
- * Matches dashboard hero pattern: teal card (received) + lime card (paid out).
+ * Uses shared summary-hero CSS pattern.
  * Net balance shown as subtitle above the cards.
  */
 
 import React from 'react'
 import { ChevronRight, ArrowDownLeft, ArrowUpRight } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { PaymentListResponse } from '../payment.types'
 
 interface PaymentSummaryBarProps {
@@ -25,49 +26,50 @@ export const PaymentSummaryBar: React.FC<PaymentSummaryBarProps> = ({
   onReceivedClick,
   onPaidClick,
 }) => {
+  const { t } = useLanguage()
   const { totalIn, totalOut, net } = summary
 
   return (
-    <div className="payment-hero" role="list" aria-label="Payment summary">
-      <p className="payment-hero-net">
-        Net: <strong className={net >= 0 ? 'payment-hero-net--positive' : 'payment-hero-net--negative'}>
+    <div className="summary-hero" role="list" aria-label={t.paymentSummary}>
+      <p className="summary-hero-net">
+        {t.net}: <strong className={net >= 0 ? 'summary-hero-net--positive' : 'summary-hero-net--negative'}>
           {formatAmount(net)}
         </strong>
       </p>
 
-      <div className="payment-hero-cards">
+      <div className="summary-hero-cards">
         {/* Money In — teal gradient */}
         <button
-          className="payment-hero-card payment-hero-card--in"
+          className="summary-hero-card summary-hero-card--teal"
           role="listitem"
           onClick={onReceivedClick}
-          aria-label={`Money received: ${formatAmount(totalIn)}`}
+          aria-label={`${t.moneyIn}: ${formatAmount(totalIn)}`}
         >
-          <div className="payment-hero-card-content">
-            <span className="payment-hero-amount">{formatAmount(totalIn)}</span>
-            <span className="payment-hero-label">
-              Money In
+          <div className="summary-hero-card-content">
+            <span className="summary-hero-amount">{formatAmount(totalIn)}</span>
+            <span className="summary-hero-label">
+              {t.moneyIn}
               <ArrowDownLeft size={14} aria-hidden="true" />
             </span>
           </div>
-          <ChevronRight size={20} aria-hidden="true" className="payment-hero-chevron" />
+          <ChevronRight size={20} aria-hidden="true" className="summary-hero-chevron" />
         </button>
 
         {/* Money Out — lime */}
         <button
-          className="payment-hero-card payment-hero-card--out"
+          className="summary-hero-card summary-hero-card--lime"
           role="listitem"
           onClick={onPaidClick}
-          aria-label={`Money paid: ${formatAmount(totalOut)}`}
+          aria-label={`${t.moneyOut}: ${formatAmount(totalOut)}`}
         >
-          <div className="payment-hero-card-content">
-            <span className="payment-hero-amount">{formatAmount(totalOut)}</span>
-            <span className="payment-hero-label">
-              Money Out
+          <div className="summary-hero-card-content">
+            <span className="summary-hero-amount">{formatAmount(totalOut)}</span>
+            <span className="summary-hero-label">
+              {t.moneyOut}
               <ArrowUpRight size={14} aria-hidden="true" />
             </span>
           </div>
-          <ChevronRight size={20} aria-hidden="true" className="payment-hero-chevron payment-hero-chevron--dark" />
+          <ChevronRight size={20} aria-hidden="true" className="summary-hero-chevron summary-hero-chevron--dark" />
         </button>
       </div>
     </div>

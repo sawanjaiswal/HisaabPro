@@ -29,13 +29,13 @@ export const OutstandingHero: React.FC<OutstandingHeroProps> = ({
 }) => {
   const { t } = useLanguage()
   return (
-    <div className="dashboard-hero" role="list" aria-label="Outstanding summary">
+    <div className="dashboard-hero" role="list" aria-label={t.outstandingSummary}>
       {/* To Collect — teal */}
       <button
         className="dashboard-hero-card dashboard-hero-card--collect"
         role="listitem"
         onClick={onCollectClick}
-        aria-label={`To collect: ${formatCompactAmount(receivableTotal)} from ${receivablePartyCount} parties`}
+        aria-label={`${t.toCollect}: ${formatCompactAmount(receivableTotal)}, ${receivablePartyCount} ${receivablePartyCount === 1 ? t.party : t.parties}`}
       >
         <div className="dashboard-hero-card-content">
           <span className="dashboard-hero-amount">{formatCompactAmount(receivableTotal)}</span>
@@ -54,7 +54,7 @@ export const OutstandingHero: React.FC<OutstandingHeroProps> = ({
         className="dashboard-hero-card dashboard-hero-card--pay"
         role="listitem"
         onClick={onPayClick}
-        aria-label={`To pay: ${formatCompactAmount(payableTotal)} to ${payablePartyCount} parties`}
+        aria-label={`${t.toPay}: ${formatCompactAmount(payableTotal)}, ${payablePartyCount} ${payablePartyCount === 1 ? t.party : t.parties}`}
       >
         <div className="dashboard-hero-card-content">
           <span className="dashboard-hero-amount">{formatCompactAmount(payableTotal)}</span>

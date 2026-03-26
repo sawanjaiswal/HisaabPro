@@ -5,6 +5,7 @@
  */
 
 import { PartySearchInput } from '@/components/ui/PartySearch'
+import { useLanguage } from '@/hooks/useLanguage'
 import { PAYMENT_MODE_LABELS, MODES_WITH_REFERENCE } from '../payment.constants'
 import { getReferencePlaceholder } from '../payment.utils'
 import type { PaymentMode } from '../payment.types'
@@ -44,6 +45,7 @@ export function PaymentDetailsSection({
   onReferenceChange,
   onNotesChange,
 }: PaymentDetailsSectionProps) {
+  const { t } = useLanguage()
   const showReference = MODES_WITH_REFERENCE.includes(mode)
 
   return (
@@ -57,7 +59,7 @@ export function PaymentDetailsSection({
 
       {/* Amount */}
       <div className="payment-field">
-        <label className="label" htmlFor="payment-amount">Amount *</label>
+        <label className="label" htmlFor="payment-amount">{t.amountRequired}</label>
         <div className="payment-amount-field">
           <span className="payment-amount-prefix" aria-hidden="true">₹</span>
           <input
@@ -71,7 +73,7 @@ export function PaymentDetailsSection({
               const paise = Math.round(parseFloat(e.target.value || '0') * 100)
               onAmountChange(paise)
             }}
-            aria-label="Payment amount in rupees"
+            aria-label={t.paymentAmountRupees}
           />
         </div>
         {errors.amount && <span className="field-error" role="alert">{errors.amount}</span>}
@@ -80,14 +82,14 @@ export function PaymentDetailsSection({
       {/* Date */}
       <div className="payment-row">
         <div className="payment-field payment-field-half">
-          <label className="label" htmlFor="payment-date">Date *</label>
+          <label className="label" htmlFor="payment-date">{t.dateRequired}</label>
           <input
             id="payment-date"
             type="date"
             className="input"
             value={date}
             onChange={(e) => onDateChange(e.target.value)}
-            aria-label="Payment date"
+            aria-label={t.paymentDate2}
           />
           {errors.date && <span className="field-error" role="alert">{errors.date}</span>}
         </div>
@@ -95,8 +97,8 @@ export function PaymentDetailsSection({
 
       {/* Payment Mode Grid */}
       <div className="payment-field">
-        <label className="label">Payment Mode *</label>
-        <div className="payment-mode-grid" role="radiogroup" aria-label="Payment mode">
+        <label className="label">{t.paymentModeRequired}</label>
+        <div className="payment-mode-grid" role="radiogroup" aria-label={t.paymentModeAriaLabel}>
           {PAYMENT_MODES.map((m) => (
             <button
               key={m}
@@ -117,7 +119,7 @@ export function PaymentDetailsSection({
       {/* Reference Number (conditional) */}
       {showReference && (
         <div className="payment-field">
-          <label className="label" htmlFor="payment-ref">Reference Number</label>
+          <label className="label" htmlFor="payment-ref">{t.referenceNumberLabel}</label>
           <input
             id="payment-ref"
             type="text"
@@ -125,7 +127,7 @@ export function PaymentDetailsSection({
             placeholder={getReferencePlaceholder(mode)}
             value={referenceNumber}
             onChange={(e) => onReferenceChange(e.target.value)}
-            aria-label="Reference number"
+            aria-label={t.referenceNumberAria}
             maxLength={100}
           />
           {errors.referenceNumber && <span className="field-error" role="alert">{errors.referenceNumber}</span>}
@@ -134,15 +136,15 @@ export function PaymentDetailsSection({
 
       {/* Notes */}
       <div className="payment-field">
-        <label className="label" htmlFor="payment-notes">Notes</label>
+        <label className="label" htmlFor="payment-notes">{t.notesLabel}</label>
         <textarea
           id="payment-notes"
           className="input"
           rows={3}
-          placeholder="Add a note..."
+          placeholder={t.addPaymentNote}
           value={notes}
           onChange={(e) => onNotesChange(e.target.value)}
-          aria-label="Payment notes"
+          aria-label={t.paymentNotesAria}
           aria-invalid={errors.notes ? true : undefined}
           aria-describedby={errors.notes ? 'payment-notes-error' : undefined}
           maxLength={500}

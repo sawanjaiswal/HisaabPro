@@ -3,6 +3,7 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { ROUTES } from '@/config/routes.config'
+import { useLanguage } from '@/hooks/useLanguage'
 import { LockPeriodSection } from './components/LockPeriodSection'
 import { ApprovalTogglesSection } from './components/ApprovalTogglesSection'
 import { ThresholdSection } from './components/ThresholdSection'
@@ -13,14 +14,15 @@ import './settings-toggle.css'
 
 export default function TransactionControlsPage() {
   const { config, status, refresh, updateField } = useTransactionControls()
+  const { t } = useLanguage()
 
   return (
     <AppShell>
-      <Header title="Transaction Controls" backTo={ROUTES.SETTINGS} />
+      <Header title={t.transactionControls} backTo={ROUTES.SETTINGS} />
       <PageContainer className="txn-controls-page">
 
         {status === 'loading' && (
-          <div aria-busy="true" aria-label="Loading settings">
+          <div aria-busy="true" aria-label={t.couldNotLoadSettings}>
             {[1, 2, 3, 4].map((n) => (
               <div
                 key={n}
@@ -32,8 +34,8 @@ export default function TransactionControlsPage() {
 
         {status === 'error' && (
           <ErrorState
-            title="Could not load transaction controls"
-            message="Check your connection and try again."
+            title={t.couldNotLoadTxnControls}
+            message={t.checkConnectionRetry2}
             onRetry={refresh}
           />
         )}

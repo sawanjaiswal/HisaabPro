@@ -15,6 +15,7 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { BulkActionBar } from '@/components/ui/BulkActionBar'
 import { useBulkSelect } from '@/hooks/useBulkSelect'
 import { useToast } from '@/hooks/useToast'
+import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { usePayments } from './usePayments'
 import { PaymentSummaryBar } from './components/PaymentSummaryBar'
@@ -31,6 +32,7 @@ import './payment-list.css'
 export default function PaymentsPage() {
   const navigate = useNavigate()
   const toast = useToast()
+  const { t } = useLanguage()
   const [activeType, setActiveType] = useState<PaymentType | 'ALL'>('ALL')
   const [activeMode, setActiveMode] = useState<PaymentMode | 'ALL'>('ALL')
   const bulk = useBulkSelect()
@@ -78,11 +80,11 @@ export default function PaymentsPage() {
     try {
       const ids = Array.from(bulk.selectedIds)
       await Promise.all(ids.map((id) => deletePayment(id)))
-      toast.success(`${count} ${count === 1 ? 'payment' : 'payments'} deleted`)
+      toast.success(`${count} ${count === 1 ? t.paymentDeleted : t.paymentsDeleted}`)
       bulk.clear()
       refresh()
     } catch {
-      toast.error('Failed to delete some payments')
+      toast.error(t.failedDeletePayments)
     } finally {
       setIsBulkDeleting(false)
     }
@@ -93,22 +95,22 @@ export default function PaymentsPage() {
   const bulkActions: BulkAction[] = [
     {
       id: 'delete',
-      label: 'Delete',
+      label: t.delete,
       icon: 'delete',
       isDanger: true,
       onClick: handleBulkDelete,
     },
     {
       id: 'export',
-      label: 'Export',
+      label: t.export,
       icon: 'export',
-      onClick: () => toast.info('Export coming soon'),
+      onClick: () => toast.info(t.exportComingSoon),
     },
   ]
 
   return (
     <AppShell>
-      <Header title={bulk.isActive ? `${bulk.selectedCount} Selected` : 'Payments'} />
+      <Header title={bulk.isActive ? `${bulk.selectedCount} ${t.selected}` : t.payments} />
 
       {status === 'success' && data && !bulk.isActive && (
         <div className="page-hero">
@@ -132,8 +134,8 @@ export default function PaymentsPage() {
 
         {status === 'error' && (
           <ErrorState
-            title="Could not load payments"
-            message="Check your connection and try again."
+            title={t.couldNotLoadPayments}
+            message={t.checkConnectionRetry}
             onRetry={refresh}
           />
         )}
@@ -141,15 +143,15 @@ export default function PaymentsPage() {
         {status === 'success' && data && data.payments.length === 0 && (
           <EmptyState
             icon={<Banknote size={40} aria-hidden="true" />}
-            title="No payments recorded yet"
-            description="Record your first payment to start tracking money in & out"
+            title={t.noPaymentsRecordedYet}
+            description={t.recordFirstPaymentDesc}
             action={
               <button
                 className="btn btn-primary btn-md"
                 onClick={() => navigate(`${ROUTES.PAYMENT_NEW}?type=PAYMENT_IN`)}
-                aria-label="Record first payment"
+                aria-label={t.recordFirstPayment}
               >
-                Record Payment In
+                {t.recordPaymentIn}
               </button>
             }
           />
@@ -157,14 +159,14 @@ export default function PaymentsPage() {
 
         {status === 'success' && data && (
           <div role="status" aria-live="polite" className="sr-only">
-            {data.payments.length} {data.payments.length === 1 ? 'payment' : 'payments'} found
+            {data.payments.length} {data.payments.length === 1 ? t.paymentFound : t.paymentsFound}
           </div>
         )}
 
         {status === 'success' && data && data.payments.length > 0 && (
           <>
-          <h2 className="sr-only">Payment list</h2>
-          <div className="payment-list stagger-list" role="list" aria-label="Payments">
+          <h2 className="sr-only">{t.paymentList}</h2>
+          <div className="payment-list stagger-list" role="list" aria-label={t.payments}>
             {data.payments.map((payment) => (
               <div
                 key={payment.id}
@@ -195,7 +197,7 @@ export default function PaymentsPage() {
         <button
           className="fab"
           onClick={() => navigate(`${ROUTES.PAYMENT_NEW}?type=PAYMENT_IN`)}
-          aria-label="Record new payment"
+          aria-label={t.recordNewPayment}
         >
           <Plus size={24} aria-hidden="true" />
         </button>

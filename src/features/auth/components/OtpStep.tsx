@@ -2,6 +2,7 @@ import { useRef, useEffect } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '../../../components/ui/Button'
 import { OTP_LENGTH } from '../auth.constants'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface OtpStepProps {
   phone: string
@@ -26,6 +27,7 @@ export function OtpStep({
   error,
   resendCooldown,
 }: OtpStepProps) {
+  const { t } = useLanguage()
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
   // Auto-focus first input on mount
@@ -79,7 +81,7 @@ export function OtpStep({
         type="button"
         onClick={onBack}
         className="auth-otp__back"
-        aria-label="Go back to phone input"
+        aria-label={t.goBackPhoneInput}
       >
         <ArrowLeft size={20} />
         <span>Change number</span>

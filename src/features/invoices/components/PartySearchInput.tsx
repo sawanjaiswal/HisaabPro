@@ -1,6 +1,7 @@
 /** Party Search Input — debounced dropdown for invoice form party selection */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useDebounce } from '@/hooks/useDebounce'
 import { getParties } from '@/lib/services/party.service'
 import type { PartySummary } from '@/lib/types/party.types'
@@ -27,6 +28,7 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
   onChange,
   error,
 }) => {
+  const { t } = useLanguage()
   const [query, setQuery] = useState('')
   const [selectedName, setSelectedName] = useState('')
   const [results, setResults] = useState<PartySummary[]>([])
@@ -156,7 +158,7 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
   return (
     <div className="party-search" ref={containerRef}>
       <label className="label" htmlFor="party-search-input">
-        Customer / Supplier
+        {t.customerSupplierLabel}
       </label>
 
       {isSelected ? (
@@ -168,9 +170,9 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
             type="button"
             className="party-selector-change"
             onClick={handleClear}
-            aria-label="Change selected party"
+            aria-label={t.changeSelectedParty}
           >
-            Change
+            {t.changeLabel}
           </button>
         </div>
       ) : (

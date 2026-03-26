@@ -1,6 +1,7 @@
 /** Create Product — Tax category, HSN/SAC, barcode, description, status section */
 
 import { Input } from '@/components/ui/Input'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { ProductFormData, ProductStatus } from '../product.types'
 import { PRODUCT_STATUS_LABELS, HSN_CODE_MAX, SAC_CODE_MAX, PRODUCT_DESCRIPTION_MAX } from '../product.constants'
 import type { TaxCategory } from '@/lib/types/tax.types'
@@ -20,13 +21,14 @@ const STATUS_OPTIONS: { value: ProductStatus; label: string }[] = [
 ]
 
 export function ProductFormExtra({ form, errors, onUpdate, taxCategories = [] }: ProductFormExtraProps) {
+  const { t } = useLanguage()
   return (
     <div className="create-party-section">
       {taxCategories.length > 0 && (
         <div className="input-group">
-          <label htmlFor="product-tax-cat" className="input-label">Tax Category</label>
-          <select id="product-tax-cat" className="input" value={form.taxCategoryId ?? ''} onChange={(e) => onUpdate('taxCategoryId', e.target.value || null)} aria-label="Select tax category">
-            <option value="">None (Exempt)</option>
+          <label htmlFor="product-tax-cat" className="input-label">{t.taxCategoryLabel}</label>
+          <select id="product-tax-cat" className="input" value={form.taxCategoryId ?? ''} onChange={(e) => onUpdate('taxCategoryId', e.target.value || null)} aria-label={t.selectTaxCategory}>
+            <option value="">{t.noneExempt}</option>
             {taxCategories.map((tc) => (
               <option key={tc.id} value={tc.id}>{tc.name}</option>
             ))}
@@ -36,20 +38,20 @@ export function ProductFormExtra({ form, errors, onUpdate, taxCategories = [] }:
 
       <BarcodeField form={form} errors={errors} onUpdate={onUpdate} />
 
-      <Input label="HSN Code (goods)" id="product-hsn" value={form.hsnCode ?? ''} onChange={(e) => onUpdate('hsnCode', e.target.value || undefined)} error={errors.hsnCode} placeholder="e.g. 19023090" maxLength={HSN_CODE_MAX} autoComplete="off" />
+      <Input label={t.hsnCodeGoods} id="product-hsn" value={form.hsnCode ?? ''} onChange={(e) => onUpdate('hsnCode', e.target.value || undefined)} error={errors.hsnCode} placeholder="e.g. 19023090" maxLength={HSN_CODE_MAX} autoComplete="off" />
 
-      <Input label="SAC Code (services)" id="product-sac" value={form.sacCode ?? ''} onChange={(e) => onUpdate('sacCode', e.target.value || undefined)} error={errors.sacCode} placeholder="e.g. 998314" maxLength={SAC_CODE_MAX} autoComplete="off" />
+      <Input label={t.sacCodeServices} id="product-sac" value={form.sacCode ?? ''} onChange={(e) => onUpdate('sacCode', e.target.value || undefined)} error={errors.sacCode} placeholder="e.g. 998314" maxLength={SAC_CODE_MAX} autoComplete="off" />
 
       <div className="input-group">
-        <label htmlFor="product-description" className="input-label">Description</label>
-        <textarea id="product-description" className="input create-party-textarea" value={form.description ?? ''} onChange={(e) => onUpdate('description', e.target.value || undefined)} placeholder="Additional product details..." rows={3} maxLength={PRODUCT_DESCRIPTION_MAX} aria-label="Product description" style={{ resize: 'vertical', height: 'auto', paddingTop: 'var(--space-3)', paddingBottom: 'var(--space-3)' }} />
+        <label htmlFor="product-description" className="input-label">{t.descriptionLabel}</label>
+        <textarea id="product-description" className="input create-party-textarea" value={form.description ?? ''} onChange={(e) => onUpdate('description', e.target.value || undefined)} placeholder={t.additionalProductDetails} rows={3} maxLength={PRODUCT_DESCRIPTION_MAX} aria-label={t.descriptionLabel} style={{ resize: 'vertical', height: 'auto', paddingTop: 'var(--space-3)', paddingBottom: 'var(--space-3)' }} />
       </div>
 
       <div className="input-group">
-        <span className="input-label" id="product-status-label">Status</span>
+        <span className="input-label" id="product-status-label">{t.statusLabel}</span>
         <div className="pill-tabs" role="group" aria-labelledby="product-status-label">
           {STATUS_OPTIONS.map((option) => (
-            <button key={option.value} type="button" className={`pill-tab${form.status === option.value ? ' active' : ''}`} onClick={() => onUpdate('status', option.value)} aria-pressed={form.status === option.value} aria-label={`Set product status to ${option.label}`}>
+            <button key={option.value} type="button" className={`pill-tab${form.status === option.value ? ' active' : ''}`} onClick={() => onUpdate('status', option.value)} aria-pressed={form.status === option.value} aria-label={`${t.setProductStatusTo} ${option.label}`}>
               {option.label}
             </button>
           ))}

@@ -22,8 +22,10 @@ import './report-shared.css'
 import './report-cards.css'
 import './report-shared-ui.css'
 import './report-party-statement.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export default function PartyStatementPage() {
+  const { t } = useLanguage()
   const { partyId = '' } = useParams<{ partyId: string }>()
   const navigate = useNavigate()
   const toast = useToast()
@@ -54,15 +56,15 @@ export default function PartyStatementPage() {
           format,
           filters: { partyId },
         })
-        toast.success(`Statement exported as ${format.toUpperCase()}`)
+        toast.success(`${t.statementExported} ${format.toUpperCase()}`)
       } catch {
-        toast.error('Export failed. Please try again.')
+        toast.error(t.exportFailed)
       }
     },
     [statement, partyId, toast],
   )
 
-  const pageTitle = party ? `${party.name} Statement` : 'Party Statement'
+  const pageTitle = party ? `${party.name} ${t.statementSuffix}` : t.partyStatement
 
   return (
     <AppShell>
@@ -75,8 +77,8 @@ export default function PartyStatementPage() {
         {/* Error */}
         {status === 'error' && (
           <ErrorState
-            title="Could not load statement"
-            message="Failed to fetch the party ledger. Please try again."
+            title={t.couldNotLoadStatement}
+            message={t.failedFetchPartyLedger}
             onRetry={refresh}
           />
         )}
@@ -97,15 +99,15 @@ export default function PartyStatementPage() {
                 <div className="report-empty-icon" aria-hidden="true">
                   <FileText size={28} />
                 </div>
-                <p className="report-empty-title">No transactions yet</p>
+                <p className="report-empty-title">{t.noTransactionsYet}</p>
                 <p className="report-empty-desc">
-                  No transactions with {party.name} yet.
+                  {`${t.noTransactionsWith} ${party.name} ${t.yet}`}
                 </p>
                 <button
                   className="btn btn-primary btn-md"
                   type="button"
                   onClick={() => navigate(ROUTES.INVOICE_CREATE)}
-                  aria-label="Create an invoice"
+                  aria-label={t.createAnInvoice}
                 >
                   Create Invoice
                 </button>
@@ -114,7 +116,7 @@ export default function PartyStatementPage() {
               <div
                 className="report-card-list"
                 role="list"
-                aria-label={`Transactions for ${party.name}`}
+                aria-label={`${t.transactionsFor} ${party.name}`}
               >
                 {statement.transactions.map((txn) => (
                   <StatementRow

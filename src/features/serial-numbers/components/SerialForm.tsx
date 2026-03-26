@@ -1,3 +1,4 @@
+import { useLanguage } from '@/hooks/useLanguage'
 import { SERIAL_NUMBER_MAX, NOTES_MAX } from '../serial-number.constants'
 import { useSerialForm } from '../useSerialForm'
 
@@ -7,6 +8,7 @@ interface SerialFormProps {
 }
 
 export function SerialForm({ productId, onSuccess }: SerialFormProps) {
+  const { t } = useLanguage()
   const { form, errors, isSubmitting, updateField, handleSubmit } = useSerialForm(productId, onSuccess)
 
   const onSubmit = (e: React.FormEvent) => {
@@ -17,7 +19,7 @@ export function SerialForm({ productId, onSuccess }: SerialFormProps) {
   return (
     <form className="serial-form" onSubmit={onSubmit} noValidate>
       <div className="serial-form__field">
-        <label htmlFor="serialNumber" className="serial-form__label">Serial Number *</label>
+        <label htmlFor="serialNumber" className="serial-form__label">{t.serialNumberRequired}</label>
         <input
           id="serialNumber"
           type="text"
@@ -25,21 +27,21 @@ export function SerialForm({ productId, onSuccess }: SerialFormProps) {
           value={form.serialNumber}
           onChange={(e) => updateField('serialNumber', e.target.value)}
           maxLength={SERIAL_NUMBER_MAX}
-          placeholder="e.g. SN-2026-001"
+          placeholder={t.serialPlaceholder}
           autoFocus
         />
         {errors.serialNumber && <p className="serial-form__error">{errors.serialNumber}</p>}
       </div>
 
       <div className="serial-form__field">
-        <label htmlFor="notes" className="serial-form__label">Notes</label>
+        <label htmlFor="notes" className="serial-form__label">{t.notesLabel}</label>
         <textarea
           id="notes"
           className="serial-form__input serial-form__textarea"
           value={form.notes}
           onChange={(e) => updateField('notes', e.target.value)}
           maxLength={NOTES_MAX}
-          placeholder="Optional notes"
+          placeholder={t.optionalNotes}
           rows={3}
         />
         {errors.notes && <p className="serial-form__error">{errors.notes}</p>}
@@ -50,7 +52,7 @@ export function SerialForm({ productId, onSuccess }: SerialFormProps) {
         className="btn btn-primary btn-md serial-form__submit"
         disabled={isSubmitting}
       >
-        {isSubmitting ? 'Adding...' : 'Add Serial Number'}
+        {isSubmitting ? t.addingSerial : t.addSerialNumber}
       </button>
     </form>
   )

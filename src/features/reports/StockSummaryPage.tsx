@@ -23,6 +23,7 @@ import type { StockStatusFilter } from './components/StockSummaryFilterBar'
 import './report-shared.css'
 import './report-cards.css'
 import './report-shared-ui.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
 
@@ -31,6 +32,7 @@ const ALL_STOCK_STATUS = 'all'
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function StockSummaryPage() {
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const toast = useToast()
 
@@ -77,9 +79,9 @@ export default function StockSummaryPage() {
           format,
           filters: filters as unknown as Record<string, unknown>,
         })
-        toast.success(`Stock summary exported as ${format.toUpperCase()}`)
+        toast.success(`${t.stockSummaryExported} ${format.toUpperCase()}`)
       } catch {
-        toast.error('Export failed. Please try again.')
+        toast.error(t.exportFailed)
       }
     },
     [data, filters, toast],
@@ -87,7 +89,7 @@ export default function StockSummaryPage() {
 
   return (
     <AppShell>
-      <Header title="Stock Summary" backTo={ROUTES.REPORTS} />
+      <Header title={t.stockSummary} backTo={ROUTES.REPORTS} />
 
       <PageContainer>
         <StockSummaryFilterBar
@@ -105,8 +107,8 @@ export default function StockSummaryPage() {
         {/* Error */}
         {status === 'error' && (
           <ErrorState
-            title="Could not load stock"
-            message="Failed to fetch stock summary. Please try again."
+            title={t.couldNotLoadStock}
+            message={t.failedFetchStock}
             onRetry={refresh}
           />
         )}
@@ -117,19 +119,19 @@ export default function StockSummaryPage() {
             <ReportSummaryBar
               items={[
                 {
-                  label: 'Products',
+                  label: t.products,
                   value: String(summary.totalProducts),
                 },
                 {
-                  label: 'Stock Value (Buy)',
+                  label: t.stockValueBuy,
                   value: formatAmount(summary.totalStockValueAtPurchase),
                 },
                 {
-                  label: 'Stock Value (Sale)',
+                  label: t.stockValueSale,
                   value: formatAmount(summary.totalStockValueAtSale),
                 },
                 {
-                  label: 'Low Stock',
+                  label: t.lowStock,
                   value: String(summary.lowStockCount),
                   color:
                     summary.lowStockCount > 0
@@ -137,7 +139,7 @@ export default function StockSummaryPage() {
                       : undefined,
                 },
                 {
-                  label: 'Out of Stock',
+                  label: t.outOfStock,
                   value: String(summary.outOfStockCount),
                   color:
                     summary.outOfStockCount > 0
@@ -161,7 +163,7 @@ export default function StockSummaryPage() {
               <div
                 className="report-card-list"
                 role="list"
-                aria-label="Stock summary"
+                aria-label={t.stockSummary}
               >
                 {items.map((item) => (
                   <StockSummaryProductCard key={item.productId} item={item} />

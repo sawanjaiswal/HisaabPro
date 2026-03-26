@@ -11,6 +11,7 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { ROUTES } from '@/config/routes.config'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useReconciliationDetail } from './useReconciliationDetail'
 import { ReconciliationSummaryCards } from './components/ReconciliationSummaryCards'
 import { ReconciliationEntryCard } from './components/ReconciliationEntryCard'
@@ -20,6 +21,7 @@ import './reconciliation.css'
 
 export default function ReconciliationDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const { t } = useLanguage()
   const {
     summary, entries,
     summaryStatus, entriesStatus,
@@ -28,12 +30,12 @@ export default function ReconciliationDetailPage() {
     refresh,
   } = useReconciliationDetail(id ?? '')
 
-  const title = summary ? `${summary.period} Reconciliation` : 'Reconciliation'
+  const title = summary ? `${summary.period} ${t.reconciliation}` : t.reconciliation
 
   if (summaryStatus === 'loading') {
     return (
       <AppShell>
-        <Header title="Reconciliation" backTo={ROUTES.GST_RECONCILIATION} />
+        <Header title={t.reconciliation} backTo={ROUTES.GST_RECONCILIATION} />
         <PageContainer>
           <div className="recon-detail-skeleton">
             <div className="recon-detail-skeleton__cards" aria-hidden="true" />
@@ -47,11 +49,11 @@ export default function ReconciliationDetailPage() {
   if (summaryStatus === 'error' || !summary) {
     return (
       <AppShell>
-        <Header title="Reconciliation" backTo={ROUTES.GST_RECONCILIATION} />
+        <Header title={t.reconciliation} backTo={ROUTES.GST_RECONCILIATION} />
         <PageContainer>
           <ErrorState
-            title="Could not load reconciliation"
-            message="Check your connection and try again."
+            title={t.couldNotLoadReconciliation}
+            message={t.checkConnectionRetry}
             onRetry={refresh}
           />
         </PageContainer>
@@ -68,7 +70,7 @@ export default function ReconciliationDetailPage() {
         <ReconciliationSummaryCards summary={summary} />
 
         {/* Filter pills */}
-        <div className="recon-filter-pills" role="tablist" aria-label="Filter by match status">
+        <div className="recon-filter-pills" role="tablist" aria-label={t.filterByMatchStatus}>
           {MATCH_STATUS_FILTER_OPTIONS.map(({ value, label }) => (
             <button
               key={value}
@@ -85,7 +87,7 @@ export default function ReconciliationDetailPage() {
 
         {/* Entries loading */}
         {entriesStatus === 'loading' && entries.length === 0 && (
-          <div className="recon-entries-skeleton" aria-label="Loading entries" aria-busy="true">
+          <div className="recon-entries-skeleton" aria-label={t.loadingEntries} aria-busy="true">
             {[1, 2, 3].map((n) => <div key={n} className="recon-entry-skeleton-item" aria-hidden="true" />)}
           </div>
         )}
@@ -93,8 +95,8 @@ export default function ReconciliationDetailPage() {
         {/* Entries error */}
         {entriesStatus === 'error' && (
           <ErrorState
-            title="Could not load entries"
-            message="Try again or change the filter."
+            title={t.couldNotLoadEntries}
+            message={t.couldNotLoadEntriesMsg}
             onRetry={refresh}
           />
         )}
@@ -103,11 +105,11 @@ export default function ReconciliationDetailPage() {
         {entriesStatus === 'success' && entries.length === 0 && (
           <div className="recon-empty">
             <div className="recon-empty__icon" aria-hidden="true"><FileText size={28} /></div>
-            <p className="recon-empty__title">No entries found</p>
+            <p className="recon-empty__title">{t.noEntriesFound}</p>
             <p className="recon-empty__desc">
               {matchFilter === 'ALL'
-                ? 'This reconciliation has no entries.'
-                : `No ${matchFilter.toLowerCase().replace(/_/g, ' ')} entries.`}
+                ? t.noEntriesForRecon
+                : `No ${matchFilter.toLowerCase().replace(/_/g, ' ')} ${t.entries}.`}
             </p>
           </div>
         )}
@@ -116,7 +118,7 @@ export default function ReconciliationDetailPage() {
         {entries.length > 0 && (
           <>
             <p className="recon-entry-count">
-              {entriesTotal} {entriesTotal === 1 ? 'entry' : 'entries'}
+              {entriesTotal} {entriesTotal === 1 ? t.entry : t.entries}
             </p>
             <div className="recon-entry-list">
               {entries.map((entry) => (
@@ -125,7 +127,7 @@ export default function ReconciliationDetailPage() {
             </div>
             {hasMoreEntries && (
               <button type="button" className="recon-load-more" onClick={loadMoreEntries}>
-                Load more
+                {t.loadMore}
               </button>
             )}
           </>

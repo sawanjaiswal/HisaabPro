@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { Search } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { PREDEFINED_CATEGORIES } from '../product.constants'
 
 interface ProductFilterBarProps {
@@ -11,14 +12,14 @@ interface ProductFilterBarProps {
   onCategoryChange: (categoryId: string | 'ALL') => void
 }
 
-const ALL_OPTION = { id: 'ALL', name: 'All' }
-
 export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
   search,
   onSearchChange,
   activeCategoryId,
   onCategoryChange,
 }) => {
+  const { t } = useLanguage()
+
   return (
     <div className="product-filter-bar">
       <div className="search-bar">
@@ -27,20 +28,20 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
           type="search"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search by name or SKU..."
-          aria-label="Search products by name or SKU"
+          placeholder={t.searchByNameOrSku}
+          aria-label={t.searchProducts}
         />
       </div>
 
-      <div className="pill-tabs" role="group" aria-label="Filter products by category">
+      <div className="pill-tabs" role="group" aria-label={t.filterProductsByCategory}>
         <button
-          key={ALL_OPTION.id}
-          className={`pill-tab${activeCategoryId === ALL_OPTION.id ? ' active' : ''}`}
+          key="ALL"
+          className={`pill-tab${activeCategoryId === 'ALL' ? ' active' : ''}`}
           onClick={() => onCategoryChange('ALL')}
-          aria-pressed={activeCategoryId === ALL_OPTION.id}
-          aria-label="Show all products"
+          aria-pressed={activeCategoryId === 'ALL'}
+          aria-label={t.showAllProducts}
         >
-          {ALL_OPTION.name}
+          {t.all}
         </button>
         {PREDEFINED_CATEGORIES.map((cat) => (
           <button
@@ -48,7 +49,7 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
             className={`pill-tab${activeCategoryId === cat.id ? ' active' : ''}`}
             onClick={() => onCategoryChange(cat.id)}
             aria-pressed={activeCategoryId === cat.id}
-            aria-label={`Show ${cat.name} products`}
+            aria-label={`${t.showCatProducts} ${cat.name} ${t.productsLabel}`}
           >
             {cat.name}
           </button>

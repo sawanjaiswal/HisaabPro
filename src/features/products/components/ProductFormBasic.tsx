@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Plus } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { ProductFormData, Category, Unit } from '../product.types'
 import { getCategories, getUnits, createUnit } from '../product.service'
 import type { UnitInput } from '../unit.service'
@@ -15,6 +16,7 @@ interface ProductFormBasicProps {
 }
 
 export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicProps) {
+  const { t } = useLanguage()
   const [categories, setCategories] = useState<Category[]>([])
   const [units, setUnits] = useState<Unit[]>([])
   const [addUnitOpen, setAddUnitOpen] = useState(false)
@@ -58,7 +60,7 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
   return (
     <div className="create-party-section">
       <Input
-        label="Product Name"
+        label={t.productName}
         id="product-name"
         value={form.name}
         onChange={(e) => onUpdate('name', e.target.value)}
@@ -70,25 +72,25 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
       />
 
       <div className="input-group">
-        <span className="input-label" id="sku-mode-label">SKU</span>
+        <span className="input-label" id="sku-mode-label">{t.sku}</span>
         <div className="pill-tabs" role="group" aria-labelledby="sku-mode-label" style={{ marginBottom: 'var(--space-2)' }}>
           <button
             type="button"
             className={`pill-tab${form.autoGenerateSku ? ' active' : ''}`}
             onClick={() => onUpdate('autoGenerateSku', true)}
             aria-pressed={form.autoGenerateSku}
-            aria-label="Auto-generate SKU"
+            aria-label={t.autoGenerateSku}
           >
-            Auto-generate
+            {t.autoGenerate}
           </button>
           <button
             type="button"
             className={`pill-tab${!form.autoGenerateSku ? ' active' : ''}`}
             onClick={() => onUpdate('autoGenerateSku', false)}
             aria-pressed={!form.autoGenerateSku}
-            aria-label="Enter SKU manually"
+            aria-label={t.enterSkuManually}
           >
-            Manual
+            {t.manualEntry}
           </button>
         </div>
         {!form.autoGenerateSku && (
@@ -98,24 +100,24 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
             value={form.sku ?? ''}
             onChange={(e) => onUpdate('sku', e.target.value)}
             placeholder="e.g. PRD-0001"
-            aria-label="Product SKU code"
+            aria-label={t.productSkuCode}
           />
         )}
         {errors.sku && <p className="input-error" role="alert">{errors.sku}</p>}
       </div>
 
       <div className="input-group">
-        <label htmlFor="product-category" className="input-label">Category</label>
+        <label htmlFor="product-category" className="input-label">{t.category}</label>
         <select
           id="product-category"
           className="input"
           value={form.categoryId ?? ''}
           onChange={(e) => onUpdate('categoryId', e.target.value)}
-          aria-label="Select product category"
+          aria-label={t.selectProductCategory}
           disabled={categories.length === 0}
         >
           {categories.length === 0 && (
-            <option value="">Loading...</option>
+            <option value="">{t.loading}</option>
           )}
           {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -124,19 +126,19 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
       </div>
 
       <div className="input-group">
-        <label htmlFor="product-unit" className="input-label">Unit</label>
+        <label htmlFor="product-unit" className="input-label">{t.unit}</label>
         <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
           <select
             id="product-unit"
             className="input"
             value={form.unitId}
             onChange={(e) => onUpdate('unitId', e.target.value)}
-            aria-label="Select product unit"
+            aria-label={t.selectProductUnit}
             disabled={units.length === 0}
             style={{ flex: 1 }}
           >
             {units.length === 0 && (
-              <option value="">Loading...</option>
+              <option value="">{t.loading}</option>
             )}
             {units.map((unit) => (
               <option key={unit.id} value={unit.id}>{unit.name} ({unit.symbol})</option>
@@ -146,7 +148,7 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
             type="button"
             className="btn btn-ghost btn-sm"
             onClick={() => setAddUnitOpen(true)}
-            aria-label="Add custom unit"
+            aria-label={t.addCustomUnit}
             style={{ flexShrink: 0 }}
           >
             <Plus size={16} aria-hidden="true" />
@@ -156,7 +158,7 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
       </div>
 
       <div className="input-group">
-        <span className="input-label">Sale Price</span>
+        <span className="input-label">{t.salePriceLabel}</span>
         <div className="create-party-prefix-input">
           <span className="create-party-prefix" aria-hidden="true">Rs</span>
           <input
@@ -168,7 +170,7 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
             value={form.salePrice > 0 ? form.salePrice / 100 : ''}
             onChange={(e) => onUpdate('salePrice', Math.round((parseFloat(e.target.value) || 0) * 100))}
             placeholder="0.00"
-            aria-label="Sale price in rupees"
+            aria-label={t.salePriceRupees}
             inputMode="decimal"
           />
         </div>
@@ -176,7 +178,7 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
       </div>
 
       <div className="input-group">
-        <span className="input-label">Purchase Price <span style={{ color: 'var(--color-gray-400)', fontWeight: 400 }}>(optional)</span></span>
+        <span className="input-label">{t.purchasePriceLabel} <span style={{ color: 'var(--color-gray-400)', fontWeight: 400 }}>({t.notesOptionalLabel})</span></span>
         <div className="create-party-prefix-input">
           <span className="create-party-prefix" aria-hidden="true">Rs</span>
           <input
@@ -188,7 +190,7 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
             value={form.purchasePrice && form.purchasePrice > 0 ? form.purchasePrice / 100 : ''}
             onChange={(e) => onUpdate('purchasePrice', Math.round((parseFloat(e.target.value) || 0) * 100))}
             placeholder="0.00"
-            aria-label="Purchase price in rupees"
+            aria-label={t.purchasePriceRupees}
             inputMode="decimal"
           />
         </div>

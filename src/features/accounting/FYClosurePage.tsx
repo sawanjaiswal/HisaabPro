@@ -13,6 +13,7 @@ import { formatPaise } from '@/lib/format'
 import { getFYClosures, closeFY, reopenFY } from '@/features/reports/finance.service'
 import type { FYClosure } from '@/features/reports/finance.types'
 import './accounting.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 function fyLabel(fy: string): string {
   const s = 2000 + parseInt(fy.slice(0, 2), 10)
@@ -29,6 +30,7 @@ function getCurrentFY(): string {
 }
 
 export default function FYClosurePage() {
+  const { t } = useLanguage()
   const toast = useToast()
   const [closures, setClosures] = useState<FYClosure[]>([])
   const [fetchStatus, setFetchStatus] = useState<'loading' | 'error' | 'success'>('loading')
@@ -88,7 +90,7 @@ export default function FYClosurePage() {
   if (fetchStatus === 'loading') {
     return (
       <AppShell>
-        <Header title="FY Closure" backTo={ROUTES.CHART_OF_ACCOUNTS} />
+        <Header title={t.fyClosurePage} backTo={ROUTES.CHART_OF_ACCOUNTS} />
         <PageContainer>
           <div className="acct-skeleton" aria-busy="true">
             {['sk-1', 'sk-2'].map((k) => <div key={k} className="acct-skeleton__block" />)}
@@ -101,7 +103,7 @@ export default function FYClosurePage() {
   if (fetchStatus === 'error') {
     return (
       <AppShell>
-        <Header title="FY Closure" backTo={ROUTES.CHART_OF_ACCOUNTS} />
+        <Header title={t.fyClosurePage} backTo={ROUTES.CHART_OF_ACCOUNTS} />
         <PageContainer><ErrorState title="Could not load closures" message="Check your connection and try again." onRetry={refresh} /></PageContainer>
       </AppShell>
     )
@@ -112,18 +114,18 @@ export default function FYClosurePage() {
 
   return (
     <AppShell>
-      <Header title="FY Closure" backTo={ROUTES.CHART_OF_ACCOUNTS} />
+      <Header title={t.fyClosurePage} backTo={ROUTES.CHART_OF_ACCOUNTS} />
       <PageContainer>
         <div className="fy-close-card">
           <div className="fy-close-card__header">
             <Calendar size={20} aria-hidden="true" />
-            <span>Close Financial Year</span>
+            <span>{t.closeFinancialYear}</span>
           </div>
           <div className="fy-close-card__body">
             <input
               type="text"
               className="fy-close-card__input"
-              placeholder="e.g. 2526"
+              placeholder={t.fyPlaceholder}
               maxLength={4}
               value={closingFY}
               onChange={(e) => setClosingFY(e.target.value.replace(/\D/g, '').slice(0, 4))}
@@ -137,7 +139,7 @@ export default function FYClosurePage() {
               aria-label={`Close financial year ${closingFY}`}
             >
               <Lock size={14} aria-hidden="true" />
-              {actionPending ? 'Closing...' : 'Close FY'}
+              {actionPending ? t.loading : t.closeFyBtn}
             </button>
           </div>
           {alreadyClosed && <p className="fy-close-card__note">Current FY ({fyLabel(currentFY)}) is already closed.</p>}
@@ -146,8 +148,8 @@ export default function FYClosurePage() {
         {closures.length === 0 && (
           <div className="acct-empty">
             <div className="acct-empty__icon" aria-hidden="true"><Lock size={32} /></div>
-            <p className="acct-empty__title">No FY closures yet</p>
-            <p className="acct-empty__desc">Close a financial year above to transfer income/expense balances to Retained Earnings.</p>
+            <p className="acct-empty__title">{t.noFyClosuresYet}</p>
+            <p className="acct-empty__desc">{t.closeFyAbove}</p>
           </div>
         )}
 
@@ -160,7 +162,7 @@ export default function FYClosurePage() {
                   <span className={`fy-card__status fy-card__status--${c.status.toLowerCase()}`}>{c.status}</span>
                 </div>
                 <div className="fy-card__details">
-                  <span className="fy-card__detail">Retained Earnings: {formatPaise(c.retainedEarnings)}</span>
+                  <span className="fy-card__detail">{t.retainedEarnings}: {formatPaise(c.retainedEarnings)}</span>
                   <span className="fy-card__detail">Closed: {new Date(c.closedAt).toLocaleDateString('en-IN')}</span>
                 </div>
                 {c.status === 'CLOSED' && (

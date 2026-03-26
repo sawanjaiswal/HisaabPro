@@ -19,6 +19,7 @@ import { useOtherIncome } from './useOtherIncome'
 import { createOtherIncome } from './other-income.service'
 import type { OtherIncome, OtherIncomePaymentMode, CreateOtherIncomeInput } from './other-income.types'
 import './other-income.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 const PAGE_LIMIT = 20
 
@@ -49,6 +50,7 @@ function IncomeCard({ item }: { item: OtherIncome }) {
 const TODAY = new Date().toISOString().split('T')[0]
 
 export default function OtherIncomePage() {
+  const { t } = useLanguage()
   const toast = useToast()
   const { items, total, page, status, categoryFilter, setCategoryFilter, setPage, refresh } = useOtherIncome()
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -89,7 +91,7 @@ export default function OtherIncomePage() {
   if (status === 'loading') {
     return (
       <AppShell>
-        <Header title="Other Income" backTo={ROUTES.DASHBOARD} />
+        <Header title={t.otherIncome ?? "Other Income"} backTo={ROUTES.DASHBOARD} />
         <PageContainer>
           <div className="income-skeleton" aria-busy="true">
             {['sk-1', 'sk-2', 'sk-3'].map((k) => <div key={k} className="income-skeleton__card" />)}
@@ -102,9 +104,9 @@ export default function OtherIncomePage() {
   if (status === 'error') {
     return (
       <AppShell>
-        <Header title="Other Income" backTo={ROUTES.DASHBOARD} />
+        <Header title={t.otherIncome ?? "Other Income"} backTo={ROUTES.DASHBOARD} />
         <PageContainer>
-          <ErrorState title="Could not load income entries" message="Check your connection and try again." onRetry={refresh} />
+          <ErrorState title={t.couldNotLoadIncome} message="Check your connection and try again." onRetry={refresh} />
         </PageContainer>
       </AppShell>
     )
@@ -112,7 +114,7 @@ export default function OtherIncomePage() {
 
   return (
     <AppShell>
-      <Header title="Other Income" backTo={ROUTES.DASHBOARD} />
+      <Header title={t.otherIncome ?? "Other Income"} backTo={ROUTES.DASHBOARD} />
       <PageContainer>
         <div className="income-filter-bar" role="group" aria-label="Filter by category">
           <button type="button" className={`income-filter-pill${categoryFilter === null ? ' income-filter-pill--active' : ''}`} onClick={() => setCategoryFilter(null)} aria-pressed={categoryFilter === null}>All</button>
@@ -131,9 +133,9 @@ export default function OtherIncomePage() {
         {items.length === 0 && (
           <div className="income-empty">
             <div className="income-empty__icon" aria-hidden="true"><TrendingUp size={32} /></div>
-            <p className="income-empty__title">No other income recorded</p>
-            <p className="income-empty__desc">Track interest, rent, commissions, and any other income not from sales.</p>
-            <button type="button" className="income-add-btn" onClick={() => setDrawerOpen(true)}><Plus size={14} aria-hidden="true" /> Add First Entry</button>
+            <p className="income-empty__title">{t.noOtherIncomeRecorded}</p>
+            <p className="income-empty__desc">{t.trackInterestRent}</p>
+            <button type="button" className="income-add-btn" onClick={() => setDrawerOpen(true)}><Plus size={14} aria-hidden="true" /> {t.addFirstEntry}</button>
           </div>
         )}
 
@@ -141,43 +143,43 @@ export default function OtherIncomePage() {
 
         {totalPages > 1 && (
           <div className="income-pagination">
-            <button type="button" className="income-pagination__btn" onClick={() => setPage(page - 1)} disabled={page <= 1} aria-label="Previous page">Previous</button>
+            <button type="button" className="income-pagination__btn" onClick={() => setPage(page - 1)} disabled={page <= 1} aria-label="Previous page">{t.back}</button>
             <span className="income-pagination__info">Page {page} of {totalPages}</span>
             <button type="button" className="income-pagination__btn" onClick={() => setPage(page + 1)} disabled={page >= totalPages} aria-label="Next page">Next</button>
           </div>
         )}
       </PageContainer>
 
-      <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title="Add Other Income">
+      <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title={t.addOtherIncome}>
         <form className="income-drawer__form" onSubmit={handleSubmit}>
           {formError && <p className="income-drawer__error" role="alert">{formError}</p>}
           <div className="income-drawer__field">
-            <label className="income-drawer__label" htmlFor="incCategory">Category</label>
+            <label className="income-drawer__label" htmlFor="incCategory">{t.categoryLabel}</label>
             <input id="incCategory" className="income-drawer__input" list="income-categories" value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} placeholder="e.g. Interest, Rental" />
             <datalist id="income-categories">{COMMON_CATEGORIES.map((c) => <option key={c} value={c} />)}</datalist>
           </div>
           <div className="income-drawer__row">
             <div className="income-drawer__field">
-              <label className="income-drawer__label" htmlFor="incAmount">Amount (₹)</label>
+              <label className="income-drawer__label" htmlFor="incAmount">{t.amountRsLabel}</label>
               <input id="incAmount" type="number" min="0.01" step="0.01" required className="income-drawer__input" value={form.amountRupees} onChange={(e) => setForm((f) => ({ ...f, amountRupees: e.target.value }))} placeholder="0.00" />
             </div>
             <div className="income-drawer__field">
-              <label className="income-drawer__label" htmlFor="incDate">Date</label>
+              <label className="income-drawer__label" htmlFor="incDate">{t.dateLabel}</label>
               <input id="incDate" type="date" required className="income-drawer__input" value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
             </div>
           </div>
           <div className="income-drawer__field">
-            <label className="income-drawer__label" htmlFor="incMode">Payment Mode</label>
+            <label className="income-drawer__label" htmlFor="incMode">{t.paymentModeLabel}</label>
             <select id="incMode" className="income-drawer__select" value={form.paymentMode} onChange={(e) => setForm((f) => ({ ...f, paymentMode: e.target.value as OtherIncomePaymentMode }))}>
               {(Object.entries(PAYMENT_MODE_LABELS) as [OtherIncomePaymentMode, string][]).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
             </select>
           </div>
           <div className="income-drawer__field">
-            <label className="income-drawer__label" htmlFor="incNotes">Notes (optional)</label>
+            <label className="income-drawer__label" htmlFor="incNotes">{t.notesOptional}</label>
             <input id="incNotes" className="income-drawer__input" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder="Additional details" />
           </div>
           <button type="submit" className="income-drawer__submit-btn" disabled={submitting} aria-busy={submitting}>
-            {submitting ? 'Saving...' : 'Record Income'}
+            {submitting ? t.loading : t.recordIncome}
           </button>
         </form>
       </Drawer>

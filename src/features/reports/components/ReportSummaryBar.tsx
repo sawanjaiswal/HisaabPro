@@ -5,6 +5,7 @@
  */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface SummaryItem {
   label: string
@@ -17,9 +18,10 @@ interface ReportSummaryBarProps {
   items: SummaryItem[]
 }
 
-export const ReportSummaryBar: React.FC<ReportSummaryBarProps> = ({ items }) => {
-  return (
-    <div className="report-summary-bar" role="region" aria-label="Report summary">
+export const ReportSummaryBar: React.FC<ReportSummaryBarProps> = ({items }) => {
+  const { t } = useLanguage()
+    return (
+    <div className="report-summary-bar" role="region" aria-label={t.reportSummary}>
       {items.map((item) => (
         <div key={item.label} className="report-summary-item">
           <span className="report-summary-label">{item.label}</span>

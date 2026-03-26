@@ -1,6 +1,7 @@
 /** Invoice preview — Bill To customer address block */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { TemplateFieldsConfig } from '../template.types'
 import { SAMPLE_PARTY } from './templatePreview.constants'
 
@@ -10,6 +11,7 @@ interface PreviewBillToProps {
 }
 
 export const PreviewBillTo: React.FC<PreviewBillToProps> = ({ fields, borderColor }) => {
+  const { t } = useLanguage()
   if (!fields.customerAddress) return null
 
   return (
@@ -22,7 +24,7 @@ export const PreviewBillTo: React.FC<PreviewBillToProps> = ({ fields, borderColo
       aria-hidden="true"
     >
       <div style={{ fontWeight: 600, color: 'var(--color-gray-500)', fontSize: '0.625rem', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>
-        Bill To
+        {t.billTo}
       </div>
       <div style={{ fontWeight: 600, color: 'var(--color-gray-800)' }}>{SAMPLE_PARTY.name}</div>
       {fields.customerPhone && (

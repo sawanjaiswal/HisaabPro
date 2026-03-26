@@ -1,6 +1,7 @@
 /** GodownCard — Single godown in the list */
 
 import { Warehouse, MapPin } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { truncateAddress } from '../godown.utils'
 import type { Godown } from '../godown.types'
 
@@ -10,12 +11,13 @@ interface GodownCardProps {
 }
 
 export function GodownCard({ godown, onClick }: GodownCardProps) {
+  const { t } = useLanguage()
   return (
     <button
       type="button"
       className="godown-card"
       onClick={() => onClick(godown.id)}
-      aria-label={`View ${godown.name}`}
+      aria-label={`${t.viewGodown} ${godown.name}`}
     >
       <div className="godown-card__icon">
         <Warehouse size={20} aria-hidden="true" />
@@ -25,7 +27,7 @@ export function GodownCard({ godown, onClick }: GodownCardProps) {
         <div className="godown-card__header">
           <span className="godown-card__name">{godown.name}</span>
           {godown.isDefault && (
-            <span className="godown-card__badge">Default</span>
+            <span className="godown-card__badge">{t.defaultBadge}</span>
           )}
         </div>
         {godown.address && (

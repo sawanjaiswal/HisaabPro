@@ -8,6 +8,7 @@
 import React from 'react'
 import { formatAmount } from '../report.utils'
 import type { TdsTcsTotals } from '../report-tax.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface TdsTcsSummaryCardsProps {
   totals: TdsTcsTotals
@@ -28,25 +29,27 @@ const MetricCard: React.FC<MetricCardProps> = ({ label, value, colorClass }) => 
   </div>
 )
 
-export const TdsTcsSummaryCards: React.FC<TdsTcsSummaryCardsProps> = ({ totals }) => {
-  return (
-    <div className="tds-tcs-summary-cards" role="region" aria-label="TDS/TCS summary totals">
+export const TdsTcsSummaryCards: React.FC<TdsTcsSummaryCardsProps> = ({
+  totals }) => {
+  const { t } = useLanguage()
+    return (
+    <div className="tds-tcs-summary-cards" role="region" aria-label={t.tdsTcsSummaryTotals}>
       <MetricCard
-        label="TDS Collected"
+        label={t.tdsCollected}
         value={formatAmount(totals.totalTdsAmount)}
         colorClass="tds-tcs-metric-card__value--tds"
       />
       <MetricCard
-        label="TCS Collected"
+        label={t.tcsCollected}
         value={formatAmount(totals.totalTcsAmount)}
         colorClass="tds-tcs-metric-card__value--tcs"
       />
       <MetricCard
-        label="Invoice Value"
+        label={t.invoiceValue}
         value={formatAmount(totals.totalInvoiceValue)}
       />
       <MetricCard
-        label="Invoices"
+        label={t.invoices}
         value={String(totals.invoiceCount)}
         colorClass="tds-tcs-metric-card__value--count"
       />

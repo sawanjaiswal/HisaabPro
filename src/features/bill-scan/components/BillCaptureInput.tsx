@@ -3,12 +3,14 @@
 import { useRef } from 'react'
 import { Camera, ImageIcon } from 'lucide-react'
 import { ACCEPTED_IMAGE_EXTENSIONS, ACCEPTED_IMAGE_TYPES } from '../bill-scan.constants'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface BillCaptureInputProps {
   onCapture: (file: File) => void
 }
 
 export function BillCaptureInput({ onCapture }: BillCaptureInputProps) {
+  const { t } = useLanguage()
   const cameraRef = useRef<HTMLInputElement>(null)
   const galleryRef = useRef<HTMLInputElement>(null)
 
@@ -26,9 +28,9 @@ export function BillCaptureInput({ onCapture }: BillCaptureInputProps) {
         <Camera size={48} strokeWidth={1.5} />
       </div>
 
-      <h2 className="bill-capture-title">Scan a Bill</h2>
+      <h2 className="bill-capture-title">{t.scanABill}</h2>
       <p className="bill-capture-description">
-        Take a photo of a printed bill or receipt to auto-extract items
+        {t.takePhotoOfBill}
       </p>
 
       <div className="bill-capture-buttons">
@@ -36,25 +38,25 @@ export function BillCaptureInput({ onCapture }: BillCaptureInputProps) {
           type="button"
           className="btn btn-primary btn-lg bill-capture-btn"
           onClick={() => cameraRef.current?.click()}
-          aria-label="Take photo with camera"
+          aria-label={t.takePhoto}
         >
           <Camera size={20} aria-hidden="true" />
-          <span>Take Photo</span>
+          <span>{t.takePhoto}</span>
         </button>
 
         <button
           type="button"
           className="btn btn-secondary btn-lg bill-capture-btn"
           onClick={() => galleryRef.current?.click()}
-          aria-label="Choose image from gallery"
+          aria-label={t.fromGallery}
         >
           <ImageIcon size={20} aria-hidden="true" />
-          <span>From Gallery</span>
+          <span>{t.fromGallery}</span>
         </button>
       </div>
 
       <p className="bill-capture-hint">
-        Works best with clear, well-lit photos of printed bills
+        {t.worksBestClear}
       </p>
 
       {/* Hidden file inputs */}

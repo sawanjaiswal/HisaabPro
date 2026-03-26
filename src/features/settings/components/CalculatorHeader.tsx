@@ -1,4 +1,5 @@
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { X, Settings, Volume2, VolumeX, Smartphone } from 'lucide-react'
 import type { CalculatorSettings } from '../settings.types'
 
@@ -18,22 +19,25 @@ export const CalculatorHeader: React.FC<CalculatorHeaderProps> = ({
   onToggleSound,
   onToggleVibration,
   onClose,
-}) => (
+}) => {
+  const { t } = useLanguage()
+
+  return (
   <>
     <div className="calculator-header">
-      <span className="calculator-header-title">Calculator</span>
+      <span className="calculator-header-title">{t.calculator}</span>
       <div className="calculator-header-actions">
         <button
           className="calculator-close-btn"
           onClick={onToggleSettings}
-          aria-label="Calculator settings"
+          aria-label={t.calculatorSettingsLabel}
         >
           <Settings size={16} aria-hidden="true" />
         </button>
         <button
           className="calculator-close-btn"
           onClick={onClose}
-          aria-label="Close calculator"
+          aria-label={t.closeCalculatorLabel}
         >
           <X size={18} aria-hidden="true" />
         </button>
@@ -45,10 +49,10 @@ export const CalculatorHeader: React.FC<CalculatorHeaderProps> = ({
         <button
           className="calculator-settings-row"
           onClick={onToggleSound}
-          aria-label={`Keyboard sound ${settings.keyboardSound ? 'on' : 'off'}`}
+          aria-label={`${t.keyboardSoundOnOff} ${settings.keyboardSound ? t.onLabel : t.offLabel}`}
         >
           {settings.keyboardSound ? <Volume2 size={16} aria-hidden="true" /> : <VolumeX size={16} aria-hidden="true" />}
-          <span className="calculator-settings-label">Keyboard Sound</span>
+          <span className="calculator-settings-label">{t.keyboardSoundLabel}</span>
           <span className={`calculator-settings-toggle${settings.keyboardSound ? ' calculator-settings-toggle--on' : ''}`} aria-hidden="true">
             <span className="calculator-settings-toggle-knob" />
           </span>
@@ -56,10 +60,10 @@ export const CalculatorHeader: React.FC<CalculatorHeaderProps> = ({
         <button
           className="calculator-settings-row"
           onClick={onToggleVibration}
-          aria-label={`Keyboard vibration ${settings.keyboardVibration ? 'on' : 'off'}`}
+          aria-label={`${t.vibrationOnOff} ${settings.keyboardVibration ? t.onLabel : t.offLabel}`}
         >
           <Smartphone size={16} aria-hidden="true" />
-          <span className="calculator-settings-label">Vibration</span>
+          <span className="calculator-settings-label">{t.vibrationLabel}</span>
           <span className={`calculator-settings-toggle${settings.keyboardVibration ? ' calculator-settings-toggle--on' : ''}`} aria-hidden="true">
             <span className="calculator-settings-toggle-knob" />
           </span>
@@ -68,3 +72,4 @@ export const CalculatorHeader: React.FC<CalculatorHeaderProps> = ({
     )}
   </>
 )
+}

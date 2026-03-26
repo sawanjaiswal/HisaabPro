@@ -9,6 +9,7 @@
  */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useECompliance } from '../hooks/useECompliance'
 import { EInvoiceCard } from './EInvoiceCard'
 import { EWayBillCard } from './EWayBillCard'
@@ -29,6 +30,7 @@ export const EComplianceSection: React.FC<EComplianceSectionProps> = ({
   documentType: _documentType, // guards call-site — only SALE/PURCHASE_INVOICE allowed
   totalAmountPaise,
 }) => {
+  const { t } = useLanguage()
   const {
     fetchState,
     fetchError,
@@ -52,8 +54,8 @@ export const EComplianceSection: React.FC<EComplianceSectionProps> = ({
   if (fetchState === 'loading') {
     return (
       <div className="ecompliance-section" aria-busy="true">
-        <p className="ecompliance-section-title">GST Compliance</p>
-        <div className="compliance-card" aria-label="Loading compliance status">
+        <p className="ecompliance-section-title">{t.gstCompliance}</p>
+        <div className="compliance-card" aria-label={t.loadingComplianceStatus}>
           <div style={{ height: 80, background: 'var(--color-gray-100)', borderRadius: 'var(--radius-md)', animation: 'pulse 1.5s ease-in-out infinite' }} />
         </div>
       </div>
@@ -63,18 +65,18 @@ export const EComplianceSection: React.FC<EComplianceSectionProps> = ({
   if (fetchState === 'error') {
     return (
       <div className="ecompliance-section">
-        <p className="ecompliance-section-title">GST Compliance</p>
+        <p className="ecompliance-section-title">{t.gstCompliance}</p>
         <div className="compliance-card">
           <p className="compliance-inline-error" role="alert">
-            {fetchError ?? 'Failed to load compliance status.'}
+            {fetchError ?? t.failedLoadCompliance}
           </p>
           <button
             type="button"
             className="btn btn-secondary btn-md"
             onClick={refresh}
-            aria-label="Retry loading compliance status"
+            aria-label={t.retryLoadCompliance}
           >
-            Retry
+            {t.retry}
           </button>
         </div>
       </div>
@@ -83,7 +85,7 @@ export const EComplianceSection: React.FC<EComplianceSectionProps> = ({
 
   return (
     <div className="ecompliance-section">
-      <p className="ecompliance-section-title">GST Compliance</p>
+      <p className="ecompliance-section-title">{t.gstCompliance}</p>
 
       <EInvoiceCard
         status={eInvoice}

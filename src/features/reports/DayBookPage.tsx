@@ -22,20 +22,18 @@ import './report-shared.css'
 import './report-cards.css'
 import './report-shared-ui.css'
 import './report-day-book.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 // ─── Type filter options ───────────────────────────────────────────────────────
 
-const TYPE_FILTER_OPTIONS = [
-  { value: '', label: 'All' },
-  ...Object.entries(DAY_BOOK_TYPE_LABELS).map(([value, label]) => ({
-    value,
-    label,
-  })),
-]
+const TYPE_FILTER_OPTIONS_BASE = Object.entries(DAY_BOOK_TYPE_LABELS).map(
+  ([value, label]) => ({ value, label }),
+)
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function DayBookPage() {
+  const { t } = useLanguage()
   const {
     data,
     status,
@@ -55,6 +53,11 @@ export default function DayBookPage() {
     }).catch(() => { /* download handled internally */ })
   }, [filters])
 
+  const typeFilterOptions = [
+    { value: '', label: t.all },
+    ...TYPE_FILTER_OPTIONS_BASE,
+  ]
+
   const isLoadingMore = status === 'loading' && data !== null
 
   const dayLabel = data?.data.dayLabel ?? ''
@@ -69,7 +72,7 @@ export default function DayBookPage() {
   if (status === 'loading' && data === null) {
     return (
       <AppShell>
-        <Header title="Day Book" backTo={ROUTES.REPORTS} />
+        <Header title={t.dayBook} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <ReportSkeleton rows={6} />
         </PageContainer>
@@ -82,23 +85,23 @@ export default function DayBookPage() {
   if (status === 'error' && data === null) {
     return (
       <AppShell>
-        <Header title="Day Book" backTo={ROUTES.REPORTS} />
+        <Header title={t.dayBook} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <div className="report-empty">
             <div className="report-empty-icon" aria-hidden="true">
               <Calendar size={28} />
             </div>
-            <p className="report-empty-title">Could not load day book</p>
+            <p className="report-empty-title">{t.couldNotLoadDayBook}</p>
             <p className="report-empty-desc">
-              Check your connection and try again.
+              {t.checkConnectionRetry}
             </p>
             <button
               className="report-load-more-btn"
               onClick={refresh}
               type="button"
-              aria-label="Retry loading day book"
+              aria-label={t.retryLoadingDayBook}
             >
-              Retry
+              {t.retry}
             </button>
           </div>
         </PageContainer>
@@ -110,7 +113,7 @@ export default function DayBookPage() {
 
   return (
     <AppShell>
-      <Header title="Day Book" backTo={ROUTES.REPORTS} />
+      <Header title={t.dayBook} backTo={ROUTES.REPORTS} />
 
       <PageContainer>
         {/* Date navigator */}
@@ -125,12 +128,12 @@ export default function DayBookPage() {
         {/* Transaction type filter */}
         <div className="report-filter-bar">
           <ReportFilterPills
-            options={TYPE_FILTER_OPTIONS}
+            options={typeFilterOptions}
             activeValue={filters.type ?? ''}
             onChange={(v) =>
               setTypeFilter(v ? (v as DayBookTransactionType) : undefined)
             }
-            ariaLabel="Filter by transaction type"
+            ariaLabel={t.filterByTransactionType}
           />
         </div>
 
@@ -146,19 +149,19 @@ export default function DayBookPage() {
               <Calendar size={28} />
             </div>
             <p className="report-empty-title">
-              No transactions{dayLabel ? ` on ${dayLabel}` : ' for this day'}.
+              {dayLabel ? `${t.noTransactionsOn} ${dayLabel}` : `${t.noTransactionsForThisDay}`}.
             </p>
             <p className="report-empty-desc">
               {filters.type
-                ? 'Try clearing the type filter to see all entries.'
-                : 'No activity was recorded for this date.'}
+                ? t.tryClearingTypeFilter
+                : t.noActivityRecorded}
             </p>
           </div>
         )}
 
         {/* Transaction list */}
         {hasTransactions && (
-          <ReportCardList ariaLabel="Day book transactions">
+          <ReportCardList ariaLabel={t.dayBookTransactions}>
             {transactions.map((txn) => (
               <DayBookTransactionCard key={txn.id} transaction={txn} />
             ))}

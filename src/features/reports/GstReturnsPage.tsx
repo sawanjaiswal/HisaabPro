@@ -14,6 +14,7 @@ import type { GstReturnType } from './report-tax.types'
 import './report-shared.css'
 import './report-shared-ui.css'
 import './report-tax.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 const RETURN_TABS: { type: GstReturnType; label: string }[] = [
   { type: 'GSTR1',  label: 'GSTR-1' },
@@ -22,6 +23,7 @@ const RETURN_TABS: { type: GstReturnType; label: string }[] = [
 ]
 
 export default function GstReturnsPage() {
+  const { t } = useLanguage()
   const {
     data,
     status,
@@ -56,7 +58,7 @@ export default function GstReturnsPage() {
   if (status === 'loading') {
     return (
       <AppShell>
-        <Header title="GST Returns" backTo={ROUTES.REPORTS} />
+        <Header title={t.gstReturns} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <ReportSkeleton rows={5} />
         </PageContainer>
@@ -69,11 +71,11 @@ export default function GstReturnsPage() {
   if (status === 'error') {
     return (
       <AppShell>
-        <Header title="GST Returns" backTo={ROUTES.REPORTS} />
+        <Header title={t.gstReturns} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <ErrorState
-            title="Could not load GST return"
-            message="Check your connection and try again."
+            title={t.couldNotLoadGstReturn}
+            message={t.checkConnectionRetry}
             onRetry={refresh}
           />
         </PageContainer>
@@ -85,11 +87,11 @@ export default function GstReturnsPage() {
 
   return (
     <AppShell>
-      <Header title="GST Returns" backTo={ROUTES.REPORTS} />
+      <Header title={t.gstReturns} backTo={ROUTES.REPORTS} />
 
       <PageContainer>
         {/* Return type tab pills */}
-        <div className="gst-return-tabs" role="tablist" aria-label="GST return type">
+        <div className="gst-return-tabs" role="tablist" aria-label={t.gstReturnType}>
           {RETURN_TABS.map(({ type, label }) => (
             <button
               key={type}
@@ -106,13 +108,13 @@ export default function GstReturnsPage() {
 
         {/* Period selector */}
         <div className="gst-period-row">
-          <label className="gst-period-label" htmlFor="gst-period">Period</label>
+          <label className="gst-period-label" htmlFor="gst-period">{t.period}</label>
           <input
             id="gst-period"
             type="month"
             className="gst-period-input"
             value={period}
-            aria-label="Select period (month)"
+            aria-label={t.selectPeriod}
             onChange={(e) => setPeriod(e.target.value)}
           />
           {/* Export — GSTR-1 only */}
@@ -122,10 +124,10 @@ export default function GstReturnsPage() {
               className="report-export-btn"
               onClick={handleExport}
               disabled={isExporting}
-              aria-label="Export GSTR-1 as JSON"
+              aria-label={t.exportGstr1Json}
             >
               <Download size={14} aria-hidden="true" />
-              {isExporting ? 'Exporting…' : 'Export JSON'}
+              {isExporting ? t.exporting : t.exportJson}
             </button>
           )}
         </div>
@@ -136,9 +138,9 @@ export default function GstReturnsPage() {
             <div className="report-empty-icon" aria-hidden="true">
               <FileText size={28} />
             </div>
-            <p className="report-empty-title">No data for this period</p>
+            <p className="report-empty-title">{t.noDataForPeriod}</p>
             <p className="report-empty-desc">
-              No {returnType} data found for {period}. Try selecting a different period.
+              {`${t.noReturnDataFound} ${returnType} ${t.dataFoundFor} ${period}. ${t.tryDifferentPeriod}`}
             </p>
           </div>
         )}

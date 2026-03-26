@@ -1,12 +1,8 @@
 /** EWayBillPartBForm — update vehicle number and type for an active EWB */
 
 import React, { useState } from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { VehicleType } from '../ecompliance.types'
-
-const VEHICLE_TYPES: { value: VehicleType; label: string }[] = [
-  { value: 'REGULAR', label: 'Regular' },
-  { value: 'ODC', label: 'ODC (Over Dimensional)' },
-]
 
 interface EWayBillPartBFormProps {
   initialVehicleNumber?: string
@@ -21,9 +17,15 @@ export const EWayBillPartBForm: React.FC<EWayBillPartBFormProps> = ({
   onSubmit,
   onDismiss,
 }) => {
+  const { t } = useLanguage()
   const [vehicleNumber, setVehicleNumber] = useState(initialVehicleNumber)
   const [vehicleType, setVehicleType] = useState<VehicleType>('REGULAR')
   const [actionError, setActionError] = useState('')
+
+  const VEHICLE_TYPES: { value: VehicleType; label: string }[] = [
+    { value: 'REGULAR', label: t.vehicleRegular },
+    { value: 'ODC', label: t.vehicleOdc },
+  ]
 
   const handleSubmit = async () => {
     if (!vehicleNumber.trim()) return
@@ -31,17 +33,17 @@ export const EWayBillPartBForm: React.FC<EWayBillPartBFormProps> = ({
     try {
       await onSubmit(vehicleNumber.trim().toUpperCase(), vehicleType)
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : 'Failed to update vehicle details')
+      setActionError(err instanceof Error ? err.message : t.failedUpdateVehicle)
     }
   }
 
   return (
-    <div className="partb-form" role="group" aria-label="Update vehicle details">
-      <p className="partb-form-title">Update Vehicle (Part-B)</p>
+    <div className="partb-form" role="group" aria-label={t.updateVehicleDetailsAria}>
+      <p className="partb-form-title">{t.updateVehiclePartB}</p>
       {actionError && <p className="compliance-inline-error" role="alert">{actionError}</p>}
       <div className="ewb-form-row">
         <div className="input-group">
-          <label className="input-label" htmlFor="partb-vehicle">Vehicle Number</label>
+          <label className="input-label" htmlFor="partb-vehicle">{t.vehicleNumber}</label>
           <input
             id="partb-vehicle"
             className="input"
@@ -53,7 +55,7 @@ export const EWayBillPartBForm: React.FC<EWayBillPartBFormProps> = ({
           />
         </div>
         <div className="input-group">
-          <label className="input-label" htmlFor="partb-vtype">Vehicle Type</label>
+          <label className="input-label" htmlFor="partb-vtype">{t.vehicleType}</label>
           <select
             id="partb-vtype"
             className="ewb-form-select"
@@ -73,7 +75,7 @@ export const EWayBillPartBForm: React.FC<EWayBillPartBFormProps> = ({
           onClick={onDismiss}
           disabled={updatingPartB}
         >
-          Dismiss
+          {t.dismiss}
         </button>
         <button
           type="button"
@@ -82,7 +84,7 @@ export const EWayBillPartBForm: React.FC<EWayBillPartBFormProps> = ({
           disabled={updatingPartB || !vehicleNumber.trim()}
           aria-busy={updatingPartB}
         >
-          {updatingPartB ? 'Updating…' : 'Update'}
+          {updatingPartB ? t.updatingVehicle : t.update}
         </button>
       </div>
     </div>

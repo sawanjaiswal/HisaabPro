@@ -6,6 +6,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import type { Unit } from '../unit.types'
 import { UnitCategoryBadge } from './UnitCategoryBadge'
 import { getUnitCategory } from '../unit.utils'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface UnitListItemProps {
   unit: Unit
@@ -14,6 +15,7 @@ interface UnitListItemProps {
 }
 
 export function UnitListItem({ unit, onEdit, onDelete }: UnitListItemProps) {
+  const { t } = useLanguage()
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const isCustom = unit.type === 'CUSTOM'
@@ -69,8 +71,8 @@ export function UnitListItem({ unit, onEdit, onDelete }: UnitListItemProps) {
         title={`Delete "${unit.name}"?`}
         description={
           unit.productCount > 0
-            ? `${unit.productCount} product(s) use this unit. Reassign them first.`
-            : 'This custom unit will be permanently removed.'
+            ? t.xProductsUseUnit
+            : t.unitPermanentRemove
         }
         isLoading={isDeleting}
       />

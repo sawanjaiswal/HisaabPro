@@ -18,6 +18,7 @@ import { STATUS_LABELS } from './coupon.constants'
 import { isCouponListEmpty } from './coupon.utils'
 import type { CouponStatus } from './coupon.types'
 import './coupon.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 const STATUS_OPTIONS: Array<{ value: CouponStatus | ''; label: string }> = [
   { value: '', label: 'All' },
@@ -28,6 +29,7 @@ const STATUS_OPTIONS: Array<{ value: CouponStatus | ''; label: string }> = [
 ]
 
 export default function CouponsPage() {
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const {
     coupons,
@@ -62,7 +64,7 @@ export default function CouponsPage() {
   return (
     <>
       <Header
-        title="Coupons"
+        title={t.coupons ?? "Coupons"}
         actions={
           <button
             className="coupon-add-btn"
@@ -82,7 +84,7 @@ export default function CouponsPage() {
             <input
               type="search"
               className="coupon-search-input"
-              placeholder="Search codes..."
+              placeholder={t.search}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               aria-label="Search coupon codes"
@@ -120,7 +122,7 @@ export default function CouponsPage() {
         {/* Error */}
         {status === 'error' && (
           <ErrorState
-            title="Couldn't load coupons"
+            title={t.couldntLoadCoupons}
             message="Check your connection and try again."
             onRetry={refresh}
           />
@@ -130,8 +132,8 @@ export default function CouponsPage() {
         {status === 'success' && isCouponListEmpty(coupons) && (
           <EmptyState
             icon={<Tag size={48} aria-hidden="true" />}
-            title="No coupons yet"
-            description="Create your first discount code to attract subscribers!"
+            title={t.noCouponsYet}
+            description={t.createFirstCoupon}
             action={
               <button
                 className="coupon-empty-cta"

@@ -1,6 +1,7 @@
 /** Party Detail — Hero header card with identity + outstanding balance */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { PartyDetail } from '../party.types'
 import '../party-detail-header.css'
 import { PARTY_TYPE_LABELS } from '../party.constants'
@@ -16,6 +17,7 @@ interface PartyDetailHeaderProps {
 }
 
 export const PartyDetailHeader: React.FC<PartyDetailHeaderProps> = ({ party }) => {
+  const { t } = useLanguage()
   const { text: balanceText, isReceivable } = formatOutstanding(party.outstandingBalance)
 
   const badgeClass =
@@ -29,10 +31,10 @@ export const PartyDetailHeader: React.FC<PartyDetailHeaderProps> = ({ party }) =
     ? 'var(--color-success-500)'
     : 'var(--color-error-500)'
 
-  const balanceLabel = isReceivable ? 'To Receive' : 'To Pay'
+  const balanceLabel = isReceivable ? t.toReceive : t.toPay
 
   return (
-    <div className="card-primary party-detail-header" role="region" aria-label="Party overview">
+    <div className="card-primary party-detail-header" role="region" aria-label={t.partyOverview}>
       <PartyAvatar name={party.name} size="lg" className="party-detail-avatar" />
 
       <div className="party-detail-info">
@@ -44,19 +46,19 @@ export const PartyDetailHeader: React.FC<PartyDetailHeaderProps> = ({ party }) =
               {formatPhone(party.phone)}
             </span>
           )}
-          <span className={badgeClass} aria-label={`Party type: ${PARTY_TYPE_LABELS[party.type]}`}>
+          <span className={badgeClass} aria-label={`${t.partyTypeColon} ${PARTY_TYPE_LABELS[party.type]}`}>
             {PARTY_TYPE_LABELS[party.type]}
           </span>
         </div>
       </div>
 
-      <div className="party-detail-balance" aria-label={`Outstanding balance: ${balanceText}`}>
+      <div className="party-detail-balance" aria-label={`${t.outstandingBalanceColon} ${balanceText}`}>
         <span className="money-hero" style={{ color: balanceColor }}>
           {balanceText}
         </span>
         <span className="money-label" style={{ opacity: 0.7 }}>{balanceLabel}</span>
         <span className="money-label" style={{ opacity: 0.55, marginTop: 'var(--space-1)' }}>
-          Total business: {formatAmount(party.totalBusiness)}
+          {t.totalBusiness} {formatAmount(party.totalBusiness)}
         </span>
       </div>
     </div>

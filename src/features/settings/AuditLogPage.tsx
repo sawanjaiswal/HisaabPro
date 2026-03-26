@@ -6,6 +6,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ROUTES } from '@/config/routes.config'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useAuth } from '@/context/AuthContext'
 import { useAuditLog } from './useAuditLog'
 import { AuditLogEntry } from './components/AuditLogEntry'
@@ -29,15 +30,15 @@ const ENTITY_FILTERS: Array<{ label: string; value: string | undefined }> = [
   })),
 ]
 
-function formatDateGroupLabel(iso: string): string {
+function formatDateGroupLabel(iso: string, t: Record<string, string>): string {
   const date = new Date(iso)
   const now = new Date()
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const yesterday = new Date(today.getTime() - 86_400_000)
   const entryDay = new Date(date.getFullYear(), date.getMonth(), date.getDate())
 
-  if (entryDay.getTime() === today.getTime()) return 'Today'
-  if (entryDay.getTime() === yesterday.getTime()) return 'Yesterday'
+  if (entryDay.getTime() === today.getTime()) return t.todayLabel
+  if (entryDay.getTime() === yesterday.getTime()) return t.yesterdayLabel
 
   return date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
 }
@@ -53,6 +54,7 @@ interface DateGroup {
 }
 
 export default function AuditLogPage() {
+  const { t } = useLanguage()
   const { user } = useAuth()
   const businessId = user?.businessId ?? ''
   const { data, status, filters, setFilter, loadMore, refresh } = useAuditLog(businessId)
@@ -66,7 +68,7 @@ export default function AuditLogPage() {
       const key = getDateKey(entry.createdAt)
       if (!groupMap.has(key)) {
         groupMap.set(key, {
-          label: formatDateGroupLabel(entry.createdAt),
+          label: formatDateGroupLabel(entry.createdAt, t),
           dateKey: key,
           entryIds: [],
         })
@@ -75,7 +77,7 @@ export default function AuditLogPage() {
     }
 
     return Array.from(groupMap.values())
-  }, [data])
+  }, [data, t])
 
   const entryById = useMemo(() => {
     if (!data) return new Map()
@@ -88,14 +90,14 @@ export default function AuditLogPage() {
 
   return (
     <AppShell>
-      <Header title="Audit Log" backTo={ROUTES.SETTINGS} />
+      <Header title={t.auditLog} backTo={ROUTES.SETTINGS} />
       <PageContainer className="audit-page">
 
         <div>
           <p className="settings-section-title" style={{ paddingBottom: 'var(--space-2)' }}>
-            Action
+            {t.actionFilterLabel}
           </p>
-          <div className="audit-filters" role="group" aria-label="Filter by action">
+          <div className="audit-filters" role="group" aria-label={t.filterByAction}>
             {ACTION_FILTERS.map((f) => (
               <button
                 key={f.label}
@@ -112,9 +114,9 @@ export default function AuditLogPage() {
 
         <div>
           <p className="settings-section-title" style={{ paddingBottom: 'var(--space-2)' }}>
-            Entity
+            {t.entityFilterLabel}
           </p>
-          <div className="audit-filters" role="group" aria-label="Filter by entity type">
+          <div className="audit-filters" role="group" aria-label={t.filterByEntityType}>
             {ENTITY_FILTERS.map((f) => (
               <button
                 key={f.label}
@@ -130,7 +132,7 @@ export default function AuditLogPage() {
         </div>
 
         {status === 'loading' && (
-          <div className="audit-list" aria-busy="true" aria-label="Loading audit log">
+          <div className="audit-list" aria-busy="true" aria-label={t.loadingAuditLog}>
             {[1, 2, 3, 4, 5].map((n) => (
               <div
                 key={n}
@@ -142,8 +144,8 @@ export default function AuditLogPage() {
 
         {status === 'error' && (
           <ErrorState
-            title="Could not load audit log"
-            message="Check your connection and try again."
+            title={t.couldNotLoadAuditLog}
+            message={t.checkConnectionRetry2}
             onRetry={refresh}
           />
         )}
@@ -153,14 +155,14 @@ export default function AuditLogPage() {
             {data.entries.length === 0 ? (
               <EmptyState
                 icon={<ClipboardList size={48} aria-hidden="true" />}
-                title="No audit entries"
-                description="Activity will be logged here as your team works."
+                title={t.noAuditEntries}
+                description={t.auditEmptyDesc}
               />
             ) : (
               <div className="audit-list">
                 {dateGroups.map((group) => (
                   <React.Fragment key={group.dateKey}>
-                    <div className="audit-date-group" aria-label={`Entries from ${group.label}`}>
+                    <div className="audit-date-group" aria-label={`${t.entriesFrom} ${group.label}`}>
                       <span className="audit-date-group-label">{group.label}</span>
                       <span className="audit-date-group-line" aria-hidden="true" />
                     </div>
@@ -190,7 +192,7 @@ export default function AuditLogPage() {
                         minHeight: 44,
                       }}
                     >
-                      Load More
+                      {t.loadMoreBtn}
                     </button>
                   </div>
                 )}

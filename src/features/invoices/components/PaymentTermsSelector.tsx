@@ -1,6 +1,7 @@
 /** Payment terms pill selector */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { PaymentTerms } from '../invoice.types'
 import { PAYMENT_TERMS_LABELS } from '../invoice.constants'
 
@@ -19,26 +20,27 @@ const PAYMENT_TERMS_OPTIONS: PaymentTerms[] = [
   'NET_90',
 ]
 
-/** Abbreviated labels for compact pills */
-const PAYMENT_TERMS_SHORT_LABELS: Record<PaymentTerms, string> = {
-  COD:    'COD',
-  NET_7:  '7 Days',
-  NET_15: '15 Days',
-  NET_30: '30 Days',
-  NET_60: '60 Days',
-  NET_90: '90 Days',
-  CUSTOM: 'Custom',
-}
-
 export const PaymentTermsSelector: React.FC<PaymentTermsSelectorProps> = ({
   value,
   onChange,
 }) => {
+  const { t } = useLanguage()
+
+  const PAYMENT_TERMS_SHORT_LABELS: Record<PaymentTerms, string> = {
+    COD:    t.codLabel,
+    NET_7:  t.days7Label,
+    NET_15: t.days15Label,
+    NET_30: t.days30Label,
+    NET_60: t.days60Label,
+    NET_90: t.days90Label,
+    CUSTOM: t.customLabel,
+  }
+
   return (
     <div
       className="pill-tabs"
       role="group"
-      aria-label="Select payment terms"
+      aria-label={t.selectPaymentTerms}
     >
       {PAYMENT_TERMS_OPTIONS.map((terms) => (
         <button
@@ -47,7 +49,7 @@ export const PaymentTermsSelector: React.FC<PaymentTermsSelectorProps> = ({
           className={`pill-tab${value === terms ? ' active' : ''}`}
           onClick={() => onChange(terms)}
           aria-pressed={value === terms}
-          aria-label={`Set payment terms to ${PAYMENT_TERMS_LABELS[terms]}`}
+          aria-label={`${t.selectPaymentTerms}: ${PAYMENT_TERMS_LABELS[terms]}`}
         >
           {PAYMENT_TERMS_SHORT_LABELS[terms]}
         </button>

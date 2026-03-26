@@ -9,6 +9,7 @@ import { getExpiryStatus, formatExpiryDate } from '../batch.utils'
 import { EXPIRY_BADGE_CLASSES, EXPIRY_STATUS_LABELS } from '../batch.constants'
 import { DeleteBatchDialog } from './DeleteBatchDialog'
 import type { Batch } from '../batch.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface BatchCardProps {
   batch: Batch
@@ -17,6 +18,7 @@ interface BatchCardProps {
 }
 
 export function BatchCard({ batch, onDelete, isDeleting }: BatchCardProps) {
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const [showDelete, setShowDelete] = useState(false)
   const expiryStatus = getExpiryStatus(batch.expiryDate)
@@ -34,7 +36,7 @@ export function BatchCard({ batch, onDelete, isDeleting }: BatchCardProps) {
       className="batch-card"
       role="button"
       tabIndex={0}
-      aria-label={`View batch ${batch.batchNumber}`}
+      aria-label={`${t.viewBatch} ${batch.batchNumber}`}
       onClick={handleClick}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleClick() }}
       style={{ cursor: 'pointer' }}
@@ -46,14 +48,14 @@ export function BatchCard({ batch, onDelete, isDeleting }: BatchCardProps) {
       <div className="batch-card-info">
         <div className="batch-card-header">
           <span className="batch-card-number">{batch.batchNumber}</span>
-          <span className={badgeClass} aria-label={`Expiry status: ${badgeLabel}`}>
+          <span className={badgeClass} aria-label={`${t.expiryStatusLabel}: ${badgeLabel}`}>
             {badgeLabel}
           </span>
         </div>
 
         <div className="batch-card-meta">
           <span className="batch-card-stock">
-            Stock: {batch.currentStock}
+            {t.stockLabelColon} {batch.currentStock}
           </span>
           {batch.expiryDate && (
             <span className="batch-card-expiry">
@@ -83,7 +85,7 @@ export function BatchCard({ batch, onDelete, isDeleting }: BatchCardProps) {
           className="batch-card-delete"
           onClick={handleDeleteClick}
           disabled={isDeleting}
-          aria-label={`Delete batch ${batch.batchNumber}`}
+          aria-label={`${t.deleteBatch} ${batch.batchNumber}`}
         >
           <Trash2 size={16} aria-hidden="true" />
         </button>

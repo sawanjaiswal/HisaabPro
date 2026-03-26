@@ -1,4 +1,5 @@
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { Role } from '../settings.types'
 
 interface FormErrors {
@@ -34,23 +35,25 @@ export function StaffInviteForm({
   onRoleChange,
   onSubmit,
 }: StaffInviteFormProps) {
+  const { t } = useLanguage()
+
   return (
     <form className="staff-invite-form" onSubmit={onSubmit} noValidate>
-      <p className="staff-invite-form-title">New Staff Member</p>
+      <p className="staff-invite-form-title">{t.newStaffMember}</p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1-5)' }}>
         <label
           htmlFor="invite-name"
           style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-gray-700)' }}
         >
-          Name
+          {t.name}
         </label>
         <input
           id="invite-name"
           type="text"
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
-          placeholder="Staff member's name"
+          placeholder={t.staffName}
           autoComplete="name"
           style={{
             width: '100%',
@@ -76,14 +79,14 @@ export function StaffInviteForm({
           htmlFor="invite-phone"
           style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-gray-700)' }}
         >
-          Phone Number
+          {t.phone}
         </label>
         <input
           id="invite-phone"
           type="tel"
           value={phone}
           onChange={(e) => onPhoneChange(e.target.value.replace(/\D/g, '').slice(0, 10))}
-          placeholder="10-digit mobile number"
+          placeholder={t.tenDigitMobile}
           autoComplete="tel"
           inputMode="numeric"
           maxLength={10}
@@ -111,7 +114,7 @@ export function StaffInviteForm({
           htmlFor="invite-role"
           style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-gray-700)' }}
         >
-          Role
+          {t.roles}
         </label>
         <select
           id="invite-role"
@@ -130,7 +133,7 @@ export function StaffInviteForm({
             background: 'var(--color-gray-0, #fff)',
           }}
         >
-          <option value="">Select a role</option>
+          <option value="">{t.selectARoleOption}</option>
           {roles.map((role) => (
             <option key={role.id} value={role.id}>
               {role.name}
@@ -159,7 +162,7 @@ export function StaffInviteForm({
         disabled={submitting}
         aria-busy={submitting}
       >
-        {submitting ? 'Sending Invite...' : 'Send Invite'}
+        {submitting ? t.sendingInvite : t.sendInviteBtn}
       </button>
     </form>
   )

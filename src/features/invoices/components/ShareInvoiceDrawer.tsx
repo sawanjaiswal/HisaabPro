@@ -13,6 +13,7 @@ import { useState, useCallback } from 'react'
 import { MessageCircle, Download, Link, Printer } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
 import { useToast } from '@/hooks/useToast'
+import { useLanguage } from '@/hooks/useLanguage'
 import { shareViaWhatsApp, exportDocument, getShareableLink } from '../invoice.service'
 import { formatInvoiceAmount } from '../invoice-format.utils'
 import { ShareActionRow } from './ShareActionRow'
@@ -60,6 +61,7 @@ export function ShareInvoiceDrawer({
   grandTotal,
 }: ShareInvoiceDrawerProps) {
   const toast = useToast()
+  const { t } = useLanguage()
   const [loading, setLoading] = useState<LoadingKey>(null)
 
   // ── WhatsApp ──────────────────────────────────────────────────────────────
@@ -82,10 +84,10 @@ export function ShareInvoiceDrawer({
 
       // Open the server-generated WhatsApp deep link
       window.open(result.whatsappDeepLink, '_blank', 'noopener,noreferrer')
-      toast.success('Opening WhatsApp…')
+      toast.success(t.openingWhatsApp)
       onClose()
     } catch {
-      toast.error('Could not prepare WhatsApp share. Try again.')
+      toast.error(t.couldNotWhatsApp)
     } finally {
       setLoading(null)
     }
@@ -105,10 +107,10 @@ export function ShareInvoiceDrawer({
       anchor.download = `${documentNumber}.pdf`
       anchor.click()
       URL.revokeObjectURL(url)
-      toast.success('PDF downloaded')
+      toast.success(t.pdfDownloaded)
       onClose()
     } catch {
-      toast.error('Could not download PDF. Try again.')
+      toast.error(t.couldNotDownloadPdf)
     } finally {
       setLoading(null)
     }
@@ -137,9 +139,9 @@ export function ShareInvoiceDrawer({
         document.body.removeChild(textarea)
       }
 
-      toast.success('Link copied to clipboard!')
+      toast.success(t.linkCopiedClipboard)
     } catch {
-      toast.error('Could not copy link. Try again.')
+      toast.error(t.couldNotCopyLink)
     } finally {
       setLoading(null)
     }
@@ -163,11 +165,11 @@ export function ShareInvoiceDrawer({
       } else {
         // Pop-up blocked — fall back to opening the PDF
         URL.revokeObjectURL(url)
-        toast.info('Open the PDF and use your browser\'s print option.')
+        toast.info(t.openPdfPrint)
       }
       onClose()
     } catch {
-      toast.error('Could not prepare print. Try again.')
+      toast.error(t.couldNotPrint)
     } finally {
       setLoading(null)
     }
@@ -178,46 +180,46 @@ export function ShareInvoiceDrawer({
   const isDisabled = loading !== null
 
   return (
-    <Drawer open={open} onClose={onClose} title="Share Invoice" size="sm">
-      <ul className="share-action-list" role="list" aria-label="Share options">
+    <Drawer open={open} onClose={onClose} title={t.shareInvoice} size="sm">
+      <ul className="share-action-list" role="list" aria-label={t.shareOptionsAriaLabel}>
         <ShareActionRow
           icon={<MessageCircle size={22} aria-hidden="true" />}
-          label="Share via WhatsApp"
+          label={t.shareViaWhatsAppLabel}
           subLabel={partyPhone}
           onClick={() => { void handleWhatsApp() }}
           isLoading={loading === 'whatsapp'}
           disabled={isDisabled}
-          ariaLabel="Share invoice via WhatsApp"
+          ariaLabel={t.shareInvoiceViaWhatsApp}
           iconModifier="whatsapp"
         />
         <ShareActionRow
           icon={<Download size={22} aria-hidden="true" />}
-          label="Download PDF"
-          subLabel="Save as PDF file"
+          label={t.downloadPdfLabel}
+          subLabel={t.savePdfFile}
           onClick={() => { void handlePdfDownload() }}
           isLoading={loading === 'pdf'}
           disabled={isDisabled}
-          ariaLabel="Download invoice as PDF"
+          ariaLabel={t.downloadInvoicePdf}
           iconModifier="pdf"
         />
         <ShareActionRow
           icon={<Link size={22} aria-hidden="true" />}
-          label="Copy Shareable Link"
-          subLabel="Anyone with the link can view"
+          label={t.copySharLink}
+          subLabel={t.anyoneCanView}
           onClick={() => { void handleCopyLink() }}
           isLoading={loading === 'link'}
           disabled={isDisabled}
-          ariaLabel="Copy shareable link to clipboard"
+          ariaLabel={t.copyLinkClipboard}
           iconModifier="link"
         />
         <ShareActionRow
           icon={<Printer size={22} aria-hidden="true" />}
-          label="Print Invoice"
-          subLabel="Open print dialog"
+          label={t.printInvoice}
+          subLabel={t.openPrintDialog}
           onClick={() => { void handlePrint() }}
           isLoading={false}
           disabled={isDisabled}
-          ariaLabel="Print invoice"
+          ariaLabel={t.printInvoiceAriaLabel}
           iconModifier="print"
           isLast
         />

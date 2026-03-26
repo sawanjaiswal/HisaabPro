@@ -2,6 +2,7 @@
 
 import { Plus } from 'lucide-react'
 import type { LibraryItem } from '../items-library.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface LibraryItemListProps {
   items: LibraryItem[]
@@ -12,10 +13,11 @@ interface LibraryItemListProps {
 }
 
 export function LibraryItemList({ items, total, hasMore, onSelect, onLoadMore }: LibraryItemListProps) {
+  const { t } = useLanguage()
   if (items.length === 0) {
     return (
       <div className="library-empty">
-        <p>No items found. Try a different search or category.</p>
+        <p>{t.noItemsFoundLibrary}</p>
       </div>
     )
   }
@@ -23,13 +25,13 @@ export function LibraryItemList({ items, total, hasMore, onSelect, onLoadMore }:
   return (
     <>
       <p className="library-count">{total} items</p>
-      <div className="library-item-list" role="list" aria-label="Library items">
+      <div className="library-item-list" role="list" aria-label={t.libraryItems}>
         {items.map((item) => (
           <div key={item.id} className="library-item" role="listitem">
             <div className="library-item-info">
               <span className="library-item-name">{item.name}</span>
               <span className="library-item-meta">
-                {item.hsn && <span>HSN: {item.hsn}</span>}
+                {item.hsn && <span>{t.hsnPrefix} {item.hsn}</span>}
                 {item.unit && <span>{item.unit}</span>}
               </span>
             </div>

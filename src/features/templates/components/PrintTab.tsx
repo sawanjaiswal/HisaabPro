@@ -1,6 +1,7 @@
 /** Print tab — page size, orientation, margins, copies, and print options */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 
 import type {
   PrintSettings,
@@ -29,14 +30,16 @@ interface PrintTabProps {
   onChange: (patch: Partial<PrintSettings>) => void
 }
 
-export const PrintTab: React.FC<PrintTabProps> = ({ printSettings, onChange }) => (
+export const PrintTab: React.FC<PrintTabProps> = ({ printSettings, onChange }) => {
+  const { t } = useLanguage()
+  return (
   <>
-    <Section title="Page">
-      <ControlRow label="Page Size">
+    <Section title={t.pageSection}>
+      <ControlRow label={t.pageSizeLabel}>
         <select
           className="input"
           value={printSettings.pageSize}
-          aria-label="Page size"
+          aria-label={t.pageSizeAria}
           onChange={(e) => onChange({ pageSize: e.target.value as PageSize })}
           style={{ minHeight: 44 }}
         >
@@ -46,34 +49,34 @@ export const PrintTab: React.FC<PrintTabProps> = ({ printSettings, onChange }) =
         </select>
       </ControlRow>
 
-      <ControlRow label="Orientation">
+      <ControlRow label={t.orientationLabel}>
         <SegmentedControl<PageOrientation>
           value={printSettings.orientation}
           options={['portrait', 'landscape']}
           labels={ORIENTATION_LABELS}
-          ariaLabel="Page orientation"
+          ariaLabel={t.orientationAria}
           onChange={(v) => onChange({ orientation: v })}
         />
       </ControlRow>
 
-      <ControlRow label="Margins">
+      <ControlRow label={t.marginsLabel}>
         <SegmentedControl<PageMargins>
           value={printSettings.margins}
           options={['normal', 'narrow', 'wide', 'none']}
           labels={MARGINS_LABELS}
-          ariaLabel="Page margins"
+          ariaLabel={t.marginsAria}
           onChange={(v) => onChange({ margins: v })}
         />
       </ControlRow>
     </Section>
 
-    <Section title="Print Options">
-      <ControlRow label="Copies">
+    <Section title={t.printOptionsSection}>
+      <ControlRow label={t.copiesLabel}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
           <button
             type="button"
             className="template-segmented-btn"
-            aria-label="Decrease copies"
+            aria-label={t.decreaseCopies}
             disabled={printSettings.copies <= 1}
             onClick={() => onChange({ copies: Math.max(1, printSettings.copies - 1) })}
             style={{ minWidth: 44, minHeight: 44, fontWeight: 700 }}
@@ -83,14 +86,14 @@ export const PrintTab: React.FC<PrintTabProps> = ({ printSettings, onChange }) =
           <span
             style={{ minWidth: 32, textAlign: 'center', fontWeight: 600, fontSize: '1rem' }}
             aria-live="polite"
-            aria-label={`${printSettings.copies} copies`}
+            aria-label={`${printSettings.copies} ${t.copiesCountAria}`}
           >
             {printSettings.copies}
           </span>
           <button
             type="button"
             className="template-segmented-btn"
-            aria-label="Increase copies"
+            aria-label={t.increaseCopies}
             disabled={printSettings.copies >= MAX_COPIES}
             onClick={() => onChange({ copies: Math.min(MAX_COPIES, printSettings.copies + 1) })}
             style={{ minWidth: 44, minHeight: 44, fontWeight: 700 }}
@@ -101,50 +104,51 @@ export const PrintTab: React.FC<PrintTabProps> = ({ printSettings, onChange }) =
       </ControlRow>
 
       <ToggleRow
-        label="Header on All Pages"
-        sublabel="Repeat business header on every page"
+        label={t.headerOnAllPages}
+        sublabel={t.repeatHeaderDesc}
         checked={printSettings.headerOnAllPages}
-        ariaLabel="Repeat header on all pages"
+        ariaLabel={t.repeatHeaderAria}
         onChange={(v) => onChange({ headerOnAllPages: v })}
       />
       <ToggleRow
-        label="Page Numbers"
+        label={t.pageNumbersLabel}
         checked={printSettings.pageNumbers}
-        ariaLabel="Show page numbers"
+        ariaLabel={t.showPageNumbers}
         onChange={(v) => onChange({ pageNumbers: v })}
       />
     </Section>
 
-    <Section title="Stamp & Labels">
-      <ControlRow label="Payment Stamp">
+    <Section title={t.stampAndLabels}>
+      <ControlRow label={t.paymentStampLabel}>
         <SegmentedControl<StampStyle>
           value={printSettings.stampStyle}
           options={['badge', 'watermark', 'none']}
           labels={STAMP_STYLE_LABELS}
-          ariaLabel="Payment stamp style"
+          ariaLabel={t.paymentStampAria}
           onChange={(v) => onChange({ stampStyle: v })}
         />
       </ControlRow>
 
       <ToggleRow
-        label="Copy Labels"
-        sublabel="ORIGINAL / DUPLICATE / TRIPLICATE"
+        label={t.copyLabelsLabel}
+        sublabel={t.copyLabelsDesc}
         checked={printSettings.copyLabels}
-        ariaLabel="Enable copy labels"
+        ariaLabel={t.enableCopyLabels}
         onChange={(v) => onChange({ copyLabels: v })}
       />
 
       {printSettings.copyLabels && (
-        <ControlRow label="Label Mode">
+        <ControlRow label={t.labelModeLabel}>
           <SegmentedControl<CopyLabelMode>
             value={printSettings.copyLabelMode}
             options={['auto', 'manual']}
             labels={COPY_LABEL_MODE_LABELS}
-            ariaLabel="Copy label mode"
+            ariaLabel={t.copyLabelModeAria}
             onChange={(v) => onChange({ copyLabelMode: v })}
           />
         </ControlRow>
       )}
     </Section>
   </>
-)
+  )
+}

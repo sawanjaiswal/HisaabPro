@@ -3,10 +3,10 @@
 import { Search } from 'lucide-react'
 import { ReportFilterPills } from './ReportFilterPills'
 import {
-  STOCK_STATUS_LABELS,
   STOCK_SORT_LABELS,
 } from '../report.constants'
 import type { StockStatus } from '../report.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
 
@@ -14,11 +14,14 @@ const ALL_STOCK_STATUS = 'all'
 
 export type StockStatusFilter = StockStatus | typeof ALL_STOCK_STATUS
 
-const STOCK_STATUS_OPTIONS: Array<{ value: string; label: string }> = [
-  { value: ALL_STOCK_STATUS, label: 'All' },
-  { value: 'in_stock', label: STOCK_STATUS_LABELS.in_stock },
-  { value: 'low', label: STOCK_STATUS_LABELS.low },
-  { value: 'out_of_stock', label: STOCK_STATUS_LABELS.out_of_stock },
+const STOCK_STATUS_OPTIONS_BASE: Array<{
+  value: string
+  labelKey: 'all' | 'inStockLabel' | 'lowStock' | 'outOfStock'
+}> = [
+  { value: ALL_STOCK_STATUS, labelKey: 'all' },
+  { value: 'in_stock', labelKey: 'inStockLabel' },
+  { value: 'low', labelKey: 'lowStock' },
+  { value: 'out_of_stock', labelKey: 'outOfStock' },
 ]
 
 const STOCK_SORT_OPTIONS: Array<{ value: string; label: string }> = Object.entries(
@@ -46,6 +49,12 @@ export function StockSummaryFilterBar({
   onStatusChange,
   onSortChange,
 }: StockSummaryFilterBarProps) {
+  const { t } = useLanguage()
+  const stockStatusOptions = STOCK_STATUS_OPTIONS_BASE.map((opt) => ({
+    value: opt.value,
+    label: t[opt.labelKey],
+  }))
+
   return (
     <div className="report-filter-bar">
       {/* Search input */}
@@ -65,20 +74,20 @@ export function StockSummaryFilterBar({
         <input
           type="search"
           className="input"
-          placeholder="Search products..."
+          placeholder={t.searchProductsPlaceholder}
           defaultValue={searchDefault}
           onChange={(e) => onSearchChange(e.target.value)}
-          aria-label="Search products by name"
+          aria-label={t.searchProductsByName}
           style={{ paddingLeft: 'var(--space-8)' }}
         />
       </div>
 
       {/* Stock status filter pills */}
       <ReportFilterPills
-        options={STOCK_STATUS_OPTIONS}
+        options={stockStatusOptions}
         activeValue={activeStatusFilter}
         onChange={onStatusChange}
-        ariaLabel="Filter by stock status"
+        ariaLabel={t.filterByStockStatus}
       />
 
       {/* Sort pills */}
@@ -86,7 +95,7 @@ export function StockSummaryFilterBar({
         options={STOCK_SORT_OPTIONS}
         activeValue={activeSortBy}
         onChange={onSortChange}
-        ariaLabel="Sort products"
+        ariaLabel={t.sortProducts}
       />
     </div>
   )

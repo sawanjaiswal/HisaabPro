@@ -17,6 +17,7 @@ import { formatPaise } from '@/lib/format'
 import { getBalanceSheet } from './finance.service'
 import type { BalanceSheetData, BalanceSheetSection } from './finance.types'
 import './report-finance.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 function SectionCard({ section }: { section: BalanceSheetSection }) {
   return (
@@ -40,6 +41,7 @@ function SectionCard({ section }: { section: BalanceSheetSection }) {
 }
 
 export default function BalanceSheetPage() {
+  const { t } = useLanguage()
   const toast = useToast()
   const [asOf, setAsOf] = useState(() => new Date().toISOString().split('T')[0])
   const [data, setData] = useState<BalanceSheetData | null>(null)
@@ -54,7 +56,7 @@ export default function BalanceSheetPage() {
       .catch((err: unknown) => {
         if (err instanceof Error && err.name === 'AbortError') return
         setFetchStatus('error')
-        toast.error(err instanceof ApiError ? err.message : 'Failed to load balance sheet')
+        toast.error(err instanceof ApiError ? err.message : t.failedLoadBalanceSheet)
       })
     return () => controller.abort()
   }, [asOf, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -64,7 +66,7 @@ export default function BalanceSheetPage() {
   if (fetchStatus === 'loading') {
     return (
       <AppShell>
-        <Header title="Balance Sheet" backTo={ROUTES.REPORTS} />
+        <Header title={t.balanceSheet} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <div className="finance-skeleton" aria-busy="true">
             {['sk-1', 'sk-2', 'sk-3'].map((k) => <div key={k} className="finance-skeleton__section" />)}
@@ -77,9 +79,9 @@ export default function BalanceSheetPage() {
   if (fetchStatus === 'error') {
     return (
       <AppShell>
-        <Header title="Balance Sheet" backTo={ROUTES.REPORTS} />
+        <Header title={t.balanceSheet} backTo={ROUTES.REPORTS} />
         <PageContainer>
-          <ErrorState title="Could not load balance sheet" message="Check your connection and try again." onRetry={refresh} />
+          <ErrorState title={t.couldNotLoadBalanceSheet} message={t.checkConnectionRetry} onRetry={refresh} />
         </PageContainer>
       </AppShell>
     )
@@ -87,12 +89,12 @@ export default function BalanceSheetPage() {
 
   return (
     <AppShell>
-      <Header title="Balance Sheet" backTo={ROUTES.REPORTS} />
+      <Header title={t.balanceSheet} backTo={ROUTES.REPORTS} />
       <PageContainer>
         <div className="finance-date-bar">
-          <span className="finance-date-bar__label">As of</span>
-          <input type="date" className="finance-date-bar__input" value={asOf} onChange={(e) => setAsOf(e.target.value)} aria-label="As of date" />
-          <button type="button" className="finance-date-bar__refresh-btn" onClick={refresh} aria-label="Refresh balance sheet">
+          <span className="finance-date-bar__label">{t.asOf}</span>
+          <input type="date" className="finance-date-bar__input" value={asOf} onChange={(e) => setAsOf(e.target.value)} aria-label={t.asOfDate} />
+          <button type="button" className="finance-date-bar__refresh-btn" onClick={refresh} aria-label={t.refreshBalanceSheet}>
             <RefreshCw size={14} aria-hidden="true" />
           </button>
         </div>
@@ -100,8 +102,8 @@ export default function BalanceSheetPage() {
         {!data && (
           <div className="finance-empty">
             <div className="finance-empty__icon" aria-hidden="true"><BarChart3 size={32} /></div>
-            <p className="finance-empty__title">No data for this date</p>
-            <p className="finance-empty__desc">Try a different date.</p>
+            <p className="finance-empty__title">{t.noDataForThisDate}</p>
+            <p className="finance-empty__desc">{t.tryDifferentDate}</p>
           </div>
         )}
 
@@ -111,7 +113,7 @@ export default function BalanceSheetPage() {
             <SectionCard section={data.liabilities} />
             <SectionCard section={data.equity} />
             <div className="finance-net-row">
-              <span className="finance-net-row__label">Total Assets</span>
+              <span className="finance-net-row__label">{t.totalAssets}</span>
               <span className="finance-net-row__amount">{formatPaise(data.assets.total)}</span>
             </div>
           </>

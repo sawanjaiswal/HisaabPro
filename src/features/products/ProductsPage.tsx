@@ -11,6 +11,7 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { BulkActionBar } from '@/components/ui/BulkActionBar'
 import { useBulkSelect } from '@/hooks/useBulkSelect'
 import { useToast } from '@/hooks/useToast'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useProducts } from './useProducts'
 import { ProductSummaryBar } from './components/ProductSummaryBar'
 import { ProductFilterBar } from './components/ProductFilterBar'
@@ -26,6 +27,7 @@ import './products.css'
 export default function ProductsPage() {
   const navigate = useNavigate()
   const toast = useToast()
+  const { t } = useLanguage()
   const { data, status, filters, setSearch, setFilter, refresh } = useProducts()
   const bulk = useBulkSelect()
   const [isBulkDeleting, setIsBulkDeleting] = useState(false)
@@ -37,7 +39,7 @@ export default function ProductsPage() {
     if (product) {
       navigate(`/products/${product.id}`)
     } else {
-      toast.error(`No product found for barcode: ${value}`)
+      toast.error(`${t.noBarcodeProdFound}: ${value}`)
     }
   }
 
@@ -66,11 +68,11 @@ export default function ProductsPage() {
     try {
       const ids = Array.from(bulk.selectedIds)
       await Promise.all(ids.map((id) => deleteProduct(id)))
-      toast.success(`${count} ${count === 1 ? 'product' : 'products'} deleted`)
+      toast.success(`${count} ${count === 1 ? t.product : t.productsLabel} ${t.delete.toLowerCase()}`)
       bulk.clear()
       refresh()
     } catch {
-      toast.error('Failed to delete some products')
+      toast.error(t.failedDeleteProducts)
     } finally {
       setIsBulkDeleting(false)
     }
@@ -81,30 +83,30 @@ export default function ProductsPage() {
   const bulkActions: BulkAction[] = [
     {
       id: 'delete',
-      label: 'Delete',
+      label: t.delete,
       icon: 'delete',
       isDanger: true,
       onClick: handleBulkDelete,
     },
     {
       id: 'export',
-      label: 'Export',
+      label: t.export,
       icon: 'export',
-      onClick: () => toast.info('Export coming soon'),
+      onClick: () => toast.info(t.exportComingSoon),
     },
   ]
 
   return (
     <AppShell>
       <Header
-        title={bulk.isActive ? `${bulk.selectedCount} Selected` : 'Products'}
+        title={bulk.isActive ? `${bulk.selectedCount} ${t.selected}` : t.products}
         actions={
           !bulk.isActive ? (
             <>
-              <button className="btn btn-ghost btn-sm" onClick={() => navigate(ROUTES.ITEMS_LIBRARY)} aria-label="Items library">
+              <button className="btn btn-ghost btn-sm" onClick={() => navigate(ROUTES.ITEMS_LIBRARY)} aria-label={t.itemsLibrary}>
                 <BookOpen size={18} aria-hidden="true" />
               </button>
-              <button className="btn btn-ghost btn-sm" onClick={() => setScannerOpen(true)} aria-label="Scan barcode">
+              <button className="btn btn-ghost btn-sm" onClick={() => setScannerOpen(true)} aria-label={t.scanBarcode}>
                 <ScanBarcode size={20} aria-hidden="true" />
               </button>
             </>
@@ -132,8 +134,8 @@ export default function ProductsPage() {
 
         {status === 'error' && (
           <ErrorState
-            title="Could not load products"
-            message="Check your connection and try again."
+            title={t.couldNotLoadProducts}
+            message={t.checkConnectionRetry}
             onRetry={refresh}
           />
         )}
@@ -141,11 +143,11 @@ export default function ProductsPage() {
         {status === 'success' && data && data.products.length === 0 && (
           <EmptyState
             icon={<Package size={40} aria-hidden="true" />}
-            title="No products yet"
-            description="Add your first product to start managing inventory"
+            title={t.noProductsYet}
+            description={t.addFirstProductDesc}
             action={
-              <button className="btn btn-primary btn-md" onClick={goToCreate} aria-label="Add first product">
-                Add Product
+              <button className="btn btn-primary btn-md" onClick={goToCreate} aria-label={t.addFirstProduct}>
+                {t.addProduct}
               </button>
             }
           />
@@ -153,14 +155,14 @@ export default function ProductsPage() {
 
         {status === 'success' && data && (
           <div role="status" aria-live="polite" className="sr-only">
-            {data.products.length} {data.products.length === 1 ? 'product' : 'products'} found
+            {data.products.length} {data.products.length === 1 ? t.product : t.productsLabel} {t.found}
           </div>
         )}
 
         {status === 'success' && data && data.products.length > 0 && (
           <>
-          <h2 className="sr-only">Product list</h2>
-          <div className="product-list stagger-list" role="list" aria-label="Products">
+          <h2 className="sr-only">{t.productList}</h2>
+          <div className="product-list stagger-list" role="list" aria-label={t.products}>
             {data.products.map((product) => (
               <div
                 key={product.id}
@@ -183,7 +185,7 @@ export default function ProductsPage() {
       </PageContainer>
 
       {!bulk.isActive && (
-        <button className="fab" onClick={goToCreate} aria-label="Add new product">
+        <button className="fab" onClick={goToCreate} aria-label={t.addNewProduct}>
           <Plus size={24} aria-hidden="true" />
         </button>
       )}

@@ -1,4 +1,5 @@
 import type { TransactionLockConfig } from '../settings.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface ApprovalTogglesSectionProps {
   requireApprovalForEdit: boolean
@@ -11,19 +12,21 @@ export function ApprovalTogglesSection({
   requireApprovalForDelete,
   onUpdate,
 }: ApprovalTogglesSectionProps) {
+  const { t } = useLanguage()
+
   return (
     <section>
-      <p className="settings-section-title">Approvals</p>
+      <p className="settings-section-title">{t.approvalsTitle}</p>
       <div className="txn-controls">
 
         <div className="txn-control-row">
           <div className="txn-control-content">
-            <p className="txn-control-label">Require Approval for Edits</p>
+            <p className="txn-control-label">{t.requireApprovalEdits}</p>
             <p className="txn-control-description">
-              Staff must request approval before editing locked transactions
+              {t.approvalEditsDesc}
             </p>
           </div>
-          <label className="settings-toggle" aria-label="Require approval for edits">
+          <label className="settings-toggle" aria-label={t.requireApprovalEditsAria}>
             <input
               type="checkbox"
               checked={requireApprovalForEdit}
@@ -35,12 +38,12 @@ export function ApprovalTogglesSection({
 
         <div className="txn-control-row">
           <div className="txn-control-content">
-            <p className="txn-control-label">Require Approval for Deletes</p>
+            <p className="txn-control-label">{t.requireApprovalDeletes}</p>
             <p className="txn-control-description">
-              Staff must request approval before deleting any transaction
+              {t.approvalDeletesDesc}
             </p>
           </div>
-          <label className="settings-toggle" aria-label="Require approval for deletes">
+          <label className="settings-toggle" aria-label={t.requireApprovalDeletesAria}>
             <input
               type="checkbox"
               checked={requireApprovalForDelete}

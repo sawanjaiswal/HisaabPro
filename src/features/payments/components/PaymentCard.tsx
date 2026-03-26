@@ -2,6 +2,7 @@
 
 import React, { useRef, useCallback } from 'react'
 import { ArrowDownLeft, ArrowUpRight, Check } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { PaymentSummary } from '../payment.types'
 import { PAYMENT_TYPE_LABELS } from '../payment.constants'
 import { formatPaymentMode } from '../payment.utils'
@@ -40,14 +41,15 @@ export const PaymentCard: React.FC<PaymentCardProps> = ({
   isSelected = false,
   isBulkMode = false,
 }) => {
+  const { t } = useLanguage()
   const isIn = payment.type === 'PAYMENT_IN'
   const arrowClass = isIn ? 'payment-card-arrow payment-card-arrow--in' : 'payment-card-arrow payment-card-arrow--out'
   const amountClass = isIn ? 'payment-card-amount payment-card-amount--in' : 'payment-card-amount payment-card-amount--out'
   const badgeClass = isIn ? 'payment-type-badge payment-type-badge--in' : 'payment-type-badge payment-type-badge--out'
   const typeLabel = PAYMENT_TYPE_LABELS[payment.type]
   const allocationLabel = payment.allocationsCount > 0
-    ? `${payment.allocationsCount} invoice${payment.allocationsCount > 1 ? 's' : ''}`
-    : 'Advance'
+    ? `${payment.allocationsCount} ${payment.allocationsCount > 1 ? t.invoicesWord : t.invoiceWord}`
+    : t.advanceLabel
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const didLongPress = useRef(false)
@@ -81,7 +83,7 @@ export const PaymentCard: React.FC<PaymentCardProps> = ({
       className={`payment-card${isSelected ? ' txn-row--selected' : ''}`}
       role="button"
       tabIndex={0}
-      aria-label={`${isBulkMode ? (isSelected ? 'Deselect' : 'Select') : 'View details for'} ${typeLabel} from ${payment.partyName}, ${formatAmount(payment.amount)}`}
+      aria-label={`${isBulkMode ? (isSelected ? t.deselectLabel : t.selectLabel) : t.viewDetailsFor} ${typeLabel} from ${payment.partyName}, ${formatAmount(payment.amount)}`}
       onClick={handleClick}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleClick() }}
       onPointerDown={handlePointerDown}
@@ -117,7 +119,7 @@ export const PaymentCard: React.FC<PaymentCardProps> = ({
         <span className={amountClass}>{formatAmount(payment.amount)}</span>
         <span
           className={badgeClass}
-          aria-label={`Payment type: ${typeLabel}`}
+          aria-label={`${t.paymentTypeColon} ${typeLabel}`}
         >
           {typeLabel}
         </span>

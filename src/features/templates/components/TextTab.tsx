@@ -1,6 +1,7 @@
 /** Text tab — custom header, footer, and terms text */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 
 import type { TemplateConfig } from '../template.types'
 import {
@@ -16,15 +17,17 @@ interface TextTabProps {
   onChange: (patch: Partial<TemplateConfig>) => void
 }
 
-export const TextTab: React.FC<TextTabProps> = ({ config, onChange }) => (
-  <Section title="Custom Text">
+export const TextTab: React.FC<TextTabProps> = ({ config, onChange }) => {
+  const { t } = useLanguage()
+  return (
+  <Section title={t.customText}>
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
       <div>
         <label
           htmlFor="template-header-text"
           style={{ display: 'block', fontSize: '0.833rem', fontWeight: 500, color: 'var(--color-gray-700)', marginBottom: 'var(--space-2)' }}
         >
-          Header Text
+          {t.headerTextLabel}
         </label>
         <input
           id="template-header-text"
@@ -32,8 +35,8 @@ export const TextTab: React.FC<TextTabProps> = ({ config, onChange }) => (
           className="input"
           value={config.headerText}
           maxLength={MAX_HEADER_TEXT_LENGTH}
-          placeholder="e.g. || Shree Ganeshay Namah ||"
-          aria-label="Header text printed above the invoice title"
+          placeholder={t.headerTextPlaceholder}
+          aria-label={t.headerTextAria}
           onChange={(e) => onChange({ headerText: e.target.value })}
         />
         <span style={{ fontSize: '0.694rem', color: 'var(--color-gray-400)', marginTop: '4px', display: 'block' }}>
@@ -46,7 +49,7 @@ export const TextTab: React.FC<TextTabProps> = ({ config, onChange }) => (
           htmlFor="template-footer-text"
           style={{ display: 'block', fontSize: '0.833rem', fontWeight: 500, color: 'var(--color-gray-700)', marginBottom: 'var(--space-2)' }}
         >
-          Footer Text
+          {t.footerTextLabel}
         </label>
         <input
           id="template-footer-text"
@@ -54,8 +57,8 @@ export const TextTab: React.FC<TextTabProps> = ({ config, onChange }) => (
           className="input"
           value={config.footerText}
           maxLength={MAX_FOOTER_TEXT_LENGTH}
-          placeholder="e.g. Thank you for your business!"
-          aria-label="Footer text printed at the bottom of the invoice"
+          placeholder={t.footerTextPlaceholder}
+          aria-label={t.footerTextAria}
           onChange={(e) => onChange({ footerText: e.target.value })}
         />
         <span style={{ fontSize: '0.694rem', color: 'var(--color-gray-400)', marginTop: '4px', display: 'block' }}>
@@ -68,7 +71,7 @@ export const TextTab: React.FC<TextTabProps> = ({ config, onChange }) => (
           htmlFor="template-terms-text"
           style={{ display: 'block', fontSize: '0.833rem', fontWeight: 500, color: 'var(--color-gray-700)', marginBottom: 'var(--space-2)' }}
         >
-          Default Terms & Conditions
+          {t.defaultTermsConditions}
         </label>
         <textarea
           id="template-terms-text"
@@ -76,8 +79,8 @@ export const TextTab: React.FC<TextTabProps> = ({ config, onChange }) => (
           value={config.termsText}
           maxLength={MAX_TERMS_TEXT_LENGTH}
           rows={4}
-          placeholder="Enter default terms pre-filled on new invoices…"
-          aria-label="Default terms and conditions pre-filled on new invoices"
+          placeholder={t.enterDefaultTerms}
+          aria-label={t.defaultTermsAria}
           onChange={(e) => onChange({ termsText: e.target.value })}
           style={{ resize: 'vertical', minHeight: '96px' }}
         />
@@ -87,4 +90,5 @@ export const TextTab: React.FC<TextTabProps> = ({ config, onChange }) => (
       </div>
     </div>
   </Section>
-)
+  )
+}

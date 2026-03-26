@@ -7,6 +7,7 @@
 
 import React from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface ReportDateNavigatorProps {
   /** ISO date string, e.g. "2026-03-15" */
@@ -29,12 +30,13 @@ export const ReportDateNavigator: React.FC<ReportDateNavigatorProps> = ({
   canGoNext,
   onDateClick,
 }) => {
-  return (
+  const { t } = useLanguage()
+    return (
     <div className="report-date-nav">
       <button
         className="report-date-nav-btn"
         onClick={onPrev}
-        aria-label="Go to previous day"
+        aria-label={t.goToPreviousDay}
         type="button"
       >
         <ChevronLeft size={20} aria-hidden="true" />
@@ -44,7 +46,7 @@ export const ReportDateNavigator: React.FC<ReportDateNavigatorProps> = ({
         <button
           className="report-date-nav-primary"
           onClick={onDateClick}
-          aria-label={`Current date: ${dayLabel}. Tap to pick a date.`}
+          aria-label={`${t.currentDate}: ${dayLabel}. ${t.tapToPickDate}`}
           type="button"
           style={onDateClick ? { cursor: 'pointer', background: 'none', border: 'none', padding: 0, font: 'inherit', width: '100%' } : { background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'default', width: '100%' }}
         >
@@ -57,7 +59,7 @@ export const ReportDateNavigator: React.FC<ReportDateNavigatorProps> = ({
         className="report-date-nav-btn"
         onClick={onNext}
         disabled={!canGoNext}
-        aria-label="Go to next day"
+        aria-label={t.goToNextDay}
         aria-disabled={!canGoNext}
         type="button"
       >

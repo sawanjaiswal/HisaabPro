@@ -1,14 +1,14 @@
 /** Product list — Hero card pair (Stock Value / Low Stock Alert)
  *
- * Matches dashboard hero pattern: teal card (value) + amber card (alert).
- * Unique to products: stock value is the hero metric, low stock count is the alert.
+ * Uses shared summary-hero CSS pattern.
+ * Teal card (value) + amber card (alert) / lime card (safe).
  */
 
 import React from 'react'
 import { ChevronRight, TrendingUp, AlertTriangle } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { formatProductPrice } from '../product.utils'
 import type { ProductListResponse } from '../product.types'
-import './ProductSummaryBar.css'
 
 interface ProductSummaryBarProps {
   summary: ProductListResponse['summary']
@@ -21,45 +21,46 @@ export const ProductSummaryBar: React.FC<ProductSummaryBarProps> = ({
   onStockClick,
   onLowStockClick,
 }) => {
+  const { t } = useLanguage()
   const { totalProducts, lowStockCount, totalStockValue } = summary
 
   return (
-    <div className="product-hero" role="list" aria-label="Inventory summary">
-      <p className="product-hero-count">{totalProducts} Products</p>
+    <div className="summary-hero" role="list" aria-label={t.inventorySummary}>
+      <p className="summary-hero-count">{totalProducts} {totalProducts === 1 ? t.product : t.products}</p>
 
-      <div className="product-hero-cards">
+      <div className="summary-hero-cards">
         {/* Stock Value — teal gradient */}
         <button
-          className="product-hero-card product-hero-card--value"
+          className="summary-hero-card summary-hero-card--teal"
           role="listitem"
           onClick={onStockClick}
-          aria-label={`Total stock value: ${formatProductPrice(totalStockValue)}`}
+          aria-label={`${t.stockValue}: ${formatProductPrice(totalStockValue)}`}
         >
-          <div className="product-hero-card-content">
-            <span className="product-hero-amount">{formatProductPrice(totalStockValue)}</span>
-            <span className="product-hero-label">
-              Stock Value
+          <div className="summary-hero-card-content">
+            <span className="summary-hero-amount">{formatProductPrice(totalStockValue)}</span>
+            <span className="summary-hero-label">
+              {t.stockValue}
               <TrendingUp size={14} aria-hidden="true" />
             </span>
           </div>
-          <ChevronRight size={20} aria-hidden="true" className="product-hero-chevron" />
+          <ChevronRight size={20} aria-hidden="true" className="summary-hero-chevron" />
         </button>
 
-        {/* Low Stock Alert — amber/warning */}
+        {/* Low Stock Alert — amber/warning or lime/safe */}
         <button
-          className={`product-hero-card product-hero-card--alert${lowStockCount === 0 ? ' product-hero-card--safe' : ''}`}
+          className={`summary-hero-card ${lowStockCount > 0 ? 'summary-hero-card--amber' : 'summary-hero-card--safe'}`}
           role="listitem"
           onClick={onLowStockClick}
-          aria-label={lowStockCount > 0 ? `${lowStockCount} products low on stock` : 'All products stocked'}
+          aria-label={lowStockCount > 0 ? `${lowStockCount} ${t.lowOnStock}` : t.allStocked}
         >
-          <div className="product-hero-card-content">
-            <span className="product-hero-amount">{lowStockCount}</span>
-            <span className="product-hero-label">
-              {lowStockCount > 0 ? 'Low Stock' : 'All Stocked'}
+          <div className="summary-hero-card-content">
+            <span className="summary-hero-amount">{lowStockCount}</span>
+            <span className="summary-hero-label">
+              {lowStockCount > 0 ? t.lowOnStock : t.allStocked}
               <AlertTriangle size={14} aria-hidden="true" />
             </span>
           </div>
-          <ChevronRight size={20} aria-hidden="true" className="product-hero-chevron product-hero-chevron--dark" />
+          <ChevronRight size={20} aria-hidden="true" className="summary-hero-chevron summary-hero-chevron--dark" />
         </button>
       </div>
     </div>

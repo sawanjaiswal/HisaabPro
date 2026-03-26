@@ -8,6 +8,7 @@
 import React, { useRef, useState, useCallback } from 'react'
 import { Upload } from 'lucide-react'
 import { useToast } from '@/hooks/useToast'
+import { useLanguage } from '@/hooks/useLanguage'
 import { startReconciliation } from '../reconciliation.service'
 import { ApiError } from '@/lib/api'
 import type { GstrInputItem } from '../reconciliation.types'
@@ -50,6 +51,7 @@ function validateGstrItems(raw: unknown): GstrInputItem[] {
 }
 
 export const ReconciliationUploadForm: React.FC<Props> = ({ onSuccess }) => {
+  const { t } = useLanguage()
   const toast    = useToast()
   const fileRef  = useRef<HTMLInputElement>(null)
   const submitRef = useRef(false)
@@ -111,7 +113,7 @@ export const ReconciliationUploadForm: React.FC<Props> = ({ onSuccess }) => {
   return (
     <form className="recon-upload-form" onSubmit={handleSubmit} noValidate>
       <div className="recon-upload-form__field">
-        <label className="recon-upload-form__label" htmlFor="recon-period">Period</label>
+        <label className="recon-upload-form__label" htmlFor="recon-period">{t.reconPeriodLabel}</label>
         <input
           id="recon-period"
           type="month"
@@ -119,22 +121,22 @@ export const ReconciliationUploadForm: React.FC<Props> = ({ onSuccess }) => {
           value={period}
           onChange={(e) => setPeriod(e.target.value)}
           required
-          aria-label="Select reconciliation period (month)"
+          aria-label={t.selectReconPeriod}
         />
       </div>
 
       <div className="recon-upload-form__field">
         <label className="recon-upload-form__label" htmlFor="recon-file">
-          Upload GSTR JSON file
+          {t.uploadGstrJsonFile}
         </label>
         <button
           type="button"
           className="recon-upload-form__file-btn"
           onClick={() => fileRef.current?.click()}
-          aria-label="Choose GSTR JSON file"
+          aria-label={t.chooseGstrJsonFile}
         >
           <Upload size={16} aria-hidden="true" />
-          Choose file
+          {t.chooseFile}
         </button>
         <input
           ref={fileRef}
@@ -143,13 +145,13 @@ export const ReconciliationUploadForm: React.FC<Props> = ({ onSuccess }) => {
           accept=".json,application/json"
           className="recon-upload-form__file-input-hidden"
           onChange={handleFileChange}
-          aria-label="GSTR JSON file upload"
+          aria-label={t.gstrJsonFileUpload}
         />
       </div>
 
       <div className="recon-upload-form__field">
         <label className="recon-upload-form__label" htmlFor="recon-json">
-          Or paste JSON directly
+          {t.orPasteJsonDirectly}
         </label>
         <textarea
           id="recon-json"
@@ -158,7 +160,7 @@ export const ReconciliationUploadForm: React.FC<Props> = ({ onSuccess }) => {
           onChange={(e) => { setJsonText(e.target.value); setParseError(null) }}
           placeholder='[{"invoiceNumber":"INV001","invoiceDate":"2026-03-01","gstin":"29AABCT1332L1ZN","taxableValue":10000,"taxAmount":1800}]'
           rows={6}
-          aria-label="Paste GSTR data JSON"
+          aria-label={t.pasteGstrDataJson}
           aria-describedby={parseError ? 'recon-json-error' : undefined}
         />
         {parseError && (
@@ -174,7 +176,7 @@ export const ReconciliationUploadForm: React.FC<Props> = ({ onSuccess }) => {
         disabled={isLoading || !jsonText.trim() || !period}
         aria-busy={isLoading}
       >
-        {isLoading ? 'Starting…' : 'Start Reconciliation'}
+        {isLoading ? t.starting : t.startReconciliation}
       </button>
     </form>
   )

@@ -9,12 +9,14 @@ import {
   ENTRY_STATUS_BG,
 } from '../accounting.constants'
 import type { JournalEntry } from '../accounting.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface JournalEntryCardProps {
   entry: JournalEntry
 }
 
 export function JournalEntryCard({ entry }: JournalEntryCardProps) {
+  const { t } = useLanguage()
   const typeColor = JOURNAL_TYPE_COLORS[entry.type]
   const statusColor = ENTRY_STATUS_COLORS[entry.status]
   const statusBg = ENTRY_STATUS_BG[entry.status]
@@ -48,11 +50,11 @@ export function JournalEntryCard({ entry }: JournalEntryCardProps) {
         </div>
         <div className="je-card-amounts">
           <div className="je-amount-row">
-            <span className="je-amount-label">Dr</span>
+            <span className="je-amount-label">{t.dr}</span>
             <span className="je-amount-value">{formatPaise(entry.totalDebit)}</span>
           </div>
           <div className="je-amount-row">
-            <span className="je-amount-label">Cr</span>
+            <span className="je-amount-label">{t.cr}</span>
             <span className="je-amount-value">{formatPaise(entry.totalCredit)}</span>
           </div>
         </div>

@@ -5,127 +5,42 @@
  * 4 UI states: loading skeleton · error · empty · success.
  */
 
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import { RefreshCw, Plus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
-import { useToast } from '@/hooks/useToast'
-import { ApiError } from '@/lib/api'
+import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { useRecurringList } from './hooks/useRecurringList'
+import { useRecurringActions } from './hooks/useRecurringActions'
 import { RecurringCard } from './components/RecurringCard'
 import { RecurringCreateDrawer } from './components/RecurringCreateDrawer'
 import {
   RECURRING_STATUS_FILTER_OPTIONS,
   RECURRING_PAGE_LIMIT,
 } from './recurring.constants'
-import {
-  createRecurring,
-  updateRecurring,
-  deleteRecurring,
-  generateDueInvoices,
-} from './recurring.service'
-import type { CreateRecurringInput } from './recurring.types'
 import './recurring.css'
 
 export default function RecurringListPage() {
-  const toast = useToast()
+  const { t } = useLanguage()
   const { items, total, page, status, statusFilter, setStatusFilter, setPage, refresh } =
     useRecurringList()
+  const { handleCreate, handlePause, handleResume, handleDelete, handleGenerate, generating } =
+    useRecurringActions(refresh)
 
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const [generating, setGenerating] = useState(false)
-
   const totalPages = Math.ceil(total / RECURRING_PAGE_LIMIT)
-
-  // ── Create ─────────────────────────────────────────────────────────────
-
-  const handleCreate = useCallback(
-    async (input: CreateRecurringInput) => {
-      await createRecurring(input)
-      toast.success('Recurring schedule created.')
-      refresh()
-    },
-    [toast, refresh]
-  )
-
-  // ── Pause / Resume ──────────────────────────────────────────────────────
-
-  const handlePause = useCallback(
-    async (id: string) => {
-      try {
-        await updateRecurring(id, { status: 'PAUSED' })
-        toast.success('Schedule paused.')
-        refresh()
-      } catch (err: unknown) {
-        const message = err instanceof ApiError ? err.message : 'Failed to pause schedule.'
-        toast.error(message)
-      }
-    },
-    [toast, refresh]
-  )
-
-  const handleResume = useCallback(
-    async (id: string) => {
-      try {
-        await updateRecurring(id, { status: 'ACTIVE' })
-        toast.success('Schedule resumed.')
-        refresh()
-      } catch (err: unknown) {
-        const message = err instanceof ApiError ? err.message : 'Failed to resume schedule.'
-        toast.error(message)
-      }
-    },
-    [toast, refresh]
-  )
-
-  // ── Delete ──────────────────────────────────────────────────────────────
-
-  const handleDelete = useCallback(
-    async (id: string) => {
-      try {
-        await deleteRecurring(id)
-        toast.success('Schedule deleted.')
-        refresh()
-      } catch (err: unknown) {
-        const message = err instanceof ApiError ? err.message : 'Failed to delete schedule.'
-        toast.error(message)
-      }
-    },
-    [toast, refresh]
-  )
-
-  // ── Manual generate ─────────────────────────────────────────────────────
-
-  const handleGenerate = useCallback(async () => {
-    if (generating) return
-    setGenerating(true)
-    try {
-      const result = await generateDueInvoices()
-      toast.success(
-        result.generated === 0
-          ? 'No invoices due right now.'
-          : `Generated ${result.generated} invoice${result.generated === 1 ? '' : 's'}.`
-      )
-      refresh()
-    } catch (err: unknown) {
-      const message = err instanceof ApiError ? err.message : 'Generation failed.'
-      toast.error(message)
-    } finally {
-      setGenerating(false)
-    }
-  }, [generating, toast, refresh])
 
   // ── Loading state ───────────────────────────────────────────────────────
 
   if (status === 'loading') {
     return (
       <AppShell>
-        <Header title="Recurring Invoices" backTo={ROUTES.INVOICES} />
+        <Header title={t.recurringInvoices} backTo={ROUTES.INVOICES} />
         <PageContainer>
-          <div className="recurring-skeleton" aria-busy="true" aria-label="Loading schedules">
+          <div className="recurring-skeleton" aria-busy="true" aria-label={t.loadingSchedules}>
             {(['sk-1', 'sk-2', 'sk-3', 'sk-4'] as const).map((key) => (
               <div key={key} className="recurring-skeleton__card" />
             ))}
@@ -140,11 +55,11 @@ export default function RecurringListPage() {
   if (status === 'error') {
     return (
       <AppShell>
-        <Header title="Recurring Invoices" backTo={ROUTES.INVOICES} />
+        <Header title={t.recurringInvoices} backTo={ROUTES.INVOICES} />
         <PageContainer>
           <ErrorState
-            title="Could not load recurring invoices"
-            message="Check your connection and try again."
+            title={t.couldNotLoadRecurring}
+            message={t.checkConnectionTryAgain}
             onRetry={refresh}
           />
         </PageContainer>
@@ -157,13 +72,13 @@ export default function RecurringListPage() {
   return (
     <AppShell>
       <Header
-        title="Recurring Invoices"
+        title={t.recurringInvoices}
         backTo={ROUTES.INVOICES}
       />
 
       <PageContainer>
         {/* Filter pills */}
-        <div className="recurring-filter-pills" role="group" aria-label="Filter by status">
+        <div className="recurring-filter-pills" role="group" aria-label={t.filterByStatusGroup}>
           {RECURRING_STATUS_FILTER_OPTIONS.map((opt) => (
             <button
               key={opt.value}
@@ -183,7 +98,7 @@ export default function RecurringListPage() {
         {/* Action bar */}
         <div className="recurring-action-bar">
           <span className="recurring-count">
-            {total} {total === 1 ? 'schedule' : 'schedules'}
+            {total} {total === 1 ? t.scheduleCount : t.schedulesCount}
           </span>
           <div className="recurring-action-bar__buttons">
             <button
@@ -192,19 +107,19 @@ export default function RecurringListPage() {
               onClick={handleGenerate}
               disabled={generating}
               aria-busy={generating}
-              aria-label="Manually generate due invoices"
+              aria-label={t.manuallyGenerateDue}
             >
               <RefreshCw size={14} aria-hidden="true" />
-              {generating ? 'Generating...' : 'Generate Due'}
+              {generating ? t.generatingDue : t.generateDue}
             </button>
             <button
               type="button"
               className="recurring-btn recurring-btn--primary"
               onClick={() => setDrawerOpen(true)}
-              aria-label="Create new recurring schedule"
+              aria-label={t.createNewSchedule}
             >
               <Plus size={14} aria-hidden="true" />
-              New Schedule
+              {t.newSchedule}
             </button>
           </div>
         </div>
@@ -215,9 +130,9 @@ export default function RecurringListPage() {
             <div className="recurring-empty__icon" aria-hidden="true">
               <RefreshCw size={32} />
             </div>
-            <p className="recurring-empty__title">No recurring schedules</p>
+            <p className="recurring-empty__title">{t.noRecurringSchedules}</p>
             <p className="recurring-empty__desc">
-              Create a recurring schedule to automatically generate invoices on a set frequency.
+              {t.recurringEmptyDesc}
             </p>
             <button
               type="button"
@@ -225,7 +140,7 @@ export default function RecurringListPage() {
               onClick={() => setDrawerOpen(true)}
             >
               <Plus size={14} aria-hidden="true" />
-              Create First Schedule
+              {t.createFirstSchedule}
             </button>
           </div>
         )}
@@ -253,21 +168,21 @@ export default function RecurringListPage() {
               className="recurring-btn recurring-btn--secondary"
               onClick={() => setPage(page - 1)}
               disabled={page <= 1}
-              aria-label="Previous page"
+              aria-label={t.previousPage}
             >
-              Previous
+              {t.previous}
             </button>
             <span className="recurring-pagination__info">
-              Page {page} of {totalPages}
+              {t.pageLabel} {page} {t.ofLabel} {totalPages}
             </span>
             <button
               type="button"
               className="recurring-btn recurring-btn--secondary"
               onClick={() => setPage(page + 1)}
               disabled={page >= totalPages}
-              aria-label="Next page"
+              aria-label={t.nextPage}
             >
-              Next
+              {t.next}
             </button>
           </div>
         )}

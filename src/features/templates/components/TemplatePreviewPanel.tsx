@@ -1,6 +1,7 @@
 /** Live invoice mock-up — renders a simplified invoice preview using the template config */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { TemplateConfig, PrintSettings } from '../template.types'
 import { getVisibleColumns } from '../template.utils'
 import { PreviewInvoiceHeader } from './PreviewInvoiceHeader'
@@ -17,6 +18,7 @@ interface TemplatePreviewPanelProps {
 }
 
 export const TemplatePreviewPanel: React.FC<TemplatePreviewPanelProps> = ({ config, printSettings }) => {
+  const { t } = useLanguage()
   const { colors, typography, layout, fields } = config
   const visibleColumns = getVisibleColumns(config.columns)
 
@@ -58,7 +60,7 @@ export const TemplatePreviewPanel: React.FC<TemplatePreviewPanelProps> = ({ conf
   return (
     <div
       className="template-preview-panel"
-      aria-label="Invoice preview"
+      aria-label={t.invoicePreview}
       role="region"
     >
       <div className="template-preview-container">
@@ -125,7 +127,7 @@ export const TemplatePreviewPanel: React.FC<TemplatePreviewPanelProps> = ({ conf
               }}
               aria-hidden="true"
             >
-              Total Qty: {totalQty}
+              {t.totalQtyPrefix}: {totalQty}
             </div>
           )}
 

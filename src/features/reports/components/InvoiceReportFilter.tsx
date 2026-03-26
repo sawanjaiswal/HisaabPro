@@ -3,11 +3,11 @@
 import {
   DATE_RANGE_PRESETS,
   DATE_RANGE_LABELS,
-  INVOICE_STATUS_LABELS,
   GROUP_BY_LABELS,
   SORT_BY_LABELS,
 } from '../report.constants'
 import { ReportFilterPills } from './ReportFilterPills'
+import { useLanguage } from '@/hooks/useLanguage'
 import type {
   DateRangePreset,
   InvoiceReportStatus,
@@ -20,11 +20,14 @@ import type {
 const STATUS_ALL = 'all' as const
 export type StatusFilterValue = InvoiceReportStatus | typeof STATUS_ALL
 
-const STATUS_OPTIONS: Array<{ value: StatusFilterValue; label: string }> = [
-  { value: STATUS_ALL, label: 'All' },
-  { value: 'paid', label: INVOICE_STATUS_LABELS.paid },
-  { value: 'unpaid', label: INVOICE_STATUS_LABELS.unpaid },
-  { value: 'partial', label: INVOICE_STATUS_LABELS.partial },
+const STATUS_OPTIONS_BASE: Array<{
+  value: StatusFilterValue
+  labelKey: 'all' | 'paid' | 'unpaid' | 'partial'
+}> = [
+  { value: STATUS_ALL, labelKey: 'all' },
+  { value: 'paid', labelKey: 'paid' },
+  { value: 'unpaid', labelKey: 'unpaid' },
+  { value: 'partial', labelKey: 'partial' },
 ]
 
 const DATE_RANGE_OPTIONS = DATE_RANGE_PRESETS.map((preset) => ({
@@ -63,27 +66,33 @@ export function InvoiceReportFilter({
   onGroupByChange,
   onSortByChange,
 }: InvoiceReportFilterProps) {
+  const { t } = useLanguage()
+  const statusOptions = STATUS_OPTIONS_BASE.map((opt) => ({
+    value: opt.value,
+    label: t[opt.labelKey],
+  }))
+
   return (
     <div className="report-filter-bar">
       <ReportFilterPills
         options={DATE_RANGE_OPTIONS}
         activeValue={activeDatePreset}
         onChange={onDatePresetChange}
-        ariaLabel="Date range filter"
+        ariaLabel={t.dateRangeFilter}
       />
 
       <ReportFilterPills
-        options={STATUS_OPTIONS}
+        options={statusOptions}
         activeValue={activeStatus}
         onChange={onStatusChange}
-        ariaLabel="Payment status filter"
+        ariaLabel={t.paymentStatusFilter}
       />
 
       <ReportFilterPills
         options={GROUP_BY_OPTIONS}
         activeValue={activeGroupBy}
         onChange={onGroupByChange}
-        ariaLabel="Group by"
+        ariaLabel={t.groupBy}
       />
 
       <div className="report-filter-pills">
@@ -91,7 +100,7 @@ export function InvoiceReportFilter({
           className="report-filter-pill"
           value={activeSortBy}
           onChange={onSortByChange}
-          aria-label="Sort order"
+          aria-label={t.sortOrder}
         >
           {SORT_BY_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>

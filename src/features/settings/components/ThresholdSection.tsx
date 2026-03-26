@@ -1,4 +1,5 @@
 import type { TransactionLockConfig } from '../settings.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface ThresholdSectionProps {
   priceChangeThresholdPercent: TransactionLockConfig['priceChangeThresholdPercent']
@@ -11,16 +12,18 @@ export function ThresholdSection({
   discountThresholdPercent,
   onUpdate,
 }: ThresholdSectionProps) {
+  const { t } = useLanguage()
+
   return (
     <section>
-      <p className="settings-section-title">Thresholds</p>
+      <p className="settings-section-title">{t.thresholdsTitle}</p>
       <div className="txn-controls">
 
         <div className="txn-control-row">
           <div className="txn-control-content">
-            <p className="txn-control-label">Price Change Threshold</p>
+            <p className="txn-control-label">{t.priceChangeThreshold}</p>
             <p className="txn-control-description">
-              Require approval when price is changed by more than this
+              {t.priceChangeThresholdDesc}
             </p>
           </div>
           <div className="txn-threshold-input">
@@ -35,7 +38,7 @@ export function ThresholdSection({
               min={0}
               max={100}
               placeholder="—"
-              aria-label="Price change threshold percentage"
+              aria-label={t.priceChangeThresholdAria}
             />
             <span className="txn-threshold-suffix">%</span>
           </div>
@@ -43,9 +46,9 @@ export function ThresholdSection({
 
         <div className="txn-control-row">
           <div className="txn-control-content">
-            <p className="txn-control-label">Discount Threshold</p>
+            <p className="txn-control-label">{t.discountThresholdLabel}</p>
             <p className="txn-control-description">
-              Require approval when discount exceeds this percentage
+              {t.discountThresholdDesc}
             </p>
           </div>
           <div className="txn-threshold-input">
@@ -60,7 +63,7 @@ export function ThresholdSection({
               min={0}
               max={100}
               placeholder="—"
-              aria-label="Discount threshold percentage"
+              aria-label={t.discountThresholdAria}
             />
             <span className="txn-threshold-suffix">%</span>
           </div>

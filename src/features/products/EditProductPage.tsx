@@ -11,6 +11,7 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
+import { useLanguage } from '@/hooks/useLanguage'
 import { getProduct } from './product.service'
 import { EditProductForm } from './components/EditProductForm'
 import type { ProductFormData, ProductDetail } from './product.types'
@@ -39,6 +40,7 @@ function detailToFormData(detail: ProductDetail): ProductFormData {
 }
 
 export default function EditProductPage() {
+  const { t } = useLanguage()
   const { id } = useParams<{ id: string }>()
   const productId = id ?? ''
   const [loadStatus, setLoadStatus] = useState<'loading' | 'error' | 'ready'>('loading')
@@ -56,7 +58,7 @@ export default function EditProductPage() {
   if (loadStatus === 'loading') {
     return (
       <AppShell>
-        <Header title="Edit Product" backTo={`/products/${productId}`} />
+        <Header title={t.editProductTitle} backTo={`/products/${productId}`} />
         <PageContainer>
           <Skeleton height="2.5rem" borderRadius="var(--radius-full)" />
           <div style={{ marginTop: 'var(--space-4)' }}>
@@ -70,9 +72,9 @@ export default function EditProductPage() {
   if (loadStatus === 'error' || !initialData) {
     return (
       <AppShell>
-        <Header title="Edit Product" backTo={`/products/${productId}`} />
+        <Header title={t.editProductTitle} backTo={`/products/${productId}`} />
         <PageContainer>
-          <ErrorState title="Could not load product" message="Check your connection and try again." onRetry={() => window.location.reload()} />
+          <ErrorState title={t.couldNotLoadProduct} message={t.checkConnectionRetry} onRetry={() => window.location.reload()} />
         </PageContainer>
       </AppShell>
     )

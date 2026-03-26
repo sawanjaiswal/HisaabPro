@@ -1,6 +1,7 @@
 /** EWayBillCard — EWB status display, generate/cancel/update-PartB triggers */
 
 import React, { useState } from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { formatDate } from '@/lib/format'
 import type { EWayBillStatus, VehicleType, EWayBillGenerateInput } from '../ecompliance.types'
 import { EWayBillGenerateForm } from './EWayBillGenerateForm'
@@ -29,6 +30,7 @@ export const EWayBillCard: React.FC<EWayBillCardProps> = ({
   status, generating, cancelling, updatingPartB,
   onGenerate, onCancel, onUpdatePartB, error,
 }) => {
+  const { t } = useLanguage()
   const [activeForm, setActiveForm] = useState<ActiveForm>('none')
 
   const isPending = !status || status.status === 'PENDING'
@@ -40,47 +42,47 @@ export const EWayBillCard: React.FC<EWayBillCardProps> = ({
     <div className="compliance-card">
       <div className="compliance-card-header">
         <div className="compliance-card-title-group">
-          <h2 className="compliance-card-title">E-Way Bill</h2>
-          <p className="compliance-card-subtitle">Required for goods movement above Rs 50,000</p>
+          <h2 className="compliance-card-title">{t.eWayBill}</h2>
+          <p className="compliance-card-subtitle">{t.ewbSubtitle}</p>
         </div>
         <span
           className={`compliance-badge ${isPending ? 'compliance-badge-pending' : isGenerated ? 'compliance-badge-generated' : 'compliance-badge-cancelled'}`}
-          aria-label={`E-way bill status: ${status?.status ?? 'PENDING'}`}
+          aria-label={`${t.ewbStatusLabel} ${status?.status ?? 'PENDING'}`}
         >
           <span className="compliance-badge-dot" aria-hidden="true" />
-          {isPending ? 'Pending' : isGenerated ? 'Generated' : 'Cancelled'}
+          {isPending ? t.statusPending : isGenerated ? t.statusGenerated : t.statusCancelled}
         </span>
       </div>
 
       {error && <p className="compliance-inline-error" role="alert">{error}</p>}
 
       {isGenerated && status && (
-        <div className="compliance-details" aria-label="E-way bill details">
+        <div className="compliance-details" aria-label={t.ewbDetails}>
           <div className="compliance-detail-row">
-            <span className="compliance-detail-label">EWB No.</span>
+            <span className="compliance-detail-label">{t.ewbNo}</span>
             <span className="compliance-detail-value">{status.ewbNumber}</span>
           </div>
           {status.ewbDate && (
             <div className="compliance-detail-row">
-              <span className="compliance-detail-label">Generated</span>
+              <span className="compliance-detail-label">{t.statusGenerated}</span>
               <span className="compliance-detail-value">{formatDate(status.ewbDate)}</span>
             </div>
           )}
           {status.validUntil && (
             <div className="compliance-detail-row">
-              <span className="compliance-detail-label">Valid Until</span>
+              <span className="compliance-detail-label">{t.validUntil}</span>
               <span className="compliance-detail-value">{formatDate(status.validUntil)}</span>
             </div>
           )}
           {status.vehicleNumber && (
             <div className="compliance-detail-row">
-              <span className="compliance-detail-label">Vehicle</span>
+              <span className="compliance-detail-label">{t.vehicle}</span>
               <span className="compliance-detail-value">{status.vehicleNumber}</span>
             </div>
           )}
           {status.transportMode && (
             <div className="compliance-detail-row">
-              <span className="compliance-detail-label">Mode</span>
+              <span className="compliance-detail-label">{t.mode}</span>
               <span className="compliance-detail-value">{status.transportMode}</span>
             </div>
           )}
@@ -89,9 +91,9 @@ export const EWayBillCard: React.FC<EWayBillCardProps> = ({
 
       {isCancelled && (
         <div className="compliance-cancelled-notice" role="status">
-          <span>Cancelled on {status?.cancelledAt ? formatDate(status.cancelledAt) : '—'}</span>
+          <span>{t.cancelledOn} {status?.cancelledAt ? formatDate(status.cancelledAt) : '—'}</span>
           {status?.cancelReason && (
-            <span className="compliance-cancelled-reason">Reason: {status.cancelReason}</span>
+            <span className="compliance-cancelled-reason">{t.reasonLabel} {status.cancelReason}</span>
           )}
         </div>
       )}
@@ -115,8 +117,8 @@ export const EWayBillCard: React.FC<EWayBillCardProps> = ({
 
       {activeForm === 'cancel' && (
         <ComplianceCancelForm
-          title="Cancel E-Way Bill"
-          placeholder="e.g. Wrong vehicle number, cancelled order"
+          title={t.cancelEWayBill}
+          placeholder={t.wrongVehicleExample}
           cancelling={cancelling}
           onConfirm={async reason => { await onCancel(reason); setActiveForm('none') }}
           onDismiss={() => setActiveForm('none')}
@@ -127,20 +129,20 @@ export const EWayBillCard: React.FC<EWayBillCardProps> = ({
         <div className="compliance-actions">
           {isPending && (
             <button type="button" className="btn btn-primary btn-md"
-              onClick={() => setActiveForm('generate')} aria-label="Generate e-way bill">
-              Generate EWB
+              onClick={() => setActiveForm('generate')} aria-label={t.generateEwbAria}>
+              {t.generateEwb}
             </button>
           )}
           {isGenerated && (
             <button type="button" className="btn btn-secondary btn-md"
-              onClick={() => setActiveForm('partb')} aria-label="Update vehicle details for e-way bill">
-              Update Vehicle
+              onClick={() => setActiveForm('partb')} aria-label={t.updateVehicleAria}>
+              {t.updateVehicle}
             </button>
           )}
           {canCancel && (
             <button type="button" className="btn btn-ghost btn-md"
-              onClick={() => setActiveForm('cancel')} aria-label="Cancel this e-way bill">
-              Cancel EWB
+              onClick={() => setActiveForm('cancel')} aria-label={t.cancelEwbAria}>
+              {t.cancelEwb}
             </button>
           )}
         </div>

@@ -5,6 +5,7 @@
  */
 
 import { useCallback } from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { ROUTES } from '@/config/routes.config'
@@ -17,6 +18,7 @@ import './template-controls.css'
 import './template-actions.css'
 
 export default function TemplateEditorPage() {
+  const { t } = useLanguage()
   const {
     form,
     isSubmitting,
@@ -50,16 +52,16 @@ export default function TemplateEditorPage() {
   return (
     <AppShell>
       <Header
-        title={form.name || 'New Template'}
+        title={form.name || t.newTemplate}
         backTo={ROUTES.TEMPLATES}
         actions={
           <button
             className="btn btn-primary btn-sm"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            aria-label={isSubmitting ? 'Saving template...' : 'Save template'}
+            aria-label={isSubmitting ? t.savingTemplate : t.saveTemplate}
           >
-            {isSubmitting ? 'Saving...' : 'Save'}
+            {isSubmitting ? t.saving : t.save}
           </button>
         }
       />

@@ -2,6 +2,7 @@
 
 import { Banknote } from 'lucide-react'
 import type { PaymentHistoryFilters } from '../report.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface PaymentHistoryEmptyProps {
   hasFiltersApplied: boolean
@@ -17,7 +18,9 @@ export function PaymentHistoryEmpty({
   onNavigateNew,
   setFilter,
 }: PaymentHistoryEmptyProps) {
-  if (hasFiltersApplied) {
+  const { t } = useLanguage()
+    if (hasFiltersApplied) {
+  const { t } = useLanguage()
     return (
       <div className="report-empty">
         <div className="report-empty-icon" aria-hidden="true">
@@ -27,7 +30,7 @@ export function PaymentHistoryEmpty({
           No payments match your filters.
         </p>
         <p className="report-empty-desc">
-          Try a broader date range or clear the active filters.
+          {t.tryBroaderDateRange}
         </p>
         <button
           className="report-load-more-btn"
@@ -36,7 +39,7 @@ export function PaymentHistoryEmpty({
             setFilter('mode', undefined)
           }}
           type="button"
-          aria-label="Clear filters"
+          aria-label={t.clearFilters}
         >
           Clear Filters
         </button>
@@ -49,15 +52,15 @@ export function PaymentHistoryEmpty({
       <div className="report-empty-icon" aria-hidden="true">
         <Banknote size={28} />
       </div>
-      <p className="report-empty-title">No payments recorded yet.</p>
+      <p className="report-empty-title">{t.noPaymentsRecordedYet}</p>
       <p className="report-empty-desc">
-        Record your first payment to start tracking cash flow.
+        {t.recordFirstPayment}
       </p>
       <button
         className="report-load-more-btn"
         onClick={onNavigateNew}
         type="button"
-        aria-label="Record a new payment"
+        aria-label={t.recordNewPayment}
       >
         Record Payment
       </button>

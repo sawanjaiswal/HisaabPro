@@ -1,15 +1,8 @@
 /** Dropdown list for party search results — loading, error, empty, hint, and result states */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { PartySummary, PartyType } from '@/lib/types/party.types'
-
-// ─── Constants ───────────────────────────────────────────────────────────────
-
-const PARTY_TYPE_LABELS: Record<PartyType, string> = {
-  CUSTOMER: 'Customer',
-  SUPPLIER: 'Supplier',
-  BOTH: 'Both',
-}
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -30,36 +23,42 @@ export const PartySearchDropdown: React.FC<PartySearchDropdownProps> = ({
   debouncedQuery,
   onSelect,
 }) => {
+  const { t } = useLanguage()
+  const PARTY_TYPE_LABELS: Record<PartyType, string> = {
+    CUSTOMER: t.customer,
+    SUPPLIER: t.supplier,
+    BOTH: t.both,
+  }
   const trimmedQuery = debouncedQuery.trim()
 
   return (
     <ul
       className="party-search-dropdown"
       role="listbox"
-      aria-label="Party search results"
+      aria-label={t.partySearchResults}
     >
       {isLoading && (
         <li className="party-search-status" role="status" aria-live="polite">
           <span className="party-search-spinner" aria-hidden="true" />
-          Searching...
+          {t.searching}
         </li>
       )}
 
       {!isLoading && fetchError && (
         <li className="party-search-status party-search-error" role="alert">
-          Failed to load parties. Try again.
+          {t.failedLoadParties}
         </li>
       )}
 
       {!isLoading && !fetchError && trimmedQuery.length > 0 && results.length === 0 && (
         <li className="party-search-status party-search-empty">
-          No parties found for &ldquo;{debouncedQuery}&rdquo;
+          {t.noPartiesFoundFor} &ldquo;{debouncedQuery}&rdquo;
         </li>
       )}
 
       {!isLoading && !fetchError && trimmedQuery.length === 0 && (
         <li className="party-search-status party-search-hint">
-          Type to search parties
+          {t.typeToSearchParties}
         </li>
       )}
 

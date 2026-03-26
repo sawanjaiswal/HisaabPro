@@ -1,4 +1,5 @@
 import { AlertCircle, CheckCircle } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { BULK_CREATE_MAX } from '../serial-number.constants'
 import { parseSerialNumbers } from '../serial-number.utils'
 import { useBulkSerialForm } from '../useBulkSerialForm'
@@ -9,6 +10,7 @@ interface BulkSerialFormProps {
 }
 
 export function BulkSerialForm({ productId, onSuccess }: BulkSerialFormProps) {
+  const { t } = useLanguage()
   const { form, errors, isSubmitting, result, updateField, handleSubmit } = useBulkSerialForm(productId, onSuccess)
 
   const parsed = parseSerialNumbers(form.text)
@@ -23,7 +25,7 @@ export function BulkSerialForm({ productId, onSuccess }: BulkSerialFormProps) {
     <form className="serial-form" onSubmit={onSubmit} noValidate>
       <div className="serial-form__field">
         <label htmlFor="bulkSerials" className="serial-form__label">
-          Serial Numbers (one per line or comma-separated)
+          {t.serialNumbersOnePerLine}
         </label>
         <textarea
           id="bulkSerials"
@@ -35,7 +37,7 @@ export function BulkSerialForm({ productId, onSuccess }: BulkSerialFormProps) {
           autoFocus
         />
         <p className="serial-form__hint">
-          {count} serial {count === 1 ? 'number' : 'numbers'} detected (max {BULK_CREATE_MAX})
+          {count} {count === 1 ? t.serialNumberDetected : t.serialNumbersDetected} {t.detectedMax} {BULK_CREATE_MAX})
         </p>
         {errors.text && <p className="serial-form__error">{errors.text}</p>}
       </div>
@@ -43,11 +45,11 @@ export function BulkSerialForm({ productId, onSuccess }: BulkSerialFormProps) {
       {result && result.errors.length > 0 && (
         <div className="serial-bulk-result">
           <p className="serial-bulk-result__summary">
-            <CheckCircle size={14} aria-hidden="true" /> {result.created} created
+            <CheckCircle size={14} aria-hidden="true" /> {result.created} {t.bulkCreated}
           </p>
           <div className="serial-bulk-result__errors" role="alert">
             <p className="serial-bulk-result__errors-title">
-              <AlertCircle size={14} aria-hidden="true" /> {result.errors.length} failed:
+              <AlertCircle size={14} aria-hidden="true" /> {result.errors.length} {t.bulkFailed}
             </p>
             <ul className="serial-bulk-result__list">
               {result.errors.map((err) => (
@@ -63,7 +65,7 @@ export function BulkSerialForm({ productId, onSuccess }: BulkSerialFormProps) {
         className="btn btn-primary btn-md serial-form__submit"
         disabled={isSubmitting || count === 0}
       >
-        {isSubmitting ? 'Adding...' : `Add ${count} Serial ${count === 1 ? 'Number' : 'Numbers'}`}
+        {isSubmitting ? t.addingSerial : `${t.addCountSerials} ${count} ${t.serialAriaPrefix} ${count === 1 ? t.serialNumberSingle : t.serialNumberPlural}`}
       </button>
     </form>
   )

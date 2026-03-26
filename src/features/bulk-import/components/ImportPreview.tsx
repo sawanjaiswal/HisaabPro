@@ -4,6 +4,7 @@ import { Check, X, AlertTriangle } from 'lucide-react'
 import { PARTY_TYPE_LABELS } from '@/features/parties/party.constants'
 import type { ImportedContact } from '../bulk-import.types'
 import type { PartyType } from '@/lib/types/party.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface ImportPreviewProps {
   contacts: ImportedContact[]
@@ -23,13 +24,14 @@ export function ImportPreview({
   contacts, partyType, selectedCount, totalValid,
   onToggle, onSelectAll, onTypeChange, onConfirm, onBack,
 }: ImportPreviewProps) {
+  const { t } = useLanguage()
   const invalidCount = contacts.filter((c) => c.error).length
 
   return (
     <div className="import-preview">
       {/* Type selector */}
       <div className="import-preview-type">
-        <span className="import-preview-type-label">Import as:</span>
+        <span className="import-preview-type-label">{t.importAs}:</span>
         <div className="pill-tabs" role="tablist">
           {PARTY_TYPES.map((t) => (
             <button
@@ -48,7 +50,7 @@ export function ImportPreview({
 
       {/* Stats bar */}
       <div className="import-preview-stats">
-        <span>{selectedCount} of {totalValid} selected</span>
+        <span>{t.xOfYSelected}</span>
         {invalidCount > 0 && (
           <span className="import-preview-invalid">
             <AlertTriangle size={14} aria-hidden="true" />
@@ -60,12 +62,12 @@ export function ImportPreview({
           className="btn btn-ghost btn-sm"
           onClick={() => onSelectAll(selectedCount < totalValid)}
         >
-          {selectedCount === totalValid ? 'Deselect All' : 'Select All'}
+          {selectedCount === totalValid ? t.deselectAll : t.selectAll}
         </button>
       </div>
 
       {/* Contact list */}
-      <div className="import-preview-list" role="list" aria-label="Contacts to import">
+      <div className="import-preview-list" role="list" aria-label={t.contactsToImport}>
         {contacts.map((contact) => (
           <div
             key={contact.id}
@@ -88,7 +90,7 @@ export function ImportPreview({
             <div className="import-preview-info">
               <span className="import-preview-name">{contact.name}</span>
               <span className="import-preview-phone">
-                {contact.phone || 'No phone'}
+                {contact.phone || t.noPhone}
                 {contact.error && <span className="import-preview-error-text"> — {contact.error}</span>}
               </span>
             </div>

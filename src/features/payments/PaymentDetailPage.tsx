@@ -13,6 +13,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { usePaymentDetail } from './usePaymentDetail'
 import { PAYMENT_DETAIL_TAB_LABELS } from './payment.constants'
@@ -33,6 +34,7 @@ const TABS: { id: PaymentDetailTab; label: string }[] = [
 export default function PaymentDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const paymentId = id ?? ''
   const { payment, status, activeTab, setActiveTab, refresh, handleDelete } = usePaymentDetail(paymentId)
 
@@ -48,11 +50,11 @@ export default function PaymentDetailPage() {
       <button
         className="btn btn-ghost btn-sm"
         onClick={() => navigate(ROUTES.PAYMENT_EDIT.replace(':id', paymentId))}
-        aria-label="Edit payment"
+        aria-label={t.editPayment}
       >
         <Pencil size={18} aria-hidden="true" />
       </button>
-      <button className="btn btn-ghost btn-sm" onClick={() => setDeleteOpen(true)} aria-label="Delete payment">
+      <button className="btn btn-ghost btn-sm" onClick={() => setDeleteOpen(true)} aria-label={t.deletePayment}>
         <Trash2 size={18} aria-hidden="true" />
       </button>
     </>
@@ -61,7 +63,7 @@ export default function PaymentDetailPage() {
   return (
     <>
       <AppShell>
-        <Header title="Payment Detail" backTo={ROUTES.PAYMENTS} actions={headerActions} />
+        <Header title={t.paymentDetail} backTo={ROUTES.PAYMENTS} actions={headerActions} />
 
       <PageContainer>
         {/* Loading */}
@@ -70,8 +72,8 @@ export default function PaymentDetailPage() {
         {/* Error */}
         {status === 'error' && (
           <ErrorState
-            title="Could not load payment"
-            message="Check your connection and try again."
+            title={t.couldNotLoadPayment}
+            message={t.checkConnectionRetry}
             onRetry={refresh}
           />
         )}
@@ -80,15 +82,15 @@ export default function PaymentDetailPage() {
         {status === 'success' && !payment && (
           <EmptyState
             icon={<Banknote size={40} aria-hidden="true" />}
-            title="Payment not found"
-            description="This payment may have been deleted."
+            title={t.paymentNotFound}
+            description={t.paymentNotFoundDesc}
             action={
               <button
                 className="btn btn-primary btn-md"
                 onClick={() => navigate(ROUTES.PAYMENTS)}
-                aria-label="Go back to payments list"
+                aria-label={t.goBackToPayments}
               >
-                Back to Payments
+                {t.backToPayments}
               </button>
             }
           />
@@ -98,7 +100,7 @@ export default function PaymentDetailPage() {
         {status === 'success' && payment && (
           <>
             <div role="status" aria-live="polite" className="sr-only">
-              Payment details loaded
+              {t.paymentDetailsLoaded}
             </div>
             <PaymentDetailHero
               type={payment.type}
@@ -109,7 +111,7 @@ export default function PaymentDetailPage() {
             />
 
             {/* Pill tabs */}
-            <div className="pill-tabs" role="tablist" aria-label="Payment detail sections">
+            <div className="pill-tabs" role="tablist" aria-label={t.paymentDetailSections}>
               {TABS.map((tab) => (
                 <button
                   key={tab.id}
@@ -124,7 +126,7 @@ export default function PaymentDetailPage() {
               ))}
             </div>
 
-            <div id={`panel-${activeTab}`} role="tabpanel" aria-label={`${activeTab} tab content`}>
+            <div id={`panel-${activeTab}`} role="tabpanel" aria-label={`${activeTab} ${t.tabContent}`}>
               {activeTab === 'overview' && (
                 <PaymentOverviewTab
                   type={payment.type}
@@ -151,8 +153,8 @@ export default function PaymentDetailPage() {
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
         onConfirm={confirmDelete}
-        title="Delete Payment?"
-        description="This payment will be permanently deleted. Linked invoice balances will be reversed and outstanding amounts recalculated."
+        title={t.deletePaymentTitle}
+        description={t.deletePaymentDesc}
       />
     </>
   )

@@ -1,5 +1,6 @@
 /** Create Party — Credit & opening balance section */
 
+import { useLanguage } from '@/hooks/useLanguage'
 import type { PartyFormData, BalanceType, CreditLimitMode } from '../party.types'
 
 interface PartyFormCreditProps {
@@ -10,17 +11,18 @@ interface PartyFormCreditProps {
 
 const TODAY = new Date().toISOString().split('T')[0]
 
-const BALANCE_TYPE_OPTIONS: { value: BalanceType; label: string }[] = [
-  { value: 'RECEIVABLE', label: 'I Receive' },
-  { value: 'PAYABLE', label: 'I Pay' },
-]
-
-const CREDIT_MODE_OPTIONS: { value: CreditLimitMode; label: string }[] = [
-  { value: 'WARN', label: 'Warn' },
-  { value: 'BLOCK', label: 'Block' },
-]
-
 export function PartyFormCredit({ form, errors, onUpdate }: PartyFormCreditProps) {
+  const { t } = useLanguage()
+
+  const BALANCE_TYPE_OPTIONS: { value: BalanceType; label: string }[] = [
+    { value: 'RECEIVABLE', label: t.iReceive },
+    { value: 'PAYABLE', label: t.iPay },
+  ]
+
+  const CREDIT_MODE_OPTIONS: { value: CreditLimitMode; label: string }[] = [
+    { value: 'WARN', label: t.warn },
+    { value: 'BLOCK', label: t.blockLabel },
+  ]
   const openingBalance = form.openingBalance
   const balanceType: BalanceType = openingBalance?.type ?? 'RECEIVABLE'
 
@@ -47,7 +49,7 @@ export function PartyFormCredit({ form, errors, onUpdate }: PartyFormCreditProps
     <div className="create-party-section">
       {/* Opening Balance */}
       <div className="input-group">
-        <span className="input-label" id="opening-balance-label">Opening Balance</span>
+        <span className="input-label" id="opening-balance-label">{t.openingBalance}</span>
         <div className="create-party-prefix-input">
           <span className="create-party-prefix" aria-hidden="true">Rs</span>
           <input
@@ -59,14 +61,14 @@ export function PartyFormCredit({ form, errors, onUpdate }: PartyFormCreditProps
             value={openingBalance?.amount ?? ''}
             onChange={e => handleBalanceAmount(e.target.value)}
             placeholder="0.00"
-            aria-label="Opening balance amount in rupees"
+            aria-label={t.openingBalanceAmount}
             inputMode="decimal"
           />
         </div>
       </div>
 
       <div className="input-group">
-        <span className="input-label" id="balance-type-label">Balance Direction</span>
+        <span className="input-label" id="balance-type-label">{t.balanceDirection}</span>
         <div className="pill-tabs" role="group" aria-labelledby="balance-type-label">
           {BALANCE_TYPE_OPTIONS.map(option => (
             <button
@@ -85,7 +87,7 @@ export function PartyFormCredit({ form, errors, onUpdate }: PartyFormCreditProps
 
       {/* Credit Limit */}
       <div className="input-group">
-        <span className="input-label" id="credit-limit-label">Credit Limit</span>
+        <span className="input-label" id="credit-limit-label">{t.creditLimit}</span>
         <div className="create-party-prefix-input">
           <span className="create-party-prefix" aria-hidden="true">Rs</span>
           <input
@@ -97,7 +99,7 @@ export function PartyFormCredit({ form, errors, onUpdate }: PartyFormCreditProps
             value={form.creditLimit === 0 ? '' : form.creditLimit}
             onChange={e => onUpdate('creditLimit', parseFloat(e.target.value) || 0)}
             placeholder="0.00"
-            aria-label="Credit limit in rupees"
+            aria-label={t.creditLimitInRupees}
             aria-describedby={errors.creditLimit ? 'credit-limit-error' : undefined}
             inputMode="decimal"
           />
@@ -110,7 +112,7 @@ export function PartyFormCredit({ form, errors, onUpdate }: PartyFormCreditProps
       </div>
 
       <div className="input-group">
-        <span className="input-label" id="credit-mode-label">When Limit Exceeded</span>
+        <span className="input-label" id="credit-mode-label">{t.whenLimitExceeded}</span>
         <div className="pill-tabs" role="group" aria-labelledby="credit-mode-label">
           {CREDIT_MODE_OPTIONS.map(option => (
             <button
@@ -119,7 +121,7 @@ export function PartyFormCredit({ form, errors, onUpdate }: PartyFormCreditProps
               className={`pill-tab${form.creditLimitMode === option.value ? ' active' : ''}`}
               onClick={() => onUpdate('creditLimitMode', option.value)}
               aria-pressed={form.creditLimitMode === option.value}
-              aria-label={`Credit limit mode: ${option.label}`}
+              aria-label={`${t.creditLimitModeColon} ${option.label}`}
             >
               {option.label}
             </button>

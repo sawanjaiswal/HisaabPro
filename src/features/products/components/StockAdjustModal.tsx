@@ -5,6 +5,7 @@ import { Plus, Minus } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { useToast } from '@/hooks/useToast'
+import { useLanguage } from '@/hooks/useLanguage'
 import { adjustStock } from '../product.service'
 import { STOCK_ADJUST_REASON_LABELS, CUSTOM_REASON_MAX, NOTES_MAX } from '../product.constants'
 import type { StockAdjustType, StockAdjustReason, StockAdjustFormData } from '../product.types'
@@ -29,6 +30,7 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
   onSuccess,
 }) => {
   const toast = useToast()
+  const { t } = useLanguage()
   const submittingRef = useRef(false)
 
   const [type, setType] = useState<StockAdjustType>('ADJUSTMENT_IN')
@@ -58,10 +60,10 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
     const qty = parseFloat(quantity)
 
     if (!quantity || isNaN(qty) || qty <= 0) {
-      next.quantity = 'Quantity must be greater than 0'
+      next.quantity = t.quantityGtZero
     }
     if (reason === 'OTHER' && !customReason.trim()) {
-      next.customReason = 'Please specify a reason'
+      next.customReason = t.pleaseSpecifyReason
     }
 
     setErrors(next)
@@ -84,12 +86,12 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
 
     try {
       await adjustStock(productId, payload)
-      const label = type === 'ADJUSTMENT_IN' ? 'added to' : 'removed from'
+      const label = type === 'ADJUSTMENT_IN' ? t.addedTo : t.removedFrom
       toast.success(`${quantity} ${unitSymbol} ${label} ${productName}`)
       handleClose()
       onSuccess()
     } catch {
-      toast.error('Failed to adjust stock. Please try again.')
+      toast.error(t.failedAdjustStock)
     } finally {
       setIsSubmitting(false)
       submittingRef.current = false
@@ -97,34 +99,34 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
   }, [type, quantity, reason, customReason, notes, productId, productName, unitSymbol, validate, toast, handleClose, onSuccess])
 
   return (
-    <Modal open={isOpen} onClose={handleClose} title="Adjust Stock">
+    <Modal open={isOpen} onClose={handleClose} title={t.adjustStock}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
         <div className="input-group">
-          <span className="input-label" id="adjust-type-label">Type</span>
+          <span className="input-label" id="adjust-type-label">{t.typeLabel}</span>
           <div className="pill-tabs" role="group" aria-labelledby="adjust-type-label">
             <button
               type="button"
               className={`pill-tab${type === 'ADJUSTMENT_IN' ? ' active' : ''}`}
               onClick={() => setType('ADJUSTMENT_IN')}
               aria-pressed={type === 'ADJUSTMENT_IN'}
-              aria-label="Add stock"
+              aria-label={t.addStockLabel}
             >
-              <Plus size={14} aria-hidden="true" style={{ marginRight: 'var(--space-1)' }} /> Stock In
+              <Plus size={14} aria-hidden="true" style={{ marginRight: 'var(--space-1)' }} /> {t.stockIn}
             </button>
             <button
               type="button"
               className={`pill-tab${type === 'ADJUSTMENT_OUT' ? ' active' : ''}`}
               onClick={() => setType('ADJUSTMENT_OUT')}
               aria-pressed={type === 'ADJUSTMENT_OUT'}
-              aria-label="Remove stock"
+              aria-label={t.removeStockLabel}
             >
-              <Minus size={14} aria-hidden="true" style={{ marginRight: 'var(--space-1)' }} /> Stock Out
+              <Minus size={14} aria-hidden="true" style={{ marginRight: 'var(--space-1)' }} /> {t.stockOut}
             </button>
           </div>
         </div>
 
         <div className="input-group">
-          <label htmlFor="adjust-quantity" className="input-label">Quantity ({unitSymbol})</label>
+          <label htmlFor="adjust-quantity" className="input-label">{t.qty} ({unitSymbol})</label>
           <input
             id="adjust-quantity"
             className={`input${errors.quantity ? ' input-error-border' : ''}`}
@@ -138,19 +140,19 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
             }}
             placeholder="0"
             inputMode="decimal"
-            aria-label={`Quantity in ${unitSymbol}`}
+            aria-label={`${t.quantityIn} ${unitSymbol}`}
           />
           {errors.quantity && <p className="input-error" role="alert">{errors.quantity}</p>}
         </div>
 
         <div className="input-group">
-          <label htmlFor="adjust-reason" className="input-label">Reason</label>
+          <label htmlFor="adjust-reason" className="input-label">{t.reasonLabel}</label>
           <select
             id="adjust-reason"
             className="input"
             value={reason}
             onChange={(e) => setReason(e.target.value as StockAdjustReason)}
-            aria-label="Select reason for adjustment"
+            aria-label={t.selectReasonLabel}
           >
             {REASONS.map(([value, label]) => (
               <option key={value} value={value}>{label}</option>
@@ -160,7 +162,7 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
 
         {reason === 'OTHER' && (
           <div className="input-group">
-            <label htmlFor="adjust-custom-reason" className="input-label">Specify Reason</label>
+            <label htmlFor="adjust-custom-reason" className="input-label">{t.specifyReasonLabel}</label>
             <input
               id="adjust-custom-reason"
               className={`input${errors.customReason ? ' input-error-border' : ''}`}
@@ -169,9 +171,9 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
                 setCustomReason(e.target.value)
                 if (errors.customReason) setErrors((prev) => { const n = { ...prev }; delete n.customReason; return n })
               }}
-              placeholder="Enter reason..."
+              placeholder={t.enterReason}
               maxLength={CUSTOM_REASON_MAX}
-              aria-label="Custom reason for stock adjustment"
+              aria-label={t.customReasonLabel}
             />
             {errors.customReason && <p className="input-error" role="alert">{errors.customReason}</p>}
           </div>
@@ -179,17 +181,17 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
 
         <div className="input-group">
           <label htmlFor="adjust-notes" className="input-label">
-            Notes <span style={{ color: 'var(--color-gray-400)', fontWeight: 400 }}>(optional)</span>
+            {t.notesLabel} <span style={{ color: 'var(--color-gray-400)', fontWeight: 400 }}>({t.notesOptionalLabel})</span>
           </label>
           <textarea
             id="adjust-notes"
             className="input"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Additional notes..."
+            placeholder={t.additionalNotes}
             rows={2}
             maxLength={NOTES_MAX}
-            aria-label="Notes for stock adjustment"
+            aria-label={t.notesForAdjustment}
             style={{ resize: 'vertical', height: 'auto', paddingTop: 'var(--space-3)', paddingBottom: 'var(--space-3)' }}
           />
         </div>
@@ -199,10 +201,10 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
           size="md"
           loading={isSubmitting}
           onClick={handleSubmit}
-          aria-label="Confirm stock adjustment"
+          aria-label={t.confirmStockAdjust}
           style={{ width: '100%' }}
         >
-          {type === 'ADJUSTMENT_IN' ? 'Add Stock' : 'Remove Stock'}
+          {type === 'ADJUSTMENT_IN' ? t.addStockBtn : t.removeStockBtn}
         </Button>
       </div>
     </Modal>

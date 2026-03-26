@@ -5,6 +5,7 @@
  */
 
 import { formatCurrency } from '@/lib/format'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { PaymentFormAllocation } from '../payment.types'
 
 interface PaymentInvoicesSectionProps {
@@ -24,13 +25,14 @@ export function PaymentInvoicesSection({
   onAmountChange,
   onAutoAllocate,
 }: PaymentInvoicesSectionProps) {
+  const { t } = useLanguage()
   const selectedCount = allocations.filter((a) => a.selected).length
 
   if (allocations.length === 0) {
     return (
       <div className="payment-form">
         <p className="payment-empty-text">
-          No unpaid invoices for this party. This payment will be recorded as advance.
+          {t.noUnpaidInvoices}
         </p>
       </div>
     )
@@ -40,15 +42,15 @@ export function PaymentInvoicesSection({
     <div className="payment-form">
       <div className="payment-invoices-header">
         <span className="payment-invoices-count">
-          {selectedCount} of {allocations.length} invoices selected
+          {selectedCount} {t.ofWord} {allocations.length} {t.invoicesSelected}
         </span>
         <button
           type="button"
           className="btn btn-outline btn-sm"
           onClick={onAutoAllocate}
-          aria-label="Auto-allocate oldest first"
+          aria-label={t.autoAllocateOldest}
         >
-          Auto (FIFO)
+          {t.autoFifo}
         </button>
       </div>
 
@@ -60,11 +62,11 @@ export function PaymentInvoicesSection({
                 type="checkbox"
                 checked={alloc.selected}
                 onChange={() => onToggle(alloc.invoiceId)}
-                aria-label={`Link ${alloc.invoiceNumber}`}
+                aria-label={`${t.linkInvoice} ${alloc.invoiceNumber}`}
               />
               <div className="payment-invoice-info">
                 <span className="payment-invoice-number">{alloc.invoiceNumber}</span>
-                <span className="payment-invoice-due">Due: {formatCurrency(alloc.invoiceDue)}</span>
+                <span className="payment-invoice-due">{t.dueColon} {formatCurrency(alloc.invoiceDue)}</span>
               </div>
             </label>
             {alloc.selected && (
@@ -78,7 +80,7 @@ export function PaymentInvoicesSection({
                   const paise = Math.round(parseFloat(e.target.value || '0') * 100)
                   onAmountChange(alloc.invoiceId, paise)
                 }}
-                aria-label={`Amount for ${alloc.invoiceNumber}`}
+                aria-label={`${t.amountFor} ${alloc.invoiceNumber}`}
               />
             )}
           </div>
@@ -89,8 +91,8 @@ export function PaymentInvoicesSection({
 
       <div className="payment-unallocated">
         {unallocatedAmount > 0
-          ? `${formatCurrency(unallocatedAmount)} will be recorded as advance payment`
-          : 'Fully allocated'}
+          ? `${formatCurrency(unallocatedAmount)} ${t.advancePaymentNote}`
+          : t.fullyAllocatedLabel}
       </div>
     </div>
   )

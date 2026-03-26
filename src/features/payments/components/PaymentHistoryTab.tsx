@@ -6,14 +6,16 @@
 
 import { Banknote } from 'lucide-react'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export function PaymentHistoryTab() {
+  const { t } = useLanguage()
   return (
     <div className="payment-history-tab">
       <EmptyState
         icon={<Banknote size={32} aria-hidden="true" />}
-        title="No edit history"
-        description="Changes to this payment will appear here."
+        title={t.noEditHistory}
+        description={t.editHistoryDesc}
       />
     </div>
   )

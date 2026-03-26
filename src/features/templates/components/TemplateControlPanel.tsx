@@ -1,6 +1,7 @@
 /** Template editor control panel — tab-driven customisation controls */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 
 import type { CustomizationTab, TemplateConfig, PrintSettings } from '../template.types'
 import { CUSTOMIZATION_TAB_LABELS } from '../template.constants'
@@ -31,10 +32,11 @@ export const TemplateControlPanel: React.FC<TemplateControlPanelProps> = ({
   onConfigChange,
   onPrintSettingsChange,
 }) => {
+  const { t } = useLanguage()
   return (
     <div className="template-controls-panel">
       {/* Tab pills */}
-      <nav className="template-controls-tabs" aria-label="Template customisation sections" role="tablist">
+      <nav className="template-controls-tabs" aria-label={t.templateCustomSections} role="tablist">
         {CUSTOMIZATION_TABS.map((tab) => (
           <button
             key={tab}
@@ -54,7 +56,7 @@ export const TemplateControlPanel: React.FC<TemplateControlPanelProps> = ({
       <div
         className="template-controls-body"
         role="tabpanel"
-        aria-label={`${CUSTOMIZATION_TAB_LABELS[activeTab]} settings`}
+        aria-label={`${CUSTOMIZATION_TAB_LABELS[activeTab]} ${t.settingsSuffix}`}
       >
         {activeTab === 'layout'  && <LayoutTab  config={config} onChange={onConfigChange} />}
         {activeTab === 'columns' && <ColumnsTab config={config} onChange={onConfigChange} />}

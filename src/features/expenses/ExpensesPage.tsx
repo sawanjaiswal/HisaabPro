@@ -19,8 +19,10 @@ import { AddExpenseDrawer } from './components/AddExpenseDrawer'
 import { EXPENSE_PAGE_LIMIT } from './expense.constants'
 import type { ExpenseCategory } from './expense.types'
 import './expenses.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export default function ExpensesPage() {
+  const { t } = useLanguage()
   const { items, total, page, status, categoryFilter, setCategoryFilter, setPage, refresh } = useExpenses()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [categories, setCategories] = useState<ExpenseCategory[]>([])
@@ -38,7 +40,7 @@ export default function ExpensesPage() {
   if (status === 'loading') {
     return (
       <AppShell>
-        <Header title="Expenses" backTo={ROUTES.DASHBOARD} />
+        <Header title={t.expenses ?? "Expenses"} backTo={ROUTES.DASHBOARD} />
         <PageContainer>
           <div className="expense-skeleton" aria-busy="true">
             {['sk-1', 'sk-2', 'sk-3', 'sk-4'].map((k) => <div key={k} className="expense-skeleton__card" />)}
@@ -51,9 +53,9 @@ export default function ExpensesPage() {
   if (status === 'error') {
     return (
       <AppShell>
-        <Header title="Expenses" backTo={ROUTES.DASHBOARD} />
+        <Header title={t.expenses ?? "Expenses"} backTo={ROUTES.DASHBOARD} />
         <PageContainer>
-          <ErrorState title="Could not load expenses" message="Check your connection and try again." onRetry={refresh} />
+          <ErrorState title={t.couldNotLoadExpenses} message="Check your connection and try again." onRetry={refresh} />
         </PageContainer>
       </AppShell>
     )
@@ -61,7 +63,7 @@ export default function ExpensesPage() {
 
   return (
     <AppShell>
-      <Header title="Expenses" backTo={ROUTES.DASHBOARD} />
+      <Header title={t.expenses ?? "Expenses"} backTo={ROUTES.DASHBOARD} />
       <PageContainer>
         {/* Category filter pills */}
         <div className="expense-filter-bar" role="group" aria-label="Filter by category">
@@ -88,7 +90,7 @@ export default function ExpensesPage() {
 
         <div className="expense-action-bar">
           <span className="expense-count">{total} {total === 1 ? 'expense' : 'expenses'}</span>
-          <button type="button" className="expense-add-btn" onClick={() => setDrawerOpen(true)} aria-label="Add expense">
+          <button type="button" className="expense-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.recordExpense}>
             <Plus size={14} aria-hidden="true" /> Add Expense
           </button>
         </div>
@@ -96,8 +98,8 @@ export default function ExpensesPage() {
         {items.length === 0 && (
           <div className="expense-empty">
             <div className="expense-empty__icon" aria-hidden="true"><Receipt size={32} /></div>
-            <p className="expense-empty__title">No expenses recorded</p>
-            <p className="expense-empty__desc">Start tracking your business expenses to understand where money is going.</p>
+            <p className="expense-empty__title">{t.noExpensesRecorded}</p>
+            <p className="expense-empty__desc">{t.startTrackingExpenses}</p>
             <button type="button" className="expense-add-btn" onClick={() => setDrawerOpen(true)}>
               <Plus size={14} aria-hidden="true" /> Record First Expense
             </button>
@@ -112,7 +114,7 @@ export default function ExpensesPage() {
 
         {totalPages > 1 && (
           <div className="expense-pagination">
-            <button type="button" className="expense-pagination__btn" onClick={() => setPage(page - 1)} disabled={page <= 1} aria-label="Previous page">Previous</button>
+            <button type="button" className="expense-pagination__btn" onClick={() => setPage(page - 1)} disabled={page <= 1} aria-label="Previous page">{t.back}</button>
             <span className="expense-pagination__info">Page {page} of {totalPages}</span>
             <button type="button" className="expense-pagination__btn" onClick={() => setPage(page + 1)} disabled={page >= totalPages} aria-label="Next page">Next</button>
           </div>

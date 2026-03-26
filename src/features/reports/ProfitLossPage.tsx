@@ -17,6 +17,7 @@ import { formatPaise } from '@/lib/format'
 import { getProfitLoss } from './finance.service'
 import type { ProfitLossData, ProfitLossSection } from './finance.types'
 import './report-finance.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 function SectionCard({ section, amountClass }: { section: ProfitLossSection; amountClass?: string }) {
   return (
@@ -47,6 +48,7 @@ function getMonthRange(): { from: string; to: string } {
 }
 
 export default function ProfitLossPage() {
+  const { t } = useLanguage()
   const toast = useToast()
   const [dateRange, setDateRange] = useState(getMonthRange)
   const [data, setData] = useState<ProfitLossData | null>(null)
@@ -61,7 +63,7 @@ export default function ProfitLossPage() {
       .catch((err: unknown) => {
         if (err instanceof Error && err.name === 'AbortError') return
         setFetchStatus('error')
-        toast.error(err instanceof ApiError ? err.message : 'Failed to load P&L report')
+        toast.error(err instanceof ApiError ? err.message : t.failedLoadPl)
       })
     return () => controller.abort()
   }, [dateRange, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -71,7 +73,7 @@ export default function ProfitLossPage() {
   if (fetchStatus === 'loading') {
     return (
       <AppShell>
-        <Header title="Profit & Loss" backTo={ROUTES.REPORTS} />
+        <Header title={t.profitAndLoss} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <div className="finance-skeleton" aria-busy="true">
             {['sk-1', 'sk-2', 'sk-3'].map((k) => <div key={k} className="finance-skeleton__section" />)}
@@ -84,9 +86,9 @@ export default function ProfitLossPage() {
   if (fetchStatus === 'error') {
     return (
       <AppShell>
-        <Header title="Profit & Loss" backTo={ROUTES.REPORTS} />
+        <Header title={t.profitAndLoss} backTo={ROUTES.REPORTS} />
         <PageContainer>
-          <ErrorState title="Could not load P&L report" message="Check your connection and try again." onRetry={refresh} />
+          <ErrorState title={t.couldNotLoadPl} message={t.checkConnectionRetry} onRetry={refresh} />
         </PageContainer>
       </AppShell>
     )
@@ -96,14 +98,14 @@ export default function ProfitLossPage() {
 
   return (
     <AppShell>
-      <Header title="Profit & Loss" backTo={ROUTES.REPORTS} />
+      <Header title={t.profitAndLoss} backTo={ROUTES.REPORTS} />
       <PageContainer>
         <div className="finance-date-bar">
-          <span className="finance-date-bar__label">From</span>
-          <input type="date" className="finance-date-bar__input" value={dateRange.from} onChange={(e) => setDateRange((r) => ({ ...r, from: e.target.value }))} aria-label="From date" />
-          <span className="finance-date-bar__label">To</span>
-          <input type="date" className="finance-date-bar__input" value={dateRange.to} onChange={(e) => setDateRange((r) => ({ ...r, to: e.target.value }))} aria-label="To date" />
-          <button type="button" className="finance-date-bar__refresh-btn" onClick={refresh} aria-label="Refresh report">
+          <span className="finance-date-bar__label">{t.from}</span>
+          <input type="date" className="finance-date-bar__input" value={dateRange.from} onChange={(e) => setDateRange((r) => ({ ...r, from: e.target.value }))} aria-label={t.fromDate} />
+          <span className="finance-date-bar__label">{t.to}</span>
+          <input type="date" className="finance-date-bar__input" value={dateRange.to} onChange={(e) => setDateRange((r) => ({ ...r, to: e.target.value }))} aria-label={t.toDate} />
+          <button type="button" className="finance-date-bar__refresh-btn" onClick={refresh} aria-label={t.refreshReport}>
             <RefreshCw size={14} aria-hidden="true" />
           </button>
         </div>
@@ -111,8 +113,8 @@ export default function ProfitLossPage() {
         {!data && (
           <div className="finance-empty">
             <div className="finance-empty__icon" aria-hidden="true"><BarChart3 size={32} /></div>
-            <p className="finance-empty__title">No data for this period</p>
-            <p className="finance-empty__desc">Try a different date range.</p>
+            <p className="finance-empty__title">{t.noDataForThisPeriod}</p>
+            <p className="finance-empty__desc">{t.tryDifferentDateRange}</p>
           </div>
         )}
 
@@ -121,13 +123,13 @@ export default function ProfitLossPage() {
             <SectionCard section={data.revenue} />
             <SectionCard section={data.costOfGoods} />
             <div className={`finance-net-row${isProfit ? ' finance-net-row--profit' : ' finance-net-row--loss'}`}>
-              <span className="finance-net-row__label">Gross Profit</span>
+              <span className="finance-net-row__label">{t.grossProfit}</span>
               <span className="finance-net-row__amount">{formatPaise(data.grossProfit)}</span>
             </div>
             <SectionCard section={data.expenses} />
             {data.otherIncome.amount > 0 && <SectionCard section={data.otherIncome} />}
             <div className={`finance-net-row${isProfit ? ' finance-net-row--profit' : ' finance-net-row--loss'}`}>
-              <span className="finance-net-row__label">Net {isProfit ? 'Profit' : 'Loss'}</span>
+              <span className="finance-net-row__label">{isProfit ? t.netProfitLabel : t.netLossLabel}</span>
               <span className="finance-net-row__amount">{formatPaise(Math.abs(data.netProfit))}</span>
             </div>
           </>

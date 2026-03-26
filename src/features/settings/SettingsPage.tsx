@@ -88,7 +88,7 @@ export default function SettingsPage() {
   const navigate = useNavigate()
   const { settings, status, updateSetting, refresh } = useAppSettings()
   const { theme, toggleTheme } = useTheme()
-  const { language, setLanguage } = useLanguage()
+  const { language, setLanguage, t } = useLanguage()
 
   function handleItemClick(item: SettingsItem) {
     if (item.type === 'navigation' && item.route) {
@@ -126,15 +126,15 @@ export default function SettingsPage() {
 
   return (
     <AppShell>
-      <Header title="Settings" backTo={ROUTES.DASHBOARD} />
+      <Header title={t.settings} backTo={ROUTES.DASHBOARD} />
 
       <PageContainer>
         {status === 'loading' && <SettingsSkeleton />}
 
         {status === 'error' && (
           <ErrorState
-            title="Could not load settings"
-            message="Check your connection and try again."
+            title={t.couldNotLoadSettings}
+            message={t.checkConnectionRetry2}
             onRetry={refresh}
           />
         )}

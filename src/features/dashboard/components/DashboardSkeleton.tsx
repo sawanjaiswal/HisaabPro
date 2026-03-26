@@ -5,12 +5,14 @@
 
 import React from 'react'
 import { Skeleton } from '@/components/feedback/Skeleton'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export const DashboardSkeleton: React.FC = () => {
+  const { t } = useLanguage()
   return (
     <>
       {/* Top gradient section */}
-      <div className="dashboard-top-section" aria-busy="true" aria-label="Loading dashboard">
+      <div className="dashboard-top-section" aria-busy="true" aria-label={t.loadingDashboard}>
         {/* Sales hero skeleton */}
         <div className="dashboard-sales-hero" aria-hidden="true">
           <Skeleton width="80px" height="13px" />

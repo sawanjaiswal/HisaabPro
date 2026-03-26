@@ -8,8 +8,10 @@ import { getPublicLedger } from './shared-ledger.service'
 import { PublicLedgerView } from './components/PublicLedgerView'
 import type { PublicLedgerData } from './shared-ledger.types'
 import './shared-ledger.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export default function PublicLedgerPage() {
+  const { t } = useLanguage()
   const { token } = useParams<{ token: string }>()
   const [data, setData] = useState<PublicLedgerData | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -17,7 +19,7 @@ export default function PublicLedgerPage() {
   const abortRef = useRef<AbortController | null>(null)
 
   useEffect(() => {
-    if (!token) { setError('Invalid link'); setIsLoading(false); return }
+    if (!token) { setError(t.invalidLink); setIsLoading(false); return }
 
     abortRef.current = new AbortController()
     setIsLoading(true)
@@ -26,7 +28,7 @@ export default function PublicLedgerPage() {
       .then(setData)
       .catch((err) => {
         if (err?.name === 'AbortError') return
-        setError(err?.message === '404' ? 'This link has expired or been revoked.' : 'Could not load ledger. Please try again.')
+        setError(err?.message === '404' ? t.linkExpiredRevoked : t.couldNotLoadLedger)
       })
       .finally(() => setIsLoading(false))
 
@@ -38,8 +40,8 @@ export default function PublicLedgerPage() {
     return (
       <div className="public-ledger-page">
         <ErrorState
-          title="Link Not Available"
-          message={error ?? 'This shared ledger link is no longer valid.'}
+          title={t.linkNotAvailable}
+          message={error ?? t.linkNoLongerValid}
         />
       </div>
     )

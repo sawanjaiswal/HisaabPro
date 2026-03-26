@@ -1,6 +1,7 @@
 /** ComplianceCancelForm — reusable inline cancel form for e-invoice and e-way bill */
 
 import React, { useState } from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface ComplianceCancelFormProps {
   title: string
@@ -12,18 +13,19 @@ interface ComplianceCancelFormProps {
 
 export const ComplianceCancelForm: React.FC<ComplianceCancelFormProps> = ({
   title,
-  placeholder = 'Enter reason for cancellation',
+  placeholder,
   cancelling,
   onConfirm,
   onDismiss,
 }) => {
+  const { t } = useLanguage()
   const [reason, setReason] = useState('')
   const [validationError, setValidationError] = useState('')
   const [actionError, setActionError] = useState('')
 
   const handleConfirm = async () => {
     if (!reason.trim()) {
-      setValidationError('Please enter a cancellation reason')
+      setValidationError(t.pleaseEnterCancelReason)
       return
     }
     setValidationError('')
@@ -31,7 +33,7 @@ export const ComplianceCancelForm: React.FC<ComplianceCancelFormProps> = ({
     try {
       await onConfirm(reason.trim())
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : 'Cancellation failed')
+      setActionError(err instanceof Error ? err.message : t.cancellationFailed)
     }
   }
 
@@ -40,12 +42,12 @@ export const ComplianceCancelForm: React.FC<ComplianceCancelFormProps> = ({
       <p className="compliance-cancel-title">{title}</p>
       {actionError && <p className="compliance-inline-error" role="alert">{actionError}</p>}
       <div className="input-group">
-        <label className="input-label" htmlFor="cancel-reason-input">Cancellation reason</label>
+        <label className="input-label" htmlFor="cancel-reason-input">{t.cancellationReason}</label>
         <input
           id="cancel-reason-input"
           className="input"
           type="text"
-          placeholder={placeholder}
+          placeholder={placeholder ?? t.enterCancelReason}
           value={reason}
           onChange={e => { setReason(e.target.value); setValidationError('') }}
           maxLength={200}
@@ -64,7 +66,7 @@ export const ComplianceCancelForm: React.FC<ComplianceCancelFormProps> = ({
           onClick={onDismiss}
           disabled={cancelling}
         >
-          Dismiss
+          {t.dismiss}
         </button>
         <button
           type="button"
@@ -73,7 +75,7 @@ export const ComplianceCancelForm: React.FC<ComplianceCancelFormProps> = ({
           disabled={cancelling}
           aria-busy={cancelling}
         >
-          {cancelling ? 'Cancelling…' : 'Confirm Cancel'}
+          {cancelling ? t.cancellingAction : t.confirmCancel}
         </button>
       </div>
     </div>

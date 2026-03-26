@@ -1,6 +1,7 @@
 /** CurrencyRateCard — Displays a single exchange rate entry */
 
 import { Calendar } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { formatRateLabel, formatEffectiveDate } from '../currency.utils'
 import type { ExchangeRateEntry } from '../currency.types'
 
@@ -9,6 +10,8 @@ interface CurrencyRateCardProps {
 }
 
 export function CurrencyRateCard({ entry }: CurrencyRateCardProps) {
+  const { t } = useLanguage()
+
   return (
     <div className="currency-rate-card">
       <div className="currency-rate-card__main">
@@ -21,7 +24,7 @@ export function CurrencyRateCard({ entry }: CurrencyRateCardProps) {
         <Calendar size={12} aria-hidden="true" />
         <span>{formatEffectiveDate(entry.effectiveDate)}</span>
         {entry.source === 'manual' && (
-          <span className="currency-rate-card__badge">Manual</span>
+          <span className="currency-rate-card__badge">{t.manualBadge}</span>
         )}
       </div>
     </div>

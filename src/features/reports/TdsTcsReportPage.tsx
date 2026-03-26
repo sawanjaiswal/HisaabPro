@@ -19,22 +19,29 @@ import { ReportSkeleton } from './components/ReportSkeleton'
 import './report-shared.css'
 import './report-shared-ui.css'
 import './report-tds-tcs.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
-const TYPE_OPTIONS = [
-  { value: 'all', label: 'All' },
-  { value: 'tds', label: 'TDS' },
-  { value: 'tcs', label: 'TCS' },
+const TYPE_OPTIONS_BASE = [
+  { value: 'all', labelKey: 'all' as const },
+  { value: 'tds', labelKey: 'tds' as const },
+  { value: 'tcs', labelKey: 'tcs' as const },
 ]
 
 export default function TdsTcsReportPage() {
+  const { t } = useLanguage()
   const { data, status, filters, setFilters, refresh } = useTdsTcs()
 
   // ─── Loading state ────────────────────────────────────────────────────────
 
+  const typeOptions = TYPE_OPTIONS_BASE.map((opt) => ({
+    value: opt.value,
+    label: t[opt.labelKey],
+  }))
+
   if (status === 'loading') {
     return (
       <AppShell>
-        <Header title="TDS / TCS Report" backTo={ROUTES.REPORTS} />
+        <Header title={t.tdsTcsReport} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <ReportSkeleton rows={4} />
         </PageContainer>
@@ -47,11 +54,11 @@ export default function TdsTcsReportPage() {
   if (status === 'error') {
     return (
       <AppShell>
-        <Header title="TDS / TCS Report" backTo={ROUTES.REPORTS} />
+        <Header title={t.tdsTcsReport} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <ErrorState
-            title="Could not load TDS/TCS report"
-            message="Check your connection and try again."
+            title={t.couldNotLoadTdsTcs}
+            message={t.checkConnectionRetry}
             onRetry={refresh}
           />
         </PageContainer>
@@ -66,7 +73,7 @@ export default function TdsTcsReportPage() {
 
   return (
     <AppShell>
-      <Header title="TDS / TCS Report" backTo={ROUTES.REPORTS} />
+      <Header title={t.tdsTcsReport} backTo={ROUTES.REPORTS} />
 
       <PageContainer>
         {/* Date range inputs */}
@@ -76,7 +83,7 @@ export default function TdsTcsReportPage() {
             className="tds-tcs-date-input"
             value={filters.from}
             max={filters.to}
-            aria-label="From date"
+            aria-label={t.fromDate}
             onChange={(e) => setFilters({ ...filters, from: e.target.value })}
           />
           <input
@@ -84,19 +91,19 @@ export default function TdsTcsReportPage() {
             className="tds-tcs-date-input"
             value={filters.to}
             min={filters.from}
-            aria-label="To date"
+            aria-label={t.toDate}
             onChange={(e) => setFilters({ ...filters, to: e.target.value })}
           />
         </div>
 
         {/* Type filter pills */}
         <ReportFilterPills
-          options={TYPE_OPTIONS}
+          options={typeOptions}
           activeValue={filters.type}
           onChange={(value) =>
             setFilters({ ...filters, type: value as 'all' | 'tds' | 'tcs' })
           }
-          ariaLabel="Filter by TDS or TCS"
+          ariaLabel={t.filterByTdsOrTcs}
         />
 
         {/* Summary cards */}
@@ -108,9 +115,9 @@ export default function TdsTcsReportPage() {
             <div className="tds-tcs-empty__icon" aria-hidden="true">
               <FileText size={28} />
             </div>
-            <p className="tds-tcs-empty__title">No TDS/TCS entries found</p>
+            <p className="tds-tcs-empty__title">{t.noTdsTcsEntries}</p>
             <p className="tds-tcs-empty__desc">
-              No transactions with TDS or TCS were found for this date range and filter.
+              {t.noTdsTcsTransactions}
             </p>
           </div>
         )}
@@ -119,7 +126,7 @@ export default function TdsTcsReportPage() {
         {entries.length > 0 && (
           <>
             <p className="tds-tcs-section-heading">
-              {entries.length} {entries.length === 1 ? 'entry' : 'entries'}
+              {entries.length} {entries.length === 1 ? t.entry : t.entries}
             </p>
             <div className="tds-tcs-entry-list">
               {entries.map((entry) => (

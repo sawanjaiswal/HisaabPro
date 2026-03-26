@@ -29,12 +29,12 @@ export const AlertStrip: React.FC<AlertStripProps> = ({
   const hasAlerts = lowStockCount > 0 || overdueInvoiceCount > 0
 
   return (
-    <div className="dashboard-alerts" role="complementary" aria-label="Promotions and alerts">
+    <div className="dashboard-alerts" role="complementary" aria-label={t.promotionsAlerts}>
       {/* Upgrade banner — always visible */}
       <button
         className="dashboard-alert-banner"
         onClick={onUpgradeClick}
-        aria-label="Upgrade to premium plan"
+        aria-label={t.upgradePlan}
       >
         <div className="dashboard-alert-icon">
           <img src="/assets/icon-crown.svg" alt="" width={20} height={20} aria-hidden="true" />

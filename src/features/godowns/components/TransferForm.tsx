@@ -1,5 +1,6 @@
 /** TransferForm — Stock transfer between godowns */
 
+import { useLanguage } from '@/hooks/useLanguage'
 import { TRANSFER_NOTES_MAX } from '../godown.constants'
 import type { TransferStockData, Godown } from '../godown.types'
 
@@ -13,6 +14,7 @@ interface TransferFormProps {
 }
 
 export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, onSubmit }: TransferFormProps) {
+  const { t } = useLanguage()
   return (
     <form
       className="godown-form"
@@ -21,7 +23,7 @@ export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, on
     >
       <div className="godown-form__field">
         <label htmlFor="transfer-product" className="godown-form__label">
-          Product ID <span aria-hidden="true">*</span>
+          {t.productId} <span aria-hidden="true">*</span>
         </label>
         <input
           id="transfer-product"
@@ -29,7 +31,7 @@ export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, on
           className={`godown-form__input${errors.productId ? ' godown-form__input--error' : ''}`}
           value={form.productId}
           onChange={(e) => onUpdate('productId', e.target.value)}
-          placeholder="Enter product ID"
+          placeholder={t.enterProductId}
           aria-required="true"
           aria-invalid={Boolean(errors.productId)}
           aria-describedby={errors.productId ? 'transfer-product-error' : undefined}
@@ -37,12 +39,12 @@ export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, on
         {errors.productId && (
           <p id="transfer-product-error" className="godown-form__error" role="alert">{errors.productId}</p>
         )}
-        <p className="godown-form__hint">Find the product ID on the product detail page</p>
+        <p className="godown-form__hint">{t.productIdHint}</p>
       </div>
 
       <div className="godown-form__field">
         <label htmlFor="transfer-from" className="godown-form__label">
-          From Godown <span aria-hidden="true">*</span>
+          {t.fromGodown} <span aria-hidden="true">*</span>
         </label>
         <select
           id="transfer-from"
@@ -53,7 +55,7 @@ export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, on
           aria-invalid={Boolean(errors.fromGodownId)}
           aria-describedby={errors.fromGodownId ? 'transfer-from-error' : undefined}
         >
-          <option value="">Select source godown</option>
+          <option value="">{t.selectSourceGodown}</option>
           {godowns.map((g) => (
             <option key={g.id} value={g.id}>{g.name}</option>
           ))}
@@ -65,7 +67,7 @@ export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, on
 
       <div className="godown-form__field">
         <label htmlFor="transfer-to" className="godown-form__label">
-          To Godown <span aria-hidden="true">*</span>
+          {t.toGodown} <span aria-hidden="true">*</span>
         </label>
         <select
           id="transfer-to"
@@ -76,7 +78,7 @@ export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, on
           aria-invalid={Boolean(errors.toGodownId)}
           aria-describedby={errors.toGodownId ? 'transfer-to-error' : undefined}
         >
-          <option value="">Select destination godown</option>
+          <option value="">{t.selectDestGodown}</option>
           {godowns.map((g) => (
             <option key={g.id} value={g.id}>{g.name}</option>
           ))}
@@ -88,7 +90,7 @@ export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, on
 
       <div className="godown-form__field">
         <label htmlFor="transfer-qty" className="godown-form__label">
-          Quantity <span aria-hidden="true">*</span>
+          {t.quantity} <span aria-hidden="true">*</span>
         </label>
         <input
           id="transfer-qty"
@@ -110,25 +112,25 @@ export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, on
       </div>
 
       <div className="godown-form__field">
-        <label htmlFor="transfer-batch" className="godown-form__label">Batch ID</label>
+        <label htmlFor="transfer-batch" className="godown-form__label">{t.batchIdLabelSimple}</label>
         <input
           id="transfer-batch"
           type="text"
           className="godown-form__input"
           value={form.batchId ?? ''}
           onChange={(e) => onUpdate('batchId', e.target.value)}
-          placeholder="Batch ID (optional)"
+          placeholder={t.batchId}
         />
       </div>
 
       <div className="godown-form__field">
-        <label htmlFor="transfer-notes" className="godown-form__label">Notes</label>
+        <label htmlFor="transfer-notes" className="godown-form__label">{t.notes}</label>
         <textarea
           id="transfer-notes"
           className="godown-form__textarea"
           value={form.notes ?? ''}
           onChange={(e) => onUpdate('notes', e.target.value)}
-          placeholder="Transfer notes (optional)"
+          placeholder={t.transferNotes}
           maxLength={TRANSFER_NOTES_MAX}
           rows={2}
         />
@@ -140,7 +142,7 @@ export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, on
         disabled={isSubmitting}
         aria-busy={isSubmitting}
       >
-        {isSubmitting ? 'Transferring...' : 'Transfer Stock'}
+        {isSubmitting ? t.transferring : t.transferStock}
       </button>
     </form>
   )

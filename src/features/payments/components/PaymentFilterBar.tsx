@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { Search } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { PaymentType, PaymentMode } from '../payment.types'
 import { PAYMENT_TYPE_LABELS, PAYMENT_MODE_LABELS } from '../payment.constants'
 
@@ -34,6 +35,7 @@ export const PaymentFilterBar: React.FC<PaymentFilterBarProps> = ({
   activeMode,
   onModeChange,
 }) => {
+  const { t } = useLanguage()
   return (
     <div className="payment-filter-bar">
       <div className="search-bar">
@@ -42,31 +44,29 @@ export const PaymentFilterBar: React.FC<PaymentFilterBarProps> = ({
           type="search"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search by party or reference..."
-          aria-label="Search payments by party name or reference number"
+          placeholder={t.searchByPartyOrRef}
+          aria-label={t.searchPayments}
         />
       </div>
 
       <div
-        className="payment-filter-pills"
+        className="pill-tabs"
         role="group"
-        aria-label="Filter by payment type"
+        aria-label={t.filterByType}
       >
         <button
-          className={`payment-filter-pill${activeType === 'ALL' ? ' payment-filter-pill--active' : ''}`}
+          className={`pill-tab${activeType === 'ALL' ? ' active-tint' : ''}`}
           onClick={() => onTypeChange('ALL')}
           aria-pressed={activeType === 'ALL'}
-          aria-label="Show all payment types"
         >
-          All
+          {t.all}
         </button>
         {PAYMENT_TYPES.map((type) => (
           <button
             key={type}
-            className={`payment-filter-pill${activeType === type ? ' payment-filter-pill--active' : ''}`}
+            className={`pill-tab${activeType === type ? ' active-tint' : ''}`}
             onClick={() => onTypeChange(type)}
             aria-pressed={activeType === type}
-            aria-label={`Show ${PAYMENT_TYPE_LABELS[type]}`}
           >
             {PAYMENT_TYPE_LABELS[type]}
           </button>
@@ -74,25 +74,23 @@ export const PaymentFilterBar: React.FC<PaymentFilterBarProps> = ({
       </div>
 
       <div
-        className="payment-filter-pills"
+        className="pill-tabs"
         role="group"
-        aria-label="Filter by payment mode"
+        aria-label={t.filterByMode}
       >
         <button
-          className={`payment-filter-pill${activeMode === 'ALL' ? ' payment-filter-pill--active' : ''}`}
+          className={`pill-tab${activeMode === 'ALL' ? ' active-tint' : ''}`}
           onClick={() => onModeChange('ALL')}
           aria-pressed={activeMode === 'ALL'}
-          aria-label="Show all payment modes"
         >
-          All Modes
+          {t.allModes}
         </button>
         {PAYMENT_MODES.map((mode) => (
           <button
             key={mode}
-            className={`payment-filter-pill${activeMode === mode ? ' payment-filter-pill--active' : ''}`}
+            className={`pill-tab${activeMode === mode ? ' active-tint' : ''}`}
             onClick={() => onModeChange(mode)}
             aria-pressed={activeMode === mode}
-            aria-label={`Show ${PAYMENT_MODE_LABELS[mode]} payments`}
           >
             {PAYMENT_MODE_LABELS[mode]}
           </button>

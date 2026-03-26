@@ -11,6 +11,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { ROUTES } from '@/config/routes.config'
+import { useLanguage } from '@/hooks/useLanguage'
 import { api } from '@/lib/api'
 import { useGodownForm } from './useGodownForm'
 import { GodownForm } from './components/GodownForm'
@@ -19,6 +20,7 @@ import './godowns.css'
 
 export default function EditGodownPage() {
   const { id } = useParams<{ id: string }>()
+  const { t } = useLanguage()
   const godownId = id ?? ''
 
   const [loadStatus, setLoadStatus] = useState<'loading' | 'error' | 'ready'>('loading')
@@ -55,7 +57,7 @@ export default function EditGodownPage() {
   if (loadStatus === 'loading') {
     return (
       <AppShell>
-        <Header title="Edit Godown" backTo={backTo} />
+        <Header title={t.editGodown} backTo={backTo} />
         <PageContainer>
           <Skeleton height="3.5rem" borderRadius="var(--radius-md)" count={3} />
         </PageContainer>
@@ -66,11 +68,11 @@ export default function EditGodownPage() {
   if (loadStatus === 'error' || !initialData) {
     return (
       <AppShell>
-        <Header title="Edit Godown" backTo={backTo} />
+        <Header title={t.editGodown} backTo={backTo} />
         <PageContainer>
           <ErrorState
-            title="Could not load godown"
-            message="Check your connection and try again."
+            title={t.couldNotLoadGodown}
+            message={t.checkConnectionRetry}
             onRetry={() => window.location.reload()}
           />
         </PageContainer>
@@ -82,6 +84,7 @@ export default function EditGodownPage() {
 }
 
 function EditGodownForm({ godownId, initialData, backTo }: { godownId: string; initialData: CreateGodownData; backTo: string }) {
+  const { t } = useLanguage()
   const { form, errors, isSubmitting, updateField, handleSubmit } = useGodownForm({
     editId: godownId,
     initialData,
@@ -89,7 +92,7 @@ function EditGodownForm({ godownId, initialData, backTo }: { godownId: string; i
 
   return (
     <AppShell>
-      <Header title="Edit Godown" backTo={backTo} />
+      <Header title={t.editGodown} backTo={backTo} />
       <PageContainer>
         <GodownForm
           form={form}
@@ -97,7 +100,7 @@ function EditGodownForm({ godownId, initialData, backTo }: { godownId: string; i
           isSubmitting={isSubmitting}
           onUpdate={updateField}
           onSubmit={handleSubmit}
-          submitLabel="Update Godown"
+          submitLabel={t.updateGodown}
         />
       </PageContainer>
     </AppShell>

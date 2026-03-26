@@ -1,12 +1,13 @@
 import { PIN_MAX_LENGTH } from './settings.constants'
+import { useLanguage } from '@/hooks/useLanguage'
 import { PinPad } from './components/PinPad'
 import { usePinSetup } from './usePinSetup'
 import './pin-setup.css'
 
-const WEAK_PIN_WARNING =
-  'This PIN is too simple. Consider using a stronger PIN.'
+
 
 export default function PinSetupPage() {
+  const { t } = useLanguage()
   const {
     step,
     pin,
@@ -53,7 +54,7 @@ export default function PinSetupPage() {
           justifyContent: 'center',
           fontSize: '1.375rem',
         }}
-        aria-label="Go back"
+        aria-label={t.goBack}
       >
         &#8592;
       </button>
@@ -95,7 +96,7 @@ export default function PinSetupPage() {
             marginTop: 'calc(var(--space-3) * -1)',
           }}
         >
-          {WEAK_PIN_WARNING}
+          {t.weakPinWarning}
         </p>
       )}
 
@@ -118,9 +119,9 @@ export default function PinSetupPage() {
             cursor: 'pointer',
             minHeight: '48px',
           }}
-          aria-label="Continue to confirm PIN"
+          aria-label={t.continueToConfirmPin}
         >
-          Continue
+          {t.continueBtn}
         </button>
       )}
 
@@ -131,7 +132,7 @@ export default function PinSetupPage() {
           className="pin-forgot-link"
           onClick={handleSkip}
         >
-          Skip — set up later
+          {t.skipSetUpLater}
         </button>
       )}
     </div>

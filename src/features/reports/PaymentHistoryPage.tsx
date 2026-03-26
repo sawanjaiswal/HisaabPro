@@ -23,8 +23,10 @@ import type { ExportFormat } from './report.types'
 import './report-shared.css'
 import './report-cards.css'
 import './report-shared-ui.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export default function PaymentHistoryPage() {
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const { data, status, filters, setFilter, loadMore, refresh } =
     usePaymentHistoryReport()
@@ -77,7 +79,7 @@ export default function PaymentHistoryPage() {
   if (status === 'loading' && data === null) {
     return (
       <AppShell>
-        <Header title="Payment History" backTo={ROUTES.REPORTS} />
+        <Header title={t.paymentHistory} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <ReportSkeleton rows={7} />
         </PageContainer>
@@ -90,21 +92,21 @@ export default function PaymentHistoryPage() {
   if (status === 'error' && data === null) {
     return (
       <AppShell>
-        <Header title="Payment History" backTo={ROUTES.REPORTS} />
+        <Header title={t.paymentHistory} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <div className="report-empty">
             <div className="report-empty-icon" aria-hidden="true">
               <Banknote size={28} />
             </div>
-            <p className="report-empty-title">Could not load payment history</p>
+            <p className="report-empty-title">{t.couldNotLoadPaymentHistory}</p>
             <p className="report-empty-desc">
-              Check your connection and try again.
+              {t.checkConnectionRetry}
             </p>
             <button
               className="report-load-more-btn"
               onClick={refresh}
               type="button"
-              aria-label="Retry loading payment history"
+              aria-label={t.retryLoadingPaymentHistory}
             >
               Retry
             </button>
@@ -118,7 +120,7 @@ export default function PaymentHistoryPage() {
 
   return (
     <AppShell>
-      <Header title="Payment History" backTo={ROUTES.REPORTS} />
+      <Header title={t.paymentHistory} backTo={ROUTES.REPORTS} />
       <PageContainer>
         <PaymentHistoryFilter
           filters={filters}
@@ -130,25 +132,25 @@ export default function PaymentHistoryPage() {
           <ReportSummaryBar
             items={[
               {
-                label: 'Received',
+                label: t.receivedLabel,
                 value: formatAmount(summary.totalReceived),
                 color: 'var(--color-success-600)',
               },
               {
-                label: 'Paid',
+                label: t.paid,
                 value: formatAmount(summary.totalPaid),
                 color: 'var(--color-error-600)',
               },
               {
-                label: 'Net',
+                label: t.net,
                 value: formatAmount(summary.net),
                 color:
                   summary.net >= 0
                     ? 'var(--color-success-600)'
                     : 'var(--color-error-600)',
               },
-              { label: 'In', value: String(summary.countIn) },
-              { label: 'Out', value: String(summary.countOut) },
+              { label: t.inLabel, value: String(summary.countIn) },
+              { label: t.outLabel, value: String(summary.countOut) },
             ]}
           />
         )}

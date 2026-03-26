@@ -2,12 +2,14 @@
 
 import React from 'react'
 import { Skeleton } from '@/components/feedback/Skeleton'
+import { useLanguage } from '@/hooks/useLanguage'
 
 const SKELETON_COUNT = 6
 
 export const ProductListSkeleton: React.FC = () => {
+  const { t } = useLanguage()
   return (
-    <div role="status" aria-label="Loading products">
+    <div role="status" aria-label={t.loadingProducts}>
       {Array.from({ length: SKELETON_COUNT }, (_, i) => (
         <div
           key={`skeleton-product-${i}`}

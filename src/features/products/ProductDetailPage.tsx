@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Pencil, Trash2, Package, Info } from 'lucide-react'
+import { Pencil, Trash2, Package } from 'lucide-react'
 import { ROUTES } from '@/config/routes.config'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -12,29 +12,31 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useToast } from '@/hooks/useToast'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useProductDetail } from './useProductDetail'
 import { deleteProduct } from './product.service'
 import { ProductDetailHeader } from './components/ProductDetailHeader'
 import { ProductStockTab } from './components/ProductStockTab'
 import { StockAdjustModal } from './components/StockAdjustModal'
 import { formatProductPrice } from './product.utils'
-import { PREDEFINED_CATEGORIES, PREDEFINED_UNITS, STOCK_VALIDATION_LABELS, BARCODE_FORMAT_LABELS } from './product.constants'
-import { BarcodeDisplay } from './components/BarcodeDisplay'
+import { PREDEFINED_CATEGORIES, PREDEFINED_UNITS, STOCK_VALIDATION_LABELS } from './product.constants'
+import { ProductInfoTab } from './components/ProductInfoTab'
 import './product-detail.css'
 import './barcode.css'
 
 type DetailTab = 'overview' | 'stock' | 'info'
 
-const TABS: { id: DetailTab; label: string }[] = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'stock', label: 'Stock' },
-  { id: 'info', label: 'Info' },
-]
-
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const toast = useToast()
+  const { t } = useLanguage()
+
+  const TABS: { id: DetailTab; label: string }[] = [
+    { id: 'overview', label: t.overviewTab },
+    { id: 'stock', label: t.stockTab },
+    { id: 'info', label: t.infoTab },
+  ]
   const productId = id ?? ''
   const { product, status, activeTab, setActiveTab, refresh } = useProductDetail(productId)
 
@@ -46,11 +48,11 @@ export default function ProductDetailPage() {
     setIsDeleting(true)
     deleteProduct(productId)
       .then(() => {
-        toast.success('Product deactivated')
+        toast.success(t.productDeactivated)
         navigate(ROUTES.PRODUCTS)
       })
       .catch((err: unknown) => {
-        const message = err instanceof Error ? err.message : 'Failed to delete product'
+        const message = err instanceof Error ? err.message : t.failedDeleteProductDefault
         toast.error(message)
         setIsDeleting(false)
         setDeleteOpen(false)
@@ -59,10 +61,10 @@ export default function ProductDetailPage() {
 
   const headerActions = (
     <>
-      <button className="btn btn-ghost btn-sm" onClick={() => navigate(`/products/${productId}/edit`)} aria-label="Edit product">
+      <button className="btn btn-ghost btn-sm" onClick={() => navigate(`/products/${productId}/edit`)} aria-label={t.editProduct}>
         <Pencil size={18} aria-hidden="true" />
       </button>
-      <button className="btn btn-ghost btn-sm" onClick={() => setDeleteOpen(true)} aria-label="Delete product">
+      <button className="btn btn-ghost btn-sm" onClick={() => setDeleteOpen(true)} aria-label={t.deleteProduct}>
         <Trash2 size={18} aria-hidden="true" />
       </button>
     </>
@@ -71,7 +73,7 @@ export default function ProductDetailPage() {
   return (
     <>
       <AppShell>
-        <Header title="Product Detail" backTo={ROUTES.PRODUCTS} actions={headerActions} />
+        <Header title={t.productDetail} backTo={ROUTES.PRODUCTS} actions={headerActions} />
 
       <PageContainer>
         {status === 'loading' && (
@@ -94,8 +96,8 @@ export default function ProductDetailPage() {
 
         {status === 'error' && (
           <ErrorState
-            title="Could not load product"
-            message="Check your connection and try again."
+            title={t.couldNotLoadProduct}
+            message={t.checkConnectionRetry}
             onRetry={refresh}
           />
         )}
@@ -103,19 +105,19 @@ export default function ProductDetailPage() {
         {status === 'success' && !product && (
           <EmptyState
             icon={<Package size={40} aria-hidden="true" />}
-            title="Product not found"
-            description="This product may have been deleted."
+            title={t.productNotFound}
+            description={t.productMayBeDeleted}
           />
         )}
 
         {status === 'success' && product && (
           <>
             <div role="status" aria-live="polite" className="sr-only">
-              {product.name} details loaded
+              {product.name} {t.detailsLoaded}
             </div>
             <ProductDetailHeader product={product} />
 
-            <div className="pill-tabs product-detail-tabs" role="tablist" aria-label="Product detail sections">
+            <div className="pill-tabs product-detail-tabs" role="tablist" aria-label={t.productDetailSections}>
               {TABS.map((tab) => (
                 <button
                   key={tab.id}
@@ -130,39 +132,39 @@ export default function ProductDetailPage() {
               ))}
             </div>
 
-            <div id={`panel-${activeTab}`} role="tabpanel" aria-label={`${activeTab} tab content`}>
+            <div id={`panel-${activeTab}`} role="tabpanel" aria-label={`${activeTab} ${t.tabContent}`}>
               {activeTab === 'overview' && (
                 <div className="card product-info-card">
                   <div className="product-info-row">
-                    <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>Category</span>
+                    <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>{t.categoryLabel}</span>
                     <span style={{ fontWeight: 500 }}>
                       {PREDEFINED_CATEGORIES.find((c) => c.id === product.category.id)?.name ?? product.category.name}
                     </span>
                   </div>
                   <div className="product-info-row">
-                    <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>Unit</span>
+                    <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>{t.unitLabel}</span>
                     <span style={{ fontWeight: 500 }}>
                       {PREDEFINED_UNITS.find((u) => u.id === product.unit.id)?.name ?? product.unit.name} ({product.unit.symbol})
                     </span>
                   </div>
                   <div className="product-info-row">
-                    <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>Sale Price</span>
+                    <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>{t.salePriceLabel}</span>
                     <span style={{ fontWeight: 600 }}>{formatProductPrice(product.salePrice)}</span>
                   </div>
                   {product.purchasePrice !== null && (
                     <div className="product-info-row">
-                      <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>Purchase</span>
+                      <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>{t.purchasePriceLabel}</span>
                       <span style={{ fontWeight: 500 }}>{formatProductPrice(product.purchasePrice)}</span>
                     </div>
                   )}
                   <div className="product-info-row">
-                    <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>Min Stock</span>
+                    <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>{t.minStockLabel}</span>
                     <span style={{ fontWeight: 500 }}>
-                      {product.minStockLevel > 0 ? `${product.minStockLevel} ${product.unit.symbol}` : 'Not set'}
+                      {product.minStockLevel > 0 ? `${product.minStockLevel} ${product.unit.symbol}` : t.notSet}
                     </span>
                   </div>
                   <div className="product-info-row">
-                    <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>Validation</span>
+                    <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>{t.validationLabel}</span>
                     <span style={{ fontWeight: 500 }}>{STOCK_VALIDATION_LABELS[product.stockValidation]}</span>
                   </div>
                 </div>
@@ -177,55 +179,16 @@ export default function ProductDetailPage() {
               )}
 
               {activeTab === 'info' && (
-                <div className="card product-info-card">
-                  {product.description && (
-                    <div className="product-info-row" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem' }}>Description</span>
-                      <p style={{ marginTop: 'var(--space-1)', lineHeight: 1.5 }}>{product.description}</p>
-                    </div>
-                  )}
-                  {product.hsnCode && (
-                    <div className="product-info-row">
-                      <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>HSN Code</span>
-                      <span style={{ fontWeight: 500 }}>{product.hsnCode}</span>
-                    </div>
-                  )}
-                  {product.sacCode && (
-                    <div className="product-info-row">
-                      <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>SAC Code</span>
-                      <span style={{ fontWeight: 500 }}>{product.sacCode}</span>
-                    </div>
-                  )}
-                  <div className="product-info-row">
-                    <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>SKU</span>
-                    <span style={{ fontWeight: 500, fontFamily: 'monospace' }}>{product.sku}</span>
-                  </div>
-                  {product.barcode && (
-                    <div className="product-info-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 'var(--space-3)' }}>
-                      <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem' }}>
-                        Barcode ({BARCODE_FORMAT_LABELS[product.barcodeFormat ?? 'CODE128']})
-                      </span>
-                      <BarcodeDisplay
-                        value={product.barcode}
-                        format={product.barcodeFormat ?? 'CODE128'}
-                        productName={product.name}
-                      />
-                    </div>
-                  )}
-                  <div className="product-info-row">
-                    <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>Status</span>
-                    <span className={`badge ${product.status === 'ACTIVE' ? 'badge-paid' : 'badge-pending'}`}>
-                      {product.status === 'ACTIVE' ? 'Active' : 'Inactive'}
-                    </span>
-                  </div>
-                  {!product.description && !product.hsnCode && !product.sacCode && (
-                    <EmptyState
-                      icon={<Info size={32} aria-hidden="true" />}
-                      title="No additional info"
-                      description="Add HSN codes, descriptions, and more when editing."
-                    />
-                  )}
-                </div>
+                <ProductInfoTab
+                  description={product.description}
+                  hsnCode={product.hsnCode}
+                  sacCode={product.sacCode}
+                  sku={product.sku}
+                  barcode={product.barcode}
+                  barcodeFormat={product.barcodeFormat}
+                  status={product.status}
+                  stockValidation={product.stockValidation}
+                />
               )}
             </div>
 
@@ -246,8 +209,8 @@ export default function ProductDetailPage() {
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
         onConfirm={handleDelete}
-        title="Delete Product?"
-        description={`"${product?.name ?? 'This product'}" will be deactivated. It will no longer appear in new invoices. Products referenced by invoices cannot be permanently deleted.`}
+        title={t.deleteProductTitle}
+        description={`"${product?.name ?? t.product}" ${t.deleteProductDesc}`}
         isLoading={isDeleting}
       />
     </>

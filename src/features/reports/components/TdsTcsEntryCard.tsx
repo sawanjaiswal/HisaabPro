@@ -8,6 +8,7 @@
 import React from 'react'
 import { formatAmount, formatReportDate } from '../report.utils'
 import type { TdsTcsEntry } from '../report-tax.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface TdsTcsEntryCardProps {
   entry: TdsTcsEntry
@@ -18,8 +19,10 @@ function formatRate(basisPoints: number): string {
   return `${(basisPoints / 100).toFixed(2)}%`
 }
 
-export const TdsTcsEntryCard: React.FC<TdsTcsEntryCardProps> = ({ entry }) => {
-  return (
+export const TdsTcsEntryCard: React.FC<TdsTcsEntryCardProps> = ({
+  entry }) => {
+  const { t } = useLanguage()
+    return (
     <div className="tds-tcs-entry-card">
       <div className="tds-tcs-entry-card__header">
         <span className="tds-tcs-entry-card__doc-number">{entry.documentNumber}</span>
@@ -30,14 +33,14 @@ export const TdsTcsEntryCard: React.FC<TdsTcsEntryCardProps> = ({ entry }) => {
 
       <div className="tds-tcs-entry-card__amounts">
         <div className="tds-tcs-entry-card__amount-row">
-          <span className="tds-tcs-entry-card__amount-label">Invoice Total</span>
+          <span className="tds-tcs-entry-card__amount-label">{t.invoiceTotal}</span>
           <span className="tds-tcs-entry-card__amount-value">{formatAmount(entry.grandTotal)}</span>
         </div>
 
         {entry.tdsAmount > 0 && (
           <div className="tds-tcs-entry-card__amount-row">
             <span className="tds-tcs-entry-card__amount-label tds-tcs-entry-card__amount-label--tds">
-              TDS ({formatRate(entry.tdsRate)})
+              {t.tds} ({formatRate(entry.tdsRate)})
             </span>
             <span className="tds-tcs-entry-card__amount-value tds-tcs-entry-card__amount-value--tds">
               {formatAmount(entry.tdsAmount)}
@@ -48,7 +51,7 @@ export const TdsTcsEntryCard: React.FC<TdsTcsEntryCardProps> = ({ entry }) => {
         {entry.tcsAmount > 0 && (
           <div className="tds-tcs-entry-card__amount-row">
             <span className="tds-tcs-entry-card__amount-label tds-tcs-entry-card__amount-label--tcs">
-              TCS ({formatRate(entry.tcsRate)})
+              {t.tcs} ({formatRate(entry.tcsRate)})
             </span>
             <span className="tds-tcs-entry-card__amount-value tds-tcs-entry-card__amount-value--tcs">
               {formatAmount(entry.tcsAmount)}

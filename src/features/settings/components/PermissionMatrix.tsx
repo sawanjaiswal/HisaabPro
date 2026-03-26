@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { ChevronRight } from 'lucide-react'
 import type { PermissionModule } from '../settings.types'
 import { formatPermissionKey, getPermissionCount } from '../settings.utils'
@@ -19,6 +20,7 @@ interface ModuleRowProps {
 }
 
 const ModuleRow: React.FC<ModuleRowProps> = ({ module, selectedPermissions, onToggle, onToggleModuleAll }) => {
+  const { t } = useLanguage()
   const [isOpen, setIsOpen] = useState(false)
   const { granted, total } = getPermissionCount(selectedPermissions, module.key, module.actions.length)
   const allGranted = granted === total
@@ -30,20 +32,20 @@ const ModuleRow: React.FC<ModuleRowProps> = ({ module, selectedPermissions, onTo
         onClick={() => setIsOpen((prev) => !prev)}
         aria-expanded={isOpen}
         aria-controls={`module-content-${module.key}`}
-        aria-label={`${module.label} module, ${granted} of ${total} permissions granted`}
+        aria-label={`${module.label} ${t.moduleWord}, ${granted} ${t.ofWord} ${total} ${t.permissionsGranted}`}
       >
         <span className="role-module-name">{module.label}</span>
         <span className="role-module-count">{granted}/{total}</span>
         <label
           className="settings-toggle"
           onClick={(e) => { e.stopPropagation(); onToggleModuleAll(module.key) }}
-          aria-label={`Toggle all ${module.label} permissions`}
+          aria-label={`${t.toggleAllPrefix} ${module.label} ${t.toggleAllSuffix}`}
         >
           <input
             type="checkbox"
             checked={allGranted}
             onChange={() => onToggleModuleAll(module.key)}
-            aria-label={`Toggle all ${module.label} permissions`}
+            aria-label={`${t.toggleAllPrefix} ${module.label} ${t.toggleAllSuffix}`}
           />
           <span className="settings-toggle-track" />
         </label>
@@ -66,7 +68,7 @@ const ModuleRow: React.FC<ModuleRowProps> = ({ module, selectedPermissions, onTo
                 key={permKey}
                 className="role-permission-row"
                 onClick={() => onToggle(permKey)}
-                aria-label={`${action.label}${action.description ? ': ' + action.description : ''}, ${isChecked ? 'enabled' : 'disabled'}`}
+                aria-label={`${action.label}${action.description ? ': ' + action.description : ''}, ${isChecked ? t.enabledLabel : t.disabledLabel}`}
               >
                 <span className="role-permission-label">
                   {action.label}

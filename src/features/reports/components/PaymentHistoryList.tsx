@@ -3,14 +3,16 @@
 import { ReportCardList } from './ReportCardList'
 import { formatAmount, formatReportDate } from '../report.utils'
 import type { PaymentHistoryItem } from '../report.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface PaymentHistoryListProps {
   items: PaymentHistoryItem[]
 }
 
-export function PaymentHistoryList({ items }: PaymentHistoryListProps) {
-  return (
-    <ReportCardList ariaLabel="Payment history">
+export function PaymentHistoryList({items }: PaymentHistoryListProps) {
+  const { t } = useLanguage()
+    return (
+    <ReportCardList ariaLabel={t.paymentHistory}>
       {items.map((item) => (
         <PaymentCard key={item.id} item={item} />
       ))}

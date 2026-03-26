@@ -16,6 +16,7 @@ import { DeleteBatchDialog } from './components/DeleteBatchDialog'
 import { BatchForm } from './components/BatchForm'
 import type { Batch } from './batch.types'
 import './batches.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 function DetailSkeleton() {
   return (
@@ -29,6 +30,7 @@ function DetailSkeleton() {
 }
 
 export default function BatchDetailPage() {
+  const { t } = useLanguage()
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const toast = useToast()
@@ -65,7 +67,7 @@ export default function BatchDetailPage() {
   if (isEditing && batch) {
     return (
       <AppShell>
-        <Header title="Edit Batch" backTo={true} />
+        <Header title={t.editBatch} backTo={true} />
         <PageContainer>
           <BatchForm
             productId={batch.productId}
@@ -88,7 +90,7 @@ export default function BatchDetailPage() {
               <button
                 className="btn btn-ghost btn-sm"
                 onClick={() => setIsEditing(true)}
-                aria-label="Edit batch"
+                aria-label={t.editBatchAria}
               >
                 <Pencil size={18} aria-hidden="true" />
               </button>
@@ -96,7 +98,7 @@ export default function BatchDetailPage() {
                 <button
                   className="btn btn-ghost btn-sm"
                   onClick={() => setShowDeleteConfirm(true)}
-                  aria-label="Delete batch"
+                  aria-label={t.deleteBatch}
                 >
                   <Trash2 size={18} aria-hidden="true" />
                 </button>
@@ -111,7 +113,7 @@ export default function BatchDetailPage() {
 
         {status === 'error' && (
           <ErrorState
-            title="Could not load batch"
+            title={t.couldNotLoadBatch}
             message={error?.message ?? 'Check your connection and try again.'}
             onRetry={refetch}
           />

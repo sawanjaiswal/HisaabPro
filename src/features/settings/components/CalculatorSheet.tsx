@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { CalculatorState, CalculatorSettings } from '../settings.types'
 import { CalculatorHeader } from './CalculatorHeader'
 import { CalculatorDisplay } from './CalculatorDisplay'
@@ -56,10 +57,11 @@ export const CalculatorSheet: React.FC<CalculatorSheetProps> = ({
   onToggleVibration,
   onClose,
 }) => {
+  const { t } = useLanguage()
   const [showSettings, setShowSettings] = useState(false)
 
   return (
-    <div className="calculator-sheet" role="dialog" aria-label="Calculator" aria-modal="true">
+    <div className="calculator-sheet" role="dialog" aria-label={t.calculatorDialog} aria-modal="true">
       <CalculatorHeader
         settings={settings}
         showSettings={showSettings}

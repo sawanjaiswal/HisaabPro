@@ -1,6 +1,7 @@
 /** Columns tab — toggle visibility of line item columns */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 
 import type { TemplateConfig } from '../template.types'
 import { COLUMN_ORDER } from '../template.constants'
@@ -16,8 +17,10 @@ interface ColumnsTabProps {
   onChange: (patch: Partial<TemplateConfig>) => void
 }
 
-export const ColumnsTab: React.FC<ColumnsTabProps> = ({ config, onChange }) => (
-  <Section title="Line Item Columns">
+export const ColumnsTab: React.FC<ColumnsTabProps> = ({ config, onChange }) => {
+  const { t } = useLanguage()
+  return (
+  <Section title={t.lineItemColumns}>
     {COLUMN_ORDER.map((key) => {
       const col = config.columns[key]
       const isLocked = LOCKED_COLUMNS.has(key)
@@ -25,10 +28,10 @@ export const ColumnsTab: React.FC<ColumnsTabProps> = ({ config, onChange }) => (
         <ToggleRow
           key={key}
           label={col.label}
-          sublabel={isLocked ? 'Required — cannot be hidden' : undefined}
+          sublabel={isLocked ? t.requiredCannotBeHidden : undefined}
           checked={col.visible}
           disabled={isLocked}
-          ariaLabel={`${isLocked ? 'Required column' : 'Toggle column'}: ${col.label}`}
+          ariaLabel={`${isLocked ? t.requiredColumnLabel : t.toggleColumnLabel}: ${col.label}`}
           onChange={(checked) =>
             onChange({
               columns: {
@@ -41,4 +44,5 @@ export const ColumnsTab: React.FC<ColumnsTabProps> = ({ config, onChange }) => (
       )
     })}
   </Section>
-)
+  )
+}

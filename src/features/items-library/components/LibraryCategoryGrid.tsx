@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { LIBRARY_CATEGORIES } from '../items-library.constants'
 import type { LucideIcon } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 
 const ICON_MAP: Record<string, LucideIcon> = {
   ShoppingCart, Milk, Wrench, Smartphone, Shirt,
@@ -18,8 +19,9 @@ interface LibraryCategoryGridProps {
 }
 
 export function LibraryCategoryGrid({ activeCategory, onSelect }: LibraryCategoryGridProps) {
+  const { t } = useLanguage()
   return (
-    <div className="library-category-grid" role="listbox" aria-label="Product categories">
+    <div className="library-category-grid" role="listbox" aria-label={t.productCategories}>
       <button
         type="button"
         className={`library-category-chip${activeCategory === null ? ' active' : ''}`}

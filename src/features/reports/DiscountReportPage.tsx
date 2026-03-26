@@ -13,6 +13,7 @@ import { formatPaise } from '@/lib/format'
 import { getDiscountReport } from './finance.service'
 import type { DiscountReportData } from './finance.types'
 import './report-finance.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 function getMonthRange(): { from: string; to: string } {
   const now = new Date()
@@ -22,6 +23,7 @@ function getMonthRange(): { from: string; to: string } {
 }
 
 export default function DiscountReportPage() {
+  const { t } = useLanguage()
   const toast = useToast()
   const [dateRange, setDateRange] = useState(getMonthRange)
   const [data, setData] = useState<DiscountReportData | null>(null)
@@ -36,7 +38,7 @@ export default function DiscountReportPage() {
       .catch((err: unknown) => {
         if (err instanceof Error && err.name === 'AbortError') return
         setFetchStatus('error')
-        toast.error(err instanceof ApiError ? err.message : 'Failed to load discount report')
+        toast.error(err instanceof ApiError ? err.message : t.failedLoadDiscountReport)
       })
     return () => controller.abort()
   }, [dateRange, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -46,7 +48,7 @@ export default function DiscountReportPage() {
   if (fetchStatus === 'loading') {
     return (
       <AppShell>
-        <Header title="Discount Report" backTo={ROUTES.REPORTS} />
+        <Header title={t.discountReport} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <div className="finance-skeleton" aria-busy="true">
             {['sk-1', 'sk-2', 'sk-3'].map((k) => <div key={k} className="finance-skeleton__section" />)}
@@ -59,8 +61,8 @@ export default function DiscountReportPage() {
   if (fetchStatus === 'error') {
     return (
       <AppShell>
-        <Header title="Discount Report" backTo={ROUTES.REPORTS} />
-        <PageContainer><ErrorState title="Could not load report" message="Check your connection and try again." onRetry={refresh} /></PageContainer>
+        <Header title={t.discountReport} backTo={ROUTES.REPORTS} />
+        <PageContainer><ErrorState title={t.couldNotLoadDiscountReport} message={t.checkConnectionRetry} onRetry={refresh} /></PageContainer>
       </AppShell>
     )
   }
@@ -69,37 +71,37 @@ export default function DiscountReportPage() {
 
   return (
     <AppShell>
-      <Header title="Discount Report" backTo={ROUTES.REPORTS} />
+      <Header title={t.discountReport} backTo={ROUTES.REPORTS} />
       <PageContainer>
         <div className="finance-date-bar">
-          <span className="finance-date-bar__label">From</span>
-          <input type="date" className="finance-date-bar__input" value={dateRange.from} onChange={(e) => setDateRange((r) => ({ ...r, from: e.target.value }))} aria-label="From date" />
-          <span className="finance-date-bar__label">To</span>
-          <input type="date" className="finance-date-bar__input" value={dateRange.to} onChange={(e) => setDateRange((r) => ({ ...r, to: e.target.value }))} aria-label="To date" />
-          <button type="button" className="finance-date-bar__refresh-btn" onClick={refresh} aria-label="Refresh report"><RefreshCw size={14} aria-hidden="true" /></button>
+          <span className="finance-date-bar__label">{t.from}</span>
+          <input type="date" className="finance-date-bar__input" value={dateRange.from} onChange={(e) => setDateRange((r) => ({ ...r, from: e.target.value }))} aria-label={t.fromDate} />
+          <span className="finance-date-bar__label">{t.to}</span>
+          <input type="date" className="finance-date-bar__input" value={dateRange.to} onChange={(e) => setDateRange((r) => ({ ...r, to: e.target.value }))} aria-label={t.toDate} />
+          <button type="button" className="finance-date-bar__refresh-btn" onClick={refresh} aria-label={t.refreshReport}><RefreshCw size={14} aria-hidden="true" /></button>
         </div>
 
         {rows.length === 0 && (
           <div className="finance-empty">
             <div className="finance-empty__icon" aria-hidden="true"><Percent size={32} /></div>
-            <p className="finance-empty__title">No discounts in this period</p>
-            <p className="finance-empty__desc">Try a different date range.</p>
+            <p className="finance-empty__title">{t.noDiscountsInPeriod}</p>
+            <p className="finance-empty__desc">{t.tryDifferentDateRange}</p>
           </div>
         )}
 
         {rows.length > 0 && (
           <>
             <div className="finance-net-row">
-              <span className="finance-net-row__label">Total Discounts Given</span>
+              <span className="finance-net-row__label">{t.totalDiscountsGiven}</span>
               <span className="finance-net-row__amount">{formatPaise(data?.totalDiscount ?? 0)}</span>
             </div>
             <div className="aging-table">
-              <table aria-label="Discount details by invoice">
+              <table aria-label={t.discountDetailsByInvoice}>
                 <thead>
                   <tr>
-                    <th scope="col">Invoice</th>
-                    <th scope="col">Party</th>
-                    <th scope="col">Discount</th>
+                    <th scope="col">{t.invoice}</th>
+                    <th scope="col">{t.party}</th>
+                    <th scope="col">{t.discount}</th>
                     <th scope="col">%</th>
                   </tr>
                 </thead>

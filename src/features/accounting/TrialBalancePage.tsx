@@ -12,8 +12,10 @@ import { useTrialBalance } from './useTrialBalance'
 import { TrialBalanceTable } from './components/TrialBalanceTable'
 import { isBalanced, formatPaise } from './accounting.utils'
 import './accounting.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export default function TrialBalancePage() {
+  const { t } = useLanguage()
   const { data, status, asOf, setAsOf, refresh } = useTrialBalance()
 
   const dateInput = (
@@ -23,14 +25,14 @@ export default function TrialBalancePage() {
       value={asOf}
       max={new Date().toISOString().slice(0, 10)}
       onChange={(e) => setAsOf(e.target.value)}
-      aria-label="As of date for trial balance"
+      aria-label={t.asOfDateTrialBalance}
     />
   )
 
   if (status === 'loading') {
     return (
       <AppShell>
-        <Header title="Trial Balance" backTo={ROUTES.REPORTS} actions={dateInput} />
+        <Header title={t.trialBalance ?? "Trial Balance"} backTo={ROUTES.REPORTS} actions={dateInput} />
         <PageContainer>
           <Skeleton height="320px" />
         </PageContainer>
@@ -41,9 +43,9 @@ export default function TrialBalancePage() {
   if (status === 'error') {
     return (
       <AppShell>
-        <Header title="Trial Balance" backTo={ROUTES.REPORTS} actions={dateInput} />
+        <Header title={t.trialBalance ?? "Trial Balance"} backTo={ROUTES.REPORTS} actions={dateInput} />
         <PageContainer>
-          <ErrorState title="Could not load trial balance" onRetry={refresh} />
+          <ErrorState title={t.couldNotLoadTrialBalance} onRetry={refresh} />
         </PageContainer>
       </AppShell>
     )
@@ -52,12 +54,12 @@ export default function TrialBalancePage() {
   if (!data || data.rows.length === 0) {
     return (
       <AppShell>
-        <Header title="Trial Balance" backTo={ROUTES.REPORTS} actions={dateInput} />
+        <Header title={t.trialBalance ?? "Trial Balance"} backTo={ROUTES.REPORTS} actions={dateInput} />
         <PageContainer>
           <EmptyState
             icon={<Scale size={28} aria-hidden="true" />}
-            title="No data available"
-            description="Post journal entries to see the trial balance."
+            title={t.noDataAvailable}
+            description={t.postJournalEntries}
           />
         </PageContainer>
       </AppShell>
@@ -68,14 +70,14 @@ export default function TrialBalancePage() {
 
   return (
     <AppShell>
-      <Header title="Trial Balance" backTo={ROUTES.REPORTS} actions={dateInput} />
+      <Header title={t.trialBalance ?? "Trial Balance"} backTo={ROUTES.REPORTS} actions={dateInput} />
       <PageContainer>
         {/* Balance indicator */}
         <div className={`tb-balance-chip ${balanced ? 'balanced' : 'unbalanced'}`} role="status">
           <span className="tb-balance-dot" aria-hidden="true" />
           {balanced
-            ? `Balanced — ${formatPaise(data.totals.debit)} each side`
-            : `Out of balance by ${formatPaise(Math.abs(data.totals.debit - data.totals.credit))}`
+            ? `${t.balanced} — ${formatPaise(data.totals.debit)} ${t.eachSide}`
+            : `${t.outOfBalanceBy} ${formatPaise(Math.abs(data.totals.debit - data.totals.credit))}`
           }
         </div>
 

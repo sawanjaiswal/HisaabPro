@@ -1,6 +1,7 @@
 /** Invoice Detail — hero header card with document identity + totals */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { DocumentDetail, DocumentType, PaymentStatus } from '../invoice.types'
 import { formatInvoiceAmount, formatInvoiceDate } from '../invoice-format.utils'
 import { getPaymentStatus } from '../invoice-document.utils'
@@ -27,13 +28,13 @@ const DOC_TYPE_ICON_CLASS: Record<DocumentType, string> = {
   DELIVERY_CHALLAN: 'doc-type-icon doc-type-icon--delivery-challan invoice-detail-type-icon',
 }
 
-const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
-  PAID:    'Paid',
-  PARTIAL: 'Partial',
-  UNPAID:  'Unpaid',
-}
-
 export const InvoiceDetailHeader: React.FC<InvoiceDetailHeaderProps> = ({ document }) => {
+  const { t } = useLanguage()
+  const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
+    PAID:    t.paidStatus,
+    PARTIAL: t.partialStatus,
+    UNPAID:  t.unpaidStatus,
+  }
   const paymentStatus = getPaymentStatus(document.grandTotal, document.paidAmount)
   const typeCode = DOCUMENT_TYPE_CODES[document.type]
   const typeLabel = DOCUMENT_TYPE_LABELS[document.type]
@@ -44,7 +45,7 @@ export const InvoiceDetailHeader: React.FC<InvoiceDetailHeaderProps> = ({ docume
     <div
       className="card-primary invoice-detail-header"
       role="region"
-      aria-label={`${typeLabel} ${document.documentNumber} overview`}
+      aria-label={`${typeLabel} ${document.documentNumber} ${t.overviewLabel}`}
     >
       <div className={iconClass} aria-hidden="true">
         {typeCode}
@@ -59,32 +60,32 @@ export const InvoiceDetailHeader: React.FC<InvoiceDetailHeaderProps> = ({ docume
           </span>
           <span
             className={`badge ${STATUS_BADGE_VARIANTS[document.status]}`}
-            aria-label={`Document status: ${statusLabel}`}
+            aria-label={`${t.documentStatusPrefix} ${statusLabel}`}
           >
             {statusLabel}
           </span>
           <span
             className={`badge ${PAYMENT_STATUS_BADGE[paymentStatus]}`}
-            aria-label={`Payment status: ${PAYMENT_STATUS_LABELS[paymentStatus]}`}
+            aria-label={`${t.paymentStatusPrefix} ${PAYMENT_STATUS_LABELS[paymentStatus]}`}
           >
             {PAYMENT_STATUS_LABELS[paymentStatus]}
           </span>
         </div>
       </div>
 
-      <div className="invoice-detail-total-block" aria-label={`Grand total: ${formatInvoiceAmount(document.grandTotal)}`}>
-        <span className="invoice-detail-total-label">Grand Total</span>
+      <div className="invoice-detail-total-block" aria-label={`${t.grandTotal}: ${formatInvoiceAmount(document.grandTotal)}`}>
+        <span className="invoice-detail-total-label">{t.grandTotal}</span>
         <span className="invoice-detail-total-amount">
           {formatInvoiceAmount(document.grandTotal)}
         </span>
         {document.balanceDue > 0 && (
           <span className="invoice-detail-balance invoice-detail-balance--overdue">
-            Due: {formatInvoiceAmount(document.balanceDue)}
+            {t.dueColon} {formatInvoiceAmount(document.balanceDue)}
           </span>
         )}
         {document.balanceDue === 0 && document.paidAmount > 0 && (
           <span className="invoice-detail-balance">
-            Fully Paid
+            {t.fullyPaid}
           </span>
         )}
       </div>

@@ -1,10 +1,13 @@
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import '../settings.css'
 
 export const SettingsSkeleton: React.FC = () => {
+  const { t } = useLanguage()
+
   return (
-    <div className="settings-page" aria-busy="true" aria-label="Loading settings">
+    <div className="settings-page" aria-busy="true" aria-label={t.couldNotLoadSettings}>
       {Array.from({ length: 4 }, (_, sectionIndex) => (
         <div key={`section-${sectionIndex}`} className="settings-section">
           <Skeleton width="80px" height="0.6875rem" borderRadius="var(--radius-sm)" />

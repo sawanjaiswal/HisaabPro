@@ -5,12 +5,14 @@ import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/hooks/useToast'
 import { ROUTES } from '@/config/routes.config'
 import { getBusinessInitials, getBusinessColor } from '../business.utils'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface BusinessSwitcherProps {
   onClose: () => void
 }
 
 export function BusinessSwitcher({ onClose }: BusinessSwitcherProps) {
+  const { t } = useLanguage()
   const { user, businesses, switchBusiness, isSwitching, switchingBusinessId } = useAuth()
   const navigate = useNavigate()
   const toast = useToast()
@@ -80,7 +82,7 @@ export function BusinessSwitcher({ onClose }: BusinessSwitcherProps) {
         ref={sheetRef}
         className="business-switcher-sheet"
         role="dialog"
-        aria-label="Switch business"
+        aria-label={t.switchBusiness}
         aria-modal="true"
       >
         <div className="business-switcher-handle" />
@@ -111,7 +113,7 @@ export function BusinessSwitcher({ onClose }: BusinessSwitcherProps) {
                         ? ''
                         : biz.roleName}
                       {switchingBusinessId === biz.id && (
-                        <Loader2 size={14} className="spinner" aria-label="Switching" />
+                        <Loader2 size={14} className="spinner" aria-label={t.switching} />
                       )}
                     </span>
                   </span>

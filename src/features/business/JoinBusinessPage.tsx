@@ -4,8 +4,10 @@ import { Header } from '@/components/layout/Header'
 import { ROUTES } from '@/config/routes.config'
 import { useJoinBusiness } from './useJoinBusiness'
 import './join-business.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export default function JoinBusinessPage() {
+  const { t } = useLanguage()
   const { code, loading, error, success, handleCodeChange, handleSubmit } = useJoinBusiness()
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -20,7 +22,7 @@ export default function JoinBusinessPage() {
   if (success) {
     return (
       <div className="join-business-page">
-        <Header title="Join Business" backTo={ROUTES.SETTINGS} />
+        <Header title={t.joinBusiness} backTo={ROUTES.SETTINGS} />
         <div className="join-business-content">
           <div className="join-business-success">
             <CheckCircle size={48} className="join-business-success-icon" />
@@ -45,7 +47,7 @@ export default function JoinBusinessPage() {
 
   return (
     <div className="join-business-page">
-      <Header title="Join Business" backTo={ROUTES.SETTINGS} />
+      <Header title={t.joinBusiness} backTo={ROUTES.SETTINGS} />
       <div className="join-business-content">
         <div className="join-business-icon-container">
           <Building2 size={40} className="join-business-icon" />
@@ -61,12 +63,12 @@ export default function JoinBusinessPage() {
           className="join-business-input"
           value={code}
           onChange={(e) => handleCodeChange(e.target.value)}
-          placeholder="XXXXXX"
+          placeholder={t.inviteCodePlaceholder}
           maxLength={6}
           autoCapitalize="characters"
           autoComplete="off"
           spellCheck={false}
-          aria-label="Invite code"
+          aria-label={t.inviteCodeAria}
         />
 
         {error && <p className="join-business-error">{error}</p>}

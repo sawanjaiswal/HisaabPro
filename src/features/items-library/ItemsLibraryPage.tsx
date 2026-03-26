@@ -12,8 +12,10 @@ import { LibraryCategoryGrid } from './components/LibraryCategoryGrid'
 import { LibraryItemList } from './components/LibraryItemList'
 import type { LibraryItem } from './items-library.types'
 import './items-library.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export default function ItemsLibraryPage() {
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const toast = useToast()
   const { search, category, items, total, hasMore, setSearch, setCategory, loadMore } = useItemsLibrary()
@@ -34,7 +36,7 @@ export default function ItemsLibraryPage() {
 
   return (
     <AppShell>
-      <Header title="Items Library" backTo={ROUTES.PRODUCTS} />
+      <Header title={t.itemsLibrary} backTo={ROUTES.PRODUCTS} />
 
       <PageContainer>
         <div className="library-search">
@@ -42,10 +44,10 @@ export default function ItemsLibraryPage() {
           <input
             type="text"
             className="library-search-input"
-            placeholder="Search products, HSN codes..."
+            placeholder={t.searchItemsLibrary}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            aria-label="Search items library"
+            aria-label={t.searchItemsLibrary}
           />
         </div>
 

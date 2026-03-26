@@ -2,16 +2,18 @@
 
 import { formatAmount } from '../report.utils'
 import type { DayBookSummary } from '../report.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface DayBookSummaryBarProps {
   summary: DayBookSummary
 }
 
-export function DayBookSummaryBar({ summary }: DayBookSummaryBarProps) {
-  return (
-    <div className="report-summary-bar" role="region" aria-label="Day totals">
+export function DayBookSummaryBar({summary }: DayBookSummaryBarProps) {
+  const { t } = useLanguage()
+    return (
+    <div className="report-summary-bar" role="region" aria-label={t.dayTotals}>
       <div className="report-summary-item">
-        <span className="report-summary-label">Sales</span>
+        <span className="report-summary-label">{t.sales}</span>
         <span className="report-summary-value report-summary-value--primary">
           {formatAmount(summary.totalSales.amount)}
         </span>
@@ -20,7 +22,7 @@ export function DayBookSummaryBar({ summary }: DayBookSummaryBarProps) {
         </span>
       </div>
       <div className="report-summary-item">
-        <span className="report-summary-label">Purchases</span>
+        <span className="report-summary-label">{t.purchases}</span>
         <span className="report-summary-value">
           {formatAmount(summary.totalPurchases.amount)}
         </span>
@@ -29,7 +31,7 @@ export function DayBookSummaryBar({ summary }: DayBookSummaryBarProps) {
         </span>
       </div>
       <div className="report-summary-item">
-        <span className="report-summary-label">Pay In</span>
+        <span className="report-summary-label">{t.payIn}</span>
         <span className="report-summary-value report-summary-value--positive">
           {formatAmount(summary.paymentsIn.amount)}
         </span>
@@ -38,7 +40,7 @@ export function DayBookSummaryBar({ summary }: DayBookSummaryBarProps) {
         </span>
       </div>
       <div className="report-summary-item">
-        <span className="report-summary-label">Pay Out</span>
+        <span className="report-summary-label">{t.payOut}</span>
         <span className="report-summary-value report-summary-value--negative">
           {formatAmount(summary.paymentsOut.amount)}
         </span>
@@ -47,7 +49,7 @@ export function DayBookSummaryBar({ summary }: DayBookSummaryBarProps) {
         </span>
       </div>
       <div className="report-summary-item">
-        <span className="report-summary-label">Net Cash</span>
+        <span className="report-summary-label">{t.netCash}</span>
         <span
           className={
             summary.netCashFlow >= 0

@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/feedback/Skeleton'
 import { Button } from '@/components/ui/Button'
 import { ROUTES } from '@/config/routes.config'
 import { useAuth } from '@/context/AuthContext'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useTaxCategoryDetail } from './useTaxCategoryDetail'
 import { useTaxCategoryForm } from './useTaxCategoryForm'
 import { TaxCategoryFormFields } from './components/TaxCategoryFormFields'
@@ -16,6 +17,7 @@ import './tax-category-form.css'
 
 export default function EditTaxCategoryPage() {
   const { id } = useParams<{ id: string }>()
+  const { t } = useLanguage()
   const { user } = useAuth()
   const businessId = user?.businessId ?? ''
   const { category, status, refresh } = useTaxCategoryDetail(id!)
@@ -23,7 +25,7 @@ export default function EditTaxCategoryPage() {
   if (status === 'loading') {
     return (
       <AppShell>
-        <Header title="Edit Tax Rate" backTo={ROUTES.SETTINGS_TAX_RATES} />
+        <Header title={t.editTaxRate} backTo={ROUTES.SETTINGS_TAX_RATES} />
         <PageContainer className="tax-category-form-page">
           <Skeleton width="100%" height="300px" borderRadius="var(--radius-lg)" />
         </PageContainer>
@@ -34,9 +36,9 @@ export default function EditTaxCategoryPage() {
   if (status === 'error' || !category) {
     return (
       <AppShell>
-        <Header title="Edit Tax Rate" backTo={ROUTES.SETTINGS_TAX_RATES} />
+        <Header title={t.editTaxRate} backTo={ROUTES.SETTINGS_TAX_RATES} />
         <PageContainer>
-          <ErrorState title="Could not load tax category" message="Check your connection and try again." onRetry={refresh} />
+          <ErrorState title={t.couldNotLoadTaxCategory} message={t.checkConnectionRetry} onRetry={refresh} />
         </PageContainer>
       </AppShell>
     )
@@ -49,17 +51,18 @@ export default function EditTaxCategoryPage() {
 }
 
 function EditForm({ editId, businessId, initialData }: { editId: string; businessId: string; initialData: import('./tax.types').TaxCategoryFormData }) {
+  const { t } = useLanguage()
   const { form, errors, isSubmitting, updateField, handleSubmit } = useTaxCategoryForm({ editId, initialData, businessId })
 
   return (
     <AppShell>
-      <Header title="Edit Tax Rate" backTo={ROUTES.SETTINGS_TAX_RATES} />
+      <Header title={t.editTaxRate} backTo={ROUTES.SETTINGS_TAX_RATES} />
       <PageContainer className="tax-category-form-page">
         <TaxCategoryFormFields form={form} errors={errors} onUpdate={updateField} />
       </PageContainer>
       <div className="tax-category-form-actions">
-        <Button variant="primary" size="lg" loading={isSubmitting} onClick={handleSubmit} aria-label="Update tax rate">
-          Update Tax Rate
+        <Button variant="primary" size="lg" loading={isSubmitting} onClick={handleSubmit} aria-label={t.updateTaxRate}>
+          {t.updateTaxRate}
         </Button>
       </div>
     </AppShell>

@@ -6,6 +6,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { Button } from '@/components/ui/Button'
 import { ROUTES } from '@/config/routes.config'
 import { useAuth } from '@/context/AuthContext'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useProductForm } from './useProductForm'
 import { useTaxCategories } from '@/hooks/useTaxCategories'
 import { ProductFormBasic } from './components/ProductFormBasic'
@@ -15,6 +16,7 @@ import { PRODUCT_FORM_SECTIONS } from './product.constants'
 import './create-product.css'
 
 export default function CreateProductPage() {
+  const { t } = useLanguage()
   const { user } = useAuth()
   const businessId = user?.businessId ?? ''
   const { categories: taxCategories } = useTaxCategories(businessId)
@@ -24,9 +26,9 @@ export default function CreateProductPage() {
 
   return (
     <AppShell>
-      <Header title="New Product" backTo={ROUTES.PRODUCTS} />
+      <Header title={t.newProduct} backTo={ROUTES.PRODUCTS} />
       <PageContainer className="create-product-page">
-        <nav className="pill-tabs" role="tablist" aria-label="Form sections">
+        <nav className="pill-tabs" role="tablist" aria-label={t.formSections}>
           {PRODUCT_FORM_SECTIONS.map((section) => (
             <button key={section.id} type="button" role="tab" className={`pill-tab${activeSection === section.id ? ' active' : ''}`} onClick={() => setActiveSection(section.id)} aria-selected={activeSection === section.id} aria-controls={`section-panel-${section.id}`}>
               {section.label}
@@ -40,8 +42,8 @@ export default function CreateProductPage() {
         </div>
       </PageContainer>
       <div className="create-product-actions">
-        <Button variant="primary" size="lg" loading={isSubmitting} onClick={handleSubmit} aria-label="Save product">Save Product</Button>
-        <button type="button" className="create-product-save-another" onClick={handleSaveAndAddAnother} disabled={isSubmitting} aria-label="Save product and add another">Save &amp; Add Another</button>
+        <Button variant="primary" size="lg" loading={isSubmitting} onClick={handleSubmit} aria-label={t.saveProduct}>{t.saveProductBtn}</Button>
+        <button type="button" className="create-product-save-another" onClick={handleSaveAndAddAnother} disabled={isSubmitting} aria-label={t.saveAndAddAnotherProduct}>{t.saveAndAddAnother}</button>
       </div>
     </AppShell>
   )

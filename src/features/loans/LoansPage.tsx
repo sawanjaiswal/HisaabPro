@@ -21,6 +21,7 @@ import { useLoans } from './useLoans'
 import { createLoan } from './loan.service'
 import type { Loan, LoanStatus, LoanType, CreateLoanInput } from './loan.types'
 import './loans.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 const STATUS_LABELS: Record<LoanStatus, string> = {
   ACTIVE: 'Active', CLOSED: 'Closed', OVERDUE: 'Overdue',
@@ -33,12 +34,13 @@ const STATUS_BG: Record<LoanStatus, string> = {
 }
 
 function LoanCard({ loan, onClick }: { loan: Loan; onClick: (id: string) => void }) {
+  const { t } = useLanguage()
   return (
     <div className="loan-card" role="button" onClick={() => onClick(loan.id)} aria-label={`Loan: ${loan.partyName ?? 'Unknown'}`} tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && onClick(loan.id)}>
       <div className="loan-card__header">
         <div>
-          <div className="loan-card__party">{loan.partyName ?? 'Personal Loan'}</div>
-          <div className="loan-card__type">{loan.loanType === 'TAKEN' ? 'Loan Taken' : 'Loan Given'}</div>
+          <div className="loan-card__party">{loan.partyName ?? t.personalLoan}</div>
+          <div className="loan-card__type">{loan.loanType === 'TAKEN' ? t.loanTaken : t.loanGiven}</div>
         </div>
         <span className="loan-card__status-badge" style={{ background: STATUS_BG[loan.status], color: STATUS_COLORS[loan.status] }}>
           {STATUS_LABELS[loan.status]}
@@ -46,8 +48,8 @@ function LoanCard({ loan, onClick }: { loan: Loan; onClick: (id: string) => void
       </div>
       <div className="loan-card__amounts">
         <div>
-          <div className="loan-card__principal">Principal: {formatPaise(loan.principalAmount)}</div>
-          {loan.emiAmount && <div className="loan-card__emi">EMI: {formatPaise(loan.emiAmount)}/mo</div>}
+          <div className="loan-card__principal">{t.principalColon} {formatPaise(loan.principalAmount)}</div>
+          {loan.emiAmount && <div className="loan-card__emi">{t.emiColon} {formatPaise(loan.emiAmount)}/mo</div>}
         </div>
         <div className="loan-card__outstanding">{formatPaise(loan.outstandingAmount)}</div>
       </div>
@@ -58,6 +60,7 @@ function LoanCard({ loan, onClick }: { loan: Loan; onClick: (id: string) => void
 const TODAY = new Date().toISOString().split('T')[0]
 
 export default function LoansPage() {
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const toast = useToast()
   const { items, total, status, refresh } = useLoans()
@@ -97,7 +100,7 @@ export default function LoansPage() {
   if (status === 'loading') {
     return (
       <AppShell>
-        <Header title="Loans" backTo={ROUTES.DASHBOARD} />
+        <Header title={t.loans ?? "Loans"} backTo={ROUTES.DASHBOARD} />
         <PageContainer>
           <div className="loan-skeleton" aria-busy="true">
             {['sk-1', 'sk-2', 'sk-3'].map((k) => <div key={k} className="loan-skeleton__card" />)}
@@ -110,9 +113,9 @@ export default function LoansPage() {
   if (status === 'error') {
     return (
       <AppShell>
-        <Header title="Loans" backTo={ROUTES.DASHBOARD} />
+        <Header title={t.loans ?? "Loans"} backTo={ROUTES.DASHBOARD} />
         <PageContainer>
-          <ErrorState title="Could not load loans" message="Check your connection and try again." onRetry={refresh} />
+          <ErrorState title={t.couldNotLoadLoans} message="Check your connection and try again." onRetry={refresh} />
         </PageContainer>
       </AppShell>
     )
@@ -120,11 +123,11 @@ export default function LoansPage() {
 
   return (
     <AppShell>
-      <Header title="Loans" backTo={ROUTES.DASHBOARD} />
+      <Header title={t.loans ?? "Loans"} backTo={ROUTES.DASHBOARD} />
       <PageContainer>
         <div className="loan-action-bar">
           <span className="loan-count">{total} {total === 1 ? 'loan' : 'loans'}</span>
-          <button type="button" className="loan-add-btn" onClick={() => setDrawerOpen(true)} aria-label="Add loan">
+          <button type="button" className="loan-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.addFirstLoan}>
             <Plus size={14} aria-hidden="true" /> Add Loan
           </button>
         </div>
@@ -132,9 +135,9 @@ export default function LoansPage() {
         {items.length === 0 && (
           <div className="loan-empty">
             <div className="loan-empty__icon" aria-hidden="true"><Landmark size={32} /></div>
-            <p className="loan-empty__title">No loans added</p>
-            <p className="loan-empty__desc">Track loans taken from banks or individuals, and loans given to others.</p>
-            <button type="button" className="loan-add-btn" onClick={() => setDrawerOpen(true)}><Plus size={14} aria-hidden="true" /> Add First Loan</button>
+            <p className="loan-empty__title">{t.noLoansAdded}</p>
+            <p className="loan-empty__desc">{t.trackLoansDesc}</p>
+            <button type="button" className="loan-add-btn" onClick={() => setDrawerOpen(true)}><Plus size={14} aria-hidden="true" /> {t.addFirstLoan}</button>
           </div>
         )}
 
@@ -145,42 +148,42 @@ export default function LoansPage() {
         )}
       </PageContainer>
 
-      <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title="Add Loan">
+      <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title={t.addFirstLoan}>
         <form className="loan-drawer__form" onSubmit={handleSubmit}>
           {formError && <p className="loan-drawer__error" role="alert">{formError}</p>}
           <div className="loan-drawer__field">
-            <label className="loan-drawer__label" htmlFor="loanType">Loan Type</label>
+            <label className="loan-drawer__label" htmlFor="loanType">{t.loanType}</label>
             <select id="loanType" className="loan-drawer__select" value={form.loanType} onChange={(e) => setForm((f) => ({ ...f, loanType: e.target.value as LoanType }))}>
-              <option value="TAKEN">Loan Taken (borrowed)</option>
-              <option value="GIVEN">Loan Given (lent)</option>
+              <option value="TAKEN">{t.loanTakenBorrowed}</option>
+              <option value="GIVEN">{t.loanGivenLent}</option>
             </select>
           </div>
           <div className="loan-drawer__row">
             <div className="loan-drawer__field">
-              <label className="loan-drawer__label" htmlFor="loanPrincipal">Principal (₹)</label>
+              <label className="loan-drawer__label" htmlFor="loanPrincipal">{t.principalRs}</label>
               <input id="loanPrincipal" type="number" min="1" step="0.01" required className="loan-drawer__input" value={form.principalRupees} onChange={(e) => setForm((f) => ({ ...f, principalRupees: e.target.value }))} placeholder="0.00" />
             </div>
             <div className="loan-drawer__field">
-              <label className="loan-drawer__label" htmlFor="loanRate">Interest Rate (%)</label>
+              <label className="loan-drawer__label" htmlFor="loanRate">{t.interestRatePercent}</label>
               <input id="loanRate" type="number" min="0" step="0.01" className="loan-drawer__input" value={form.interestRate} onChange={(e) => setForm((f) => ({ ...f, interestRate: e.target.value }))} placeholder="e.g. 12.5" />
             </div>
           </div>
           <div className="loan-drawer__row">
             <div className="loan-drawer__field">
-              <label className="loan-drawer__label" htmlFor="loanStart">Start Date</label>
+              <label className="loan-drawer__label" htmlFor="loanStart">{t.dateLabel}</label>
               <input id="loanStart" type="date" required className="loan-drawer__input" value={form.startDate} onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))} />
             </div>
             <div className="loan-drawer__field">
-              <label className="loan-drawer__label" htmlFor="loanEmi">EMI (₹, optional)</label>
+              <label className="loan-drawer__label" htmlFor="loanEmi">{t.emiRsOptional}</label>
               <input id="loanEmi" type="number" min="0" step="0.01" className="loan-drawer__input" value={form.emiRupees} onChange={(e) => setForm((f) => ({ ...f, emiRupees: e.target.value }))} placeholder="Monthly EMI" />
             </div>
           </div>
           <div className="loan-drawer__field">
-            <label className="loan-drawer__label" htmlFor="loanNotes">Notes (optional)</label>
+            <label className="loan-drawer__label" htmlFor="loanNotes">{t.notesOptional}</label>
             <input id="loanNotes" className="loan-drawer__input" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder="Additional details" />
           </div>
           <button type="submit" className="loan-drawer__submit-btn" disabled={submitting} aria-busy={submitting}>
-            {submitting ? 'Saving...' : 'Add Loan'}
+            {submitting ? t.loading : t.addFirstLoan}
           </button>
         </form>
       </Drawer>

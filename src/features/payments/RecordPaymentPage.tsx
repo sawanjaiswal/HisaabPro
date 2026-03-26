@@ -8,6 +8,7 @@ import { useSearchParams } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
+import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { usePaymentForm } from './usePaymentForm'
 import { PAYMENT_FORM_SECTION_LABELS } from './payment.constants'
@@ -28,6 +29,7 @@ const SECTIONS: { id: PaymentFormSection; label: string }[] = [
 
 export default function RecordPaymentPage() {
   const [searchParams] = useSearchParams()
+  const { t } = useLanguage()
   const typeParam = (searchParams.get('type') ?? 'PAYMENT_IN') as PaymentType
 
   const {
@@ -36,7 +38,7 @@ export default function RecordPaymentPage() {
     autoAllocate, toggleDiscount, updateDiscount, handleSubmit,
   } = usePaymentForm({ defaultType: typeParam })
 
-  const title = form.type === 'PAYMENT_IN' ? 'Record Payment In' : 'Record Payment Out'
+  const title = form.type === 'PAYMENT_IN' ? t.recordPaymentIn : t.recordPaymentOut
   const settlement = calculateSettlement(form.amount, form.discount)
   const unallocated = calculateUnallocatedAmount(form.amount, form.allocations.filter((a) => a.selected))
 
@@ -45,7 +47,7 @@ export default function RecordPaymentPage() {
       <Header title={title} backTo={ROUTES.PAYMENTS} />
 
       <PageContainer>
-        <nav className="pill-tabs" role="tablist" aria-label="Payment form sections">
+        <nav className="pill-tabs" role="tablist" aria-label={t.paymentFormSections}>
           {SECTIONS.map((section) => (
             <button
               key={section.id}
@@ -114,9 +116,9 @@ export default function RecordPaymentPage() {
           className="btn btn-primary btn-lg payment-save-btn"
           onClick={handleSubmit}
           disabled={isSubmitting}
-          aria-label={isSubmitting ? 'Saving payment...' : 'Save payment'}
+          aria-label={isSubmitting ? t.savingPayment : t.savePayment}
         >
-          {isSubmitting ? 'Saving...' : 'Save Payment'}
+          {isSubmitting ? t.saving : t.savePaymentBtn}
         </button>
       </div>
     </AppShell>

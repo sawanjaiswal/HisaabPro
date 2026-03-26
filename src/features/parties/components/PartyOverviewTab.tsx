@@ -11,6 +11,7 @@ import {
   StickyNote,
   CheckCircle,
 } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { PartyDetail } from '../party.types'
 import { formatAmount } from '../party.utils'
 
@@ -39,33 +40,34 @@ const InfoRow: React.FC<InfoRowProps> = ({ icon, label, value }) => (
 )
 
 export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => {
+  const { t } = useLanguage()
   const hasContactInfo = party.phone || party.email || party.companyName
   const hasBusinessInfo = party.gstin || party.pan
-  const creditLimitLabel = party.creditLimitMode === 'WARN' ? 'Warn' : 'Block'
+  const creditLimitLabel = party.creditLimitMode === 'WARN' ? t.warn : t.blockLabel
 
   return (
     <div className="party-info-card">
       {hasContactInfo && (
-        <div className="card" aria-label="Contact information">
-          <h3 className="section-title" style={{ marginBottom: 'var(--space-3)' }}>Contact</h3>
+        <div className="card" aria-label={t.contactInfo}>
+          <h3 className="section-title" style={{ marginBottom: 'var(--space-3)' }}>{t.contact}</h3>
           {party.phone && (
             <InfoRow
               icon={<Phone size={18} />}
-              label="Phone"
+              label={t.phone}
               value={party.phone}
             />
           )}
           {party.email && (
             <InfoRow
               icon={<Mail size={18} />}
-              label="Email"
+              label={t.email}
               value={party.email}
             />
           )}
           {party.companyName && (
             <InfoRow
               icon={<Building2 size={18} />}
-              label="Company"
+              label={t.company}
               value={party.companyName}
             />
           )}
@@ -73,19 +75,19 @@ export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => 
       )}
 
       {hasBusinessInfo && (
-        <div className="card" aria-label="Business information">
-          <h3 className="section-title" style={{ marginBottom: 'var(--space-3)' }}>Business</h3>
+        <div className="card" aria-label={t.businessInfoLabel}>
+          <h3 className="section-title" style={{ marginBottom: 'var(--space-3)' }}>{t.business2}</h3>
           {party.gstin && (
             <div>
               <InfoRow
                 icon={<FileText size={18} />}
-                label="GSTIN"
+                label={t.gstin}
                 value={party.gstin}
               />
               {party.gstinVerified && (
                 <span className="gstin-verified-badge">
                   <CheckCircle size={12} aria-hidden="true" />
-                  Verified{party.gstinLegalName ? ` — ${party.gstinLegalName}` : ''}
+                  {t.verified}{party.gstinLegalName ? ` — ${party.gstinLegalName}` : ''}
                 </span>
               )}
             </div>
@@ -100,33 +102,33 @@ export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => 
         </div>
       )}
 
-      <div className="card" aria-label="Credit information">
-        <h3 className="section-title" style={{ marginBottom: 'var(--space-3)' }}>Credit</h3>
+      <div className="card" aria-label={t.creditInfo}>
+        <h3 className="section-title" style={{ marginBottom: 'var(--space-3)' }}>{t.credit}</h3>
         <InfoRow
           icon={<CreditCard size={18} />}
-          label="Credit Limit"
-          value={party.creditLimit > 0 ? formatAmount(party.creditLimit) : 'No limit'}
+          label={t.creditLimit}
+          value={party.creditLimit > 0 ? formatAmount(party.creditLimit) : t.noLimit}
         />
         <InfoRow
           icon={<CreditCard size={18} />}
-          label="Credit Limit Mode"
+          label={t.creditLimitModeValue}
           value={creditLimitLabel}
         />
         {party.openingBalance && (
           <InfoRow
             icon={<FileText size={18} />}
-            label="Opening Balance"
-            value={`${formatAmount(party.openingBalance.amount)} (${party.openingBalance.type === 'RECEIVABLE' ? 'Receivable' : 'Payable'})`}
+            label={t.openingBalance}
+            value={`${formatAmount(party.openingBalance.amount)} (${party.openingBalance.type === 'RECEIVABLE' ? t.receivable : t.payable})`}
           />
         )}
       </div>
 
       {party.notes && (
-        <div className="card" aria-label="Notes">
+        <div className="card" aria-label={t.notesSection}>
           <h3 className="section-title" style={{ marginBottom: 'var(--space-3)' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
               <StickyNote size={18} aria-hidden="true" />
-              Notes
+              {t.notesSection}
             </span>
           </h3>
           <p style={{ color: 'var(--color-gray-600)', lineHeight: 1.6 }}>{party.notes}</p>

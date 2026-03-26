@@ -6,6 +6,7 @@
 
 import { Banknote } from 'lucide-react'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { PaymentAllocation } from '../payment.types'
 
 interface PaymentAllocationsTabProps {
@@ -19,13 +20,14 @@ function formatAmount(paise: number): string {
 }
 
 export function PaymentAllocationsTab({ allocations }: PaymentAllocationsTabProps) {
+  const { t } = useLanguage()
   if (allocations.length === 0) {
     return (
       <div className="payment-allocations-tab">
         <EmptyState
           icon={<Banknote size={32} aria-hidden="true" />}
-          title="Not linked to any invoice"
-          description="This payment is recorded as an advance."
+          title={t.notLinkedToInvoice}
+          description={t.advancePaymentDesc}
         />
       </div>
     )
@@ -33,7 +35,7 @@ export function PaymentAllocationsTab({ allocations }: PaymentAllocationsTabProp
 
   return (
     <div className="payment-allocations-tab">
-      <div className="payment-allocations-list" role="list" aria-label="Invoice allocations">
+      <div className="payment-allocations-list" role="list" aria-label={t.invoiceAllocations}>
         {allocations.map((alloc) => (
           <div key={alloc.id} className="card payment-alloc-card" role="listitem">
             <div className="payment-alloc-header">

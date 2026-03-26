@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { Search, X, ChevronDown } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -26,6 +27,7 @@ export const PartySearchField: React.FC<PartySearchFieldProps> = ({
   onKeyDown,
   onClear,
 }) => {
+  const { t } = useLanguage()
   return (
     <div className="party-search-input-wrap">
       <Search
@@ -38,13 +40,13 @@ export const PartySearchField: React.FC<PartySearchFieldProps> = ({
         ref={inputRef}
         type="text"
         className="input party-search-field"
-        placeholder="Search party name or phone..."
+        placeholder={t.searchPartyNamePhone}
         value={query}
         onChange={onQueryChange}
         onFocus={onFocus}
         onKeyDown={onKeyDown}
         autoComplete="off"
-        aria-label="Search customer or supplier"
+        aria-label={t.searchCustomerSupplier}
         aria-expanded={showDropdown}
         aria-haspopup="listbox"
         aria-autocomplete="list"
@@ -55,7 +57,7 @@ export const PartySearchField: React.FC<PartySearchFieldProps> = ({
           type="button"
           className="party-search-clear"
           onClick={onClear}
-          aria-label="Clear search"
+          aria-label={t.clearSearch}
         >
           <X size={14} aria-hidden="true" />
         </button>

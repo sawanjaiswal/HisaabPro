@@ -12,6 +12,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { Button } from '@/components/ui/Button'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
+import { useLanguage } from '@/hooks/useLanguage'
 import { usePartyForm } from './usePartyForm'
 import { getParty } from './party.service'
 import { paiseToRupeesNum } from './party.utils'
@@ -22,12 +23,6 @@ import type { PartyFormData, PartyDetail } from './party.types'
 import './create-party.css'
 
 type SectionId = 'basic' | 'business' | 'credit'
-
-const SECTIONS: { id: SectionId; label: string }[] = [
-  { id: 'basic', label: 'Basic Info' },
-  { id: 'business', label: 'Business' },
-  { id: 'credit', label: 'Credit' },
-]
 
 /** Convert server PartyDetail → form-compatible PartyFormData */
 function detailToFormData(detail: PartyDetail): PartyFormData {
@@ -59,6 +54,7 @@ function detailToFormData(detail: PartyDetail): PartyFormData {
 
 export default function EditPartyPage() {
   const { id } = useParams<{ id: string }>()
+  const { t } = useLanguage()
   const partyId = id ?? ''
 
   const [loadStatus, setLoadStatus] = useState<'loading' | 'error' | 'ready'>('loading')
@@ -84,7 +80,7 @@ export default function EditPartyPage() {
   if (loadStatus === 'loading') {
     return (
       <AppShell>
-        <Header title="Edit Party" backTo={`/parties/${partyId}`} />
+        <Header title={t.editParty} backTo={`/parties/${partyId}`} />
         <PageContainer>
           <Skeleton height="2.5rem" borderRadius="var(--radius-full)" />
           <div style={{ marginTop: 'var(--space-4)' }}>
@@ -98,11 +94,11 @@ export default function EditPartyPage() {
   if (loadStatus === 'error' || !initialData) {
     return (
       <AppShell>
-        <Header title="Edit Party" backTo={`/parties/${partyId}`} />
+        <Header title={t.editParty} backTo={`/parties/${partyId}`} />
         <PageContainer>
           <ErrorState
-            title="Could not load party"
-            message="Check your connection and try again."
+            title={t.couldNotLoadParty}
+            message={t.checkConnectionRetry}
             onRetry={() => window.location.reload()}
           />
         </PageContainer>
@@ -115,6 +111,7 @@ export default function EditPartyPage() {
 
 /** Inner component — only renders when data is loaded */
 function EditPartyForm({ partyId, initialData }: { partyId: string; initialData: PartyFormData }) {
+  const { t } = useLanguage()
   const {
     form,
     errors,
@@ -128,11 +125,15 @@ function EditPartyForm({ partyId, initialData }: { partyId: string; initialData:
 
   return (
     <AppShell>
-      <Header title="Edit Party" backTo={`/parties/${partyId}`} />
+      <Header title={t.editParty} backTo={`/parties/${partyId}`} />
 
       <PageContainer className="create-party-page">
-        <nav className="pill-tabs" role="tablist" aria-label="Form sections">
-          {SECTIONS.map(section => (
+        <nav className="pill-tabs" role="tablist" aria-label={t.formSections}>
+          {[
+            { id: 'basic' as SectionId, label: t.basicInfo },
+            { id: 'business' as SectionId, label: t.business2 },
+            { id: 'credit' as SectionId, label: t.credit },
+          ].map(section => (
             <button
               key={section.id}
               type="button"
@@ -150,7 +151,7 @@ function EditPartyForm({ partyId, initialData }: { partyId: string; initialData:
         <div
           id={`section-panel-${activeSection}`}
           role="tabpanel"
-          aria-label={SECTIONS.find(s => s.id === activeSection)?.label}
+          aria-label={activeSection === 'basic' ? t.basicInfo : activeSection === 'business' ? t.business2 : t.credit}
         >
           {activeSection === 'basic' && (
             <PartyFormBasic form={form} errors={errors} onUpdate={updateField} />
@@ -170,9 +171,9 @@ function EditPartyForm({ partyId, initialData }: { partyId: string; initialData:
           size="lg"
           loading={isSubmitting}
           onClick={handleSubmit}
-          aria-label="Update party"
+          aria-label={t.updatePartyLabel}
         >
-          Update Party
+          {t.updatePartyText}
         </Button>
       </div>
     </AppShell>

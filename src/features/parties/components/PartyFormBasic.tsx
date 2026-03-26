@@ -1,6 +1,7 @@
 /** Create Party — Basic info section */
 
 import { Input } from '@/components/ui/Input'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { PartyFormData, PartyType } from '../party.types'
 
 interface PartyFormBasicProps {
@@ -9,17 +10,19 @@ interface PartyFormBasicProps {
   onUpdate: <K extends keyof PartyFormData>(key: K, value: PartyFormData[K]) => void
 }
 
-const PARTY_TYPE_OPTIONS: { value: PartyType; label: string }[] = [
-  { value: 'CUSTOMER', label: 'Customer' },
-  { value: 'SUPPLIER', label: 'Supplier' },
-  { value: 'BOTH', label: 'Both' },
-]
-
 export function PartyFormBasic({ form, errors, onUpdate }: PartyFormBasicProps) {
+  const { t } = useLanguage()
+
+  const PARTY_TYPE_OPTIONS: { value: PartyType; label: string }[] = [
+    { value: 'CUSTOMER', label: t.customer },
+    { value: 'SUPPLIER', label: t.supplier },
+    { value: 'BOTH', label: t.both },
+  ]
+
   return (
     <div className="create-party-section">
       <Input
-        label="Party Name"
+        label={t.partyName}
         id="party-name"
         value={form.name}
         onChange={e => onUpdate('name', e.target.value)}
@@ -29,27 +32,27 @@ export function PartyFormBasic({ form, errors, onUpdate }: PartyFormBasicProps) 
           }
         }}
         error={errors.name}
-        placeholder="e.g. Raju Traders"
+        placeholder={t.partyNamePlaceholder}
         required
         autoComplete="off"
         aria-required="true"
       />
 
       <Input
-        label="Contact Number"
+        label={t.contactNumber}
         id="party-phone"
         type="tel"
         value={form.phone ?? ''}
         onChange={e => onUpdate('phone', e.target.value || undefined)}
         error={errors.phone}
-        placeholder="9876543210"
+        placeholder={t.phonePlaceholder}
         maxLength={10}
         inputMode="numeric"
         autoComplete="tel"
       />
 
       <div className="input-group">
-        <span className="input-label" id="party-type-label">Party Type</span>
+        <span className="input-label" id="party-type-label">{t.partyType}</span>
         <div className="pill-tabs" role="group" aria-labelledby="party-type-label">
           {PARTY_TYPE_OPTIONS.map(option => (
             <button
@@ -58,7 +61,7 @@ export function PartyFormBasic({ form, errors, onUpdate }: PartyFormBasicProps) 
               className={`pill-tab${form.type === option.value ? ' active' : ''}`}
               onClick={() => onUpdate('type', option.value)}
               aria-pressed={form.type === option.value}
-              aria-label={`Set party type to ${option.label}`}
+              aria-label={`${t.setPartyTypeTo} ${option.label}`}
             >
               {option.label}
             </button>
@@ -67,23 +70,23 @@ export function PartyFormBasic({ form, errors, onUpdate }: PartyFormBasicProps) 
       </div>
 
       <Input
-        label="Email"
+        label={t.email}
         id="party-email"
         type="email"
         value={form.email ?? ''}
         onChange={e => onUpdate('email', e.target.value || undefined)}
         error={errors.email}
-        placeholder="raju@example.com"
+        placeholder={t.emailPlaceholder}
         autoComplete="email"
         inputMode="email"
       />
 
       <Input
-        label="Company Name"
+        label={t.companyNameLabel}
         id="party-company"
         value={form.companyName ?? ''}
         onChange={e => onUpdate('companyName', e.target.value || undefined)}
-        placeholder="e.g. Raju Traders Pvt Ltd"
+        placeholder={t.companyPlaceholder}
         autoComplete="organization"
       />
     </div>

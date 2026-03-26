@@ -10,8 +10,10 @@ import { ContactPicker } from './components/ContactPicker'
 import { ImportPreview } from './components/ImportPreview'
 import { ImportProgress } from './components/ImportProgress'
 import './bulk-import.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export default function BulkImportPage() {
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const {
     status, contacts, partyType, setPartyType,
@@ -24,11 +26,11 @@ export default function BulkImportPage() {
   return (
     <AppShell>
       <Header
-        title="Import Parties"
+        title={t.importParties}
         backTo={status === 'idle' || status === 'done' ? ROUTES.PARTIES : undefined}
         actions={
           status === 'preview' ? (
-            <button className="btn btn-ghost btn-sm" onClick={reset} aria-label="Start over">
+            <button className="btn btn-ghost btn-sm" onClick={reset} aria-label={t.startOver}>
               Reset
             </button>
           ) : undefined
@@ -66,7 +68,7 @@ export default function BulkImportPage() {
 
         {status === 'error' && (
           <div className="bulk-import-error">
-            <p>{error ?? 'Something went wrong. Please try again.'}</p>
+            <p>{error ?? t.somethingWentWrong}</p>
             <button type="button" className="btn btn-primary btn-md" onClick={reset}>
               Try Again
             </button>

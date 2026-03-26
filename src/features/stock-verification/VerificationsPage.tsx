@@ -12,6 +12,7 @@ import { STATUS_LABELS } from './stock-verification.constants'
 import { VerificationCard } from './components/VerificationCard'
 import type { VerificationStatus } from './stock-verification.types'
 import './stock-verification.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 const FILTER_TABS: Array<{ value: VerificationStatus | null; label: string }> = [
   { value: null, label: 'All' },
@@ -21,6 +22,7 @@ const FILTER_TABS: Array<{ value: VerificationStatus | null; label: string }> = 
 ]
 
 export default function VerificationsPage() {
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const { verifications, status, error, refetch, createVerification, isCreating, statusFilter, setStatusFilter } = useVerifications()
 
@@ -32,17 +34,17 @@ export default function VerificationsPage() {
   return (
     <AppShell>
       <Header
-        title="Stock Verification"
+        title={t.stockVerification}
         actions={
-          <button type="button" className="sv-page__create-btn" onClick={handleCreate} disabled={isCreating} aria-label="New stock count">
+          <button type="button" className="sv-page__create-btn" onClick={handleCreate} disabled={isCreating} aria-label={t.newStockCount}>
             <Plus size={18} aria-hidden="true" />
-            New Count
+            {t.newCount}
           </button>
         }
       />
 
       <PageContainer>
-        <nav className="sv-tabs" aria-label="Filter by status">
+        <nav className="sv-tabs" aria-label={t.status}>
           {FILTER_TABS.map((tab) => (
             <button
               key={tab.label}
@@ -63,17 +65,17 @@ export default function VerificationsPage() {
         )}
 
         {status === 'error' && (
-          <ErrorState title="Could not load verifications" message={error?.message} onRetry={refetch} />
+          <ErrorState title={t.couldNotLoadVerifications} message={error?.message} onRetry={refetch} />
         )}
 
         {status === 'success' && verifications.length === 0 && (
           <EmptyState
             icon={<ClipboardList size={28} aria-hidden="true" />}
-            title="No verifications yet"
-            description="Start a stock count to compare physical stock with your records."
+            title={t.noVerificationsYet}
+            description={t.startStockCountDesc}
             action={
               <button type="button" className="sv-page__create-btn" onClick={handleCreate} disabled={isCreating}>
-                <Plus size={16} aria-hidden="true" /> Start First Count
+                <Plus size={16} aria-hidden="true" /> {t.startFirstCount}
               </button>
             }
           />

@@ -6,6 +6,7 @@
 
 import { Share2, MessageCircle, Mail, Printer } from 'lucide-react'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { useLanguage } from '@/hooks/useLanguage'
 import { formatInvoiceDate } from '../invoice-format.utils'
 import { SHARE_CHANNEL_LABELS } from '../invoice.constants'
 import type { DocumentShareLog } from '../invoice.types'
@@ -16,20 +17,21 @@ interface InvoiceSharePanelProps {
 }
 
 export function InvoiceSharePanel({ shareLogs, onShare }: InvoiceSharePanelProps) {
+  const { t } = useLanguage()
   if (shareLogs.length === 0) {
     return (
       <div className="invoice-share-tab">
         <EmptyState
           icon={<Share2 size={32} aria-hidden="true" />}
-          title="Not shared yet"
-          description="Share this invoice via WhatsApp, email, or print."
+          title={t.notSharedYet}
+          description={t.notSharedYetDesc}
           action={
             <button
               className="btn btn-primary btn-md"
-              aria-label="Share invoice now"
+              aria-label={t.shareInvoiceNow}
               onClick={onShare}
             >
-              Share Invoice
+              {t.shareInvoice}
             </button>
           }
         />
@@ -39,7 +41,7 @@ export function InvoiceSharePanel({ shareLogs, onShare }: InvoiceSharePanelProps
 
   return (
     <div className="invoice-share-tab">
-      <ul className="share-timeline card" role="list" aria-label="Share history">
+      <ul className="share-timeline card" role="list" aria-label={t.shareHistoryAriaLabel}>
         {shareLogs.map((log) => (
           <li key={log.id} className="share-timeline-item">
             <span
@@ -62,7 +64,7 @@ export function InvoiceSharePanel({ shareLogs, onShare }: InvoiceSharePanelProps
               )}
               <div className="share-timeline-date">{formatInvoiceDate(log.sentAt)}</div>
             </div>
-            <span className="share-timeline-format" aria-label={`Format: ${log.format}`}>
+            <span className="share-timeline-format" aria-label={`${t.formatLabel} ${log.format}`}>
               {log.format}
             </span>
           </li>
@@ -71,10 +73,10 @@ export function InvoiceSharePanel({ shareLogs, onShare }: InvoiceSharePanelProps
       <div style={{ marginTop: 'var(--space-4)', display: 'flex', justifyContent: 'center' }}>
         <button
           className="btn btn-primary btn-md"
-          aria-label="Share invoice again"
+          aria-label={t.shareAgain}
           onClick={onShare}
         >
-          Share Again
+          {t.shareAgain}
         </button>
       </div>
     </div>

@@ -13,6 +13,7 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { useOutstanding } from './useOutstanding'
 import { OutstandingSummaryBar } from './components/OutstandingSummaryBar'
@@ -30,6 +31,7 @@ import './outstanding-skeleton.css'
 
 export default function OutstandingPage() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const [searchParams] = useSearchParams()
 
   // Read initial tab from URL: ?tab=receivable|payable → maps to RECEIVABLE|PAYABLE
@@ -65,7 +67,7 @@ export default function OutstandingPage() {
 
   return (
     <AppShell>
-      <Header title="Outstanding" backTo={ROUTES.DASHBOARD} />
+      <Header title={t.outstandingTitle} backTo={ROUTES.DASHBOARD} />
 
       <PageContainer>
         {/* Summary cards */}
@@ -94,8 +96,8 @@ export default function OutstandingPage() {
         {/* Error */}
         {status === 'error' && (
           <ErrorState
-            title="Could not load outstanding"
-            message="Check your connection and try again."
+            title={t.couldNotLoadOutstanding}
+            message={t.checkConnectionRetry}
             onRetry={refresh}
           />
         )}
@@ -104,14 +106,14 @@ export default function OutstandingPage() {
         {status === 'success' && data && data.parties.length === 0 && (
           <EmptyState
             icon={<Banknote size={40} aria-hidden="true" />}
-            title="All clear! No outstanding."
-            description="When you create invoices, outstanding will show here."
+            title={t.allClearNoOutstanding}
+            description={t.outstandingEmptyDesc}
           />
         )}
 
         {/* Party list */}
         {status === 'success' && data && data.parties.length > 0 && (
-          <div className="outstanding-list" role="list" aria-label="Outstanding parties">
+          <div className="outstanding-list" role="list" aria-label={t.outstandingPartiesList}>
             {data.parties.map((party) => (
               <div key={party.partyId} role="listitem">
                 <OutstandingCard
@@ -138,6 +140,7 @@ export default function OutstandingPage() {
 
 /** Aging bar chart — horizontal stacked bars */
 function AgingChart({ aging }: { aging: OutstandingAging }) {
+  const { t } = useLanguage()
   const total = calculateAgingTotal(aging)
   if (total === 0) return null
 
@@ -145,9 +148,9 @@ function AgingChart({ aging }: { aging: OutstandingAging }) {
   const buckets = Object.keys(AGING_BUCKET_LABELS) as Array<keyof typeof AGING_BUCKET_LABELS>
 
   return (
-    <div className="outstanding-aging-chart" aria-label="Aging breakdown">
-      <h2 className="outstanding-aging-title">Aging Breakdown</h2>
-      <div className="outstanding-aging-bar" role="img" aria-label="Aging bar chart">
+    <div className="outstanding-aging-chart" aria-label={t.agingBreakdown}>
+      <h2 className="outstanding-aging-title">{t.agingBreakdown}</h2>
+      <div className="outstanding-aging-bar" role="img" aria-label={t.agingBarChart}>
         {buckets.map((bucket) => {
           const pct = percentages[bucket]
           if (pct <= 0) return null

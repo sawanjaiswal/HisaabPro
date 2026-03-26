@@ -87,13 +87,13 @@
   white-space: nowrap;
 }
 
-.unit-category-badge[data-category="WEIGHT"] { background: #FEF3C7; color: #92400E; }
-.unit-category-badge[data-category="VOLUME"] { background: #DBEAFE; color: #1E40AF; }
-.unit-category-badge[data-category="COUNT"]  { background: #D1FAE5; color: #065F46; }
-.unit-category-badge[data-category="LENGTH"] { background: #EDE9FE; color: #5B21B6; }
-.unit-category-badge[data-category="AREA"]   { background: #FCE7F3; color: #9D174D; }
-.unit-category-badge[data-category="SERVICE"]   { background: #FFF7ED; color: #9A3412; }
-.unit-category-badge[data-category="PACKAGING"] { background: #F0F9FF; color: #0C4A6E; }
+.unit-category-badge[data-category="WEIGHT"] { background: var(--color-warning-50); color: var(--color-warning-800); }
+.unit-category-badge[data-category="VOLUME"] { background: var(--color-info-50); color: var(--color-info-800); }
+.unit-category-badge[data-category="COUNT"]  { background: var(--color-success-50); color: var(--color-success-800); }
+.unit-category-badge[data-category="LENGTH"] { background: var(--color-purple-50, #EDE9FE); color: var(--color-purple-800, #5B21B6); }
+.unit-category-badge[data-category="AREA"]   { background: var(--color-pink-50, #FCE7F3); color: var(--color-pink-800, #9D174D); }
+.unit-category-badge[data-category="SERVICE"]   { background: var(--color-orange-50, #FFF7ED); color: var(--color-orange-800, #9A3412); }
+.unit-category-badge[data-category="PACKAGING"] { background: var(--color-sky-50, #F0F9FF); color: var(--color-sky-800, #0C4A6E); }
 
 /* ─── Sheet form ───────────────────────────────────────────────────────── */
 

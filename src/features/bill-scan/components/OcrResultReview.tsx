@@ -3,6 +3,7 @@
 import { Trash2, AlertTriangle, CheckCircle, HelpCircle } from 'lucide-react'
 import type { BillScanResult, ExtractedItem } from '../bill-scan.types'
 import { CONFIDENCE_HIGH, CONFIDENCE_MEDIUM } from '../bill-scan.constants'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface OcrResultReviewProps {
   result: BillScanResult
@@ -13,13 +14,14 @@ interface OcrResultReviewProps {
 }
 
 function ConfidenceBadge({ value }: { value: number }) {
+  const { t } = useLanguage()
   if (value >= CONFIDENCE_HIGH) {
-    return <CheckCircle size={16} className="confidence-high" aria-label={`${value}% confidence`} />
+    return <CheckCircle size={16} className="confidence-high" aria-label={`${value}% ${t.confidenceLabel}`} />
   }
   if (value >= CONFIDENCE_MEDIUM) {
-    return <HelpCircle size={16} className="confidence-medium" aria-label={`${value}% confidence — verify this item`} />
+    return <HelpCircle size={16} className="confidence-medium" aria-label={`${value}% ${t.confidenceLabel} — ${t.verifyThisItem}`} />
   }
-  return <AlertTriangle size={16} className="confidence-low" aria-label={`${value}% confidence — likely incorrect`} />
+  return <AlertTriangle size={16} className="confidence-low" aria-label={`${value}% ${t.confidenceLabel} — ${t.likelyIncorrect}`} />
 }
 
 function formatPaise(paise: number | null): string {
@@ -34,6 +36,7 @@ function parsePaise(value: string): number | null {
 }
 
 export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm, onRetry }: OcrResultReviewProps) {
+  const { t } = useLanguage()
   const { extractedItems, extractedTotal, confidence, processingTimeMs } = result
   const itemsTotal = extractedItems.reduce((sum, item) => sum + (item.total ?? 0), 0)
 
@@ -64,14 +67,14 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
       {extractedItems.length === 0 ? (
         <div className="ocr-review-empty">
           <AlertTriangle size={32} aria-hidden="true" />
-          <p>No items could be extracted. Try a clearer photo.</p>
+          <p>{t.noItemsExtracted}</p>
           <button type="button" className="btn btn-secondary btn-md" onClick={onRetry}>
             Try Again
           </button>
         </div>
       ) : (
         <>
-          <div className="ocr-review-items" role="list" aria-label="Extracted items">
+          <div className="ocr-review-items" role="list" aria-label={t.lineItems}>
             {extractedItems.map((item) => (
               <div key={item.id} className="ocr-review-item" role="listitem">
                 <div className="ocr-review-item-header">
@@ -80,7 +83,7 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
                     className="ocr-review-item-name"
                     value={item.name}
                     onChange={(e) => onUpdateItem(item.id, { name: e.target.value })}
-                    aria-label="Item name"
+                    aria-label={t.productName}
                   />
                   <button
                     type="button"
@@ -141,14 +144,14 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
 
           <div className="ocr-review-totals">
             <div className="ocr-review-total-row">
-              <span>Items Total</span>
+              <span>{t.itemsTotal}</span>
               <span className="ocr-review-total-value">
                 Rs {(itemsTotal / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
               </span>
             </div>
             {extractedTotal !== null && (
               <div className="ocr-review-total-row">
-                <span>Bill Total (scanned)</span>
+                <span>{t.billTotalScanned}</span>
                 <span className={`ocr-review-total-value ${Math.abs(extractedTotal - itemsTotal) > 100 ? 'ocr-review-total-mismatch' : ''}`}>
                   Rs {(extractedTotal / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </span>
@@ -162,7 +165,7 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
               className="btn btn-primary btn-lg"
               onClick={onConfirm}
               disabled={extractedItems.length === 0}
-              aria-label="Add items to invoice"
+              aria-label={t.addXItemsToInvoice}
             >
               Add {extractedItems.length} Item{extractedItems.length !== 1 ? 's' : ''} to Invoice
             </button>

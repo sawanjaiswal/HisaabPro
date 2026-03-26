@@ -1,4 +1,5 @@
 import { formatPaise } from '@/lib/format'
+import { useLanguage } from '@/hooks/useLanguage'
 import {
   CHEQUE_STATUS_LABELS,
   CHEQUE_STATUS_COLORS,
@@ -17,8 +18,10 @@ interface ChequeCardProps {
 }
 
 export function ChequeCard({ cheque, onStatusUpdate }: ChequeCardProps) {
+  const { t } = useLanguage()
+
   return (
-    <div className="cheque-card" role="article" aria-label={`Cheque #${cheque.chequeNumber}`}>
+    <div className="cheque-card" role="article" aria-label={`${t.chequeAriaLabel} #${cheque.chequeNumber}`}>
       <div className="cheque-card__header">
         <div>
           <div className="cheque-card__number">
@@ -49,17 +52,17 @@ export function ChequeCard({ cheque, onStatusUpdate }: ChequeCardProps) {
             type="button"
             className="cheque-card__action-btn"
             onClick={() => onStatusUpdate(cheque.id, 'CLEARED')}
-            aria-label="Mark cheque as cleared"
+            aria-label={t.markChequeCleared}
           >
-            Mark Cleared
+            {t.markCleared}
           </button>
           <button
             type="button"
             className="cheque-card__action-btn cheque-card__action-btn--danger"
             onClick={() => onStatusUpdate(cheque.id, 'BOUNCED')}
-            aria-label="Mark cheque as bounced"
+            aria-label={t.markChequeBounced}
           >
-            Mark Bounced
+            {t.markBounced}
           </button>
         </div>
       )}

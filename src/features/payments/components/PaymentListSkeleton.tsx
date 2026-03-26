@@ -2,15 +2,17 @@
 
 import React from 'react'
 import { Skeleton } from '@/components/feedback/Skeleton'
+import { useLanguage } from '@/hooks/useLanguage'
 
 const SKELETON_COUNT = 5
 
 export const PaymentListSkeleton: React.FC = () => {
+  const { t } = useLanguage()
   return (
     <div
       className="payment-skeleton"
       role="status"
-      aria-label="Loading payments"
+      aria-label={t.loadingPayments}
     >
       {Array.from({ length: SKELETON_COUNT }, (_, i) => (
         <div

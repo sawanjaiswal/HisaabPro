@@ -7,6 +7,7 @@ import { useState, useRef } from 'react'
 import type { CreateCouponInput, DiscountType, CouponAppliesTo } from '../coupon.types'
 import { CODE_MIN_LENGTH, CODE_MAX_LENGTH, CODE_PATTERN, MAX_PERCENTAGE_BASIS_POINTS, PERCENTAGE_CAP_MSG, DISCOUNT_TYPE_LABELS, APPLIES_TO_LABELS } from '../coupon.constants'
 import '../coupon.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface CouponFormProps {
   onSubmit: (data: CreateCouponInput) => Promise<unknown>
@@ -14,6 +15,7 @@ interface CouponFormProps {
 }
 
 export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
+  const { t } = useLanguage()
   const [code, setCode] = useState('')
   const [description, setDescription] = useState('')
   const [discountType, setDiscountType] = useState<DiscountType>('PERCENTAGE')
@@ -83,7 +85,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
 
   return (
     <form className="coupon-form" onSubmit={handleSubmit}>
-      <h2 className="coupon-form-title">Create Coupon</h2>
+      <h2 className="coupon-form-title">{t.createCoupon}</h2>
 
       {error && (
         <div className="coupon-form-error" role="alert">{error}</div>
@@ -105,7 +107,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
       </div>
 
       <div className="coupon-form-field">
-        <label htmlFor="coupon-desc">Description (internal)</label>
+        <label htmlFor="coupon-desc">{t.descriptionInternal}</label>
         <input
           id="coupon-desc"
           type="text"
@@ -117,7 +119,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
 
       <div className="coupon-form-row">
         <div className="coupon-form-field">
-          <label htmlFor="coupon-type">Discount Type</label>
+          <label htmlFor="coupon-type">{t.discountType}</label>
           <select
             id="coupon-type"
             value={discountType}
@@ -131,7 +133,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
 
         <div className="coupon-form-field">
           <label htmlFor="coupon-value">
-            {discountType === 'PERCENTAGE' ? 'Value (basis points)' : 'Value (paise)'}
+            {discountType === 'PERCENTAGE' ? t.valueBasisPoints : t.valuePaise}
           </label>
           <input
             id="coupon-value"
@@ -147,19 +149,19 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
 
       <div className="coupon-form-row">
         <div className="coupon-form-field">
-          <label htmlFor="coupon-max-uses">Max Uses (total)</label>
+          <label htmlFor="coupon-max-uses">{t.maxUsesTotal}</label>
           <input
             id="coupon-max-uses"
             type="number"
             value={maxUses}
             onChange={(e) => setMaxUses(e.target.value)}
-            placeholder="Empty = unlimited"
+            placeholder={t.emptyUnlimited}
             min={1}
           />
         </div>
 
         <div className="coupon-form-field">
-          <label htmlFor="coupon-per-user">Max Per User</label>
+          <label htmlFor="coupon-per-user">{t.maxPerUser}</label>
           <input
             id="coupon-per-user"
             type="number"
@@ -173,7 +175,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
 
       <div className="coupon-form-row">
         <div className="coupon-form-field">
-          <label htmlFor="coupon-from">Valid From</label>
+          <label htmlFor="coupon-from">{t.validFrom}</label>
           <input
             id="coupon-from"
             type="datetime-local"
@@ -184,7 +186,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
         </div>
 
         <div className="coupon-form-field">
-          <label htmlFor="coupon-until">Valid Until</label>
+          <label htmlFor="coupon-until">{t.validUntilCoupon}</label>
           <input
             id="coupon-until"
             type="datetime-local"
@@ -196,7 +198,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
       </div>
 
       <div className="coupon-form-field">
-        <label htmlFor="coupon-applies">Applies To</label>
+        <label htmlFor="coupon-applies">{t.appliesTo}</label>
         <select
           id="coupon-applies"
           value={appliesTo}
@@ -217,7 +219,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
           className="coupon-form-btn-submit"
           disabled={submitting}
         >
-          {submitting ? 'Creating...' : 'Create Coupon'}
+          {submitting ? t.creating : t.createCoupon}
         </button>
       </div>
     </form>

@@ -11,8 +11,10 @@ import { BillCaptureInput } from './components/BillCaptureInput'
 import { ScanProgress } from './components/ScanProgress'
 import { OcrResultReview } from './components/OcrResultReview'
 import './bill-scan.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export default function BillScanPage() {
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const { status, progress, result, error, processImage, updateItem, removeItem, reset } = useBillScan()
 
@@ -28,11 +30,11 @@ export default function BillScanPage() {
   return (
     <AppShell>
       <Header
-        title="Scan Bill"
+        title={t.scanBill}
         backTo={status === 'idle' ? ROUTES.INVOICES : undefined}
         actions={
           status !== 'idle' && status !== 'processing' ? (
-            <button className="btn btn-ghost btn-sm" onClick={reset} aria-label="Start over">
+            <button className="btn btn-ghost btn-sm" onClick={reset} aria-label={t.startOver}>
               Reset
             </button>
           ) : undefined
@@ -66,8 +68,8 @@ export default function BillScanPage() {
                 <path d="M15 9l-6 6M9 9l6 6" />
               </svg>
             </div>
-            <h3 className="bill-scan-error-title">Could not read this bill</h3>
-            <p className="bill-scan-error-message">{error ?? 'Try a clearer, well-lit photo of a printed bill.'}</p>
+            <h3 className="bill-scan-error-title">{t.couldNotReadBill}</h3>
+            <p className="bill-scan-error-message">{error ?? t.tryClearerPhoto}</p>
             <button type="button" className="btn btn-primary btn-md" onClick={reset}>
               Try Again
             </button>

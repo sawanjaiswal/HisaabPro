@@ -5,6 +5,7 @@
  */
 
 import { Plus, AlertTriangle } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { LineItemEditor } from './LineItemEditor'
 import { PartySearchInput } from './PartySearchInput'
 import { ProductSearchInput } from './ProductSearchInput'
@@ -42,6 +43,7 @@ export function InvoiceItemsSection({
   onRemoveLineItem,
   onToggleProductSearch,
 }: InvoiceItemsSectionProps) {
+  const { t } = useLanguage()
   const addedProductIds = lineItems.map((item) => item.productId)
 
   return (
@@ -70,7 +72,7 @@ export function InvoiceItemsSection({
             key={item.productId}
             item={{
               ...item,
-              productName: productNames[item.productId] ?? `Item ${index + 1}`,
+              productName: productNames[item.productId] ?? `${t.item} ${index + 1}`,
               discountAmount,
               lineTotal,
               profit,
@@ -92,13 +94,13 @@ export function InvoiceItemsSection({
         <div className={`stock-warnings${hasStockBlocks ? ' stock-warnings--block' : ''}`} role="alert">
           <div className="stock-warnings-title">
             <AlertTriangle size={16} aria-hidden="true" />
-            {hasStockBlocks ? 'Insufficient Stock' : 'Low Stock Warning'}
+            {hasStockBlocks ? t.insufficientStock : t.lowStockWarning}
           </div>
           {stockWarnings.map((w) => (
             <div key={w.productId} className="stock-warning-item">
               <span className="stock-warning-name">{w.productName}</span>
               <span className="stock-warning-detail">
-                {w.currentStock} {w.requestedUnit} available, {w.requestedQty} requested
+                {w.currentStock} {w.requestedUnit} {t.availableLabel}, {w.requestedQty} {t.requestedLabel}
               </span>
             </div>
           ))}
@@ -122,11 +124,11 @@ export function InvoiceItemsSection({
         type="button"
         className="add-item-btn"
         onClick={onToggleProductSearch}
-        aria-label={showProductSearch ? 'Hide product search' : 'Add line item'}
+        aria-label={showProductSearch ? t.hideProductSearch : t.addLineItemLabel}
         aria-expanded={showProductSearch}
       >
         <Plus size={18} aria-hidden="true" />
-        {showProductSearch ? 'Hide Search' : 'Add Item'}
+        {showProductSearch ? t.hideSearch : t.addItem}
       </button>
     </div>
   )

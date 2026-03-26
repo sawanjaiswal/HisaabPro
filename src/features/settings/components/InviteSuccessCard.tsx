@@ -1,4 +1,5 @@
 import { MessageCircle, CheckCircle } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 
 /** WhatsApp brand green — uses CSS variable --color-whatsapp from globals.css */
 const WHATSAPP_GREEN = 'var(--color-whatsapp)'
@@ -11,6 +12,7 @@ interface InviteSuccessCardProps {
 }
 
 export function InviteSuccessCard({ code, staffName, onShareWhatsApp, onBackToStaff }: InviteSuccessCardProps) {
+  const { t } = useLanguage()
   return (
     <div style={{ textAlign: 'center', padding: 'var(--space-12) var(--space-4)' }}>
       <CheckCircle
@@ -19,10 +21,10 @@ export function InviteSuccessCard({ code, staffName, onShareWhatsApp, onBackToSt
         style={{ color: 'var(--color-success-600)', marginBottom: 'var(--space-4)' }}
       />
       <p style={{ fontWeight: 700, fontSize: '1.0625rem', color: 'var(--color-gray-900)', marginBottom: 'var(--space-2)' }}>
-        Invite Sent!
+        {t.inviteSent}
       </p>
       <p style={{ color: 'var(--color-gray-500)', marginBottom: 'var(--space-6)', lineHeight: 1.5 }}>
-        Share this code with {staffName}
+        {t.shareCodeWith} {staffName}
       </p>
       <div
         style={{
@@ -37,7 +39,7 @@ export function InviteSuccessCard({ code, staffName, onShareWhatsApp, onBackToSt
           color: 'var(--color-primary-700)',
           marginBottom: 'var(--space-8)',
         }}
-        aria-label={`Invite code: ${code}`}
+        aria-label={`${t.inviteCodeLabel}: ${code}`}
       >
         {code}
       </div>
@@ -49,7 +51,7 @@ export function InviteSuccessCard({ code, staffName, onShareWhatsApp, onBackToSt
           onClick={onShareWhatsApp}
         >
           <MessageCircle size={18} aria-hidden="true" />
-          Share via WhatsApp
+          {t.shareWhatsApp}
         </button>
         <button
           type="button"
@@ -57,7 +59,7 @@ export function InviteSuccessCard({ code, staffName, onShareWhatsApp, onBackToSt
           style={{ background: 'var(--color-gray-100)', color: 'var(--color-gray-700)' }}
           onClick={onBackToStaff}
         >
-          Back to Staff
+          {t.backToStaff}
         </button>
       </div>
     </div>

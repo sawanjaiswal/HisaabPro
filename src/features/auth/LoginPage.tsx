@@ -3,8 +3,10 @@ import { Turnstile } from '../../components/ui/Turnstile'
 import { APP_NAME, IS_DEV } from '../../config/app.config'
 import { useLogin } from './useLogin'
 import './LoginPage.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export default function LoginPage() {
+  const { t } = useLanguage()
   const {
     username, setUsername,
     password, setPassword,
@@ -39,7 +41,7 @@ export default function LoginPage() {
                 id="username"
                 type="text"
                 className="login-page__input"
-                placeholder="Enter username"
+                placeholder={t.enterUsername}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 autoComplete="username"
@@ -55,7 +57,7 @@ export default function LoginPage() {
                 id="password"
                 type="password"
                 className="login-page__input"
-                placeholder="Enter password"
+                placeholder={t.enterPassword}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
@@ -78,7 +80,7 @@ export default function LoginPage() {
             type="submit"
             className="login-page__submit"
             disabled={!isValid || loading}
-            aria-label="Sign in"
+            aria-label={t.signIn}
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>

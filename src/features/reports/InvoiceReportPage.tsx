@@ -35,10 +35,12 @@ import type { StatusFilterValue } from './components/InvoiceReportFilter'
 import './report-shared.css'
 import './report-cards.css'
 import './report-shared-ui.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function InvoiceReportPage() {
+  const { t } = useLanguage()
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -46,7 +48,7 @@ export default function InvoiceReportPage() {
     ? 'purchase'
     : 'sale'
 
-  const title = type === 'sale' ? 'Sales Report' : 'Purchase Report'
+  const title = type === 'sale' ? t.salesReport : t.purchaseReport
 
   const { data, status, filters, setFilter, loadMore, refresh } = useInvoiceReport({ type })
 
@@ -126,10 +128,10 @@ export default function InvoiceReportPage() {
 
   const summaryItems = data
     ? [
-        { label: 'Total Invoices', value: String(data.data.summary.totalInvoices) },
-        { label: 'Total Amount', value: formatAmount(data.data.summary.totalAmount), color: 'var(--color-primary-600)' },
-        { label: 'Paid', value: formatAmount(data.data.summary.totalPaid), color: 'var(--color-success-600)' },
-        { label: 'Outstanding', value: formatAmount(data.data.summary.totalOutstanding), color: 'var(--color-error-600)' },
+        { label: t.totalInvoices, value: String(data.data.summary.totalInvoices) },
+        { label: t.totalAmount, value: formatAmount(data.data.summary.totalAmount), color: 'var(--color-primary-600)' },
+        { label: t.paid, value: formatAmount(data.data.summary.totalPaid), color: 'var(--color-success-600)' },
+        { label: t.outstanding, value: formatAmount(data.data.summary.totalOutstanding), color: 'var(--color-error-600)' },
       ]
     : []
 
@@ -153,8 +155,8 @@ export default function InvoiceReportPage() {
         {status === 'loading' && <ReportSkeleton rows={6} />}
         {status === 'error' && (
           <ErrorState
-            title={`Could not load ${title.toLowerCase()}`}
-            message="Check your connection and try again."
+            title={`${t.couldNotLoadReport} ${title.toLowerCase()}`}
+            message={t.checkConnectionRetry}
             onRetry={refresh}
           />
         )}
@@ -164,9 +166,9 @@ export default function InvoiceReportPage() {
             <div className="report-empty-icon" aria-hidden="true">
               <FileText size={28} />
             </div>
-            <p className="report-empty-title">No invoices found</p>
+            <p className="report-empty-title">{t.noInvoicesFound}</p>
             <p className="report-empty-desc">
-              Try adjusting the date range or filters above.
+              {t.tryAdjustingFilters}
             </p>
           </div>
         )}

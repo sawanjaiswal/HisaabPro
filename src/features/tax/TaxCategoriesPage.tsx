@@ -14,6 +14,7 @@ import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { ROUTES } from '@/config/routes.config'
 import { useAuth } from '@/context/AuthContext'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useTaxCategories } from './useTaxCategories'
 import { TaxCategoryCard } from './components/TaxCategoryCard'
 import { TaxCategoriesSkeleton } from './components/TaxCategoriesSkeleton'
@@ -21,38 +22,39 @@ import './tax-categories.css'
 
 export default function TaxCategoriesPage() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const { user } = useAuth()
   const businessId = user?.businessId ?? ''
   const { categories, status, refresh, seedDefaults } = useTaxCategories(businessId)
 
   return (
     <AppShell>
-      <Header title="Tax Rates" backTo={ROUTES.SETTINGS_GST} />
+      <Header title={t.taxRates} backTo={ROUTES.SETTINGS_GST} />
 
       <PageContainer>
         <div className="tax-cat-page">
           {status === 'loading' && <TaxCategoriesSkeleton />}
 
           {status === 'error' && (
-            <ErrorState title="Could not load tax categories" message="Check your connection and try again." onRetry={refresh} />
+            <ErrorState title={t.couldNotLoadTaxCategories} message={t.checkConnectionRetry} onRetry={refresh} />
           )}
 
           {status === 'success' && categories.length === 0 && (
             <EmptyState
               icon={<Receipt size={40} aria-hidden="true" />}
-              title="No tax categories"
-              description="Create custom GST rates or seed the standard defaults."
+              title={t.noTaxCategories}
+              description={t.noTaxCategoriesDesc}
               action={
                 <div className="tax-cat-empty-actions">
-                  <button className="btn btn-primary btn-md" onClick={() => seedDefaults(businessId)} aria-label="Seed default GST rates">Seed Defaults</button>
-                  <button className="btn btn-outline btn-md" onClick={() => navigate(ROUTES.SETTINGS_TAX_RATE_NEW)} aria-label="Create custom tax rate">Create Custom</button>
+                  <button className="btn btn-primary btn-md" onClick={() => seedDefaults(businessId)} aria-label={t.seedDefaultGstRates}>{t.seedDefaults}</button>
+                  <button className="btn btn-outline btn-md" onClick={() => navigate(ROUTES.SETTINGS_TAX_RATE_NEW)} aria-label={t.createCustomTaxRate}>{t.create}</button>
                 </div>
               }
             />
           )}
 
           {status === 'success' && categories.length > 0 && (
-            <div className="tax-cat-list" role="list" aria-label="Tax categories">
+            <div className="tax-cat-list" role="list" aria-label={t.taxCategoriesList}>
               {categories.map((cat) => (
                 <div key={cat.id} role="listitem">
                   <TaxCategoryCard category={cat} onClick={(id) => navigate(ROUTES.SETTINGS_TAX_RATE_EDIT.replace(':id', id))} />
@@ -63,7 +65,7 @@ export default function TaxCategoriesPage() {
         </div>
       </PageContainer>
 
-      <button className="fab" onClick={() => navigate(ROUTES.SETTINGS_TAX_RATE_NEW)} aria-label="Create new tax rate">
+      <button className="fab" onClick={() => navigate(ROUTES.SETTINGS_TAX_RATE_NEW)} aria-label={t.createNewTaxRate}>
         <Plus size={24} aria-hidden="true" />
       </button>
     </AppShell>

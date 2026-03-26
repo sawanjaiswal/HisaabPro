@@ -11,8 +11,10 @@ import { MappingPreview } from './components/MappingPreview'
 import { ImportProgress } from '@/features/bulk-import/components/ImportProgress'
 import type { BulkImportResult } from '@/features/bulk-import/bulk-import.types'
 import './data-import.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export default function DataImportPage() {
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const {
     status, dataType, headers, mappings, rows, importResult, progress, error, validCount,
@@ -30,11 +32,11 @@ export default function DataImportPage() {
   return (
     <AppShell>
       <Header
-        title="Import Data"
+        title={t.importData}
         backTo={status === 'idle' ? ROUTES.SETTINGS : undefined}
         actions={
           status !== 'idle' && status !== 'importing' ? (
-            <button className="btn btn-ghost btn-sm" onClick={reset} aria-label="Start over">
+            <button className="btn btn-ghost btn-sm" onClick={reset} aria-label={t.startOver}>
               Reset
             </button>
           ) : undefined
@@ -76,7 +78,7 @@ export default function DataImportPage() {
 
         {status === 'error' && (
           <div className="data-import-error">
-            <p>{error ?? 'Something went wrong.'}</p>
+            <p>{error ?? t.somethingWentWrong}</p>
             <button type="button" className="btn btn-primary btn-md" onClick={reset}>
               Try Again
             </button>

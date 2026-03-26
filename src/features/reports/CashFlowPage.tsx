@@ -17,6 +17,7 @@ import { formatPaise } from '@/lib/format'
 import { getCashFlow } from './finance.service'
 import type { CashFlowData, CashFlowSection } from './finance.types'
 import './report-finance.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 function CashFlowSectionCard({ section }: { section: CashFlowSection }) {
   const isPositive = section.netAmount >= 0
@@ -51,6 +52,7 @@ function getMonthRange() {
 }
 
 export default function CashFlowPage() {
+  const { t } = useLanguage()
   const toast = useToast()
   const [dateRange, setDateRange] = useState(getMonthRange)
   const [data, setData] = useState<CashFlowData | null>(null)
@@ -65,7 +67,7 @@ export default function CashFlowPage() {
       .catch((err: unknown) => {
         if (err instanceof Error && err.name === 'AbortError') return
         setFetchStatus('error')
-        toast.error(err instanceof ApiError ? err.message : 'Failed to load cash flow')
+        toast.error(err instanceof ApiError ? err.message : t.failedLoadCashFlow)
       })
     return () => controller.abort()
   }, [dateRange, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -75,7 +77,7 @@ export default function CashFlowPage() {
   if (fetchStatus === 'loading') {
     return (
       <AppShell>
-        <Header title="Cash Flow" backTo={ROUTES.REPORTS} />
+        <Header title={t.cashFlow} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <div className="finance-skeleton" aria-busy="true">
             {['sk-1', 'sk-2', 'sk-3'].map((k) => <div key={k} className="finance-skeleton__section" />)}
@@ -88,9 +90,9 @@ export default function CashFlowPage() {
   if (fetchStatus === 'error') {
     return (
       <AppShell>
-        <Header title="Cash Flow" backTo={ROUTES.REPORTS} />
+        <Header title={t.cashFlow} backTo={ROUTES.REPORTS} />
         <PageContainer>
-          <ErrorState title="Could not load cash flow" message="Check your connection and try again." onRetry={refresh} />
+          <ErrorState title={t.couldNotLoadCashFlow} message={t.checkConnectionRetry} onRetry={refresh} />
         </PageContainer>
       </AppShell>
     )
@@ -100,14 +102,14 @@ export default function CashFlowPage() {
 
   return (
     <AppShell>
-      <Header title="Cash Flow Statement" backTo={ROUTES.REPORTS} />
+      <Header title={t.cashFlowStatement} backTo={ROUTES.REPORTS} />
       <PageContainer>
         <div className="finance-date-bar">
-          <span className="finance-date-bar__label">From</span>
-          <input type="date" className="finance-date-bar__input" value={dateRange.from} onChange={(e) => setDateRange((r) => ({ ...r, from: e.target.value }))} aria-label="From date" />
-          <span className="finance-date-bar__label">To</span>
-          <input type="date" className="finance-date-bar__input" value={dateRange.to} onChange={(e) => setDateRange((r) => ({ ...r, to: e.target.value }))} aria-label="To date" />
-          <button type="button" className="finance-date-bar__refresh-btn" onClick={refresh} aria-label="Refresh cash flow">
+          <span className="finance-date-bar__label">{t.from}</span>
+          <input type="date" className="finance-date-bar__input" value={dateRange.from} onChange={(e) => setDateRange((r) => ({ ...r, from: e.target.value }))} aria-label={t.fromDate} />
+          <span className="finance-date-bar__label">{t.to}</span>
+          <input type="date" className="finance-date-bar__input" value={dateRange.to} onChange={(e) => setDateRange((r) => ({ ...r, to: e.target.value }))} aria-label={t.toDate} />
+          <button type="button" className="finance-date-bar__refresh-btn" onClick={refresh} aria-label={t.refreshCashFlow}>
             <RefreshCw size={14} aria-hidden="true" />
           </button>
         </div>
@@ -115,8 +117,8 @@ export default function CashFlowPage() {
         {!data && (
           <div className="finance-empty">
             <div className="finance-empty__icon" aria-hidden="true"><TrendingUp size={32} /></div>
-            <p className="finance-empty__title">No data for this period</p>
-            <p className="finance-empty__desc">Try a different date range.</p>
+            <p className="finance-empty__title">{t.noDataForThisPeriod}</p>
+            <p className="finance-empty__desc">{t.tryDifferentDateRange}</p>
           </div>
         )}
 
@@ -126,7 +128,7 @@ export default function CashFlowPage() {
             <CashFlowSectionCard section={data.investing} />
             <CashFlowSectionCard section={data.financing} />
             <div className={`finance-net-row${isPositiveNet ? ' finance-net-row--profit' : ' finance-net-row--loss'}`}>
-              <span className="finance-net-row__label">Net Cash Flow</span>
+              <span className="finance-net-row__label">{t.netCashFlow}</span>
               <span className="finance-net-row__amount">{formatPaise(data.netCashFlow)}</span>
             </div>
           </>

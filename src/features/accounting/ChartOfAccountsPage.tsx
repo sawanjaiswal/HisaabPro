@@ -13,8 +13,10 @@ import { AccountGroupSection } from './components/AccountGroupSection'
 import { sumGroupBalance } from './accounting.utils'
 import { ACCOUNT_TYPE_LABELS, ACCOUNT_TYPE_ORDER } from './accounting.constants'
 import './accounting.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export default function ChartOfAccountsPage() {
+  const { t } = useLanguage()
   const { grouped, total, status, isSeedingLoading, refresh, handleSeed } =
     useChartOfAccounts()
 
@@ -24,16 +26,16 @@ export default function ChartOfAccountsPage() {
       className="btn btn-secondary btn-sm"
       onClick={handleSeed}
       disabled={isSeedingLoading}
-      aria-label="Seed default chart of accounts"
+      aria-label={t.seedDefaultAccounts}
     >
-      {isSeedingLoading ? 'Seeding…' : 'Seed Defaults'}
+      {isSeedingLoading ? t.creatingAccounts : t.seedDefaultAccountsBtn}
     </button>
   )
 
   if (status === 'loading') {
     return (
       <AppShell>
-        <Header title="Chart of Accounts" backTo={ROUTES.REPORTS} actions={seedAction} />
+        <Header title={t.chartOfAccounts ?? "Chart of Accounts"} backTo={ROUTES.REPORTS} actions={seedAction} />
         <PageContainer>
           <div className="mb-3"><Skeleton height="64px" /></div>
           <div className="mb-3"><Skeleton height="64px" /></div>
@@ -47,9 +49,9 @@ export default function ChartOfAccountsPage() {
   if (status === 'error') {
     return (
       <AppShell>
-        <Header title="Chart of Accounts" backTo={ROUTES.REPORTS} actions={seedAction} />
+        <Header title={t.chartOfAccounts ?? "Chart of Accounts"} backTo={ROUTES.REPORTS} actions={seedAction} />
         <PageContainer>
-          <ErrorState title="Could not load accounts" onRetry={refresh} />
+          <ErrorState title={t.couldNotLoadAccounts} onRetry={refresh} />
         </PageContainer>
       </AppShell>
     )
@@ -58,12 +60,12 @@ export default function ChartOfAccountsPage() {
   if (total === 0) {
     return (
       <AppShell>
-        <Header title="Chart of Accounts" backTo={ROUTES.REPORTS} actions={seedAction} />
+        <Header title={t.chartOfAccounts ?? "Chart of Accounts"} backTo={ROUTES.REPORTS} actions={seedAction} />
         <PageContainer>
           <EmptyState
             icon={<BookOpen size={28} aria-hidden="true" />}
-            title="No accounts yet"
-            description="Seed default accounts to get started with double-entry bookkeeping."
+            title={t.noAccountsYet}
+            description={t.seedDefaultAccounts}
             action={
               <button
                 type="button"
@@ -71,7 +73,7 @@ export default function ChartOfAccountsPage() {
                 onClick={handleSeed}
                 disabled={isSeedingLoading}
               >
-                {isSeedingLoading ? 'Creating…' : 'Seed Default Accounts'}
+                {isSeedingLoading ? t.creatingAccounts : t.seedDefaultAccountsBtn}
               </button>
             }
           />
@@ -82,7 +84,7 @@ export default function ChartOfAccountsPage() {
 
   return (
     <AppShell>
-      <Header title="Chart of Accounts" backTo={ROUTES.REPORTS} actions={seedAction} />
+      <Header title={t.chartOfAccounts ?? "Chart of Accounts"} backTo={ROUTES.REPORTS} actions={seedAction} />
       <PageContainer>
         <div className="acc-page">
           {ACCOUNT_TYPE_ORDER.map((type) => {

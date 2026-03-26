@@ -8,6 +8,7 @@
 import React from 'react'
 import { RefreshCw, Pause, Play, Trash2, Calendar } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
+import { useLanguage } from '@/hooks/useLanguage'
 import { formatDate } from '@/lib/format'
 import {
   FREQUENCY_LABELS,
@@ -29,6 +30,7 @@ export const RecurringCard: React.FC<RecurringCardProps> = ({
   onResume,
   onDelete,
 }) => {
+  const { t } = useLanguage()
   const badgeVariant = STATUS_BADGE_VARIANTS[item.status]
 
   return (
@@ -49,14 +51,14 @@ export const RecurringCard: React.FC<RecurringCardProps> = ({
       <div className="recurring-card__meta">
         <span className="recurring-card__meta-item">
           <Calendar size={12} aria-hidden="true" />
-          Next:{' '}
+          {t.nextColon}{' '}
           {item.nextRunDate
             ? formatDate(item.nextRunDate)
             : '—'}
         </span>
         <span className="recurring-card__meta-item">
           {item.generatedCount}{' '}
-          {item.generatedCount === 1 ? 'invoice' : 'invoices'} generated
+          {item.generatedCount === 1 ? t.invoiceGenerated : t.invoicesGenerated}
         </span>
       </div>
 
@@ -66,10 +68,10 @@ export const RecurringCard: React.FC<RecurringCardProps> = ({
             type="button"
             className="recurring-card__action-btn recurring-card__action-btn--pause"
             onClick={() => onPause(item.id)}
-            aria-label={`Pause recurring schedule for ${item.partyName ?? item.templateDocumentId}`}
+            aria-label={`${t.pauseScheduleFor} ${item.partyName ?? item.templateDocumentId}`}
           >
             <Pause size={14} aria-hidden="true" />
-            Pause
+            {t.pause}
           </button>
         )}
         {item.status === 'PAUSED' && (
@@ -77,20 +79,20 @@ export const RecurringCard: React.FC<RecurringCardProps> = ({
             type="button"
             className="recurring-card__action-btn recurring-card__action-btn--resume"
             onClick={() => onResume(item.id)}
-            aria-label={`Resume recurring schedule for ${item.partyName ?? item.templateDocumentId}`}
+            aria-label={`${t.resumeScheduleFor} ${item.partyName ?? item.templateDocumentId}`}
           >
             <Play size={14} aria-hidden="true" />
-            Resume
+            {t.resume}
           </button>
         )}
         <button
           type="button"
           className="recurring-card__action-btn recurring-card__action-btn--delete"
           onClick={() => onDelete(item.id)}
-          aria-label={`Delete recurring schedule for ${item.partyName ?? item.templateDocumentId}`}
+          aria-label={`${t.deleteScheduleFor} ${item.partyName ?? item.templateDocumentId}`}
         >
           <Trash2 size={14} aria-hidden="true" />
-          Delete
+          {t.delete}
         </button>
       </div>
     </div>

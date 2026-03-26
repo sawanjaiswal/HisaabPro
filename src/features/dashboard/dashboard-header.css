@@ -135,8 +135,8 @@
 }
 
 /* Hide floating calculator FAB on dashboard — it's in the header instead */
-:root:has(.dashboard-page) .calculator-fab {
-  display: none !important;
+:root:has(.dashboard-page) .calculator-fab.calculator-fab {
+  display: none;
 }
 
 /* Theme toggle icon — smooth rotation on switch */

@@ -1,5 +1,7 @@
 /** Settings — Sticky save bar for role builder form */
 
+import { useLanguage } from '@/hooks/useLanguage'
+
 interface RoleSaveBarProps {
   isEditMode: boolean
   isSubmitting: boolean
@@ -7,6 +9,7 @@ interface RoleSaveBarProps {
 }
 
 export function RoleSaveBar({ isEditMode, isSubmitting, onSave }: RoleSaveBarProps) {
+  const { t } = useLanguage()
   return (
     <div className="role-save-bar">
       <button
@@ -14,10 +17,10 @@ export function RoleSaveBar({ isEditMode, isSubmitting, onSave }: RoleSaveBarPro
         className="role-save-button"
         onClick={onSave}
         disabled={isSubmitting}
-        aria-label={isEditMode ? 'Save role changes' : 'Create role'}
+        aria-label={isEditMode ? t.saveRoleChanges : t.createRole}
         aria-busy={isSubmitting}
       >
-        {isSubmitting ? 'Saving...' : 'Save Role'}
+        {isSubmitting ? t.saving : t.saveRole}
       </button>
     </div>
   )

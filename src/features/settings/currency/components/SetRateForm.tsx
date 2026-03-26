@@ -1,6 +1,7 @@
 /** SetRateForm — Form to set an exchange rate for a foreign currency */
 
 import { useState, useCallback } from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { todayIso, parseRateInput } from '../currency.utils'
 import type { SupportedCurrency, SetExchangeRatePayload } from '../currency.types'
 import { BASE_CURRENCY } from '../currency.constants'
@@ -12,6 +13,7 @@ interface SetRateFormProps {
 }
 
 export function SetRateForm({ currencies, onSubmit, onCancel }: SetRateFormProps) {
+  const { t } = useLanguage()
   const foreignCurrencies = currencies.filter((c) => c.code !== BASE_CURRENCY)
 
   const [fromCurrency, setFromCurrency] = useState(foreignCurrencies[0]?.code ?? '')
@@ -26,11 +28,11 @@ export function SetRateForm({ currencies, onSubmit, onCancel }: SetRateFormProps
 
     const rate = parseRateInput(rateInput)
     if (isNaN(rate)) {
-      setError('Enter a valid positive rate (e.g. 84.50)')
+      setError(t.validRateError)
       return
     }
     if (!fromCurrency) {
-      setError('Select a currency')
+      setError(t.selectCurrencyError)
       return
     }
 
@@ -42,13 +44,13 @@ export function SetRateForm({ currencies, onSubmit, onCancel }: SetRateFormProps
     } finally {
       setSubmitting(false)
     }
-  }, [fromCurrency, rateInput, effectiveDate, onSubmit])
+  }, [fromCurrency, rateInput, effectiveDate, onSubmit, t])
 
   return (
     <form className="set-rate-form" onSubmit={handleSubmit} noValidate>
       <div className="set-rate-form__field">
         <label className="set-rate-form__label" htmlFor="sr-currency">
-          Currency
+          {t.currencyFormLabel}
         </label>
         <select
           id="sr-currency"
@@ -67,7 +69,7 @@ export function SetRateForm({ currencies, onSubmit, onCancel }: SetRateFormProps
 
       <div className="set-rate-form__field">
         <label className="set-rate-form__label" htmlFor="sr-rate">
-          Rate (1 {fromCurrency || '...'} = Rs ?)
+          {`${t.rateInputPrefix} ${fromCurrency || '...'} ${t.rateInputSuffix}`}
         </label>
         <input
           id="sr-rate"
@@ -76,7 +78,7 @@ export function SetRateForm({ currencies, onSubmit, onCancel }: SetRateFormProps
           step="0.01"
           min="0.0001"
           className="set-rate-form__input"
-          placeholder="e.g. 84.50"
+          placeholder={t.ratePlaceholder}
           value={rateInput}
           onChange={(e) => setRateInput(e.target.value)}
           required
@@ -85,7 +87,7 @@ export function SetRateForm({ currencies, onSubmit, onCancel }: SetRateFormProps
 
       <div className="set-rate-form__field">
         <label className="set-rate-form__label" htmlFor="sr-date">
-          Effective Date
+          {t.effectiveDateLabel}
         </label>
         <input
           id="sr-date"
@@ -111,7 +113,7 @@ export function SetRateForm({ currencies, onSubmit, onCancel }: SetRateFormProps
           onClick={onCancel}
           disabled={submitting}
         >
-          Cancel
+          {t.cancel}
         </button>
         <button
           type="submit"
@@ -119,7 +121,7 @@ export function SetRateForm({ currencies, onSubmit, onCancel }: SetRateFormProps
           disabled={submitting}
           aria-busy={submitting}
         >
-          {submitting ? 'Saving…' : 'Save Rate'}
+          {submitting ? t.saving : t.saveRateBtn}
         </button>
       </div>
     </form>

@@ -15,6 +15,7 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { ROUTES } from '@/config/routes.config'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useAuth } from '@/context/AuthContext'
 import { useRoleBuilder, useRoleBuilderPage } from './useRoleBuilder'
 import { BuilderSkeleton } from './components/BuilderSkeleton'
@@ -46,6 +47,7 @@ interface BuilderFormProps {
 }
 
 function BuilderForm({ roleId, role, systemRoles, businessId }: BuilderFormProps) {
+  const { t } = useLanguage()
   const isEditMode = roleId !== undefined
 
   const {
@@ -82,7 +84,7 @@ function BuilderForm({ roleId, role, systemRoles, businessId }: BuilderFormProps
 
       {/* Permission matrix */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-        <p style={LABEL_STYLE}>Permissions</p>
+        <p style={LABEL_STYLE}>{t.permissionsLabel}</p>
         {errors.permissions && (
           <p className="input-error" role="alert">
             {errors.permissions}
@@ -108,6 +110,7 @@ function BuilderForm({ roleId, role, systemRoles, businessId }: BuilderFormProps
 // ---- Page wrapper -- delegates fetch state to useRoleBuilderPage ----
 
 export default function RoleBuilderPage() {
+  const { t: t2 } = useLanguage()
   const { id: roleId } = useParams<{ id: string }>()
   const { user } = useAuth()
   const businessId = user?.businessId ?? ''
@@ -115,7 +118,7 @@ export default function RoleBuilderPage() {
   const { fetchStatus, fetchError, role, systemRoles, retry } =
     useRoleBuilderPage({ roleId, businessId })
 
-  const pageTitle = roleId !== undefined ? 'Edit Role' : 'Create Role'
+  const pageTitle = roleId !== undefined ? t2.editRole : t2.createRole
 
   return (
     <AppShell>
@@ -126,16 +129,16 @@ export default function RoleBuilderPage() {
 
         {fetchStatus === 'error' && (
           <ErrorState
-            title="Could not load role"
-            message={fetchError ?? 'Check your connection and try again.'}
+            title={t2.couldNotLoadRole}
+            message={fetchError ?? t2.checkConnectionRetry2}
             onRetry={retry}
           />
         )}
 
         {fetchStatus === 'not-found' && (
           <ErrorState
-            title="Role not found"
-            message="This role may have been deleted."
+            title={t2.roleNotFound}
+            message={t2.roleNotFoundDesc}
           />
         )}
 

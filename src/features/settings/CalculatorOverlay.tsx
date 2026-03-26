@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Calculator } from 'lucide-react'
 import type { CalculatorPosition } from './settings.types'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useCalculator } from './useCalculator'
 import { CalculatorSheet } from './components/CalculatorSheet'
 import './calculator.css'
@@ -20,6 +21,7 @@ interface CalculatorOverlayProps {
 export function CalculatorOverlay({
   position = 'BOTTOM_RIGHT',
 }: CalculatorOverlayProps) {
+  const { t } = useLanguage()
   const {
     state,
     settings,
@@ -68,7 +70,7 @@ export function CalculatorOverlay({
         type="button"
         className={`calculator-fab ${fabPositionClass}`}
         onClick={toggle}
-        aria-label={isOpen ? 'Close calculator' : 'Open calculator'}
+        aria-label={isOpen ? t.closeCalculatorLabel : t.openCalculatorLabel}
         aria-expanded={isOpen}
         aria-haspopup="dialog"
       >

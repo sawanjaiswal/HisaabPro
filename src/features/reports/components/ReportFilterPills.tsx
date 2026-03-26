@@ -5,6 +5,7 @@
  */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface FilterOption {
   value: string
@@ -23,13 +24,14 @@ export const ReportFilterPills: React.FC<ReportFilterPillsProps> = ({
   options,
   activeValue,
   onChange,
-  ariaLabel = 'Filter options',
+  ariaLabel,
 }) => {
+  const { t } = useLanguage()
   return (
     <div
       className="report-filter-pills"
       role="group"
-      aria-label={ariaLabel}
+      aria-label={ariaLabel ?? t.filterOptions}
     >
       {options.map((option) => {
         const isActive = option.value === activeValue

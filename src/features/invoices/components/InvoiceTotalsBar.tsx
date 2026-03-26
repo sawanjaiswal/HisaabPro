@@ -1,6 +1,7 @@
 /** Create Invoice — sticky bottom totals + save actions */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { formatInvoiceAmount } from '../invoice-format.utils'
 
 interface InvoiceTotalsBarProps {
@@ -30,22 +31,23 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
   onSaveDraft,
   showProfit,
 }) => {
+  const { t } = useLanguage()
   const isProfitPositive = totalProfit >= 0
   const profitClass = isProfitPositive
     ? 'invoice-summary-profit invoice-summary-profit-positive'
     : 'invoice-summary-profit invoice-summary-profit-negative'
 
   return (
-    <div className="invoice-summary-bar" aria-label="Invoice totals">
+    <div className="invoice-summary-bar" aria-label={t.invoiceTotalsAriaLabel}>
       <div className="invoice-summary-rows" role="list">
         <div className="invoice-summary-row" role="listitem">
-          <span>Subtotal</span>
+          <span>{t.subtotal}</span>
           <span>{formatInvoiceAmount(subtotal)}</span>
         </div>
 
         {totalDiscount > 0 && (
           <div className="invoice-summary-row" role="listitem">
-            <span>Discount</span>
+            <span>{t.discount}</span>
             <span style={{ color: 'var(--color-error-600)' }}>
               -{formatInvoiceAmount(totalDiscount)}
             </span>
@@ -54,14 +56,14 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
 
         {totalCharges > 0 && (
           <div className="invoice-summary-row" role="listitem">
-            <span>Charges</span>
+            <span>{t.chargesLabel}</span>
             <span>+{formatInvoiceAmount(totalCharges)}</span>
           </div>
         )}
 
         {roundOff !== 0 && (
           <div className="invoice-summary-row" role="listitem">
-            <span>Round Off</span>
+            <span>{t.roundOff}</span>
             <span style={{ color: roundOff < 0 ? 'var(--color-error-600)' : 'inherit' }}>
               {roundOff > 0 ? '+' : ''}{formatInvoiceAmount(Math.abs(roundOff))}
             </span>
@@ -69,14 +71,14 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
         )}
 
         <div className="invoice-summary-row invoice-summary-row-total" role="listitem">
-          <span>Grand Total</span>
+          <span>{t.grandTotal}</span>
           <span>{formatInvoiceAmount(grandTotal)}</span>
         </div>
       </div>
 
       {showProfit && (
-        <p className={profitClass} aria-label={`Profit: ${formatInvoiceAmount(totalProfit)}, ${profitPercent.toFixed(1)}%`}>
-          Profit: {isProfitPositive ? '+' : ''}{formatInvoiceAmount(totalProfit)}
+        <p className={profitClass} aria-label={`${t.profitLabel} ${formatInvoiceAmount(totalProfit)}, ${profitPercent.toFixed(1)}%`}>
+          {t.profitLabel} {isProfitPositive ? '+' : ''}{formatInvoiceAmount(totalProfit)}
           {' '}({profitPercent.toFixed(1)}%)
         </p>
       )}
@@ -87,18 +89,18 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
           className="btn btn-secondary btn-md"
           onClick={onSaveDraft}
           disabled={isSubmitting}
-          aria-label="Save as draft"
+          aria-label={t.saveDraftAriaLabel}
         >
-          Save Draft
+          {t.saveDraft}
         </button>
         <button
           type="button"
           className="btn btn-primary btn-md"
           onClick={onSave}
           disabled={isSubmitting}
-          aria-label={isSubmitting ? 'Saving invoice...' : 'Save invoice'}
+          aria-label={isSubmitting ? t.savingInvoice : t.saveInvoice}
         >
-          {isSubmitting ? 'Saving...' : 'Save'}
+          {isSubmitting ? t.saving : t.save}
         </button>
       </div>
     </div>

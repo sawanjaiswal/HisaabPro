@@ -1,19 +1,21 @@
 import { Shield } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface OperationPinSectionProps {
   operationPinSet: boolean
 }
 
 export function OperationPinSection({ operationPinSet }: OperationPinSectionProps) {
+  const { t } = useLanguage()
   return (
     <section>
-      <p className="settings-section-title">Operation PIN</p>
+      <p className="settings-section-title">{t.operationPinTitle}</p>
       <div className="txn-controls">
         <div className="txn-control-row">
           <div className="txn-control-content">
-            <p className="txn-control-label">Operation PIN</p>
+            <p className="txn-control-label">{t.operationPinTitle}</p>
             <p className="txn-control-description">
-              Required to approve requests and perform sensitive actions
+              {t.operationPinDesc}
             </p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexShrink: 0 }}>
@@ -29,7 +31,7 @@ export function OperationPinSection({ operationPinSet }: OperationPinSectionProp
                 color: operationPinSet ? 'var(--color-success-600)' : 'var(--color-gray-400)',
               }}
             >
-              {operationPinSet ? 'Set' : 'Not set'}
+              {operationPinSet ? t.operationPinSetLabel : t.operationPinNotSet}
             </span>
           </div>
         </div>

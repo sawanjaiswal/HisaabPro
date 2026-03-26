@@ -7,6 +7,7 @@
 import React, { useState, useEffect } from 'react'
 import { Bell, Calculator, Sun, Moon } from 'lucide-react'
 import { useTheme } from '@/context/ThemeContext'
+import { useLanguage } from '@/hooks/useLanguage'
 import { APP_NAME } from '@/config/app.config'
 import { BusinessAvatar } from '@/features/business/BusinessAvatar'
 
@@ -21,6 +22,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 }) => {
   const [isScrolled, setIsScrolled] = useState(false)
   const { theme, toggleTheme } = useTheme()
+  const { t } = useLanguage()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,7 +40,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         <button
           className="dashboard-header-icon-btn"
           onClick={toggleTheme}
-          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          aria-label={theme === 'dark' ? t.switchToLight : t.switchToDark}
         >
           {theme === 'dark' ? (
             <Sun size={18} aria-hidden="true" />
@@ -56,14 +58,14 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         <button
           className="dashboard-header-icon-btn"
           onClick={onCalculatorClick}
-          aria-label="Calculator"
+          aria-label={t.calculator}
         >
           <Calculator size={20} aria-hidden="true" />
         </button>
         <button
           className="dashboard-header-icon-btn"
           onClick={onNotificationsClick}
-          aria-label="Notifications"
+          aria-label={t.notifications}
         >
           <Bell size={20} aria-hidden="true" />
         </button>

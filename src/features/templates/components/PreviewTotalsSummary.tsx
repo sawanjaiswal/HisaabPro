@@ -1,6 +1,7 @@
 /** Invoice preview — totals summary block (subtotal + grand total) */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { TemplateLayoutConfig } from '../template.types'
 import { SAMPLE_SUBTOTAL, SAMPLE_TOTAL, paise } from './templatePreview.constants'
 
@@ -14,7 +15,9 @@ export const PreviewTotalsSummary: React.FC<PreviewTotalsSummaryProps> = ({
   layout,
   borderColor,
   accentColor,
-}) => (
+}) => {
+  const { t } = useLanguage()
+  return (
   <div
     style={{
       display: 'flex',
@@ -26,7 +29,7 @@ export const PreviewTotalsSummary: React.FC<PreviewTotalsSummaryProps> = ({
   >
     <div style={{ minWidth: '180px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', fontSize: '0.833rem' }}>
-        <span style={{ color: 'var(--color-gray-500)' }}>Subtotal</span>
+        <span style={{ color: 'var(--color-gray-500)' }}>{t.subtotal}</span>
         <span style={{ color: 'var(--color-gray-700)' }}>{paise(SAMPLE_SUBTOTAL)}</span>
       </div>
       <div
@@ -41,9 +44,10 @@ export const PreviewTotalsSummary: React.FC<PreviewTotalsSummaryProps> = ({
           marginTop: '4px',
         }}
       >
-        <span>Grand Total</span>
+        <span>{t.grandTotal}</span>
         <span>{paise(SAMPLE_TOTAL)}</span>
       </div>
     </div>
   </div>
-)
+  )
+}

@@ -17,6 +17,7 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useToast } from '@/hooks/useToast'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useImageExport } from '@/hooks/useImageExport'
 import { useInvoiceDetail } from './useInvoiceDetail'
 import { deleteDocument } from './invoice.service'
@@ -41,6 +42,7 @@ export default function InvoiceDetailPage() {
   const { document, status, activeTab, setActiveTab, refresh } = useInvoiceDetail(documentId)
 
   const toast = useToast()
+  const { t } = useLanguage()
 
   const [shareOpen, setShareOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
@@ -50,11 +52,11 @@ export default function InvoiceDetailPage() {
     setIsDeleting(true)
     deleteDocument(documentId)
       .then(() => {
-        toast.success('Invoice moved to trash. Restored within 30 days.')
+        toast.success(t.invoiceMovedToTrash)
         navigate(ROUTES.INVOICES)
       })
       .catch((err: unknown) => {
-        const message = err instanceof Error ? err.message : 'Failed to delete invoice'
+        const message = err instanceof Error ? err.message : t.failedDeleteInvoice
         toast.error(message)
         setIsDeleting(false)
         setDeleteOpen(false)
@@ -71,12 +73,12 @@ export default function InvoiceDetailPage() {
 
   const headerActions = (
     <>
-      <button className="btn btn-ghost btn-sm" onClick={() => navigate(`/invoices/${documentId}/edit`)} aria-label="Edit invoice">
+      <button className="btn btn-ghost btn-sm" onClick={() => navigate(`/invoices/${documentId}/edit`)} aria-label={t.editInvoice}>
         <Pencil size={18} aria-hidden="true" />
       </button>
       <button
         className="btn btn-ghost btn-sm"
-        aria-label="Share invoice"
+        aria-label={t.shareInvoice}
         onClick={() => setShareOpen(true)}
         disabled={status !== 'success' || !document}
       >
@@ -84,7 +86,7 @@ export default function InvoiceDetailPage() {
       </button>
       <button
         className="btn btn-ghost btn-sm"
-        aria-label={isExporting ? 'Exporting image...' : 'Export as image'}
+        aria-label={isExporting ? t.exportingImage : t.exportAsImage}
         onClick={handleExportImage}
         disabled={isExporting || status !== 'success' || !document}
       >
@@ -96,7 +98,7 @@ export default function InvoiceDetailPage() {
       </button>
       <button
         className="btn btn-ghost btn-sm"
-        aria-label="Delete invoice"
+        aria-label={t.deleteInvoice}
         onClick={() => setDeleteOpen(true)}
         disabled={status !== 'success' || !document}
       >
@@ -108,7 +110,7 @@ export default function InvoiceDetailPage() {
   return (
     <>
       <AppShell>
-        <Header title="Invoice Detail" backTo={ROUTES.INVOICES} actions={headerActions} />
+        <Header title={t.invoiceDetail} backTo={ROUTES.INVOICES} actions={headerActions} />
 
       <PageContainer>
         {status === 'loading' && (
@@ -131,8 +133,8 @@ export default function InvoiceDetailPage() {
 
         {status === 'error' && (
           <ErrorState
-            title="Could not load invoice"
-            message="Check your connection and try again."
+            title={t.couldNotLoadInvoice}
+            message={t.checkConnectionRetry}
             onRetry={refresh}
           />
         )}
@@ -140,15 +142,15 @@ export default function InvoiceDetailPage() {
         {status === 'success' && !document && (
           <EmptyState
             icon={<FileText size={40} aria-hidden="true" />}
-            title="Invoice not found"
-            description="This invoice may have been deleted."
+            title={t.invoiceNotFound}
+            description={t.invoiceNotFoundDesc}
             action={
               <button
                 className="btn btn-primary btn-md"
                 onClick={() => navigate(ROUTES.INVOICES)}
-                aria-label="Go back to invoices list"
+                aria-label={t.goBackToInvoices}
               >
-                Back to Invoices
+                {t.backToInvoices}
               </button>
             }
           />
@@ -157,12 +159,12 @@ export default function InvoiceDetailPage() {
         {status === 'success' && document && (
           <>
             <div role="status" aria-live="polite" className="sr-only">
-              Invoice {document.documentNumber} loaded
+              {t.invoice} {document.documentNumber} {t.invoiceLoadedSr}
             </div>
             <div ref={previewRef} className="invoice-export-capture">
             <InvoiceDetailHeader document={document} />
 
-            <div className="pill-tabs invoice-detail-tabs" role="tablist" aria-label="Invoice detail sections">
+            <div className="pill-tabs invoice-detail-tabs" role="tablist" aria-label={t.invoiceDetailSections}>
               {DETAIL_TABS.map((tab) => (
                 <button
                   key={tab.id}
@@ -177,7 +179,7 @@ export default function InvoiceDetailPage() {
               ))}
             </div>
 
-            <div id={`panel-${activeTab}`} role="tabpanel" aria-label={`${activeTab} tab content`}>
+            <div id={`panel-${activeTab}`} role="tabpanel" aria-label={`${activeTab} ${t.tabContent}`}>
               {activeTab === 'overview' && <InvoiceOverviewPanel document={document} />}
               {activeTab === 'items' && <InvoiceItemsPanel lineItems={document.lineItems} />}
               {activeTab === 'share' && <InvoiceSharePanel shareLogs={document.shareLogs} onShare={() => setShareOpen(true)} />}
@@ -211,8 +213,8 @@ export default function InvoiceDetailPage() {
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
         onConfirm={handleDelete}
-        title="Delete Invoice?"
-        description="This invoice will be moved to trash. Any payment allocations linked to it will be reversed. You can restore it within 30 days."
+        title={t.deleteInvoiceConfirmTitle}
+        description={t.deleteInvoiceConfirmDesc}
         isLoading={isDeleting}
       />
     </>

@@ -1,5 +1,6 @@
 /** GodownForm — Create/Edit godown form fields */
 
+import { useLanguage } from '@/hooks/useLanguage'
 import { GODOWN_NAME_MAX, ADDRESS_MAX } from '../godown.constants'
 import type { CreateGodownData } from '../godown.types'
 
@@ -13,6 +14,7 @@ interface GodownFormProps {
 }
 
 export function GodownForm({ form, errors, isSubmitting, onUpdate, onSubmit, submitLabel }: GodownFormProps) {
+  const { t } = useLanguage()
   return (
     <form
       className="godown-form"
@@ -21,7 +23,7 @@ export function GodownForm({ form, errors, isSubmitting, onUpdate, onSubmit, sub
     >
       <div className="godown-form__field">
         <label htmlFor="godown-name" className="godown-form__label">
-          Godown Name <span aria-hidden="true">*</span>
+          {t.godownName} <span aria-hidden="true">*</span>
         </label>
         <input
           id="godown-name"
@@ -30,7 +32,7 @@ export function GodownForm({ form, errors, isSubmitting, onUpdate, onSubmit, sub
           value={form.name}
           onChange={(e) => onUpdate('name', e.target.value)}
           onBlur={() => onUpdate('name', form.name)}
-          placeholder="e.g. Main Warehouse"
+          placeholder={t.godownNamePlaceholder}
           maxLength={GODOWN_NAME_MAX}
           autoFocus
           aria-required="true"
@@ -43,13 +45,13 @@ export function GodownForm({ form, errors, isSubmitting, onUpdate, onSubmit, sub
       </div>
 
       <div className="godown-form__field">
-        <label htmlFor="godown-address" className="godown-form__label">Address</label>
+        <label htmlFor="godown-address" className="godown-form__label">{t.address}</label>
         <textarea
           id="godown-address"
           className={`godown-form__textarea${errors.address ? ' godown-form__input--error' : ''}`}
           value={form.address ?? ''}
           onChange={(e) => onUpdate('address', e.target.value)}
-          placeholder="Godown address (optional)"
+          placeholder={t.godownAddress}
           maxLength={ADDRESS_MAX}
           rows={3}
           aria-invalid={Boolean(errors.address)}
@@ -66,7 +68,7 @@ export function GodownForm({ form, errors, isSubmitting, onUpdate, onSubmit, sub
           checked={form.isDefault ?? false}
           onChange={(e) => onUpdate('isDefault', e.target.checked)}
         />
-        <span className="godown-form__toggle-label">Set as default godown</span>
+        <span className="godown-form__toggle-label">{t.setAsDefaultGodown}</span>
       </label>
 
       <button
@@ -75,7 +77,7 @@ export function GodownForm({ form, errors, isSubmitting, onUpdate, onSubmit, sub
         disabled={isSubmitting}
         aria-busy={isSubmitting}
       >
-        {isSubmitting ? 'Saving...' : submitLabel}
+        {isSubmitting ? t.saving : submitLabel}
       </button>
     </form>
   )

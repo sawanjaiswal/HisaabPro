@@ -5,6 +5,7 @@
  */
 
 import { ChevronRight } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { LucideIcon } from 'lucide-react'
 
 interface QuickLink {
@@ -20,8 +21,9 @@ interface GstQuickLinksProps {
 }
 
 export function GstQuickLinks({ links, onNavigate }: GstQuickLinksProps) {
+  const { t } = useLanguage()
   return (
-    <div className="gst-quick-links" role="list" aria-label="GST quick links">
+    <div className="gst-quick-links" role="list" aria-label={t.gstQuickLinks}>
       {links.map((link) => (
         <button
           key={link.route}

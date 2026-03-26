@@ -11,6 +11,7 @@ import { ApiError } from '@/lib/api'
 import { validateCouponCode, applyCouponCode, removeCouponCode } from '../coupon.service'
 import type { CouponValidationResult, CouponApplyResult } from '../coupon.types'
 import './coupon-input.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface CouponInputProps {
   planId?: string
@@ -23,6 +24,7 @@ interface CouponInputProps {
 type InputState = 'collapsed' | 'expanded' | 'validating' | 'applied' | 'error'
 
 export function CouponInput({ planId, planAmountPaise, razorpaySubscriptionId, onApplied, onRemoved }: CouponInputProps) {
+  const { t } = useLanguage()
   const [state, setState] = useState<InputState>('collapsed')
   const [code, setCode] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
@@ -45,7 +47,7 @@ export function CouponInput({ planId, planAmountPaise, razorpaySubscriptionId, o
 
       if (!validation.valid) {
         setState('error')
-        setErrorMsg(validation.error?.message ?? 'Invalid coupon code')
+        setErrorMsg(validation.error?.message ?? t.invalidCouponCode)
         submitRef.current = false
         return
       }
@@ -58,7 +60,7 @@ export function CouponInput({ planId, planAmountPaise, razorpaySubscriptionId, o
       onApplied?.(result)
     } catch (err: unknown) {
       setState('error')
-      setErrorMsg(err instanceof ApiError ? err.message : 'Something went wrong')
+      setErrorMsg(err instanceof ApiError ? err.message : t.somethingWentWrong)
     } finally {
       submitRef.current = false
     }
@@ -76,7 +78,7 @@ export function CouponInput({ planId, planAmountPaise, razorpaySubscriptionId, o
       setRedemptionId(null)
       onRemoved?.()
     } catch (err: unknown) {
-      const msg = err instanceof ApiError ? err.message : 'Failed to remove coupon'
+      const msg = err instanceof ApiError ? err.message : t.failedRemoveCoupon
       setErrorMsg(msg)
     } finally {
       setRemoving(false)
@@ -121,7 +123,7 @@ export function CouponInput({ planId, planAmountPaise, razorpaySubscriptionId, o
           onClick={handleRemove}
           disabled={removing}
           type="button"
-          aria-label="Remove coupon"
+          aria-label={t.removeCoupon}
         >
           {removing ? <Loader2 size={14} className="spinner" /> : <X size={14} />}
           Remove
@@ -143,10 +145,10 @@ export function CouponInput({ planId, planAmountPaise, razorpaySubscriptionId, o
             if (state === 'error') setState('expanded')
           }}
           onKeyDown={handleKeyDown}
-          placeholder="Enter coupon code"
+          placeholder={t.couponCodeInput}
           disabled={state === 'validating'}
           autoFocus
-          aria-label="Coupon code"
+          aria-label={t.couponCodeInput}
           aria-invalid={state === 'error'}
           aria-describedby={state === 'error' ? 'coupon-error' : undefined}
         />
@@ -157,7 +159,7 @@ export function CouponInput({ planId, planAmountPaise, razorpaySubscriptionId, o
           type="button"
         >
           {state === 'validating' ? (
-            <Loader2 size={16} className="spinner" aria-label="Validating" />
+            <Loader2 size={16} className="spinner" aria-label={t.validating} />
           ) : (
             'Apply'
           )}

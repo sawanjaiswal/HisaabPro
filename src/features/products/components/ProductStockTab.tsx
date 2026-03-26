@@ -3,6 +3,7 @@
 import React from 'react'
 import { ArrowDownLeft, ArrowUpRight, Package } from 'lucide-react'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { StockMovement } from '../product.types'
 import { formatMovementType } from '../product.utils'
 
@@ -18,15 +19,16 @@ const formatDate = (iso: string): string =>
   new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
 
 export const ProductStockTab: React.FC<ProductStockTabProps> = ({ movements, unitSymbol, onAdjust }) => {
+  const { t } = useLanguage()
   if (movements.length === 0) {
     return (
       <EmptyState
         icon={<Package size={40} aria-hidden="true" />}
-        title="No stock movements"
-        description="Adjust stock or create an invoice to see movements here."
+        title={t.noStockMovements}
+        description={t.noStockMovementsDesc}
         action={
-          <button className="btn btn-primary btn-md" onClick={onAdjust} aria-label="Adjust stock">
-            Adjust Stock
+          <button className="btn btn-primary btn-md" onClick={onAdjust} aria-label={t.adjustStock}>
+            {t.adjustStock}
           </button>
         }
       />
@@ -35,7 +37,7 @@ export const ProductStockTab: React.FC<ProductStockTabProps> = ({ movements, uni
 
   return (
     <div>
-      <div className="card" role="list" aria-label="Stock movements">
+      <div className="card" role="list" aria-label={t.stockMovements}>
         {movements.map((movement) => {
           const isIn = MOVEMENT_IN_TYPES.has(movement.type)
           const qtyColor = isIn ? 'var(--color-success-600)' : 'var(--color-error-600)'
@@ -64,7 +66,7 @@ export const ProductStockTab: React.FC<ProductStockTabProps> = ({ movements, uni
                   {qtyPrefix}{Math.abs(movement.quantity)} {unitSymbol}
                 </div>
                 <div className="stock-movement-balance">
-                  Bal: {movement.balanceAfter} {unitSymbol}
+                  {t.balLabel}: {movement.balanceAfter} {unitSymbol}
                 </div>
               </div>
             </div>
@@ -75,9 +77,9 @@ export const ProductStockTab: React.FC<ProductStockTabProps> = ({ movements, uni
       <button
         className="btn btn-outline btn-md product-adjust-btn"
         onClick={onAdjust}
-        aria-label="Adjust stock"
+        aria-label={t.adjustStock}
       >
-        Adjust Stock
+        {t.adjustStock}
       </button>
     </div>
   )

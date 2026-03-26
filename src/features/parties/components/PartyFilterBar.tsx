@@ -1,5 +1,6 @@
 import React from 'react'
 import { Search } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { PartyType } from '../party.types'
 import { PARTY_TYPE_OPTIONS } from '../party.constants'
 
@@ -16,6 +17,8 @@ export const PartyFilterBar: React.FC<PartyFilterBarProps> = ({
   activeType,
   onTypeChange,
 }) => {
+  const { t } = useLanguage()
+
   return (
     <div className="party-filter-bar">
       <div className="search-bar">
@@ -24,18 +27,18 @@ export const PartyFilterBar: React.FC<PartyFilterBarProps> = ({
           type="search"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search by name or phone..."
-          aria-label="Search parties by name or phone"
+          placeholder={t.searchByNameOrPhone}
+          aria-label={t.searchParties}
         />
       </div>
-      <div className="pill-tabs" role="group" aria-label="Filter parties by type">
+      <div className="pill-tabs" role="group" aria-label={t.filterByPartyType}>
         {PARTY_TYPE_OPTIONS.map((option) => (
           <button
             key={option.value}
             className={`pill-tab${activeType === option.value ? ' active' : ''}`}
             onClick={() => onTypeChange(option.value)}
             aria-pressed={activeType === option.value}
-            aria-label={`Show ${option.label}`}
+            aria-label={`${t.showLabel} ${option.label}`}
           >
             {option.label}
           </button>

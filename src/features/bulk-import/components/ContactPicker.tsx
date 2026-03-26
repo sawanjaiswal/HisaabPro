@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import { Users, FileSpreadsheet } from 'lucide-react'
 import { HAS_CONTACT_PICKER, CSV_ACCEPT } from '../bulk-import.constants'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface ContactPickerProps {
   onPickContacts: () => void
@@ -10,6 +11,7 @@ interface ContactPickerProps {
 }
 
 export function ContactPicker({ onPickContacts, onImportCsv }: ContactPickerProps) {
+  const { t } = useLanguage()
   const fileRef = useRef<HTMLInputElement>(null)
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,9 +26,9 @@ export function ContactPicker({ onPickContacts, onImportCsv }: ContactPickerProp
         <Users size={48} strokeWidth={1.5} />
       </div>
 
-      <h2 className="bulk-import-title">Import Parties</h2>
+      <h2 className="bulk-import-title">{t.importParties}</h2>
       <p className="bulk-import-description">
-        Add multiple customers or suppliers at once from your phone contacts or a CSV file
+        {t.addMultipleCustomers}
       </p>
 
       <div className="bulk-import-buttons">
@@ -35,10 +37,10 @@ export function ContactPicker({ onPickContacts, onImportCsv }: ContactPickerProp
             type="button"
             className="btn btn-primary btn-lg bulk-import-btn"
             onClick={onPickContacts}
-            aria-label="Import from phone contacts"
+            aria-label={t.phoneContacts}
           >
             <Users size={20} aria-hidden="true" />
-            <span>Phone Contacts</span>
+            <span>{t.phoneContacts}</span>
           </button>
         )}
 
@@ -46,10 +48,10 @@ export function ContactPicker({ onPickContacts, onImportCsv }: ContactPickerProp
           type="button"
           className={`btn ${HAS_CONTACT_PICKER ? 'btn-secondary' : 'btn-primary'} btn-lg bulk-import-btn`}
           onClick={() => fileRef.current?.click()}
-          aria-label="Import from CSV file"
+          aria-label={t.csvFile}
         >
           <FileSpreadsheet size={20} aria-hidden="true" />
-          <span>CSV File</span>
+          <span>{t.csvFile}</span>
         </button>
       </div>
 

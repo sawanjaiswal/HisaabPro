@@ -7,6 +7,7 @@
 import React from 'react'
 import { formatAmount } from '../report.utils'
 import type { TaxSummaryData } from '../report-tax.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface TaxSummaryCardsProps {
   summary: TaxSummaryData
@@ -25,29 +26,33 @@ interface TaxCardProps {
 
 const TaxCard: React.FC<TaxCardProps> = ({
   label, count, taxableValue, cgst, sgst, igst, total, colorClass,
-}) => (
+}) => {
+  const { t } = useLanguage()
+  return (
   <div className="tax-summary-card">
     <div className="tax-summary-card__header">
       <span className="tax-summary-card__label">{label}</span>
-      <span className="tax-summary-card__count">{count} invoices</span>
+      <span className="tax-summary-card__count">{count} {t.invoices}</span>
     </div>
     <div className={`tax-summary-card__total ${colorClass ?? ''}`}>
       {formatAmount(total)}
     </div>
     <div className="tax-summary-card__breakdown">
-      <span>Taxable: {formatAmount(taxableValue)}</span>
+      <span>{t.taxable}: {formatAmount(taxableValue)}</span>
       {cgst > 0 && <span>CGST: {formatAmount(cgst)}</span>}
       {sgst > 0 && <span>SGST: {formatAmount(sgst)}</span>}
       {igst > 0 && <span>IGST: {formatAmount(igst)}</span>}
     </div>
   </div>
-)
+  )
+}
 
 export const TaxSummaryCards: React.FC<TaxSummaryCardsProps> = ({ summary }) => {
+  const { t } = useLanguage()
   return (
-    <div className="tax-summary-cards" role="region" aria-label="Tax summary by category">
+    <div className="tax-summary-cards" role="region" aria-label={t.taxSummaryByCategory}>
       <TaxCard
-        label="Sales Tax"
+        label={t.salesTax}
         count={summary.sales.count}
         taxableValue={summary.sales.taxableValue}
         cgst={summary.sales.cgst}
@@ -57,7 +62,7 @@ export const TaxSummaryCards: React.FC<TaxSummaryCardsProps> = ({ summary }) => 
         colorClass="tax-summary-card__total--positive"
       />
       <TaxCard
-        label="Purchase ITC"
+        label={t.purchaseItc}
         count={summary.purchases.count}
         taxableValue={summary.purchases.taxableValue}
         cgst={summary.purchases.cgst}
@@ -67,7 +72,7 @@ export const TaxSummaryCards: React.FC<TaxSummaryCardsProps> = ({ summary }) => 
         colorClass="tax-summary-card__total--info"
       />
       <TaxCard
-        label="Credit Notes"
+        label={t.creditNotes}
         count={summary.creditNotes.count}
         taxableValue={summary.creditNotes.taxableValue}
         cgst={summary.creditNotes.cgst}
@@ -76,7 +81,7 @@ export const TaxSummaryCards: React.FC<TaxSummaryCardsProps> = ({ summary }) => 
         total={summary.creditNotes.total}
       />
       <TaxCard
-        label="Debit Notes"
+        label={t.debitNotes}
         count={summary.debitNotes.count}
         taxableValue={summary.debitNotes.taxableValue}
         cgst={summary.debitNotes.cgst}

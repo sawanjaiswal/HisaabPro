@@ -9,6 +9,7 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { BulkActionBar } from '@/components/ui/BulkActionBar'
 import { useBulkSelect } from '@/hooks/useBulkSelect'
 import { useToast } from '@/hooks/useToast'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useParties } from './useParties'
 import { PartySummaryBar } from './components/PartySummaryBar'
 import { PartyFilterBar } from './components/PartyFilterBar'
@@ -25,6 +26,7 @@ const PARTY_NEW_ROUTE = ROUTES.PARTY_NEW
 export default function PartiesPage() {
   const navigate = useNavigate()
   const toast = useToast()
+  const { t } = useLanguage()
   const { data, status, filters, setSearch, setFilter, refresh } = useParties()
   const bulk = useBulkSelect()
   const [isBulkDeleting, setIsBulkDeleting] = useState(false)
@@ -52,11 +54,11 @@ export default function PartiesPage() {
     try {
       const ids = Array.from(bulk.selectedIds)
       await Promise.all(ids.map((id) => deleteParty(id)))
-      toast.success(`${count} ${count === 1 ? 'party' : 'parties'} deleted`)
+      toast.success(`${count} ${count === 1 ? t.partyDeleted : t.partiesDeleted}`)
       bulk.clear()
       refresh()
     } catch {
-      toast.error('Failed to delete some parties')
+      toast.error(t.failedDeleteParties)
     } finally {
       setIsBulkDeleting(false)
     }
@@ -67,28 +69,28 @@ export default function PartiesPage() {
   const bulkActions: BulkAction[] = [
     {
       id: 'delete',
-      label: 'Delete',
+      label: t.delete,
       icon: 'delete',
       isDanger: true,
       onClick: handleBulkDelete,
     },
     {
       id: 'export',
-      label: 'Export',
+      label: t.export,
       icon: 'export',
-      onClick: () => toast.info('Export coming soon'),
+      onClick: () => toast.info(t.exportComingSoon),
     },
   ]
 
   return (
     <AppShell>
       <Header
-        title={bulk.isActive ? `${bulk.selectedCount} Selected` : 'Parties'}
+        title={bulk.isActive ? `${bulk.selectedCount} ${t.selected}` : t.parties}
         actions={
           !bulk.isActive ? (
-            <button className="btn btn-ghost btn-sm" onClick={() => navigate(ROUTES.BULK_IMPORT_PARTIES)} aria-label="Import parties">
+            <button className="btn btn-ghost btn-sm" onClick={() => navigate(ROUTES.BULK_IMPORT_PARTIES)} aria-label={t.importPartiesLabel}>
               <Upload size={18} aria-hidden="true" />
-              <span>Import</span>
+              <span>{t.import}</span>
             </button>
           ) : undefined
         }
@@ -114,8 +116,8 @@ export default function PartiesPage() {
 
         {status === 'error' && (
           <ErrorState
-            title="Could not load parties"
-            message="Check your connection and try again."
+            title={t.couldNotLoadParties}
+            message={t.checkConnectionRetry}
             onRetry={refresh}
           />
         )}
@@ -123,11 +125,11 @@ export default function PartiesPage() {
         {status === 'success' && data && data.parties.length === 0 && (
           <EmptyState
             icon={<Users size={40} aria-hidden="true" />}
-            title="No parties yet"
-            description="Add your first customer or supplier"
+            title={t.noParties}
+            description={t.addFirstParty}
             action={
-              <button className="btn btn-primary btn-md" onClick={goToCreate} aria-label="Add first party">
-                Add Party
+              <button className="btn btn-primary btn-md" onClick={goToCreate} aria-label={t.addFirstPartyLabel}>
+                {t.addParty}
               </button>
             }
           />
@@ -135,14 +137,14 @@ export default function PartiesPage() {
 
         {status === 'success' && data && (
           <div role="status" aria-live="polite" className="sr-only">
-            {data.parties.length} {data.parties.length === 1 ? 'party' : 'parties'} found
+            {data.parties.length} {data.parties.length === 1 ? t.partyFound : t.partiesFound}
           </div>
         )}
 
         {status === 'success' && data && data.parties.length > 0 && (
           <>
-          <h2 className="sr-only">Party list</h2>
-          <div className="party-list stagger-list" role="list" aria-label="Parties">
+          <h2 className="sr-only">{t.partyList}</h2>
+          <div className="party-list stagger-list" role="list" aria-label={t.parties}>
             {data.parties.map((party) => (
               <div
                 key={party.id}
@@ -165,7 +167,7 @@ export default function PartiesPage() {
       </PageContainer>
 
       {!bulk.isActive && (
-        <button className="fab" onClick={goToCreate} aria-label="Add new party">
+        <button className="fab" onClick={goToCreate} aria-label={t.addNewPartyLabel}>
           <Plus size={24} aria-hidden="true" />
         </button>
       )}

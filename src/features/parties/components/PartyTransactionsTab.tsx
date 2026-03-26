@@ -12,6 +12,7 @@ import '../party-transactions.css'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
+import { useLanguage } from '@/hooks/useLanguage'
 import { getPartyTransactions } from '../party.service'
 import { formatAmount, paisaToRupees } from '../party.utils'
 import type { PartyTransaction, PartyTransactionListResponse } from '../party.types'
@@ -26,6 +27,7 @@ const PAGE_SIZE = 20
 
 export function PartyTransactionsTab({ partyId }: PartyTransactionsTabProps) {
   const navigate = useNavigate()
+  const { t } = useLanguage()
 
   const [transactions, setTransactions] = useState<PartyTransaction[]>([])
   const [summary, setSummary] = useState<PartyTransactionListResponse['summary'] | null>(null)
@@ -95,8 +97,8 @@ export function PartyTransactionsTab({ partyId }: PartyTransactionsTabProps) {
   if (status === 'error') {
     return (
       <ErrorState
-        title="Could not load transactions"
-        message="Check your connection and try again."
+        title={t.couldNotLoadTransactions}
+        message={t.checkConnectionRetry}
         onRetry={retry}
       />
     )
@@ -106,15 +108,15 @@ export function PartyTransactionsTab({ partyId }: PartyTransactionsTabProps) {
     return (
       <EmptyState
         icon={<FileText size={40} aria-hidden="true" />}
-        title="No transactions yet"
-        description="Create an invoice or record a payment to start tracking business with this party."
+        title={t.noTransactionsYet}
+        description={t.noTransactionsDesc}
         action={
           <button
             className="btn btn-primary btn-md"
             onClick={() => navigate('/invoices/new')}
-            aria-label="Create invoice for this party"
+            aria-label={t.createInvoiceForParty}
           >
-            Create Invoice
+            {t.createInvoice}
           </button>
         }
       />
@@ -127,19 +129,19 @@ export function PartyTransactionsTab({ partyId }: PartyTransactionsTabProps) {
       {summary && (
         <div className="party-txn-summary">
           <div className="party-txn-summary-item">
-            <span className="party-txn-summary-label">Total Debit</span>
+            <span className="party-txn-summary-label">{t.totalDebit}</span>
             <span className="party-txn-summary-value party-txn-summary-value--debit">
               {formatAmount(summary.totalDebit)}
             </span>
           </div>
           <div className="party-txn-summary-item">
-            <span className="party-txn-summary-label">Total Credit</span>
+            <span className="party-txn-summary-label">{t.totalCredit}</span>
             <span className="party-txn-summary-value party-txn-summary-value--credit">
               {formatAmount(summary.totalCredit)}
             </span>
           </div>
           <div className="party-txn-summary-item">
-            <span className="party-txn-summary-label">Balance</span>
+            <span className="party-txn-summary-label">{t.balance}</span>
             <span className={`party-txn-summary-value ${summary.closingBalance > 0 ? 'party-txn-summary-value--debit' : 'party-txn-summary-value--credit'}`}>
               {formatAmount(Math.abs(summary.closingBalance))}
               <small>{summary.closingBalance > 0 ? ' DR' : summary.closingBalance < 0 ? ' CR' : ''}</small>
@@ -149,7 +151,7 @@ export function PartyTransactionsTab({ partyId }: PartyTransactionsTabProps) {
       )}
 
       {/* Transaction list */}
-      <div className="party-txn-list" role="list" aria-label="Transaction ledger">
+      <div className="party-txn-list" role="list" aria-label={t.transactionLedger}>
         {transactions.map((txn) => (
           <button
             key={`${txn.type}-${txn.id}`}
@@ -178,7 +180,7 @@ export function PartyTransactionsTab({ partyId }: PartyTransactionsTabProps) {
                 {txn.amount > 0 ? '+' : ''}{paisaToRupees(txn.amount)}
               </span>
               <span className="party-txn-balance">
-                Bal: {paisaToRupees(txn.runningBalance)}
+                {t.balAbbrev} {paisaToRupees(txn.runningBalance)}
               </span>
             </div>
           </button>
@@ -191,11 +193,11 @@ export function PartyTransactionsTab({ partyId }: PartyTransactionsTabProps) {
           className="btn btn-ghost btn-md party-txn-load-more"
           onClick={handleLoadMore}
           disabled={isLoadingMore}
-          aria-label="Load more transactions"
+          aria-label={t.loadMoreTransactions}
         >
-          {isLoadingMore ? 'Loading...' : (
+          {isLoadingMore ? t.loading : (
             <>
-              Load More
+              {t.loadMore2}
               <ChevronDown size={16} aria-hidden="true" />
             </>
           )}

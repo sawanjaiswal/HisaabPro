@@ -2,6 +2,7 @@
 
 import { Minus, Plus, Trash2 } from 'lucide-react'
 import { formatPaise } from '@/lib/format'
+import { useLanguage } from '@/hooks/useLanguage'
 import { lineTotal } from '../pos.utils'
 
 import type { PosCartItem } from '../pos.types'
@@ -13,6 +14,7 @@ interface CartItemProps {
 }
 
 export function CartItem({ item, onUpdateQty, onRemove }: CartItemProps) {
+  const { t } = useLanguage()
   const total = lineTotal(item)
   const atMin = item.quantity <= 1
   const atMax = item.quantity >= item.stock
@@ -22,17 +24,17 @@ export function CartItem({ item, onUpdateQty, onRemove }: CartItemProps) {
       <div className="pos-cart-item-info">
         <span className="pos-cart-item-name">{item.name}</span>
         <span className="pos-cart-item-price">
-          {formatPaise(item.unitPrice)} each
+          {formatPaise(item.unitPrice)} {t.posEach}
         </span>
       </div>
       <div className="pos-cart-item-actions">
-        <div className="pos-qty-stepper" role="group" aria-label={`Quantity for ${item.name}`}>
+        <div className="pos-qty-stepper" role="group" aria-label={`${t.qty} — ${item.name}`}>
           <button
             type="button"
             className="pos-qty-btn"
             onClick={() => onUpdateQty(item.productId, item.quantity - 1)}
             disabled={atMin}
-            aria-label="Decrease quantity"
+            aria-label={t.posDecreaseQty}
           >
             <Minus size={14} aria-hidden="true" />
           </button>
@@ -42,7 +44,7 @@ export function CartItem({ item, onUpdateQty, onRemove }: CartItemProps) {
             className="pos-qty-btn"
             onClick={() => onUpdateQty(item.productId, item.quantity + 1)}
             disabled={atMax}
-            aria-label="Increase quantity"
+            aria-label={t.posIncreaseQty}
           >
             <Plus size={14} aria-hidden="true" />
           </button>
@@ -52,7 +54,7 @@ export function CartItem({ item, onUpdateQty, onRemove }: CartItemProps) {
           type="button"
           className="pos-cart-item-remove"
           onClick={() => onRemove(item.productId)}
-          aria-label={`Remove ${item.name}`}
+          aria-label={`${t.remove} ${item.name}`}
         >
           <Trash2 size={16} aria-hidden="true" />
         </button>

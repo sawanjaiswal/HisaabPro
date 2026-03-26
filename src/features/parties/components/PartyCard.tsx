@@ -1,5 +1,6 @@
 import React, { useRef, useCallback } from 'react'
 import { Check } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { PartySummary } from '../party.types'
 import { PARTY_TYPE_LABELS } from '../party.constants'
 import { formatOutstanding, formatPhone, timeAgo } from '../party.utils'
@@ -25,6 +26,7 @@ export const PartyCard: React.FC<PartyCardProps> = ({
   isSelected = false,
   isBulkMode = false,
 }) => {
+  const { t } = useLanguage()
   const { text: balanceText, isReceivable } = formatOutstanding(party.outstandingBalance)
   const badgeClass = party.type === 'CUSTOMER'
     ? 'badge badge-customer'
@@ -64,7 +66,7 @@ export const PartyCard: React.FC<PartyCardProps> = ({
       className={`txn-row${isSelected ? ' txn-row--selected' : ''}`}
       role="button"
       tabIndex={0}
-      aria-label={`${isBulkMode ? (isSelected ? 'Deselect' : 'Select') : 'View details for'} ${party.name}`}
+      aria-label={`${isBulkMode ? (isSelected ? t.deselectParty : t.selectParty) : t.viewDetailsFor} ${party.name}`}
       onClick={handleClick}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleClick() }}
       onPointerDown={handlePointerDown}

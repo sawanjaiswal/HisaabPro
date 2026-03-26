@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { Search, SlidersHorizontal } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { OutstandingType, OutstandingSortBy } from '../payment.types'
 import { OUTSTANDING_TYPE_LABELS, OUTSTANDING_SORT_LABELS } from '../payment.constants'
 
@@ -29,6 +30,7 @@ export const OutstandingFilterBar: React.FC<OutstandingFilterBarProps> = ({
   sortBy,
   onSortChange,
 }) => {
+  const { t } = useLanguage()
   return (
     <div className="outstanding-filter-bar">
       <div className="search-bar">
@@ -37,15 +39,15 @@ export const OutstandingFilterBar: React.FC<OutstandingFilterBarProps> = ({
           type="search"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search by party name..."
-          aria-label="Search outstanding by party name"
+          placeholder={t.searchByPartyName}
+          aria-label={t.searchOutstandingParty}
         />
       </div>
 
       <div
         className="outstanding-filter-pills"
         role="group"
-        aria-label="Filter by outstanding type"
+        aria-label={t.filterOutstandingType}
       >
         {OUTSTANDING_TYPES.map((type) => (
           <button
@@ -53,7 +55,7 @@ export const OutstandingFilterBar: React.FC<OutstandingFilterBarProps> = ({
             className={`outstanding-filter-pill${activeType === type ? ' outstanding-filter-pill--active' : ''}`}
             onClick={() => onTypeChange(type)}
             aria-pressed={activeType === type}
-            aria-label={`Show ${OUTSTANDING_TYPE_LABELS[type]}`}
+            aria-label={`${t.showLabel} ${OUTSTANDING_TYPE_LABELS[type]}`}
           >
             {OUTSTANDING_TYPE_LABELS[type]}
           </button>
@@ -63,9 +65,9 @@ export const OutstandingFilterBar: React.FC<OutstandingFilterBarProps> = ({
           className={`outstanding-filter-pill${overdueOnly ? ' outstanding-filter-pill--active' : ''}`}
           onClick={() => onOverdueToggle(!overdueOnly)}
           aria-pressed={overdueOnly}
-          aria-label={overdueOnly ? 'Showing overdue only — click to show all' : 'Show overdue only'}
+          aria-label={overdueOnly ? t.showingOverdueClick : t.showOverdueOnly}
         >
-          Overdue Only
+          {t.overdueOnly}
         </button>
       </div>
 
@@ -74,7 +76,7 @@ export const OutstandingFilterBar: React.FC<OutstandingFilterBarProps> = ({
         <select
           value={sortBy}
           onChange={(e) => onSortChange(e.target.value as OutstandingSortBy)}
-          aria-label="Sort outstanding list"
+          aria-label={t.sortOutstandingList}
           style={{
             height: '44px',
             padding: '0 var(--space-3)',

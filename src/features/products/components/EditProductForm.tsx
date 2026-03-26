@@ -5,6 +5,7 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { Button } from '@/components/ui/Button'
 import { useAuth } from '@/context/AuthContext'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useTaxCategories } from '@/hooks/useTaxCategories'
 import { useProductForm } from '../useProductForm'
 import { ProductFormBasic } from './ProductFormBasic'
@@ -20,6 +21,7 @@ interface EditProductFormProps {
 }
 
 export function EditProductForm({ productId, initialData }: EditProductFormProps) {
+  const { t } = useLanguage()
   const { user } = useAuth()
   const businessId = user?.businessId ?? ''
   const { categories: taxCategories } = useTaxCategories(businessId)
@@ -27,9 +29,9 @@ export function EditProductForm({ productId, initialData }: EditProductFormProps
 
   return (
     <AppShell>
-      <Header title="Edit Product" backTo={`/products/${productId}`} />
+      <Header title={t.editProductTitle} backTo={`/products/${productId}`} />
       <PageContainer className="create-product-page">
-        <nav className="pill-tabs" role="tablist" aria-label="Form sections">
+        <nav className="pill-tabs" role="tablist" aria-label={t.formSections}>
           {PRODUCT_FORM_SECTIONS.map((s) => (
             <button key={s.id} type="button" role="tab" className={`pill-tab${activeSection === s.id ? ' active' : ''}`} onClick={() => setActiveSection(s.id)} aria-selected={activeSection === s.id} aria-controls={`section-panel-${s.id}`}>
               {s.label}
@@ -43,7 +45,7 @@ export function EditProductForm({ productId, initialData }: EditProductFormProps
         </div>
       </PageContainer>
       <div className="create-product-actions">
-        <Button variant="primary" size="lg" loading={isSubmitting} onClick={handleSubmit} aria-label="Update product">Update Product</Button>
+        <Button variant="primary" size="lg" loading={isSubmitting} onClick={handleSubmit} aria-label={t.updateProductLabel}>{t.updateProductBtn}</Button>
       </div>
     </AppShell>
   )

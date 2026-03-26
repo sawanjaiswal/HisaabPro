@@ -5,6 +5,7 @@ import { ReportGroupHeader } from './ReportGroupHeader'
 import { PaymentCard } from './PaymentHistoryList'
 import { formatAmount } from '../report.utils'
 import type { PaymentHistoryGroup } from '../report.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface PaymentHistoryGroupedProps {
   groups: PaymentHistoryGroup[]
@@ -17,11 +18,12 @@ export function PaymentHistoryGrouped({
   expandedGroups,
   onToggleGroup,
 }: PaymentHistoryGroupedProps) {
-  return (
-    <div role="list" aria-label="Payment history grouped">
+  const { t } = useLanguage()
+    return (
+    <div role="list" aria-label={t.paymentHistoryGrouped}>
       {groups.map((group) => {
         const isExpanded = expandedGroups.has(group.key)
-        const subtitle = `${group.count} payment${group.count !== 1 ? 's' : ''} \u00b7 +${formatAmount(group.totalReceived)} / -${formatAmount(group.totalPaid)}`
+        const subtitle = `${group.count} ${t.payments} \u00b7 +${formatAmount(group.totalReceived)} / -${formatAmount(group.totalPaid)}`
 
         return (
           <div key={group.key} role="listitem">
@@ -34,7 +36,7 @@ export function PaymentHistoryGrouped({
             {isExpanded && (
               <div className="report-group-items">
                 <ReportCardList
-                  ariaLabel={`Payments in group ${group.label}`}
+                  ariaLabel={`${t.paymentsInGroup} ${group.label}`}
                 >
                   {group.items.map((item) => (
                     <PaymentCard key={item.id} item={item} />

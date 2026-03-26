@@ -1,6 +1,7 @@
 /** Settings — Template pills for cloning permissions from system roles (create mode only) */
 
 import type { Role } from '../settings.types'
+import { useLanguage } from '@/hooks/useLanguage'
 import { SYSTEM_ROLE_NAMES } from '../role.constants'
 
 const TEMPLATE_NAMES = [...SYSTEM_ROLE_NAMES] as const
@@ -24,9 +25,10 @@ export function RoleTemplatePills({
   onCloneTemplate,
   onClearPermissions,
 }: RoleTemplatePillsProps) {
+  const { t } = useLanguage()
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-      <p style={LABEL_STYLE}>Start from Template</p>
+      <p style={LABEL_STYLE}>{t.startFromTemplate}</p>
       <div className="role-template-pills">
         {TEMPLATE_NAMES.map((name) => {
           const templateRole = systemRoles.find((r) => r.name === name)
@@ -41,7 +43,7 @@ export function RoleTemplatePills({
                 }
               }}
               disabled={templateRole === undefined}
-              aria-label={`Use ${name} template`}
+              aria-label={`${t.useTemplatePrefix} ${name} ${t.useTemplateSuffix}`}
             >
               {name}
             </button>
@@ -51,9 +53,9 @@ export function RoleTemplatePills({
           type="button"
           className="role-template-pill"
           onClick={onClearPermissions}
-          aria-label="Start from blank — no permissions"
+          aria-label={t.startFromBlankDesc}
         >
-          Blank
+          {t.blankLabel}
         </button>
       </div>
     </div>

@@ -196,8 +196,19 @@
   min-height: 44px;
 }
 
+.pill-tab:hover:not(.active) {
+  border-color: var(--color-primary-300);
+  color: var(--color-primary-500);
+}
+
 .pill-tab:active:not(.active) {
   background: var(--color-gray-100);
+  transform: scale(0.95);
+}
+
+.pill-tab:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
 }
 
 .pill-tab.active {
@@ -205,4 +216,23 @@
   color: var(--color-white-inverse);
   border-color: var(--color-primary-600);
   box-shadow: var(--shadow-pill-active);
+}
+
+/* Tinted variant — for filter pills (subtler than filled tabs) */
+.pill-tab.active-tint {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-400);
+  color: var(--color-primary-500);
+  font-weight: 600;
+}
+
+/* Dark theme pill tab overrides */
+[data-theme="dark"] .pill-tab {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-400);
+}
+
+[data-theme="dark"] .pill-tab.active-tint {
+  background: var(--color-primary-bg-subtle-strong);
 }

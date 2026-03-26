@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Search, X } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useDebounce } from '@/hooks/useDebounce'
 import { getProducts } from '@/lib/services/product.service'
 import type { ProductSummary } from '@/lib/types/product.types'
@@ -27,6 +28,7 @@ export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
   onSelect,
   addedProductIds,
 }) => {
+  const { t } = useLanguage()
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<ProductSummary[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -147,13 +149,13 @@ export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
           ref={inputRef}
           type="text"
           className="input product-search-field"
-          placeholder="Search product name or SKU..."
+          placeholder={t.searchProductNameSku}
           value={query}
           onChange={handleQueryChange}
           onFocus={handleFocus}
           onKeyDown={handleKeyDown}
           autoComplete="off"
-          aria-label="Search for a product to add"
+          aria-label={t.searchProductToAdd}
           aria-expanded={showDropdown}
           aria-haspopup="listbox"
           aria-autocomplete="list"
@@ -164,7 +166,7 @@ export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
             type="button"
             className="product-search-clear"
             onClick={handleClearQuery}
-            aria-label="Clear product search"
+            aria-label={t.clearProductSearch}
           >
             <X size={14} aria-hidden="true" />
           </button>

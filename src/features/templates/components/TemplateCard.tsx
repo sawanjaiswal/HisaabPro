@@ -1,6 +1,7 @@
 /** Template gallery card — shows preview thumbnail, name, and default badges */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { TemplateSummary } from '../template.types'
 import { BASE_TEMPLATE_LABELS, DOCUMENT_TYPE_TITLE_LABELS } from '../template.constants'
 
@@ -23,6 +24,7 @@ function getBaseTemplateAbbrev(baseTemplate: TemplateSummary['baseTemplate']): s
 }
 
 export const TemplateCard: React.FC<TemplateCardProps> = ({ template, onClick }) => {
+  const { t } = useLanguage()
   const abbrev = getBaseTemplateAbbrev(template.baseTemplate)
   const baseLabel = BASE_TEMPLATE_LABELS[template.baseTemplate]
 
@@ -56,8 +58,8 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template, onClick })
         </span>
 
         {template.isDefault && (
-          <span className="template-card-default-badge" aria-label="Default template">
-            Default
+          <span className="template-card-default-badge" aria-label={t.defaultBadge}>
+            {t.defaultBadge}
           </span>
         )}
       </div>
@@ -68,7 +70,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template, onClick })
         </div>
 
         {template.defaultForTypes.length > 0 && (
-          <div className="template-card-badges" aria-label="Default for document types">
+          <div className="template-card-badges" aria-label={t.defaultForDocTypes}>
             {template.defaultForTypes.map((docType) => (
               <span key={docType} className="template-card-badge">
                 {DOCUMENT_TYPE_TITLE_LABELS[docType]}

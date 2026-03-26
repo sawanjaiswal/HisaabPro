@@ -3,6 +3,7 @@
 import { Phone, User } from 'lucide-react'
 import { formatAmount } from '../report.utils'
 import type { PartyStatementData } from '../report.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export interface StatementSummaryCardsProps {
   party: PartyStatementData['party']
@@ -17,14 +18,15 @@ export function StatementSummaryCards({
   closingBalance,
   totals,
 }: StatementSummaryCardsProps) {
-  return (
+  const { t } = useLanguage()
+    return (
     <>
       {/* Party header card */}
       <div className="report-summary-bar" style={{ marginBottom: 'var(--space-4)' }}>
         <div className="report-summary-item" style={{ flex: 2 }}>
           <span className="report-summary-label">
             <User size={12} aria-hidden="true" style={{ display: 'inline', marginRight: 4 }} />
-            {party.type === 'customer' ? 'Customer' : 'Supplier'}
+            {party.type === 'customer' ? t.customer : t.supplier}
           </span>
           <span className="report-summary-value">{party.name}</span>
           {party.phone && (
@@ -37,7 +39,7 @@ export function StatementSummaryCards({
 
         {/* Opening balance */}
         <div className="report-summary-item">
-          <span className="report-summary-label">Opening</span>
+          <span className="report-summary-label">{t.opening}</span>
           <span
             className={`report-summary-value ${
               openingBalance.type === 'receivable'
@@ -48,13 +50,13 @@ export function StatementSummaryCards({
             {formatAmount(openingBalance.amount)}
           </span>
           <span className="report-summary-count">
-            {openingBalance.type === 'receivable' ? 'Receivable' : 'Payable'}
+            {openingBalance.type === 'receivable' ? t.receivable : t.payable}
           </span>
         </div>
 
         {/* Closing balance */}
         <div className="report-summary-item">
-          <span className="report-summary-label">Closing</span>
+          <span className="report-summary-label">{t.closing}</span>
           <span
             className={`report-summary-value ${
               closingBalance.type === 'receivable'
@@ -65,7 +67,7 @@ export function StatementSummaryCards({
             {formatAmount(closingBalance.amount)}
           </span>
           <span className="report-summary-count">
-            {closingBalance.type === 'receivable' ? 'Receivable' : 'Payable'}
+            {closingBalance.type === 'receivable' ? t.receivable : t.payable}
           </span>
         </div>
       </div>
@@ -73,13 +75,13 @@ export function StatementSummaryCards({
       {/* Totals bar */}
       <div className="report-summary-bar" style={{ marginBottom: 'var(--space-4)' }}>
         <div className="report-summary-item">
-          <span className="report-summary-label">Total Debit</span>
+          <span className="report-summary-label">{t.totalDebit}</span>
           <span className="report-summary-value report-summary-value--negative">
             {formatAmount(totals.totalDebit)}
           </span>
         </div>
         <div className="report-summary-item">
-          <span className="report-summary-label">Total Credit</span>
+          <span className="report-summary-label">{t.totalCredit}</span>
           <span className="report-summary-value report-summary-value--positive">
             {formatAmount(totals.totalCredit)}
           </span>

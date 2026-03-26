@@ -10,6 +10,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { useApi } from '@/hooks/useApi'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useToast } from '@/hooks/useToast'
 import { api, ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
@@ -21,6 +22,7 @@ import './godowns.css'
 export default function GodownDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const toast = useToast()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -39,10 +41,10 @@ export default function GodownDetailPage() {
     setIsDeleting(true)
     try {
       await api(`/godowns/${id}`, { method: 'DELETE' })
-      toast.success(`${godown.name} deleted`)
+      toast.success(`${godown.name} ${t.deleted}`)
       navigate(ROUTES.GODOWNS)
     } catch (err: unknown) {
-      const message = err instanceof ApiError ? err.message : 'Failed to delete godown'
+      const message = err instanceof ApiError ? err.message : t.failedToDeleteGodown
       toast.error(message)
     } finally {
       deleteGuard.current = false
@@ -54,7 +56,7 @@ export default function GodownDetailPage() {
   return (
     <AppShell>
       <Header
-        title={godown?.name ?? 'Godown'}
+        title={godown?.name ?? t.godownLabel}
         backTo={ROUTES.GODOWNS}
         actions={
           godown ? (
@@ -90,8 +92,8 @@ export default function GodownDetailPage() {
 
         {status === 'error' && (
           <ErrorState
-            title="Could not load godown"
-            message={error?.message ?? 'Check your connection and try again.'}
+            title={t.couldNotLoadGodown}
+            message={error?.message ?? t.checkConnectionRetry}
             onRetry={refetch}
           />
         )}
@@ -100,7 +102,7 @@ export default function GodownDetailPage() {
           <>
             <div className="godown-detail-info">
               {godown.isDefault && (
-                <span className="godown-card__badge">Default Godown</span>
+                <span className="godown-card__badge">{t.defaultGodown}</span>
               )}
               {godown.address && (
                 <div className="godown-detail-address">
@@ -117,9 +119,9 @@ export default function GodownDetailPage() {
           open={showDeleteConfirm}
           onClose={() => setShowDeleteConfirm(false)}
           onConfirm={handleDelete}
-          title="Delete Godown?"
-          description={`This will permanently remove ${godown?.name ?? 'this godown'}. This cannot be undone.`}
-          confirmLabel="Delete"
+          title={t.deleteGodownTitle}
+          description={t.deleteGodownDesc}
+          confirmLabel={t.delete}
           isLoading={isDeleting}
         />
       </PageContainer>

@@ -7,6 +7,7 @@
 import { useState } from 'react'
 import { MessageCircle, Copy, Check } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
+import { useLanguage } from '@/hooks/useLanguage'
 import { APP_NAME } from '@/config/app.config'
 import '../reminder-drawer.css'
 
@@ -37,6 +38,7 @@ function sanitizePhone(phone: string): string {
 }
 
 export function ReminderDrawer({ open, onClose, partyName, partyPhone, outstanding }: ReminderDrawerProps) {
+  const { t } = useLanguage()
   const [copied, setCopied] = useState(false)
   const message = buildReminderMessage(partyName, outstanding)
   const phone = sanitizePhone(partyPhone)
@@ -53,10 +55,10 @@ export function ReminderDrawer({ open, onClose, partyName, partyPhone, outstandi
   }
 
   return (
-    <Drawer open={open} onClose={onClose} title="Send Reminder" size="sm">
+    <Drawer open={open} onClose={onClose} title={t.sendReminderTitle} size="sm">
       <div className="reminder-drawer">
         <p className="reminder-drawer-to">
-          To: <strong>{partyName}</strong> ({partyPhone})
+          {t.toColon} <strong>{partyName}</strong> ({partyPhone})
         </p>
 
         <div className="reminder-drawer-preview">
@@ -69,20 +71,20 @@ export function ReminderDrawer({ open, onClose, partyName, partyPhone, outstandi
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-primary btn-md reminder-drawer-wa"
-            aria-label={`Send reminder to ${partyName} via WhatsApp`}
+            aria-label={`${t.sendReminderViaWa} ${partyName}`}
           >
             <MessageCircle size={18} aria-hidden="true" />
-            Send via WhatsApp
+            {t.sendViaWhatsApp}
           </a>
 
           <button
             type="button"
             className="btn btn-ghost btn-md reminder-drawer-copy"
             onClick={handleCopy}
-            aria-label={copied ? 'Message copied' : 'Copy message to clipboard'}
+            aria-label={copied ? t.messageCopied : t.copyToClipboard}
           >
             {copied ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
-            {copied ? 'Copied!' : 'Copy Message'}
+            {copied ? t.copied : t.copyMessage}
           </button>
         </div>
       </div>

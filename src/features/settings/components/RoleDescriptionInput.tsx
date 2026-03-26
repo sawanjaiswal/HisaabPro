@@ -1,5 +1,7 @@
 /** Settings — Role description textarea (optional field) */
 
+import { useLanguage } from '@/hooks/useLanguage'
+
 interface RoleDescriptionInputProps {
   value: string
   onChange: (value: string) => void
@@ -14,18 +16,19 @@ const LABEL_STYLE: React.CSSProperties = {
 }
 
 export function RoleDescriptionInput({ value, onChange }: RoleDescriptionInputProps) {
+  const { t } = useLanguage()
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
       <label htmlFor="role-description" style={LABEL_STYLE}>
-        Description{' '}
+        {t.descriptionOptional}{' '}
         <span style={{ fontWeight: 400, textTransform: 'none', color: 'var(--color-gray-400)' }}>
-          (optional)
+          {t.optionalSuffix}
         </span>
       </label>
       <textarea
         id="role-description"
         className="input"
-        placeholder="Describe what this role can do..."
+        placeholder={t.roleDescPlaceholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         rows={3}

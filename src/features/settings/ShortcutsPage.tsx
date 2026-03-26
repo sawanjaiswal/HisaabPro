@@ -2,14 +2,17 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ROUTES } from '@/config/routes.config'
+import { useLanguage } from '@/hooks/useLanguage'
 import { DEFAULT_SHORTCUTS, SHORTCUT_GROUPS } from './shortcut.constants'
 import { ShortcutsList } from './components/ShortcutsList'
 import './shortcuts.css'
 
 export default function ShortcutsPage() {
+  const { t } = useLanguage()
+
   return (
     <AppShell>
-      <Header title="Keyboard Shortcuts" backTo={ROUTES.SETTINGS} />
+      <Header title={t.keyboardShortcuts} backTo={ROUTES.SETTINGS} />
       <PageContainer className="shortcuts-page">
         <ShortcutsList
           shortcuts={DEFAULT_SHORTCUTS}
@@ -24,7 +27,7 @@ export default function ShortcutsPage() {
             lineHeight: '1.5',
           }}
         >
-          Shortcuts are active on desktop and tablet only
+          {t.shortcutsDesktopOnly}
         </p>
       </PageContainer>
     </AppShell>

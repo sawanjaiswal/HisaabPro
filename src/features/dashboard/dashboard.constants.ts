@@ -6,47 +6,53 @@
 
 import { ROUTES } from '@/config/routes.config'
 import type { QuickAction, ActivityType } from './dashboard.types'
+import type { TranslationKey } from '@/lib/translations'
 
 // ─── Quick actions (Figma: Create, Send, Pay, More) ────────────────────────
+// Labels are translation keys — resolved at render time via t[action.labelKey]
 
-export const QUICK_ACTIONS: QuickAction[] = [
+export interface QuickActionConfig extends QuickAction {
+  labelKey: TranslationKey
+}
+
+export const QUICK_ACTIONS: QuickActionConfig[] = [
   {
     id:    'new-invoice',
-    label: 'Create',
+    labelKey: 'create',
     icon:  'FileText',
     route: `${ROUTES.INVOICE_CREATE}?type=SALE`,
     color: 'var(--color-primary-600)',
   },
   {
     id:    'send-invoice',
-    label: 'Send',
+    labelKey: 'send',
     icon:  'Send',
     route: ROUTES.INVOICES,
     color: 'var(--color-info-600)',
   },
   {
     id:    'record-payment',
-    label: 'Pay',
+    labelKey: 'pay',
     icon:  'CreditCard',
     route: `${ROUTES.PAYMENT_NEW}?type=PAYMENT_IN`,
     color: 'var(--color-success-600)',
   },
   {
     id:    'more-actions',
-    label: 'More',
+    labelKey: 'more',
     icon:  'MoreHorizontal',
     route: ROUTES.SETTINGS,
     color: 'var(--color-gray-600)',
   },
 ]
 
-// ─── Activity type labels & colors ──────────────────────────────────────────
+// ─── Activity type label keys ───────────────────────────────────────────────
 
-export const ACTIVITY_TYPE_LABELS: Record<ActivityType, string> = {
-  sale_invoice:     'Sale Invoice',
-  purchase_invoice: 'Purchase Invoice',
-  payment_in:       'Payment In',
-  payment_out:      'Payment Out',
+export const ACTIVITY_TYPE_LABEL_KEYS: Record<ActivityType, TranslationKey> = {
+  sale_invoice:     'saleInvoice',
+  purchase_invoice: 'purchaseInvoice',
+  payment_in:       'paymentIn',
+  payment_out:      'paymentOut',
 }
 
 // ─── Section limits ─────────────────────────────────────────────────────────
@@ -56,8 +62,8 @@ export const RECENT_ACTIVITY_LIMIT = 10
 
 // ─── WhatsApp reminder ─────────────────────────────────────────────────────
 
-export function buildReminderMessage(name: string): string {
-  return `Hi ${name}, this is a reminder about your pending payment. Please settle at your earliest convenience.`
+export function buildReminderMessage(name: string, reminderText: string): string {
+  return `Hi ${name}, ${reminderText}`
 }
 
 // ─── Subscription pricing ──────────────────────────────────────────────────

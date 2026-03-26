@@ -15,8 +15,10 @@ import { ProgressBar } from './components/ProgressBar'
 import { CountItemRow } from './components/CountItemRow'
 import { DiscrepancyRow } from './components/DiscrepancyRow'
 import './stock-verification.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export default function VerificationDetailPage() {
+  const { t } = useLanguage()
   const { id } = useParams<{ id: string }>()
   const { verification, items, status, error, refetch, recordCount, completeVerification, adjustStock, isProcessing } = useVerificationDetail(id)
   const [showAdjustConfirm, setShowAdjustConfirm] = useState(false)
@@ -24,7 +26,7 @@ export default function VerificationDetailPage() {
   if (status === 'loading') {
     return (
       <AppShell>
-        <Header title="Stock Verification" backTo={ROUTES.STOCK_VERIFICATION} />
+        <Header title={t.stockVerification} backTo={ROUTES.STOCK_VERIFICATION} />
         <PageContainer>
           <div aria-busy="true">
             <Skeleton height="2rem" width="60%" />
@@ -39,9 +41,9 @@ export default function VerificationDetailPage() {
   if (status === 'error') {
     return (
       <AppShell>
-        <Header title="Stock Verification" backTo={ROUTES.STOCK_VERIFICATION} />
+        <Header title={t.stockVerification} backTo={ROUTES.STOCK_VERIFICATION} />
         <PageContainer>
-          <ErrorState title="Could not load verification" message={error?.message} onRetry={refetch} />
+          <ErrorState title={t.couldNotLoadVerification} message={error?.message} onRetry={refetch} />
         </PageContainer>
       </AppShell>
     )
@@ -59,7 +61,7 @@ export default function VerificationDetailPage() {
   return (
     <AppShell>
       <Header
-        title="Stock Verification"
+        title={t.stockVerification}
         backTo={ROUTES.STOCK_VERIFICATION}
         actions={
           <span className="sv-detail__badge" style={badgeStyle}>
@@ -73,7 +75,7 @@ export default function VerificationDetailPage() {
 
         {isCounting && (
           <section className="sv-detail__section">
-            <h2 className="sv-detail__section-title">Count Items</h2>
+            <h2 className="sv-detail__section-title">{t.countItems}</h2>
             <div className="sv-detail__items">
               {items.map((item) => (
                 <CountItemRow key={item.id} item={item} onSave={recordCount} disabled={isProcessing} />
@@ -87,7 +89,7 @@ export default function VerificationDetailPage() {
                 disabled={isProcessing}
               >
                 <CheckCircle2 size={18} aria-hidden="true" />
-                Complete Verification
+                {t.completeVerification}
               </button>
             )}
           </section>
@@ -96,7 +98,7 @@ export default function VerificationDetailPage() {
         {(isCompleted || (isCounting && allCounted)) && (
           <section className="sv-detail__section">
             <h2 className="sv-detail__section-title">
-              Discrepancy Summary
+              {t.discrepancySummary}
               {hasDiscrepancies && <span className="sv-detail__disc-count">{verification.discrepancies}</span>}
             </h2>
             <div className="sv-detail__items">
@@ -115,7 +117,7 @@ export default function VerificationDetailPage() {
             disabled={isProcessing}
           >
             <RefreshCw size={18} aria-hidden="true" />
-            Adjust Stock
+            {t.adjustStock}
           </button>
         )}
 
@@ -123,9 +125,9 @@ export default function VerificationDetailPage() {
           open={showAdjustConfirm}
           onClose={() => setShowAdjustConfirm(false)}
           onConfirm={() => { adjustStock(); setShowAdjustConfirm(false) }}
-          title="Adjust Stock?"
-          description="This will adjust stock levels for all discrepant items. This action cannot be undone."
-          confirmLabel="Adjust Stock"
+          title={t.adjustStockTitle}
+          description={t.adjustStockDesc}
+          confirmLabel={t.adjustStock}
           isDanger={true}
           isLoading={isProcessing}
         />

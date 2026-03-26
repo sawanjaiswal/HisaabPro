@@ -1,4 +1,5 @@
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { UserCog, Ban, Trash2 } from 'lucide-react'
 import type { StaffMember } from '../settings.types'
 import { STAFF_STATUS_LABELS } from '../staff.constants'
@@ -14,10 +15,11 @@ interface StaffCardProps {
 }
 
 export const StaffCard: React.FC<StaffCardProps> = ({ staff, onSuspend, onRemove, onChangeRole }) => {
+  const { t } = useLanguage()
   const isSuspended = staff.status === 'SUSPENDED'
 
   const handleRemove = () => {
-    if (window.confirm(`Remove ${staff.name} from your business? This cannot be undone.`)) {
+    if (window.confirm(`${t.remove} ${staff.name} ${t.removeStaffConfirm}`)) {
       onRemove(staff.id)
     }
   }

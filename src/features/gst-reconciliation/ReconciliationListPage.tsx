@@ -15,11 +15,13 @@ import { ROUTES } from '@/config/routes.config'
 import { useReconciliationList } from './useReconciliationList'
 import { ReconciliationUploadForm } from './components/ReconciliationUploadForm'
 import { formatCurrency } from '@/lib/format'
+import { useLanguage } from '@/hooks/useLanguage'
 import { RECON_STATUS_LABELS, RECON_TYPE_LABELS } from './reconciliation.constants'
 import './reconciliation.css'
 
 export default function ReconciliationListPage() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const { items, status, hasMore, loadMore, refresh } = useReconciliationList()
   const [showForm, setShowForm] = useState(false)
 
@@ -31,7 +33,7 @@ export default function ReconciliationListPage() {
   if (status === 'loading' && items.length === 0) {
     return (
       <AppShell>
-        <Header title="GSTR-1 Reconciliation" backTo={ROUTES.REPORTS} />
+        <Header title={t.gstr1Reconciliation} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <div className="recon-list-skeleton">
             {[1, 2, 3].map((n) => <div key={n} className="recon-list-skeleton__item" aria-hidden="true" />)}
@@ -44,11 +46,11 @@ export default function ReconciliationListPage() {
   if (status === 'error') {
     return (
       <AppShell>
-        <Header title="GSTR-1 Reconciliation" backTo={ROUTES.REPORTS} />
+        <Header title={t.gstr1Reconciliation} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <ErrorState
-            title="Could not load reconciliations"
-            message="Check your connection and try again."
+            title={t.couldNotLoadReconciliations}
+            message={t.checkConnectionRetry}
             onRetry={refresh}
           />
         </PageContainer>
@@ -58,12 +60,12 @@ export default function ReconciliationListPage() {
 
   return (
     <AppShell>
-      <Header title="GSTR-1 Reconciliation" backTo={ROUTES.REPORTS} />
+      <Header title={t.gstr1Reconciliation} backTo={ROUTES.REPORTS} />
       <PageContainer>
 
         {showForm && (
           <div className="recon-new-form-panel">
-            <h2 className="recon-new-form-panel__title">New Reconciliation</h2>
+            <h2 className="recon-new-form-panel__title">{t.newReconciliation}</h2>
             <ReconciliationUploadForm onSuccess={handleNewSuccess} />
           </div>
         )}
@@ -71,14 +73,14 @@ export default function ReconciliationListPage() {
         {!showForm && items.length === 0 && (
           <div className="recon-empty">
             <div className="recon-empty__icon" aria-hidden="true"><GitMerge size={32} /></div>
-            <p className="recon-empty__title">No reconciliations yet</p>
-            <p className="recon-empty__desc">Upload your GSTR-1 data to compare against books.</p>
+            <p className="recon-empty__title">{t.noReconciliationsYet}</p>
+            <p className="recon-empty__desc">{t.noReconciliationsDesc}</p>
             <button
               type="button"
               className="recon-empty__cta"
               onClick={() => setShowForm(true)}
             >
-              Start your first reconciliation
+              {t.startFirstReconciliation}
             </button>
           </div>
         )}
@@ -91,7 +93,7 @@ export default function ReconciliationListPage() {
                 className="recon-list-card"
                 role="button"
                 tabIndex={0}
-                aria-label={`Reconciliation ${item.period}`}
+                aria-label={`${t.reconciliationPeriodLabel} ${item.period}`}
                 onClick={() => navigate(ROUTES.GST_RECONCILIATION_DETAIL.replace(':id', item.id))}
                 onKeyDown={(e) => e.key === 'Enter' && navigate(ROUTES.GST_RECONCILIATION_DETAIL.replace(':id', item.id))}
               >
@@ -103,15 +105,15 @@ export default function ReconciliationListPage() {
                 </div>
                 <div className="recon-list-card__type">{RECON_TYPE_LABELS[item.reconType]}</div>
                 <div className="recon-list-card__counts">
-                  <span className="recon-list-card__count recon-list-card__count--success">{item.matchedCount} matched</span>
-                  <span className="recon-list-card__count recon-list-card__count--warning">{item.mismatchedCount} mismatched</span>
-                  <span className="recon-list-card__count recon-list-card__count--error">{item.missingInGstrCount} missing</span>
+                  <span className="recon-list-card__count recon-list-card__count--success">{item.matchedCount} {t.matched}</span>
+                  <span className="recon-list-card__count recon-list-card__count--warning">{item.mismatchedCount} {t.mismatched}</span>
+                  <span className="recon-list-card__count recon-list-card__count--error">{item.missingInGstrCount} {t.missingLabel}</span>
                 </div>
                 {item.status === 'COMPLETED' && (
                   <div className="recon-list-card__diff">
-                    Difference: {formatCurrency(Math.abs(item.differenceValue))}
+                    {t.difference}: {formatCurrency(Math.abs(item.differenceValue))}
                     {' · '}
-                    {item.totalInvoices} invoices
+                    {item.totalInvoices} {t.invoices.toLowerCase()}
                   </div>
                 )}
               </div>
@@ -121,14 +123,14 @@ export default function ReconciliationListPage() {
 
         {hasMore && (
           <button type="button" className="recon-load-more" onClick={loadMore}>
-            Load more
+            {t.loadMore}
           </button>
         )}
 
         <button
           type="button"
           className="recon-fab"
-          aria-label="Start new reconciliation"
+          aria-label={t.startNewReconciliation}
           onClick={() => setShowForm((v) => !v)}
         >
           <Plus size={22} aria-hidden="true" />

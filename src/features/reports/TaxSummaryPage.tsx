@@ -14,8 +14,10 @@ import { formatAmount } from './report.utils'
 import './report-shared.css'
 import './report-shared-ui.css'
 import './report-tax.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export default function TaxSummaryPage() {
+  const { t } = useLanguage()
   const { data, status, filters, setFilters, refresh } = useTaxSummary()
 
   const { summary, hsnSummary } = data
@@ -25,7 +27,7 @@ export default function TaxSummaryPage() {
   if (status === 'loading') {
     return (
       <AppShell>
-        <Header title="Tax Summary" backTo={ROUTES.REPORTS} />
+        <Header title={t.taxSummary} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <ReportSkeleton rows={4} />
         </PageContainer>
@@ -38,11 +40,11 @@ export default function TaxSummaryPage() {
   if (status === 'error') {
     return (
       <AppShell>
-        <Header title="Tax Summary" backTo={ROUTES.REPORTS} />
+        <Header title={t.taxSummary} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <ErrorState
-            title="Could not load tax summary"
-            message="Check your connection and try again."
+            title={t.couldNotLoadTaxSummary}
+            message={t.checkConnectionRetry}
             onRetry={refresh}
           />
         </PageContainer>
@@ -54,7 +56,7 @@ export default function TaxSummaryPage() {
 
   return (
     <AppShell>
-      <Header title="Tax Summary" backTo={ROUTES.REPORTS} />
+      <Header title={t.taxSummary} backTo={ROUTES.REPORTS} />
 
       <PageContainer>
         {/* Date range inputs */}
@@ -64,7 +66,7 @@ export default function TaxSummaryPage() {
             className="tax-date-input"
             value={filters.from}
             max={filters.to}
-            aria-label="From date"
+            aria-label={t.fromDate}
             onChange={(e) => setFilters({ ...filters, from: e.target.value })}
           />
           <input
@@ -72,7 +74,7 @@ export default function TaxSummaryPage() {
             className="tax-date-input"
             value={filters.to}
             min={filters.from}
-            aria-label="To date"
+            aria-label={t.toDate}
             onChange={(e) => setFilters({ ...filters, to: e.target.value })}
           />
         </div>
@@ -83,9 +85,9 @@ export default function TaxSummaryPage() {
             <div className="report-empty-icon" aria-hidden="true">
               <Receipt size={28} />
             </div>
-            <p className="report-empty-title">No tax data found</p>
+            <p className="report-empty-title">{t.noTaxDataFound}</p>
             <p className="report-empty-desc">
-              No taxable transactions were found for this date range.
+              {t.noTaxableTransactions}
             </p>
           </div>
         )}
@@ -95,7 +97,7 @@ export default function TaxSummaryPage() {
           <>
             {/* Net Tax Liability highlight */}
             <div className="tax-net-liability">
-              <span className="tax-net-liability__label">Net Tax Liability</span>
+              <span className="tax-net-liability__label">{t.netTaxLiability}</span>
               <span className="tax-net-liability__value">
                 {formatAmount(summary.netTaxLiability)}
               </span>

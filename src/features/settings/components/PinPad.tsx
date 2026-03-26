@@ -1,4 +1,5 @@
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { Fingerprint, Delete } from 'lucide-react'
 import '../pin-setup.css'
 
@@ -40,6 +41,8 @@ export const PinPad: React.FC<PinPadProps> = ({
   title,
   subtitle,
 }) => {
+  const { t } = useLanguage()
+
   return (
     <div className="pin-screen">
       <div className="pin-header">
@@ -50,7 +53,7 @@ export const PinPad: React.FC<PinPadProps> = ({
       <div
         className={`pin-dots${error ? ' pin-error' : ''}`}
         role="status"
-        aria-label={`${value.length} of ${length} digits entered${error ? '. ' + error : ''}`}
+        aria-label={`${value.length} ${t.ofWord} ${length} ${t.digitsEntered}${error ? '. ' + error : ''}`}
         aria-live="polite"
       >
         {Array.from({ length }, (_, i) => (
@@ -66,7 +69,7 @@ export const PinPad: React.FC<PinPadProps> = ({
         <p className="pin-error-text" role="alert">{error}</p>
       )}
 
-      <div className="pin-keypad" role="group" aria-label="PIN keypad">
+      <div className="pin-keypad" role="group" aria-label={t.pinKeypadLabel}>
         {DIGIT_ROWS.map((row) =>
           row.map((digit) => (
             <button
@@ -89,7 +92,7 @@ export const PinPad: React.FC<PinPadProps> = ({
           <button
             className="pin-key pin-key-special"
             onClick={onBiometric}
-            aria-label="Use biometric authentication"
+            aria-label={t.useBiometricLabel}
           >
             <Fingerprint size={24} aria-hidden="true" />
           </button>
@@ -109,7 +112,7 @@ export const PinPad: React.FC<PinPadProps> = ({
         <button
           className="pin-key pin-key-special"
           onClick={onBackspace}
-          aria-label="Delete last digit"
+          aria-label={t.deleteLastDigit}
           disabled={value.length === 0}
         >
           <Delete size={22} aria-hidden="true" />

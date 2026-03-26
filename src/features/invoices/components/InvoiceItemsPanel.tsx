@@ -6,6 +6,7 @@
 
 import { FileText } from 'lucide-react'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { useLanguage } from '@/hooks/useLanguage'
 import { formatInvoiceAmount } from '../invoice-format.utils'
 import type { DocumentLineItem } from '../invoice.types'
 
@@ -14,13 +15,14 @@ interface InvoiceItemsPanelProps {
 }
 
 export function InvoiceItemsPanel({ lineItems }: InvoiceItemsPanelProps) {
+  const { t } = useLanguage()
   if (lineItems.length === 0) {
     return (
       <div className="invoice-items-tab">
         <EmptyState
           icon={<FileText size={32} aria-hidden="true" />}
-          title="No items"
-          description="This invoice has no line items."
+          title={t.noItemsTitle}
+          description={t.noItemsDesc}
         />
       </div>
     )
@@ -28,7 +30,7 @@ export function InvoiceItemsPanel({ lineItems }: InvoiceItemsPanelProps) {
 
   return (
     <div className="invoice-items-tab">
-      <div className="invoice-items-list" role="list" aria-label="Line items">
+      <div className="invoice-items-list" role="list" aria-label={t.lineItemsAriaLabel}>
         {lineItems.map((item) => (
           <div key={item.id} className="card invoice-item-card" role="listitem">
             <div className="invoice-item-header">
@@ -39,7 +41,7 @@ export function InvoiceItemsPanel({ lineItems }: InvoiceItemsPanelProps) {
               <span>{item.quantity} {item.product.unit} x {formatInvoiceAmount(item.rate)}</span>
               {item.discountAmount > 0 && (
                 <span style={{ color: 'var(--color-error-600)' }}>
-                  Disc: -{formatInvoiceAmount(item.discountAmount)}
+                  {t.discLabel} -{formatInvoiceAmount(item.discountAmount)}
                 </span>
               )}
             </div>

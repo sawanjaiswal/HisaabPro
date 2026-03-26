@@ -2,6 +2,7 @@
 
 import { OCCASION_LABELS } from '../smart-greetings.constants'
 import type { GreetingTemplate, GreetingOccasion } from '../smart-greetings.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface TemplateGridProps {
   templates: GreetingTemplate[]
@@ -12,6 +13,7 @@ interface TemplateGridProps {
 }
 
 export function TemplateGrid({ templates, occasions, filterOccasion, onFilterChange, onSelect }: TemplateGridProps) {
+  const { t } = useLanguage()
   return (
     <div className="greeting-templates">
       {/* Occasion filter chips */}
@@ -36,7 +38,7 @@ export function TemplateGrid({ templates, occasions, filterOccasion, onFilterCha
       </div>
 
       {/* Template cards */}
-      <div className="greeting-grid" role="list" aria-label="Greeting templates">
+      <div className="greeting-grid" role="list" aria-label={t.greetingTemplates}>
         {templates.map((t) => (
           <button
             key={t.id}

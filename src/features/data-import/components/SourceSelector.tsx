@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import { Upload } from 'lucide-react'
 import { IMPORT_SOURCES, DATA_TYPE_LABELS } from '../data-import.constants'
 import type { ImportSource, ImportDataType } from '../data-import.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface SourceSelectorProps {
   dataType: ImportDataType
@@ -14,6 +15,7 @@ interface SourceSelectorProps {
 const DATA_TYPES: ImportDataType[] = ['PARTIES', 'PRODUCTS', 'INVOICES']
 
 export function SourceSelector({ dataType, onDataTypeChange, onSelectFile }: SourceSelectorProps) {
+  const { t } = useLanguage()
   const fileRefs = useRef<Record<string, HTMLInputElement | null>>({})
 
   const handleFile = (source: ImportSource, e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,14 +26,14 @@ export function SourceSelector({ dataType, onDataTypeChange, onSelectFile }: Sou
 
   return (
     <div className="data-import-source">
-      <h2 className="data-import-title">Import Data</h2>
+      <h2 className="data-import-title">{t.importData}</h2>
       <p className="data-import-description">
-        Import your existing data from another billing app or spreadsheet
+        {t.importExistingData}
       </p>
 
       {/* Data type selector */}
       <div className="data-import-type-bar">
-        <span className="data-import-type-label">Import:</span>
+        <span className="data-import-type-label">{t.importColon}</span>
         <div className="pill-tabs" role="tablist">
           {DATA_TYPES.map((t) => (
             <button

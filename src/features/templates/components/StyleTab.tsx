@@ -1,6 +1,7 @@
 /** Style tab — typography + accent colour controls */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 
 import type {
   TemplateConfig,
@@ -25,42 +26,43 @@ interface StyleTabProps {
 }
 
 export const StyleTab: React.FC<StyleTabProps> = ({ config, onChange }) => {
+  const { t } = useLanguage()
   const { typography, colors } = config
 
   return (
     <>
-      <Section title="Typography">
-        <ControlRow label="Font Family">
+      <Section title={t.typographySection}>
+        <ControlRow label={t.fontFamilyLabel}>
           <SegmentedControl<TemplateFontFamily>
             value={typography.fontFamily}
             options={['inter', 'noto-sans', 'roboto', 'poppins']}
             labels={FONT_FAMILY_LABELS}
-            ariaLabel="Font family"
+            ariaLabel={t.fontFamilyAria}
             onChange={(v) => onChange({ typography: { ...typography, fontFamily: v } })}
           />
         </ControlRow>
-        <ControlRow label="Font Size">
+        <ControlRow label={t.fontSizeLabel}>
           <SegmentedControl<TemplateFontSize>
             value={typography.fontSize}
             options={['xs', 'small', 'medium', 'large', 'xl']}
             labels={FONT_SIZE_LABELS}
-            ariaLabel="Font size"
+            ariaLabel={t.fontSizeAria}
             onChange={(v) => onChange({ typography: { ...typography, fontSize: v } })}
           />
         </ControlRow>
-        <ControlRow label="Line Height">
+        <ControlRow label={t.lineHeightLabel}>
           <SegmentedControl<TemplateLineHeight>
             value={typography.lineHeight}
             options={['compact', 'normal', 'relaxed']}
             labels={LINE_HEIGHT_LABELS}
-            ariaLabel="Line height"
+            ariaLabel={t.lineHeightAria}
             onChange={(v) => onChange({ typography: { ...typography, lineHeight: v } })}
           />
         </ControlRow>
       </Section>
 
-      <Section title="Accent Colour">
-        <div className="template-color-swatches" role="group" aria-label="Accent colour presets">
+      <Section title={t.accentColourSection}>
+        <div className="template-color-swatches" role="group" aria-label={t.accentColourAria}>
           {COLOR_PRESETS.map(({ name, hex }) => (
             <button
               key={hex}

@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useEffect } from 'react'
 import { Download } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { BarcodeFormat } from '@/lib/types/product.types'
 import { generateBarcodeSvg, generateBarcodeDataUrl } from '../barcode.utils'
 import { BARCODE_FORMAT_LABELS } from '../product.constants'
@@ -16,6 +17,7 @@ interface BarcodeDisplayProps {
 }
 
 export function BarcodeDisplay({ value, format, productName, compact }: BarcodeDisplayProps) {
+  const { t } = useLanguage()
   const containerRef = useRef<HTMLDivElement>(null)
   const svgMarkup = useMemo(
     () => generateBarcodeSvg(value, format, { height: compact ? 48 : 60 }),
@@ -51,7 +53,7 @@ export function BarcodeDisplay({ value, format, productName, compact }: BarcodeD
   }
 
   return (
-    <div className="barcode-display" aria-label={`Barcode: ${value}`}>
+    <div className="barcode-display" aria-label={`${t.barcodeLabel}: ${value}`}>
       <div className="barcode-svg-container" ref={containerRef} />
       {!compact && (
         <div className="barcode-display-footer">
@@ -60,10 +62,10 @@ export function BarcodeDisplay({ value, format, productName, compact }: BarcodeD
             type="button"
             className="barcode-download-btn"
             onClick={handleDownload}
-            aria-label="Download barcode as SVG"
+            aria-label={t.downloadBarcodeSvg}
           >
             <Download size={16} aria-hidden="true" />
-            <span>Download</span>
+            <span>{t.download}</span>
           </button>
         </div>
       )}

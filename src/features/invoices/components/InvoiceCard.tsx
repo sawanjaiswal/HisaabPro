@@ -2,6 +2,7 @@
 
 import React, { useRef, useCallback } from 'react'
 import { Check } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { DocumentSummary, PaymentStatus, DocumentType } from '../invoice.types'
 import { formatInvoiceAmount, formatInvoiceDate } from '../invoice-format.utils'
 import { getPaymentStatus } from '../invoice-document.utils'
@@ -35,11 +36,7 @@ const DOC_TYPE_ICON_CLASS: Record<DocumentType, string> = {
   DELIVERY_CHALLAN: 'doc-type-icon doc-type-icon--delivery-challan',
 }
 
-const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
-  PAID:    'Paid',
-  PARTIAL: 'Partial',
-  UNPAID:  'Unpaid',
-}
+// Payment status labels are now derived from translations inside the component
 
 const PAYMENT_STATUS_INDICATOR_CLASS: Record<PaymentStatus, string> = {
   PAID:    'payment-status-indicator payment-status-indicator--paid',
@@ -54,6 +51,12 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
   isSelected = false,
   isBulkMode = false,
 }) => {
+  const { t } = useLanguage()
+  const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
+    PAID:    t.paidStatus,
+    PARTIAL: t.partialStatus,
+    UNPAID:  t.unpaidStatus,
+  }
   const paymentStatus = getPaymentStatus(document.grandTotal, document.paidAmount)
   const paymentBadgeClass = PAYMENT_STATUS_INDICATOR_CLASS[paymentStatus]
   const statusBadgeClass = `badge ${STATUS_BADGE_VARIANTS[document.status]}`
@@ -94,7 +97,7 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
       className={`txn-row invoice-list-item${isSelected ? ' txn-row--selected' : ''}`}
       role="button"
       tabIndex={0}
-      aria-label={`${isBulkMode ? (isSelected ? 'Deselect' : 'Select') : 'View details for'} ${typeLabel} ${document.documentNumber} for ${document.party.name}, ${formatInvoiceAmount(document.grandTotal)}`}
+      aria-label={`${isBulkMode ? (isSelected ? t.deselectLabel : t.selectLabel) : t.viewDetailsFor} ${typeLabel} ${document.documentNumber} for ${document.party.name}, ${formatInvoiceAmount(document.grandTotal)}`}
       onClick={handleClick}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleClick() }}
       onPointerDown={handlePointerDown}
@@ -120,7 +123,7 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
           <span className="txn-name">{document.party.name}</span>
           <span
             className={statusBadgeClass}
-            aria-label={`Document status: ${statusLabel}`}
+            aria-label={`${t.documentStatusPrefix} ${statusLabel}`}
           >
             {statusLabel}
           </span>
@@ -132,7 +135,7 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
         <div className="txn-amount">{formatInvoiceAmount(document.grandTotal)}</div>
         <span
           className={paymentBadgeClass}
-          aria-label={`Payment status: ${PAYMENT_STATUS_LABELS[paymentStatus]}`}
+          aria-label={`${t.paymentStatusPrefix} ${PAYMENT_STATUS_LABELS[paymentStatus]}`}
         >
           {PAYMENT_STATUS_LABELS[paymentStatus]}
         </span>

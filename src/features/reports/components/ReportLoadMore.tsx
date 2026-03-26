@@ -5,6 +5,7 @@
  */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface ReportLoadMoreProps {
   hasMore: boolean
@@ -17,6 +18,7 @@ export const ReportLoadMore: React.FC<ReportLoadMoreProps> = ({
   isLoading,
   onLoadMore,
 }) => {
+  const { t } = useLanguage()
   if (!hasMore) return null
 
   return (
@@ -25,10 +27,10 @@ export const ReportLoadMore: React.FC<ReportLoadMoreProps> = ({
         className="report-load-more-btn"
         onClick={onLoadMore}
         disabled={isLoading}
-        aria-label={isLoading ? 'Loading more results' : 'Load more results'}
+        aria-label={isLoading ? t.loadingMoreResults : t.loadMoreResults}
         type="button"
       >
-        {isLoading ? 'Loading...' : 'Load More'}
+        {isLoading ? t.loading : t.loadMore}
       </button>
     </div>
   )

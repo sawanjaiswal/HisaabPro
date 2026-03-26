@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { Search } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { DocumentType, DocumentStatus } from '../invoice.types'
 import { DOCUMENT_TYPE_LABELS, DOCUMENT_STATUS_LABELS } from '../invoice.constants'
 
@@ -25,12 +26,12 @@ const DOCUMENT_TYPES: DocumentType[] = [
 ]
 
 /** Only the statuses meaningful on a live list */
-const FILTER_STATUSES: Array<{ value: DocumentStatus | 'ALL'; label: string }> = [
-  { value: 'ALL',       label: 'All' },
-  { value: 'SAVED',     label: DOCUMENT_STATUS_LABELS.SAVED },
-  { value: 'SHARED',    label: DOCUMENT_STATUS_LABELS.SHARED },
-  { value: 'DRAFT',     label: DOCUMENT_STATUS_LABELS.DRAFT },
-  { value: 'CONVERTED', label: DOCUMENT_STATUS_LABELS.CONVERTED },
+const STATUS_VALUES: Array<{ value: DocumentStatus | 'ALL'; labelKey?: 'all' }> = [
+  { value: 'ALL', labelKey: 'all' },
+  { value: 'SAVED' },
+  { value: 'SHARED' },
+  { value: 'DRAFT' },
+  { value: 'CONVERTED' },
 ]
 
 export const InvoiceFilterBar: React.FC<InvoiceFilterBarProps> = ({
@@ -41,6 +42,7 @@ export const InvoiceFilterBar: React.FC<InvoiceFilterBarProps> = ({
   activeStatus,
   onStatusChange,
 }) => {
+  const { t } = useLanguage()
   return (
     <div className="invoice-filter-bar">
       <div className="search-bar">
@@ -49,31 +51,29 @@ export const InvoiceFilterBar: React.FC<InvoiceFilterBarProps> = ({
           type="search"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search by party, number..."
-          aria-label="Search invoices by party name or document number"
+          placeholder={t.searchByPartyOrNumber}
+          aria-label={t.searchInvoices}
         />
       </div>
 
       <div
-        className="invoice-type-pills"
+        className="pill-tabs"
         role="group"
-        aria-label="Filter by document type"
+        aria-label={t.filterByDocType}
       >
         <button
-          className={`invoice-type-pill${activeType === 'ALL' ? ' invoice-type-pill--active' : ''}`}
+          className={`pill-tab${activeType === 'ALL' ? ' active-tint' : ''}`}
           onClick={() => onTypeChange('ALL')}
           aria-pressed={activeType === 'ALL'}
-          aria-label="Show all document types"
         >
-          All
+          {t.all}
         </button>
         {DOCUMENT_TYPES.map((type) => (
           <button
             key={type}
-            className={`invoice-type-pill${activeType === type ? ' invoice-type-pill--active' : ''}`}
+            className={`pill-tab${activeType === type ? ' active-tint' : ''}`}
             onClick={() => onTypeChange(type)}
             aria-pressed={activeType === type}
-            aria-label={`Show ${DOCUMENT_TYPE_LABELS[type]}`}
           >
             {DOCUMENT_TYPE_LABELS[type]}
           </button>
@@ -83,17 +83,16 @@ export const InvoiceFilterBar: React.FC<InvoiceFilterBarProps> = ({
       <div
         className="pill-tabs"
         role="group"
-        aria-label="Filter by document status"
+        aria-label={t.filterByStatus}
       >
-        {FILTER_STATUSES.map(({ value, label }) => (
+        {STATUS_VALUES.map(({ value, labelKey }) => (
           <button
             key={value}
             className={`pill-tab${activeStatus === value ? ' active' : ''}`}
             onClick={() => onStatusChange(value)}
             aria-pressed={activeStatus === value}
-            aria-label={`Show ${label} documents`}
           >
-            {label}
+            {labelKey === 'all' ? t.all : DOCUMENT_STATUS_LABELS[value as DocumentStatus]}
           </button>
         ))}
       </div>

@@ -13,6 +13,7 @@ import type {
   Gstr9Data,
   TaxTotals,
 } from '../report-tax.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface GstReturnSummaryProps {
   returnType: GstReturnType
@@ -24,42 +25,47 @@ interface TaxRowProps {
   totals: TaxTotals
 }
 
-const TaxRow: React.FC<TaxRowProps> = ({ label, totals }) => (
+const TaxRow: React.FC<TaxRowProps> = ({ label, totals }) => {
+  const { t } = useLanguage()
+  return (
   <div className="gst-return__row">
     <div className="gst-return__row-header">
       <span className="gst-return__row-label">{label}</span>
-      <span className="gst-return__row-count">{totals.count} invoices</span>
+      <span className="gst-return__row-count">{totals.count} {t.invoices}</span>
     </div>
     <div className="gst-return__row-amounts">
-      <span>Taxable: {formatAmount(totals.taxableValue)}</span>
+      <span>{t.taxable}: {formatAmount(totals.taxableValue)}</span>
       {totals.cgst > 0 && <span>CGST: {formatAmount(totals.cgst)}</span>}
       {totals.sgst > 0 && <span>SGST: {formatAmount(totals.sgst)}</span>}
       {totals.igst > 0 && <span>IGST: {formatAmount(totals.igst)}</span>}
-      <span className="gst-return__row-total">Tax: {formatAmount(totals.total)}</span>
+      <span className="gst-return__row-total">{t.tax}: {formatAmount(totals.total)}</span>
     </div>
   </div>
-)
+  )
+}
 
-function renderGstr1(data: Gstr1Data) {
+function Gstr1Section({ data }: { data: Gstr1Data }) {
+  const { t } = useLanguage()
   return (
     <>
-      <TaxRow label="B2B — Registered Buyers" totals={data.b2b} />
-      <TaxRow label="B2CL — Large Unregistered" totals={data.b2cl} />
-      <TaxRow label="B2CS — Small Unregistered" totals={data.b2cs} />
-      <TaxRow label="CDNR — Credit/Debit (Registered)" totals={data.cdnr} />
-      <TaxRow label="CDNUR — Credit/Debit (Unregistered)" totals={data.cdnur} />
+      <TaxRow label={t.b2bRegistered} totals={data.b2b} />
+      <TaxRow label={t.b2clLargeUnregistered} totals={data.b2cl} />
+      <TaxRow label={t.b2csSmallUnregistered} totals={data.b2cs} />
+      <TaxRow label={t.cdnrRegistered} totals={data.cdnr} />
+      <TaxRow label={t.cdnurUnregistered} totals={data.cdnur} />
     </>
   )
 }
 
-function renderGstr3b(data: Gstr3bData) {
+function Gstr3bSection({ data }: { data: Gstr3bData }) {
+  const { t } = useLanguage()
   return (
     <>
-      <TaxRow label="Outward Supplies" totals={data.outwardSupplies} />
-      <TaxRow label="Input Tax Credit" totals={data.inputTaxCredit} />
-      <TaxRow label="Credit Note Adjustment" totals={data.creditNoteAdjustment} />
+      <TaxRow label={t.outwardSupplies} totals={data.outwardSupplies} />
+      <TaxRow label={t.inputTaxCredit} totals={data.inputTaxCredit} />
+      <TaxRow label={t.creditNoteAdjustment} totals={data.creditNoteAdjustment} />
       <div className="gst-return__net-tax">
-        <span className="gst-return__net-tax-label">Net Tax Payable</span>
+        <span className="gst-return__net-tax-label">{t.netTaxPayable}</span>
         <span className="gst-return__net-tax-value">
           {formatAmount(data.netTaxPayable)}
         </span>
@@ -68,14 +74,15 @@ function renderGstr3b(data: Gstr3bData) {
   )
 }
 
-function renderGstr9(data: Gstr9Data) {
+function Gstr9Section({ data }: { data: Gstr9Data }) {
+  const { t } = useLanguage()
   return (
     <>
-      <p className="gst-return__fy-label">Financial Year: {data.financialYear}</p>
-      <TaxRow label="Sales" totals={data.sales} />
-      <TaxRow label="Purchases" totals={data.purchases} />
-      <TaxRow label="Credit Notes" totals={data.creditNotes} />
-      <TaxRow label="Debit Notes" totals={data.debitNotes} />
+      <p className="gst-return__fy-label">{t.financialYear}: {data.financialYear}</p>
+      <TaxRow label={t.sales} totals={data.sales} />
+      <TaxRow label={t.purchases} totals={data.purchases} />
+      <TaxRow label={t.creditNotes} totals={data.creditNotes} />
+      <TaxRow label={t.debitNotes} totals={data.debitNotes} />
     </>
   )
 }
@@ -83,9 +90,9 @@ function renderGstr9(data: Gstr9Data) {
 export const GstReturnSummary: React.FC<GstReturnSummaryProps> = ({ returnType, data }) => {
   return (
     <div className="gst-return" role="region" aria-label={`${returnType} summary`}>
-      {returnType === 'GSTR1' && renderGstr1(data as Gstr1Data)}
-      {returnType === 'GSTR3B' && renderGstr3b(data as Gstr3bData)}
-      {returnType === 'GSTR9' && renderGstr9(data as Gstr9Data)}
+      {returnType === 'GSTR1' && <Gstr1Section data={data as Gstr1Data} />}
+      {returnType === 'GSTR3B' && <Gstr3bSection data={data as Gstr3bData} />}
+      {returnType === 'GSTR9' && <Gstr9Section data={data as Gstr9Data} />}
     </div>
   )
 }

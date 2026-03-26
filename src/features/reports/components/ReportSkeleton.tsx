@@ -6,15 +6,17 @@
 
 import React from 'react'
 import { Skeleton } from '@/components/feedback/Skeleton'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface ReportSkeletonProps {
   /** Number of row skeletons to render. Defaults to 5. */
   rows?: number
 }
 
-export const ReportSkeleton: React.FC<ReportSkeletonProps> = ({ rows = 5 }) => {
-  return (
-    <div aria-label="Loading report" aria-busy="true">
+export const ReportSkeleton: React.FC<ReportSkeletonProps> = ({rows = 5 }) => {
+  const { t } = useLanguage()
+    return (
+    <div aria-label={t.loadingReport} aria-busy="true">
       {/* Summary bar skeleton — 4 metric card placeholders */}
       <div className="report-summary-bar" aria-hidden="true">
         <div className="report-summary-item">

@@ -3,6 +3,7 @@
 import { CheckCircle, AlertTriangle } from 'lucide-react'
 import { getTargetFields } from '../data-import.utils'
 import type { ImportedRow, ColumnMapping, ImportDataType } from '../data-import.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface MappingPreviewProps {
   headers: string[]
@@ -20,6 +21,7 @@ export function MappingPreview({
   headers, mappings, rows, dataType, validCount,
   onUpdateMapping, onApply, onConfirm, onBack,
 }: MappingPreviewProps) {
+  const { t } = useLanguage()
   const targetFields = getTargetFields(dataType)
   const invalidCount = rows.filter((r) => !r.isValid).length
 
@@ -27,8 +29,8 @@ export function MappingPreview({
     <div className="mapping-preview">
       {/* Column mapping */}
       <div className="mapping-section">
-        <h3 className="mapping-section-title">Column Mapping</h3>
-        <p className="mapping-section-desc">Map your file columns to HisaabPro fields</p>
+        <h3 className="mapping-section-title">{t.columnMapping}</h3>
+        <p className="mapping-section-desc">{t.mapColumnsDesc}</p>
 
         <div className="mapping-grid">
           {headers.map((header) => {
@@ -45,7 +47,7 @@ export function MappingPreview({
                     // Debounced apply happens via effect
                   }}
                 >
-                  <option value="">Skip</option>
+                  <option value="">{t.skipColumn}</option>
                   {targetFields.map((f) => (
                     <option key={f} value={f}>{f}</option>
                   ))}

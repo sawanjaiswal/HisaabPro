@@ -1,6 +1,7 @@
 /** Fields tab — toggle visibility of invoice fields (business, customer, document, footer) */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 
 import type { TemplateConfig } from '../template.types'
 
@@ -13,51 +14,52 @@ interface FieldsTabProps {
 }
 
 export const FieldsTab: React.FC<FieldsTabProps> = ({ config, onChange }) => {
+  const { t } = useLanguage()
   const f = config.fields
   const patchFields = (patch: Partial<typeof f>) => onChange({ fields: { ...f, ...patch } })
 
   return (
     <>
-      <Section title="Business Info">
-        <ToggleRow label="GSTIN"            checked={f.businessGstin}   ariaLabel="Show business GSTIN"    onChange={(v) => patchFields({ businessGstin: v })} />
-        <ToggleRow label="PAN"              checked={f.businessPan}     ariaLabel="Show business PAN"      onChange={(v) => patchFields({ businessPan: v })} />
-        <ToggleRow label="Phone"            checked={f.businessPhone}   ariaLabel="Show business phone"    onChange={(v) => patchFields({ businessPhone: v })} />
-        <ToggleRow label="Email"            checked={f.businessEmail}   ariaLabel="Show business email"    onChange={(v) => patchFields({ businessEmail: v })} />
-        <ToggleRow label="Address"          checked={f.businessAddress} ariaLabel="Show business address"  onChange={(v) => patchFields({ businessAddress: v })} />
+      <Section title={t.businessInfoSection}>
+        <ToggleRow label={t.gstin}               checked={f.businessGstin}   ariaLabel={t.showBusinessGstin}    onChange={(v) => patchFields({ businessGstin: v })} />
+        <ToggleRow label={t.panLabel}             checked={f.businessPan}     ariaLabel={t.showBusinessPan}      onChange={(v) => patchFields({ businessPan: v })} />
+        <ToggleRow label={t.phone}                checked={f.businessPhone}   ariaLabel={t.showBusinessPhone}    onChange={(v) => patchFields({ businessPhone: v })} />
+        <ToggleRow label={t.email}                checked={f.businessEmail}   ariaLabel={t.showBusinessEmail}    onChange={(v) => patchFields({ businessEmail: v })} />
+        <ToggleRow label={t.address}              checked={f.businessAddress} ariaLabel={t.showBusinessAddress}  onChange={(v) => patchFields({ businessAddress: v })} />
       </Section>
 
-      <Section title="Customer Info">
-        <ToggleRow label="Customer GSTIN"   checked={f.customerGstin}   ariaLabel="Show customer GSTIN"    onChange={(v) => patchFields({ customerGstin: v })} />
-        <ToggleRow label="Customer Phone"   checked={f.customerPhone}   ariaLabel="Show customer phone"    onChange={(v) => patchFields({ customerPhone: v })} />
-        <ToggleRow label="Billing Address"  checked={f.customerAddress} ariaLabel="Show billing address"   onChange={(v) => patchFields({ customerAddress: v })} />
-        <ToggleRow label="Shipping Address" checked={f.shippingAddress} ariaLabel="Show shipping address"  onChange={(v) => patchFields({ shippingAddress: v })} />
-        <ToggleRow label="Place of Supply"  checked={f.placeOfSupply}   ariaLabel="Show place of supply"   onChange={(v) => patchFields({ placeOfSupply: v })} />
+      <Section title={t.customerInfoSection}>
+        <ToggleRow label={t.customerGstinLabel}   checked={f.customerGstin}   ariaLabel={t.showCustomerGstin}    onChange={(v) => patchFields({ customerGstin: v })} />
+        <ToggleRow label={t.customerPhoneLabel}   checked={f.customerPhone}   ariaLabel={t.showCustomerPhone}    onChange={(v) => patchFields({ customerPhone: v })} />
+        <ToggleRow label={t.billingAddressLabel}  checked={f.customerAddress} ariaLabel={t.showBillingAddress}   onChange={(v) => patchFields({ customerAddress: v })} />
+        <ToggleRow label={t.shippingAddressLabel} checked={f.shippingAddress} ariaLabel={t.showShippingAddress}  onChange={(v) => patchFields({ shippingAddress: v })} />
+        <ToggleRow label={t.placeOfSupplyLabel}   checked={f.placeOfSupply}   ariaLabel={t.showPlaceOfSupply}    onChange={(v) => patchFields({ placeOfSupply: v })} />
       </Section>
 
-      <Section title="Document Details">
-        <ToggleRow label="Invoice Number"    checked={f.invoiceNumber}      ariaLabel="Show invoice number"     onChange={(v) => patchFields({ invoiceNumber: v })} />
-        <ToggleRow label="Invoice Date"      checked={f.invoiceDate}        ariaLabel="Show invoice date"       onChange={(v) => patchFields({ invoiceDate: v })} />
-        <ToggleRow label="Due Date"          checked={f.dueDate}            ariaLabel="Show due date"           onChange={(v) => patchFields({ dueDate: v })} />
-        <ToggleRow label="PO Number"         checked={f.poNumber}           ariaLabel="Show PO number"          onChange={(v) => patchFields({ poNumber: v })} />
-        <ToggleRow label="Vehicle Number"    checked={f.vehicleNumber}      ariaLabel="Show vehicle number"     onChange={(v) => patchFields({ vehicleNumber: v })} />
-        <ToggleRow label="Transport Details" checked={f.transportDetails}   ariaLabel="Show transport details"  onChange={(v) => patchFields({ transportDetails: v })} />
+      <Section title={t.documentDetailsSection}>
+        <ToggleRow label={t.invoiceNumber}         checked={f.invoiceNumber}      ariaLabel={t.showInvoiceNumber}     onChange={(v) => patchFields({ invoiceNumber: v })} />
+        <ToggleRow label={t.invoiceDate}           checked={f.invoiceDate}        ariaLabel={t.showInvoiceDate}       onChange={(v) => patchFields({ invoiceDate: v })} />
+        <ToggleRow label={t.dueDate}               checked={f.dueDate}            ariaLabel={t.showDueDate}           onChange={(v) => patchFields({ dueDate: v })} />
+        <ToggleRow label={t.poNumberLabel}         checked={f.poNumber}           ariaLabel={t.showPoNumber}          onChange={(v) => patchFields({ poNumber: v })} />
+        <ToggleRow label={t.vehicleNumber}         checked={f.vehicleNumber}      ariaLabel={t.showVehicleNumber}     onChange={(v) => patchFields({ vehicleNumber: v })} />
+        <ToggleRow label={t.transportDetailsLabel} checked={f.transportDetails}   ariaLabel={t.showTransportDetails}  onChange={(v) => patchFields({ transportDetails: v })} />
       </Section>
 
-      <Section title="Status & Compliance">
-        <ToggleRow label="Payment Status Stamp" sublabel="PAID / PARTIAL / UNPAID badge on invoice"   checked={f.paymentStatusStamp}  ariaLabel="Show payment status stamp"    onChange={(v) => patchFields({ paymentStatusStamp: v })} />
-        <ToggleRow label="Udyam Number"         sublabel="MSME registration number in header"         checked={f.udyamNumber}         ariaLabel="Show Udyam number"            onChange={(v) => patchFields({ udyamNumber: v })} />
-        <ToggleRow label="Total Quantity"        sublabel="Sum of all line item quantities"            checked={f.totalQuantity}       ariaLabel="Show total quantity row"      onChange={(v) => patchFields({ totalQuantity: v })} />
-        <ToggleRow label="Copy Label"            sublabel="ORIGINAL / DUPLICATE on printout"           checked={f.copyLabel}           ariaLabel="Show copy label"              onChange={(v) => patchFields({ copyLabel: v })} />
+      <Section title={t.statusComplianceSection}>
+        <ToggleRow label={t.paymentStatusStampLabel} sublabel={t.paymentStatusStampDesc}   checked={f.paymentStatusStamp}  ariaLabel={t.showPaymentStatusStamp}    onChange={(v) => patchFields({ paymentStatusStamp: v })} />
+        <ToggleRow label={t.udyamNumberLabel}        sublabel={t.udyamNumberDesc}           checked={f.udyamNumber}         ariaLabel={t.showUdyamNumber}            onChange={(v) => patchFields({ udyamNumber: v })} />
+        <ToggleRow label={t.totalQuantityLabel}      sublabel={t.totalQuantityDesc}         checked={f.totalQuantity}       ariaLabel={t.showTotalQuantity}          onChange={(v) => patchFields({ totalQuantity: v })} />
+        <ToggleRow label={t.copyLabelLabel}          sublabel={t.copyLabelDesc}             checked={f.copyLabel}           ariaLabel={t.showCopyLabel}              onChange={(v) => patchFields({ copyLabel: v })} />
       </Section>
 
-      <Section title="Footer">
-        <ToggleRow label="Bank Details"        checked={f.bankDetails}          ariaLabel="Show bank details"          onChange={(v) => patchFields({ bankDetails: v })} />
-        <ToggleRow label="Signature"           checked={f.signature}            ariaLabel="Show signature block"       onChange={(v) => patchFields({ signature: v })} />
-        <ToggleRow label="Terms & Conditions"  checked={f.termsAndConditions}   ariaLabel="Show terms and conditions"  onChange={(v) => patchFields({ termsAndConditions: v })} />
-        <ToggleRow label="Notes"               checked={f.notes}                ariaLabel="Show notes"                 onChange={(v) => patchFields({ notes: v })} />
-        <ToggleRow label="Total in Words"      checked={f.totalInWords}         ariaLabel="Show total in words"        onChange={(v) => patchFields({ totalInWords: v })} />
-        <ToggleRow label="QR Code"             checked={f.qrCode}               ariaLabel="Show QR code"               onChange={(v) => patchFields({ qrCode: v })} />
-        <ToggleRow label="Watermark"           checked={f.watermark}            ariaLabel="Show watermark"             onChange={(v) => patchFields({ watermark: v })} />
+      <Section title={t.footerSection}>
+        <ToggleRow label={t.bankDetailsLabel}        checked={f.bankDetails}          ariaLabel={t.showBankDetails}          onChange={(v) => patchFields({ bankDetails: v })} />
+        <ToggleRow label={t.signatureLabel}          checked={f.signature}            ariaLabel={t.showSignature}            onChange={(v) => patchFields({ signature: v })} />
+        <ToggleRow label={t.termsConditionsLabel}    checked={f.termsAndConditions}   ariaLabel={t.showTermsConditions}      onChange={(v) => patchFields({ termsAndConditions: v })} />
+        <ToggleRow label={t.notesToggleLabel}        checked={f.notes}                ariaLabel={t.showNotes}                onChange={(v) => patchFields({ notes: v })} />
+        <ToggleRow label={t.totalInWordsLabel}       checked={f.totalInWords}         ariaLabel={t.showTotalInWords}         onChange={(v) => patchFields({ totalInWords: v })} />
+        <ToggleRow label={t.qrCodeLabel}             checked={f.qrCode}               ariaLabel={t.showQrCode}               onChange={(v) => patchFields({ qrCode: v })} />
+        <ToggleRow label={t.watermarkLabel}          checked={f.watermark}            ariaLabel={t.showWatermark}            onChange={(v) => patchFields({ watermark: v })} />
       </Section>
     </>
   )

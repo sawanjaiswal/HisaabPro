@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { Camera, Search, X } from 'lucide-react'
 import { BarcodeScanner } from '@/components/ui/BarcodeScanner'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useBarcodeLookup } from '../useBarcodeLookup'
 
 import type { QuickProduct } from '../pos.types'
@@ -12,6 +13,7 @@ interface ScanBarProps {
 }
 
 export function ScanBar({ onProductFound }: ScanBarProps) {
+  const { t } = useLanguage()
   const [query, setQuery] = useState('')
   const [showCamera, setShowCamera] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -21,7 +23,7 @@ export function ScanBar({ onProductFound }: ScanBarProps) {
 
   return (
     <>
-      <div className="pos-scan-bar" role="search" aria-label="Product search">
+      <div className="pos-scan-bar" role="search" aria-label={t.search}>
         <div className="pos-scan-input-wrap">
           <Search size={18} className="pos-scan-icon" aria-hidden="true" />
           <input
@@ -31,18 +33,18 @@ export function ScanBar({ onProductFound }: ScanBarProps) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit() }}
-            placeholder="Scan barcode or search..."
-            aria-label="Barcode or product search"
+            placeholder={t.scanBarcodeOrSearch}
+            aria-label={t.posBarcodeSearch}
             autoComplete="off"
             disabled={searching}
           />
           {query && (
-            <button type="button" className="pos-scan-clear" onClick={() => { setQuery(''); inputRef.current?.focus() }} aria-label="Clear search">
+            <button type="button" className="pos-scan-clear" onClick={() => { setQuery(''); inputRef.current?.focus() }} aria-label={t.posClearSearch}>
               <X size={16} aria-hidden="true" />
             </button>
           )}
         </div>
-        <button type="button" className="pos-scan-camera-btn" onClick={() => setShowCamera(true)} aria-label="Open camera scanner">
+        <button type="button" className="pos-scan-camera-btn" onClick={() => setShowCamera(true)} aria-label={t.posOpenCamera}>
           <Camera size={20} aria-hidden="true" />
         </button>
       </div>

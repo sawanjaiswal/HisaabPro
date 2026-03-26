@@ -2,6 +2,7 @@
 
 import { Send } from 'lucide-react'
 import type { GreetingTemplate } from '../smart-greetings.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface TemplateEditorProps {
   template: GreetingTemplate
@@ -12,6 +13,7 @@ interface TemplateEditorProps {
 }
 
 export function TemplateEditor({ template, message, onMessageChange, onSendToAll, onBack }: TemplateEditorProps) {
+  const { t } = useLanguage()
   return (
     <div className="greeting-editor">
       {/* Preview card */}
@@ -22,17 +24,17 @@ export function TemplateEditor({ template, message, onMessageChange, onSendToAll
 
       {/* Message editor */}
       <div className="greeting-editor-field">
-        <label className="greeting-editor-label">Message</label>
+        <label className="greeting-editor-label">{t.message}</label>
         <textarea
           className="greeting-editor-textarea"
           value={message}
           onChange={(e) => onMessageChange(e.target.value)}
           rows={8}
-          placeholder="Type your greeting message..."
+          placeholder={t.message}
           aria-label="Greeting message"
         />
         <p className="greeting-editor-hint">
-          Use {'{{name}}'} to personalize with the party&apos;s name
+          {t.useNamePersonalize}
         </p>
       </div>
 

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Send, Search } from 'lucide-react'
 import { getParties } from '@/features/parties/party-crud.service'
 import type { PartyRecipient } from '../useSmartGreetings'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface RecipientPickerProps {
   onSend: (party: PartyRecipient) => void
@@ -17,6 +18,7 @@ interface SimpleParty {
 }
 
 export function RecipientPicker({ onSend, onBack }: RecipientPickerProps) {
+  const { t } = useLanguage()
   const [parties, setParties] = useState<SimpleParty[]>([])
   const [search, setSearch] = useState('')
   const [isLoading, setIsLoading] = useState(true)
@@ -45,23 +47,23 @@ export function RecipientPicker({ onSend, onBack }: RecipientPickerProps) {
         <input
           type="text"
           className="greeting-recipients-search-input"
-          placeholder="Search parties..."
+          placeholder={t.search}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          aria-label="Search parties"
+          aria-label={t.search}
         />
       </div>
 
       {isLoading ? (
-        <p className="greeting-recipients-loading">Loading parties...</p>
+        <p className="greeting-recipients-loading">{t.loading}</p>
       ) : (
-        <div className="greeting-recipients-list" role="list" aria-label="Select recipients">
+        <div className="greeting-recipients-list" role="list" aria-label={t.selectRecipients}>
           {filtered.map((party) => (
             <div key={party.id} className="greeting-recipient-row" role="listitem">
               <div className="greeting-recipient-info">
                 <span className="greeting-recipient-name">{party.name}</span>
                 <span className="greeting-recipient-phone">
-                  {party.phone ?? 'No phone'}
+                  {party.phone ?? t.noPhone}
                 </span>
               </div>
               <button
@@ -77,7 +79,7 @@ export function RecipientPicker({ onSend, onBack }: RecipientPickerProps) {
             </div>
           ))}
           {filtered.length === 0 && (
-            <p className="greeting-recipients-empty">No parties found</p>
+            <p className="greeting-recipients-empty">{t.noPartiesFound}</p>
           )}
         </div>
       )}

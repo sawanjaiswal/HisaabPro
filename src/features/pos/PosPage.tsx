@@ -4,6 +4,7 @@ import { useCallback } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '@/config/routes.config'
+import { useLanguage } from '@/hooks/useLanguage'
 import { usePosCart } from './usePosCart'
 import { usePosCheckout } from './usePosCheckout'
 import { ScanBar } from './components/ScanBar'
@@ -17,6 +18,7 @@ import './pos.css'
 import type { PaymentMode } from './pos.types'
 
 export default function PosPage() {
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const cart = usePosCart()
   const checkout = usePosCheckout()
@@ -41,10 +43,10 @@ export default function PosPage() {
   return (
     <div className="pos-page">
       <header className="pos-header">
-        <button type="button" className="pos-back-btn" onClick={() => navigate(ROUTES.DASHBOARD)} aria-label="Back">
+        <button type="button" className="pos-back-btn" onClick={() => navigate(ROUTES.DASHBOARD)} aria-label={t.back}>
           <ArrowLeft size={20} aria-hidden="true" />
         </button>
-        <h1 className="pos-header-title">Quick Sale</h1>
+        <h1 className="pos-header-title">{t.posQuickSale}</h1>
       </header>
 
       <ScanBar onProductFound={cart.addItem} />
@@ -53,7 +55,7 @@ export default function PosPage() {
         {cart.items.length === 0 ? (
           <QuickProductGrid onSelect={cart.addItem} />
         ) : (
-          <div className="pos-cart-list" role="list" aria-label="Cart items">
+          <div className="pos-cart-list" role="list" aria-label={t.posCartItems}>
             {cart.items.map((item) => (
               <CartItem key={item.productId} item={item} onUpdateQty={cart.updateQty} onRemove={cart.removeItem} />
             ))}

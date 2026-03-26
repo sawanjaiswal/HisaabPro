@@ -1,5 +1,6 @@
 /** Create Product — Stock configuration section */
 
+import { useLanguage } from '@/hooks/useLanguage'
 import type { ProductFormData, StockValidationMode } from '../product.types'
 import { STOCK_VALIDATION_LABELS } from '../product.constants'
 
@@ -16,10 +17,11 @@ const VALIDATION_MODE_OPTIONS: { value: StockValidationMode; label: string }[] =
 ]
 
 export function ProductFormStock({ form, errors, onUpdate }: ProductFormStockProps) {
+  const { t } = useLanguage()
   return (
     <div className="create-party-section">
       <div className="input-group">
-        <label htmlFor="product-opening-stock" className="input-label">Opening Stock</label>
+        <label htmlFor="product-opening-stock" className="input-label">{t.openingStockLabel}</label>
         <input
           id="product-opening-stock"
           className={`input${errors.openingStock ? ' input-error-border' : ''}`}
@@ -29,7 +31,7 @@ export function ProductFormStock({ form, errors, onUpdate }: ProductFormStockPro
           value={form.openingStock || ''}
           onChange={(e) => onUpdate('openingStock', parseFloat(e.target.value) || 0)}
           placeholder="0"
-          aria-label="Opening stock quantity"
+          aria-label={t.openingStockQty}
           inputMode="decimal"
         />
         {errors.openingStock && <p className="input-error" role="alert">{errors.openingStock}</p>}
@@ -37,8 +39,8 @@ export function ProductFormStock({ form, errors, onUpdate }: ProductFormStockPro
 
       <div className="input-group">
         <label htmlFor="product-min-stock" className="input-label">
-          Minimum Stock Level
-          <span style={{ color: 'var(--color-gray-400)', fontWeight: 400 }}> (low stock alert)</span>
+          {t.minimumStockLevel}
+          <span style={{ color: 'var(--color-gray-400)', fontWeight: 400 }}> ({t.lowStockAlertHint})</span>
         </label>
         <input
           id="product-min-stock"
@@ -48,15 +50,15 @@ export function ProductFormStock({ form, errors, onUpdate }: ProductFormStockPro
           step="any"
           value={form.minStockLevel || ''}
           onChange={(e) => onUpdate('minStockLevel', parseFloat(e.target.value) || 0)}
-          placeholder="0 (disabled)"
-          aria-label="Minimum stock level for low stock alerts"
+          placeholder={t.minStockPlaceholder}
+          aria-label={t.minimumStockLevel}
           inputMode="decimal"
         />
         {errors.minStockLevel && <p className="input-error" role="alert">{errors.minStockLevel}</p>}
       </div>
 
       <div className="input-group">
-        <span className="input-label" id="stock-validation-label">Stock Validation Mode</span>
+        <span className="input-label" id="stock-validation-label">{t.stockValidationMode}</span>
         <div className="pill-tabs" role="group" aria-labelledby="stock-validation-label">
           {VALIDATION_MODE_OPTIONS.map((option) => (
             <button
@@ -65,7 +67,7 @@ export function ProductFormStock({ form, errors, onUpdate }: ProductFormStockPro
               className={`pill-tab${form.stockValidation === option.value ? ' active' : ''}`}
               onClick={() => onUpdate('stockValidation', option.value)}
               aria-pressed={form.stockValidation === option.value}
-              aria-label={`Stock validation: ${option.label}`}
+              aria-label={`${t.stockValidationPrefix}: ${option.label}`}
             >
               {option.label}
             </button>

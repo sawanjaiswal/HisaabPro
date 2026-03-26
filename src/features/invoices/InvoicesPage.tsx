@@ -15,6 +15,7 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { BulkActionBar } from '@/components/ui/BulkActionBar'
 import { useBulkSelect } from '@/hooks/useBulkSelect'
 import { useToast } from '@/hooks/useToast'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useInvoices } from './useInvoices'
 import { InvoiceSummaryBar } from './components/InvoiceSummaryBar'
 import { InvoiceFilterBar } from './components/InvoiceFilterBar'
@@ -31,6 +32,7 @@ import './invoice-doc-badges.css'
 
 export default function InvoicesPage() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const toast = useToast()
   const [activeType, setActiveType] = useState<DocumentType | 'ALL'>('ALL')
   const [activeStatus, setActiveStatus] = useState<DocumentStatus | 'ALL'>('ALL')
@@ -79,11 +81,11 @@ export default function InvoicesPage() {
     try {
       const ids = Array.from(bulk.selectedIds)
       await Promise.all(ids.map((id) => deleteDocument(id)))
-      toast.success(`${count} ${count === 1 ? 'invoice' : 'invoices'} deleted`)
+      toast.success(`${count} ${count === 1 ? t.invoiceDeletedSingular : t.invoiceDeletedPlural}`)
       bulk.clear()
       refresh()
     } catch {
-      toast.error('Failed to delete some invoices')
+      toast.error(t.failedDeleteInvoices)
     } finally {
       setIsBulkDeleting(false)
     }
@@ -94,30 +96,30 @@ export default function InvoicesPage() {
   const bulkActions: BulkAction[] = [
     {
       id: 'delete',
-      label: 'Delete',
+      label: t.delete,
       icon: 'delete',
       isDanger: true,
       onClick: handleBulkDelete,
     },
     {
       id: 'export',
-      label: 'Export',
+      label: t.export,
       icon: 'export',
-      onClick: () => toast.info('Export coming soon'),
+      onClick: () => toast.info(t.exportComingSoon),
     },
   ]
 
-  const typeLabel = activeType === 'ALL' ? 'Invoices' : DOCUMENT_TYPE_LABELS[activeType]
+  const typeLabel = activeType === 'ALL' ? t.invoices : DOCUMENT_TYPE_LABELS[activeType]
 
   return (
     <AppShell>
       <Header
-        title={bulk.isActive ? `${bulk.selectedCount} Selected` : typeLabel}
+        title={bulk.isActive ? `${bulk.selectedCount} ${t.nSelected}` : typeLabel}
         actions={
           !bulk.isActive ? (
-            <button className="btn btn-ghost btn-sm" onClick={() => navigate(ROUTES.BILL_SCAN)} aria-label="Scan bill">
+            <button className="btn btn-ghost btn-sm" onClick={() => navigate(ROUTES.BILL_SCAN)} aria-label={t.scanBillAriaLabel}>
               <Camera size={18} aria-hidden="true" />
-              <span>Scan</span>
+              <span>{t.scan}</span>
             </button>
           ) : undefined
         }
@@ -145,8 +147,8 @@ export default function InvoicesPage() {
 
         {status === 'error' && (
           <ErrorState
-            title="Could not load invoices"
-            message="Check your connection and try again."
+            title={t.couldNotLoadInvoices}
+            message={t.checkConnectionRetry}
             onRetry={refresh}
           />
         )}
@@ -154,11 +156,11 @@ export default function InvoicesPage() {
         {status === 'success' && data && data.documents.length === 0 && (
           <EmptyState
             icon={<FileText size={40} aria-hidden="true" />}
-            title="No invoices yet"
-            description="Create your first invoice to start billing"
+            title={t.noInvoicesYet}
+            description={t.createFirstInvoiceBilling}
             action={
-              <button className="btn btn-primary btn-md" onClick={goToCreate} aria-label="Create first invoice">
-                Create Invoice
+              <button className="btn btn-primary btn-md" onClick={goToCreate} aria-label={t.createFirstInvoiceAriaLabel}>
+                {t.createInvoice}
               </button>
             }
           />
@@ -166,14 +168,14 @@ export default function InvoicesPage() {
 
         {status === 'success' && data && (
           <div role="status" aria-live="polite" className="sr-only">
-            {data.documents.length} {data.documents.length === 1 ? 'invoice' : 'invoices'} found
+            {data.documents.length} {data.documents.length === 1 ? t.invoiceFoundSingular : t.invoiceFoundPlural}
           </div>
         )}
 
         {status === 'success' && data && data.documents.length > 0 && (
           <>
-          <h2 className="sr-only">Invoice list</h2>
-          <div className="invoice-list stagger-list" role="list" aria-label="Invoices">
+          <h2 className="sr-only">{t.invoiceListHeading}</h2>
+          <div className="invoice-list stagger-list" role="list" aria-label={t.invoices}>
             {data.documents.map((doc) => (
               <div
                 key={doc.id}
@@ -202,7 +204,7 @@ export default function InvoicesPage() {
       </PageContainer>
 
       {!bulk.isActive && (
-        <button className="fab" onClick={goToCreate} aria-label="Create new invoice">
+        <button className="fab" onClick={goToCreate} aria-label={t.createNewInvoiceAriaLabel}>
           <Plus size={24} aria-hidden="true" />
         </button>
       )}

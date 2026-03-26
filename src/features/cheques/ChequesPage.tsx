@@ -11,6 +11,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
@@ -23,6 +24,7 @@ import { AddChequeDrawer } from './components/AddChequeDrawer'
 import './cheques.css'
 
 export default function ChequesPage() {
+  const { t } = useLanguage()
   const toast = useToast()
   const { items, total, page, status, statusFilter, setStatusFilter, setPage, refresh } = useCheques()
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -30,19 +32,19 @@ export default function ChequesPage() {
   const handleStatusUpdate = useCallback(async (id: string, s: ChequeStatus) => {
     try {
       await updateChequeStatus(id, { status: s })
-      toast.success(`Cheque marked ${CHEQUE_STATUS_LABELS[s].toLowerCase()}.`)
+      toast.success(`${t.chequeAriaLabel} ${CHEQUE_STATUS_LABELS[s].toLowerCase()}.`)
       refresh()
     } catch (err: unknown) {
-      toast.error(err instanceof ApiError ? err.message : 'Failed to update status.')
+      toast.error(err instanceof ApiError ? err.message : t.failedUpdateStatus)
     }
-  }, [toast, refresh])
+  }, [toast, refresh, t])
 
   const totalPages = Math.ceil(total / CHEQUE_PAGE_LIMIT)
 
   if (status === 'loading') {
     return (
       <AppShell>
-        <Header title="Cheques" backTo={ROUTES.DASHBOARD} />
+        <Header title={t.cheques} backTo={ROUTES.DASHBOARD} />
         <PageContainer>
           <div className="cheque-skeleton" aria-busy="true">
             {['sk-1', 'sk-2', 'sk-3'].map((k) => <div key={k} className="cheque-skeleton__card" />)}
@@ -55,9 +57,9 @@ export default function ChequesPage() {
   if (status === 'error') {
     return (
       <AppShell>
-        <Header title="Cheques" backTo={ROUTES.DASHBOARD} />
+        <Header title={t.cheques} backTo={ROUTES.DASHBOARD} />
         <PageContainer>
-          <ErrorState title="Could not load cheques" message="Check your connection and try again." onRetry={refresh} />
+          <ErrorState title={t.couldNotLoadCheques} message={t.checkConnectionTryAgain} onRetry={refresh} />
         </PageContainer>
       </AppShell>
     )
@@ -65,9 +67,9 @@ export default function ChequesPage() {
 
   return (
     <AppShell>
-      <Header title="Cheques" backTo={ROUTES.DASHBOARD} />
+      <Header title={t.cheques} backTo={ROUTES.DASHBOARD} />
       <PageContainer>
-        <div className="cheque-filter-pills" role="group" aria-label="Filter by status">
+        <div className="cheque-filter-pills" role="group" aria-label={t.filterByStatusGroup}>
           {CHEQUE_FILTER_OPTIONS.map((opt) => (
             <button
               key={opt.value}
@@ -82,18 +84,18 @@ export default function ChequesPage() {
         </div>
 
         <div className="cheque-action-bar">
-          <span className="cheque-count">{total} {total === 1 ? 'cheque' : 'cheques'}</span>
-          <button type="button" className="cheque-add-btn" onClick={() => setDrawerOpen(true)} aria-label="Add cheque">
-            <Plus size={14} aria-hidden="true" /> Add Cheque
+          <span className="cheque-count">{total} {total === 1 ? t.chequeCount : t.chequesCount}</span>
+          <button type="button" className="cheque-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.addCheque}>
+            <Plus size={14} aria-hidden="true" /> {t.addCheque}
           </button>
         </div>
 
         {items.length === 0 && (
           <div className="cheque-empty">
             <div className="cheque-empty__icon" aria-hidden="true"><CheckSquare size={32} /></div>
-            <p className="cheque-empty__title">No cheques recorded</p>
-            <p className="cheque-empty__desc">Track cheques received from customers and issued to suppliers.</p>
-            <button type="button" className="cheque-add-btn" onClick={() => setDrawerOpen(true)}><Plus size={14} aria-hidden="true" /> Add First Cheque</button>
+            <p className="cheque-empty__title">{t.noChequesRecorded}</p>
+            <p className="cheque-empty__desc">{t.chequesEmptyDesc}</p>
+            <button type="button" className="cheque-add-btn" onClick={() => setDrawerOpen(true)}><Plus size={14} aria-hidden="true" /> {t.addFirstCheque}</button>
           </div>
         )}
 
@@ -105,9 +107,9 @@ export default function ChequesPage() {
 
         {totalPages > 1 && (
           <div className="cheque-pagination">
-            <button type="button" className="cheque-pagination__btn" onClick={() => setPage(page - 1)} disabled={page <= 1} aria-label="Previous page">Previous</button>
-            <span className="cheque-pagination__info">Page {page} of {totalPages}</span>
-            <button type="button" className="cheque-pagination__btn" onClick={() => setPage(page + 1)} disabled={page >= totalPages} aria-label="Next page">Next</button>
+            <button type="button" className="cheque-pagination__btn" onClick={() => setPage(page - 1)} disabled={page <= 1} aria-label={t.previousPage}>{t.previous}</button>
+            <span className="cheque-pagination__info">{t.pageLabel} {page} {t.ofLabel} {totalPages}</span>
+            <button type="button" className="cheque-pagination__btn" onClick={() => setPage(page + 1)} disabled={page >= totalPages} aria-label={t.nextPage}>{t.next}</button>
           </div>
         )}
       </PageContainer>

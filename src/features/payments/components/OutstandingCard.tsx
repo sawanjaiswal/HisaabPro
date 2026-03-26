@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { Bell, IndianRupee } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { OutstandingParty } from '../payment.types'
 
 interface OutstandingCardProps {
@@ -21,6 +22,7 @@ export const OutstandingCard: React.FC<OutstandingCardProps> = ({
   onRemind,
   onRecordPayment,
 }) => {
+  const { t } = useLanguage()
   const isReceivable = party.type === 'RECEIVABLE'
   const isOverdue = party.daysOverdue > 0
   const cardClass = `outstanding-card${isOverdue ? ' outstanding-card--overdue' : ''}`
@@ -38,13 +40,13 @@ export const OutstandingCard: React.FC<OutstandingCardProps> = ({
   const paidPct = 0 // OutstandingParty doesn't carry total invoiced; bar shows overdue state
 
   const daysLabel = isOverdue
-    ? `${party.invoiceCount} invoice${party.invoiceCount !== 1 ? 's' : ''} · ${party.daysOverdue} days overdue`
-    : `${party.invoiceCount} invoice${party.invoiceCount !== 1 ? 's' : ''}`
+    ? `${party.invoiceCount} ${party.invoiceCount !== 1 ? t.invoicesWord : t.invoiceWord} · ${party.daysOverdue} ${t.daysOverdue}`
+    : `${party.invoiceCount} ${party.invoiceCount !== 1 ? t.invoicesWord : t.invoiceWord}`
 
   const hasPhone = party.partyPhone.trim() !== ''
 
   return (
-    <div className={cardClass} aria-label={`Outstanding for ${party.partyName}`}>
+    <div className={cardClass} aria-label={`${t.outstandingFor} ${party.partyName}`}>
       <div className="outstanding-card-top">
         <div className="outstanding-card-info">
           <div className="outstanding-card-party">{party.partyName}</div>
@@ -52,7 +54,7 @@ export const OutstandingCard: React.FC<OutstandingCardProps> = ({
         </div>
         <div
           className={amountClass}
-          aria-label={`${isReceivable ? 'Receivable' : 'Payable'}: ${formatAmount(party.outstanding)}`}
+          aria-label={`${isReceivable ? t.receivable : t.payable}: ${formatAmount(party.outstanding)}`}
         >
           {formatAmount(party.outstanding)}
         </div>
@@ -66,10 +68,10 @@ export const OutstandingCard: React.FC<OutstandingCardProps> = ({
       </div>
       <div className="outstanding-progress-meta" aria-hidden="true">
         <span className="outstanding-progress-label outstanding-progress-label--paid">
-          Paid: {formatAmount(0)}
+          {t.paidColon} {formatAmount(0)}
         </span>
         <span className="outstanding-progress-label">
-          Due: {formatAmount(party.outstanding)}
+          {t.dueAmount} {formatAmount(party.outstanding)}
         </span>
       </div>
 
@@ -79,20 +81,20 @@ export const OutstandingCard: React.FC<OutstandingCardProps> = ({
           onClick={() => onRemind(party.partyId)}
           disabled={!hasPhone}
           aria-label={hasPhone
-            ? `Send payment reminder to ${party.partyName}`
-            : `Cannot remind ${party.partyName} — no phone number`
+            ? `${t.sendReminderTo} ${party.partyName}`
+            : `${t.cannotRemindNoPhone} ${party.partyName}`
           }
         >
           <Bell size={14} aria-hidden="true" />
-          Remind
+          {t.remindBtn}
         </button>
         <button
           className="outstanding-action-pay"
           onClick={() => onRecordPayment(party.partyId)}
-          aria-label={`Record payment from ${party.partyName}`}
+          aria-label={`${t.recordPaymentFrom} ${party.partyName}`}
         >
           <IndianRupee size={14} aria-hidden="true" />
-          Pay
+          {t.pay}
         </button>
       </div>
     </div>

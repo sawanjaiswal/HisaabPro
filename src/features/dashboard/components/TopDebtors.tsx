@@ -40,20 +40,20 @@ export const TopDebtors: React.FC<TopDebtorsProps> = ({
         <button
           className="dashboard-section-link"
           onClick={onViewAll}
-          aria-label="View all outstanding receivables"
+          aria-label={t.viewAllOutstanding}
         >
           {t.seeAll}
           <ChevronRight size={16} aria-hidden="true" />
         </button>
       </div>
 
-      <div className="dashboard-starred-scroll" role="list" aria-label="Top contacts">
+      <div className="dashboard-starred-scroll" role="list" aria-label={t.topContacts}>
         {/* Add button */}
         <div className="dashboard-starred-item" role="listitem">
           <button
             className="dashboard-starred-add"
             onClick={onViewAll}
-            aria-label="Add starred contact"
+            aria-label={t.addStarred}
           >
             <Plus size={20} aria-hidden="true" />
           </button>

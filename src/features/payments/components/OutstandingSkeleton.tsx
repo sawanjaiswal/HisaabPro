@@ -2,12 +2,14 @@
 
 import React from 'react'
 import { Skeleton } from '@/components/feedback/Skeleton'
+import { useLanguage } from '@/hooks/useLanguage'
 
 const CARD_COUNT = 5
 
 export const OutstandingSkeleton: React.FC = () => {
+  const { t } = useLanguage()
   return (
-    <div role="status" aria-label="Loading outstanding">
+    <div role="status" aria-label={t.loadingOutstanding}>
       {/* Summary cards skeleton */}
       <div className="outstanding-summary-cards" aria-hidden="true">
         {Array.from({ length: 3 }, (_, i) => (

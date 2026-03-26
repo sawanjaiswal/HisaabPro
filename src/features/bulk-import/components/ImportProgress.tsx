@@ -2,6 +2,7 @@
 
 import { CheckCircle, AlertTriangle } from 'lucide-react'
 import type { BulkImportResult } from '../bulk-import.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface ImportProgressProps {
   progress: number
@@ -12,6 +13,7 @@ interface ImportProgressProps {
 }
 
 export function ImportProgress({ progress, total, result, onDone, onGoToParties }: ImportProgressProps) {
+  const { t } = useLanguage()
   const isDone = result !== null
   const percent = total > 0 ? Math.round((progress / total) * 100) : 0
 
@@ -23,7 +25,7 @@ export function ImportProgress({ progress, total, result, onDone, onGoToParties 
             <div className="import-progress-bar-fill" style={{ width: `${percent}%` }} />
           </div>
           <span className="import-progress-label">
-            Importing {progress} of {total}...
+            {t.importingXOfY}
           </span>
           <span className="import-progress-percent">{percent}%</span>
         </>
@@ -38,7 +40,7 @@ export function ImportProgress({ progress, total, result, onDone, onGoToParties 
           </div>
 
           <h3 className="import-result-title">
-            {result.failed === 0 ? 'All parties imported!' : 'Import completed with errors'}
+            {result.failed === 0 ? t.allPartiesImported : t.importCompletedErrors}
           </h3>
 
           <div className="import-result-stats">
@@ -53,7 +55,7 @@ export function ImportProgress({ progress, total, result, onDone, onGoToParties 
           </div>
 
           {result.errors.length > 0 && (
-            <div className="import-result-errors" role="list" aria-label="Import errors">
+            <div className="import-result-errors" role="list" aria-label={t.importErrors}>
               {result.errors.slice(0, 10).map((err, i) => (
                 <div key={`${err.name}-${i}`} className="import-result-error-row" role="listitem">
                   <span className="import-result-error-name">{err.name}</span>
@@ -62,7 +64,7 @@ export function ImportProgress({ progress, total, result, onDone, onGoToParties 
               ))}
               {result.errors.length > 10 && (
                 <span className="import-result-error-more">
-                  +{result.errors.length - 10} more errors
+                  +{result.errors.length - 10} {t.moreErrors}
                 </span>
               )}
             </div>

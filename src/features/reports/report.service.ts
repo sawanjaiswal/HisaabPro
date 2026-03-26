@@ -25,20 +25,16 @@ import type {
   PaymentHistoryResponse,
   ExportRequest,
 } from './report.types'
-import type {
-  TaxSummaryFilters,
-  TaxSummaryData,
-  HsnSummaryData,
-  TaxLedgerFilters,
-  TaxLedgerData,
-  GstReturnType,
-  Gstr1Data,
-  Gstr3bData,
-  Gstr9Data,
-  GstExportData,
-  TdsTcsFilters,
-  TdsTcsSummaryData,
-} from './report-tax.types'
+
+// Re-export tax services so existing consumers don't break
+export {
+  getTaxSummary,
+  getHsnSummary,
+  getTaxLedger,
+  getGstReturn,
+  exportGstReturn,
+  getTdsTcsSummary,
+} from './report-tax.service'
 
 // ─── Invoice Report (Sale / Purchase) ─────────────────────────────────────────
 
@@ -120,103 +116,6 @@ export async function getPaymentHistory(
 ): Promise<PaymentHistoryResponse> {
   const query = buildQueryString(filters as unknown as Record<string, unknown>)
   return api<PaymentHistoryResponse>(`/reports/payments?${query}`, { signal })
-}
-
-// ─── Tax Summary ───────────────────────────────────────────────────────────────
-
-/**
- * Fetch tax summary (sales, purchases, credit notes, debit notes) for a date range.
- * Returns pre-aggregated tax breakdowns and net tax liability in paise.
- */
-export async function getTaxSummary(
-  filters: TaxSummaryFilters,
-  signal?: AbortSignal
-): Promise<TaxSummaryData> {
-  const query = buildQueryString(filters as unknown as Record<string, unknown>)
-  return api<TaxSummaryData>(`/reports/tax-summary?${query}`, { signal })
-}
-
-/**
- * Fetch HSN-wise tax summary for a date range.
- * Each item contains quantity, taxable value, and component-wise tax totals.
- */
-export async function getHsnSummary(
-  filters: TaxSummaryFilters,
-  signal?: AbortSignal
-): Promise<HsnSummaryData> {
-  const query = buildQueryString(filters as unknown as Record<string, unknown>)
-  return api<HsnSummaryData>(`/reports/hsn-summary?${query}`, { signal })
-}
-
-/**
- * Fetch paginated tax ledger entries for a date range.
- * Uses cursor-based pagination — pass cursor from previous response for next page.
- */
-export async function getTaxLedger(
-  filters: TaxLedgerFilters,
-  signal?: AbortSignal
-): Promise<TaxLedgerData> {
-  const query = buildQueryString(filters as unknown as Record<string, unknown>)
-  return api<TaxLedgerData>(`/reports/tax-ledger?${query}`, { signal })
-}
-
-// ─── GST Returns ───────────────────────────────────────────────────────────────
-
-/**
- * Fetch a specific GST return (GSTR-1, GSTR-3B, or GSTR-9) for a given period.
- * Period format: "YYYY-MM" (e.g. "2026-03").
- */
-export async function getGstReturn(
-  returnType: GstReturnType,
-  period: string,
-  signal?: AbortSignal
-): Promise<Gstr1Data | Gstr3bData | Gstr9Data> {
-  return api<Gstr1Data | Gstr3bData | Gstr9Data>(
-    `/gst/returns/${returnType}/${period}`,
-    { signal }
-  )
-}
-
-/**
- * Export a GST return as JSON.
- * Currently only GSTR-1 supports JSON export.
- * Returns the export data and a suggested file name.
- */
-export async function exportGstReturn(
-  returnType: GstReturnType,
-  period: string,
-  format: 'JSON',
-  signal?: AbortSignal
-): Promise<GstExportData> {
-  return api<GstExportData>(
-    `/gst/returns/${returnType}/${period}/export`,
-    {
-      method: 'POST',
-      body: JSON.stringify({ format }),
-      signal,
-    }
-  )
-}
-
-// ─── TDS / TCS Summary ─────────────────────────────────────────────────────────
-
-/**
- * Fetch TDS/TCS summary for a date range.
- *
- * `type` controls which entries are returned:
- *   - 'tds'  → only entries with tdsAmount > 0
- *   - 'tcs'  → only entries with tcsAmount > 0
- *   - 'all'  → all entries (default)
- *
- * `partyId` is optional — omit to get all parties.
- * All amounts in paise, rates in basis points.
- */
-export async function getTdsTcsSummary(
-  filters: TdsTcsFilters,
-  signal?: AbortSignal
-): Promise<TdsTcsSummaryData> {
-  const query = buildQueryString(filters as unknown as Record<string, unknown>)
-  return api<TdsTcsSummaryData>(`/reports/tds-tcs-summary?${query}`, { signal })
 }
 
 // ─── Export ────────────────────────────────────────────────────────────────────

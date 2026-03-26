@@ -5,6 +5,7 @@
  */
 
 import { Plus } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { AdditionalChargeFormData } from '../invoice.types'
 
 interface InvoiceChargesSectionProps {
@@ -20,6 +21,7 @@ export function InvoiceChargesSection({
   onRemoveCharge,
   onAddCharge,
 }: InvoiceChargesSectionProps) {
+  const { t } = useLanguage()
   return (
     <div className="charges-section">
       {charges.map((charge, index) => (
@@ -27,7 +29,7 @@ export function InvoiceChargesSection({
           <input
             type="text"
             className="input"
-            placeholder="Charge name"
+            placeholder={t.chargeNamePlaceholder}
             value={charge.name}
             onChange={(e) => onUpdateCharge(index, { name: e.target.value })}
             aria-label={`Charge ${index + 1} name`}
@@ -36,7 +38,7 @@ export function InvoiceChargesSection({
           <input
             type="number"
             className="input"
-            placeholder="Amount"
+            placeholder={t.amount}
             value={charge.value || ''}
             onChange={(e) => onUpdateCharge(index, { value: parseFloat(e.target.value) || 0 })}
             aria-label={`Charge ${index + 1} value`}
@@ -57,10 +59,10 @@ export function InvoiceChargesSection({
         type="button"
         className="add-item-btn"
         onClick={() => onAddCharge({ name: '', type: 'FIXED', value: 0 })}
-        aria-label="Add additional charge"
+        aria-label={t.addAdditionalCharge}
       >
         <Plus size={18} aria-hidden="true" />
-        Add Charge
+        {t.addChargeLabel}
       </button>
     </div>
   )

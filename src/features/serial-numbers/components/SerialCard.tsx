@@ -1,4 +1,5 @@
 import { Hash, Calendar } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { SerialStatusBadge } from './SerialStatusBadge'
 import { formatSerialDate } from '../serial-number.utils'
 import type { SerialNumber } from '../serial-number.types'
@@ -9,12 +10,14 @@ interface SerialCardProps {
 }
 
 export function SerialCard({ serial, onClick }: SerialCardProps) {
+  const { t } = useLanguage()
+
   return (
     <button
       type="button"
       className="serial-card"
       onClick={() => onClick?.(serial.id)}
-      aria-label={`Serial ${serial.serialNumber}, status ${serial.status}`}
+      aria-label={`${t.serialAriaPrefix} ${serial.serialNumber}, ${t.statusAriaPrefix} ${serial.status}`}
     >
       <div className="serial-card__header">
         <div className="serial-card__number">
@@ -30,7 +33,7 @@ export function SerialCard({ serial, onClick }: SerialCardProps) {
         </span>
         {serial.soldAt && (
           <span className="serial-card__date serial-card__date--sold">
-            Sold {formatSerialDate(serial.soldAt)}
+            {t.sold} {formatSerialDate(serial.soldAt)}
           </span>
         )}
       </div>

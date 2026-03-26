@@ -9,20 +9,22 @@ import { TemplateEditor } from './components/TemplateEditor'
 import { RecipientPicker } from './components/RecipientPicker'
 import type { GreetingSendStatus } from './smart-greetings.types'
 import './smart-greetings.css'
-
-const TITLES: Record<GreetingSendStatus, string> = {
-  idle: 'Smart Greetings',
-  selecting: 'Customize Message',
-  sending: 'Choose Recipient',
-  done: 'Smart Greetings',
-}
+import { useLanguage } from '@/hooks/useLanguage'
 
 export default function SmartGreetingsPage() {
+  const { t } = useLanguage()
   const {
     templates, occasions, selectedTemplate, filterOccasion,
     sendStatus, customMessage, setFilterOccasion, selectTemplate,
     setCustomMessage, sendToParty, setSendStatus, reset,
   } = useSmartGreetings()
+
+  const TITLES: Record<GreetingSendStatus, string> = {
+    idle: t.greetingTemplates ?? 'Smart Greetings',
+    selecting: t.customizeMessage ?? 'Customize Message',
+    sending: t.chooseRecipient ?? 'Choose Recipient',
+    done: t.greetingTemplates ?? 'Smart Greetings',
+  }
 
   const handleSelectTemplate = (template: Parameters<typeof selectTemplate>[0]) => {
     selectTemplate(template)

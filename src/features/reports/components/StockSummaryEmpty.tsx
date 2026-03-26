@@ -1,6 +1,7 @@
 /** StockSummaryEmpty — empty states (no products at all, or filters returned nothing) */
 
 import { Package, X } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface StockSummaryEmptyProps {
   hasActiveFilters: boolean
@@ -13,21 +14,23 @@ export function StockSummaryEmpty({
   onNavigateNew,
   onClearFilters,
 }: StockSummaryEmptyProps) {
-  if (hasActiveFilters) {
+  const { t } = useLanguage()
+    if (hasActiveFilters) {
+  const { t } = useLanguage()
     return (
       <div className="report-empty" role="status">
         <div className="report-empty-icon" aria-hidden="true">
           <Package size={28} />
         </div>
-        <p className="report-empty-title">No products match your filters</p>
+        <p className="report-empty-title">{t.noProductsMatchFilters}</p>
         <p className="report-empty-desc">
-          Try adjusting your search or filter to find what you are looking for.
+          {t.tryAdjustingSearchFilter}
         </p>
         <button
           className="btn btn-secondary btn-md"
           type="button"
           onClick={onClearFilters}
-          aria-label="Clear all filters"
+          aria-label={t.clearAllFilters}
         >
           <X size={16} aria-hidden="true" />
           Clear Filters
@@ -41,15 +44,15 @@ export function StockSummaryEmpty({
       <div className="report-empty-icon" aria-hidden="true">
         <Package size={28} />
       </div>
-      <p className="report-empty-title">No products yet</p>
+      <p className="report-empty-title">{t.noProducts}</p>
       <p className="report-empty-desc">
-        No products added yet. Add your first product to track stock levels.
+        {t.noProductsAddedYet}
       </p>
       <button
         className="btn btn-primary btn-md"
         type="button"
         onClick={onNavigateNew}
-        aria-label="Add a product"
+        aria-label={t.addAProduct}
       >
         Add Product
       </button>

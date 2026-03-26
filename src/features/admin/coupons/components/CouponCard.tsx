@@ -9,6 +9,7 @@ import type { Coupon } from '../coupon.types'
 import { STATUS_LABELS, STATUS_COLORS } from '../coupon.constants'
 import { formatDiscount, formatUsage, formatCouponDate } from '../coupon.utils'
 import '../coupon.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface CouponCardProps {
   coupon: Coupon
@@ -17,6 +18,7 @@ interface CouponCardProps {
 }
 
 export function CouponCard({ coupon, onView, onDeactivate }: CouponCardProps) {
+  const { t } = useLanguage()
   const [confirming, setConfirming] = useState(false)
   const [deactivating, setDeactivating] = useState(false)
   const statusColor = STATUS_COLORS[coupon.status]
@@ -83,7 +85,7 @@ export function CouponCard({ coupon, onView, onDeactivate }: CouponCardProps) {
             aria-label={confirming ? `Confirm deactivate ${coupon.code}` : `Deactivate ${coupon.code}`}
           >
             <Trash2 size={16} aria-hidden="true" />
-            {deactivating ? 'Deactivating...' : confirming ? 'Confirm?' : 'Deactivate'}
+            {deactivating ? t.deactivating : confirming ? t.confirmAction : t.deactivate}
           </button>
         )}
       </div>

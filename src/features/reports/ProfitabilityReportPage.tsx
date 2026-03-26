@@ -18,6 +18,7 @@ import { formatPaise } from '@/lib/format'
 import { getProfitability } from './finance.service'
 import type { ProfitabilityData, ProfitabilityGroupBy } from './finance.types'
 import './report-finance.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 function marginClass(m: number): string {
   if (m >= 30) return 'profit-table__margin--high'
@@ -33,13 +34,14 @@ function getMonthRange() {
   }
 }
 
-const GROUP_OPTIONS: { value: ProfitabilityGroupBy; label: string }[] = [
-  { value: 'PARTY', label: 'By Party' },
-  { value: 'PRODUCT', label: 'By Product' },
-  { value: 'DOCUMENT', label: 'By Document' },
+const GROUP_OPTIONS_BASE: { value: ProfitabilityGroupBy; labelKey: 'byParty' | 'byProduct' | 'byDocument' }[] = [
+  { value: 'PARTY', labelKey: 'byParty' },
+  { value: 'PRODUCT', labelKey: 'byProduct' },
+  { value: 'DOCUMENT', labelKey: 'byDocument' },
 ]
 
 export default function ProfitabilityReportPage() {
+  const { t } = useLanguage()
   const toast = useToast()
   const [dateRange, setDateRange] = useState(getMonthRange)
   const [groupBy, setGroupBy] = useState<ProfitabilityGroupBy>('PARTY')
@@ -55,7 +57,7 @@ export default function ProfitabilityReportPage() {
       .catch((err: unknown) => {
         if (err instanceof Error && err.name === 'AbortError') return
         setFetchStatus('error')
-        toast.error(err instanceof ApiError ? err.message : 'Failed to load profitability report')
+        toast.error(err instanceof ApiError ? err.message : t.failedLoadProfitability)
       })
     return () => controller.abort()
   }, [dateRange, groupBy, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -65,7 +67,7 @@ export default function ProfitabilityReportPage() {
   if (fetchStatus === 'loading') {
     return (
       <AppShell>
-        <Header title="Profitability" backTo={ROUTES.REPORTS} />
+        <Header title={t.profitability} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <div className="finance-skeleton" aria-busy="true">
             {['sk-1', 'sk-2'].map((k) => <div key={k} className="finance-skeleton__section" />)}
@@ -78,9 +80,9 @@ export default function ProfitabilityReportPage() {
   if (fetchStatus === 'error') {
     return (
       <AppShell>
-        <Header title="Profitability" backTo={ROUTES.REPORTS} />
+        <Header title={t.profitability} backTo={ROUTES.REPORTS} />
         <PageContainer>
-          <ErrorState title="Could not load profitability report" message="Check your connection and try again." onRetry={refresh} />
+          <ErrorState title={t.couldNotLoadProfitability} message={t.checkConnectionRetry} onRetry={refresh} />
         </PageContainer>
       </AppShell>
     )
@@ -88,42 +90,42 @@ export default function ProfitabilityReportPage() {
 
   return (
     <AppShell>
-      <Header title="Profitability Report" backTo={ROUTES.REPORTS} />
+      <Header title={t.profitabilityReport} backTo={ROUTES.REPORTS} />
       <PageContainer>
         <div className="finance-date-bar">
-          <span className="finance-date-bar__label">From</span>
-          <input type="date" className="finance-date-bar__input" value={dateRange.from} onChange={(e) => setDateRange((r) => ({ ...r, from: e.target.value }))} aria-label="From date" />
-          <span className="finance-date-bar__label">To</span>
-          <input type="date" className="finance-date-bar__input" value={dateRange.to} onChange={(e) => setDateRange((r) => ({ ...r, to: e.target.value }))} aria-label="To date" />
-          <button type="button" className="finance-date-bar__refresh-btn" onClick={refresh} aria-label="Refresh">
+          <span className="finance-date-bar__label">{t.from}</span>
+          <input type="date" className="finance-date-bar__input" value={dateRange.from} onChange={(e) => setDateRange((r) => ({ ...r, from: e.target.value }))} aria-label={t.fromDate} />
+          <span className="finance-date-bar__label">{t.to}</span>
+          <input type="date" className="finance-date-bar__input" value={dateRange.to} onChange={(e) => setDateRange((r) => ({ ...r, to: e.target.value }))} aria-label={t.toDate} />
+          <button type="button" className="finance-date-bar__refresh-btn" onClick={refresh} aria-label={t.refresh}>
             <RefreshCw size={14} aria-hidden="true" />
           </button>
         </div>
 
-        <div className="aging-tabs" role="group" aria-label="Group by">
-          {GROUP_OPTIONS.map((opt) => (
-            <button key={opt.value} type="button" className={`aging-tab${groupBy === opt.value ? ' aging-tab--active' : ''}`} onClick={() => setGroupBy(opt.value)} aria-pressed={groupBy === opt.value}>{opt.label}</button>
+        <div className="aging-tabs" role="group" aria-label={t.groupBy}>
+          {GROUP_OPTIONS_BASE.map((opt) => (
+            <button key={opt.value} type="button" className={`aging-tab${groupBy === opt.value ? ' aging-tab--active' : ''}`} onClick={() => setGroupBy(opt.value)} aria-pressed={groupBy === opt.value}>{t[opt.labelKey]}</button>
           ))}
         </div>
 
         {(!data || data.rows.length === 0) && (
           <div className="finance-empty">
             <div className="finance-empty__icon" aria-hidden="true"><BarChart3 size={32} /></div>
-            <p className="finance-empty__title">No data for this period</p>
-            <p className="finance-empty__desc">Try a different date range or grouping.</p>
+            <p className="finance-empty__title">{t.noDataForThisPeriod}</p>
+            <p className="finance-empty__desc">{t.tryDifferentGrouping}</p>
           </div>
         )}
 
         {data && data.rows.length > 0 && (
           <div className="profit-table">
-            <table aria-label="Profitability breakdown">
+            <table aria-label={t.profitabilityBreakdown}>
               <thead>
                 <tr>
-                  <th scope="col">{GROUP_OPTIONS.find((g) => g.value === groupBy)?.label.replace('By ', '') ?? 'Group'}</th>
-                  <th scope="col">Revenue</th>
-                  <th scope="col">COGS</th>
-                  <th scope="col">Gross Profit</th>
-                  <th scope="col">Margin</th>
+                  <th scope="col">{GROUP_OPTIONS_BASE.find((g) => g.value === groupBy)?.labelKey ? t[GROUP_OPTIONS_BASE.find((g) => g.value === groupBy)!.labelKey] : t.group ?? 'Group'}</th>
+                  <th scope="col">{t.revenue}</th>
+                  <th scope="col">{t.cogs}</th>
+                  <th scope="col">{t.grossProfit}</th>
+                  <th scope="col">{t.margin}</th>
                 </tr>
               </thead>
               <tbody>

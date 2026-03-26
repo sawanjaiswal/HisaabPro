@@ -1,4 +1,5 @@
 import { LOCK_PERIOD_OPTIONS } from '../settings.constants'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { TransactionLockConfig } from '../settings.types'
 
 interface LockPeriodSectionProps {
@@ -7,15 +8,16 @@ interface LockPeriodSectionProps {
 }
 
 export function LockPeriodSection({ lockAfterDays, onUpdate }: LockPeriodSectionProps) {
+  const { t } = useLanguage()
   return (
     <section>
-      <p className="settings-section-title">Lock Settings</p>
+      <p className="settings-section-title">{t.lockSettingsTitle}</p>
       <div className="txn-controls">
         <div className="txn-control-row">
           <div className="txn-control-content">
-            <p className="txn-control-label">Lock Period</p>
+            <p className="txn-control-label">{t.lockPeriodLabel}</p>
             <p className="txn-control-description">
-              Transactions older than this cannot be edited or deleted
+              {t.lockPeriodDesc}
             </p>
           </div>
           <select
@@ -24,7 +26,7 @@ export function LockPeriodSection({ lockAfterDays, onUpdate }: LockPeriodSection
               const raw = e.target.value
               onUpdate('lockAfterDays', raw === '' ? null : Number(raw))
             }}
-            aria-label="Lock period"
+            aria-label={t.lockPeriodAria}
             style={{
               padding: 'var(--space-2) var(--space-3)',
               borderRadius: 'var(--radius-md)',

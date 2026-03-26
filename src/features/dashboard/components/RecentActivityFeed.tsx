@@ -147,13 +147,13 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
           placeholder={t.searchByNameInvoice}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          aria-label="Search recent transactions"
+          aria-label={t.searchTxn}
         />
         {query && (
           <button
             className="dashboard-txn-search-clear"
             onClick={handleClear}
-            aria-label="Clear search"
+            aria-label={t.clearSearch}
           >
             <X size={14} />
           </button>
@@ -169,7 +169,7 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
 
       {/* Skeleton loading state */}
       {searching && (
-        <div className="dashboard-txn-list" aria-busy="true" aria-label="Loading search results">
+        <div className="dashboard-txn-list" aria-busy="true" aria-label={t.loadingSearch}>
           {Array.from({ length: SKELETON_COUNT }, (_, i) => (
             <div key={i} className="dashboard-txn-row dashboard-txn-row--skeleton">
               <div className="dashboard-txn-avatar">
@@ -189,7 +189,7 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
 
       {/* Results */}
       {!searching && (
-        <div className="dashboard-txn-list" role="list" aria-label="Recent transactions">
+        <div className="dashboard-txn-list" role="list" aria-label={t.recentTransactions}>
           {displayItems.length === 0 && isSearchActive && (
             <div className="dashboard-txn-empty">
               <p>{t.noTxnMatch} &ldquo;{query}&rdquo;</p>

@@ -1,13 +1,15 @@
 /** Loading skeleton for the template gallery — 4 cards in a 2-column grid */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { Skeleton } from '@/components/feedback/Skeleton'
 
 const SKELETON_CARD_COUNT = 4
 
 export const TemplateGallerySkeleton: React.FC = () => {
+  const { t } = useLanguage()
   return (
-    <div className="template-gallery" aria-busy="true" aria-label="Loading templates">
+    <div className="template-gallery" aria-busy="true" aria-label={t.loadingTemplates}>
       <div className="template-section">
         <Skeleton width="120px" height="0.75rem" borderRadius="var(--radius-sm)" />
 

@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/useToast'
 import { ROUTES } from '@/config/routes.config'
 import { exportTally } from './finance.service'
 import './report-finance.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 function getFYRange(): { from: string; to: string } {
   const now = new Date()
@@ -20,6 +21,7 @@ function getFYRange(): { from: string; to: string } {
 }
 
 export default function TallyExportPage() {
+  const { t } = useLanguage()
   const toast = useToast()
   const [dateRange, setDateRange] = useState(getFYRange)
   const [exporting, setExporting] = useState(false)
@@ -40,9 +42,9 @@ export default function TallyExportPage() {
       a.click()
       a.remove()
       URL.revokeObjectURL(url)
-      toast.success('Tally XML downloaded')
+      toast.success(t.tallyXmlDownloaded)
     } catch {
-      toast.error('Export failed. Check your connection and try again.')
+      toast.error(t.exportFailedConnection)
     } finally {
       setExporting(false)
       submitRef.current = false
@@ -51,31 +53,31 @@ export default function TallyExportPage() {
 
   return (
     <AppShell>
-      <Header title="Tally Export" backTo={ROUTES.REPORTS} />
+      <Header title={t.tallyExport} backTo={ROUTES.REPORTS} />
       <PageContainer>
         <div className="finance-section">
           <div className="finance-section__header">
-            <span className="finance-section__title">Export to TallyPrime</span>
+            <span className="finance-section__title">{t.exportToTallyPrime}</span>
           </div>
           <div className="finance-section__rows tally-export__body">
             <p className="tally-export__desc">
-              Export your ledger accounts and journal entries as a Tally-compatible XML file. Import this into TallyPrime for accounting reconciliation.
+              {t.tallyExportDesc}
             </p>
             <div className="finance-date-bar">
-              <span className="finance-date-bar__label">From</span>
-              <input type="date" className="finance-date-bar__input" value={dateRange.from} onChange={(e) => setDateRange((r) => ({ ...r, from: e.target.value }))} aria-label="From date" />
-              <span className="finance-date-bar__label">To</span>
-              <input type="date" className="finance-date-bar__input" value={dateRange.to} onChange={(e) => setDateRange((r) => ({ ...r, to: e.target.value }))} aria-label="To date" />
+              <span className="finance-date-bar__label">{t.from}</span>
+              <input type="date" className="finance-date-bar__input" value={dateRange.from} onChange={(e) => setDateRange((r) => ({ ...r, from: e.target.value }))} aria-label={t.fromDate} />
+              <span className="finance-date-bar__label">{t.to}</span>
+              <input type="date" className="finance-date-bar__input" value={dateRange.to} onChange={(e) => setDateRange((r) => ({ ...r, to: e.target.value }))} aria-label={t.toDate} />
             </div>
             <button
               type="button"
               className="finance-date-bar__refresh-btn tally-export__download-btn"
               onClick={handleExport}
               disabled={exporting}
-              aria-label="Download Tally XML"
+              aria-label={t.downloadTallyXml}
             >
-              {exporting ? 'Exporting...' : (
-                <><Download size={16} aria-hidden="true" /> Download XML</>
+              {exporting ? t.exporting : (
+                <><Download size={16} aria-hidden="true" /> {t.downloadXml}</>
               )}
             </button>
           </div>
@@ -83,9 +85,9 @@ export default function TallyExportPage() {
 
         <div className="finance-empty tally-export__info">
           <div className="finance-empty__icon" aria-hidden="true"><FileCode size={32} /></div>
-          <p className="finance-empty__title">TallyPrime Compatible</p>
+          <p className="finance-empty__title">{t.tallyPrimeCompatible}</p>
           <p className="finance-empty__desc">
-            The exported XML includes all ledger masters and vouchers. Open TallyPrime, go to Import Data, and select the downloaded file.
+            {t.tallyPrimeDesc}
           </p>
         </div>
       </PageContainer>

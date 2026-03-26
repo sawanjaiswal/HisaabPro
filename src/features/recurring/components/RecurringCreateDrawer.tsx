@@ -7,6 +7,7 @@
 
 import React, { useState, useCallback, useRef } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
+import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate } from '@/lib/format'
 import { FREQUENCY_LABELS } from '../recurring.constants'
 import type { RecurringFrequency, CreateRecurringInput } from '../recurring.types'
@@ -19,8 +20,6 @@ interface RecurringCreateDrawerProps {
 
 const FREQUENCIES = Object.keys(FREQUENCY_LABELS) as RecurringFrequency[]
 
-const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-
 function todayISO(): string {
   return toLocalISODate(new Date())
 }
@@ -30,6 +29,8 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
   onClose,
   onSubmit,
 }) => {
+  const { t } = useLanguage()
+  const dayNames = [t.daySun, t.dayMon, t.dayTue, t.dayWed, t.dayThu, t.dayFri, t.daySat]
   const [templateDocumentId, setTemplateDocumentId] = useState('')
   const [frequency, setFrequency] = useState<RecurringFrequency>('MONTHLY')
   const [startDate, setStartDate] = useState(todayISO())
@@ -59,7 +60,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
       e.preventDefault()
       if (submitGuard.current) return
       if (!templateDocumentId.trim()) {
-        setError('Template document ID is required.')
+        setError(t.templateDocRequired)
         return
       }
 
@@ -82,7 +83,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
         await onSubmit(input)
         handleClose()
       } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : 'Failed to create schedule.')
+        setError(err instanceof Error ? err.message : t.failedCreateSchedule)
       } finally {
         setSubmitting(false)
         submitGuard.current = false
@@ -107,7 +108,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
     <Drawer
       open={open}
       onClose={handleClose}
-      title="New Recurring Schedule"
+      title={t.newRecurringSchedule}
       persistent={submitting}
       footer={
         <button
@@ -117,7 +118,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
           disabled={submitting}
           aria-busy={submitting}
         >
-          {submitting ? 'Creating...' : 'Create Schedule'}
+          {submitting ? t.creatingSchedule : t.createScheduleBtn}
         </button>
       }
     >
@@ -135,7 +136,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
 
         <div className="recurring-drawer__field">
           <label htmlFor="rcd-template" className="recurring-drawer__label">
-            Template Document ID
+            {t.templateDocId}
           </label>
           <input
             id="rcd-template"
@@ -143,7 +144,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
             className="recurring-drawer__input"
             value={templateDocumentId}
             onChange={(e) => setTemplateDocumentId(e.target.value)}
-            placeholder="e.g. doc_abc123"
+            placeholder={t.templateDocPlaceholder}
             required
             autoComplete="off"
           />
@@ -151,7 +152,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
 
         <div className="recurring-drawer__field">
           <label htmlFor="rcd-frequency" className="recurring-drawer__label">
-            Frequency
+            {t.frequencyLabel}
           </label>
           <select
             id="rcd-frequency"
@@ -170,7 +171,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
         {showDayOfMonth && (
           <div className="recurring-drawer__field">
             <label htmlFor="rcd-dom" className="recurring-drawer__label">
-              Day of Month (1–28)
+              {t.dayOfMonthLabel}
             </label>
             <input
               id="rcd-dom"
@@ -187,7 +188,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
         {!showDayOfMonth && (
           <div className="recurring-drawer__field">
             <label htmlFor="rcd-dow" className="recurring-drawer__label">
-              Day of Week
+              {t.dayOfWeekLabel}
             </label>
             <select
               id="rcd-dow"
@@ -195,8 +196,8 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
               value={dayOfWeek}
               onChange={(e) => setDayOfWeek(e.target.value)}
             >
-              {DAY_NAMES.map((name, idx) => (
-                <option key={name} value={idx}>
+              {dayNames.map((name, idx) => (
+                <option key={idx} value={idx}>
                   {name}
                 </option>
               ))}
@@ -207,7 +208,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
         <div className="recurring-drawer__row">
           <div className="recurring-drawer__field">
             <label htmlFor="rcd-start" className="recurring-drawer__label">
-              Start Date
+              {t.startDateLabel}
             </label>
             <input
               id="rcd-start"
@@ -220,7 +221,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
           </div>
           <div className="recurring-drawer__field">
             <label htmlFor="rcd-end" className="recurring-drawer__label">
-              End Date (optional)
+              {t.endDateOptional}
             </label>
             <input
               id="rcd-end"
@@ -238,10 +239,10 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
             type="checkbox"
             checked={autoSend}
             onChange={(e) => setAutoSend(e.target.checked)}
-            aria-label="Auto-send invoice when generated"
+            aria-label={t.autoSendLabel}
           />
           <span className="recurring-drawer__toggle-label">
-            Auto-send invoice when generated
+            {t.autoSendLabel}
           </span>
         </label>
       </form>

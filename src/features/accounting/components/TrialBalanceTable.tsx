@@ -2,6 +2,7 @@
 
 import { formatPaise } from '../accounting.utils'
 import type { TrialBalanceRow, TrialBalanceTotals } from '../accounting.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface TrialBalanceTableProps {
   rows: TrialBalanceRow[]
@@ -9,15 +10,16 @@ interface TrialBalanceTableProps {
 }
 
 export function TrialBalanceTable({ rows, totals }: TrialBalanceTableProps) {
+  const { t } = useLanguage()
   return (
-    <div className="tb-table-wrap" role="region" aria-label="Trial balance table">
+    <div className="tb-table-wrap" role="region" aria-label={t.trialBalanceTableAria}>
       <table className="tb-table">
         <thead>
           <tr>
-            <th className="tb-th tb-th-code" scope="col">Code</th>
-            <th className="tb-th tb-th-name" scope="col">Account Name</th>
-            <th className="tb-th tb-th-num" scope="col">Debit</th>
-            <th className="tb-th tb-th-num" scope="col">Credit</th>
+            <th className="tb-th tb-th-code" scope="col">{t.sku}</th>
+            <th className="tb-th tb-th-name" scope="col">{t.accountNameLabel}</th>
+            <th className="tb-th tb-th-num" scope="col">{t.debit2}</th>
+            <th className="tb-th tb-th-num" scope="col">{t.credit2}</th>
           </tr>
         </thead>
         <tbody>
@@ -41,7 +43,7 @@ export function TrialBalanceTable({ rows, totals }: TrialBalanceTableProps) {
         </tbody>
         <tfoot>
           <tr className="tb-totals-row">
-            <td className="tb-td tb-totals-label" colSpan={2}>Total</td>
+            <td className="tb-td tb-totals-label" colSpan={2}>{t.total}</td>
             <td className="tb-td tb-num tb-debit tb-total">
               {formatPaise(totals.debit)}
             </td>

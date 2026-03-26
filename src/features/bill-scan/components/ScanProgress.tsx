@@ -1,6 +1,7 @@
 /** Scan Progress — Processing indicator with percentage */
 
 import type { OcrProgress } from '../bill-scan.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface ScanProgressProps {
   progress: OcrProgress
@@ -8,6 +9,7 @@ interface ScanProgressProps {
 }
 
 export function ScanProgress({ progress, imagePreview }: ScanProgressProps) {
+  const { t } = useLanguage()
   const percent = Math.round(progress.progress * 100)
 
   return (
@@ -16,7 +18,7 @@ export function ScanProgress({ progress, imagePreview }: ScanProgressProps) {
         <div className="scan-progress-preview">
           <img
             src={imagePreview}
-            alt="Bill being processed"
+            alt={t.billBeingProcessed}
             className="scan-progress-image"
           />
           <div className="scan-progress-overlay" />

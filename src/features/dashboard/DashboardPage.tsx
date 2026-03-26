@@ -130,7 +130,7 @@ export default function DashboardPage() {
                   <button
                     className="dashboard-sales-cta"
                     onClick={() => navigate(`${ROUTES.INVOICE_CREATE}?type=SALE`)}
-                    aria-label="Create your first invoice today"
+                    aria-label={t.createFirstInvoice}
                   >
                     {t.createFirstInvoice} &rarr;
                   </button>

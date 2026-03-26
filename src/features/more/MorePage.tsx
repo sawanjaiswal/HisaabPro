@@ -7,15 +7,17 @@ import { MORE_MENU_ITEMS, MORE_MENU_GROUPS } from './more.constants'
 import { ICON_REGISTRY } from './more.icons'
 import { ROUTES } from '@/config/routes.config'
 import './more.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export default function MorePage() {
+  const { t } = useLanguage()
   const navigate = useNavigate()
 
   return (
     <AppShell>
-      <Header title="Explore" backTo={ROUTES.DASHBOARD} />
+      <Header title={t.explore} backTo={ROUTES.DASHBOARD} />
       <PageContainer>
-        <nav className="more-sections stagger-list" aria-label="Feature categories">
+        <nav className="more-sections stagger-list" aria-label={t.featureCategories}>
           {MORE_MENU_GROUPS.map((group) => {
             const groupItems = MORE_MENU_ITEMS.filter((item) => item.group === group.id)
             if (groupItems.length === 0) return null

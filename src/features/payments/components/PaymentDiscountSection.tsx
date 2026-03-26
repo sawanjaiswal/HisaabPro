@@ -5,6 +5,7 @@
  */
 
 import { formatCurrency } from '@/lib/format'
+import { useLanguage } from '@/hooks/useLanguage'
 import { PAYMENT_DISCOUNT_TYPE_LABELS } from '../payment.constants'
 import type { PaymentFormDiscount, PaymentDiscountType } from '../payment.types'
 
@@ -33,6 +34,7 @@ export function PaymentDiscountSection({
   onToggle,
   onUpdate,
 }: PaymentDiscountSectionProps) {
+  const { t } = useLanguage()
   return (
     <div className="payment-form">
       <label className="payment-discount-toggle">
@@ -40,17 +42,17 @@ export function PaymentDiscountSection({
           type="checkbox"
           checked={discount !== null}
           onChange={onToggle}
-          aria-label="Apply discount"
+          aria-label={t.applyDiscountAria}
         />
-        Apply Discount
+        {t.applyDiscountLabel}
       </label>
 
       {discount !== null && (
         <div className="payment-discount-fields">
           {/* Discount type */}
           <div className="payment-field">
-            <label className="label">Discount Type</label>
-            <div className="payment-discount-type" role="radiogroup" aria-label="Discount type">
+            <label className="label">{t.discountTypeLabel}</label>
+            <div className="payment-discount-type" role="radiogroup" aria-label={t.discountTypeAria}>
               {DISCOUNT_TYPES.map((type) => (
                 <label key={type} className="payment-radio-label">
                   <input
@@ -70,7 +72,7 @@ export function PaymentDiscountSection({
           {/* Discount value */}
           <div className="payment-field">
             <label className="label" htmlFor="discount-value">
-              {discount.type === 'PERCENTAGE' ? 'Percentage' : 'Amount (₹)'}
+              {discount.type === 'PERCENTAGE' ? t.percentageLabel : t.amountRupees}
             </label>
             <input
               id="discount-value"
@@ -80,7 +82,7 @@ export function PaymentDiscountSection({
               placeholder={discount.type === 'PERCENTAGE' ? '0' : '0.00'}
               value={discount.value > 0 ? discount.value : ''}
               onChange={(e) => onUpdate('value', parseFloat(e.target.value || '0'))}
-              aria-label="Discount value"
+              aria-label={t.discountValueAria}
             />
             {errors['discount.value'] && (
               <span className="field-error" role="alert">{errors['discount.value']}</span>
@@ -90,21 +92,21 @@ export function PaymentDiscountSection({
           {/* Calculated discount */}
           {discount.calculatedAmount > 0 && (
             <p className="payment-discount-calc">
-              Discount: {formatCurrency(discount.calculatedAmount)}
+              {t.discountColon} {formatCurrency(discount.calculatedAmount)}
             </p>
           )}
 
           {/* Reason */}
           <div className="payment-field">
-            <label className="label" htmlFor="discount-reason">Reason (optional)</label>
+            <label className="label" htmlFor="discount-reason">{t.reasonOptional}</label>
             <input
               id="discount-reason"
               type="text"
               className="input"
-              placeholder="Early payment, long-term customer..."
+              placeholder={t.discountReason}
               value={discount.reason}
               onChange={(e) => onUpdate('reason', e.target.value)}
-              aria-label="Discount reason"
+              aria-label={t.discountReasonAria}
               maxLength={200}
             />
             {errors['discount.reason'] && (
@@ -118,17 +120,17 @@ export function PaymentDiscountSection({
       {amount > 0 && (
         <div className="payment-settlement-summary">
           <div className="payment-settlement-row">
-            <span>Payment</span>
+            <span>{t.paymentWord}</span>
             <span>{formatCurrency(settlement.payment)}</span>
           </div>
           {settlement.discount > 0 && (
             <div className="payment-settlement-row">
-              <span>Discount</span>
+              <span>{t.discount}</span>
               <span>{formatCurrency(settlement.discount)}</span>
             </div>
           )}
           <div className="payment-settlement-row payment-settlement-total">
-            <span>Total Settled</span>
+            <span>{t.totalSettled}</span>
             <span>{formatCurrency(settlement.totalSettled)}</span>
           </div>
         </div>

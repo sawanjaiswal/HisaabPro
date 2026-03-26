@@ -1,11 +1,14 @@
 import React from 'react'
 import { Skeleton } from '@/components/feedback/Skeleton'
+import { useLanguage } from '@/hooks/useLanguage'
 
 const SKELETON_COUNT = 6
 
 export const PartyListSkeleton: React.FC = () => {
+  const { t } = useLanguage()
+
   return (
-    <div role="status" aria-label="Loading parties">
+    <div role="status" aria-label={t.loadingParties}>
       {Array.from({ length: SKELETON_COUNT }, (_, i) => (
         <div
           key={`skeleton-party-${i}`}

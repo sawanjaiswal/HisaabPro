@@ -4,12 +4,14 @@ import { STOCK_STATUS_LABELS, STOCK_STATUS_COLORS } from '../report.constants'
 import { formatAmount } from '../report.utils'
 import { ReportStatusBadge } from './ReportStatusBadge'
 import type { StockSummaryItem } from '../report.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface StockSummaryProductCardProps {
   item: StockSummaryItem
 }
 
-export function StockSummaryProductCard({ item }: StockSummaryProductCardProps) {
+export function StockSummaryProductCard({item }: StockSummaryProductCardProps) {
+  const { t } = useLanguage()
   return (
     <div className="report-card" role="listitem">
       <div className="report-card-header">
@@ -28,10 +30,10 @@ export function StockSummaryProductCard({ item }: StockSummaryProductCardProps) 
       </div>
       <div className="report-card-footer">
         <span className="report-card-balance">
-          Purchase: {formatAmount(item.stockValueAtPurchase)}
+          {t.purchaseLabel}: {formatAmount(item.stockValueAtPurchase)}
         </span>
         <span className="report-card-amount">
-          Sale: {formatAmount(item.stockValueAtSale)}
+          {t.saleLabel}: {formatAmount(item.stockValueAtSale)}
         </span>
       </div>
       <div className="report-divider" />

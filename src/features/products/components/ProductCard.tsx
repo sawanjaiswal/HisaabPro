@@ -2,6 +2,7 @@
 
 import React, { useRef, useCallback } from 'react'
 import { Check } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { ProductSummary } from '../product.types'
 import { formatProductPrice, formatStock, getStockStatus } from '../product.utils'
 import { PartyAvatar } from '../../../components/ui/PartyAvatar'
@@ -20,12 +21,6 @@ const STOCK_BADGE_CLASSES: Record<string, string> = {
   out: 'badge badge-overdue',
 }
 
-const STOCK_BADGE_LABELS: Record<string, string> = {
-  ok:  'In Stock',
-  low: 'Low Stock',
-  out: 'Out of Stock',
-}
-
 const LONG_PRESS_MS = 500
 
 export const ProductCard: React.FC<ProductCardProps> = ({
@@ -35,6 +30,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   isSelected = false,
   isBulkMode = false,
 }) => {
+  const { t } = useLanguage()
+  const STOCK_BADGE_LABELS: Record<string, string> = {
+    ok:  t.inStock,
+    low: t.lowStock,
+    out: t.outOfStock,
+  }
   const status = getStockStatus(product.currentStock, product.minStockLevel)
   const badgeClass = STOCK_BADGE_CLASSES[status]
   const badgeLabel = STOCK_BADGE_LABELS[status]
@@ -71,7 +72,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       className={`txn-row${isSelected ? ' txn-row--selected' : ''}`}
       role="button"
       tabIndex={0}
-      aria-label={`${isBulkMode ? (isSelected ? 'Deselect' : 'Select') : 'View details for'} ${product.name}`}
+      aria-label={`${isBulkMode ? (isSelected ? t.deselectProduct : t.selectProduct) : t.viewDetailsFor} ${product.name}`}
       onClick={handleClick}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleClick() }}
       onPointerDown={handlePointerDown}
@@ -93,7 +94,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       <div className="txn-info">
         <div className="product-card-header">
           <span className="txn-name">{product.name}</span>
-          <span className={badgeClass} aria-label={`Stock status: ${badgeLabel}`}>{badgeLabel}</span>
+          <span className={badgeClass} aria-label={`${t.stockStatusPrefix}: ${badgeLabel}`}>{badgeLabel}</span>
         </div>
         <span className="txn-date">{product.sku} · {product.category.name}</span>
       </div>

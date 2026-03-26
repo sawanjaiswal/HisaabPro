@@ -1,0 +1,190 @@
+/* ============================================================
+   Summary Hero — Shared two-card hero pattern
+   Used by: Parties (collect/pay), Products (value/alert),
+   Payments (in/out), Dashboard (outstanding)
+   ============================================================ */
+
+/* Container */
+.summary-hero {
+  margin-bottom: var(--space-4);
+  animation: heroFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Count/subtitle above cards */
+.summary-hero-count {
+  font-size: var(--fs-2xs);
+  font-weight: 500;
+  color: var(--color-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--space-3);
+}
+
+/* Net balance line (used by payments) */
+.summary-hero-net {
+  font-size: var(--fs-sm);
+  color: var(--color-gray-600);
+  margin-bottom: var(--space-3);
+}
+
+.summary-hero-net--positive { color: var(--color-success-600); }
+.summary-hero-net--negative { color: var(--color-error-500); }
+
+/* Two-card grid */
+.summary-hero-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+/* Individual card */
+.summary-hero-card {
+  border: none;
+  border-radius: var(--radius-xl);
+  padding: var(--space-4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform var(--duration-normal) cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+  font-family: var(--font-primary);
+  min-height: 90px;
+  text-align: left;
+}
+
+.summary-hero-card:active { transform: scale(0.97); }
+
+.summary-hero-card:focus-visible {
+  outline: 2px solid var(--color-primary-400);
+  outline-offset: 2px;
+}
+
+/* Card variants */
+.summary-hero-card--teal {
+  background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
+  color: var(--color-white-inverse);
+  animation: heroFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
+}
+
+.summary-hero-card--lime {
+  background: var(--color-lime-accent);
+  color: var(--color-dark-text);
+  animation: heroFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 140ms both;
+}
+
+.summary-hero-card--amber {
+  background: linear-gradient(135deg, var(--gradient-amber-start) 0%, var(--gradient-amber-end) 100%);
+  color: var(--color-white-inverse);
+  animation: heroFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 140ms both;
+}
+
+.summary-hero-card--safe {
+  background: var(--color-lime-accent);
+  color: var(--color-dark-text);
+}
+
+/* Card content */
+.summary-hero-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.summary-hero-amount {
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary-hero-rupee {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.summary-hero-label {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  opacity: 0.85;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.summary-hero-chevron {
+  opacity: 0.6;
+  flex-shrink: 0;
+  color: var(--color-hero-text-secondary);
+}
+
+.summary-hero-chevron--dark {
+  color: var(--color-hero-text-muted);
+}
+
+/* Keyframes */
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Small screens ──────────────────────────────────────────── */
+@media (max-width: 359px) {
+  .summary-hero-card {
+    padding: var(--space-3);
+    min-height: 80px;
+  }
+
+  .summary-hero-amount {
+    font-size: var(--fs-xl);
+  }
+
+  .summary-hero-label {
+    font-size: var(--fs-xs);
+  }
+}
+
+/* ─── Tablet+ ────────────────────────────────────────────────── */
+@media (min-width: 768px) {
+  .summary-hero-card {
+    padding: var(--space-8);
+    min-height: 110px;
+  }
+
+  .summary-hero-amount {
+    font-size: var(--fs-4xl);
+  }
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .summary-hero,
+  .summary-hero-card--teal,
+  .summary-hero-card--lime,
+  .summary-hero-card--amber {
+    animation: none !important;
+  }
+
+  .summary-hero-card:active {
+    transform: none !important;
+  }
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────────── */
+[data-theme="dark"] .summary-hero-count {
+  color: var(--color-gray-400);
+}
+
+[data-theme="dark"] .summary-hero-net {
+  color: var(--color-gray-400);
+}
+
+[data-theme="dark"] .summary-hero-card--lime {
+  color: var(--color-dark-text);
+}
+
+[data-theme="dark"] .summary-hero-card--safe {
+  color: var(--color-dark-text);
+}

@@ -13,6 +13,7 @@ import { JournalEntryCard } from './components/JournalEntryCard'
 import { JOURNAL_TYPE_LABELS, ENTRY_STATUS_LABELS } from './accounting.constants'
 import type { JournalEntryType, EntryStatus } from './accounting.types'
 import './accounting.css'
+import { useLanguage } from '@/hooks/useLanguage'
 
 const TYPE_OPTIONS = [
   { value: '', label: 'All Types' },
@@ -25,13 +26,14 @@ const STATUS_OPTIONS = [
 ]
 
 export default function JournalEntriesPage() {
+  const { t } = useLanguage()
   const { entries, total, status, filters, hasMore, setTypeFilter, setStatusFilter, loadMore, refresh } =
     useJournalEntries()
 
   if (status === 'loading' && entries.length === 0) {
     return (
       <AppShell>
-        <Header title="Journal Entries" backTo={ROUTES.REPORTS} />
+        <Header title={t.journalEntries ?? "Journal Entries"} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <div className="mb-3"><Skeleton height="80px" /></div>
           <div className="mb-3"><Skeleton height="80px" /></div>
@@ -44,9 +46,9 @@ export default function JournalEntriesPage() {
   if (status === 'error' && entries.length === 0) {
     return (
       <AppShell>
-        <Header title="Journal Entries" backTo={ROUTES.REPORTS} />
+        <Header title={t.journalEntries ?? "Journal Entries"} backTo={ROUTES.REPORTS} />
         <PageContainer>
-          <ErrorState title="Could not load journal entries" onRetry={refresh} />
+          <ErrorState title={t.couldNotLoadAccounts} onRetry={refresh} />
         </PageContainer>
       </AppShell>
     )
@@ -54,7 +56,7 @@ export default function JournalEntriesPage() {
 
   return (
     <AppShell>
-      <Header title="Journal Entries" backTo={ROUTES.REPORTS} />
+      <Header title={t.journalEntries ?? "Journal Entries"} backTo={ROUTES.REPORTS} />
       <PageContainer>
         {/* Filters */}
         <div className="je-filters">
@@ -97,14 +99,14 @@ export default function JournalEntriesPage() {
         {status === 'success' && entries.length === 0 && (
           <EmptyState
             icon={<FileText size={28} aria-hidden="true" />}
-            title="No journal entries"
-            description="Journal entries are created automatically when you post invoices and payments."
+            title={t.noJournalEntries}
+            description={t.journalEntriesAutoDesc}
           />
         )}
 
         {/* List */}
         {entries.length > 0 && (
-          <ul className="je-list" role="list" aria-label="Journal entries">
+          <ul className="je-list" role="list" aria-label={t.journalEntries ?? "Journal Entries"}>
             {entries.map((entry) => (
               <JournalEntryCard key={entry.id} entry={entry} />
             ))}
@@ -118,9 +120,9 @@ export default function JournalEntriesPage() {
             className="btn btn-secondary btn-md je-load-more"
             onClick={loadMore}
             disabled={status === 'loading'}
-            aria-label="Load more journal entries"
+            aria-label={t.loadMoreJournalEntries}
           >
-            {status === 'loading' ? 'Loading…' : 'Load More'}
+            {status === 'loading' ? t.loading : t.loadMoreJournalEntries}
           </button>
         )}
       </PageContainer>

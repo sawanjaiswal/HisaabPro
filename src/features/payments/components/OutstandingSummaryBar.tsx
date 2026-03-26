@@ -1,6 +1,7 @@
 /** Outstanding — three horizontal scroll summary cards: Receivable, Payable, Net */
 
 import React from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import type { OutstandingTotals } from '../payment.types'
 
 interface OutstandingSummaryBarProps {
@@ -14,16 +15,17 @@ function formatAmount(paise: number): string {
 }
 
 export const OutstandingSummaryBar: React.FC<OutstandingSummaryBarProps> = ({ totals }) => {
+  const { t } = useLanguage()
   const { totalReceivable, totalPayable, net } = totals
   const isNetPositive = net >= 0
 
   return (
-    <div className="outstanding-summary-cards" aria-label="Outstanding summary">
+    <div className="outstanding-summary-cards" aria-label={t.outstandingSummary}>
       <div
         className="outstanding-summary-card"
-        aria-label={`Total receivable: ${formatAmount(totalReceivable)}`}
+        aria-label={`${t.receivable}: ${formatAmount(totalReceivable)}`}
       >
-        <span className="outstanding-summary-card-label">Receivable</span>
+        <span className="outstanding-summary-card-label">{t.receivable}</span>
         <span className="outstanding-summary-card-amount outstanding-summary-card-amount--receivable">
           {formatAmount(totalReceivable)}
         </span>
@@ -31,9 +33,9 @@ export const OutstandingSummaryBar: React.FC<OutstandingSummaryBarProps> = ({ to
 
       <div
         className="outstanding-summary-card"
-        aria-label={`Total payable: ${formatAmount(totalPayable)}`}
+        aria-label={`${t.payable}: ${formatAmount(totalPayable)}`}
       >
-        <span className="outstanding-summary-card-label">Payable</span>
+        <span className="outstanding-summary-card-label">{t.payable}</span>
         <span className="outstanding-summary-card-amount outstanding-summary-card-amount--payable">
           {formatAmount(totalPayable)}
         </span>
@@ -41,9 +43,9 @@ export const OutstandingSummaryBar: React.FC<OutstandingSummaryBarProps> = ({ to
 
       <div
         className="outstanding-summary-card outstanding-summary-card--net"
-        aria-label={`Net outstanding: ${isNetPositive ? '+' : '-'}${formatAmount(net)}`}
+        aria-label={`${t.net}: ${isNetPositive ? '+' : '-'}${formatAmount(net)}`}
       >
-        <span className="outstanding-summary-card-label">Net</span>
+        <span className="outstanding-summary-card-label">{t.net}</span>
         <span
           className={
             isNetPositive
