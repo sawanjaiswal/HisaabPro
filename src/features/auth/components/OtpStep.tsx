@@ -84,11 +84,11 @@ export function OtpStep({
         aria-label={t.goBackPhoneInput}
       >
         <ArrowLeft size={20} />
-        <span>Change number</span>
+        <span>{t.changeNumberLabel}</span>
       </button>
 
       <p className="auth-otp__info">
-        Enter the 6-digit code sent to <strong>{maskedPhone}</strong>
+        {t.enterCodeSentToLabel} <strong>{maskedPhone}</strong>
       </p>
 
       <div className="auth-otp__inputs" onPaste={handlePaste}>
@@ -105,21 +105,21 @@ export function OtpStep({
             onKeyDown={(e) => handleKeyDown(i, e)}
             disabled={loading}
             className="auth-otp__digit"
-            aria-label={`OTP digit ${i + 1}`}
+            aria-label={`${t.otpDigitX} ${i + 1}`}
           />
         ))}
       </div>
 
       {error && <p className="auth-otp__error">{error}</p>}
 
-      {loading && <p className="auth-otp__verifying">Verifying...</p>}
+      {loading && <p className="auth-otp__verifying">{t.verifying}</p>}
 
       <div className="auth-otp__resend">
         {resendCooldown > 0 ? (
-          <span className="auth-otp__cooldown">Resend OTP in {resendCooldown}s</span>
+          <span className="auth-otp__cooldown">{t.resendOtpInXs} {resendCooldown}s</span>
         ) : (
           <Button variant="ghost" size="sm" onClick={onResend} disabled={loading}>
-            Resend OTP
+            {t.resendOtp}
           </Button>
         )}
       </div>

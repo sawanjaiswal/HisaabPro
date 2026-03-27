@@ -602,6 +602,7 @@ export async function listGroups(businessId: string) {
       updatedAt: true,
       _count: { select: { parties: true } },
     },
+    take: 100, // bounded: typically < 100 groups per business
   })
 
   return groups.map((g) => ({
@@ -748,6 +749,7 @@ export async function listCustomFields(businessId: string, entityType?: string) 
       createdAt: true,
       updatedAt: true,
     },
+    take: 100, // bounded: typically < 100 custom field definitions per business
   })
 }
 

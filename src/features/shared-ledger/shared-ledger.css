@@ -290,7 +290,7 @@
 }
 
 /* ─── Mobile responsive ───────────────────────────────────────────── */
-
+/* mobile-first exception: public ledger table is designed desktop-first; this overrides for narrow viewports */
 @media (max-width: 600px) {
   .public-ledger-table-head,
   .public-ledger-table-row {

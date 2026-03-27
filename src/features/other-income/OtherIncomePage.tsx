@@ -64,7 +64,7 @@ export default function OtherIncomePage() {
     e.preventDefault()
     if (submitting) return
     const amountPaise = Math.round(parseFloat(form.amountRupees) * 100)
-    if (!amountPaise || amountPaise <= 0) { setFormError('Enter a valid amount.'); return }
+    if (!amountPaise || amountPaise <= 0) { setFormError(t.enterValidAmount); return }
     setSubmitting(true); setFormError('')
     const input: CreateOtherIncomeInput = {
       amount: amountPaise, date: form.date, paymentMode: form.paymentMode,
@@ -72,11 +72,11 @@ export default function OtherIncomePage() {
     }
     try {
       await createOtherIncome(input)
-      toast.success('Income recorded.')
+      toast.success(t.incomeRecorded)
       setForm({ category: '', amountRupees: '', date: TODAY, paymentMode: 'CASH', notes: '' })
       setDrawerOpen(false); refresh()
     } catch (err: unknown) {
-      setFormError(err instanceof ApiError ? err.message : 'Failed to record income.')
+      setFormError(err instanceof ApiError ? err.message : t.failedRecordIncome)
     } finally {
       setSubmitting(false)
     }
@@ -106,7 +106,7 @@ export default function OtherIncomePage() {
       <AppShell>
         <Header title={t.otherIncome ?? "Other Income"} backTo={ROUTES.DASHBOARD} />
         <PageContainer>
-          <ErrorState title={t.couldNotLoadIncome} message="Check your connection and try again." onRetry={refresh} />
+          <ErrorState title={t.couldNotLoadIncome} message={t.checkConnectionRetry} onRetry={refresh} />
         </PageContainer>
       </AppShell>
     )
@@ -116,17 +116,17 @@ export default function OtherIncomePage() {
     <AppShell>
       <Header title={t.otherIncome ?? "Other Income"} backTo={ROUTES.DASHBOARD} />
       <PageContainer>
-        <div className="income-filter-bar" role="group" aria-label="Filter by category">
-          <button type="button" className={`income-filter-pill${categoryFilter === null ? ' income-filter-pill--active' : ''}`} onClick={() => setCategoryFilter(null)} aria-pressed={categoryFilter === null}>All</button>
+        <div className="income-filter-bar" role="group" aria-label={t.filterByCategoryGroup}>
+          <button type="button" className={`income-filter-pill${categoryFilter === null ? ' income-filter-pill--active' : ''}`} onClick={() => setCategoryFilter(null)} aria-pressed={categoryFilter === null}>{t.all}</button>
           {knownCategories.map((c) => (
             <button key={c} type="button" className={`income-filter-pill${categoryFilter === c ? ' income-filter-pill--active' : ''}`} onClick={() => setCategoryFilter(c)} aria-pressed={categoryFilter === c}>{c}</button>
           ))}
         </div>
 
         <div className="income-action-bar">
-          <span className="income-count">{total} {total === 1 ? 'entry' : 'entries'}</span>
-          <button type="button" className="income-add-btn" onClick={() => setDrawerOpen(true)} aria-label="Add income entry">
-            <Plus size={14} aria-hidden="true" /> Add Income
+          <span className="income-count">{total} {total === 1 ? t.incomeSingular : t.incomeEntriesPlural}</span>
+          <button type="button" className="income-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.addIncomeEntryAria}>
+            <Plus size={14} aria-hidden="true" /> {t.addIncomeBtn}
           </button>
         </div>
 
@@ -143,9 +143,9 @@ export default function OtherIncomePage() {
 
         {totalPages > 1 && (
           <div className="income-pagination">
-            <button type="button" className="income-pagination__btn" onClick={() => setPage(page - 1)} disabled={page <= 1} aria-label="Previous page">{t.back}</button>
-            <span className="income-pagination__info">Page {page} of {totalPages}</span>
-            <button type="button" className="income-pagination__btn" onClick={() => setPage(page + 1)} disabled={page >= totalPages} aria-label="Next page">Next</button>
+            <button type="button" className="income-pagination__btn" onClick={() => setPage(page - 1)} disabled={page <= 1} aria-label={t.previousPage}>{t.back}</button>
+            <span className="income-pagination__info">{t.pageXOfY} {page} {t.ofLabel} {totalPages}</span>
+            <button type="button" className="income-pagination__btn" onClick={() => setPage(page + 1)} disabled={page >= totalPages} aria-label={t.nextPage}>{t.next}</button>
           </div>
         )}
       </PageContainer>
@@ -176,7 +176,7 @@ export default function OtherIncomePage() {
           </div>
           <div className="income-drawer__field">
             <label className="income-drawer__label" htmlFor="incNotes">{t.notesOptional}</label>
-            <input id="incNotes" className="income-drawer__input" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder="Additional details" />
+            <input id="incNotes" className="income-drawer__input" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder={t.incomeNotesPlaceholder} />
           </div>
           <button type="submit" className="income-drawer__submit-btn" disabled={submitting} aria-busy={submitting}>
             {submitting ? t.loading : t.recordIncome}

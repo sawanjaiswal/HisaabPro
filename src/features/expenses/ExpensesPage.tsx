@@ -55,7 +55,7 @@ export default function ExpensesPage() {
       <AppShell>
         <Header title={t.expenses ?? "Expenses"} backTo={ROUTES.DASHBOARD} />
         <PageContainer>
-          <ErrorState title={t.couldNotLoadExpenses} message="Check your connection and try again." onRetry={refresh} />
+          <ErrorState title={t.couldNotLoadExpenses} message={t.checkConnectionRetry} onRetry={refresh} />
         </PageContainer>
       </AppShell>
     )
@@ -66,14 +66,14 @@ export default function ExpensesPage() {
       <Header title={t.expenses ?? "Expenses"} backTo={ROUTES.DASHBOARD} />
       <PageContainer>
         {/* Category filter pills */}
-        <div className="expense-filter-bar" role="group" aria-label="Filter by category">
+        <div className="expense-filter-bar" role="group" aria-label={t.filterByCategoryGroup}>
           <button
             type="button"
             className={`expense-filter-pill${categoryFilter === null ? ' expense-filter-pill--active' : ''}`}
             onClick={() => setCategoryFilter(null)}
             aria-pressed={categoryFilter === null}
           >
-            All
+            {t.all}
           </button>
           {categories.map((c) => (
             <button
@@ -89,9 +89,9 @@ export default function ExpensesPage() {
         </div>
 
         <div className="expense-action-bar">
-          <span className="expense-count">{total} {total === 1 ? 'expense' : 'expenses'}</span>
+          <span className="expense-count">{total} {total === 1 ? t.expenseSingular : t.expensesPlural}</span>
           <button type="button" className="expense-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.recordExpense}>
-            <Plus size={14} aria-hidden="true" /> Add Expense
+            <Plus size={14} aria-hidden="true" /> {t.addExpenseBtn}
           </button>
         </div>
 
@@ -101,7 +101,7 @@ export default function ExpensesPage() {
             <p className="expense-empty__title">{t.noExpensesRecorded}</p>
             <p className="expense-empty__desc">{t.startTrackingExpenses}</p>
             <button type="button" className="expense-add-btn" onClick={() => setDrawerOpen(true)}>
-              <Plus size={14} aria-hidden="true" /> Record First Expense
+              <Plus size={14} aria-hidden="true" /> {t.recordFirstExpense}
             </button>
           </div>
         )}
@@ -114,9 +114,9 @@ export default function ExpensesPage() {
 
         {totalPages > 1 && (
           <div className="expense-pagination">
-            <button type="button" className="expense-pagination__btn" onClick={() => setPage(page - 1)} disabled={page <= 1} aria-label="Previous page">{t.back}</button>
-            <span className="expense-pagination__info">Page {page} of {totalPages}</span>
-            <button type="button" className="expense-pagination__btn" onClick={() => setPage(page + 1)} disabled={page >= totalPages} aria-label="Next page">Next</button>
+            <button type="button" className="expense-pagination__btn" onClick={() => setPage(page - 1)} disabled={page <= 1} aria-label={t.previousPage}>{t.back}</button>
+            <span className="expense-pagination__info">{t.pageXOfY} {page} {t.ofLabel} {totalPages}</span>
+            <button type="button" className="expense-pagination__btn" onClick={() => setPage(page + 1)} disabled={page >= totalPages} aria-label={t.nextPage}>{t.next}</button>
           </div>
         )}
       </PageContainer>

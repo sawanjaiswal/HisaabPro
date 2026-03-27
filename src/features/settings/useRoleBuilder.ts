@@ -63,8 +63,10 @@ export function useRoleBuilderPage({
     setFetchStatus('loading')
     setFetchError(null)
 
+    if (!roleId) return () => controller.abort()
+
     const rolesPromise = getRoles(businessId, controller.signal)
-    const rolePromise = getRole(businessId, roleId!, controller.signal)
+    const rolePromise = getRole(businessId, roleId, controller.signal)
 
     Promise.all([rolesPromise, rolePromise])
       .then(([rolesResponse, roleResponse]) => {

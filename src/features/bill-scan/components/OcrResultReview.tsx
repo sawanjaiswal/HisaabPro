@@ -45,10 +45,10 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
       <div className="ocr-review-header">
         <div className="ocr-review-stats">
           <span className="ocr-review-stat">
-            {extractedItems.length} item{extractedItems.length !== 1 ? 's' : ''} found
+            {extractedItems.length} {extractedItems.length !== 1 ? t.itemsFound : t.itemFound}
           </span>
           <span className="ocr-review-stat ocr-review-stat-secondary">
-            {Math.round(confidence)}% accuracy
+            {Math.round(confidence)}% {t.accuracyLabel}
           </span>
           <span className="ocr-review-stat ocr-review-stat-secondary">
             {(processingTimeMs / 1000).toFixed(1)}s
@@ -58,7 +58,7 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
         {result.imageDataUrl && (
           <img
             src={result.imageDataUrl}
-            alt="Scanned bill"
+            alt={t.scannedBillAlt}
             className="ocr-review-thumbnail"
           />
         )}
@@ -69,7 +69,7 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
           <AlertTriangle size={32} aria-hidden="true" />
           <p>{t.noItemsExtracted}</p>
           <button type="button" className="btn btn-secondary btn-md" onClick={onRetry}>
-            Try Again
+            {t.tryAgain}
           </button>
         </div>
       ) : (
@@ -89,7 +89,7 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
                     type="button"
                     className="ocr-review-item-delete"
                     onClick={() => onRemoveItem(item.id)}
-                    aria-label={`Remove ${item.name}`}
+                    aria-label={`${t.removeItemAria} ${item.name}`}
                   >
                     <Trash2 size={16} aria-hidden="true" />
                   </button>
@@ -97,7 +97,7 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
 
                 <div className="ocr-review-item-fields">
                   <div className="ocr-review-field">
-                    <label className="ocr-review-field-label">Qty</label>
+                    <label className="ocr-review-field-label">{t.ocrQtyLabel}</label>
                     <input
                       className="ocr-review-field-input"
                       type="number"
@@ -112,7 +112,7 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
                     />
                   </div>
                   <div className="ocr-review-field">
-                    <label className="ocr-review-field-label">Rate</label>
+                    <label className="ocr-review-field-label">{t.ocrRateLabel}</label>
                     <input
                       className="ocr-review-field-input"
                       type="number"
@@ -125,7 +125,7 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
                     />
                   </div>
                   <div className="ocr-review-field">
-                    <label className="ocr-review-field-label">Total</label>
+                    <label className="ocr-review-field-label">{t.ocrTotalLabel}</label>
                     <input
                       className="ocr-review-field-input"
                       type="number"
@@ -146,14 +146,14 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
             <div className="ocr-review-total-row">
               <span>{t.itemsTotal}</span>
               <span className="ocr-review-total-value">
-                Rs {(itemsTotal / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                {t.currencyPrefix} {(itemsTotal / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
               </span>
             </div>
             {extractedTotal !== null && (
               <div className="ocr-review-total-row">
                 <span>{t.billTotalScanned}</span>
                 <span className={`ocr-review-total-value ${Math.abs(extractedTotal - itemsTotal) > 100 ? 'ocr-review-total-mismatch' : ''}`}>
-                  Rs {(extractedTotal / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                  {t.currencyPrefix} {(extractedTotal / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </span>
               </div>
             )}
@@ -167,10 +167,10 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
               disabled={extractedItems.length === 0}
               aria-label={t.addXItemsToInvoice}
             >
-              Add {extractedItems.length} Item{extractedItems.length !== 1 ? 's' : ''} to Invoice
+              {t.addXItemsToInvoice} ({extractedItems.length})
             </button>
             <button type="button" className="btn btn-ghost btn-md" onClick={onRetry}>
-              Scan Another
+              {t.scanAnother}
             </button>
           </div>
         </>

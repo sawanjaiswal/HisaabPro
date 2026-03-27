@@ -96,6 +96,3 @@ export default function LoginPage() {
   )
 }
 
-// --- OTP-based login (commented out for dev, restore for production) ---
-// import { PhoneStep } from './components/PhoneStep'
-// import { OtpStep } from './components/OtpStep'

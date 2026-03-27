@@ -27,17 +27,17 @@ export default function JoinBusinessPage() {
           <div className="join-business-success">
             <CheckCircle size={48} className="join-business-success-icon" />
             <h2 className="join-business-success-title">
-              You joined {success.businessName}!
+              {t.youJoinedBusiness.replace('{name}', success.businessName)}
             </h2>
             <p className="join-business-success-subtitle">
-              Role: {success.roleName}
+              {t.roleColon2} {success.roleName}
             </p>
             <button
               type="button"
               className="join-business-btn"
               onClick={handleGoToDashboard}
             >
-              Go to Dashboard
+              {t.goToDashboard}
             </button>
           </div>
         </div>
@@ -52,9 +52,9 @@ export default function JoinBusinessPage() {
         <div className="join-business-icon-container">
           <Building2 size={40} className="join-business-icon" />
         </div>
-        <h2 className="join-business-heading">Enter Invite Code</h2>
+        <h2 className="join-business-heading">{t.enterInviteCodeHeading}</h2>
         <p className="join-business-subtitle">
-          Ask the business owner for a 6-character invite code
+          {t.inviteCodeSubtitle}
         </p>
 
         <input
@@ -79,7 +79,7 @@ export default function JoinBusinessPage() {
           disabled={code.length !== 6 || loading}
           onClick={handleSubmit}
         >
-          {loading ? 'Joining...' : 'Join Business'}
+          {loading ? t.joiningText : t.joinBusinessBtn}
         </button>
       </div>
     </div>

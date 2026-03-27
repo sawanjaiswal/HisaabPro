@@ -529,6 +529,7 @@ export async function listUserBusinesses(userId: string) {
       business: { select: { id: true, name: true, businessType: true } },
     },
     orderBy: { joinedAt: 'asc' },
+    take: 50, // bounded: a user typically belongs to < 50 businesses
   })
 
   return businessUsers.map(bu => ({

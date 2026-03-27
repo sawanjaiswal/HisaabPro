@@ -51,7 +51,7 @@ export function PartyFormCredit({ form, errors, onUpdate }: PartyFormCreditProps
       <div className="input-group">
         <span className="input-label" id="opening-balance-label">{t.openingBalance}</span>
         <div className="create-party-prefix-input">
-          <span className="create-party-prefix" aria-hidden="true">Rs</span>
+          <span className="create-party-prefix" aria-hidden="true">{t.currencyPrefix}</span>
           <input
             id="opening-balance-amount"
             className="input create-party-input-prefixed"
@@ -89,7 +89,7 @@ export function PartyFormCredit({ form, errors, onUpdate }: PartyFormCreditProps
       <div className="input-group">
         <span className="input-label" id="credit-limit-label">{t.creditLimit}</span>
         <div className="create-party-prefix-input">
-          <span className="create-party-prefix" aria-hidden="true">Rs</span>
+          <span className="create-party-prefix" aria-hidden="true">{t.currencyPrefix}</span>
           <input
             id="credit-limit-amount"
             className={`input create-party-input-prefixed${errors.creditLimit ? ' input-error-border' : ''}`}

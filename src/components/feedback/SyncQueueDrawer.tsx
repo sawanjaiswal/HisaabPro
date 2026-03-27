@@ -96,26 +96,29 @@ export function SyncQueueDrawer({
                 )}
               </div>
 
-              {item.status === 'dead' && item.id != null && (
-                <div className="sync-drawer-item-actions">
-                  <button
-                    type="button"
-                    className="btn btn-ghost btn-sm"
-                    onClick={() => onRetry(item.id!)}
-                    aria-label={`Retry ${item.entityLabel}`}
-                  >
-                    <RotateCcw size={14} aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-ghost btn-sm"
-                    onClick={() => onDiscard(item.id!)}
-                    aria-label={`Discard ${item.entityLabel}`}
-                  >
-                    <Trash2 size={14} aria-hidden="true" />
-                  </button>
-                </div>
-              )}
+              {item.status === 'dead' && item.id != null && (() => {
+                const id = item.id as number // guaranteed non-null by condition above
+                return (
+                  <div className="sync-drawer-item-actions">
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm"
+                      onClick={() => onRetry(id)}
+                      aria-label={`Retry ${item.entityLabel}`}
+                    >
+                      <RotateCcw size={14} aria-hidden="true" />
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm"
+                      onClick={() => onDiscard(id)}
+                      aria-label={`Discard ${item.entityLabel}`}
+                    >
+                      <Trash2 size={14} aria-hidden="true" />
+                    </button>
+                  </div>
+                )
+              })()}
             </li>
           ))}
         </ul>

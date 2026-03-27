@@ -170,10 +170,11 @@ export default function CouponsPage() {
 
       {/* Create coupon drawer */}
       {showForm && (
-        <div className="coupon-form-overlay" onClick={() => setShowForm(false)}>
+        <div className="coupon-form-overlay" onClick={() => setShowForm(false)} role="presentation">
           <div
             className="coupon-form-sheet"
             onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.key === 'Escape' && setShowForm(false)}
             role="dialog"
             aria-modal="true"
             aria-label="Create coupon"

@@ -93,17 +93,18 @@ export function useBulkImport() {
 
     setStatus('importing')
     setProgress(0)
-    abortRef.current = new AbortController()
+    const controller = new AbortController()
+    abortRef.current = controller
 
     const result: BulkImportResult = { total: parties.length, succeeded: 0, failed: 0, errors: [] }
 
     // Process in batches
     for (let i = 0; i < parties.length; i += IMPORT_BATCH_SIZE) {
-      if (abortRef.current.signal.aborted) break
+      if (controller.signal.aborted) break
 
       const batch = parties.slice(i, i + IMPORT_BATCH_SIZE)
       const results = await Promise.allSettled(
-        batch.map((p) => createPartyFromBulk(p, abortRef.current!.signal)),
+        batch.map((p) => createPartyFromBulk(p, controller.signal)),
       )
 
       for (let j = 0; j < results.length; j++) {

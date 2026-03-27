@@ -509,6 +509,7 @@ export async function getTrialBalance(businessId: string, asOf?: Date) {
       },
     },
     orderBy: [{ type: 'asc' }, { code: 'asc' }],
+    take: 500, // chart of accounts: typically < 500 accounts per business
   })
 
   let grandTotalDebit = 0
@@ -581,6 +582,7 @@ export async function getLedgerReport(
       },
     },
     orderBy: [{ journalEntry: { date: 'asc' } }, { journalEntry: { entryNumber: 'asc' } }],
+    take: 1000, // report: bounded by date range filter
   })
 
   // Build running balance (forward from zero for the filtered period)

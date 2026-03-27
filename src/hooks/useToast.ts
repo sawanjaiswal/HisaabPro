@@ -55,7 +55,7 @@ export const useToastStore = create<ToastStore>((set, get) => ({
       removeToast(toasts[0].id);
     }
 
-    const id = Math.random().toString(36).substring(2, 9);
+    const id = crypto.randomUUID();
     const newToast: Toast = { ...toast, id, createdAt: now };
 
     set((state) => ({

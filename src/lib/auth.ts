@@ -79,25 +79,6 @@ export async function devLogin(
   }
 }
 
-// --- OTP auth (commented out for dev, restore for production) ---
-// /** Send OTP to phone */
-// export async function sendOtp(phone: string, signal?: AbortSignal) {
-//   return api<SendOtpResponse>('/auth/send-otp', {
-//     method: 'POST',
-//     body: JSON.stringify({ phone }),
-//     signal,
-//   })
-// }
-//
-// /** Verify OTP and get tokens */
-// export async function verifyOtp(phone: string, otp: string, signal?: AbortSignal) {
-//   return api<VerifyOtpResponse>('/auth/verify-otp', {
-//     method: 'POST',
-//     body: JSON.stringify({ phone, otp }),
-//     signal,
-//   })
-// }
-
 /** Refresh access token — cookies handle token transport automatically */
 export async function refreshToken(signal?: AbortSignal) {
   return api<{ tokens: { accessToken: string; refreshToken: string } }>('/auth/refresh', {

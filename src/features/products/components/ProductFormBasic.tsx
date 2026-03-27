@@ -160,7 +160,7 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
       <div className="input-group">
         <span className="input-label">{t.salePriceLabel}</span>
         <div className="create-party-prefix-input">
-          <span className="create-party-prefix" aria-hidden="true">Rs</span>
+          <span className="create-party-prefix" aria-hidden="true">{t.currencyPrefix}</span>
           <input
             id="product-sale-price"
             className={`input create-party-input-prefixed${errors.salePrice ? ' input-error-border' : ''}`}
@@ -180,7 +180,7 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
       <div className="input-group">
         <span className="input-label">{t.purchasePriceLabel} <span style={{ color: 'var(--color-gray-400)', fontWeight: 400 }}>({t.notesOptionalLabel})</span></span>
         <div className="create-party-prefix-input">
-          <span className="create-party-prefix" aria-hidden="true">Rs</span>
+          <span className="create-party-prefix" aria-hidden="true">{t.currencyPrefix}</span>
           <input
             id="product-purchase-price"
             className="input create-party-input-prefixed"

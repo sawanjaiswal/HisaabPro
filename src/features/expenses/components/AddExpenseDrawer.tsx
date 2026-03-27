@@ -35,7 +35,7 @@ export function AddExpenseDrawer({ open, onClose, onCreated, categories }: AddEx
     e.preventDefault()
     if (submitting) return
     const amountPaise = Math.round(parseFloat(form.amountRupees) * 100)
-    if (!amountPaise || amountPaise <= 0) { setError('Enter a valid amount.'); return }
+    if (!amountPaise || amountPaise <= 0) { setError(t.enterValidAmount); return }
     setSubmitting(true)
     setError('')
     const input: CreateExpenseInput = {
@@ -47,12 +47,12 @@ export function AddExpenseDrawer({ open, onClose, onCreated, categories }: AddEx
     }
     try {
       await createExpense(input)
-      toast.success('Expense recorded.')
+      toast.success(t.expenseRecorded)
       setForm({ categoryId: '', amountRupees: '', date: TODAY, paymentMode: 'CASH', notes: '' })
       onCreated()
       onClose()
     } catch (err: unknown) {
-      const message = err instanceof ApiError ? err.message : 'Failed to record expense.'
+      const message = err instanceof ApiError ? err.message : t.failedRecordExpense
       setError(message)
     } finally {
       setSubmitting(false)
@@ -64,7 +64,7 @@ export function AddExpenseDrawer({ open, onClose, onCreated, categories }: AddEx
       <form className="expense-drawer__form" onSubmit={handleSubmit}>
         {error && <p className="expense-drawer__error" role="alert">{error}</p>}
         <div className="expense-drawer__field">
-          <label className="expense-drawer__label" htmlFor="expCategory">Category</label>
+          <label className="expense-drawer__label" htmlFor="expCategory">{t.categoryLabelForm}</label>
           <select id="expCategory" className="expense-drawer__select" value={form.categoryId} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}>
             <option value="">-- {t.selectCategory} --</option>
             {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -90,7 +90,7 @@ export function AddExpenseDrawer({ open, onClose, onCreated, categories }: AddEx
         </div>
         <div className="expense-drawer__field">
           <label className="expense-drawer__label" htmlFor="expNotes">{t.notesOptional}</label>
-          <input id="expNotes" className="expense-drawer__input" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder="What was this expense for?" />
+          <input id="expNotes" className="expense-drawer__input" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder={t.expenseNotesPlaceholder} />
         </div>
         <button type="submit" className="expense-drawer__submit-btn" disabled={submitting} aria-busy={submitting}>
           {submitting ? t.loading : t.recordExpense}

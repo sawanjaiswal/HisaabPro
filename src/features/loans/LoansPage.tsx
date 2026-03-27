@@ -23,8 +23,14 @@ import type { Loan, LoanStatus, LoanType, CreateLoanInput } from './loan.types'
 import './loans.css'
 import { useLanguage } from '@/hooks/useLanguage'
 
-const STATUS_LABELS: Record<LoanStatus, string> = {
-  ACTIVE: 'Active', CLOSED: 'Closed', OVERDUE: 'Overdue',
+// Status labels resolved via t at render time — see getLoanStatusLabel()
+function getLoanStatusLabel(status: LoanStatus, t: { activeLoan: string; closedLoan2: string; overdueLoan: string }): string {
+  const map: Record<LoanStatus, string> = {
+    ACTIVE: t.activeLoan,
+    CLOSED: t.closedLoan2,
+    OVERDUE: t.overdueLoan,
+  }
+  return map[status]
 }
 const STATUS_COLORS: Record<LoanStatus, string> = {
   ACTIVE: 'var(--color-info-600)', CLOSED: 'var(--color-gray-500)', OVERDUE: 'var(--color-error-600)',
@@ -43,7 +49,7 @@ function LoanCard({ loan, onClick }: { loan: Loan; onClick: (id: string) => void
           <div className="loan-card__type">{loan.loanType === 'TAKEN' ? t.loanTaken : t.loanGiven}</div>
         </div>
         <span className="loan-card__status-badge" style={{ background: STATUS_BG[loan.status], color: STATUS_COLORS[loan.status] }}>
-          {STATUS_LABELS[loan.status]}
+          {getLoanStatusLabel(loan.status, t)}
         </span>
       </div>
       <div className="loan-card__amounts">
@@ -75,7 +81,7 @@ export default function LoansPage() {
     e.preventDefault()
     if (submitting) return
     const principalPaise = Math.round(parseFloat(form.principalRupees) * 100)
-    if (!principalPaise || principalPaise <= 0) { setFormError('Enter a valid principal amount.'); return }
+    if (!principalPaise || principalPaise <= 0) { setFormError(t.enterValidPrincipal); return }
     setSubmitting(true); setFormError('')
     const input: CreateLoanInput = {
       loanType: form.loanType,
@@ -87,11 +93,11 @@ export default function LoansPage() {
     }
     try {
       await createLoan(input)
-      toast.success('Loan added.')
+      toast.success(t.loanAdded)
       setForm({ loanType: 'TAKEN', principalRupees: '', interestRate: '', startDate: TODAY, emiRupees: '', notes: '' })
       setDrawerOpen(false); refresh()
     } catch (err: unknown) {
-      setFormError(err instanceof ApiError ? err.message : 'Failed to add loan.')
+      setFormError(err instanceof ApiError ? err.message : t.failedAddLoan)
     } finally {
       setSubmitting(false)
     }
@@ -115,7 +121,7 @@ export default function LoansPage() {
       <AppShell>
         <Header title={t.loans ?? "Loans"} backTo={ROUTES.DASHBOARD} />
         <PageContainer>
-          <ErrorState title={t.couldNotLoadLoans} message="Check your connection and try again." onRetry={refresh} />
+          <ErrorState title={t.couldNotLoadLoans} message={t.checkConnectionRetry} onRetry={refresh} />
         </PageContainer>
       </AppShell>
     )
@@ -126,9 +132,9 @@ export default function LoansPage() {
       <Header title={t.loans ?? "Loans"} backTo={ROUTES.DASHBOARD} />
       <PageContainer>
         <div className="loan-action-bar">
-          <span className="loan-count">{total} {total === 1 ? 'loan' : 'loans'}</span>
+          <span className="loan-count">{total} {total === 1 ? t.loanSingular : t.loansPlural}</span>
           <button type="button" className="loan-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.addFirstLoan}>
-            <Plus size={14} aria-hidden="true" /> Add Loan
+            <Plus size={14} aria-hidden="true" /> {t.addLoanBtn}
           </button>
         </div>
 
@@ -175,12 +181,12 @@ export default function LoansPage() {
             </div>
             <div className="loan-drawer__field">
               <label className="loan-drawer__label" htmlFor="loanEmi">{t.emiRsOptional}</label>
-              <input id="loanEmi" type="number" min="0" step="0.01" className="loan-drawer__input" value={form.emiRupees} onChange={(e) => setForm((f) => ({ ...f, emiRupees: e.target.value }))} placeholder="Monthly EMI" />
+              <input id="loanEmi" type="number" min="0" step="0.01" className="loan-drawer__input" value={form.emiRupees} onChange={(e) => setForm((f) => ({ ...f, emiRupees: e.target.value }))} placeholder={t.emiMonthlyPlaceholder} />
             </div>
           </div>
           <div className="loan-drawer__field">
             <label className="loan-drawer__label" htmlFor="loanNotes">{t.notesOptional}</label>
-            <input id="loanNotes" className="loan-drawer__input" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder="Additional details" />
+            <input id="loanNotes" className="loan-drawer__input" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder={t.loanNotesPlaceholder} />
           </div>
           <button type="submit" className="loan-drawer__submit-btn" disabled={submitting} aria-busy={submitting}>
             {submitting ? t.loading : t.addFirstLoan}

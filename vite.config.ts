@@ -34,8 +34,13 @@ export default defineConfig({
 
         runtimeCaching: [
           // API calls → stale-while-revalidate (fast + fresh)
+          // SECURITY: Whitelist ONLY non-PII, safe reference/catalog endpoints.
+          // DO NOT cache: /api/parties, /api/payments, /api/customers,
+          //   /api/documents, /api/expenses, /api/auth, /api/users, /api/businesses
+          // Reason: those endpoints return PII (phone, address, balances) which must
+          //   not persist in the SW cache across sessions.
           {
-            urlPattern: /^.*\/api\/.*/i,
+            urlPattern: /^.*\/api\/(products|tax-categories|hsn|units|health|godowns)\b.*/i,
             handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'hisaabpro-api',

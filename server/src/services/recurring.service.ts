@@ -294,6 +294,7 @@ export async function generateDueInvoices(businessId?: string) {
       dayOfMonth: true,
       dayOfWeek: true,
     },
+    take: 500, // cron batch: typically < 500 due recurring invoices per run
   })
 
   const results: Array<{ recurringId: string; documentId: string; success: boolean; error?: string }> = []

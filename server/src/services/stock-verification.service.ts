@@ -44,6 +44,7 @@ export async function createVerification(
     where: { businessId, status: 'ACTIVE' },
     select: { id: true, currentStock: true },
     orderBy: { name: 'asc' },
+    take: 2000, // verification needs all products; bounded by practical catalog size
   })
 
   return prisma.$transaction(async (tx) => {
@@ -162,6 +163,7 @@ export async function applyAdjustments(
       productId: true,
       discrepancy: true,
     },
+    take: 2000, // bounded by product catalog size (matches products query limit above)
   })
 
   if (items.length === 0) {

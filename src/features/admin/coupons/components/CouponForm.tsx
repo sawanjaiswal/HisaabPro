@@ -36,17 +36,17 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
     // Client validation
     const trimmedCode = code.trim().toUpperCase()
     if (trimmedCode.length < CODE_MIN_LENGTH || trimmedCode.length > CODE_MAX_LENGTH) {
-      setError(`Code must be ${CODE_MIN_LENGTH}-${CODE_MAX_LENGTH} characters`)
+      setError(t.codeMustBeChars.replace('{min}', String(CODE_MIN_LENGTH)).replace('{max}', String(CODE_MAX_LENGTH)))
       return
     }
     if (!CODE_PATTERN.test(trimmedCode)) {
-      setError('Code must be uppercase alphanumeric + hyphens only')
+      setError(t.codeMustBeAlphanumeric)
       return
     }
 
     const parsedValue = parseInt(discountValue, 10)
     if (isNaN(parsedValue) || parsedValue < 1) {
-      setError('Discount value must be at least 1')
+      setError(t.discountValueMin)
       return
     }
     if (discountType === 'PERCENTAGE' && parsedValue > MAX_PERCENTAGE_BASIS_POINTS) {
@@ -55,7 +55,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
     }
 
     if (!validFrom) {
-      setError('Start date is required')
+      setError(t.startDateRequired)
       return
     }
 
@@ -92,7 +92,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
       )}
 
       <div className="coupon-form-field">
-        <label htmlFor="coupon-code">Code</label>
+        <label htmlFor="coupon-code">{t.couponCodeLabel}</label>
         <input
           id="coupon-code"
           type="text"
@@ -103,7 +103,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
           required
           autoFocus
         />
-        <span className="coupon-form-hint">{CODE_MIN_LENGTH}-{CODE_MAX_LENGTH} chars, uppercase, alphanumeric + hyphens</span>
+        <span className="coupon-form-hint">{t.couponCodeHint.replace('{min}', String(CODE_MIN_LENGTH)).replace('{max}', String(CODE_MAX_LENGTH))}</span>
       </div>
 
       <div className="coupon-form-field">
@@ -193,7 +193,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
             value={validUntil}
             onChange={(e) => setValidUntil(e.target.value)}
           />
-          <span className="coupon-form-hint">Empty = no expiry</span>
+          <span className="coupon-form-hint">{t.noExpiryHint}</span>
         </div>
       </div>
 
@@ -212,7 +212,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
 
       <div className="coupon-form-actions">
         <button type="button" className="coupon-form-btn-cancel" onClick={onCancel}>
-          Cancel
+          {t.cancelBtn}
         </button>
         <button
           type="submit"

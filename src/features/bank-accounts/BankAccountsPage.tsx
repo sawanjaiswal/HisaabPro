@@ -22,11 +22,15 @@ import type { BankAccount, BankAccountType, CreateBankAccountInput } from './ban
 import './bank-accounts.css'
 import { useLanguage } from '@/hooks/useLanguage'
 
-const ACCOUNT_TYPE_LABELS: Record<BankAccountType, string> = {
-  SAVINGS: 'Savings',
-  CURRENT: 'Current',
-  OVERDRAFT: 'Overdraft',
-  CASH: 'Cash',
+// Labels are resolved via t.savings, t.current, t.overdraft, t.bankAccountTypeCash at render time
+function getAccountTypeLabel(type: BankAccountType, t: { savings: string; current: string; overdraft: string; bankAccountTypeCash: string }): string {
+  const map: Record<BankAccountType, string> = {
+    SAVINGS: t.savings,
+    CURRENT: t.current,
+    OVERDRAFT: t.overdraft,
+    CASH: t.bankAccountTypeCash,
+  }
+  return map[type]
 }
 
 function maskAccountNumber(num: string): string {
@@ -44,7 +48,7 @@ function BankAccountCard({ account }: { account: BankAccount }) {
           <span className="bank-card__number">{maskAccountNumber(account.accountNumber)}</span>
         </div>
         <span className={`bank-card__type-badge${account.isDefault ? ' bank-card__type-badge--default' : ''}`}>
-          {account.isDefault ? t.defaultAccount : ACCOUNT_TYPE_LABELS[account.accountType]}
+          {account.isDefault ? t.defaultAccount : getAccountTypeLabel(account.accountType, t)}
         </span>
       </div>
       <div className={`bank-card__balance${account.currentBalance < 0 ? ' bank-card__balance--negative' : ''}`}>
@@ -78,12 +82,12 @@ export default function BankAccountsPage() {
     setFormError('')
     try {
       await createBankAccount({ ...form, openingBalance: (form.openingBalance ?? 0) * 100 })
-      toast.success('Bank account added.')
+      toast.success(t.bankAccountAdded)
       setDrawerOpen(false)
       setForm({ bankName: '', accountNumber: '', accountHolderName: '', ifscCode: '', accountType: 'SAVINGS', openingBalance: 0, isDefault: false })
       refresh()
     } catch (err: unknown) {
-      const message = err instanceof ApiError ? err.message : 'Failed to add account.'
+      const message = err instanceof ApiError ? err.message : t.failedAddAccount
       setFormError(message)
     } finally {
       setSubmitting(false)
@@ -110,7 +114,7 @@ export default function BankAccountsPage() {
       <AppShell>
         <Header title={t.bankAccounts ?? "Bank Accounts"} backTo={ROUTES.DASHBOARD} />
         <PageContainer>
-          <ErrorState title={t.couldNotLoadBankAccounts} message="Check your connection and try again." onRetry={refresh} />
+          <ErrorState title={t.couldNotLoadBankAccounts} message={t.checkConnectionRetry} onRetry={refresh} />
         </PageContainer>
       </AppShell>
     )
@@ -121,9 +125,9 @@ export default function BankAccountsPage() {
       <Header title={t.bankAccounts ?? "Bank Accounts"} backTo={ROUTES.DASHBOARD} />
       <PageContainer>
         <div className="bank-action-bar">
-          <span className="bank-count">{total} {total === 1 ? 'account' : 'accounts'}</span>
+          <span className="bank-count">{total} {total === 1 ? t.accountSingular : t.accountsPlural}</span>
           <button type="button" className="bank-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.addFirstAccount}>
-            <Plus size={14} aria-hidden="true" /> Add Account
+            <Plus size={14} aria-hidden="true" /> {t.addAccountBtn}
           </button>
         </div>
 
@@ -133,7 +137,7 @@ export default function BankAccountsPage() {
             <p className="bank-empty__title">{t.noBankAccounts}</p>
             <p className="bank-empty__desc">{t.addBankAccountsDesc}</p>
             <button type="button" className="bank-add-btn" onClick={() => setDrawerOpen(true)}>
-              <Plus size={14} aria-hidden="true" /> Add First Account
+              <Plus size={14} aria-hidden="true" /> {t.addFirstAccount}
             </button>
           </div>
         )}
@@ -158,10 +162,10 @@ export default function BankAccountsPage() {
               <input id="accountNumber" className="bank-drawer__input" required value={form.accountNumber} onChange={(e) => setForm((f) => ({ ...f, accountNumber: e.target.value }))} placeholder="Account no." />
             </div>
             <div className="bank-drawer__field">
-              <label className="bank-drawer__label" htmlFor="accountType">Type</label>
+              <label className="bank-drawer__label" htmlFor="accountType">{t.typeLabel}</label>
               <select id="accountType" className="bank-drawer__select" value={form.accountType} onChange={(e) => setForm((f) => ({ ...f, accountType: e.target.value as BankAccountType }))}>
-                {(Object.keys(ACCOUNT_TYPE_LABELS) as BankAccountType[]).map((t) => (
-                  <option key={t} value={t}>{ACCOUNT_TYPE_LABELS[t]}</option>
+                {(['SAVINGS', 'CURRENT', 'OVERDRAFT', 'CASH'] as BankAccountType[]).map((type) => (
+                  <option key={type} value={type}>{getAccountTypeLabel(type, t)}</option>
                 ))}
               </select>
             </div>

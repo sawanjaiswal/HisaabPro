@@ -22,8 +22,15 @@ import type { LoanStatement, LoanTransactionType, CreateLoanTransactionInput } f
 import './loans.css'
 import { useLanguage } from '@/hooks/useLanguage'
 
-const TXN_TYPE_LABELS: Record<LoanTransactionType, string> = {
-  DISBURSEMENT: 'Disbursement', REPAYMENT: 'Repayment', INTEREST: 'Interest', PENALTY: 'Penalty',
+// TXN_TYPE_LABELS resolved via t at render time — see getTxnTypeLabel()
+function getTxnTypeLabel(type: LoanTransactionType, t: { disbursement: string; repayment: string; interest: string; penalty: string }): string {
+  const map: Record<LoanTransactionType, string> = {
+    DISBURSEMENT: t.disbursement,
+    REPAYMENT: t.repayment,
+    INTEREST: t.interest,
+    PENALTY: t.penalty,
+  }
+  return map[type]
 }
 
 const TXN_AMOUNT_CLASS: Record<LoanTransactionType, string> = {
@@ -62,7 +69,7 @@ export default function LoanDetailPage() {
       .catch((err: unknown) => {
         if (err instanceof Error && err.name === 'AbortError') return
         setFetchStatus('error')
-        toast.error(err instanceof ApiError ? err.message : 'Failed to load loan details')
+        toast.error(err instanceof ApiError ? err.message : t.couldNotLoadLoans)
       })
     return () => controller.abort()
   }, [id, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -73,16 +80,16 @@ export default function LoanDetailPage() {
     e.preventDefault()
     if (!id || submitting) return
     const amountPaise = Math.round(parseFloat(form.amountRupees) * 100)
-    if (!amountPaise || amountPaise <= 0) { setFormError('Enter a valid amount.'); return }
+    if (!amountPaise || amountPaise <= 0) { setFormError(t.enterValidAmount); return }
     setSubmitting(true); setFormError('')
     const input: CreateLoanTransactionInput = { type: form.type, amount: amountPaise, date: form.date, notes: form.notes || undefined }
     try {
       await recordLoanTransaction(id, input)
-      toast.success('Transaction recorded.')
+      toast.success(t.transactionRecorded)
       setForm({ type: 'REPAYMENT', amountRupees: '', date: TODAY, notes: '' })
       setDrawerOpen(false); refresh()
     } catch (err: unknown) {
-      setFormError(err instanceof ApiError ? err.message : 'Failed to record transaction.')
+      setFormError(err instanceof ApiError ? err.message : t.failedRecordTxn)
     } finally {
       setSubmitting(false)
     }
@@ -106,7 +113,7 @@ export default function LoanDetailPage() {
       <AppShell>
         <Header title={t.loans ?? "Loan Details"} backTo={ROUTES.LOANS} />
         <PageContainer>
-          <ErrorState title={t.couldNotLoadLoans} message="Check your connection and try again." onRetry={refresh} />
+          <ErrorState title={t.couldNotLoadLoans} message={t.checkConnectionRetry} onRetry={refresh} />
         </PageContainer>
       </AppShell>
     )
@@ -116,7 +123,7 @@ export default function LoanDetailPage() {
 
   return (
     <AppShell>
-      <Header title={loan.partyName ?? 'Loan Details'} backTo={ROUTES.LOANS} />
+      <Header title={loan.partyName ?? t.loanDetailsTitle} backTo={ROUTES.LOANS} />
       <PageContainer>
         <div className="loan-detail__hero">
           <p className="loan-detail__label">{t.outstandingBalance}</p>
@@ -131,7 +138,7 @@ export default function LoanDetailPage() {
           </div>
           {loan.status === 'ACTIVE' && (
             <button type="button" className="loan-add-btn loan-detail__action-btn" onClick={() => setDrawerOpen(true)} aria-label={t.recordTransaction}>
-              <Plus size={14} aria-hidden="true" /> Record Transaction
+              <Plus size={14} aria-hidden="true" /> {t.recordTransaction}
             </button>
           )}
         </div>
@@ -150,7 +157,7 @@ export default function LoanDetailPage() {
             {transactions.map((txn) => (
               <div key={txn.id} className="loan-txn-card">
                 <div className="loan-txn-card__info">
-                  <div className="loan-txn-card__type">{TXN_TYPE_LABELS[txn.type]}</div>
+                  <div className="loan-txn-card__type">{getTxnTypeLabel(txn.type, t)}</div>
                   <div className="loan-txn-card__date">{formatDate(txn.date)}{txn.notes ? ` · ${txn.notes}` : ''}</div>
                 </div>
                 <span className={`loan-txn-card__amount ${TXN_AMOUNT_CLASS[txn.type]}`}>
@@ -168,7 +175,9 @@ export default function LoanDetailPage() {
           <div className="loan-drawer__field">
             <label className="loan-drawer__label" htmlFor="txnType">{t.loanType}</label>
             <select id="txnType" className="loan-drawer__select" value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as LoanTransactionType }))}>
-              {(Object.entries(TXN_TYPE_LABELS) as [LoanTransactionType, string][]).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+              {(['DISBURSEMENT', 'REPAYMENT', 'INTEREST', 'PENALTY'] as LoanTransactionType[]).map((type) => (
+                <option key={type} value={type}>{getTxnTypeLabel(type, t)}</option>
+              ))}
             </select>
           </div>
           <div className="loan-drawer__row">
@@ -183,7 +192,7 @@ export default function LoanDetailPage() {
           </div>
           <div className="loan-drawer__field">
             <label className="loan-drawer__label" htmlFor="txnNotes">{t.notesOptional}</label>
-            <input id="txnNotes" className="loan-drawer__input" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder="Payment details" />
+            <input id="txnNotes" className="loan-drawer__input" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder={t.txnNotesPlaceholder} />
           </div>
           <button type="submit" className="loan-drawer__submit-btn" disabled={submitting} aria-busy={submitting}>
             {submitting ? t.loading : t.recordTransaction}

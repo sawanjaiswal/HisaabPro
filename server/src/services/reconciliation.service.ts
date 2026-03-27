@@ -65,6 +65,7 @@ export async function startReconciliation(businessId: string, data: StartReconci
       totalCess: true,
       party: { select: { gstin: true, name: true } },
     },
+    take: 5000, // report: bounded by period filter
   })
 
   // Build lookup map by normalised documentNumber

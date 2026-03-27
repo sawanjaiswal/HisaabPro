@@ -16,6 +16,7 @@ export function NumberTicker({
 }: NumberTickerProps) {
   const spanRef = useRef<HTMLSpanElement>(null)
   const frameRef = useRef<number | null>(null)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined)
   const startTimeRef = useRef<number | null>(null)
   const startValueRef = useRef(0)
   const hasAnimatedRef = useRef(false)
@@ -56,11 +57,10 @@ export function NumberTicker({
         if (entries[0].isIntersecting && !hasAnimatedRef.current) {
           hasAnimatedRef.current = true
           observer.disconnect()
-          const timeout = setTimeout(() => {
+          timeoutRef.current = setTimeout(() => {
             startTimeRef.current = null
             frameRef.current = requestAnimationFrame(animate)
           }, delay * 1000)
-          return () => clearTimeout(timeout)
         }
       },
       { threshold: 0.1 }
@@ -72,6 +72,9 @@ export function NumberTicker({
       observer.disconnect()
       if (frameRef.current !== null) {
         cancelAnimationFrame(frameRef.current)
+      }
+      if (timeoutRef.current !== undefined) {
+        clearTimeout(timeoutRef.current)
       }
     }
   }, [value, delay, decimalPlaces])

@@ -34,11 +34,11 @@ export function CountItemRow({ item, onSave, disabled }: CountItemRowProps) {
       </div>
       <div className="sv-count-row__fields">
         <div className="sv-count-row__expected">
-          <span className="sv-count-row__label">Expected</span>
+          <span className="sv-count-row__label">{t.expectedLabel}</span>
           <span className="sv-count-row__value">{item.expectedQuantity} {unit}</span>
         </div>
         <div className="sv-count-row__input-group">
-          <label htmlFor={`count-${item.id}`} className="sv-count-row__label">Actual</label>
+          <label htmlFor={`count-${item.id}`} className="sv-count-row__label">{t.actualLabel}</label>
           <input
             id={`count-${item.id}`}
             type="number"
@@ -52,7 +52,7 @@ export function CountItemRow({ item, onSave, disabled }: CountItemRowProps) {
           />
         </div>
         <div className="sv-count-row__diff">
-          <span className="sv-count-row__label">Diff</span>
+          <span className="sv-count-row__label">{t.diffLabel}</span>
           <span className="sv-count-row__diff-value" style={{ color: getDiscrepancyColor(discrepancy) }}>
             {formatDiscrepancy(discrepancy)}
           </span>
@@ -67,7 +67,7 @@ export function CountItemRow({ item, onSave, disabled }: CountItemRowProps) {
           aria-expanded={showNotes}
         >
           {showNotes ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-          Notes
+          {t.notesToggleBtn}
         </button>
         <button
           type="button"
@@ -77,7 +77,7 @@ export function CountItemRow({ item, onSave, disabled }: CountItemRowProps) {
           aria-label={`Save count for ${item.product?.name ?? 'item'}`}
         >
           <Save size={14} aria-hidden="true" />
-          Save
+          {t.saveBtnLabel}
         </button>
       </div>
       {showNotes && (

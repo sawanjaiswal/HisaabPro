@@ -223,6 +223,7 @@ export async function listConversions(businessId: string) {
       createdAt: true,
       updatedAt: true,
     },
+    take: 200, // bounded: typically < 200 unit conversions per business
   })
 }
 

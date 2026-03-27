@@ -793,12 +793,14 @@ export async function getTallyExport(businessId: string, from: Date, to: Date): 
       },
     },
     orderBy: { date: 'asc' },
+    take: 5000, // report: bounded by date range filter
   })
 
   // Fetch all active ledger accounts for the business (for ledger masters export)
   const accounts = await prisma.ledgerAccount.findMany({
     where: { businessId, isActive: true },
     select: { name: true, type: true, subType: true },
+    take: 500, // chart of accounts: typically < 500 accounts per business
   })
 
   /** Map our account type to Tally parent group */

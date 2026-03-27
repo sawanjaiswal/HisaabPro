@@ -65,17 +65,3 @@ export function useLogin() {
   }
 }
 
-// --- OTP-based login hook (commented out for dev, restore for production) ---
-// export function useLoginOtp() {
-//   const [step, setStep] = useState<AuthStep>('phone')
-//   const [phone, setPhone] = useState('')
-//   const [otp, setOtp] = useState('')
-//   const [loading, setLoading] = useState(false)
-//   const [error, setError] = useState('')
-//   const [resendCooldown, setResendCooldown] = useState(0)
-//   const navigate = useNavigate()
-//   const { setUser } = useAuth()
-//   const submitting = useRef(false)
-//   const cooldownTimer = useRef<ReturnType<typeof setInterval>>(undefined)
-//   ... (full OTP flow preserved in git history)
-// }

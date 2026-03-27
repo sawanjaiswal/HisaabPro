@@ -62,7 +62,7 @@ export function BusinessSwitcher({ onClose }: BusinessSwitcherProps) {
       await switchBusiness(businessId)
       onClose()
     } catch {
-      toast.error('Failed to switch business. Please try again.')
+      toast.error(t.failedSwitchBusiness)
     }
   }, [user?.businessId, isSwitching, switchBusiness, onClose, toast])
 
@@ -86,7 +86,7 @@ export function BusinessSwitcher({ onClose }: BusinessSwitcherProps) {
         aria-modal="true"
       >
         <div className="business-switcher-handle" />
-        <div className="business-switcher-title">Your Businesses</div>
+        <div className="business-switcher-title">{t.yourBusinesses}</div>
         <ul className="business-switcher-list">
           {businesses.map((biz, index) => {
             const isActive = biz.id === user?.businessId
@@ -129,7 +129,7 @@ export function BusinessSwitcher({ onClose }: BusinessSwitcherProps) {
           onClick={handleAddBusiness}
         >
           <Plus size={20} aria-hidden="true" />
-          Add Business
+          {t.addBusiness}
         </button>
       </div>
     </>

@@ -19,15 +19,15 @@ export function DiscrepancyRow({ item }: DiscrepancyRowProps) {
       </div>
       <div className="sv-discrepancy-row__values">
         <div className="sv-discrepancy-row__col">
-          <span className="sv-discrepancy-row__label">Expected</span>
+          <span className="sv-discrepancy-row__label">{t.expected}</span>
           <span>{item.expectedQuantity} {unit}</span>
         </div>
         <div className="sv-discrepancy-row__col">
-          <span className="sv-discrepancy-row__label">Actual</span>
+          <span className="sv-discrepancy-row__label">{t.actual}</span>
           <span>{item.actualQuantity ?? '-'} {unit}</span>
         </div>
         <div className="sv-discrepancy-row__col">
-          <span className="sv-discrepancy-row__label">Diff</span>
+          <span className="sv-discrepancy-row__label">{t.diff}</span>
           <span style={{ color: diffColor, fontWeight: 600 }}>
             {formatDiscrepancy(item.discrepancy)}
           </span>

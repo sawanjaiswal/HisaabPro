@@ -28,7 +28,7 @@ export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProp
     <form className="batch-form" onSubmit={onSubmit} noValidate>
       <div className="form-group">
         <label htmlFor="batchNumber" className="form-label">
-          Batch Number <span className="form-required">*</span>
+          {t.batchNumberStar}
         </label>
         <input
           id="batchNumber"
@@ -47,7 +47,7 @@ export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProp
 
       <div className="batch-form-row">
         <div className="form-group">
-          <label htmlFor="manufacturingDate" className="form-label">Mfg Date</label>
+          <label htmlFor="manufacturingDate" className="form-label">{t.mfgDate}</label>
           <input
             id="manufacturingDate"
             type="date"
@@ -58,7 +58,7 @@ export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProp
         </div>
 
         <div className="form-group">
-          <label htmlFor="expiryDate" className="form-label">Expiry Date</label>
+          <label htmlFor="expiryDate" className="form-label">{t.expiryDate}</label>
           <input
             id="expiryDate"
             type="date"
@@ -71,7 +71,7 @@ export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProp
 
       <div className="batch-form-row">
         <div className="form-group">
-          <label htmlFor="costPrice" className="form-label">Cost Price (Rs)</label>
+          <label htmlFor="costPrice" className="form-label">{t.costPriceRs}</label>
           <input
             id="costPrice"
             type="number"
@@ -89,7 +89,7 @@ export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProp
         </div>
 
         <div className="form-group">
-          <label htmlFor="salePrice" className="form-label">Sale Price (Rs)</label>
+          <label htmlFor="salePrice" className="form-label">{t.salePriceRs}</label>
           <input
             id="salePrice"
             type="number"
@@ -109,7 +109,7 @@ export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProp
 
       {!existingBatch && (
         <div className="form-group">
-          <label htmlFor="currentStock" className="form-label">Opening Stock</label>
+          <label htmlFor="currentStock" className="form-label">{t.openingStockLabel}</label>
           <input
             id="currentStock"
             type="number"
@@ -128,7 +128,7 @@ export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProp
       )}
 
       <div className="form-group">
-        <label htmlFor="notes" className="form-label">Notes</label>
+        <label htmlFor="notes" className="form-label">{t.notesLabel}</label>
         <textarea
           id="notes"
           className="form-input form-textarea"
@@ -149,8 +149,8 @@ export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProp
         disabled={isSubmitting}
       >
         {isSubmitting
-          ? 'Saving...'
-          : existingBatch ? 'Update Batch' : 'Create Batch'}
+          ? t.savingBatch
+          : existingBatch ? t.updateBatch : t.createBatch}
       </button>
     </form>
   )

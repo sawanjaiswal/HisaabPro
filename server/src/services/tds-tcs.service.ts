@@ -103,6 +103,7 @@ export async function getTdsTcsReport(
       party: { select: { id: true, name: true } },
     },
     orderBy: { documentDate: 'asc' },
+    take: 5000, // report: bounded by date range filter
   })
 
   let totalInvoiceValue = 0

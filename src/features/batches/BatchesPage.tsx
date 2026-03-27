@@ -80,14 +80,14 @@ export default function BatchesPage() {
           <EmptyState
             icon={<Layers size={40} aria-hidden="true" />}
             title={t.noBatchesYet}
-            description="Add your first batch to start tracking expiry and stock"
+            description={t.addFirstBatchEmptyDesc}
             action={
               <button
                 className="btn btn-primary btn-md"
                 onClick={goToCreate}
-                aria-label="Add first batch"
+                aria-label={t.addFirstBatchBtnAria}
               >
-                Add First Batch
+                {t.addFirstBatchBtn}
               </button>
             }
           />
@@ -96,9 +96,9 @@ export default function BatchesPage() {
         {status === 'success' && batches && batches.batches.length > 0 && (
           <>
             <div role="status" aria-live="polite" className="sr-only">
-              {batches.total} {batches.total === 1 ? 'batch' : 'batches'} found
+              {batches.total} {batches.total === 1 ? t.batchesFound : t.batchesFoundPlural} found
             </div>
-            <div className="batch-list stagger-list" role="list" aria-label="Batches">
+            <div className="batch-list stagger-list" role="list" aria-label={t.batchesListAria}>
               {batches.batches.map((batch) => (
                 <div key={batch.id} className="batch-list-item" role="listitem">
                   <BatchCard

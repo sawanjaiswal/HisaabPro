@@ -60,7 +60,7 @@ export default function CreateInvoicePage() {
     const names: Record<string, string> = {}
     for (const item of state.scannedItems) {
       // Use a scan-prefixed ID so items render with names
-      const scanId = item.productId || `scan-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
+      const scanId = item.productId || `scan-${crypto.randomUUID()}`
       names[scanId] = item.productName
       addLineItem({ productId: scanId, quantity: item.quantity, rate: item.rate, discountType: item.discountType, discountValue: item.discountValue })
     }

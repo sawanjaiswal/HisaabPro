@@ -47,7 +47,7 @@ export default function FYClosurePage() {
       .catch((err: unknown) => {
         if (err instanceof Error && err.name === 'AbortError') return
         setFetchStatus('error')
-        toast.error(err instanceof ApiError ? err.message : 'Failed to load FY closures')
+        toast.error(err instanceof ApiError ? err.message : t.failedLoadFyClosures)
       })
     return () => controller.abort()
   }, [refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -60,11 +60,11 @@ export default function FYClosurePage() {
     setActionPending(true)
     try {
       const result = await closeFY(closingFY)
-      toast.success(`${fyLabel(closingFY)} closed. Net ${result.netProfit >= 0 ? 'profit' : 'loss'}: ${formatPaise(Math.abs(result.netProfit))}`)
+      toast.success(`${fyLabel(closingFY)} closed. Net ${result.netProfit >= 0 ? t.fyProfit : t.fyLoss}: ${formatPaise(Math.abs(result.netProfit))}`)
       setClosingFY('')
       refresh()
     } catch (err: unknown) {
-      toast.error(err instanceof ApiError ? err.message : 'Failed to close FY')
+      toast.error(err instanceof ApiError ? err.message : t.failedCloseFy)
     } finally {
       setActionPending(false)
       actionRef.current = false
@@ -77,10 +77,10 @@ export default function FYClosurePage() {
     setActionPending(true)
     try {
       await reopenFY(fy)
-      toast.success(`${fyLabel(fy)} reopened`)
+      toast.success(`${fyLabel(fy)} ${t.reopenFy}`)
       refresh()
     } catch (err: unknown) {
-      toast.error(err instanceof ApiError ? err.message : 'Failed to reopen FY')
+      toast.error(err instanceof ApiError ? err.message : t.failedReopenFy)
     } finally {
       setActionPending(false)
       actionRef.current = false
@@ -104,7 +104,7 @@ export default function FYClosurePage() {
     return (
       <AppShell>
         <Header title={t.fyClosurePage} backTo={ROUTES.CHART_OF_ACCOUNTS} />
-        <PageContainer><ErrorState title="Could not load closures" message="Check your connection and try again." onRetry={refresh} /></PageContainer>
+        <PageContainer><ErrorState title={t.couldNotLoadClosures} message={t.checkConnectionRetry} onRetry={refresh} /></PageContainer>
       </AppShell>
     )
   }
@@ -129,20 +129,20 @@ export default function FYClosurePage() {
               maxLength={4}
               value={closingFY}
               onChange={(e) => setClosingFY(e.target.value.replace(/\D/g, '').slice(0, 4))}
-              aria-label="Financial year code (e.g. 2526 for FY 2025-26)"
+              aria-label={t.fyAria}
             />
             <button
               type="button"
               className="fy-close-card__btn"
               onClick={handleClose}
               disabled={actionPending || closingFY.length !== 4}
-              aria-label={`Close financial year ${closingFY}`}
+              aria-label={t.closeFyAria.replace('{fy}', closingFY)}
             >
               <Lock size={14} aria-hidden="true" />
               {actionPending ? t.loading : t.closeFyBtn}
             </button>
           </div>
-          {alreadyClosed && <p className="fy-close-card__note">Current FY ({fyLabel(currentFY)}) is already closed.</p>}
+          {alreadyClosed && <p className="fy-close-card__note">{t.fyAlreadyClosedMsg.replace('{fy}', fyLabel(currentFY))}</p>}
         </div>
 
         {closures.length === 0 && (
@@ -163,7 +163,7 @@ export default function FYClosurePage() {
                 </div>
                 <div className="fy-card__details">
                   <span className="fy-card__detail">{t.retainedEarnings}: {formatPaise(c.retainedEarnings)}</span>
-                  <span className="fy-card__detail">Closed: {new Date(c.closedAt).toLocaleDateString('en-IN')}</span>
+                  <span className="fy-card__detail">{t.closedDateLabel} {new Date(c.closedAt).toLocaleDateString('en-IN')}</span>
                 </div>
                 {c.status === 'CLOSED' && (
                   <button
@@ -171,9 +171,9 @@ export default function FYClosurePage() {
                     className="fy-card__reopen-btn"
                     onClick={() => handleReopen(c.financialYear)}
                     disabled={actionPending}
-                    aria-label={`Reopen ${fyLabel(c.financialYear)}`}
+                    aria-label={t.reopenFyAria.replace('{fy}', fyLabel(c.financialYear))}
                   >
-                    <Unlock size={14} aria-hidden="true" /> Reopen
+                    <Unlock size={14} aria-hidden="true" /> {t.reopenFy}
                   </button>
                 )}
               </div>

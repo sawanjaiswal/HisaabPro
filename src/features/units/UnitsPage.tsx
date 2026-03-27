@@ -81,10 +81,10 @@ export default function UnitsPage() {
           <button
             className="btn btn-primary btn-sm"
             onClick={handleAdd}
-            aria-label="Add custom unit"
+            aria-label={t.addCustomUnitAria}
           >
             <Plus size={18} aria-hidden="true" />
-            <span>Add</span>
+            <span>{t.addUnitLabel}</span>
           </button>
         }
       />
@@ -102,7 +102,7 @@ export default function UnitsPage() {
         {status === 'error' && (
           <ErrorState
             title={t.couldntLoadUnits}
-            message="Check your connection and try again."
+            message={t.checkConnectionRetry}
             onRetry={refresh}
           />
         )}
@@ -140,7 +140,7 @@ export default function UnitsPage() {
 
                 {/* Summary */}
                 <div className="unit-summary">
-                  {units.length} units · {customCount} custom
+                  {t.unitsSummary.replace('{count}', String(units.length)).replace('{custom}', String(customCount))}
                 </div>
 
                 {/* Grouped unit list */}
@@ -150,13 +150,13 @@ export default function UnitsPage() {
                     title={searchInput ? t.noMatchingUnits : t.noCustomUnitsYet}
                     description={
                       searchInput
-                        ? 'Try a different search term.'
-                        : 'Add your first custom unit to get started.'
+                        ? t.tryDifferentSearchTerm
+                        : t.addFirstCustomUnitCta
                     }
                     action={
                       !searchInput ? (
                         <button className="btn btn-primary btn-md" onClick={handleAdd}>
-                          Add Custom Unit
+                          {t.addCustomUnitBtn}
                         </button>
                       ) : undefined
                     }

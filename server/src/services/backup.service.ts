@@ -87,7 +87,8 @@ export async function createManualBackup(userId: string) {
 
   const businessUsers = await prisma.businessUser.findMany({
     where: { userId },
-    include: { business: true },
+    include: { business: { select: { id: true, name: true, businessType: true } } },
+    take: 50, // bounded: a user typically belongs to < 50 businesses
   })
 
   const backupData: BackupData = {

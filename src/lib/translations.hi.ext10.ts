@@ -137,4 +137,151 @@ export const hiExt10 = {
   bizRestaurant:            'रेस्तरां',
   bizPharmacy:              'फार्मेसी',
   bizOther:                 'अन्य',
+
+  // ─── Currency Prefix ─────────────────────────────────────────────────────
+  currencyPrefix:           'Rs',
+
+  // ─── BatchDetailInfo ─────────────────────────────────────────────────────
+  stockDetailLabel:         'स्टॉक',
+  mfgDateLabel:             'निर्माण तिथि',
+  expiryDetailLabel:        'समाप्ति',
+  costPriceLabel:           'लागत मूल्य',
+  salePriceDetailLabel:     'बिक्री मूल्य',
+  notesDetailLabel:         'नोट्स',
+
+  // ─── BatchForm ───────────────────────────────────────────────────────────
+  batchNumberStar:          'बैच नंबर *',
+  savingBatch:              'सहेज रहे हैं...',
+  updateBatchBtn:           'बैच अपडेट करें',
+  createBatchBtn:           'बैच बनाएं',
+
+  // ─── OcrResultReview ─────────────────────────────────────────────────────
+  itemFound:                'आइटम मिला',
+  itemsFound:               'आइटम मिले',
+  accuracyLabel:            'सटीकता',
+  ocrQtyLabel:              'मात्रा',
+  ocrRateLabel:             'दर',
+  ocrTotalLabel:            'कुल',
+  removeItemAria:           'हटाएं',
+  addItemsToInvoiceBtn:     '{count} आइटम इनवॉइस में जोड़ें',
+  scannedBillAlt:           'स्कैन किया गया बिल',
+
+  // ─── BankAccountsPage ────────────────────────────────────────────────────
+  bankAccountTypeCash:      'नकद',
+  addAccountBtn:            'खाता जोड़ें',
+  accountSingular:          'खाता',
+  accountsPlural:           'खाते',
+  bankAccountAdded:         'बैंक खाता जोड़ा गया।',
+  failedAddAccount:         'खाता जोड़ने में विफल।',
+
+  // ─── ExpensesPage ────────────────────────────────────────────────────────
+  filterByCategoryGroup:    'श्रेणी से फ़िल्टर करें',
+  expenseSingular:          'खर्च',
+  expensesPlural:           'खर्च',
+  addExpenseBtn:            'खर्च जोड़ें',
+  pageInfoLabel:            'पृष्ठ {page} / {total}',
+
+  // ─── AddExpenseDrawer ────────────────────────────────────────────────────
+  enterValidAmount:         'सही राशि दर्ज करें।',
+  expenseRecorded:          'खर्च दर्ज किया गया।',
+  failedRecordExpense:      'खर्च दर्ज करने में विफल।',
+  expenseNotesPlaceholder:  'यह खर्च किस लिए था?',
+  categoryLabelForm:        'श्रेणी',
+
+  // ─── OtherIncomePage ─────────────────────────────────────────────────────
+  incomeRecorded:           'आय दर्ज की गई।',
+  failedRecordIncome:       'आय दर्ज करने में विफल।',
+  incomeNotesPlaceholder:   'अतिरिक्त विवरण',
+  addIncomeEntryAria:       'आय प्रविष्टि जोड़ें',
+  addIncomeBtn:             'आय जोड़ें',
+  incomeSingular:           'प्रविष्टि',
+  incomeEntriesPlural:      'प्रविष्टियाँ',
+
+  // ─── LoansPage ───────────────────────────────────────────────────────────
+  enterValidPrincipal:      'सही मूलधन राशि दर्ज करें।',
+  loanAdded:                'ऋण जोड़ा गया।',
+  failedAddLoan:            'ऋण जोड़ने में विफल।',
+  loanSingular:             'ऋण',
+  loansPlural:              'ऋण',
+  addLoanBtn:               'ऋण जोड़ें',
+  loanNotesPlaceholder:     'अतिरिक्त विवरण',
+  emiMonthlyPlaceholder:    'मासिक EMI',
+
+  // ─── LoanDetailPage ──────────────────────────────────────────────────────
+  loanDetailsTitle:         'ऋण विवरण',
+  disbursement:             'वितरण',
+  repayment:                'पुनर्भुगतान',
+  interest:                 'ब्याज',
+  penalty:                  'जुर्माना',
+  transactionRecorded:      'लेन-देन दर्ज किया गया।',
+  failedRecordTxn:          'लेन-देन दर्ज करने में विफल।',
+  txnNotesPlaceholder:      'भुगतान विवरण',
+  recordTransactionBtn:     'लेन-देन दर्ज करें',
+  loanStatusActive:         'ACTIVE',
+
+  // ─── FYClosurePage ───────────────────────────────────────────────────────
+  couldNotLoadClosures:     'क्लोजर लोड नहीं हो सके',
+  fyAlreadyClosedMsg:       'वर्तमान वित्त वर्ष ({fy}) पहले से बंद है।',
+  closedDateLabel:          'बंद किया:',
+  fyReopenedSuccess:        '{fy} फिर से खोला गया',
+  fyClosedSuccess:          '{fy} बंद। शुद्ध {type}: {amount}',
+  fyProfit:                 'लाभ',
+  fyLoss:                   'हानि',
+  failedLoadFyClosures:     'FY क्लोजर लोड करने में विफल',
+  failedCloseFy:            'FY बंद करने में विफल',
+  failedReopenFy:           'FY फिर से खोलने में विफल',
+  fyAria:                   'वित्तीय वर्ष कोड (जैसे FY 2025-26 के लिए 2526)',
+  closeFyAria:              'वित्तीय वर्ष {fy} बंद करें',
+  reopenFyAria:             '{fy} फिर से खोलें',
+
+  // ─── UnitsPage ───────────────────────────────────────────────────────────
+  unitsSummary:             '{count} यूनिट · {custom} कस्टम',
+  addUnitLabel:             'जोड़ें',
+  addCustomUnitAria:        'कस्टम यूनिट जोड़ें',
+  tryDifferentSearchTerm:   'अलग खोज शब्द आज़माएं।',
+  addFirstCustomUnitCta:    'शुरू करने के लिए अपनी पहली कस्टम यूनिट जोड़ें।',
+  addCustomUnitBtn:         'कस्टम यूनिट जोड़ें',
+
+  // ─── CouponForm ──────────────────────────────────────────────────────────
+  couponCodeLabel:          'कोड',
+  couponCodeHint:           '{min}-{max} अक्षर, बड़े अक्षर, अल्फ़ान्यूमेरिक + हाइफ़न',
+  cancelBtn:                'रद्द करें',
+  noExpiryHint:             'खाली = कोई समाप्ति नहीं',
+  codeMustBeChars:          'कोड {min}-{max} अक्षरों का होना चाहिए',
+  codeMustBeAlphanumeric:   'कोड केवल बड़े अक्षर, अल्फ़ान्यूमेरिक + हाइफ़न होना चाहिए',
+  discountValueMin:         'छूट मूल्य कम से कम 1 होना चाहिए',
+  startDateRequired:        'प्रारंभ तिथि आवश्यक है',
+
+  // ─── JoinBusinessPage ────────────────────────────────────────────────────
+  enterInviteCodeHeading:   'आमंत्रण कोड दर्ज करें',
+  inviteCodeSubtitle:       'व्यापार मालिक से 6-अक्षर का आमंत्रण कोड मांगें',
+  joinBusinessBtn:          'व्यापार में जुड़ें',
+  joiningText:              'जुड़ रहे हैं...',
+  youJoinedBusiness:        'आप {name} में शामिल हो गए!',
+  roleColon2:               'भूमिका:',
+
+  // ─── BusinessSwitcher ────────────────────────────────────────────────────
+  yourBusinessesTitle:      'आपके व्यापार',
+
+  // ─── OtpStep ─────────────────────────────────────────────────────────────
+  changeNumberLabel:        'नंबर बदलें',
+  enterCodeSentToLabel:     'पर भेजा गया 6-अंकीय कोड दर्ज करें',
+  otpDigitLabel:            'OTP अंक {n}',
+  verifyingLabel:           'सत्यापित हो रहा है...',
+  resendOtpCooldown:        '{secs} सेकंड में OTP पुनः भेजें',
+
+  // ─── CountItemRow ─────────────────────────────────────────────────────────
+  expectedLabel:            'अपेक्षित',
+  actualLabel:              'वास्तविक',
+  diffLabel:                'अंतर',
+  notesToggleBtn:           'नोट्स',
+  saveBtnLabel:             'सहेजें',
+
+  // ─── BatchesPage ─────────────────────────────────────────────────────────
+  addFirstBatchEmptyDesc:   'समाप्ति और स्टॉक ट्रैक करने के लिए पहला बैच जोड़ें',
+  addFirstBatchBtn:         'पहला बैच जोड़ें',
+  addFirstBatchBtnAria:     'पहला बैच जोड़ें',
+  batchesFound:             'बैच',
+  batchesFoundPlural:       'बैच',
+  batchesListAria:          'बैच',
 } as const

@@ -137,4 +137,151 @@ export const enExt10 = {
   bizRestaurant:            'Restaurant',
   bizPharmacy:              'Pharmacy',
   bizOther:                 'Other',
+
+  // ─── Currency Prefix ─────────────────────────────────────────────────────
+  currencyPrefix:           'Rs',
+
+  // ─── BatchDetailInfo ─────────────────────────────────────────────────────
+  stockDetailLabel:         'Stock',
+  mfgDateLabel:             'Mfg Date',
+  expiryDetailLabel:        'Expiry',
+  costPriceLabel:           'Cost Price',
+  salePriceDetailLabel:     'Sale Price',
+  notesDetailLabel:         'Notes',
+
+  // ─── BatchForm ───────────────────────────────────────────────────────────
+  batchNumberStar:          'Batch Number *',
+  savingBatch:              'Saving...',
+  updateBatchBtn:           'Update Batch',
+  createBatchBtn:           'Create Batch',
+
+  // ─── OcrResultReview ─────────────────────────────────────────────────────
+  itemFound:                'item found',
+  itemsFound:               'items found',
+  accuracyLabel:            'accuracy',
+  ocrQtyLabel:              'Qty',
+  ocrRateLabel:             'Rate',
+  ocrTotalLabel:            'Total',
+  removeItemAria:           'Remove',
+  addItemsToInvoiceBtn:     'Add {count} Item{s} to Invoice',
+  scannedBillAlt:           'Scanned bill',
+
+  // ─── BankAccountsPage ────────────────────────────────────────────────────
+  bankAccountTypeCash:      'Cash',
+  addAccountBtn:            'Add Account',
+  accountSingular:          'account',
+  accountsPlural:           'accounts',
+  bankAccountAdded:         'Bank account added.',
+  failedAddAccount:         'Failed to add account.',
+
+  // ─── ExpensesPage ────────────────────────────────────────────────────────
+  filterByCategoryGroup:    'Filter by category',
+  expenseSingular:          'expense',
+  expensesPlural:           'expenses',
+  addExpenseBtn:            'Add Expense',
+  pageInfoLabel:            'Page {page} of {total}',
+
+  // ─── AddExpenseDrawer ────────────────────────────────────────────────────
+  enterValidAmount:         'Enter a valid amount.',
+  expenseRecorded:          'Expense recorded.',
+  failedRecordExpense:      'Failed to record expense.',
+  expenseNotesPlaceholder:  'What was this expense for?',
+  categoryLabelForm:        'Category',
+
+  // ─── OtherIncomePage ─────────────────────────────────────────────────────
+  incomeRecorded:           'Income recorded.',
+  failedRecordIncome:       'Failed to record income.',
+  incomeNotesPlaceholder:   'Additional details',
+  addIncomeEntryAria:       'Add income entry',
+  addIncomeBtn:             'Add Income',
+  incomeSingular:           'entry',
+  incomeEntriesPlural:      'entries',
+
+  // ─── LoansPage ───────────────────────────────────────────────────────────
+  enterValidPrincipal:      'Enter a valid principal amount.',
+  loanAdded:                'Loan added.',
+  failedAddLoan:            'Failed to add loan.',
+  loanSingular:             'loan',
+  loansPlural:              'loans',
+  addLoanBtn:               'Add Loan',
+  loanNotesPlaceholder:     'Additional details',
+  emiMonthlyPlaceholder:    'Monthly EMI',
+
+  // ─── LoanDetailPage ──────────────────────────────────────────────────────
+  loanDetailsTitle:         'Loan Details',
+  disbursement:             'Disbursement',
+  repayment:                'Repayment',
+  interest:                 'Interest',
+  penalty:                  'Penalty',
+  transactionRecorded:      'Transaction recorded.',
+  failedRecordTxn:          'Failed to record transaction.',
+  txnNotesPlaceholder:      'Payment details',
+  recordTransactionBtn:     'Record Transaction',
+  loanStatusActive:         'ACTIVE',
+
+  // ─── FYClosurePage ───────────────────────────────────────────────────────
+  couldNotLoadClosures:     'Could not load closures',
+  fyAlreadyClosedMsg:       'Current FY ({fy}) is already closed.',
+  closedDateLabel:          'Closed:',
+  fyReopenedSuccess:        '{fy} reopened',
+  fyClosedSuccess:          '{fy} closed. Net {type}: {amount}',
+  fyProfit:                 'profit',
+  fyLoss:                   'loss',
+  failedLoadFyClosures:     'Failed to load FY closures',
+  failedCloseFy:            'Failed to close FY',
+  failedReopenFy:           'Failed to reopen FY',
+  fyAria:                   'Financial year code (e.g. 2526 for FY 2025-26)',
+  closeFyAria:              'Close financial year {fy}',
+  reopenFyAria:             'Reopen {fy}',
+
+  // ─── UnitsPage ───────────────────────────────────────────────────────────
+  unitsSummary:             '{count} units · {custom} custom',
+  addUnitLabel:             'Add',
+  addCustomUnitAria:        'Add custom unit',
+  tryDifferentSearchTerm:   'Try a different search term.',
+  addFirstCustomUnitCta:    'Add your first custom unit to get started.',
+  addCustomUnitBtn:         'Add Custom Unit',
+
+  // ─── CouponForm ──────────────────────────────────────────────────────────
+  couponCodeLabel:          'Code',
+  couponCodeHint:           '{min}-{max} chars, uppercase, alphanumeric + hyphens',
+  cancelBtn:                'Cancel',
+  noExpiryHint:             'Empty = no expiry',
+  codeMustBeChars:          'Code must be {min}-{max} characters',
+  codeMustBeAlphanumeric:   'Code must be uppercase alphanumeric + hyphens only',
+  discountValueMin:         'Discount value must be at least 1',
+  startDateRequired:        'Start date is required',
+
+  // ─── JoinBusinessPage ────────────────────────────────────────────────────
+  enterInviteCodeHeading:   'Enter Invite Code',
+  inviteCodeSubtitle:       'Ask the business owner for a 6-character invite code',
+  joinBusinessBtn:          'Join Business',
+  joiningText:              'Joining...',
+  youJoinedBusiness:        'You joined {name}!',
+  roleColon2:               'Role:',
+
+  // ─── BusinessSwitcher ────────────────────────────────────────────────────
+  yourBusinessesTitle:      'Your Businesses',
+
+  // ─── OtpStep ─────────────────────────────────────────────────────────────
+  changeNumberLabel:        'Change number',
+  enterCodeSentToLabel:     'Enter the 6-digit code sent to',
+  otpDigitLabel:            'OTP digit {n}',
+  verifyingLabel:           'Verifying...',
+  resendOtpCooldown:        'Resend OTP in {secs}s',
+
+  // ─── CountItemRow ─────────────────────────────────────────────────────────
+  expectedLabel:            'Expected',
+  actualLabel:              'Actual',
+  diffLabel:                'Diff',
+  notesToggleBtn:           'Notes',
+  saveBtnLabel:             'Save',
+
+  // ─── BatchesPage ─────────────────────────────────────────────────────────
+  addFirstBatchEmptyDesc:   'Add your first batch to start tracking expiry and stock',
+  addFirstBatchBtn:         'Add First Batch',
+  addFirstBatchBtnAria:     'Add first batch',
+  batchesFound:             'batch',
+  batchesFoundPlural:       'batches',
+  batchesListAria:          'Batches',
 } as const

@@ -44,6 +44,7 @@ export async function seedDefaultCategories(businessId: string) {
   return prisma.expenseCategory.findMany({
     where: { businessId },
     orderBy: { sortOrder: 'asc' },
+    take: 50, // bounded: typically < 50 categories per business
   })
 }
 
@@ -111,7 +112,7 @@ export async function createExpense(
       gstAmount: data.gstAmount ?? 0,
       createdBy: userId,
     },
-    include: { category: true },
+    include: { category: { select: { id: true, name: true, icon: true, color: true } } },
   })
 }
 
@@ -150,14 +151,14 @@ export async function updateExpense(
       ...(data.gstRate !== undefined && { gstRate: data.gstRate }),
       ...(data.gstAmount !== undefined && { gstAmount: data.gstAmount }),
     },
-    include: { category: true },
+    include: { category: { select: { id: true, name: true, icon: true, color: true } } },
   })
 }
 
 export async function getExpense(businessId: string, expenseId: string) {
   const expense = await prisma.expense.findFirst({
     where: { id: expenseId, businessId, isDeleted: false },
-    include: { category: true },
+    include: { category: { select: { id: true, name: true, icon: true, color: true } } },
   })
   if (!expense) throw notFoundError('Expense')
   return expense

@@ -94,6 +94,7 @@
 }
 
 /* Small screens — tighter cards */
+/* mobile-first exception: targets tiny screens only (< 360px) — reducing padding/font-size */
 @media (max-width: 359px) {
   .party-hero-card {
     padding: var(--space-3);
