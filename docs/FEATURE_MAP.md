@@ -1,8 +1,8 @@
 # Feature Map: HisaabPro
 
-Last updated: 2026-03-20 | Total: 113 | Done: 113 | Not Started: 0
+Last updated: 2026-03-27 | Total: 113 | Done: 113 | Not Started: 0
 
-> **Full Build**: Frontend (78 routes, 721 source files, 29 feature modules) + Backend (345 endpoints, 44 route modules, 68 Prisma models, 1920-line schema) built and wired. All 113 features done (113/113). SSOT cleanup done (CSS variables, config constants). PWA complete (SW + manifest + cache strategies). Tests: 611 passing (38 test files). Remaining: expand test coverage, OTP activation, external integrations, staging deploy.
+> **Full Build**: Frontend (78 routes, 721 source files, 29 feature modules) + Backend (345 endpoints, 44 route modules, 68 Prisma models, 1920-line schema) built and wired. All 113 features done (113/113). SSOT cleanup done (CSS variables, config constants, APP_NAME). PWA complete (SW + manifest + cache strategies). Tests: 1114 passing (106 test files — 100 FE unit + 6 BE integration). Full codebase audit clean (0 P0/P1/P2). requirePermission wired on all 133 mutation routes. Remaining: OTP activation, external credentials, staging deploy.
 
 ---
 
@@ -221,35 +221,44 @@ Last updated: 2026-03-20 | Total: 113 | Done: 113 | Not Started: 0
 | 47 | Low-Stock Alerts | Notification integration (depends on #4) |
 | 59 | Biometric Auth | Capacitor Biometric plugin |
 
-## Code Quality (2026-03-17)
+## Code Quality (2026-03-27)
 
 | Area | Status |
 |------|--------|
 | SSOT: `FALLBACK_BUSINESS_ID` | Extracted to `app.config.ts`, 6 files import from single source |
 | SSOT: Gradient hex colors | Extracted to CSS variables in `globals.css`, 10 CSS files updated |
 | SSOT: WhatsApp brand color | `--color-whatsapp` CSS variable, no inline hex |
+| SSOT: APP_NAME | All 17 landing/UI files use `APP_NAME` from config — zero raw "HisaabPro" strings |
+| SSOT: Invoice template colors | 36 hex values extracted to `DOC_COLORS` constants |
 | Auth context: businessId | All 6 settings pages use `useAuth()` instead of hardcoded value |
+| Authorization | `requirePermission()` on all 133 mutation routes (24 gaps fixed 2026-03-27) |
+| SW cache safety | Whitelisted safe API patterns only — no PII caching |
+| Prisma safety | All `include: true` replaced with explicit `select`. All `findMany` have `take` limits |
+| Memory safety | All `useEffect` async ops have AbortController/cleanup. `crypto.randomUUID()` for IDs |
+| i18n compliance | 73 hardcoded English strings replaced with `t.key` references across 20 components |
 | TypeScript | Zero errors (`tsc --noEmit` clean) |
 | Build | Passes clean (440KB gzipped main bundle) |
 | Console.log / TODOs | Zero remaining |
+| Audit status | Full 866-file audit: 0 P0, 0 P1, 0 P2 remaining |
 
-## Testing Status
+## Testing Status (2026-03-27)
 
 | Layer | Status | Coverage |
 |-------|--------|----------|
-| Unit tests (Vitest) | **Active** | 611 tests across 38 files · 20 feature utils + 4 shared hooks + 4 lib validators |
-| Integration tests (API) | **Not started** | 0% — no backend route tests |
-| E2E tests (Playwright) | **Configured** | Framework ready (`npm run test:e2e`) · No test files yet |
+| Frontend unit (Vitest) | **Active** | 1044 tests across 100 files · 29 feature modules + shared hooks + lib validators |
+| Backend integration (Vitest + supertest) | **Active** | 70 tests across 6 files · auth, parties, products, documents, payments, dashboard |
+| E2E tests (Playwright) | **Active** | 27 spec files · 4 viewports (375/320/768/1280) · fixtures + helpers + data-factory |
 | Type checking | **Passing** | `tsc --noEmit` zero errors |
 | Build | **Passing** | `npm run build` clean |
+| **Total** | **1114 tests** | **106 test files** |
 
 ## Architecture
 
 ```
 Frontend (React 19 + Vite)          Backend (Express + Prisma)
 ─────────────────────────           ──────────────────────────
-78 routes · 721 source files         339 endpoints · 43 route modules
-29 feature modules · 38 test files   67 Prisma models · 1696-line schema
+78 routes · 721 source files         345 endpoints · 44 route modules
+29 feature modules · 100 test files  68 Prisma models · 1920-line schema
 Tailwind CSS 4 + CSS variables       PostgreSQL + cursor pagination
 React-PDF (client-side)              JWT auth (httpOnly cookies)
 Dexie (IndexedDB queue)              Rate limiting (4 tiers)
@@ -263,17 +272,18 @@ Offline banner + sync UI             Multi-tenant (businessId isolation)
 
 ### Ship-blocking
 1. ~~**Service Worker + PWA manifest**~~ Done
-2. **Unit tests (Vitest)** — 611 tests passing (38 files, 20 features). All pure utils tested. Remaining: hook tests, component tests, service mocks.
-3. **Enable OTP auth flow** — code ready. Set `VITE_AUTH_MODE=otp` + uncomment routes.
+2. ~~**Test coverage**~~ Done — 1114 tests (100 FE unit + 6 BE integration + 27 E2E specs)
+3. ~~**Full codebase audit**~~ Done — 866 files, 18 criteria, 0 P0/P1/P2 remaining
+4. ~~**Authorization hardening**~~ Done — requirePermission on all 133 mutation routes
+5. **Enable OTP auth flow** — code ready. Set `VITE_AUTH_MODE=otp` + uncomment routes. Needs MSG91 key.
 
 ### Production readiness
-4. **Staging deploy** — Vercel (FE) + Render (BE) + Neon (DB).
-5. **External credentials** — Razorpay, FCM, Aisensy, Resend, MSG91, Turnstile.
-6. **E2E test coverage** — expand from 4 basic suites to per-feature journeys.
+6. **Staging deploy** — Vercel (FE) + Render (BE) + Neon (DB). Config files needed.
+7. **External credentials** — Razorpay, FCM, Aisensy, Resend, MSG91, Turnstile. Account signups required.
 
-### Next phases
-7. ~~**Phase 2: GST**~~ Done — 20 features (tax engine, GSTR-1/3B/9, e-invoice, e-way bill, TDS/TCS, CN/DN, multi-currency, recurring)
-8. ~~**Phase 3: Accounting & Finance**~~ Done — 22 features (double-entry ledger, journal entries, trial balance, P&L, balance sheet, cash flow, bank accounts, expenses, other income, cheques, loans, aging reports, profitability, discounts, Tally export, FY closure)
-9. ~~**Phase 4: Advanced Inventory & POS**~~ Done — 16/16 features (batch tracking, multi-godown, POS, bulk import/export, barcode, stock verification, labels, images, MOQ, reorder, serial numbers).
-10. ~~**Phase 5: Growth & Competitive Features**~~ Done — BillBook-inspired gaps + feature discovery (10 features)
-11. ~~**Phase 6: BillBook User Requests**~~ Done — Custom units, payment stamps, vehicle/Udyam fields, PDF quality, duplicate copies (5 features)
+### Done phases
+8. ~~**Phase 2: GST**~~ Done — 20 features (tax engine, GSTR-1/3B/9, e-invoice, e-way bill, TDS/TCS, CN/DN, multi-currency, recurring)
+9. ~~**Phase 3: Accounting & Finance**~~ Done — 22 features (double-entry ledger, journal entries, trial balance, P&L, balance sheet, cash flow, bank accounts, expenses, other income, cheques, loans, aging reports, profitability, discounts, Tally export, FY closure)
+10. ~~**Phase 4: Advanced Inventory & POS**~~ Done — 16/16 features (batch tracking, multi-godown, POS, bulk import/export, barcode, stock verification, labels, images, MOQ, reorder, serial numbers)
+11. ~~**Phase 5: Growth & Competitive Features**~~ Done — BillBook-inspired gaps + feature discovery (10 features)
+12. ~~**Phase 6: BillBook User Requests**~~ Done — Custom units, payment stamps, vehicle/Udyam fields, PDF quality, duplicate copies (5 features)
