@@ -7,6 +7,7 @@
 import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { auth } from '../middleware/auth.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   createManualBackup,
@@ -21,6 +22,7 @@ const router = Router()
 router.post(
   '/manual',
   auth,
+  requirePermission('settings.modify'),
   asyncHandler(async (req, res) => {
     const result = await createManualBackup(req.user!.userId)
     sendSuccess(res, result, 201)

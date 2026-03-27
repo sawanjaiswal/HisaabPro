@@ -7,6 +7,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   startReconciliationSchema,
@@ -19,7 +20,7 @@ const router = Router()
 router.use(auth)
 
 /** POST /api/gst/reconciliation — Start a new reconciliation (upload GSTR data) */
-router.post('/', validate(startReconciliationSchema), asyncHandler(async (req, res) => {
+router.post('/', requirePermission('accounting.create'), validate(startReconciliationSchema), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const reconciliation = await reconService.startReconciliation(businessId, req.body)
   sendSuccess(res, reconciliation, 201)
@@ -49,7 +50,7 @@ router.get('/:id/entries', asyncHandler(async (req, res) => {
 }))
 
 /** DELETE /api/gst/reconciliation/:id — Delete reconciliation + cascade entries */
-router.delete('/:id', asyncHandler(async (req, res) => {
+router.delete('/:id', requirePermission('accounting.delete'), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   await reconService.deleteReconciliation(businessId, String(req.params.id))
   sendSuccess(res, { deleted: true })

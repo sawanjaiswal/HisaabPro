@@ -10,6 +10,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import { generateEInvoiceSchema, cancelEInvoiceSchema } from '../schemas/ecompliance.schemas.js'
 import * as einvoiceService from '../services/einvoice.service.js'
@@ -20,6 +21,7 @@ router.use(auth)
 /** POST /api/einvoice/generate — Generate IRN for a saved sale invoice */
 router.post(
   '/generate',
+  requirePermission('invoicing.edit'),
   validate(generateEInvoiceSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -32,6 +34,7 @@ router.post(
 /** POST /api/einvoice/cancel — Cancel an IRN within 24 hours */
 router.post(
   '/cancel',
+  requirePermission('invoicing.edit'),
   validate(cancelEInvoiceSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId

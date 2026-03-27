@@ -12,6 +12,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   setExchangeRateSchema,
@@ -34,6 +35,7 @@ router.use(auth)
 /** POST /api/currency/exchange-rates — Set or update an exchange rate */
 router.post(
   '/exchange-rates',
+  requirePermission('settings.modify'),
   validate(setExchangeRateSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -76,6 +78,7 @@ router.get(
 /** POST /api/currency/convert — Convert amount between any two currencies */
 router.post(
   '/convert',
+  requirePermission('settings.view'),
   validate(convertAmountSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId

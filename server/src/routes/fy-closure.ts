@@ -8,6 +8,7 @@ import { z } from 'zod'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { requireOwner } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import * as fyClosureService from '../services/fy-closure.service.js'
 
@@ -24,6 +25,7 @@ const closeFYSchema = z.object({
 /** POST /api/fy-closure — Close a financial year */
 router.post(
   '/',
+  requireOwner(),
   validate(closeFYSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -46,6 +48,7 @@ router.get(
 /** POST /api/fy-closure/:financialYear/reopen — Reopen a previously closed FY */
 router.post(
   '/:financialYear/reopen',
+  requireOwner(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const financialYear = String(req.params.financialYear)

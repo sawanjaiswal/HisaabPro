@@ -7,6 +7,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import { verifyGstinSchema } from '../schemas/tax.schemas.js'
 import { validateGstin, extractStateCode } from '../services/gstin.utils.js'
@@ -24,6 +25,7 @@ router.use(auth)
  */
 router.post(
   '/validate',
+  requirePermission('settings.view'),
   validate(verifyGstinSchema),
   asyncHandler(async (req, res) => {
     const result = validateGstin(req.body.gstin)
@@ -42,6 +44,7 @@ router.post(
  */
 router.post(
   '/verify',
+  requirePermission('settings.view'),
   validate(verifyGstinSchema),
   asyncHandler(async (req, res) => {
     const localResult = validateGstin(req.body.gstin)

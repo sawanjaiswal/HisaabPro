@@ -48,6 +48,7 @@ router.use(auth)
 /** POST /api/products/stock/validate */
 router.post(
   '/stock/validate',
+  requirePermission('inventory.view'),
   validate(stockValidateSchema),
   asyncHandler(async (req, res) => {
     const result = await validateStockForInvoice(req.user!.businessId, req.body.items)
@@ -88,6 +89,7 @@ router.post(
 /** POST /api/products/label-data — Feature #103: batch label printing data */
 router.post(
   '/label-data',
+  requirePermission('inventory.view'),
   validate(labelDataSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId

@@ -5,6 +5,7 @@
 import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { auth } from '../middleware/auth.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   invoiceReportSchema,
@@ -85,6 +86,7 @@ router.get(
 /** POST /api/reports/export — Export report as CSV */
 router.post(
   '/export',
+  requirePermission('reports.download'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const body = exportReportSchema.parse(req.body)

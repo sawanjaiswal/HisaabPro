@@ -11,6 +11,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   generateEWayBillSchema,
@@ -30,6 +31,7 @@ router.use(auth)
 /** POST /api/ewaybill/generate — Generate E-Way Bill for a saved invoice */
 router.post(
   '/generate',
+  requirePermission('invoicing.edit'),
   validate(generateEWayBillSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -42,6 +44,7 @@ router.post(
 /** POST /api/ewaybill/cancel — Cancel an E-Way Bill within 24 hours */
 router.post(
   '/cancel',
+  requirePermission('invoicing.edit'),
   validate(cancelEWayBillSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -54,6 +57,7 @@ router.post(
 /** PUT /api/ewaybill/update-partb — Update vehicle details on an active E-Way Bill */
 router.put(
   '/update-partb',
+  requirePermission('invoicing.edit'),
   validate(updatePartBSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId

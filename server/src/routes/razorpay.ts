@@ -12,6 +12,7 @@ import express from 'express'
 import { auth } from '../middleware/auth.js'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
+import { requireOwner } from '../middleware/permission.js'
 import {
   subscribeSchema,
   cancelSubscriptionSchema,
@@ -52,6 +53,7 @@ const router = Router()
 router.post(
   '/subscribe',
   auth,
+  requireOwner(),
   validate(subscribeSchema),
   asyncHandler(async (req, res) => {
     const userId = req.user!.userId
@@ -75,6 +77,7 @@ router.post(
 router.post(
   '/cancel',
   auth,
+  requireOwner(),
   validate(cancelSubscriptionSchema),
   asyncHandler(async (req, res) => {
     const { subscriptionId, cancelAtEnd } = req.body as {
