@@ -17,6 +17,7 @@ import {
   setPricingSchema,
   listPricingQuerySchema,
 } from '../schemas/party.schemas.js'
+import { requirePermission } from '../middleware/permission.js'
 import * as partyService from '../services/party.service.js'
 
 const router = Router()
@@ -34,6 +35,7 @@ router.use(auth)
  */
 router.post(
   '/',
+  requirePermission('parties.create'),
   validate(createPartySchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -76,6 +78,7 @@ router.get(
  */
 router.put(
   '/:id',
+  requirePermission('parties.edit'),
   validate(updatePartySchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -91,6 +94,7 @@ router.put(
  */
 router.delete(
   '/:id',
+  requirePermission('parties.delete'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const partyId = String(req.params.id)
@@ -110,6 +114,7 @@ router.delete(
  */
 router.post(
   '/:partyId/addresses',
+  requirePermission('parties.edit'),
   validate(createAddressSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -125,6 +130,7 @@ router.post(
  */
 router.put(
   '/:partyId/addresses/:addressId',
+  requirePermission('parties.edit'),
   validate(updateAddressSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -141,6 +147,7 @@ router.put(
  */
 router.delete(
   '/:partyId/addresses/:addressId',
+  requirePermission('parties.delete'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const partyId = String(req.params.partyId)
@@ -160,6 +167,7 @@ router.delete(
  */
 router.put(
   '/:partyId/pricing',
+  requirePermission('parties.edit'),
   validate(setPricingSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId

@@ -70,6 +70,15 @@ const PERMISSION_MATRIX = [
     ],
   },
   {
+    key: 'accounting', label: 'Accounting',
+    actions: [
+      { key: 'view', label: 'View Accounting' },
+      { key: 'create', label: 'Create Entries' },
+      { key: 'edit', label: 'Edit Entries' },
+      { key: 'delete', label: 'Delete Entries' },
+    ],
+  },
+  {
     key: 'settings', label: 'Settings',
     actions: [
       { key: 'view', label: 'View Settings' },
@@ -179,6 +188,7 @@ const SYSTEM_ROLES: Array<{
       'payments.view',
       'parties.view',
       'reports.view', 'reports.download',
+      'accounting.view', 'accounting.create', 'accounting.edit',
       'fields.viewPurchasePrice', 'fields.viewProfitMargin',
       'fields.viewPartyOutstanding',
     ],
@@ -343,6 +353,7 @@ export async function listStaff(businessId: string) {
         roleRef: { select: { id: true, name: true } },
       },
       orderBy: { joinedAt: 'asc' },
+      take: 100, // bounded: typically < 100 staff per business
     }),
     prisma.staffInvite.findMany({
       where: { businessId, status: 'PENDING' },
@@ -351,6 +362,7 @@ export async function listStaff(businessId: string) {
         status: true, expiresAt: true,
       },
       orderBy: { createdAt: 'desc' },
+      take: 100, // bounded: typically < 100 pending invites per business
     }),
   ])
 

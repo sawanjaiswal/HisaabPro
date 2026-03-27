@@ -13,6 +13,7 @@ import {
   updateCustomFieldSchema,
 } from '../schemas/party.schemas.js'
 import * as partyService from '../services/party.service.js'
+import { requirePermission } from '../middleware/permission.js'
 
 const router = Router()
 
@@ -23,6 +24,7 @@ router.use(auth)
  */
 router.post(
   '/',
+  requirePermission('settings.modify'),
   validate(createCustomFieldSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -52,6 +54,7 @@ router.get(
  */
 router.put(
   '/:id',
+  requirePermission('settings.modify'),
   validate(updateCustomFieldSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -66,6 +69,7 @@ router.put(
  */
 router.delete(
   '/:id',
+  requirePermission('settings.modify'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const fieldId = String(req.params.id)

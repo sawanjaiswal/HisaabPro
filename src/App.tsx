@@ -20,7 +20,7 @@ import {
   Payments, RecordPayment, PaymentDetail, EditPayment, Outstanding,
   ReportsHub, SaleReport, PurchaseReport, PartyStatement, StockSummary,
   DayBook, PaymentHistory, TaxSummary, GstReturns, TdsTcsReport,
-  Settings, Roles, RoleBuilder, Staff, StaffInvite,
+  Settings, Roles, RoleBuilder, Staff, StaffInvite, StaffPermissions,
   TransactionControls, AuditLog, PinSetup, Shortcuts,
   GstSettings, TaxCategories, CreateTaxCategory, EditTaxCategory,
   CurrencySettings, RecurringList,
@@ -30,7 +30,7 @@ import {
   ProfitLoss, BalanceSheet, CashFlow, AgingReport, ProfitabilityReport,
   DiscountReport, TallyExport, FYClosure,
   More, BillScan, BulkImport, PublicLedger, ItemsLibrary, DataImport,
-  SmartGreetings, Units, JoinBusiness, Landing,
+  SmartGreetings, Units, JoinBusiness, CreateBusiness, Landing,
   AdminCoupons, AdminCouponDetail,
   Batches, CreateBatch, BatchDetail,
   Godowns, CreateGodown, EditGodown, GodownDetail, GodownTransfer,
@@ -113,6 +113,7 @@ export function App() {
         <Route path={ROUTES.SETTINGS_ROLE_EDIT} element={<PageRoute><ProtectedRoute><RoleBuilder /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_STAFF} element={<PageRoute><ProtectedRoute><Staff /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_STAFF_INVITE} element={<PageRoute><ProtectedRoute><StaffInvite /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_PERMISSIONS} element={<PageRoute><ProtectedRoute><StaffPermissions /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_SECURITY} element={<PageRoute><ProtectedRoute><PinSetup /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_TRANSACTION_CONTROLS} element={<PageRoute><ProtectedRoute><TransactionControls /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_AUDIT_LOG} element={<PageRoute><ProtectedRoute><AuditLog /></ProtectedRoute></PageRoute>} />
@@ -151,6 +152,7 @@ export function App() {
         <Route path={ROUTES.DATA_IMPORT} element={<PageRoute><ProtectedRoute><DataImport /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SMART_GREETINGS} element={<PageRoute><ProtectedRoute><SmartGreetings /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.JOIN_BUSINESS} element={<PageRoute><ProtectedRoute><JoinBusiness /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.CREATE_BUSINESS} element={<PageRoute><ProtectedRoute><CreateBusiness /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.ADMIN_COUPONS} element={<PageRoute><ProtectedRoute><AdminCoupons /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.ADMIN_COUPON_DETAIL} element={<PageRoute><ProtectedRoute><AdminCouponDetail /></ProtectedRoute></PageRoute>} />
 

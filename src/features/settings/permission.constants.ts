@@ -56,6 +56,16 @@ export const PERMISSION_MODULES: PermissionModule[] = [
     ],
   },
   {
+    key: 'accounting',
+    label: 'Accounting',
+    actions: [
+      { key: 'view',   label: 'View Accounting',   description: 'See expenses, income, loans, journal entries' },
+      { key: 'create', label: 'Create Entries',     description: 'Add expenses, income, loans, journal entries' },
+      { key: 'edit',   label: 'Edit Entries',       description: 'Modify accounting records' },
+      { key: 'delete', label: 'Delete Entries',     description: 'Remove accounting records' },
+    ],
+  },
+  {
     key: 'settings',
     label: 'Settings',
     actions: [

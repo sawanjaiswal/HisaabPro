@@ -6,6 +6,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   createCategorySchema,
@@ -31,6 +32,7 @@ router.get(
 /** POST /api/categories — Create custom category */
 router.post(
   '/',
+  requirePermission('inventory.edit'),
   validate(createCategorySchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -42,6 +44,7 @@ router.post(
 /** PUT /api/categories/:id — Update category */
 router.put(
   '/:id',
+  requirePermission('inventory.edit'),
   validate(updateCategorySchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -54,6 +57,7 @@ router.put(
 /** DELETE /api/categories/:id — Delete custom category (requires reassignTo in body) */
 router.delete(
   '/:id',
+  requirePermission('inventory.edit'),
   validate(deleteCategorySchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId

@@ -8,6 +8,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   createVerificationSchema,
@@ -24,6 +25,7 @@ router.use(auth)
 /** POST /api/stock-verification — Create new verification (snapshots all active products) */
 router.post(
   '/',
+  requirePermission('inventory.adjustStock'),
   validate(createVerificationSchema),
   asyncHandler(async (req, res) => {
     const result = await verificationService.createVerification(
@@ -60,6 +62,7 @@ router.get(
 /** PATCH /api/stock-verification/:id/items/:itemId — Record physical count */
 router.patch(
   '/:id/items/:itemId',
+  requirePermission('inventory.adjustStock'),
   validate(updateVerificationItemSchema),
   asyncHandler(async (req, res) => {
     const result = await verificationService.updateItemCount(
@@ -75,6 +78,7 @@ router.patch(
 /** POST /api/stock-verification/:id/complete — Mark verification complete */
 router.post(
   '/:id/complete',
+  requirePermission('inventory.adjustStock'),
   validate(completeVerificationSchema),
   asyncHandler(async (req, res) => {
     const result = await verificationService.completeVerification(
@@ -89,6 +93,7 @@ router.post(
 /** POST /api/stock-verification/:id/adjust — Apply stock adjustments for discrepancies */
 router.post(
   '/:id/adjust',
+  requirePermission('inventory.adjustStock'),
   asyncHandler(async (req, res) => {
     const result = await verificationService.applyAdjustments(
       req.user!.businessId,

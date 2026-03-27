@@ -84,6 +84,7 @@ export const DataImport = lazy(() => import('@/features/data-import/DataImportPa
 export const SmartGreetings = lazy(() => import('@/features/smart-greetings/SmartGreetingsPage'))
 export const Units = lazy(() => import('@/features/units/UnitsPage'))
 export const JoinBusiness = lazy(() => import('@/features/business/JoinBusinessPage'))
+export const CreateBusiness = lazy(() => import('@/features/business/CreateBusinessPage'))
 export const Landing = lazy(() => import('@/features/landing/LandingPage'))
 export const AdminCoupons = lazy(() => import('@/features/admin/coupons/CouponsPage'))
 export const AdminCouponDetail = lazy(() => import('@/features/admin/coupons/CouponDetailPage'))
@@ -104,5 +105,7 @@ export const CreateSerial = lazy(() => import('@/features/serial-numbers/CreateS
 export const BulkCreateSerial = lazy(() => import('@/features/serial-numbers/BulkCreateSerialPage'))
 export const SerialLookup = lazy(() => import('@/features/serial-numbers/SerialLookupPage'))
 export const Pos = lazy(() => import('@/features/pos/PosPage'))
+
+export const StaffPermissions = lazy(() => import('@/features/settings/StaffPermissionsPage'))
 
 export const NotFound = lazy(() => import('@/components/feedback/NotFoundPage'))

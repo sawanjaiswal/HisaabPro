@@ -10,3 +10,9 @@ export interface JoinBusinessSuccess {
   businessName: string
   roleName: string
 }
+
+export interface CreateBusinessInput {
+  name: string
+  businessType: string
+  cloneFromBusinessId?: string
+}

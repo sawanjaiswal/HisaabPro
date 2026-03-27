@@ -7,6 +7,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   createLoanSchema,
@@ -22,6 +23,7 @@ router.use(auth)
 /** POST /api/loans — Create a new loan account */
 router.post(
   '/',
+  requirePermission('accounting.create'),
   validate(createLoanSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -64,6 +66,7 @@ router.get(
 /** POST /api/loans/:id/transactions — Record EMI, interest, prepayment, disbursement, or closure */
 router.post(
   '/:id/transactions',
+  requirePermission('accounting.create'),
   validate(recordLoanTransactionSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -79,6 +82,7 @@ router.post(
 /** POST /api/loans/:id/close — Mark loan as CLOSED with outstandingAmount = 0 */
 router.post(
   '/:id/close',
+  requirePermission('accounting.edit'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const loan = await loanService.closeLoan(businessId, String(req.params.id))

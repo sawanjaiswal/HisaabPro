@@ -14,6 +14,7 @@ import {
   listRecurringSchema,
 } from '../schemas/recurring.schemas.js'
 import * as recurringService from '../services/recurring.service.js'
+import { requirePermission } from '../middleware/permission.js'
 
 const router = Router()
 
@@ -22,6 +23,7 @@ router.use(auth)
 /** POST /api/recurring — Create a new recurring invoice schedule */
 router.post(
   '/',
+  requirePermission('invoicing.create'),
   validate(createRecurringSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -44,6 +46,7 @@ router.get(
 /** POST /api/recurring/generate — Manually trigger generation of all due invoices */
 router.post(
   '/generate',
+  requirePermission('invoicing.edit'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const result = await recurringService.generateDueInvoices(businessId)
@@ -64,6 +67,7 @@ router.get(
 /** PUT /api/recurring/:id — Update frequency, dates, autoSend, or pause/resume */
 router.put(
   '/:id',
+  requirePermission('invoicing.edit'),
   validate(updateRecurringSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -79,6 +83,7 @@ router.put(
 /** DELETE /api/recurring/:id — Hard delete if no docs generated, else mark COMPLETED */
 router.delete(
   '/:id',
+  requirePermission('invoicing.delete'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const result = await recurringService.deleteRecurring(businessId, String(req.params.id))

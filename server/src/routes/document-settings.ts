@@ -14,6 +14,7 @@ import {
   updateNumberSeriesSchema,
 } from '../schemas/document.schemas.js'
 import * as settingsService from '../services/document-settings.service.js'
+import { requirePermission } from '../middleware/permission.js'
 import { getNextNumberPreview } from '../services/document-number.service.js'
 
 const router = Router()
@@ -37,6 +38,7 @@ router.get(
 /** PUT /api/settings/documents — Update document settings */
 router.put(
   '/',
+  requirePermission('settings.modify'),
   validate(updateDocumentSettingsSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -62,6 +64,7 @@ router.get(
 /** POST /api/settings/documents/signature — Upload/update signature */
 router.post(
   '/signature',
+  requirePermission('settings.modify'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const signature = await settingsService.upsertSignature(businessId, req.body)
@@ -72,6 +75,7 @@ router.post(
 /** DELETE /api/settings/documents/signature — Delete signature */
 router.delete(
   '/signature',
+  requirePermission('settings.modify'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     await settingsService.deleteSignature(businessId)
@@ -96,6 +100,7 @@ router.get(
 /** POST /api/settings/documents/terms-templates — Create template */
 router.post(
   '/terms-templates',
+  requirePermission('settings.modify'),
   validate(createTermsTemplateSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -107,6 +112,7 @@ router.post(
 /** PUT /api/settings/documents/terms-templates/:id — Update template */
 router.put(
   '/terms-templates/:id',
+  requirePermission('settings.modify'),
   validate(updateTermsTemplateSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -120,6 +126,7 @@ router.put(
 /** DELETE /api/settings/documents/terms-templates/:id — Delete template */
 router.delete(
   '/terms-templates/:id',
+  requirePermission('settings.modify'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     await settingsService.deleteTermsTemplate(businessId, String(req.params.id))
@@ -144,6 +151,7 @@ router.get(
 /** PUT /api/settings/documents/number-series/:type — Configure number series */
 router.put(
   '/number-series/:type',
+  requirePermission('settings.modify'),
   validate(updateNumberSeriesSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId

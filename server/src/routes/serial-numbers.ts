@@ -7,6 +7,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   createSerialNumberSchema,
@@ -55,6 +56,7 @@ router.get(
 /** POST /api/serial-numbers/product/:productId — create single serial */
 router.post(
   '/product/:productId',
+  requirePermission('inventory.edit'),
   validate(createSerialNumberSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -67,6 +69,7 @@ router.post(
 /** POST /api/serial-numbers/product/:productId/bulk — bulk create serials */
 router.post(
   '/product/:productId/bulk',
+  requirePermission('inventory.edit'),
   validate(bulkCreateSerialNumbersSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -94,6 +97,7 @@ router.get(
 /** PATCH /api/serial-numbers/:id — update status/notes */
 router.patch(
   '/:id',
+  requirePermission('inventory.edit'),
   validate(updateSerialNumberSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId

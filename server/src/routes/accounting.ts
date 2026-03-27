@@ -7,6 +7,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   createLedgerAccountSchema,
@@ -30,6 +31,7 @@ router.use(auth)
 /** POST /api/accounting/accounts — Create a new ledger account */
 router.post(
   '/accounts',
+  requirePermission('accounting.create'),
   validate(createLedgerAccountSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -52,6 +54,7 @@ router.get(
 /** POST /api/accounting/accounts/seed — Seed default chart of accounts (idempotent) */
 router.post(
   '/accounts/seed',
+  requirePermission('accounting.create'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const result = await accountingService.seedDefaultAccounts(businessId)
@@ -72,6 +75,7 @@ router.get(
 /** PUT /api/accounting/accounts/:id — Update a ledger account */
 router.put(
   '/accounts/:id',
+  requirePermission('accounting.edit'),
   validate(updateLedgerAccountSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -89,6 +93,7 @@ router.put(
 /** POST /api/accounting/entries — Create a new journal entry (DRAFT) */
 router.post(
   '/entries',
+  requirePermission('accounting.create'),
   validate(createJournalEntrySchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -125,6 +130,7 @@ router.get(
 /** POST /api/accounting/entries/:id/post — Post a DRAFT journal entry */
 router.post(
   '/entries/:id/post',
+  requirePermission('accounting.edit'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const entry = await accountingService.postJournalEntry(businessId, String(req.params.id))
@@ -135,6 +141,7 @@ router.post(
 /** POST /api/accounting/entries/:id/void — Void a DRAFT or POSTED journal entry */
 router.post(
   '/entries/:id/void',
+  requirePermission('accounting.delete'),
   validate(voidJournalEntrySchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId

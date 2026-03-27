@@ -7,6 +7,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   createBatchSchema,
@@ -39,6 +40,7 @@ router.get(
 /** POST /api/products/:productId/batches — create batch */
 router.post(
   '/products/:productId/batches',
+  requirePermission('inventory.edit'),
   validate(createBatchSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -78,6 +80,7 @@ router.get(
 /** PATCH /api/batches/:id — update batch */
 router.patch(
   '/batches/:id',
+  requirePermission('inventory.edit'),
   validate(updateBatchSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -90,6 +93,7 @@ router.patch(
 /** DELETE /api/batches/:id — soft delete (only if stock = 0) */
 router.delete(
   '/batches/:id',
+  requirePermission('inventory.delete'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const batchId = String(req.params.id)

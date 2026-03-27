@@ -14,6 +14,7 @@ import {
   deleteGroupSchema,
 } from '../schemas/party.schemas.js'
 import * as partyService from '../services/party.service.js'
+import { requirePermission } from '../middleware/permission.js'
 
 const router = Router()
 
@@ -24,6 +25,7 @@ router.use(auth)
  */
 router.post(
   '/',
+  requirePermission('parties.edit'),
   validate(createGroupSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -49,6 +51,7 @@ router.get(
  */
 router.put(
   '/:id',
+  requirePermission('parties.edit'),
   validate(updateGroupSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -64,6 +67,7 @@ router.put(
  */
 router.delete(
   '/:id',
+  requirePermission('parties.edit'),
   validate(deleteGroupSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId

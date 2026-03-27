@@ -8,6 +8,7 @@
 import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { auth } from '../middleware/auth.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess, sendError } from '../lib/response.js'
 import * as stockAlertService from '../services/stock-alert.service.js'
 
@@ -68,6 +69,7 @@ router.get(
 router.post(
   '/:id/acknowledge',
   auth,
+  requirePermission('inventory.view'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     if (!businessId) {
@@ -87,6 +89,7 @@ router.post(
 router.post(
   '/:id/dismiss',
   auth,
+  requirePermission('inventory.view'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     if (!businessId) {

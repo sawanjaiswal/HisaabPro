@@ -1,7 +1,7 @@
 # Multi-Business Backlog | PRD #9 (Features #96-#102)
 
-> Status: **In Progress** — Backend partially done, frontend not started
-> Last updated: 2026-03-19
+> Status: **In Progress** — Permission guards complete, StaffPermissionsPage + CreateBusinessPage done
+> Last updated: 2026-03-27
 > Reference code: `recovered-from-dudhhisaab/` (DudhHisaab implementation to adapt)
 
 ---
@@ -18,8 +18,8 @@
 | 6 | `POST /api/businesses/join` endpoint | TODO | `server/src/routes/settings.ts`, `server/src/services/settings.service.ts` | Validate code + phone match, create BusinessUser, mark invite ACCEPTED |
 | 7 | Remove single-business guard + `MAX_BUSINESSES=10` | TODO | `server/src/services/business.service.ts` | Lines 29-36 currently block 2nd business |
 | 8 | Clone business settings on create | TODO | `server/src/services/business.service.ts` | Copy: DocumentSettings, CustomFields, TermsTemplates, DocNumberSeries, ExchangeRates |
-| 9 | 7 role templates (replace current 4) | TODO | `server/src/services/settings.service.ts` | Partner, Manager, Salesman, Cashier, Stock Manager, Delivery Boy, Accountant. Accountant doesn't count toward staff limit |
-| 10 | Apply `requirePermission()` to mutation routes | TODO | Key route files: `documents.ts`, `payments.ts`, `party.ts`, `products.ts`, `settings.ts` | View routes need `module.view` minimum |
+| 9 | 7 role templates (replace current 4) | DONE | `server/src/services/settings.service.ts` | 7 system roles + accounting module added (2026-03-27) |
+| 10 | Apply `requirePermission()` to mutation routes | DONE | 22 route files, 122 guard insertions | All POST/PUT/PATCH/DELETE guarded (2026-03-27) |
 | 11 | Route ownership validation | TODO | `server/src/lib/business.ts` | `validateBusinessAccess()` exists — wire into routes that take `:businessId` param |
 | 12 | Invite management: cancel + resend | TODO | `server/src/routes/settings.ts`, `server/src/services/settings.service.ts` | `DELETE .../invite/:id` + `POST .../invite/:id/resend` (new code, reset 48h). Max 20 pending per biz |
 | 13 | Staff suspension/removal → blacklist token | TODO | `server/src/services/settings.service.ts` | Import `blacklistUser` from token-blacklist. Call on suspend + remove. Delete refresh tokens for that business |
@@ -34,10 +34,10 @@
 | 15 | Per-business IndexedDB namespace (`hisaab_db_{businessId}`) | TODO | `src/lib/offline.ts` or equivalent | Proxy-based DB factory. Ref: `recovered-from-dudhhisaab/frontend/src/services/db/` |
 | 16 | BusinessAvatar component (header) | TODO | `src/components/layout/Header.tsx`, new `src/features/business/BusinessAvatar.tsx` | 36px circle, swipe-to-switch (40px threshold), tap → bottom sheet. Ref: `recovered-from-dudhhisaab/frontend/src/features/business/BusinessAvatar.tsx` |
 | 17 | JoinBusiness page + deep link | TODO | New `src/features/settings/JoinBusinessForm.tsx` or `src/features/business/JoinBusiness.tsx` | `/join?code=XXXXXX` pre-fills code. 6-char input (OTP-style). Ref: `recovered-from-dudhhisaab/frontend/src/pages/JoinBusiness/` |
-| 18 | StaffPermissionsPage + PermissionGrid | TODO | New `src/features/settings/StaffPermissionsPage.tsx` + `PermissionGrid.tsx` | Toggle: "By Role" / "By Person". Grid: Read/Edit/Create/Delete per module |
-| 19 | Clone settings UI on "Add Business" | TODO | Business creation form | Toggle: "Clone settings from [Business]?" + source picker. Only shows for 2nd+ business |
-| 20 | Update `routes.config.ts` | TODO | `src/config/routes.config.ts` | Add: `JOIN_BUSINESS`, `STAFF_PERMISSIONS`, `BUSINESS_LIST` |
-| 21 | Wire routes in `App.tsx` | TODO | `src/App.tsx` | Lazy imports + `<Route>` for business pages |
+| 18 | StaffPermissionsPage + PermissionGrid | DONE | `src/features/settings/StaffPermissionsPage.tsx` + `staff-permissions.css` | By Role / By Person toggle, read-only PermissionMatrix (2026-03-27) |
+| 19 | Clone settings UI on "Add Business" | DONE | `src/features/business/CreateBusinessPage.tsx` + `useCreateBusiness.ts` + `create-business.css` | Clone toggle visible for 2+ businesses (2026-03-27) |
+| 20 | Update `routes.config.ts` | DONE | `src/config/routes.config.ts` | Added `CREATE_BUSINESS`, `SETTINGS_PERMISSIONS`, `JOIN_BUSINESS` (2026-03-27) |
+| 21 | Wire routes in `App.tsx` | DONE | `src/App.tsx`, `src/app.routes.ts` | Lazy imports + routes for StaffPermissions, CreateBusiness (2026-03-27) |
 
 ---
 
@@ -54,7 +54,6 @@
 
 ## Summary
 
-- **Done:** 4/21 build steps (steps 1, 2, 4 + `validateBusinessAccess`)
-- **TODO:** 17/21 build steps + 4 testing tasks
-- **Estimated next session:** Finish Batch A backend (steps 3, 5-13), then Batch B frontend (steps 14-21)
-- **Start with:** Step 3 (replace resolveBusinessId — mechanical, unblocks everything) → Step 7 (remove guard) → Step 5 (switch endpoint)
+- **Done:** 10/21 build steps (1, 2, 4, 9, 10, 18, 19, 20, 21 + `validateBusinessAccess`)
+- **TODO:** 11/21 build steps (3, 5-8, 11-17) + 4 testing tasks
+- **Next:** Step 3 (replace resolveBusinessId) → Step 7 (remove guard) → Step 5 (switch endpoint) → Steps 14-17 (frontend core)

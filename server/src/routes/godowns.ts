@@ -7,6 +7,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   createGodownSchema,
@@ -39,6 +40,7 @@ router.get(
 /** POST /api/godowns — create godown */
 router.post(
   '/',
+  requirePermission('inventory.edit'),
   validate(createGodownSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -55,6 +57,7 @@ router.post(
 /** POST /api/godowns/transfer — transfer stock between godowns */
 router.post(
   '/transfer',
+  requirePermission('inventory.edit'),
   validate(transferStockSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -82,6 +85,7 @@ router.get(
 /** PATCH /api/godowns/:id — update godown */
 router.patch(
   '/:id',
+  requirePermission('inventory.edit'),
   validate(updateGodownSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -94,6 +98,7 @@ router.patch(
 /** DELETE /api/godowns/:id — soft delete (only if no stock) */
 router.delete(
   '/:id',
+  requirePermission('inventory.delete'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const godownId = String(req.params.id)

@@ -7,6 +7,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   createBankAccountSchema,
@@ -22,6 +23,7 @@ router.use(auth)
 /** POST /api/bank — Create a new bank account */
 router.post(
   '/',
+  requirePermission('settings.modify'),
   validate(createBankAccountSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -54,6 +56,7 @@ router.get(
 /** PUT /api/bank/:id — Update a bank account */
 router.put(
   '/:id',
+  requirePermission('settings.modify'),
   validate(updateBankAccountSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -69,6 +72,7 @@ router.put(
 /** DELETE /api/bank/:id — Soft delete (blocks if cheques linked) */
 router.delete(
   '/:id',
+  requirePermission('settings.modify'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const result = await bankService.deleteBankAccount(businessId, String(req.params.id))

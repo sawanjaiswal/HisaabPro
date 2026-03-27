@@ -35,6 +35,7 @@ import * as bulkService from '../services/product-bulk.service.js'
 import { adjustStock, validateStockForInvoice } from '../services/stock.service.js'
 import { checkAndCreateAlerts } from '../services/stock-alert.service.js'
 import { idempotencyCheck } from '../middleware/idempotency.js'
+import { requirePermission } from '../middleware/permission.js'
 
 const router = Router()
 
@@ -57,6 +58,7 @@ router.post(
 /** POST /api/products/stock/bulk-adjust — Feature #102 */
 router.post(
   '/stock/bulk-adjust',
+  requirePermission('inventory.adjustStock'),
   validate(bulkStockAdjustSchema),
   asyncHandler(async (req, res) => {
     const result = await productService.bulkAdjustStock(
@@ -71,6 +73,7 @@ router.post(
 /** POST /api/products/bulk-import — Feature #104 */
 router.post(
   '/bulk-import',
+  requirePermission('inventory.create'),
   validate(bulkImportProductSchema),
   asyncHandler(async (req, res) => {
     const result = await bulkService.bulkImportProducts(
@@ -157,6 +160,7 @@ router.get(
 /** POST /api/products */
 router.post(
   '/',
+  requirePermission('inventory.create'),
   validate(createProductSchema),
   asyncHandler(async (req, res) => {
     const product = await productService.createProduct(
@@ -193,6 +197,7 @@ router.get(
 /** PUT /api/products/:id */
 router.put(
   '/:id',
+  requirePermission('inventory.edit'),
   validate(updateProductSchema),
   asyncHandler(async (req, res) => {
     const product = await productService.updateProduct(
@@ -207,6 +212,7 @@ router.put(
 /** DELETE /api/products/:id */
 router.delete(
   '/:id',
+  requirePermission('inventory.delete'),
   asyncHandler(async (req, res) => {
     const result = await productService.deleteProduct(
       req.user!.businessId,
@@ -223,6 +229,7 @@ router.delete(
 /** POST /api/products/:id/stock/adjust */
 router.post(
   '/:id/stock/adjust',
+  requirePermission('inventory.adjustStock'),
   idempotencyCheck(),
   validate(stockAdjustSchema),
   asyncHandler(async (req, res) => {
@@ -294,6 +301,7 @@ router.get(
 /** POST /api/products/:id/images — Set or add images to a product (max 5) */
 router.post(
   '/:id/images',
+  requirePermission('inventory.edit'),
   validate(productImageSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -331,6 +339,7 @@ router.post(
 /** DELETE /api/products/:id/images/:index — Remove image at index */
 router.delete(
   '/:id/images/:index',
+  requirePermission('inventory.edit'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const productId = String(req.params.id)

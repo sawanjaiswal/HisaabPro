@@ -7,6 +7,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   createExpenseCategorySchema,
@@ -25,6 +26,7 @@ router.use(auth)
 /** POST /api/expenses/categories — Create a custom expense category */
 router.post(
   '/categories',
+  requirePermission('accounting.create'),
   validate(createExpenseCategorySchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -46,6 +48,7 @@ router.get(
 /** POST /api/expenses/categories/seed — Seed system default categories (idempotent) */
 router.post(
   '/categories/seed',
+  requirePermission('accounting.create'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const categories = await expenseService.seedDefaultCategories(businessId)
@@ -58,6 +61,7 @@ router.post(
 /** POST /api/expenses — Create a new expense */
 router.post(
   '/',
+  requirePermission('accounting.create'),
   validate(createExpenseSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -102,6 +106,7 @@ router.get(
 /** PUT /api/expenses/:id — Update an expense */
 router.put(
   '/:id',
+  requirePermission('accounting.edit'),
   validate(updateExpenseSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -117,6 +122,7 @@ router.put(
 /** DELETE /api/expenses/:id — Soft delete an expense */
 router.delete(
   '/:id',
+  requirePermission('accounting.delete'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const result = await expenseService.deleteExpense(businessId, String(req.params.id))

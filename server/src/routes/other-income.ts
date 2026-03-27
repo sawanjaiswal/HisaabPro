@@ -7,6 +7,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   createOtherIncomeSchema,
@@ -22,6 +23,7 @@ router.use(auth)
 /** POST /api/other-income — Record a new other income entry */
 router.post(
   '/',
+  requirePermission('accounting.create'),
   validate(createOtherIncomeSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -70,6 +72,7 @@ router.get(
 /** PUT /api/other-income/:id — Update an other income record */
 router.put(
   '/:id',
+  requirePermission('accounting.edit'),
   validate(updateOtherIncomeSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -85,6 +88,7 @@ router.put(
 /** DELETE /api/other-income/:id — Soft delete an other income record */
 router.delete(
   '/:id',
+  requirePermission('accounting.delete'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const result = await otherIncomeService.deleteOtherIncome(businessId, String(req.params.id))

@@ -7,6 +7,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   createChequeSchema,
@@ -22,6 +23,7 @@ router.use(auth)
 /** POST /api/cheques — Record a new cheque (issued or received) */
 router.post(
   '/',
+  requirePermission('payments.record'),
   validate(createChequeSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -64,6 +66,7 @@ router.get(
 /** PUT /api/cheques/:id/status — Update cheque status (clear, bounce, cancel, return) */
 router.put(
   '/:id/status',
+  requirePermission('payments.edit'),
   validate(updateChequeStatusSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -79,6 +82,7 @@ router.put(
 /** DELETE /api/cheques/:id — Soft delete a PENDING cheque */
 router.delete(
   '/:id',
+  requirePermission('payments.delete'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const result = await chequeService.deleteCheque(businessId, String(req.params.id))

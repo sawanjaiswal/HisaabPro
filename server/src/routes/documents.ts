@@ -26,6 +26,7 @@ import { validateStockForInvoice } from '../services/stock.service.js'
 import { prisma } from '../lib/prisma.js'
 import { notFoundError } from '../lib/errors.js'
 import logger from '../lib/logger.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendWhatsApp, sendEmail } from '../services/notification.service.js'
 import { renderInvoiceShareEmail } from '../lib/email-templates.js'
 import { generateInvoicePdf } from '../services/pdf.service.js'
@@ -73,6 +74,7 @@ router.get(
 /** POST /api/documents/validate-stock — Pre-save stock availability check */
 router.post(
   '/validate-stock',
+  requirePermission('invoicing.view'),
   validate(validateStockSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -85,6 +87,7 @@ router.post(
 /** POST /api/documents/quick-sale — Feature #110: POS one-shot sale + payment */
 router.post(
   '/quick-sale',
+  requirePermission('invoicing.create'),
   idempotencyCheck(),
   validate(quickSaleSchema),
   asyncHandler(async (req, res) => {
@@ -216,6 +219,7 @@ router.post(
 /** POST /api/documents — Create document */
 router.post(
   '/',
+  requirePermission('invoicing.create'),
   replayProtection,
   idempotencyCheck(),
   validate(createDocumentSchema),
@@ -229,6 +233,7 @@ router.post(
 /** PUT /api/documents/:id — Update document */
 router.put(
   '/:id',
+  requirePermission('invoicing.edit'),
   replayProtection,
   validate(updateDocumentSchema),
   asyncHandler(async (req, res) => {
@@ -243,6 +248,7 @@ router.put(
 /** DELETE /api/documents/recycle-bin — Empty entire bin (MUST be before /:id) */
 router.delete(
   '/recycle-bin',
+  requirePermission('invoicing.delete'),
   replayProtection,
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -254,6 +260,7 @@ router.delete(
 /** DELETE /api/documents/:id — Soft delete to recycle bin */
 router.delete(
   '/:id',
+  requirePermission('invoicing.delete'),
   replayProtection,
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -271,6 +278,7 @@ router.delete(
 /** POST /api/documents/:id/convert — Convert to target type */
 router.post(
   '/:id/convert',
+  requirePermission('invoicing.create'),
   replayProtection,
   idempotencyCheck(),
   validate(convertDocumentSchema),
@@ -290,6 +298,7 @@ router.post(
 /** POST /api/documents/:id/restore — Restore from recycle bin */
 router.post(
   '/:id/restore',
+  requirePermission('invoicing.edit'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const doc = await documentService.restoreDocument(
@@ -302,6 +311,7 @@ router.post(
 /** DELETE /api/documents/:id/permanent — Hard delete */
 router.delete(
   '/:id/permanent',
+  requirePermission('invoicing.delete'),
   replayProtection,
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -317,6 +327,7 @@ router.delete(
 /** POST /api/documents/:id/share/whatsapp */
 router.post(
   '/:id/share/whatsapp',
+  requirePermission('invoicing.share'),
   replayProtection,
   validate(shareWhatsAppSchema),
   asyncHandler(async (req, res) => {
@@ -391,6 +402,7 @@ router.post(
 /** POST /api/documents/:id/share/email */
 router.post(
   '/:id/share/email',
+  requirePermission('invoicing.share'),
   replayProtection,
   validate(shareEmailSchema),
   asyncHandler(async (req, res) => {

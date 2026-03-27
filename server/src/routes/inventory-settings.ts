@@ -9,6 +9,7 @@ import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
 import { updateInventorySettingsSchema } from '../schemas/product.schemas.js'
 import * as settingsService from '../services/inventory-settings.service.js'
+import { requirePermission } from '../middleware/permission.js'
 
 const router = Router()
 
@@ -27,6 +28,7 @@ router.get(
 /** PUT /api/settings/inventory — Update inventory settings */
 router.put(
   '/',
+  requirePermission('settings.modify'),
   validate(updateInventorySettingsSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId

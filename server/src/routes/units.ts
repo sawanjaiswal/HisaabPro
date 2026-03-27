@@ -6,6 +6,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import { notFoundError } from '../lib/errors.js'
 import { prisma } from '../lib/prisma.js'
@@ -39,6 +40,7 @@ router.get(
 /** POST /api/units — Create custom unit */
 router.post(
   '/',
+  requirePermission('inventory.edit'),
   validate(createUnitSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -120,6 +122,7 @@ router.get(
 /** PUT /api/units/:id — Update custom unit */
 router.put(
   '/:id',
+  requirePermission('inventory.edit'),
   validate(updateUnitSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -132,6 +135,7 @@ router.put(
 /** DELETE /api/units/:id — Delete custom unit */
 router.delete(
   '/:id',
+  requirePermission('inventory.edit'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const unitId = String(req.params.id)
@@ -157,6 +161,7 @@ router.get(
 /** POST /api/unit-conversions — Create conversion (both directions) */
 router.post(
   '/conversions',
+  requirePermission('inventory.edit'),
   validate(createConversionSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -168,6 +173,7 @@ router.post(
 /** PUT /api/unit-conversions/:id — Update conversion factor */
 router.put(
   '/conversions/:id',
+  requirePermission('inventory.edit'),
   validate(updateConversionSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
@@ -180,6 +186,7 @@ router.put(
 /** DELETE /api/unit-conversions/:id — Delete conversion (both directions) */
 router.delete(
   '/conversions/:id',
+  requirePermission('inventory.edit'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const conversionId = String(req.params.id)
