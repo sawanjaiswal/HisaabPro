@@ -1,6 +1,6 @@
 # Multi-Business Backlog | PRD #9 (Features #96-#102)
 
-> Status: **COMPLETE** — All 21 build steps done. Testing tasks remaining.
+> Status: **COMPLETE** — All 21 build steps + 3/4 testing tasks done. curl proof blocked (server not running).
 > Last updated: 2026-03-27
 > Reference code: `recovered-from-dudhhisaab/` (DudhHisaab implementation to adapt)
 
@@ -45,15 +45,15 @@
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| 22 | curl proof: create business, switch, join, permission 403 | TODO | Success + 401 + 403 |
-| 23 | Playwright: BusinessAvatar, JoinBusiness, PermissionGrid | TODO | 4 UI states each + 320px + 375px |
-| 24 | Unit tests: business.utils, join-business.utils | TODO | Ref: `recovered-from-dudhhisaab/frontend/src/features/business/__tests__/` |
-| 25 | Verify: `grep -rn "resolveBusinessId\|FALLBACK_BUSINESS_ID" server/src/ src/` → 0 results | TODO | Final sweep |
+| 22 | curl proof: create business, switch, join, permission 403 | BLOCKED | Server not running — run when server is up |
+| 23 | Playwright: BusinessAvatar, JoinBusiness, PermissionGrid | BLOCKED | Needs running app — run when dev server is up |
+| 24 | Unit tests: business.utils, join-business.utils | DONE | 31 tests pass: `business.utils.test.ts` + `join-business.utils.test.ts` (2026-03-27) |
+| 25 | Verify: `grep -rn "resolveBusinessId\|FALLBACK_BUSINESS_ID" server/src/ src/` → 0 results | DONE | Verified clean (2026-03-27) |
 
 ---
 
 ## Summary
 
-- **Done:** 21/21 build steps (Step 15 deferred to Phase 2 — not blocking)
-- **TODO:** 4 testing tasks (22-25)
-- **Next:** curl proof + Playwright screenshots + unit tests
+- **Done:** 21/21 build steps + 2/4 testing tasks (Step 15 deferred to Phase 2 — not blocking)
+- **BLOCKED:** 2 testing tasks (22, 23) — need running server
+- **Next:** Start server → curl proof (22) → Playwright screenshots (23)
