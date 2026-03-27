@@ -24,7 +24,7 @@ export default function LoginPage() {
       <div className="login-page__card">
         <div className="login-page__header">
           <h1 className="login-page__title">{APP_NAME}</h1>
-          <p className="login-page__subtitle">Sign in to your account</p>
+          <p className="login-page__subtitle">{t.signInSubtitle}</p>
         </div>
 
         <form
@@ -35,7 +35,7 @@ export default function LoginPage() {
           }}
         >
           <div className="login-page__field">
-            <label className="login-page__label" htmlFor="username">Username</label>
+            <label className="login-page__label" htmlFor="username">{t.username}</label>
             <div className="login-page__input-wrapper">
               <input
                 id="username"
@@ -51,7 +51,7 @@ export default function LoginPage() {
           </div>
 
           <div className="login-page__field">
-            <label className="login-page__label" htmlFor="password">Password</label>
+            <label className="login-page__label" htmlFor="password">{t.password}</label>
             <div className="login-page__input-wrapper">
               <input
                 id="password"
@@ -82,7 +82,7 @@ export default function LoginPage() {
             disabled={!isValid || loading}
             aria-label={t.signIn}
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? t.signingIn : t.signIn}
           </button>
 
           {IS_DEV && (

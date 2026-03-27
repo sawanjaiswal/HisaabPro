@@ -65,7 +65,7 @@ export default function TaxCategoriesPage() {
         </div>
       </PageContainer>
 
-      <button className="fab" onClick={() => navigate(ROUTES.SETTINGS_TAX_RATE_NEW)} aria-label={t.createNewTaxRate}>
+      <button type="button" className="fab" onClick={() => navigate(ROUTES.SETTINGS_TAX_RATE_NEW)} aria-label={t.createNewTaxRate}>
         <Plus size={24} aria-hidden="true" />
       </button>
     </AppShell>

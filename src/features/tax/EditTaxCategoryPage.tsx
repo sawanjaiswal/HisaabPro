@@ -16,11 +16,11 @@ import { TaxCategoryFormFields } from './components/TaxCategoryFormFields'
 import './tax-category-form.css'
 
 export default function EditTaxCategoryPage() {
-  const { id } = useParams<{ id: string }>()
+  const { id = '' } = useParams<{ id: string }>()
   const { t } = useLanguage()
   const { user } = useAuth()
   const businessId = user?.businessId ?? ''
-  const { category, status, refresh } = useTaxCategoryDetail(id!)
+  const { category, status, refresh } = useTaxCategoryDetail(id)
 
   if (status === 'loading') {
     return (
@@ -44,7 +44,7 @@ export default function EditTaxCategoryPage() {
     )
   }
 
-  return <EditForm editId={id!} businessId={businessId} initialData={{
+  return <EditForm editId={id} businessId={businessId} initialData={{
     name: category.name, rate: category.rate, cessRate: category.cessRate,
     cessType: category.cessType, hsnCode: category.hsnCode ?? '', sacCode: category.sacCode ?? '',
   }} />

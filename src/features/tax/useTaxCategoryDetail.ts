@@ -17,7 +17,7 @@ export function useTaxCategoryDetail(id: string) {
     if (!id) return
     const controller = new AbortController()
     setStatus('loading')
-    api<TaxCategory>(`/tax-categories/${id}`)
+    api<TaxCategory>(`/tax-categories/${id}`, { signal: controller.signal })
       .then((data) => { setCategory(data); setStatus('success') })
       .catch((err: unknown) => {
         if (err instanceof Error && err.name === 'AbortError') return

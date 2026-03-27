@@ -1,6 +1,6 @@
 /** Tax — Tax Category form hook (create/edit) */
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/hooks/useToast'
 import { ROUTES } from '@/config/routes.config'
@@ -22,6 +22,7 @@ export function useTaxCategoryForm({ editId, initialData, businessId }: UseTaxCa
   const [form, setForm] = useState<TaxCategoryFormData>(initialData ?? INITIAL)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const submitting = useRef(false)
 
   const updateField = useCallback(<K extends keyof TaxCategoryFormData>(key: K, value: TaxCategoryFormData[K]) => {
     setForm((p) => ({ ...p, [key]: value }))
@@ -38,15 +39,16 @@ export function useTaxCategoryForm({ editId, initialData, businessId }: UseTaxCa
   }, [form])
 
   const handleSubmit = useCallback(async () => {
-    if (!validate() || isSubmitting) return
+    if (!validate() || submitting.current) return
+    submitting.current = true
     setIsSubmitting(true)
     try {
       if (isEdit && editId) { await updateTaxCategory(editId, form); toast.success(`${form.name} updated`) }
       else { await createTaxCategory(businessId, form); toast.success(`${form.name} created`) }
       navigate(ROUTES.SETTINGS_TAX_RATES)
     } catch { toast.error(isEdit ? 'Failed to update' : 'Failed to create') }
-    finally { setIsSubmitting(false) }
-  }, [form, isSubmitting, validate, toast, navigate, isEdit, editId, businessId])
+    finally { submitting.current = false; setIsSubmitting(false) }
+  }, [form, validate, toast, navigate, isEdit, editId, businessId])
 
   return { form, errors, isSubmitting, isEdit, updateField, handleSubmit }
 }

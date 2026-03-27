@@ -29,7 +29,7 @@ describe('useTaxCategoryDetail', () => {
     const { result } = renderHook(() => useTaxCategoryDetail('tc-1'))
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.category).toEqual(MOCK_CATEGORY)
-    expect(mockApi).toHaveBeenCalledWith('/tax-categories/tc-1')
+    expect(mockApi).toHaveBeenCalledWith('/tax-categories/tc-1', expect.objectContaining({ signal: expect.any(AbortSignal) }))
   })
 
   it('shows error toast on failure', async () => {
