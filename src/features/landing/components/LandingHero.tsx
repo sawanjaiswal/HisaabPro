@@ -4,6 +4,8 @@ import { memo } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
+import { APP_NAME } from '@/config/app.config'
+
 import { HERO, CTA_ROUTE } from '../landing.constants'
 
 export const LandingHero = memo(function LandingHero() {
@@ -56,7 +58,7 @@ export const LandingHero = memo(function LandingHero() {
           type="button"
           className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 h-12 px-8 text-base bg-gradient-to-b from-white via-white/95 to-white/60 text-black hover:scale-105 active:scale-95"
           onClick={() => navigate(CTA_ROUTE)}
-          aria-label="Get started with HisaabPro"
+          aria-label={`Get started with ${APP_NAME}`}
         >
           {HERO.cta}
         </button>

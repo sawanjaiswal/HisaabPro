@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { ArrowRight, Check, X } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { APP_NAME } from "@/config/app.config"
 import { motion, useReducedMotion } from "motion/react"
 import { LP_APP } from "@/config/landing-links.config"
 
@@ -73,7 +74,7 @@ const defaultTiers: PricingTier[] = [
       { name: "WhatsApp sharing", description: "Send invoices instantly", included: true },
       { name: "Advanced reports", description: "Detailed analytics & export", included: true },
       { name: "4 preset staff roles", description: "Admin, Manager, Salesperson, Viewer", included: true },
-      { name: "Your logo on invoices", description: "Remove HisaabPro branding", included: true },
+      { name: "Your logo on invoices", description: `Remove ${APP_NAME} branding`, included: true },
       { name: "Custom role builder", description: "Fine-grained permissions", included: false },
     ],
   },

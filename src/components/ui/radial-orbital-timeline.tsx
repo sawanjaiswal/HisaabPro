@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { ArrowRight, Link, Zap } from "lucide-react";
+import { APP_NAME } from "@/config/app.config";
 
 interface TimelineItem {
   id: number;
@@ -23,7 +24,7 @@ const defaultTimelineData: TimelineItem[] = [
     id: 1,
     title: "Download",
     date: "30 seconds",
-    content: "Get HisaabPro from Play Store or App Store. 14-day trial, no credit card needed.",
+    content: `Get ${APP_NAME} from Play Store or App Store. 14-day trial, no credit card needed.`,
     category: "setup",
     icon: Zap,
     relatedIds: [2],

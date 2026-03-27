@@ -1,6 +1,7 @@
 'use client';
 import { InstagramIcon, LinkedinIcon, TwitterIcon, YoutubeIcon } from 'lucide-react';
 import { LP_SECTIONS, LP_SOCIAL, LP_LEGAL, LP_EXTERNAL, hash } from '@/config/landing-links.config';
+import { APP_NAME } from '@/config/app.config';
 
 const footerLinks = [
   {
@@ -56,7 +57,7 @@ export function Footer() {
         <div className="grid gap-8 md:gap-10 grid-cols-2 md:grid-cols-6">
           {/* Brand column */}
           <div className="col-span-2 flex flex-col gap-4">
-            <p className="text-lg font-bold lp-text">HisaabPro</p>
+            <p className="text-lg font-bold lp-text">{APP_NAME}</p>
             <p className="text-sm lp-text-muted max-w-[240px]">
               Billing, inventory &amp; payments for Indian businesses.
             </p>
@@ -108,7 +109,7 @@ export function Footer() {
           style={{ borderColor: 'var(--lp-border-subtle)' }}
         >
           <p className="text-xs lp-text-muted">
-            &copy; {new Date().getFullYear()} HisaabPro. Made in India.
+            &copy; {new Date().getFullYear()} {APP_NAME}. Made in India.
           </p>
           <div className="flex items-center gap-6">
             {[

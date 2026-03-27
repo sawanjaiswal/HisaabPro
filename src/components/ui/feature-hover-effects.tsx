@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Download, Settings, FileText, TrendingUp } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
+import { APP_NAME } from "@/config/app.config";
 
 const EASE_OUT: [number, number, number, number] = [0.25, 1, 0.5, 1];
 
@@ -10,7 +11,7 @@ export function FeaturesSectionWithHoverEffects() {
     {
       title: "1. Download",
       description:
-        "Get HisaabPro from Play Store or App Store. 30 seconds to install, ready to bill in 2 minutes.",
+        `Get ${APP_NAME} from Play Store or App Store. 30 seconds to install, ready to bill in 2 minutes.`,
       icon: <Download />,
     },
     {

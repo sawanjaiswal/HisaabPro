@@ -1,5 +1,7 @@
 /** Landing page data — sections 5, 8-12 (deep dive, comparison, pricing, testimonials, CTA, footer) */
 
+import { APP_NAME } from '@/config/app.config'
+
 import type { CompetitorRow, FeatureDeepDive } from './landing.types'
 
 /* ─── Section 5: Feature deep dive (accordion) ─── */
@@ -112,7 +114,7 @@ export const TESTIMONIALS = [
   {
     id: 't1',
     quote:
-      'Switched from Vyapar 3 months ago. Haven\'t lost a single bill since. My shop is in a basement — other apps would crash, but HisaabPro just works.',
+      `Switched from Vyapar 3 months ago. Haven't lost a single bill since. My shop is in a basement — other apps would crash, but ${APP_NAME} just works.`,
     name: 'Ramesh Gupta',
     role: 'Kirana Store Owner',
     location: 'Indore, MP',
@@ -120,7 +122,7 @@ export const TESTIMONIALS = [
   {
     id: 't2',
     quote:
-      'We manage 200+ SKUs and 50 customers. HisaabPro handles inventory and payments better than anything we tried. The staff role system is a lifesaver.',
+      `We manage 200+ SKUs and 50 customers. ${APP_NAME} handles inventory and payments better than anything we tried. The staff role system is a lifesaver.`,
     name: 'Priya Sharma',
     role: 'Wholesale Distributor',
     location: 'Jaipur, RJ',
@@ -144,7 +146,7 @@ export const TESTIMONIALS = [
   {
     id: 't5',
     quote:
-      'Used Excel for 8 years. Set up HisaabPro in 15 minutes, now billing takes half the time. Thermal printer support is amazing — no separate billing machine.',
+      `Used Excel for 8 years. Set up ${APP_NAME} in 15 minutes, now billing takes half the time. Thermal printer support is amazing — no separate billing machine.`,
     name: 'Vikram Singh',
     role: 'Hardware Store Owner',
     location: 'Jodhpur, RJ',
@@ -152,7 +154,7 @@ export const TESTIMONIALS = [
   {
     id: 't6',
     quote:
-      'Our town has terrible internet. Other apps show loading screens all day. HisaabPro is fast and reliable — my delivery challans are always ready.',
+      `Our town has terrible internet. Other apps show loading screens all day. ${APP_NAME} is fast and reliable — my delivery challans are always ready.`,
     name: 'Meena Agarwal',
     role: 'Grain Wholesaler',
     location: 'Ratlam, MP',

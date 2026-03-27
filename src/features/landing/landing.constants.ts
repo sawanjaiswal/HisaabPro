@@ -1,6 +1,7 @@
 /** Landing page data — sections 1-7 (above fold + core) */
 
 import { ROUTES } from '@/config/routes.config'
+import { APP_NAME } from '@/config/app.config'
 
 import type { LandingFeature } from './landing.types'
 
@@ -47,7 +48,7 @@ export const PROBLEMS = [
     emoji: '\uD83D\uDCF5',
     title: 'Losing data with other apps?',
     description:
-      'Other apps freeze, show loading spinners, lose entries. You shouldn\'t worry about your billing data disappearing. HisaabPro keeps everything safe.',
+      `Other apps freeze, show loading spinners, lose entries. You shouldn't worry about your billing data disappearing. ${APP_NAME} keeps everything safe.`,
     icon: 'ShieldAlert',
   },
 ] as const
@@ -163,7 +164,7 @@ export const USE_CASES = [
       'Udhar (credit) tracking per customer',
       'Thermal receipt printing via Bluetooth',
     ],
-    imageAlt: 'Kirana store owner using HisaabPro on phone at billing counter',
+    imageAlt: `Kirana store owner using ${APP_NAME} on phone at billing counter`,
   },
   {
     id: 'wholesale',

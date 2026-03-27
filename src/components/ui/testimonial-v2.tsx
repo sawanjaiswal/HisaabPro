@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from "motion/react";
+import { APP_NAME } from '@/config/app.config';
 
 // --- Types ---
 interface Testimonial {
@@ -19,7 +20,7 @@ function avatarUrl(name: string, index: number): string {
 
 const testimonials: Testimonial[] = [
   {
-    text: "Mera purana billing app bahut slow tha aur data kho jaata tha. HisaabPro mein sab kuch fast hai aur bills kabhi nahi kho-te.",
+    text: `Mera purana billing app bahut slow tha aur data kho jaata tha. ${APP_NAME} mein sab kuch fast hai aur bills kabhi nahi kho-te.`,
     image: avatarUrl("Rajesh Sharma", 0),
     name: "Rajesh Sharma",
     role: "Kirana Store Owner, Indore",
@@ -49,7 +50,7 @@ const testimonials: Testimonial[] = [
     role: "Electronics Dealer, Hyderabad",
   },
   {
-    text: "Beautiful app. My customers think I hired a designer for my invoices. It is just HisaabPro templates. Very professional look.",
+    text: `Beautiful app. My customers think I hired a designer for my invoices. It is just ${APP_NAME} templates. Very professional look.`,
     image: avatarUrl("Kavita Joshi", 5),
     name: "Kavita Joshi",
     role: "Boutique Owner, Pune",
@@ -61,7 +62,7 @@ const testimonials: Testimonial[] = [
     role: "Hardware Store, Ludhiana",
   },
   {
-    text: "I was using paper registers for 5 years. Switching to HisaabPro was the best business decision. My CA is also happy now.",
+    text: `I was using paper registers for 5 years. Switching to ${APP_NAME} was the best business decision. My CA is also happy now.`,
     image: avatarUrl("Neha Agarwal", 7),
     name: "Neha Agarwal",
     role: "Beauty Salon, Delhi",

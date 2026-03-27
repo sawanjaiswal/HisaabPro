@@ -1,6 +1,7 @@
-/** Hero Dashboard Mockup — full-height HisaabPro dashboard preview */
+/** Hero Dashboard Mockup — full-height dashboard preview */
 
 import { TrendingUp, FileText, Users, Package, BarChart3, IndianRupee, ArrowUpRight, Clock, Plus, Send, Download, CreditCard, Wallet } from 'lucide-react'
+import { APP_NAME } from '@/config/app.config'
 
 export function HeroDashboardMockup() {
   return (
@@ -17,7 +18,7 @@ export function HeroDashboardMockup() {
           <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background: 'var(--lp-accent)' }}>
             <IndianRupee className="w-3.5 h-3.5 text-white" />
           </div>
-          <span className="text-sm font-semibold lp-text">HisaabPro</span>
+          <span className="text-sm font-semibold lp-text">{APP_NAME}</span>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 px-3 py-1 rounded-md text-xs" style={{ background: 'var(--lp-bg-elevated)', color: 'var(--lp-text-muted)' }}>

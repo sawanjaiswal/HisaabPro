@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { LP_SECTIONS, LP_APP } from '@/config/landing-links.config';
+import { APP_NAME } from '@/config/app.config';
 
 export function StickyMobileCTA() {
   const [visible, setVisible] = useState(false);
@@ -60,7 +61,7 @@ export function StickyMobileCTA() {
         >
           <div className="flex items-center justify-between gap-3 px-4 py-3">
             <div>
-              <p className="font-semibold text-sm lp-text">Try HisaabPro</p>
+              <p className="font-semibold text-sm lp-text">Try {APP_NAME}</p>
               <p className="text-xs lp-text-muted">14-day trial, no card</p>
             </div>
             <a href={LP_APP.REGISTER}>

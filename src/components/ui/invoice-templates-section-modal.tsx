@@ -1,10 +1,19 @@
 /** Invoice Template Preview Modal — full-size preview of a template */
-
 import { useEffect, useCallback } from 'react'
 import { motion } from 'motion/react'
 import { FileText, X } from 'lucide-react'
+import { APP_NAME } from '@/config/app.config'
 import type { TemplateData } from './invoice-templates-section.data'
 import { EASE_OUT } from './invoice-templates-section.data'
+
+/* Document-rendering color constants (not design tokens — only used in this file) */
+const DOC_COLORS = {
+  TEXT_PRIMARY: '#111827', TEXT_BODY: '#374151', TEXT_MUTED: '#6b7280',
+  TEXT_LIGHT: '#9ca3af', TEXT_FAINT: '#d1d5db', TEXT_WHITE: '#fff',
+  BG_WHITE: '#ffffff', BG_SUBTLE: '#fafafa', BG_STRIPE: '#f9fafb', BG_TABLE_HEADER: '#f3f4f6',
+  BORDER: '#e5e7eb', BORDER_SIGNATURE: '#d1d5db',
+  STAMP_GREEN: '#059669', WATERMARK: '#e5e7eb',
+} as const
 
 export function TemplatePreviewModal({ template: t, onClose }: { template: TemplateData; onClose: () => void }) {
   const subtotal = t.items.reduce((s, item) => s + item.amount, 0)
@@ -26,8 +35,6 @@ export function TemplatePreviewModal({ template: t, onClose }: { template: Templ
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [handleKeyDown])
 
-  const border = '#e5e7eb'
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -48,8 +55,8 @@ export function TemplatePreviewModal({ template: t, onClose }: { template: Templ
         transition={{ duration: 0.3, ease: EASE_OUT }}
         className="relative w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-xl shadow-2xl"
         style={{
-          backgroundColor: '#ffffff',
-          color: '#111827',
+          backgroundColor: DOC_COLORS.BG_WHITE,
+          color: DOC_COLORS.TEXT_PRIMARY,
           fontFamily: isSerif ? 'Georgia, "Times New Roman", serif' : 'Inter, system-ui, sans-serif',
         }}
         onClick={e => e.stopPropagation()}
@@ -60,7 +67,7 @@ export function TemplatePreviewModal({ template: t, onClose }: { template: Templ
           className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer"
           style={{
             backgroundColor: t.headerBg ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.05)',
-            color: t.headerBg ? '#fff' : '#111827',
+            color: t.headerBg ? DOC_COLORS.TEXT_WHITE : DOC_COLORS.TEXT_PRIMARY,
           }}
           onPointerEnter={e => e.currentTarget.style.backgroundColor = t.headerBg ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.1)'}
           onPointerLeave={e => e.currentTarget.style.backgroundColor = t.headerBg ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.05)'}
@@ -68,19 +75,15 @@ export function TemplatePreviewModal({ template: t, onClose }: { template: Templ
         >
           <X size={16} />
         </button>
-
         {/* PAID stamp overlay */}
         {t.showStamp && (
           <div
             className="absolute top-20 right-8 rotate-[-15deg] px-4 py-1 rounded-md border-2 font-bold tracking-widest opacity-20 pointer-events-none"
-            style={{ color: '#059669', borderColor: '#059669', fontSize: '1.5rem' }}
+            style={{ color: DOC_COLORS.STAMP_GREEN, borderColor: DOC_COLORS.STAMP_GREEN, fontSize: '1.5rem' }}
           >
             PAID
           </div>
         )}
-
-        {/* ─── HEADER — each style is visually unique ─── */}
-
         {/* BOLD: Full-width colored header */}
         {t.headerBg && (
           <div className="rounded-t-xl px-6 py-6" style={{ backgroundColor: t.headerBg, color: t.headerTextColor }}>
@@ -99,12 +102,11 @@ export function TemplatePreviewModal({ template: t, onClose }: { template: Templ
             </div>
           </div>
         )}
-
-        {/* GST STANDARD: Side-by-side with accent bar */}
+        {/* STANDARD: Side-by-side with accent bar */}
         {!t.headerBg && t.headerStyle === 'side-by-side' && (
           <>
             <div className="h-1.5 w-full rounded-t-xl" style={{ backgroundColor: t.accent }} />
-            <div className="px-6 py-5 flex items-start justify-between" style={{ borderBottom: `1px solid ${border}` }}>
+            <div className="px-6 py-5 flex items-start justify-between" style={{ borderBottom: `1px solid ${DOC_COLORS.BORDER}` }}>
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-8 h-8 rounded-md flex items-center justify-center" style={{ backgroundColor: t.accent }}>
@@ -112,41 +114,39 @@ export function TemplatePreviewModal({ template: t, onClose }: { template: Templ
                   </div>
                   <span className="text-base font-bold">{t.business.name}</span>
                 </div>
-                <p className="text-xs" style={{ color: '#6b7280' }}>{t.business.address}</p>
-                <p className="text-xs" style={{ color: '#6b7280' }}>Ph: {t.business.phone}</p>
+                <p className="text-xs" style={{ color: DOC_COLORS.TEXT_MUTED }}>{t.business.address}</p>
+                <p className="text-xs" style={{ color: DOC_COLORS.TEXT_MUTED }}>Ph: {t.business.phone}</p>
                 {t.business.gstin && <p className="text-xs font-medium mt-1" style={{ color: t.accent }}>GSTIN: {t.business.gstin}</p>}
               </div>
               <div className="text-right">
                 <p className="text-sm font-bold" style={{ color: t.accent }}>TAX INVOICE</p>
-                <p className="text-xs mt-1" style={{ color: '#6b7280' }}>{t.invoiceNo}</p>
-                <p className="text-xs" style={{ color: '#6b7280' }}>20 Mar 2026</p>
-                <p className="text-xs" style={{ color: '#6b7280' }}>Due: 19 Apr 2026</p>
+                <p className="text-xs mt-1" style={{ color: DOC_COLORS.TEXT_MUTED }}>{t.invoiceNo}</p>
+                <p className="text-xs" style={{ color: DOC_COLORS.TEXT_MUTED }}>20 Mar 2026</p>
+                <p className="text-xs" style={{ color: DOC_COLORS.TEXT_MUTED }}>Due: 19 Apr 2026</p>
               </div>
             </div>
           </>
         )}
-
-        {/* ELEGANT: Centered, serif, decorative divider */}
+        {/* ELEGANT: Centered serif with decorative divider */}
         {t.headerStyle === 'stacked' && !t.headerBg && (
           <>
             <div className="h-1 w-full rounded-t-xl" style={{ backgroundColor: t.accent }} />
-            <div className="px-6 pt-6 pb-4 text-center" style={{ borderBottom: `1px solid ${border}` }}>
+            <div className="px-6 pt-6 pb-4 text-center" style={{ borderBottom: `1px solid ${DOC_COLORS.BORDER}` }}>
               <p className="text-xl font-bold tracking-tight" style={{ fontFamily: 'Georgia, serif' }}>{t.business.name}</p>
               {t.business.tagline && (
                 <p className="text-xs italic mt-0.5" style={{ color: t.accent }}>{t.business.tagline}</p>
               )}
-              <p className="text-xs mt-1" style={{ color: '#9ca3af' }}>{t.business.address} | {t.business.phone}</p>
+              <p className="text-xs mt-1" style={{ color: DOC_COLORS.TEXT_LIGHT }}>{t.business.address} | {t.business.phone}</p>
               {/* Decorative divider */}
               <div className="flex items-center justify-center gap-3 mt-4">
-                <div className="h-px flex-1" style={{ backgroundColor: border }} />
+                <div className="h-px flex-1" style={{ backgroundColor: DOC_COLORS.BORDER }} />
                 <span className="text-xs font-semibold tracking-widest" style={{ color: t.accent }}>INVOICE</span>
-                <div className="h-px flex-1" style={{ backgroundColor: border }} />
+                <div className="h-px flex-1" style={{ backgroundColor: DOC_COLORS.BORDER }} />
               </div>
-              <p className="text-xs mt-2" style={{ color: '#9ca3af' }}>{t.invoiceNo} | 20 Mar 2026</p>
+              <p className="text-xs mt-2" style={{ color: DOC_COLORS.TEXT_LIGHT }}>{t.invoiceNo} | 20 Mar 2026</p>
             </div>
           </>
         )}
-
         {/* KIRANA: Minimal compact header */}
         {t.headerStyle === 'minimal' && !t.headerBg && (
           <>
@@ -154,38 +154,36 @@ export function TemplatePreviewModal({ template: t, onClose }: { template: Templ
             <div className="px-6 py-3 flex items-center justify-between" style={{ borderBottom: `2px solid ${t.accent}` }}>
               <div>
                 <span className="text-sm font-bold">{t.business.name}</span>
-                <p className="text-xs" style={{ color: '#9ca3af' }}>{t.business.address} | {t.business.phone}</p>
+                <p className="text-xs" style={{ color: DOC_COLORS.TEXT_LIGHT }}>{t.business.address} | {t.business.phone}</p>
               </div>
               <div className="text-right">
                 <span className="text-xs font-bold" style={{ color: t.accent }}>{t.invoiceNo}</span>
-                <p className="text-xs" style={{ color: '#9ca3af' }}>20 Mar 2026</p>
+                <p className="text-xs" style={{ color: DOC_COLORS.TEXT_LIGHT }}>20 Mar 2026</p>
               </div>
             </div>
           </>
         )}
-
-        {/* ─── BILL TO ─── */}
-        <div className="px-6 py-3" style={{ borderBottom: `1px solid ${border}`, backgroundColor: t.headerStyle === 'stacked' ? '#ffffff' : '#fafafa' }}>
-          <p className="text-xs font-semibold mb-1" style={{ color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.625rem' }}>Bill To</p>
+        {/* Bill To */}
+        <div className="px-6 py-3" style={{ borderBottom: `1px solid ${DOC_COLORS.BORDER}`, backgroundColor: t.headerStyle === 'stacked' ? DOC_COLORS.BG_WHITE : DOC_COLORS.BG_SUBTLE }}>
+          <p className="text-xs font-semibold mb-1" style={{ color: DOC_COLORS.TEXT_LIGHT, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.625rem' }}>Bill To</p>
           <p className="text-sm font-medium">{t.customer.name}</p>
-          {t.customer.address && <p className="text-xs" style={{ color: '#6b7280' }}>{t.customer.address}</p>}
-          {t.customer.gstin && <p className="text-xs" style={{ color: '#6b7280' }}>GSTIN: {t.customer.gstin}</p>}
+          {t.customer.address && <p className="text-xs" style={{ color: DOC_COLORS.TEXT_MUTED }}>{t.customer.address}</p>}
+          {t.customer.gstin && <p className="text-xs" style={{ color: DOC_COLORS.TEXT_MUTED }}>GSTIN: {t.customer.gstin}</p>}
         </div>
-
-        {/* ─── LINE ITEMS TABLE ─── */}
+        {/* Line Items */}
         <div className="px-6 py-3">
           <table className="w-full" style={{ fontSize: '0.75rem', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{
-                backgroundColor: t.tableStyle === 'minimal' ? 'transparent' : t.tableStyle === 'bordered' ? '#f3f4f6' : 'transparent',
-                borderBottom: t.tableStyle === 'minimal' ? `1px solid ${border}` : `2px solid ${t.accent}`,
+                backgroundColor: t.tableStyle === 'minimal' ? 'transparent' : t.tableStyle === 'bordered' ? DOC_COLORS.BG_TABLE_HEADER : 'transparent',
+                borderBottom: t.tableStyle === 'minimal' ? `1px solid ${DOC_COLORS.BORDER}` : `2px solid ${t.accent}`,
               }}>
-                <th className="text-left py-2 px-1.5 font-semibold" style={{ color: '#374151' }}>#</th>
-                <th className="text-left py-2 px-1.5 font-semibold" style={{ color: '#374151' }}>Item</th>
-                {t.hasGst && <th className="text-left py-2 px-1.5 font-semibold" style={{ color: '#374151' }}>HSN</th>}
-                <th className="text-right py-2 px-1.5 font-semibold" style={{ color: '#374151' }}>Qty</th>
-                <th className="text-right py-2 px-1.5 font-semibold" style={{ color: '#374151' }}>Rate</th>
-                <th className="text-right py-2 px-1.5 font-semibold" style={{ color: '#374151' }}>Amt</th>
+                <th className="text-left py-2 px-1.5 font-semibold" style={{ color: DOC_COLORS.TEXT_BODY }}>#</th>
+                <th className="text-left py-2 px-1.5 font-semibold" style={{ color: DOC_COLORS.TEXT_BODY }}>Item</th>
+                {t.hasGst && <th className="text-left py-2 px-1.5 font-semibold" style={{ color: DOC_COLORS.TEXT_BODY }}>HSN</th>}
+                <th className="text-right py-2 px-1.5 font-semibold" style={{ color: DOC_COLORS.TEXT_BODY }}>Qty</th>
+                <th className="text-right py-2 px-1.5 font-semibold" style={{ color: DOC_COLORS.TEXT_BODY }}>Rate</th>
+                <th className="text-right py-2 px-1.5 font-semibold" style={{ color: DOC_COLORS.TEXT_BODY }}>Amt</th>
               </tr>
             </thead>
             <tbody>
@@ -193,13 +191,13 @@ export function TemplatePreviewModal({ template: t, onClose }: { template: Templ
                 <tr
                   key={idx}
                   style={{
-                    borderBottom: t.tableStyle === 'bordered' ? `1px solid ${border}` : 'none',
-                    backgroundColor: t.tableStyle === 'striped' && idx % 2 === 0 ? '#f9fafb' : 'transparent',
+                    borderBottom: t.tableStyle === 'bordered' ? `1px solid ${DOC_COLORS.BORDER}` : 'none',
+                    backgroundColor: t.tableStyle === 'striped' && idx % 2 === 0 ? DOC_COLORS.BG_STRIPE : 'transparent',
                   }}
                 >
-                  <td className="py-2 px-1.5" style={{ color: '#9ca3af' }}>{idx + 1}</td>
+                  <td className="py-2 px-1.5" style={{ color: DOC_COLORS.TEXT_LIGHT }}>{idx + 1}</td>
                   <td className="py-2 px-1.5">{item.name}</td>
-                  {t.hasGst && <td className="py-2 px-1.5" style={{ color: '#9ca3af' }}>{item.hsn}</td>}
+                  {t.hasGst && <td className="py-2 px-1.5" style={{ color: DOC_COLORS.TEXT_LIGHT }}>{item.hsn}</td>}
                   <td className="py-2 px-1.5 text-right">{item.qty} {item.unit}</td>
                   <td className="py-2 px-1.5 text-right">₹{item.rate.toLocaleString('en-IN')}</td>
                   <td className="py-2 px-1.5 text-right font-medium">₹{item.amount.toLocaleString('en-IN')}</td>
@@ -208,22 +206,21 @@ export function TemplatePreviewModal({ template: t, onClose }: { template: Templ
             </tbody>
           </table>
         </div>
-
-        {/* ─── TOTALS ─── */}
-        <div className="px-6 py-3" style={{ borderTop: `1px solid ${border}` }}>
+        {/* Totals */}
+        <div className="px-6 py-3" style={{ borderTop: `1px solid ${DOC_COLORS.BORDER}` }}>
           <div className="flex flex-col items-end gap-1" style={{ fontSize: '0.8125rem' }}>
             <div className="flex justify-between w-40 sm:w-48">
-              <span style={{ color: '#9ca3af' }}>Subtotal</span>
+              <span style={{ color: DOC_COLORS.TEXT_LIGHT }}>Subtotal</span>
               <span style={{ fontWeight: 500 }}>₹{subtotal.toLocaleString('en-IN')}</span>
             </div>
             {t.hasGst && (
               <>
                 <div className="flex justify-between w-40 sm:w-48">
-                  <span style={{ color: '#9ca3af' }}>CGST (9%)</span>
+                  <span style={{ color: DOC_COLORS.TEXT_LIGHT }}>CGST (9%)</span>
                   <span style={{ fontWeight: 500 }}>₹{Math.round(taxAmount / 2).toLocaleString('en-IN')}</span>
                 </div>
                 <div className="flex justify-between w-40 sm:w-48">
-                  <span style={{ color: '#9ca3af' }}>SGST (9%)</span>
+                  <span style={{ color: DOC_COLORS.TEXT_LIGHT }}>SGST (9%)</span>
                   <span style={{ fontWeight: 500 }}>₹{Math.round(taxAmount / 2).toLocaleString('en-IN')}</span>
                 </div>
               </>
@@ -234,21 +231,19 @@ export function TemplatePreviewModal({ template: t, onClose }: { template: Templ
             </div>
           </div>
         </div>
-
-        {/* ─── SIGNATURE (Elegant only) ─── */}
+        {/* Signature (Elegant only) */}
         {t.showSignature && (
-          <div className="px-6 py-3 flex justify-end" style={{ borderTop: `1px solid ${border}` }}>
+          <div className="px-6 py-3 flex justify-end" style={{ borderTop: `1px solid ${DOC_COLORS.BORDER}` }}>
             <div className="text-center">
-              <div className="w-32 border-b mb-1" style={{ borderColor: '#d1d5db', height: 30 }} />
-              <p className="text-xs" style={{ color: '#9ca3af' }}>Authorized Signature</p>
+              <div className="w-32 border-b mb-1" style={{ borderColor: DOC_COLORS.BORDER_SIGNATURE, height: 30 }} />
+              <p className="text-xs" style={{ color: DOC_COLORS.TEXT_LIGHT }}>Authorized Signature</p>
             </div>
           </div>
         )}
-
-        {/* ─── FOOTER ─── */}
-        <div className="px-6 py-3 rounded-b-xl" style={{ borderTop: `1px solid ${border}`, backgroundColor: '#fafafa' }}>
-          <p className="text-xs" style={{ color: '#d1d5db' }}>{t.footerNote}</p>
-          <p className="text-center text-xs mt-2" style={{ color: '#e5e7eb' }}>Generated with HisaabPro</p>
+        {/* Footer */}
+        <div className="px-6 py-3 rounded-b-xl" style={{ borderTop: `1px solid ${DOC_COLORS.BORDER}`, backgroundColor: DOC_COLORS.BG_SUBTLE }}>
+          <p className="text-xs" style={{ color: DOC_COLORS.TEXT_FAINT }}>{t.footerNote}</p>
+          <p className="text-center text-xs mt-2" style={{ color: DOC_COLORS.WATERMARK }}>Generated with {APP_NAME}</p>
         </div>
       </motion.div>
     </motion.div>

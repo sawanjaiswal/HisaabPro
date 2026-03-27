@@ -1,6 +1,7 @@
 /** Hero Phone Mockup — mobile app preview inside a phone frame */
 
 import { Plus, Send, FileText, IndianRupee, ArrowUpRight, Clock, Bell } from 'lucide-react'
+import { APP_NAME } from '@/config/app.config'
 
 export function HeroPhoneMockup({ className = '' }: { className?: string }) {
   return (
@@ -38,7 +39,7 @@ export function HeroPhoneMockup({ className = '' }: { className?: string }) {
             <div className="w-5 h-5 rounded-md flex items-center justify-center" style={{ background: 'var(--lp-accent)' }}>
               <IndianRupee className="w-2.5 h-2.5 text-white" />
             </div>
-            <span className="font-semibold lp-text" style={{ fontSize: '0.625rem' }}>HisaabPro</span>
+            <span className="font-semibold lp-text" style={{ fontSize: '0.625rem' }}>{APP_NAME}</span>
           </div>
           <Bell className="w-3.5 h-3.5" style={{ color: 'var(--lp-text-muted)' }} />
         </div>

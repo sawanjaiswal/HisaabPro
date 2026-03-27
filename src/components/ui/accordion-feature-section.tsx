@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
+import { APP_NAME } from "@/config/app.config";
 
 import {
   Accordion,
@@ -57,7 +58,7 @@ const defaultFeatures: FeatureItem[] = [
     title: "How is this different from Vyapar or MyBillBook?",
     image: "",
     description:
-      "HisaabPro guarantees zero data loss, has a modern premium UI that your customers will notice, a custom staff role builder, and real WhatsApp support that replies in hours — not months. Plus transparent pricing with no hidden charges.",
+      `${APP_NAME} guarantees zero data loss, has a modern premium UI that your customers will notice, a custom staff role builder, and real WhatsApp support that replies in hours — not months. Plus transparent pricing with no hidden charges.`,
   },
 ];
 

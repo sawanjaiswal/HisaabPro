@@ -3,6 +3,8 @@
 import { ArrowRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
+import { APP_NAME } from '@/config/app.config'
+
 import { CTA_ROUTE } from '../landing.constants'
 
 export function LandingCTA() {
@@ -32,7 +34,7 @@ export function LandingCTA() {
           Ready to upgrade your business?
         </h2>
         <p className="mt-4 max-w-lg text-[1rem] leading-relaxed text-gray-400">
-          Join thousands of Indian businesses using HisaabPro. 14-day trial, no credit card required.
+          Join thousands of Indian businesses using {APP_NAME}. 14-day trial, no credit card required.
         </p>
 
         <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row">
@@ -40,7 +42,7 @@ export function LandingCTA() {
             type="button"
             className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-b from-white via-white/95 to-white/60 px-8 py-3 text-[1rem] font-medium text-black transition-all hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
             onClick={() => navigate(CTA_ROUTE)}
-            aria-label="Start using HisaabPro"
+            aria-label={`Start using ${APP_NAME}`}
           >
             Get Started
           </button>

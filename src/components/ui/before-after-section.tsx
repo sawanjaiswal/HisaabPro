@@ -9,6 +9,7 @@
 import { useState } from 'react'
 import { motion, useReducedMotion, AnimatePresence } from 'motion/react'
 import { FileText, Wallet, Package, ArrowRight, AlertTriangle, CheckCircle } from 'lucide-react'
+import { APP_NAME } from '@/config/app.config'
 
 const EASE_OUT: [number, number, number, number] = [0.25, 1, 0.5, 1]
 
@@ -243,7 +244,7 @@ export function BeforeAfterSection() {
             <span className="text-3xl md:text-4xl lg:text-5xl">To Digital Clarity.</span>
           </h2>
           <p className="text-sm md:text-base lp-text-muted max-w-xl mx-auto">
-            Real features, real impact — see how HisaabPro replaces manual work.
+            Real features, real impact — see how {APP_NAME} replaces manual work.
           </p>
         </motion.div>
 
@@ -341,7 +342,7 @@ export function BeforeAfterSection() {
                   >
                     AFTER
                   </span>
-                  <span className="text-sm" style={{ color: 'var(--lp-mock-success)' }}>With HisaabPro</span>
+                  <span className="text-sm" style={{ color: 'var(--lp-mock-success)' }}>With {APP_NAME}</span>
                 </div>
                 <div className="flex-1 mb-4">{tab.afterContent}</div>
                 <div className="flex flex-col gap-2.5">

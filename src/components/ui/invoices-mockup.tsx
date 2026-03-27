@@ -1,6 +1,7 @@
 /** Invoices List Mockup — shows invoice management view for features section */
 
 import { FileText, Users, Package, BarChart3, IndianRupee, Search, Filter, Plus, Download, ChevronDown, CreditCard, Wallet, TrendingUp, Settings } from 'lucide-react'
+import { APP_NAME } from '@/config/app.config'
 
 const INVOICES = [
   { id: 'INV-1042', party: 'Sharma Electronics', date: '20 Mar', amount: '₹12,450', status: 'Paid', statusColor: 'var(--lp-mock-success)' },
@@ -39,7 +40,7 @@ export function InvoicesMockup() {
           <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background: 'var(--lp-accent)' }}>
             <IndianRupee className="w-3.5 h-3.5 text-white" />
           </div>
-          <span className="text-sm font-semibold lp-text">HisaabPro</span>
+          <span className="text-sm font-semibold lp-text">{APP_NAME}</span>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 px-3 py-1 rounded-md text-xs" style={{ background: 'var(--lp-bg-elevated)', color: 'var(--lp-text-muted)' }}>

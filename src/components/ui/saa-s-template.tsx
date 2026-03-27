@@ -2,6 +2,7 @@ import React from "react";
 import { Sun, Moon } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { LP_SECTIONS, LP_APP, hash } from "@/config/landing-links.config";
+import { APP_NAME } from "@/config/app.config";
 import { HeroDashboardMockup } from "@/components/ui/hero-dashboard-mockup";
 import { HeroPhoneMockup } from "@/components/ui/hero-phone-mockup";
 import { ScaledMockup } from "@/components/ui/scaled-mockup";
@@ -127,7 +128,7 @@ const Navigation = React.memo(({ isDark, onToggleTheme }: ThemeProps) => {
         style={{ padding: scrolled ? '0.625rem 1.5rem' : '1rem 1.5rem' }}
       >
         <div className="flex items-center justify-between">
-          <div className="text-xl font-semibold lp-text-brand">HisaabPro</div>
+          <div className="text-xl font-semibold lp-text-brand">{APP_NAME}</div>
 
           <div className="hidden md:flex items-center justify-center gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <a href={hash(LP_SECTIONS.FEATURES)} className="text-sm lp-text-secondary hover:opacity-100 transition-colors">Features</a>
