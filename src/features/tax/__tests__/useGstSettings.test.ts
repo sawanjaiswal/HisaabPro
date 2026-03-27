@@ -29,7 +29,7 @@ describe('useGstSettings', () => {
     const { result } = renderHook(() => useGstSettings('biz-1'))
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.settings).toEqual(MOCK_SETTINGS)
-    expect(mockApi).toHaveBeenCalledWith('/businesses/biz-1/gst-settings')
+    expect(mockApi).toHaveBeenCalledWith('/businesses/biz-1/gst-settings', expect.objectContaining({ signal: expect.any(AbortSignal) }))
   })
 
   it('shows error toast on fetch failure', async () => {

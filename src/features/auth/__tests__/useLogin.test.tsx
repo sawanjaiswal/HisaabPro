@@ -12,15 +12,18 @@ vi.mock('react-router-dom', async () => {
   return { ...actual, useNavigate: () => mockNavigate }
 })
 
+const mockSetBusinesses = vi.fn()
 vi.mock('@/context/AuthContext', () => ({
-  useAuth: () => ({ setUser: mockSetUser }),
+  useAuth: () => ({ setUser: mockSetUser, setBusinesses: mockSetBusinesses }),
 }))
 
 const mockDevLogin = vi.fn()
 const mockSetCachedUser = vi.fn()
+const mockSetCachedBusinesses = vi.fn()
 vi.mock('@/lib/auth', () => ({
   devLogin: (...args: unknown[]) => mockDevLogin(...args),
   setCachedUser: (...args: unknown[]) => mockSetCachedUser(...args),
+  setCachedBusinesses: (...args: unknown[]) => mockSetCachedBusinesses(...args),
 }))
 
 vi.mock('@/lib/api', () => ({
@@ -55,7 +58,7 @@ describe('useLogin', () => {
   })
 
   it('navigates to dashboard on successful login', async () => {
-    mockDevLogin.mockResolvedValue({ user: { id: '1' }, isNewUser: false })
+    mockDevLogin.mockResolvedValue({ user: { id: '1' }, businesses: [{ id: 'b1' }], isNewUser: false })
     const { result } = renderHook(() => useLogin(), { wrapper })
 
     act(() => { result.current.setUsername('admin') })
