@@ -266,6 +266,8 @@ model Party {
   lastTransactionAt DateTime?
   notes             String?
   isActive          Boolean  @default(true)
+  isDeleted         Boolean  @default(false)
+  deletedAt         DateTime?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -283,6 +285,7 @@ model Party {
   @@index([businessId, type, isActive])
   @@index([businessId, name])
   @@index([businessId, outstandingBalance])
+  @@index([businessId, isDeleted])
   @@index([groupId])
 }
 
@@ -297,12 +300,15 @@ model PartyAddress {
   pincode   String
   type      String   @default("BILLING") // BILLING, SHIPPING
   isDefault Boolean  @default(false)
+  isDeleted Boolean  @default(false)
+  deletedAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
 
   @@index([partyId, type])
+  @@index([partyId, isDeleted])
 }
 
 model PartyGroup {
@@ -311,6 +317,8 @@ model PartyGroup {
   name        String
   description String?
   color       String   @default("#6B7280")
+  isDeleted   Boolean  @default(false)
+  deletedAt   DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -319,6 +327,7 @@ model PartyGroup {
 
   @@unique([businessId, name])
   @@index([businessId])
+  @@index([businessId, isDeleted])
 }
 
 model CustomFieldDefinition {
@@ -331,6 +340,8 @@ model CustomFieldDefinition {
   showOnInvoice Boolean  @default(false)
   entityType    String   @default("PARTY") // PARTY, PRODUCT, INVOICE
   sortOrder     Int      @default(0)
+  isDeleted     Boolean  @default(false)
+  deletedAt     DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -340,6 +351,7 @@ model CustomFieldDefinition {
 
   @@unique([businessId, name, entityType])
   @@index([businessId, entityType])
+  @@index([businessId, isDeleted])
 }
 
 model PartyCustomFieldValue {
@@ -358,12 +370,14 @@ model PartyCustomFieldValue {
 }
 
 model OpeningBalance {
-  id       String   @id @default(cuid())
-  partyId  String   @unique
-  amount   Int      // in paise
-  type     String   // RECEIVABLE, PAYABLE
-  asOfDate DateTime
-  notes    String?
+  id        String   @id @default(cuid())
+  partyId   String   @unique
+  amount    Int      // in paise
+  type      String   // RECEIVABLE, PAYABLE
+  asOfDate  DateTime
+  notes     String?
+  isDeleted Boolean  @default(false)
+  deletedAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -376,6 +390,8 @@ model PartyPricing {
   productId String
   price     Int      // in paise
   minQty    Int      @default(1)
+  isDeleted Boolean  @default(false)
+  deletedAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -384,6 +400,7 @@ model PartyPricing {
 
   @@unique([partyId, productId])
   @@index([productId])
+  @@index([partyId, isDeleted])
 }
 
 // === Inventory & Products ===
@@ -396,6 +413,8 @@ model Category {
   color      String   @default("#6B7280")
   sortOrder  Int      @default(0)
   isHidden   Boolean  @default(false) // hide predefined without deleting
+  isDeleted  Boolean  @default(false)
+  deletedAt  DateTime?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -404,6 +423,7 @@ model Category {
 
   @@unique([businessId, name])
   @@index([businessId])
+  @@index([businessId, isDeleted])
 }
 
 model Unit {
@@ -416,6 +436,8 @@ model Unit {
   decimalAllowed  Boolean  @default(true)      // false for pcs/box, true for kg/ltr
   baseUnitId      String?                      // Self-ref: Box of 12 → pcs
   baseUnitFactor  Float?                       // 1 box12 = 12 pcs
+  isDeleted       Boolean  @default(false)
+  deletedAt       DateTime?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -429,6 +451,7 @@ model Unit {
   @@unique([businessId, name])
   @@unique([businessId, symbol])
   @@index([businessId])
+  @@index([businessId, isDeleted])
 }
 
 model UnitConversion {
@@ -437,6 +460,8 @@ model UnitConversion {
   fromUnitId String
   toUnitId   String
   factor     Float    // 1 fromUnit = factor toUnits
+  isDeleted  Boolean  @default(false)
+  deletedAt  DateTime?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -446,6 +471,7 @@ model UnitConversion {
 
   @@unique([businessId, fromUnitId, toUnitId])
   @@index([businessId])
+  @@index([businessId, isDeleted])
 }
 
 model Product {
@@ -474,6 +500,8 @@ model Product {
   moq             Int?
   // Feature #103 — Label Printing
   labelTemplate   String?   @default("standard") // "standard" | "compact" | "barcode-only"
+  isDeleted       Boolean   @default(false)
+  deletedAt       DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -500,6 +528,7 @@ model Product {
   @@index([businessId, categoryId])
   @@index([businessId, name])
   @@index([businessId, currentStock, minStockLevel])
+  @@index([businessId, isDeleted])
 }
 
 model StockMovement {
@@ -645,7 +674,8 @@ model Document {
   paidAmount             Int      @default(0)
   balanceDue             Int      @default(0)
 
-  // Recycle bin
+  // Recycle bin / Soft delete
+  isDeleted              Boolean   @default(false)
   deletedAt              DateTime?
   deletedBy              String?
   permanentDeleteAt      DateTime?
@@ -690,6 +720,7 @@ model Document {
   @@index([businessId, type, status])
   @@index([businessId, partyId])
   @@index([businessId, documentDate])
+  @@index([businessId, isDeleted])
   @@index([permanentDeleteAt])
   @@index([clientId])
   @@index([recurringInvoiceId])
@@ -788,6 +819,8 @@ model DocumentNumberSeries {
   currentSequence Int      @default(0)
   startingNumber  Int      @default(1)
   resetOnNewYear  Boolean  @default(true)
+  isDeleted       Boolean  @default(false)
+  deletedAt       DateTime?
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -795,6 +828,7 @@ model DocumentNumberSeries {
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
   @@unique([businessId, documentType, financialYear])
+  @@index([businessId, isDeleted])
 }
 
 model DigitalSignature {
@@ -815,6 +849,8 @@ model TermsAndConditionsTemplate {
   content    String   @db.Text
   isDefault  Boolean  @default(false)
   appliesTo  String[] @default([]) // Document types this applies to
+  isDeleted  Boolean  @default(false)
+  deletedAt  DateTime?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -822,6 +858,7 @@ model TermsAndConditionsTemplate {
 
   @@unique([businessId, name])
   @@index([businessId])
+  @@index([businessId, isDeleted])
 }
 
 model DocumentSettings {
@@ -959,6 +996,8 @@ model Role {
   isDefault   Boolean  @default(false)
   priority    Int      @default(0)
   permissions String[] @default([])
+  isDeleted   Boolean  @default(false)
+  deletedAt   DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -967,6 +1006,7 @@ model Role {
 
   @@unique([businessId, name])
   @@index([businessId])
+  @@index([businessId, isDeleted])
 }
 
 model StaffInvite {
@@ -979,12 +1019,15 @@ model StaffInvite {
   status     String   @default("PENDING") // PENDING, ACCEPTED, EXPIRED, CANCELLED
   expiresAt  DateTime
   invitedBy  String
+  isDeleted  Boolean  @default(false)
+  deletedAt  DateTime?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
   @@index([businessId])
+  @@index([businessId, isDeleted])
   @@index([phone])
   @@index([code])
 }
@@ -1255,6 +1298,8 @@ model TaxCategory {
   sacCode      String?  // Default SAC for this category
   isDefault    Boolean  @default(false) // System-created defaults (0%, 5%, 12%, 18%, 28%)
   isActive     Boolean  @default(true)
+  isDeleted    Boolean  @default(false)
+  deletedAt    DateTime?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -1263,6 +1308,7 @@ model TaxCategory {
 
   @@unique([businessId, name])
   @@index([businessId, isActive])
+  @@index([businessId, isDeleted])
 }
 
 /// Pre-seeded HSN/SAC code database (~12K records, read-only)
@@ -1428,6 +1474,8 @@ model RecurringInvoice {
   status              String    @default("ACTIVE") // ACTIVE, PAUSED, COMPLETED
   generatedCount      Int       @default(0)
   lastGeneratedAt     DateTime?
+  isDeleted           Boolean   @default(false)
+  deletedAt           DateTime?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
@@ -1436,6 +1484,7 @@ model RecurringInvoice {
 
   @@index([businessId, status])
   @@index([nextRunDate, status])
+  @@index([businessId, isDeleted])
 }
 
 // ---------------------------------------------------------------------------
@@ -1476,6 +1525,8 @@ model LedgerAccount {
   description   String?
   isSystem      Boolean  @default(false) // System-created (cannot delete)
   isActive      Boolean  @default(true)
+  isDeleted     Boolean  @default(false)
+  deletedAt     DateTime?
   // Running balance (paise) — updated on each journal entry post
   // Positive = debit-normal for ASSET/EXPENSE, credit-normal for LIABILITY/EQUITY/INCOME
   balance       Int      @default(0)
@@ -1495,6 +1546,7 @@ model LedgerAccount {
   @@unique([businessId, code])
   @@index([businessId, type, isActive])
   @@index([businessId, subType])
+  @@index([businessId, isDeleted])
   @@index([parentId])
   @@index([partyId])
 }
@@ -1569,6 +1621,8 @@ model BankAccount {
   currentBalance  Int       @default(0) // paise (updated on transactions)
   isDefault       Boolean   @default(false)
   isActive        Boolean   @default(true)
+  isDeleted       Boolean   @default(false)
+  deletedAt       DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -1578,6 +1632,7 @@ model BankAccount {
 
   @@unique([businessId, accountNumber])
   @@index([businessId, isActive])
+  @@index([businessId, isDeleted])
 }
 
 /// Expense record — with category, receipt, and journal entry auto-posting
@@ -1626,6 +1681,8 @@ model ExpenseCategory {
   color       String   @default("#6B7280")
   isSystem    Boolean  @default(false) // Rent, Salary, Utilities, etc.
   isActive    Boolean  @default(true)
+  isDeleted   Boolean  @default(false)
+  deletedAt   DateTime?
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -1635,6 +1692,7 @@ model ExpenseCategory {
 
   @@unique([businessId, name])
   @@index([businessId, isActive])
+  @@index([businessId, isDeleted])
 }
 
 /// Other Income — interest, rent, misc income that's not from sales
@@ -1694,6 +1752,7 @@ model Cheque {
   @@index([businessId, status])
   @@index([businessId, type])
   @@index([businessId, date])
+  @@index([businessId, isDeleted])
   @@index([bankAccountId])
 }
 
@@ -1715,6 +1774,8 @@ model LoanAccount {
   status          String    @default("ACTIVE") // ACTIVE, CLOSED, DEFAULTED
   journalEntryId  String?   @unique // opening entry
   notes           String?   @db.Text
+  isDeleted       Boolean   @default(false)
+  deletedAt       DateTime?
   createdBy       String
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -1723,6 +1784,7 @@ model LoanAccount {
   transactions    LoanTransaction[]
 
   @@index([businessId, type, status])
+  @@index([businessId, isDeleted])
 }
 
 /// Loan Transaction — EMI payment, interest charge, prepayment
@@ -1903,6 +1965,8 @@ model SerialNumber {
   soldInDocumentId String?
   soldAt           DateTime?
   notes            String?
+  isDeleted        Boolean   @default(false)
+  deletedAt        DateTime?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
@@ -1915,6 +1979,7 @@ model SerialNumber {
   @@unique([businessId, serialNumber])
   @@index([businessId, productId, status])
   @@index([businessId, status])
+  @@index([businessId, isDeleted])
   @@index([productId])
   @@index([soldInDocumentId])
 }
@@ -1933,6 +1998,7 @@ model Batch {
   currentStock      Float     @default(0)
   notes             String?
   isDeleted         Boolean   @default(false)
+  deletedAt         DateTime?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
@@ -1958,6 +2024,7 @@ model Godown {
   address    String?
   isDefault  Boolean  @default(false)
   isDeleted  Boolean  @default(false)
+  deletedAt  DateTime?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 

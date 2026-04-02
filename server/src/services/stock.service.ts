@@ -5,13 +5,12 @@
  * Reused by Product routes (manual adjust) and Invoice module (auto deduct/add).
  */
 
-import type { PrismaClient } from '@prisma/client'
-import { prisma } from '../lib/prisma.js'
+import { prisma, type ExtendedPrismaClient } from '../lib/prisma.js'
 import { notFoundError, insufficientStockError } from '../lib/errors.js'
 import { checkAndCreateAlerts } from './stock-alert.service.js'
 import logger from '../lib/logger.js'
 
-type TxClient = Parameters<Parameters<PrismaClient['$transaction']>[0]>[0]
+type TxClient = Parameters<Parameters<ExtendedPrismaClient['$transaction']>[0]>[0]
 
 interface AdjustStockParams {
   productId: string

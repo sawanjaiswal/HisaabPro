@@ -1,12 +1,13 @@
 /**
- * Prisma singleton — adapted from HisaabPro
- * Connection pooling (10) + slow query logging
+ * Prisma singleton — HisaabPro
+ * Connection pooling (10) + soft-delete extension + slow query logging
  */
 
 import { PrismaClient } from '@prisma/client'
 import logger from './logger.js'
+import { createSoftDeleteExtension } from './soft-delete/index.js'
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }
+const globalForPrisma = globalThis as unknown as { prisma: ReturnType<typeof createPrismaClient> }
 
 function getDatabaseUrl(): string {
   const baseUrl = process.env.DATABASE_URL
@@ -18,17 +19,27 @@ function getDatabaseUrl(): string {
   return `${baseUrl}${separator}connection_limit=10&pool_timeout=30`
 }
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient({
-  log: process.env.NODE_ENV === 'development'
-    ? ['query', 'warn', 'error']
-    : ['error'],
-  datasources: {
-    db: { url: getDatabaseUrl() },
-  },
-})
+function createPrismaClient() {
+  const base = new PrismaClient({
+    log: process.env.NODE_ENV === 'development'
+      ? ['query', 'warn', 'error']
+      : ['error'],
+    datasources: {
+      db: { url: getDatabaseUrl() },
+    },
+  })
+
+  // Apply soft-delete extension (auto-filter + delete interception)
+  return base.$extends(createSoftDeleteExtension())
+}
+
+export const prisma = globalForPrisma.prisma ?? createPrismaClient()
+
+/** Type of the extended prisma client — use this instead of PrismaClient in service signatures */
+export type ExtendedPrismaClient = typeof prisma
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma
 }
 
-logger.info('Database connection initialized')
+logger.info('Database connection initialized (soft-delete extension active)')

@@ -58,6 +58,7 @@ import godownRoutes from './routes/godowns.js'
 import serialNumberRoutes from './routes/serial-numbers.js'
 import razorpayRoutes, { razorpayWebhookRouter } from './routes/razorpay.js'
 import adminRoutes from './routes/admin/index.js'
+import recycleBinRoutes from './routes/recycle-bin.js'
 
 export function createApp() {
   const app = express()
@@ -155,6 +156,7 @@ export function createApp() {
   app.use('/api/loans', loanRoutes)
   app.use('/api/fy-closure', fyClosureRoutes)
   app.use('/api/admin', adminRoutes)
+  app.use('/api/recycle-bin', recycleBinRoutes)
 
   app.use((_req, res) => {
     res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Route not found' } })

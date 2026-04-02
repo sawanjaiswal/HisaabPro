@@ -3,10 +3,9 @@
  * Uses UPDATE ... RETURNING to prevent race conditions (same pattern as SKU generation).
  */
 
-import type { PrismaClient } from '@prisma/client'
-import { prisma } from '../lib/prisma.js'
+import { prisma, type ExtendedPrismaClient } from '../lib/prisma.js'
 
-type TxClient = Parameters<Parameters<PrismaClient['$transaction']>[0]>[0]
+type TxClient = Parameters<Parameters<ExtendedPrismaClient['$transaction']>[0]>[0]
 
 /** Default prefixes per document type */
 const DEFAULT_PREFIXES: Record<string, string> = {
