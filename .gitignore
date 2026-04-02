@@ -16,10 +16,16 @@ dist/
 .DS_Store
 Thumbs.db
 
-# Capacitor / Native
-android/
+# Capacitor / Native — track android/ but ignore build outputs + secrets
+android/.gradle/
+android/app/build/
+android/build/
+android/capacitor-cordova-android-plugins/build/
+android/local.properties
+android/keystore.properties
+android/*.keystore
+android/*.jks
 ios/
-.gradle/
 
 # Testing
 test-screenshots/
