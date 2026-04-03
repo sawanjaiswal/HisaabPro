@@ -1,8 +1,10 @@
-/** useTrialBalance — Fetches trial balance with optional as-of date */
+/** useTrialBalance — Fetches trial balance with optional as-of date (TanStack Query) */
 
 import { useState, useEffect, useCallback } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { getTrialBalance } from './accounting.service'
 import { getTodayISO } from './accounting.utils'
 import type { TrialBalanceData } from './accounting.types'
@@ -19,37 +21,34 @@ interface UseTrialBalanceReturn {
 
 export function useTrialBalance(): UseTrialBalanceReturn {
   const toast = useToast()
+  const queryClient = useQueryClient()
   const [asOf, setAsOfDate] = useState<string>(getTodayISO)
-  const [data, setData] = useState<TrialBalanceData | null>(null)
-  const [status, setStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
 
+  const filters = { asOf }
+
+  const query = useQuery({
+    queryKey: queryKeys.accounting.trialBalance(filters),
+    queryFn: ({ signal }) => getTrialBalance(asOf, signal),
+  })
+
+  const data = query.data ?? null
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
+
+  // Show toast on fetch error
   useEffect(() => {
-    const controller = new AbortController()
-    setStatus('loading')
-
-    getTrialBalance(asOf, controller.signal)
-      .then((res) => {
-        setData(res)
-        setStatus('success')
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        const message = err instanceof ApiError ? err.message : 'Failed to load trial balance'
-        toast.error(message)
-      })
-
-    return () => controller.abort()
-  }, [asOf, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (query.error) {
+      const message = query.error instanceof ApiError ? query.error.message : 'Failed to load trial balance'
+      toast.error(message)
+    }
+  }, [query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const setAsOf = useCallback((date: string) => {
     setAsOfDate(date)
   }, [])
 
   const refresh = useCallback(() => {
-    setRefreshKey((k) => k + 1)
-  }, [])
+    queryClient.invalidateQueries({ queryKey: queryKeys.accounting.all() })
+  }, [queryClient])
 
   return { data, status, asOf, setAsOf, refresh }
 }

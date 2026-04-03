@@ -1,13 +1,16 @@
 /** Payments — List hook
  *
- * Manages paginated payment list, debounced search, filter state, and
- * optimistic delete with undo toast. Mirrors useInvoices.ts pattern exactly.
+ * TanStack Query v5 migration. Manages paginated payment list,
+ * debounced search, filter state, and optimistic delete with undo toast.
+ * Query replaces useState(data) + useEffect(fetch) + refreshKey.
  * All amounts in PAISE.
  */
 
 import { useState, useEffect, useCallback } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { TIMEOUTS } from '@/config/app.config'
 import { DEFAULT_PAYMENT_FILTERS } from './payment.constants'
 import { getPayments, deletePayment } from './payment.service'
@@ -41,35 +44,30 @@ export function usePayments({
   initialFilters,
 }: UsePaymentsOptions = {}): UsePaymentsReturn {
   const toast = useToast()
+  const queryClient = useQueryClient()
 
   const [filters, setFilters] = useState<PaymentFilters>({
     ...DEFAULT_PAYMENT_FILTERS,
     ...(type !== undefined ? { type } : {}),
     ...initialFilters,
   })
-  const [data, setData] = useState<PaymentListResponse | null>(null)
-  const [status, setStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
 
-  // Fetch payments whenever filters or refreshKey change
+  // TanStack Query replaces useState(data) + useEffect(fetch) + refreshKey
+  const query = useQuery({
+    queryKey: queryKeys.payments.list(filters),
+    queryFn: ({ signal }) => getPayments(filters, signal),
+  })
+
+  const data = query.data ?? null
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
+
+  // Show toast on fetch error
   useEffect(() => {
-    const controller = new AbortController()
-    setStatus('loading')
-
-    getPayments(filters, controller.signal)
-      .then((response: PaymentListResponse) => {
-        setData(response)
-        setStatus('success')
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        const message = err instanceof ApiError ? err.message : 'Failed to load payments'
-        toast.error(message)
-      })
-
-    return () => controller.abort()
-  }, [filters, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (query.error) {
+      const message = query.error instanceof ApiError ? query.error.message : 'Failed to load payments'
+      toast.error(message)
+    }
+  }, [query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Debounced search — holds the raw input, effect fires API after 300ms idle
   const [pendingSearch, setPendingSearch] = useState<string | null>(null)
@@ -99,47 +97,43 @@ export function usePayments({
   }, [])
 
   const refresh = useCallback(() => {
-    setRefreshKey((k) => k + 1)
-  }, [])
+    queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() })
+  }, [queryClient])
 
   const handleDelete = useCallback((id: string, paymentLabel: string) => {
-    // Optimistic removal from list
-    setData((prev) => {
-      if (!prev) return prev
-      return {
-        ...prev,
-        payments: prev.payments.filter((p) => p.id !== id),
-        pagination: {
-          ...prev.pagination,
-          total: prev.pagination.total - 1,
-        },
+    // Optimistic: update cache directly
+    queryClient.setQueryData<PaymentListResponse>(
+      queryKeys.payments.list(filters),
+      (old) => {
+        if (!old) return old
+        return {
+          ...old,
+          payments: old.payments.filter((p) => p.id !== id),
+          pagination: { ...old.pagination, total: old.pagination.total - 1 },
+        }
       }
-    })
+    )
 
     let undone = false
 
     toast.success(`${paymentLabel} deleted`, {
       onUndo: () => {
         undone = true
-        refresh()
+        queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() })
       },
       undoLabel: 'Undo',
     })
 
     // Delay actual deletion to allow undo window (matches toast duration)
-    const timerId = setTimeout(() => {
+    setTimeout(() => {
       if (undone) return
       deletePayment(id).catch((err: unknown) => {
         const message = err instanceof ApiError ? err.message : 'Failed to delete payment'
         toast.error(message)
-        refresh() // Restore list on failure
+        queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() })
       })
     }, 5_000)
-
-    // Cleanup on unmount is not needed here — timer is self-contained
-    // and a leaked delete after unmount is safe (server state corrects on next fetch)
-    void timerId
-  }, [refresh, toast])
+  }, [filters, queryClient, toast])
 
   return {
     data,

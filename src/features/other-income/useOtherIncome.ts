@@ -1,8 +1,10 @@
 /** useOtherIncome — Manages other income list state */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { listOtherIncome } from './other-income.service'
 import type { OtherIncome } from './other-income.types'
 
@@ -21,28 +23,41 @@ interface UseOtherIncomeReturn {
 
 export function useOtherIncome(): UseOtherIncomeReturn {
   const toast = useToast()
+  const queryClient = useQueryClient()
   const [categoryFilter, setCategoryFilterState] = useState<string | null>(null)
   const [page, setPage] = useState(1)
-  const [items, setItems] = useState<OtherIncome[]>([])
-  const [total, setTotal] = useState(0)
-  const [fetchStatus, setFetchStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
+
+  const query = useQuery({
+    queryKey: queryKeys.otherIncome.list({ page, categoryFilter }),
+    queryFn: ({ signal }) => listOtherIncome(page, categoryFilter, signal),
+  })
 
   useEffect(() => {
-    const controller = new AbortController()
-    setFetchStatus('loading')
-    listOtherIncome(page, categoryFilter, controller.signal)
-      .then((res) => { setItems(res.items); setTotal(res.total); setFetchStatus('success') })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setFetchStatus('error')
-        toast.error(err instanceof ApiError ? err.message : 'Failed to load other income')
-      })
-    return () => controller.abort()
-  }, [page, categoryFilter, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (query.isError) {
+      const err = query.error
+      toast.error(err instanceof ApiError ? err.message : 'Failed to load other income')
+    }
+  }, [query.isError, query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
-  const setCategoryFilter = useCallback((c: string | null) => { setCategoryFilterState(c); setPage(1) }, [])
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
 
-  return { items, total, page, status: fetchStatus, categoryFilter, setCategoryFilter, setPage, refresh }
+  const refresh = useCallback(() => {
+    void queryClient.invalidateQueries({ queryKey: queryKeys.otherIncome.all() })
+  }, [queryClient])
+
+  const setCategoryFilter = useCallback((c: string | null) => {
+    setCategoryFilterState(c)
+    setPage(1)
+  }, [])
+
+  return {
+    items: query.data?.items ?? [],
+    total: query.data?.total ?? 0,
+    page,
+    status,
+    categoryFilter,
+    setCategoryFilter,
+    setPage,
+    refresh,
+  }
 }

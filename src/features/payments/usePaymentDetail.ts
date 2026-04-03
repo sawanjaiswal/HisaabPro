@@ -1,13 +1,16 @@
 /** Payment Detail — Hook to fetch and manage a single payment record
  *
- * Fetches full PaymentDetail by ID, manages tab state, and supports
- * manual refresh via refreshKey. Mirrors useInvoiceDetail.ts exactly.
+ * TanStack Query v5 migration. Fetches full PaymentDetail by ID,
+ * manages tab state, and delete action. Query replaces useState +
+ * useEffect + refreshKey.
  */
 
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { ROUTES } from '@/config/routes.config'
 import { getPayment, deletePayment } from './payment.service'
 import type { PaymentDetail, PaymentDetailTab } from './payment.types'
@@ -26,50 +29,50 @@ interface UsePaymentDetailReturn {
 export function usePaymentDetail(id: string): UsePaymentDetailReturn {
   const toast = useToast()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
-  const [payment, setPayment] = useState<PaymentDetail | null>(null)
-  const [status, setStatus] = useState<DetailStatus>('loading')
   const [activeTab, setActiveTab] = useState<PaymentDetailTab>('overview')
-  const [refreshKey, setRefreshKey] = useState(0)
 
+  // TanStack Query replaces useState(payment) + useEffect(fetch) + refreshKey
+  const query = useQuery({
+    queryKey: queryKeys.payments.detail(id),
+    queryFn: ({ signal }) => getPayment(id, signal),
+  })
+
+  const payment = query.data ?? null
+  const status: DetailStatus = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
+
+  // Show toast on fetch error
   useEffect(() => {
-    const controller = new AbortController()
-    setStatus('loading')
-
-    getPayment(id, controller.signal)
-      .then((data: PaymentDetail) => {
-        setPayment(data)
-        setStatus('success')
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        const message = err instanceof ApiError ? err.message : 'Failed to load payment'
-        toast.error(message)
-      })
-
-    return () => controller.abort()
-  }, [id, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (query.error) {
+      const message = query.error instanceof ApiError ? query.error.message : 'Failed to load payment'
+      toast.error(message)
+    }
+  }, [query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const refresh = useCallback(() => {
-    setRefreshKey((k) => k + 1)
-  }, [])
+    queryClient.invalidateQueries({ queryKey: queryKeys.payments.detail(id) })
+  }, [queryClient, id])
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: () => deletePayment(id),
+    onSuccess: () => {
+      const label = payment ? `Payment of Rs${(payment.amount / 100).toFixed(2)}` : 'Payment'
+      toast.success(`${label} deleted`)
+      queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() })
+      navigate(ROUTES.PAYMENTS)
+    },
+    onError: (err: Error) => {
+      const message = err instanceof ApiError ? err.message : 'Failed to delete payment'
+      toast.error(message)
+    },
+  })
 
   const handleDelete = useCallback(() => {
     if (payment === null) return
-
-    const label = `Payment of ₹${(payment.amount / 100).toFixed(2)}`
-
-    deletePayment(payment.id)
-      .then(() => {
-        toast.success(`${label} deleted`)
-        navigate(ROUTES.PAYMENTS)
-      })
-      .catch((err: unknown) => {
-        const message = err instanceof ApiError ? err.message : 'Failed to delete payment'
-        toast.error(message)
-      })
-  }, [payment, toast, navigate])
+    deleteMutation.mutate()
+  }, [payment, deleteMutation])
 
   return {
     payment,

@@ -1,8 +1,9 @@
 /** Create / Edit Payment — Form state hook
  *
- * Manages form state, per-field validation, 3-section pill navigation,
- * invoice allocation (manual + FIFO auto), and discount section.
- * Mirrors useInvoiceForm.ts structure. All amounts in PAISE.
+ * TanStack Query v5 migration. Submit wrapped in useMutation for
+ * automatic error handling and cache invalidation. Manages form state,
+ * per-field validation, 3-section pill navigation, invoice allocation
+ * (manual + FIFO auto), and discount section. All amounts in PAISE.
  *
  * Actions (field updates, allocation ops, discount ops) are in usePaymentFormActions.ts.
  * Pure helpers (initial state, API payload, merge logic) are in paymentForm.helpers.ts.
@@ -10,7 +11,9 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
+import { queryKeys } from '@/lib/query-keys'
 import { ROUTES } from '@/config/routes.config'
 import { createPayment, updatePayment } from './payment.service'
 import { validatePaymentForm } from './payment.utils'
@@ -61,6 +64,7 @@ export function usePaymentForm({
 }: UsePaymentFormOptions = {}): UsePaymentFormReturn {
   const navigate = useNavigate()
   const toast = useToast()
+  const queryClient = useQueryClient()
 
   const isEditMode = payment !== null
 
@@ -68,7 +72,6 @@ export function usePaymentForm({
     payment !== null ? buildFormFromPayment(payment) : buildInitialForm(defaultType),
   )
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [activeSection, setActiveSection] = useState<PaymentFormSection>('details')
 
   // ─── Delegate field / allocation / discount actions ──────────────────────
@@ -94,32 +97,43 @@ export function usePaymentForm({
     return Object.keys(next).length === 0
   }, [form, selectedAllocations])
 
-  // ─── Submit ──────────────────────────────────────────────────────────────
+  // ─── Submit mutation ──────────────────────────────────────────────────────
+
+  const submitMutation = useMutation({
+    mutationFn: async () => {
+      const apiPayload = buildApiPayload(form, selectedAllocations)
+      if (isEditMode && payment !== null) {
+        await updatePayment(payment.id, apiPayload as unknown as PaymentFormData)
+        return { mode: 'edit' as const, paymentId: payment.id }
+      }
+      await createPayment(apiPayload as unknown as PaymentFormData)
+      return { mode: 'create' as const }
+    },
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() })
+      // Also invalidate invoices since payment allocation changes outstanding
+      queryClient.invalidateQueries({ queryKey: queryKeys.invoices.all() })
+
+      if (result.mode === 'edit') {
+        toast.success('Payment updated')
+        navigate(ROUTES.PAYMENT_DETAIL.replace(':id', result.paymentId))
+      } else {
+        toast.success('Payment recorded')
+        navigate(ROUTES.PAYMENTS)
+      }
+    },
+    onError: () => {
+      toast.error('Failed to save payment. Please try again.')
+    },
+  })
+
+  const isSubmitting = submitMutation.isPending
 
   const handleSubmit = useCallback(async () => {
     if (!validate()) return
     if (isSubmitting) return
-
-    setIsSubmitting(true)
-
-    const apiPayload = buildApiPayload(form, selectedAllocations)
-
-    try {
-      if (isEditMode && payment !== null) {
-        await updatePayment(payment.id, apiPayload as unknown as PaymentFormData)
-        toast.success('Payment updated')
-        navigate(ROUTES.PAYMENT_DETAIL.replace(':id', payment.id))
-      } else {
-        await createPayment(apiPayload as unknown as PaymentFormData)
-        toast.success('Payment recorded')
-        navigate(ROUTES.PAYMENTS)
-      }
-    } catch {
-      toast.error('Failed to save payment. Please try again.')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }, [form, isSubmitting, isEditMode, payment, selectedAllocations, validate, toast, navigate])
+    await submitMutation.mutateAsync()
+  }, [validate, isSubmitting, submitMutation])
 
   return {
     form,

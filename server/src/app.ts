@@ -14,6 +14,8 @@ import { performanceMonitoring } from './middleware/performance.js'
 import { apiRateLimiter } from './middleware/rate-limit.js'
 import { csrfProtection } from './middleware/csrf.js'
 import { sanitizeInput } from './middleware/sanitize-input.js'
+import { sseAutoEmit } from './middleware/sse-emit.js'
+import { conflictDetection } from './middleware/conflict-detection.js'
 import { prisma } from './lib/prisma.js'
 import authRoutes from './routes/auth.js'
 import feedbackRoutes from './routes/feedback.js'
@@ -61,6 +63,9 @@ import serialNumberRoutes from './routes/serial-numbers.js'
 import razorpayRoutes, { razorpayWebhookRouter } from './routes/razorpay.js'
 import adminRoutes from './routes/admin/index.js'
 import recycleBinRoutes from './routes/recycle-bin.js'
+import eventRoutes from './routes/events.js'
+import sessionRoutes from './routes/sessions.js'
+import exportRoutes from './routes/export.js'
 
 export function createApp() {
   const app = express()
@@ -107,6 +112,8 @@ export function createApp() {
   app.use(apiRateLimiter)
   app.use(csrfProtection)
   app.use(sanitizeInput)
+  app.use(sseAutoEmit) // Auto-broadcast SSE events for all mutations
+  app.use(conflictDetection) // Offline conflict detection on PUT/PATCH
 
   app.get('/api/health', (_req, res) => {
     sendSuccess(res, { status: 'ok', timestamp: new Date().toISOString() })
@@ -190,6 +197,9 @@ export function createApp() {
   app.use('/api/fy-closure', fyClosureRoutes)
   app.use('/api/admin', adminRoutes)
   app.use('/api/recycle-bin', recycleBinRoutes)
+  app.use('/api/events', eventRoutes)
+  app.use('/api/sessions', sessionRoutes)
+  app.use('/api/export', exportRoutes)
 
   app.use((_req, res) => {
     res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Route not found' } })

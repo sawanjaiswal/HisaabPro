@@ -1,6 +1,7 @@
-/** useEWayBillActions — generate, cancel, and update-Part-B mutations */
+/** useEWayBillActions -- generate, cancel, and update-Part-B mutations (TanStack Query) */
 
-import { useState, useCallback } from 'react'
+import { useCallback } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import { generateEWayBill, cancelEWayBill, updateEWayBillPartB } from '../ecompliance.service'
 import type { EWayBillStatus, EWayBillGenerateInput, VehicleType } from '../ecompliance.types'
 
@@ -17,15 +18,10 @@ export function useEWayBillActions(
   documentId: string,
   onUpdate: (updater: (prev: EWayBillStatus | null) => EWayBillStatus | null) => void
 ): EWayBillActions {
-  const [generatingEwb, setGeneratingEwb] = useState(false)
-  const [cancellingEwb, setCancellingEwb] = useState(false)
-  const [updatingPartB, setUpdatingPartB] = useState(false)
-
-  const generateEwb = useCallback(async (input: Omit<EWayBillGenerateInput, 'documentId'>) => {
-    if (generatingEwb) return
-    setGeneratingEwb(true)
-    try {
-      const result = await generateEWayBill({ ...input, documentId })
+  const generateMutation = useMutation({
+    mutationFn: (input: Omit<EWayBillGenerateInput, 'documentId'>) =>
+      generateEWayBill({ ...input, documentId }),
+    onSuccess: (result, input) => {
       onUpdate(() => ({
         ewbNumber: result.ewbNumber,
         ewbDate: result.ewbDate,
@@ -35,35 +31,48 @@ export function useEWayBillActions(
         vehicleType: input.vehicleType,
         transportMode: input.transportMode,
       }))
-    } finally {
-      setGeneratingEwb(false)
-    }
-  }, [documentId, generatingEwb, onUpdate])
+    },
+  })
 
-  const cancelEwb = useCallback(async (reason: string) => {
-    if (cancellingEwb) return
-    setCancellingEwb(true)
-    try {
-      await cancelEWayBill(documentId, reason)
+  const cancelMutation = useMutation({
+    mutationFn: (reason: string) => cancelEWayBill(documentId, reason),
+    onSuccess: (_data, reason) => {
       onUpdate(prev => prev
         ? { ...prev, status: 'CANCELLED', cancelledAt: new Date().toISOString(), cancelReason: reason }
         : prev
       )
-    } finally {
-      setCancellingEwb(false)
-    }
-  }, [documentId, cancellingEwb, onUpdate])
+    },
+  })
+
+  const updatePartBMutation = useMutation({
+    mutationFn: ({ vehicleNumber, vehicleType }: { vehicleNumber: string; vehicleType?: VehicleType }) =>
+      updateEWayBillPartB(documentId, vehicleNumber, vehicleType),
+    onSuccess: (_data, { vehicleNumber, vehicleType }) => {
+      onUpdate(prev => prev ? { ...prev, vehicleNumber, vehicleType } : prev)
+    },
+  })
+
+  const generateEwb = useCallback(async (input: Omit<EWayBillGenerateInput, 'documentId'>) => {
+    if (generateMutation.isPending) return
+    await generateMutation.mutateAsync(input)
+  }, [generateMutation])
+
+  const cancelEwb = useCallback(async (reason: string) => {
+    if (cancelMutation.isPending) return
+    await cancelMutation.mutateAsync(reason)
+  }, [cancelMutation])
 
   const updatePartB = useCallback(async (vehicleNumber: string, vehicleType?: VehicleType) => {
-    if (updatingPartB) return
-    setUpdatingPartB(true)
-    try {
-      await updateEWayBillPartB(documentId, vehicleNumber, vehicleType)
-      onUpdate(prev => prev ? { ...prev, vehicleNumber, vehicleType } : prev)
-    } finally {
-      setUpdatingPartB(false)
-    }
-  }, [documentId, updatingPartB, onUpdate])
+    if (updatePartBMutation.isPending) return
+    await updatePartBMutation.mutateAsync({ vehicleNumber, vehicleType })
+  }, [updatePartBMutation])
 
-  return { generatingEwb, cancellingEwb, updatingPartB, generateEwb, cancelEwb, updatePartB }
+  return {
+    generatingEwb: generateMutation.isPending,
+    cancellingEwb: cancelMutation.isPending,
+    updatingPartB: updatePartBMutation.isPending,
+    generateEwb,
+    cancelEwb,
+    updatePartB,
+  }
 }

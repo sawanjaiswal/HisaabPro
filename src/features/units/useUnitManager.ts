@@ -1,10 +1,12 @@
-/** Units Feature — State management hook
+/** Units Feature -- State management hook
  *
  * Handles CRUD operations, search, and loading state for units.
  * Uses existing API service from products/unit.service.ts.
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useCallback } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { queryKeys } from '@/lib/query-keys'
 import type { Unit, UnitConversion, UnitsTab } from './unit.types'
 import {
   getUnits,
@@ -18,96 +20,98 @@ import { useToast } from '@/hooks/useToast'
 
 export function useUnitManager() {
   const toast = useToast()
-  const [units, setUnits] = useState<Unit[]>([])
-  const [conversions, setConversions] = useState<UnitConversion[]>([])
-  const [status, setStatus] = useState<'loading' | 'error' | 'success'>('loading')
+  const queryClient = useQueryClient()
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState<UnitsTab>('units')
-  const abortRef = useRef<AbortController | null>(null)
 
-  const fetchUnits = useCallback(async (query?: string) => {
-    abortRef.current?.abort()
-    const controller = new AbortController()
-    abortRef.current = controller
+  const unitsQuery = useQuery({
+    queryKey: [...queryKeys.units.list(), { search }] as const,
+    queryFn: ({ signal }) => getUnits(search || undefined, signal),
+  })
 
-    try {
-      const data = await getUnits(query || undefined, controller.signal)
-      setUnits(data)
-      setStatus('success')
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') return
-      setStatus('error')
-    }
-  }, [])
+  const conversionsQuery = useQuery({
+    queryKey: queryKeys.units.conversions(),
+    queryFn: () => getUnitConversions(),
+  })
 
-  const fetchConversions = useCallback(async () => {
-    try {
-      const data = await getUnitConversions()
-      setConversions(data)
-    } catch {
-      // Non-critical — conversions tab will show error if needed
-    }
-  }, [])
+  const status: 'loading' | 'error' | 'success' = unitsQuery.isPending
+    ? 'loading'
+    : unitsQuery.isError ? 'error' : 'success'
 
-  useEffect(() => {
-    void fetchUnits()
-    void fetchConversions()
-    return () => abortRef.current?.abort()
-  }, [fetchUnits, fetchConversions])
+  const createMutation = useMutation({
+    mutationFn: (data: UnitInput) => createUnit(data),
+    onSuccess: () => {
+      toast.success('Unit created')
+      void queryClient.invalidateQueries({ queryKey: queryKeys.units.all() })
+    },
+    onError: (err: unknown) => {
+      const msg = err instanceof Error ? err.message : 'Failed to create unit'
+      toast.error(msg)
+    },
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<UnitInput> }) => updateUnit(id, data),
+    onSuccess: () => {
+      toast.success('Unit updated')
+      void queryClient.invalidateQueries({ queryKey: queryKeys.units.all() })
+    },
+    onError: (err: unknown) => {
+      const msg = err instanceof Error ? err.message : 'Failed to update unit'
+      toast.error(msg)
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteUnit(id),
+    onSuccess: () => {
+      toast.success('Unit deleted')
+      void queryClient.invalidateQueries({ queryKey: queryKeys.units.all() })
+    },
+    onError: (err: unknown) => {
+      const msg = err instanceof Error ? err.message : 'Failed to delete unit'
+      toast.error(msg)
+    },
+  })
 
   const handleSearch = useCallback((query: string) => {
     setSearch(query)
-    void fetchUnits(query)
-  }, [fetchUnits])
+  }, [])
 
   const handleCreate = useCallback(async (data: UnitInput): Promise<Unit | null> => {
     try {
-      const created = await createUnit(data)
-      setUnits((prev) => [...prev, created])
-      toast.success('Unit created')
+      const created = await createMutation.mutateAsync(data)
       return created
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to create unit'
-      toast.error(msg)
+    } catch {
       return null
     }
-  }, [toast])
+  }, [createMutation])
 
   const handleUpdate = useCallback(async (id: string, data: Partial<UnitInput>): Promise<boolean> => {
     try {
-      const updated = await updateUnit(id, data)
-      setUnits((prev) => prev.map((u) => (u.id === id ? updated : u)))
-      toast.success('Unit updated')
+      await updateMutation.mutateAsync({ id, data })
       return true
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to update unit'
-      toast.error(msg)
+    } catch {
       return false
     }
-  }, [toast])
+  }, [updateMutation])
 
   const handleDelete = useCallback(async (id: string): Promise<boolean> => {
     try {
-      await deleteUnit(id)
-      setUnits((prev) => prev.filter((u) => u.id !== id))
-      toast.success('Unit deleted')
+      await deleteMutation.mutateAsync(id)
       return true
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to delete unit'
-      toast.error(msg)
+    } catch {
       return false
     }
-  }, [toast])
+  }, [deleteMutation])
 
   const refresh = useCallback(() => {
-    setStatus('loading')
-    void fetchUnits(search)
-    void fetchConversions()
-  }, [fetchUnits, fetchConversions, search])
+    void queryClient.invalidateQueries({ queryKey: queryKeys.units.all() })
+  }, [queryClient])
 
   return {
-    units,
-    conversions,
+    units: unitsQuery.data ?? [] as Unit[],
+    conversions: conversionsQuery.data ?? [] as UnitConversion[],
     status,
     search,
     activeTab,

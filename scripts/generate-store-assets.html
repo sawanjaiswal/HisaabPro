@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #f0f0f0; }
+
+  /* === APP ICON 512x512 === */
+  .app-icon {
+    width: 512px; height: 512px;
+    background: linear-gradient(145deg, #0f3638 0%, #1a5c5f 50%, #0f3638 100%);
+    border-radius: 108px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .app-icon::before {
+    content: '';
+    position: absolute; top: -60px; right: -60px;
+    width: 240px; height: 240px;
+    background: radial-gradient(circle, rgba(45,212,191,0.25) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .app-icon::after {
+    content: '';
+    position: absolute; bottom: -40px; left: -40px;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle, rgba(45,212,191,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .icon-letter {
+    font-size: 220px; font-weight: 900; color: #fff;
+    line-height: 1; position: relative; z-index: 2;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .icon-accent {
+    width: 80px; height: 6px; border-radius: 3px;
+    background: linear-gradient(90deg, #2dd4bf, #14b8a6);
+    margin-top: 8px; position: relative; z-index: 2;
+  }
+  .icon-tagline {
+    font-size: 28px; font-weight: 600; color: rgba(255,255,255,0.85);
+    letter-spacing: 8px; text-transform: uppercase;
+    margin-top: 12px; position: relative; z-index: 2;
+  }
+
+  /* === FEATURE GRAPHIC 1024x500 === */
+  .feature-graphic {
+    width: 1024px; height: 500px;
+    background: linear-gradient(135deg, #0f3638 0%, #1a5c5f 40%, #0f3638 100%);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    margin-top: 40px;
+  }
+  .fg-pattern {
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 15% 85%, rgba(45,212,191,0.12) 0%, transparent 50%),
+      radial-gradient(circle at 85% 15%, rgba(45,212,191,0.12) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(45,212,191,0.05) 0%, transparent 60%);
+  }
+  .fg-grid {
+    position: absolute; inset: 0; opacity: 0.04;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .fg-content {
+    display: flex; align-items: center; gap: 60px;
+    position: relative; z-index: 2;
+  }
+  .fg-icon-mini {
+    width: 160px; height: 160px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 100%);
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 36px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(10px);
+  }
+  .fg-icon-mini .letter {
+    font-size: 72px; font-weight: 900; color: #fff;
+    line-height: 1;
+  }
+  .fg-icon-mini .accent {
+    width: 32px; height: 3px; border-radius: 2px;
+    background: linear-gradient(90deg, #2dd4bf, #14b8a6);
+    margin-top: 4px;
+  }
+  .fg-text { color: #fff; }
+  .fg-title {
+    font-size: 56px; font-weight: 800;
+    line-height: 1.1; margin-bottom: 12px;
+  }
+  .fg-title span { color: #2dd4bf; }
+  .fg-subtitle {
+    font-size: 22px; font-weight: 400;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.5;
+  }
+  .fg-pills {
+    display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;
+  }
+  .fg-pill {
+    padding: 6px 16px; border-radius: 20px;
+    background: rgba(45,212,191,0.15);
+    border: 1px solid rgba(45,212,191,0.3);
+    color: #2dd4bf; font-size: 14px; font-weight: 600;
+  }
+  .fg-badge {
+    position: absolute; bottom: 24px; right: 32px;
+    color: rgba(255,255,255,0.4); font-size: 14px; font-weight: 500;
+    z-index: 2;
+  }
+
+  /* === ADAPTIVE ICON FOREGROUND 512x512 (with safe zone padding) === */
+  .adaptive-fg {
+    width: 512px; height: 512px;
+    background: transparent;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    margin-top: 40px;
+  }
+  .adaptive-fg .icon-letter {
+    font-size: 180px; color: #fff;
+  }
+  .adaptive-fg .icon-accent {
+    width: 64px; height: 5px;
+    background: linear-gradient(90deg, #2dd4bf, #14b8a6);
+    margin-top: 6px;
+  }
+
+  /* === ADAPTIVE ICON BACKGROUND 512x512 === */
+  .adaptive-bg {
+    width: 512px; height: 512px;
+    background: linear-gradient(145deg, #0f3638 0%, #1a5c5f 50%, #0f3638 100%);
+    position: relative; overflow: hidden;
+    margin-top: 40px;
+  }
+  .adaptive-bg::before {
+    content: '';
+    position: absolute; top: -60px; right: -60px;
+    width: 240px; height: 240px;
+    background: radial-gradient(circle, rgba(45,212,191,0.25) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .adaptive-bg::after {
+    content: '';
+    position: absolute; bottom: -40px; left: -40px;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle, rgba(45,212,191,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .section-label {
+    margin-top: 40px; margin-bottom: 10px;
+    font-size: 16px; font-weight: 700; color: #333;
+    text-transform: uppercase; letter-spacing: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="section-label">Play Store Icon (512x512)</div>
+<div class="app-icon" id="app-icon">
+  <div class="icon-letter">H</div>
+  <div class="icon-accent"></div>
+  <div class="icon-tagline">Pro</div>
+</div>
+
+<div class="section-label">Feature Graphic (1024x500)</div>
+<div class="feature-graphic" id="feature-graphic">
+  <div class="fg-pattern"></div>
+  <div class="fg-grid"></div>
+  <div class="fg-content">
+    <div class="fg-icon-mini">
+      <div class="letter">H</div>
+      <div class="accent"></div>
+    </div>
+    <div class="fg-text">
+      <div class="fg-title">Hisaab<span>Pro</span></div>
+      <div class="fg-subtitle">Smart Billing & Inventory for Indian Businesses</div>
+      <div class="fg-pills">
+        <span class="fg-pill">Invoicing</span>
+        <span class="fg-pill">Inventory</span>
+        <span class="fg-pill">Payments</span>
+        <span class="fg-pill">Reports</span>
+        <span class="fg-pill">Offline</span>
+      </div>
+    </div>
+  </div>
+  <div class="fg-badge">Made in India</div>
+</div>
+
+</body>
+</html>

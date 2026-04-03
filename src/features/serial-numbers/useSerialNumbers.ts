@@ -1,7 +1,9 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, ApiError } from '@/lib/api'
 import { useToast } from '@/hooks/useToast'
 import { useDebounce } from '@/hooks/useDebounce'
+import { queryKeys } from '@/lib/query-keys'
 import { SERIAL_PAGE_SIZE } from './serial-number.constants'
 import type { SerialListResponse, SerialStatus } from './serial-number.types'
 
@@ -14,41 +16,34 @@ interface Filters {
 
 export function useSerialNumbers(productId: string) {
   const toast = useToast()
-  const toastRef = useRef(toast)
-  toastRef.current = toast
+  const queryClient = useQueryClient()
   const [filters, setFilters] = useState<Filters>({ status: 'all', search: '' })
-  const [data, setData] = useState<SerialListResponse | null>(null)
-  const [status, setStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
 
   const debouncedSearch = useDebounce(filters.search)
 
+  const query = useQuery({
+    queryKey: queryKeys.serialNumbers.list({ productId, status: filters.status, search: debouncedSearch }),
+    queryFn: ({ signal }) => {
+      const params = new URLSearchParams({ limit: String(SERIAL_PAGE_SIZE) })
+      if (filters.status !== 'all') params.set('status', filters.status)
+      if (debouncedSearch) params.set('search', debouncedSearch)
+
+      return api<SerialListResponse>(
+        `/serial-numbers/product/${productId}?${params}`,
+        { signal },
+      )
+    },
+    enabled: Boolean(productId),
+  })
+
   useEffect(() => {
-    if (!productId) {
-      setData(null)
-      setStatus('success')
-      return
+    if (query.isError) {
+      const err = query.error
+      toast.error(err instanceof ApiError ? err.message : 'Failed to load serial numbers')
     }
+  }, [query.isError, query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    const controller = new AbortController()
-    setStatus('loading')
-
-    const params = new URLSearchParams({ limit: String(SERIAL_PAGE_SIZE) })
-    if (filters.status !== 'all') params.set('status', filters.status)
-    if (debouncedSearch) params.set('search', debouncedSearch)
-
-    api<SerialListResponse>(`/serial-numbers/product/${productId}?${params}`, {
-      signal: controller.signal,
-    })
-      .then((res) => { setData(res); setStatus('success') })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        toastRef.current.error(err instanceof ApiError ? err.message : 'Failed to load serial numbers')
-      })
-
-    return () => controller.abort()
-  }, [productId, filters.status, debouncedSearch, refreshKey])
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
 
   const setSearch = useCallback((term: string) => {
     setFilters((prev) => ({ ...prev, search: term }))
@@ -58,7 +53,17 @@ export function useSerialNumbers(productId: string) {
     setFilters((prev) => ({ ...prev, status: value }))
   }, [])
 
-  const refetch = useCallback(() => setRefreshKey((k) => k + 1), [])
+  const refetch = useCallback(() => {
+    void queryClient.invalidateQueries({ queryKey: queryKeys.serialNumbers.all() })
+  }, [queryClient])
 
-  return { serials: data?.serialNumbers ?? [], total: data?.total ?? 0, status, refetch, filters, setSearch, setStatusFilter }
+  return {
+    serials: query.data?.serialNumbers ?? [],
+    total: query.data?.total ?? 0,
+    status,
+    refetch,
+    filters,
+    setSearch,
+    setStatusFilter,
+  }
 }

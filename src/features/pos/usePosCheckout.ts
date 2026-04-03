@@ -1,6 +1,7 @@
-/** POS Checkout — Submit sale + receipt data */
+/** POS Checkout -- Submit sale + receipt data (TanStack Query mutation) */
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useCallback } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { useToast } from '@/hooks/useToast'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -16,15 +17,25 @@ interface CheckoutArgs {
 }
 
 export function usePosCheckout() {
-  const [isProcessing, setIsProcessing] = useState(false)
   const [receipt, setReceipt] = useState<QuickSaleResult | null>(null)
   const [receiptItems, setReceiptItems] = useState<PosCartItem[]>([])
-  const submitRef = useRef(false)
   const toast = useToast()
   const { t } = useLanguage()
 
+  const mutation = useMutation({
+    mutationFn: async ({ items, paymentMode, amountPaid }: Omit<CheckoutArgs, 'setStatus'>) => {
+      const payload = buildPayload(items, paymentMode, amountPaid)
+      const idempotencyKey = crypto.randomUUID()
+      return api<QuickSaleResult>('/documents/quick-sale', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: { 'X-Idempotency-Key': idempotencyKey },
+      })
+    },
+  })
+
   const submit = useCallback(async ({ items, paymentMode, amountPaid, setStatus }: CheckoutArgs) => {
-    if (submitRef.current) return
+    if (mutation.isPending) return
     const error = validateCart(items, t)
     if (error) { toast.error(error); return }
 
@@ -34,37 +45,25 @@ export function usePosCheckout() {
       return
     }
 
-    submitRef.current = true
-    setIsProcessing(true)
     setStatus('processing')
 
     try {
-      const payload = buildPayload(items, paymentMode, amountPaid)
-      const idempotencyKey = crypto.randomUUID()
-      const result = await api<QuickSaleResult>('/documents/quick-sale', {
-        method: 'POST',
-        body: JSON.stringify(payload),
-        headers: { 'X-Idempotency-Key': idempotencyKey },
-      })
+      const result = await mutation.mutateAsync({ items, paymentMode, amountPaid })
       setReceipt(result)
       setReceiptItems([...items])
       setStatus('receipt')
-      // TODO: structured log — sale.completed {documentId, itemCount, total, paymentMode}
       if (navigator.vibrate) navigator.vibrate([100, 50, 100])
     } catch (err) {
       setStatus('checkout')
       const msg = err instanceof Error ? err.message : t.posSaleFailed
       toast.error(msg)
-    } finally {
-      setIsProcessing(false)
-      submitRef.current = false
     }
-  }, [toast, t])
+  }, [toast, t, mutation])
 
   const resetReceipt = useCallback(() => {
     setReceipt(null)
     setReceiptItems([])
   }, [])
 
-  return { isProcessing, receipt, receiptItems, submit, resetReceipt }
+  return { isProcessing: mutation.isPending, receipt, receiptItems, submit, resetReceipt }
 }

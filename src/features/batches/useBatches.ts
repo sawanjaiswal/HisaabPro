@@ -1,13 +1,14 @@
-/** Batch Tracking — List hook
+/** Batch Tracking -- List hook
  *
  * Manages batch list for a given productId.
  * Fetches batches, handles delete with confirmation.
  */
 
-import { useState, useCallback } from 'react'
-import { useApi } from '@/hooks/useApi'
+import { useCallback } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api, ApiError } from '@/lib/api'
 import { useToast } from '@/hooks/useToast'
+import { queryKeys } from '@/lib/query-keys'
 import { BATCH_PAGE_SIZE } from './batch.constants'
 import type { BatchListResponse } from './batch.types'
 
@@ -22,36 +23,55 @@ interface UseBatchesReturn {
 
 export function useBatches(productId: string | undefined): UseBatchesReturn {
   const toast = useToast()
-  const [isDeleting, setIsDeleting] = useState(false)
+  const queryClient = useQueryClient()
 
-  const path = productId
-    ? `/products/${productId}/batches?limit=${BATCH_PAGE_SIZE}`
+  const query = useQuery({
+    queryKey: queryKeys.batches.list({ productId }),
+    queryFn: ({ signal }) =>
+      api<BatchListResponse>(
+        `/products/${productId}/batches?limit=${BATCH_PAGE_SIZE}`,
+        { signal },
+      ),
+    enabled: Boolean(productId),
+  })
+
+  const status = !productId
+    ? 'idle' as const
+    : query.isPending
+      ? 'loading' as const
+      : query.isError ? 'error' as const : 'success' as const
+
+  const error = query.isError && query.error instanceof ApiError
+    ? query.error
     : null
 
-  const { data, status, error, refetch } = useApi<BatchListResponse>(path)
+  const deleteMutation = useMutation({
+    mutationFn: ({ id }: { id: string; batchNumber: string }) =>
+      api(`/batches/${id}`, { method: 'DELETE' }),
+    onSuccess: (_data, variables) => {
+      toast.success(`Batch ${variables.batchNumber} deleted`)
+      void queryClient.invalidateQueries({ queryKey: queryKeys.batches.all() })
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof ApiError ? err.message : 'Failed to delete batch'
+      toast.error(message)
+    },
+  })
+
+  const refetch = useCallback(() => {
+    void queryClient.invalidateQueries({ queryKey: queryKeys.batches.all() })
+  }, [queryClient])
 
   const deleteBatch = useCallback(async (id: string, batchNumber: string) => {
-    setIsDeleting(true)
-    try {
-      await api(`/batches/${id}`, { method: 'DELETE' })
-      toast.success(`Batch ${batchNumber} deleted`)
-      refetch()
-    } catch (err: unknown) {
-      const message = err instanceof ApiError
-        ? err.message
-        : 'Failed to delete batch'
-      toast.error(message)
-    } finally {
-      setIsDeleting(false)
-    }
-  }, [refetch, toast])
+    await deleteMutation.mutateAsync({ id, batchNumber })
+  }, [deleteMutation])
 
   return {
-    batches: data,
+    batches: query.data ?? null,
     status,
     error,
     refetch,
     deleteBatch,
-    isDeleting,
+    isDeleting: deleteMutation.isPending,
   }
 }

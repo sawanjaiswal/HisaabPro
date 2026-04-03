@@ -1,8 +1,10 @@
 /** useReconciliationList — fetches paginated list of reconciliations */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { listReconciliations, deleteReconciliation } from './reconciliation.service'
 import { RECON_PAGE_LIMIT } from './reconciliation.constants'
 import type { ReconciliationSummary } from './reconciliation.types'
@@ -22,32 +24,39 @@ interface UseReconciliationListReturn {
 
 export function useReconciliationList(): UseReconciliationListReturn {
   const toast = useToast()
+  const queryClient = useQueryClient()
+  const [page, setPage] = useState(1)
 
-  const [items, setItems]   = useState<ReconciliationSummary[]>([])
-  const [status, setStatus] = useState<Status>('loading')
-  const [page, setPage]     = useState(1)
-  const [total, setTotal]   = useState(0)
-  const [refreshKey, setRefreshKey] = useState(0)
+  const query = useQuery({
+    queryKey: queryKeys.gstReconciliation.list({ page }),
+    queryFn: ({ signal }) =>
+      listReconciliations({ page, limit: RECON_PAGE_LIMIT }, signal),
+  })
 
   useEffect(() => {
-    const controller = new AbortController()
-    setStatus('loading')
+    if (query.isError) {
+      const err = query.error
+      const message = err instanceof ApiError ? err.message : 'Failed to load reconciliations'
+      toast.error(message)
+    }
+  }, [query.isError, query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    listReconciliations({ page, limit: RECON_PAGE_LIMIT }, controller.signal)
-      .then((res) => {
-        setItems((prev) => page === 1 ? res.data : [...prev, ...res.data])
-        setTotal(res.total)
-        setStatus('success')
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        const message = err instanceof ApiError ? err.message : 'Failed to load reconciliations'
-        toast.error(message)
-      })
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
+  const items = query.data?.data ?? []
+  const total = query.data?.total ?? 0
+  const hasMore = items.length < total
 
-    return () => controller.abort()
-  }, [page, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteReconciliation(id),
+    onSuccess: () => {
+      toast.success('Reconciliation deleted')
+      void queryClient.invalidateQueries({ queryKey: queryKeys.gstReconciliation.all() })
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof ApiError ? err.message : 'Failed to delete reconciliation'
+      toast.error(message)
+    },
+  })
 
   const loadMore = useCallback(() => {
     setPage((p) => p + 1)
@@ -55,17 +64,12 @@ export function useReconciliationList(): UseReconciliationListReturn {
 
   const refresh = useCallback(() => {
     setPage(1)
-    setItems([])
-    setRefreshKey((k) => k + 1)
-  }, [])
+    void queryClient.invalidateQueries({ queryKey: queryKeys.gstReconciliation.all() })
+  }, [queryClient])
 
   const remove = useCallback(async (id: string) => {
-    await deleteReconciliation(id)
-    toast.success('Reconciliation deleted')
-    refresh()
-  }, [refresh, toast])
-
-  const hasMore = items.length < total
+    await deleteMutation.mutateAsync(id)
+  }, [deleteMutation])
 
   return { items, status, page, total, hasMore, loadMore, remove, refresh }
 }

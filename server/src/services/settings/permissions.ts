@@ -15,6 +15,7 @@ const PERMISSION_MATRIX = [
       { key: 'edit', label: 'Edit Invoices' },
       { key: 'delete', label: 'Delete Invoices' },
       { key: 'share', label: 'Share Invoices' },
+      { key: 'export', label: 'Export Invoices' },
     ],
   },
   {
@@ -46,10 +47,22 @@ const PERMISSION_MATRIX = [
     ],
   },
   {
-    key: 'reports', label: 'Reports',
+    key: 'expenses', label: 'Expenses',
     actions: [
-      { key: 'view', label: 'View Reports' },
-      { key: 'download', label: 'Download Reports' },
+      { key: 'view', label: 'View Expenses' },
+      { key: 'create', label: 'Create Expenses' },
+      { key: 'edit', label: 'Edit Expenses' },
+      { key: 'delete', label: 'Delete Expenses' },
+    ],
+  },
+  {
+    key: 'banking', label: 'Banking',
+    actions: [
+      { key: 'view', label: 'View Bank Accounts' },
+      { key: 'create', label: 'Create Bank Account' },
+      { key: 'edit', label: 'Edit Bank Account' },
+      { key: 'manageCheques', label: 'Manage Cheques' },
+      { key: 'manageLoans', label: 'Manage Loans' },
     ],
   },
   {
@@ -62,11 +75,53 @@ const PERMISSION_MATRIX = [
     ],
   },
   {
+    key: 'godowns', label: 'Godowns',
+    actions: [
+      { key: 'view', label: 'View Godowns' },
+      { key: 'create', label: 'Create Godown' },
+      { key: 'edit', label: 'Edit Godown' },
+      { key: 'transfer', label: 'Transfer Stock' },
+    ],
+  },
+  {
+    key: 'batches', label: 'Batch Tracking',
+    actions: [
+      { key: 'view', label: 'View Batches' },
+      { key: 'create', label: 'Create Batch' },
+      { key: 'edit', label: 'Edit Batch' },
+    ],
+  },
+  {
+    key: 'serials', label: 'Serial Numbers',
+    actions: [
+      { key: 'view', label: 'View Serials' },
+      { key: 'create', label: 'Create Serial' },
+      { key: 'edit', label: 'Edit Serial' },
+    ],
+  },
+  {
+    key: 'templates', label: 'Templates',
+    actions: [
+      { key: 'view', label: 'View Templates' },
+      { key: 'create', label: 'Create Template' },
+      { key: 'edit', label: 'Edit Template' },
+    ],
+  },
+  {
+    key: 'reports', label: 'Reports',
+    actions: [
+      { key: 'view', label: 'View Reports' },
+      { key: 'download', label: 'Download Reports' },
+      { key: 'export', label: 'Export Data' },
+    ],
+  },
+  {
     key: 'settings', label: 'Settings',
     actions: [
       { key: 'view', label: 'View Settings' },
       { key: 'modify', label: 'Modify Settings' },
       { key: 'manageStaff', label: 'Manage Staff' },
+      { key: 'manageRoles', label: 'Manage Roles' },
     ],
   },
   {
@@ -113,7 +168,7 @@ const SYSTEM_ROLES: Array<{
     isSystem: true,
     priority: 70,
     permissions: ALL_PERMISSIONS.filter(p =>
-      !['settings.manageStaff', 'settings.modify'].includes(p)
+      !['settings.manageStaff', 'settings.modify', 'settings.manageRoles'].includes(p)
     ),
   },
   {
@@ -125,6 +180,7 @@ const SYSTEM_ROLES: Array<{
       'parties.view',
       'payments.view', 'payments.record',
       'reports.view',
+      'templates.view',
       'fields.viewPartyPhone',
     ],
   },
@@ -148,6 +204,9 @@ const SYSTEM_ROLES: Array<{
       'invoicing.view',
       'parties.view',
       'reports.view',
+      'godowns.view', 'godowns.transfer',
+      'batches.view', 'batches.create', 'batches.edit',
+      'serials.view', 'serials.create',
       'fields.viewPurchasePrice',
     ],
   },
@@ -172,7 +231,9 @@ const SYSTEM_ROLES: Array<{
       'inventory.view',
       'payments.view',
       'parties.view',
-      'reports.view', 'reports.download',
+      'expenses.view', 'expenses.create', 'expenses.edit',
+      'banking.view', 'banking.manageCheques', 'banking.manageLoans',
+      'reports.view', 'reports.download', 'reports.export',
       'accounting.view', 'accounting.create', 'accounting.edit',
       'fields.viewPurchasePrice', 'fields.viewProfitMargin',
       'fields.viewPartyOutstanding',

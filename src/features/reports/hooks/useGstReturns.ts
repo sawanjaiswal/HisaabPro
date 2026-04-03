@@ -1,12 +1,14 @@
-/** GST Returns hook
+/** GST Returns hook (TanStack Query)
  *
  * Fetches a specific GST return (GSTR-1, GSTR-3B, or GSTR-9) for a given period.
- * Re-fetches whenever returnType or period changes. Aborts on cleanup.
+ * Re-fetches whenever returnType or period changes. Aborts via TanStack Query.
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { getGstReturn, exportGstReturn } from '../report.service'
 import type {
   GstReturnType,
@@ -39,65 +41,57 @@ function getCurrentPeriod(): string {
 
 export function useGstReturns(): UseGstReturnsReturn {
   const toast = useToast()
+  const queryClient = useQueryClient()
 
   const [returnType, setReturnType] = useState<GstReturnType>('GSTR1')
   const [period, setPeriod] = useState<string>(getCurrentPeriod)
-  const [data, setData] = useState<Gstr1Data | Gstr3bData | Gstr9Data | null>(null)
-  const [status, setStatus] = useState<Status>('loading')
-  const [isExporting, setIsExporting] = useState(false)
-  const [refreshKey, setRefreshKey] = useState(0)
+
+  const query = useQuery({
+    queryKey: queryKeys.reports.gstReturns({ returnType, period }),
+    queryFn: ({ signal }) => getGstReturn(returnType, period, signal),
+  })
 
   useEffect(() => {
-    const controller = new AbortController()
-    setStatus('loading')
-    setData(null)
+    if (query.isError) {
+      const err = query.error
+      toast.error(err instanceof ApiError ? err.message : 'Failed to load GST return')
+    }
+  }, [query.isError, query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    getGstReturn(returnType, period, controller.signal)
-      .then((response) => {
-        setData(response)
-        setStatus('success')
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        const message =
-          err instanceof ApiError ? err.message : 'Failed to load GST return'
-        toast.error(message)
-      })
-
-    return () => controller.abort()
-  }, [returnType, period, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  const exportMutation = useMutation({
+    mutationFn: () => exportGstReturn(returnType, period, 'JSON'),
+    onSuccess: () => {
+      toast.success('GSTR-1 JSON exported successfully')
+    },
+    onError: (err: unknown) => {
+      toast.error(err instanceof ApiError ? err.message : 'Export failed. Please try again.')
+    },
+  })
 
   const exportJson = useCallback(async (): Promise<GstExportData | null> => {
     if (returnType !== 'GSTR1') return null
-    setIsExporting(true)
     try {
-      const result = await exportGstReturn(returnType, period, 'JSON')
-      toast.success('GSTR-1 JSON exported successfully')
-      return result
-    } catch (err: unknown) {
-      const message =
-        err instanceof ApiError ? err.message : 'Export failed. Please try again.'
-      toast.error(message)
+      return await exportMutation.mutateAsync()
+    } catch {
       return null
-    } finally {
-      setIsExporting(false)
     }
-  }, [returnType, period, toast])
+  }, [returnType, exportMutation])
+
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
 
   const refresh = useCallback(() => {
-    setRefreshKey((k) => k + 1)
-  }, [])
+    queryClient.invalidateQueries({ queryKey: queryKeys.reports.gstReturns({ returnType, period }) })
+  }, [queryClient, returnType, period])
 
   return {
-    data,
+    data: query.data ?? null,
     status,
     returnType,
     period,
     setReturnType,
     setPeriod,
     exportJson,
-    isExporting,
+    isExporting: exportMutation.isPending,
     refresh,
   }
 }

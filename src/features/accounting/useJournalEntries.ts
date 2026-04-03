@@ -1,8 +1,10 @@
-/** useJournalEntries — Paginated journal entries with type/status filters */
+/** useJournalEntries — Paginated journal entries with type/status filters (TanStack Query) */
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { getJournalEntries } from './accounting.service'
 import { ACCOUNTING_PAGE_LIMIT } from './accounting.constants'
 import type { JournalEntry, JournalEntryFilters, JournalEntryType, EntryStatus } from './accounting.types'
@@ -28,45 +30,61 @@ const DEFAULT_FILTERS: JournalEntryFilters = {
 
 export function useJournalEntries(): UseJournalEntriesReturn {
   const toast = useToast()
+  const queryClient = useQueryClient()
   const [filters, setFilters] = useState<JournalEntryFilters>(DEFAULT_FILTERS)
-  const [entries, setEntries] = useState<JournalEntry[]>([])
-  const [total, setTotal] = useState(0)
-  const [status, setStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
+  // Track accumulated entries for append-on-loadMore
+  const accumulatedRef = useRef<JournalEntry[]>([])
   const isLoadMore = useRef(false)
 
+  const query = useQuery({
+    queryKey: queryKeys.accounting.journals(filters as unknown as Record<string, unknown>),
+    queryFn: ({ signal }) => getJournalEntries(filters, signal),
+  })
+
+  // Build accumulated entries: on page 1 reset, on loadMore append
+  const rawItems = query.data?.items ?? []
+  const total = query.data?.total ?? 0
+
+  if (query.isSuccess) {
+    if (!isLoadMore.current || filters.page === 1) {
+      accumulatedRef.current = rawItems
+    } else {
+      // Append new items
+      const existingIds = new Set(accumulatedRef.current.map((e) => e.id))
+      const newItems = rawItems.filter((e) => !existingIds.has(e.id))
+      accumulatedRef.current = [...accumulatedRef.current, ...newItems]
+    }
+    isLoadMore.current = false
+  }
+
+  const entries = accumulatedRef.current
+
+  // Only show loading skeleton on first page / filter change
+  const status: Status = (() => {
+    if (query.isPending && !isLoadMore.current) return 'loading'
+    if (query.isError) return 'error'
+    if (query.isSuccess) return 'success'
+    return entries.length > 0 ? 'success' : 'loading'
+  })()
+
+  // Show toast on fetch error
   useEffect(() => {
-    const controller = new AbortController()
-    const appendMode = isLoadMore.current
-    if (!appendMode) setStatus('loading')
-
-    getJournalEntries(filters, controller.signal)
-      .then((res) => {
-        setEntries((prev) =>
-          appendMode ? [...prev, ...res.items] : res.items
-        )
-        setTotal(res.total)
-        setStatus('success')
-        isLoadMore.current = false
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        isLoadMore.current = false
-        const message = err instanceof ApiError ? err.message : 'Failed to load entries'
-        toast.error(message)
-      })
-
-    return () => controller.abort()
-  }, [filters, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (query.error) {
+      isLoadMore.current = false
+      const message = query.error instanceof ApiError ? query.error.message : 'Failed to load entries'
+      toast.error(message)
+    }
+  }, [query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const setTypeFilter = useCallback((type: JournalEntryType | undefined) => {
     isLoadMore.current = false
+    accumulatedRef.current = []
     setFilters((prev) => ({ ...prev, type, page: 1 }))
   }, [])
 
   const setStatusFilter = useCallback((s: EntryStatus | undefined) => {
     isLoadMore.current = false
+    accumulatedRef.current = []
     setFilters((prev) => ({ ...prev, status: s, page: 1 }))
   }, [])
 
@@ -77,9 +95,10 @@ export function useJournalEntries(): UseJournalEntriesReturn {
 
   const refresh = useCallback(() => {
     isLoadMore.current = false
+    accumulatedRef.current = []
     setFilters((prev) => ({ ...prev, page: 1 }))
-    setRefreshKey((k) => k + 1)
-  }, [])
+    queryClient.invalidateQueries({ queryKey: queryKeys.accounting.all() })
+  }, [queryClient])
 
   const page = filters.page ?? 1
   const limit = filters.limit ?? ACCOUNTING_PAGE_LIMIT

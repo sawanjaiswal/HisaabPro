@@ -1,8 +1,10 @@
-/** useChartOfAccounts — Fetches and groups accounts by type */
+/** useChartOfAccounts — Fetches and groups accounts by type (TanStack Query) */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useEffect, useCallback } from 'react'
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { getAccounts, seedDefaultAccounts } from './accounting.service'
 import { groupAccountsByType } from './accounting.utils'
 import type { LedgerAccount, AccountType } from './accounting.types'
@@ -20,55 +22,51 @@ interface UseChartOfAccountsReturn {
 
 export function useChartOfAccounts(): UseChartOfAccountsReturn {
   const toast = useToast()
-  const [status, setStatus] = useState<Status>('loading')
-  const [accounts, setAccounts] = useState<LedgerAccount[]>([])
-  const [total, setTotal] = useState(0)
-  const [refreshKey, setRefreshKey] = useState(0)
-  const [isSeedingLoading, setIsSeedingLoading] = useState(false)
+  const queryClient = useQueryClient()
 
+  const query = useQuery({
+    queryKey: queryKeys.accounting.chart(),
+    queryFn: ({ signal }) => getAccounts(1, 200, signal),
+  })
+
+  const accounts = query.data?.items ?? []
+  const total = query.data?.total ?? 0
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
+
+  // Show toast on fetch error
   useEffect(() => {
-    const controller = new AbortController()
-    setStatus('loading')
-
-    getAccounts(1, 200, controller.signal)
-      .then((res) => {
-        setAccounts(res.items)
-        setTotal(res.total)
-        setStatus('success')
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        const message = err instanceof ApiError ? err.message : 'Failed to load accounts'
-        toast.error(message)
-      })
-
-    return () => controller.abort()
-  }, [refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (query.error) {
+      const message = query.error instanceof ApiError ? query.error.message : 'Failed to load accounts'
+      toast.error(message)
+    }
+  }, [query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const refresh = useCallback(() => {
-    setRefreshKey((k) => k + 1)
-  }, [])
+    queryClient.invalidateQueries({ queryKey: queryKeys.accounting.all() })
+  }, [queryClient])
 
-  const handleSeed = useCallback(async () => {
-    setIsSeedingLoading(true)
-    try {
-      await seedDefaultAccounts()
+  // Seed default accounts mutation
+  const seedMutation = useMutation({
+    mutationFn: () => seedDefaultAccounts(),
+    onSuccess: () => {
       toast.success('Default accounts created')
-      setRefreshKey((k) => k + 1)
-    } catch (err) {
+      queryClient.invalidateQueries({ queryKey: queryKeys.accounting.all() })
+    },
+    onError: (err: Error) => {
       const message = err instanceof ApiError ? err.message : 'Failed to seed accounts'
       toast.error(message)
-    } finally {
-      setIsSeedingLoading(false)
-    }
-  }, [toast])
+    },
+  })
+
+  const handleSeed = useCallback(async () => {
+    await seedMutation.mutateAsync()
+  }, [seedMutation])
 
   return {
     grouped: groupAccountsByType(accounts),
     total,
     status,
-    isSeedingLoading,
+    isSeedingLoading: seedMutation.isPending,
     refresh,
     handleSeed,
   }

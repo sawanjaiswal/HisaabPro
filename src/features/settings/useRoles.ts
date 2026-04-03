@@ -1,12 +1,14 @@
-/** Settings — Roles list hook
+/** Settings — Roles list hook (TanStack Query)
  *
  * Fetches all roles for the business, exposes refresh.
  * businessId is passed as a parameter (AuthUser has no businessId field).
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { getRoles } from './role.service'
 import type { Role } from './settings.types'
 
@@ -20,35 +22,28 @@ interface UseRolesReturn {
 
 export function useRoles(businessId: string): UseRolesReturn {
   const toast = useToast()
+  const queryClient = useQueryClient()
 
-  const [roles, setRoles] = useState<Role[]>([])
-  const [status, setStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
+  const query = useQuery({
+    queryKey: queryKeys.settings.roles(),
+    queryFn: ({ signal }) => getRoles(businessId, signal),
+    enabled: !!businessId,
+  })
 
+  const roles = query.data?.data.roles ?? []
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
+
+  // Show toast on fetch error
   useEffect(() => {
-    if (!businessId) return
+    if (query.error) {
+      const message = query.error instanceof ApiError ? query.error.message : 'Failed to load roles'
+      toast.error(message)
+    }
+  }, [query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    const controller = new AbortController()
-    setStatus('loading')
-
-    getRoles(businessId, controller.signal)
-      .then((response) => {
-        setRoles(response.data.roles)
-        setStatus('success')
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        const message = err instanceof ApiError ? err.message : 'Failed to load roles'
-        toast.error(message)
-      })
-
-    return () => controller.abort()
-  }, [businessId, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const refresh = useCallback(() => {
-    setRefreshKey((k) => k + 1)
-  }, [])
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.settings.roles() })
+  }
 
   return { roles, status, refresh }
 }

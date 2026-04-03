@@ -1,12 +1,10 @@
-/** useRecurringList — Manages list state, status filter, and pagination
- *
- * AbortController cleanup prevents stale updates when status/page changes
- * mid-flight. refreshKey forces re-fetch without changing other deps.
- */
+/** useRecurringList — Manages list state, status filter, and pagination */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { listRecurring } from '../recurring.service'
 import type { RecurringInvoice } from '../recurring.types'
 
@@ -25,36 +23,28 @@ interface UseRecurringListReturn {
 
 export function useRecurringList(): UseRecurringListReturn {
   const toast = useToast()
-
+  const queryClient = useQueryClient()
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [page, setPage] = useState(1)
-  const [items, setItems] = useState<RecurringInvoice[]>([])
-  const [total, setTotal] = useState(0)
-  const [fetchStatus, setFetchStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
+
+  const query = useQuery({
+    queryKey: queryKeys.recurring.list({ page, statusFilter }),
+    queryFn: ({ signal }) => listRecurring(page, statusFilter, signal),
+  })
 
   useEffect(() => {
-    const controller = new AbortController()
-    setFetchStatus('loading')
+    if (query.isError) {
+      const err = query.error
+      const message = err instanceof ApiError ? err.message : 'Failed to load recurring invoices'
+      toast.error(message)
+    }
+  }, [query.isError, query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    listRecurring(page, statusFilter, controller.signal)
-      .then((res) => {
-        setItems(res.items)
-        setTotal(res.total)
-        setFetchStatus('success')
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setFetchStatus('error')
-        const message =
-          err instanceof ApiError ? err.message : 'Failed to load recurring invoices'
-        toast.error(message)
-      })
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
 
-    return () => controller.abort()
-  }, [page, statusFilter, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
+  const refresh = useCallback(() => {
+    void queryClient.invalidateQueries({ queryKey: queryKeys.recurring.all() })
+  }, [queryClient])
 
   const handleStatusFilter = useCallback((s: string) => {
     setStatusFilter(s)
@@ -62,10 +52,10 @@ export function useRecurringList(): UseRecurringListReturn {
   }, [])
 
   return {
-    items,
-    total,
+    items: query.data?.items ?? [],
+    total: query.data?.total ?? 0,
     page,
-    status: fetchStatus,
+    status,
     statusFilter,
     setStatusFilter: handleStatusFilter,
     setPage,

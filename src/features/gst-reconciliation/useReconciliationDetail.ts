@@ -1,8 +1,10 @@
 /** useReconciliationDetail — summary + paginated entries with matchStatus filter */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { getReconciliationDetail, getReconciliationEntries } from './reconciliation.service'
 import { RECON_PAGE_LIMIT } from './reconciliation.constants'
 import type { MatchStatus, ReconciliationEntry, ReconciliationSummary } from './reconciliation.types'
@@ -24,61 +26,57 @@ interface UseReconciliationDetailReturn {
 
 export function useReconciliationDetail(id: string): UseReconciliationDetailReturn {
   const toast = useToast()
-
-  const [summary, setSummary]             = useState<ReconciliationSummary | null>(null)
-  const [summaryStatus, setSummaryStatus] = useState<Status>('loading')
-  const [entries, setEntries]             = useState<ReconciliationEntry[]>([])
-  const [entriesStatus, setEntriesStatus] = useState<Status>('loading')
+  const queryClient = useQueryClient()
   const [matchFilter, setMatchFilterState] = useState<MatchStatus | 'ALL'>('ALL')
-  const [page, setPage]                   = useState(1)
-  const [entriesTotal, setEntriesTotal]   = useState(0)
-  const [refreshKey, setRefreshKey]       = useState(0)
+  const [page, setPage] = useState(1)
 
-  // Fetch summary
+  // Summary query
+  const summaryQuery = useQuery({
+    queryKey: queryKeys.gstReconciliation.detail(id),
+    queryFn: ({ signal }) => getReconciliationDetail(id, signal),
+  })
+
   useEffect(() => {
-    const controller = new AbortController()
-    setSummaryStatus('loading')
+    if (summaryQuery.isError) {
+      const err = summaryQuery.error
+      const message = err instanceof ApiError ? err.message : 'Failed to load summary'
+      toast.error(message)
+    }
+  }, [summaryQuery.isError, summaryQuery.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    getReconciliationDetail(id, controller.signal)
-      .then((data) => { setSummary(data); setSummaryStatus('success') })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setSummaryStatus('error')
-        const message = err instanceof ApiError ? err.message : 'Failed to load summary'
-        toast.error(message)
-      })
+  const summaryStatus: Status = summaryQuery.isPending
+    ? 'loading'
+    : summaryQuery.isError ? 'error' : 'success'
 
-    return () => controller.abort()
-  }, [id, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  // Entries query
+  const entriesQuery = useQuery({
+    queryKey: ['gst-reconciliation', 'entries', id, { matchFilter, page }] as const,
+    queryFn: ({ signal }) =>
+      getReconciliationEntries(
+        { id, matchStatus: matchFilter, page, limit: RECON_PAGE_LIMIT },
+        signal,
+      ),
+  })
 
-  // Fetch entries (re-runs on filter or page change)
   useEffect(() => {
-    const controller = new AbortController()
-    setEntriesStatus('loading')
+    if (entriesQuery.isError) {
+      const err = entriesQuery.error
+      const message = err instanceof ApiError ? err.message : 'Failed to load entries'
+      toast.error(message)
+    }
+  }, [entriesQuery.isError, entriesQuery.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    getReconciliationEntries(
-      { id, matchStatus: matchFilter, page, limit: RECON_PAGE_LIMIT },
-      controller.signal
-    )
-      .then((res) => {
-        setEntries((prev) => page === 1 ? res.data : [...prev, ...res.data])
-        setEntriesTotal(res.total)
-        setEntriesStatus('success')
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setEntriesStatus('error')
-        const message = err instanceof ApiError ? err.message : 'Failed to load entries'
-        toast.error(message)
-      })
+  const entriesStatus: Status = entriesQuery.isPending
+    ? 'loading'
+    : entriesQuery.isError ? 'error' : 'success'
 
-    return () => controller.abort()
-  }, [id, matchFilter, page, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  const entries = entriesQuery.data?.data ?? []
+  const entriesTotal = entriesQuery.data?.total ?? 0
+  const hasMoreEntries = entries.length < entriesTotal
 
   const setMatchFilter = useCallback((f: MatchStatus | 'ALL') => {
     setMatchFilterState(f)
     setPage(1)
-    setEntries([])
   }, [])
 
   const loadMoreEntries = useCallback(() => {
@@ -87,14 +85,12 @@ export function useReconciliationDetail(id: string): UseReconciliationDetailRetu
 
   const refresh = useCallback(() => {
     setPage(1)
-    setEntries([])
-    setRefreshKey((k) => k + 1)
-  }, [])
-
-  const hasMoreEntries = entries.length < entriesTotal
+    void queryClient.invalidateQueries({ queryKey: queryKeys.gstReconciliation.detail(id) })
+    void queryClient.invalidateQueries({ queryKey: ['gst-reconciliation', 'entries', id] })
+  }, [queryClient, id])
 
   return {
-    summary,
+    summary: summaryQuery.data ?? null,
     entries,
     summaryStatus,
     entriesStatus,

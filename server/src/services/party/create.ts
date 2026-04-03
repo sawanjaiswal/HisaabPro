@@ -6,6 +6,7 @@ import { prisma } from '../../lib/prisma.js'
 import logger from '../../lib/logger.js'
 import type { CreatePartyInput } from '../../schemas/party.schemas.js'
 import { requireGroup } from './helpers.js'
+// SSE events auto-emitted by middleware/sse-emit.ts on successful responses
 
 export async function createParty(businessId: string, data: CreatePartyInput) {
   logger.info('Creating party', { businessId, partyName: data.name })

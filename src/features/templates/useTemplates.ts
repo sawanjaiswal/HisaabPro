@@ -1,14 +1,13 @@
 /** Invoice Templates — List hook
  *
- * Mirrors useProducts.ts pattern. Manages the full list of template summaries,
- * AbortController cleanup on unmount, and manual refresh via refreshKey.
- *
  * PRD: invoice-templates-PLAN.md
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { getTemplates } from './template.service'
 import type { TemplateSummary } from './template.types'
 
@@ -22,36 +21,29 @@ interface UseTemplatesReturn {
 
 export function useTemplates(): UseTemplatesReturn {
   const toast = useToast()
+  const queryClient = useQueryClient()
 
-  const [templates, setTemplates] = useState<TemplateSummary[]>([])
-  const [status, setStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
+  const query = useQuery({
+    queryKey: queryKeys.templates.list(),
+    queryFn: ({ signal }) => getTemplates(signal),
+  })
 
   useEffect(() => {
-    const controller = new AbortController()
-    setStatus('loading')
+    if (query.isError) {
+      const err = query.error
+      const message = err instanceof ApiError ? err.message : 'Failed to load templates'
+      toast.error(message)
+    }
+  }, [query.isError, query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    getTemplates(controller.signal)
-      .then((data: TemplateSummary[]) => {
-        setTemplates(data)
-        setStatus('success')
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        const message = err instanceof ApiError ? err.message : 'Failed to load templates'
-        toast.error(message)
-      })
-
-    return () => controller.abort()
-  }, [refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
 
   const refresh = useCallback(() => {
-    setRefreshKey((k) => k + 1)
-  }, [])
+    void queryClient.invalidateQueries({ queryKey: queryKeys.templates.all() })
+  }, [queryClient])
 
   return {
-    templates,
+    templates: query.data ?? [],
     status,
     refresh,
   }

@@ -1,13 +1,14 @@
-/** TDS/TCS Report hook
+/** TDS/TCS Report hook (TanStack Query)
  *
- * Manages date range + type filter state, fetches the summary, and aborts
- * in-flight requests on cleanup to prevent stale state updates.
+ * Manages date range + type filter state, fetches the summary via TanStack Query.
  * All amounts in PAISE. Rates in BASIS POINTS.
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { getDateRange } from '../report.utils'
 import { getTdsTcsSummary } from '../report.service'
 import type { TdsTcsFilters, TdsTcsSummaryData } from '../report-tax.types'
@@ -28,35 +29,27 @@ function buildDefaultFilters(): TdsTcsFilters {
 
 export function useTdsTcs(): UseTdsTcsReturn {
   const toast = useToast()
+  const queryClient = useQueryClient()
 
   const [filters, setFilters] = useState<TdsTcsFilters>(buildDefaultFilters)
-  const [data, setData] = useState<TdsTcsSummaryData | null>(null)
-  const [status, setStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
+
+  const query = useQuery({
+    queryKey: queryKeys.reports.tdsTcs(filters),
+    queryFn: ({ signal }) => getTdsTcsSummary(filters, signal),
+  })
 
   useEffect(() => {
-    const controller = new AbortController()
-    setStatus('loading')
+    if (query.isError) {
+      const err = query.error
+      toast.error(err instanceof ApiError ? err.message : 'Failed to load TDS/TCS report')
+    }
+  }, [query.isError, query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    getTdsTcsSummary(filters, controller.signal)
-      .then((summary) => {
-        setData(summary)
-        setStatus('success')
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        const message =
-          err instanceof ApiError ? err.message : 'Failed to load TDS/TCS report'
-        toast.error(message)
-      })
-
-    return () => controller.abort()
-  }, [filters, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
 
   const refresh = useCallback(() => {
-    setRefreshKey((k) => k + 1)
-  }, [])
+    queryClient.invalidateQueries({ queryKey: queryKeys.reports.tdsTcs(filters) })
+  }, [queryClient, filters])
 
-  return { data, status, filters, setFilters, refresh }
+  return { data: query.data ?? null, status, filters, setFilters, refresh }
 }

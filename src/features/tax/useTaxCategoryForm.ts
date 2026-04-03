@@ -1,9 +1,11 @@
-/** Tax — Tax Category form hook (create/edit) */
+/** Tax — Tax Category form hook (create/edit) — TanStack Query mutation */
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ROUTES } from '@/config/routes.config'
+import { queryKeys } from '@/lib/query-keys'
 import { createTaxCategory, updateTaxCategory } from './tax.service'
 import type { TaxCategoryFormData } from './tax.types'
 
@@ -19,10 +21,25 @@ export function useTaxCategoryForm({ editId, initialData, businessId }: UseTaxCa
   const isEdit = Boolean(editId)
   const navigate = useNavigate()
   const toast = useToast()
+  const queryClient = useQueryClient()
   const [form, setForm] = useState<TaxCategoryFormData>(initialData ?? INITIAL)
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const submitting = useRef(false)
+
+  const mutation = useMutation({
+    mutationFn: async (data: TaxCategoryFormData) => {
+      if (isEdit && editId) return updateTaxCategory(editId, data)
+      return createTaxCategory(businessId, data)
+    },
+    onSuccess: () => {
+      toast.success(`${form.name} ${isEdit ? 'updated' : 'created'}`)
+      queryClient.invalidateQueries({ queryKey: queryKeys.tax.categories() })
+      if (editId) queryClient.invalidateQueries({ queryKey: queryKeys.tax.detail(editId) })
+      navigate(ROUTES.SETTINGS_TAX_RATES)
+    },
+    onError: () => {
+      toast.error(isEdit ? 'Failed to update' : 'Failed to create')
+    },
+  })
 
   const updateField = useCallback(<K extends keyof TaxCategoryFormData>(key: K, value: TaxCategoryFormData[K]) => {
     setForm((p) => ({ ...p, [key]: value }))
@@ -32,23 +49,16 @@ export function useTaxCategoryForm({ editId, initialData, businessId }: UseTaxCa
   const validate = useCallback((): boolean => {
     const e: Record<string, string> = {}
     if (!form.name.trim()) e.name = 'Name is required'
-    if (form.rate < 0 || form.rate > 10000) e.rate = 'Rate must be 0–100%'
+    if (form.rate < 0 || form.rate > 10000) e.rate = 'Rate must be 0-100%'
     if (form.cessRate < 0) e.cessRate = 'Cess cannot be negative'
     setErrors(e)
     return Object.keys(e).length === 0
   }, [form])
 
   const handleSubmit = useCallback(async () => {
-    if (!validate() || submitting.current) return
-    submitting.current = true
-    setIsSubmitting(true)
-    try {
-      if (isEdit && editId) { await updateTaxCategory(editId, form); toast.success(`${form.name} updated`) }
-      else { await createTaxCategory(businessId, form); toast.success(`${form.name} created`) }
-      navigate(ROUTES.SETTINGS_TAX_RATES)
-    } catch { toast.error(isEdit ? 'Failed to update' : 'Failed to create') }
-    finally { submitting.current = false; setIsSubmitting(false) }
-  }, [form, validate, toast, navigate, isEdit, editId, businessId])
+    if (!validate() || mutation.isPending) return
+    mutation.mutate(form)
+  }, [form, validate, mutation])
 
-  return { form, errors, isSubmitting, isEdit, updateField, handleSubmit }
+  return { form, errors, isSubmitting: mutation.isPending, isEdit, updateField, handleSubmit }
 }

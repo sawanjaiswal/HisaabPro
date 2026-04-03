@@ -1,9 +1,11 @@
-/** Stock transfer — Form hook */
+/** Stock transfer -- Form hook */
 
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { api, ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { ROUTES } from '@/config/routes.config'
 import { TRANSFER_NOTES_MAX } from './godown.constants'
 import type { TransferStockData } from './godown.types'
@@ -28,10 +30,10 @@ const INITIAL_FORM: TransferStockData = {
 export function useTransferForm(): UseTransferFormReturn {
   const navigate = useNavigate()
   const toast = useToast()
+  const queryClient = useQueryClient()
 
   const [form, setForm] = useState<TransferStockData>(INITIAL_FORM)
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const updateField = useCallback(<K extends keyof TransferStockData>(key: K, value: TransferStockData[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }))
@@ -65,9 +67,27 @@ export function useTransferForm(): UseTransferFormReturn {
     return Object.keys(next).length === 0
   }, [form])
 
+  const mutation = useMutation({
+    mutationFn: (payload: TransferStockData) =>
+      api('/godowns/transfer', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        entityType: 'transfer',
+        entityLabel: 'Stock transfer',
+      }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.godowns.all() })
+      toast.success('Stock transferred successfully')
+      navigate(ROUTES.GODOWNS)
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof ApiError ? err.message : 'Failed to transfer stock'
+      toast.error(message)
+    },
+  })
+
   const handleSubmit = useCallback(async () => {
-    if (!validate() || isSubmitting) return
-    setIsSubmitting(true)
+    if (!validate() || mutation.isPending) return
 
     const payload: TransferStockData = {
       productId: form.productId,
@@ -78,24 +98,8 @@ export function useTransferForm(): UseTransferFormReturn {
       notes: form.notes?.trim() || undefined,
     }
 
-    try {
-      await api('/godowns/transfer', {
-        method: 'POST',
-        body: JSON.stringify(payload),
-        entityType: 'transfer',
-        entityLabel: 'Stock transfer',
-      })
-      toast.success('Stock transferred successfully')
-      navigate(ROUTES.GODOWNS)
-    } catch (err: unknown) {
-      const message = err instanceof ApiError
-        ? err.message
-        : 'Failed to transfer stock'
-      toast.error(message)
-    } finally {
-      setIsSubmitting(false)
-    }
-  }, [form, isSubmitting, validate, toast, navigate])
+    await mutation.mutateAsync(payload)
+  }, [form, mutation, validate])
 
-  return { form, errors, isSubmitting, updateField, handleSubmit }
+  return { form, errors, isSubmitting: mutation.isPending, updateField, handleSubmit }
 }

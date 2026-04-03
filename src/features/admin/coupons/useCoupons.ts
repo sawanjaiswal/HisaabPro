@@ -1,12 +1,14 @@
 /**
- * Coupon Admin — Hook (state + API)
+ * Coupon Admin -- Hook (TanStack Query)
  * Feature #96
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { useDebounce } from '@/hooks/useDebounce'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import * as couponService from './coupon.service'
 import type { Coupon, CouponListResult, CouponStatus, CreateCouponInput, BulkCreateInput } from './coupon.types'
 
@@ -30,104 +32,149 @@ interface UseCouponsReturn {
 
 export function useCoupons(): UseCouponsReturn {
   const toast = useToast()
-  const [coupons, setCoupons] = useState<Coupon[]>([])
-  const [total, setTotal] = useState(0)
-  const [nextCursor, setNextCursor] = useState<string | null>(null)
-  const [status, setStatus] = useState<Status>('loading')
+  const queryClient = useQueryClient()
   const [statusFilter, setStatusFilter] = useState<CouponStatus | undefined>(undefined)
   const [searchQuery, setSearchQuery] = useState('')
   const debouncedSearch = useDebounce(searchQuery)
-  const [refreshKey, setRefreshKey] = useState(0)
+
+  // Track merged data for load-more pagination
+  const isLoadMore = useRef(false)
+  const [mergedCoupons, setMergedCoupons] = useState<Coupon[]>([])
+  const [nextCursor, setNextCursor] = useState<string | null>(null)
+  const [total, setTotal] = useState(0)
+
+  const filters = { status: statusFilter, search: debouncedSearch || undefined } as Record<string, unknown>
+
+  const query = useQuery({
+    queryKey: queryKeys.coupons.list(filters),
+    queryFn: ({ signal }) =>
+      couponService.listCoupons(
+        { status: statusFilter, search: debouncedSearch || undefined },
+        signal,
+      ),
+    placeholderData: (prev) => prev,
+  })
 
   useEffect(() => {
-    const controller = new AbortController()
-    setStatus('loading')
+    if (!query.data) return
+    const result = query.data as CouponListResult
+    if (!isLoadMore.current) {
+      setMergedCoupons(result.items)
+    } else {
+      setMergedCoupons((prev) => [...prev, ...result.items])
+    }
+    setTotal(result.total)
+    setNextCursor(result.nextCursor)
+    isLoadMore.current = false
+  }, [query.data])
 
-    couponService
-      .listCoupons({ status: statusFilter, search: debouncedSearch || undefined }, controller.signal)
-      .then((result: CouponListResult) => {
-        setCoupons(result.items)
-        setTotal(result.total)
-        setNextCursor(result.nextCursor)
-        setStatus('success')
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        const message = err instanceof ApiError ? err.message : 'Failed to load coupons'
-        toast.error(message)
-      })
+  useEffect(() => {
+    if (query.isError) {
+      const err = query.error
+      toast.error(err instanceof ApiError ? err.message : 'Failed to load coupons')
+    }
+  }, [query.isError, query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    return () => controller.abort()
-  }, [statusFilter, debouncedSearch, refreshKey, toast])
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
 
-  const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
+  const refresh = useCallback(() => {
+    isLoadMore.current = false
+    setMergedCoupons([])
+    queryClient.invalidateQueries({ queryKey: queryKeys.coupons.all() })
+  }, [queryClient])
+
+  const loadMoreMutation = useMutation({
+    mutationFn: () =>
+      couponService.listCoupons({
+        cursor: nextCursor ?? undefined,
+        status: statusFilter,
+        search: searchQuery || undefined,
+      }),
+    onSuccess: (result: CouponListResult) => {
+      setMergedCoupons((prev) => [...prev, ...result.items])
+      setNextCursor(result.nextCursor)
+    },
+    onError: (err: unknown) => {
+      toast.error(err instanceof ApiError ? err.message : 'Failed to load more')
+    },
+  })
 
   const loadMore = useCallback(() => {
     if (!nextCursor) return
+    loadMoreMutation.mutate()
+  }, [nextCursor, loadMoreMutation])
 
-    couponService
-      .listCoupons({ cursor: nextCursor, status: statusFilter, search: searchQuery || undefined })
-      .then((result: CouponListResult) => {
-        setCoupons((prev) => [...prev, ...result.items])
-        setNextCursor(result.nextCursor)
-      })
-      .catch((err: unknown) => {
-        const message = err instanceof ApiError ? err.message : 'Failed to load more'
-        toast.error(message)
-      })
-  }, [nextCursor, statusFilter, searchQuery, toast])
+  const createMutation = useMutation({
+    mutationFn: (data: CreateCouponInput) => couponService.createCoupon(data),
+    onSuccess: (coupon) => {
+      toast.success(`Coupon ${coupon.code} created`)
+      refresh()
+    },
+    onError: (err: unknown) => {
+      toast.error(err instanceof ApiError ? err.message : 'Failed to create coupon')
+    },
+  })
+
+  const bulkCreateMutation = useMutation({
+    mutationFn: (data: BulkCreateInput) => couponService.bulkCreateCoupons(data),
+    onSuccess: (result) => {
+      toast.success(`${result.created} coupons generated`)
+      refresh()
+    },
+    onError: (err: unknown) => {
+      toast.error(err instanceof ApiError ? err.message : 'Failed to generate coupons')
+    },
+  })
+
+  const deactivateMutation = useMutation({
+    mutationFn: ({ couponId }: { couponId: string; code: string }) =>
+      couponService.deactivateCoupon(couponId),
+    onSuccess: (_data, { code }) => {
+      toast.success(`Coupon ${code} deactivated`)
+      refresh()
+    },
+    onError: (err: unknown) => {
+      toast.error(err instanceof ApiError ? err.message : 'Failed to deactivate')
+    },
+  })
 
   const handleCreate = useCallback(
     async (data: CreateCouponInput): Promise<Coupon | null> => {
       try {
-        const coupon = await couponService.createCoupon(data)
-        toast.success(`Coupon ${coupon.code} created`)
-        refresh()
-        return coupon
-      } catch (err: unknown) {
-        const message = err instanceof ApiError ? err.message : 'Failed to create coupon'
-        toast.error(message)
+        return await createMutation.mutateAsync(data)
+      } catch {
         return null
       }
     },
-    [toast, refresh]
+    [createMutation],
   )
 
   const handleBulkCreate = useCallback(
     async (data: BulkCreateInput): Promise<boolean> => {
       try {
-        const result = await couponService.bulkCreateCoupons(data)
-        toast.success(`${result.created} coupons generated`)
-        refresh()
+        await bulkCreateMutation.mutateAsync(data)
         return true
-      } catch (err: unknown) {
-        const message = err instanceof ApiError ? err.message : 'Failed to generate coupons'
-        toast.error(message)
+      } catch {
         return false
       }
     },
-    [toast, refresh]
+    [bulkCreateMutation],
   )
 
   const handleDeactivate = useCallback(
     async (couponId: string, code: string): Promise<boolean> => {
       try {
-        await couponService.deactivateCoupon(couponId)
-        toast.success(`Coupon ${code} deactivated`)
-        refresh()
+        await deactivateMutation.mutateAsync({ couponId, code })
         return true
-      } catch (err: unknown) {
-        const message = err instanceof ApiError ? err.message : 'Failed to deactivate'
-        toast.error(message)
+      } catch {
         return false
       }
     },
-    [toast, refresh]
+    [deactivateMutation],
   )
 
   return {
-    coupons,
+    coupons: mergedCoupons,
     total,
     nextCursor,
     status,

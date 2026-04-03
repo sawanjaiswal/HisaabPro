@@ -1,6 +1,7 @@
-/** useEInvoiceActions — generate and cancel e-invoice mutations */
+/** useEInvoiceActions -- generate and cancel e-invoice mutations (TanStack Query) */
 
-import { useState, useCallback } from 'react'
+import { useCallback } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import { generateEInvoice, cancelEInvoice } from '../ecompliance.service'
 import type { EInvoiceStatus } from '../ecompliance.types'
 
@@ -15,14 +16,9 @@ export function useEInvoiceActions(
   documentId: string,
   onUpdate: (updater: (prev: EInvoiceStatus | null) => EInvoiceStatus | null) => void
 ): EInvoiceActions {
-  const [generatingInvoice, setGeneratingInvoice] = useState(false)
-  const [cancellingInvoice, setCancellingInvoice] = useState(false)
-
-  const generateInvoice = useCallback(async () => {
-    if (generatingInvoice) return
-    setGeneratingInvoice(true)
-    try {
-      const result = await generateEInvoice(documentId)
+  const generateMutation = useMutation({
+    mutationFn: () => generateEInvoice(documentId),
+    onSuccess: (result) => {
       onUpdate(() => ({
         irn: result.irn,
         ackNumber: result.ackNumber,
@@ -30,24 +26,33 @@ export function useEInvoiceActions(
         qrCode: result.qrCode,
         status: 'GENERATED',
       }))
-    } finally {
-      setGeneratingInvoice(false)
-    }
-  }, [documentId, generatingInvoice, onUpdate])
+    },
+  })
 
-  const cancelInvoice = useCallback(async (reason: string) => {
-    if (cancellingInvoice) return
-    setCancellingInvoice(true)
-    try {
-      await cancelEInvoice(documentId, reason)
+  const cancelMutation = useMutation({
+    mutationFn: (reason: string) => cancelEInvoice(documentId, reason),
+    onSuccess: (_data, reason) => {
       onUpdate(prev => prev
         ? { ...prev, status: 'CANCELLED', cancelledAt: new Date().toISOString(), cancelReason: reason }
         : prev
       )
-    } finally {
-      setCancellingInvoice(false)
-    }
-  }, [documentId, cancellingInvoice, onUpdate])
+    },
+  })
 
-  return { generatingInvoice, cancellingInvoice, generateInvoice, cancelInvoice }
+  const generateInvoice = useCallback(async () => {
+    if (generateMutation.isPending) return
+    await generateMutation.mutateAsync()
+  }, [generateMutation])
+
+  const cancelInvoice = useCallback(async (reason: string) => {
+    if (cancelMutation.isPending) return
+    await cancelMutation.mutateAsync(reason)
+  }, [cancelMutation])
+
+  return {
+    generatingInvoice: generateMutation.isPending,
+    cancellingInvoice: cancelMutation.isPending,
+    generateInvoice,
+    cancelInvoice,
+  }
 }

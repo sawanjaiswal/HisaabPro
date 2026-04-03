@@ -1,11 +1,15 @@
-/** Dashboard — State hook
+/** Dashboard — State hook (TanStack Query)
  *
  * Fetches the home dashboard data in a single call.
  * Returns exactly what DashboardPage.tsx needs.
  * All amounts in PAISE (integer).
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useToast } from '@/hooks/useToast'
+import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { getHomeDashboard } from './dashboard.service'
 import type { HomeDashboardData } from './dashboard.types'
 
@@ -18,40 +22,28 @@ interface UseHomeDashboardReturn {
 }
 
 export function useHomeDashboard(): UseHomeDashboardReturn {
-  const [data, setData] = useState<HomeDashboardData | null>(null)
-  const [status, setStatus] = useState<Status>('loading')
-  const abortRef = useRef<AbortController | null>(null)
+  const toast = useToast()
+  const queryClient = useQueryClient()
 
-  const fetchData = useCallback(async () => {
-    abortRef.current?.abort()
-    const controller = new AbortController()
-    abortRef.current = controller
+  const query = useQuery({
+    queryKey: queryKeys.dashboard.summary(),
+    queryFn: ({ signal }) => getHomeDashboard(signal),
+  })
 
-    setStatus('loading')
+  const data = query.data ?? null
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
 
-    try {
-      const result = await getHomeDashboard(controller.signal)
-      if (!controller.signal.aborted) {
-        setData(result)
-        setStatus('success')
-      }
-    } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') return
-      if (err instanceof Error && err.name === 'AbortError') return
-      if (!controller.signal.aborted) {
-        setStatus('error')
-      }
-    }
-  }, [])
-
+  // Show toast on fetch error
   useEffect(() => {
-    void fetchData()
-    return () => { abortRef.current?.abort() }
-  }, [fetchData])
+    if (query.error) {
+      const message = query.error instanceof ApiError ? query.error.message : 'Failed to load dashboard'
+      toast.error(message)
+    }
+  }, [query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const refresh = useCallback(() => {
-    void fetchData()
-  }, [fetchData])
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all() })
+  }
 
   return { data, status, refresh }
 }

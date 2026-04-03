@@ -1,3 +1,23 @@
+/**
+ * @deprecated Use `useQuery` from @tanstack/react-query instead.
+ *
+ * Migration guide:
+ * ```ts
+ * // Before:
+ * const { data, status, error, refetch } = useApi<MyType>('/path')
+ *
+ * // After:
+ * import { useQuery } from '@tanstack/react-query'
+ * import { api } from '@/lib/api'
+ *
+ * const query = useQuery({
+ *   queryKey: ['my-key'],
+ *   queryFn: ({ signal }) => api<MyType>('/path', { signal }),
+ * })
+ * // query.data, query.isPending, query.isError, query.refetch()
+ * ```
+ */
+
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { api, ApiError } from '@/lib/api'
 
@@ -10,7 +30,7 @@ interface UseApiResult<T> {
   refetch: () => void
 }
 
-/** Fetch data with loading/error states and auto-abort on cleanup */
+/** @deprecated Use `useQuery` from @tanstack/react-query instead. See migration guide above. */
 export function useApi<T>(path: string | null): UseApiResult<T> {
   const [data, setData] = useState<T | null>(null)
   const [status, setStatus] = useState<Status>(path ? 'loading' : 'idle')

@@ -1,13 +1,15 @@
-/** Day Book hook
+/** Day Book hook (TanStack Query)
  *
  * Manages the day book for a specific date with next/prev navigation,
- * transaction-type filter, load-more pagination, and abort-on-cleanup.
- * All amounts are in PAISE — display via formatAmount() at render.
+ * transaction-type filter, load-more pagination via keepPreviousData.
+ * All amounts are in PAISE -- display via formatAmount() at render.
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { STATEMENT_PAGE_LIMIT } from '../report.constants'
 import { getTodayISO, getPrevDate, getNextDate } from '../report.utils'
 import { getDayBook } from '../report.service'
@@ -40,55 +42,54 @@ function buildDefaultFilters(): DayBookFilters {
 
 export function useDayBook(): UseDayBookReturn {
   const toast = useToast()
+  const queryClient = useQueryClient()
 
   const [filters, setFilters] = useState<DayBookFilters>(buildDefaultFilters)
-  const [data, setData] = useState<DayBookResponse | null>(null)
-  const [status, setStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
-
   const isLoadMore = useRef(false)
+  const [mergedData, setMergedData] = useState<DayBookResponse | null>(null)
+
+  const query = useQuery({
+    queryKey: queryKeys.reports.dayBook(filters),
+    queryFn: ({ signal }) => getDayBook(filters, signal),
+    placeholderData: (prev) => prev,
+  })
 
   useEffect(() => {
-    const controller = new AbortController()
+    if (!query.data) return
     const appendMode = isLoadMore.current
-
-    if (!appendMode) {
-      setStatus('loading')
+    if (!appendMode || mergedData === null) {
+      setMergedData(query.data)
+    } else {
+      setMergedData((prev) => {
+        if (!prev) return query.data!
+        return {
+          ...query.data!,
+          data: {
+            ...query.data!.data,
+            transactions: [
+              ...prev.data.transactions,
+              ...query.data!.data.transactions,
+            ],
+          },
+        }
+      })
     }
+    isLoadMore.current = false
+  }, [query.data]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    getDayBook(filters, controller.signal)
-      .then((response: DayBookResponse) => {
-        setData((prev) => {
-          if (!appendMode || prev === null) return response
-          return {
-            ...response,
-            data: {
-              ...response.data,
-              transactions: [
-                ...prev.data.transactions,
-                ...response.data.transactions,
-              ],
-            },
-          }
-        })
-        setStatus('success')
-        isLoadMore.current = false
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        isLoadMore.current = false
-        const message =
-          err instanceof ApiError ? err.message : 'Failed to load day book'
-        toast.error(message)
-      })
+  useEffect(() => {
+    if (query.isError) {
+      isLoadMore.current = false
+      const err = query.error
+      toast.error(err instanceof ApiError ? err.message : 'Failed to load day book')
+    }
+  }, [query.isError, query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    return () => controller.abort()
-  }, [filters, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
 
   const setDate = useCallback((date: string) => {
     isLoadMore.current = false
-    setData(null)
+    setMergedData(null)
     setFilters((prev) => ({ ...prev, date, cursor: undefined }))
   }, [])
 
@@ -98,16 +99,17 @@ export function useDayBook(): UseDayBookReturn {
   }, [])
 
   const loadMore = useCallback(() => {
-    if (!data?.meta.hasMore || !data.meta.cursor) return
+    if (!mergedData?.meta.hasMore || !mergedData.meta.cursor) return
     isLoadMore.current = true
-    setFilters((prev) => ({ ...prev, cursor: data.meta.cursor ?? undefined }))
-  }, [data])
+    setFilters((prev) => ({ ...prev, cursor: mergedData.meta.cursor ?? undefined }))
+  }, [mergedData])
 
   const refresh = useCallback(() => {
     isLoadMore.current = false
+    setMergedData(null)
     setFilters((prev) => ({ ...prev, cursor: undefined }))
-    setRefreshKey((k) => k + 1)
-  }, [])
+    queryClient.invalidateQueries({ queryKey: ['reports', 'day-book'] })
+  }, [queryClient])
 
   const goToPrevDay = useCallback(() => {
     setDate(getPrevDate(filters.date))
@@ -119,7 +121,7 @@ export function useDayBook(): UseDayBookReturn {
   }, [filters.date, setDate])
 
   return {
-    data,
+    data: mergedData,
     status,
     filters,
     setDate,

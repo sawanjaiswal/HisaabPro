@@ -1,8 +1,10 @@
 /** useLoans — Manages loan list state */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { listLoans } from './loan.service'
 import type { Loan } from './loan.types'
 
@@ -17,25 +19,30 @@ interface UseLoansReturn {
 
 export function useLoans(): UseLoansReturn {
   const toast = useToast()
-  const [items, setItems] = useState<Loan[]>([])
-  const [total, setTotal] = useState(0)
-  const [fetchStatus, setFetchStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
+  const queryClient = useQueryClient()
+
+  const query = useQuery({
+    queryKey: queryKeys.loans.list({}),
+    queryFn: ({ signal }) => listLoans(signal),
+  })
 
   useEffect(() => {
-    const controller = new AbortController()
-    setFetchStatus('loading')
-    listLoans(controller.signal)
-      .then((res) => { setItems(res.items); setTotal(res.total); setFetchStatus('success') })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setFetchStatus('error')
-        toast.error(err instanceof ApiError ? err.message : 'Failed to load loans')
-      })
-    return () => controller.abort()
-  }, [refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (query.isError) {
+      const err = query.error
+      toast.error(err instanceof ApiError ? err.message : 'Failed to load loans')
+    }
+  }, [query.isError, query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
 
-  return { items, total, status: fetchStatus, refresh }
+  const refresh = useCallback(() => {
+    void queryClient.invalidateQueries({ queryKey: queryKeys.loans.all() })
+  }, [queryClient])
+
+  return {
+    items: query.data?.items ?? [],
+    total: query.data?.total ?? 0,
+    status,
+    refresh,
+  }
 }

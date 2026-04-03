@@ -1,14 +1,15 @@
-/** Settings — Audit log hook
+/** Settings — Audit log hook (TanStack Query)
  *
  * Manages paginated audit log with optional filters.
  * setFilter resets to page 1. loadMore appends the next page.
- * AbortController cleans up in-flight requests on filter change.
  * businessId is passed as a parameter.
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { getAuditLog } from './audit-log.service'
 import type { AuditLogEntry, AuditLogFilters, AuditAction } from './settings.types'
 
@@ -35,53 +36,52 @@ interface UseAuditLogReturn {
 
 export function useAuditLog(businessId: string): UseAuditLogReturn {
   const toast = useToast()
+  const queryClient = useQueryClient()
 
   const [filters, setFilters] = useState<AuditLogFilters>(DEFAULT_FILTERS)
-  const [data, setData] = useState<AuditLogData | null>(null)
-  const [status, setStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
-  // Track which page was used in last load to support append-on-loadMore
-  const [loadedPage, setLoadedPage] = useState(1)
+  // Accumulated entries for append-on-loadMore
+  const accumulatedRef = useRef<AuditLogEntry[]>([])
 
-  useEffect(() => {
-    if (!businessId) return
+  const query = useQuery({
+    queryKey: queryKeys.settings.auditLog(filters as unknown as Record<string, unknown>),
+    queryFn: ({ signal }) => getAuditLog(businessId, filters, signal),
+    enabled: !!businessId,
+  })
 
-    const controller = new AbortController()
+  // Build accumulated data: on page 1 reset, on subsequent pages append
+  const rawData = query.data?.data ?? null
 
-    // Only show full loading skeleton on first page or filter change
+  const data: AuditLogData | null = (() => {
+    if (!rawData) return null
+
     if (filters.page === 1) {
-      setStatus('loading')
+      accumulatedRef.current = rawData.entries
+    } else {
+      // Append — avoid duplicates by id
+      const existingIds = new Set(accumulatedRef.current.map((e) => e.id))
+      const newEntries = rawData.entries.filter((e) => !existingIds.has(e.id))
+      accumulatedRef.current = [...accumulatedRef.current, ...newEntries]
     }
 
-    getAuditLog(businessId, filters, controller.signal)
-      .then((response) => {
-        const incoming = response.data
+    return { entries: accumulatedRef.current, pagination: rawData.pagination }
+  })()
 
-        setData((prev) => {
-          if (filters.page === 1 || prev === null) {
-            return { entries: incoming.entries, pagination: incoming.pagination }
-          }
-          // Append for loadMore — avoid duplicates by id
-          const existingIds = new Set(prev.entries.map((e) => e.id))
-          const newEntries = incoming.entries.filter((e) => !existingIds.has(e.id))
-          return {
-            entries: [...prev.entries, ...newEntries],
-            pagination: incoming.pagination,
-          }
-        })
+  // Only show loading skeleton on first page
+  const status: Status = (() => {
+    if (query.isPending && filters.page === 1) return 'loading'
+    if (query.isError) return 'error'
+    if (query.isSuccess) return 'success'
+    // loadMore in progress — keep showing success (entries already visible)
+    return data ? 'success' : 'loading'
+  })()
 
-        setLoadedPage(filters.page)
-        setStatus('success')
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        const message = err instanceof ApiError ? err.message : 'Failed to load audit log'
-        toast.error(message)
-      })
-
-    return () => controller.abort()
-  }, [businessId, filters, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  // Show toast on fetch error
+  useEffect(() => {
+    if (query.error) {
+      const message = query.error instanceof ApiError ? query.error.message : 'Failed to load audit log'
+      toast.error(message)
+    }
+  }, [query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const setFilter = useCallback(<K extends keyof AuditLogFilters>(
     key: K,
@@ -95,13 +95,14 @@ export function useAuditLog(businessId: string): UseAuditLogReturn {
     const { page, limit, total } = data.pagination
     const hasMore = page * limit < total
     if (!hasMore) return
-    setFilters((prev) => ({ ...prev, page: loadedPage + 1 }))
-  }, [data, loadedPage])
+    setFilters((prev) => ({ ...prev, page: (prev.page ?? 1) + 1 }))
+  }, [data])
 
   const refresh = useCallback(() => {
+    accumulatedRef.current = []
     setFilters((prev) => ({ ...prev, page: 1 }))
-    setRefreshKey((k) => k + 1)
-  }, [])
+    queryClient.invalidateQueries({ queryKey: queryKeys.settings.all() })
+  }, [queryClient])
 
   return { data, status, filters, setFilter, loadMore, refresh }
 }

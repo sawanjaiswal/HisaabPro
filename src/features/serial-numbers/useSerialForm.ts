@@ -1,6 +1,8 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { api, ApiError } from '@/lib/api'
 import { useToast } from '@/hooks/useToast'
+import { queryKeys } from '@/lib/query-keys'
 import { SERIAL_NUMBER_MAX, NOTES_MAX } from './serial-number.constants'
 import type { CreateSerialData, SerialNumber } from './serial-number.types'
 
@@ -15,10 +17,9 @@ const INITIAL: FormState = { serialNumber: '', batchId: '', godownId: '', notes:
 
 export function useSerialForm(productId: string, onSuccess?: () => void) {
   const toast = useToast()
+  const queryClient = useQueryClient()
   const [form, setForm] = useState<FormState>(INITIAL)
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const submitRef = useRef(false)
 
   const updateField = useCallback(<K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }))
@@ -34,10 +35,25 @@ export function useSerialForm(productId: string, onSuccess?: () => void) {
     return Object.keys(next).length === 0
   }, [form])
 
+  const mutation = useMutation({
+    mutationFn: (body: CreateSerialData) =>
+      api<SerialNumber>(`/serial-numbers/product/${productId}`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
+    onSuccess: () => {
+      toast.success('Serial number added')
+      setForm(INITIAL)
+      void queryClient.invalidateQueries({ queryKey: queryKeys.serialNumbers.all() })
+      onSuccess?.()
+    },
+    onError: (err: unknown) => {
+      toast.error(err instanceof ApiError ? err.message : 'Failed to add serial number')
+    },
+  })
+
   const handleSubmit = useCallback(async () => {
-    if (!productId || submitRef.current || !validate()) return
-    submitRef.current = true
-    setIsSubmitting(true)
+    if (!productId || mutation.isPending || !validate()) return
 
     const body: CreateSerialData = {
       serialNumber: form.serialNumber.trim(),
@@ -46,21 +62,8 @@ export function useSerialForm(productId: string, onSuccess?: () => void) {
       ...(form.notes.trim() && { notes: form.notes.trim() }),
     }
 
-    try {
-      await api<SerialNumber>(`/serial-numbers/product/${productId}`, {
-        method: 'POST',
-        body: JSON.stringify(body),
-      })
-      toast.success('Serial number added')
-      setForm(INITIAL)
-      onSuccess?.()
-    } catch (err: unknown) {
-      toast.error(err instanceof ApiError ? err.message : 'Failed to add serial number')
-    } finally {
-      setIsSubmitting(false)
-      submitRef.current = false
-    }
-  }, [form, productId, validate, toast, onSuccess])
+    await mutation.mutateAsync(body)
+  }, [form, productId, validate, mutation])
 
-  return { form, errors, isSubmitting, updateField, handleSubmit }
+  return { form, errors, isSubmitting: mutation.isPending, updateField, handleSubmit }
 }

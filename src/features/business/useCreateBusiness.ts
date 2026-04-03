@@ -1,5 +1,8 @@
-import { useState, useRef } from 'react'
+/** Create Business hook (TanStack Query mutation) */
+
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
 import { BUSINESS_NAME_MIN, BUSINESS_NAME_MAX } from './business.constants'
@@ -16,14 +19,27 @@ interface CreatedBusiness {
 
 export function useCreateBusiness() {
   const navigate = useNavigate()
-  const isSubmittingRef = useRef(false)
 
   const [name, setName] = useState('')
   const [businessType, setBusinessType] = useState('general')
   const [cloneEnabled, setCloneEnabled] = useState(false)
   const [cloneFromBusinessId, setCloneFromBusinessId] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<CreateBusinessErrors>({})
+
+  const mutation = useMutation({
+    mutationFn: (payload: CreateBusinessInput) =>
+      api<CreatedBusiness>('/businesses', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      }),
+    onSuccess: () => {
+      navigate(ROUTES.DASHBOARD)
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : 'Failed to create business'
+      setErrors({ name: message })
+    },
+  })
 
   function validate(): boolean {
     const next: CreateBusinessErrors = {}
@@ -38,11 +54,8 @@ export function useCreateBusiness() {
   }
 
   async function handleSubmit() {
-    if (isSubmittingRef.current) return
+    if (mutation.isPending) return
     if (!validate()) return
-
-    isSubmittingRef.current = true
-    setIsSubmitting(true)
 
     const payload: CreateBusinessInput = {
       name: name.trim(),
@@ -52,19 +65,7 @@ export function useCreateBusiness() {
         : {}),
     }
 
-    try {
-      await api<CreatedBusiness>('/businesses', {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      })
-      navigate(ROUTES.DASHBOARD)
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to create business'
-      setErrors({ name: message })
-    } finally {
-      isSubmittingRef.current = false
-      setIsSubmitting(false)
-    }
+    mutation.mutate(payload)
   }
 
   return {
@@ -76,7 +77,7 @@ export function useCreateBusiness() {
     setCloneEnabled,
     cloneFromBusinessId,
     setCloneFromBusinessId,
-    isSubmitting,
+    isSubmitting: mutation.isPending,
     errors,
     handleSubmit,
   }

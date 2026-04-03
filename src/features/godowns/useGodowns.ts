@@ -1,9 +1,10 @@
-/** Godowns list — Hook */
+/** Godowns list -- Hook */
 
-import { useState, useCallback, useRef } from 'react'
-import { useApi } from '@/hooks/useApi'
+import { useCallback } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { api, ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { GODOWN_PAGE_SIZE } from './godown.constants'
 import type { GodownListResponse } from './godown.types'
 
@@ -18,45 +19,50 @@ interface UseGodownsReturn {
 
 export function useGodowns(): UseGodownsReturn {
   const toast = useToast()
-  const [isDeleting, setIsDeleting] = useState(false)
-  const [refreshKey, setRefreshKey] = useState(0)
-  const deletingRef = useRef(false)
+  const queryClient = useQueryClient()
 
-  const path = `/godowns?limit=${GODOWN_PAGE_SIZE}&_r=${refreshKey}`
-  const { data, status, error } = useApi<GodownListResponse>(path)
+  const query = useQuery({
+    queryKey: queryKeys.godowns.list(),
+    queryFn: ({ signal }) =>
+      api<GodownListResponse>(`/godowns?limit=${GODOWN_PAGE_SIZE}`, { signal }),
+  })
 
-  const refresh = useCallback(() => {
-    setRefreshKey((k) => k + 1)
-  }, [])
+  const status = query.isPending
+    ? 'loading' as const
+    : query.isError ? 'error' as const : 'success' as const
+
+  const error = query.isError && query.error instanceof ApiError
+    ? query.error
+    : null
+
+  const deleteMutation = useMutation({
+    mutationFn: ({ id, name }: { id: string; name: string }) =>
+      api(`/godowns/${id}`, { method: 'DELETE', entityType: 'godown', entityLabel: name }),
+    onSuccess: (_data, variables) => {
+      toast.success(`${variables.name} deleted`)
+      void queryClient.invalidateQueries({ queryKey: queryKeys.godowns.all() })
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof ApiError ? err.message : 'Failed to delete godown'
+      toast.error(message)
+    },
+  })
+
+  const refetch = useCallback(() => {
+    void queryClient.invalidateQueries({ queryKey: queryKeys.godowns.all() })
+  }, [queryClient])
 
   const deleteGodown = useCallback((id: string, name: string) => {
-    if (deletingRef.current) return
-    deletingRef.current = true
-    setIsDeleting(true)
-
-    api(`/godowns/${id}`, { method: 'DELETE', entityType: 'godown', entityLabel: name })
-      .then(() => {
-        toast.success(`${name} deleted`)
-        refresh()
-      })
-      .catch((err: unknown) => {
-        const message = err instanceof ApiError
-          ? err.message
-          : 'Failed to delete godown'
-        toast.error(message)
-      })
-      .finally(() => {
-        deletingRef.current = false
-        setIsDeleting(false)
-      })
-  }, [toast, refresh])
+    if (deleteMutation.isPending) return
+    deleteMutation.mutate({ id, name })
+  }, [deleteMutation])
 
   return {
-    data,
+    data: query.data ?? null,
     status,
     error,
-    refetch: refresh,
+    refetch,
     deleteGodown,
-    isDeleting,
+    isDeleting: deleteMutation.isPending,
   }
 }

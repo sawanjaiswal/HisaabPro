@@ -1,19 +1,16 @@
-/** useBankAccounts — Manages bank account list state
- *
- * AbortController cleanup prevents stale updates.
- * refreshKey forces re-fetch without changing deps.
- */
+/** useBankAccounts — Manages bank account list state (TanStack Query) */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useEffect, useCallback } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { listBankAccounts } from './bank-account.service'
-import type { BankAccount } from './bank-account.types'
 
 type Status = 'loading' | 'error' | 'success'
 
 interface UseBankAccountsReturn {
-  items: BankAccount[]
+  items: import('./bank-account.types').BankAccount[]
   total: number
   status: Status
   refresh: () => void
@@ -21,32 +18,28 @@ interface UseBankAccountsReturn {
 
 export function useBankAccounts(): UseBankAccountsReturn {
   const toast = useToast()
-  const [items, setItems] = useState<BankAccount[]>([])
-  const [total, setTotal] = useState(0)
-  const [fetchStatus, setFetchStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
+  const queryClient = useQueryClient()
 
+  const query = useQuery({
+    queryKey: queryKeys.bankAccounts.list(),
+    queryFn: ({ signal }) => listBankAccounts(signal),
+  })
+
+  const items = query.data?.items ?? []
+  const total = query.data?.total ?? 0
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
+
+  // Show toast on fetch error
   useEffect(() => {
-    const controller = new AbortController()
-    setFetchStatus('loading')
+    if (query.error) {
+      const message = query.error instanceof ApiError ? query.error.message : 'Failed to load bank accounts'
+      toast.error(message)
+    }
+  }, [query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    listBankAccounts(controller.signal)
-      .then((res) => {
-        setItems(res.items)
-        setTotal(res.total)
-        setFetchStatus('success')
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setFetchStatus('error')
-        const message = err instanceof ApiError ? err.message : 'Failed to load bank accounts'
-        toast.error(message)
-      })
+  const refresh = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.bankAccounts.all() })
+  }, [queryClient])
 
-    return () => controller.abort()
-  }, [refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
-
-  return { items, total, status: fetchStatus, refresh }
+  return { items, total, status, refresh }
 }

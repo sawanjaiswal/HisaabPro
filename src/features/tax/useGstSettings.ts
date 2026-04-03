@@ -1,6 +1,7 @@
-/** Tax — GST Settings hook */
+/** Tax — GST Settings hook (TanStack Query) */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useEffect } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError, api } from '@/lib/api'
 
@@ -14,44 +15,50 @@ export interface GstSettings {
 
 type Status = 'loading' | 'error' | 'success'
 
-const EMPTY: GstSettings = {
-  gstin: null, stateCode: null,
-  compositionScheme: false, eInvoiceEnabled: false, eWayBillEnabled: false,
-}
+const GST_SETTINGS_KEY = (businessId: string) => ['gst-settings', businessId] as const
 
 export function useGstSettings(businessId: string) {
   const toast = useToast()
-  const [settings, setSettings] = useState<GstSettings>(EMPTY)
-  const [status, setStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
+  const queryClient = useQueryClient()
+
+  const query = useQuery({
+    queryKey: GST_SETTINGS_KEY(businessId),
+    queryFn: ({ signal }) =>
+      api<GstSettings>(`/businesses/${businessId}/gst-settings`, { signal }),
+    enabled: Boolean(businessId),
+  })
 
   useEffect(() => {
-    if (!businessId) return
-    const controller = new AbortController()
-    setStatus('loading')
-    api<GstSettings>(`/businesses/${businessId}/gst-settings`, { signal: controller.signal })
-      .then((data) => { setSettings(data); setStatus('success') })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        toast.error(err instanceof ApiError ? err.message : 'Failed to load GST settings')
-      })
-    return () => controller.abort()
-  }, [businessId, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
-
-  const updateGst = useCallback(async (data: Partial<GstSettings>) => {
-    try {
-      const updated = await api<GstSettings>(`/businesses/${businessId}/gst-settings`, {
-        method: 'PUT', body: JSON.stringify(data),
-      })
-      setSettings(updated)
-      toast.success('GST settings updated')
-    } catch (err: unknown) {
-      toast.error(err instanceof ApiError ? err.message : 'Failed to update')
+    if (query.isError) {
+      const err = query.error
+      toast.error(err instanceof ApiError ? err.message : 'Failed to load GST settings')
     }
-  }, [businessId, toast])
+  }, [query.isError, query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  return { settings, status, refresh, updateGst }
+  const updateMutation = useMutation({
+    mutationFn: (data: Partial<GstSettings>) =>
+      api<GstSettings>(`/businesses/${businessId}/gst-settings`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+    onSuccess: (updated) => {
+      queryClient.setQueryData(GST_SETTINGS_KEY(businessId), updated)
+      toast.success('GST settings updated')
+    },
+    onError: (err: unknown) => {
+      toast.error(err instanceof ApiError ? err.message : 'Failed to update')
+    },
+  })
+
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
+
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: GST_SETTINGS_KEY(businessId) })
+  }
+
+  const updateGst = async (data: Partial<GstSettings>) => {
+    await updateMutation.mutateAsync(data)
+  }
+
+  return { settings: query.data ?? { gstin: null, stateCode: null, compositionScheme: false, eInvoiceEnabled: false, eWayBillEnabled: false }, status, refresh, updateGst }
 }

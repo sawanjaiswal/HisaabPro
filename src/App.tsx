@@ -10,6 +10,7 @@ import { SWUpdatePrompt } from '@/components/feedback/SWUpdatePrompt'
 import { PageTransition } from '@/components/layout/PageTransition'
 import { useAuth } from '@/context/AuthContext'
 import { useRoutePreload } from '@/hooks/useRoutePreload'
+import { useSSE } from '@/hooks/useSSE'
 import {
   CalculatorOverlay, FeedbackWidget,
   Login, Onboarding, Dashboard,
@@ -68,6 +69,7 @@ function GuestRoute({ children }: { children: ReactNode }) {
 
 export function App() {
   useRoutePreload()
+  useSSE() // Real-time sync: SSE → TanStack Query cache invalidation
 
   return (
     <ErrorBoundary>

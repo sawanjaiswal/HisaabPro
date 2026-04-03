@@ -1,8 +1,8 @@
 /** Create / Edit Invoice — Form state hook
  *
- * Manages form state, per-field updates, section navigation,
- * real-time totals via useMemo, stock validation, and draft/save
- * submit paths. All amounts in PAISE.
+ * TanStack Query v5 migration. Submit paths (save/draft) wrapped in
+ * useMutation for automatic error handling and cache invalidation.
+ * All amounts in PAISE.
  *
  * Pure logic (validation, initial state, payload normalization) lives in
  * invoice-form.utils.ts. Types/interfaces in invoice-form.types.ts.
@@ -10,7 +10,9 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
+import { queryKeys } from '@/lib/query-keys'
 import { ROUTES } from '@/config/routes.config'
 import { createDocument, updateDocument } from './invoice.service'
 import { calculateInvoiceTotals } from './invoice-totals.utils'
@@ -38,10 +40,10 @@ export function useInvoiceForm(
 
   const navigate = useNavigate()
   const toast = useToast()
+  const queryClient = useQueryClient()
 
   const [form, setForm] = useState<DocumentFormData>(() => initialData ?? buildInitialForm(type))
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [activeSection, setActiveSection] = useState<FormSection>('items')
 
   // ─── Field update ──────────────────────────────────────────────────────────
@@ -153,38 +155,45 @@ export function useInvoiceForm(
     return Object.keys(next).length === 0
   }, [form, hasStockBlocks])
 
-  // ─── Submit ───────────────────────────────────────────────────────────────
+  // ─── Submit mutation ──────────────────────────────────────────────────────
+
+  const submitMutation = useMutation({
+    mutationFn: async (targetStatus: 'SAVED' | 'DRAFT') => {
+      const payload = normalizeFormPayload(form, targetStatus)
+      if (isEditMode && editId) {
+        await updateDocument(editId, payload)
+        return { mode: 'edit' as const, targetStatus, editId }
+      }
+      await createDocument(payload)
+      return { mode: 'create' as const, targetStatus }
+    },
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.invoices.all() })
+
+      if (result.mode === 'edit') {
+        toast.success('Invoice updated')
+        navigate(`/invoices/${result.editId}`)
+      } else if (result.targetStatus === 'SAVED') {
+        toast.success('Invoice saved')
+        navigate(ROUTES.INVOICES)
+      } else {
+        toast.success('Draft saved')
+      }
+    },
+    onError: () => {
+      toast.error(isEditMode ? 'Failed to update invoice.' : 'Failed to save invoice. Please try again.')
+    },
+  })
+
+  const isSubmitting = submitMutation.isPending
 
   const submitWithStatus = useCallback(async (
     targetStatus: 'SAVED' | 'DRAFT',
   ) => {
     if (targetStatus === 'SAVED' && !validate()) return
     if (isSubmitting) return
-
-    setIsSubmitting(true)
-    const payload = normalizeFormPayload(form, targetStatus)
-
-    try {
-      if (isEditMode && editId) {
-        await updateDocument(editId, payload)
-        toast.success('Invoice updated')
-        navigate(`/invoices/${editId}`)
-      } else {
-        await createDocument(payload)
-
-        if (targetStatus === 'SAVED') {
-          toast.success('Invoice saved')
-          navigate(ROUTES.INVOICES)
-        } else {
-          toast.success('Draft saved')
-        }
-      }
-    } catch {
-      toast.error(isEditMode ? 'Failed to update invoice.' : 'Failed to save invoice. Please try again.')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }, [form, isSubmitting, validate, toast, navigate, isEditMode, editId])
+    await submitMutation.mutateAsync(targetStatus)
+  }, [validate, isSubmitting, submitMutation])
 
   const handleSubmit = useCallback(async () => {
     await submitWithStatus('SAVED')

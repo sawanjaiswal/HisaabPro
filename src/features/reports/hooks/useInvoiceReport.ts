@@ -1,14 +1,15 @@
-/** Invoice Report hook — sale or purchase
+/** Invoice Report hook -- sale or purchase (TanStack Query)
  *
  * Manages paginated invoice report state including filters, load-more cursor
- * pagination, and abort-on-cleanup for every fetch.
- *
- * All monetary amounts are in PAISE — display via formatAmount() at render.
+ * pagination via TanStack Query.
+ * All monetary amounts are in PAISE -- display via formatAmount() at render.
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { getDateRange, getTodayISO } from '../report.utils'
 import { getInvoiceReport } from '../report.service'
 import type {
@@ -52,79 +53,76 @@ export function useInvoiceReport({
   type,
 }: UseInvoiceReportOptions): UseInvoiceReportReturn {
   const toast = useToast()
+  const queryClient = useQueryClient()
 
   const [filters, setFilters] = useState<InvoiceReportFilters>(() =>
     buildDefaultFilters(type),
   )
-  const [data, setData] = useState<InvoiceReportResponse | null>(null)
-  const [status, setStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
-
-  // Track whether we are appending (load-more) or replacing (filter change).
-  // Use a ref + capture pattern: ref stores intent, effect captures it as local
-  // variable so the callback references the value at fetch-time, not at resolve-time.
   const isLoadMore = useRef(false)
+  const [mergedData, setMergedData] = useState<InvoiceReportResponse | null>(null)
+
+  const query = useQuery({
+    queryKey: queryKeys.reports.invoiceReport(filters),
+    queryFn: ({ signal }) => getInvoiceReport(filters, signal),
+    placeholderData: (prev) => prev,
+  })
 
   useEffect(() => {
-    const controller = new AbortController()
+    if (!query.data) return
     const appendMode = isLoadMore.current
-
-    if (!appendMode) {
-      setStatus('loading')
+    if (!appendMode || mergedData === null) {
+      setMergedData(query.data)
+    } else {
+      setMergedData((prev) => {
+        if (!prev) return query.data!
+        const prevItems = prev.data.items ?? []
+        const nextItems = query.data!.data.items ?? []
+        const prevGroups = prev.data.groups ?? []
+        const nextGroups = query.data!.data.groups ?? []
+        return {
+          ...query.data!,
+          data: {
+            summary: query.data!.data.summary,
+            items: nextItems.length > 0 ? [...prevItems, ...nextItems] : undefined,
+            groups: nextGroups.length > 0 ? [...prevGroups, ...nextGroups] : undefined,
+          },
+        }
+      })
     }
+    isLoadMore.current = false
+  }, [query.data]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    getInvoiceReport(filters, controller.signal)
-      .then((response: InvoiceReportResponse) => {
-        setData((prev) => {
-          if (!appendMode || prev === null) return response
-          // Merge paginated results — append items or groups
-          const prevItems = prev.data.items ?? []
-          const nextItems = response.data.items ?? []
-          const prevGroups = prev.data.groups ?? []
-          const nextGroups = response.data.groups ?? []
-          return {
-            ...response,
-            data: {
-              summary: response.data.summary,
-              items: nextItems.length > 0 ? [...prevItems, ...nextItems] : undefined,
-              groups: nextGroups.length > 0 ? [...prevGroups, ...nextGroups] : undefined,
-            },
-          }
-        })
-        setStatus('success')
-        isLoadMore.current = false
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        isLoadMore.current = false
-        const message =
-          err instanceof ApiError ? err.message : 'Failed to load invoice report'
-        toast.error(message)
-      })
+  useEffect(() => {
+    if (query.isError) {
+      isLoadMore.current = false
+      const err = query.error
+      toast.error(err instanceof ApiError ? err.message : 'Failed to load invoice report')
+    }
+  }, [query.isError, query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    return () => controller.abort()
-  }, [filters, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
 
   const setFilter = useCallback(
     <K extends keyof InvoiceReportFilters>(key: K, value: InvoiceReportFilters[K]) => {
       isLoadMore.current = false
+      setMergedData(null)
       setFilters((prev) => ({ ...prev, [key]: value, cursor: undefined }))
     },
     [],
   )
 
   const loadMore = useCallback(() => {
-    if (!data?.meta.hasMore || !data.meta.cursor) return
+    if (!mergedData?.meta.hasMore || !mergedData.meta.cursor) return
     isLoadMore.current = true
-    setFilters((prev) => ({ ...prev, cursor: data.meta.cursor ?? undefined }))
-  }, [data])
+    setFilters((prev) => ({ ...prev, cursor: mergedData.meta.cursor ?? undefined }))
+  }, [mergedData])
 
   const refresh = useCallback(() => {
     isLoadMore.current = false
+    setMergedData(null)
     setFilters((prev) => ({ ...prev, cursor: undefined }))
-    setRefreshKey((k) => k + 1)
-  }, [])
+    queryClient.invalidateQueries({ queryKey: ['reports', 'invoice-report'] })
+  }, [queryClient])
 
-  return { data, status, filters, setFilter, loadMore, refresh }
+  return { data: mergedData, status, filters, setFilter, loadMore, refresh }
 }

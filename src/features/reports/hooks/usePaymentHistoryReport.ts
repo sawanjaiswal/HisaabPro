@@ -1,13 +1,14 @@
-/** Payment History Report hook
+/** Payment History Report hook (TanStack Query)
  *
- * Manages paginated payment history with filter state, cursor-based load-more,
- * and abort-on-cleanup for every fetch.
- * All amounts are in PAISE — display via formatAmount() at render.
+ * Manages paginated payment history with filter state, cursor-based load-more.
+ * All amounts are in PAISE -- display via formatAmount() at render.
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { DEFAULT_PAGE_LIMIT } from '../report.constants'
 import { getDateRange, getTodayISO } from '../report.utils'
 import { getPaymentHistory } from '../report.service'
@@ -44,53 +45,52 @@ function buildDefaultFilters(): PaymentHistoryFilters {
 
 export function usePaymentHistoryReport(): UsePaymentHistoryReportReturn {
   const toast = useToast()
+  const queryClient = useQueryClient()
 
   const [filters, setFilters] = useState<PaymentHistoryFilters>(buildDefaultFilters)
-  const [data, setData] = useState<PaymentHistoryResponse | null>(null)
-  const [status, setStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
-
   const isLoadMore = useRef(false)
+  const [mergedData, setMergedData] = useState<PaymentHistoryResponse | null>(null)
+
+  const query = useQuery({
+    queryKey: queryKeys.reports.paymentHistory(filters),
+    queryFn: ({ signal }) => getPaymentHistory(filters, signal),
+    placeholderData: (prev) => prev,
+  })
 
   useEffect(() => {
-    const controller = new AbortController()
+    if (!query.data) return
     const appendMode = isLoadMore.current
-
-    if (!appendMode) {
-      setStatus('loading')
+    if (!appendMode || mergedData === null) {
+      setMergedData(query.data)
+    } else {
+      setMergedData((prev) => {
+        if (!prev) return query.data!
+        const prevItems = prev.data.items ?? []
+        const nextItems = query.data!.data.items ?? []
+        const prevGroups = prev.data.groups ?? []
+        const nextGroups = query.data!.data.groups ?? []
+        return {
+          ...query.data!,
+          data: {
+            summary: query.data!.data.summary,
+            items: nextItems.length > 0 ? [...prevItems, ...nextItems] : undefined,
+            groups: nextGroups.length > 0 ? [...prevGroups, ...nextGroups] : undefined,
+          },
+        }
+      })
     }
+    isLoadMore.current = false
+  }, [query.data]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    getPaymentHistory(filters, controller.signal)
-      .then((response: PaymentHistoryResponse) => {
-        setData((prev) => {
-          if (!appendMode || prev === null) return response
-          const prevItems = prev.data.items ?? []
-          const nextItems = response.data.items ?? []
-          const prevGroups = prev.data.groups ?? []
-          const nextGroups = response.data.groups ?? []
-          return {
-            ...response,
-            data: {
-              summary: response.data.summary,
-              items: nextItems.length > 0 ? [...prevItems, ...nextItems] : undefined,
-              groups: nextGroups.length > 0 ? [...prevGroups, ...nextGroups] : undefined,
-            },
-          }
-        })
-        setStatus('success')
-        isLoadMore.current = false
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        isLoadMore.current = false
-        const message =
-          err instanceof ApiError ? err.message : 'Failed to load payment history'
-        toast.error(message)
-      })
+  useEffect(() => {
+    if (query.isError) {
+      isLoadMore.current = false
+      const err = query.error
+      toast.error(err instanceof ApiError ? err.message : 'Failed to load payment history')
+    }
+  }, [query.isError, query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    return () => controller.abort()
-  }, [filters, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
 
   const setFilter = useCallback(
     <K extends keyof PaymentHistoryFilters>(
@@ -98,22 +98,24 @@ export function usePaymentHistoryReport(): UsePaymentHistoryReportReturn {
       value: PaymentHistoryFilters[K],
     ) => {
       isLoadMore.current = false
+      setMergedData(null)
       setFilters((prev) => ({ ...prev, [key]: value, cursor: undefined }))
     },
     [],
   )
 
   const loadMore = useCallback(() => {
-    if (!data?.meta.hasMore || !data.meta.cursor) return
+    if (!mergedData?.meta.hasMore || !mergedData.meta.cursor) return
     isLoadMore.current = true
-    setFilters((prev) => ({ ...prev, cursor: data.meta.cursor ?? undefined }))
-  }, [data])
+    setFilters((prev) => ({ ...prev, cursor: mergedData.meta.cursor ?? undefined }))
+  }, [mergedData])
 
   const refresh = useCallback(() => {
     isLoadMore.current = false
+    setMergedData(null)
     setFilters((prev) => ({ ...prev, cursor: undefined }))
-    setRefreshKey((k) => k + 1)
-  }, [])
+    queryClient.invalidateQueries({ queryKey: ['reports', 'payment-history'] })
+  }, [queryClient])
 
-  return { data, status, filters, setFilter, loadMore, refresh }
+  return { data: mergedData, status, filters, setFilter, loadMore, refresh }
 }

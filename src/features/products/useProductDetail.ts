@@ -1,12 +1,14 @@
 /** Product Detail — Hook to fetch and manage a single product
  *
- * Mirrors usePartyDetail.ts exactly. Fetches full product by ID,
- * manages tab state, and supports manual refresh via refreshKey.
+ * TanStack Query v5 migration. Fetches full product by ID,
+ * manages tab state. Query replaces useState + useEffect + refreshKey.
  */
 
 import { useState, useEffect, useCallback } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { getProduct } from './product.service'
 import type { ProductDetail } from './product.types'
 
@@ -23,34 +25,30 @@ interface UseProductDetailReturn {
 
 export function useProductDetail(id: string): UseProductDetailReturn {
   const toast = useToast()
+  const queryClient = useQueryClient()
 
-  const [product, setProduct] = useState<ProductDetail | null>(null)
-  const [status, setStatus] = useState<DetailStatus>('loading')
   const [activeTab, setActiveTab] = useState<DetailTab>('overview')
-  const [refreshKey, setRefreshKey] = useState(0)
 
+  // TanStack Query replaces useState(product) + useEffect(fetch) + refreshKey
+  const query = useQuery({
+    queryKey: queryKeys.products.detail(id),
+    queryFn: ({ signal }) => getProduct(id, signal),
+  })
+
+  const product = query.data ?? null
+  const status: DetailStatus = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
+
+  // Show toast on fetch error
   useEffect(() => {
-    const controller = new AbortController()
-    setStatus('loading')
-
-    getProduct(id, controller.signal)
-      .then((data: ProductDetail) => {
-        setProduct(data)
-        setStatus('success')
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        const message = err instanceof ApiError ? err.message : 'Failed to load product'
-        toast.error(message)
-      })
-
-    return () => controller.abort()
-  }, [id, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (query.error) {
+      const message = query.error instanceof ApiError ? query.error.message : 'Failed to load product'
+      toast.error(message)
+    }
+  }, [query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const refresh = useCallback(() => {
-    setRefreshKey((k) => k + 1)
-  }, [])
+    queryClient.invalidateQueries({ queryKey: queryKeys.products.detail(id) })
+  }, [queryClient, id])
 
   return {
     product,

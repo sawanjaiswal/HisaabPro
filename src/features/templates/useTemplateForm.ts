@@ -1,4 +1,4 @@
-/** Invoice Templates — Template editor form hook
+/** Invoice Templates -- Template editor form hook
  *
  * Mirrors useProductForm.ts pattern. Manages all form state for the 6-tab
  * template editor: name, base template, config sections, and print settings.
@@ -9,8 +9,10 @@
 
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { ROUTES } from '@/config/routes.config'
 import { createTemplate, updateTemplate } from './template.service'
 import { buildDefaultConfig, buildDefaultPrintSettings, validateTemplateName } from './template.utils'
@@ -25,7 +27,7 @@ import type {
   BaseTemplate,
 } from './template.types'
 
-// ─── Return type ──────────────────────────────────────────────────────────────
+// --- Return type ---
 
 export interface UseTemplateFormReturn {
   form: TemplateFormData
@@ -43,7 +45,7 @@ export interface UseTemplateFormReturn {
   handleReset: () => void
 }
 
-// ─── Initial state builder ────────────────────────────────────────────────────
+// --- Initial state builder ---
 
 function buildInitialForm(template: InvoiceTemplate | null, base: BaseTemplate): TemplateFormData {
   if (template !== null) {
@@ -62,7 +64,7 @@ function buildInitialForm(template: InvoiceTemplate | null, base: BaseTemplate):
   }
 }
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
+// --- Hook ---
 
 interface UseTemplateFormOptions {
   /** Existing template for edit mode. Pass null for create mode. */
@@ -77,19 +79,18 @@ export function useTemplateForm({
 }: UseTemplateFormOptions = {}): UseTemplateFormReturn {
   const navigate = useNavigate()
   const toast = useToast()
+  const queryClient = useQueryClient()
 
   const [form, setForm] = useState<TemplateFormData>(() =>
     buildInitialForm(template, defaultBase),
   )
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [activeTab, setActiveTab] = useState<CustomizationTab>('layout')
 
-  // ─── Field updaters ─────────────────────────────────────────────────────────
+  // --- Field updaters ---
 
   const updateName = useCallback((name: string) => {
     setForm((prev) => ({ ...prev, name }))
-    // Clear name error on change
     setErrors((prev) => {
       if (!prev.name) return prev
       const next = { ...prev }
@@ -149,7 +150,7 @@ export function useTemplateForm({
     }))
   }, [])
 
-  // ─── Validation ─────────────────────────────────────────────────────────────
+  // --- Validation ---
 
   const validate = useCallback((): boolean => {
     const next: Record<string, string> = {}
@@ -163,32 +164,33 @@ export function useTemplateForm({
     return Object.keys(next).length === 0
   }, [form.name])
 
-  // ─── Submit ─────────────────────────────────────────────────────────────────
+  // --- Submit ---
+
+  const mutation = useMutation({
+    mutationFn: async (data: TemplateFormData) => {
+      if (template !== null) {
+        return updateTemplate(template.id, data)
+      }
+      return createTemplate(data)
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.templates.all() })
+      toast.success(`${form.name} ${template !== null ? 'updated' : 'created'}`)
+      navigate(ROUTES.SETTINGS + '/templates')
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof ApiError ? err.message : 'Failed to save template. Please try again.'
+      toast.error(message)
+    },
+  })
 
   const handleSubmit = useCallback(async () => {
     if (!validate()) return
-    if (isSubmitting) return
+    if (mutation.isPending) return
+    await mutation.mutateAsync(form)
+  }, [form, mutation, validate])
 
-    setIsSubmitting(true)
-
-    try {
-      if (template !== null) {
-        await updateTemplate(template.id, form)
-        toast.success(`${form.name} updated`)
-      } else {
-        await createTemplate(form)
-        toast.success(`${form.name} created`)
-      }
-      navigate(ROUTES.SETTINGS + '/templates')
-    } catch (err: unknown) {
-      const message = err instanceof ApiError ? err.message : 'Failed to save template. Please try again.'
-      toast.error(message)
-    } finally {
-      setIsSubmitting(false)
-    }
-  }, [form, isSubmitting, template, validate, toast, navigate])
-
-  // ─── Reset ──────────────────────────────────────────────────────────────────
+  // --- Reset ---
 
   /** Reset config and print settings to the base-template defaults. Name is preserved. */
   const handleReset = useCallback(() => {
@@ -201,12 +203,12 @@ export function useTemplateForm({
     setErrors({})
   }, [form.baseTemplate])
 
-  // ─── Return ─────────────────────────────────────────────────────────────────
+  // --- Return ---
 
   return {
     form,
     errors,
-    isSubmitting,
+    isSubmitting: mutation.isPending,
     activeTab,
     setActiveTab,
     updateName,

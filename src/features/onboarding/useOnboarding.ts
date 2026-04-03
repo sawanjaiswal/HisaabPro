@@ -1,5 +1,8 @@
-import { useState, useCallback, useRef } from 'react'
+/** Onboarding hook (TanStack Query mutation) */
+
+import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
 import { useAuth } from '../../context/AuthContext'
 import { api } from '../../lib/api'
 import { ROUTES } from '../../config/routes.config'
@@ -11,41 +14,38 @@ export function useOnboarding() {
   const [businessName, setBusinessName] = useState('')
   const [businessType, setBusinessType] = useState('general')
   const [phone, setPhone] = useState(user?.phone ?? '')
-
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   const navigate = useNavigate()
-  const submitting = useRef(false)
+
+  const mutation = useMutation({
+    mutationFn: (payload: { name: string; businessType: string; phone?: string }) =>
+      api<CreateBusinessResponse>('/businesses', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      }),
+    onSuccess: () => {
+      navigate(ROUTES.DASHBOARD, { replace: true })
+    },
+    onError: (err: unknown) => {
+      setError(err instanceof Error ? err.message : 'Failed to create business. Please try again.')
+    },
+  })
 
   const handleSubmit = useCallback(async () => {
-    if (submitting.current) return
+    if (mutation.isPending) return
     if (!businessName.trim()) {
       setError('Business name is required')
       return
     }
 
-    submitting.current = true
-    setLoading(true)
     setError('')
-
-    try {
-      await api<CreateBusinessResponse>('/businesses', {
-        method: 'POST',
-        body: JSON.stringify({
-          name: businessName.trim(),
-          businessType,
-          ...(phone.trim() ? { phone: phone.trim() } : {}),
-        }),
-      })
-      navigate(ROUTES.DASHBOARD, { replace: true })
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create business. Please try again.')
-    } finally {
-      setLoading(false)
-      submitting.current = false
-    }
-  }, [businessName, businessType, phone, navigate])
+    mutation.mutate({
+      name: businessName.trim(),
+      businessType,
+      ...(phone.trim() ? { phone: phone.trim() } : {}),
+    })
+  }, [businessName, businessType, phone, mutation])
 
   return {
     businessName,
@@ -54,7 +54,7 @@ export function useOnboarding() {
     setBusinessType,
     phone,
     setPhone,
-    loading,
+    loading: mutation.isPending,
     error,
     handleSubmit,
   }

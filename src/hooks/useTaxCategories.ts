@@ -1,8 +1,12 @@
-/** Shared hook — Tax categories list, used by products and tax features */
+/** Shared hook -- Tax categories list (TanStack Query)
+ * Used by products and tax features.
+ */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useEffect, useCallback } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { listTaxCategories, deleteTaxCategory, seedDefaultTaxCategories } from '@/lib/services/tax.service'
 import type { TaxCategory } from '@/lib/types/tax.types'
 
@@ -10,45 +14,58 @@ type Status = 'loading' | 'error' | 'success'
 
 export function useTaxCategories(businessId: string) {
   const toast = useToast()
-  const [categories, setCategories] = useState<TaxCategory[]>([])
-  const [status, setStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
+  const queryClient = useQueryClient()
+
+  const query = useQuery({
+    queryKey: queryKeys.tax.categories(),
+    queryFn: () => listTaxCategories(businessId),
+    enabled: Boolean(businessId),
+  })
 
   useEffect(() => {
-    if (!businessId) return
-    const controller = new AbortController()
-    setStatus('loading')
-    listTaxCategories(businessId)
-      .then((data) => { setCategories(data); setStatus('success') })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        toast.error(err instanceof ApiError ? err.message : 'Failed to load tax categories')
-      })
-    return () => controller.abort()
-  }, [businessId, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (query.isError) {
+      const err = query.error
+      toast.error(err instanceof ApiError ? err.message : 'Failed to load tax categories')
+    }
+  }, [query.isError, query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
-
-  const remove = useCallback(async (id: string) => {
-    try {
-      await deleteTaxCategory(id)
-      setCategories((prev) => prev.filter((c) => c.id !== id))
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteTaxCategory(id),
+    onSuccess: (_data, id) => {
+      queryClient.setQueryData<TaxCategory[]>(queryKeys.tax.categories(), (prev) =>
+        prev ? prev.filter((c) => c.id !== id) : [],
+      )
       toast.success('Tax category deleted')
-    } catch (err: unknown) {
+    },
+    onError: (err: unknown) => {
       toast.error(err instanceof ApiError ? err.message : 'Failed to delete')
-    }
-  }, [toast])
+    },
+  })
 
-  const seedDefaults = useCallback(async (bid: string) => {
-    try {
-      await seedDefaultTaxCategories(bid)
+  const seedMutation = useMutation({
+    mutationFn: (bid: string) => seedDefaultTaxCategories(bid),
+    onSuccess: () => {
       toast.success('Default tax categories created')
-      refresh()
-    } catch (err: unknown) {
+      queryClient.invalidateQueries({ queryKey: queryKeys.tax.categories() })
+    },
+    onError: (err: unknown) => {
       toast.error(err instanceof ApiError ? err.message : 'Failed to seed defaults')
-    }
-  }, [toast, refresh])
+    },
+  })
 
-  return { categories, status, refresh, remove, seedDefaults }
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
+
+  const refresh = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.tax.categories() })
+  }, [queryClient])
+
+  const remove = useCallback((id: string) => {
+    deleteMutation.mutate(id)
+  }, [deleteMutation])
+
+  const seedDefaults = useCallback((bid: string) => {
+    seedMutation.mutate(bid)
+  }, [seedMutation])
+
+  return { categories: query.data ?? [], status, refresh, remove, seedDefaults }
 }

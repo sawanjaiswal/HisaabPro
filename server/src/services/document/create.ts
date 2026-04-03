@@ -13,6 +13,7 @@ import {
   STOCK_DECREASE_TYPES, STOCK_INCREASE_TYPES, AFFECTS_OUTSTANDING,
   getRoundOffSetting, updateOutstanding,
 } from './helpers.js'
+// SSE events auto-emitted by middleware/sse-emit.ts on successful responses
 
 export async function createDocument(
   businessId: string,

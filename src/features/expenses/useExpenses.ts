@@ -1,8 +1,10 @@
-/** useExpenses — Manages expense list + category filter state */
+/** useExpenses — Manages expense list + category filter state (TanStack Query) */
 
 import { useState, useEffect, useCallback } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { listExpenses } from './expense.service'
 import type { Expense } from './expense.types'
 
@@ -21,39 +23,37 @@ interface UseExpensesReturn {
 
 export function useExpenses(): UseExpensesReturn {
   const toast = useToast()
+  const queryClient = useQueryClient()
   const [categoryFilter, setCategoryFilterState] = useState<string | null>(null)
   const [page, setPage] = useState(1)
-  const [items, setItems] = useState<Expense[]>([])
-  const [total, setTotal] = useState(0)
-  const [fetchStatus, setFetchStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
 
+  const filters = { page, categoryFilter }
+
+  const query = useQuery({
+    queryKey: queryKeys.expenses.list(filters),
+    queryFn: ({ signal }) => listExpenses(page, categoryFilter, signal),
+  })
+
+  const items = query.data?.items ?? []
+  const total = query.data?.total ?? 0
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
+
+  // Show toast on fetch error
   useEffect(() => {
-    const controller = new AbortController()
-    setFetchStatus('loading')
+    if (query.error) {
+      const message = query.error instanceof ApiError ? query.error.message : 'Failed to load expenses'
+      toast.error(message)
+    }
+  }, [query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    listExpenses(page, categoryFilter, controller.signal)
-      .then((res) => {
-        setItems(res.items)
-        setTotal(res.total)
-        setFetchStatus('success')
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setFetchStatus('error')
-        const message = err instanceof ApiError ? err.message : 'Failed to load expenses'
-        toast.error(message)
-      })
-
-    return () => controller.abort()
-  }, [page, categoryFilter, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
+  const refresh = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.expenses.all() })
+  }, [queryClient])
 
   const setCategoryFilter = useCallback((id: string | null) => {
     setCategoryFilterState(id)
     setPage(1)
   }, [])
 
-  return { items, total, page, status: fetchStatus, categoryFilter, setCategoryFilter, setPage, refresh }
+  return { items, total, page, status, categoryFilter, setCategoryFilter, setPage, refresh }
 }

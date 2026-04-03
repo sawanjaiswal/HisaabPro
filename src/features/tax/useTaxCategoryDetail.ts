@@ -1,32 +1,36 @@
-/** Tax — Single tax category detail hook */
+/** Tax — Single tax category detail hook (TanStack Query) */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError, api } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import type { TaxCategory } from './tax.types'
 
 type Status = 'loading' | 'error' | 'success'
 
 export function useTaxCategoryDetail(id: string) {
   const toast = useToast()
-  const [category, setCategory] = useState<TaxCategory | null>(null)
-  const [status, setStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
+  const queryClient = useQueryClient()
+
+  const query = useQuery({
+    queryKey: queryKeys.tax.detail(id),
+    queryFn: ({ signal }) => api<TaxCategory>(`/tax-categories/${id}`, { signal }),
+    enabled: Boolean(id),
+  })
 
   useEffect(() => {
-    if (!id) return
-    const controller = new AbortController()
-    setStatus('loading')
-    api<TaxCategory>(`/tax-categories/${id}`, { signal: controller.signal })
-      .then((data) => { setCategory(data); setStatus('success') })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        toast.error(err instanceof ApiError ? err.message : 'Failed to load tax category')
-      })
-    return () => controller.abort()
-  }, [id, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (query.isError) {
+      const err = query.error
+      toast.error(err instanceof ApiError ? err.message : 'Failed to load tax category')
+    }
+  }, [query.isError, query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
-  return { category, status, refresh }
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
+
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.tax.detail(id) })
+  }
+
+  return { category: query.data ?? null, status, refresh }
 }

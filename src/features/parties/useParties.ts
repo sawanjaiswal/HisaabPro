@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { TIMEOUTS } from '@/config/app.config'
 import { DEFAULT_FILTERS } from './party.constants'
 import { getParties, createParty, deleteParty } from './party.service'
@@ -26,36 +28,31 @@ interface UsePartiesReturn {
 
 export function useParties({ initialFilters }: UsePartiesOptions = {}): UsePartiesReturn {
   const toast = useToast()
+  const queryClient = useQueryClient()
 
   const [filters, setFilters] = useState<PartyFilters>({
     ...DEFAULT_FILTERS,
     ...initialFilters,
   })
-  const [data, setData] = useState<PartyListResponse | null>(null)
-  const [status, setStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
 
-  // Fetch parties whenever filters or refreshKey change
+  // TanStack Query replaces useState(data) + useEffect(fetch) + refreshKey
+  const query = useQuery({
+    queryKey: queryKeys.parties.list(filters),
+    queryFn: ({ signal }) => getParties(filters, signal),
+  })
+
+  const data = query.data ?? null
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
+
+  // Show toast on fetch error
   useEffect(() => {
-    const controller = new AbortController()
-    setStatus('loading')
+    if (query.error) {
+      const message = query.error instanceof ApiError ? query.error.message : 'Failed to load parties'
+      toast.error(message)
+    }
+  }, [query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    getParties(filters, controller.signal)
-      .then((response: PartyListResponse) => {
-        setData(response)
-        setStatus('success')
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        const message = err instanceof ApiError ? err.message : 'Failed to load parties'
-        toast.error(message)
-      })
-
-    return () => controller.abort()
-  }, [filters, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Debounced search — holds the raw input, effect fires API after 300ms idle
+  // Debounced search
   const [pendingSearch, setPendingSearch] = useState<string | null>(null)
 
   const setSearch = useCallback((term: string) => {
@@ -80,59 +77,60 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
   }, [])
 
   const refresh = useCallback(() => {
-    setRefreshKey((k) => k + 1)
-  }, [])
+    queryClient.invalidateQueries({ queryKey: queryKeys.parties.all() })
+  }, [queryClient])
 
-  const handleCreate = useCallback(async (formData: PartyFormData) => {
-    try {
-      await createParty(formData)
+  // Create mutation
+  const createMutation = useMutation({
+    mutationFn: (formData: PartyFormData) => createParty(formData),
+    onSuccess: (_result, formData) => {
       toast.success(`${formData.name} added successfully`)
-      refresh()
-    } catch (err: unknown) {
+      queryClient.invalidateQueries({ queryKey: queryKeys.parties.all() })
+    },
+    onError: (err: Error) => {
       const message = err instanceof ApiError ? err.message : 'Failed to create party'
       toast.error(message)
-      throw err
-    }
-  }, [refresh, toast])
+    },
+  })
 
+  const handleCreate = useCallback(async (formData: PartyFormData) => {
+    await createMutation.mutateAsync(formData)
+  }, [createMutation])
+
+  // Delete with undo (keeps existing UX: delay actual delete for 5s undo window)
   const handleDelete = useCallback((id: string, name: string) => {
-    // Optimistic removal from list
-    setData((prev) => {
-      if (!prev) return prev
-      return {
-        ...prev,
-        parties: prev.parties.filter((p) => p.id !== id),
-        pagination: {
-          ...prev.pagination,
-          total: prev.pagination.total - 1,
-        },
+    // Optimistic: update cache directly
+    queryClient.setQueryData<PartyListResponse>(
+      queryKeys.parties.list(filters),
+      (old) => {
+        if (!old) return old
+        return {
+          ...old,
+          parties: old.parties.filter((p) => p.id !== id),
+          pagination: { ...old.pagination, total: old.pagination.total - 1 },
+        }
       }
-    })
+    )
 
     let undone = false
 
     toast.success(`${name} deleted`, {
       onUndo: () => {
         undone = true
-        refresh()
+        queryClient.invalidateQueries({ queryKey: queryKeys.parties.all() })
       },
       undoLabel: 'Undo',
     })
 
-    // Delay actual deletion to allow undo window (matches toast duration)
-    const timerId = setTimeout(() => {
+    setTimeout(() => {
       if (undone) return
       deleteParty(id).catch((err: unknown) => {
         const message = err instanceof ApiError ? err.message : 'Failed to delete party'
         toast.error(message)
-        refresh() // Restore list on failure
+        queryClient.invalidateQueries({ queryKey: queryKeys.parties.all() })
       })
     }, 5_000)
-
-    // Cleanup on unmount is not needed here — timer is self-contained
-    // and a leaked delete after unmount is safe (server state corrects on next fetch)
-    void timerId
-  }, [refresh, toast])
+  }, [filters, queryClient, toast])
 
   return {
     data,

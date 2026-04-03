@@ -1,12 +1,14 @@
-/** Tax Summary hook
+/** Tax Summary hook (TanStack Query)
  *
  * Fetches tax summary and HSN summary in parallel for a given date range.
- * Aborts both fetches on cleanup. All amounts are in PAISE.
+ * All amounts are in PAISE.
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { getDateRange } from '../report.utils'
 import { getTaxSummary, getHsnSummary } from '../report.service'
 import type { TaxSummaryFilters, TaxSummaryData, HsnSummaryData } from '../report-tax.types'
@@ -32,38 +34,39 @@ function buildDefaultFilters(): TaxSummaryFilters {
 
 export function useTaxSummary(): UseTaxSummaryReturn {
   const toast = useToast()
+  const queryClient = useQueryClient()
 
   const [filters, setFilters] = useState<TaxSummaryFilters>(buildDefaultFilters)
-  const [data, setData] = useState<TaxSummaryResult>({ summary: null, hsnSummary: null })
-  const [status, setStatus] = useState<Status>('loading')
-  const [refreshKey, setRefreshKey] = useState(0)
+
+  const query = useQuery({
+    queryKey: queryKeys.reports.taxSummary(filters),
+    queryFn: async ({ signal }) => {
+      const [summary, hsnSummary] = await Promise.all([
+        getTaxSummary(filters, signal),
+        getHsnSummary(filters, signal),
+      ])
+      return { summary, hsnSummary }
+    },
+  })
 
   useEffect(() => {
-    const controller = new AbortController()
-    setStatus('loading')
+    if (query.isError) {
+      const err = query.error
+      toast.error(err instanceof ApiError ? err.message : 'Failed to load tax summary')
+    }
+  }, [query.isError, query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    Promise.all([
-      getTaxSummary(filters, controller.signal),
-      getHsnSummary(filters, controller.signal),
-    ])
-      .then(([summary, hsnSummary]) => {
-        setData({ summary, hsnSummary })
-        setStatus('success')
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        const message =
-          err instanceof ApiError ? err.message : 'Failed to load tax summary'
-        toast.error(message)
-      })
-
-    return () => controller.abort()
-  }, [filters, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
 
   const refresh = useCallback(() => {
-    setRefreshKey((k) => k + 1)
-  }, [])
+    queryClient.invalidateQueries({ queryKey: queryKeys.reports.taxSummary(filters) })
+  }, [queryClient, filters])
 
-  return { data, status, filters, setFilters, refresh }
+  return {
+    data: query.data ?? { summary: null, hsnSummary: null },
+    status,
+    filters,
+    setFilters,
+    refresh,
+  }
 }
