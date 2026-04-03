@@ -175,7 +175,10 @@ export async function deleteCategory(
       data: { categoryId: reassignTo },
     })
 
-    await tx.category.delete({ where: { id: categoryId } })
+    await tx.category.update({
+      where: { id: categoryId },
+      data: { isDeleted: true, deletedAt: new Date() },
+    })
   })
 
   return { deleted: true }

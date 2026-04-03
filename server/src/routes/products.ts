@@ -14,6 +14,7 @@ import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
 import { prisma } from '../lib/prisma.js'
 import { notFoundError, validationError } from '../lib/errors.js'
+import logger from '../lib/logger.js'
 import {
   createProductSchema,
   updateProductSchema,
@@ -255,7 +256,9 @@ router.post(
       })
     )
 
-    checkAndCreateAlerts(businessId, productId).catch(() => {})
+    checkAndCreateAlerts(businessId, productId).catch((err) => {
+      logger.error('Stock alert check failed', { productId, error: (err as Error).message })
+    })
 
     sendSuccess(res, {
       movement: result.movement,
@@ -309,29 +312,30 @@ router.post(
     const businessId = req.user!.businessId
     const productId = String(req.params.id)
 
-    const existing = await prisma.product.findFirst({
-      where: { id: productId, businessId },
-      select: { id: true, imageUrl: true, images: true },
-    })
-    if (!existing) throw notFoundError('Product')
-
     const { imageUrl, images: newImages } = req.body as {
       imageUrl?: string
       images?: string[]
     }
 
-    const merged = Array.from(
-      new Set([...existing.images, ...(newImages ?? []), ...(imageUrl ? [imageUrl] : [])])
-    ).slice(0, 5)
+    const updated = await prisma.$transaction(async (tx) => {
+      const existing = await tx.product.findFirst({
+        where: { id: productId, businessId },
+        select: { id: true, imageUrl: true, images: true },
+      })
+      if (!existing) throw notFoundError('Product')
 
-    const updated = await prisma.product.update({
-      where: { id: productId },
-      data: {
-        images: merged,
-        // Set imageUrl to the supplied primary, or keep existing, or first in merged
-        imageUrl: imageUrl ?? existing.imageUrl ?? (merged[0] ?? null),
-      },
-      select: { id: true, imageUrl: true, images: true },
+      const merged = Array.from(
+        new Set([...existing.images, ...(newImages ?? []), ...(imageUrl ? [imageUrl] : [])])
+      ).slice(0, 5)
+
+      return tx.product.update({
+        where: { id: productId },
+        data: {
+          images: merged,
+          imageUrl: imageUrl ?? existing.imageUrl ?? (merged[0] ?? null),
+        },
+        select: { id: true, imageUrl: true, images: true },
+      })
     })
 
     sendSuccess(res, { product: updated })
@@ -351,28 +355,30 @@ router.delete(
       throw validationError('Image index must be a non-negative integer')
     }
 
-    const existing = await prisma.product.findFirst({
-      where: { id: productId, businessId },
-      select: { id: true, imageUrl: true, images: true },
-    })
-    if (!existing) throw notFoundError('Product')
+    const updated = await prisma.$transaction(async (tx) => {
+      const existing = await tx.product.findFirst({
+        where: { id: productId, businessId },
+        select: { id: true, imageUrl: true, images: true },
+      })
+      if (!existing) throw notFoundError('Product')
 
-    if (index >= existing.images.length) {
-      throw validationError(
-        `Image index ${index} out of range (product has ${existing.images.length} images)`
-      )
-    }
+      if (index >= existing.images.length) {
+        throw validationError(
+          `Image index ${index} out of range (product has ${existing.images.length} images)`
+        )
+      }
 
-    const removedUrl = existing.images[index]
-    const updatedImages = existing.images.filter((_, i) => i !== index)
-    const newImageUrl = existing.imageUrl === removedUrl
-      ? (updatedImages[0] ?? null)
-      : existing.imageUrl
+      const removedUrl = existing.images[index]
+      const updatedImages = existing.images.filter((_, i) => i !== index)
+      const newImageUrl = existing.imageUrl === removedUrl
+        ? (updatedImages[0] ?? null)
+        : existing.imageUrl
 
-    const updated = await prisma.product.update({
-      where: { id: productId },
-      data: { images: updatedImages, imageUrl: newImageUrl },
-      select: { id: true, imageUrl: true, images: true },
+      return tx.product.update({
+        where: { id: productId },
+        data: { images: updatedImages, imageUrl: newImageUrl },
+        select: { id: true, imageUrl: true, images: true },
+      })
     })
 
     sendSuccess(res, { product: updated })

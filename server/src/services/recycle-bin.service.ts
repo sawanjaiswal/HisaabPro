@@ -61,11 +61,30 @@ export async function listDeleted(
   }
 }
 
+/** Verify record belongs to the business before operating on it */
+async function verifyOwnership(
+  entityType: string,
+  id: string,
+  businessId: string,
+): Promise<void> {
+  const model = getModel(entityType)
+  const record = await model.findFirst({
+    where: { id, businessId, isDeleted: true },
+    select: { id: true },
+  })
+  if (!record) {
+    throw new Error('Record not found or does not belong to this business')
+  }
+}
+
 /** Restore a soft-deleted record (with cascade for Party/Product) */
 export async function restoreRecord(
   entityType: string,
   id: string,
+  businessId: string,
 ): Promise<unknown> {
+  await verifyOwnership(entityType, id, businessId)
+
   // Use cascade restore for parent entities
   if (entityType === 'Party') {
     await restoreParty(prisma as AnyModel, id)
@@ -88,8 +107,11 @@ export async function restoreRecord(
 export async function permanentDelete(
   entityType: string,
   id: string,
+  businessId: string,
 ): Promise<void> {
-  // Raw SQL bypasses the soft-delete extension — Prisma uses model name as table
+  await verifyOwnership(entityType, id, businessId)
+
+  // Use parameterized query — entityType is validated by Zod schema (allowlist)
   await (prisma as AnyModel).$executeRawUnsafe(
     `DELETE FROM "${entityType}" WHERE "id" = $1`,
     id,

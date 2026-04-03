@@ -13,6 +13,8 @@ import { errorHandler } from './middleware/errorHandler.js'
 import { performanceMonitoring } from './middleware/performance.js'
 import { apiRateLimiter } from './middleware/rate-limit.js'
 import { csrfProtection } from './middleware/csrf.js'
+import { sanitizeInput } from './middleware/sanitize-input.js'
+import { prisma } from './lib/prisma.js'
 import authRoutes from './routes/auth.js'
 import feedbackRoutes from './routes/feedback.js'
 import backupRoutes from './routes/backup.js'
@@ -104,9 +106,40 @@ export function createApp() {
   app.use(performanceMonitoring)
   app.use(apiRateLimiter)
   app.use(csrfProtection)
+  app.use(sanitizeInput)
 
   app.get('/api/health', (_req, res) => {
     sendSuccess(res, { status: 'ok', timestamp: new Date().toISOString() })
+  })
+
+  app.get('/api/health/detailed', async (_req, res) => {
+    const mem = process.memoryUsage()
+    const uptime = process.uptime()
+
+    // DB latency check
+    let dbLatencyMs = -1
+    let dbStatus: 'ok' | 'slow' | 'down' = 'down'
+    try {
+      const start = Date.now()
+      await prisma.$queryRaw`SELECT 1`
+      dbLatencyMs = Date.now() - start
+      dbStatus = dbLatencyMs > 500 ? 'slow' : 'ok'
+    } catch {
+      dbStatus = 'down'
+    }
+
+    sendSuccess(res, {
+      status: dbStatus === 'down' ? 'degraded' : 'ok',
+      timestamp: new Date().toISOString(),
+      uptime: Math.floor(uptime),
+      db: { status: dbStatus, latencyMs: dbLatencyMs },
+      memory: {
+        heapUsedMB: Math.round(mem.heapUsed / 1024 / 1024),
+        heapTotalMB: Math.round(mem.heapTotal / 1024 / 1024),
+        rssMB: Math.round(mem.rss / 1024 / 1024),
+      },
+      node: process.version,
+    })
   })
 
   app.use('/api/auth', authRoutes)

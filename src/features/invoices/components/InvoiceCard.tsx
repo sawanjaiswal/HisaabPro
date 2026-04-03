@@ -34,6 +34,8 @@ const DOC_TYPE_ICON_CLASS: Record<DocumentType, string> = {
   SALE_ORDER:       'doc-type-icon doc-type-icon--sale-order',
   PURCHASE_ORDER:   'doc-type-icon doc-type-icon--purchase-order',
   DELIVERY_CHALLAN: 'doc-type-icon doc-type-icon--delivery-challan',
+  CREDIT_NOTE:      'doc-type-icon doc-type-icon--credit-note',
+  DEBIT_NOTE:       'doc-type-icon doc-type-icon--debit-note',
 }
 
 // Payment status labels are now derived from translations inside the component

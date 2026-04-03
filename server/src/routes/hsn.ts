@@ -6,7 +6,7 @@
 import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { auth } from '../middleware/auth.js'
-import { sendSuccess } from '../lib/response.js'
+import { sendSuccess, sendError } from '../lib/response.js'
 import { prisma } from '../lib/prisma.js'
 import { hsnSearchSchema } from '../schemas/tax.schemas.js'
 
@@ -63,7 +63,7 @@ router.get(
       where: { code: String(req.params.code) },
     })
     if (!hsnCode) {
-      sendSuccess(res, null, 404)
+      sendError(res, 'HSN code not found', 'NOT_FOUND', 404)
       return
     }
     sendSuccess(res, { hsnCode })

@@ -1,14 +1,16 @@
 import crypto from 'crypto'
 import bcrypt from 'bcryptjs'
+import {
+  OTP_LENGTH,
+  OTP_TTL_MS,
+  OTP_MAX_ATTEMPTS,
+  OTP_RESEND_COOLDOWN_MS,
+} from '../config/security.js'
 
-const OTP_LENGTH = 6
-const OTP_TTL_MS = 5 * 60 * 1000 // 5 minutes
-const MAX_ATTEMPTS = 5
-const RESEND_COOLDOWN_MS = 30 * 1000 // 30 seconds
 /** Lower rounds for OTP — short-lived, speed matters more than brute-force resistance */
 const OTP_BCRYPT_ROUNDS = 6
 
-export { OTP_LENGTH, OTP_TTL_MS, MAX_ATTEMPTS, RESEND_COOLDOWN_MS }
+export { OTP_LENGTH, OTP_TTL_MS, OTP_MAX_ATTEMPTS as MAX_ATTEMPTS, OTP_RESEND_COOLDOWN_MS as RESEND_COOLDOWN_MS }
 
 /** Generate a cryptographically secure 6-digit OTP */
 export function generateOTP(): string {

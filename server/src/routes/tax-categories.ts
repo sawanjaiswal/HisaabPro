@@ -7,7 +7,7 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { requirePermission } from '../middleware/permission.js'
-import { sendSuccess } from '../lib/response.js'
+import { sendSuccess, sendError } from '../lib/response.js'
 import { createTaxCategorySchema, updateTaxCategorySchema } from '../schemas/tax.schemas.js'
 import * as svc from '../services/tax-category.service.js'
 
@@ -25,7 +25,7 @@ router.get('/', asyncHandler(async (req, res) => {
 router.get('/:id', asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const category = await svc.getCategory(String(req.params.id), businessId)
-  if (!category) return sendSuccess(res, null, 404)
+  if (!category) return sendError(res, 'Tax category not found', 'NOT_FOUND', 404)
   sendSuccess(res, { category })
 }))
 
@@ -47,7 +47,7 @@ router.post('/', requirePermission('settings.modify'), validate(createTaxCategor
 router.put('/:id', requirePermission('settings.modify'), validate(updateTaxCategorySchema), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const category = await svc.updateCategory(String(req.params.id), businessId, req.body)
-  if (!category) return sendSuccess(res, null, 404)
+  if (!category) return sendError(res, 'Tax category not found', 'NOT_FOUND', 404)
   sendSuccess(res, { category })
 }))
 
@@ -55,7 +55,7 @@ router.put('/:id', requirePermission('settings.modify'), validate(updateTaxCateg
 router.delete('/:id', requirePermission('settings.modify'), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const deleted = await svc.softDeleteCategory(String(req.params.id), businessId)
-  if (!deleted) return sendSuccess(res, null, 404)
+  if (!deleted) return sendError(res, 'Tax category not found', 'NOT_FOUND', 404)
   sendSuccess(res, { deleted: true })
 }))
 

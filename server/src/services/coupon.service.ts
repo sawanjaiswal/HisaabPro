@@ -192,7 +192,8 @@ export async function listCoupons(query: ListCouponsQuery) {
     where.isActive = true
   }
 
-  const fetchLimit = status === 'ACTIVE' || status === 'EXHAUSTED' ? limit * 3 : limit + 1
+  // Over-fetch 2x (not 3x) for computed-status filters that need in-memory filtering
+  const fetchLimit = status === 'ACTIVE' || status === 'EXHAUSTED' ? limit * 2 : limit + 1
 
   const coupons = await prisma.coupon.findMany({
     where,

@@ -44,6 +44,7 @@ interface MemoryEntry {
 
 class MemoryStore implements RateLimitStore {
   private readonly entries = new Map<string, MemoryEntry>()
+  private static readonly MAX_ENTRIES = 50_000 // prevent unbounded memory growth
 
   constructor() {
     // Evict expired entries every 60 seconds
@@ -60,6 +61,11 @@ class MemoryStore implements RateLimitStore {
     const existing = this.entries.get(key)
 
     if (!existing || now > existing.resetAt) {
+      // Evict oldest entry if at capacity (FIFO)
+      if (this.entries.size >= MemoryStore.MAX_ENTRIES) {
+        const firstKey = this.entries.keys().next().value
+        if (firstKey !== undefined) this.entries.delete(firstKey)
+      }
       const entry: MemoryEntry = { count: 1, resetAt: now + windowMs }
       this.entries.set(key, entry)
       return { count: 1, resetAt: entry.resetAt }
@@ -130,7 +136,10 @@ async function getStore(): Promise<RateLimitStore> {
 }
 
 // Eagerly initialise so the first request isn't delayed
-getStore().catch(() => {
+getStore().catch((err) => {
+  logger.warn('Rate limit store init failed, falling back to memory store', {
+    error: (err as Error).message,
+  })
   _store = new MemoryStore()
 })
 

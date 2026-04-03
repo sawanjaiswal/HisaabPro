@@ -50,6 +50,8 @@ export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   SALE_ORDER:        'Sale Order',
   PURCHASE_ORDER:    'Purchase Order',
   DELIVERY_CHALLAN:  'Delivery Challan',
+  CREDIT_NOTE:       'Credit Note',
+  DEBIT_NOTE:        'Debit Note',
 }
 
 // ─── Document type short codes ────────────────────────────────────────────────
@@ -63,6 +65,8 @@ export const DOCUMENT_TYPE_CODES: Record<DocumentType, string> = {
   SALE_ORDER:        'SO',
   PURCHASE_ORDER:    'PO',
   DELIVERY_CHALLAN:  'DC',
+  CREDIT_NOTE:       'CN',
+  DEBIT_NOTE:        'DN',
 }
 
 // ─── Document status display labels ───────────────────────────────────────────
@@ -150,7 +154,7 @@ export const SHARE_CHANNEL_LABELS: Record<ShareChannel, string> = {
 export const DOCUMENT_SORT_OPTIONS: { value: DocumentSortBy; label: string }[] = [
   { value: 'documentDate',    label: 'Invoice Date' },
   { value: 'createdAt',       label: 'Date Created' },
-  { value: 'total',           label: 'Amount' },
+  { value: 'grandTotal',      label: 'Amount' },
   { value: 'documentNumber',  label: 'Document Number' },
 ]
 
@@ -194,6 +198,8 @@ export const DOCUMENT_DIRECTION: Record<DocumentType, DocumentDirection> = {
   SALE_ORDER:        'OUTWARD',
   PURCHASE_ORDER:    'INWARD',
   DELIVERY_CHALLAN:  'OUTWARD',
+  CREDIT_NOTE:       'OUTWARD',
+  DEBIT_NOTE:        'INWARD',
 }
 
 // ─── Stock effect flags ────────────────────────────────────────────────────────
@@ -207,6 +213,8 @@ export const AFFECTS_STOCK: Record<DocumentType, boolean> = {
   SALE_ORDER:        false,
   PURCHASE_ORDER:    false,
   DELIVERY_CHALLAN:  true,   // decreases stock
+  CREDIT_NOTE:       true,   // increases stock (returned goods)
+  DEBIT_NOTE:        true,   // decreases stock (returned goods)
 }
 
 // ─── Outstanding effect flags ─────────────────────────────────────────────────
@@ -220,6 +228,8 @@ export const AFFECTS_OUTSTANDING: Record<DocumentType, boolean> = {
   SALE_ORDER:        false,
   PURCHASE_ORDER:    false,
   DELIVERY_CHALLAN:  false,
+  CREDIT_NOTE:       true,   // reduces receivable
+  DEBIT_NOTE:        true,   // reduces payable
 }
 
 // ─── Invoice number config ────────────────────────────────────────────────────

@@ -22,6 +22,7 @@ import type {
 // ─── Constants ─────────────────────────────────────────────────────────────────
 
 /** Account types where debit increases balance (debit-normal accounts). */
+/** Account types with debit-normal balance (ASSET, EXPENSE). All others are credit-normal (LIABILITY, EQUITY, INCOME). */
 const DEBIT_NORMAL_TYPES = new Set(['ASSET', 'EXPENSE'])
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────

@@ -438,15 +438,15 @@ export async function updateProduct(
       select: productDetailSelect,
     })
 
-    // Upsert custom field values if provided
+    // Batch upsert custom field values if provided
     if (data.customFields && data.customFields.length > 0) {
-      for (const cf of data.customFields) {
-        await tx.productCustomFieldValue.upsert({
+      await Promise.all(data.customFields.map(cf =>
+        tx.productCustomFieldValue.upsert({
           where: { productId_fieldId: { productId, fieldId: cf.fieldId } },
           create: { productId, fieldId: cf.fieldId, value: cf.value },
           update: { value: cf.value },
         })
-      }
+      ))
     }
 
     return updated

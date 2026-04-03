@@ -96,7 +96,8 @@ function initialNextRunDate(
     const diff = (dayOfWeek - d.getDay() + 7) % 7
     d.setDate(d.getDate() + diff)
     // If that snapped to today or the past, advance one week
-    if (d <= new Date()) {
+    // Compare in UTC to avoid timezone mismatch (d is UTC-normalized)
+    if (d.getTime() <= Date.now()) {
       d.setDate(d.getDate() + 7)
     }
   }

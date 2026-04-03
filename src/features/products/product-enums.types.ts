@@ -1,47 +1,42 @@
 /** Basic Inventory — Enum and type alias definitions
  *
- * All monetary amounts stored in PAISE (integer).
- * All quantities stored in the product's base unit.
+ * Re-exports from @shared/enums (SSOT). All monetary amounts in PAISE (integer).
  */
 
-export type StockValidationMode = 'GLOBAL' | 'WARN_ONLY' | 'HARD_BLOCK'
+// ─── Re-exports from SSOT ───────────────────────────────────────────────────
 
-export type StockMovementType =
-  | 'SALE'
-  | 'PURCHASE'
-  | 'ADJUSTMENT_IN'
-  | 'ADJUSTMENT_OUT'
-  | 'OPENING'
-  | 'RETURN_IN'
-  | 'RETURN_OUT'
+export type {
+  StockValidationMode,
+  StockMovementType,
+  StockAdjustReason,
+  StockAdjustType,
+  StockStatus,
+  StockValidationResult,
+  LowStockAlertFrequency,
+  BarcodeFormat,
+  ProductSortBy,
+  CustomFieldType,
+  ReferenceType,
+  ProductStatus,
+} from '@shared/enums'
 
-export type StockAdjustReason =
-  | 'DAMAGE'
-  | 'THEFT'
-  | 'AUDIT'
-  | 'GIFT'
-  | 'RETURN'
-  | 'OTHER'
+export {
+  STOCK_VALIDATION_MODES,
+  STOCK_MOVEMENT_TYPES,
+  STOCK_ADJUST_REASONS,
+  STOCK_ADJUST_TYPES,
+  STOCK_STATUSES,
+  STOCK_VALIDATION_RESULTS,
+  LOW_STOCK_ALERT_FREQUENCIES,
+  BARCODE_FORMATS,
+  PRODUCT_SORT_BY,
+  CUSTOM_FIELD_TYPES,
+  REFERENCE_TYPES,
+  PRODUCT_STATUSES,
+} from '@shared/enums'
+
+// ─── Feature-specific UI types ──────────────────────────────────────────────
 
 export type CategoryType = 'PREDEFINED' | 'CUSTOM'
 
 export type UnitType = 'PREDEFINED' | 'CUSTOM'
-
-export type CustomFieldType = 'TEXT' | 'NUMBER' | 'DATE' | 'DROPDOWN'
-
-export type StockStatus = 'ok' | 'low' | 'out'
-
-export type ProductSortBy =
-  | 'name'
-  | 'salePrice'
-  | 'purchasePrice'
-  | 'currentStock'
-  | 'createdAt'
-
-export type StockAdjustType = 'ADJUSTMENT_IN' | 'ADJUSTMENT_OUT'
-
-export type ReferenceType = 'INVOICE' | 'PURCHASE_ORDER' | 'CREDIT_NOTE' | 'DEBIT_NOTE' | 'MANUAL'
-
-export type StockValidationResult = 'OK' | 'WARN' | 'BLOCK'
-
-export type LowStockAlertFrequency = 'ONCE' | 'DAILY' | 'EVERY_TIME'

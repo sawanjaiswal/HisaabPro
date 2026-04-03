@@ -13,10 +13,17 @@ const blacklistedTokens = new Map<string, number>() // token → expiresAt (ms)
 const blacklistedUsers = new Set<string>() // userId — for account deletion/suspension
 
 const CLEANUP_INTERVAL_MS = 60 * 60 * 1000 // 1 hour
+const MAX_BLACKLISTED_TOKENS = 10_000 // prevent unbounded memory growth
+const MAX_BLACKLISTED_USERS = 5_000
 
 /** Blacklist a token until it naturally expires */
 export function blacklistToken(token: string, ttlMs: number): void {
   if (ttlMs <= 0) return
+  // Evict oldest entries if at capacity (FIFO — first key in Map is oldest)
+  if (blacklistedTokens.size >= MAX_BLACKLISTED_TOKENS) {
+    const firstKey = blacklistedTokens.keys().next().value
+    if (firstKey !== undefined) blacklistedTokens.delete(firstKey)
+  }
   blacklistedTokens.set(token, Date.now() + ttlMs)
 }
 
@@ -33,6 +40,11 @@ export function isBlacklisted(token: string): boolean {
 
 /** Blacklist all tokens for a user (account deletion/suspension) */
 export function blacklistUser(userId: string): void {
+  // Evict oldest if at capacity
+  if (blacklistedUsers.size >= MAX_BLACKLISTED_USERS) {
+    const firstKey = blacklistedUsers.values().next().value
+    if (firstKey !== undefined) blacklistedUsers.delete(firstKey)
+  }
   blacklistedUsers.add(userId)
 }
 

@@ -5,6 +5,7 @@
  */
 
 import type { TaxLineInput, TaxLineResult, TaxSummary } from './tax-calc.types.js'
+import { PAISE_BASIS_POINTS } from '../../shared/enums.js'
 
 // Re-export types for convenience
 export type { TaxLineInput, TaxLineResult, TaxSummary }
@@ -36,17 +37,17 @@ export function calculateLineTax(input: TaxLineInput, interState: boolean): TaxL
 
   if (interState) {
     igstRate = gstRate
-    igstAmount = Math.round(taxableValue * igstRate / 10000)
+    igstAmount = Math.round(taxableValue * igstRate / PAISE_BASIS_POINTS)
   } else {
     cgstRate = Math.floor(gstRate / 2)
     sgstRate = gstRate - cgstRate
-    cgstAmount = Math.round(taxableValue * cgstRate / 10000)
-    sgstAmount = Math.round(taxableValue * sgstRate / 10000)
+    cgstAmount = Math.round(taxableValue * cgstRate / PAISE_BASIS_POINTS)
+    sgstAmount = Math.round(taxableValue * sgstRate / PAISE_BASIS_POINTS)
   }
 
   let cessAmount = 0
   if (cessType === 'PERCENTAGE' && cessRate > 0) {
-    cessAmount = Math.round(taxableValue * cessRate / 10000)
+    cessAmount = Math.round(taxableValue * cessRate / PAISE_BASIS_POINTS)
   } else if (cessType === 'FIXED_PER_UNIT' && cessRate > 0) {
     cessAmount = Math.round(quantity * cessRate)
   }

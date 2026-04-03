@@ -117,3 +117,40 @@ export const RATE_LIMIT_COUPON_IP_WINDOW_MS = 60 * 1000
 
 /** Max coupon requests per IP per window (shared across all users on that IP) */
 export const RATE_LIMIT_COUPON_IP_MAX = 20
+
+// --- OTP ---
+
+/** OTP digit length */
+export const OTP_LENGTH = 6
+
+/** OTP validity period (ms) — 5 minutes */
+export const OTP_TTL_MS = 5 * 60 * 1000
+
+/** Max OTP verification attempts before lockout */
+export const OTP_MAX_ATTEMPTS = 5
+
+/** Cooldown between OTP resend requests (ms) — 30 seconds */
+export const OTP_RESEND_COOLDOWN_MS = 30 * 1000
+
+// --- Replay protection ---
+
+/** Replay nonce validity window (ms) — 5 minutes */
+export const REPLAY_WINDOW_MS = 5 * 60 * 1000
+
+/** Replay nonce cleanup interval (ms) — 60 seconds */
+export const REPLAY_CLEANUP_INTERVAL_MS = 60 * 1000
+
+// --- Captcha ---
+
+/** CAPTCHA token validity window (ms) — 15 minutes */
+export const CAPTCHA_WINDOW_MS = 15 * 60 * 1000
+
+// --- Idempotency ---
+
+/** Idempotency key TTL (days) */
+export const IDEMPOTENCY_TTL_DAYS = 5
+
+// --- Slow query ---
+
+/** Slow query threshold (ms) — log queries slower than this */
+export const SLOW_QUERY_THRESHOLD_MS = 500

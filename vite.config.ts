@@ -89,6 +89,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
+      '@shared': resolve(__dirname, './shared'),
     },
   },
   server: {
@@ -96,7 +97,7 @@ export default defineConfig({
     host: true, // expose on LAN for mobile testing
     proxy: {
       '/api': {
-        target: 'http://localhost:4002',
+        target: 'http://localhost:4000',
         changeOrigin: true,
       },
     },

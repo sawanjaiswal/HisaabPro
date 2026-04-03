@@ -3,6 +3,7 @@
  * All amounts in PAISE (integer). Must match frontend utils exactly.
  * Extended in Phase 2 to include GST calculations.
  */
+import { PAISE_BASIS_POINTS } from '../../shared/enums.js'
 
 import type { TaxLineInput, TaxLineResult } from './tax-calc.types.js'
 import { calculateLineTax, isInterState } from './tax-calc.js'
@@ -23,7 +24,7 @@ export function calculateLineDiscount(
   let discountAmount = 0
 
   if (discountType === 'PERCENTAGE' && discountValue > 0) {
-    discountAmount = Math.round(gross * discountValue / 10000)
+    discountAmount = Math.round(gross * discountValue / PAISE_BASIS_POINTS)
   } else if (discountType === 'AMOUNT' && discountValue > 0) {
     discountAmount = discountValue
   }
@@ -38,7 +39,7 @@ export function calculateChargeAmount(
   chargeValue: number,
 ): number {
   if (chargeType === 'PERCENTAGE' && chargeValue > 0) {
-    return Math.round(subtotalPaise * chargeValue / 10000)
+    return Math.round(subtotalPaise * chargeValue / PAISE_BASIS_POINTS)
   }
   return chargeValue
 }

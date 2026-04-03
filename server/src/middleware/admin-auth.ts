@@ -101,7 +101,7 @@ function verifyAdminToken(token: string, expectedType: 'access' | 'refresh'): Ad
  * Resolves token from Authorization: Bearer <token> header.
  * Verifies role from DB on every call to catch role revocations.
  */
-export function requireAdmin(req: Request, res: Response, next: NextFunction) {
+export async function requireAdmin(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization
   if (!authHeader?.startsWith('Bearer ')) {
     sendError(res, 'Admin authentication required', 'UNAUTHORIZED', 401)
@@ -129,11 +129,13 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction) {
     return
   }
 
-  // Async DB verification — verify role and active status
-  prisma.adminUser.findUnique({
-    where: { id: decoded.adminId },
-    select: { role: true, isActive: true },
-  }).then((admin) => {
+  // DB verification — verify role and active status (MUST be awaited)
+  try {
+    const admin = await prisma.adminUser.findUnique({
+      where: { id: decoded.adminId },
+      select: { role: true, isActive: true },
+    })
+
     if (!admin) {
       sendError(res, 'Admin account not found', 'UNAUTHORIZED', 401)
       return
@@ -160,9 +162,9 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction) {
     }
 
     next()
-  }).catch(() => {
+  } catch {
     sendError(res, 'Admin authentication failed', 'UNAUTHORIZED', 401)
-  })
+  }
 }
 
 // --------------------------------------------------------------------------

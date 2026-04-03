@@ -15,13 +15,17 @@
 
 import type { Request, Response, NextFunction } from 'express'
 import logger from '../lib/logger.js'
+import {
+  REPLAY_WINDOW_MS as _REPLAY_WINDOW_MS,
+  REPLAY_CLEANUP_INTERVAL_MS as _CLEANUP_INTERVAL_MS,
+} from '../config/security.js'
 
 // ---------------------------------------------------------------------------
-// Constants
+// Constants (from config/security.ts SSOT)
 // ---------------------------------------------------------------------------
 
-export const REPLAY_WINDOW_MS = 5 * 60 * 1000   // 5 minutes
-export const CLEANUP_INTERVAL_MS = 60 * 1000     // run eviction every 60 s
+export const REPLAY_WINDOW_MS = _REPLAY_WINDOW_MS
+export const CLEANUP_INTERVAL_MS = _CLEANUP_INTERVAL_MS
 
 // ---------------------------------------------------------------------------
 // In-memory nonce store
@@ -32,6 +36,7 @@ interface NonceEntry {
 }
 
 const nonceStore = new Map<string, NonceEntry>()
+const MAX_NONCES = 50_000 // prevent unbounded memory growth under traffic spikes
 
 // Evict nonces older than the replay window every CLEANUP_INTERVAL_MS.
 // .unref() prevents the interval from keeping the process alive.
@@ -115,6 +120,12 @@ export function replayProtection(req: Request, res: Response, next: NextFunction
       },
     })
     return
+  }
+
+  // Evict oldest nonce if at capacity (FIFO)
+  if (nonceStore.size >= MAX_NONCES) {
+    const firstKey = nonceStore.keys().next().value
+    if (firstKey !== undefined) nonceStore.delete(firstKey)
   }
 
   // Record the nonce and proceed

@@ -49,6 +49,7 @@ async function ensurePredefinedUnits(businessId: string) {
       category: u.category,
       decimalAllowed: u.decimalAllowed,
     })),
+    skipDuplicates: true,
   })
 }
 
@@ -203,7 +204,10 @@ export async function deleteUnit(businessId: string, unitId: string) {
     },
   })
 
-  await prisma.unit.delete({ where: { id: unitId } })
+  await prisma.unit.update({
+    where: { id: unitId },
+    data: { isDeleted: true, deletedAt: new Date() },
+  })
   return { deleted: true }
 }
 

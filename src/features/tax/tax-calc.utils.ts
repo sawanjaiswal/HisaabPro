@@ -5,6 +5,7 @@
  */
 
 import type { LineTaxBreakdown, DocumentTaxSummary } from './tax.types'
+import { PAISE_BASIS_POINTS } from '@shared/enums'
 
 export interface TaxLineInput {
   lineTotal: number       // paise (taxable value after discount)
@@ -20,7 +21,7 @@ export function isInterState(
   placeOfSupply: string | null,
 ): boolean {
   if (!businessStateCode || !placeOfSupply) return false
-  return businessStateCode !== placeOfSupply
+  return businessStateCode.trim() !== placeOfSupply.trim()
 }
 
 /** Calculate tax for a single line item */
@@ -38,12 +39,12 @@ export function calculateLineTax(
   if (gstRate > 0) {
     if (interState) {
       igstRate = gstRate
-      igstAmount = Math.round(taxableValue * igstRate / 10_000)
+      igstAmount = Math.round(taxableValue * igstRate / PAISE_BASIS_POINTS)
     } else {
       cgstRate = Math.floor(gstRate / 2)
       sgstRate = gstRate - cgstRate
-      cgstAmount = Math.round(taxableValue * cgstRate / 10_000)
-      sgstAmount = Math.round(taxableValue * sgstRate / 10_000)
+      cgstAmount = Math.round(taxableValue * cgstRate / PAISE_BASIS_POINTS)
+      sgstAmount = Math.round(taxableValue * sgstRate / PAISE_BASIS_POINTS)
     }
   }
 
@@ -51,7 +52,7 @@ export function calculateLineTax(
   if (cessRate > 0) {
     cessAmount = cessType === 'FIXED_PER_UNIT'
       ? Math.round(quantity * cessRate)
-      : Math.round(taxableValue * cessRate / 10_000)
+      : Math.round(taxableValue * cessRate / PAISE_BASIS_POINTS)
   }
 
   const totalTax = cgstAmount + sgstAmount + igstAmount + cessAmount

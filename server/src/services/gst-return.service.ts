@@ -80,6 +80,10 @@ export async function generateGstr1(businessId: string, period: string) {
   }
 
   // HSN summary (aggregated across all docs)
+  // Note: quantities are in the unit specified per line item. GST filing
+  // expects same-HSN items to share a common UQC (unit quantity code).
+  // If products with the same HSN use different units, quantities will be
+  // summed without conversion — caller should ensure unit consistency per HSN.
   const hsnMap = new Map<string, { qty: number; taxable: number; cgst: number; sgst: number; igst: number; cess: number }>()
   for (const doc of docs) {
     if (doc.type !== 'SALE_INVOICE') continue

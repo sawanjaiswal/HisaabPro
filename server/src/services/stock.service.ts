@@ -273,7 +273,9 @@ export async function reverseForInvoice(
 export function scheduleAlertChecks(businessId: string, productIds: string[]): void {
   const unique = [...new Set(productIds)]
   for (const productId of unique) {
-    checkAndCreateAlerts(businessId, productId).catch(() => {})
+    checkAndCreateAlerts(businessId, productId).catch((err) => {
+      logger.error('Stock alert check failed', { productId, error: (err as Error).message })
+    })
   }
 }
 
@@ -291,6 +293,7 @@ export async function validateStockForInvoice(
       name: true,
       currentStock: true,
       stockValidation: true,
+      unitId: true,
       unit: { select: { name: true, symbol: true } },
     },
   })
@@ -309,8 +312,8 @@ export async function validateStockForInvoice(
   for (const item of items) {
     const product = productMap.get(item.productId)
     // product.id is used as toUnitId in the original code (unit base lookup)
-    if (product && item.unitId !== product.id) {
-      conversionPairs.push({ fromUnitId: item.unitId, toUnitId: product.id })
+    if (product && item.unitId !== product.unitId) {
+      conversionPairs.push({ fromUnitId: item.unitId, toUnitId: product.unitId })
     }
   }
 
@@ -352,8 +355,8 @@ export async function validateStockForInvoice(
 
     // Convert quantity if unit differs from product's base unit
     let baseQty = item.quantity
-    if (item.unitId !== product.id) {
-      const factor = conversionMap.get(`${item.unitId}:${product.id}`)
+    if (item.unitId !== product.unitId) {
+      const factor = conversionMap.get(`${item.unitId}:${product.unitId}`)
       if (factor !== undefined) {
         baseQty = item.quantity * factor
       }

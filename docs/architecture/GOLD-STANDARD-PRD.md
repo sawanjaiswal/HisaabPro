@@ -1,7 +1,7 @@
 # Gold Standard Architecture — PRD
 
-> **Status:** Draft — Pending Approval
-> **Date:** 2026-04-02
+> **Status:** Phase A COMPLETE — Phase B pending
+> **Date:** 2026-04-02 (updated 2026-04-03)
 > **Owner:** Sawan Jaiswal
 > **Scope:** Architecture upgrades to reach production gold standard
 > **Affects:** All 113 existing features + future phases
@@ -85,9 +85,16 @@ Frontend = dumb UI that renders server state
 | Idempotency | `middleware/idempotency.ts` on documents, payments, stock, expenses, accounting |
 | Security headers | Helmet + CSP + HSTS + CORP + COOP + replay protection |
 | Rate limiting | 4-tier (api/auth/otp/sensitive), pluggable Redis store |
-| Soft delete (partial) | Documents, Payments, StockMovements, Batches, SerialNumbers |
+| Soft delete (full) | Prisma extension auto-filters `isDeleted: false` on all reads. 24 models covered. Cascade rules enforced. |
 | Permission middleware | `requirePermission()` on all 133 mutation routes |
 | Admin separation | Separate `AdminUser` table, JWT audience claim, dedicated routes |
+| Connection pooling | `connection_limit=10`, `pool_timeout=30` in Prisma datasource URL |
+| Health monitoring | `GET /api/health/detailed` — DB, memory, uptime, version. Slow query logging (configurable threshold). |
+| Integration tests | 148 tests (78 integration w/ real PostgreSQL + 70 mock). Vitest, `fileParallelism: false`. |
+| Security audit | Full 156-file audit (2026-04-03). 24 findings (4 P0, 7 P1, 10 P2, 3 P3) — ALL resolved. |
+| Config SSOT | OTP, replay, captcha, idempotency, slow-query timeouts centralized in `config/security.ts` |
+| Error handling | Expanded Prisma error codes (P2002-P2034), process-level `uncaughtException`/`unhandledRejection` handlers |
+| Recycle bin auth | IDOR-protected — `verifyOwnership(businessId)` on restore/permanent-delete |
 
 ### What's NOT Gold Standard
 
@@ -96,12 +103,12 @@ Frontend = dumb UI that renders server state
 | **Server state management** | `useState + useEffect + manual refresh()` | TanStack Query (auto-cache, stale-while-revalidate, optimistic updates) |
 | **Real-time sync** | None — page reload to see changes | SSE (Server-Sent Events) for multi-user sync |
 | **Permission model** | `String[]` on Role | Resource × Action matrix with inheritance |
-| **Soft delete coverage** | 6 models have it, ~62 don't | ALL business data models (GST compliance) |
+| ~~**Soft delete coverage**~~ | ~~6 models have it, ~62 don't~~ | **DONE** — Prisma extension + 24 models + cascade rules |
 | **Subscription gating** | No enforcement | Middleware that checks plan limits per-request |
 | **Offline conflict resolution** | Basic sync queue | Last-Write-Wins with vector timestamps + user merge UI |
 | **Data export** | None | CSV/Excel/Tally export for business owners |
 | **Multi-device sessions** | No tracking | Active sessions list, force logout, device trust |
-| **Connection pooling** | Direct Prisma connection | PgBouncer or Prisma connection pool config |
+| ~~**Connection pooling**~~ | ~~Direct Prisma connection~~ | **DONE** — `connection_limit=10`, `pool_timeout=30` in datasource URL |
 
 ### 3.5 Observability Strategy
 
@@ -170,6 +177,34 @@ GET /api/health/deep     → All dependencies checked, returns degraded status p
 
 ---
 
+## 3.7 Phase A Completion Summary (2026-04-03)
+
+**What was delivered beyond the original Phase A scope:**
+
+| Deliverable | Section | Evidence |
+|------------|---------|----------|
+| Soft delete Prisma extension | 4.2 | `lib/soft-delete/middleware.ts` — auto-filters reads for 24 models |
+| Cascade delete rules | 4.2 | Party/Product cascade, Godown/Role block |
+| Connection pooling | 4.9 | `connection_limit=10`, `pool_timeout=30` |
+| Slow query logging | 4.9 | Configurable via `SLOW_QUERY_THRESHOLD_MS` |
+| Health endpoint | 3.5 | `GET /api/health/detailed` — DB, memory, uptime |
+| Config SSOT | — | `config/security.ts` centralizes all timeouts |
+| Expanded error handling | — | Prisma codes P2002-P2034, process crash handlers |
+| Integration test suite | — | 78 integration tests with real PostgreSQL |
+| Full security audit | — | 24 findings (4 P0 / 7 P1 / 10 P2 / 3 P3) — all resolved |
+| Recycle bin IDOR fix | — | `verifyOwnership(businessId)` on restore/delete |
+| Document unitId bug fix | — | `li.productId` → `li.unitId` in stock adjustments |
+| Stock validation fix | — | `product.id` → `product.unitId` in unit conversion |
+| WebAuthn atomic signCount | — | `updateMany` with `{ signCount: { lt: parsed } }` |
+| Admin auth async fix | — | `.then()/.catch()` → proper `async/await` |
+| Product image race fix | — | Wrapped in `prisma.$transaction()` |
+| Cross-business alert fix | — | Added `businessId` to `resolveAlerts()` WHERE |
+
+**Tests:** 148/148 passing (78 integration + 70 mock)
+**Audit:** `docs/AUDIT_REPORTS/AUDIT-full-2026-04-03.md` — Ship Gate: PASS
+
+---
+
 ## 4. Upgrades Required (Priority Order)
 
 ### 4.1 TanStack Query Migration (P0 — Do First)
@@ -196,9 +231,17 @@ GET /api/health/deep     → All dependencies checked, returns degraded status p
 
 ---
 
-### 4.2 Soft Delete Everywhere (P0 — Legal Compliance)
+### 4.2 Soft Delete Everywhere (P0 — Legal Compliance) — COMPLETED 2026-04-03
 
 **Why:** Indian GST law requires 6-8 years of billing data retention. Hard-deleting any business data is a compliance violation. Currently only 6 models have soft delete.
+
+**Implementation (completed):**
+- Prisma extension in `lib/soft-delete/middleware.ts` auto-injects `isDeleted: false` on all read queries for soft-delete models
+- 24 models covered: Party, Product, Category, Unit, Document, Payment, Role, Expense, ExpenseCategory, Loan, Cheque, Address, PartyPricing, Batch, Serial, StockMovement, etc.
+- Cascade rules: Party->addresses/pricing cascades, Product->batches/serials cascades, Godown BLOCKED if stock, Role BLOCKED if in use
+- Services use explicit `.update({ data: { isDeleted: true, deletedAt: new Date() } })` — extension handles read filtering only
+- Recycle bin IDOR-protected with `verifyOwnership(businessId)` check
+- Full audit verified: zero hard deletes on business data
 
 **What changes:**
 - Add `isDeleted Boolean @default(false)` + `deletedAt DateTime?` to ALL business data models:
@@ -554,20 +597,16 @@ POST /api/export/full
 
 ---
 
-### 4.9 Connection Pooling (P2)
+### 4.9 Connection Pooling (P2) — COMPLETED 2026-04-03
 
 **Why:** Prisma opens a connection per query by default. Under load (50+ concurrent users), this exhausts Neon's connection limit.
 
-**What changes:**
-- Configure Prisma connection pool:
-  ```
-  datasource db {
-    url = env("DATABASE_URL")
-    directUrl = env("DIRECT_URL") // for migrations
-  }
-  ```
-- Set `connection_limit` in DATABASE_URL: `?connection_limit=10&pool_timeout=30`
-- Add Neon's serverless driver for edge compatibility (future)
+**Implementation (completed):**
+- `connection_limit=10` and `pool_timeout=30` configured in Prisma datasource URL
+- `directUrl` set for migrations (bypasses pooler)
+- Slow query logging with configurable threshold (`SLOW_QUERY_THRESHOLD_MS` in `config/security.ts`)
+- Query timeout protection via Prisma `$queryRawUnsafe` timeout
+- Health endpoint (`GET /api/health/detailed`) monitors DB connectivity
 
 **Success criteria:**
 - 100 concurrent requests handled without connection errors
@@ -577,22 +616,23 @@ POST /api/export/full
 
 ## 5. Implementation Order
 
-| Phase | Upgrade | Weeks | Dependencies |
-|-------|---------|-------|-------------|
-| **A** | 4.2 Soft Delete Everywhere | 1 | None — schema migration |
-| **A** | 4.9 Connection Pooling | 0.5 | None — config change |
-| **B** | 4.1 TanStack Query Migration | 2 | None — frontend only |
-| **C** | 4.3 SSE Real-Time Sync | 1 | Depends on 4.1 (TanStack Query) |
-| **C** | 4.5 Subscription Gating | 1 | None — but Razorpay keys needed |
-| **D** | 4.4 Permission Matrix | 1.5 | None — backward compatible |
-| **D** | 4.6 Offline Conflict Resolution | 1 | Depends on 4.1 (TanStack Query) |
-| **E** | 4.7 Multi-Device Sessions | 0.5 | None |
-| **E** | 4.8 Data Export | 1 | None |
+| Phase | Upgrade | Weeks | Dependencies | Status |
+|-------|---------|-------|-------------|--------|
+| **A** | 4.2 Soft Delete Everywhere | 1 | None — schema migration | DONE 2026-04-03 |
+| **A** | 4.9 Connection Pooling | 0.5 | None — config change | DONE 2026-04-03 |
+| **B** | 4.1 TanStack Query Migration | 2 | None — frontend only | PENDING |
+| **C** | 4.3 SSE Real-Time Sync | 1 | Depends on 4.1 (TanStack Query) | PENDING |
+| **C** | 4.5 Subscription Gating | 1 | None — but Razorpay keys needed | PENDING |
+| **D** | 4.4 Permission Matrix | 1.5 | None — backward compatible | PENDING |
+| **D** | 4.6 Offline Conflict Resolution | 1 | Depends on 4.1 (TanStack Query) | PENDING |
+| **E** | 4.7 Multi-Device Sessions | 0.5 | None | PENDING |
+| **E** | 4.8 Data Export | 1 | None | PENDING |
 
-**Total: ~9.5 weeks for gold standard.**
+**Total: ~9.5 weeks for gold standard. Phase A complete (1.5 weeks saved).**
 
-Phase A+B can run in parallel (backend + frontend).
-Phase C+D can run in parallel.
+Phase A: COMPLETE (soft delete + connection pooling + security audit + health monitoring).
+Phase B: Next (TanStack Query migration — frontend only).
+Phase C+D can run in parallel after B.
 Phase E is independent.
 
 ---
@@ -720,13 +760,13 @@ These are already gold standard — do not touch:
 |--------|---------|--------------|
 | Stale data incidents | Frequent (manual refresh) | Zero (TanStack Query + SSE) |
 | Multi-user sync delay | ∞ (page reload) | < 2 seconds (SSE) |
-| Hard-deleted business data | Some models | Zero (soft delete everywhere) |
+| Hard-deleted business data | ~~Some models~~ | **Zero** (soft delete extension + 24 models) |
 | Permission update for new feature | Manual per-role | Add 1 resource name |
 | Offline conflict handling | Silent overwrite | Notification + diff |
 | Active session visibility | None | Full list + force logout |
 | Data export | None | Full ZIP in < 60s |
 | Free user on paid feature | No enforcement | 402 + upgrade prompt |
-| Connection limit under load | Unpooled | Pooled (100 concurrent) |
+| Connection limit under load | ~~Unpooled~~ | **Pooled** (connection_limit=10, pool_timeout=30) |
 
 ---
 

@@ -96,6 +96,7 @@ export const STOCK_MOVEMENT_TYPE_LABELS: Record<StockMovementType, string> = {
   OPENING:         'Opening stock',
   RETURN_IN:       'Return In',
   RETURN_OUT:      'Return Out',
+  REVERSAL:        'Reversal',
 }
 
 // ─── Product status labels ────────────────────────────────────────────────────

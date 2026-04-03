@@ -5,15 +5,16 @@
  */
 
 import { z } from 'zod'
-
-const PAYMENT_TYPES = ['PAYMENT_IN', 'PAYMENT_OUT'] as const
-const PAYMENT_MODES = ['CASH', 'UPI', 'BANK_TRANSFER', 'CHEQUE', 'NEFT_RTGS_IMPS', 'CREDIT_CARD', 'OTHER'] as const
-const DISCOUNT_TYPES = ['PERCENTAGE', 'FIXED'] as const
-const SORT_BY = ['date', 'amount', 'createdAt'] as const
-const SORT_ORDER = ['asc', 'desc'] as const
-const OUTSTANDING_TYPES = ['RECEIVABLE', 'PAYABLE', 'ALL'] as const
-const OUTSTANDING_SORT = ['amount', 'name', 'daysOverdue'] as const
-const REMINDER_CHANNELS = ['WHATSAPP', 'SMS', 'PUSH'] as const
+import {
+  PAYMENT_TYPES,
+  PAYMENT_MODES,
+  PAYMENT_DISCOUNT_TYPES as DISCOUNT_TYPES,
+  PAYMENT_SORT_BY as SORT_BY,
+  SORT_ORDER,
+  OUTSTANDING_TYPES,
+  OUTSTANDING_SORT_BY as OUTSTANDING_SORT,
+  REMINDER_CHANNELS,
+} from '../../shared/enums.js'
 
 // === Payment CRUD ===
 

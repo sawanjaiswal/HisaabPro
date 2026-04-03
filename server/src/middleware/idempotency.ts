@@ -9,8 +9,9 @@
 import type { Request, Response, NextFunction } from 'express'
 import { prisma } from '../lib/prisma.js'
 import logger from '../lib/logger.js'
+import { IDEMPOTENCY_TTL_DAYS } from '../config/security.js'
 
-const DEFAULT_TTL_DAYS = 5
+const DEFAULT_TTL_DAYS = IDEMPOTENCY_TTL_DAYS
 
 export function idempotencyCheck() {
   return async (req: Request, res: Response, next: NextFunction) => {

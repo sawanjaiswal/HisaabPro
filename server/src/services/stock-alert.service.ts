@@ -45,7 +45,7 @@ export async function checkAndCreateAlerts(
 
   // Stock is above threshold — resolve any active alerts
   if (currentStock > threshold) {
-    await resolveAlerts(productId)
+    await resolveAlerts(businessId, productId)
     return
   }
 
@@ -190,9 +190,10 @@ export async function dismissAlert(
 }
 
 /** Resolve active alerts when stock is replenished above threshold. */
-async function resolveAlerts(productId: string): Promise<void> {
+async function resolveAlerts(businessId: string, productId: string): Promise<void> {
   const result = await prisma.stockAlert.updateMany({
     where: {
+      businessId,
       productId,
       status: { in: ['ACTIVE', 'ACKNOWLEDGED'] },
     },

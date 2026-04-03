@@ -6,24 +6,18 @@
  */
 
 import { z } from 'zod'
-
-// === Enums ===
-
-const DOCUMENT_TYPES = [
-  'SALE_INVOICE', 'PURCHASE_INVOICE', 'ESTIMATE', 'PROFORMA',
-  'SALE_ORDER', 'PURCHASE_ORDER', 'DELIVERY_CHALLAN',
-  'CREDIT_NOTE', 'DEBIT_NOTE',
-] as const
-
-const DOCUMENT_STATUSES = ['DRAFT', 'SAVED'] as const // Only these two are valid for create/update
-const PAYMENT_TERMS = ['COD', 'NET_7', 'NET_15', 'NET_30', 'NET_60', 'NET_90', 'CUSTOM'] as const
-const DISCOUNT_TYPES = ['AMOUNT', 'PERCENTAGE'] as const
-const CHARGE_TYPES = ['FIXED', 'PERCENTAGE'] as const
-const SORT_BY = ['documentDate', 'createdAt', 'grandTotal', 'documentNumber'] as const
-const SORT_ORDER = ['asc', 'desc'] as const
-const SHARE_CHANNELS = ['WHATSAPP', 'EMAIL', 'PRINT'] as const
-const EXPORT_FORMATS = ['PDF', 'JPG', 'PNG'] as const
-const ROUND_OFF_SETTINGS = ['NONE', 'NEAREST_1', 'NEAREST_050', 'NEAREST_010'] as const
+import {
+  DOCUMENT_TYPES,
+  DOCUMENT_MUTATION_STATUSES as DOCUMENT_STATUSES,
+  PAYMENT_TERMS,
+  DISCOUNT_TYPES,
+  CHARGE_TYPES,
+  DOCUMENT_SORT_BY as SORT_BY,
+  SORT_ORDER,
+  SHARE_CHANNELS,
+  EXPORT_FORMATS,
+  ROUND_OFF_SETTINGS,
+} from '../../shared/enums.js'
 
 // === Line Item ===
 

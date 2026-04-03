@@ -1,4 +1,15 @@
 import { z } from 'zod'
+import {
+  STOCK_VALIDATION_MODES,
+  BARCODE_FORMATS,
+  PRODUCT_STATUSES,
+  STOCK_ADJUST_TYPES,
+  STOCK_ADJUST_REASONS,
+  STOCK_MOVEMENT_TYPES,
+  PRODUCT_SORT_BY,
+  SORT_ORDER,
+  LOW_STOCK_ALERT_FREQUENCIES,
+} from '../../shared/enums.js'
 
 // === Sub-schemas ===
 
@@ -19,14 +30,14 @@ export const createProductSchema = z.object({
   purchasePrice: z.number().int().min(0).optional(), // in paise
   openingStock: z.number().min(0).default(0),
   minStockLevel: z.number().min(0).default(0),
-  stockValidation: z.enum(['GLOBAL', 'WARN_ONLY', 'HARD_BLOCK']).default('GLOBAL'),
+  stockValidation: z.enum(STOCK_VALIDATION_MODES).default('GLOBAL'),
   hsnCode: z.string().max(8).optional(),
   sacCode: z.string().max(6).optional(),
   taxCategoryId: z.string().nullable().optional(),
   description: z.string().max(500).optional(),
   barcode: z.string().max(128).optional(),
-  barcodeFormat: z.enum(['CODE128', 'EAN13', 'EAN8', 'UPC', 'QR', 'CODE39']).optional(),
-  status: z.enum(['ACTIVE', 'INACTIVE']).default('ACTIVE'),
+  barcodeFormat: z.enum(BARCODE_FORMATS).optional(),
+  status: z.enum(PRODUCT_STATUSES).default('ACTIVE'),
   customFields: z.array(customFieldValueSchema).default([]),
 })
 
@@ -38,18 +49,18 @@ export const updateProductSchema = z.object({
   salePrice: z.number().int().min(0).optional(),
   purchasePrice: z.number().int().min(0).nullable().optional(),
   minStockLevel: z.number().min(0).optional(),
-  stockValidation: z.enum(['GLOBAL', 'WARN_ONLY', 'HARD_BLOCK']).optional(),
+  stockValidation: z.enum(STOCK_VALIDATION_MODES).optional(),
   hsnCode: z.string().max(8).nullable().optional(),
   sacCode: z.string().max(6).nullable().optional(),
   taxCategoryId: z.string().nullable().optional(),
   description: z.string().max(500).nullable().optional(),
   barcode: z.string().max(128).nullable().optional(),
-  barcodeFormat: z.enum(['CODE128', 'EAN13', 'EAN8', 'UPC', 'QR', 'CODE39']).nullable().optional(),
+  barcodeFormat: z.enum(BARCODE_FORMATS).nullable().optional(),
   // Feature #109 — MOQ
   moq: z.number().int().positive().nullable().optional(),
   // Feature #103 — Label template
   labelTemplate: z.enum(['standard', 'compact', 'barcode-only']).nullable().optional(),
-  status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
+  status: z.enum(PRODUCT_STATUSES).optional(),
   customFields: z.array(customFieldValueSchema).optional(),
 })
 
@@ -58,18 +69,18 @@ export const listProductsSchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
   search: z.string().max(100).optional(),
   categoryId: z.string().optional(),
-  status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
+  status: z.enum(PRODUCT_STATUSES).optional(),
   lowStockOnly: z.coerce.boolean().optional(),
-  sortBy: z.enum(['name', 'salePrice', 'purchasePrice', 'currentStock', 'createdAt']).default('name'),
-  sortOrder: z.enum(['asc', 'desc']).default('asc'),
+  sortBy: z.enum(PRODUCT_SORT_BY).default('name'),
+  sortOrder: z.enum(SORT_ORDER).default('asc'),
 })
 
 // === Stock schemas ===
 
 export const stockAdjustSchema = z.object({
-  type: z.enum(['ADJUSTMENT_IN', 'ADJUSTMENT_OUT']),
+  type: z.enum(STOCK_ADJUST_TYPES),
   quantity: z.number().positive('Quantity must be positive'),
-  reason: z.enum(['DAMAGE', 'THEFT', 'AUDIT', 'GIFT', 'RETURN', 'OTHER']),
+  reason: z.enum(STOCK_ADJUST_REASONS),
   customReason: z.string().max(200).optional(),
   notes: z.string().max(500).optional(),
   date: z.string().datetime().optional(),
@@ -86,10 +97,7 @@ export const stockAdjustSchema = z.object({
 export const stockMovementQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-  type: z.enum([
-    'SALE', 'PURCHASE', 'ADJUSTMENT_IN', 'ADJUSTMENT_OUT',
-    'OPENING', 'RETURN_IN', 'RETURN_OUT', 'REVERSAL',
-  ]).optional(),
+  type: z.enum(STOCK_MOVEMENT_TYPES).optional(),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
 })
@@ -119,9 +127,9 @@ export const stockHistorySchema = z.object({
 
 const bulkAdjustItemSchema = z.object({
   productId: z.string().min(1),
-  type: z.enum(['ADJUSTMENT_IN', 'ADJUSTMENT_OUT']),
+  type: z.enum(STOCK_ADJUST_TYPES),
   quantity: z.number().positive('Quantity must be positive'),
-  reason: z.enum(['DAMAGE', 'THEFT', 'AUDIT', 'GIFT', 'RETURN', 'OTHER']),
+  reason: z.enum(STOCK_ADJUST_REASONS),
   customReason: z.string().max(200).optional(),
   note: z.string().max(500).optional(),
 }).superRefine((data, ctx) => {
@@ -198,10 +206,10 @@ export const updateConversionSchema = z.object({
 // === Inventory Settings schemas ===
 
 export const updateInventorySettingsSchema = z.object({
-  stockValidationMode: z.enum(['WARN_ONLY', 'HARD_BLOCK']).optional(),
+  stockValidationMode: z.enum(STOCK_VALIDATION_MODES).optional(),
   skuPrefix: z.string().max(10).optional(),
   skuAutoGenerate: z.boolean().optional(),
-  lowStockAlertFrequency: z.enum(['ONCE', 'DAILY', 'EVERY_TIME']).optional(),
+  lowStockAlertFrequency: z.enum(LOW_STOCK_ALERT_FREQUENCIES).optional(),
   lowStockAlertEnabled: z.boolean().optional(),
   decimalPrecisionQty: z.number().int().min(0).max(3).optional(),
   defaultCategoryId: z.string().nullable().optional(),

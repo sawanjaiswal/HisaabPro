@@ -1,63 +1,40 @@
 /** Invoicing & Documents — Enum and union type definitions
  *
- * All enum-like union types used across the invoicing feature.
+ * Re-exports from @shared/enums (SSOT). Feature-specific UI types stay here.
  * PRD: invoicing-documents-PLAN.md
  */
 
-// ─── Enums / union types ────────────────────────────────────────────────────
+// ─── Re-exports from SSOT ───────────────────────────────────────────────────
 
-export type DocumentType =
-  | 'SALE_INVOICE'
-  | 'PURCHASE_INVOICE'
-  | 'ESTIMATE'
-  | 'PROFORMA'
-  | 'SALE_ORDER'
-  | 'PURCHASE_ORDER'
-  | 'DELIVERY_CHALLAN'
+export type {
+  DocumentType,
+  DocumentStatus,
+  DocumentDirection,
+  PaymentStatus,
+  PaymentTerms,
+  DiscountType,
+  ChargeType,
+  RoundOffSetting,
+  DocumentStockValidation,
+  ShareChannel,
+  ExportFormat,
+  DocumentSortBy,
+  FinancialYearFormat,
+} from '@shared/enums'
 
-export type DocumentStatus =
-  | 'DRAFT'
-  | 'SAVED'
-  | 'SHARED'
-  | 'CONVERTED'
-  | 'DELETED'
-  | 'PERMANENTLY_DELETED'
-
-export type DocumentDirection = 'OUTWARD' | 'INWARD'
-
-export type PaymentStatus = 'PAID' | 'PARTIAL' | 'UNPAID'
-
-export type PaymentTerms =
-  | 'COD'
-  | 'NET_7'
-  | 'NET_15'
-  | 'NET_30'
-  | 'NET_60'
-  | 'NET_90'
-  | 'CUSTOM'
-
-export type DiscountType = 'AMOUNT' | 'PERCENTAGE'
-
-export type ChargeType = 'FIXED' | 'PERCENTAGE'
-
-export type RoundOffSetting =
-  | 'NONE'
-  | 'NEAREST_1'
-  | 'NEAREST_050'
-  | 'NEAREST_010'
-
-/** Stock validation mode — also used in document settings */
-export type DocumentStockValidation = 'OFF' | 'WARN' | 'BLOCK'
-
-export type ShareChannel = 'WHATSAPP' | 'EMAIL' | 'PRINT'
-
-export type ExportFormat = 'PDF' | 'JPG' | 'PNG'
-
-export type DocumentSortBy =
-  | 'documentDate'
-  | 'createdAt'
-  | 'total'
-  | 'documentNumber'
-
-/** Financial year format stored in number series, e.g. "2526" */
-export type FinancialYearFormat = 'SHORT' | 'FULL'
+export {
+  DOCUMENT_TYPES,
+  DOCUMENT_STATUSES,
+  DOCUMENT_MUTATION_STATUSES,
+  DOCUMENT_DIRECTIONS,
+  PAYMENT_STATUSES,
+  PAYMENT_TERMS,
+  DISCOUNT_TYPES,
+  CHARGE_TYPES,
+  ROUND_OFF_SETTINGS,
+  DOC_STOCK_VALIDATION_MODES,
+  SHARE_CHANNELS,
+  EXPORT_FORMATS,
+  DOCUMENT_SORT_BY,
+  FINANCIAL_YEAR_FORMATS,
+} from '@shared/enums'

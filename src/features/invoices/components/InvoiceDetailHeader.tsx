@@ -26,6 +26,8 @@ const DOC_TYPE_ICON_CLASS: Record<DocumentType, string> = {
   SALE_ORDER:       'doc-type-icon doc-type-icon--sale-order invoice-detail-type-icon',
   PURCHASE_ORDER:   'doc-type-icon doc-type-icon--purchase-order invoice-detail-type-icon',
   DELIVERY_CHALLAN: 'doc-type-icon doc-type-icon--delivery-challan invoice-detail-type-icon',
+  CREDIT_NOTE:      'doc-type-icon doc-type-icon--credit-note invoice-detail-type-icon',
+  DEBIT_NOTE:       'doc-type-icon doc-type-icon--debit-note invoice-detail-type-icon',
 }
 
 export const InvoiceDetailHeader: React.FC<InvoiceDetailHeaderProps> = ({ document }) => {

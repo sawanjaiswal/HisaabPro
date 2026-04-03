@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express'
 import logger from '../lib/logger.js'
+import { CAPTCHA_WINDOW_MS as CAPTCHA_WINDOW } from '../config/security.js'
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -8,8 +9,8 @@ import logger from '../lib/logger.js'
 /** Number of failed login attempts before CAPTCHA is required */
 export const CAPTCHA_THRESHOLD = 3
 
-/** Window in which failed attempts are counted (ms) — 15 minutes */
-const CAPTCHA_WINDOW_MS = 15 * 60 * 1000
+/** Window in which failed attempts are counted (ms) */
+const CAPTCHA_WINDOW_MS = CAPTCHA_WINDOW
 
 /** Cloudflare Turnstile verification endpoint */
 const TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'

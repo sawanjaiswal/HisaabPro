@@ -1,13 +1,16 @@
 /**
- * Prisma soft-delete extension — global filter + delete interception.
+ * Prisma soft-delete extension — global read filter.
  *
  * Uses Prisma Client Extensions (v5+) instead of deprecated $use middleware.
  *
- * 1. findMany/findFirst/findUnique/count — auto-adds isDeleted=false
- * 2. delete → update with isDeleted=true, deletedAt=now()
- * 3. deleteMany → updateMany with isDeleted=true, deletedAt=now()
+ * READ operations: auto-adds isDeleted=false to findMany/findFirst/findUnique/count etc.
  *
- * To bypass (e.g. recycle bin listing): pass { where: { isDeleted: true } }
+ * DELETE operations: Services must explicitly call .update() with
+ * { isDeleted: true, deletedAt: new Date() } instead of .delete().
+ * Prisma's query extensions cannot reliably change the operation type
+ * (delete → update), especially inside $transaction contexts.
+ *
+ * To bypass read filter (e.g. recycle bin listing): pass { where: { isDeleted: true } }
  * explicitly — the extension respects explicit isDeleted values.
  */
 
@@ -29,7 +32,7 @@ const READ_ACTIONS = new Set([
 ])
 
 /**
- * Creates a Prisma Client Extension that applies soft-delete behavior
+ * Creates a Prisma Client Extension that applies soft-delete read filtering
  * to all models in SOFT_DELETE_MODELS.
  */
 export function createSoftDeleteExtension() {
@@ -53,24 +56,6 @@ export function createSoftDeleteExtension() {
               }
             }
             return query(args)
-          }
-
-          // --- DELETE: convert to soft delete ---
-          if (operation === 'delete') {
-            const castArgs = args as { where: Record<string, unknown> }
-            return (query as unknown as (a: unknown) => Promise<unknown>)({
-              ...castArgs,
-              data: { isDeleted: true, deletedAt: new Date() },
-            })
-          }
-
-          // --- DELETE MANY: convert to soft updateMany ---
-          if (operation === 'deleteMany') {
-            const castArgs = args as { where?: Record<string, unknown> }
-            return (query as unknown as (a: unknown) => Promise<unknown>)({
-              ...castArgs,
-              data: { isDeleted: true, deletedAt: new Date() },
-            })
           }
 
           return query(args)

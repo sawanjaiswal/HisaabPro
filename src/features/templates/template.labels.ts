@@ -155,6 +155,8 @@ export const DOCUMENT_TYPE_TITLE_LABELS: Record<DocumentType, string> = {
   SALE_ORDER:       'Sale Order',
   PURCHASE_ORDER:   'Purchase Order',
   DELIVERY_CHALLAN: 'Delivery Challan',
+  CREDIT_NOTE:      'Credit Note',
+  DEBIT_NOTE:       'Debit Note',
 }
 
 /** Label for the document number field, e.g. "Invoice No." */
@@ -166,6 +168,8 @@ export const DOCUMENT_TYPE_NUMBER_LABELS: Record<DocumentType, string> = {
   SALE_ORDER:       'SO No.',
   PURCHASE_ORDER:   'PO No.',
   DELIVERY_CHALLAN: 'Challan No.',
+  CREDIT_NOTE:      'Credit Note No.',
+  DEBIT_NOTE:       'Debit Note No.',
 }
 
 /** Label for the document date field, e.g. "Invoice Date" */
@@ -177,6 +181,8 @@ export const DOCUMENT_TYPE_DATE_LABELS: Record<DocumentType, string> = {
   SALE_ORDER:       'SO Date',
   PURCHASE_ORDER:   'PO Date',
   DELIVERY_CHALLAN: 'Challan Date',
+  CREDIT_NOTE:      'Credit Note Date',
+  DEBIT_NOTE:       'Debit Note Date',
 }
 
 /** Label for the customer / party address block on the invoice */
@@ -188,4 +194,6 @@ export const DOCUMENT_TYPE_PARTY_LABELS: Record<DocumentType, string> = {
   SALE_ORDER:       'Order From',
   PURCHASE_ORDER:   'Order To',
   DELIVERY_CHALLAN: 'Deliver To',
+  CREDIT_NOTE:      'Credit To',
+  DEBIT_NOTE:       'Debit To',
 }

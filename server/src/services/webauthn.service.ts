@@ -546,14 +546,24 @@ export async function verifyAuthentication(
     throw new Error('Authenticator sign count invalid - possible cloned device')
   }
 
-  // 9. Update signCount and lastUsedAt
-  await prisma.webAuthnCredential.update({
-    where: { credentialId },
+  // 9. Atomically update signCount (prevents race on concurrent auth attempts)
+  const updated = await prisma.webAuthnCredential.updateMany({
+    where: {
+      credentialId,
+      signCount: { lt: parsed.signCount },
+    },
     data: {
       signCount: parsed.signCount,
       lastUsedAt: new Date(),
     },
   })
+
+  if (updated.count === 0) {
+    logger.warn('WebAuthn: signCount update race — concurrent auth attempt', {
+      userId: user.id,
+      credentialId,
+    })
+  }
 
   logger.info('WebAuthn: assertion verified', {
     userId: user.id,

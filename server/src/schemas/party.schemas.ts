@@ -1,4 +1,10 @@
 import { z } from 'zod'
+import {
+  PARTY_TYPES,
+  ADDRESS_TYPES,
+  CREDIT_LIMIT_MODES,
+  OPENING_BALANCE_TYPES,
+} from '../../shared/enums.js'
 
 // === Regex constants ===
 
@@ -17,7 +23,7 @@ const addressSchema = z.object({
   city: z.string().min(1, 'City is required').max(100),
   state: z.string().min(1, 'State is required').max(100),
   pincode: z.string().regex(PINCODE_REGEX, 'Pincode must be 6 digits'),
-  type: z.enum(['BILLING', 'SHIPPING']).default('BILLING'),
+  type: z.enum(ADDRESS_TYPES).default('BILLING'),
   isDefault: z.boolean().default(false),
 })
 
@@ -28,7 +34,7 @@ const customFieldValueSchema = z.object({
 
 const openingBalanceSchema = z.object({
   amount: z.number().int().min(0, 'Opening balance must be non-negative'),
-  type: z.enum(['RECEIVABLE', 'PAYABLE']),
+  type: z.enum(OPENING_BALANCE_TYPES),
   asOfDate: z.string().datetime({ message: 'asOfDate must be a valid ISO date' }),
   notes: z.string().max(500).optional(),
 })
@@ -40,13 +46,13 @@ export const createPartySchema = z.object({
   phone: z.string().regex(PHONE_REGEX, 'Valid 10-digit Indian mobile number required').optional(),
   email: z.string().email('Invalid email address').optional(),
   companyName: z.string().max(200).optional(),
-  type: z.enum(['CUSTOMER', 'SUPPLIER', 'BOTH']).default('CUSTOMER'),
+  type: z.enum(PARTY_TYPES).default('CUSTOMER'),
   groupId: z.string().optional(),
   tags: z.array(z.string().max(50)).default([]),
   gstin: z.string().regex(GSTIN_REGEX, 'Invalid GSTIN format').optional(),
   pan: z.string().regex(PAN_REGEX, 'Invalid PAN format').optional(),
   creditLimit: z.number().int().min(0).default(0), // in paise
-  creditLimitMode: z.enum(['WARN', 'BLOCK']).default('WARN'),
+  creditLimitMode: z.enum(CREDIT_LIMIT_MODES).default('WARN'),
   notes: z.string().max(1000).optional(),
   addresses: z.array(addressSchema).default([]),
   customFields: z.array(customFieldValueSchema).default([]),
@@ -58,13 +64,13 @@ export const updatePartySchema = z.object({
   phone: z.string().regex(PHONE_REGEX, 'Valid 10-digit Indian mobile number required').optional(),
   email: z.string().email('Invalid email address').optional(),
   companyName: z.string().max(200).optional(),
-  type: z.enum(['CUSTOMER', 'SUPPLIER', 'BOTH']).optional(),
+  type: z.enum(PARTY_TYPES).optional(),
   groupId: z.string().nullable().optional(),
   tags: z.array(z.string().max(50)).optional(),
   gstin: z.string().regex(GSTIN_REGEX, 'Invalid GSTIN format').nullable().optional(),
   pan: z.string().regex(PAN_REGEX, 'Invalid PAN format').nullable().optional(),
   creditLimit: z.number().int().min(0).optional(),
-  creditLimitMode: z.enum(['WARN', 'BLOCK']).optional(),
+  creditLimitMode: z.enum(CREDIT_LIMIT_MODES).optional(),
   notes: z.string().max(1000).nullable().optional(),
   customFields: z.array(customFieldValueSchema).optional(),
 })
@@ -73,7 +79,7 @@ export const listPartiesSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(200).default(50),
   search: z.string().max(100).optional(),
-  type: z.enum(['CUSTOMER', 'SUPPLIER', 'BOTH']).optional(),
+  type: z.enum(PARTY_TYPES).optional(),
   groupId: z.string().optional(),
   hasOutstanding: z.coerce.boolean().optional(),
   isActive: z.coerce.boolean().default(true),
@@ -95,7 +101,7 @@ export const updateAddressSchema = z.object({
   city: z.string().min(1).max(100).optional(),
   state: z.string().min(1).max(100).optional(),
   pincode: z.string().regex(PINCODE_REGEX, 'Pincode must be 6 digits').optional(),
-  type: z.enum(['BILLING', 'SHIPPING']).optional(),
+  type: z.enum(ADDRESS_TYPES).optional(),
   isDefault: z.boolean().optional(),
 })
 

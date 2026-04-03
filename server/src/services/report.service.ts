@@ -284,9 +284,16 @@ export async function getStockSummary(businessId: string, query: StockSummaryQue
   if (categoryId) where.categoryId = categoryId
   if (search) where.name = { contains: search, mode: 'insensitive' }
 
-  // Stock status filter
-  if (stockStatus === 'out_of_stock') where.currentStock = { lte: 0 }
-  // low stock and in_stock need raw SQL for column comparison, handled post-query for simplicity
+  // Stock status filters pushed to DB where possible
+  if (stockStatus === 'out_of_stock') {
+    where.currentStock = { lte: 0 }
+  } else if (stockStatus === 'low') {
+    // Low stock: currentStock > 0 AND currentStock <= minStockLevel
+    // Since Prisma can't compare columns, over-fetch and filter post-query
+    where.currentStock = { gt: 0 }
+  } else if (stockStatus === 'in_stock') {
+    where.currentStock = { gt: 0 }
+  }
 
   const orderField = sortBy.startsWith('name') ? 'name'
     : sortBy.startsWith('stock') ? 'currentStock'
@@ -303,7 +310,8 @@ export async function getStockSummary(businessId: string, query: StockSummaryQue
         unit: { select: { symbol: true } },
       },
       orderBy: { [orderField]: orderDir },
-      take: limit,
+      // Over-fetch when post-filtering is needed (low/in_stock require column comparison)
+      take: (stockStatus === 'low' || stockStatus === 'in_stock') ? limit * 3 : limit,
     }),
     prisma.product.aggregate({
       where: { businessId, status: 'ACTIVE' },
@@ -348,6 +356,7 @@ export async function getStockSummary(businessId: string, query: StockSummaryQue
       stockStatus: status,
     }
   }).filter(item => !stockStatus || stockStatus === item.stockStatus)
+    .slice(0, limit)
 
   return {
     data: {

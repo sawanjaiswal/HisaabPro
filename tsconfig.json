@@ -16,8 +16,9 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@shared/*": ["./shared/*"]
     }
   },
-  "include": ["src", "vite-env.d.ts"]
+  "include": ["src", "shared", "vite-env.d.ts"]
 }

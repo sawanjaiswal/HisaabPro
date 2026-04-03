@@ -52,7 +52,8 @@ router.post(
       return
     }
     const { entityType, id } = parsed.data
-    const result = await restoreRecord(entityType, id)
+    const businessId = req.user!.businessId
+    const result = await restoreRecord(entityType, id, businessId)
     sendSuccess(res, result)
   }),
 )
@@ -67,7 +68,8 @@ router.delete(
       return
     }
     const { entityType, id } = parsed.data
-    await permanentDelete(entityType, id)
+    const businessId = req.user!.businessId
+    await permanentDelete(entityType, id, businessId)
     sendSuccess(res, { deleted: true, entityType, id })
   }),
 )

@@ -1,289 +1,278 @@
-# Feature Map: HisaabPro
+# HisaabPro — Master Feature & Page Map (SSOT)
 
-Last updated: 2026-03-27 | Total: 113 | Done: 113 | Not Started: 0
+Last updated: 2026-04-03 | Features: 135 | Pages: 95 | Stubs: 15
 
-> **Full Build**: Frontend (78 routes, 721 source files, 29 feature modules) + Backend (345 endpoints, 44 route modules, 68 Prisma models, 1920-line schema) built and wired. All 113 features done (113/113). SSOT cleanup done (CSS variables, config constants, APP_NAME). PWA complete (SW + manifest + cache strategies). Tests: 1114 passing (106 test files — 100 FE unit + 6 BE integration). Full codebase audit clean (0 P0/P1/P2). requirePermission wired on all 133 mutation routes. Remaining: OTP activation, external credentials, staging deploy.
-
----
-
-## 1A. Core & Reused (from DudhHisaab)
-
-| # | Feature | Status | Priority | PRD | Notes |
-|---|---------|--------|----------|-----|-------|
-| 1 | Auth (OTP, JWT, refresh, 2FA, WebAuthn) | Done | P0 | [core-reused](../PRDs/core-reused-PLAN.md) | FE: LoginPage · BE: 5 routes (send-otp, verify-otp, refresh, logout, me) · Rate limited · Token blacklist |
-| 2 | Subscription & Billing (Razorpay, tiers) | Needs Credentials | P0 | [core-reused](../PRDs/core-reused-PLAN.md) | Razorpay service + webhooks + subscription routes wired · Set RAZORPAY_KEY_ID/SECRET to activate |
-| 3 | Referral & Earn (codes, wallet, UPI) | Done | P1 | [core-reused](../PRDs/core-reused-PLAN.md) | 8 endpoints · Crypto code gen · Fraud detection · 7-day review window · UPI withdrawal stub · Cursor pagination |
-| 4 | Notifications (push, email, WhatsApp, SMS) | Needs Credentials | P0 | [core-reused](../PRDs/core-reused-PLAN.md) | notification.service.ts wired (Resend + Aisensy + FCM) · Set API keys to activate |
-| 5 | Backup (local + Google Drive + email) | Done | P0 | [core-reused](../PRDs/core-reused-PLAN.md) | BE: manual backup, list, download, cooldown · 90% reuse |
-| 6 | Offline-first PWA (IndexedDB, sync, SW) | Done | P0 | [pwa-sw](../PRDs/pwa-service-worker-PLAN.md) | Dexie queue + offline banner + sync UI + SW (workbox) + manifest.json + cache strategies (SWR for API, cache-first for assets) + offline fallback + update prompt |
-| 7 | Admin Panel Framework | Done | P1 | [core-reused](../PRDs/core-reused-PLAN.md) | 15 endpoints · Separate admin JWT (audience claim) · SUPER_ADMIN guard · User suspend/unsuspend · Platform stats · Feature flags · Audit trail |
-| 8 | Dark Mode / Theming | Done | P1 | [core-reused](../PRDs/core-reused-PLAN.md) | ThemeContext + `[data-theme="dark"]` CSS vars · Toggle in Settings · localStorage persist · System preference detection · Cross-tab sync |
-| 9 | Multi-language (EN/HI) | Done | P0 | [core-reused](../PRDs/core-reused-PLAN.md) | `translations.ts` 160 keys · LanguageContext · Toggle in Settings · localStorage persist · Cross-tab sync |
-| 10 | Onboarding Flow (business setup wizard) | Done | P0 | [core-reused](../PRDs/core-reused-PLAN.md) | BE: POST /businesses (creates business on first login) |
-
-## 1B. Party Management
-
-| # | Feature | Status | Priority | PRD | Notes |
-|---|---------|--------|----------|-----|-------|
-| 11 | Party CRUD (customers + suppliers, groups, contact import) | Done | P0 | [party-management](../PRDs/party-management-PLAN.md) | FE: 3 pages · BE: 10 routes · Groups + custom fields · Cursor pagination |
-| 12 | Party Balances & Statements | Done | P0 | [party-management](../PRDs/party-management-PLAN.md) | FE: PartyStatementPage · BE: /reports/party-statement/:partyId |
-| 13 | Multiple Addresses per Party | Done | P0 | [party-management](../PRDs/party-management-PLAN.md) | BE: CRUD on /parties/:id/addresses · Billing + Shipping types |
-| 14 | Party Credit Limits | Done | P1 | [party-management](../PRDs/party-management-PLAN.md) | WARN + BLOCK modes in Party model |
-| 15 | Party Custom Fields | Done | P2 | [party-management](../PRDs/party-management-PLAN.md) | BE: /custom-fields CRUD · entityType=PARTY |
-| 16 | Party-wise Pricing | Done | P1 | [party-management](../PRDs/party-management-PLAN.md) | BE: /parties/:id/pricing · Bulk upsert · #1 MyBillBook gap |
-| 17 | Opening Balances (migration) | Done | P0 | [party-management](../PRDs/party-management-PLAN.md) | OpeningBalance model · RECEIVABLE/PAYABLE types |
-
-## 1C. Invoicing & Documents
-
-| # | Feature | Status | Priority | PRD | Notes |
-|---|---------|--------|----------|-----|-------|
-| 18 | Sale Invoice (non-GST, line items, discounts) | Done | P0 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | FE + BE wired · 7 doc types · Stock validation on save · Amounts in paise |
-| 19 | Purchase Invoice | Done | P0 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | Shares document system (type toggle) |
-| 20 | Estimates / Quotations | Done | P1 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | Document type: QUOTATION · Convert to invoice supported |
-| 21 | Proforma Invoices | Done | P1 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | Document type: PROFORMA |
-| 22 | Purchase Orders | Done | P1 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | Document type: PURCHASE_ORDER |
-| 23 | Sale Orders | Done | P1 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | Document type: SALE_ORDER |
-| 24 | Delivery Challans | Done | P1 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | Document type: CHALLAN · Transport fields |
-| 25 | Invoice Numbering (auto-increment, prefix) | Done | P0 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | BE: DocumentNumberSeries · Per-type, per-financial-year |
-| 26 | Additional Charges (shipping, freight) | Done | P0 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | BE: DocumentAdditionalCharge · FIXED/PERCENTAGE |
-| 27 | Due Dates (payment terms: 15/30/60 days) | Done | P0 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | In DocumentSettings.defaultPaymentTerms |
-| 28 | Terms & Conditions on Invoice | Done | P1 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | BE: TermsAndConditionsTemplate CRUD · Per doc type |
-| 29 | Digital Signature Block | Done | P2 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | BE: /settings/documents/signature · Auto-apply option |
-| 30 | Auto Invoice Sharing (WhatsApp/email) | Needs Credentials | P0 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | Share routes send via notification.service · Set AISENSY/RESEND keys to activate |
-| 31 | Invoice Image Export (JPG/PNG) | Done | P1 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | `useImageExport` hook · html-to-image (dynamic import) · Export button in InvoiceDetailPage |
-| 32 | Share via Email with PDF | Needs Credentials | P1 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | Email share wired with HTML template · PDF gen stub ready · Set RESEND_API_KEY to activate |
-| 33 | Invoice Recycle Bin | Done | P1 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | BE: soft delete + /recycle-bin + restore + permanent delete + empty bin |
-| 34 | Show Profit During Sale | Done | P1 | [invoicing-documents](../PRDs/invoicing-documents-PLAN.md) | DocumentSettings.showProfitDuringBilling · Profit in line items |
-
-## 1D. Invoice Templates & Printing
-
-| # | Feature | Status | Priority | PRD | Notes |
-|---|---------|--------|----------|-----|-------|
-| 35 | Invoice Templates (30 templates across 7 categories) | Done | P0 | [invoice-templates](../PRDs/invoice-templates-PLAN.md) | 30 base templates: Essential (4), Modern (6), GST (2), Indian Business (4), Industry (6), Compact (6), Thermal (2) · Full customization editor |
-| 36 | Template Customization (fonts, colors, columns) | Done | P1 | [invoice-templates](../PRDs/invoice-templates-PLAN.md) | In TemplateEditorPage |
-| 37 | Print Settings (page size, margins) | Done | P1 | [invoice-templates](../PRDs/invoice-templates-PLAN.md) | In TemplateEditorPage |
-| 38 | Round-off Settings | Done | P0 | [invoice-templates](../PRDs/invoice-templates-PLAN.md) | DocumentSettings.roundOffTo (NONE/NEAREST_1/NEAREST_50/NEAREST_10) |
-| 39 | Decimal Precision Settings | Done | P1 | [invoice-templates](../PRDs/invoice-templates-PLAN.md) | InventorySetting.decimalPrecision |
-
-## 1E. Payment Tracking
-
-| # | Feature | Status | Priority | PRD | Notes |
-|---|---------|--------|----------|-----|-------|
-| 40 | Payment In/Out (cash, UPI, bank, cheque) | Done | P0 | [payment-tracking](../PRDs/payment-tracking-PLAN.md) | FE: 3 pages · BE: 11 routes · Multi-invoice allocation · Idempotent · Soft delete + restore |
-| 41 | Outstanding Tracking (aging buckets) | Done | P0 | [payment-tracking](../PRDs/payment-tracking-PLAN.md) | FE: OutstandingPage · BE: /outstanding/list + /:partyId · Aging: current/1-30/31-60/61-90/90+ |
-| 42 | Payment Reminders (WhatsApp/SMS/push) | Needs Credentials | P1 | [payment-tracking](../PRDs/payment-tracking-PLAN.md) | Reminders now send via WhatsApp · Set AISENSY_API_KEY to activate |
-| 43 | Discount During Payment | Done | P2 | [payment-tracking](../PRDs/payment-tracking-PLAN.md) | PaymentDiscount model · PERCENTAGE/FIXED |
-
-## 1F. Basic Inventory
-
-| # | Feature | Status | Priority | PRD | Notes |
-|---|---------|--------|----------|-----|-------|
-| 44 | Products CRUD (name, price, unit, category) | Done | P0 | [basic-inventory](../PRDs/basic-inventory-PLAN.md) | FE: 3 pages · BE: 10 routes · SKU auto-gen · Amounts in paise |
-| 45 | Stock In/Out (auto on invoice, manual adjust) | Done | P0 | [basic-inventory](../PRDs/basic-inventory-PLAN.md) | BE: /stock/adjust (idempotent) + /stock/movements · Immutable StockMovement log |
-| 46 | Stock Validation (block if stock < qty) | Done | P0 | [basic-inventory](../PRDs/basic-inventory-PLAN.md) | BE: POST /stock/validate · GLOBAL/WARN_ONLY/HARD_BLOCK modes |
-| 47 | Low-Stock Alerts | Done | P1 | [basic-inventory](../PRDs/basic-inventory-PLAN.md) | StockAlert model + service · Wired into all stock mutation paths · Dashboard count endpoint |
-| 48 | Item Categories & Units (unit conversion) | Done | P0 | [basic-inventory](../PRDs/basic-inventory-PLAN.md) | BE: /categories + /units + /units/conversions · Bidirectional conversion |
-| 49 | Item Custom Fields | Done | P2 | [basic-inventory](../PRDs/basic-inventory-PLAN.md) | BE: /custom-fields CRUD · entityType=PRODUCT |
-
-## 1G. Dashboard & Reports
-
-| # | Feature | Status | Priority | PRD | Notes |
-|---|---------|--------|----------|-----|-------|
-| 50 | Dashboard (sales, outstanding, quick actions) | Done | P0 | [dashboard-reports](../PRDs/dashboard-reports-PLAN.md) | FE: DashboardPage · BE: /dashboard/home (single-call) + /dashboard/stats |
-| 51 | Sale/Purchase Reports (filterable, exportable) | Done | P1 | [dashboard-reports](../PRDs/dashboard-reports-PLAN.md) | BE: /reports/invoices + /reports/export (CSV) |
-| 52 | Party Statements (per-party history) | Done | P1 | [dashboard-reports](../PRDs/dashboard-reports-PLAN.md) | BE: /reports/party-statement/:partyId |
-| 53 | Stock Summary Report | Done | P1 | [dashboard-reports](../PRDs/dashboard-reports-PLAN.md) | BE: /reports/stock-summary |
-| 54 | Day Book (all transactions for a day) | Done | P1 | [dashboard-reports](../PRDs/dashboard-reports-PLAN.md) | BE: /reports/day-book |
-| 55 | Payment History Report | Done | P1 | [dashboard-reports](../PRDs/dashboard-reports-PLAN.md) | BE: /reports/payments |
-
-## 1H. Settings & Security
-
-| # | Feature | Status | Priority | PRD | Notes |
-|---|---------|--------|----------|-----|-------|
-| 56 | Custom User Roles/Permissions | Done | P0 | [settings-security](../PRDs/settings-security-PLAN.md) | BE: Role CRUD + permission matrix + staff management + invites |
-| 57 | Transaction Edit/Delete Controls | Done | P1 | [settings-security](../PRDs/settings-security-PLAN.md) | BE: TransactionLockConfig + ApprovalRequest flow |
-| 58 | Passcode / PIN Protection | Done | P1 | [settings-security](../PRDs/settings-security-PLAN.md) | BE: /users/:id/pin (set/verify/reset) + operation PIN on business |
-| 59 | Biometric Auth | Done | P1 | [settings-security](../PRDs/settings-security-PLAN.md) | WebAuthn service (from DudhHisaab) · Register/authenticate routes · useBiometric hook · Set WEBAUTHN_RP_ID for prod |
-| 60 | Date Format Customization | Done | P2 | [settings-security](../PRDs/settings-security-PLAN.md) | UserAppSettings.dateFormat |
-| 61 | Keyboard Shortcuts for Billing | Done | P2 | [settings-security](../PRDs/settings-security-PLAN.md) | FE: ShortcutsPage |
-| 62 | Built-in Calculator | Done | P2 | [settings-security](../PRDs/settings-security-PLAN.md) | FE: CalculatorOverlay (global FAB) |
+> Single source of truth. Every feature has a unique ID. Every page is mapped to its feature. No duplicates.
 
 ---
 
-## 1I. Security Hardening & Scalability
+## Phase 1A: Core & Reused
 
-| # | Feature | Status | Priority | PRD | Notes |
-|---|---------|--------|----------|-----|-------|
-| 63 | CSRF Middleware + Cookie Parser | Done | P0 | — | `middleware/csrf.ts` double-submit cookie · `routes/auth.ts` `/csrf-token` endpoint · cookie-parser wired in `index.ts` |
-| 64 | Account Lockout (5 failed attempts, 15min lock) | Done | P0 | — | `auth.service.ts` `recordFailedLogin()` + `resetLoginAttempts()` · 5 attempts · 15min lock · progressive delay (500ms/attempt) |
-| 65 | Redis-backed Rate Limiter | Done | P0 | — | `middleware/rate-limit.ts` pluggable `RateLimitStore` · `MemoryStore` default + `RedisStore` when `REDIS_URL` set · 4 limiters (api/auth/otp/sensitive) |
-| 66 | httpOnly Cookie Tokens (migrate from sessionStorage) | Done | P0 | — | `__Host-at` + `__Host-rt` httpOnly cookies · `setTokenCookies()`/`clearTokenCookies()` · Bearer fallback for migration |
-| 67 | CAPTCHA on Login (after 3 failures) | Done | P1 | — | Cloudflare Turnstile · `captcha.ts` middleware tracks failed attempts per IP · Frontend `Turnstile.tsx` widget · Dev-mode skip when env vars unset |
-| 68 | Suspicious Pattern Logging | Done | P1 | — | Winston structured JSON logging · `logger.warn()` on CSRF fail, rate limit hit, login fail · File transports in production |
-| 69 | Request Signing / Replay Protection | Done | P2 | — | `replay-protection.ts` middleware · Nonce + timestamp (5min window) · In-memory store with auto-eviction · Wired on payment + document mutations |
-| 70 | Security Headers Hardening | Done | P1 | — | Helmet with full CSP directives · HSTS (prod) · CORP · COOP · Referrer-Policy · X-Frame via frameAncestors:'none' |
+| ID | Feature | Page(s) | Page Status | Feature Status | Priority |
+|----|---------|---------|-------------|----------------|----------|
+| F001 | Auth (OTP, JWT, refresh, 2FA, WebAuthn) | `/login` | Real | Done | P0 |
+| F002 | Subscription & Billing (Razorpay) | — (backend only) | — | Needs Credentials | P0 |
+| F003 | Referral & Earn (codes, wallet, UPI) | — (backend only) | — | Done | P1 |
+| F004 | Notifications (push, email, WhatsApp, SMS) | — (backend only) | — | Needs Credentials | P0 |
+| F005 | Backup (local + Google Drive + email) | — (in Settings) | — | Done | P0 |
+| F006 | Offline-first PWA (IndexedDB, sync, SW) | — (global) | — | Done | P0 |
+| F007 | Admin Panel Framework | `/admin/coupons`, `/admin/coupons/:id` | Real, Real | Done | P1 |
+| F008 | Dark Mode / Theming | — (in Settings toggle) | — | Done | P1 |
+| F009 | Multi-language (EN/HI) | — (in Settings toggle) | — | Done | P0 |
+| F010 | Onboarding Flow (business setup wizard) | `/onboarding`, `/business/create` | Real, Real | Done | P0 |
 
-## 2. Phase 2 — GST & Compliance
+## Phase 1B: Party Management
 
-| # | Feature | Status | Priority | Notes |
-|---|---------|--------|----------|-------|
-| 63 | GST Invoice Engine (CGST/SGST/IGST auto-calc) | Done | P0 | `tax-calc.ts` + `document-calc.ts` · Place of supply determines IGST vs CGST+SGST · Amounts in paise, rates in basis points |
-| 64 | Tax Categories / Tax Groups | Done | P0 | `TaxCategory` model · 0%/5%/12%/18%/28% defaults · Cess support (% or fixed/unit) |
-| 65 | Place of Supply | Done | P0 | `placeOfSupply` on Document · 2-digit state codes · Determines inter/intra-state |
-| 66 | GSTR-1 Export (JSON for filing) | Done | P1 | `gst-return.service.ts` · B2B/B2CL/B2CS/CDNR/CDNUR categories · JSON export |
-| 67 | GSTR-1 Auto-Reconciliation | Done | P1 | `reconciliation.service.ts` · Upload GSTR data → match against books · 4 statuses: Matched/Mismatched/Missing/Extra |
-| 68 | GSTR-3B Report | Done | P1 | Outward supplies (RCM/non-RCM split) + ITC + CN adjustment + net payable |
-| 69 | GSTR-9 Annual Return | Done | P1 | Full FY summary: sales/purchases/CN/DN with tax breakup |
-| 70 | Tax Summary + HSN Summary + Tax Ledger | Done | P1 | FE: TaxSummaryPage + GstReturnsPage · 3 report endpoints |
-| 71 | E-Invoicing (IRN generation, QR code) | Done | P0 | `einvoice.service.ts` · NIC IRP sandbox mock · 64-char IRN · QR code · 24h cancel · FE: EInvoiceCard in document detail |
-| 72 | E-Way Bill (auto-generate, transport details) | Done | P0 | `ewaybill.service.ts` · Rs 50K threshold · Part-B updates · 24h cancel · FE: EWayBillCard with generate form |
-| 73 | Reverse Charge Mechanism | Done | P1 | `isReverseCharge` on Document · GSTR-3B RCM split |
-| 74 | Composite Scheme Support | Done | P1 | `composition.service.ts` · Flat rates by business type · "Bill of Supply" label · No tax breakup |
-| 75 | Additional Cess | Done | P1 | `cessRate`/`cessAmount` on line items · PERCENTAGE or FIXED_PER_UNIT · Flows through to GSTR |
-| 76 | HSN Auto-fill | Done | P2 | `HsnCode` model (12K pre-seeded) · `/api/hsn/search` · Auto-carry per product |
-| 77 | TDS/TCS Support | Done | P1 | `tds-tcs.service.ts` · tdsRate/tdsAmount/tcsRate/tcsAmount on Document · FE: TdsTcsReportPage |
-| 78 | GSTIN Verification | Done | P1 | `/api/gstin/verify` · Party GSTIN validation |
-| 79 | Tax Reports | Done | P1 | Tax Summary, HSN Summary, Tax Ledger · FE: 2 pages + report hub cards |
-| 80 | Credit Notes / Debit Notes | Done | P0 | CN/DN in document service · Stock effects (CN = return) · Outstanding effects · Bi-directional linking |
-| 81 | Multi-currency Support | Done | P2 | `ExchangeRate` model · `currency.service.ts` · Rate * 10000 precision · INR base · 11 currencies · FE: CurrencySettingsPage (building) |
-| 82 | Recurring Invoices | Done | P2 | `RecurringInvoice` model · `recurring.service.ts` · 4 frequencies · Template cloning · Scheduler · FE: RecurringListPage (building) |
+| ID | Feature | Page(s) | Page Status | Feature Status | Priority |
+|----|---------|---------|-------------|----------------|----------|
+| F011 | Party CRUD (customers + suppliers, groups) | `/parties`, `/parties/:id`, `/parties/new`, `/parties/:id/edit` | Real, Real, Real, Real | Done | P0 |
+| F012 | Party Balances & Statements | `/reports/party-statement/:partyId` | Real | Done | P0 |
+| F013 | Multiple Addresses per Party | — (in Party detail) | — | Done | P0 |
+| F014 | Party Credit Limits | — (in Party model) | — | Done | P1 |
+| F015 | Party Custom Fields | — (backend only) | — | Done | P2 |
+| F016 | Party-wise Pricing | — (in Party detail) | — | Done | P1 |
+| F017 | Opening Balances (migration) | — (backend only) | — | Done | P0 |
 
-## Phase 5: Growth & Competitive Features
+## Phase 1C: Invoicing & Documents
 
-> Inspired by [BillBook competitor analysis](../docs/design-references/billbook/) — 10 feature gaps identified, 2 already done (#16 Party-wise Pricing, #33 Invoice Recycle Bin). 8 new features below.
+| ID | Feature | Page(s) | Page Status | Feature Status | Priority |
+|----|---------|---------|-------------|----------------|----------|
+| F018 | Sale Invoice (non-GST, line items, discounts) | `/invoices`, `/invoices/:id`, `/invoices/new`, `/invoices/:id/edit` | Real, Real, Real, Real | Done | P0 |
+| F019 | Purchase Invoice | — (shares invoice pages, type toggle) | — | Done | P0 |
+| F020 | Estimates / Quotations | — (shares invoice pages, type toggle) | — | Done | P1 |
+| F021 | Proforma Invoices | — (shares invoice pages, type toggle) | — | Done | P1 |
+| F022 | Purchase Orders | — (shares invoice pages, type toggle) | — | Done | P1 |
+| F023 | Sale Orders | — (shares invoice pages, type toggle) | — | Done | P1 |
+| F024 | Delivery Challans | — (shares invoice pages, type toggle) | — | Done | P1 |
+| F025 | Invoice Numbering (auto-increment, prefix) | — (backend + settings) | — | Done | P0 |
+| F026 | Additional Charges (shipping, freight) | — (in invoice form) | — | Done | P0 |
+| F027 | Due Dates (payment terms: 15/30/60 days) | — (in DocumentSettings) | — | Done | P0 |
+| F028 | Terms & Conditions on Invoice | — (backend CRUD) | — | Done | P1 |
+| F029 | Digital Signature Block | — (in settings) | — | Done | P2 |
+| F030 | Auto Invoice Sharing (WhatsApp/email) | — (backend only) | — | Needs Credentials | P0 |
+| F031 | Invoice Image Export (JPG/PNG) | — (in InvoiceDetailPage) | — | Done | P1 |
+| F032 | Share via Email with PDF | — (backend only) | — | Needs Credentials | P1 |
+| F033 | Invoice Recycle Bin | — (in invoices list) | — | Done | P1 |
+| F034 | Show Profit During Sale | — (in DocumentSettings) | — | Done | P1 |
 
-| # | Feature | Status | Priority | Notes |
-|---|---------|--------|----------|-------|
-| 83 | GST Autofill (GSTIN → party details) | Done | P1 | [gst-autofill](../PRDs/gst-autofill-PLAN.md) | useGstinVerify hook · debounced API verify · auto-populate companyName/PAN/state · verified badge on detail page · dark mode + reduced motion |
-| 84 | Bulk Add Parties from Contacts | Done | P2 | Contact Picker API + CSV import. Multi-select → type assignment → batch create. Route: `/parties/import` |
-| 85 | Shared Ledgers | Done | P2 | Share party ledger via read-only link. Generate/revoke/copy share URLs. Public ledger viewer. Backend endpoints pending. Route: `/public/ledger/:token` |
-| 86 | Bill Scanning (OCR → Items) | Done | P1 | Client-side OCR via Tesseract.js v7. Camera/gallery capture → preprocessing → OCR → editable review → add to invoice. Route: `/bill-scan` |
-| 87 | Items Library (100K+ database) | Done | P2 | Curated Indian product database (67 seed items across 10 categories). Search + category filter + add to products. Route: `/products/library`. Expandable with API/dataset |
-| 88 | Competitor Data Import | Done | P3 | CSV/Excel import with auto column mapping. Sources: Vyapar, Tally, Busy, Marg, Excel. Parties import live, products/invoices need backend. Route: `/settings/import` |
-| 89 | Smart Greetings (WhatsApp templates) | Done | P3 | 12 templates for Indian festivals + business. Template grid → customize message → pick recipient → WhatsApp deep link. Route: `/greetings`. Accessible from More hub |
-| 90 | Categorized Feature Discovery ("For You") | Done | P3 | More page reorganized into 5 categories: Efficiency, Money & Payments, Accounting & Tax, Marketing & CRM, Tools. Each item has label + description. Staggered section animations |
+## Phase 1D: Invoice Templates & Printing
 
-## Phase 6: BillBook User Requests (Competitive Parity)
+| ID | Feature | Page(s) | Page Status | Feature Status | Priority |
+|----|---------|---------|-------------|----------------|----------|
+| F035 | Invoice Templates (30 across 7 categories) | `/settings/templates`, `/settings/templates/:id` | Real, Real | Done | P0 |
+| F036 | Template Customization (fonts, colors, columns) | — (in TemplateEditorPage) | — | Done | P1 |
+| F037 | Print Settings (page size, margins) | — (in TemplateEditorPage) | — | Done | P1 |
+| F038 | Round-off Settings | — (in DocumentSettings) | — | Done | P0 |
+| F039 | Decimal Precision Settings | — (in InventorySetting) | — | Done | P1 |
 
-> From BillBook Play Store feature request analysis. Users switching from BillBook expect these.
+## Phase 1E: Payment Tracking
 
-| # | Feature | Status | Priority | Notes |
-|---|---------|--------|----------|-------|
-| 91 | Custom Units (user-defined: Bags, Cans, Hours, variable box sizes) | Done | P0 | UnitsPage + AddUnitSheet + category/decimalAllowed/baseUnit fields. Schema migration + backend service + Zod validation. Route /settings/units |
-| 92 | Payment Status Stamps on Invoice PDF | Done | P1 | PreviewPaymentStamp (badge/watermark/none). Template toggle + print settings. CSS for both styles |
-| 93 | Vehicle Number & Udyam Aadhar on Invoice | Done | P1 | Vehicle Number on invoice form (create+edit). Udyam in preview header. Total Quantity row in preview. Business schema udyamNumber field |
-| 94 | PDF Quality Enhancement | Done | P1 | 5-level font scale (xs→xl), 3-level line height, pixelRatio 3 for exports. DeepPartial type for gallery configs |
-| 95 | Duplicate Bill Copy Labels | Done | P2 | PreviewCopyLabel component. Print settings: copyLabels toggle, auto/manual mode, custom label names |
+| ID | Feature | Page(s) | Page Status | Feature Status | Priority |
+|----|---------|---------|-------------|----------------|----------|
+| F040 | Payment In/Out (cash, UPI, bank, cheque) | `/payments`, `/payments/:id`, `/payments/new`, `/payments/:id/edit` | Real, Real, Real, Real | Done | P0 |
+| F041 | Outstanding Tracking (aging buckets) | `/outstanding` | Real | Done | P0 |
+| F042 | Payment Reminders (WhatsApp/SMS/push) | — (backend only) | — | Needs Credentials | P1 |
+| F043 | Discount During Payment | — (in payment form) | — | Done | P2 |
+
+## Phase 1F: Basic Inventory
+
+| ID | Feature | Page(s) | Page Status | Feature Status | Priority |
+|----|---------|---------|-------------|----------------|----------|
+| F044 | Products CRUD (name, price, unit, category) | `/products`, `/products/:id`, `/products/new`, `/products/:id/edit` | Real, Real, **Stub**, Real | Done | P0 |
+| F045 | Stock In/Out (auto on invoice, manual adjust) | — (backend only) | — | Done | P0 |
+| F046 | Stock Validation (block if stock < qty) | — (backend only) | — | Done | P0 |
+| F047 | Low-Stock Alerts | — (dashboard + backend) | — | Done | P1 |
+| F048 | Item Categories & Units (unit conversion) | `/settings/units` | Real | Done | P0 |
+| F049 | Item Custom Fields | — (backend only) | — | Done | P2 |
+
+## Phase 1G: Dashboard & Reports
+
+| ID | Feature | Page(s) | Page Status | Feature Status | Priority |
+|----|---------|---------|-------------|----------------|----------|
+| F050 | Dashboard (sales, outstanding, quick actions) | `/dashboard` | Real | Done | P0 |
+| F051 | Sale/Purchase Reports (filterable, exportable) | `/reports/sales`, `/reports/purchases` | Real, Real | Done | P1 |
+| F052 | Party Statements (per-party history) | `/reports/party-statement/:partyId` | Real | Done | P1 |
+| F053 | Stock Summary Report | `/reports/stock-summary` | Real | Done | P1 |
+| F054 | Day Book (all transactions for a day) | `/reports/day-book` | Real | Done | P1 |
+| F055 | Payment History Report | `/reports/payment-history` | Real | Done | P1 |
+
+## Phase 1H: Settings & Security
+
+| ID | Feature | Page(s) | Page Status | Feature Status | Priority |
+|----|---------|---------|-------------|----------------|----------|
+| F056 | Custom User Roles/Permissions | `/settings/roles`, `/settings/roles/:id`, `/settings/roles/new`, `/settings/staff`, `/settings/permissions` | Real, Real, Real, Real, Real | Done | P0 |
+| F057 | Transaction Edit/Delete Controls | `/settings/transaction-controls` | **Stub** | Done | P1 |
+| F058 | Passcode / PIN Protection | `/settings/pin-setup` | Real | Done | P1 |
+| F059 | Biometric Auth | — (backend + hook) | — | Done | P1 |
+| F060 | Date Format Customization | — (in UserAppSettings) | — | Done | P2 |
+| F061 | Keyboard Shortcuts for Billing | `/settings/shortcuts` | **Stub** | Done | P2 |
+| F062 | Built-in Calculator | — (global FAB overlay) | — | Done | P2 |
+
+## Phase 1I: Security Hardening
+
+| ID | Feature | Page(s) | Page Status | Feature Status | Priority |
+|----|---------|---------|-------------|----------------|----------|
+| F063 | CSRF Middleware + Cookie Parser | — (middleware) | — | Done | P0 |
+| F064 | Account Lockout (5 failed, 15min lock) | — (backend) | — | Done | P0 |
+| F065 | Redis-backed Rate Limiter | — (middleware) | — | Done | P0 |
+| F066 | httpOnly Cookie Tokens | — (backend) | — | Done | P0 |
+| F067 | CAPTCHA on Login (after 3 failures) | — (in LoginPage) | — | Done | P1 |
+| F068 | Suspicious Pattern Logging | — (backend) | — | Done | P1 |
+| F069 | Request Signing / Replay Protection | — (middleware) | — | Done | P2 |
+| F070 | Security Headers Hardening | — (middleware) | — | Done | P1 |
+
+## Phase 2: GST & Compliance
+
+| ID | Feature | Page(s) | Page Status | Feature Status | Priority |
+|----|---------|---------|-------------|----------------|----------|
+| F071 | GST Invoice Engine (CGST/SGST/IGST auto-calc) | — (in invoice form) | — | Done | P0 |
+| F072 | Tax Categories / Tax Groups | `/settings/tax-rates`, `/settings/tax-rates/:id`, `/settings/tax-rates/new` | Real, Real, **Stub** | Done | P0 |
+| F073 | Place of Supply | — (in invoice form) | — | Done | P0 |
+| F074 | GSTR-1 Export (JSON for filing) | `/reports/gst-returns` | Real | Done | P1 |
+| F075 | GSTR-1 Auto-Reconciliation | `/gst/reconciliation`, `/gst/reconciliation/:id` | Real, Real | Done | P1 |
+| F076 | GSTR-3B Report | — (in GstReturnsPage) | — | Done | P1 |
+| F077 | GSTR-9 Annual Return | — (in GstReturnsPage) | — | Done | P1 |
+| F078 | Tax Summary + HSN Summary + Tax Ledger | `/reports/tax-summary` | Real | Done | P1 |
+| F079 | E-Invoicing (IRN generation, QR code) | — (in InvoiceDetailPage) | — | Done | P0 |
+| F080 | E-Way Bill (auto-generate, transport) | — (in InvoiceDetailPage) | — | Done | P0 |
+| F081 | Reverse Charge Mechanism | — (in invoice form) | — | Done | P1 |
+| F082 | Composite Scheme Support | — (backend service) | — | Done | P1 |
+| F083 | Additional Cess | — (in line items) | — | Done | P1 |
+| F084 | HSN Auto-fill | — (in product/invoice form) | — | Done | P2 |
+| F085 | TDS/TCS Support | `/reports/tds-tcs` | Real | Done | P1 |
+| F086 | GSTIN Verification | — (backend API) | — | Done | P1 |
+| F087 | Tax Reports | `/reports/tax-summary`, `/reports/gst-returns` | Real, Real | Done | P1 |
+| F088 | Credit Notes / Debit Notes | — (in document service) | — | Done | P0 |
+| F089 | Multi-currency Support | `/settings/currency` | Real | Done | P2 |
+| F090 | Recurring Invoices | `/recurring` | Real | Done | P2 |
+
+## Phase 3: Accounting & Finance
+
+| ID | Feature | Page(s) | Page Status | Feature Status | Priority |
+|----|---------|---------|-------------|----------------|----------|
+| F091 | Chart of Accounts | `/accounting/chart-of-accounts` | Real | Done | P1 |
+| F092 | Journal Entries | `/accounting/journal-entries` | Real | Done | P1 |
+| F093 | Trial Balance | `/reports/trial-balance` | Real | Done | P1 |
+| F094 | Profit & Loss | `/reports/profit-loss` | Real | Done | P1 |
+| F095 | Balance Sheet | `/reports/balance-sheet` | Real | Done | P1 |
+| F096 | Cash Flow Statement | `/reports/cash-flow` | Real | Done | P1 |
+| F097 | Bank Accounts | `/bank-accounts` | Real | Done | P1 |
+| F098 | Expenses | `/expenses` | Real | Done | P1 |
+| F099 | Other Income | `/other-income` | Real | Done | P1 |
+| F100 | Cheque Management | `/cheques` | Real | Done | P1 |
+| F101 | Loans | `/loans`, `/loans/:id` | Real, Real | Done | P1 |
+| F102 | Aging Report | `/reports/aging` | Real | Done | P1 |
+| F103 | Profitability Report | `/reports/profitability` | Real | Done | P1 |
+| F104 | Discount Report | `/reports/discounts` | Real | Done | P1 |
+| F105 | Tally Export | `/accounting/tally-export` | Real | Done | P1 |
+| F106 | FY Closure | `/accounting/fy-closure` | Real | Done | P1 |
 
 ## Phase 4: Advanced Inventory & POS
 
-| # | Feature | Status | Priority | Notes |
-|---|---------|--------|----------|-------|
-| 97 | Barcode Generation | Done | P1 | FE: BarcodeDisplay + BarcodeField + barcode.utils (5 formats) · BE: barcode/barcodeFormat in Product schema + GET /by-barcode/:code lookup · POST /label-data for batch labels |
-| 98 | Barcode Scanning | Done | P1 | FE: BarcodeScanner.tsx (BarcodeDetector API, camera, 5 formats) · BE: barcode lookup reused for POS · Integrated via onScan callback |
-| 99 | Batch Tracking | Done | P1 | Batch model (MFD, expiry, batchNumber, cost/sale price override) · batch.service.ts CRUD + expiring batches report · 6 API routes · Cursor pagination |
-| 100 | Serial Number Tracking | Done | P2 | SerialNumber model (status lifecycle: AVAILABLE→SOLD→RETURNED→DAMAGED→WARRANTY) · serial-number.service.ts CRUD + bulk create (200 max) + global lookup · 6 API routes · Batch/Godown/Document relations · Cursor pagination |
-| 101 | Multi-Godown (Warehouse) | Done | P1 | Godown + GodownStock + GodownTransfer models · godown.service.ts + godown-transfer.service.ts · CRUD + stock-by-location + inter-godown transfer (transactional) · Transfer history with cursor pagination |
-| 102 | Stock Adjustment (Advanced) | Done | P1 | FE: StockAdjustModal · BE: single + bulk adjust (POST /stock/bulk-adjust, transactional) · GET /:id/stock/history (paginated movements) · 6 reasons |
-| 103 | Label Printing | Done | P2 | POST /products/label-data (batch label data, max 200) · labelTemplate field on Product · FE label rendering ready |
-| 104 | Bulk Import/Export (Products) | Done | P1 | POST /products/bulk-import (max 500, per-row tx, partial success with error report) · GET /products/export (cursor paginated, max 1000) |
-| 105 | Expiry Alerts | Done | P1 | GET /batches/expiring?daysAhead=N · Uses Batch.expiryDate · Sorted by nearest expiry · Cursor pagination |
-| 106 | Reorder Points | Done | P1 | GET /products/reorder-list · Products where currentStock ≤ minStockLevel · Deficit-sorted · Cursor pagination |
-| 107 | Item Conversion (BOM) | Done | P2 | GET /units/convert?fromUnitId&toUnitId&quantity · Bidirectional lookup · UnitConversion model · BOM deferred to Phase 7 |
-| 108 | Item Images | Done | P2 | imageUrl + images[] (up to 5) on Product · POST /:id/images · DELETE /:id/images/:index · URL validation |
-| 109 | MOQ (Min Order Qty) | Done | P3 | moq field on Product · Validated on PURCHASE_ORDER creation (qty ≥ moq) · Zod-validated update |
-| 110 | POS Billing Mode | Done | P1 | POST /documents/quick-sale (creates invoice + payment in one tx, walk-in customer auto-create) · Barcode lookup via /by-barcode/:code |
-| 111 | Data Verification | Done | P2 | StockVerification + StockVerificationItem models · 6 endpoints: create → count → complete → adjust · Transactional stock adjustments · Discrepancy tracking |
-| 112 | Party Ledger | Done | P1 | FE: SharedLedger + PublicLedgerPage · BE: share token generation · Route: /public/ledger/:token · Fully wired |
+| ID | Feature | Page(s) | Page Status | Feature Status | Priority |
+|----|---------|---------|-------------|----------------|----------|
+| F107 | Barcode Generation | — (in ProductDetail) | — | Done | P1 |
+| F108 | Barcode Scanning | — (BarcodeScanner component) | — | Done | P1 |
+| F109 | Batch Tracking | `/products/:id/batches`, `/products/:id/batches/new`, `/batches/:id` | Real, **Stub**, Real | Done | P1 |
+| F110 | Serial Number Tracking | `/products/:id/serials`, `/products/:id/serials/new`, `/products/:id/serials/bulk`, `/serial-lookup` | Real, **Stub**, **Stub**, Real | Done | P2 |
+| F111 | Multi-Godown (Warehouse) | `/godowns`, `/godowns/:id`, `/godowns/:id/edit`, `/godowns/new`, `/godowns/transfer` | Real, Real, Real, **Stub**, **Stub** | Done | P1 |
+| F112 | Stock Adjustment (Advanced) | — (StockAdjustModal) | — | Done | P1 |
+| F113 | Label Printing | — (backend + FE component) | — | Done | P2 |
+| F114 | Bulk Import/Export (Products) | — (backend endpoints) | — | Done | P1 |
+| F115 | Expiry Alerts | — (backend endpoint) | — | Done | P1 |
+| F116 | Reorder Points | — (backend endpoint) | — | Done | P1 |
+| F117 | Item Conversion (BOM) | — (backend endpoint) | — | Done | P2 |
+| F118 | Item Images | — (in ProductDetail) | — | Done | P2 |
+| F119 | MOQ (Min Order Qty) | — (backend validation) | — | Done | P3 |
+| F120 | POS Billing Mode | `/pos` | **Stub** | Done | P1 |
+| F121 | Stock Verification | `/stock-verification`, `/stock-verification/:id` | Real, Real | Done | P2 |
+| F122 | Party Ledger (shared) | `/public/ledger/:token` | **Stub** | Done | P1 |
 
-## Phase 7: Planned Features
+## Phase 5: Growth & Competitive Features
 
-| # | Feature | Status | Priority | Module | Notes |
-|---|---------|--------|----------|--------|-------|
-| 113 | Coupon / Discount Code System | Done | P2 | Payments & Subscriptions | Admin coupon CRUD · User apply at checkout · First-cycle discount · Razorpay coupon integration |
+| ID | Feature | Page(s) | Page Status | Feature Status | Priority |
+|----|---------|---------|-------------|----------------|----------|
+| F123 | GST Autofill (GSTIN → party details) | — (in party form) | — | Done | P1 |
+| F124 | Bulk Add Parties from Contacts | `/parties/import` | Real | Done | P2 |
+| F125 | Shared Ledgers | `/public/ledger/:token` | **Stub** | Done | P2 |
+| F126 | Bill Scanning (OCR → Items) | `/bill-scan` | Real | Done | P1 |
+| F127 | Items Library (100K+ database) | `/products/library` | Real | Done | P2 |
+| F128 | Competitor Data Import | `/settings/import` | Real | Done | P3 |
+| F129 | Smart Greetings (WhatsApp templates) | `/greetings` | Real | Done | P3 |
+| F130 | Categorized Feature Discovery ("For You") | `/more` | **Stub** | Done | P3 |
 
-## Status Summary
+## Phase 6: BillBook User Requests
 
-| Status | Count | Details |
-|--------|-------|---------|
-| **Done** | 113 | Phase 1-6 (96) + Phase 4 (16) + Coupons · 5 "Needs Credentials" (code wired, set API keys to activate) |
+| ID | Feature | Page(s) | Page Status | Feature Status | Priority |
+|----|---------|---------|-------------|----------------|----------|
+| F131 | Custom Units (Bags, Cans, Hours) | `/settings/units` | Real | Done | P0 |
+| F132 | Payment Status Stamps on Invoice PDF | — (in preview component) | — | Done | P1 |
+| F133 | Vehicle Number & Udyam on Invoice | — (in invoice form) | — | Done | P1 |
+| F134 | PDF Quality Enhancement | — (in print settings) | — | Done | P1 |
+| F135 | Duplicate Bill Copy Labels | — (in preview component) | — | Done | P2 |
 
-## Needs Integration (external credentials required)
+## Phase 7: Planned
 
-| # | Feature | What's needed |
-|---|---------|--------------|
-| 1 | OTP Auth (enable) | MSG91 auth key + template ID (set `VITE_AUTH_MODE=otp`) |
-| 2 | Subscription & Billing | Razorpay API key + webhook secret |
-| 4 | Notifications | FCM server key + Aisensy API key + Resend API key |
-| 30 | Auto Invoice Sharing | Aisensy (WhatsApp) + Resend (email) |
-| 32 | Share via Email with PDF | Resend API key |
-| 42 | Payment Reminders | Aisensy + FCM credentials |
-| 47 | Low-Stock Alerts | Notification integration (depends on #4) |
-| 59 | Biometric Auth | Capacitor Biometric plugin |
+| ID | Feature | Page(s) | Page Status | Feature Status | Priority |
+|----|---------|---------|-------------|----------------|----------|
+| F136 | Coupon / Discount Code System | `/admin/coupons`, `/admin/coupons/:id` | Real, Real | Done | P2 |
 
-## Code Quality (2026-03-27)
+---
 
-| Area | Status |
-|------|--------|
-| SSOT: `FALLBACK_BUSINESS_ID` | Extracted to `app.config.ts`, 6 files import from single source |
-| SSOT: Gradient hex colors | Extracted to CSS variables in `globals.css`, 10 CSS files updated |
-| SSOT: WhatsApp brand color | `--color-whatsapp` CSS variable, no inline hex |
-| SSOT: APP_NAME | All 17 landing/UI files use `APP_NAME` from config — zero raw "HisaabPro" strings |
-| SSOT: Invoice template colors | 36 hex values extracted to `DOC_COLORS` constants |
-| Auth context: businessId | All 6 settings pages use `useAuth()` instead of hardcoded value |
-| Authorization | `requirePermission()` on all 133 mutation routes (24 gaps fixed 2026-03-27) |
-| SW cache safety | Whitelisted safe API patterns only — no PII caching |
-| Prisma safety | All `include: true` replaced with explicit `select`. All `findMany` have `take` limits |
-| Memory safety | All `useEffect` async ops have AbortController/cleanup. `crypto.randomUUID()` for IDs |
-| i18n compliance | 73 hardcoded English strings replaced with `t.key` references across 20 components |
-| TypeScript | Zero errors (`tsc --noEmit` clean) |
-| Build | Passes clean (440KB gzipped main bundle) |
-| Console.log / TODOs | Zero remaining |
-| Audit status | Full 866-file audit: 0 P0, 0 P1, 0 P2 remaining |
+## Standalone Pages (no dedicated feature)
 
-## Testing Status (2026-03-27)
+| Page | Route | Status | Belongs To |
+|------|-------|--------|------------|
+| Landing | `/` | Real | Marketing |
+| Join Business | `/join` | Real | F010 Onboarding |
+| Reports Hub | `/reports` | Real | F050-F055 Reports |
+| Settings Hub | `/settings` | Real | F056-F062 Settings |
+| Staff Invite | `/settings/staff/invite` | **Stub** | F056 Roles |
+| GST Settings | `/settings/gst` | **Stub** | F071 GST Engine |
+| Audit Log | `/settings/audit-log` | Real | F007 Admin |
+| Not Found (404) | `*` | **Stub** | — |
 
-| Layer | Status | Coverage |
-|-------|--------|----------|
-| Frontend unit (Vitest) | **Active** | 1044 tests across 100 files · 29 feature modules + shared hooks + lib validators |
-| Backend integration (Vitest + supertest) | **Active** | 70 tests across 6 files · auth, parties, products, documents, payments, dashboard |
-| E2E tests (Playwright) | **Active** | 27 spec files · 4 viewports (375/320/768/1280) · fixtures + helpers + data-factory |
-| Type checking | **Passing** | `tsc --noEmit` zero errors |
-| Build | **Passing** | `npm run build` clean |
-| **Total** | **1114 tests** | **106 test files** |
+---
 
-## Architecture
+## Summary
 
-```
-Frontend (React 19 + Vite)          Backend (Express + Prisma)
-─────────────────────────           ──────────────────────────
-78 routes · 721 source files         345 endpoints · 44 route modules
-29 feature modules · 100 test files  68 Prisma models · 1920-line schema
-Tailwind CSS 4 + CSS variables       PostgreSQL + cursor pagination
-React-PDF (client-side)              JWT auth (httpOnly cookies)
-Dexie (IndexedDB queue)              Rate limiting (4 tiers)
-Capacitor 8 (mobile)                 CSRF + CAPTCHA + Audit log
-Offline banner + sync UI             Multi-tenant (businessId isolation)
-                                     GST engine (CGST/SGST/IGST/Cess)
-                                     E-Invoice + E-Way Bill (NIC sandbox)
-```
+| Metric | Count |
+|--------|-------|
+| **Total features** | 136 (F001–F136) |
+| **Features done** | 136 |
+| **Needs credentials** | 5 (F002, F004, F030, F032, F042) |
+| **Total pages/routes** | 95 unique |
+| **Pages real** | 80 |
+| **Pages stub** | 15 |
 
-## Next Steps (Priority Order)
+## 15 Stub Pages (need full UI)
 
-### Ship-blocking
-1. ~~**Service Worker + PWA manifest**~~ Done
-2. ~~**Test coverage**~~ Done — 1114 tests (100 FE unit + 6 BE integration + 27 E2E specs)
-3. ~~**Full codebase audit**~~ Done — 866 files, 18 criteria, 0 P0/P1/P2 remaining
-4. ~~**Authorization hardening**~~ Done — requirePermission on all 133 mutation routes
-5. **Enable OTP auth flow** — code ready. Set `VITE_AUTH_MODE=otp` + uncomment routes. Needs MSG91 key.
+| # | Route | Feature | Priority |
+|---|-------|---------|----------|
+| 1 | `/products/new` | F044 Products CRUD | **P0** |
+| 2 | `/products/:id/batches/new` | F109 Batch Tracking | P1 |
+| 3 | `/products/:id/serials/new` | F110 Serial Numbers | P2 |
+| 4 | `/products/:id/serials/bulk` | F110 Serial Numbers | P2 |
+| 5 | `/godowns/new` | F111 Multi-Godown | P1 |
+| 6 | `/godowns/transfer` | F111 Multi-Godown | P1 |
+| 7 | `/pos` | F120 POS Billing | **P1** |
+| 8 | `/public/ledger/:token` | F122/F125 Shared Ledger | P2 |
+| 9 | `/settings/tax-rates/new` | F072 Tax Categories | P0 |
+| 10 | `/settings/staff/invite` | F056 Roles | P0 |
+| 11 | `/settings/gst` | F071 GST Engine | P1 |
+| 12 | `/settings/shortcuts` | F061 Keyboard Shortcuts | P2 |
+| 13 | `/settings/transaction-controls` | F057 Txn Controls | P1 |
+| 14 | `/more` | F130 Feature Discovery | P3 |
+| 15 | `*` (404 page) | — | P2 |
 
-### Production readiness
-6. **Staging deploy** — Vercel (FE) + Render (BE) + Neon (DB). Config files needed.
-7. **External credentials** — Razorpay, FCM, Aisensy, Resend, MSG91, Turnstile. Account signups required.
+## Needs Credentials (code wired, set API keys to activate)
 
-### Done phases
-8. ~~**Phase 2: GST**~~ Done — 20 features (tax engine, GSTR-1/3B/9, e-invoice, e-way bill, TDS/TCS, CN/DN, multi-currency, recurring)
-9. ~~**Phase 3: Accounting & Finance**~~ Done — 22 features (double-entry ledger, journal entries, trial balance, P&L, balance sheet, cash flow, bank accounts, expenses, other income, cheques, loans, aging reports, profitability, discounts, Tally export, FY closure)
-10. ~~**Phase 4: Advanced Inventory & POS**~~ Done — 16/16 features (batch tracking, multi-godown, POS, bulk import/export, barcode, stock verification, labels, images, MOQ, reorder, serial numbers)
-11. ~~**Phase 5: Growth & Competitive Features**~~ Done — BillBook-inspired gaps + feature discovery (10 features)
-12. ~~**Phase 6: BillBook User Requests**~~ Done — Custom units, payment stamps, vehicle/Udyam fields, PDF quality, duplicate copies (5 features)
+| Feature | What's needed |
+|---------|--------------|
+| F001 OTP Auth | MSG91 key + `VITE_AUTH_MODE=otp` |
+| F002 Subscription | Razorpay API key + webhook secret |
+| F004 Notifications | FCM + Aisensy + Resend API keys |
+| F030 Invoice Sharing | Aisensy + Resend |
+| F032 Email with PDF | Resend API key |
+| F042 Payment Reminders | Aisensy + FCM |
+| F059 Biometric Auth | Capacitor Biometric plugin |

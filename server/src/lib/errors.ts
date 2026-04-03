@@ -128,13 +128,27 @@ export function handleError(error: unknown): AppError {
 
   // Prisma errors
   if (typeof error === 'object' && error !== null && 'code' in error) {
-    const prismaError = error as { code: string; meta?: { target?: string[] } }
-    if (prismaError.code === 'P2002') {
-      const field = prismaError.meta?.target?.[0] || 'field'
-      return conflictError(`${field} already exists`)
-    }
-    if (prismaError.code === 'P2025') {
-      return notFoundError('Resource')
+    const prismaError = error as { code: string; meta?: { target?: string[]; cause?: string } }
+    switch (prismaError.code) {
+      case 'P2002': {
+        const field = prismaError.meta?.target?.[0] || 'field'
+        return conflictError(`${field} already exists`)
+      }
+      case 'P2025':
+        return notFoundError('Resource')
+      case 'P2003':
+        return new AppError(ErrorCode.VALIDATION_ERROR, 400, 'Related record not found (foreign key constraint)', {
+          cause: prismaError.meta?.cause,
+        })
+      case 'P2014':
+        return new AppError(ErrorCode.VALIDATION_ERROR, 400, 'Required relation violation')
+      case 'P2024':
+        return new AppError(ErrorCode.DATABASE_ERROR, 503, 'Database connection timeout — please retry')
+      default:
+        if (prismaError.code.startsWith('P')) {
+          logger.error('Unhandled Prisma error', { code: prismaError.code, meta: prismaError.meta })
+          return new AppError(ErrorCode.DATABASE_ERROR, 500, 'A database error occurred')
+        }
     }
   }
 
