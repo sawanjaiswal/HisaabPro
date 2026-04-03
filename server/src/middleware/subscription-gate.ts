@@ -2,7 +2,7 @@
  * Subscription gating middleware — enforces plan limits per-request.
  * Applied at route level for features that require paid plans.
  *
- * Until Subscription model is deployed, defaults to FREE with trial grace period.
+ * Reads from Subscription model in DB. Falls back to trial grace period if no subscription.
  */
 
 import type { Request, Response, NextFunction } from 'express'
@@ -11,27 +11,35 @@ import { sendError } from '../lib/response.js'
 import { PLAN_LIMITS, PLAN_HIERARCHY, TRIAL_DAYS } from '../config/plans.js'
 import type { PlanTier } from '../config/plans.js'
 
-/** Get business plan tier — reads from Business.planTier or defaults to FREE */
+/** Get business plan tier — reads from Subscription model with trial fallback */
 async function getBusinessPlan(businessId: string): Promise<{ plan: PlanTier; isTrialing: boolean }> {
-  const business = await prisma.business.findUnique({
-    where: { id: businessId },
-    select: {
-      createdAt: true,
-      // planTier will be added in future migration — use fallback for now
-    },
-  })
+  const [business, subscription] = await Promise.all([
+    prisma.business.findUnique({
+      where: { id: businessId },
+      select: { createdAt: true },
+    }),
+    prisma.subscription.findUnique({
+      where: { businessId },
+      select: { planTier: true, status: true },
+    }),
+  ])
 
   if (!business) return { plan: 'FREE', isTrialing: false }
 
-  // Trial: businesses created within TRIAL_DAYS get PRO features free
+  // Subscription exists — use it unless cancelled/past_due
+  if (subscription) {
+    if (subscription.status === 'ACTIVE' || subscription.status === 'TRIALING') {
+      return { plan: subscription.planTier as PlanTier, isTrialing: subscription.status === 'TRIALING' }
+    }
+    // CANCELLED or PAST_DUE — downgrade to FREE
+    return { plan: 'FREE', isTrialing: false }
+  }
+
+  // No subscription — check trial grace period
   const daysSinceCreation = (Date.now() - business.createdAt.getTime()) / (1000 * 60 * 60 * 24)
   if (daysSinceCreation <= TRIAL_DAYS) {
     return { plan: 'PRO', isTrialing: true }
   }
-
-  // TODO: Read from Subscription model once deployed
-  // const sub = await prisma.subscription.findFirst({ where: { businessId, status: 'ACTIVE' } })
-  // if (sub) return { plan: sub.planTier as PlanTier, isTrialing: false }
 
   return { plan: 'FREE', isTrialing: false }
 }

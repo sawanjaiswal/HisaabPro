@@ -88,7 +88,7 @@ Frontend = dumb UI that renders server state
 | Soft delete (full) | Prisma extension auto-filters `isDeleted: false` on all reads. 24 models covered. Cascade rules enforced. |
 | Permission middleware | `requirePermission()` on all 133 mutation routes |
 | Admin separation | Separate `AdminUser` table, JWT audience claim, dedicated routes |
-| Connection pooling | `connection_limit=10`, `pool_timeout=30` in Prisma datasource URL |
+| Connection pooling | `directUrl` in schema.prisma for migrations, `connection_limit=10&pool_timeout=30` documented in `.env.example` for production |
 | Health monitoring | `GET /api/health/detailed` — DB, memory, uptime, version. Slow query logging (configurable threshold). |
 | Integration tests | 148 tests (78 integration w/ real PostgreSQL + 70 mock). Vitest, `fileParallelism: false`. |
 | Security audit | Full 156-file audit (2026-04-03). 24 findings (4 P0, 7 P1, 10 P2, 3 P3) — ALL resolved. |
@@ -100,15 +100,15 @@ Frontend = dumb UI that renders server state
 
 | Gap | Current State | Gold Standard |
 |-----|--------------|---------------|
-| ~~**Server state management**~~ | ~~useState + useEffect + manual refresh()~~ | **DONE** — TanStack Query v5: 64 hooks migrated, auto-cache, stale-while-revalidate |
-| ~~**Real-time sync**~~ | ~~None — page reload~~ | **DONE** — SSE `/api/events/stream` + auto-emit middleware + `useSSE` hook → TQ invalidation |
-| ~~**Permission model**~~ | ~~8 modules~~ | **DONE** — Expanded to 14 modules (56 permissions), resource.action matrix with field-level control |
-| ~~**Soft delete coverage**~~ | ~~6 models have it, ~62 don't~~ | **DONE** — Prisma extension + 24 models + cascade rules |
-| ~~**Subscription gating**~~ | ~~No enforcement~~ | **DONE** — `requirePlan()` + `requireQuota()` middleware, 3 tiers, 30-day trial |
-| ~~**Offline conflict resolution**~~ | ~~Basic sync queue~~ | **DONE** — `X-Updated-At` conflict detection middleware, 409 Conflict response |
-| ~~**Data export**~~ | ~~None~~ | **DONE** — CSV export: parties, products, documents, payments, expenses (`/api/export/full`) |
-| ~~**Multi-device sessions**~~ | ~~No tracking~~ | **DONE** — `/api/sessions` list/revoke/revoke-all (built on RefreshToken) |
-| ~~**Connection pooling**~~ | ~~Direct Prisma connection~~ | **DONE** — `connection_limit=10`, `pool_timeout=30` in datasource URL |
+| ~~**Server state management**~~ | ~~useState + useEffect + manual refresh()~~ | **DONE** — TanStack Query v5: 83 hooks migrated, auto-cache, stale-while-revalidate, zero old patterns remaining |
+| ~~**Real-time sync**~~ | ~~None — page reload~~ | **DONE** — SSE `/api/events/stream` + auto-emit middleware + `useSSE` hook → TQ cache invalidation |
+| ~~**Permission model**~~ | ~~8 modules~~ | **DONE** — 14 modules (52 permissions) as `String[]` on Role model + field-level filter middleware. Note: using flat `resource.action` strings, not normalized RoleGrant table — simpler, works for this scale. |
+| ~~**Soft delete coverage**~~ | ~~6 models have it, ~62 don't~~ | **DONE** — Prisma extension + 37 models registered + cascade rules. BusinessUser soft-deleted on staff removal. |
+| ~~**Subscription gating**~~ | ~~No enforcement~~ | **DONE** — `Subscription` Prisma model + `requirePlan()` + `requireQuota()` middleware on 8 routes. 3 tiers (FREE/PRO/BUSINESS), 30-day trial, Razorpay IDs stored. |
+| ~~**Offline conflict resolution**~~ | ~~Basic sync queue~~ | **DONE** — `X-Updated-At` conflict detection middleware, 409 Conflict response + frontend handler |
+| ~~**Data export**~~ | ~~None~~ | **DONE** — CSV export (5 entities), owner-only (`requireOwner()`), rate limited 1/day per business |
+| ~~**Multi-device sessions**~~ | ~~No tracking~~ | **DONE** — `/api/sessions` list/revoke/revoke-all (built on RefreshToken model) |
+| ~~**Connection pooling**~~ | ~~Direct Prisma connection~~ | **DONE** — `directUrl` in schema.prisma, `connection_limit=10&pool_timeout=30` documented in `.env.example` |
 
 ### 3.5 Observability Strategy
 

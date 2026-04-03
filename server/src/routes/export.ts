@@ -7,13 +7,24 @@
 
 import { Router } from 'express'
 import { auth } from '../middleware/auth.js'
+import { requireOwner } from '../middleware/permission.js'
+import { createRateLimiter } from '../middleware/rate-limit.js'
 import { sendSuccess, sendError } from '../lib/response.js'
 import { asyncHandler } from '../lib/async-handler.js'
 import { generateFullExport } from '../services/export.service.js'
 
 const router = Router()
 
-router.use(auth)
+/** 1 export per businessId per 24 hours */
+const exportRateLimiter = createRateLimiter({
+  windowMs: 86_400_000, // 24 hours
+  max: 1,
+  message: 'Export limit: 1 per day. Try again tomorrow.',
+  keyFn: (req) => `rl:export:${req.user?.businessId ?? req.ip ?? 'unknown'}`,
+  eventName: 'rate_limit.export_hit',
+})
+
+router.use(auth, requireOwner(), exportRateLimiter)
 
 /** Full business data export — all entities as CSV */
 router.get('/full', asyncHandler(async (req, res) => {

@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
 }
 
 // === Foundation models — expanded per feature via /f ===
@@ -164,6 +165,7 @@ model Business {
   serialNumbers    SerialNumber[]
 
   usersLastActive  User[] @relation("UserLastActiveBusiness")
+  subscription     Subscription?
 
   @@index([name])
 }
@@ -2080,4 +2082,25 @@ model GodownTransfer {
   @@index([productId])
   @@index([fromGodownId])
   @@index([toGodownId])
+}
+
+// === Subscription — Feature: plan gating ===
+
+model Subscription {
+  id             String    @id @default(cuid())
+  businessId     String    @unique
+  planTier       String    @default("FREE") // FREE, PRO, BUSINESS
+  status         String    @default("ACTIVE") // ACTIVE, CANCELLED, PAST_DUE, TRIALING
+  startDate      DateTime  @default(now())
+  expiresAt      DateTime?
+  razorpaySubId  String?   // Razorpay subscription ID
+  razorpayPlanId String?   // Razorpay plan ID
+  cancelledAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id])
+
+  @@index([businessId])
+  @@index([status])
 }
