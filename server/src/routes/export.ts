@@ -10,7 +10,7 @@ import { auth } from '../middleware/auth.js'
 import { requireOwner } from '../middleware/permission.js'
 import { createRateLimiter } from '../middleware/rate-limit.js'
 import { sendSuccess, sendError } from '../lib/response.js'
-import { asyncHandler } from '../lib/async-handler.js'
+import { asyncHandler } from '../middleware/asyncHandler.js'
 import { generateFullExport } from '../services/export.service.js'
 
 const router = Router()
@@ -42,7 +42,7 @@ router.get('/csv/:entity', asyncHandler(async (req, res) => {
   const { entity } = req.params
   const validEntities = ['parties', 'products', 'documents', 'payments', 'expenses']
 
-  if (!validEntities.includes(entity)) {
+  if (!validEntities.includes(entity as string)) {
     return sendError(res, `Invalid entity: ${entity}. Valid: ${validEntities.join(', ')}`, 'VALIDATION_ERROR', 400)
   }
 

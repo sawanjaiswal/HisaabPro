@@ -521,6 +521,10 @@ function requireQuota(resource: 'invoices' | 'users') {
 - Frontend conflict notification UI (toast + diff viewer)
 - Conflict log table for audit
 
+> **MVP Scope Notes:**
+> - Diff viewer is **Phase 2** — toast notification with "Your changes were not applied" is sufficient for MVP.
+> - ConflictLog can use the existing `AuditLog` table (action: `CONFLICT_DETECTED`) — no separate model needed.
+
 **Not building (overkill for this market):**
 - CRDTs
 - Three-way merge
@@ -585,6 +589,11 @@ POST /api/export/full
 → GET /api/export/:jobId/status
 → GET /api/export/:jobId/download (signed URL, 24h expiry)
 ```
+
+> **MVP Scope Notes:**
+> - Async job queue is **Phase 2** — synchronous export handles current scale (50K rows per entity). MVP uses `POST /api/export/csv` with direct download response.
+> - Excel format (.xlsx) is **Phase 2** — CSV is the industry standard for accounting data and works with Tally, Excel, and Google Sheets out of the box.
+> - Tally XML export already exists at a separate endpoint (`/api/reports/financial/tally-export`) — no duplication needed here.
 
 **Limits:**
 - 1 full export per day (prevent abuse)
@@ -796,6 +805,21 @@ These are already gold standard — do not touch:
 | **Erasure Request** | < 72 hours | Automated anonymization workflow |
 
 **Note:** 99.5% is realistic for Render's starter/standard tiers. Achieving 99.9%+ requires Render's dedicated instances or migration to Railway/Fly.io with multi-region. Not needed at current scale.
+
+---
+
+## 10. Architecture vs Product Features
+
+This PRD covers **architecture upgrades** — the plumbing that makes the app production-ready. It is important to distinguish what is "complete" at the architecture level vs what still needs product/UI polish:
+
+| Layer | Status | What This Means |
+|-------|--------|-----------------|
+| **Middleware** (auth, permissions, subscription gating, conflict detection, rate limiting) | Complete | All request-level enforcement works. Routes are protected. |
+| **Prisma models** (Subscription, RoleGrant, soft delete fields, AuditLog) | Complete | Schema supports all gold-standard features. |
+| **Patterns** (TanStack Query hooks, SSE invalidation, CSV export, session management) | Complete | The code patterns exist and are wired up. |
+| **Product UI** (usage meters, upgrade modals, role builder grid, session list, export download page) | Basic | Created as functional components. Will be polished during frontend design passes (`/polish` + `/critique` cycles). |
+
+**In practice:** A feature like subscription gating has a working `requirePlan()` middleware, a `402` response with upgrade info, and a basic frontend handler — but the upgrade modal UI is not yet the premium Cred/Jupiter-level experience described in the design direction. That polish comes in dedicated UI passes, not in this architecture PRD.
 
 ---
 

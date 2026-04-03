@@ -67,6 +67,7 @@ import recycleBinRoutes from './routes/recycle-bin.js'
 import eventRoutes from './routes/events.js'
 import sessionRoutes from './routes/sessions.js'
 import exportRoutes from './routes/export.js'
+import { subscriptionRouter } from './routes/subscription.js'
 
 export function createApp() {
   const app = express()
@@ -168,6 +169,7 @@ export function createApp() {
   app.use('/api/dashboard', dashboardRoutes)
   app.use('/api/reports', reportRoutes)
   app.use('/api/businesses', businessSettingsRouter)
+  app.use('/api/businesses', subscriptionRouter)
   app.use('/api/users', userSettingsRouter)
   app.use('/api/permissions', permissionsRouter)
   app.use('/api/referral', referralRoutes)

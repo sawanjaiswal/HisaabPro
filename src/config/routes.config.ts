@@ -102,4 +102,7 @@ export const ROUTES = {
 
   // POS
   POS: '/pos',
+
+  // Account
+  SETTINGS_SESSIONS: '/settings/sessions',
 } as const

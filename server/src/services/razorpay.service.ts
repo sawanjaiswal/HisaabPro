@@ -7,14 +7,22 @@
 
 import Razorpay from 'razorpay'
 import crypto from 'node:crypto'
-import { prisma } from '../lib/prisma.js'
 import logger from '../lib/logger.js'
 import { validationError } from '../lib/errors.js'
+import type { WebhookPayload } from './razorpay-webhook.service.js'
+import {
+  handleSubscriptionActivated,
+  handleSubscriptionCharged,
+  handleSubscriptionCancelled,
+  handleSubscriptionPaused,
+  handlePaymentFailedOnSubscription,
+} from './razorpay-webhook.service.js'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface CreateSubscriptionOpts {
   userId: string
+  businessId: string
   planId: string
   couponCode?: string
 }
@@ -35,14 +43,6 @@ interface StatusResult {
   status: string
   currentEnd?: Date
   error?: string
-}
-
-interface WebhookPayload {
-  event: string
-  payload: {
-    subscription?: { entity: { id: string; status: string; current_end?: number | null } }
-    payment?: { entity: { id: string; status: string; subscription_id?: string } }
-  }
 }
 
 // ─── Singleton ──────────────────────────────────────────────────────────────
@@ -74,11 +74,12 @@ export async function createSubscription(
   const rz = getRazorpay()
   if (!rz) return { success: false, error: 'Razorpay not configured' }
 
-  const { userId, planId, couponCode } = opts
+  const { userId, businessId, planId, couponCode } = opts
 
   // Look up coupon for offer_id if provided
   let offerId: string | undefined
   if (couponCode) {
+    const { prisma } = await import('../lib/prisma.js')
     const coupon = await prisma.coupon.findUnique({
       where: { code: couponCode.toUpperCase() },
       select: { razorpayOfferId: true },
@@ -94,7 +95,7 @@ export async function createSubscription(
       total_count: 12, // 12 billing cycles (1 year for monthly)
       customer_notify: 1,
       ...(offerId ? { offer_id: offerId } : {}),
-      notes: { userId, source: 'hisaabpro' },
+      notes: { userId, businessId, source: 'hisaabpro' },
     })
 
     logger.info('razorpay.subscription_created', {
@@ -189,91 +190,34 @@ export async function handleWebhook(
 
   switch (event) {
     case 'subscription.activated':
+      await handleSubscriptionActivated(payload)
+      break
+
     case 'subscription.charged':
-      await handleSubscriptionActive(payload)
+      await handleSubscriptionCharged(payload)
       break
 
     case 'subscription.cancelled':
     case 'subscription.completed':
-      await handleSubscriptionEnded(payload, event)
+      await handleSubscriptionCancelled(payload)
       break
 
-    case 'payment.captured':
-      await handlePaymentCaptured(payload)
+    case 'subscription.paused':
+      await handleSubscriptionPaused(payload)
       break
 
     case 'payment.failed':
-      await handlePaymentFailed(payload)
+      await handlePaymentFailedOnSubscription(payload)
+      break
+
+    case 'payment.captured':
+      logger.info('razorpay.payment_captured', {
+        paymentId: payload.payload.payment?.entity.id,
+        subscriptionId: payload.payload.payment?.entity.subscription_id ?? null,
+      })
       break
 
     default:
       logger.info('razorpay.webhook_unhandled', { event })
   }
-}
-
-// ─── Webhook Event Handlers (private) ───────────────────────────────────────
-
-async function handleSubscriptionActive(payload: WebhookPayload): Promise<void> {
-  const sub = payload.payload.subscription?.entity
-  if (!sub) return
-
-  const subscriptionId = sub.id
-  const currentEnd = sub.current_end ? new Date(sub.current_end * 1000) : null
-
-  // Find redemption linked to this subscription and update user status
-  const redemption = await prisma.couponRedemption.findFirst({
-    where: { razorpaySubscriptionId: subscriptionId },
-    select: { userId: true },
-  })
-
-  if (redemption) {
-    logger.info('razorpay.subscription_active', {
-      subscriptionId,
-      userId: redemption.userId,
-      currentEnd: currentEnd?.toISOString(),
-    })
-  } else {
-    logger.info('razorpay.subscription_active_no_user', { subscriptionId })
-  }
-}
-
-async function handleSubscriptionEnded(
-  payload: WebhookPayload,
-  event: string
-): Promise<void> {
-  const sub = payload.payload.subscription?.entity
-  if (!sub) return
-
-  const subscriptionId = sub.id
-
-  const redemption = await prisma.couponRedemption.findFirst({
-    where: { razorpaySubscriptionId: subscriptionId },
-    select: { userId: true },
-  })
-
-  logger.info('razorpay.subscription_ended', {
-    subscriptionId,
-    event,
-    userId: redemption?.userId ?? null,
-  })
-}
-
-async function handlePaymentCaptured(payload: WebhookPayload): Promise<void> {
-  const payment = payload.payload.payment?.entity
-  if (!payment) return
-
-  logger.info('razorpay.payment_captured', {
-    paymentId: payment.id,
-    subscriptionId: payment.subscription_id ?? null,
-  })
-}
-
-async function handlePaymentFailed(payload: WebhookPayload): Promise<void> {
-  const payment = payload.payload.payment?.entity
-  if (!payment) return
-
-  logger.warn('razorpay.payment_failed', {
-    paymentId: payment.id,
-    subscriptionId: payment.subscription_id ?? null,
-  })
 }

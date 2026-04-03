@@ -8,7 +8,7 @@
 import { Router } from 'express'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess, sendError } from '../lib/response.js'
-import { asyncHandler } from '../lib/async-handler.js'
+import { asyncHandler } from '../middleware/asyncHandler.js'
 import { listSessions, revokeSession, revokeAllSessions } from '../services/session.service.js'
 
 const router = Router()
@@ -30,7 +30,7 @@ router.delete('/all', asyncHandler(async (req, res) => {
 
 /** Revoke a specific session */
 router.delete('/:sessionId', asyncHandler(async (req, res) => {
-  const success = await revokeSession(req.user!.userId, req.params.sessionId)
+  const success = await revokeSession(req.user!.userId, req.params.sessionId as string)
   if (!success) {
     return sendError(res, 'Session not found', 'NOT_FOUND', 404)
   }

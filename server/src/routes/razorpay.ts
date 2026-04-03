@@ -57,9 +57,10 @@ router.post(
   validate(subscribeSchema),
   asyncHandler(async (req, res) => {
     const userId = req.user!.userId
+    const businessId = req.user!.businessId
     const { planId, couponCode } = req.body as { planId: string; couponCode?: string }
 
-    const result = await createSubscription({ userId, planId, couponCode })
+    const result = await createSubscription({ userId, businessId, planId, couponCode })
 
     if (!result.success) {
       sendError(res, result.error ?? 'Subscription creation failed', 'SUBSCRIPTION_FAILED', 502)

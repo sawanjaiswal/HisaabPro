@@ -1,5 +1,6 @@
-import { Suspense } from 'react'
+import { Suspense, useEffect } from 'react'
 import type { ReactNode } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ROUTES } from '@/config/routes.config'
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary'
@@ -22,7 +23,7 @@ import {
   ReportsHub, SaleReport, PurchaseReport, PartyStatement, StockSummary,
   DayBook, PaymentHistory, TaxSummary, GstReturns, TdsTcsReport,
   Settings, Roles, RoleBuilder, Staff, StaffInvite, StaffPermissions,
-  TransactionControls, AuditLog, PinSetup, Shortcuts,
+  TransactionControls, AuditLog, ActiveSessions, PinSetup, Shortcuts,
   GstSettings, TaxCategories, CreateTaxCategory, EditTaxCategory,
   CurrencySettings, RecurringList,
   GstReconciliationList, GstReconciliationDetail,
@@ -70,6 +71,19 @@ function GuestRoute({ children }: { children: ReactNode }) {
 export function App() {
   useRoutePreload()
   useSSE() // Real-time sync: SSE → TanStack Query cache invalidation
+
+  const queryClient = useQueryClient()
+
+  // Invalidate all queries when app returns to foreground
+  useEffect(() => {
+    const handler = () => {
+      if (document.visibilityState === 'visible') {
+        queryClient.invalidateQueries()
+      }
+    }
+    document.addEventListener('visibilitychange', handler)
+    return () => document.removeEventListener('visibilitychange', handler)
+  }, [queryClient])
 
   return (
     <ErrorBoundary>
@@ -119,6 +133,7 @@ export function App() {
         <Route path={ROUTES.SETTINGS_SECURITY} element={<PageRoute><ProtectedRoute><PinSetup /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_TRANSACTION_CONTROLS} element={<PageRoute><ProtectedRoute><TransactionControls /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_AUDIT_LOG} element={<PageRoute><ProtectedRoute><AuditLog /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_SESSIONS} element={<PageRoute><ProtectedRoute><ActiveSessions /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_SHORTCUTS} element={<PageRoute><ProtectedRoute><Shortcuts /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_PIN_SETUP} element={<PageRoute><ProtectedRoute><PinSetup /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_GST} element={<PageRoute><ProtectedRoute><GstSettings /></ProtectedRoute></PageRoute>} />

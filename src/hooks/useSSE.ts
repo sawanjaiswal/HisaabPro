@@ -1,6 +1,7 @@
 /**
  * SSE hook — connects to server event stream and auto-invalidates TanStack Query cache.
  * Mount once at app root. TanStack Query handles the actual refetching.
+ * Fallback: when SSE disconnects, polls every 30s via queryClient.invalidateQueries().
  */
 
 import { useEffect, useRef } from 'react'
@@ -31,15 +32,34 @@ export function useSSE() {
   const queryClient = useQueryClient()
   const { isAuthenticated } = useAuth()
   const sourceRef = useRef<EventSource | null>(null)
+  const pollingRef = useRef<number | null>(null)
 
   useEffect(() => {
     if (!isAuthenticated) return
+
+    const stopPolling = () => {
+      if (pollingRef.current !== null) {
+        clearInterval(pollingRef.current)
+        pollingRef.current = null
+      }
+    }
+
+    const startPolling = () => {
+      if (pollingRef.current === null) {
+        pollingRef.current = window.setInterval(() => {
+          queryClient.invalidateQueries()
+        }, 30_000)
+      }
+    }
 
     const url = `${API_URL}/events/stream`
     const source = new EventSource(url, { withCredentials: true })
     sourceRef.current = source
 
     source.onmessage = (event) => {
+      // SSE is alive — stop polling fallback
+      stopPolling()
+
       try {
         const data = JSON.parse(event.data) as {
           type: string
@@ -68,12 +88,14 @@ export function useSSE() {
     }
 
     source.onerror = () => {
-      // EventSource auto-reconnects — no manual handling needed
+      // EventSource auto-reconnects — start polling fallback in the meantime
+      startPolling()
     }
 
     return () => {
       source.close()
       sourceRef.current = null
+      stopPolling()
     }
   }, [isAuthenticated, queryClient])
 }

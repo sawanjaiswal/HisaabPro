@@ -11,7 +11,11 @@ import { LanguageProvider } from './context/LanguageContext'
 import { App } from './App'
 import { initServiceWorker } from './lib/sw-register'
 import { recoverStuckItems } from './lib/offline'
+import { initSentry } from './lib/sentry'
 import './styles/globals.css'
+
+// Initialize error tracking before anything else
+initSentry()
 
 // Register service worker + recover any stuck sync items from previous crash
 initServiceWorker()

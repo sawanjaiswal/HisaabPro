@@ -139,6 +139,20 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     ],
   },
   {
+    id: 'account',
+    title: 'Account',
+    items: [
+      {
+        id: 'active-sessions',
+        label: 'Active Sessions',
+        description: 'View and revoke logins from other devices',
+        icon: 'ShieldCheck',
+        route: ROUTES.SETTINGS_SESSIONS,
+        type: 'navigation',
+      },
+    ],
+  },
+  {
     id: 'transaction-controls',
     title: 'Transaction Controls',
     items: [

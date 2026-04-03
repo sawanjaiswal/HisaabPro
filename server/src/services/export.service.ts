@@ -1,6 +1,6 @@
 /**
  * Data export service — CSV export of all business data for owners.
- * Streams data to avoid loading entire DB into memory.
+ * Uses Prisma select to minimize memory footprint.
  */
 
 import { prisma } from '../lib/prisma.js'
@@ -20,7 +20,6 @@ function toCsv(rows: ExportRow[], columns: string[]): string {
       const val = row[col]
       if (val === null || val === undefined) return ''
       const str = String(val)
-      // Escape CSV: wrap in quotes if contains comma, quote, or newline
       if (str.includes(',') || str.includes('"') || str.includes('\n')) {
         return `"${str.replace(/"/g, '""')}"`
       }
@@ -47,7 +46,7 @@ async function exportParties(businessId: string): Promise<string> {
   return toCsv(
     parties.map((p) => ({
       ...p,
-      outstandingBalance: Number(p.outstandingBalance) / 100, // paise → rupees
+      outstandingBalance: Number(p.outstandingBalance) / 100,
       totalBusiness: Number(p.totalBusiness) / 100,
       createdAt: p.createdAt.toISOString(),
     })),
@@ -61,10 +60,10 @@ async function exportProducts(businessId: string): Promise<string> {
   const products = await prisma.product.findMany({
     where: { businessId, isDeleted: false },
     select: {
-      name: true, sku: true, type: true,
+      name: true, sku: true, status: true,
       salePrice: true, purchasePrice: true,
-      currentStock: true, lowStockThreshold: true,
-      hsn: true, isActive: true, createdAt: true,
+      currentStock: true, minStockLevel: true,
+      hsnCode: true, createdAt: true,
       unit: { select: { symbol: true } },
       category: { select: { name: true } },
     },
@@ -75,31 +74,31 @@ async function exportProducts(businessId: string): Promise<string> {
     products.map((p) => ({
       name: p.name,
       sku: p.sku,
-      type: p.type,
+      status: p.status,
       salePrice: Number(p.salePrice) / 100,
-      purchasePrice: Number(p.purchasePrice) / 100,
+      purchasePrice: p.purchasePrice ? Number(p.purchasePrice) / 100 : null,
       currentStock: Number(p.currentStock),
-      lowStockThreshold: p.lowStockThreshold,
+      minStockLevel: Number(p.minStockLevel),
       unit: p.unit?.symbol ?? '',
       category: p.category?.name ?? '',
-      hsn: p.hsn,
-      isActive: p.isActive,
+      hsnCode: p.hsnCode,
       createdAt: p.createdAt.toISOString(),
     })),
-    ['name', 'sku', 'type', 'salePrice', 'purchasePrice', 'currentStock',
-     'lowStockThreshold', 'unit', 'category', 'hsn', 'isActive', 'createdAt']
+    ['name', 'sku', 'status', 'salePrice', 'purchasePrice', 'currentStock',
+     'minStockLevel', 'unit', 'category', 'hsnCode', 'createdAt']
   )
 }
 
-/** Export invoices as CSV */
+/** Export documents/invoices as CSV */
 async function exportDocuments(businessId: string): Promise<string> {
   const docs = await prisma.document.findMany({
     where: { businessId, isDeleted: false },
     select: {
       documentNumber: true, type: true, status: true,
       documentDate: true, dueDate: true,
-      subtotal: true, taxAmount: true, totalAmount: true,
-      paidAmount: true, balanceDue: true,
+      subtotal: true, totalTaxableValue: true,
+      totalCgst: true, totalSgst: true, totalIgst: true,
+      grandTotal: true,
       party: { select: { name: true } },
       createdAt: true,
     },
@@ -113,17 +112,15 @@ async function exportDocuments(businessId: string): Promise<string> {
       type: d.type,
       status: d.status,
       partyName: d.party?.name ?? '',
-      documentDate: d.documentDate?.toISOString().split('T')[0] ?? '',
+      documentDate: d.documentDate.toISOString().split('T')[0],
       dueDate: d.dueDate?.toISOString().split('T')[0] ?? '',
       subtotal: Number(d.subtotal) / 100,
-      taxAmount: Number(d.taxAmount) / 100,
-      totalAmount: Number(d.totalAmount) / 100,
-      paidAmount: Number(d.paidAmount) / 100,
-      balanceDue: Number(d.balanceDue) / 100,
+      taxAmount: (Number(d.totalCgst) + Number(d.totalSgst) + Number(d.totalIgst)) / 100,
+      grandTotal: Number(d.grandTotal) / 100,
       createdAt: d.createdAt.toISOString(),
     })),
     ['documentNumber', 'type', 'status', 'partyName', 'documentDate', 'dueDate',
-     'subtotal', 'taxAmount', 'totalAmount', 'paidAmount', 'balanceDue', 'createdAt']
+     'subtotal', 'taxAmount', 'grandTotal', 'createdAt']
   )
 }
 
@@ -132,30 +129,27 @@ async function exportPayments(businessId: string): Promise<string> {
   const payments = await prisma.payment.findMany({
     where: { businessId, isDeleted: false },
     select: {
-      paymentNumber: true, type: true, mode: true, status: true,
-      amount: true, paymentDate: true, reference: true, notes: true,
+      type: true, mode: true,
+      amount: true, date: true, referenceNumber: true, notes: true,
       party: { select: { name: true } },
       createdAt: true,
     },
-    orderBy: { paymentDate: 'desc' },
+    orderBy: { date: 'desc' },
     take: 100000,
   })
 
   return toCsv(
     payments.map((p) => ({
-      paymentNumber: p.paymentNumber,
       type: p.type,
       mode: p.mode,
-      status: p.status,
       partyName: p.party?.name ?? '',
       amount: Number(p.amount) / 100,
-      paymentDate: p.paymentDate?.toISOString().split('T')[0] ?? '',
-      reference: p.reference,
+      date: p.date.toISOString().split('T')[0],
+      referenceNumber: p.referenceNumber,
       notes: p.notes,
       createdAt: p.createdAt.toISOString(),
     })),
-    ['paymentNumber', 'type', 'mode', 'status', 'partyName', 'amount',
-     'paymentDate', 'reference', 'notes', 'createdAt']
+    ['type', 'mode', 'partyName', 'amount', 'date', 'referenceNumber', 'notes', 'createdAt']
   )
 }
 
@@ -164,12 +158,12 @@ async function exportExpenses(businessId: string): Promise<string> {
   const expenses = await prisma.expense.findMany({
     where: { businessId, isDeleted: false },
     select: {
-      amount: true, description: true, expenseDate: true,
-      paymentMode: true, reference: true,
+      amount: true, notes: true, date: true,
+      paymentMode: true, referenceNumber: true,
       category: { select: { name: true } },
       createdAt: true,
     },
-    orderBy: { expenseDate: 'desc' },
+    orderBy: { date: 'desc' },
     take: 100000,
   })
 
@@ -177,13 +171,13 @@ async function exportExpenses(businessId: string): Promise<string> {
     expenses.map((e) => ({
       category: e.category?.name ?? '',
       amount: Number(e.amount) / 100,
-      description: e.description,
-      expenseDate: e.expenseDate?.toISOString().split('T')[0] ?? '',
+      notes: e.notes,
+      date: e.date.toISOString().split('T')[0],
       paymentMode: e.paymentMode,
-      reference: e.reference,
+      referenceNumber: e.referenceNumber,
       createdAt: e.createdAt.toISOString(),
     })),
-    ['category', 'amount', 'description', 'expenseDate', 'paymentMode', 'reference', 'createdAt']
+    ['category', 'amount', 'notes', 'date', 'paymentMode', 'referenceNumber', 'createdAt']
   )
 }
 

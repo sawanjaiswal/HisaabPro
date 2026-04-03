@@ -1,6 +1,10 @@
 import 'dotenv/config'
+import { initSentry } from './lib/sentry.js'
 import { createApp } from './app.js'
 import logger from './lib/logger.js'
+
+// Initialize error tracking before app starts
+initSentry()
 
 // ─── Process-level error handlers (catch unhandled async errors) ─────────────
 
