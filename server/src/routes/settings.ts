@@ -29,6 +29,7 @@ import {
 import { joinBusinessSchema } from '../schemas/auth.schemas.js'
 import { createBusinessSchema, updateBusinessSchema } from '../schemas/business.schemas.js'
 import { requireOwner } from '../middleware/permission.js'
+import { requirePlan, requireQuota } from '../middleware/subscription-gate.js'
 import * as settingsService from '../services/settings.service.js'
 import * as businessService from '../services/business.service.js'
 import * as authService from '../services/auth.service.js'
@@ -91,13 +92,13 @@ businessSettingsRouter.get('/:businessId/roles/:roleId', asyncHandler(async (req
   sendSuccess(res, role)
 }))
 
-businessSettingsRouter.post('/:businessId/roles', requireOwner(), validate(createRoleSchema), asyncHandler(async (req, res) => {
+businessSettingsRouter.post('/:businessId/roles', requirePlan('PRO'), requireOwner(), validate(createRoleSchema), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const role = await settingsService.createRole(businessId, req.body)
   sendSuccess(res, role, 201)
 }))
 
-businessSettingsRouter.put('/:businessId/roles/:roleId', requireOwner(), validate(updateRoleSchema), asyncHandler(async (req, res) => {
+businessSettingsRouter.put('/:businessId/roles/:roleId', requirePlan('PRO'), requireOwner(), validate(updateRoleSchema), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const role = await settingsService.updateRole(businessId, String(req.params.roleId), req.body)
   sendSuccess(res, role)
@@ -119,7 +120,7 @@ businessSettingsRouter.get('/:businessId/staff', asyncHandler(async (req, res) =
   sendSuccess(res, data)
 }))
 
-businessSettingsRouter.post('/:businessId/staff/invite', requireOwner(), sensitiveMutationLimiter, validate(inviteStaffSchema), asyncHandler(async (req, res) => {
+businessSettingsRouter.post('/:businessId/staff/invite', requireQuota('users'), requireOwner(), sensitiveMutationLimiter, validate(inviteStaffSchema), asyncHandler(async (req, res) => {
   const userId = req.user!.userId
   const businessId = req.user!.businessId
   const data = await settingsService.inviteStaff(businessId, userId, req.body)

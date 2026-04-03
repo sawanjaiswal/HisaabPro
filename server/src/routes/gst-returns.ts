@@ -6,6 +6,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { auth } from '../middleware/auth.js'
 import { requirePermission } from '../middleware/permission.js'
+import { requirePlan } from '../middleware/subscription-gate.js'
 import { sendSuccess } from '../lib/response.js'
 import { gstReturnSchema, gstReturnExportSchema } from '../schemas/report.schemas.js'
 import * as gstService from '../services/gst-return.service.js'
@@ -19,6 +20,7 @@ function sanitizeFileName(name: string): string {
 }
 
 router.use(auth)
+router.use(requirePlan('PRO'))
 
 /** GET /api/gst/returns/:returnType/:period — Generate return summary */
 router.get('/:returnType/:period', asyncHandler(async (req, res) => {

@@ -159,6 +159,16 @@ export async function api<T>(
     throw new ApiError('Session expired', 'UNAUTHORIZED', 401)
   }
 
+  // 409 conflict — another user modified the record while offline
+  if (response.status === 409) {
+    const conflictBody = await response.json().catch(() => null)
+    throw new ApiError(
+      conflictBody?.error?.message || 'This record was modified by another user. Please refresh and try again.',
+      'CONFLICT',
+      409
+    )
+  }
+
   // 204/205/304 have no body — synthesize success
   const NO_BODY_STATUSES = new Set([204, 205, 304])
   let json: ApiResponse<T>

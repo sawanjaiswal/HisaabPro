@@ -8,6 +8,7 @@
 import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { auth } from '../middleware/auth.js'
+import { requirePlan } from '../middleware/subscription-gate.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   periodQuerySchema,
@@ -96,6 +97,7 @@ router.get(
  */
 router.get(
   '/tally-export',
+  requirePlan('BUSINESS'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const { from, to } = tallyExportQuerySchema.parse(req.query)

@@ -27,6 +27,7 @@ import { prisma } from '../lib/prisma.js'
 import { notFoundError } from '../lib/errors.js'
 import logger from '../lib/logger.js'
 import { requirePermission } from '../middleware/permission.js'
+import { requirePlan, requireQuota } from '../middleware/subscription-gate.js'
 import { sendWhatsApp, sendEmail } from '../services/notification.service.js'
 import { renderInvoiceShareEmail } from '../lib/email-templates.js'
 import { generateInvoicePdf } from '../services/pdf.service.js'
@@ -87,6 +88,7 @@ router.post(
 /** POST /api/documents/quick-sale — Feature #110: POS one-shot sale + payment */
 router.post(
   '/quick-sale',
+  requirePlan('BUSINESS'),
   requirePermission('invoicing.create'),
   idempotencyCheck(),
   validate(quickSaleSchema),
@@ -219,6 +221,7 @@ router.post(
 /** POST /api/documents — Create document */
 router.post(
   '/',
+  requireQuota('invoices'),
   requirePermission('invoicing.create'),
   replayProtection,
   idempotencyCheck(),

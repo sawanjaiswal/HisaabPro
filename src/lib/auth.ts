@@ -67,7 +67,12 @@ export async function devLogin(
     tokens: { accessToken: string; refreshToken: string }
   }>('/auth/dev-login', {
     method: 'POST',
-    body: JSON.stringify({ username, password, ...(captchaToken ? { captchaToken } : {}) }),
+    body: JSON.stringify({
+      username,
+      password,
+      ...(captchaToken ? { captchaToken } : {}),
+      deviceInfo: `${navigator.userAgent.slice(0, 200)}`,
+    }),
     signal,
   })
   const businessId = raw.activeBusiness?.id ?? raw.businesses[0]?.id ?? null

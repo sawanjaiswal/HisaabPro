@@ -11,12 +11,14 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { requirePermission } from '../middleware/permission.js'
+import { requirePlan } from '../middleware/subscription-gate.js'
 import { sendSuccess } from '../lib/response.js'
 import { generateEInvoiceSchema, cancelEInvoiceSchema } from '../schemas/ecompliance.schemas.js'
 import * as einvoiceService from '../services/einvoice.service.js'
 
 const router = Router()
 router.use(auth)
+router.use(requirePlan('BUSINESS'))
 
 /** POST /api/einvoice/generate — Generate IRN for a saved sale invoice */
 router.post(

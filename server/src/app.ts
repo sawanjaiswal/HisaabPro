@@ -14,6 +14,7 @@ import { performanceMonitoring } from './middleware/performance.js'
 import { apiRateLimiter } from './middleware/rate-limit.js'
 import { csrfProtection } from './middleware/csrf.js'
 import { sanitizeInput } from './middleware/sanitize-input.js'
+import { fieldFilter } from './middleware/field-filter.js'
 import { sseAutoEmit } from './middleware/sse-emit.js'
 import { conflictDetection } from './middleware/conflict-detection.js'
 import { prisma } from './lib/prisma.js'
@@ -112,6 +113,7 @@ export function createApp() {
   app.use(apiRateLimiter)
   app.use(csrfProtection)
   app.use(sanitizeInput)
+  app.use(fieldFilter) // Strip sensitive fields based on role permissions
   app.use(sseAutoEmit) // Auto-broadcast SSE events for all mutations
   app.use(conflictDetection) // Offline conflict detection on PUT/PATCH
 

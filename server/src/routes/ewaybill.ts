@@ -12,6 +12,7 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { requirePermission } from '../middleware/permission.js'
+import { requirePlan } from '../middleware/subscription-gate.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   generateEWayBillSchema,
@@ -27,6 +28,7 @@ import * as ewaybillService from '../services/ewaybill.service.js'
 
 const router = Router()
 router.use(auth)
+router.use(requirePlan('BUSINESS'))
 
 /** POST /api/ewaybill/generate — Generate E-Way Bill for a saved invoice */
 router.post(

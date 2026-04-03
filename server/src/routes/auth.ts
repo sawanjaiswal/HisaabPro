@@ -6,6 +6,7 @@ import { auth } from '../middleware/auth.js'
 import { authRateLimiter } from '../middleware/rate-limit.js'
 import { captchaGuard, recordFailedAttempt } from '../middleware/captcha.js'
 import { logoutSchema, devLoginSchema, switchBusinessSchema } from '../schemas/auth.schemas.js'
+import { prisma } from '../lib/prisma.js'
 import { sendSuccess, sendError } from '../lib/response.js'
 import { isBlacklisted, blacklistToken } from '../lib/token-blacklist.js'
 import { decodeToken } from '../lib/jwt.js'
@@ -17,6 +18,7 @@ import {
   CSRF_HEADER_NAME,
   CSRF_COOKIE_TTL_MS,
   REFRESH_TOKEN_COOKIE,
+  REFRESH_TOKEN_TTL_MS,
 } from '../config/security.js'
 
 const router = Router()
@@ -77,6 +79,16 @@ if (process.env.NODE_ENV !== 'production') {
         sendError(res, result.message, 'LOGIN_FAILED', 400)
         return
       }
+
+      // Store refresh token in DB for session management
+      await prisma.refreshToken.create({
+        data: {
+          userId: result.user!.id,
+          token: result.tokens!.refreshToken,
+          deviceInfo: (req.body.deviceInfo as string | undefined)?.slice(0, 200) || req.headers['user-agent']?.slice(0, 200) || null,
+          expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
+        },
+      })
 
       // Set tokens as httpOnly cookies
       authService.setTokenCookies(res, result.tokens!)
