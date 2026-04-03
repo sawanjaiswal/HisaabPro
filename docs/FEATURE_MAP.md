@@ -1,8 +1,34 @@
 # HisaabPro — Master Feature & Page Map (SSOT)
 
-Last updated: 2026-04-03 | Features: 135 | Pages: 95 | Stubs: 15
+Last updated: 2026-04-03 | Features: 152 | Pages: 96 | Stubs: 15
 
 > Single source of truth. Every feature has a unique ID. Every page is mapped to its feature. No duplicates.
+
+---
+
+## Phases Overview
+
+| Phase | Name | Features | Count | Status |
+|-------|------|----------|-------|--------|
+| **1A** | Core & Auth | F001–F010 | 10 | Done |
+| **1B** | Party Management | F011–F017 | 7 | Done |
+| **1C** | Invoicing & Documents | F018–F034 | 17 | Done (F030, F032 need credentials) |
+| **1D** | Invoice Templates & Printing | F035–F039 | 5 | Done |
+| **1E** | Payment Tracking | F040–F043 | 4 | Done (F042 needs credentials) |
+| **1F** | Basic Inventory | F044–F049 | 6 | Done |
+| **1G** | Dashboard & Reports | F050–F055 | 6 | Done |
+| **1H** | Settings & Security | F056–F062 | 7 | Done |
+| **1I** | Security Hardening | F063–F070 | 8 | Done |
+| **2** | GST & Compliance | F071–F085 | 15 | Done |
+| **3** | Accounting & Finance | F086–F100 | 15 | Done |
+| **4** | Advanced Inventory & POS | F101–F120 | 20 | Done |
+| **5** | Growth & Competitive Features | F121–F130 | 10 | Done |
+| **6** | BillBook User Requests | F131–F135 | 5 | Done |
+| **7** | Planned | F136 | 1 | Done |
+| **8** | Gold Standard Architecture | F137–F152 | 16 | Done (F148, F151 need credentials) |
+| | **Total** | | **152** | **All done** |
+
+**Needs credentials to activate (code is wired):** F002, F004, F030, F032, F042, F059, F148, F151
 
 ---
 
@@ -217,6 +243,27 @@ Last updated: 2026-04-03 | Features: 135 | Pages: 95 | Stubs: 15
 |----|---------|---------|-------------|----------------|----------|
 | F136 | Coupon / Discount Code System | `/admin/coupons`, `/admin/coupons/:id` | Real, Real | Done | P2 |
 
+## Phase 8: Gold Standard Architecture (2026-04-03)
+
+| ID | Feature | Page(s) | Page Status | Feature Status | Priority |
+|----|---------|---------|-------------|----------------|----------|
+| F137 | TanStack Query Migration (83 hooks, cache, stale-while-revalidate) | — (global, `QueryClientProvider` in main.tsx) | — | Done | P0 |
+| F138 | SSE Real-Time Sync (auto-emit middleware, per-business event bus) | — (global, `useSSE` in App.tsx) | — | Done | P0 |
+| F139 | Subscription Gating (`requirePlan`, `requireQuota`, 3 tiers, trial) | — (middleware on 8 routes) | — | Done | P0 |
+| F140 | Subscription API + Hook | — (`GET /api/businesses/:id/subscription`) | — | Done | P0 |
+| F141 | Upgrade Prompt (402 handler UI) | — (component, no dedicated page) | — | Done | P1 |
+| F142 | Offline Conflict Detection (`X-Updated-At` header, 409 response) | — (middleware + `api.ts` handler) | — | Done | P0 |
+| F143 | Permission Matrix (14 modules, 52 permissions, field-level filter) | — (middleware + `permissions.ts`) | — | Done | P0 |
+| F144 | Multi-Device Session Management | `/settings/sessions` | Real | Done | P1 |
+| F145 | Data Export CSV (5 entities, owner-only, 1/day rate limit) | — (`GET /api/export/full`, `GET /api/export/csv/:entity`) | — | Done | P1 |
+| F146 | Soft Delete Extension (37 models, Prisma auto-filter, cascade rules) | — (global middleware) | — | Done | P0 |
+| F147 | Connection Pooling (`directUrl`, pool params in env) | — (schema.prisma + .env) | — | Done | P0 |
+| F148 | Sentry Observability (frontend + backend, no-op without DSN) | — (global init in main.tsx + index.ts) | — | Needs Credentials | P0 |
+| F149 | SSE Polling Fallback (30s interval when EventSource disconnects) | — (in `useSSE.ts`) | — | Done | P1 |
+| F150 | Foreground Resume Cache Invalidation (visibilitychange listener) | — (in App.tsx) | — | Done | P1 |
+| F151 | Razorpay Webhook → Subscription (activated/charged/cancelled/paused) | — (backend webhook handler) | — | Done | P0 |
+| F152 | Disaster Recovery Runbook (5 scenarios, backup schedule) | — (docs/runbooks/disaster-recovery.md) | — | Done | P1 |
+
 ---
 
 ## Standalone Pages (no dedicated feature)
@@ -230,6 +277,7 @@ Last updated: 2026-04-03 | Features: 135 | Pages: 95 | Stubs: 15
 | Staff Invite | `/settings/staff/invite` | **Stub** | F056 Roles |
 | GST Settings | `/settings/gst` | **Stub** | F071 GST Engine |
 | Audit Log | `/settings/audit-log` | Real | F007 Admin |
+| Active Sessions | `/settings/sessions` | Real | F144 Sessions |
 | Not Found (404) | `*` | **Stub** | — |
 
 ---
@@ -238,11 +286,11 @@ Last updated: 2026-04-03 | Features: 135 | Pages: 95 | Stubs: 15
 
 | Metric | Count |
 |--------|-------|
-| **Total features** | 136 (F001–F136) |
-| **Features done** | 136 |
-| **Needs credentials** | 5 (F002, F004, F030, F032, F042) |
-| **Total pages/routes** | 95 unique |
-| **Pages real** | 80 |
+| **Total features** | 152 (F001–F152) |
+| **Features done** | 152 |
+| **Needs credentials** | 6 (F002, F004, F030, F032, F042, F148) |
+| **Total pages/routes** | 96 unique |
+| **Pages real** | 81 |
 | **Pages stub** | 15 |
 
 ## 15 Stub Pages (need full UI)
@@ -276,3 +324,5 @@ Last updated: 2026-04-03 | Features: 135 | Pages: 95 | Stubs: 15
 | F032 Email with PDF | Resend API key |
 | F042 Payment Reminders | Aisensy + FCM |
 | F059 Biometric Auth | Capacitor Biometric plugin |
+| F148 Sentry Observability | `SENTRY_DSN` + `VITE_SENTRY_DSN` |
+| F151 Razorpay → Subscription | `RAZORPAY_PLAN_PRO` + `RAZORPAY_PLAN_BUSINESS` plan IDs |
