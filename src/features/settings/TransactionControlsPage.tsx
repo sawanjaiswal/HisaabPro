@@ -19,7 +19,7 @@ export default function TransactionControlsPage() {
   return (
     <AppShell>
       <Header title={t.transactionControls} backTo={ROUTES.SETTINGS} />
-      <PageContainer className="txn-controls-page">
+      <PageContainer className="txn-controls-page stagger-enter">
 
         {status === 'loading' && (
           <div aria-busy="true" aria-label={t.couldNotLoadSettings}>

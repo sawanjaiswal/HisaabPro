@@ -148,7 +148,7 @@ export default function LoansPage() {
         )}
 
         {items.length > 0 && (
-          <div className="loan-list">
+          <div className="loan-list stagger-list">
             {items.map((l) => <LoanCard key={l.id} loan={l} onClick={(id) => navigate(ROUTES.LOAN_DETAIL.replace(':id', id))} />)}
           </div>
         )}

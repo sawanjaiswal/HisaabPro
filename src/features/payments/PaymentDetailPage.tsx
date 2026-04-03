@@ -98,7 +98,7 @@ export default function PaymentDetailPage() {
 
         {/* Success */}
         {status === 'success' && payment && (
-          <>
+          <div className="stagger-enter">
             <div role="status" aria-live="polite" className="sr-only">
               {t.paymentDetailsLoaded}
             </div>
@@ -144,7 +144,7 @@ export default function PaymentDetailPage() {
               )}
               {activeTab === 'history' && <PaymentHistoryTab />}
             </div>
-          </>
+          </div>
         )}
       </PageContainer>
       </AppShell>

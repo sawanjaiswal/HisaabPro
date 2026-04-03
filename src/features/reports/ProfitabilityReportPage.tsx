@@ -102,7 +102,7 @@ export default function ProfitabilityReportPage() {
           </button>
         </div>
 
-        <div className="aging-tabs" role="group" aria-label={t.groupBy}>
+        <div className="aging-tabs stagger-filters" role="group" aria-label={t.groupBy}>
           {GROUP_OPTIONS_BASE.map((opt) => (
             <button key={opt.value} type="button" className={`aging-tab${groupBy === opt.value ? ' aging-tab--active' : ''}`} onClick={() => setGroupBy(opt.value)} aria-pressed={groupBy === opt.value}>{t[opt.labelKey]}</button>
           ))}
@@ -117,7 +117,7 @@ export default function ProfitabilityReportPage() {
         )}
 
         {data && data.rows.length > 0 && (
-          <div className="profit-table">
+          <div className="profit-table stagger-list">
             <table aria-label={t.profitabilityBreakdown}>
               <thead>
                 <tr>

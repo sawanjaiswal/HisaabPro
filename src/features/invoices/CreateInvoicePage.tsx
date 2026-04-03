@@ -109,7 +109,7 @@ export default function CreateInvoicePage() {
         }
       />
 
-      <PageContainer className="invoice-details-section">
+      <PageContainer className="invoice-details-section stagger-enter">
         <nav className="pill-tabs" role="tablist" aria-label={t.invoiceFormSections}>
           {FORM_SECTIONS.map((section) => (
             <button

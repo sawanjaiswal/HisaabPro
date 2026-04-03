@@ -95,7 +95,7 @@ export default function DiscountReportPage() {
               <span className="finance-net-row__label">{t.totalDiscountsGiven}</span>
               <span className="finance-net-row__amount">{formatPaise(data?.totalDiscount ?? 0)}</span>
             </div>
-            <div className="aging-table">
+            <div className="aging-table stagger-list">
               <table aria-label={t.discountDetailsByInvoice}>
                 <thead>
                   <tr>

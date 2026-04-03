@@ -110,7 +110,7 @@ export default function UnitsPage() {
         {status === 'success' && (
           <>
             {/* Tabs */}
-            <nav className="pill-tabs" role="tablist" aria-label="Units sections">
+            <nav className="pill-tabs stagger-filters" role="tablist" aria-label="Units sections">
               {UNITS_PAGE_TABS.map((tab) => (
                 <button
                   key={tab.id}
@@ -162,7 +162,7 @@ export default function UnitsPage() {
                     }
                   />
                 ) : (
-                  <div className="unit-groups">
+                  <div className="unit-groups stagger-list">
                     {Array.from(grouped.entries()).map(([category, catUnits]) => (
                       <div key={category} className="unit-group">
                         <h3 className="unit-group__title">

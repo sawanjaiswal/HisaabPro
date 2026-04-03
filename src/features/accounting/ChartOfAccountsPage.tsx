@@ -86,7 +86,7 @@ export default function ChartOfAccountsPage() {
     <AppShell>
       <Header title={t.chartOfAccounts ?? "Chart of Accounts"} backTo={ROUTES.REPORTS} actions={seedAction} />
       <PageContainer>
-        <div className="acc-page">
+        <div className="acc-page stagger-enter">
           {ACCOUNT_TYPE_ORDER.map((type) => {
             const accounts = grouped.get(type) ?? []
             return (

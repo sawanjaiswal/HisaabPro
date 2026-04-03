@@ -19,7 +19,7 @@ export default function BulkCreateSerialPage() {
   return (
     <AppShell>
       <Header title={t.bulkAddSerials} backTo={ROUTES.SERIAL_NUMBERS.replace(':productId', productId)} />
-      <PageContainer>
+      <PageContainer className="stagger-enter">
         <BulkSerialForm productId={productId} onSuccess={handleSuccess} />
       </PageContainer>
     </AppShell>

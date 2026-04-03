@@ -113,7 +113,7 @@ export default function OutstandingPage() {
 
         {/* Party list */}
         {status === 'success' && data && data.parties.length > 0 && (
-          <div className="outstanding-list" role="list" aria-label={t.outstandingPartiesList}>
+          <div className="outstanding-list stagger-list" role="list" aria-label={t.outstandingPartiesList}>
             {data.parties.map((party) => (
               <div key={party.partyId} role="listitem">
                 <OutstandingCard

@@ -48,7 +48,7 @@ export default function JoinBusinessPage() {
   return (
     <div className="join-business-page">
       <Header title={t.joinBusiness} backTo={ROUTES.SETTINGS} />
-      <div className="join-business-content">
+      <div className="join-business-content stagger-enter">
         <div className="join-business-icon-container">
           <Building2 size={40} className="join-business-icon" />
         </div>

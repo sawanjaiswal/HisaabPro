@@ -55,7 +55,7 @@ export default function PosPage() {
         {cart.items.length === 0 ? (
           <QuickProductGrid onSelect={cart.addItem} />
         ) : (
-          <div className="pos-cart-list" role="list" aria-label={t.posCartItems}>
+          <div className="pos-cart-list stagger-list" role="list" aria-label={t.posCartItems}>
             {cart.items.map((item) => (
               <CartItem key={item.productId} item={item} onUpdateQty={cart.updateQty} onRemove={cart.removeItem} />
             ))}

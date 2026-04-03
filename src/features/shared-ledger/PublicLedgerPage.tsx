@@ -48,7 +48,7 @@ export default function PublicLedgerPage() {
   }
 
   return (
-    <div className="public-ledger-page">
+    <div className="public-ledger-page fade-up">
       <PublicLedgerView data={data} />
     </div>
   )

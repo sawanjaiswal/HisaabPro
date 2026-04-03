@@ -116,7 +116,7 @@ export default function FYClosurePage() {
     <AppShell>
       <Header title={t.fyClosurePage} backTo={ROUTES.CHART_OF_ACCOUNTS} />
       <PageContainer>
-        <div className="fy-close-card">
+        <div className="fy-close-card fade-up">
           <div className="fy-close-card__header">
             <Calendar size={20} aria-hidden="true" />
             <span>{t.closeFinancialYear}</span>
@@ -154,7 +154,7 @@ export default function FYClosurePage() {
         )}
 
         {closures.length > 0 && (
-          <div className="fy-list">
+          <div className="fy-list stagger-list">
             {closures.map((c) => (
               <div key={c.id} className={`fy-card fy-card--${c.status.toLowerCase()}`}>
                 <div className="fy-card__header">

@@ -78,7 +78,7 @@ export default function RecurringListPage() {
 
       <PageContainer>
         {/* Filter pills */}
-        <div className="recurring-filter-pills" role="group" aria-label={t.filterByStatusGroup}>
+        <div className="recurring-filter-pills stagger-filters" role="group" aria-label={t.filterByStatusGroup}>
           {RECURRING_STATUS_FILTER_OPTIONS.map((opt) => (
             <button
               key={opt.value}
@@ -147,7 +147,7 @@ export default function RecurringListPage() {
 
         {/* List */}
         {items.length > 0 && (
-          <div className="recurring-list">
+          <div className="recurring-list stagger-list">
             {items.map((item) => (
               <RecurringCard
                 key={item.id}

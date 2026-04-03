@@ -13,7 +13,7 @@ export default function ShortcutsPage() {
   return (
     <AppShell>
       <Header title={t.keyboardShortcuts} backTo={ROUTES.SETTINGS} />
-      <PageContainer className="shortcuts-page">
+      <PageContainer className="shortcuts-page stagger-enter">
         <ShortcutsList
           shortcuts={DEFAULT_SHORTCUTS}
           groups={SHORTCUT_GROUPS}

@@ -68,7 +68,7 @@ export default function BatchDetailPage() {
     return (
       <AppShell>
         <Header title={t.editBatch} backTo={true} />
-        <PageContainer>
+        <PageContainer className="stagger-enter">
           <BatchForm
             productId={batch.productId}
             existingBatch={batch}
@@ -108,7 +108,7 @@ export default function BatchDetailPage() {
         }
       />
 
-      <PageContainer>
+      <PageContainer className="stagger-enter">
         {status === 'loading' && <DetailSkeleton />}
 
         {status === 'error' && (

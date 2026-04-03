@@ -132,7 +132,7 @@ export default function PartyDetailPage() {
           )}
 
           {status === 'success' && party && (
-            <>
+            <div className="stagger-enter">
               <div role="status" aria-live="polite" className="sr-only">
                 {party.name} {t.detailsLoaded}
               </div>
@@ -212,7 +212,7 @@ export default function PartyDetailPage() {
                   <PartyAddressesTab addresses={party.addresses} />
                 )}
               </div>
-            </>
+            </div>
           )}
         </PageContainer>
       </AppShell>

@@ -48,7 +48,7 @@ export default function RecordPaymentPage() {
       <Header title={title} backTo={ROUTES.PAYMENTS} />
 
       <PageContainer>
-        <nav className="pill-tabs" role="tablist" aria-label={t.paymentFormSections}>
+        <nav className="pill-tabs stagger-enter" role="tablist" aria-label={t.paymentFormSections}>
           {SECTIONS.map((section) => (
             <button
               key={section.id}

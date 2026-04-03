@@ -116,7 +116,7 @@ export default function OtherIncomePage() {
     <AppShell>
       <Header title={t.otherIncome ?? "Other Income"} backTo={ROUTES.DASHBOARD} />
       <PageContainer>
-        <div className="income-filter-bar" role="group" aria-label={t.filterByCategoryGroup}>
+        <div className="income-filter-bar stagger-filters" role="group" aria-label={t.filterByCategoryGroup}>
           <button type="button" className={`income-filter-pill${categoryFilter === null ? ' income-filter-pill--active' : ''}`} onClick={() => setCategoryFilter(null)} aria-pressed={categoryFilter === null}>{t.all}</button>
           {knownCategories.map((c) => (
             <button key={c} type="button" className={`income-filter-pill${categoryFilter === c ? ' income-filter-pill--active' : ''}`} onClick={() => setCategoryFilter(c)} aria-pressed={categoryFilter === c}>{c}</button>
@@ -139,7 +139,7 @@ export default function OtherIncomePage() {
           </div>
         )}
 
-        {items.length > 0 && <div className="income-list">{items.map((i) => <IncomeCard key={i.id} item={i} />)}</div>}
+        {items.length > 0 && <div className="income-list stagger-list">{items.map((i) => <IncomeCard key={i.id} item={i} />)}</div>}
 
         {totalPages > 1 && (
           <div className="income-pagination">

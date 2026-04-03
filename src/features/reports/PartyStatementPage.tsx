@@ -114,7 +114,7 @@ export default function PartyStatementPage() {
               </div>
             ) : (
               <div
-                className="report-card-list"
+                className="report-card-list stagger-list"
                 role="list"
                 aria-label={`${t.transactionsFor} ${party.name}`}
               >

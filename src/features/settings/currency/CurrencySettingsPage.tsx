@@ -105,7 +105,7 @@ export default function CurrencySettingsPage() {
               {rates.length} {rates.length === 1 ? t.rateWord : t.ratesWord} {t.configuredSuffix}
             </p>
 
-            <div className="currency-rate-list">
+            <div className="currency-rate-list stagger-list">
               {rates.map((entry) => (
                 <CurrencyRateCard key={entry.id} entry={entry} />
               ))}

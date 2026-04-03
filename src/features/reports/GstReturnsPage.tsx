@@ -91,7 +91,7 @@ export default function GstReturnsPage() {
 
       <PageContainer>
         {/* Return type tab pills */}
-        <div className="gst-return-tabs" role="tablist" aria-label={t.gstReturnType}>
+        <div className="gst-return-tabs stagger-filters" role="tablist" aria-label={t.gstReturnType}>
           {RETURN_TABS.map(({ type, label }) => (
             <button
               key={type}

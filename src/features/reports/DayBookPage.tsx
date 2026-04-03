@@ -126,7 +126,7 @@ export default function DayBookPage() {
         />
 
         {/* Transaction type filter */}
-        <div className="report-filter-bar">
+        <div className="report-filter-bar stagger-filters">
           <ReportFilterPills
             options={typeFilterOptions}
             activeValue={filters.type ?? ''}

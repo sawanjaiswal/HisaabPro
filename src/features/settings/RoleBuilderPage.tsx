@@ -62,7 +62,7 @@ function BuilderForm({ roleId, role, systemRoles, businessId }: BuilderFormProps
   } = useRoleBuilder({ businessId, role })
 
   return (
-    <div className="role-builder">
+    <div className="role-builder stagger-enter">
       <RoleNameInput
         value={form.name}
         error={errors.name}

@@ -39,7 +39,7 @@ export default function ItemsLibraryPage() {
       <Header title={t.itemsLibrary} backTo={ROUTES.PRODUCTS} />
 
       <PageContainer>
-        <div className="library-search">
+        <div className="library-search fade-up">
           <Search size={18} className="library-search-icon" aria-hidden="true" />
           <input
             type="text"

@@ -21,7 +21,7 @@ export default function LoginPage() {
     <div className="login-page">
       <SEO title="Login" />
 
-      <div className="login-page__card">
+      <div className="login-page__card stagger-enter">
         <div className="login-page__header">
           <h1 className="login-page__title">{APP_NAME}</h1>
           <p className="login-page__subtitle">{t.signInSubtitle}</p>

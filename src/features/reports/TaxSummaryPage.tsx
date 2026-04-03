@@ -60,7 +60,7 @@ export default function TaxSummaryPage() {
 
       <PageContainer>
         {/* Date range inputs */}
-        <div className="tax-date-row">
+        <div className="tax-date-row fade-up">
           <input
             type="date"
             className="tax-date-input"

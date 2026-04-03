@@ -127,7 +127,7 @@ function EditPartyForm({ partyId, initialData }: { partyId: string; initialData:
     <AppShell>
       <Header title={t.editParty} backTo={`/parties/${partyId}`} />
 
-      <PageContainer className="create-party-page">
+      <PageContainer className="create-party-page stagger-enter">
         <nav className="pill-tabs" role="tablist" aria-label={t.formSections}>
           {[
             { id: 'basic' as SectionId, label: t.basicInfo },

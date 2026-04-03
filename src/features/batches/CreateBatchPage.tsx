@@ -30,7 +30,7 @@ export default function CreateBatchPage() {
   return (
     <AppShell>
       <Header title={t.addBatch} backTo={backPath} />
-      <PageContainer>
+      <PageContainer className="stagger-enter">
         <BatchForm productId={productId} onSuccess={handleSuccess} />
       </PageContainer>
     </AppShell>

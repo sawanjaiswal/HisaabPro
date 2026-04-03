@@ -61,7 +61,7 @@ export default function BillScanPage() {
         )}
 
         {status === 'error' && (
-          <div className="bill-scan-error">
+          <div className="bill-scan-error fade-up">
             <div className="bill-scan-error-icon" aria-hidden="true">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <circle cx="12" cy="12" r="10" />

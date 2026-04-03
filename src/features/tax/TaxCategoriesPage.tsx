@@ -54,7 +54,7 @@ export default function TaxCategoriesPage() {
           )}
 
           {status === 'success' && categories.length > 0 && (
-            <div className="tax-cat-list" role="list" aria-label={t.taxCategoriesList}>
+            <div className="tax-cat-list stagger-list" role="list" aria-label={t.taxCategoriesList}>
               {categories.map((cat) => (
                 <div key={cat.id} role="listitem">
                   <TaxCategoryCard category={cat} onClick={(id) => navigate(ROUTES.SETTINGS_TAX_RATE_EDIT.replace(':id', id))} />

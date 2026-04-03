@@ -70,7 +70,7 @@ export default function AgingReportPage() {
     <AppShell>
       <Header title={t.agingReport} backTo={ROUTES.REPORTS} />
       <PageContainer>
-        <div className="aging-tabs" role="group" aria-label={t.reportType}>
+        <div className="aging-tabs stagger-filters" role="group" aria-label={t.reportType}>
           <button type="button" className={`aging-tab${agingType === 'RECEIVABLE' ? ' aging-tab--active' : ''}`} onClick={() => setAgingType('RECEIVABLE')} aria-pressed={agingType === 'RECEIVABLE'}>{t.receivable}</button>
           <button type="button" className={`aging-tab${agingType === 'PAYABLE' ? ' aging-tab--active' : ''}`} onClick={() => setAgingType('PAYABLE')} aria-pressed={agingType === 'PAYABLE'}>{t.payable}</button>
         </div>
@@ -88,7 +88,7 @@ export default function AgingReportPage() {
         )}
 
         {data && data.rows.length > 0 && (
-          <div className="aging-table">
+          <div className="aging-table stagger-list">
             <table aria-label={agingType === 'RECEIVABLE' ? t.receivablesAging : t.payablesAging}>
               <thead>
                 <tr>

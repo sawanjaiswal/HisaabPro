@@ -9,6 +9,7 @@
 @import './tokens-dark.css';
 @import './base.css';
 @import './animations.css';
+@import './utilities.css';
 @import './components-layout.css';
 @import './components-ui.css';
 @import './components-data.css';

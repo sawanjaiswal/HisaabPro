@@ -97,7 +97,7 @@ export default function AuditLogPage() {
           <p className="settings-section-title" style={{ paddingBottom: 'var(--space-2)' }}>
             {t.actionFilterLabel}
           </p>
-          <div className="audit-filters" role="group" aria-label={t.filterByAction}>
+          <div className="audit-filters stagger-filters" role="group" aria-label={t.filterByAction}>
             {ACTION_FILTERS.map((f) => (
               <button
                 key={f.label}
@@ -116,7 +116,7 @@ export default function AuditLogPage() {
           <p className="settings-section-title" style={{ paddingBottom: 'var(--space-2)' }}>
             {t.entityFilterLabel}
           </p>
-          <div className="audit-filters" role="group" aria-label={t.filterByEntityType}>
+          <div className="audit-filters stagger-filters" role="group" aria-label={t.filterByEntityType}>
             {ENTITY_FILTERS.map((f) => (
               <button
                 key={f.label}
@@ -159,7 +159,7 @@ export default function AuditLogPage() {
                 description={t.auditEmptyDesc}
               />
             ) : (
-              <div className="audit-list">
+              <div className="audit-list stagger-list">
                 {dateGroups.map((group) => (
                   <React.Fragment key={group.dateKey}>
                     <div className="audit-date-group" aria-label={`${t.entriesFrom} ${group.label}`}>

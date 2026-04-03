@@ -99,7 +99,7 @@ export default function GodownDetailPage() {
         )}
 
         {status === 'success' && godown && (
-          <>
+          <div className="stagger-enter">
             <div className="godown-detail-info">
               {godown.isDefault && (
                 <span className="godown-card__badge">{t.defaultGodown}</span>
@@ -113,7 +113,7 @@ export default function GodownDetailPage() {
             </div>
 
             <GodownStockList stockData={stockData} status={stockStatus} onRetry={refetchStock} />
-          </>
+          </div>
         )}
         <ConfirmDialog
           open={showDeleteConfirm}

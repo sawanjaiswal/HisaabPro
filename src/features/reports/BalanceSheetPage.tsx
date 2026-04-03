@@ -91,7 +91,7 @@ export default function BalanceSheetPage() {
     <AppShell>
       <Header title={t.balanceSheet} backTo={ROUTES.REPORTS} />
       <PageContainer>
-        <div className="finance-date-bar">
+        <div className="finance-date-bar fade-up">
           <span className="finance-date-bar__label">{t.asOf}</span>
           <input type="date" className="finance-date-bar__input" value={asOf} onChange={(e) => setAsOf(e.target.value)} aria-label={t.asOfDate} />
           <button type="button" className="finance-date-bar__refresh-btn" onClick={refresh} aria-label={t.refreshBalanceSheet}>

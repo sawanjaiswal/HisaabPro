@@ -88,7 +88,7 @@ export default function TemplateGalleryPage() {
             {templates.length > 0 && (
               <section className="template-section">
                 <h2 className="template-section-title">{t.yourTemplates} ({templates.length})</h2>
-                <div className="template-grid" role="list" aria-label={t.yourTemplates}>
+                <div className="template-grid stagger-list" role="list" aria-label={t.yourTemplates}>
                   {templates.map((template) => (
                     <div key={template.id} role="listitem">
                       <TemplateCard template={template} onClick={handleTemplateClick} />

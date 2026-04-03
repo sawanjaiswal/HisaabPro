@@ -71,7 +71,7 @@ export default function ReconciliationDetailPage() {
         <ReconciliationSummaryCards summary={summary} />
 
         {/* Filter pills */}
-        <div className="recon-filter-pills" role="tablist" aria-label={t.filterByMatchStatus}>
+        <div className="recon-filter-pills stagger-filters" role="tablist" aria-label={t.filterByMatchStatus}>
           {MATCH_STATUS_FILTER_OPTIONS.map(({ value, label }) => (
             <button
               key={value}
@@ -121,7 +121,7 @@ export default function ReconciliationDetailPage() {
             <p className="recon-entry-count">
               {entriesTotal} {entriesTotal === 1 ? t.entry : t.entries}
             </p>
-            <div className="recon-entry-list">
+            <div className="recon-entry-list stagger-list">
               {entries.map((entry) => (
                 <ReconciliationEntryCard key={entry.id} entry={entry} />
               ))}

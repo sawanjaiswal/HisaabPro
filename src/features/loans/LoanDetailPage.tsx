@@ -125,7 +125,7 @@ export default function LoanDetailPage() {
     <AppShell>
       <Header title={loan.partyName ?? t.loanDetailsTitle} backTo={ROUTES.LOANS} />
       <PageContainer>
-        <div className="loan-detail__hero">
+        <div className="loan-detail__hero fade-up">
           <p className="loan-detail__label">{t.outstandingBalance}</p>
           <p className="loan-detail__outstanding">{formatPaise(loan.outstandingAmount)}</p>
           <div className="loan-detail__grid">

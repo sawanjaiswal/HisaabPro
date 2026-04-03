@@ -104,7 +104,7 @@ export default function ActiveSessionsPage() {
         )}
 
         {query.isSuccess && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div className="stagger-enter" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {sessions.map((session) => (
               <div
                 key={session.id}

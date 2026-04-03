@@ -100,7 +100,7 @@ export default function CouponDetailPage() {
 
       <PageContainer>
         {/* Status + Discount */}
-        <section className="coupon-detail-hero">
+        <section className="coupon-detail-hero fade-up">
           <div className="coupon-detail-code-row">
             <Tag size={20} aria-hidden="true" />
             <h2 className="coupon-detail-code">{coupon.code}</h2>

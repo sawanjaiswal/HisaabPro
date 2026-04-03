@@ -73,7 +73,7 @@ export default function DashboardPage() {
         onCalculatorClick={handleCalculatorClick}
       />
 
-      <div className="dashboard-page">
+      <div className="dashboard-page stagger-enter">
         {/* Background pattern overlay */}
         <div className="dashboard-bg-pattern" aria-hidden="true" />
 

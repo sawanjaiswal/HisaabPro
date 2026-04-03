@@ -73,7 +73,7 @@ export default function TrialBalancePage() {
       <Header title={t.trialBalance ?? "Trial Balance"} backTo={ROUTES.REPORTS} actions={dateInput} />
       <PageContainer>
         {/* Balance indicator */}
-        <div className={`tb-balance-chip ${balanced ? 'balanced' : 'unbalanced'}`} role="status">
+        <div className={`tb-balance-chip fade-up ${balanced ? 'balanced' : 'unbalanced'}`} role="status">
           <span className="tb-balance-dot" aria-hidden="true" />
           {balanced
             ? `${t.balanced} — ${formatPaise(data.totals.debit)} ${t.eachSide}`

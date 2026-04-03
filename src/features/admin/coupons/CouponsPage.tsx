@@ -78,7 +78,7 @@ export default function CouponsPage() {
 
       <PageContainer>
         {/* Search + filter bar */}
-        <div className="coupon-toolbar">
+        <div className="coupon-toolbar fade-up">
           <div className="coupon-search">
             <Search size={16} aria-hidden="true" className="coupon-search-icon" />
             <input

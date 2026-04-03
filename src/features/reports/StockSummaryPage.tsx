@@ -161,7 +161,7 @@ export default function StockSummaryPage() {
             {/* Product list */}
             {items.length > 0 && (
               <div
-                className="report-card-list"
+                className="report-card-list stagger-list"
                 role="list"
                 aria-label={t.stockSummary}
               >

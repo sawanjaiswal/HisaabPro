@@ -79,7 +79,7 @@ export default function StaffPage() {
               <>
                 <section>
                   <p className="settings-section-title">{t.activeStaffTitle}</p>
-                  <div className="staff-list">
+                  <div className="staff-list stagger-list">
                     {data.staff.map((member) => (
                       <StaffCard
                         key={member.id}
@@ -95,7 +95,7 @@ export default function StaffPage() {
                 {data.pending.length > 0 && (
                   <section>
                     <p className="settings-section-title">{t.pendingInvitesTitle}</p>
-                    <div className="staff-list">
+                    <div className="staff-list stagger-list">
                       {data.pending.map((invite) => (
                         <InviteCard
                           key={invite.id}

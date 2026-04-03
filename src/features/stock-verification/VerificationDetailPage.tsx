@@ -74,9 +74,9 @@ export default function VerificationDetailPage() {
         <ProgressBar percentage={percentage} label={label} />
 
         {isCounting && (
-          <section className="sv-detail__section">
+          <section className="sv-detail__section fade-up">
             <h2 className="sv-detail__section-title">{t.countItems}</h2>
-            <div className="sv-detail__items">
+            <div className="sv-detail__items stagger-list">
               {items.map((item) => (
                 <CountItemRow key={item.id} item={item} onSave={recordCount} disabled={isProcessing} />
               ))}

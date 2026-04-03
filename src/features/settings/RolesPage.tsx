@@ -92,7 +92,7 @@ export default function RolesPage() {
           )}
 
           {status === 'success' && roles.length > 0 && (
-            <div className="roles-list" role="list" aria-label={t.roles}>
+            <div className="roles-list stagger-list" role="list" aria-label={t.roles}>
               {roles.map((role) => (
                 <div key={role.id} role="listitem">
                   <RoleCard role={role} onClick={handleRoleClick} />

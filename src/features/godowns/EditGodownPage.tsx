@@ -93,7 +93,7 @@ function EditGodownForm({ godownId, initialData, backTo }: { godownId: string; i
   return (
     <AppShell>
       <Header title={t.editGodown} backTo={backTo} />
-      <PageContainer>
+      <PageContainer className="stagger-enter">
         <GodownForm
           form={form}
           errors={errors}

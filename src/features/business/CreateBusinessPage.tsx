@@ -28,7 +28,7 @@ export default function CreateBusinessPage() {
       <Header title="Create Business" backTo={ROUTES.SETTINGS} />
 
       <div className="create-biz-content">
-        <div className="create-biz-form">
+        <div className="create-biz-form stagger-enter">
 
           {/* Business name */}
           <div className="create-biz-field">

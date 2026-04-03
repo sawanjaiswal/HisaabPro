@@ -111,7 +111,7 @@ export default function ProductDetailPage() {
         )}
 
         {status === 'success' && product && (
-          <>
+          <div className="stagger-enter">
             <div role="status" aria-live="polite" className="sr-only">
               {product.name} {t.detailsLoaded}
             </div>
@@ -200,7 +200,7 @@ export default function ProductDetailPage() {
               unitSymbol={product.unit.symbol}
               onSuccess={refresh}
             />
-          </>
+          </div>
         )}
       </PageContainer>
       </AppShell>

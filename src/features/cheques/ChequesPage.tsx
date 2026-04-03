@@ -70,7 +70,7 @@ export default function ChequesPage() {
     <AppShell>
       <Header title={t.cheques} backTo={ROUTES.DASHBOARD} />
       <PageContainer>
-        <div className="cheque-filter-pills" role="group" aria-label={t.filterByStatusGroup}>
+        <div className="cheque-filter-pills stagger-filters" role="group" aria-label={t.filterByStatusGroup}>
           {CHEQUE_FILTER_OPTIONS.map((opt) => (
             <button
               key={opt.value}
@@ -101,7 +101,7 @@ export default function ChequesPage() {
         )}
 
         {items.length > 0 && (
-          <div className="cheque-list">
+          <div className="cheque-list stagger-list">
             {items.map((c) => <ChequeCard key={c.id} cheque={c} onStatusUpdate={handleStatusUpdate} />)}
           </div>
         )}

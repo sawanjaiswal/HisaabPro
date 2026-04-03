@@ -31,7 +31,7 @@ export default function PinSetupPage() {
 
   return (
     <div
-      className="pin-screen"
+      className="pin-screen stagger-enter"
       style={{ position: 'relative' }}
       aria-label={pageTitle}
     >

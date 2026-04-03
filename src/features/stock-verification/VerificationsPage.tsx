@@ -44,7 +44,7 @@ export default function VerificationsPage() {
       />
 
       <PageContainer>
-        <nav className="sv-tabs" aria-label={t.status}>
+        <nav className="sv-tabs stagger-filters" aria-label={t.status}>
           {FILTER_TABS.map((tab) => (
             <button
               key={tab.label}
@@ -82,7 +82,7 @@ export default function VerificationsPage() {
         )}
 
         {status === 'success' && verifications.length > 0 && (
-          <div className="sv-list">
+          <div className="sv-list stagger-list">
             {verifications.map((v) => (
               <VerificationCard key={v.id} verification={v} onClick={() => navigate(ROUTES.STOCK_VERIFICATION_DETAIL.replace(':id', v.id))} />
             ))}

@@ -104,7 +104,7 @@ export default function CashFlowPage() {
     <AppShell>
       <Header title={t.cashFlowStatement} backTo={ROUTES.REPORTS} />
       <PageContainer>
-        <div className="finance-date-bar">
+        <div className="finance-date-bar fade-up">
           <span className="finance-date-bar__label">{t.from}</span>
           <input type="date" className="finance-date-bar__input" value={dateRange.from} onChange={(e) => setDateRange((r) => ({ ...r, from: e.target.value }))} aria-label={t.fromDate} />
           <span className="finance-date-bar__label">{t.to}</span>

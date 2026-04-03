@@ -32,7 +32,7 @@ export default function StaffInvitePage() {
   return (
     <AppShell>
       <Header title={t.inviteStaff} backTo={ROUTES.SETTINGS_STAFF} />
-      <PageContainer className="staff-page">
+      <PageContainer className="staff-page stagger-enter">
 
         {success !== null ? (
           <InviteSuccessCard

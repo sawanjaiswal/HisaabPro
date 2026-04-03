@@ -86,7 +86,7 @@ export default function ReconciliationListPage() {
         )}
 
         {items.length > 0 && (
-          <div className="recon-list">
+          <div className="recon-list stagger-list">
             {items.map((item) => (
               <div
                 key={item.id}

@@ -66,7 +66,7 @@ export default function ExpensesPage() {
       <Header title={t.expenses ?? "Expenses"} backTo={ROUTES.DASHBOARD} />
       <PageContainer>
         {/* Category filter pills */}
-        <div className="expense-filter-bar" role="group" aria-label={t.filterByCategoryGroup}>
+        <div className="expense-filter-bar stagger-filters" role="group" aria-label={t.filterByCategoryGroup}>
           <button
             type="button"
             className={`expense-filter-pill${categoryFilter === null ? ' expense-filter-pill--active' : ''}`}
@@ -107,7 +107,7 @@ export default function ExpensesPage() {
         )}
 
         {items.length > 0 && (
-          <div className="expense-list">
+          <div className="expense-list stagger-list">
             {items.map((e) => <ExpenseCard key={e.id} expense={e} />)}
           </div>
         )}

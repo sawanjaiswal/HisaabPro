@@ -143,7 +143,7 @@ export default function BankAccountsPage() {
         )}
 
         {items.length > 0 && (
-          <div className="bank-list">
+          <div className="bank-list stagger-list">
             {items.map((account) => <BankAccountCard key={account.id} account={account} />)}
           </div>
         )}

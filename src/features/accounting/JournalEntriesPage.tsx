@@ -59,7 +59,7 @@ export default function JournalEntriesPage() {
       <Header title={t.journalEntries ?? "Journal Entries"} backTo={ROUTES.REPORTS} />
       <PageContainer>
         {/* Filters */}
-        <div className="je-filters">
+        <div className="je-filters stagger-filters">
           <div className="pill-tabs">
             {TYPE_OPTIONS.map((opt) => (
               <button
@@ -106,7 +106,7 @@ export default function JournalEntriesPage() {
 
         {/* List */}
         {entries.length > 0 && (
-          <ul className="je-list" role="list" aria-label={t.journalEntries ?? "Journal Entries"}>
+          <ul className="je-list stagger-list" role="list" aria-label={t.journalEntries ?? "Journal Entries"}>
             {entries.map((entry) => (
               <JournalEntryCard key={entry.id} entry={entry} />
             ))}

@@ -21,7 +21,7 @@ export default function TransferPage() {
   return (
     <AppShell>
       <Header title={t.transferStock} backTo={ROUTES.GODOWNS} />
-      <PageContainer>
+      <PageContainer className="stagger-enter">
         {status === 'loading' && <Skeleton height="4rem" count={5} />}
 
         {status === 'error' && (

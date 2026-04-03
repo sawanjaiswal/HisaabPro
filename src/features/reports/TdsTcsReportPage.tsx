@@ -128,7 +128,7 @@ export default function TdsTcsReportPage() {
             <p className="tds-tcs-section-heading">
               {entries.length} {entries.length === 1 ? t.entry : t.entries}
             </p>
-            <div className="tds-tcs-entry-list">
+            <div className="tds-tcs-entry-list stagger-list">
               {entries.map((entry) => (
                 <TdsTcsEntryCard key={entry.id} entry={entry} />
               ))}

@@ -215,7 +215,7 @@ export default function StaffPermissionsPage() {
       <Header title="Permissions" backTo={ROUTES.SETTINGS} />
 
       <PageContainer>
-        <div className="sp-page">
+        <div className="sp-page stagger-enter">
 
           {/* Segmented toggle */}
           <div className="sp-toggle" role="tablist" aria-label="View permissions by">
@@ -260,7 +260,7 @@ export default function StaffPermissionsPage() {
                 description="Create a role first to view its permissions."
               />
             ) : (
-              <div className="sp-list" role="list" aria-label="Roles">
+              <div className="sp-list stagger-list" role="list" aria-label="Roles">
                 {roles.map((role) => (
                   <div key={role.id} role="listitem">
                     <RoleRow
@@ -283,7 +283,7 @@ export default function StaffPermissionsPage() {
                 description="Invite a team member to see their permissions here."
               />
             ) : (
-              <div className="sp-list" role="list" aria-label="Staff members">
+              <div className="sp-list stagger-list" role="list" aria-label="Staff members">
                 {staff.map((member) => (
                   <div key={member.id} role="listitem">
                     <PersonRow

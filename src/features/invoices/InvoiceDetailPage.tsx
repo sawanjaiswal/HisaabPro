@@ -161,7 +161,7 @@ export default function InvoiceDetailPage() {
             <div role="status" aria-live="polite" className="sr-only">
               {t.invoice} {document.documentNumber} {t.invoiceLoadedSr}
             </div>
-            <div ref={previewRef} className="invoice-export-capture">
+            <div ref={previewRef} className="invoice-export-capture stagger-enter">
             <InvoiceDetailHeader document={document} />
 
             <div className="pill-tabs invoice-detail-tabs" role="tablist" aria-label={t.invoiceDetailSections}>
