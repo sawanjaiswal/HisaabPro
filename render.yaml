@@ -27,7 +27,9 @@ services:
     envVars:
       # Database (Neon PostgreSQL)
       - key: DATABASE_URL
-        sync: false  # Set manually — contains connection string with pooler
+        sync: false  # Pooled connection (for app runtime)
+      - key: DIRECT_DATABASE_URL
+        sync: false  # Direct connection (for migrations)
 
       # Auth — JWT
       - key: JWT_SECRET
