@@ -9,7 +9,7 @@ import {
   PRODUCT_SORT_BY,
   SORT_ORDER,
   LOW_STOCK_ALERT_FREQUENCIES,
-} from '../../shared/enums.js'
+} from '../../../shared/enums.js'
 
 // === Sub-schemas ===
 

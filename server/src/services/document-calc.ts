@@ -3,7 +3,7 @@
  * All amounts in PAISE (integer). Must match frontend utils exactly.
  * Extended in Phase 2 to include GST calculations.
  */
-import { PAISE_BASIS_POINTS } from '../../shared/enums.js'
+import { PAISE_BASIS_POINTS } from '../../../shared/enums.js'
 
 import type { TaxLineInput, TaxLineResult } from './tax-calc.types.js'
 import { calculateLineTax, isInterState } from './tax-calc.js'

@@ -17,7 +17,7 @@ import {
   SHARE_CHANNELS,
   EXPORT_FORMATS,
   ROUND_OFF_SETTINGS,
-} from '../../shared/enums.js'
+} from '../../../shared/enums.js'
 
 // === Line Item ===
 

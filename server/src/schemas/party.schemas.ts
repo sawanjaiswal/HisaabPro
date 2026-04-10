@@ -4,7 +4,7 @@ import {
   ADDRESS_TYPES,
   CREDIT_LIMIT_MODES,
   OPENING_BALANCE_TYPES,
-} from '../../shared/enums.js'
+} from '../../../shared/enums.js'
 
 // === Regex constants ===
 

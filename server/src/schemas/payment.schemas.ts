@@ -14,7 +14,7 @@ import {
   OUTSTANDING_TYPES,
   OUTSTANDING_SORT_BY as OUTSTANDING_SORT,
   REMINDER_CHANNELS,
-} from '../../shared/enums.js'
+} from '../../../shared/enums.js'
 
 // === Payment CRUD ===
 

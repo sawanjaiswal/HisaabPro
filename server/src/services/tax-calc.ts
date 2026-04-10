@@ -5,7 +5,7 @@
  */
 
 import type { TaxLineInput, TaxLineResult, TaxSummary } from './tax-calc.types.js'
-import { PAISE_BASIS_POINTS } from '../../shared/enums.js'
+import { PAISE_BASIS_POINTS } from '../../../shared/enums.js'
 
 // Re-export types for convenience
 export type { TaxLineInput, TaxLineResult, TaxSummary }
