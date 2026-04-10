@@ -1,14 +1,13 @@
 /** Final CTA — dark section with teal radial glow */
 
 import { ArrowRight } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 
 import { APP_NAME } from '@/config/app.config'
 
-import { CTA_ROUTE } from '../landing.constants'
+import { useCta } from '../useCta'
 
 export function LandingCTA() {
-  const navigate = useNavigate()
+  const goToApp = useCta()
 
   return (
     <section className="relative overflow-hidden px-4 py-20 sm:py-28">
@@ -41,7 +40,7 @@ export function LandingCTA() {
           <button
             type="button"
             className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-b from-white via-white/95 to-white/60 px-8 py-3 text-[1rem] font-medium text-black transition-all hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
-            onClick={() => navigate(CTA_ROUTE)}
+            onClick={() => goToApp()}
             aria-label={`Start using ${APP_NAME}`}
           >
             Get Started

@@ -1,15 +1,15 @@
 /** Navigation — fixed top, backdrop-blur, center links (wisedev/saa-s-template) */
 
 import { memo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 
 import { APP_NAME } from '@/config/app.config'
-import { NAV_LINKS, CTA_ROUTE } from '../landing.constants'
+import { NAV_LINKS } from '../landing.constants'
+import { useCta } from '../useCta'
 
 export const LandingNav = memo(function LandingNav() {
   const [mobileOpen, setMobileOpen] = useState(false)
-  const navigate = useNavigate()
+  const goToApp = useCta()
 
   return (
     <header className="fixed top-0 w-full z-50 border-b border-gray-800/50 bg-black/80 backdrop-blur-md">
@@ -35,14 +35,14 @@ export const LandingNav = memo(function LandingNav() {
             <button
               type="button"
               className="inline-flex items-center justify-center h-10 px-5 text-sm font-medium text-white hover:bg-gray-800/50 rounded-md transition-all"
-              onClick={() => navigate(CTA_ROUTE)}
+              onClick={() => goToApp()}
             >
               Sign in
             </button>
             <button
               type="button"
               className="inline-flex items-center justify-center h-10 px-5 text-sm font-medium bg-white text-black hover:bg-gray-100 rounded-md transition-all"
-              onClick={() => navigate(CTA_ROUTE)}
+              onClick={() => goToApp()}
             >
               Get Started
             </button>
@@ -78,14 +78,14 @@ export const LandingNav = memo(function LandingNav() {
               <button
                 type="button"
                 className="h-10 px-5 text-sm font-medium text-white hover:bg-gray-800/50 rounded-md transition-all"
-                onClick={() => { setMobileOpen(false); navigate(CTA_ROUTE) }}
+                onClick={() => { setMobileOpen(false); goToApp() }}
               >
                 Sign in
               </button>
               <button
                 type="button"
                 className="h-10 px-5 text-sm font-medium bg-white text-black hover:bg-gray-100 rounded-md transition-all"
-                onClick={() => { setMobileOpen(false); navigate(CTA_ROUTE) }}
+                onClick={() => { setMobileOpen(false); goToApp() }}
               >
                 Get Started
               </button>

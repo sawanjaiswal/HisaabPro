@@ -68,6 +68,18 @@ function GuestRoute({ children }: { children: ReactNode }) {
   return <>{children}</>
 }
 
+/** Host-based root route: landing on marketing domain, login on app.*, admin on admin.* */
+function HomeGate() {
+  const host = typeof window !== 'undefined' ? window.location.hostname : ''
+  if (host === 'app.hisaabpro.in') {
+    return <GuestRoute><Login /></GuestRoute>
+  }
+  if (host === 'admin.hisaabpro.in') {
+    return <ProtectedRoute><AdminCoupons /></ProtectedRoute>
+  }
+  return <GuestRoute><Landing /></GuestRoute>
+}
+
 export function App() {
   useRoutePreload()
   useSSE() // Real-time sync: SSE → TanStack Query cache invalidation
@@ -90,7 +102,7 @@ export function App() {
       <OfflineBanner />
       <PageTransition>
       <Routes>
-        <Route path={ROUTES.HOME} element={<ErrorBoundary><Suspense fallback={<div className="min-h-screen bg-black" />}><GuestRoute><Landing /></GuestRoute></Suspense></ErrorBoundary>} />
+        <Route path={ROUTES.HOME} element={<ErrorBoundary><Suspense fallback={<div className="min-h-screen bg-black" />}><HomeGate /></Suspense></ErrorBoundary>} />
         <Route path={ROUTES.LOGIN} element={<PageRoute><GuestRoute><Login /></GuestRoute></PageRoute>} />
         <Route path={ROUTES.ONBOARDING} element={<PageRoute><ProtectedRoute><Onboarding /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.DASHBOARD} element={<PageRoute><ProtectedRoute><Dashboard /></ProtectedRoute></PageRoute>} />

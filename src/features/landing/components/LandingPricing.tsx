@@ -2,7 +2,8 @@
 
 import { Check } from 'lucide-react'
 
-import { CTA_ROUTE, PRICING } from '../landing.constants'
+import { PRICING } from '../landing.constants'
+import { ctaHref } from '../useCta'
 
 export function LandingPricing() {
   const { monthly, annual, features } = PRICING
@@ -34,7 +35,7 @@ export function LandingPricing() {
             </div>
             <p className="mt-2 text-[0.875rem] text-gray-500">Pay as you go</p>
             <a
-              href={CTA_ROUTE}
+              href={ctaHref()}
               className="mt-6 block rounded-xl bg-gray-800 py-3 text-center text-[0.875rem] font-semibold text-white transition-colors duration-200 hover:bg-gray-700"
             >
               Get Started
@@ -58,7 +59,7 @@ export function LandingPricing() {
               Save &#8377;{annual.savings} per year
             </p>
             <a
-              href={CTA_ROUTE}
+              href={ctaHref()}
               className="mt-6 block rounded-xl bg-teal-500 py-3 text-center text-[0.875rem] font-bold text-black transition-colors duration-200 hover:bg-teal-400"
             >
               Get Started
