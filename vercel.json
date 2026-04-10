@@ -8,7 +8,7 @@
 
   "rewrites": [
     {
-      "source": "/((?!assets|icons|manifest|sw|workbox).*)",
+      "source": "/((?!assets|icons|images|manifest|sw|workbox|privacy|delete-account|offline|robots|sitemap|favicon|icon-).*)",
       "destination": "/index.html"
     }
   ],
