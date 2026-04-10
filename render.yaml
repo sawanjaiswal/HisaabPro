@@ -5,14 +5,14 @@ services:
   - type: web
     name: hisaabpro-api
     runtime: node
-    plan: starter
+    plan: free
     region: singapore  # Closest to India
 
     # Server lives in server/ subdirectory of the monorepo
     rootDir: server
 
-    # Build: install deps, generate Prisma client, compile TypeScript
-    buildCommand: npm install && npx prisma generate && npm run build
+    # Build: install deps, generate Prisma client, run migrations, compile TypeScript
+    buildCommand: npm install && npx prisma generate && npx prisma migrate deploy && npm run build
 
     # Start the compiled JS
     startCommand: npm run start
@@ -36,12 +36,15 @@ services:
         generateValue: true
 
       # App config
+      # NOTE: NODE_ENV=staging (not production) keeps /dev-login route mounted
+      # for Play Store reviewer access with admin/admin123 credentials.
+      # Switch to 'production' once real OTP auth is wired.
       - key: NODE_ENV
-        value: production
+        value: staging
       - key: PORT
-        value: "4000"
+        value: "10000"
       - key: CORS_ORIGIN
-        sync: false  # Set to frontend URL (e.g., https://app.hisaabpro.in)
+        value: https://localhost,capacitor://localhost,http://localhost:3000,http://localhost:5173
 
       # Encryption (for sensitive fields at rest)
       - key: ENCRYPTION_KEY
