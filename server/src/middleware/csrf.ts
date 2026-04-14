@@ -22,13 +22,20 @@ import {
   CSRF_COOKIE_TTL_MS,
 } from '../config/security.js'
 
-/** Auth paths that don't require CSRF (unauthenticated or token-only) */
+/** Auth paths that don't require CSRF (unauthenticated — no session cookie exists yet) */
 const CSRF_EXEMPT_AUTH_PATHS = new Set([
   '/api/auth/csrf-token',
   '/api/auth/send-otp',
   '/api/auth/verify-otp',
   '/api/auth/dev-login',
   '/api/auth/refresh',
+  // Password-based auth — unauthenticated, no CSRF cookie present
+  '/api/auth/login',
+  '/api/auth/register',
+  '/api/auth/verify-registration',
+  '/api/auth/resend-otp',
+  '/api/auth/forgot-password',
+  '/api/auth/reset-password',
 ])
 
 /** Timing-safe string comparison */
