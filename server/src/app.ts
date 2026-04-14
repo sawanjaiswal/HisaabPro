@@ -97,10 +97,15 @@ export function createApp() {
       : false,
   }))
 
-  const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:5173',
+  const allowedOrigins = [
+    ...(process.env.CORS_ORIGIN?.split(',') || [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:5173',
+    ]),
+    // Capacitor Android uses https://localhost (androidScheme: 'https')
+    'https://localhost',
+    'capacitor://localhost',
   ]
   app.use(cors({ origin: allowedOrigins, credentials: true }))
   app.use(compression())
