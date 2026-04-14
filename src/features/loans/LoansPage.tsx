@@ -22,6 +22,7 @@ import { createLoan } from './loan.service'
 import type { Loan, LoanStatus, LoanType, CreateLoanInput } from './loan.types'
 import './loans.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { toLocalISODate } from '../../lib/format'
 
 // Status labels resolved via t at render time — see getLoanStatusLabel()
 function getLoanStatusLabel(status: LoanStatus, t: { activeLoan: string; closedLoan2: string; overdueLoan: string }): string {
@@ -63,7 +64,7 @@ function LoanCard({ loan, onClick }: { loan: Loan; onClick: (id: string) => void
   )
 }
 
-const TODAY = new Date().toISOString().split('T')[0]
+const TODAY = toLocalISODate(new Date())
 
 export default function LoansPage() {
   const { t } = useLanguage()

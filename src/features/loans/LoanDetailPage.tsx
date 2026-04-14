@@ -21,6 +21,7 @@ import { getLoanStatement, recordLoanTransaction } from './loan.service'
 import type { LoanStatement, LoanTransactionType, CreateLoanTransactionInput } from './loan.types'
 import './loans.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { toLocalISODate } from '../../lib/format'
 
 // TXN_TYPE_LABELS resolved via t at render time — see getTxnTypeLabel()
 function getTxnTypeLabel(type: LoanTransactionType, t: { disbursement: string; repayment: string; interest: string; penalty: string }): string {
@@ -44,7 +45,7 @@ function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-const TODAY = new Date().toISOString().split('T')[0]
+const TODAY = toLocalISODate(new Date())
 
 export default function LoanDetailPage() {
   const { t } = useLanguage()

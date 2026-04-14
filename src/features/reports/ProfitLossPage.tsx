@@ -18,6 +18,7 @@ import { getProfitLoss } from './finance.service'
 import type { ProfitLossData, ProfitLossSection } from './finance.types'
 import './report-finance.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { toLocalISODate } from '../../lib/format'
 
 function SectionCard({ section, amountClass }: { section: ProfitLossSection; amountClass?: string }) {
   return (
@@ -42,8 +43,8 @@ function SectionCard({ section, amountClass }: { section: ProfitLossSection; amo
 
 function getMonthRange(): { from: string; to: string } {
   const now = new Date()
-  const from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]
-  const to = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0]
+  const from = toLocalISODate(new Date(now.getFullYear(), now.getMonth(), 1))
+  const to = toLocalISODate(new Date(now.getFullYear(), now.getMonth() + 1, 0))
   return { from, to }
 }
 

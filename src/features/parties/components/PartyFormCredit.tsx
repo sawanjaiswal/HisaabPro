@@ -2,6 +2,7 @@
 
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PartyFormData, BalanceType, CreditLimitMode } from '../party.types'
+import { toLocalISODate } from '../../../lib/format'
 
 interface PartyFormCreditProps {
   form: PartyFormData
@@ -9,7 +10,7 @@ interface PartyFormCreditProps {
   onUpdate: <K extends keyof PartyFormData>(key: K, value: PartyFormData[K]) => void
 }
 
-const TODAY = new Date().toISOString().split('T')[0]
+const TODAY = toLocalISODate(new Date())
 
 export function PartyFormCredit({ form, errors, onUpdate }: PartyFormCreditProps) {
   const { t } = useLanguage()

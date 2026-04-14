@@ -20,6 +20,7 @@ import { createOtherIncome } from './other-income.service'
 import type { OtherIncome, OtherIncomePaymentMode, CreateOtherIncomeInput } from './other-income.types'
 import './other-income.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { toLocalISODate } from '../../lib/format'
 
 const PAGE_LIMIT = 20
 
@@ -47,7 +48,7 @@ function IncomeCard({ item }: { item: OtherIncome }) {
   )
 }
 
-const TODAY = new Date().toISOString().split('T')[0]
+const TODAY = toLocalISODate(new Date())
 
 export default function OtherIncomePage() {
   const { t } = useLanguage()

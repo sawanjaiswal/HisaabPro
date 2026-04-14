@@ -39,7 +39,7 @@ export function setTokenCookies(
   res.cookie(ACCESS_TOKEN_COOKIE, tokens.accessToken, {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? 'strict' : 'lax',
+    sameSite: isProduction ? 'none' : 'lax',
     maxAge: ACCESS_TOKEN_TTL_MS,
     path: '/',
   })
@@ -47,7 +47,7 @@ export function setTokenCookies(
   res.cookie(REFRESH_TOKEN_COOKIE, tokens.refreshToken, {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? 'strict' : 'lax',
+    sameSite: isProduction ? 'none' : 'lax',
     maxAge: REFRESH_TOKEN_TTL_MS,
     path: '/api/auth',
   })
@@ -62,13 +62,13 @@ export function clearTokenCookies(res: Response) {
   res.clearCookie(ACCESS_TOKEN_COOKIE, {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? 'strict' : 'lax',
+    sameSite: isProduction ? 'none' : 'lax',
     path: '/',
   })
   res.clearCookie(REFRESH_TOKEN_COOKIE, {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? 'strict' : 'lax',
+    sameSite: isProduction ? 'none' : 'lax',
     path: '/api/auth',
   })
 }

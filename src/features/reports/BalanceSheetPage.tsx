@@ -18,6 +18,7 @@ import { getBalanceSheet } from './finance.service'
 import type { BalanceSheetData, BalanceSheetSection } from './finance.types'
 import './report-finance.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { toLocalISODate } from '../../lib/format'
 
 function SectionCard({ section }: { section: BalanceSheetSection }) {
   return (
@@ -43,7 +44,7 @@ function SectionCard({ section }: { section: BalanceSheetSection }) {
 export default function BalanceSheetPage() {
   const { t } = useLanguage()
   const toast = useToast()
-  const [asOf, setAsOf] = useState(() => new Date().toISOString().split('T')[0])
+  const [asOf, setAsOf] = useState(() => toLocalISODate(new Date()))
   const [data, setData] = useState<BalanceSheetData | null>(null)
   const [fetchStatus, setFetchStatus] = useState<'loading' | 'error' | 'success'>('loading')
   const [refreshKey, setRefreshKey] = useState(0)

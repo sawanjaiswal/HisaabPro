@@ -19,6 +19,7 @@ import { getProfitability } from './finance.service'
 import type { ProfitabilityData, ProfitabilityGroupBy } from './finance.types'
 import './report-finance.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { toLocalISODate } from '../../lib/format'
 
 function marginClass(m: number): string {
   if (m >= 30) return 'profit-table__margin--high'
@@ -29,8 +30,8 @@ function marginClass(m: number): string {
 function getMonthRange() {
   const now = new Date()
   return {
-    from: new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0],
-    to: new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0],
+    from: toLocalISODate(new Date(now.getFullYear(), now.getMonth(), 1)),
+    to: toLocalISODate(new Date(now.getFullYear(), now.getMonth() + 1, 0)),
   }
 }
 

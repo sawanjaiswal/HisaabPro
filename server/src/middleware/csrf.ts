@@ -48,7 +48,7 @@ export function csrfProtection(req: Request, res: Response, next: NextFunction) 
       const isProduction = process.env.NODE_ENV === 'production'
       res.cookie(CSRF_COOKIE_NAME, token, {
         httpOnly: true,
-        sameSite: 'strict',
+        sameSite: isProduction ? 'none' : 'lax',
         secure: isProduction,
         path: '/',
         maxAge: CSRF_COOKIE_TTL_MS,

@@ -21,13 +21,14 @@ export const MAX_PROGRESSIVE_DELAY_MS = 3_000
 
 /**
  * Cookie names.
- * __Host- prefix requires Secure=true → only works over HTTPS (production).
+ * __Host- prefix requires Secure=true + Path=/ + no Domain → only works over HTTPS.
+ * __Secure- prefix requires Secure=true → used for the refresh token (scoped to /api/auth).
  * In development (HTTP), use unprefixed names so the browser accepts them.
  */
 const isProduction = process.env.NODE_ENV === 'production'
 
 export const ACCESS_TOKEN_COOKIE = isProduction ? '__Host-at' : 'at'
-export const REFRESH_TOKEN_COOKIE = isProduction ? '__Host-rt' : 'rt'
+export const REFRESH_TOKEN_COOKIE = isProduction ? '__Secure-rt' : 'rt'
 
 /** Access token lifetime (ms) — 15 minutes */
 export const ACCESS_TOKEN_TTL_MS = 15 * 60 * 1000

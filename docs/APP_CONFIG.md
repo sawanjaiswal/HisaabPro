@@ -11,6 +11,27 @@
 | **Domain** | hisaabpro.in |
 | **Tagline** | Billing, Inventory & Payments for Indian Businesses |
 
+## Subdomains
+
+| Host | Purpose | Hosted on |
+|------|---------|-----------|
+| `hisaabpro.in` / `www.hisaabpro.in` | Marketing landing page | Vercel |
+| `app.hisaabpro.in` | PWA / web app (login + dashboard) | Vercel |
+| `admin.hisaabpro.in` | Internal admin panel | Vercel |
+| `api.hisaabpro.in` | Backend API (Express + Prisma) | Render |
+
+## Email
+
+| Address | Purpose | Destination |
+|---------|---------|-------------|
+| `support@hisaabpro.in` | Public support, Play Console contact, privacy/delete-account contact, landing footer | Forwards to `sawanj2311@gmail.com` via ImprovMX |
+
+- **Provider:** ImprovMX (free tier, 25 aliases)
+- **MX records:** `mx1.improvmx.com` (10), `mx2.improvmx.com` (20)
+- **SPF:** `v=spf1 include:spf.improvmx.com ~all`
+- **DNS managed at:** Hostinger
+- To add more aliases: improvmx.com dashboard → `hisaabpro.in` → Aliases
+
 ## Notes
 
 - Domain hisaabpro.in — **purchased** (2026-03)

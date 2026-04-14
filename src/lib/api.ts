@@ -20,6 +20,32 @@ interface ApiResponse<T> {
   error?: { code: string; message: string }
 }
 
+// ─── CSRF double-submit token (fetched once, cached in memory) ──────────────
+
+let csrfToken: string | null = null
+let csrfPromise: Promise<string | null> | null = null
+
+async function getCsrfToken(): Promise<string | null> {
+  if (csrfToken) return csrfToken
+  if (csrfPromise) return csrfPromise
+  csrfPromise = (async () => {
+    try {
+      const res = await fetch(`${API_URL}/auth/csrf-token`, { credentials: 'include' })
+      if (!res.ok) return null
+      const body = await res.json().catch(() => null) as { data?: { csrfToken?: string } } | null
+      csrfToken = body?.data?.csrfToken ?? res.headers.get('x-csrf-token')
+      return csrfToken
+    } catch {
+      return null
+    } finally {
+      csrfPromise = null
+    }
+  })()
+  return csrfPromise
+}
+
+function invalidateCsrfToken() { csrfToken = null }
+
 // ─── Token refresh queue — prevents multiple concurrent refresh calls ────────
 
 let isRefreshing = false
@@ -113,6 +139,11 @@ export async function api<T>(
     options.signal.addEventListener('abort', () => controller.abort(), { once: true })
   }
 
+  // CSRF: mutations require X-CSRF-Token header matching csrf-token cookie.
+  // Auth endpoints are exempt server-side; skip the roundtrip for them.
+  const needsCsrf = SYNC_MUTATION_METHODS.has(method) && !path.startsWith('/auth/')
+  const csrf = needsCsrf ? await getCsrfToken() : null
+
   let response: Response
   try {
     response = await fetch(`${API_URL}${path}`, {
@@ -121,6 +152,7 @@ export async function api<T>(
       signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
+        ...(csrf ? { 'X-CSRF-Token': csrf } : {}),
         ...fetchOptions.headers,
       },
     })
@@ -159,6 +191,15 @@ export async function api<T>(
     throw new ApiError('Session expired', 'UNAUTHORIZED', 401)
   }
 
+  // 403 CSRF_FAILED — token may be stale (server restart); refresh once and retry
+  if (response.status === 403 && needsCsrf && !options._skipRefresh) {
+    const body = await response.clone().json().catch(() => null) as { error?: { code?: string } } | null
+    if (body?.error?.code === 'CSRF_FAILED') {
+      invalidateCsrfToken()
+      return api<T>(path, { ...options, _skipRefresh: true })
+    }
+  }
+
   // 409 conflict — another user modified the record while offline
   if (response.status === 409) {
     const conflictBody = await response.json().catch(() => null)
@@ -175,14 +216,16 @@ export async function api<T>(
   if (NO_BODY_STATUSES.has(response.status)) {
     json = { success: true, data: undefined as T }
   } else {
+    const rawBody = await response.text().catch(() => '')
     try {
-      json = await response.json()
+      json = JSON.parse(rawBody) as ApiResponse<T>
     } catch {
       const GATEWAY_ERRORS = new Set([502, 503, 504])
+      const snippet = rawBody ? ` [${response.status}: ${rawBody.slice(0, 80)}]` : ` [${response.status}: empty]`
       throw new ApiError(
         GATEWAY_ERRORS.has(response.status)
           ? 'Server is temporarily unavailable — please try again'
-          : 'Server returned an unexpected response. Please try again.',
+          : `Server returned an unexpected response. Please try again.${snippet}`,
         'INVALID_RESPONSE',
         response.status
       )

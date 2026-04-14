@@ -37,10 +37,11 @@ router.get('/csrf-token', (req, res) => {
   const token = existing ?? randomUUID()
 
   if (!existing) {
+    const isProduction = process.env.NODE_ENV === 'production'
     res.cookie(CSRF_COOKIE_NAME, token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       path: '/',
       maxAge: CSRF_COOKIE_TTL_MS,
     })
@@ -51,15 +52,14 @@ router.get('/csrf-token', (req, res) => {
 })
 
 // ---------------------------------------------------------------------------
-// Dev login (non-production only)
+// Password login (MVP — used across dev + production closed testing)
 // ---------------------------------------------------------------------------
 
-if (process.env.NODE_ENV !== 'production') {
+{
   /**
    * POST /api/auth/dev-login
-   * Dev-only: login with username + password (no OTP needed).
+   * MVP: login with username + password (no OTP needed).
    * Creates user if not exists. Sets httpOnly cookie tokens.
-   * Route is NOT mounted in production.
    */
   router.post(
     '/dev-login',

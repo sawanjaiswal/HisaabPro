@@ -5,8 +5,9 @@ import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { createCheque } from '../cheque.service'
 import type { ChequeType, CreateChequeInput } from '../cheque.types'
+import { toLocalISODate } from '../../../lib/format'
 
-const TODAY = new Date().toISOString().split('T')[0]
+const TODAY = toLocalISODate(new Date())
 
 interface AddChequeDrawerProps {
   open: boolean

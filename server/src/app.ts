@@ -90,7 +90,7 @@ export function createApp() {
       },
     },
     crossOriginOpenerPolicy: { policy: 'same-origin' },
-    crossOriginResourcePolicy: { policy: 'same-origin' },
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
     referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
     hsts: process.env.NODE_ENV === 'production'
       ? { maxAge: 31536000, includeSubDomains: true, preload: true }

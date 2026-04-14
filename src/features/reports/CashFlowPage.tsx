@@ -18,6 +18,7 @@ import { getCashFlow } from './finance.service'
 import type { CashFlowData, CashFlowSection } from './finance.types'
 import './report-finance.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { toLocalISODate } from '../../lib/format'
 
 function CashFlowSectionCard({ section }: { section: CashFlowSection }) {
   const isPositive = section.netAmount >= 0
@@ -46,8 +47,8 @@ function CashFlowSectionCard({ section }: { section: CashFlowSection }) {
 function getMonthRange() {
   const now = new Date()
   return {
-    from: new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0],
-    to: new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0],
+    from: toLocalISODate(new Date(now.getFullYear(), now.getMonth(), 1)),
+    to: toLocalISODate(new Date(now.getFullYear(), now.getMonth() + 1, 0)),
   }
 }
 

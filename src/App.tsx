@@ -1,5 +1,6 @@
 import { Suspense, useEffect } from 'react'
 import type { ReactNode } from 'react'
+import { Capacitor } from '@capacitor/core'
 import { useQueryClient } from '@tanstack/react-query'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ROUTES } from '@/config/routes.config'
@@ -68,10 +69,11 @@ function GuestRoute({ children }: { children: ReactNode }) {
   return <>{children}</>
 }
 
-/** Host-based root route: landing on marketing domain, login on app.*, admin on admin.* */
+/** Host-based root route: landing on marketing, login on app host and native, admin on admin host */
 function HomeGate() {
+  const isNative = Capacitor.isNativePlatform()
   const host = typeof window !== 'undefined' ? window.location.hostname : ''
-  if (host === 'app.hisaabpro.in') {
+  if (isNative || host === 'app.hisaabpro.in') {
     return <GuestRoute><Login /></GuestRoute>
   }
   if (host === 'admin.hisaabpro.in') {

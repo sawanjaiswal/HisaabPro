@@ -8,6 +8,7 @@ import { createExpense } from '../expense.service'
 import { PAYMENT_MODE_LABELS } from '../expense.constants'
 import type { ExpenseCategory, ExpensePaymentMode, CreateExpenseInput } from '../expense.types'
 import { useLanguage } from '@/hooks/useLanguage'
+import { toLocalISODate } from '../../../lib/format'
 
 interface AddExpenseDrawerProps {
   open: boolean
@@ -16,7 +17,7 @@ interface AddExpenseDrawerProps {
   categories: ExpenseCategory[]
 }
 
-const TODAY = new Date().toISOString().split('T')[0]
+const TODAY = toLocalISODate(new Date())
 
 export function AddExpenseDrawer({ open, onClose, onCreated, categories }: AddExpenseDrawerProps) {
   const { t } = useLanguage()
