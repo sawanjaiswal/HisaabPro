@@ -8,6 +8,7 @@ import { ApiError } from '../../lib/api'
 import * as authLib from '../../lib/auth'
 import { useBiometric } from '../../hooks/useBiometric'
 import { ROUTES } from '../../config/routes.config'
+import { AUTH_MODE } from '../../config/app.config'
 
 export function useLogin() {
   const [identifier, setIdentifier] = useState('')
@@ -22,7 +23,9 @@ export function useLogin() {
 
   const mutation = useMutation({
     mutationFn: ({ id, pass, captcha }: { id: string; pass: string; captcha?: string }) =>
-      authLib.login(id, pass, captcha),
+      AUTH_MODE === 'dev-login'
+        ? authLib.devLogin(id, pass, captcha)
+        : authLib.login(id, pass, captcha),
     onSuccess: (result) => {
       authLib.setCachedUser(result.user)
       authLib.setCachedBusinesses(result.businesses)

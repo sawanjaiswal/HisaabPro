@@ -72,6 +72,10 @@ router.get('/csrf-token', (req, res) => {
     captchaGuard,
     validate(devLoginSchema),
     asyncHandler(async (req, res) => {
+      if (process.env.ALLOW_DEV_LOGIN !== 'true') {
+        sendError(res, 'Not found', 'NOT_FOUND', 404)
+        return
+      }
       const result = await authService.devLogin(req.body)
 
       if (!result.verified) {

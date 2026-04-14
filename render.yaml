@@ -41,11 +41,13 @@ services:
         generateValue: true
 
       # App config
-      # NOTE: NODE_ENV=staging (not production) keeps /dev-login route mounted
-      # for Play Store reviewer access with admin/admin123 credentials.
-      # Switch to 'production' once real OTP auth is wired.
+      # NODE_ENV=production ensures SameSite=None cookies for cross-origin (app.hisaabpro.in → api.hisaabpro.in).
+      # ALLOW_DEV_LOGIN=true keeps admin/admin123 devLogin active during closed testing.
+      # Set ALLOW_DEV_LOGIN=false (or remove) before public launch.
       - key: NODE_ENV
-        value: staging
+        value: production
+      - key: ALLOW_DEV_LOGIN
+        value: "true"
       - key: PORT
         value: "10000"
       - key: CORS_ORIGIN

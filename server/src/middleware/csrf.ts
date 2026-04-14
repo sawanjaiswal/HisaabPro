@@ -36,6 +36,10 @@ const CSRF_EXEMPT_AUTH_PATHS = new Set([
   '/api/auth/resend-otp',
   '/api/auth/forgot-password',
   '/api/auth/reset-password',
+  // Biometric — native device auth, no session cookie at challenge time
+  '/api/auth/biometric/register',
+  '/api/auth/biometric/authenticate',
+  '/api/auth/biometric/challenge',
 ])
 
 /** Timing-safe string comparison */

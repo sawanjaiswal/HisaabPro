@@ -27,7 +27,7 @@ export const MAX_PROGRESSIVE_DELAY_MS = 3_000
  */
 const isProduction = process.env.NODE_ENV === 'production'
 
-export const ACCESS_TOKEN_COOKIE = isProduction ? '__Host-at' : 'at'
+export const ACCESS_TOKEN_COOKIE = isProduction ? '__Secure-at' : 'at'
 export const REFRESH_TOKEN_COOKIE = isProduction ? '__Secure-rt' : 'rt'
 
 /** Access token lifetime (ms) — 15 minutes */
@@ -48,7 +48,7 @@ export const RATE_LIMIT_GLOBAL_MAX = 100
 export const RATE_LIMIT_AUTH_WINDOW_MS = 60 * 1000
 
 /** Max auth attempts per IP per window */
-export const RATE_LIMIT_AUTH_MAX = 5
+export const RATE_LIMIT_AUTH_MAX = 20
 
 /** Sensitive mutation rate limit window (ms) — 1 minute */
 export const RATE_LIMIT_SENSITIVE_WINDOW_MS = 60 * 1000

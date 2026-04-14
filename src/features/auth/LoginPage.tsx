@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
 import { SEO } from '../../components/layout/SEO'
 import { Turnstile } from '../../components/ui/Turnstile'
-import { APP_NAME } from '../../config/app.config'
+import { APP_NAME, AUTH_MODE } from '../../config/app.config'
 import { useLogin } from './useLogin'
 import { ROUTES } from '@/config/routes.config'
 import './LoginPage.css'
+
+const isDevMode = AUTH_MODE === 'dev-login'
 
 export default function LoginPage() {
   const {
@@ -36,14 +38,16 @@ export default function LoginPage() {
           }}
         >
           <div className="login-page__field">
-            <label className="login-page__label" htmlFor="identifier">Phone or Email</label>
+            <label className="login-page__label" htmlFor="identifier">
+              {isDevMode ? 'Username' : 'Phone or Email'}
+            </label>
             <div className="login-page__input-wrapper">
               <input
                 id="identifier"
                 type="text"
-                inputMode="tel"
+                inputMode={isDevMode ? 'text' : 'tel'}
                 className="login-page__input"
-                placeholder="Mobile number or email"
+                placeholder={isDevMode ? 'admin or demo' : 'Mobile number or email'}
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 autoComplete="username"
@@ -98,18 +102,21 @@ export default function LoginPage() {
             </button>
           )}
 
-          <p className="login-page__hint">
-            <Link to={ROUTES.FORGOT_PASSWORD} style={{ color: 'var(--color-primary-500)' }}>
-              Forgot password?
-            </Link>
-          </p>
-
-          <p className="login-page__hint">
-            New here?{' '}
-            <Link to={ROUTES.REGISTER} style={{ color: 'var(--color-primary-500)' }}>
-              Create account
-            </Link>
-          </p>
+          {!isDevMode && (
+            <>
+              <p className="login-page__hint">
+                <Link to={ROUTES.FORGOT_PASSWORD} style={{ color: 'var(--color-primary-500)' }}>
+                  Forgot password?
+                </Link>
+              </p>
+              <p className="login-page__hint">
+                New here?{' '}
+                <Link to={ROUTES.REGISTER} style={{ color: 'var(--color-primary-500)' }}>
+                  Create account
+                </Link>
+              </p>
+            </>
+          )}
         </form>
       </div>
     </div>
