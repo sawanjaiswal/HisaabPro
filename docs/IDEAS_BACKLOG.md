@@ -1,8 +1,23 @@
 # Ideas Backlog: HisaabPro
 
-Last updated: 2026-04-11
+Last updated: 2026-04-14
 
 > Feature ideas and enhancements not yet in active development. Items graduate to FEATURE_MAP.md when prioritized for a phase.
+
+---
+
+## Auth — Post Closed-Testing (Before Public Launch)
+
+### STPL + MSG91 OTP Setup
+- **Priority:** P0 (must-do before public launch)
+- **Status:** BACKLOG — closed testing uses admin/admin123 devLogin
+- **What to do:**
+  1. STPL: Add `HSABPR` (or `HISAAB`) header under existing entity (SAWAN JAISWAL)
+  2. STPL: Register OTP template: `Your HisaabPro OTP is {#var#}. Valid for 10 min. -HSABPR`
+  3. MSG91: Create Flow using HSABPR sender ID, get `template_id`
+  4. Render env vars: set `MSG91_AUTH_KEY` + `MSG91_TEMPLATE_ID`
+  5. Remove devLogin from auth routes (or gate with `ALLOW_DEV_LOGIN=false`)
+- **Current state:** `devLogin` (admin/admin123) is open for testers. OTP routes built and ready — just needs credentials.
 
 ---
 

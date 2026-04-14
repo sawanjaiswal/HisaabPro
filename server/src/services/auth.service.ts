@@ -155,10 +155,7 @@ async function resetLoginAttempts(userId: string): Promise<void> {
  * Uses hardcoded admin/demo credentials. Auto-creates user if not exists.
  */
 export async function devLogin(data: { username: string; password: string }) {
-  const allowDevLogin = process.env.ALLOW_DEV_LOGIN === 'true'
-  if (process.env.NODE_ENV === 'production' && !allowDevLogin) {
-    return { verified: false, message: 'Please register to continue' }
-  }
+  // Closed testing: dev login always available. Replace with OTP flow post-launch.
 
   const { username, password } = data
 
