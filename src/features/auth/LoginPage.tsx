@@ -99,6 +99,12 @@ export default function LoginPage() {
           )}
 
           <p className="login-page__hint">
+            <Link to={ROUTES.FORGOT_PASSWORD} style={{ color: 'var(--color-primary-500)' }}>
+              Forgot password?
+            </Link>
+          </p>
+
+          <p className="login-page__hint">
             New here?{' '}
             <Link to={ROUTES.REGISTER} style={{ color: 'var(--color-primary-500)' }}>
               Create account

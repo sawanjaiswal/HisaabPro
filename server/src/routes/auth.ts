@@ -9,6 +9,7 @@ import {
   logoutSchema, devLoginSchema, switchBusinessSchema,
   registerSchema, loginSchema, verifyRegistrationSchema,
   sendOtpSchema, verifyOtpSchema, resendOtpSchema,
+  forgotPasswordSchema, resetPasswordSchema,
 } from '../schemas/auth.schemas.js'
 import { prisma } from '../lib/prisma.js'
 import { sendSuccess, sendError } from '../lib/response.js'
@@ -228,6 +229,47 @@ router.post(
       businesses: result.businesses ?? [],
       activeBusiness: result.activeBusiness ?? null,
     })
+  })
+)
+
+// ---------------------------------------------------------------------------
+// Password reset (OTP-based)
+// ---------------------------------------------------------------------------
+
+/**
+ * POST /api/auth/forgot-password
+ * Step 1: Send OTP to registered phone.
+ */
+router.post(
+  '/forgot-password',
+  authRateLimiter,
+  captchaGuard,
+  validate(forgotPasswordSchema),
+  asyncHandler(async (req, res) => {
+    const result = await authService.forgotPassword(req.body)
+    if (!result.sent) {
+      sendError(res, result.message, 'OTP_FAILED', 400)
+      return
+    }
+    sendSuccess(res, { message: result.message })
+  })
+)
+
+/**
+ * POST /api/auth/reset-password
+ * Step 2: Verify OTP and set new password.
+ */
+router.post(
+  '/reset-password',
+  authRateLimiter,
+  validate(resetPasswordSchema),
+  asyncHandler(async (req, res) => {
+    const result = await authService.resetPassword(req.body)
+    if (!result.success) {
+      sendError(res, result.message, 'RESET_FAILED', 400)
+      return
+    }
+    sendSuccess(res, { message: result.message })
   })
 )
 

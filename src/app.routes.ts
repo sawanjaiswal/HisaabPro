@@ -12,6 +12,7 @@ export const FeedbackWidget = lazy(() =>
 export const Login = lazy(() => import('@/features/auth/LoginPage'))
 export const Register = lazy(() => import('@/features/auth/RegisterPage'))
 export const VerifyOtp = lazy(() => import('@/features/auth/VerifyOtpPage'))
+export const ForgotPassword = lazy(() => import('@/features/auth/ForgotPasswordPage'))
 export const Onboarding = lazy(() => import('@/features/onboarding/OnboardingPage'))
 export const Dashboard = lazy(() => import('@/features/dashboard/DashboardPage'))
 export const Parties = lazy(() => import('@/features/parties/PartiesPage'))

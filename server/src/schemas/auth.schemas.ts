@@ -34,6 +34,17 @@ export const resendOtpSchema = z.object({
   context: z.enum(['registration', 'login', 'password_reset']).optional(),
 })
 
+export const forgotPasswordSchema = z.object({
+  phone: z.string().regex(phoneRegex, 'Valid 10-digit Indian mobile number required'),
+  captchaToken: z.string().optional(),
+})
+
+export const resetPasswordSchema = z.object({
+  phone: z.string().regex(phoneRegex, 'Valid 10-digit Indian mobile number required'),
+  otp: z.string().length(6, 'OTP must be 6 digits').regex(/^\d{6}$/, 'OTP must be numeric'),
+  newPassword: z.string().min(6, 'Password must be at least 6 characters').max(100),
+})
+
 export const refreshTokenSchema = z.object({
   refreshToken: z.string().optional(),
 })
@@ -62,6 +73,8 @@ export type VerifyRegistrationInput = z.infer<typeof verifyRegistrationSchema>
 export type SendOtpInput = z.infer<typeof sendOtpSchema>
 export type VerifyOtpInput = z.infer<typeof verifyOtpSchema>
 export type ResendOtpInput = z.infer<typeof resendOtpSchema>
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>
 export type RefreshTokenInput = z.infer<typeof refreshTokenSchema>
 export type LogoutInput = z.infer<typeof logoutSchema>
 export type SwitchBusinessInput = z.infer<typeof switchBusinessSchema>
