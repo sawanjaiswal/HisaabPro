@@ -103,6 +103,10 @@ export function createApp() {
       'http://localhost:3001',
       'http://localhost:5173',
     ]),
+    // Production web origins
+    'https://hisaabpro.in',
+    'https://app.hisaabpro.in',
+    'https://admin.hisaabpro.in',
     // Capacitor Android uses https://localhost (androidScheme: 'https')
     'https://localhost',
     'capacitor://localhost',
