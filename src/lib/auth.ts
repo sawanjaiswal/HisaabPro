@@ -52,6 +52,35 @@ export function hasCachedSession(): boolean {
   return sessionStorage.getItem('cachedUser') !== null
 }
 
+/** Production login — phone or email + password */
+export async function login(
+  identifier: string,
+  password: string,
+  captchaToken?: string,
+  signal?: AbortSignal,
+) {
+  const raw = await api<{
+    isNewUser: boolean
+    user: { id: string; phone: string; name: string | null; email: string | null }
+    businesses: BusinessSummary[]
+    activeBusiness: BusinessSummary | null
+  }>('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({
+      identifier,
+      password,
+      ...(captchaToken ? { captchaToken } : {}),
+    }),
+    signal,
+  })
+  const businessId = raw.activeBusiness?.id ?? raw.businesses[0]?.id ?? null
+  return {
+    isNewUser: raw.isNewUser,
+    user: { ...raw.user, businessId } satisfies AuthUser,
+    businesses: raw.businesses ?? [],
+  }
+}
+
 /** Dev login with username + password (and optional CAPTCHA token) */
 export async function devLogin(
   username: string,

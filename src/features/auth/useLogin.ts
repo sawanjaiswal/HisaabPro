@@ -6,10 +6,11 @@ import { useMutation } from '@tanstack/react-query'
 import { useAuth } from '../../context/AuthContext'
 import { ApiError } from '../../lib/api'
 import * as authLib from '../../lib/auth'
+import { useBiometric } from '../../hooks/useBiometric'
 import { ROUTES } from '../../config/routes.config'
 
 export function useLogin() {
-  const [username, setUsername] = useState('')
+  const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [captchaRequired, setCaptchaRequired] = useState(false)
@@ -17,10 +18,11 @@ export function useLogin() {
 
   const navigate = useNavigate()
   const { setUser, setBusinesses } = useAuth()
+  const { isSupported: biometricSupported, isRegistered: biometricRegistered, checking: biometricChecking, authenticate } = useBiometric()
 
   const mutation = useMutation({
-    mutationFn: ({ user, pass, captcha }: { user: string; pass: string; captcha?: string }) =>
-      authLib.devLogin(user, pass, captcha),
+    mutationFn: ({ id, pass, captcha }: { id: string; pass: string; captcha?: string }) =>
+      authLib.login(id, pass, captcha),
     onSuccess: (result) => {
       authLib.setCachedUser(result.user)
       authLib.setCachedBusinesses(result.businesses)
@@ -38,9 +40,8 @@ export function useLogin() {
     },
   })
 
-  // Reset captcha token whenever the user changes credentials
-  const handleSetUsername = useCallback((value: string) => {
-    setUsername(value)
+  const handleSetIdentifier = useCallback((value: string) => {
+    setIdentifier(value)
     setCaptchaToken('')
   }, [])
 
@@ -52,14 +53,45 @@ export function useLogin() {
   const handleLogin = useCallback(async () => {
     if (mutation.isPending) return
     setError('')
-    mutation.mutate({ user: username, pass: password, captcha: captchaToken || undefined })
-  }, [username, password, captchaToken, mutation])
+    mutation.mutate({ id: identifier, pass: password, captcha: captchaToken || undefined })
+  }, [identifier, password, captchaToken, mutation])
+
+  const [biometricLoading, setBiometricLoading] = useState(false)
+
+  const handleBiometric = useCallback(async () => {
+    if (biometricLoading) return
+    setBiometricLoading(true)
+    setError('')
+    try {
+      const result = await authenticate()
+      if (result.success) {
+        // Biometric auth sets cookies — refresh user from server
+        const me = await authLib.getMe()
+        authLib.setCachedUser(me.user)
+        authLib.setCachedBusinesses(me.businesses)
+        setUser(me.user)
+        setBusinesses(me.businesses)
+        navigate(ROUTES.DASHBOARD, { replace: true })
+      } else {
+        setError('Biometric authentication failed. Please use your password.')
+      }
+    } catch {
+      setError('Biometric authentication failed.')
+    } finally {
+      setBiometricLoading(false)
+    }
+  }, [authenticate, biometricLoading, navigate, setUser, setBusinesses])
+
+  const showBiometric = !biometricChecking && biometricSupported && biometricRegistered
 
   return {
-    username, setUsername: handleSetUsername,
+    identifier, setIdentifier: handleSetIdentifier,
     password, setPassword: handleSetPassword,
     loading: mutation.isPending, error,
     captchaRequired, captchaToken, setCaptchaToken,
     handleLogin,
+    showBiometric, biometricLoading, handleBiometric,
+    // backward-compat aliases used in LoginPage
+    username: identifier, setUsername: handleSetIdentifier,
   }
 }

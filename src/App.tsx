@@ -15,7 +15,7 @@ import { useRoutePreload } from '@/hooks/useRoutePreload'
 import { useSSE } from '@/hooks/useSSE'
 import {
   CalculatorOverlay, FeedbackWidget,
-  Login, Onboarding, Dashboard,
+  Login, Register, VerifyOtp, Onboarding, Dashboard,
   Parties, CreateParty, PartyDetail, EditParty,
   Products, CreateProduct, ProductDetail, EditProduct,
   Invoices, CreateInvoice, InvoiceDetail, EditInvoice,
@@ -106,6 +106,8 @@ export function App() {
       <Routes>
         <Route path={ROUTES.HOME} element={<ErrorBoundary><Suspense fallback={<div className="min-h-screen bg-black" />}><HomeGate /></Suspense></ErrorBoundary>} />
         <Route path={ROUTES.LOGIN} element={<PageRoute><GuestRoute><Login /></GuestRoute></PageRoute>} />
+        <Route path={ROUTES.REGISTER} element={<PageRoute><GuestRoute><Register /></GuestRoute></PageRoute>} />
+        <Route path={ROUTES.VERIFY_OTP} element={<PageRoute><VerifyOtp /></PageRoute>} />
         <Route path={ROUTES.ONBOARDING} element={<PageRoute><ProtectedRoute><Onboarding /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.DASHBOARD} element={<PageRoute><ProtectedRoute><Dashboard /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PARTIES} element={<PageRoute><ProtectedRoute><Parties /></ProtectedRoute></PageRoute>} />

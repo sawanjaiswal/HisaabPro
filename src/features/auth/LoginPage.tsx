@@ -1,21 +1,22 @@
+import { Link } from 'react-router-dom'
 import { SEO } from '../../components/layout/SEO'
 import { Turnstile } from '../../components/ui/Turnstile'
-import { APP_NAME, IS_DEV } from '../../config/app.config'
+import { APP_NAME } from '../../config/app.config'
 import { useLogin } from './useLogin'
+import { ROUTES } from '@/config/routes.config'
 import './LoginPage.css'
-import { useLanguage } from '@/hooks/useLanguage'
 
 export default function LoginPage() {
-  const { t } = useLanguage()
   const {
-    username, setUsername,
+    identifier, setIdentifier,
     password, setPassword,
     loading, error,
     captchaRequired, setCaptchaToken,
     handleLogin,
+    showBiometric, biometricLoading, handleBiometric,
   } = useLogin()
 
-  const isValid = username.trim().length > 0 && password.length > 0
+  const isValid = identifier.trim().length > 0 && password.length > 0
 
   return (
     <div className="login-page">
@@ -24,7 +25,7 @@ export default function LoginPage() {
       <div className="login-page__card stagger-enter">
         <div className="login-page__header">
           <h1 className="login-page__title">{APP_NAME}</h1>
-          <p className="login-page__subtitle">{t.signInSubtitle}</p>
+          <p className="login-page__subtitle">Sign in to your account</p>
         </div>
 
         <form
@@ -35,15 +36,16 @@ export default function LoginPage() {
           }}
         >
           <div className="login-page__field">
-            <label className="login-page__label" htmlFor="username">{t.username}</label>
+            <label className="login-page__label" htmlFor="identifier">Phone or Email</label>
             <div className="login-page__input-wrapper">
               <input
-                id="username"
+                id="identifier"
                 type="text"
+                inputMode="tel"
                 className="login-page__input"
-                placeholder={t.enterUsername}
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Mobile number or email"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
                 autoComplete="username"
                 autoFocus
               />
@@ -51,13 +53,13 @@ export default function LoginPage() {
           </div>
 
           <div className="login-page__field">
-            <label className="login-page__label" htmlFor="password">{t.password}</label>
+            <label className="login-page__label" htmlFor="password">Password</label>
             <div className="login-page__input-wrapper">
               <input
                 id="password"
                 type="password"
                 className="login-page__input"
-                placeholder={t.enterPassword}
+                placeholder="Your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
@@ -80,19 +82,30 @@ export default function LoginPage() {
             type="submit"
             className="login-page__submit"
             disabled={!isValid || loading}
-            aria-label={t.signIn}
           >
-            {loading ? t.signingIn : t.signIn}
+            {loading ? 'Signing in…' : 'Sign In'}
           </button>
 
-          {IS_DEV && (
-            <p className="login-page__hint">
-              Dev accounts: admin / admin123 or demo / demo123
-            </p>
+          {showBiometric && (
+            <button
+              type="button"
+              className="login-page__submit"
+              style={{ background: 'var(--color-gray-100)', color: 'var(--color-gray-700)', marginTop: 0 }}
+              disabled={biometricLoading}
+              onClick={handleBiometric}
+            >
+              {biometricLoading ? 'Authenticating…' : 'Use Fingerprint / Face ID'}
+            </button>
           )}
+
+          <p className="login-page__hint">
+            New here?{' '}
+            <Link to={ROUTES.REGISTER} style={{ color: 'var(--color-primary-500)' }}>
+              Create account
+            </Link>
+          </p>
         </form>
       </div>
     </div>
   )
 }
-

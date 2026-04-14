@@ -5,7 +5,11 @@ import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { authRateLimiter } from '../middleware/rate-limit.js'
 import { captchaGuard, recordFailedAttempt } from '../middleware/captcha.js'
-import { logoutSchema, devLoginSchema, switchBusinessSchema } from '../schemas/auth.schemas.js'
+import {
+  logoutSchema, devLoginSchema, switchBusinessSchema,
+  registerSchema, loginSchema, verifyRegistrationSchema,
+  sendOtpSchema, verifyOtpSchema, resendOtpSchema,
+} from '../schemas/auth.schemas.js'
 import { prisma } from '../lib/prisma.js'
 import { sendSuccess, sendError } from '../lib/response.js'
 import { isBlacklisted, blacklistToken } from '../lib/token-blacklist.js'
@@ -108,61 +112,124 @@ router.get('/csrf-token', (req, res) => {
 }
 
 // ---------------------------------------------------------------------------
-// OTP-based auth (commented out for dev — restore for production)
+// Registration + OTP verification
 // ---------------------------------------------------------------------------
 
-// /**
-//  * POST /api/auth/send-otp
-//  * Send OTP to phone number for login/signup
-//  */
-// router.post(
-//   '/send-otp',
-//   authRateLimiter,
-//   validate(sendOtpSchema),
-//   asyncHandler(async (req, res) => {
-//     const result = await authService.sendOtp(req.body)
-//     if (!result.sent) {
-//       sendError(res, result.message, 'OTP_FAILED', 400)
-//       return
-//     }
-//     sendSuccess(res, { message: result.message })
-//   })
-// )
+/**
+ * POST /api/auth/register
+ * Step 1: validate name/phone/password, send OTP. User is created after verify-registration.
+ */
+router.post(
+  '/register',
+  authRateLimiter,
+  captchaGuard,
+  validate(registerSchema),
+  asyncHandler(async (req, res) => {
+    const result = await authService.register(req.body)
+    if (!result.sent) {
+      sendError(res, result.message, 'REGISTER_FAILED', 400)
+      return
+    }
+    sendSuccess(res, { message: result.message })
+  })
+)
 
-// /**
-//  * POST /api/auth/verify-otp
-//  * Verify OTP, auto-create user if new, return tokens + set cookies
-//  */
-// router.post(
-//   '/verify-otp',
-//   otpRateLimiter,
-//   captchaGuard,
-//   validate(verifyOtpSchema),
-//   asyncHandler(async (req, res) => {
-//     const result = await authService.verifyOtp(req.body)
-//     if (!result.verified) {
-//       logger.warn('auth.otp_failed', {
-//         ip: req.ip,
-//         phone: req.body.phone,
-//         userAgent: req.headers['user-agent'],
-//       })
-//       recordFailedAttempt(req.ip ?? 'unknown')
-//       sendError(res, result.message, 'OTP_INVALID', 400)
-//       return
-//     }
-//
-//     authService.setTokenCookies(res, result.tokens!)
-//
-//     const meData = await authService.getMe(result.user!.id)
-//     sendSuccess(res, {
-//       isNewUser: result.isNewUser,
-//       user: result.user,
-//       tokens: result.tokens,
-//       businesses: meData?.businesses ?? [],
-//       activeBusiness: meData?.activeBusiness ?? null,
-//     }, result.isNewUser as boolean ? 201 : 200)
-//   })
-// )
+/**
+ * POST /api/auth/verify-registration
+ * Step 2: verify OTP, create user account, set cookies.
+ */
+router.post(
+  '/verify-registration',
+  authRateLimiter,
+  validate(verifyRegistrationSchema),
+  asyncHandler(async (req, res) => {
+    const result = await authService.verifyRegistration(req.body)
+    if (!result.verified) {
+      logger.warn('auth.verify_registration_failed', { ip: req.ip, phone: req.body.phone })
+      recordFailedAttempt(req.ip ?? 'unknown')
+      sendError(res, result.message, 'OTP_INVALID', 400)
+      return
+    }
+
+    await prisma.refreshToken.create({
+      data: {
+        userId: result.user!.id,
+        token: result.tokens!.refreshToken,
+        deviceInfo: req.headers['user-agent']?.slice(0, 200) || null,
+        expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
+      },
+    })
+
+    authService.setTokenCookies(res, result.tokens!)
+    res.set('Cache-Control', 'no-store')
+    sendSuccess(res, {
+      isNewUser: true,
+      user: result.user,
+      businesses: [],
+      activeBusiness: null,
+    }, 201)
+  })
+)
+
+/**
+ * POST /api/auth/resend-otp
+ * Resend OTP — enforces 30s cooldown.
+ */
+router.post(
+  '/resend-otp',
+  authRateLimiter,
+  validate(resendOtpSchema),
+  asyncHandler(async (req, res) => {
+    const result = await authService.resendOtp(req.body.phone as string)
+    if (!result.sent) {
+      sendError(res, result.message, 'RESEND_FAILED', 400)
+      return
+    }
+    sendSuccess(res, { message: result.message, resendAvailableAt: result.resendAvailableAt })
+  })
+)
+
+// ---------------------------------------------------------------------------
+// Production login — phone or email + password
+// ---------------------------------------------------------------------------
+
+/**
+ * POST /api/auth/login
+ * Login with phone or email + password. Works in all environments.
+ */
+router.post(
+  '/login',
+  authRateLimiter,
+  captchaGuard,
+  validate(loginSchema),
+  asyncHandler(async (req, res) => {
+    const result = await authService.login(req.body)
+    if (!result.verified) {
+      logger.warn('auth.login_failed', { ip: req.ip, userAgent: req.headers['user-agent'] })
+      recordFailedAttempt(req.ip ?? 'unknown')
+      sendError(res, result.message, 'LOGIN_FAILED', 400)
+      return
+    }
+
+    await prisma.refreshToken.create({
+      data: {
+        userId: result.user!.id,
+        token: result.tokens!.refreshToken,
+        deviceInfo: req.headers['user-agent']?.slice(0, 200) || null,
+        expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
+      },
+    })
+
+    authService.setTokenCookies(res, result.tokens!)
+    res.set('Cache-Control', 'no-store')
+    sendSuccess(res, {
+      isNewUser: false,
+      user: result.user,
+      businesses: result.businesses ?? [],
+      activeBusiness: result.activeBusiness ?? null,
+    })
+  })
+)
 
 // ---------------------------------------------------------------------------
 // Token refresh

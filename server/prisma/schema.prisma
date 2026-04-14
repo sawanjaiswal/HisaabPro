@@ -14,7 +14,7 @@ model User {
   id            String   @id @default(cuid())
   phone         String   @unique
   name          String?
-  email         String?
+  email         String?  @unique
   passwordHash  String?
   pinHash       String?
   biometricEnabled Boolean @default(false)
@@ -211,6 +211,7 @@ model OtpCode {
   verified  Boolean  @default(false)
   expiresAt DateTime
   createdAt DateTime @default(now())
+  context   String?  // JSON: { purpose: 'registration'|'password_reset', name?, passwordHash? }
 
   @@index([phone, verified])
   @@index([expiresAt])
