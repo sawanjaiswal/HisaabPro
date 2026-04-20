@@ -11,6 +11,7 @@ import type {
   RoleFormData,
   RoleDeleteResponse,
   PermissionMatrix,
+  Role,
 } from './settings.types'
 
 // ─── Local response shapes ────────────────────────────────────────────────────
@@ -31,10 +32,14 @@ export async function getRoles(
   businessId: string,
   signal?: AbortSignal
 ): Promise<RolesListResponse> {
-  return api<RolesListResponse>(
+  // Backend returns roles array directly in data; api() unwraps success envelope.
+  // Re-wrap to the shape consumers expect (`.data.roles`).
+  const unwrapped = await api<Role[] | { roles: Role[] }>(
     `/businesses/${businessId}/roles`,
     { signal }
   )
+  const roles = Array.isArray(unwrapped) ? unwrapped : unwrapped.roles ?? []
+  return { success: true, data: { roles } }
 }
 
 /**

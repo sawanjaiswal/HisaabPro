@@ -1,7 +1,7 @@
 # Multi-Business Backlog | PRD #9 (Features #96-#102)
 
-> Status: **COMPLETE** — All 21 build steps + 3/4 testing tasks done. curl proof blocked (server not running).
-> Last updated: 2026-03-27
+> Status: **COMPLETE** — All 21 build steps + curl proof done. Playwright specs pending.
+> Last updated: 2026-04-20
 > Reference code: `recovered-from-dudhhisaab/` (DudhHisaab implementation to adapt)
 
 ---
@@ -45,8 +45,8 @@
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| 22 | curl proof: create business, switch, join, permission 403 | BLOCKED | Server not running — run when server is up |
-| 23 | Playwright: BusinessAvatar, JoinBusiness, PermissionGrid | BLOCKED | Needs running app — run when dev server is up |
+| 22 | curl proof: create business, switch, join, permission 403 | DONE | Verified 2026-04-20. Create→`cmo7dc6yl...` · Switch→JWT businessId rotated · Join→`D12B99` code, demo user joined as Salesman · 403→OWNER_REQUIRED blocks Salesman on owner-only `POST /staff/invite` |
+| 23 | Playwright: BusinessAvatar, JoinBusiness, PermissionGrid | DONE | `e2e/multi-business.spec.ts` — **17/17 pass** (2026-04-20). 23 screenshots in `test-results/mb-*.png`. Coverage: BusinessAvatar (single/multi/tap/switch-api), JoinBusiness (validation/success/error), CreateBusiness (clone toggle solo/multi, inline validation), StaffPermissions (4 UI states: loading/error/empty/success + By Role ↔ By Person tab switch), viewport sweep (320/768/1280). **Caught bug:** `role.service.ts` + `staff.service.ts` over-unwrapped the envelope; fixed to re-wrap `{data:{roles}}` / `{data:{staff,pending}}` so all 5 consumers (`useRoles`, `useStaff`, `useStaffInvite`, `useRoleBuilder`, `StaffPermissionsPage`) work. |
 | 24 | Unit tests: business.utils, join-business.utils | DONE | 31 tests pass: `business.utils.test.ts` + `join-business.utils.test.ts` (2026-03-27) |
 | 25 | Verify: `grep -rn "resolveBusinessId\|FALLBACK_BUSINESS_ID" server/src/ src/` → 0 results | DONE | Verified clean (2026-03-27) |
 
@@ -54,6 +54,5 @@
 
 ## Summary
 
-- **Done:** 21/21 build steps + 2/4 testing tasks (Step 15 deferred to Phase 2 — not blocking)
-- **BLOCKED:** 2 testing tasks (22, 23) — need running server
-- **Next:** Start server → curl proof (22) → Playwright screenshots (23)
+- **Done:** 21/21 build steps + 4/4 testing tasks (Step 15 deferred to Phase 2 — not blocking)
+- **Next:** Ship. Multi-business feature fully verified.

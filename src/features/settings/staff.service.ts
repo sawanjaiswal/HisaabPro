@@ -9,6 +9,8 @@ import type {
   StaffListResponse,
   InviteStaffData,
   InviteResponse,
+  StaffMember,
+  StaffInvite,
 } from './settings.types'
 
 // ─── Local response shapes ────────────────────────────────────────────────────
@@ -43,10 +45,18 @@ export async function getStaff(
   businessId: string,
   signal?: AbortSignal
 ): Promise<StaffListResponse> {
-  return api<StaffListResponse>(
+  // api() unwraps the success envelope; re-wrap for consumers using `.data.staff`.
+  const unwrapped = await api<{ staff: StaffMember[]; pending: StaffInvite[] }>(
     `/businesses/${businessId}/staff`,
     { signal }
   )
+  return {
+    success: true,
+    data: {
+      staff: unwrapped?.staff ?? [],
+      pending: unwrapped?.pending ?? [],
+    },
+  }
 }
 
 /**
