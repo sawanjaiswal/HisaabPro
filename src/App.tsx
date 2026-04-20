@@ -106,6 +106,7 @@ export function App() {
       <PageTransition>
       <Routes>
         <Route path={ROUTES.HOME} element={<ErrorBoundary><Suspense fallback={<div className="min-h-screen bg-black" />}><HomeGate /></Suspense></ErrorBoundary>} />
+        <Route path={ROUTES.PRICING} element={<Navigate to="/#pricing" replace />} />
         <Route path={ROUTES.LOGIN} element={<PageRoute><GuestRoute><Login /></GuestRoute></PageRoute>} />
         <Route path={ROUTES.REGISTER} element={<PageRoute><GuestRoute><Register /></GuestRoute></PageRoute>} />
         <Route path={ROUTES.VERIFY_OTP} element={<PageRoute><VerifyOtp /></PageRoute>} />

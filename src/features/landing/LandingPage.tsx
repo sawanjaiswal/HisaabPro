@@ -28,10 +28,26 @@ export default function LandingPage() {
 
   const toggleTheme = () => setIsDark(prev => !prev)
 
-  // Restore scroll position on mount + throttled scroll save
+  // Restore scroll position on mount + throttled scroll save.
+  // Hash (#pricing, #features, …) wins over saved position — poll for the
+  // anchor because below-the-fold sections are lazy-loaded after mount.
   useEffect(() => {
-    const saved = sessionStorage.getItem('landing-scroll')
-    if (saved) window.scrollTo({ top: parseInt(saved, 10), behavior: 'instant' })
+    const hash = window.location.hash.slice(1)
+    if (hash) {
+      const deadline = Date.now() + 3000
+      const tryScroll = () => {
+        const el = document.getElementById(hash)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          return
+        }
+        if (Date.now() < deadline) requestAnimationFrame(tryScroll)
+      }
+      requestAnimationFrame(tryScroll)
+    } else {
+      const saved = sessionStorage.getItem('landing-scroll')
+      if (saved) window.scrollTo({ top: parseInt(saved, 10), behavior: 'instant' })
+    }
 
     let ticking = false
     const onScroll = () => {
