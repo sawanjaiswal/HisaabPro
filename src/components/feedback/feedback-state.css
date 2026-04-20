@@ -85,7 +85,7 @@
 
 .feedback-description {
   font-size: var(--fs-md);
-  color: var(--color-gray-500);
+  color: var(--color-gray-600);
   max-width: 320px;
   line-height: 1.5;
 }

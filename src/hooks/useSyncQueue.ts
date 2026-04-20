@@ -8,12 +8,15 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useOnlineStatusWithCallbacks } from './useOnlineStatus'
+import { useSubscription } from './useSubscription'
+import { PLAN_HIERARCHY } from '@/features/subscription/plan-limits'
 import {
   subscribe,
   getQueueCounts,
   getQueueSnapshot,
   processQueue,
   recoverStuckItems,
+  reactivateBlocked,
   retryItem,
   discardItem,
   discardAllDead,
@@ -26,12 +29,13 @@ interface SyncQueueState {
   syncing: number
   failed: number
   dead: number
+  blocked: number
   total: number
   isProcessing: boolean
 }
 
 const EMPTY_STATE: SyncQueueState = {
-  pending: 0, syncing: 0, failed: 0, dead: 0, total: 0, isProcessing: false,
+  pending: 0, syncing: 0, failed: 0, dead: 0, blocked: 0, total: 0, isProcessing: false,
 }
 
 export function useSyncQueue() {
@@ -70,6 +74,19 @@ export function useSyncQueue() {
     },
   })
 
+  // Reactivate blocked items when plan upgrades (402 items → pending)
+  const { plan } = useSubscription()
+  const prevPlanRef = useRef(plan)
+  useEffect(() => {
+    const prev = prevPlanRef.current
+    if (PLAN_HIERARCHY[plan] > PLAN_HIERARCHY[prev]) {
+      reactivateBlocked().then((count) => {
+        if (count > 0) processQueue()
+      })
+    }
+    prevPlanRef.current = plan
+  }, [plan])
+
   // Load full item list on demand
   const loadItems = useCallback(async () => {
     const snapshot = await getQueueSnapshot()
@@ -98,7 +115,7 @@ export function useSyncQueue() {
     discardDead,
     /** True when there's anything to show (pending, syncing, failed, or dead) */
     hasItems: state.total > 0,
-    /** True when there are dead items requiring user attention */
-    needsAttention: state.dead > 0,
+    /** True when there are dead or blocked items requiring user attention */
+    needsAttention: state.dead > 0 || state.blocked > 0,
   }
 }
