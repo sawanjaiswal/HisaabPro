@@ -10,6 +10,7 @@ import { prisma } from '../lib/prisma.js'
 import { sendError } from '../lib/response.js'
 import { PLAN_LIMITS, PLAN_HIERARCHY, TRIAL_DAYS } from '../config/plans.js'
 import type { PlanTier, PlanLimits } from '../config/plans.js'
+import logger from '../lib/logger.js'
 
 type BooleanFeatureFlag = {
   [K in keyof PlanLimits]: PlanLimits[K] extends boolean ? K : never
@@ -62,6 +63,17 @@ export function requirePlan(minPlan: PlanTier) {
       return next()
     }
 
+    logger.info('subscription.upgrade_required', {
+      reason: 'plan_tier',
+      currentPlan: plan,
+      requiredPlan: minPlan,
+      isTrialing,
+      businessId: req.user.businessId,
+      userId: req.user.userId,
+      path: req.path,
+      method: req.method,
+    })
+
     sendError(
       res,
       `This feature requires the ${minPlan} plan. You are currently on ${plan}${isTrialing ? ' (trial)' : ''}.`,
@@ -80,6 +92,17 @@ export function requireFeature(flag: BooleanFeatureFlag) {
     if (!req.user?.businessId) return next()
     const { plan } = await getBusinessPlan(req.user.businessId)
     if (PLAN_LIMITS[plan][flag]) return next()
+
+    logger.info('subscription.upgrade_required', {
+      reason: 'feature_flag',
+      flag,
+      currentPlan: plan,
+      businessId: req.user.businessId,
+      userId: req.user.userId,
+      path: req.path,
+      method: req.method,
+    })
+
     sendError(
       res,
       `This feature requires an upgraded plan.`,
