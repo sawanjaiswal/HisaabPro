@@ -33,6 +33,13 @@ function createPrismaClient() {
     datasources: {
       db: { url: getDatabaseUrl() },
     },
+    // Global transaction defaults — prevents runaway interactive transactions
+    // (prior default of 5s was too short for bulk imports and FY closure;
+    // 20s covers the heaviest writes while still failing fast on deadlocks).
+    transactionOptions: {
+      timeout: 20_000,
+      maxWait: 5_000,
+    },
   })
 
   // Log slow queries (configurable via SLOW_QUERY_MS env, default 500ms)

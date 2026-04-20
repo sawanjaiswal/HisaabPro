@@ -22,6 +22,22 @@ export interface PlanLimits {
   batchTracking: boolean
   serialTracking: boolean
   taxReports: boolean        // GST returns + TDS/TCS reconciliation
+
+  // Universal gating v3 (2026-04-21) — currently free on every tier, flags exist
+  // so any one can be flipped to `false` for FREE without touching product code.
+  invoicing: boolean         // sale invoices, estimates, proforma, DC
+  products: boolean          // catalog + stock
+  parties: boolean           // customers/suppliers
+  payments: boolean          // payment record + allocations
+  expenses: boolean
+  basicReports: boolean      // sales/purchase/inventory summaries
+  bulkImport: boolean        // CSV import
+  backup: boolean            // data export / backup
+  bankAccounts: boolean      // non-accounting bank ledger
+  cheques: boolean
+  stockAdjustments: boolean
+  paymentReminders: boolean
+  barcodes: boolean
 }
 
 export const PLAN_HIERARCHY: Record<PlanTier, number> = {
@@ -47,6 +63,20 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     batchTracking: false,
     serialTracking: false,
     taxReports: false,
+    // Universal flags — free today. Flip to false to gate on FREE.
+    invoicing: true,
+    products: true,
+    parties: true,
+    payments: true,
+    expenses: true,
+    basicReports: true,
+    bulkImport: true,
+    backup: true,
+    bankAccounts: true,
+    cheques: true,
+    stockAdjustments: true,
+    paymentReminders: true,
+    barcodes: true,
   },
   PRO: {
     maxUsers: 3,
@@ -64,6 +94,19 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     batchTracking: false,
     serialTracking: false,
     taxReports: true,
+    invoicing: true,
+    products: true,
+    parties: true,
+    payments: true,
+    expenses: true,
+    basicReports: true,
+    bulkImport: true,
+    backup: true,
+    bankAccounts: true,
+    cheques: true,
+    stockAdjustments: true,
+    paymentReminders: true,
+    barcodes: true,
   },
   BUSINESS: {
     maxUsers: -1,
@@ -81,6 +124,19 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     batchTracking: true,
     serialTracking: true,
     taxReports: true,
+    invoicing: true,
+    products: true,
+    parties: true,
+    payments: true,
+    expenses: true,
+    basicReports: true,
+    bulkImport: true,
+    backup: true,
+    bankAccounts: true,
+    cheques: true,
+    stockAdjustments: true,
+    paymentReminders: true,
+    barcodes: true,
   },
 }
 

@@ -6,6 +6,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { auth } from '../middleware/auth.js'
 import { requirePermission } from '../middleware/permission.js'
+import { requireFeature } from '../middleware/subscription-gate.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   invoiceReportSchema,
@@ -25,6 +26,7 @@ function sanitizeFileName(name: string): string {
 }
 
 router.use(auth)
+router.use(requireFeature('basicReports'))
 
 /** GET /api/reports/invoices — Invoice report (sale/purchase) */
 router.get(

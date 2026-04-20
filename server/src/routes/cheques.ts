@@ -8,6 +8,7 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { requirePermission } from '../middleware/permission.js'
+import { requireFeature } from '../middleware/subscription-gate.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   createChequeSchema,
@@ -19,6 +20,7 @@ import * as chequeService from '../services/cheque.service.js'
 const router = Router()
 
 router.use(auth)
+router.use(requireFeature('cheques'))
 
 /** POST /api/cheques — Record a new cheque (issued or received) */
 router.post(

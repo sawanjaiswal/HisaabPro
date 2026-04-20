@@ -8,6 +8,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { auth } from '../middleware/auth.js'
 import { requirePermission } from '../middleware/permission.js'
+import { requireFeature } from '../middleware/subscription-gate.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   createManualBackup,
@@ -17,6 +18,9 @@ import {
 } from '../services/backup.service.js'
 
 const router = Router()
+
+router.use(auth)
+router.use(requireFeature('backup'))
 
 /** POST /api/backup/manual — create a manual backup */
 router.post(

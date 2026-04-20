@@ -12,6 +12,7 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { userMutationLimiter } from '../middleware/rate-limit.js'
+import { requireFeature } from '../middleware/subscription-gate.js'
 import { sendSuccess } from '../lib/response.js'
 import { prisma } from '../lib/prisma.js'
 import { notFoundError, validationError } from '../lib/errors.js'
@@ -43,6 +44,7 @@ const router = Router()
 
 router.use(auth)
 router.use(userMutationLimiter)
+router.use(requireFeature('products'))
 
 // ============================================================
 // Static routes — MUST be before /:id to avoid param capture

@@ -58,13 +58,18 @@ export async function sendOTP(phone: string, otp: string): Promise<boolean> {
         short_url: '0',
         recipients: [{ mobiles: `91${phone}`, otp }],
       }),
+      signal: AbortSignal.timeout(5_000),
     })
 
     const data = (await response.json()) as { type?: string }
     return data.type === 'success'
   } catch (error) {
     const { default: logger } = await import('./logger.js')
-    logger.error('MSG91 SMS send failed', { error })
+    // Scrub authKey from any error surface — never log secrets
+    const safeError = error instanceof Error
+      ? { name: error.name, message: error.message.replace(authKey, '[REDACTED]') }
+      : 'unknown'
+    logger.error('MSG91 SMS send failed', { error: safeError })
     return false
   }
 }

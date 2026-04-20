@@ -8,12 +8,16 @@
 import { Router } from 'express'
 import { auth } from '../middleware/auth.js'
 import { requireOwner } from '../middleware/permission.js'
+import { requireFeature } from '../middleware/subscription-gate.js'
 import { createRateLimiter } from '../middleware/rate-limit.js'
 import { sendSuccess, sendError } from '../lib/response.js'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { generateFullExport } from '../services/export.service.js'
 
 const router = Router()
+
+router.use(auth)
+router.use(requireFeature('backup'))
 
 /** 1 export per businessId per 24 hours */
 const exportRateLimiter = createRateLimiter({

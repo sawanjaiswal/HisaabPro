@@ -23,6 +23,19 @@ export interface PlanLimits {
   batchTracking: boolean
   serialTracking: boolean
   taxReports: boolean
+  invoicing: boolean
+  products: boolean
+  parties: boolean
+  payments: boolean
+  expenses: boolean
+  basicReports: boolean
+  bulkImport: boolean
+  backup: boolean
+  bankAccounts: boolean
+  cheques: boolean
+  stockAdjustments: boolean
+  paymentReminders: boolean
+  barcodes: boolean
 }
 
 export type FeatureFlag = {
@@ -52,6 +65,19 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     batchTracking: false,
     serialTracking: false,
     taxReports: false,
+    invoicing: true,
+    products: true,
+    parties: true,
+    payments: true,
+    expenses: true,
+    basicReports: true,
+    bulkImport: true,
+    backup: true,
+    bankAccounts: true,
+    cheques: true,
+    stockAdjustments: true,
+    paymentReminders: true,
+    barcodes: true,
   },
   PRO: {
     maxUsers: 3,
@@ -69,6 +95,19 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     batchTracking: false,
     serialTracking: false,
     taxReports: true,
+    invoicing: true,
+    products: true,
+    parties: true,
+    payments: true,
+    expenses: true,
+    basicReports: true,
+    bulkImport: true,
+    backup: true,
+    bankAccounts: true,
+    cheques: true,
+    stockAdjustments: true,
+    paymentReminders: true,
+    barcodes: true,
   },
   BUSINESS: {
     maxUsers: -1,
@@ -86,6 +125,19 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     batchTracking: true,
     serialTracking: true,
     taxReports: true,
+    invoicing: true,
+    products: true,
+    parties: true,
+    payments: true,
+    expenses: true,
+    basicReports: true,
+    bulkImport: true,
+    backup: true,
+    bankAccounts: true,
+    cheques: true,
+    stockAdjustments: true,
+    paymentReminders: true,
+    barcodes: true,
   },
 }
 
