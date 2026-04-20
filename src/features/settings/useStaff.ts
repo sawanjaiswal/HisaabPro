@@ -89,7 +89,7 @@ export function useStaff(businessId: string): UseStaffReturn {
   })
 
   const handleSuspend = useCallback((staffId: string, staffName: string) => {
-    if (!window.confirm(`Suspend ${staffName}? They will no longer be able to log in.`)) return
+    // Confirmation is handled by the consumer (StaffCard renders ConfirmDialog)
     suspendMutation.mutate({ staffId, staffName })
   }, [suspendMutation])
 
@@ -108,7 +108,7 @@ export function useStaff(businessId: string): UseStaffReturn {
   })
 
   const handleRemove = useCallback((staffId: string, staffName: string) => {
-    if (!window.confirm(`Remove ${staffName} permanently? This cannot be undone.`)) return
+    // Confirmation is handled by the consumer (StaffCard renders ConfirmDialog)
     removeMutation.mutate({ staffId, staffName })
   }, [removeMutation])
 

@@ -18,12 +18,23 @@ interface StaffCardProps {
 export const StaffCard: React.FC<StaffCardProps> = ({ staff, onSuspend, onRemove, onChangeRole }) => {
   const { t } = useLanguage()
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [suspendOpen, setSuspendOpen] = useState(false)
   const isSuspended = staff.status === 'SUSPENDED'
 
   const handleRemove = () => setConfirmOpen(true)
   const handleConfirmRemove = () => {
     setConfirmOpen(false)
     onRemove(staff.id)
+  }
+
+  // Unsuspend doesn't need a confirm — it's a reversal.
+  const handleSuspend = () => {
+    if (isSuspended) onSuspend(staff.id)
+    else setSuspendOpen(true)
+  }
+  const handleConfirmSuspend = () => {
+    setSuspendOpen(false)
+    onSuspend(staff.id)
   }
 
   return (
@@ -63,7 +74,7 @@ export const StaffCard: React.FC<StaffCardProps> = ({ staff, onSuspend, onRemove
 
       <button
         className="staff-action-button"
-        onClick={() => onSuspend(staff.id)}
+        onClick={handleSuspend}
         aria-label={isSuspended ? `Unsuspend ${staff.name}` : `Suspend ${staff.name}`}
       >
         <Ban size={18} aria-hidden="true" />
@@ -84,6 +95,15 @@ export const StaffCard: React.FC<StaffCardProps> = ({ staff, onSuspend, onRemove
         title={`${t.remove} ${staff.name}?`}
         description={t.removeStaffConfirm}
         confirmLabel={t.remove}
+      />
+
+      <ConfirmDialog
+        open={suspendOpen}
+        onClose={() => setSuspendOpen(false)}
+        onConfirm={handleConfirmSuspend}
+        title={`Suspend ${staff.name}?`}
+        description="They will no longer be able to log in until unsuspended."
+        confirmLabel="Suspend"
       />
     </div>
   )
