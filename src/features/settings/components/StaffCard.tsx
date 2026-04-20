@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { UserCog, Ban, Trash2 } from 'lucide-react'
 import type { StaffMember } from '../settings.types'
 import { STAFF_STATUS_LABELS } from '../staff.constants'
 import { formatTimeAgo } from '../settings.utils'
 import { PartyAvatar } from '../../../components/ui/PartyAvatar'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import '../staff-list.css'
 
 interface StaffCardProps {
@@ -16,12 +17,13 @@ interface StaffCardProps {
 
 export const StaffCard: React.FC<StaffCardProps> = ({ staff, onSuspend, onRemove, onChangeRole }) => {
   const { t } = useLanguage()
+  const [confirmOpen, setConfirmOpen] = useState(false)
   const isSuspended = staff.status === 'SUSPENDED'
 
-  const handleRemove = () => {
-    if (window.confirm(`${t.remove} ${staff.name} ${t.removeStaffConfirm}`)) {
-      onRemove(staff.id)
-    }
+  const handleRemove = () => setConfirmOpen(true)
+  const handleConfirmRemove = () => {
+    setConfirmOpen(false)
+    onRemove(staff.id)
   }
 
   return (
@@ -74,6 +76,15 @@ export const StaffCard: React.FC<StaffCardProps> = ({ staff, onSuspend, onRemove
       >
         <Trash2 size={18} aria-hidden="true" />
       </button>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleConfirmRemove}
+        title={`${t.remove} ${staff.name}?`}
+        description={t.removeStaffConfirm}
+        confirmLabel={t.remove}
+      />
     </div>
   )
 }
