@@ -5,12 +5,14 @@
 import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { auth } from '../middleware/auth.js'
+import { requireFeature } from '../middleware/subscription-gate.js'
 import { sendSuccess } from '../lib/response.js'
 import { taxSummarySchema, hsnSummarySchema, taxLedgerSchema } from '../schemas/report.schemas.js'
 import * as taxReportService from '../services/tax-report.service.js'
 
 const router = Router()
 router.use(auth)
+router.use(requireFeature('taxReports'))
 
 /** GET /api/reports/tax-summary — Aggregated CGST/SGST/IGST/Cess */
 router.get('/tax-summary', asyncHandler(async (req, res) => {

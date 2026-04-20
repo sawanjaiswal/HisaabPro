@@ -8,7 +8,7 @@
 import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { auth } from '../middleware/auth.js'
-import { requirePlan } from '../middleware/subscription-gate.js'
+import { requirePlan, requireFeature } from '../middleware/subscription-gate.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   periodQuerySchema,
@@ -24,6 +24,10 @@ import * as reportService from '../services/financial-reports.service.js'
 const router = Router()
 
 router.use(auth)
+
+// All report endpoints below require the `advancedReports` feature flag
+// (PRO or BUSINESS). Tally export additionally requires BUSINESS.
+router.use(requireFeature('advancedReports'))
 
 /** GET /api/financial-reports/profit-loss?from=&to= */
 router.get(

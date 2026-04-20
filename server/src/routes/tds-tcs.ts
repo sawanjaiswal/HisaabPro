@@ -5,6 +5,7 @@
 import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { auth } from '../middleware/auth.js'
+import { requireFeature } from '../middleware/subscription-gate.js'
 import { sendSuccess } from '../lib/response.js'
 import { tdsTcsSummarySchema } from '../schemas/report.schemas.js'
 import { getTdsTcsReport } from '../services/tds-tcs.service.js'
@@ -12,6 +13,7 @@ import { getTdsTcsReport } from '../services/tds-tcs.service.js'
 const router = Router()
 
 router.use(auth)
+router.use(requireFeature('taxReports'))
 
 /** GET /api/reports/tds-tcs-summary?from=&to=&partyId=&type= — TDS/TCS summary report */
 router.get(

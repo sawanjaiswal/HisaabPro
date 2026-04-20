@@ -15,6 +15,13 @@ export interface PlanLimits {
   tallyExport: boolean
   eInvoicing: boolean
   prioritySupport: boolean
+  // Paid-gating v2 (2026-04-21)
+  advancedReports: boolean   // P&L, Balance Sheet, Cash Flow, Aging, Profitability, Discounts
+  accounting: boolean        // CoA, Journal, Trial Balance, Bank, Loans, Cheques
+  recurringInvoices: boolean
+  batchTracking: boolean
+  serialTracking: boolean
+  taxReports: boolean        // GST returns + TDS/TCS reconciliation
 }
 
 export const PLAN_HIERARCHY: Record<PlanTier, number> = {
@@ -34,6 +41,12 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     tallyExport: false,
     eInvoicing: false,
     prioritySupport: false,
+    advancedReports: false,
+    accounting: false,
+    recurringInvoices: false,
+    batchTracking: false,
+    serialTracking: false,
+    taxReports: false,
   },
   PRO: {
     maxUsers: 3,
@@ -45,6 +58,12 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     tallyExport: false,
     eInvoicing: false,
     prioritySupport: true,
+    advancedReports: true,
+    accounting: true,
+    recurringInvoices: true,
+    batchTracking: false,
+    serialTracking: false,
+    taxReports: true,
   },
   BUSINESS: {
     maxUsers: -1,
@@ -56,6 +75,12 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     tallyExport: true,
     eInvoicing: true,
     prioritySupport: true,
+    advancedReports: true,
+    accounting: true,
+    recurringInvoices: true,
+    batchTracking: true,
+    serialTracking: true,
+    taxReports: true,
   },
 }
 

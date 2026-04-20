@@ -8,6 +8,7 @@
 
 import { Router } from 'express'
 import { auth } from '../middleware/auth.js'
+import { requireOwner } from '../middleware/permission.js'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { sendSuccess, sendError } from '../lib/response.js'
 import {
@@ -42,9 +43,10 @@ router.get(
   }),
 )
 
-/** Restore a soft-deleted record */
+/** Restore a soft-deleted record — owner-only (cross-entity destructive action) */
 router.post(
   '/:entityType/:id/restore',
+  requireOwner(),
   asyncHandler(async (req, res) => {
     const parsed = recycleBinParamsSchema.safeParse(req.params)
     if (!parsed.success) {
@@ -58,9 +60,10 @@ router.post(
   }),
 )
 
-/** Permanently delete a record (irreversible) */
+/** Permanently delete a record (irreversible) — owner-only */
 router.delete(
   '/:entityType/:id/permanent',
+  requireOwner(),
   asyncHandler(async (req, res) => {
     const parsed = recycleBinParamsSchema.safeParse(req.params)
     if (!parsed.success) {

@@ -4,8 +4,10 @@ import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/context/AuthContext'
 import { api } from '@/lib/api'
 
-interface SubscriptionData {
-  plan: 'FREE' | 'PRO' | 'BUSINESS'
+export type PlanTier = 'FREE' | 'PRO' | 'BUSINESS'
+
+export interface SubscriptionData {
+  plan: PlanTier
   status: 'ACTIVE' | 'CANCELLED' | 'PAST_DUE' | 'TRIALING' | 'NONE'
   expiresAt: string | null
   usage: {
@@ -15,29 +17,26 @@ interface SubscriptionData {
   isTrialing: boolean
 }
 
-interface ApiResponse<T> {
-  success: boolean
-  data: T
-}
-
 export function useSubscription() {
   const { user } = useAuth()
   const businessId = user?.businessId
 
-  const query = useQuery<ApiResponse<SubscriptionData>>({
+  const query = useQuery<SubscriptionData>({
     queryKey: ['subscription', businessId],
-    queryFn: () => api<ApiResponse<SubscriptionData>>(`/businesses/${businessId}/subscription`),
+    // api() unwraps the { success, data } envelope — returns SubscriptionData directly.
+    queryFn: () => api<SubscriptionData>(`/businesses/${businessId}/subscription`),
     enabled: !!businessId,
-    staleTime: 60_000, // 1 min — subscription doesn't change often
+    staleTime: 60_000,
   })
 
-  const sub = query.data?.data ?? null
+  const sub = query.data ?? null
 
   return {
     subscription: sub,
     isLoading: query.isPending,
-    isPro: ['PRO', 'BUSINESS'].includes(sub?.plan ?? ''),
+    plan: (sub?.plan ?? 'FREE') as PlanTier,
+    isPro: sub?.plan === 'PRO' || sub?.plan === 'BUSINESS',
     isBusiness: sub?.plan === 'BUSINESS',
-    isFree: sub?.plan === 'FREE' || !sub,
+    isFree: !sub || sub.plan === 'FREE',
   }
 }

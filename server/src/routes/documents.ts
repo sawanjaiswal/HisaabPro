@@ -7,6 +7,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { userMutationLimiter } from '../middleware/rate-limit.js'
 import { sendSuccess } from '../lib/response.js'
 import { idempotencyCheck } from '../middleware/idempotency.js'
 import { replayProtection } from '../middleware/replay-protection.js'
@@ -35,6 +36,7 @@ import { generateInvoicePdf } from '../services/pdf.service.js'
 const router = Router()
 
 router.use(auth)
+router.use(userMutationLimiter)
 
 // ============================================================
 // Document CRUD

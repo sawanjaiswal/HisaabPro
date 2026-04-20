@@ -56,6 +56,12 @@ export const RATE_LIMIT_SENSITIVE_WINDOW_MS = 60 * 1000
 /** Max sensitive mutations per user per window */
 export const RATE_LIMIT_SENSITIVE_MAX = 20
 
+/** CRUD mutation rate limit window (ms) — 1 hour */
+export const RATE_LIMIT_CRUD_WINDOW_MS = 60 * 60 * 1000
+
+/** Max CRUD mutations per user per window — protects against runaway clients / abuse */
+export const RATE_LIMIT_CRUD_MAX = 600
+
 /** OTP rate limit window (ms) */
 export const RATE_LIMIT_OTP_WINDOW_MS = 10 * 60 * 1000
 

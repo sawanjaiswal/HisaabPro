@@ -13,6 +13,7 @@ import { PageTransition } from '@/components/layout/PageTransition'
 import { useAuth } from '@/context/AuthContext'
 import { useRoutePreload } from '@/hooks/useRoutePreload'
 import { useSSE } from '@/hooks/useSSE'
+import { PlanGate } from '@/features/subscription/PlanGate'
 import {
   CalculatorOverlay, FeedbackWidget,
   Login, Register, VerifyOtp, ForgotPassword, Onboarding, Dashboard,
@@ -137,9 +138,9 @@ export function App() {
         <Route path={ROUTES.REPORT_STOCK_SUMMARY} element={<PageRoute><ProtectedRoute><StockSummary /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.REPORT_DAY_BOOK} element={<PageRoute><ProtectedRoute><DayBook /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.REPORT_PAYMENT_HISTORY} element={<PageRoute><ProtectedRoute><PaymentHistory /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.REPORT_TAX_SUMMARY} element={<PageRoute><ProtectedRoute><TaxSummary /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.REPORT_GST_RETURNS} element={<PageRoute><ProtectedRoute><GstReturns /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.REPORT_TDS_TCS} element={<PageRoute><ProtectedRoute><TdsTcsReport /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_TAX_SUMMARY} element={<PageRoute><ProtectedRoute><PlanGate feature="taxReports" featureLabel="Tax Summary"><TaxSummary /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_GST_RETURNS} element={<PageRoute><ProtectedRoute><PlanGate feature="taxReports" featureLabel="GST Returns"><GstReturns /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_TDS_TCS} element={<PageRoute><ProtectedRoute><PlanGate feature="taxReports" featureLabel="TDS/TCS Report"><TdsTcsReport /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS} element={<PageRoute><ProtectedRoute><Settings /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_ROLES} element={<PageRoute><ProtectedRoute><Roles /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_ROLE_NEW} element={<PageRoute><ProtectedRoute><RoleBuilder /></ProtectedRoute></PageRoute>} />
@@ -159,25 +160,25 @@ export function App() {
         <Route path={ROUTES.SETTINGS_TAX_RATE_EDIT} element={<PageRoute><ProtectedRoute><EditTaxCategory /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_CURRENCY} element={<PageRoute><ProtectedRoute><CurrencySettings /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_UNITS} element={<PageRoute><ProtectedRoute><Units /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.RECURRING} element={<PageRoute><ProtectedRoute><RecurringList /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.RECURRING} element={<PageRoute><ProtectedRoute><PlanGate feature="recurringInvoices" featureLabel="Recurring Invoices"><RecurringList /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.GST_RECONCILIATION} element={<PageRoute><ProtectedRoute><GstReconciliationList /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.GST_RECONCILIATION_DETAIL} element={<PageRoute><ProtectedRoute><GstReconciliationDetail /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.CHART_OF_ACCOUNTS} element={<PageRoute><ProtectedRoute><ChartOfAccounts /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.JOURNAL_ENTRIES} element={<PageRoute><ProtectedRoute><JournalEntries /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.TRIAL_BALANCE} element={<PageRoute><ProtectedRoute><TrialBalance /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.CHART_OF_ACCOUNTS} element={<PageRoute><ProtectedRoute><PlanGate feature="accounting" featureLabel="Chart of Accounts"><ChartOfAccounts /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.JOURNAL_ENTRIES} element={<PageRoute><ProtectedRoute><PlanGate feature="accounting" featureLabel="Journal Entries"><JournalEntries /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.TRIAL_BALANCE} element={<PageRoute><ProtectedRoute><PlanGate feature="accounting" featureLabel="Trial Balance"><TrialBalance /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.BANK_ACCOUNTS} element={<PageRoute><ProtectedRoute><BankAccounts /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.EXPENSES} element={<PageRoute><ProtectedRoute><Expenses /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.OTHER_INCOME} element={<PageRoute><ProtectedRoute><OtherIncome /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.CHEQUES} element={<PageRoute><ProtectedRoute><Cheques /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.LOANS} element={<PageRoute><ProtectedRoute><Loans /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.LOAN_DETAIL} element={<PageRoute><ProtectedRoute><LoanDetail /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.REPORT_PROFIT_LOSS} element={<PageRoute><ProtectedRoute><ProfitLoss /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.REPORT_BALANCE_SHEET} element={<PageRoute><ProtectedRoute><BalanceSheet /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.REPORT_CASH_FLOW} element={<PageRoute><ProtectedRoute><CashFlow /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.REPORT_AGING} element={<PageRoute><ProtectedRoute><AgingReport /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.REPORT_PROFITABILITY} element={<PageRoute><ProtectedRoute><ProfitabilityReport /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.REPORT_DISCOUNTS} element={<PageRoute><ProtectedRoute><DiscountReport /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.TALLY_EXPORT} element={<PageRoute><ProtectedRoute><TallyExport /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_PROFIT_LOSS} element={<PageRoute><ProtectedRoute><PlanGate feature="advancedReports" featureLabel="Profit & Loss"><ProfitLoss /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_BALANCE_SHEET} element={<PageRoute><ProtectedRoute><PlanGate feature="advancedReports" featureLabel="Balance Sheet"><BalanceSheet /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_CASH_FLOW} element={<PageRoute><ProtectedRoute><PlanGate feature="advancedReports" featureLabel="Cash Flow"><CashFlow /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_AGING} element={<PageRoute><ProtectedRoute><PlanGate feature="advancedReports" featureLabel="Aging Report"><AgingReport /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_PROFITABILITY} element={<PageRoute><ProtectedRoute><PlanGate feature="advancedReports" featureLabel="Profitability Report"><ProfitabilityReport /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.REPORT_DISCOUNTS} element={<PageRoute><ProtectedRoute><PlanGate feature="advancedReports" featureLabel="Discount Report"><DiscountReport /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.TALLY_EXPORT} element={<PageRoute><ProtectedRoute><PlanGate feature="tallyExport" featureLabel="Tally Export"><TallyExport /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.FY_CLOSURE} element={<PageRoute><ProtectedRoute><FYClosure /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.BILL_SCAN} element={<PageRoute><ProtectedRoute><BillScan /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.BULK_IMPORT_PARTIES} element={<PageRoute><ProtectedRoute><BulkImport /></ProtectedRoute></PageRoute>} />
@@ -191,21 +192,21 @@ export function App() {
         <Route path={ROUTES.ADMIN_COUPON_DETAIL} element={<PageRoute><ProtectedRoute><AdminCouponDetail /></ProtectedRoute></PageRoute>} />
 
         {/* Phase 4 — Advanced Inventory */}
-        <Route path={ROUTES.BATCH_NEW} element={<PageRoute><ProtectedRoute><CreateBatch /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.BATCHES} element={<PageRoute><ProtectedRoute><Batches /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.BATCH_DETAIL} element={<PageRoute><ProtectedRoute><BatchDetail /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.GODOWN_NEW} element={<PageRoute><ProtectedRoute><CreateGodown /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.GODOWN_EDIT} element={<PageRoute><ProtectedRoute><EditGodown /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.GODOWN_TRANSFER} element={<PageRoute><ProtectedRoute><GodownTransfer /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.GODOWNS} element={<PageRoute><ProtectedRoute><Godowns /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.GODOWN_DETAIL} element={<PageRoute><ProtectedRoute><GodownDetail /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.BATCH_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="batchTracking" featureLabel="Batch Tracking"><CreateBatch /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.BATCHES} element={<PageRoute><ProtectedRoute><PlanGate feature="batchTracking" featureLabel="Batch Tracking"><Batches /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.BATCH_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="batchTracking" featureLabel="Batch Tracking"><BatchDetail /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.GODOWN_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="multiGodown" featureLabel="Multi-Godown"><CreateGodown /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.GODOWN_EDIT} element={<PageRoute><ProtectedRoute><PlanGate feature="multiGodown" featureLabel="Multi-Godown"><EditGodown /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.GODOWN_TRANSFER} element={<PageRoute><ProtectedRoute><PlanGate feature="multiGodown" featureLabel="Multi-Godown"><GodownTransfer /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.GODOWNS} element={<PageRoute><ProtectedRoute><PlanGate feature="multiGodown" featureLabel="Multi-Godown"><Godowns /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.GODOWN_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="multiGodown" featureLabel="Multi-Godown"><GodownDetail /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.STOCK_VERIFICATION} element={<PageRoute><ProtectedRoute><StockVerifications /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.STOCK_VERIFICATION_DETAIL} element={<PageRoute><ProtectedRoute><VerificationDetail /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.SERIAL_NEW} element={<PageRoute><ProtectedRoute><CreateSerial /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.SERIAL_BULK} element={<PageRoute><ProtectedRoute><BulkCreateSerial /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.SERIAL_NUMBERS} element={<PageRoute><ProtectedRoute><Serials /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.SERIAL_LOOKUP} element={<PageRoute><ProtectedRoute><SerialLookup /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.POS} element={<PageRoute><ProtectedRoute><Pos /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SERIAL_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="serialTracking" featureLabel="Serial Numbers"><CreateSerial /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SERIAL_BULK} element={<PageRoute><ProtectedRoute><PlanGate feature="serialTracking" featureLabel="Serial Numbers"><BulkCreateSerial /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SERIAL_NUMBERS} element={<PageRoute><ProtectedRoute><PlanGate feature="serialTracking" featureLabel="Serial Numbers"><Serials /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SERIAL_LOOKUP} element={<PageRoute><ProtectedRoute><PlanGate feature="serialTracking" featureLabel="Serial Numbers"><SerialLookup /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.POS} element={<PageRoute><ProtectedRoute><PlanGate feature="posMode" featureLabel="POS"><Pos /></PlanGate></ProtectedRoute></PageRoute>} />
 
         <Route path={ROUTES.PUBLIC_LEDGER} element={<PageRoute><PublicLedger /></PageRoute>} />
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />

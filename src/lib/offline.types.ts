@@ -1,6 +1,10 @@
 /** Offline sync queue — type definitions */
 
-export type SyncItemStatus = 'pending' | 'syncing' | 'failed' | 'dead'
+/**
+ * `blocked` — server returned 402 UPGRADE_REQUIRED during replay. Item is
+ * preserved (not discarded) so it can be retried after upgrade.
+ */
+export type SyncItemStatus = 'pending' | 'syncing' | 'failed' | 'dead' | 'blocked'
 
 export type SyncHttpMethod = 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 

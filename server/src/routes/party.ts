@@ -7,6 +7,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { userMutationLimiter } from '../middleware/rate-limit.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   createPartySchema,
@@ -24,6 +25,7 @@ const router = Router()
 
 // All party routes require auth
 router.use(auth)
+router.use(userMutationLimiter)
 
 // ============================================================
 // Parties

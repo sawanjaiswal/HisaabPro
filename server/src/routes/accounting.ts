@@ -8,6 +8,7 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { requirePermission } from '../middleware/permission.js'
+import { requireFeature } from '../middleware/subscription-gate.js'
 import { sendSuccess } from '../lib/response.js'
 import {
   createLedgerAccountSchema,
@@ -25,6 +26,7 @@ import * as accountingService from '../services/accounting.service.js'
 const router = Router()
 
 router.use(auth)
+router.use(requireFeature('accounting'))
 
 // ─── Chart of Accounts ─────────────────────────────────────────────────────────
 

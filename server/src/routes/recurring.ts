@@ -15,10 +15,12 @@ import {
 } from '../schemas/recurring.schemas.js'
 import * as recurringService from '../services/recurring.service.js'
 import { requirePermission } from '../middleware/permission.js'
+import { requireFeature } from '../middleware/subscription-gate.js'
 
 const router = Router()
 
 router.use(auth)
+router.use(requireFeature('recurringInvoices'))
 
 /** POST /api/recurring — Create a new recurring invoice schedule */
 router.post(

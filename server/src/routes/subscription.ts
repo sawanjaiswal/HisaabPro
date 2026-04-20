@@ -28,7 +28,6 @@ subscriptionRouter.get(
         status: true,
         expiresAt: true,
         startDate: true,
-        razorpaySubId: true,
       },
     })
 
@@ -57,7 +56,6 @@ subscriptionRouter.get(
       status: subscription?.status ?? 'NONE',
       expiresAt: subscription?.expiresAt ?? null,
       startDate: subscription?.startDate ?? null,
-      razorpaySubId: subscription?.razorpaySubId ?? null,
       usage: {
         invoices: { used: invoiceCount, limit: limits.maxInvoicesPerMonth },
         users: { used: userCount, limit: limits.maxUsers },

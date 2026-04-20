@@ -65,16 +65,29 @@ export async function getQueueCounts(): Promise<{
   syncing: number
   failed: number
   dead: number
+  blocked: number
   total: number
 }> {
   const all = await db.syncQueue.toArray()
-  const counts = { pending: 0, syncing: 0, failed: 0, dead: 0, total: all.length }
+  const counts = { pending: 0, syncing: 0, failed: 0, dead: 0, blocked: 0, total: all.length }
   for (const item of all) {
     if (item.status in counts) {
       counts[item.status as keyof Omit<typeof counts, 'total'>]++
     }
   }
   return counts
+}
+
+/** Reactivate all `blocked` items — call after user upgrades their plan. */
+export async function reactivateBlocked(): Promise<number> {
+  const blocked = await db.syncQueue.where('status').equals('blocked').toArray()
+  if (blocked.length === 0) return 0
+  await db.syncQueue
+    .where('status')
+    .equals('blocked')
+    .modify({ status: 'pending' as SyncItemStatus, retryCount: 0, errorMessage: null })
+  notify()
+  return blocked.length
 }
 
 export async function retryItem(id: number): Promise<void> {
@@ -160,7 +173,19 @@ export async function processQueue(): Promise<void> {
           break
         }
 
-        // Client error (4xx) — data is invalid, mark dead immediately
+        // 402 UPGRADE_REQUIRED — plan lapsed since queuing. Preserve item so it
+        // can replay after the user upgrades; surface via `blocked` status.
+        if (response.status === 402) {
+          const errMsg = await extractErrorMessage(response)
+          await db.syncQueue.update(next.id, {
+            status: 'blocked' as SyncItemStatus,
+            errorMessage: errMsg,
+          })
+          notify()
+          continue
+        }
+
+        // Other client errors (4xx) — data is invalid, mark dead immediately
         if (response.status >= 400 && response.status < 500) {
           const errMsg = await extractErrorMessage(response)
           await db.syncQueue.update(next.id, {
