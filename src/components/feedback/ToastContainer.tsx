@@ -86,7 +86,7 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
               aria-hidden="true"
             />
             <p style={{
-              fontSize: '0.875rem',
+              fontSize: 'var(--fs-sm)',
               fontWeight: 500,
               color: 'var(--toast-text)',
               flex: 1,
@@ -105,7 +105,7 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
                     color: 'var(--toast-bg)',
                     borderRadius: 'var(--radius-sm)',
                     fontWeight: 600,
-                    fontSize: '0.75rem',
+                    fontSize: 'var(--fs-xs)',
                     border: 'none',
                     cursor: 'pointer',
                     fontFamily: 'var(--font-primary)',

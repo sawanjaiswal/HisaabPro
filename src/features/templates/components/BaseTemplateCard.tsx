@@ -34,7 +34,7 @@ export const BaseTemplateCard: React.FC<BaseTemplateCardProps> = ({ baseTemplate
       <div className="template-card-preview" aria-hidden="true">
         <span
           style={{
-            fontSize: '1.5rem',
+            fontSize: 'var(--fs-lg)',
             fontWeight: 700,
             color: 'var(--color-gray-300)',
             letterSpacing: '0.04em',
@@ -50,7 +50,7 @@ export const BaseTemplateCard: React.FC<BaseTemplateCardProps> = ({ baseTemplate
         </div>
         <p
           style={{
-            fontSize: '0.75rem',
+            fontSize: 'var(--fs-xs)',
             color: 'var(--color-gray-500)',
             lineHeight: 1.4,
             margin: 0,

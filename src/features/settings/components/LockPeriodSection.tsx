@@ -31,7 +31,7 @@ export function LockPeriodSection({ lockAfterDays, onUpdate }: LockPeriodSection
               padding: 'var(--space-2) var(--space-3)',
               borderRadius: 'var(--radius-md)',
               border: '1.5px solid var(--color-gray-300)',
-              fontSize: '0.9375rem',
+              fontSize: 'var(--fs-df)',
               fontFamily: 'var(--font-primary)',
               minHeight: 44,
               background: 'var(--color-gray-0, #fff)',

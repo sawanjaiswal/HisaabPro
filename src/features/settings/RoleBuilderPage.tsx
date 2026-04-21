@@ -30,7 +30,7 @@ import './role-builder.css'
 import './settings-toggle.css'
 
 const LABEL_STYLE: React.CSSProperties = {
-  fontSize: '0.75rem',
+  fontSize: 'var(--fs-xs)',
   fontWeight: 600,
   color: 'var(--color-gray-600)',
   textTransform: 'uppercase',

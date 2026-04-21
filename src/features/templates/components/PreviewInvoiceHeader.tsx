@@ -58,7 +58,7 @@ export const PreviewInvoiceHeader: React.FC<PreviewInvoiceHeaderProps> = ({
           <div style={{ fontSize: 'var(--fs-xs)', opacity: 0.75 }}>{SAMPLE_INVOICE.date}</div>
         )}
         {fields.dueDate && (
-          <div style={{ fontSize: '0.694rem', opacity: 0.75 }}>{t.duePrefix}: {SAMPLE_INVOICE.dueDate}</div>
+          <div style={{ fontSize: 'var(--fs-xs)', opacity: 0.75 }}>{t.duePrefix}: {SAMPLE_INVOICE.dueDate}</div>
         )}
       </div>
     </div>

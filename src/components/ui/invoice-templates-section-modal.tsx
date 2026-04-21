@@ -79,7 +79,7 @@ export function TemplatePreviewModal({ template: t, onClose }: { template: Templ
         {t.showStamp && (
           <div
             className="absolute top-20 right-8 rotate-[-15deg] px-4 py-1 rounded-md border-2 font-bold tracking-widest opacity-20 pointer-events-none"
-            style={{ color: DOC_COLORS.STAMP_GREEN, borderColor: DOC_COLORS.STAMP_GREEN, fontSize: '1.5rem' }}
+            style={{ color: DOC_COLORS.STAMP_GREEN, borderColor: DOC_COLORS.STAMP_GREEN, fontSize: 'var(--fs-lg)' }}
           >
             PAID
           </div>
@@ -165,14 +165,14 @@ export function TemplatePreviewModal({ template: t, onClose }: { template: Templ
         )}
         {/* Bill To */}
         <div className="px-6 py-3" style={{ borderBottom: `1px solid ${DOC_COLORS.BORDER}`, backgroundColor: t.headerStyle === 'stacked' ? DOC_COLORS.BG_WHITE : DOC_COLORS.BG_SUBTLE }}>
-          <p className="text-xs font-semibold mb-1" style={{ color: DOC_COLORS.TEXT_LIGHT, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.625rem' }}>Bill To</p>
+          <p className="text-xs font-semibold mb-1" style={{ color: DOC_COLORS.TEXT_LIGHT, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: 'var(--fs-xs)' }}>Bill To</p>
           <p className="text-sm font-medium">{t.customer.name}</p>
           {t.customer.address && <p className="text-xs" style={{ color: DOC_COLORS.TEXT_MUTED }}>{t.customer.address}</p>}
           {t.customer.gstin && <p className="text-xs" style={{ color: DOC_COLORS.TEXT_MUTED }}>GSTIN: {t.customer.gstin}</p>}
         </div>
         {/* Line Items */}
         <div className="px-6 py-3">
-          <table className="w-full" style={{ fontSize: '0.75rem', borderCollapse: 'collapse' }}>
+          <table className="w-full" style={{ fontSize: 'var(--fs-xs)', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{
                 backgroundColor: t.tableStyle === 'minimal' ? 'transparent' : t.tableStyle === 'bordered' ? DOC_COLORS.BG_TABLE_HEADER : 'transparent',
@@ -208,7 +208,7 @@ export function TemplatePreviewModal({ template: t, onClose }: { template: Templ
         </div>
         {/* Totals */}
         <div className="px-6 py-3" style={{ borderTop: `1px solid ${DOC_COLORS.BORDER}` }}>
-          <div className="flex flex-col items-end gap-1" style={{ fontSize: '0.8125rem' }}>
+          <div className="flex flex-col items-end gap-1" style={{ fontSize: 'var(--fs-xs)' }}>
             <div className="flex justify-between w-40 sm:w-48">
               <span style={{ color: DOC_COLORS.TEXT_LIGHT }}>Subtotal</span>
               <span style={{ fontWeight: 500 }}>₹{subtotal.toLocaleString('en-IN')}</span>
@@ -227,7 +227,7 @@ export function TemplatePreviewModal({ template: t, onClose }: { template: Templ
             )}
             <div className="flex justify-between w-48 pt-1.5 mt-1" style={{ borderTop: `2px solid ${t.accent}` }}>
               <span style={{ fontWeight: 700 }}>Total</span>
-              <span style={{ color: t.accent, fontWeight: 700, fontSize: '1rem' }}>₹{total.toLocaleString('en-IN')}</span>
+              <span style={{ color: t.accent, fontWeight: 700, fontSize: 'var(--fs-base)' }}>₹{total.toLocaleString('en-IN')}</span>
             </div>
           </div>
         </div>

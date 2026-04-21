@@ -42,7 +42,7 @@ export const PartyDetailHeader: React.FC<PartyDetailHeaderProps> = ({ party }) =
 
         <div className="party-detail-meta">
           {party.phone && (
-            <span style={{ opacity: 0.8, fontSize: '0.875rem' }}>
+            <span style={{ opacity: 0.8, fontSize: 'var(--fs-sm)' }}>
               {formatPhone(party.phone)}
             </span>
           )}

@@ -84,7 +84,7 @@ export function InvoiceTemplatesSection() {
                   /* Bold: colored header block */
                   <div className="rounded px-2 py-1.5 mb-2" style={{ backgroundColor: tpl.headerBg, color: tpl.headerTextColor }}>
                     <div className="flex items-center justify-between">
-                      <span style={{ fontSize: '0.5rem', fontWeight: 700 }}>{tpl.business.name}</span>
+                      <span style={{ fontSize: 'var(--fs-xs)', fontWeight: 700 }}>{tpl.business.name}</span>
                       <span style={{ fontSize: '0.375rem', fontWeight: 700 }}>TAX INVOICE</span>
                     </div>
                     <div className="flex justify-between mt-0.5">
@@ -95,7 +95,7 @@ export function InvoiceTemplatesSection() {
                 ) : tpl.headerStyle === 'stacked' ? (
                   /* Elegant: centered */
                   <div className="text-center mb-2">
-                    <p style={{ fontSize: '0.5rem', fontWeight: 700, fontFamily: 'Georgia, serif' }}>{tpl.business.name}</p>
+                    <p style={{ fontSize: 'var(--fs-xs)', fontWeight: 700, fontFamily: 'Georgia, serif' }}>{tpl.business.name}</p>
                     {tpl.business.tagline && <p style={{ fontSize: '0.3125rem', color: tpl.accent, fontStyle: 'italic' }}>{tpl.business.tagline}</p>}
                     <div className="flex items-center gap-1.5 mt-1">
                       <div className="h-px flex-1" style={{ backgroundColor: '#e5e7eb' }} />
@@ -106,7 +106,7 @@ export function InvoiceTemplatesSection() {
                 ) : tpl.headerStyle === 'minimal' ? (
                   /* Kirana: compact */
                   <div className="flex justify-between items-center mb-2 pb-1.5" style={{ borderBottom: `1px solid ${tpl.accent}` }}>
-                    <span style={{ fontSize: '0.5rem', fontWeight: 700 }}>{tpl.business.name}</span>
+                    <span style={{ fontSize: 'var(--fs-xs)', fontWeight: 700 }}>{tpl.business.name}</span>
                     <span style={{ fontSize: '0.3125rem', color: tpl.accent, fontWeight: 600 }}>{tpl.invoiceNo}</span>
                   </div>
                 ) : (
@@ -195,7 +195,7 @@ export function InvoiceTemplatesSection() {
                 <span className="font-medium block" style={{ color: 'var(--lp-text)', fontSize: '0.6875rem' }}>
                   {tpl.name}
                 </span>
-                <span style={{ color: 'var(--lp-text-muted)', fontSize: '0.5625rem' }}>
+                <span style={{ color: 'var(--lp-text-muted)', fontSize: 'var(--fs-xs)' }}>
                   {tpl.desc}
                 </span>
               </div>

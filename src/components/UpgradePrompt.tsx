@@ -25,7 +25,7 @@ export function UpgradePrompt({ requiredPlan, feature }: UpgradePromptProps) {
     >
       <p
         style={{
-          fontSize: '0.875rem',
+          fontSize: 'var(--fs-sm)',
           fontWeight: 500,
           color: 'var(--color-warning-800, #92400e)',
           margin: 0,
@@ -37,7 +37,7 @@ export function UpgradePrompt({ requiredPlan, feature }: UpgradePromptProps) {
       <p
         style={{
           marginTop: '0.25rem',
-          fontSize: '0.75rem',
+          fontSize: 'var(--fs-xs)',
           color: 'var(--color-warning-600, #d97706)',
         }}
       >

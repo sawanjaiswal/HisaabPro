@@ -19,7 +19,7 @@ export function HeroPhoneMockup({ className = '' }: { className?: string }) {
           className="flex items-center justify-between px-5 pt-2 pb-1"
           style={{ background: 'var(--lp-bg-card)' }}
         >
-          <span style={{ fontSize: '0.5rem', color: 'var(--lp-text-muted)' }}>9:41</span>
+          <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--lp-text-muted)' }}>9:41</span>
           <div
             className="w-16 h-4 rounded-full"
             style={{ background: 'var(--lp-phone-border, #374151)' }}
@@ -39,7 +39,7 @@ export function HeroPhoneMockup({ className = '' }: { className?: string }) {
             <div className="w-5 h-5 rounded-md flex items-center justify-center" style={{ background: 'var(--lp-accent)' }}>
               <IndianRupee className="w-2.5 h-2.5 text-white" />
             </div>
-            <span className="font-semibold lp-text" style={{ fontSize: '0.625rem' }}>{APP_NAME}</span>
+            <span className="font-semibold lp-text" style={{ fontSize: 'var(--fs-xs)' }}>{APP_NAME}</span>
           </div>
           <Bell className="w-3.5 h-3.5" style={{ color: 'var(--lp-text-muted)' }} />
         </div>
@@ -49,7 +49,7 @@ export function HeroPhoneMockup({ className = '' }: { className?: string }) {
           {/* Greeting */}
           <div>
             <p className="font-semibold lp-text" style={{ fontSize: '0.6875rem' }}>Good morning!</p>
-            <p style={{ fontSize: '0.5rem', color: 'var(--lp-text-muted)' }}>Sharma Electronics</p>
+            <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--lp-text-muted)' }}>Sharma Electronics</p>
           </div>
 
           {/* Stats row */}
@@ -64,7 +64,7 @@ export function HeroPhoneMockup({ className = '' }: { className?: string }) {
                 style={{ borderColor: 'var(--lp-border-subtle)', background: 'var(--lp-bg-card)' }}
               >
                 <p style={{ fontSize: '0.4375rem', color: 'var(--lp-text-muted)' }}>{stat.label}</p>
-                <p className="font-bold lp-text leading-tight" style={{ fontSize: '0.75rem' }}>{stat.value}</p>
+                <p className="font-bold lp-text leading-tight" style={{ fontSize: 'var(--fs-xs)' }}>{stat.value}</p>
                 <p
                   className="flex items-center gap-0.5"
                   style={{ fontSize: '0.4375rem', color: stat.up ? 'var(--lp-mock-success)' : 'var(--lp-mock-warning)' }}
@@ -100,7 +100,7 @@ export function HeroPhoneMockup({ className = '' }: { className?: string }) {
             style={{ borderColor: 'var(--lp-border-subtle)', background: 'var(--lp-bg-card)' }}
           >
             <div className="px-2 py-1.5 border-b" style={{ borderColor: 'var(--lp-border-subtle)' }}>
-              <p className="font-semibold lp-text" style={{ fontSize: '0.5625rem' }}>Recent Invoices</p>
+              <p className="font-semibold lp-text" style={{ fontSize: 'var(--fs-xs)' }}>Recent Invoices</p>
             </div>
             {[
               { id: 'INV-1042', party: 'Sharma Elec.', amount: '₹12,450', status: 'Paid', color: 'var(--lp-mock-success)' },
@@ -114,11 +114,11 @@ export function HeroPhoneMockup({ className = '' }: { className?: string }) {
                 style={{ borderColor: 'var(--lp-border-subtle)' }}
               >
                 <div className="min-w-0">
-                  <p className="font-medium lp-text truncate" style={{ fontSize: '0.5rem' }}>{inv.party}</p>
+                  <p className="font-medium lp-text truncate" style={{ fontSize: 'var(--fs-xs)' }}>{inv.party}</p>
                   <p style={{ fontSize: '0.4375rem', color: 'var(--lp-text-muted)' }}>{inv.id}</p>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
-                  <span className="font-semibold lp-text" style={{ fontSize: '0.5rem' }}>{inv.amount}</span>
+                  <span className="font-semibold lp-text" style={{ fontSize: 'var(--fs-xs)' }}>{inv.amount}</span>
                   <span
                     className="rounded-full px-1 py-0.5 font-medium"
                     style={{ fontSize: '0.375rem', color: inv.color, background: `color-mix(in srgb, ${inv.color} 15%, transparent)` }}

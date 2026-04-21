@@ -52,7 +52,7 @@ export default function PinSetupPage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: '1.375rem',
+          fontSize: 'var(--fs-lg)',
         }}
         aria-label={t.goBack}
       >
@@ -88,7 +88,7 @@ export default function PinSetupPage() {
         <p
           role="status"
           style={{
-            fontSize: '0.875rem',
+            fontSize: 'var(--fs-sm)',
             color: 'var(--color-warning-600, #d97706)',
             textAlign: 'center',
             maxWidth: '280px',
@@ -114,7 +114,7 @@ export default function PinSetupPage() {
             color: 'var(--color-gray-0, #fff)',
             border: 'none',
             fontFamily: 'var(--font-primary)',
-            fontSize: '1rem',
+            fontSize: 'var(--fs-base)',
             fontWeight: 600,
             cursor: 'pointer',
             minHeight: '48px',

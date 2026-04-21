@@ -44,7 +44,7 @@ export function StaffInviteForm({
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1-5)' }}>
         <label
           htmlFor="invite-name"
-          style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-gray-700)' }}
+          style={{ fontSize: 'var(--fs-sm)', fontWeight: 500, color: 'var(--color-gray-700)' }}
         >
           {t.name}
         </label>
@@ -60,7 +60,7 @@ export function StaffInviteForm({
             padding: 'var(--space-3)',
             borderRadius: 'var(--radius-md)',
             border: `1.5px solid ${errors.name ? 'var(--color-error-500)' : 'var(--color-gray-300)'}`,
-            fontSize: '1rem',
+            fontSize: 'var(--fs-base)',
             fontFamily: 'var(--font-primary)',
             minHeight: 44,
             outline: 'none',
@@ -68,7 +68,7 @@ export function StaffInviteForm({
           }}
         />
         {errors.name && (
-          <p style={{ fontSize: '0.8125rem', color: 'var(--color-error-600)' }} role="alert">
+          <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-error-600)' }} role="alert">
             {errors.name}
           </p>
         )}
@@ -77,7 +77,7 @@ export function StaffInviteForm({
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1-5)' }}>
         <label
           htmlFor="invite-phone"
-          style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-gray-700)' }}
+          style={{ fontSize: 'var(--fs-sm)', fontWeight: 500, color: 'var(--color-gray-700)' }}
         >
           {t.phone}
         </label>
@@ -95,7 +95,7 @@ export function StaffInviteForm({
             padding: 'var(--space-3)',
             borderRadius: 'var(--radius-md)',
             border: `1.5px solid ${errors.phone ? 'var(--color-error-500)' : 'var(--color-gray-300)'}`,
-            fontSize: '1rem',
+            fontSize: 'var(--fs-base)',
             fontFamily: 'var(--font-primary)',
             minHeight: 44,
             outline: 'none',
@@ -103,7 +103,7 @@ export function StaffInviteForm({
           }}
         />
         {errors.phone && (
-          <p style={{ fontSize: '0.8125rem', color: 'var(--color-error-600)' }} role="alert">
+          <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-error-600)' }} role="alert">
             {errors.phone}
           </p>
         )}
@@ -112,7 +112,7 @@ export function StaffInviteForm({
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1-5)' }}>
         <label
           htmlFor="invite-role"
-          style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-gray-700)' }}
+          style={{ fontSize: 'var(--fs-sm)', fontWeight: 500, color: 'var(--color-gray-700)' }}
         >
           {t.roles}
         </label>
@@ -125,7 +125,7 @@ export function StaffInviteForm({
             padding: 'var(--space-3)',
             borderRadius: 'var(--radius-md)',
             border: `1.5px solid ${errors.roleId ? 'var(--color-error-500)' : 'var(--color-gray-300)'}`,
-            fontSize: '1rem',
+            fontSize: 'var(--fs-base)',
             fontFamily: 'var(--font-primary)',
             minHeight: 44,
             outline: 'none',
@@ -141,7 +141,7 @@ export function StaffInviteForm({
           ))}
         </select>
         {errors.roleId && (
-          <p style={{ fontSize: '0.8125rem', color: 'var(--color-error-600)' }} role="alert">
+          <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-error-600)' }} role="alert">
             {errors.roleId}
           </p>
         )}
@@ -149,7 +149,7 @@ export function StaffInviteForm({
 
       {submitError && (
         <p
-          style={{ fontSize: '0.875rem', color: 'var(--color-error-600)', padding: 'var(--space-3)', background: 'var(--color-red-50)', borderRadius: 'var(--radius-md)' }}
+          style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-error-600)', padding: 'var(--space-3)', background: 'var(--color-red-50)', borderRadius: 'var(--radius-md)' }}
           role="alert"
         >
           {submitError}

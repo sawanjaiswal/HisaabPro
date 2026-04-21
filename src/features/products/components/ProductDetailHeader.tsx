@@ -30,7 +30,7 @@ export const ProductDetailHeader: React.FC<ProductDetailHeaderProps> = ({ produc
       <div className="party-detail-info">
         <h2 className="party-detail-name">{product.name}</h2>
         <div className="party-detail-meta">
-          <span style={{ opacity: 0.8, fontSize: '0.875rem' }}>{product.sku}</span>
+          <span style={{ opacity: 0.8, fontSize: 'var(--fs-sm)' }}>{product.sku}</span>
           <span
             className={STOCK_BADGE_CLASSES[stockStatus]}
             aria-label={`${t.stockStatusPrefix}: ${STOCK_STATUS_LABELS[stockStatus]}`}

@@ -164,7 +164,7 @@ export function HeroDashboardMockup() {
               >
                 <div className="flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: 'var(--lp-border-subtle)' }}>
                   <p className="text-xs font-semibold lp-text">This Week</p>
-                  <div className="flex items-center gap-1" style={{ color: 'var(--lp-mock-success)', fontSize: '0.625rem', fontWeight: 600 }}>
+                  <div className="flex items-center gap-1" style={{ color: 'var(--lp-mock-success)', fontSize: 'var(--fs-xs)', fontWeight: 600 }}>
                     <TrendingUp className="w-2.5 h-2.5" /> +18%
                   </div>
                 </div>
@@ -187,7 +187,7 @@ export function HeroDashboardMockup() {
                           minHeight: 4,
                         }}
                       />
-                      <span className="mt-1.5" style={{ fontSize: '0.5rem', color: 'var(--lp-text-muted)' }}>{d.day}</span>
+                      <span className="mt-1.5" style={{ fontSize: 'var(--fs-xs)', color: 'var(--lp-text-muted)' }}>{d.day}</span>
                     </div>
                   ))}
                 </div>
@@ -200,7 +200,7 @@ export function HeroDashboardMockup() {
               >
                 <div className="flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: 'var(--lp-border-subtle)' }}>
                   <p className="text-xs font-semibold lp-text">Outstanding</p>
-                  <span style={{ color: 'var(--lp-mock-warning)', fontSize: '0.625rem', fontWeight: 600 }}>₹1,24,500</span>
+                  <span style={{ color: 'var(--lp-mock-warning)', fontSize: 'var(--fs-xs)', fontWeight: 600 }}>₹1,24,500</span>
                 </div>
                 {[
                   { name: 'Gupta Traders', amount: '₹45,200', days: '32d' },
@@ -215,7 +215,7 @@ export function HeroDashboardMockup() {
                   >
                     <div>
                       <p className="font-medium lp-text">{p.name}</p>
-                      <p className="lp-text-muted" style={{ fontSize: '0.5625rem' }}>{p.days} overdue</p>
+                      <p className="lp-text-muted" style={{ fontSize: 'var(--fs-xs)' }}>{p.days} overdue</p>
                     </div>
                     <span style={{ color: 'var(--lp-mock-warning)', fontWeight: 600 }}>{p.amount}</span>
                   </div>
@@ -239,7 +239,7 @@ export function HeroDashboardMockup() {
                 <div className="rounded-full" style={{ width: '15%', backgroundColor: '#8b5cf6' }} />
                 <div className="rounded-full" style={{ width: '12%', backgroundColor: 'var(--lp-text-muted)' }} />
               </div>
-              <div className="flex gap-5 mt-2" style={{ fontSize: '0.5625rem', color: 'var(--lp-text-muted)' }}>
+              <div className="flex gap-5 mt-2" style={{ fontSize: 'var(--fs-xs)', color: 'var(--lp-text-muted)' }}>
                 <span className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: 'var(--lp-accent)' }} /> UPI ₹4.2L
                 </span>

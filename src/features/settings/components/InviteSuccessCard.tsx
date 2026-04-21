@@ -20,7 +20,7 @@ export function InviteSuccessCard({ code, staffName, onShareWhatsApp, onBackToSt
         aria-hidden="true"
         style={{ color: 'var(--color-success-600)', marginBottom: 'var(--space-4)' }}
       />
-      <p style={{ fontWeight: 700, fontSize: '1.0625rem', color: 'var(--color-gray-900)', marginBottom: 'var(--space-2)' }}>
+      <p style={{ fontWeight: 700, fontSize: 'var(--fs-base)', color: 'var(--color-gray-900)', marginBottom: 'var(--space-2)' }}>
         {t.inviteSent}
       </p>
       <p style={{ color: 'var(--color-gray-500)', marginBottom: 'var(--space-6)', lineHeight: 1.5 }}>
@@ -33,7 +33,7 @@ export function InviteSuccessCard({ code, staffName, onShareWhatsApp, onBackToSt
           background: 'var(--color-primary-50)',
           borderRadius: 'var(--radius-lg)',
           border: '1.5px dashed var(--color-primary-300)',
-          fontSize: '1.5rem',
+          fontSize: 'var(--fs-lg)',
           fontWeight: 700,
           letterSpacing: '0.15em',
           color: 'var(--color-primary-700)',

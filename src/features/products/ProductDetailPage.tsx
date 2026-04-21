@@ -136,35 +136,35 @@ export default function ProductDetailPage() {
               {activeTab === 'overview' && (
                 <div className="card product-info-card">
                   <div className="product-info-row">
-                    <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>{t.categoryLabel}</span>
+                    <span style={{ color: 'var(--color-gray-400)', fontSize: 'var(--fs-sm)', minWidth: 100 }}>{t.categoryLabel}</span>
                     <span style={{ fontWeight: 500 }}>
                       {PREDEFINED_CATEGORIES.find((c) => c.id === product.category.id)?.name ?? product.category.name}
                     </span>
                   </div>
                   <div className="product-info-row">
-                    <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>{t.unitLabel}</span>
+                    <span style={{ color: 'var(--color-gray-400)', fontSize: 'var(--fs-sm)', minWidth: 100 }}>{t.unitLabel}</span>
                     <span style={{ fontWeight: 500 }}>
                       {PREDEFINED_UNITS.find((u) => u.id === product.unit.id)?.name ?? product.unit.name} ({product.unit.symbol})
                     </span>
                   </div>
                   <div className="product-info-row">
-                    <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>{t.salePriceLabel}</span>
+                    <span style={{ color: 'var(--color-gray-400)', fontSize: 'var(--fs-sm)', minWidth: 100 }}>{t.salePriceLabel}</span>
                     <span style={{ fontWeight: 600 }}>{formatProductPrice(product.salePrice)}</span>
                   </div>
                   {product.purchasePrice !== null && (
                     <div className="product-info-row">
-                      <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>{t.purchasePriceLabel}</span>
+                      <span style={{ color: 'var(--color-gray-400)', fontSize: 'var(--fs-sm)', minWidth: 100 }}>{t.purchasePriceLabel}</span>
                       <span style={{ fontWeight: 500 }}>{formatProductPrice(product.purchasePrice)}</span>
                     </div>
                   )}
                   <div className="product-info-row">
-                    <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>{t.minStockLabel}</span>
+                    <span style={{ color: 'var(--color-gray-400)', fontSize: 'var(--fs-sm)', minWidth: 100 }}>{t.minStockLabel}</span>
                     <span style={{ fontWeight: 500 }}>
                       {product.minStockLevel > 0 ? `${product.minStockLevel} ${product.unit.symbol}` : t.notSet}
                     </span>
                   </div>
                   <div className="product-info-row">
-                    <span style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem', minWidth: 100 }}>{t.validationLabel}</span>
+                    <span style={{ color: 'var(--color-gray-400)', fontSize: 'var(--fs-sm)', minWidth: 100 }}>{t.validationLabel}</span>
                     <span style={{ fontWeight: 500 }}>{STOCK_VALIDATION_LABELS[product.stockValidation]}</span>
                   </div>
                 </div>

@@ -23,7 +23,7 @@ export const PreviewPaymentStamp: React.FC<PreviewPaymentStampProps> = ({ status
     return (
       <div
         className="preview-stamp preview-stamp--watermark"
-        style={{ color, opacity: 0.08, fontSize: '3rem' }}
+        style={{ color, opacity: 0.08, fontSize: 'var(--fs-5xl)' }}
         aria-hidden="true"
       >
         {status}

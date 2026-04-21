@@ -185,7 +185,7 @@ export default function AuditLogPage() {
                         border: '1.5px solid var(--color-gray-300)',
                         background: 'var(--color-gray-0, #fff)',
                         color: 'var(--color-gray-700)',
-                        fontSize: '0.9375rem',
+                        fontSize: 'var(--fs-df)',
                         fontWeight: 500,
                         fontFamily: 'var(--font-primary)',
                         cursor: 'pointer',

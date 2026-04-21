@@ -140,7 +140,7 @@ export default function ActiveSessionsPage() {
                   <p
                     style={{
                       margin: 0,
-                      fontSize: '0.875rem',
+                      fontSize: 'var(--fs-sm)',
                       fontWeight: 500,
                       color: 'var(--color-text-primary)',
                       display: 'flex',
@@ -152,7 +152,7 @@ export default function ActiveSessionsPage() {
                     {session.isCurrent && (
                       <span
                         style={{
-                          fontSize: '0.625rem',
+                          fontSize: 'var(--fs-xs)',
                           fontWeight: 600,
                           padding: '0.125rem 0.375rem',
                           borderRadius: '9999px',
@@ -169,7 +169,7 @@ export default function ActiveSessionsPage() {
                   <p
                     style={{
                       margin: '0.125rem 0 0',
-                      fontSize: '0.75rem',
+                      fontSize: 'var(--fs-xs)',
                       color: 'var(--color-text-secondary)',
                     }}
                   >
@@ -210,7 +210,7 @@ export default function ActiveSessionsPage() {
                 style={{
                   textAlign: 'center',
                   color: 'var(--color-text-secondary)',
-                  fontSize: '0.875rem',
+                  fontSize: 'var(--fs-sm)',
                   paddingTop: '2rem',
                 }}
               >

@@ -26,7 +26,7 @@ export const PreviewLineItems: React.FC<PreviewLineItemsProps> = ({
       style={{
         width: '100%',
         borderCollapse: 'collapse',
-        fontSize: '0.833rem',
+        fontSize: 'var(--fs-sm)',
       }}
     >
       <thead>

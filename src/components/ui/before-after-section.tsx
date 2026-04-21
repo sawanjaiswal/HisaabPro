@@ -52,7 +52,7 @@ function BeforePhoto({ src, alt, caption }: { src: string; alt: string; caption:
       <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 50%)' }} />
       <div className="absolute bottom-0 left-0 right-0 p-4 flex items-center gap-2">
         <AlertTriangle size={14} style={{ color: 'var(--lp-before-icon)' }} className="shrink-0" />
-        <span style={{ fontSize: '0.8125rem', color: 'var(--lp-text-body)', fontWeight: 500 }}>{caption}</span>
+        <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--lp-text-body)', fontWeight: 500 }}>{caption}</span>
       </div>
     </div>
   )
@@ -67,17 +67,17 @@ function AfterInvoice() {
           <div className="w-6 h-6 rounded flex items-center justify-center" style={{ background: 'var(--lp-accent)' }}>
             <FileText size={12} className="text-white" />
           </div>
-          <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--lp-text)' }}>INV-1042</span>
+          <span style={{ fontSize: 'var(--fs-xs)', fontWeight: 600, color: 'var(--lp-text)' }}>INV-1042</span>
         </div>
-        <span className="px-2 py-0.5 rounded-full" style={{ fontSize: '0.625rem', fontWeight: 600, background: 'color-mix(in srgb, var(--lp-mock-success) 15%, transparent)', color: 'var(--lp-mock-success)' }}>
+        <span className="px-2 py-0.5 rounded-full" style={{ fontSize: 'var(--fs-xs)', fontWeight: 600, background: 'color-mix(in srgb, var(--lp-mock-success) 15%, transparent)', color: 'var(--lp-mock-success)' }}>
           Paid
         </span>
       </div>
       <div className="px-5 py-2.5 border-b" style={{ borderColor: 'var(--lp-card-border)' }}>
-        <p style={{ color: 'var(--lp-text)', fontWeight: 500, fontSize: '0.8125rem' }}>Sharma Electronics</p>
+        <p style={{ color: 'var(--lp-text)', fontWeight: 500, fontSize: 'var(--fs-xs)' }}>Sharma Electronics</p>
         <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.6875rem' }}>Lajpat Nagar, New Delhi</p>
       </div>
-      <div className="px-5 py-1" style={{ fontSize: '0.75rem' }}>
+      <div className="px-5 py-1" style={{ fontSize: 'var(--fs-xs)' }}>
         {[
           { item: 'LED Panel Light x20', amt: '₹8,000' },
           { item: 'MCB Switch 32A x15', amt: '₹2,250' },
@@ -92,8 +92,8 @@ function AfterInvoice() {
         ))}
       </div>
       <div className="px-5 py-2.5 flex justify-between border-t" style={{ borderColor: 'var(--lp-card-border)' }}>
-        <span style={{ color: 'var(--lp-text-muted)', fontSize: '0.75rem' }}>Total</span>
-        <span style={{ color: 'var(--lp-text)', fontSize: '1rem', fontWeight: 700 }}>₹23,450</span>
+        <span style={{ color: 'var(--lp-text-muted)', fontSize: 'var(--fs-xs)' }}>Total</span>
+        <span style={{ color: 'var(--lp-text)', fontSize: 'var(--fs-base)', fontWeight: 700 }}>₹23,450</span>
       </div>
       <div className="px-5 py-2.5 flex items-center gap-2 justify-center border-t" style={{ borderColor: 'var(--lp-card-border)' }}>
         <CheckCircle size={12} style={{ color: 'var(--lp-mock-success)' }} />
@@ -109,9 +109,9 @@ function AfterPayments() {
     <div className="rounded-xl w-full h-full overflow-hidden" style={{ background: 'var(--lp-bg-card)', border: '1px solid var(--lp-card-border)' }}>
       <div className="h-1 w-full" style={{ background: 'var(--lp-accent)' }} />
       <div className="px-5 py-3 border-b" style={{ borderColor: 'var(--lp-card-border)' }}>
-        <p style={{ fontSize: '0.625rem', color: 'var(--lp-text-muted)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Outstanding</p>
+        <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--lp-text-muted)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Outstanding</p>
         <div className="flex items-baseline gap-2 mt-1">
-          <span style={{ color: 'var(--lp-text)', fontSize: '1.25rem', fontWeight: 700 }}>₹1,14,400</span>
+          <span style={{ color: 'var(--lp-text)', fontSize: 'var(--fs-lg)', fontWeight: 700 }}>₹1,14,400</span>
           <span style={{ color: 'var(--lp-mock-warning)', fontSize: '0.6875rem', fontWeight: 500 }}>5 parties</span>
         </div>
       </div>
@@ -123,10 +123,10 @@ function AfterPayments() {
       ].map((p) => (
         <div key={p.name} className="px-5 py-2 flex items-center justify-between border-b" style={{ borderColor: 'var(--lp-card-border)' }}>
           <div>
-            <p style={{ color: 'var(--lp-text)', fontSize: '0.75rem', fontWeight: 500 }}>{p.name}</p>
-            <p style={{ color: p.warn ? 'var(--lp-mock-warning)' : 'var(--lp-text-muted)', fontSize: '0.625rem' }}>{p.days}</p>
+            <p style={{ color: 'var(--lp-text)', fontSize: 'var(--fs-xs)', fontWeight: 500 }}>{p.name}</p>
+            <p style={{ color: p.warn ? 'var(--lp-mock-warning)' : 'var(--lp-text-muted)', fontSize: 'var(--fs-xs)' }}>{p.days}</p>
           </div>
-          <span style={{ color: 'var(--lp-mock-warning)', fontSize: '0.75rem', fontWeight: 600 }}>{p.amt}</span>
+          <span style={{ color: 'var(--lp-mock-warning)', fontSize: 'var(--fs-xs)', fontWeight: 600 }}>{p.amt}</span>
         </div>
       ))}
       <div className="px-5 py-2.5 flex items-center gap-2 justify-center border-t" style={{ borderColor: 'var(--lp-card-border)' }}>
@@ -143,8 +143,8 @@ function AfterInventory() {
     <div className="rounded-xl w-full h-full overflow-hidden" style={{ background: 'var(--lp-bg-card)', border: '1px solid var(--lp-card-border)' }}>
       <div className="h-1 w-full" style={{ background: 'var(--lp-accent)' }} />
       <div className="px-5 py-3 flex items-center justify-between border-b" style={{ borderColor: 'var(--lp-card-border)' }}>
-        <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--lp-text)' }}>Stock Overview</span>
-        <span className="px-2 py-0.5 rounded-full" style={{ fontSize: '0.5625rem', fontWeight: 600, background: 'color-mix(in srgb, var(--lp-mock-success) 15%, transparent)', color: 'var(--lp-mock-success)' }}>
+        <span style={{ fontSize: 'var(--fs-xs)', fontWeight: 600, color: 'var(--lp-text)' }}>Stock Overview</span>
+        <span className="px-2 py-0.5 rounded-full" style={{ fontSize: 'var(--fs-xs)', fontWeight: 600, background: 'color-mix(in srgb, var(--lp-mock-success) 15%, transparent)', color: 'var(--lp-mock-success)' }}>
           Live
         </span>
       </div>
@@ -157,10 +157,10 @@ function AfterInventory() {
       ].map((p) => (
         <div key={p.item} className="px-5 py-2 flex items-center justify-between border-b" style={{ borderColor: 'var(--lp-card-border)' }}>
           <div>
-            <p style={{ color: 'var(--lp-text)', fontSize: '0.75rem', fontWeight: 500 }}>{p.item}</p>
-            <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.625rem' }}>{p.qty}</p>
+            <p style={{ color: 'var(--lp-text)', fontSize: 'var(--fs-xs)', fontWeight: 500 }}>{p.item}</p>
+            <p style={{ color: 'var(--lp-text-muted)', fontSize: 'var(--fs-xs)' }}>{p.qty}</p>
           </div>
-          <span className="px-1.5 py-0.5 rounded-full" style={{ fontSize: '0.5625rem', fontWeight: 600, color: p.status === 'low' ? 'var(--lp-mock-warning)' : 'var(--lp-mock-success)', background: p.status === 'low' ? 'color-mix(in srgb, var(--lp-mock-warning) 15%, transparent)' : 'color-mix(in srgb, var(--lp-mock-success) 15%, transparent)' }}>
+          <span className="px-1.5 py-0.5 rounded-full" style={{ fontSize: 'var(--fs-xs)', fontWeight: 600, color: p.status === 'low' ? 'var(--lp-mock-warning)' : 'var(--lp-mock-success)', background: p.status === 'low' ? 'color-mix(in srgb, var(--lp-mock-warning) 15%, transparent)' : 'color-mix(in srgb, var(--lp-mock-success) 15%, transparent)' }}>
             {p.status === 'low' ? 'Low Stock' : 'In Stock'}
           </span>
         </div>
@@ -266,7 +266,7 @@ export function BeforeAfterSection() {
                     background: isActive ? 'var(--lp-cta-bg)' : 'transparent',
                     color: isActive ? 'var(--lp-cta-text)' : 'var(--lp-text-muted)',
                     fontWeight: isActive ? 600 : 400,
-                    fontSize: '0.875rem',
+                    fontSize: 'var(--fs-sm)',
                   }}
                 >
                   <Icon size={15} />
@@ -294,9 +294,9 @@ export function BeforeAfterSection() {
               <span className="text-sm lp-text-muted hidden sm:inline">{tab.subtitle}</span>
               <span className="hidden sm:block w-px h-5" style={{ background: 'var(--lp-divider)' }} aria-hidden="true" />
               <div className="flex items-center gap-3">
-                <span className="line-through lp-text-muted" style={{ fontSize: '0.875rem', opacity: 0.5 }}>{tab.metric.before}</span>
+                <span className="line-through lp-text-muted" style={{ fontSize: 'var(--fs-sm)', opacity: 0.5 }}>{tab.metric.before}</span>
                 <ArrowRight size={14} style={{ color: 'var(--lp-accent)' }} />
-                <span style={{ color: 'var(--lp-mock-success)', fontSize: '1.125rem', fontWeight: 700 }}>{tab.metric.after}</span>
+                <span style={{ color: 'var(--lp-mock-success)', fontSize: 'var(--fs-base)', fontWeight: 700 }}>{tab.metric.after}</span>
                 <span className="text-xs lp-text-muted">{tab.metric.unit}</span>
               </div>
             </div>
@@ -324,7 +324,7 @@ export function BeforeAfterSection() {
                       <span className="mt-0.5 w-4 h-4 rounded-full flex items-center justify-center shrink-0" style={{ background: 'var(--lp-before-badge-bg)' }}>
                         <AlertTriangle size={9} style={{ color: 'var(--lp-before-icon)' }} />
                       </span>
-                      <span style={{ color: 'var(--lp-text-muted)', fontSize: '0.8125rem' }}>{point}</span>
+                      <span style={{ color: 'var(--lp-text-muted)', fontSize: 'var(--fs-xs)' }}>{point}</span>
                     </div>
                   ))}
                 </div>
@@ -351,7 +351,7 @@ export function BeforeAfterSection() {
                       <span className="mt-0.5 w-4 h-4 rounded-full flex items-center justify-center shrink-0" style={{ background: 'color-mix(in srgb, var(--lp-mock-success) 15%, transparent)' }}>
                         <CheckCircle size={9} style={{ color: 'var(--lp-mock-success)' }} />
                       </span>
-                      <span style={{ color: 'var(--lp-text-body)', fontSize: '0.8125rem' }}>{point}</span>
+                      <span style={{ color: 'var(--lp-text-body)', fontSize: 'var(--fs-xs)' }}>{point}</span>
                     </div>
                   ))}
                 </div>

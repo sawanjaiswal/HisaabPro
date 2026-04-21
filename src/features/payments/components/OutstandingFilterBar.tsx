@@ -85,7 +85,7 @@ export const OutstandingFilterBar: React.FC<OutstandingFilterBarProps> = ({
             background: 'var(--color-gray-0)',
             color: 'var(--color-gray-700)',
             fontFamily: 'var(--font-primary)',
-            fontSize: '0.8125rem',
+            fontSize: 'var(--fs-xs)',
             fontWeight: 500,
             cursor: 'pointer',
           }}

@@ -84,7 +84,7 @@ export const TemplatePreviewPanel: React.FC<TemplatePreviewPanelProps> = ({ conf
             <div
               style={{
                 textAlign: 'center',
-                fontSize: '0.75rem',
+                fontSize: 'var(--fs-xs)',
                 padding: 'var(--space-2) var(--space-4)',
                 color: colors.accent,
                 borderBottom: `1px solid ${borderColor}`,
@@ -143,7 +143,7 @@ export const TemplatePreviewPanel: React.FC<TemplatePreviewPanelProps> = ({ conf
             <div
               style={{
                 textAlign: 'center',
-                fontSize: '0.694rem',
+                fontSize: 'var(--fs-xs)',
                 color: 'var(--color-gray-400)',
                 padding: 'var(--space-2) var(--space-4) var(--space-3)',
                 borderTop: `1px solid ${borderColor}`,

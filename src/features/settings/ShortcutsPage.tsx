@@ -20,7 +20,7 @@ export default function ShortcutsPage() {
         />
         <p
           style={{
-            fontSize: '0.8125rem',
+            fontSize: 'var(--fs-xs)',
             color: 'var(--color-gray-400)',
             textAlign: 'center',
             padding: 'var(--space-2) var(--space-4) var(--space-6)',

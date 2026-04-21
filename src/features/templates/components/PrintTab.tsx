@@ -84,7 +84,7 @@ export const PrintTab: React.FC<PrintTabProps> = ({ printSettings, onChange }) =
             −
           </button>
           <span
-            style={{ minWidth: 32, textAlign: 'center', fontWeight: 600, fontSize: '1rem' }}
+            style={{ minWidth: 32, textAlign: 'center', fontWeight: 600, fontSize: 'var(--fs-base)' }}
             aria-live="polite"
             aria-label={`${printSettings.copies} ${t.copiesCountAria}`}
           >

@@ -163,7 +163,7 @@ const InteractiveBar = ({ height, isActive, label }: { height: number; isActive:
         e.currentTarget.style.transform = 'scaleY(1)'
       }}
     />
-    <span className="mt-2" style={{ fontSize: '0.5625rem', color: 'var(--lp-text-muted)' }}>{label}</span>
+    <span className="mt-2" style={{ fontSize: 'var(--fs-xs)', color: 'var(--lp-text-muted)' }}>{label}</span>
   </div>
 )
 
@@ -178,7 +178,7 @@ export const SkeletonOne = () => {
           {/* Invoice header */}
           <div className="px-4 py-3 flex items-center justify-between border-b" style={{ borderColor: 'var(--lp-card-border)' }}>
             <div className="flex items-center gap-2">
-              <span className="font-semibold" style={{ color: 'var(--lp-text)', fontSize: '0.875rem' }}>
+              <span className="font-semibold" style={{ color: 'var(--lp-text)', fontSize: 'var(--fs-sm)' }}>
                 INV-1042
               </span>
               <span
@@ -192,17 +192,17 @@ export const SkeletonOne = () => {
                 Paid
               </span>
             </div>
-            <span style={{ color: 'var(--lp-text-muted)', fontSize: '0.75rem' }}>18 Mar 2026</span>
+            <span style={{ color: 'var(--lp-text-muted)', fontSize: 'var(--fs-xs)' }}>18 Mar 2026</span>
           </div>
 
           {/* Party name */}
           <div className="px-4 py-2.5 border-b" style={{ borderColor: 'var(--lp-card-border)' }}>
-            <p style={{ color: 'var(--lp-text)', fontSize: '0.8125rem', fontWeight: 500 }}>Sharma Electronics</p>
+            <p style={{ color: 'var(--lp-text)', fontSize: 'var(--fs-xs)', fontWeight: 500 }}>Sharma Electronics</p>
             <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.6875rem' }}>Lajpat Nagar, New Delhi</p>
           </div>
 
           {/* Line items */}
-          <div className="px-4 py-2" style={{ fontSize: '0.75rem' }}>
+          <div className="px-4 py-2" style={{ fontSize: 'var(--fs-xs)' }}>
             {[
               { item: 'LED Panel Light × 20', amount: '₹8,000' },
               { item: 'MCB Switch 32A × 15', amount: '₹2,250' },
@@ -223,7 +223,7 @@ export const SkeletonOne = () => {
           </div>
 
           {/* Subtotal + Tax + Total */}
-          <div className="px-4 py-2 border-t" style={{ borderColor: 'var(--lp-card-border)', fontSize: '0.75rem' }}>
+          <div className="px-4 py-2 border-t" style={{ borderColor: 'var(--lp-card-border)', fontSize: 'var(--fs-xs)' }}>
             <div className="flex justify-between py-1">
               <span style={{ color: 'var(--lp-text-muted)' }}>Subtotal</span>
               <span style={{ color: 'var(--lp-text)', fontWeight: 500 }}>₹31,400</span>
@@ -234,8 +234,8 @@ export const SkeletonOne = () => {
             </div>
           </div>
           <div className="px-4 py-2.5 flex justify-between items-center border-t" style={{ borderColor: 'var(--lp-card-border)' }}>
-            <span style={{ color: 'var(--lp-text-muted)', fontSize: '0.75rem', fontWeight: 500 }}>Total</span>
-            <span style={{ color: 'var(--lp-text)', fontSize: '1.125rem', fontWeight: 700 }}>₹29,830</span>
+            <span style={{ color: 'var(--lp-text-muted)', fontSize: 'var(--fs-xs)', fontWeight: 500 }}>Total</span>
+            <span style={{ color: 'var(--lp-text)', fontSize: 'var(--fs-base)', fontWeight: 700 }}>₹29,830</span>
           </div>
 
           {/* Action buttons */}
@@ -308,7 +308,7 @@ export const SkeletonTwo = () => {
             Total Outstanding
           </p>
           <div className="flex items-baseline gap-2 mt-1">
-            <span style={{ color: 'var(--lp-text)', fontSize: '1.5rem', fontWeight: 700 }}>₹1,37,100</span>
+            <span style={{ color: 'var(--lp-text)', fontSize: 'var(--fs-lg)', fontWeight: 700 }}>₹1,37,100</span>
             <span style={{ color: 'var(--lp-mock-warning)', fontSize: '0.6875rem', fontWeight: 500 }}>5 parties</span>
           </div>
         </div>
@@ -322,17 +322,17 @@ export const SkeletonTwo = () => {
               style={{ borderColor: 'var(--lp-card-border)' }}
             >
               <div>
-                <p style={{ color: 'var(--lp-text)', fontSize: '0.75rem', fontWeight: 500 }}>{p.name}</p>
-                <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.625rem' }}>{p.days} overdue</p>
+                <p style={{ color: 'var(--lp-text)', fontSize: 'var(--fs-xs)', fontWeight: 500 }}>{p.name}</p>
+                <p style={{ color: 'var(--lp-text-muted)', fontSize: 'var(--fs-xs)' }}>{p.days} overdue</p>
               </div>
-              <span style={{ color: 'var(--lp-mock-warning)', fontSize: '0.8125rem', fontWeight: 600 }}>{p.amount}</span>
+              <span style={{ color: 'var(--lp-mock-warning)', fontSize: 'var(--fs-xs)', fontWeight: 600 }}>{p.amount}</span>
             </InteractiveRow>
           ))}
         </div>
 
         {/* Recent Payments */}
         <div className="px-4 py-3 border-t" style={{ borderColor: 'var(--lp-card-border)' }}>
-          <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.625rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>
+          <p style={{ color: 'var(--lp-text-muted)', fontSize: 'var(--fs-xs)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>
             Recent Payments
           </p>
           {recentPayments.map((p) => (
@@ -342,17 +342,17 @@ export const SkeletonTwo = () => {
               style={{ borderTop: '1px solid var(--lp-card-border)' }}
             >
               <div>
-                <p style={{ color: 'var(--lp-text)', fontSize: '0.75rem', fontWeight: 500 }}>{p.party}</p>
-                <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.5625rem' }}>{p.date} · {p.mode}</p>
+                <p style={{ color: 'var(--lp-text)', fontSize: 'var(--fs-xs)', fontWeight: 500 }}>{p.party}</p>
+                <p style={{ color: 'var(--lp-text-muted)', fontSize: 'var(--fs-xs)' }}>{p.date} · {p.mode}</p>
               </div>
-              <span style={{ color: 'var(--lp-mock-success)', fontSize: '0.8125rem', fontWeight: 600 }}>+{p.amount}</span>
+              <span style={{ color: 'var(--lp-mock-success)', fontSize: 'var(--fs-xs)', fontWeight: 600 }}>+{p.amount}</span>
             </InteractiveRow>
           ))}
         </div>
 
         {/* Payment modes bar */}
         <div className="px-4 py-3 border-t" style={{ borderColor: 'var(--lp-card-border)' }}>
-          <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.625rem', fontWeight: 500, marginBottom: 8 }}>
+          <p style={{ color: 'var(--lp-text-muted)', fontSize: 'var(--fs-xs)', fontWeight: 500, marginBottom: 8 }}>
             Received This Month
           </p>
           <div className="flex gap-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--lp-mock-bar-bg)' }}>
@@ -360,7 +360,7 @@ export const SkeletonTwo = () => {
             <div className="rounded-full" style={{ width: '30%', backgroundColor: 'var(--lp-mock-success)' }} />
             <div className="rounded-full" style={{ width: '15%', backgroundColor: 'var(--lp-text-muted)' }} />
           </div>
-          <div className="flex gap-4 mt-2" style={{ fontSize: '0.5625rem', color: 'var(--lp-text-muted)' }}>
+          <div className="flex gap-4 mt-2" style={{ fontSize: 'var(--fs-xs)', color: 'var(--lp-text-muted)' }}>
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: 'var(--lp-accent)' }} /> UPI
             </span>
@@ -422,7 +422,7 @@ export const SkeletonThree = () => {
                   <span
                     className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full"
                     style={{
-                      fontSize: '0.5625rem',
+                      fontSize: 'var(--fs-xs)',
                       fontWeight: 600,
                       backgroundColor: 'color-mix(in srgb, var(--lp-mock-warning) 15%, transparent)',
                       color: 'var(--lp-mock-warning)',
@@ -435,7 +435,7 @@ export const SkeletonThree = () => {
                   <span
                     className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full"
                     style={{
-                      fontSize: '0.5625rem',
+                      fontSize: 'var(--fs-xs)',
                       fontWeight: 600,
                       backgroundColor: 'color-mix(in srgb, var(--lp-mock-success) 15%, transparent)',
                       color: 'var(--lp-mock-success)',
@@ -445,13 +445,13 @@ export const SkeletonThree = () => {
                   </span>
                 )}
               </div>
-              <p style={{ color: 'var(--lp-text)', fontSize: '0.75rem', fontWeight: 600, lineHeight: 1.3 }}>{p.name}</p>
-              <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.625rem', marginTop: 2 }}>
+              <p style={{ color: 'var(--lp-text)', fontSize: 'var(--fs-xs)', fontWeight: 600, lineHeight: 1.3 }}>{p.name}</p>
+              <p style={{ color: 'var(--lp-text-muted)', fontSize: 'var(--fs-xs)', marginTop: 2 }}>
                 {p.qty} {p.unit}
               </p>
               <div className="mt-2 pt-2 flex items-center justify-between" style={{ borderTop: '1px solid var(--lp-card-border)' }}>
-                <span style={{ color: 'var(--lp-text)', fontSize: '0.8125rem', fontWeight: 700 }}>{p.price}</span>
-                <span style={{ color: 'var(--lp-text-muted)', fontSize: '0.5625rem' }}>per {p.unitSingular}</span>
+                <span style={{ color: 'var(--lp-text)', fontSize: 'var(--fs-xs)', fontWeight: 700 }}>{p.price}</span>
+                <span style={{ color: 'var(--lp-text-muted)', fontSize: 'var(--fs-xs)' }}>per {p.unitSingular}</span>
               </div>
             </div>
           ))}
@@ -490,7 +490,7 @@ export const SkeletonFour = () => {
           <div>
             <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.6875rem', fontWeight: 500 }}>Monthly Sales</p>
             <div className="flex items-baseline gap-2 mt-0.5">
-              <span style={{ color: 'var(--lp-text)', fontSize: '1.25rem', fontWeight: 700 }}>₹2,85,000</span>
+              <span style={{ color: 'var(--lp-text)', fontSize: 'var(--fs-lg)', fontWeight: 700 }}>₹2,85,000</span>
               <span className="flex items-center gap-0.5" style={{ color: 'var(--lp-mock-success)', fontSize: '0.6875rem', fontWeight: 600 }}>
                 <TrendingUp size={12} /> 12%
               </span>
@@ -498,7 +498,7 @@ export const SkeletonFour = () => {
           </div>
           <div
             className="px-2 py-1 rounded-md"
-            style={{ backgroundColor: 'var(--lp-bg-elevated)', fontSize: '0.625rem', color: 'var(--lp-text-muted)' }}
+            style={{ backgroundColor: 'var(--lp-bg-elevated)', fontSize: 'var(--fs-xs)', color: 'var(--lp-text-muted)' }}
           >
             Mar 2026
           </div>
@@ -520,7 +520,7 @@ export const SkeletonFour = () => {
 
         {/* Top parties */}
         <div className="px-4 py-3 border-t" style={{ borderColor: 'var(--lp-card-border)' }}>
-          <p style={{ color: 'var(--lp-text-muted)', fontSize: '0.625rem', fontWeight: 500, marginBottom: 6 }}>
+          <p style={{ color: 'var(--lp-text-muted)', fontSize: 'var(--fs-xs)', fontWeight: 500, marginBottom: 6 }}>
             Top Parties
           </p>
           {topParties.map((p, i) => (
@@ -534,7 +534,7 @@ export const SkeletonFour = () => {
                   className="w-4 h-4 rounded-full flex items-center justify-center"
                   style={{
                     backgroundColor: 'var(--lp-bg-elevated)',
-                    fontSize: '0.5rem',
+                    fontSize: 'var(--fs-xs)',
                     color: 'var(--lp-text-muted)',
                     fontWeight: 600,
                   }}

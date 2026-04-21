@@ -263,7 +263,7 @@ function PricingSection({ tiers = defaultTiers, className }: PricingSectionProps
                       color: tier.highlight ? 'var(--lp-price-btn-hl-text)' : 'var(--lp-price-btn-text)',
                       border: tier.highlight ? 'none' : `1px solid var(--lp-price-btn-border)`,
                       fontWeight: tier.highlight ? 600 : 500,
-                      fontSize: tier.highlight ? '1rem' : '0.875rem',
+                      fontSize: tier.highlight ? 'var(--fs-base)' : 'var(--fs-sm)',
                     }}
                     onPointerEnter={e => {
                       e.currentTarget.style.backgroundColor = tier.highlight ? 'var(--lp-price-btn-hl-hover-bg)' : 'var(--lp-price-btn-hover-bg)'

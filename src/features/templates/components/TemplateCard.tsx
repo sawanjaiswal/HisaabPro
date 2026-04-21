@@ -48,7 +48,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template, onClick })
       <div className="template-card-preview" aria-hidden="true">
         <span
           style={{
-            fontSize: '1.5rem',
+            fontSize: 'var(--fs-lg)',
             fontWeight: 700,
             color: 'var(--color-primary-300)',
             letterSpacing: '0.04em',

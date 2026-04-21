@@ -62,8 +62,8 @@ export function InvoiceOverviewPanel({ document }: InvoiceOverviewPanelProps) {
         </div>
       )}
       <div className="invoice-info-row" style={{ borderTop: '1px solid var(--color-gray-100)', paddingTop: 'var(--space-3)', marginTop: 'var(--space-1)' }}>
-        <span className="invoice-info-label" style={{ fontWeight: 700, fontSize: '1rem' }}>{t.grandTotal}</span>
-        <span className="invoice-info-value" style={{ fontWeight: 700, fontSize: '1.125rem' }}>{formatInvoiceAmount(document.grandTotal)}</span>
+        <span className="invoice-info-label" style={{ fontWeight: 700, fontSize: 'var(--fs-base)' }}>{t.grandTotal}</span>
+        <span className="invoice-info-value" style={{ fontWeight: 700, fontSize: 'var(--fs-base)' }}>{formatInvoiceAmount(document.grandTotal)}</span>
       </div>
       {document.notes && (
         <div className="invoice-info-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 'var(--space-1)' }}>

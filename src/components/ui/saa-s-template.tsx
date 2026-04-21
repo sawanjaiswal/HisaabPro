@@ -233,7 +233,7 @@ const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
       </motion.aside>
 
       {/* h1 gradient controlled by landing.css tokens */}
-      <motion.h1 {...fade(0.2)} className="text-center max-w-3xl px-6 leading-tight mb-6 font-medium" style={{ fontSize: '2.5rem' }}>
+      <motion.h1 {...fade(0.2)} className="text-center max-w-3xl px-6 leading-tight mb-6 font-medium" style={{ fontSize: 'var(--fs-2xl)' }}>
         Your Entire Business.<br />In Your Pocket.
       </motion.h1>
 

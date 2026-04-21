@@ -57,7 +57,7 @@ export const InvoiceDetailHeader: React.FC<InvoiceDetailHeaderProps> = ({ docume
         <h2 className="invoice-detail-number">{document.documentNumber}</h2>
         <p className="invoice-detail-party">{document.party.name}</p>
         <div className="invoice-detail-meta">
-          <span style={{ fontSize: '0.8125rem', opacity: 0.75, color: 'var(--color-gray-0)' }}>
+          <span style={{ fontSize: 'var(--fs-xs)', opacity: 0.75, color: 'var(--color-gray-0)' }}>
             {formatInvoiceDate(document.documentDate)}
           </span>
           <span
