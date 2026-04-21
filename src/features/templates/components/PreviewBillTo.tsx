@@ -19,11 +19,11 @@ export const PreviewBillTo: React.FC<PreviewBillToProps> = ({ fields, borderColo
       style={{
         padding: 'var(--space-3) var(--space-4)',
         borderBottom: `1px solid ${borderColor}`,
-        fontSize: '0.75rem',
+        fontSize: 'var(--fs-xs)',
       }}
       aria-hidden="true"
     >
-      <div style={{ fontWeight: 600, color: 'var(--color-gray-500)', fontSize: '0.625rem', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>
+      <div style={{ fontWeight: 600, color: 'var(--color-gray-500)', fontSize: 'var(--fs-xs)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>
         {t.billTo}
       </div>
       <div style={{ fontWeight: 600, color: 'var(--color-gray-800)' }}>{SAMPLE_PARTY.name}</div>

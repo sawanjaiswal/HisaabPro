@@ -26,7 +26,7 @@ export function OperationPinSection({ operationPinSet }: OperationPinSectionProp
             />
             <span
               style={{
-                fontSize: '0.8125rem',
+                fontSize: 'var(--fs-xs)',
                 fontWeight: 500,
                 color: operationPinSet ? 'var(--color-success-600)' : 'var(--color-gray-400)',
               }}

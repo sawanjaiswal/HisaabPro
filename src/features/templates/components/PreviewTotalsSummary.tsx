@@ -28,7 +28,7 @@ export const PreviewTotalsSummary: React.FC<PreviewTotalsSummaryProps> = ({
     aria-hidden="true"
   >
     <div style={{ minWidth: '180px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', fontSize: '0.833rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', fontSize: 'var(--fs-sm)' }}>
         <span style={{ color: 'var(--color-gray-500)' }}>{t.subtotal}</span>
         <span style={{ color: 'var(--color-gray-700)' }}>{paise(SAMPLE_SUBTOTAL)}</span>
       </div>
@@ -37,7 +37,7 @@ export const PreviewTotalsSummary: React.FC<PreviewTotalsSummaryProps> = ({
           display: 'flex',
           justifyContent: 'space-between',
           fontWeight: 700,
-          fontSize: '0.9375rem',
+          fontSize: 'var(--fs-df)',
           color: accentColor,
           borderTop: `1px solid ${borderColor}`,
           paddingTop: '6px',

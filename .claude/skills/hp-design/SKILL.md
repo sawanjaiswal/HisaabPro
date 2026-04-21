@@ -1,6 +1,138 @@
 ---
 name: hp-design
-description: HisaabPro design system — RIGID enforcement. MUST activate for ANY UI/page/component work. Deep Teal + Lime-Yellow palette, warm cream backgrounds, NexoWallet-inspired premium aesthetic.
+description: HisaabPro design system — RIGID workflow. MUST activate for ANY UI/page/component work. Deep Teal + Lime-Yellow palette, warm cream backgrounds, NexoWallet-inspired premium aesthetic.
+---
+
+# HisaabPro Design Workflow
+
+> WORKFLOW, not reference. Follow phases IN ORDER. Skipping = rejection.
+> OVERRIDE: If ui-ux-pro-max suggests colors or fonts, IGNORE those.
+> HisaabPro tokens are FINAL. Only use external guidance for UX/layout.
+
+## Phase 0 — INIT (runs on activation)
+
+Do these in parallel, ONCE per session:
+
+1. **Touch the session marker** so pre-tool-gate.sh allows frontend writes:
+   ```bash
+   touch /Users/sawanjaiswal/Projects/HisaabPro/.claude/design-session-active
+   ```
+   Without this, writes to `src/(features|components/ui|components/layout|components/feedback|pages|styles)/**/*.{tsx,css}`
+   are blocked by `pre-tool-gate.sh → check-design-gate.cjs`. TTL: 240 min.
+
+2. **Load the SSOT** (mandatory, no exceptions):
+   - `.claude/design-system.config.cjs` — banned patterns, component registry,
+     token prefixes, session gate config (single source imported by the hook)
+   - The reference card below (tokens, templates, components)
+
+3. **Confirm loaded:** "Config loaded (N banned patterns, M components). Tokens ready."
+
+## Phase 1 — ANALYZE
+
+For each UI element in the task, produce a **COMPONENT MAP**:
+
+| UI Element | Component (from config) | Props/Variant | Notes |
+|------------|-------------------------|---------------|-------|
+| Submit btn | Button                  | variant="primary", loading | fullWidth |
+| Name field | Input                   | icon, error, label |     |
+| NEW: X     | NONE — justify creation | —             | Why  |
+
+**Gate:** if >2 items map to NONE, stop and ask if the scope is right.
+
+## Phase 2 — PLAN (mechanically enforced)
+
+Write the plan to `.claude/design-plan-active.md`. The hook `check-design-gate.cjs`
+reads it and blocks Phase 3 writes until `status: approved`.
+
+**Step 2a — Write the plan file** with frontmatter:
+
+```markdown
+---
+status: draft           # set to "approved" ONLY after user confirms
+task: [Feature Name]
+createdAt: [ISO timestamp]
+approvedAt:             # fill when user approves
+---
+
+## Checklist: [Feature Name]
+
+Files to create/modify (each ≤ 250 lines):
+- [ ] src/features/[name]/[name].types.ts
+- [ ] src/features/[name]/[name].constants.ts
+- [ ] src/features/[name]/use[Name].ts
+- [ ] src/features/[name]/components/[Component].tsx
+- [ ] src/features/[name]/[Name].tsx
+
+## Design tokens (specific vars — from reference card)
+- Colors: var(--color-primary-500), var(--color-gray-50), …
+- Radius: var(--radius-xl) card, --radius-md input, --radius-sm button
+- FS: var(--fs-xl), var(--fs-df), var(--fs-sm)
+- Z: Z.* (src/config/zIndexes.ts)
+- Timing: TIMINGS.* (src/config/timings.ts) or var(--duration-*)
+
+## UI components (from config.COMPONENTS)
+- Button (primary, loading) — CTA
+- Input — fields
+- ConfirmDialog — destructive confirmations
+- Badge — status
+
+## Translation keys
+- t.[…] via useLanguage() — EN + HI (no hardcoded strings)
+
+## 4 UI states (mandatory)
+- Loading: <Skeleton> or animate-pulse block
+- Error: <ErrorState message onRetry />
+- Empty: <EmptyState title action />
+- Success: data render
+```
+
+**Step 2b — Gate:** show the checklist to the user. WAIT for "approved" /
+"go ahead" / similar. Do NOT assume approval.
+
+**Step 2c — After approval:** rewrite the plan with `status: approved` and
+`approvedAt: [ISO now]`. Only then can Phase 3 writes succeed.
+
+TTL on the plan file: 240 min. After that the hook re-blocks UI writes —
+scope change or long pause = plan again.
+
+## Phase 3 — BUILD
+
+Follow the checklist mechanically using the reference card below. Every rule
+traces to `.claude/design-system.config.cjs`:
+
+- Every color → `var(--color-*)` (see TOKEN_NAMESPACES.cssVarPrefixes)
+- Every z-index → `Z.*` from `config/zIndexes` or `var(--z-*)`
+- Every timing → `TIMINGS.*` or `var(--duration-*)`
+- Every string → `t.keyName` via `useLanguage()`
+- Every interactive element → component from `config.COMPONENTS`
+- Every confirmation → `<ConfirmDialog>` (not window.confirm)
+- Every toast → `useToast()` (not alert())
+- Max 250 lines per file; feature order: types > constants > utils > hook > components > Page
+
+**Banned patterns:** see `config.BANNED_PATTERNS` — each cites its enforcer.
+Don't write them.
+
+## Phase 4 — VERIFY
+
+After all files built:
+
+1. `node scripts/enforce.js` (or the project's standard enforcement command)
+2. Walk the checklist — every box ticked, all 4 UI states present.
+3. If errors → fix → re-run until 0.
+
+**Done =** 0 enforce errors + checklist complete.
+
+## Session gate (mechanical enforcement)
+
+- Marker: `.claude/design-session-active` (touched by Phase 0, gitignored)
+- TTL: 240 min from mtime
+- Plan file: `.claude/design-plan-active.md` (status: approved required)
+- Gated paths + exemptions: `.claude/design-system.config.cjs → SESSION_GATE`
+- Gate script: `.claude/hooks/check-design-gate.cjs`
+- Wired via: `~/.claude/hooks/pre-tool-gate.sh`
+
+If Phase 0 is skipped, pre-tool-gate rejects every Write/Edit to a UI file.
+
 ---
 
 # HisaabPro Design System — Execution Card
@@ -8,7 +140,7 @@ description: HisaabPro design system — RIGID enforcement. MUST activate for AN
 ## PRE-BUILD (mandatory)
 
 - [ ] Run `ls src/components/ui/` — search for existing component before building
-- [ ] Confirm all strings use `t.keyName` from `src/config/translations.ts`
+- [ ] Confirm all strings use `t.keyName` via `useLanguage()` from `src/context/LanguageContext.tsx` (translations in `src/lib/translations.{en,hi}.ts`)
 - [ ] Pick the correct PAGE TEMPLATE below — copy skeleton, fill in fields
 - [ ] Pick field types from FIELD TEMPLATES — copy exact JSX per field
 - [ ] Confirm colors use CSS variables from `tokens-colors.css` — no hex, no Tailwind color classes

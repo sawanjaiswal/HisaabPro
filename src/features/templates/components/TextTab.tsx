@@ -25,7 +25,7 @@ export const TextTab: React.FC<TextTabProps> = ({ config, onChange }) => {
       <div>
         <label
           htmlFor="template-header-text"
-          style={{ display: 'block', fontSize: '0.833rem', fontWeight: 500, color: 'var(--color-gray-700)', marginBottom: 'var(--space-2)' }}
+          style={{ display: 'block', fontSize: 'var(--fs-sm)', fontWeight: 500, color: 'var(--color-gray-700)', marginBottom: 'var(--space-2)' }}
         >
           {t.headerTextLabel}
         </label>
@@ -39,7 +39,7 @@ export const TextTab: React.FC<TextTabProps> = ({ config, onChange }) => {
           aria-label={t.headerTextAria}
           onChange={(e) => onChange({ headerText: e.target.value })}
         />
-        <span style={{ fontSize: '0.694rem', color: 'var(--color-gray-400)', marginTop: '4px', display: 'block' }}>
+        <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-gray-400)', marginTop: '4px', display: 'block' }}>
           {config.headerText.length}/{MAX_HEADER_TEXT_LENGTH}
         </span>
       </div>
@@ -47,7 +47,7 @@ export const TextTab: React.FC<TextTabProps> = ({ config, onChange }) => {
       <div>
         <label
           htmlFor="template-footer-text"
-          style={{ display: 'block', fontSize: '0.833rem', fontWeight: 500, color: 'var(--color-gray-700)', marginBottom: 'var(--space-2)' }}
+          style={{ display: 'block', fontSize: 'var(--fs-sm)', fontWeight: 500, color: 'var(--color-gray-700)', marginBottom: 'var(--space-2)' }}
         >
           {t.footerTextLabel}
         </label>
@@ -61,7 +61,7 @@ export const TextTab: React.FC<TextTabProps> = ({ config, onChange }) => {
           aria-label={t.footerTextAria}
           onChange={(e) => onChange({ footerText: e.target.value })}
         />
-        <span style={{ fontSize: '0.694rem', color: 'var(--color-gray-400)', marginTop: '4px', display: 'block' }}>
+        <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-gray-400)', marginTop: '4px', display: 'block' }}>
           {config.footerText.length}/{MAX_FOOTER_TEXT_LENGTH}
         </span>
       </div>
@@ -69,7 +69,7 @@ export const TextTab: React.FC<TextTabProps> = ({ config, onChange }) => {
       <div>
         <label
           htmlFor="template-terms-text"
-          style={{ display: 'block', fontSize: '0.833rem', fontWeight: 500, color: 'var(--color-gray-700)', marginBottom: 'var(--space-2)' }}
+          style={{ display: 'block', fontSize: 'var(--fs-sm)', fontWeight: 500, color: 'var(--color-gray-700)', marginBottom: 'var(--space-2)' }}
         >
           {t.defaultTermsConditions}
         </label>
@@ -84,7 +84,7 @@ export const TextTab: React.FC<TextTabProps> = ({ config, onChange }) => {
           onChange={(e) => onChange({ termsText: e.target.value })}
           style={{ resize: 'vertical', minHeight: '96px' }}
         />
-        <span style={{ fontSize: '0.694rem', color: 'var(--color-gray-400)', marginTop: '4px', display: 'block' }}>
+        <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-gray-400)', marginTop: '4px', display: 'block' }}>
           {config.termsText.length}/{MAX_TERMS_TEXT_LENGTH}
         </span>
       </div>

@@ -29,33 +29,33 @@ export const PreviewInvoiceHeader: React.FC<PreviewInvoiceHeaderProps> = ({
       }}
     >
       <div>
-        <div style={{ fontWeight: 700, fontSize: '1.125rem', lineHeight: 1.2 }}>
+        <div style={{ fontWeight: 700, fontSize: 'var(--fs-base)', lineHeight: 1.2 }}>
           {SAMPLE_BUSINESS.name}
         </div>
         {fields.businessPhone && (
-          <div style={{ fontSize: '0.75rem', opacity: 0.85, marginTop: '2px' }}>
+          <div style={{ fontSize: 'var(--fs-xs)', opacity: 0.85, marginTop: '2px' }}>
             {SAMPLE_BUSINESS.phone}
           </div>
         )}
         {fields.businessAddress && (
-          <div style={{ fontSize: '0.694rem', opacity: 0.75, marginTop: '2px', maxWidth: '160px' }}>
+          <div style={{ fontSize: 'var(--fs-xs)', opacity: 0.75, marginTop: '2px', maxWidth: '160px' }}>
             {SAMPLE_BUSINESS.address}
           </div>
         )}
         {fields.udyamNumber && (
-          <div style={{ fontSize: '0.694rem', opacity: 0.75, marginTop: '2px' }}>
+          <div style={{ fontSize: 'var(--fs-xs)', opacity: 0.75, marginTop: '2px' }}>
             {t.udyamPrefix}: {SAMPLE_BUSINESS.udyamNumber}
           </div>
         )}
       </div>
 
       <div style={{ textAlign: layout.headerStyle === 'side-by-side' ? 'right' : 'left' }}>
-        <div style={{ fontWeight: 700, fontSize: '0.9375rem' }}>{t.taxInvoice}</div>
+        <div style={{ fontWeight: 700, fontSize: 'var(--fs-df)' }}>{t.taxInvoice}</div>
         {fields.invoiceNumber && (
-          <div style={{ fontSize: '0.75rem', opacity: 0.85 }}>{SAMPLE_INVOICE.number}</div>
+          <div style={{ fontSize: 'var(--fs-xs)', opacity: 0.85 }}>{SAMPLE_INVOICE.number}</div>
         )}
         {fields.invoiceDate && (
-          <div style={{ fontSize: '0.694rem', opacity: 0.75 }}>{SAMPLE_INVOICE.date}</div>
+          <div style={{ fontSize: 'var(--fs-xs)', opacity: 0.75 }}>{SAMPLE_INVOICE.date}</div>
         )}
         {fields.dueDate && (
           <div style={{ fontSize: '0.694rem', opacity: 0.75 }}>{t.duePrefix}: {SAMPLE_INVOICE.dueDate}</div>

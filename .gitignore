@@ -51,3 +51,7 @@ server/dist/
 server/.env
 .superpowers/
 .vercel
+
+# Design skill session state (runtime, never committed)
+.claude/design-session-active
+.claude/design-plan-active.md

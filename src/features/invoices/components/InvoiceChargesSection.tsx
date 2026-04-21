@@ -28,21 +28,19 @@ export function InvoiceChargesSection({
         <div key={`charge-${charge.name || index}`} className="charge-row">
           <input
             type="text"
-            className="input"
+            className="input min-h-[44px] flex-1"
             placeholder={t.chargeNamePlaceholder}
             value={charge.name}
             onChange={(e) => onUpdateCharge(index, { name: e.target.value })}
             aria-label={`Charge ${index + 1} name`}
-            style={{ minHeight: '44px', flex: 1 }}
           />
           <input
             type="number"
-            className="input"
+            className="input min-h-[44px] w-[100px]"
             placeholder={t.amount}
             value={charge.value || ''}
             onChange={(e) => onUpdateCharge(index, { value: parseFloat(e.target.value) || 0 })}
             aria-label={`Charge ${index + 1} value`}
-            style={{ minHeight: '44px', width: '100px' }}
           />
           <button
             type="button"
