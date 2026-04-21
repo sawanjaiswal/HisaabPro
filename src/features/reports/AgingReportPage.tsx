@@ -46,7 +46,7 @@ export default function AgingReportPage() {
     return (
       <AppShell>
         <Header title={t.agingReport} backTo={ROUTES.REPORTS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <div className="finance-skeleton" aria-busy="true">
             {['sk-1', 'sk-2'].map((k) => <div key={k} className="finance-skeleton__section py-0" />)}
           </div>
@@ -59,7 +59,7 @@ export default function AgingReportPage() {
     return (
       <AppShell>
         <Header title={t.agingReport} backTo={ROUTES.REPORTS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ErrorState title={t.couldNotLoadAging} message={t.checkConnectionRetry} onRetry={refresh} />
         </PageContainer>
       </AppShell>
@@ -69,7 +69,7 @@ export default function AgingReportPage() {
   return (
     <AppShell>
       <Header title={t.agingReport} backTo={ROUTES.REPORTS} />
-      <PageContainer>
+      <PageContainer className="space-y-6">
         <div className="aging-tabs stagger-filters" role="group" aria-label={t.reportType}>
           <button type="button" className={`aging-tab${agingType === 'RECEIVABLE' ? ' aging-tab--active' : ''}`} onClick={() => setAgingType('RECEIVABLE')} aria-pressed={agingType === 'RECEIVABLE'}>{t.receivable}</button>
           <button type="button" className={`aging-tab${agingType === 'PAYABLE' ? ' aging-tab--active' : ''}`} onClick={() => setAgingType('PAYABLE')} aria-pressed={agingType === 'PAYABLE'}>{t.payable}</button>

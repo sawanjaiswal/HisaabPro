@@ -46,7 +46,7 @@ export default function ChequesPage() {
     return (
       <AppShell>
         <Header title={t.cheques} backTo={ROUTES.DASHBOARD} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <div className="cheque-skeleton" aria-busy="true">
             {['sk-1', 'sk-2', 'sk-3'].map((k) => <div key={k} className="cheque-skeleton__card" />)}
           </div>
@@ -59,7 +59,7 @@ export default function ChequesPage() {
     return (
       <AppShell>
         <Header title={t.cheques} backTo={ROUTES.DASHBOARD} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ErrorState title={t.couldNotLoadCheques} message={t.checkConnectionTryAgain} onRetry={refresh} />
         </PageContainer>
       </AppShell>
@@ -69,7 +69,7 @@ export default function ChequesPage() {
   return (
     <AppShell>
       <Header title={t.cheques} backTo={ROUTES.DASHBOARD} />
-      <PageContainer>
+      <PageContainer className="space-y-6">
         <div className="cheque-filter-pills stagger-filters" role="group" aria-label={t.filterByStatusGroup}>
           {CHEQUE_FILTER_OPTIONS.map((opt) => (
             <button

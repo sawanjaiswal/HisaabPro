@@ -68,7 +68,7 @@ export default function BalanceSheetPage() {
     return (
       <AppShell>
         <Header title={t.balanceSheet} backTo={ROUTES.REPORTS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <div className="finance-skeleton" aria-busy="true">
             {['sk-1', 'sk-2', 'sk-3'].map((k) => <div key={k} className="finance-skeleton__section py-0" />)}
           </div>
@@ -81,7 +81,7 @@ export default function BalanceSheetPage() {
     return (
       <AppShell>
         <Header title={t.balanceSheet} backTo={ROUTES.REPORTS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ErrorState title={t.couldNotLoadBalanceSheet} message={t.checkConnectionRetry} onRetry={refresh} />
         </PageContainer>
       </AppShell>
@@ -91,7 +91,7 @@ export default function BalanceSheetPage() {
   return (
     <AppShell>
       <Header title={t.balanceSheet} backTo={ROUTES.REPORTS} />
-      <PageContainer>
+      <PageContainer className="space-y-6">
         <div className="finance-date-bar fade-up">
           <span className="finance-date-bar__label">{t.asOf}</span>
           <input type="date" className="finance-date-bar__input" value={asOf} onChange={(e) => setAsOf(e.target.value)} aria-label={t.asOfDate} />

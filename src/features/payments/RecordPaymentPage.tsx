@@ -47,7 +47,7 @@ export default function RecordPaymentPage() {
     <AppShell>
       <Header title={title} backTo={ROUTES.PAYMENTS} />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         <nav className="pill-tabs stagger-enter" role="tablist" aria-label={t.paymentFormSections}>
           {SECTIONS.map((section) => (
             <button

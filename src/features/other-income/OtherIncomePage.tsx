@@ -93,7 +93,7 @@ export default function OtherIncomePage() {
     return (
       <AppShell>
         <Header title={t.otherIncome ?? "Other Income"} backTo={ROUTES.DASHBOARD} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <div className="income-skeleton" aria-busy="true">
             {['sk-1', 'sk-2', 'sk-3'].map((k) => <div key={k} className="income-skeleton__card" />)}
           </div>
@@ -106,7 +106,7 @@ export default function OtherIncomePage() {
     return (
       <AppShell>
         <Header title={t.otherIncome ?? "Other Income"} backTo={ROUTES.DASHBOARD} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ErrorState title={t.couldNotLoadIncome} message={t.checkConnectionRetry} onRetry={refresh} />
         </PageContainer>
       </AppShell>
@@ -116,7 +116,7 @@ export default function OtherIncomePage() {
   return (
     <AppShell>
       <Header title={t.otherIncome ?? "Other Income"} backTo={ROUTES.DASHBOARD} />
-      <PageContainer>
+      <PageContainer className="space-y-6">
         <div className="income-filter-bar stagger-filters" role="group" aria-label={t.filterByCategoryGroup}>
           <button type="button" className={`income-filter-pill${categoryFilter === null ? ' income-filter-pill--active' : ''}`} onClick={() => setCategoryFilter(null)} aria-pressed={categoryFilter === null}>{t.all}</button>
           {knownCategories.map((c) => (

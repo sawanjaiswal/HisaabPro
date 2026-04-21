@@ -33,7 +33,7 @@ export default function SerialsPage() {
         }
       />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         <div className="serial-filter-bar">
           <div className="serial-search">
             <Search size={16} aria-hidden="true" className="serial-search__icon" />

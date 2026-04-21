@@ -39,7 +39,7 @@ export default function SmartGreetingsPage() {
   return (
     <AppShell>
       <Header title={TITLES[sendStatus]} backTo="" />
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {sendStatus === 'idle' && (
           <TemplateGrid
             templates={templates}

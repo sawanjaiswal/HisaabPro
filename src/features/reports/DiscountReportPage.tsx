@@ -50,7 +50,7 @@ export default function DiscountReportPage() {
     return (
       <AppShell>
         <Header title={t.discountReport} backTo={ROUTES.REPORTS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <div className="finance-skeleton" aria-busy="true">
             {['sk-1', 'sk-2', 'sk-3'].map((k) => <div key={k} className="finance-skeleton__section py-0" />)}
           </div>
@@ -63,7 +63,7 @@ export default function DiscountReportPage() {
     return (
       <AppShell>
         <Header title={t.discountReport} backTo={ROUTES.REPORTS} />
-        <PageContainer><ErrorState title={t.couldNotLoadDiscountReport} message={t.checkConnectionRetry} onRetry={refresh} /></PageContainer>
+        <PageContainer className="space-y-6"><ErrorState title={t.couldNotLoadDiscountReport} message={t.checkConnectionRetry} onRetry={refresh} /></PageContainer>
       </AppShell>
     )
   }
@@ -73,7 +73,7 @@ export default function DiscountReportPage() {
   return (
     <AppShell>
       <Header title={t.discountReport} backTo={ROUTES.REPORTS} />
-      <PageContainer>
+      <PageContainer className="space-y-6">
         <div className="finance-date-bar">
           <span className="finance-date-bar__label">{t.from}</span>
           <input type="date" className="finance-date-bar__input" value={dateRange.from} onChange={(e) => setDateRange((r) => ({ ...r, from: e.target.value }))} aria-label={t.fromDate} />

@@ -139,7 +139,7 @@ export default function InvoiceReportPage() {
     <AppShell>
       <Header title={title} backTo={ROUTES.REPORTS} />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         <InvoiceReportFilter
           activeDatePreset={activeDatePreset}
           activeStatus={activeStatus}

@@ -98,7 +98,7 @@ export default function BankAccountsPage() {
     return (
       <AppShell>
         <Header title={t.bankAccounts ?? "Bank Accounts"} backTo={ROUTES.DASHBOARD} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <div className="bank-skeleton" aria-busy="true" aria-label={t.loadingAccounts2}>
             {(['sk-1', 'sk-2', 'sk-3'] as const).map((key) => (
               <div key={key} className="bank-skeleton__card" />
@@ -113,7 +113,7 @@ export default function BankAccountsPage() {
     return (
       <AppShell>
         <Header title={t.bankAccounts ?? "Bank Accounts"} backTo={ROUTES.DASHBOARD} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ErrorState title={t.couldNotLoadBankAccounts} message={t.checkConnectionRetry} onRetry={refresh} />
         </PageContainer>
       </AppShell>
@@ -123,7 +123,7 @@ export default function BankAccountsPage() {
   return (
     <AppShell>
       <Header title={t.bankAccounts ?? "Bank Accounts"} backTo={ROUTES.DASHBOARD} />
-      <PageContainer>
+      <PageContainer className="space-y-6">
         <div className="bank-action-bar">
           <span className="bank-count">{total} {total === 1 ? t.accountSingular : t.accountsPlural}</span>
           <button type="button" className="bank-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.addFirstAccount}>

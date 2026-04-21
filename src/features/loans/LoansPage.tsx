@@ -108,7 +108,7 @@ export default function LoansPage() {
     return (
       <AppShell>
         <Header title={t.loans ?? "Loans"} backTo={ROUTES.DASHBOARD} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <div className="loan-skeleton" aria-busy="true">
             {['sk-1', 'sk-2', 'sk-3'].map((k) => <div key={k} className="loan-skeleton__card" />)}
           </div>
@@ -121,7 +121,7 @@ export default function LoansPage() {
     return (
       <AppShell>
         <Header title={t.loans ?? "Loans"} backTo={ROUTES.DASHBOARD} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ErrorState title={t.couldNotLoadLoans} message={t.checkConnectionRetry} onRetry={refresh} />
         </PageContainer>
       </AppShell>
@@ -131,7 +131,7 @@ export default function LoansPage() {
   return (
     <AppShell>
       <Header title={t.loans ?? "Loans"} backTo={ROUTES.DASHBOARD} />
-      <PageContainer>
+      <PageContainer className="space-y-6">
         <div className="loan-action-bar">
           <span className="loan-count">{total} {total === 1 ? t.loanSingular : t.loansPlural}</span>
           <button type="button" className="loan-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.addFirstLoan}>

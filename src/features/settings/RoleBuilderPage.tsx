@@ -124,7 +124,7 @@ export default function RoleBuilderPage() {
     <AppShell>
       <Header title={pageTitle} backTo={ROUTES.SETTINGS_ROLES} />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {fetchStatus === 'loading' && <BuilderSkeleton />}
 
         {fetchStatus === 'error' && (

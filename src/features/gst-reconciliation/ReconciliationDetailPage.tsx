@@ -37,7 +37,7 @@ export default function ReconciliationDetailPage() {
     return (
       <AppShell>
         <Header title={t.reconciliation} backTo={ROUTES.GST_RECONCILIATION} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <div className="recon-detail-skeleton">
             <div className="recon-detail-skeleton__cards" aria-hidden="true" />
             <div className="recon-detail-skeleton__entries" aria-hidden="true" />
@@ -51,7 +51,7 @@ export default function ReconciliationDetailPage() {
     return (
       <AppShell>
         <Header title={t.reconciliation} backTo={ROUTES.GST_RECONCILIATION} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ErrorState
             title={t.couldNotLoadReconciliation}
             message={t.checkConnectionRetry}
@@ -65,7 +65,7 @@ export default function ReconciliationDetailPage() {
   return (
     <AppShell>
       <Header title={title} backTo={ROUTES.GST_RECONCILIATION} />
-      <PageContainer>
+      <PageContainer className="space-y-6">
 
         {/* Summary metric cards */}
         <ReconciliationSummaryCards summary={summary} />

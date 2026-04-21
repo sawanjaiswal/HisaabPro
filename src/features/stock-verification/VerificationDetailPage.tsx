@@ -27,7 +27,7 @@ export default function VerificationDetailPage() {
     return (
       <AppShell>
         <Header title={t.stockVerification} backTo={ROUTES.STOCK_VERIFICATION} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <div aria-busy="true">
             <Skeleton height="2rem" width="60%" />
             <Skeleton height="1rem" width="40%" />
@@ -42,7 +42,7 @@ export default function VerificationDetailPage() {
     return (
       <AppShell>
         <Header title={t.stockVerification} backTo={ROUTES.STOCK_VERIFICATION} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ErrorState title={t.couldNotLoadVerification} message={error?.message} onRetry={refetch} />
         </PageContainer>
       </AppShell>
@@ -70,7 +70,7 @@ export default function VerificationDetailPage() {
         }
       />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         <ProgressBar percentage={percentage} label={label} />
 
         {isCounting && (

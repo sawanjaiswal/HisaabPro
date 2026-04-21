@@ -75,7 +75,7 @@ export default function ProductDetailPage() {
       <AppShell>
         <Header title={t.productDetail} backTo={ROUTES.PRODUCTS} actions={headerActions} />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {status === 'loading' && (
           <>
             <div className="card-primary" style={{ marginBottom: 'var(--space-4)', minHeight: 140 }}>

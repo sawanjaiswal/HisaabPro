@@ -80,7 +80,7 @@ export default function PaymentHistoryPage() {
     return (
       <AppShell>
         <Header title={t.paymentHistory} backTo={ROUTES.REPORTS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ReportSkeleton rows={7} />
         </PageContainer>
       </AppShell>
@@ -93,7 +93,7 @@ export default function PaymentHistoryPage() {
     return (
       <AppShell>
         <Header title={t.paymentHistory} backTo={ROUTES.REPORTS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <div className="report-empty">
             <div className="report-empty-icon" aria-hidden="true">
               <Banknote size={28} />
@@ -121,7 +121,7 @@ export default function PaymentHistoryPage() {
   return (
     <AppShell>
       <Header title={t.paymentHistory} backTo={ROUTES.REPORTS} />
-      <PageContainer>
+      <PageContainer className="space-y-6">
         <PaymentHistoryFilter
           filters={filters}
           activeDatePreset={activeDatePreset}

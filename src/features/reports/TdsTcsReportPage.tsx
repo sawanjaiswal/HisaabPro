@@ -42,7 +42,7 @@ export default function TdsTcsReportPage() {
     return (
       <AppShell>
         <Header title={t.tdsTcsReport} backTo={ROUTES.REPORTS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ReportSkeleton rows={4} />
         </PageContainer>
       </AppShell>
@@ -55,7 +55,7 @@ export default function TdsTcsReportPage() {
     return (
       <AppShell>
         <Header title={t.tdsTcsReport} backTo={ROUTES.REPORTS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ErrorState
             title={t.couldNotLoadTdsTcs}
             message={t.checkConnectionRetry}
@@ -75,7 +75,7 @@ export default function TdsTcsReportPage() {
     <AppShell>
       <Header title={t.tdsTcsReport} backTo={ROUTES.REPORTS} />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {/* Date range inputs */}
         <div className="tds-tcs-date-row">
           <input

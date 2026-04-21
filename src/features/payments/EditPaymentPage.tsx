@@ -60,7 +60,7 @@ export default function EditPaymentPage() {
     return (
       <AppShell>
         <Header title={t.editPayment} backTo={`/payments/${paymentId}`} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <Skeleton height="2.5rem" borderRadius="var(--radius-full)" />
           <div style={{ marginTop: 'var(--space-4)' }}>
             <Skeleton height="3.5rem" borderRadius="var(--radius-md)" count={5} />
@@ -74,7 +74,7 @@ export default function EditPaymentPage() {
     return (
       <AppShell>
         <Header title={t.editPayment} backTo={`/payments/${paymentId}`} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ErrorState
             title={t.couldNotLoadPayment}
             message={t.checkConnectionRetry}
@@ -110,7 +110,7 @@ function EditPaymentForm({
     <AppShell>
       <Header title={t.editPayment} backTo={`/payments/${paymentId}`} />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         <nav className="pill-tabs stagger-enter" role="tablist" aria-label={t.paymentFormSections}>
           {SECTIONS.map((section) => (
             <button

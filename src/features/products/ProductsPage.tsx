@@ -120,7 +120,7 @@ export default function ProductsPage() {
         </div>
       )}
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {!bulk.isActive && (
           <ProductFilterBar
             search={filters.search}

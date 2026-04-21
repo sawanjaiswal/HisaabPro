@@ -34,7 +34,7 @@ export default function JournalEntriesPage() {
     return (
       <AppShell>
         <Header title={t.journalEntries ?? "Journal Entries"} backTo={ROUTES.REPORTS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <div className="mb-3"><Skeleton height="80px" /></div>
           <div className="mb-3"><Skeleton height="80px" /></div>
           <Skeleton height="80px" />
@@ -47,7 +47,7 @@ export default function JournalEntriesPage() {
     return (
       <AppShell>
         <Header title={t.journalEntries ?? "Journal Entries"} backTo={ROUTES.REPORTS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ErrorState title={t.couldNotLoadAccounts} onRetry={refresh} />
         </PageContainer>
       </AppShell>
@@ -57,7 +57,7 @@ export default function JournalEntriesPage() {
   return (
     <AppShell>
       <Header title={t.journalEntries ?? "Journal Entries"} backTo={ROUTES.REPORTS} />
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {/* Filters */}
         <div className="je-filters stagger-filters">
           <div className="pill-tabs">

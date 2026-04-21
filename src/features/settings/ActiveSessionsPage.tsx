@@ -77,7 +77,7 @@ export default function ActiveSessionsPage() {
     <AppShell>
       <Header title="Active Sessions" backTo={ROUTES.SETTINGS} />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {query.isPending && (
           <div aria-busy="true" aria-label="Loading sessions">
             {[1, 2, 3].map((n) => (

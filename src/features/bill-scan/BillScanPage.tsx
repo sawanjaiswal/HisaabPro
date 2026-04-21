@@ -41,7 +41,7 @@ export default function BillScanPage() {
         }
       />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {status === 'idle' && (
           <BillCaptureInput onCapture={processImage} />
         )}

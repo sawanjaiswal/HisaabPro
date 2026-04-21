@@ -112,7 +112,7 @@ export default function InvoiceDetailPage() {
       <AppShell>
         <Header title={t.invoiceDetail} backTo={ROUTES.INVOICES} actions={headerActions} />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {status === 'loading' && (
           <>
             <div className="card-primary" style={{ marginBottom: 'var(--space-4)', minHeight: 160 }}>

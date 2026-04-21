@@ -65,7 +65,7 @@ export default function BatchesPage() {
         }
       />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {status === 'loading' && <BatchListSkeleton />}
 
         {status === 'error' && (

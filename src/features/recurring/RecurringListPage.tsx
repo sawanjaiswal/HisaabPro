@@ -39,7 +39,7 @@ export default function RecurringListPage() {
     return (
       <AppShell>
         <Header title={t.recurringInvoices} backTo={ROUTES.INVOICES} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <div className="recurring-skeleton" aria-busy="true" aria-label={t.loadingSchedules}>
             {(['sk-1', 'sk-2', 'sk-3', 'sk-4'] as const).map((key) => (
               <div key={key} className="recurring-skeleton__card" />
@@ -56,7 +56,7 @@ export default function RecurringListPage() {
     return (
       <AppShell>
         <Header title={t.recurringInvoices} backTo={ROUTES.INVOICES} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ErrorState
             title={t.couldNotLoadRecurring}
             message={t.checkConnectionTryAgain}
@@ -76,7 +76,7 @@ export default function RecurringListPage() {
         backTo={ROUTES.INVOICES}
       />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {/* Filter pills */}
         <div className="recurring-filter-pills stagger-filters" role="group" aria-label={t.filterByStatusGroup}>
           {RECURRING_STATUS_FILTER_OPTIONS.map((opt) => (

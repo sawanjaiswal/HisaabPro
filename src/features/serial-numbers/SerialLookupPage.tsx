@@ -18,7 +18,7 @@ export default function SerialLookupPage() {
     <AppShell>
       <Header title={t.serialLookup} backTo={true} />
 
-      <PageContainer className="stagger-enter">
+      <PageContainer className="stagger-enter space-y-6">
         <div className="serial-lookup-search">
           <Search size={18} aria-hidden="true" className="serial-search__icon" />
           <input

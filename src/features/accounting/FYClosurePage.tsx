@@ -91,7 +91,7 @@ export default function FYClosurePage() {
     return (
       <AppShell>
         <Header title={t.fyClosurePage} backTo={ROUTES.CHART_OF_ACCOUNTS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <div className="acct-skeleton" aria-busy="true">
             {['sk-1', 'sk-2'].map((k) => <div key={k} className="acct-skeleton__block" />)}
           </div>
@@ -104,7 +104,7 @@ export default function FYClosurePage() {
     return (
       <AppShell>
         <Header title={t.fyClosurePage} backTo={ROUTES.CHART_OF_ACCOUNTS} />
-        <PageContainer><ErrorState title={t.couldNotLoadClosures} message={t.checkConnectionRetry} onRetry={refresh} /></PageContainer>
+        <PageContainer className="space-y-6"><ErrorState title={t.couldNotLoadClosures} message={t.checkConnectionRetry} onRetry={refresh} /></PageContainer>
       </AppShell>
     )
   }
@@ -115,7 +115,7 @@ export default function FYClosurePage() {
   return (
     <AppShell>
       <Header title={t.fyClosurePage} backTo={ROUTES.CHART_OF_ACCOUNTS} />
-      <PageContainer>
+      <PageContainer className="space-y-6">
         <div className="fy-close-card fade-up">
           <div className="fy-close-card__header">
             <Calendar size={20} aria-hidden="true" />

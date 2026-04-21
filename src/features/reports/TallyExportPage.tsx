@@ -54,7 +54,7 @@ export default function TallyExportPage() {
   return (
     <AppShell>
       <Header title={t.tallyExport} backTo={ROUTES.REPORTS} />
-      <PageContainer>
+      <PageContainer className="space-y-6">
         <div className="finance-section stagger-enter py-0">
           <div className="finance-section__header py-0">
             <span className="finance-section__title py-0">{t.exportToTallyPrime}</span>

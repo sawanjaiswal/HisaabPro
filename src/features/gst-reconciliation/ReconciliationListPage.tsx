@@ -34,7 +34,7 @@ export default function ReconciliationListPage() {
     return (
       <AppShell>
         <Header title={t.gstr1Reconciliation} backTo={ROUTES.REPORTS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <div className="recon-list-skeleton">
             {[1, 2, 3].map((n) => <div key={n} className="recon-list-skeleton__item" aria-hidden="true" />)}
           </div>
@@ -47,7 +47,7 @@ export default function ReconciliationListPage() {
     return (
       <AppShell>
         <Header title={t.gstr1Reconciliation} backTo={ROUTES.REPORTS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ErrorState
             title={t.couldNotLoadReconciliations}
             message={t.checkConnectionRetry}
@@ -61,7 +61,7 @@ export default function ReconciliationListPage() {
   return (
     <AppShell>
       <Header title={t.gstr1Reconciliation} backTo={ROUTES.REPORTS} />
-      <PageContainer>
+      <PageContainer className="space-y-6">
 
         {showForm && (
           <div className="recon-new-form-panel py-0">

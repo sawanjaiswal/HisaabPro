@@ -59,7 +59,7 @@ export default function EditProductPage() {
     return (
       <AppShell>
         <Header title={t.editProductTitle} backTo={`/products/${productId}`} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <Skeleton height="2.5rem" borderRadius="var(--radius-full)" />
           <div style={{ marginTop: 'var(--space-4)' }}>
             <Skeleton height="3.5rem" borderRadius="var(--radius-md)" count={5} />
@@ -73,7 +73,7 @@ export default function EditProductPage() {
     return (
       <AppShell>
         <Header title={t.editProductTitle} backTo={`/products/${productId}`} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ErrorState title={t.couldNotLoadProduct} message={t.checkConnectionRetry} onRetry={() => window.location.reload()} />
         </PageContainer>
       </AppShell>

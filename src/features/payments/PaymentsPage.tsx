@@ -118,7 +118,7 @@ export default function PaymentsPage() {
         </div>
       )}
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {!bulk.isActive && (
           <PaymentFilterBar
             search={filters.search ?? ''}

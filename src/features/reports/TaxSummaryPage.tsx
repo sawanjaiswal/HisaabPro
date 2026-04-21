@@ -28,7 +28,7 @@ export default function TaxSummaryPage() {
     return (
       <AppShell>
         <Header title={t.taxSummary} backTo={ROUTES.REPORTS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ReportSkeleton rows={4} />
         </PageContainer>
       </AppShell>
@@ -41,7 +41,7 @@ export default function TaxSummaryPage() {
     return (
       <AppShell>
         <Header title={t.taxSummary} backTo={ROUTES.REPORTS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ErrorState
             title={t.couldNotLoadTaxSummary}
             message={t.checkConnectionRetry}
@@ -58,7 +58,7 @@ export default function TaxSummaryPage() {
     <AppShell>
       <Header title={t.taxSummary} backTo={ROUTES.REPORTS} />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {/* Date range inputs */}
         <div className="tax-date-row fade-up">
           <input

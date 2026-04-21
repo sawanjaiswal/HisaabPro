@@ -78,7 +78,7 @@ export default function EditInvoicePage() {
     return (
       <AppShell>
         <Header title={t.editInvoice} backTo={`/invoices/${invoiceId}`} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <Skeleton height="2.5rem" borderRadius="var(--radius-full)" />
           <div style={{ marginTop: 'var(--space-4)' }}>
             <Skeleton height="5rem" borderRadius="var(--radius-md)" count={3} />
@@ -92,7 +92,7 @@ export default function EditInvoicePage() {
     return (
       <AppShell>
         <Header title={t.editInvoice} backTo={`/invoices/${invoiceId}`} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ErrorState
             title={t.couldNotLoadInvoice}
             message={t.checkConnectionRetry}

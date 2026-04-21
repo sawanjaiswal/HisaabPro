@@ -16,7 +16,7 @@ export default function CreateGodownPage() {
   return (
     <AppShell>
       <Header title={t.newGodown} backTo={ROUTES.GODOWNS} />
-      <PageContainer className="stagger-enter">
+      <PageContainer className="stagger-enter space-y-6">
         <GodownForm
           form={form}
           errors={errors}

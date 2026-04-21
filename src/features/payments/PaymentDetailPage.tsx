@@ -65,7 +65,7 @@ export default function PaymentDetailPage() {
       <AppShell>
         <Header title={t.paymentDetail} backTo={ROUTES.PAYMENTS} actions={headerActions} />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {/* Loading */}
         {status === 'loading' && <PaymentDetailSkeleton />}
 

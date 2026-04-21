@@ -37,7 +37,7 @@ export default function BulkImportPage() {
         }
       />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {(status === 'idle' || status === 'picking') && (
           <ContactPicker onPickContacts={pickContacts} onImportCsv={importCsv} />
         )}

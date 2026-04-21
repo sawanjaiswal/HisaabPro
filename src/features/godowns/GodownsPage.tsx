@@ -38,7 +38,7 @@ export default function GodownsPage() {
         }
       />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         <nav className="pill-tabs" role="tablist" aria-label={t.godownSections}>
           {GODOWN_TABS.map((tab) => (
             <button

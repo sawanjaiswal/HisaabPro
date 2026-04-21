@@ -59,7 +59,7 @@ export default function GstReturnsPage() {
     return (
       <AppShell>
         <Header title={t.gstReturns} backTo={ROUTES.REPORTS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ReportSkeleton rows={5} />
         </PageContainer>
       </AppShell>
@@ -72,7 +72,7 @@ export default function GstReturnsPage() {
     return (
       <AppShell>
         <Header title={t.gstReturns} backTo={ROUTES.REPORTS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ErrorState
             title={t.couldNotLoadGstReturn}
             message={t.checkConnectionRetry}
@@ -89,7 +89,7 @@ export default function GstReturnsPage() {
     <AppShell>
       <Header title={t.gstReturns} backTo={ROUTES.REPORTS} />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {/* Return type tab pills */}
         <div className="gst-return-tabs stagger-filters" role="tablist" aria-label={t.gstReturnType}>
           {RETURN_TABS.map(({ type, label }) => (

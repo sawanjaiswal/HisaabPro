@@ -100,7 +100,7 @@ export default function LoanDetailPage() {
     return (
       <AppShell>
         <Header title={t.loans ?? "Loan Details"} backTo={ROUTES.LOANS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <div className="loan-skeleton" aria-busy="true">
             {['sk-1', 'sk-2', 'sk-3'].map((k) => <div key={k} className="loan-skeleton__card" />)}
           </div>
@@ -113,7 +113,7 @@ export default function LoanDetailPage() {
     return (
       <AppShell>
         <Header title={t.loans ?? "Loan Details"} backTo={ROUTES.LOANS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ErrorState title={t.couldNotLoadLoans} message={t.checkConnectionRetry} onRetry={refresh} />
         </PageContainer>
       </AppShell>
@@ -125,7 +125,7 @@ export default function LoanDetailPage() {
   return (
     <AppShell>
       <Header title={loan.partyName ?? t.loanDetailsTitle} backTo={ROUTES.LOANS} />
-      <PageContainer>
+      <PageContainer className="space-y-6">
         <div className="loan-detail__hero fade-up">
           <p className="loan-detail__label">{t.outstandingBalance}</p>
           <p className="loan-detail__outstanding">{formatPaise(loan.outstandingAmount)}</p>

@@ -16,7 +16,7 @@ export default function MorePage() {
   return (
     <AppShell>
       <Header title={t.explore} backTo={ROUTES.DASHBOARD} />
-      <PageContainer>
+      <PageContainer className="space-y-6">
         <nav className="more-sections stagger-list py-0" aria-label={t.featureCategories}>
           {MORE_MENU_GROUPS.map((group) => {
             const groupItems = MORE_MENU_ITEMS.filter((item) => item.group === group.id)

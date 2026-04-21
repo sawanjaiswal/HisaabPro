@@ -19,7 +19,7 @@ export default function CreateSerialPage() {
   return (
     <AppShell>
       <Header title={t.addSerialNumber} backTo={ROUTES.SERIAL_NUMBERS.replace(':productId', productId)} />
-      <PageContainer className="stagger-enter">
+      <PageContainer className="stagger-enter space-y-6">
         <SerialForm productId={productId} onSuccess={handleSuccess} />
       </PageContainer>
     </AppShell>

@@ -73,7 +73,7 @@ export default function DayBookPage() {
     return (
       <AppShell>
         <Header title={t.dayBook} backTo={ROUTES.REPORTS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ReportSkeleton rows={6} />
         </PageContainer>
       </AppShell>
@@ -86,7 +86,7 @@ export default function DayBookPage() {
     return (
       <AppShell>
         <Header title={t.dayBook} backTo={ROUTES.REPORTS} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <div className="report-empty">
             <div className="report-empty-icon" aria-hidden="true">
               <Calendar size={28} />
@@ -115,7 +115,7 @@ export default function DayBookPage() {
     <AppShell>
       <Header title={t.dayBook} backTo={ROUTES.REPORTS} />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {/* Date navigator */}
         <ReportDateNavigator
           date={filters.date}

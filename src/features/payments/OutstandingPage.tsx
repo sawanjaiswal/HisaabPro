@@ -69,7 +69,7 @@ export default function OutstandingPage() {
     <AppShell>
       <Header title={t.outstandingTitle} backTo={ROUTES.DASHBOARD} />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {/* Summary cards */}
         {status === 'success' && data && <OutstandingSummaryBar totals={data.totals} />}
 

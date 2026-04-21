@@ -58,7 +58,7 @@ export default function EditGodownPage() {
     return (
       <AppShell>
         <Header title={t.editGodown} backTo={backTo} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <Skeleton height="3.5rem" borderRadius="var(--radius-md)" count={3} />
         </PageContainer>
       </AppShell>
@@ -69,7 +69,7 @@ export default function EditGodownPage() {
     return (
       <AppShell>
         <Header title={t.editGodown} backTo={backTo} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ErrorState
             title={t.couldNotLoadGodown}
             message={t.checkConnectionRetry}
@@ -93,7 +93,7 @@ function EditGodownForm({ godownId, initialData, backTo }: { godownId: string; i
   return (
     <AppShell>
       <Header title={t.editGodown} backTo={backTo} />
-      <PageContainer className="stagger-enter">
+      <PageContainer className="stagger-enter space-y-6">
         <GodownForm
           form={form}
           errors={errors}

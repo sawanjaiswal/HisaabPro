@@ -89,7 +89,7 @@ export default function UnitsPage() {
         }
       />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {status === 'loading' && (
           <>
             <Skeleton height="2.5rem" borderRadius="var(--radius-full)" />

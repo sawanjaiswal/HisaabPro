@@ -131,7 +131,7 @@ export default function InvoicesPage() {
         </div>
       )}
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {!bulk.isActive && (
           <InvoiceFilterBar
             search={filters.search ?? ''}

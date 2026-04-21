@@ -33,7 +33,7 @@ export default function TrialBalancePage() {
     return (
       <AppShell>
         <Header title={t.trialBalance ?? "Trial Balance"} backTo={ROUTES.REPORTS} actions={dateInput} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <Skeleton height="320px" />
         </PageContainer>
       </AppShell>
@@ -44,7 +44,7 @@ export default function TrialBalancePage() {
     return (
       <AppShell>
         <Header title={t.trialBalance ?? "Trial Balance"} backTo={ROUTES.REPORTS} actions={dateInput} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <ErrorState title={t.couldNotLoadTrialBalance} onRetry={refresh} />
         </PageContainer>
       </AppShell>
@@ -55,7 +55,7 @@ export default function TrialBalancePage() {
     return (
       <AppShell>
         <Header title={t.trialBalance ?? "Trial Balance"} backTo={ROUTES.REPORTS} actions={dateInput} />
-        <PageContainer>
+        <PageContainer className="space-y-6">
           <EmptyState
             icon={<Scale size={28} aria-hidden="true" />}
             title={t.noDataAvailable}
@@ -71,7 +71,7 @@ export default function TrialBalancePage() {
   return (
     <AppShell>
       <Header title={t.trialBalance ?? "Trial Balance"} backTo={ROUTES.REPORTS} actions={dateInput} />
-      <PageContainer>
+      <PageContainer className="space-y-6">
         {/* Balance indicator */}
         <div className={`tb-balance-chip fade-up ${balanced ? 'balanced' : 'unbalanced'}`} role="status">
           <span className="tb-balance-dot" aria-hidden="true" />
