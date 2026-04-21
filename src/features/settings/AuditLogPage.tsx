@@ -94,7 +94,7 @@ export default function AuditLogPage() {
       <PageContainer className="audit-page space-y-6">
 
         <div>
-          <p className="settings-section-title py-0" className="py-0">
+          <p className="settings-section-title py-0">
             {t.actionFilterLabel}
           </p>
           <div className="audit-filters stagger-filters" role="group" aria-label={t.filterByAction}>
@@ -113,7 +113,7 @@ export default function AuditLogPage() {
         </div>
 
         <div>
-          <p className="settings-section-title py-0" className="py-0">
+          <p className="settings-section-title py-0">
             {t.entityFilterLabel}
           </p>
           <div className="audit-filters stagger-filters" role="group" aria-label={t.filterByEntityType}>

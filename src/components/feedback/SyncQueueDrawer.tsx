@@ -25,6 +25,7 @@ const STATUS_LABELS: Record<SyncItemStatus, string> = {
   syncing: 'Syncing',
   failed: 'Retrying',
   dead: 'Failed',
+  blocked: 'Blocked',
 }
 
 const METHOD_LABELS: Record<string, string> = {
