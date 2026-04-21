@@ -63,7 +63,7 @@ export default function RolesPage() {
       <Header title={t.roles} backTo={ROUTES.SETTINGS} />
 
       <PageContainer>
-        <div className="roles-page">
+        <div className="roles-page space-y-6">
           {status === 'loading' && <RolesListSkeleton />}
 
           {status === 'error' && (

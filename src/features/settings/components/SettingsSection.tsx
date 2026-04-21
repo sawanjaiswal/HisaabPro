@@ -65,8 +65,8 @@ function getSelectValue(item: SettingsItem, settings?: AppSettings): string {
 
 export const SettingsSection: React.FC<SettingsSectionProps> = ({ section, onItemClick, settings }) => {
   return (
-    <div className="settings-section">
-      <p className="settings-section-title">{section.title}</p>
+    <div className="settings-section py-0">
+      <p className="settings-section-title py-0">{section.title}</p>
       <div className="settings-group">
         {section.items.map((item) => {
           const iconEl = (

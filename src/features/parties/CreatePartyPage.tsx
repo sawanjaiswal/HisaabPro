@@ -44,7 +44,7 @@ export default function CreatePartyPage() {
     <AppShell>
       <Header title={t.newParty} backTo={ROUTES.PARTIES} />
 
-      <PageContainer className="create-party-page stagger-enter">
+      <PageContainer className="create-party-page stagger-enter space-y-6">
         <nav className="pill-tabs" role="tablist" aria-label={t.formSections}>
           {SECTIONS.map(section => (
             <button

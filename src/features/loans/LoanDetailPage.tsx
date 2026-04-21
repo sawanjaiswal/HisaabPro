@@ -144,7 +144,7 @@ export default function LoanDetailPage() {
           )}
         </div>
 
-        <p className="loan-detail__section-title">{t.transactionHistoryLoan}</p>
+        <p className="loan-detail__section-title py-0">{t.transactionHistoryLoan}</p>
 
         {transactions.length === 0 && (
           <div className="loan-empty">
@@ -171,31 +171,31 @@ export default function LoanDetailPage() {
       </PageContainer>
 
       <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title={t.recordTransaction}>
-        <form className="loan-drawer__form" onSubmit={handleSubmit}>
-          {formError && <p className="loan-drawer__error" role="alert">{formError}</p>}
-          <div className="loan-drawer__field">
-            <label className="loan-drawer__label" htmlFor="txnType">{t.loanType}</label>
-            <select id="txnType" className="loan-drawer__select" value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as LoanTransactionType }))}>
+        <form className="loan-drawer__form py-0" onSubmit={handleSubmit}>
+          {formError && <p className="loan-drawer__error py-0" role="alert">{formError}</p>}
+          <div className="loan-drawer__field py-0">
+            <label className="loan-drawer__label py-0" htmlFor="txnType">{t.loanType}</label>
+            <select id="txnType" className="loan-drawer__select py-0" value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as LoanTransactionType }))}>
               {(['DISBURSEMENT', 'REPAYMENT', 'INTEREST', 'PENALTY'] as LoanTransactionType[]).map((type) => (
                 <option key={type} value={type}>{getTxnTypeLabel(type, t)}</option>
               ))}
             </select>
           </div>
-          <div className="loan-drawer__row">
-            <div className="loan-drawer__field">
-              <label className="loan-drawer__label" htmlFor="txnAmount">{t.amountRsLabel}</label>
-              <input id="txnAmount" type="number" min="0.01" step="0.01" required className="loan-drawer__input" value={form.amountRupees} onChange={(e) => setForm((f) => ({ ...f, amountRupees: e.target.value }))} placeholder="0.00" />
+          <div className="loan-drawer__row py-0">
+            <div className="loan-drawer__field py-0">
+              <label className="loan-drawer__label py-0" htmlFor="txnAmount">{t.amountRsLabel}</label>
+              <input id="txnAmount" type="number" min="0.01" step="0.01" required className="loan-drawer__input py-0" value={form.amountRupees} onChange={(e) => setForm((f) => ({ ...f, amountRupees: e.target.value }))} placeholder="0.00" />
             </div>
-            <div className="loan-drawer__field">
-              <label className="loan-drawer__label" htmlFor="txnDate">{t.dateLabel}</label>
-              <input id="txnDate" type="date" required className="loan-drawer__input" value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
+            <div className="loan-drawer__field py-0">
+              <label className="loan-drawer__label py-0" htmlFor="txnDate">{t.dateLabel}</label>
+              <input id="txnDate" type="date" required className="loan-drawer__input py-0" value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
             </div>
           </div>
-          <div className="loan-drawer__field">
-            <label className="loan-drawer__label" htmlFor="txnNotes">{t.notesOptional}</label>
-            <input id="txnNotes" className="loan-drawer__input" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder={t.txnNotesPlaceholder} />
+          <div className="loan-drawer__field py-0">
+            <label className="loan-drawer__label py-0" htmlFor="txnNotes">{t.notesOptional}</label>
+            <input id="txnNotes" className="loan-drawer__input py-0" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder={t.txnNotesPlaceholder} />
           </div>
-          <button type="submit" className="loan-drawer__submit-btn" disabled={submitting} aria-busy={submitting}>
+          <button type="submit" className="loan-drawer__submit-btn py-0" disabled={submitting} aria-busy={submitting}>
             {submitting ? t.loading : t.recordTransaction}
           </button>
         </form>

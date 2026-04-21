@@ -7,9 +7,9 @@ export const SettingsSkeleton: React.FC = () => {
   const { t } = useLanguage()
 
   return (
-    <div className="settings-page" aria-busy="true" aria-label={t.couldNotLoadSettings}>
+    <div className="settings-page space-y-6" aria-busy="true" aria-label={t.couldNotLoadSettings}>
       {Array.from({ length: 4 }, (_, sectionIndex) => (
-        <div key={`section-${sectionIndex}`} className="settings-section">
+        <div key={`section-${sectionIndex}`} className="settings-section py-0">
           <Skeleton width="80px" height="0.6875rem" borderRadius="var(--radius-sm)" />
           <div className="settings-group" style={{ marginTop: 'var(--space-2)' }}>
             {Array.from({ length: sectionIndex === 0 ? 4 : sectionIndex === 1 ? 3 : 2 }, (_, itemIndex) => (

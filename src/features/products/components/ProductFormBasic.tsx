@@ -58,7 +58,7 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
   }, []) // fetch once on mount; onUpdate is stable (useCallback), form defaults applied once
 
   return (
-    <div className="create-party-section">
+    <div className="create-party-section py-0">
       <Input
         label={t.productName}
         id="product-name"

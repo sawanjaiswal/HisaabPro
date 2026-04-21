@@ -16,7 +16,7 @@ export function ThresholdSection({
 
   return (
     <section>
-      <p className="settings-section-title">{t.thresholdsTitle}</p>
+      <p className="settings-section-title py-0">{t.thresholdsTitle}</p>
       <div className="txn-controls">
 
         <div className="txn-control-row">

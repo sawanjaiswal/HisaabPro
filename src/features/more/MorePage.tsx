@@ -17,14 +17,14 @@ export default function MorePage() {
     <AppShell>
       <Header title={t.explore} backTo={ROUTES.DASHBOARD} />
       <PageContainer>
-        <nav className="more-sections stagger-list" aria-label={t.featureCategories}>
+        <nav className="more-sections stagger-list py-0" aria-label={t.featureCategories}>
           {MORE_MENU_GROUPS.map((group) => {
             const groupItems = MORE_MENU_ITEMS.filter((item) => item.group === group.id)
             if (groupItems.length === 0) return null
             return (
-              <section key={group.id} className="more-section">
-                <h2 className="more-section-title">
-                  <span className="more-section-emoji" aria-hidden="true">{group.emoji}</span>
+              <section key={group.id} className="more-section py-0">
+                <h2 className="more-section-title py-0">
+                  <span className="more-section-emoji py-0" aria-hidden="true">{group.emoji}</span>
                   {group.label}
                 </h2>
                 <div className="more-grid">

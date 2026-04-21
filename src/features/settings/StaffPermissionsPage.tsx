@@ -215,7 +215,7 @@ export default function StaffPermissionsPage() {
       <Header title="Permissions" backTo={ROUTES.SETTINGS} />
 
       <PageContainer>
-        <div className="sp-page stagger-enter">
+        <div className="sp-page stagger-enter space-y-6">
 
           {/* Segmented toggle */}
           <div className="sp-toggle" role="tablist" aria-label="View permissions by">

@@ -113,8 +113,8 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
   if (items.length === 0 && !isSearchActive) {
     return (
       <div className="dashboard-transactions">
-        <div className="dashboard-section-header">
-          <span className="dashboard-section-title">{t.recentTransactions}</span>
+        <div className="dashboard-section-header py-0">
+          <span className="dashboard-section-title py-0">{t.recentTransactions}</span>
         </div>
         <div className="dashboard-txn-empty">
           <p>{t.noTxnYet}</p>
@@ -126,10 +126,10 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
 
   return (
     <div className="dashboard-transactions">
-      <div className="dashboard-section-header">
-        <span className="dashboard-section-title">{t.recentTransactions}</span>
+      <div className="dashboard-section-header py-0">
+        <span className="dashboard-section-title py-0">{t.recentTransactions}</span>
         <button
-          className="dashboard-section-link"
+          className="dashboard-section-link py-0"
           onClick={onViewAll}
           aria-label={t.viewAll}
         >

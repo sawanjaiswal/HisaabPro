@@ -36,7 +36,7 @@ export default function VerificationsPage() {
       <Header
         title={t.stockVerification}
         actions={
-          <button type="button" className="sv-page__create-btn" onClick={handleCreate} disabled={isCreating} aria-label={t.newStockCount}>
+          <button type="button" className="sv-page__create-btn space-y-6" onClick={handleCreate} disabled={isCreating} aria-label={t.newStockCount}>
             <Plus size={18} aria-hidden="true" />
             {t.newCount}
           </button>
@@ -74,7 +74,7 @@ export default function VerificationsPage() {
             title={t.noVerificationsYet}
             description={t.startStockCountDesc}
             action={
-              <button type="button" className="sv-page__create-btn" onClick={handleCreate} disabled={isCreating}>
+              <button type="button" className="sv-page__create-btn space-y-6" onClick={handleCreate} disabled={isCreating}>
                 <Plus size={16} aria-hidden="true" /> {t.startFirstCount}
               </button>
             }

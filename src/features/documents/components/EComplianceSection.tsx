@@ -53,8 +53,8 @@ export const EComplianceSection: React.FC<EComplianceSectionProps> = ({
 
   if (fetchState === 'loading') {
     return (
-      <div className="ecompliance-section" aria-busy="true">
-        <p className="ecompliance-section-title">{t.gstCompliance}</p>
+      <div className="ecompliance-section py-0" aria-busy="true">
+        <p className="ecompliance-section-title py-0">{t.gstCompliance}</p>
         <div className="compliance-card" aria-label={t.loadingComplianceStatus}>
           <div style={{ height: 80, background: 'var(--color-gray-100)', borderRadius: 'var(--radius-md)', animation: 'pulse 1.5s ease-in-out infinite' }} />
         </div>
@@ -64,8 +64,8 @@ export const EComplianceSection: React.FC<EComplianceSectionProps> = ({
 
   if (fetchState === 'error') {
     return (
-      <div className="ecompliance-section">
-        <p className="ecompliance-section-title">{t.gstCompliance}</p>
+      <div className="ecompliance-section py-0">
+        <p className="ecompliance-section-title py-0">{t.gstCompliance}</p>
         <div className="compliance-card">
           <p className="compliance-inline-error" role="alert">
             {fetchError ?? t.failedLoadCompliance}
@@ -84,8 +84,8 @@ export const EComplianceSection: React.FC<EComplianceSectionProps> = ({
   }
 
   return (
-    <div className="ecompliance-section">
-      <p className="ecompliance-section-title">{t.gstCompliance}</p>
+    <div className="ecompliance-section py-0">
+      <p className="ecompliance-section-title py-0">{t.gstCompliance}</p>
 
       <EInvoiceCard
         status={eInvoice}

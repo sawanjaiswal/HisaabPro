@@ -141,7 +141,7 @@ export default function CouponDetailPage() {
 
         {/* Details */}
         <section className="coupon-detail-info">
-          <h3 className="coupon-detail-section-title">{t.couponDetail}</h3>
+          <h3 className="coupon-detail-section-title py-0">{t.couponDetail}</h3>
           <dl className="coupon-detail-dl">
             <dt>{t.validFrom}</dt>
             <dd>{formatCouponDateTime(coupon.validFrom)}</dd>
@@ -162,7 +162,7 @@ export default function CouponDetailPage() {
 
         {/* Redemptions */}
         <section className="coupon-detail-redemptions">
-          <h3 className="coupon-detail-section-title">
+          <h3 className="coupon-detail-section-title py-0">
             Redemptions ({redemptions.length})
           </h3>
           {redemptions.length === 0 ? (

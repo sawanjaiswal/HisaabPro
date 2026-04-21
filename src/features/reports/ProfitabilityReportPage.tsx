@@ -71,7 +71,7 @@ export default function ProfitabilityReportPage() {
         <Header title={t.profitability} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <div className="finance-skeleton" aria-busy="true">
-            {['sk-1', 'sk-2'].map((k) => <div key={k} className="finance-skeleton__section" />)}
+            {['sk-1', 'sk-2'].map((k) => <div key={k} className="finance-skeleton__section py-0" />)}
           </div>
         </PageContainer>
       </AppShell>

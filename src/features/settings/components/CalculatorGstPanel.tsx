@@ -37,7 +37,7 @@ export const CalculatorGstPanel: React.FC<CalculatorGstPanelProps> = ({
 
   return (
     <>
-      <div className="calc-gst-panel" role="group" aria-label={t.gstControlsLabel}>
+      <div className="calc-gst-panel py-0" role="group" aria-label={t.gstControlsLabel}>
         <div className="calc-gst-rate-bar" ref={gstBarRef}>
           {isGstMode && state.gstRate && (
             <div className="calc-gst-rate-indicator" style={indicatorStyle} aria-hidden="true" />

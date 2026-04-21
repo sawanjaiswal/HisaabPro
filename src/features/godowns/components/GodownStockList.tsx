@@ -18,7 +18,7 @@ export function GodownStockList({ stockData, status, onRetry }: GodownStockListP
   const { t } = useLanguage()
   return (
     <>
-      <h2 className="godown-section-title">{t.stockInGodown}</h2>
+      <h2 className="godown-section-title py-0">{t.stockInGodown}</h2>
 
       {status === 'loading' && <Skeleton height="3.5rem" count={4} />}
 

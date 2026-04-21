@@ -38,7 +38,7 @@ export default function PublicLedgerPage() {
   if (isLoading) return <Spinner fullScreen />
   if (error || !data) {
     return (
-      <div className="public-ledger-page">
+      <div className="public-ledger-page space-y-6">
         <ErrorState
           title={t.linkNotAvailable}
           message={error ?? t.linkNoLongerValid}
@@ -48,7 +48,7 @@ export default function PublicLedgerPage() {
   }
 
   return (
-    <div className="public-ledger-page fade-up">
+    <div className="public-ledger-page fade-up space-y-6">
       <PublicLedgerView data={data} />
     </div>
   )

@@ -45,7 +45,7 @@ export const CalculatorHeader: React.FC<CalculatorHeaderProps> = ({
     </div>
 
     {showSettings && (
-      <div className="calculator-settings-panel">
+      <div className="calculator-settings-panel py-0">
         <button
           className="calculator-settings-row"
           onClick={onToggleSound}

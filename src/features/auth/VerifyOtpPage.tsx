@@ -13,13 +13,13 @@ export default function VerifyOtpPage() {
   const isComplete = otp.every(d => d !== '')
 
   return (
-    <div className="login-page">
+    <div className="login-page space-y-6">
       <SEO title="Verify OTP" />
 
-      <div className="login-page__card stagger-enter">
-        <div className="login-page__header">
-          <h1 className="login-page__title">Verify OTP</h1>
-          <p className="login-page__subtitle">
+      <div className="login-page__card stagger-enter space-y-6">
+        <div className="login-page__header space-y-6">
+          <h1 className="login-page__title space-y-6">Verify OTP</h1>
+          <p className="login-page__subtitle space-y-6">
             Sent to +91 {phone.slice(0, 5)}XXXXX
           </p>
         </div>
@@ -74,7 +74,7 @@ export default function VerifyOtpPage() {
           </div>
 
           <button
-            className="login-page__submit"
+            className="login-page__submit space-y-6"
             disabled={!isComplete || loading}
             onClick={handleVerify}
             type="button"

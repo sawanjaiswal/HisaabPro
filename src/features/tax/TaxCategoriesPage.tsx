@@ -32,7 +32,7 @@ export default function TaxCategoriesPage() {
       <Header title={t.taxRates} backTo={ROUTES.SETTINGS_GST} />
 
       <PageContainer>
-        <div className="tax-cat-page">
+        <div className="tax-cat-page space-y-6">
           {status === 'loading' && <TaxCategoriesSkeleton />}
 
           {status === 'error' && (

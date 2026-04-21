@@ -34,7 +34,7 @@ export const TemplateControlPanel: React.FC<TemplateControlPanelProps> = ({
 }) => {
   const { t } = useLanguage()
   return (
-    <div className="template-controls-panel">
+    <div className="template-controls-panel py-0">
       {/* Tab pills */}
       <nav className="template-controls-tabs" aria-label={t.templateCustomSections} role="tablist">
         {CUSTOMIZATION_TABS.map((tab) => (

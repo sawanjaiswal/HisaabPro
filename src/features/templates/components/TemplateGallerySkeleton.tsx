@@ -10,7 +10,7 @@ export const TemplateGallerySkeleton: React.FC = () => {
   const { t } = useLanguage()
   return (
     <div className="template-gallery" aria-busy="true" aria-label={t.loadingTemplates}>
-      <div className="template-section">
+      <div className="template-section py-0">
         <Skeleton width="120px" height="0.75rem" borderRadius="var(--radius-sm)" />
 
         <div className="template-grid">

@@ -56,21 +56,21 @@ export function ReminderDrawer({ open, onClose, partyName, partyPhone, outstandi
 
   return (
     <Drawer open={open} onClose={onClose} title={t.sendReminderTitle} size="sm">
-      <div className="reminder-drawer">
-        <p className="reminder-drawer-to">
+      <div className="reminder-drawer py-0">
+        <p className="reminder-drawer-to py-0">
           {t.toColon} <strong>{partyName}</strong> ({partyPhone})
         </p>
 
-        <div className="reminder-drawer-preview">
-          <p className="reminder-drawer-preview-text">{message}</p>
+        <div className="reminder-drawer-preview py-0">
+          <p className="reminder-drawer-preview-text py-0">{message}</p>
         </div>
 
-        <div className="reminder-drawer-actions">
+        <div className="reminder-drawer-actions py-0">
           <a
             href={waUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn btn-primary btn-md reminder-drawer-wa"
+            className="btn btn-primary btn-md reminder-drawer-wa py-0"
             aria-label={`${t.sendReminderViaWa} ${partyName}`}
           >
             <MessageCircle size={18} aria-hidden="true" />
@@ -79,7 +79,7 @@ export function ReminderDrawer({ open, onClose, partyName, partyPhone, outstandi
 
           <button
             type="button"
-            className="btn btn-ghost btn-md reminder-drawer-copy"
+            className="btn btn-ghost btn-md reminder-drawer-copy py-0"
             onClick={handleCopy}
             aria-label={copied ? t.messageCopied : t.copyToClipboard}
           >

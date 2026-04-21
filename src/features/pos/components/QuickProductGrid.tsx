@@ -73,7 +73,7 @@ export function QuickProductGrid({ onSelect }: QuickProductGridProps) {
   }
 
   return (
-    <div className="pos-quick-section">
+    <div className="pos-quick-section py-0">
       <h3 className="pos-quick-title">{t.posQuickAdd}</h3>
       <div className="pos-quick-grid" role="list" aria-label={t.posFrequentProducts}>
         {products.map((p) => (

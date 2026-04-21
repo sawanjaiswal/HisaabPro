@@ -20,7 +20,7 @@ export function PartyFormBasic({ form, errors, onUpdate }: PartyFormBasicProps) 
   ]
 
   return (
-    <div className="create-party-section">
+    <div className="create-party-section py-0">
       <Input
         label={t.partyName}
         id="party-name"

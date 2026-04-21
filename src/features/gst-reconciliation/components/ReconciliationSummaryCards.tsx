@@ -30,7 +30,7 @@ const CountCard: React.FC<CountCardProps> = ({ label, count, mod }) => (
 export const ReconciliationSummaryCards: React.FC<Props> = ({ summary }) => {
   const { t } = useLanguage()
   return (
-    <div className="recon-summary-section" role="region" aria-label={t.reconciliationSummary}>
+    <div className="recon-summary-section py-0" role="region" aria-label={t.reconciliationSummary}>
       {/* Count cards */}
       <div className="recon-count-grid">
         <CountCard label={t.matchedLabel}      count={summary.matchedCount}        mod="success" />

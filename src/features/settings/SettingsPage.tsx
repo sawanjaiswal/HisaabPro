@@ -140,7 +140,7 @@ export default function SettingsPage() {
         )}
 
         {status === 'success' && (
-          <div className="settings-page stagger-enter">
+          <div className="settings-page stagger-enter space-y-6">
             {SETTINGS_SECTIONS.map((section) => (
               <SettingsSection
                 key={section.id}

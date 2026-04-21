@@ -66,12 +66,12 @@ export default function TemplateEditorPage() {
         }
       />
 
-      <div className="template-customize-page stagger-enter">
-        <div className="template-preview-panel">
+      <div className="template-customize-page stagger-enter space-y-6">
+        <div className="template-preview-panel py-0">
           <TemplatePreviewPanel config={form.config} printSettings={form.printSettings} />
         </div>
 
-        <div className="template-controls-panel">
+        <div className="template-controls-panel py-0">
           <TemplateControlPanel
             activeTab={activeTab}
             config={form.config}

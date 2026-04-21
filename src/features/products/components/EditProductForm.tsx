@@ -30,7 +30,7 @@ export function EditProductForm({ productId, initialData }: EditProductFormProps
   return (
     <AppShell>
       <Header title={t.editProductTitle} backTo={`/products/${productId}`} />
-      <PageContainer className="create-product-page">
+      <PageContainer className="create-product-page space-y-6">
         <nav className="pill-tabs" role="tablist" aria-label={t.formSections}>
           {PRODUCT_FORM_SECTIONS.map((s) => (
             <button key={s.id} type="button" role="tab" className={`pill-tab${activeSection === s.id ? ' active' : ''}`} onClick={() => setActiveSection(s.id)} aria-selected={activeSection === s.id} aria-controls={`section-panel-${s.id}`}>

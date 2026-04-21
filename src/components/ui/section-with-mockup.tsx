@@ -43,7 +43,7 @@ const SectionWithMockup: React.FC<SectionWithMockupProps> = ({
 
     return (
         <section className="relative py-24 md:py-48 bg-black overflow-hidden">
-            <div className="container max-w-[1220px] w-full px-6 md:px-10 relative z-10 mx-auto">
+            <div className="container max-w-[1220px] w-full px-6 md:px-10 relative z-10 mx-auto space-y-6">
                 <motion.div
                      className={`grid grid-cols-1 gap-16 md:gap-8 w-full items-center ${layoutClasses}`}
                      variants={containerVariants}
@@ -52,7 +52,7 @@ const SectionWithMockup: React.FC<SectionWithMockupProps> = ({
                      viewport={{ once: true, amount: 0.2 }}
                 >
                     <motion.div
-                        className={`flex flex-col items-start gap-4 mt-10 md:mt-0 max-w-[546px] mx-auto md:mx-0 ${textOrderClass}`}
+                        className={`flex flex-col items-start gap-4 md:mt-0 max-w-[546px] mx-auto md:mx-0 ${textOrderClass}`}
                         variants={itemVariants}
                     >
                          <div className="space-y-2 md:space-y-1">
@@ -67,7 +67,7 @@ const SectionWithMockup: React.FC<SectionWithMockupProps> = ({
                     </motion.div>
 
                     <motion.div
-                        className={`relative mt-10 md:mt-0 mx-auto ${imageOrderClass} w-full max-w-[300px] md:max-w-[471px]`}
+                        className={`relative md:mt-0 mx-auto ${imageOrderClass} w-full max-w-[300px] md:max-w-[471px]`}
                         variants={itemVariants}
                     >
                         <motion.div

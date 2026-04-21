@@ -71,7 +71,7 @@ export default function OnboardingPage() {
 
   if (step === 'welcome') {
     return (
-      <div className="onboarding-page">
+      <div className="onboarding-page space-y-6">
         <SEO title={`Welcome to ${APP_NAME}`} />
         <div className="onboarding-card stagger-enter" style={{ maxWidth: 420 }}>
           <div className="onboarding-icon" style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--color-primary-50)' }}>
@@ -119,7 +119,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="onboarding-page">
+    <div className="onboarding-page space-y-6">
       <SEO title={t.onboardingTitle} />
 
       <div className="onboarding-card stagger-enter">

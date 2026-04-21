@@ -23,7 +23,7 @@ export function InvoiceChargesSection({
 }: InvoiceChargesSectionProps) {
   const { t } = useLanguage()
   return (
-    <div className="charges-section">
+    <div className="charges-section py-0">
       {charges.map((charge, index) => (
         <div key={`charge-${charge.name || index}`} className="charge-row">
           <input

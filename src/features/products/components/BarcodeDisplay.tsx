@@ -54,7 +54,7 @@ export function BarcodeDisplay({ value, format, productName, compact }: BarcodeD
 
   return (
     <div className="barcode-display" aria-label={`${t.barcodeLabel}: ${value}`}>
-      <div className="barcode-svg-container" ref={containerRef} />
+      <div className="barcode-svg-container space-y-6" ref={containerRef} />
       {!compact && (
         <div className="barcode-display-footer">
           <span className="barcode-format-label">{BARCODE_FORMAT_LABELS[format]}</span>

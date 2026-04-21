@@ -29,7 +29,7 @@ export function BatchDetailInfo({ batch }: BatchDetailInfoProps) {
         )}
       </div>
 
-      <div className="batch-detail-section">
+      <div className="batch-detail-section py-0">
         <div className="batch-detail-row">
           <Package size={16} aria-hidden="true" />
           <span className="batch-detail-label">{t.stockDetailLabel}</span>
@@ -37,7 +37,7 @@ export function BatchDetailInfo({ batch }: BatchDetailInfoProps) {
         </div>
       </div>
 
-      <div className="batch-detail-section">
+      <div className="batch-detail-section py-0">
         <div className="batch-detail-row">
           <Calendar size={16} aria-hidden="true" />
           <span className="batch-detail-label">{t.mfgDateLabel}</span>
@@ -54,7 +54,7 @@ export function BatchDetailInfo({ batch }: BatchDetailInfoProps) {
         </div>
       </div>
 
-      <div className="batch-detail-section">
+      <div className="batch-detail-section py-0">
         <div className="batch-detail-row">
           <IndianRupee size={16} aria-hidden="true" />
           <span className="batch-detail-label">{t.costPriceLabel}</span>
@@ -72,7 +72,7 @@ export function BatchDetailInfo({ batch }: BatchDetailInfoProps) {
       </div>
 
       {batch.notes && (
-        <div className="batch-detail-section">
+        <div className="batch-detail-section py-0">
           <div className="batch-detail-row batch-detail-row--notes">
             <FileText size={16} aria-hidden="true" />
             <span className="batch-detail-label">{t.notesDetailLabel}</span>

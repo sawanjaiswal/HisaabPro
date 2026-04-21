@@ -101,7 +101,7 @@ export default function CurrencySettingsPage() {
           </div>
         ) : (
           <>
-            <p className="currency-section-label">
+            <p className="currency-section-label py-0">
               {rates.length} {rates.length === 1 ? t.rateWord : t.ratesWord} {t.configuredSuffix}
             </p>
 

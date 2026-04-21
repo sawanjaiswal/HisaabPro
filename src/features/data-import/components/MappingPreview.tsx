@@ -28,9 +28,9 @@ export function MappingPreview({
   return (
     <div className="mapping-preview">
       {/* Column mapping */}
-      <div className="mapping-section">
-        <h3 className="mapping-section-title">{t.columnMapping}</h3>
-        <p className="mapping-section-desc">{t.mapColumnsDesc}</p>
+      <div className="mapping-section py-0">
+        <h3 className="mapping-section-title py-0">{t.columnMapping}</h3>
+        <p className="mapping-section-desc py-0">{t.mapColumnsDesc}</p>
 
         <div className="mapping-grid">
           {headers.map((header) => {
@@ -63,8 +63,8 @@ export function MappingPreview({
       </div>
 
       {/* Data preview */}
-      <div className="mapping-section">
-        <h3 className="mapping-section-title">Preview ({rows.length} rows)</h3>
+      <div className="mapping-section py-0">
+        <h3 className="mapping-section-title py-0">Preview ({rows.length} rows)</h3>
         <div className="mapping-stats">
           <span className="mapping-stat mapping-stat-valid">
             <CheckCircle size={14} aria-hidden="true" />

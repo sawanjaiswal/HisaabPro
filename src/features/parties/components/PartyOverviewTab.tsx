@@ -49,7 +49,7 @@ export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => 
     <div className="party-info-card">
       {hasContactInfo && (
         <div className="card" aria-label={t.contactInfo}>
-          <h3 className="section-title" style={{ marginBottom: 'var(--space-3)' }}>{t.contact}</h3>
+          <h3 className="section-title py-0" style={{ marginBottom: 'var(--space-3)' }}>{t.contact}</h3>
           {party.phone && (
             <InfoRow
               icon={<Phone size={18} />}
@@ -76,7 +76,7 @@ export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => 
 
       {hasBusinessInfo && (
         <div className="card" aria-label={t.businessInfoLabel}>
-          <h3 className="section-title" style={{ marginBottom: 'var(--space-3)' }}>{t.business2}</h3>
+          <h3 className="section-title py-0" style={{ marginBottom: 'var(--space-3)' }}>{t.business2}</h3>
           {party.gstin && (
             <div>
               <InfoRow
@@ -103,7 +103,7 @@ export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => 
       )}
 
       <div className="card" aria-label={t.creditInfo}>
-        <h3 className="section-title" style={{ marginBottom: 'var(--space-3)' }}>{t.credit}</h3>
+        <h3 className="section-title py-0" style={{ marginBottom: 'var(--space-3)' }}>{t.credit}</h3>
         <InfoRow
           icon={<CreditCard size={18} />}
           label={t.creditLimit}
@@ -125,7 +125,7 @@ export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => 
 
       {party.notes && (
         <div className="card" aria-label={t.notesSection}>
-          <h3 className="section-title" style={{ marginBottom: 'var(--space-3)' }}>
+          <h3 className="section-title py-0" style={{ marginBottom: 'var(--space-3)' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
               <StickyNote size={18} aria-hidden="true" />
               {t.notesSection}

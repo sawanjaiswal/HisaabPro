@@ -170,7 +170,7 @@ export function Drawer({
     <>
       {/* Backdrop */}
       <div
-        className="drawer-backdrop"
+        className="drawer-backdrop py-0"
         data-state={animState}
         aria-hidden="true"
         onClick={handleBackdropClick}
@@ -183,27 +183,27 @@ export function Drawer({
         aria-modal="true"
         aria-labelledby={title ? 'drawer-title' : undefined}
         aria-label={!title ? 'Dialog' : undefined}
-        className="drawer-panel"
+        className="drawer-panel py-0"
         data-state={animState}
         data-size={size}
         tabIndex={-1}
         onClick={e => e.stopPropagation()}
       >
         {/* Drag handle — visible on mobile only via CSS */}
-        <div className="drawer-drag-handle" aria-hidden="true" />
+        <div className="drawer-drag-handle py-0" aria-hidden="true" />
 
         {/* Header */}
         {hasHeader && (
-          <div className="drawer-header">
+          <div className="drawer-header py-0">
             {title && (
-              <h2 id="drawer-title" className="drawer-title">
+              <h2 id="drawer-title" className="drawer-title py-0">
                 {title}
               </h2>
             )}
             {showClose && (
               <button
                 type="button"
-                className="drawer-close"
+                className="drawer-close py-0"
                 onClick={onClose}
                 aria-label="Close"
               >
@@ -214,10 +214,10 @@ export function Drawer({
         )}
 
         {/* Scrollable body */}
-        <div className="drawer-body">{children}</div>
+        <div className="drawer-body py-0">{children}</div>
 
         {/* Footer */}
-        {footer && <div className="drawer-footer">{footer}</div>}
+        {footer && <div className="drawer-footer py-0">{footer}</div>}
       </div>
     </>
   )

@@ -53,7 +53,7 @@ export function SyncQueueDrawer({
   const footer = deadCount > 0 ? (
     <button
       type="button"
-      className="btn btn-ghost btn-sm sync-drawer-clear"
+      className="btn btn-ghost btn-sm sync-drawer-clear py-0"
       onClick={onDiscardAllDead}
       aria-label={`Discard all ${deadCount} failed items`}
     >
@@ -65,41 +65,41 @@ export function SyncQueueDrawer({
   return (
     <Drawer open={open} onClose={onClose} title="Offline Queue" size="sm" footer={footer}>
       {items.length === 0 ? (
-        <div className="sync-drawer-empty">
+        <div className="sync-drawer-empty py-0">
           <Check size={24} aria-hidden="true" />
           <p>All changes synced</p>
         </div>
       ) : (
-        <ul className="sync-drawer-list" role="list" aria-label="Queued offline changes">
+        <ul className="sync-drawer-list py-0" role="list" aria-label="Queued offline changes">
           {items.map((item) => (
             <li key={item.id} className={`sync-drawer-item sync-drawer-item--${item.status}`}>
-              <div className="sync-drawer-item-icon" aria-hidden="true">
+              <div className="sync-drawer-item-icon py-0" aria-hidden="true">
                 {item.status === 'syncing' && <Loader2 size={16} className="sync-spin" />}
                 {item.status === 'pending' && <CloudOff size={16} />}
                 {(item.status === 'failed' || item.status === 'dead') && <AlertTriangle size={16} />}
               </div>
 
-              <div className="sync-drawer-item-info">
-                <div className="sync-drawer-item-header">
-                  <span className="sync-drawer-item-label">{item.entityLabel}</span>
+              <div className="sync-drawer-item-info py-0">
+                <div className="sync-drawer-item-header py-0">
+                  <span className="sync-drawer-item-label py-0">{item.entityLabel}</span>
                   <span className={`sync-drawer-badge sync-drawer-badge--${item.status}`}>
                     {STATUS_LABELS[item.status]}
                   </span>
                 </div>
-                <div className="sync-drawer-item-meta">
-                  <span className="sync-drawer-method">{METHOD_LABELS[item.method] ?? item.method}</span>
-                  <span className="sync-drawer-entity-type">{item.entityType}</span>
-                  <span className="sync-drawer-time">{formatTimeAgo(item.createdAt)}</span>
+                <div className="sync-drawer-item-meta py-0">
+                  <span className="sync-drawer-method py-0">{METHOD_LABELS[item.method] ?? item.method}</span>
+                  <span className="sync-drawer-entity-type py-0">{item.entityType}</span>
+                  <span className="sync-drawer-time py-0">{formatTimeAgo(item.createdAt)}</span>
                 </div>
                 {item.errorMessage && item.status === 'dead' && (
-                  <p className="sync-drawer-item-error">{item.errorMessage}</p>
+                  <p className="sync-drawer-item-error py-0">{item.errorMessage}</p>
                 )}
               </div>
 
               {item.status === 'dead' && item.id != null && (() => {
                 const id = item.id as number // guaranteed non-null by condition above
                 return (
-                  <div className="sync-drawer-item-actions">
+                  <div className="sync-drawer-item-actions py-0">
                     <button
                       type="button"
                       className="btn btn-ghost btn-sm"

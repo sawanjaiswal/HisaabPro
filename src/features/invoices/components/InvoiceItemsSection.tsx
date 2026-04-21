@@ -47,7 +47,7 @@ export function InvoiceItemsSection({
   const addedProductIds = lineItems.map((item) => item.productId)
 
   return (
-    <div className="line-items-section">
+    <div className="line-items-section py-0">
       <PartySearchInput
         value={partyId}
         onChange={onPartyChange}
@@ -112,7 +112,7 @@ export function InvoiceItemsSection({
       )}
 
       {showProductSearch && (
-        <div className="product-search-panel">
+        <div className="product-search-panel py-0">
           <ProductSearchInput
             onSelect={onProductSelect}
             addedProductIds={addedProductIds}

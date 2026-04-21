@@ -24,7 +24,7 @@ export default function CreateBusinessPage() {
   const hasMultipleBusinesses = businesses.length >= 2
 
   return (
-    <div className="create-biz-page">
+    <div className="create-biz-page space-y-6">
       <Header title="Create Business" backTo={ROUTES.SETTINGS} />
 
       <div className="create-biz-content">
@@ -70,7 +70,7 @@ export default function CreateBusinessPage() {
 
           {/* Clone section — only when user has 2+ businesses */}
           {hasMultipleBusinesses && (
-            <div className="create-biz-clone-section">
+            <div className="create-biz-clone-section py-0">
               <div className="create-biz-clone-toggle-row">
                 <div className="create-biz-clone-toggle-info">
                   <p className="create-biz-clone-toggle-label">Clone settings from existing business</p>

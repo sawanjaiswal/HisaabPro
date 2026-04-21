@@ -95,7 +95,7 @@ export const CyberneticBentoGrid = () => {
                     box-shadow: 0 0 30px rgba(99, 102, 241, 0.1);
                 }
             `}</style>
-            <div className="main-container">
+            <div className="main-container space-y-6">
                 <div className="w-full max-w-6xl z-10">
                     <h1 className="text-4xl sm:text-5xl font-bold text-white text-center mb-8">Core Features</h1>
                     <div className="bento-grid">

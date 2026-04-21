@@ -27,7 +27,7 @@ export default function CreateProductPage() {
   return (
     <AppShell>
       <Header title={t.newProduct} backTo={ROUTES.PRODUCTS} />
-      <PageContainer className="create-product-page stagger-enter">
+      <PageContainer className="create-product-page stagger-enter space-y-6">
         <nav className="pill-tabs" role="tablist" aria-label={t.formSections}>
           {PRODUCT_FORM_SECTIONS.map((section) => (
             <button key={section.id} type="button" role="tab" className={`pill-tab${activeSection === section.id ? ' active' : ''}`} onClick={() => setActiveSection(section.id)} aria-selected={activeSection === section.id} aria-controls={`section-panel-${section.id}`}>

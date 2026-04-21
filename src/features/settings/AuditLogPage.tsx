@@ -91,10 +91,10 @@ export default function AuditLogPage() {
   return (
     <AppShell>
       <Header title={t.auditLog} backTo={ROUTES.SETTINGS} />
-      <PageContainer className="audit-page">
+      <PageContainer className="audit-page space-y-6">
 
         <div>
-          <p className="settings-section-title" style={{ paddingBottom: 'var(--space-2)' }}>
+          <p className="settings-section-title py-0" className="py-0">
             {t.actionFilterLabel}
           </p>
           <div className="audit-filters stagger-filters" role="group" aria-label={t.filterByAction}>
@@ -113,7 +113,7 @@ export default function AuditLogPage() {
         </div>
 
         <div>
-          <p className="settings-section-title" style={{ paddingBottom: 'var(--space-2)' }}>
+          <p className="settings-section-title py-0" className="py-0">
             {t.entityFilterLabel}
           </p>
           <div className="audit-filters stagger-filters" role="group" aria-label={t.filterByEntityType}>
@@ -179,18 +179,7 @@ export default function AuditLogPage() {
                     <button
                       type="button"
                       onClick={loadMore}
-                      style={{
-                        padding: 'var(--space-3) var(--space-6)',
-                        borderRadius: 'var(--radius-lg)',
-                        border: '1.5px solid var(--color-gray-300)',
-                        background: 'var(--color-gray-0, #fff)',
-                        color: 'var(--color-gray-700)',
-                        fontSize: 'var(--fs-df)',
-                        fontWeight: 500,
-                        fontFamily: 'var(--font-primary)',
-                        cursor: 'pointer',
-                        minHeight: 44,
-                      }}
+                      className="py-0"
                     >
                       {t.loadMoreBtn}
                     </button>

@@ -52,7 +52,7 @@ export default function DiscountReportPage() {
         <Header title={t.discountReport} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <div className="finance-skeleton" aria-busy="true">
-            {['sk-1', 'sk-2', 'sk-3'].map((k) => <div key={k} className="finance-skeleton__section" />)}
+            {['sk-1', 'sk-2', 'sk-3'].map((k) => <div key={k} className="finance-skeleton__section py-0" />)}
           </div>
         </PageContainer>
       </AppShell>

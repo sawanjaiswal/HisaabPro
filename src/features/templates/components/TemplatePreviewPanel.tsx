@@ -59,11 +59,11 @@ export const TemplatePreviewPanel: React.FC<TemplatePreviewPanelProps> = ({ conf
 
   return (
     <div
-      className="template-preview-panel"
+      className="template-preview-panel py-0"
       aria-label={t.invoicePreview}
       role="region"
     >
-      <div className="template-preview-container">
+      <div className="template-preview-container space-y-6">
         <div className="template-preview-invoice" style={{ position: 'relative', overflow: 'hidden' }}>
 
           {/* Payment status stamp overlay */}

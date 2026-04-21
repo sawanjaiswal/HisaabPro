@@ -114,7 +114,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
         <button
           type="submit"
           form="recurring-create-form"
-          className="recurring-drawer__submit-btn"
+          className="recurring-drawer__submit-btn py-0"
           disabled={submitting}
           aria-busy={submitting}
         >
@@ -124,24 +124,24 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
     >
       <form
         id="recurring-create-form"
-        className="recurring-drawer__form"
+        className="recurring-drawer__form py-0"
         onSubmit={handleSubmit}
         noValidate
       >
         {error && (
-          <p className="recurring-drawer__error" role="alert">
+          <p className="recurring-drawer__error py-0" role="alert">
             {error}
           </p>
         )}
 
-        <div className="recurring-drawer__field">
-          <label htmlFor="rcd-template" className="recurring-drawer__label">
+        <div className="recurring-drawer__field py-0">
+          <label htmlFor="rcd-template" className="recurring-drawer__label py-0">
             {t.templateDocId}
           </label>
           <input
             id="rcd-template"
             type="text"
-            className="recurring-drawer__input"
+            className="recurring-drawer__input py-0"
             value={templateDocumentId}
             onChange={(e) => setTemplateDocumentId(e.target.value)}
             placeholder={t.templateDocPlaceholder}
@@ -150,13 +150,13 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
           />
         </div>
 
-        <div className="recurring-drawer__field">
-          <label htmlFor="rcd-frequency" className="recurring-drawer__label">
+        <div className="recurring-drawer__field py-0">
+          <label htmlFor="rcd-frequency" className="recurring-drawer__label py-0">
             {t.frequencyLabel}
           </label>
           <select
             id="rcd-frequency"
-            className="recurring-drawer__select"
+            className="recurring-drawer__select py-0"
             value={frequency}
             onChange={(e) => setFrequency(e.target.value as RecurringFrequency)}
           >
@@ -169,14 +169,14 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
         </div>
 
         {showDayOfMonth && (
-          <div className="recurring-drawer__field">
-            <label htmlFor="rcd-dom" className="recurring-drawer__label">
+          <div className="recurring-drawer__field py-0">
+            <label htmlFor="rcd-dom" className="recurring-drawer__label py-0">
               {t.dayOfMonthLabel}
             </label>
             <input
               id="rcd-dom"
               type="number"
-              className="recurring-drawer__input"
+              className="recurring-drawer__input py-0"
               value={dayOfMonth}
               min={1}
               max={28}
@@ -186,13 +186,13 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
         )}
 
         {!showDayOfMonth && (
-          <div className="recurring-drawer__field">
-            <label htmlFor="rcd-dow" className="recurring-drawer__label">
+          <div className="recurring-drawer__field py-0">
+            <label htmlFor="rcd-dow" className="recurring-drawer__label py-0">
               {t.dayOfWeekLabel}
             </label>
             <select
               id="rcd-dow"
-              className="recurring-drawer__select"
+              className="recurring-drawer__select py-0"
               value={dayOfWeek}
               onChange={(e) => setDayOfWeek(e.target.value)}
             >
@@ -205,28 +205,28 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
           </div>
         )}
 
-        <div className="recurring-drawer__row">
-          <div className="recurring-drawer__field">
-            <label htmlFor="rcd-start" className="recurring-drawer__label">
+        <div className="recurring-drawer__row py-0">
+          <div className="recurring-drawer__field py-0">
+            <label htmlFor="rcd-start" className="recurring-drawer__label py-0">
               {t.startDateLabel}
             </label>
             <input
               id="rcd-start"
               type="date"
-              className="recurring-drawer__input"
+              className="recurring-drawer__input py-0"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               required
             />
           </div>
-          <div className="recurring-drawer__field">
-            <label htmlFor="rcd-end" className="recurring-drawer__label">
+          <div className="recurring-drawer__field py-0">
+            <label htmlFor="rcd-end" className="recurring-drawer__label py-0">
               {t.endDateOptional}
             </label>
             <input
               id="rcd-end"
               type="date"
-              className="recurring-drawer__input"
+              className="recurring-drawer__input py-0"
               value={endDate}
               min={startDate}
               onChange={(e) => setEndDate(e.target.value)}
@@ -234,14 +234,14 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
           </div>
         </div>
 
-        <label className="recurring-drawer__toggle">
+        <label className="recurring-drawer__toggle py-0">
           <input
             type="checkbox"
             checked={autoSend}
             onChange={(e) => setAutoSend(e.target.checked)}
             aria-label={t.autoSendLabel}
           />
-          <span className="recurring-drawer__toggle-label">
+          <span className="recurring-drawer__toggle-label py-0">
             {t.autoSendLabel}
           </span>
         </label>

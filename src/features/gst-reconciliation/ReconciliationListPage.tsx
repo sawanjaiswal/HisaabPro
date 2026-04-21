@@ -64,8 +64,8 @@ export default function ReconciliationListPage() {
       <PageContainer>
 
         {showForm && (
-          <div className="recon-new-form-panel">
-            <h2 className="recon-new-form-panel__title">{t.newReconciliation}</h2>
+          <div className="recon-new-form-panel py-0">
+            <h2 className="recon-new-form-panel__title py-0">{t.newReconciliation}</h2>
             <ReconciliationUploadForm onSuccess={handleNewSuccess} />
           </div>
         )}

@@ -20,7 +20,7 @@ export default function CreateTaxCategoryPage() {
   return (
     <AppShell>
       <Header title={t.newTaxRate} backTo={ROUTES.SETTINGS_TAX_RATES} />
-      <PageContainer className="tax-category-form-page">
+      <PageContainer className="tax-category-form-page space-y-6">
         <TaxCategoryFormFields form={form} errors={errors} onUpdate={updateField} />
       </PageContainer>
       <div className="tax-category-form-actions">

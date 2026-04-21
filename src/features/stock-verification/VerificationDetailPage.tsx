@@ -74,8 +74,8 @@ export default function VerificationDetailPage() {
         <ProgressBar percentage={percentage} label={label} />
 
         {isCounting && (
-          <section className="sv-detail__section fade-up">
-            <h2 className="sv-detail__section-title">{t.countItems}</h2>
+          <section className="sv-detail__section fade-up py-0">
+            <h2 className="sv-detail__section-title py-0">{t.countItems}</h2>
             <div className="sv-detail__items stagger-list">
               {items.map((item) => (
                 <CountItemRow key={item.id} item={item} onSave={recordCount} disabled={isProcessing} />
@@ -96,8 +96,8 @@ export default function VerificationDetailPage() {
         )}
 
         {(isCompleted || (isCounting && allCounted)) && (
-          <section className="sv-detail__section">
-            <h2 className="sv-detail__section-title">
+          <section className="sv-detail__section py-0">
+            <h2 className="sv-detail__section-title py-0">
               {t.discrepancySummary}
               {hasDiscrepancies && <span className="sv-detail__disc-count">{verification.discrepancies}</span>}
             </h2>

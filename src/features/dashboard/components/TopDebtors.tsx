@@ -30,15 +30,15 @@ export const TopDebtors: React.FC<TopDebtorsProps> = ({
 
   return (
     <div className="dashboard-starred">
-      <div className="dashboard-section-header">
-        <div className="dashboard-section-title-group">
-          <span className="dashboard-section-title">{t.whoOwesYou}</span>
-          <span className="dashboard-section-subtitle">
+      <div className="dashboard-section-header py-0">
+        <div className="dashboard-section-title-group py-0">
+          <span className="dashboard-section-title py-0">{t.whoOwesYou}</span>
+          <span className="dashboard-section-subtitle py-0">
             {debtors.length} {debtors.length === 1 ? t.party : t.parties} &middot; {formatCompactAmount(totalOutstanding)}
           </span>
         </div>
         <button
-          className="dashboard-section-link"
+          className="dashboard-section-link py-0"
           onClick={onViewAll}
           aria-label={t.viewAllOutstanding}
         >

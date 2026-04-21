@@ -162,9 +162,9 @@ const TestimonialsSection = () => {
           ease: [0.16, 1, 0.3, 1],
           opacity: { duration: 0.8 }
         }}
-        className="container px-4 z-10 mx-auto"
+        className="container px-4 z-10 mx-auto space-y-6"
       >
-        <div className="flex flex-col items-center justify-center max-w-[540px] mx-auto mb-10 md:mb-16 px-6">
+        <div className="flex flex-col items-center justify-center max-w-[540px] mx-auto md:mb-16 px-6">
           <div className="flex justify-center">
             <div
               className="border py-1 px-4 rounded-full text-xs font-semibold tracking-wide uppercase"
@@ -178,16 +178,16 @@ const TestimonialsSection = () => {
             </div>
           </div>
 
-          <h2 id="testimonials-heading" className="text-4xl md:text-5xl font-extrabold tracking-tight mt-6 text-center">
+          <h2 id="testimonials-heading" className="text-4xl md:text-5xl font-extrabold tracking-tight text-center">
             Loved by 10,000+ business owners
           </h2>
-          <p className="text-center mt-5 text-lg leading-relaxed max-w-sm lp-text-muted">
+          <p className="text-center text-lg leading-relaxed max-w-sm lp-text-muted">
             From kirana stores to wholesalers — hear why they switched.
           </p>
         </div>
 
         <div
-          className="flex justify-center gap-6 mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)] max-h-[740px] overflow-hidden"
+          className="flex justify-center gap-6 [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)] max-h-[740px] overflow-hidden"
           role="region"
           aria-label="Scrolling Testimonials"
         >

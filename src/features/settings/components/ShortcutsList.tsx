@@ -10,7 +10,7 @@ interface ShortcutsListProps {
 
 export const ShortcutsList: React.FC<ShortcutsListProps> = ({ shortcuts, groups }) => {
   return (
-    <div className="shortcuts-page">
+    <div className="shortcuts-page space-y-6">
       {groups.map((group) => {
         const groupShortcuts = Object.entries(shortcuts).filter(([key]) =>
           key.startsWith(`${group.id}.`)

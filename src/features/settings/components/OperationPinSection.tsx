@@ -9,7 +9,7 @@ export function OperationPinSection({ operationPinSet }: OperationPinSectionProp
   const { t } = useLanguage()
   return (
     <section>
-      <p className="settings-section-title">{t.operationPinTitle}</p>
+      <p className="settings-section-title py-0">{t.operationPinTitle}</p>
       <div className="txn-controls">
         <div className="txn-control-row">
           <div className="txn-control-content">

@@ -144,26 +144,26 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="login-page">
+    <div className="login-page space-y-6">
       <SEO title="Reset Password" />
 
-      <div className="login-page__card stagger-enter">
+      <div className="login-page__card stagger-enter space-y-6">
 
         {step === 'phone' && (
           <>
-            <div className="login-page__header">
-              <h1 className="login-page__title">{APP_NAME}</h1>
-              <p className="login-page__subtitle">Reset your password</p>
+            <div className="login-page__header space-y-6">
+              <h1 className="login-page__title space-y-6">{APP_NAME}</h1>
+              <p className="login-page__subtitle space-y-6">Reset your password</p>
             </div>
 
-            <form className="login-page__form" onSubmit={(e) => { e.preventDefault(); if (phoneRegex.test(phone) && !loading) handleSendOtp() }}>
-              <div className="login-page__field">
-                <label className="login-page__label" htmlFor="phone">Registered Mobile Number</label>
+            <form className="login-page__form space-y-6" onSubmit={(e) => { e.preventDefault(); if (phoneRegex.test(phone) && !loading) handleSendOtp() }}>
+              <div className="login-page__field space-y-6">
+                <label className="login-page__label space-y-6" htmlFor="phone">Registered Mobile Number</label>
                 <input
                   id="phone"
                   type="tel"
                   inputMode="numeric"
-                  className="login-page__input"
+                  className="login-page__input space-y-6"
                   placeholder="10-digit mobile number"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
@@ -171,13 +171,13 @@ export default function ForgotPasswordPage() {
                 />
               </div>
 
-              {error && <p className="login-page__error">{error}</p>}
+              {error && <p className="login-page__error space-y-6">{error}</p>}
 
-              <button type="submit" className="login-page__submit" disabled={!phoneRegex.test(phone) || loading}>
+              <button type="submit" className="login-page__submit space-y-6" disabled={!phoneRegex.test(phone) || loading}>
                 {loading ? 'Sending OTP…' : 'Send OTP'}
               </button>
 
-              <p className="login-page__hint">
+              <p className="login-page__hint space-y-6">
                 <Link to={ROUTES.LOGIN} style={{ color: 'var(--color-primary-500)' }}>Back to Sign In</Link>
               </p>
             </form>
@@ -186,9 +186,9 @@ export default function ForgotPasswordPage() {
 
         {step === 'verify' && (
           <>
-            <div className="login-page__header">
-              <h1 className="login-page__title">Enter OTP</h1>
-              <p className="login-page__subtitle">Sent to {maskPhone(phone)}</p>
+            <div className="login-page__header space-y-6">
+              <h1 className="login-page__title space-y-6">Enter OTP</h1>
+              <p className="login-page__subtitle space-y-6">Sent to {maskPhone(phone)}</p>
             </div>
 
             <div className="auth-otp">
@@ -214,14 +214,14 @@ export default function ForgotPasswordPage() {
                 ))}
               </div>
 
-              <div className="login-page__field" style={{ marginTop: 'var(--space-2)' }}>
-                <label className="login-page__label" htmlFor="newPassword">New Password</label>
-                <input id="newPassword" type="password" className="login-page__input" placeholder="At least 6 characters" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} autoComplete="new-password" />
+              <div className="login-page__field space-y-6" style={{ marginTop: 'var(--space-2)' }}>
+                <label className="login-page__label space-y-6" htmlFor="newPassword">New Password</label>
+                <input id="newPassword" type="password" className="login-page__input space-y-6" placeholder="At least 6 characters" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} autoComplete="new-password" />
               </div>
 
-              <div className="login-page__field">
-                <label className="login-page__label" htmlFor="confirmPassword">Confirm Password</label>
-                <input id="confirmPassword" type="password" className="login-page__input" placeholder="Repeat password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="new-password" />
+              <div className="login-page__field space-y-6">
+                <label className="login-page__label space-y-6" htmlFor="confirmPassword">Confirm Password</label>
+                <input id="confirmPassword" type="password" className="login-page__input space-y-6" placeholder="Repeat password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="new-password" />
               </div>
 
               {error && <p className="auth-otp__error">{error}</p>}
@@ -235,7 +235,7 @@ export default function ForgotPasswordPage() {
               </div>
 
               <button
-                className="login-page__submit"
+                className="login-page__submit space-y-6"
                 disabled={otp.join('').length < 6 || !newPassword || !confirmPassword || loading}
                 onClick={handleReset}
                 type="button"
@@ -248,12 +248,12 @@ export default function ForgotPasswordPage() {
 
         {step === 'success' && (
           <>
-            <div className="login-page__header">
+            <div className="login-page__header space-y-6">
               <div style={{ fontSize: 48, textAlign: 'center', marginBottom: 'var(--space-2)' }}>✓</div>
-              <h1 className="login-page__title" style={{ fontSize: 'var(--fs-2xl)' }}>Password Reset!</h1>
-              <p className="login-page__subtitle">Your password has been updated. All devices have been signed out.</p>
+              <h1 className="login-page__title space-y-6" style={{ fontSize: 'var(--fs-2xl)' }}>Password Reset!</h1>
+              <p className="login-page__subtitle space-y-6">Your password has been updated. All devices have been signed out.</p>
             </div>
-            <button className="login-page__submit" onClick={() => navigate(ROUTES.LOGIN, { replace: true })} type="button">
+            <button className="login-page__submit space-y-6" onClick={() => navigate(ROUTES.LOGIN, { replace: true })} type="button">
               Sign In
             </button>
           </>

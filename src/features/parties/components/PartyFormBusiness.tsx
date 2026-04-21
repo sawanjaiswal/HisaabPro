@@ -18,7 +18,7 @@ export function PartyFormBusiness({ form, errors, onUpdate, gstinVerify }: Party
   const { status, result, stateName } = gstinVerify
 
   return (
-    <div className="create-party-section">
+    <div className="create-party-section py-0">
       <div>
         <Input
           label={t.gstin}

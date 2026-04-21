@@ -23,7 +23,7 @@ const STATUS_OPTIONS: { value: ProductStatus; label: string }[] = [
 export function ProductFormExtra({ form, errors, onUpdate, taxCategories = [] }: ProductFormExtraProps) {
   const { t } = useLanguage()
   return (
-    <div className="create-party-section">
+    <div className="create-party-section py-0">
       {taxCategories.length > 0 && (
         <div className="input-group">
           <label htmlFor="product-tax-cat" className="input-label">{t.taxCategoryLabel}</label>

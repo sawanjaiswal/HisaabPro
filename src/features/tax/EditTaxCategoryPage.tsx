@@ -26,7 +26,7 @@ export default function EditTaxCategoryPage() {
     return (
       <AppShell>
         <Header title={t.editTaxRate} backTo={ROUTES.SETTINGS_TAX_RATES} />
-        <PageContainer className="tax-category-form-page">
+        <PageContainer className="tax-category-form-page space-y-6">
           <Skeleton width="100%" height="300px" borderRadius="var(--radius-lg)" />
         </PageContainer>
       </AppShell>
@@ -57,7 +57,7 @@ function EditForm({ editId, businessId, initialData }: { editId: string; busines
   return (
     <AppShell>
       <Header title={t.editTaxRate} backTo={ROUTES.SETTINGS_TAX_RATES} />
-      <PageContainer className="tax-category-form-page">
+      <PageContainer className="tax-category-form-page space-y-6">
         <TaxCategoryFormFields form={form} errors={errors} onUpdate={updateField} />
       </PageContainer>
       <div className="tax-category-form-actions">

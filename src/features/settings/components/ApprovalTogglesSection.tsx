@@ -16,7 +16,7 @@ export function ApprovalTogglesSection({
 
   return (
     <section>
-      <p className="settings-section-title">{t.approvalsTitle}</p>
+      <p className="settings-section-title py-0">{t.approvalsTitle}</p>
       <div className="txn-controls">
 
         <div className="txn-control-row">

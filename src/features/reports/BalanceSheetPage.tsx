@@ -22,17 +22,17 @@ import { toLocalISODate } from '../../lib/format'
 
 function SectionCard({ section }: { section: BalanceSheetSection }) {
   return (
-    <div className="finance-section">
-      <div className="finance-section__header">
-        <span className="finance-section__title">{section.label}</span>
-        <span className="finance-section__total">{formatPaise(section.total)}</span>
+    <div className="finance-section py-0">
+      <div className="finance-section__header py-0">
+        <span className="finance-section__title py-0">{section.label}</span>
+        <span className="finance-section__total py-0">{formatPaise(section.total)}</span>
       </div>
       {section.items.length > 0 && (
-        <div className="finance-section__rows">
+        <div className="finance-section__rows py-0">
           {section.items.map((item) => (
-            <div key={item.label} className="finance-section__row">
-              <span className="finance-section__row-label">{item.label}</span>
-              <span className="finance-section__row-amount">{formatPaise(item.amount)}</span>
+            <div key={item.label} className="finance-section__row py-0">
+              <span className="finance-section__row-label py-0">{item.label}</span>
+              <span className="finance-section__row-amount py-0">{formatPaise(item.amount)}</span>
             </div>
           ))}
         </div>
@@ -70,7 +70,7 @@ export default function BalanceSheetPage() {
         <Header title={t.balanceSheet} backTo={ROUTES.REPORTS} />
         <PageContainer>
           <div className="finance-skeleton" aria-busy="true">
-            {['sk-1', 'sk-2', 'sk-3'].map((k) => <div key={k} className="finance-skeleton__section" />)}
+            {['sk-1', 'sk-2', 'sk-3'].map((k) => <div key={k} className="finance-skeleton__section py-0" />)}
           </div>
         </PageContainer>
       </AppShell>

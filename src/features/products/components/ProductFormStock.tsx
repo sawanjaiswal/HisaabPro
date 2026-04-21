@@ -19,7 +19,7 @@ const VALIDATION_MODE_OPTIONS: { value: StockValidationMode; label: string }[] =
 export function ProductFormStock({ form, errors, onUpdate }: ProductFormStockProps) {
   const { t } = useLanguage()
   return (
-    <div className="create-party-section">
+    <div className="create-party-section py-0">
       <div className="input-group">
         <label htmlFor="product-opening-stock" className="input-label">{t.openingStockLabel}</label>
         <input

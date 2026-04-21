@@ -34,14 +34,14 @@ export default function PosPage() {
 
   if (cart.status === 'receipt' && checkout.receipt) {
     return (
-      <div className="pos-page">
+      <div className="pos-page space-y-6">
         <SaleReceipt receipt={checkout.receipt} items={checkout.receiptItems} onNewSale={handleNewSale} />
       </div>
     )
   }
 
   return (
-    <div className="pos-page">
+    <div className="pos-page space-y-6">
       <header className="pos-header">
         <button type="button" className="pos-back-btn" onClick={() => navigate(ROUTES.DASHBOARD)} aria-label={t.back}>
           <ArrowLeft size={20} aria-hidden="true" />

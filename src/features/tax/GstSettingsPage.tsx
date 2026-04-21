@@ -33,7 +33,7 @@ export default function GstSettingsPage() {
     <AppShell>
       <Header title={t.gstSettings} backTo={ROUTES.SETTINGS} />
       <PageContainer>
-        <div className="gst-settings-page stagger-enter">
+        <div className="gst-settings-page stagger-enter space-y-6">
           {status === 'loading' && <GstSettingsSkeleton />}
           {status === 'error' && (
             <ErrorState title={t.couldNotLoadGstSettings} message={t.checkConnectionRetry} onRetry={refresh} />

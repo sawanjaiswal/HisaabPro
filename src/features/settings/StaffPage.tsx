@@ -39,7 +39,7 @@ export default function StaffPage() {
   return (
     <AppShell>
       <Header title={t.staff} backTo={ROUTES.SETTINGS} actions={inviteAction} />
-      <PageContainer className="staff-page">
+      <PageContainer className="staff-page space-y-6">
 
         {status === 'loading' && (
           <div className="staff-list" aria-busy="true" aria-label={t.loadingStaffLabel}>
@@ -78,7 +78,7 @@ export default function StaffPage() {
             ) : (
               <>
                 <section>
-                  <p className="settings-section-title">{t.activeStaffTitle}</p>
+                  <p className="settings-section-title py-0">{t.activeStaffTitle}</p>
                   <div className="staff-list stagger-list">
                     {data.staff.map((member) => (
                       <StaffCard
@@ -94,7 +94,7 @@ export default function StaffPage() {
 
                 {data.pending.length > 0 && (
                   <section>
-                    <p className="settings-section-title">{t.pendingInvitesTitle}</p>
+                    <p className="settings-section-title py-0">{t.pendingInvitesTitle}</p>
                     <div className="staff-list stagger-list">
                       {data.pending.map((invite) => (
                         <InviteCard

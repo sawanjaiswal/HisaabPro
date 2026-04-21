@@ -11,7 +11,7 @@ export function LockPeriodSection({ lockAfterDays, onUpdate }: LockPeriodSection
   const { t } = useLanguage()
   return (
     <section>
-      <p className="settings-section-title">{t.lockSettingsTitle}</p>
+      <p className="settings-section-title py-0">{t.lockSettingsTitle}</p>
       <div className="txn-controls">
         <div className="txn-control-row">
           <div className="txn-control-content">
@@ -27,17 +27,7 @@ export function LockPeriodSection({ lockAfterDays, onUpdate }: LockPeriodSection
               onUpdate('lockAfterDays', raw === '' ? null : Number(raw))
             }}
             aria-label={t.lockPeriodAria}
-            style={{
-              padding: 'var(--space-2) var(--space-3)',
-              borderRadius: 'var(--radius-md)',
-              border: '1.5px solid var(--color-gray-300)',
-              fontSize: 'var(--fs-df)',
-              fontFamily: 'var(--font-primary)',
-              minHeight: 44,
-              background: 'var(--color-gray-0, #fff)',
-              color: 'var(--color-gray-900)',
-              flexShrink: 0,
-            }}
+            className="py-0"
           >
             {LOCK_PERIOD_OPTIONS.map((opt) => (
               <option key={opt.label} value={opt.value ?? ''}>

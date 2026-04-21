@@ -21,7 +21,7 @@ export default function JoinBusinessPage() {
 
   if (success) {
     return (
-      <div className="join-business-page">
+      <div className="join-business-page space-y-6">
         <Header title={t.joinBusiness} backTo={ROUTES.SETTINGS} />
         <div className="join-business-content">
           <div className="join-business-success">
@@ -46,10 +46,10 @@ export default function JoinBusinessPage() {
   }
 
   return (
-    <div className="join-business-page">
+    <div className="join-business-page space-y-6">
       <Header title={t.joinBusiness} backTo={ROUTES.SETTINGS} />
       <div className="join-business-content stagger-enter">
-        <div className="join-business-icon-container">
+        <div className="join-business-icon-container space-y-6">
           <Building2 size={40} className="join-business-icon" />
         </div>
         <h2 className="join-business-heading">{t.enterInviteCodeHeading}</h2>

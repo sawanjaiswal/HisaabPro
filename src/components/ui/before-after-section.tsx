@@ -218,7 +218,7 @@ export function BeforeAfterSection() {
     reducedMotion ? {} : reveal(delay, y)
 
   return (
-    <section className="py-20 md:py-28 px-6 landing-section-tinted">
+    <section className="md:py-28 px-6 landing-section-tinted py-0">
       <div className="max-w-5xl mx-auto">
         {/* ── Section badge (hero badge style) ── */}
         <motion.div {...r(0.1, 20)} className="flex justify-center mb-6">
@@ -238,7 +238,7 @@ export function BeforeAfterSection() {
 
         {/* ── Heading (hero gradient style) ── */}
         <motion.div {...r(0.2)} className="text-center mb-10">
-          <h2 className="text-center max-w-3xl mx-auto leading-tight mb-4 font-medium lp-heading-plain">
+          <h2 className="text-center max-w-3xl mx-auto leading-tight font-medium lp-heading-plain">
             <span className="text-3xl md:text-4xl lg:text-5xl">From Paper Chaos.</span>
             <br />
             <span className="text-3xl md:text-4xl lg:text-5xl">To Digital Clarity.</span>
@@ -288,7 +288,7 @@ export function BeforeAfterSection() {
           >
             {/* ── Metric strip ── */}
             <div
-              className="rounded-xl mb-8 py-3 px-5 flex items-center justify-center gap-4 sm:gap-6"
+              className="rounded-xl py-3 px-5 flex items-center justify-center gap-4 sm:gap-6"
               style={{ background: 'var(--lp-bg-surface)', border: '1px solid var(--lp-card-border)' }}
             >
               <span className="text-sm lp-text-muted hidden sm:inline">{tab.subtitle}</span>

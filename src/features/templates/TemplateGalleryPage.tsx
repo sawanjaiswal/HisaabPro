@@ -86,8 +86,8 @@ export default function TemplateGalleryPage() {
           <>
             {/* User's custom templates */}
             {templates.length > 0 && (
-              <section className="template-section">
-                <h2 className="template-section-title">{t.yourTemplates} ({templates.length})</h2>
+              <section className="template-section py-0">
+                <h2 className="template-section-title py-0">{t.yourTemplates} ({templates.length})</h2>
                 <div className="template-grid stagger-list" role="list" aria-label={t.yourTemplates}>
                   {templates.map((template) => (
                     <div key={template.id} role="listitem">
@@ -108,8 +108,8 @@ export default function TemplateGalleryPage() {
 
             {/* Base templates by category */}
             {TEMPLATE_CATEGORIES.map((category) => (
-              <section key={category.titleKey} className="template-section">
-                <h2 className="template-section-title">{t[category.titleKey]}</h2>
+              <section key={category.titleKey} className="template-section py-0">
+                <h2 className="template-section-title py-0">{t[category.titleKey]}</h2>
                 <div className="template-grid" role="list" aria-label={`${t[category.titleKey]} ${t.templatesAriaLabel}`}>
                   {category.templates.map((base) => (
                     <div key={base} role="listitem">

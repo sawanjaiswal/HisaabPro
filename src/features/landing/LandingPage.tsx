@@ -92,7 +92,7 @@ export default function LandingPage() {
 
       {/* 4. Feature Deep-Dive — bento grid */}
       <Suspense fallback={null}>
-        <div className="landing-section-tinted">
+        <div className="landing-section-tinted py-0">
           <LazyBentoGrid />
         </div>
       </Suspense>
@@ -114,7 +114,7 @@ export default function LandingPage() {
 
       {/* 8. Pricing — ₹INR, 3 tiers */}
       <Suspense fallback={null}>
-        <div className="landing-section-tinted">
+        <div className="landing-section-tinted py-0">
           <LazyPricing />
         </div>
       </Suspense>
@@ -126,14 +126,14 @@ export default function LandingPage() {
 
       {/* 9. FAQ — objection handling */}
       <Suspense fallback={null}>
-        <div className="landing-section-tinted">
+        <div className="landing-section-tinted py-0">
           <LazyFAQ />
         </div>
       </Suspense>
 
       {/* 10. Final CTA + Download anchor */}
       <Suspense fallback={null}>
-        <div id={LP_SECTIONS.FINAL_CTA} style={{ paddingBottom: '5rem' }}>
+        <div id={LP_SECTIONS.FINAL_CTA} className="py-0">
           <div id={LP_SECTIONS.DOWNLOAD} />
           <LazyCTA />
         </div>

@@ -47,7 +47,7 @@ export function PartyFormCredit({ form, errors, onUpdate }: PartyFormCreditProps
   }
 
   return (
-    <div className="create-party-section">
+    <div className="create-party-section py-0">
       {/* Opening Balance */}
       <div className="input-group">
         <span className="input-label" id="opening-balance-label">{t.openingBalance}</span>

@@ -31,7 +31,7 @@ export function InvoiceDetailsSection({
 }: InvoiceDetailsSectionProps) {
   const { t } = useLanguage()
   return (
-    <div className="line-items-section">
+    <div className="line-items-section py-0">
       <div className="line-item-field">
         <label className="label" htmlFor="invoice-date">{t.invoiceDateLabel}</label>
         <input

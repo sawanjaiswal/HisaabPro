@@ -125,7 +125,7 @@ export default function TdsTcsReportPage() {
         {/* Entry list */}
         {entries.length > 0 && (
           <>
-            <p className="tds-tcs-section-heading">
+            <p className="tds-tcs-section-heading py-0">
               {entries.length} {entries.length === 1 ? t.entry : t.entries}
             </p>
             <div className="tds-tcs-entry-list stagger-list">

@@ -73,7 +73,7 @@ export default function DashboardPage() {
         onCalculatorClick={handleCalculatorClick}
       />
 
-      <div className="dashboard-page stagger-enter">
+      <div className="dashboard-page stagger-enter space-y-6">
         {/* Background pattern overlay */}
         <div className="dashboard-bg-pattern" aria-hidden="true" />
 
@@ -91,7 +91,7 @@ export default function DashboardPage() {
 
         {/* Empty — first-time user */}
         {status === 'success' && data && isHomeDashboardEmpty(data) && (
-          <div className="dashboard-top-section">
+          <div className="dashboard-top-section py-0">
             <DashboardQuickActions actions={QUICK_ACTIONS} onAction={handleQuickAction} />
             <EmptyState
               icon={<BarChart3 size={48} aria-hidden="true" />}
@@ -114,7 +114,7 @@ export default function DashboardPage() {
         {status === 'success' && data && !isHomeDashboardEmpty(data) && (
           <>
             {/* Gradient area */}
-            <div className="dashboard-top-section">
+            <div className="dashboard-top-section py-0">
               <div className={`dashboard-sales-hero ${data.today.salesAmount === 0 ? 'dashboard-sales-hero--zero' : ''}`}>
                 <span className="dashboard-sales-label">{t.todaysSale}</span>
                 {data.today.salesAmount > 0 ? (
@@ -158,7 +158,7 @@ export default function DashboardPage() {
             />
 
             {/* White drawer section */}
-            <div className="dashboard-white-section">
+            <div className="dashboard-white-section py-0">
               <TopDebtors
                 debtors={data.topDebtors}
                 totalOutstanding={data.outstanding.receivable.total}
