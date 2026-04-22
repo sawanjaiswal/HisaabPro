@@ -22,7 +22,7 @@ interface EmptyStateProps {
 export function EmptyState({ icon, title, description, action, className }: EmptyStateProps) {
   return (
     <FeedbackState
-      icon={icon ?? <Inbox size={28} aria-hidden="true" />}
+      icon={icon ?? <Inbox size={22} aria-hidden="true" />}
       variant="teal"
       title={title}
       description={description}

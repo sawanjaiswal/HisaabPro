@@ -40,7 +40,7 @@ export function NetworkError({
 
   return (
     <FeedbackState
-      icon={icon ?? <WifiOff size={28} aria-hidden="true" />}
+      icon={icon ?? <WifiOff size={22} aria-hidden="true" />}
       variant="warning"
       title={title}
       description={message}

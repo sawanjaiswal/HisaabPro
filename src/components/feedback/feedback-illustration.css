@@ -9,16 +9,16 @@
 
 .feedback-illustration {
   position: relative;
-  width: 96px;
-  height: 96px;
+  width: 72px;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .feedback-illustration--lg {
-  width: 120px;
-  height: 120px;
+  width: 96px;
+  height: 96px;
 }
 
 /* ─── Decorative ring — variant colors ───────────────────────────────────── */
@@ -63,7 +63,7 @@
 .feedback-state--lg .feedback-ring--teal::after {
   content: '';
   position: absolute;
-  inset: 8px;
+  inset: 6px;
   border-radius: var(--radius-full);
   border: 1.5px solid var(--overlay-primary-06);
 }
@@ -72,7 +72,7 @@
 
 .feedback-pulse {
   position: absolute;
-  inset: 8px;
+  inset: 6px;
   border-radius: var(--radius-full);
   border: 1.5px solid var(--overlay-warning-10);
   animation: signal-pulse 2s ease-out infinite;
@@ -81,14 +81,21 @@
 /* ─── Icon circle — variant colors ───────────────────────────────────────── */
 
 .feedback-icon-circle {
-  width: 64px;
-  height: 64px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   z-index: 1;
+}
+
+/* Normalize icon size across all call sites — overrides any size prop */
+.feedback-icon-circle > svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
 }
 
 /* Teal (empty, info, 404) */
@@ -117,8 +124,13 @@
 
 /* Large icon circle (404) */
 .feedback-state--lg .feedback-icon-circle {
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
+}
+
+.feedback-state--lg .feedback-icon-circle > svg {
+  width: 28px;
+  height: 28px;
 }
 
 /* ─── Keyframe animations ────────────────────────────────────────────────── */

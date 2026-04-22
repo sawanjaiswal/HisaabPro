@@ -25,6 +25,8 @@ android/local.properties
 android/keystore.properties
 android/*.keystore
 android/*.jks
+*.aab
+*.apk
 ios/
 
 # Testing

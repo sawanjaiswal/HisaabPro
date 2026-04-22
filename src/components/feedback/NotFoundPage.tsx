@@ -15,7 +15,7 @@ export default function NotFoundPage() {
 
   return (
     <FeedbackState
-      icon={<MapPin size={36} aria-hidden="true" />}
+      icon={<MapPin size={28} aria-hidden="true" />}
       variant="teal"
       size="lg"
       subtitle={<span className="feedback-404-code" aria-hidden="true">404</span>}

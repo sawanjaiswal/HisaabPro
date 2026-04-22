@@ -40,7 +40,7 @@ export function ErrorState({
 
   return (
     <FeedbackState
-      icon={icon ?? <AlertTriangle size={28} aria-hidden="true" />}
+      icon={icon ?? <AlertTriangle size={22} aria-hidden="true" />}
       variant="error"
       title={title}
       description={message}
