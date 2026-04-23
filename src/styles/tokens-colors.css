@@ -100,6 +100,7 @@
   --color-background:     var(--color-gray-50);
   --color-surface:        var(--color-gray-0);
   --color-surface-alt:    var(--color-gray-100);
+  --color-surface-hover:  var(--color-gray-50);
   --color-border:         var(--color-gray-200);
   --color-text:           var(--color-gray-900);
   --color-text-primary:   var(--color-gray-900);

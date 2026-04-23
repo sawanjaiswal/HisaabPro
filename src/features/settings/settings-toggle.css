@@ -28,7 +28,7 @@
   position: relative;
   width: 44px;
   height: 24px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background-color: var(--color-gray-300);
   transition: background-color 0.2s ease;
 }

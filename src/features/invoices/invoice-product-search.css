@@ -63,7 +63,7 @@
   list-style: none;
   margin: 0;
   padding: var(--space-1) 0;
-  z-index: var(--z-dropdown, 100);
+  z-index: var(--z-dropdown);
   max-height: 320px;
   overflow-y: auto;
 }

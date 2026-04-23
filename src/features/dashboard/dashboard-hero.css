@@ -113,7 +113,7 @@
 
 .dashboard-hero-card {
   border: none;
-  border-radius: 24px;
+  border-radius: var(--radius-2xl);
   padding: var(--pad-card-hero);
   cursor: pointer;
   display: flex;

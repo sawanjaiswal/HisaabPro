@@ -110,12 +110,12 @@
   left: 0;
   right: 0;
   background: var(--color-surface);
-  border-radius: 1rem 1rem 0 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   z-index: var(--z-modal);
   max-height: 60vh;
   overflow-y: auto;
   animation: slide-up 0.25s ease;
-  padding: 0.5rem 0 env(safe-area-inset-bottom, 0);
+  padding: var(--space-2) 0 env(safe-area-inset-bottom, 0);
 }
 
 .business-switcher-handle {
@@ -123,13 +123,13 @@
   height: 4px;
   border-radius: 2px;
   background: var(--color-border);
-  margin: 0.5rem auto;
+  margin: var(--space-2) auto;
 }
 
 .business-switcher-title {
   font-size: var(--fs-base);
   font-weight: 600;
-  padding: 0.5rem 1rem;
+  padding: var(--space-2) var(--space-4);
   color: var(--color-text);
 }
 
@@ -142,8 +142,8 @@
 .business-switcher-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
   cursor: pointer;
   transition: background 0.15s;
   border: none;
@@ -184,8 +184,8 @@
 .business-switcher-add {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
   cursor: pointer;
   border: none;
   background: none;
@@ -197,7 +197,7 @@
 }
 
 .business-switcher-error {
-  padding: 0.5rem 1rem;
+  padding: var(--space-2) var(--space-4);
   font-size: var(--fs-sm);
   color: var(--color-error);
   text-align: center;
