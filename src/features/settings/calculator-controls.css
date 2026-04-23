@@ -33,8 +33,8 @@
   border-radius: var(--radius-lg);
   background: linear-gradient(160deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
   box-shadow: var(--shadow-teal-indicator);
-  transition: left 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-              width 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: left 0.25s var(--ease-smooth),
+              width 0.25s var(--ease-smooth);
   z-index: 0;
 }
 

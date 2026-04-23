@@ -40,8 +40,8 @@
 }
 
 @theme {
-  --animate-accordion-down: accordion-down 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-  --animate-accordion-up: accordion-up 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  --animate-accordion-down: accordion-down 0.4s var(--ease-out-soft);
+  --animate-accordion-up: accordion-up 0.3s var(--ease-out-soft);
 }
 
 /* ── Shared Page Entrance Animations ── */

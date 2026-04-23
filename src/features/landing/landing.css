@@ -385,7 +385,7 @@ body:has(.landing-root) {
    ============================================================ */
 
 [data-slot="accordion-trigger"] svg {
-  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: transform 0.3s var(--ease-out-soft);
 }
 
 [data-slot="accordion-content"] {
