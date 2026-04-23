@@ -14,11 +14,11 @@ import {
 } from './helpers.js'
 
 // Mock the dashboard service — all functions stubbed
-vi.mock('../services/dashboard.service.js', () => ({
+vi.mock('../services/dashboard/index.js', () => ({
   getHomeDashboard: vi.fn(),
   getDashboardStats: vi.fn(),
 }))
-import * as dashboardService from '../services/dashboard.service.js'
+import * as dashboardService from '../services/dashboard/index.js'
 
 const app = createApp()
 

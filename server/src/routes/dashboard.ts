@@ -7,7 +7,7 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { auth } from '../middleware/auth.js'
 import { sendSuccess } from '../lib/response.js'
 import { dashboardStatsSchema } from '../schemas/report.schemas.js'
-import { getDashboardStats, getHomeDashboard } from '../services/dashboard.service.js'
+import { getDashboardStats, getHomeDashboard } from '../services/dashboard/index.js'
 
 const router = Router()
 
