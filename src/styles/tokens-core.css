@@ -195,5 +195,6 @@
   /* Layout */
   --side-padding: var(--space-4);
   --bottom-nav-safe-inset: env(safe-area-inset-bottom, 0px);
-  --bottom-nav-height: calc(72px + var(--bottom-nav-safe-inset));
+  /* 64px bar + 28px FAB overhang + 11px FAB glow + 9px breathing buffer = 112px */
+  --bottom-nav-height: calc(112px + var(--bottom-nav-safe-inset));
 }

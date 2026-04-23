@@ -202,11 +202,11 @@
   display: block;
 }
 
-/* Reserve page space so content never hides behind the bar.
- * Includes the bar height, safe-area chin, and a small visual buffer.
+/* Reserve page space so content never hides behind the bar OR the FAB.
+ * Uses --bottom-nav-height which already includes bar + FAB overhang + glow + buffer.
  */
 body:has(.bnav) {
-  padding-bottom: calc(var(--bnav-h) + env(safe-area-inset-bottom, 0px) + 12px);
+  padding-bottom: var(--bottom-nav-height);
 }
 
 /* Dark mode */
