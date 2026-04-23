@@ -23,7 +23,7 @@
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-gray-100);
   overflow: hidden;
-  animation: calc-settings-slide 0.15s ease;
+  animation: calc-settings-slide var(--duration-snappy) var(--ease-default);
 }
 
 .calculator-settings-row {
@@ -59,7 +59,7 @@
   height: 22px;
   border-radius: 11px;
   background: var(--color-gray-300);
-  transition: background-color 0.2s ease;
+  transition: background-color var(--duration-normal) var(--ease-default);
   flex-shrink: 0;
 }
 
@@ -76,7 +76,7 @@
   border-radius: 50%;
   background: var(--color-gray-0);
   box-shadow: var(--shadow-toggle-knob-sm);
-  transition: transform 0.2s ease;
+  transition: transform var(--duration-normal) var(--ease-default);
 }
 
 .calculator-settings-toggle--on .calculator-settings-toggle-knob {

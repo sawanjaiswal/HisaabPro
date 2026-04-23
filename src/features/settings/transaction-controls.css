@@ -68,7 +68,7 @@
   min-height: 44px;
   min-width: 80px;
   background-color: var(--color-gray-0);
-  transition: border-color 0.15s ease;
+  transition: border-color var(--duration-snappy) var(--ease-default);
 }
 
 .txn-threshold-input:focus-within {

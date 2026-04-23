@@ -36,7 +36,7 @@
   font-family: var(--font-primary);
   cursor: pointer;
   min-height: 44px;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition: border-color var(--duration-snappy) var(--ease-default), background-color var(--duration-snappy) var(--ease-default);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -99,7 +99,7 @@
 
 .role-module-chevron {
   color: var(--color-gray-400);
-  transition: transform 0.2s ease;
+  transition: transform var(--duration-normal) var(--ease-default);
 }
 
 .role-module-chevron--open {
@@ -109,7 +109,7 @@
 .role-module-content {
   border-top: 1px solid var(--color-gray-100);
   padding: var(--space-1) 0;
-  animation: role-module-expand 0.15s ease;
+  animation: role-module-expand var(--duration-snappy) var(--ease-default);
 }
 
 @keyframes role-module-expand {
@@ -180,7 +180,7 @@
   font-weight: 600;
   border: none;
   cursor: pointer;
-  transition: background-color 0.15s ease, opacity 0.15s ease;
+  transition: background-color var(--duration-snappy) var(--ease-default), opacity var(--duration-snappy) var(--ease-default);
 }
 
 .role-save-button:disabled {

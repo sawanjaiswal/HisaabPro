@@ -13,7 +13,7 @@
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: none;
-  transition: transform 0.15s ease;
+  transition: transform var(--duration-snappy) var(--ease-default);
   flex-shrink: 0;
 }
 
@@ -28,7 +28,7 @@
 }
 
 .business-avatar--switching {
-  animation: avatar-flip 0.3s ease;
+  animation: avatar-flip var(--duration-slow) var(--ease-default);
 }
 
 @keyframes avatar-flip {
@@ -44,11 +44,11 @@
 }
 
 .business-avatar-container--swipe-down .business-avatar {
-  animation: avatar-swipe-down 0.3s ease;
+  animation: avatar-swipe-down var(--duration-slow) var(--ease-default);
 }
 
 .business-avatar-container--swipe-up .business-avatar {
-  animation: avatar-swipe-up 0.3s ease;
+  animation: avatar-swipe-up var(--duration-slow) var(--ease-default);
 }
 
 @keyframes avatar-swipe-down {
@@ -101,7 +101,7 @@
   inset: 0;
   background: var(--backdrop-dark);
   z-index: var(--z-modal-backdrop);
-  animation: fadeIn 0.2s ease;
+  animation: fadeIn var(--duration-normal) var(--ease-default);
 }
 
 .business-switcher-sheet {

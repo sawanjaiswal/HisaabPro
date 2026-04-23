@@ -96,7 +96,7 @@
   border: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: color 0.15s ease, transform 0.12s ease;
+  transition: color var(--duration-snappy) var(--ease-default), transform 0.12s ease;
 }
 
 .bnav__tab:hover {

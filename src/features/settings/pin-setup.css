@@ -50,7 +50,7 @@
   border-radius: 50%;
   border: 2px solid var(--color-gray-300);
   background-color: transparent;
-  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  transition: background-color var(--duration-snappy) var(--ease-default), border-color var(--duration-snappy) var(--ease-default), transform var(--duration-fast) var(--ease-default);
 }
 
 .pin-dot--filled {
@@ -109,7 +109,7 @@
   font-weight: 600;
   cursor: pointer;
   min-height: 64px;
-  transition: background-color 0.1s ease, transform 0.1s ease;
+  transition: background-color var(--duration-fast) var(--ease-default), transform var(--duration-fast) var(--ease-default);
   -webkit-tap-highlight-color: transparent;
 }
 

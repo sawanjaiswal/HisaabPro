@@ -42,7 +42,7 @@
   cursor: pointer;
   white-space: nowrap;
   min-height: 44px;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition: border-color var(--duration-snappy) var(--ease-default), background-color var(--duration-snappy) var(--ease-default);
   -webkit-tap-highlight-color: transparent;
 }
 

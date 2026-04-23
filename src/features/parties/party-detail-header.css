@@ -194,7 +194,7 @@
   white-space: nowrap;
   min-height: 40px;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition: background var(--duration-snappy) var(--ease-default), border-color var(--duration-snappy) var(--ease-default);
 }
 
 .party-quick-action-btn:hover {

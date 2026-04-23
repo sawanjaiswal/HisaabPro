@@ -80,7 +80,7 @@
   cursor: pointer;
   text-align: left;
   width: 100%;
-  transition: background 0.1s ease;
+  transition: background var(--duration-fast) var(--ease-default);
 }
 
 .party-txn-row:first-child {

@@ -112,7 +112,7 @@
   font-size: var(--fs-md);
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: background-color var(--duration-snappy) var(--ease-default);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -151,7 +151,7 @@
   z-index: var(--z-overlay);
   font-size: var(--fs-lg);
   opacity: 0.6;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  transition: transform var(--duration-snappy) var(--ease-default), box-shadow var(--duration-snappy) var(--ease-default), opacity var(--duration-snappy) var(--ease-default);
   -webkit-tap-highlight-color: transparent;
 }
 

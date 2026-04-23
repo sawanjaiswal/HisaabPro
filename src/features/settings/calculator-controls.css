@@ -53,7 +53,7 @@
   background: var(--color-gray-0);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: all 0.2s ease;
+  transition: all var(--duration-normal) var(--ease-default);
   padding: 0;
   box-shadow: var(--shadow-key-btn);
 }
@@ -74,7 +74,7 @@
   font-size: var(--fs-df);
   font-weight: 700;
   color: var(--color-gray-700);
-  transition: color 0.2s ease;
+  transition: color var(--duration-normal) var(--ease-default);
 }
 
 .calc-gst-rate-suffix {
@@ -82,7 +82,7 @@
   font-size: var(--fs-3xs);
   font-weight: 600;
   color: var(--color-gray-400);
-  transition: color 0.2s ease;
+  transition: color var(--duration-normal) var(--ease-default);
   margin-top: 1px;
 }
 
@@ -113,7 +113,7 @@
   text-transform: uppercase;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: all 0.15s ease;
+  transition: all var(--duration-snappy) var(--ease-default);
   box-shadow: var(--shadow-key-btn);
 }
 

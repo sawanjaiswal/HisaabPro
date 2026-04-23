@@ -27,7 +27,7 @@
   min-height: 52px;
   text-align: left;
   -webkit-tap-highlight-color: transparent;
-  transition: background-color 0.15s ease;
+  transition: background-color var(--duration-snappy) var(--ease-default);
 }
 
 .staff-role-option:active {

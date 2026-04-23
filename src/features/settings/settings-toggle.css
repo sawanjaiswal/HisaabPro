@@ -30,7 +30,7 @@
   height: 24px;
   border-radius: var(--radius-md);
   background-color: var(--color-gray-300);
-  transition: background-color 0.2s ease;
+  transition: background-color var(--duration-normal) var(--ease-default);
 }
 
 .settings-toggle input:checked + .settings-toggle-track {
@@ -47,7 +47,7 @@
   border-radius: 50%;
   background-color: var(--color-gray-0);
   box-shadow: 0 1px 3px var(--color-gray-400);
-  transition: transform 0.2s ease;
+  transition: transform var(--duration-normal) var(--ease-default);
 }
 
 .settings-toggle input:checked + .settings-toggle-track::after {
