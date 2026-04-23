@@ -58,3 +58,6 @@ server/.env
 .claude/design-session-active
 .claude/design-plan-active.md
 .claude/scheduled_tasks.lock
+
+# Lighthouse CI reports (uploaded as GitHub Actions artifact)
+.lighthouseci
