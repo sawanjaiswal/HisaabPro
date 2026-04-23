@@ -49,8 +49,7 @@
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
 
-  filter: drop-shadow(0 -2px 12px rgba(15, 23, 42, 0.08))
-          drop-shadow(0 -1px 3px rgba(15, 23, 42, 0.04));
+  filter: var(--shadow-bnav-bar);
 
   animation: bnavSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -162,18 +161,14 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 
-  background: radial-gradient(circle at 30% 30%, var(--color-lime-highlight, #e5f24a) 0%, var(--color-lime-accent) 70%);
+  background: radial-gradient(circle at 30% 30%, var(--color-lime-highlight) 0%, var(--color-lime-accent) 70%);
   color: var(--color-gray-900);
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  box-shadow:
-    0 0 0 5px rgba(207, 223, 46, 0.16),
-    0 0 0 11px rgba(207, 223, 46, 0.08),
-    0 8px 18px rgba(207, 223, 46, 0.42),
-    0 4px 10px rgba(0, 0, 0, 0.10);
+  box-shadow: var(--shadow-bnav-fab);
 
   transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
               box-shadow 0.18s ease;
@@ -207,33 +202,6 @@
  */
 body:has(.bnav) {
   padding-bottom: var(--bottom-nav-height);
-}
-
-/* Dark mode */
-:is(html.dark) .bnav {
-  background: var(--color-gray-900);
-  filter: drop-shadow(0 -2px 14px rgba(0, 0, 0, 0.5))
-          drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.3));
-}
-
-:is(html.dark) .bnav__tab {
-  color: #94a3b8;
-}
-
-:is(html.dark) .bnav__tab:hover {
-  color: #cbd5e1;
-}
-
-:is(html.dark) .bnav__tab--active {
-  color: #7fd9e1;
-}
-
-:is(html.dark) .bnav__tab:focus-visible {
-  outline-color: #7fd9e1;
-}
-
-:is(html.dark) .bnav__fab {
-  color: var(--color-gray-900);
 }
 
 @media (prefers-reduced-motion: reduce) {

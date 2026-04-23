@@ -101,6 +101,14 @@
   --shadow-teal-gst-mode: 0 1px 4px rgba(11, 79, 94, 0.12);
   --shadow-icon-btn-light: 0 1px 4px rgba(0, 0, 0, 0.08);
   --shadow-card-hover: 0 4px 16px rgba(26, 25, 23, 0.08), 0 2px 6px rgba(26, 25, 23, 0.04);
+  /* Bottom-nav bar drop-shadow (used as filter: var(--shadow-bnav-bar)) */
+  --shadow-bnav-bar: drop-shadow(0 -2px 12px rgba(15, 23, 42, 0.08)) drop-shadow(0 -1px 3px rgba(15, 23, 42, 0.04));
+  /* Bottom-nav FAB — rings + lift + seat */
+  --shadow-bnav-fab:
+    0 0 0 5px rgba(207, 223, 46, 0.16),
+    0 0 0 11px rgba(207, 223, 46, 0.08),
+    0 8px 18px rgba(207, 223, 46, 0.42),
+    0 4px 10px rgba(0, 0, 0, 0.10);
   --backdrop-color: rgba(26, 25, 23, 0.5);
   --backdrop-dark: rgba(0, 0, 0, 0.4);
   --backdrop-medium: rgba(0, 0, 0, 0.3);
@@ -136,6 +144,7 @@
   --overlay-primary-06: rgba(27, 99, 105, 0.06);
   --overlay-primary-04: rgba(27, 99, 105, 0.04);
   --overlay-primary-12: rgba(27, 99, 105, 0.12);
+  --overlay-primary-25: rgba(27, 99, 105, 0.25);
   --overlay-primary-scan: rgba(27, 99, 105, 0.3);
   --overlay-primary-ring-selected: 0 0 0 3px rgba(27, 99, 105, 0.3);
   --overlay-success-10: rgba(34, 197, 94, 0.1);

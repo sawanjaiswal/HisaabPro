@@ -334,8 +334,8 @@
 }
 
 [data-theme="dark"] .sync-status--busy {
-  background: var(--overlay-primary-12, rgba(56, 132, 255, 0.12));
-  border-color: var(--overlay-primary-25, rgba(56, 132, 255, 0.25));
+  background: var(--overlay-primary-12);
+  border-color: var(--overlay-primary-25);
   color: var(--color-primary-400);
 }
 

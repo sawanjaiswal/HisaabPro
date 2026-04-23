@@ -82,6 +82,7 @@
 
   /* Accent — Figma lime */
   --color-lime-accent: #cfdf2e;
+  --color-lime-highlight: #e5f24a;
 
   /* Inverse colors — always white/black regardless of theme (Figma: white-inverse, black-inverse) */
   --color-white-inverse: #FFFFFF;

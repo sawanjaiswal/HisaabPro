@@ -262,7 +262,7 @@
 .batch-delete-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--backdrop-color);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -340,8 +340,8 @@
 }
 
 [data-theme="dark"] .batch-detail-section {
-  background: var(--color-gray-800, #1f1f1f);
-  border-color: var(--color-gray-700, #333);
+  background: var(--color-gray-800);
+  border-color: var(--color-gray-700);
 }
 
 [data-theme="dark"] .batch-detail-value {
@@ -353,11 +353,11 @@
 }
 
 [data-theme="dark"] .batch-detail-row + .batch-detail-row {
-  border-color: var(--color-gray-700, #333);
+  border-color: var(--color-gray-700);
 }
 
 [data-theme="dark"] .batch-delete-dialog {
-  background: var(--color-gray-800, #1f1f1f);
+  background: var(--color-gray-800);
 }
 
 [data-theme="dark"] .batch-delete-title {

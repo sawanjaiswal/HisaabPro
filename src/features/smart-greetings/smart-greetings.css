@@ -308,7 +308,7 @@
 
 [data-theme="dark"] .greeting-editor-textarea:focus {
   border-color: var(--color-primary-400);
-  box-shadow: 0 0 0 3px rgba(var(--color-primary-500-rgb, 20, 184, 166), 0.15);
+  box-shadow: 0 0 0 3px var(--overlay-primary-15);
 }
 
 [data-theme="dark"] .greeting-editor-hint {

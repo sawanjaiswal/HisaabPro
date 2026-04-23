@@ -299,7 +299,7 @@
 }
 
 .godown-form__input--error:focus {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+  box-shadow: 0 0 0 3px var(--overlay-error-10);
 }
 
 .godown-form__textarea {
