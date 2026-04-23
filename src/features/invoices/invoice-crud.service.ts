@@ -1,12 +1,4 @@
-/** Invoicing — CRUD, stock validation, and document number series
- *
- * All monetary values are in PAISE (integer) — the server and client both
- * use paise. Display conversion is done at the component level via formatCurrency.
- *
- * API base: the `api()` helper already prepends API_URL, so paths start at /
- * (not /api). The server routes are mounted at /documents and /settings/documents.
- */
-
+/** Invoicing CRUD, stock validation, and document number series (paise). */
 import { api } from '@/lib/api'
 import type {
   DocumentListResponse,
@@ -20,15 +12,9 @@ import type {
   DocumentType,
 } from './invoice.types'
 
-// ─── Query builder helper ────────────────────────────────────────────────────
-
-/**
- * Builds a URLSearchParams query string from DocumentFilters.
- * Only appends params that have non-undefined, non-empty values.
- */
+/** Build URLSearchParams query from DocumentFilters (skips empty values). */
 export function buildDocumentQuery(filters: Partial<DocumentFilters>): string {
   const params = new URLSearchParams()
-
   const {
     page,
     limit,
@@ -57,8 +43,6 @@ export function buildDocumentQuery(filters: Partial<DocumentFilters>): string {
   return qs ? `?${qs}` : ''
 }
 
-// ─── Stock Validation ────────────────────────────────────────────────────────
-
 export interface StockValidationItem {
   productId: string
   productName: string
@@ -75,12 +59,7 @@ export interface StockValidationResult {
   items: StockValidationItem[]
 }
 
-/**
- * Pre-save stock availability check.
- * Returns per-item validation status (OK, WARN, BLOCK).
- * BLOCK = hard block (insufficient stock, cannot save).
- * WARN = soft warning (stock low but save is allowed).
- */
+/** Pre-save stock availability check (per-item OK/WARN/BLOCK). */
 export async function validateStock(
   items: Array<{ productId: string; quantity: number; unitId?: string }>
 ): Promise<StockValidationResult> {
@@ -93,13 +72,7 @@ export async function validateStock(
   })
 }
 
-// ─── Documents CRUD ───────────────────────────────────────────────────────────
-
-/**
- * Fetch paginated document list.
- * `type` is required in filters — each document type has its own list screen.
- * Supports filtering by party, date range, search, and status (comma-separated).
- */
+/** Fetch paginated document list filtered by type / party / date / status. */
 export async function getDocuments(
   filters: Partial<DocumentFilters> = {},
   signal?: AbortSignal
@@ -110,10 +83,7 @@ export async function getDocuments(
   )
 }
 
-/**
- * Fetch full detail for a single document by ID.
- * Includes lineItems, additionalCharges, shareLogs, sourceDocument, convertedTo.
- */
+/** Fetch full detail for a single document by ID. */
 export async function getDocument(
   id: string,
   signal?: AbortSignal
@@ -121,14 +91,7 @@ export async function getDocument(
   return api<DocumentDetail>(`/documents/${id}`, { signal })
 }
 
-/**
- * Create a new document (any of the 7 types).
- *
- * Pass `status: 'DRAFT'` for auto-saves and `status: 'SAVED'` when the user
- * taps "Save". Only SAVED triggers stock deduction and outstanding updates.
- *
- * Returns the full DocumentDetail (201 Created).
- */
+/** Create a new document (DRAFT or SAVED). */
 export async function createDocument(
   data: DocumentFormData
 ): Promise<DocumentDetail> {
@@ -140,12 +103,7 @@ export async function createDocument(
   })
 }
 
-/**
- * Update an existing document.
- * Cannot update CONVERTED or DELETED documents (server returns 400 DOCUMENT_LOCKED).
- * Stock and outstanding deltas are recalculated atomically on the server.
- * Returns the updated DocumentDetail (200 OK).
- */
+/** Update an existing document (blocked once CONVERTED or DELETED). */
 export async function updateDocument(
   id: string,
   data: Partial<DocumentFormData>
@@ -158,12 +116,7 @@ export async function updateDocument(
   })
 }
 
-/**
- * Soft-delete a document — moves it to the recycle bin.
- * Side effects: stock reversed, outstanding reversed, deletedAt set.
- * Cannot delete CONVERTED documents.
- * Returns a slim { id, status, deletedAt, permanentDeleteAt } object.
- */
+/** Soft-delete a document (reverses stock + outstanding; recycle bin). */
 export async function deleteDocument(
   id: string
 ): Promise<DocumentDeleteResponse> {
@@ -174,21 +127,7 @@ export async function deleteDocument(
   })
 }
 
-// ─── Document Conversion ──────────────────────────────────────────────────────
-
-/**
- * Convert a source document to a new document type.
- *
- * Allowed chains:
- *   ESTIMATE -> SALE_ORDER | SALE_INVOICE
- *   PROFORMA -> SALE_INVOICE
- *   SALE_ORDER -> SALE_INVOICE | DELIVERY_CHALLAN
- *   PURCHASE_ORDER -> PURCHASE_INVOICE
- *   DELIVERY_CHALLAN -> SALE_INVOICE
- *
- * Returns the new document in DRAFT status (201). The client should redirect
- * to the edit form so the user can review and tap "Save".
- */
+/** Convert a source document to a new type (returns new DRAFT). */
 export async function convertDocument(
   id: string,
   targetType: ConversionTargetType
@@ -201,13 +140,7 @@ export async function convertDocument(
   })
 }
 
-// ─── Document Number Series ───────────────────────────────────────────────────
-
-/**
- * Fetch the next auto-generated document number for a given type.
- * Called when opening the create form to pre-fill the document number field.
- * The number is reserved only when the document is saved (SAVED status).
- */
+/** Fetch the next auto-generated document number preview for a type. */
 export async function getNextDocumentNumber(
   type: DocumentType,
   signal?: AbortSignal
@@ -218,11 +151,7 @@ export async function getNextDocumentNumber(
   )
 }
 
-/**
- * Update the number series configuration for a document type.
- * Controls prefix, separator, financial year format, padding, and reset behaviour.
- * Returns the updated NextDocumentNumber preview showing what the next number will look like.
- */
+/** Update the number-series configuration for a document type. */
 export async function updateNumberSeries(
   type: DocumentType,
   data: Partial<DocumentNumberSeriesConfig>
@@ -234,8 +163,6 @@ export async function updateNumberSeries(
     entityLabel: `${type} numbering`,
   })
 }
-
-// ─── Local helper ─────────────────────────────────────────────────────────────
 
 /** Map a DocumentType to a short noun for the offline queue UI label. */
 function docTypeToEntity(type: DocumentType): string {

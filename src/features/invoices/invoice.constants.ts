@@ -1,9 +1,4 @@
-/** Invoicing & Documents — Constants and configuration
- *
- * All label maps, defaults, and config values for the invoicing system.
- * No business logic here — pure data.
- */
-
+/** Invoicing & Documents — label maps, defaults, and config (pure data). */
 import type {
   DocumentType,
   DocumentStatus,
@@ -18,8 +13,6 @@ import type {
   PaymentStatus,
 } from './invoice.types'
 
-// ─── Invoice detail page tabs ────────────────────────────────────────────────
-
 export type DetailTab = 'overview' | 'items' | 'share' | 'compliance'
 
 export const DETAIL_TABS: { id: DetailTab; label: string }[] = [
@@ -32,15 +25,11 @@ export const DETAIL_TABS: { id: DetailTab; label: string }[] = [
 /** Document types that support e-compliance (e-invoice + e-way bill) */
 export const ECOMPLIANCE_DOCUMENT_TYPES = new Set(['SALE_INVOICE', 'PURCHASE_INVOICE'])
 
-// ─── Invoice form section tabs ───────────────────────────────────────────────
-
 export const FORM_SECTIONS: { id: 'items' | 'details' | 'charges'; label: string }[] = [
   { id: 'items', label: 'Items' },
   { id: 'details', label: 'Details' },
   { id: 'charges', label: 'Charges' },
 ]
-
-// ─── Document type display labels ─────────────────────────────────────────────
 
 export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   SALE_INVOICE:      'Sale Invoice',
@@ -202,9 +191,7 @@ export const DOCUMENT_DIRECTION: Record<DocumentType, DocumentDirection> = {
   DEBIT_NOTE:        'INWARD',
 }
 
-// ─── Stock effect flags ────────────────────────────────────────────────────────
-// true = document affects inventory when saved
-
+/** true = document affects inventory when saved. */
 export const AFFECTS_STOCK: Record<DocumentType, boolean> = {
   SALE_INVOICE:      true,   // decreases stock
   PURCHASE_INVOICE:  true,   // increases stock
@@ -217,9 +204,7 @@ export const AFFECTS_STOCK: Record<DocumentType, boolean> = {
   DEBIT_NOTE:        true,   // decreases stock (returned goods)
 }
 
-// ─── Outstanding effect flags ─────────────────────────────────────────────────
-// true = document updates party outstanding balance when saved
-
+/** true = document updates party outstanding balance when saved. */
 export const AFFECTS_OUTSTANDING: Record<DocumentType, boolean> = {
   SALE_INVOICE:      true,   // receivable — party owes us
   PURCHASE_INVOICE:  true,   // payable   — we owe party
@@ -232,14 +217,9 @@ export const AFFECTS_OUTSTANDING: Record<DocumentType, boolean> = {
   DEBIT_NOTE:        true,   // reduces payable
 }
 
-// ─── Invoice number config ────────────────────────────────────────────────────
-
 export const INVOICE_NUMBER_PADDING = 3         // "INV-2526-001"
 export const INVOICE_NUMBER_SEPARATOR = '-'
 export const FINANCIAL_YEAR_FORMAT = 'SHORT' as const  // "2526" for FY 2025-26
-
-// ─── Status badge CSS class variants ─────────────────────────────────────────
-// CSS classes defined in the design system. No raw colors here.
 
 export const STATUS_BADGE_VARIANTS: Record<DocumentStatus, string> = {
   DRAFT:               'badge-info',
@@ -249,8 +229,6 @@ export const STATUS_BADGE_VARIANTS: Record<DocumentStatus, string> = {
   DELETED:             'badge-error',
   PERMANENTLY_DELETED: 'badge-error',
 }
-
-// ─── Payment status badge CSS class variants ──────────────────────────────────
 
 export const PAYMENT_STATUS_BADGE: Record<PaymentStatus, string> = {
   PAID:    'badge-paid',

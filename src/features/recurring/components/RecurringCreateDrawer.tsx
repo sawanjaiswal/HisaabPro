@@ -1,10 +1,4 @@
-/** RecurringCreateDrawer — Bottom drawer form to create a new recurring schedule
- *
- * Accepts an existing template document ID and configures the schedule.
- * dayOfMonth shown for MONTHLY/QUARTERLY/YEARLY; dayOfWeek shown for WEEKLY.
- * All state is local — cleared on close. Submission is disabled during loading.
- */
-
+/** Bottom drawer form to configure a new recurring schedule for a template doc. */
 import React, { useState, useCallback, useRef } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import { useLanguage } from '@/hooks/useLanguage'

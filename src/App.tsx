@@ -45,10 +45,7 @@ import {
   NotFound,
 } from '@/app.routes'
 
-/** Route-level ErrorBoundary + Suspense wrapper for individual pages.
- *  Pass `fallback` to override the default centered spinner — used by the
- *  dashboard route to render a chrome-shaped skeleton instead of a bare
- *  spinner during the lazy-chunk download. */
+/** Route-level ErrorBoundary + Suspense wrapper for individual pages. */
 function PageRoute({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
   return (
     <ErrorBoundary>
@@ -59,8 +56,7 @@ function PageRoute({ children, fallback }: { children: ReactNode; fallback?: Rea
   )
 }
 
-/** First-paint shell for the dashboard so cold loads see the proper layout
- *  instead of a centered spinner on an empty cream background. */
+/** First-paint shell for the dashboard cold load. */
 function DashboardFallback() {
   return (
     <AppShell>
@@ -85,9 +81,7 @@ function GuestRoute({ children }: { children: ReactNode }) {
   return <>{children}</>
 }
 
-/** True only on the dashboard root. The Calculator + Feedback FABs are
- *  visual noise on every other screen (compete with the primary "+" FAB
- *  and overlap content), so we restrict them to the home surface. */
+/** True only on the dashboard root (scopes Calculator + Feedback FABs). */
 function useIsDashboardRoute(): boolean {
   const { pathname } = useLocation()
   return pathname === ROUTES.DASHBOARD
@@ -108,11 +102,8 @@ function HomeGate() {
 
 export function App() {
   useRoutePreload()
-  useSSE() // Real-time sync: SSE → TanStack Query cache invalidation
-
+  useSSE()
   const queryClient = useQueryClient()
-
-  // Invalidate all queries when app returns to foreground
   useEffect(() => {
     const handler = () => {
       if (document.visibilityState === 'visible') {
@@ -245,8 +236,7 @@ export function App() {
   )
 }
 
-/** Calculator + Feedback widgets — only on the dashboard so they don't
- *  compete with the primary "+" FAB or obscure list/form content. */
+/** Calculator + Feedback widgets, dashboard-only. */
 function FloatingWidgets() {
   if (!useIsDashboardRoute()) return null
   return (
