@@ -1,10 +1,10 @@
 .create-biz-page {
   min-height: 100vh;
-  background: var(--color-background);
+  background: var(--color-gray-50);
 }
 
 .create-biz-content {
-  padding: 1.5rem 1rem 3rem;
+  padding: var(--space-6) var(--space-4) 3rem;
   max-width: 480px;
   margin: 0 auto;
 }
@@ -13,7 +13,7 @@
 .create-biz-form {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: var(--space-5);
 }
 
 .create-biz-field {
@@ -23,20 +23,20 @@
 }
 
 .create-biz-label {
-  font-size: 0.875rem;
+  font-size: var(--fs-sm);
   font-weight: 500;
-  color: var(--color-text-muted);
+  color: var(--color-gray-500);
 }
 
 .create-biz-input,
 .create-biz-select {
   width: 100%;
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
-  border: 1.5px solid var(--color-border);
-  border-radius: 0.625rem;
-  background: var(--color-surface);
-  color: var(--color-text);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-base);
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-sm);
+  background: var(--color-gray-0);
+  color: var(--color-gray-900);
   outline: none;
   transition: border-color 0.15s;
   -webkit-appearance: none;
@@ -45,34 +45,34 @@
 
 .create-biz-input:focus,
 .create-biz-select:focus {
-  border-color: var(--color-primary);
+  border-color: var(--color-primary-500);
 }
 
 .create-biz-input--error {
-  border-color: var(--color-error);
+  border-color: var(--color-error-500);
 }
 
 .create-biz-field-error {
-  font-size: 0.8125rem;
-  color: var(--color-error);
+  font-size: var(--fs-xs);
+  color: var(--color-error-500);
   margin: 0;
 }
 
 /* Clone section */
 .create-biz-clone-section {
-  border-radius: 0.75rem;
-  background: var(--color-surface-alt, var(--color-surface));
-  border: 1.5px solid var(--color-border);
-  padding: 1rem;
+  border-radius: var(--radius-md);
+  background: var(--color-gray-0);
+  border: 1.5px solid var(--color-gray-200);
+  padding: var(--space-4);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .create-biz-clone-toggle-row {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-4);
   justify-content: space-between;
 }
 
@@ -82,15 +82,15 @@
 }
 
 .create-biz-clone-toggle-label {
-  font-size: 0.9375rem;
+  font-size: var(--fs-md);
   font-weight: 500;
-  color: var(--color-text);
+  color: var(--color-gray-900);
   margin: 0 0 0.125rem;
 }
 
 .create-biz-clone-toggle-hint {
-  font-size: 0.8125rem;
-  color: var(--color-text-muted);
+  font-size: var(--fs-xs);
+  color: var(--color-gray-500);
   margin: 0;
 }
 
@@ -106,7 +106,7 @@
   width: 44px;
   height: 26px;
   border-radius: 13px;
-  background: var(--color-border);
+  background: var(--color-gray-200);
   border: none;
   cursor: pointer;
   padding: 3px;
@@ -115,7 +115,7 @@
 }
 
 .create-biz-toggle--on {
-  background: var(--color-primary);
+  background: var(--color-primary-500);
 }
 
 .create-biz-toggle-thumb {
@@ -135,13 +135,13 @@
 /* Submit button */
 .create-biz-submit {
   width: 100%;
-  padding: 0.9375rem;
-  margin-top: 0.5rem;
+  padding: var(--space-4);
+  margin-top: var(--space-2);
   border: none;
-  border-radius: 0.75rem;
-  background: var(--color-primary);
-  color: white;
-  font-size: 1rem;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-500);
+  color: var(--color-white-inverse);
+  font-size: var(--fs-base);
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.15s;
@@ -158,6 +158,6 @@
 
 @media (min-width: 480px) {
   .create-biz-content {
-    padding: 2rem 1.5rem 4rem;
+    padding: var(--space-8) var(--space-6) 4rem;
   }
 }

@@ -93,6 +93,24 @@
   /* WhatsApp brand green */
   --color-whatsapp: #25D366;
 
+  /* ─── Semantic aliases ─────────────────────────────────────
+   * Kept for legacy feature CSS that references un-numbered
+   * colour names. New code should use the numbered scales.
+   */
+  --color-background:     var(--color-gray-50);
+  --color-surface:        var(--color-gray-0);
+  --color-surface-alt:    var(--color-gray-100);
+  --color-border:         var(--color-gray-200);
+  --color-text:           var(--color-gray-900);
+  --color-text-primary:   var(--color-gray-900);
+  --color-text-secondary: var(--color-gray-600);
+  --color-text-muted:     var(--color-gray-500);
+  --color-primary:        var(--color-primary-500);
+  --color-error:          var(--color-error-500);
+  --color-success:        var(--color-success-500);
+  --color-warning:        var(--color-warning-500);
+  --color-info:           var(--color-info-500);
+
   /* Gradient hero cards — teal (collect/received/stock-value) */
   --gradient-teal-start: #1b6369;
   --gradient-teal-end:   #123e42;
