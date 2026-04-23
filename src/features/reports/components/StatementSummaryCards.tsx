@@ -25,13 +25,13 @@ export function StatementSummaryCards({
       <div className="report-summary-bar" style={{ marginBottom: 'var(--space-4)' }}>
         <div className="report-summary-item" style={{ flex: 2 }}>
           <span className="report-summary-label">
-            <User size={12} aria-hidden="true" style={{ display: 'inline', marginRight: 4 }} />
+            <User size={12} aria-hidden="true" style={{ display: 'inline', marginInlineEnd: 'var(--space-1)' }} />
             {party.type === 'customer' ? t.customer : t.supplier}
           </span>
           <span className="report-summary-value">{party.name}</span>
           {party.phone && (
             <span className="report-summary-count">
-              <Phone size={11} aria-hidden="true" style={{ display: 'inline', marginRight: 2 }} />
+              <Phone size={11} aria-hidden="true" style={{ display: 'inline', marginInlineEnd: 'var(--space-0-5)' }} />
               {party.phone}
             </span>
           )}

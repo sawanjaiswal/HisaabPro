@@ -5,7 +5,6 @@
 
 import { describe, it, expect } from 'vitest'
 import { createApp } from '../../app.js'
-import { prisma } from '../../lib/prisma.js'
 import { generateToken, authRequest, anonRequest } from './auth-helper.js'
 import {
   createTestUser,

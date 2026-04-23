@@ -9,9 +9,9 @@ interface PreviewPaymentStampProps {
 }
 
 const STAMP_COLORS: Record<string, string> = {
-  PAID:    '#16A34A',
-  PARTIAL: '#EA580C',
-  UNPAID:  '#DC2626',
+  PAID:    'var(--color-success-600)',
+  PARTIAL: 'var(--color-warning-600)',
+  UNPAID:  'var(--color-error-600)',
 }
 
 export const PreviewPaymentStamp: React.FC<PreviewPaymentStampProps> = ({ status, style }) => {

@@ -42,7 +42,7 @@ export function PartyAddressesTab({ addresses }: PartyAddressesTabProps) {
               <MapPin size={14} aria-hidden="true" />
               {address.label} — {address.type}
               {address.isDefault && (
-                <span className="badge badge-info" style={{ marginLeft: 'var(--space-2)' }}>
+                <span className="badge badge-info" style={{ marginInlineStart: 'var(--space-2)' }}>
                   {t.defaultLabel}
                 </span>
               )}

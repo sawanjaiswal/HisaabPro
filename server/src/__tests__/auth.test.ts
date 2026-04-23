@@ -28,12 +28,22 @@ const app = createApp()
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const MOCK_USER = { id: TEST_USER.userId, phone: TEST_USER.phone, name: 'Dev Admin' }
+const MOCK_USER = { id: TEST_USER.userId, phone: TEST_USER.phone, name: 'Dev Admin' as string | null }
 const MOCK_TOKENS = { accessToken: 'access-tok', refreshToken: 'refresh-tok' }
+const MOCK_BIZ = {
+  id: TEST_USER.businessId,
+  name: 'Test Biz',
+  businessType: 'retail',
+  role: 'owner',
+  roleId: null as string | null,
+  roleName: 'owner',
+  status: 'active',
+  lastActiveAt: null as Date | null,
+}
 const MOCK_ME = {
   user: MOCK_USER,
-  businesses: [{ id: TEST_USER.businessId, name: 'Test Biz', businessType: 'retail', role: 'owner' }],
-  activeBusiness: { id: TEST_USER.businessId, name: 'Test Biz', businessType: 'retail', role: 'owner' },
+  businesses: [MOCK_BIZ],
+  activeBusiness: MOCK_BIZ,
 }
 
 // ─── Tests ────────────────────────────────────────────────────────────────────

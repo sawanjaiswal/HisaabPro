@@ -6,6 +6,7 @@
  * select items (date-format, calculator-position) cycle through options on tap
  */
 
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Lock,
@@ -31,6 +32,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { ROUTES } from '@/config/routes.config'
 import { useTheme } from '@/context/ThemeContext'
 import { useLanguage } from '@/context/LanguageContext'
@@ -92,9 +94,14 @@ export default function SettingsPage() {
   const { theme, toggleTheme } = useTheme()
   const { language, setLanguage, t } = useLanguage()
   const { handleLogout } = useAuth()
+  const [confirmLogout, setConfirmLogout] = useState(false)
 
   function onLogout() {
-    if (!window.confirm(t.logout + '?')) return
+    setConfirmLogout(true)
+  }
+
+  function doLogout() {
+    setConfirmLogout(false)
     handleLogout()
     navigate(ROUTES.LOGIN, { replace: true })
   }
@@ -170,6 +177,16 @@ export default function SettingsPage() {
           </div>
         )}
       </PageContainer>
+
+      <ConfirmDialog
+        open={confirmLogout}
+        onClose={() => setConfirmLogout(false)}
+        onConfirm={doLogout}
+        title={t.logout}
+        description="Sign out of your account?"
+        confirmLabel={t.logout}
+        isDanger
+      />
     </AppShell>
   )
 }

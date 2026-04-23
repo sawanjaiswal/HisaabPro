@@ -27,6 +27,8 @@ const lineItemSchema = z.object({
   rate: z.number().int().min(0), // paise
   discountType: z.enum(DISCOUNT_TYPES).default('AMOUNT'),
   discountValue: z.number().int().min(0).default(0),
+  // Optional: when omitted, server falls back to the product's base unit
+  unitId: z.string().min(1).optional(),
   // Phase 2 — GST fields (optional, backward compatible)
   taxCategoryId: z.string().optional(),
   hsnCode: z.string().max(8).optional(),

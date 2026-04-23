@@ -143,7 +143,7 @@ beforeEach(() => {
 describe('POST /api/parties', () => {
   it('creates a party successfully (201, owner)', async () => {
     mockOwnerPermission()
-    vi.mocked(partyService.createParty).mockResolvedValue(MOCK_PARTY)
+    vi.mocked(partyService.createParty).mockResolvedValue(MOCK_PARTY as any)
 
     const res = await authAgent(app).post('/api/parties').send(CREATE_PARTY_BODY)
 
@@ -190,7 +190,7 @@ describe('POST /api/parties', () => {
 describe('GET /api/parties', () => {
   it('lists parties with pagination', async () => {
     mockOwnerPermission()
-    vi.mocked(partyService.listParties).mockResolvedValue(MOCK_LIST_RESULT)
+    vi.mocked(partyService.listParties).mockResolvedValue(MOCK_LIST_RESULT as any)
 
     const res = await authAgent(app).get('/api/parties')
 
@@ -208,7 +208,7 @@ describe('GET /api/parties', () => {
 describe('GET /api/parties/:id', () => {
   it('returns party detail', async () => {
     mockOwnerPermission()
-    vi.mocked(partyService.getParty).mockResolvedValue(MOCK_PARTY)
+    vi.mocked(partyService.getParty).mockResolvedValue(MOCK_PARTY as any)
 
     const res = await authAgent(app).get('/api/parties/p-1')
 
@@ -223,7 +223,7 @@ describe('PUT /api/parties/:id', () => {
   it('updates a party successfully', async () => {
     mockOwnerPermission()
     const updated = { ...MOCK_PARTY, name: 'Updated Name' }
-    vi.mocked(partyService.updateParty).mockResolvedValue(updated)
+    vi.mocked(partyService.updateParty).mockResolvedValue(updated as any)
 
     const res = await authAgent(app).put('/api/parties/p-1').send({ name: 'Updated Name' })
 
@@ -252,7 +252,7 @@ describe('DELETE /api/parties/:id', () => {
 describe('POST /api/parties/:partyId/addresses', () => {
   it('creates an address (201)', async () => {
     mockOwnerPermission()
-    vi.mocked(partyService.createAddress).mockResolvedValue(MOCK_ADDRESS)
+    vi.mocked(partyService.createAddress).mockResolvedValue(MOCK_ADDRESS as any)
 
     const res = await authAgent(app)
       .post('/api/parties/p-1/addresses')
@@ -286,7 +286,7 @@ describe('DELETE /api/parties/:partyId/addresses/:addressId', () => {
 describe('PUT /api/parties/:partyId/pricing', () => {
   it('sets pricing overrides', async () => {
     mockOwnerPermission()
-    vi.mocked(partyService.setPricing).mockResolvedValue(MOCK_PRICING)
+    vi.mocked(partyService.setPricing).mockResolvedValue(MOCK_PRICING as any)
 
     const body = {
       pricing: [{ productId: 'prod-1', price: 10000, minQty: 1 }],
@@ -307,7 +307,7 @@ describe('PUT /api/parties/:partyId/pricing', () => {
 describe('GET /api/parties/:partyId/pricing', () => {
   it('lists pricing overrides', async () => {
     mockOwnerPermission()
-    vi.mocked(partyService.getPartyPricing).mockResolvedValue(MOCK_PRICING_LIST)
+    vi.mocked(partyService.getPartyPricing).mockResolvedValue(MOCK_PRICING_LIST as any)
 
     const res = await authAgent(app).get('/api/parties/p-1/pricing')
 

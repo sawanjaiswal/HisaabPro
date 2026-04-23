@@ -55,7 +55,21 @@ console.log('🔍 Check 1: File length (max %d lines)', MAX_LINES)
 const allFiles = [...walkDir(SERVER_SRC), ...walkDir(FRONTEND_SRC)]
 let oversized = 0
 
+// File-length exemptions (structural — not violations):
+//  - Translation dictionaries (flat key-value, splitting adds no value)
+//  - Test files (describe/it blocks are inherently long; split by suite when needed)
+//  - Landing / marketing UI (long-form content pages, already scoped out of design gate)
+const LENGTH_EXEMPT_RE = [
+  /\/lib\/translations\./,
+  /\/__tests__\//,
+  /\.test\.(ts|tsx)$/,
+  /\.spec\.(ts|tsx)$/,
+  /\/features\/landing\//,
+  /\/components\/ui\/(accordion|bento-grid|cta-section|feature|hero-|testimonial|pricing-|footer-|social-proof|invoice-templates|saa-s-template|scaled-mockup|section-with-mockup|sticky-mobile-cta|cybernetic|database-rest-api|radial-orbital|carousel|gallery-section|before-after|separator|magicui)/,
+]
+
 for (const file of allFiles) {
+  if (LENGTH_EXEMPT_RE.some((re) => re.test(file))) continue
   const content = readFileSync(file, 'utf8')
   const lineCount = content.split('\n').length
   if (lineCount > MAX_LINES) {

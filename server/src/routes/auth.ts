@@ -8,7 +8,7 @@ import { captchaGuard, recordFailedAttempt } from '../middleware/captcha.js'
 import {
   logoutSchema, devLoginSchema, switchBusinessSchema,
   registerSchema, loginSchema, verifyRegistrationSchema,
-  sendOtpSchema, verifyOtpSchema, resendOtpSchema,
+  resendOtpSchema,
   forgotPasswordSchema, resetPasswordSchema,
 } from '../schemas/auth.schemas.js'
 import { prisma } from '../lib/prisma.js'

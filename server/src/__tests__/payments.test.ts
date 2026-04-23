@@ -121,7 +121,7 @@ beforeEach(() => {
 describe('GET /api/payments', () => {
   it('returns paginated payment list for authenticated user', async () => {
     mockOwnerPermission()
-    vi.mocked(paymentService.listPayments).mockResolvedValue(MOCK_LIST_RESULT)
+    vi.mocked(paymentService.listPayments).mockResolvedValue(MOCK_LIST_RESULT as any)
 
     const res = await authAgent(app).get('/api/payments')
 
@@ -290,7 +290,7 @@ describe('PUT /api/payments/:id/allocations', () => {
 describe('GET /api/payments/outstanding/list', () => {
   it('returns outstanding balances list', async () => {
     mockOwnerPermission()
-    vi.mocked(paymentService.listOutstanding).mockResolvedValue(MOCK_OUTSTANDING_LIST)
+    vi.mocked(paymentService.listOutstanding).mockResolvedValue(MOCK_OUTSTANDING_LIST as any)
 
     const res = await authAgent(app).get('/api/payments/outstanding/list')
 

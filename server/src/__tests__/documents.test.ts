@@ -154,7 +154,7 @@ describe('Document Routes — /api/documents', () => {
   // ── 1. GET /documents — success (list) ──────────────────────────────────
   it('GET / returns paginated document list', async () => {
     mockOwnerPermission()
-    vi.mocked(documentService.listDocuments).mockResolvedValue(MOCK_LIST_RESULT)
+    vi.mocked(documentService.listDocuments).mockResolvedValue(MOCK_LIST_RESULT as any)
 
     const res = await authAgent(app)
       .get('/api/documents?type=SALE_INVOICE')
@@ -181,7 +181,7 @@ describe('Document Routes — /api/documents', () => {
   // ── 3. GET /documents/:id — success ─────────────────────────────────────
   it('GET /:id returns document detail', async () => {
     mockOwnerPermission()
-    vi.mocked(documentService.getDocument).mockResolvedValue(MOCK_DOCUMENT)
+    vi.mocked(documentService.getDocument).mockResolvedValue(MOCK_DOCUMENT as any)
 
     const res = await authAgent(app)
       .get('/api/documents/doc-1')
@@ -195,7 +195,7 @@ describe('Document Routes — /api/documents', () => {
   // ── 4. POST /documents — success (201, owner) ──────────────────────────
   it('POST / creates document with 201 (owner)', async () => {
     mockOwnerPermission()
-    vi.mocked(documentService.createDocument).mockResolvedValue(MOCK_DOCUMENT)
+    vi.mocked(documentService.createDocument).mockResolvedValue(MOCK_DOCUMENT as any)
 
     const res = await authAgent(app)
       .post('/api/documents')
@@ -244,7 +244,7 @@ describe('Document Routes — /api/documents', () => {
     vi.mocked(documentService.updateDocument).mockResolvedValue({
       ...MOCK_DOCUMENT,
       notes: 'Updated notes',
-    })
+    } as any)
 
     const res = await authAgent(app)
       .put('/api/documents/doc-1')
@@ -268,7 +268,7 @@ describe('Document Routes — /api/documents', () => {
       status: 'DELETED',
       deletedAt: new Date().toISOString(),
       permanentDeleteAt: new Date().toISOString(),
-    })
+    } as any)
 
     const res = await authAgent(app)
       .delete('/api/documents/doc-1')
@@ -300,7 +300,7 @@ describe('Document Routes — /api/documents', () => {
       id: 'inv-qs-1',
       grandTotal: 50000,
       balanceDue: 50000,
-    })
+    } as any)
     // Mock payment creation via $transaction (already passes through in setup)
     mockPrisma.payment.create = vi.fn().mockResolvedValue({
       id: 'pmt-1',
@@ -333,7 +333,7 @@ describe('Document Routes — /api/documents', () => {
       ...MOCK_DOCUMENT,
       status: 'SAVED',
       deletedAt: null,
-    })
+    } as any)
 
     const res = await authAgent(app)
       .post('/api/documents/doc-1/restore')
@@ -355,7 +355,7 @@ describe('Document Routes — /api/documents', () => {
       documents: [{ ...MOCK_DOCUMENT, status: 'DELETED', deletedAt: '2026-03-27T00:00:00.000Z' }],
       pagination: { page: 1, limit: 20, total: 1, totalPages: 1 },
     }
-    vi.mocked(documentService.listRecycleBin).mockResolvedValue(recycleBinResult)
+    vi.mocked(documentService.listRecycleBin).mockResolvedValue(recycleBinResult as any)
 
     const res = await authAgent(app)
       .get('/api/documents/recycle-bin')

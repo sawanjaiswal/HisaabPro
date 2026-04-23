@@ -227,7 +227,7 @@ export async function removeStaff(businessId: string, staffId: string) {
   // Soft-delete: preserve audit trail of who had access
   await prisma.businessUser.update({
     where: { id: staffId },
-    data: { isActive: false, status: 'REMOVED', isDeleted: true, deletedAt: new Date() },
+    data: { isActive: false, status: 'REMOVED' },
   })
 }
 

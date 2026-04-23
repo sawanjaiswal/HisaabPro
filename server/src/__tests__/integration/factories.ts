@@ -25,7 +25,7 @@ export async function createTestUser(overrides?: Record<string, unknown>) {
 // ─── Business ────────────────────────────────────────────────────────────────
 
 export async function createTestBusiness(
-  userId: string,
+  _userId: string,
   overrides?: Record<string, unknown>
 ) {
   return prisma.business.create({
