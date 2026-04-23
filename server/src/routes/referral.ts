@@ -18,7 +18,7 @@ import {
   withdrawReferralSchema,
   referralRewardsQuerySchema,
 } from '../schemas/referral.schemas.js'
-import * as referral from '../services/referral.service.js'
+import * as referral from '../services/referral/index.js'
 import { prisma } from '../lib/prisma.js'
 
 const router = Router()
