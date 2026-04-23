@@ -27,6 +27,42 @@ Do these in parallel, ONCE per session:
 
 3. **Confirm loaded:** "Config loaded (N banned patterns, M components). Tokens ready."
 
+## Phase 0.5 — INVENTORY SCAN (mandatory, before Phase 1)
+
+**Scan what exists before proposing anything new.** Paste raw output into the
+plan file under an `## Inventory` section so the user can audit what you saw:
+
+```bash
+ls src/components/ui/ 2>/dev/null                  # reusable primitives
+ls src/components/layout/ 2>/dev/null               # layout shells
+ls src/components/feedback/ 2>/dev/null             # 4-state building blocks
+grep -rnE "variants\s*[:=]|variant:\s*['\"]" src/components/ui/ 2>/dev/null | head -20
+find src/features -name '*.tsx' -not -name '*.test.*' 2>/dev/null | head
+```
+
+Then grep for near-matches by concept (money display, avatar with badge,
+segmented control). If a concept already exists as a component or variant,
+**extend it** — do not fork.
+
+## Phase 0.75 — VARIANT-FIRST RULE (mandatory)
+
+Before any Phase-1 row maps to `NONE — justify creation`, the plan MUST answer
+in writing for each such row:
+
+> "Did an existing component's variant list cover this with a new variant,
+> size, or state? If no: which component in the Phase 0.5 inventory is
+> closest, and why is extending it worse than forking?"
+
+Default bias: **extend variants before forking components.** A new
+`variant="tenant"` on `Badge` is cheaper, better-tested, and dark-mode-safe
+for free. A new `TenantBadge.tsx` duplicates all of that. Only fork when:
+
+- The new component has different semantics (`Dialog` vs `Drawer`)
+- Composition is the right call — wrapper lives in `src/features/**/components/`
+  and imports the underlying primitive from `@/components/ui/`
+- The primitive genuinely does not exist yet — propose in `src/components/ui/`
+  with a changelog note in the plan
+
 ## Phase 1 — ANALYZE
 
 For each UI element in the task, produce a **COMPONENT MAP**:
@@ -274,8 +310,33 @@ All font sizes MUST use rem via `var(--fs-*)`. Hero sizes use `var(--fs-5xl)` or
 | List header | `px-4 pt-4 pb-2` |
 | List content | `px-4 py-4` |
 | Card grid gap | `gap-3` |
-| Section separation | `mb-8` or `space-y-6` |
+| **Section container vertical padding** | **`py-0` (0px top AND bottom — mandatory)** |
+| **Section group gap** | **`space-y-6` or `gap-6` (24px = `var(--space-6)`) — mandatory between section siblings** |
+| Section horizontal padding | `px-4` (inherits side padding) |
+| Section internal padding | Move to INNER child (`<div className="py-4">…</div>`), not the section wrapper |
 | Bottom nav clearance | `pb-[calc(var(--bottom-nav-height)+2rem)]` |
+
+### SECTION LAYOUT RULES (mechanically enforced)
+
+Every UI section (a div/frame identified by a className matching `-section`,
+`section-`, or `__section`) MUST obey:
+
+1. **padding-top: 0** and **padding-bottom: 0** on the section container.
+   - `py-0` is required. `pt-N`/`pb-N`/`py-N` where N > 0 is a compile-time error.
+   - If you need inner breathing room, add an inner child with its own padding.
+2. **Gap between sections: exactly 24px** (= `var(--space-6)`).
+   - Parent that stacks sections uses `space-y-6` or `gap-6` ONLY. Other values
+     on a section-group container are a compile-time error.
+3. Horizontal padding on the section is fine (`px-4`), just never vertical.
+
+Why: consistent vertical rhythm comes from ONE place (the section-group gap),
+not from each section adding its own `py-*` which compounds unpredictably.
+Sections that own their own vertical padding fight the grid.
+
+Enforcer: `.claude/design-system.config.cjs` → banned patterns
+`section-top-padding-nonzero`, `section-bottom-padding-nonzero`,
+`section-py-nonzero`, `section-inline-padding-top/bottom`,
+`section-group-wrong-gap`.
 
 ### Shadows
 | Element | Token |
@@ -591,6 +652,17 @@ const handleSubmit = async (e: React.FormEvent) => {
 - [ ] Amounts displayed with `tabular-nums` class for alignment
 - [ ] Indian number format (Rs 1,00,000) via `Intl.NumberFormat('en-IN')`
 - [ ] Warm cream background on pages (`var(--color-gray-50)`)
+- [ ] **Every section container has `py-0` (0 top AND bottom padding)**
+- [ ] **Section-group parent stacks with `space-y-6` or `gap-6` (24px)**
+- [ ] Inner padding lives on a CHILD of the section, not the section itself
+- [ ] No raw `fetch()` outside `src/lib/api.ts` / `src/lib/auth.ts` /
+      `hooks/useOnlineStatus.ts`; if unavoidable, pass `AbortController.signal`
+- [ ] No PII in `console.*` / logger calls (phone, email, pin, otp, password)
+- [ ] Offline compliance (see `.claude/rules/OFFLINE_RULES.md`):
+      `api()` used, mutations pass `entityType`+`entityLabel`, no
+      `localStorage` writes for entity data
+- [ ] Variant-first: any new component must answer "why not extend an
+      existing variant" in the plan
 
 ## DEEP REFERENCE (read on-demand, NOT upfront)
 

@@ -134,6 +134,114 @@ const BANNED_PATTERNS = [
     severity: 'warn',
     msg: 'Hardcoded string in JSX — use t.keyName via useLanguage() (src/context/LanguageContext.tsx)',
   },
+
+  // ── Section layout (top/bottom padding must be 0 on section containers) ─
+  // Sections are identified by className containing "-section", "section-",
+  // "__section", or a data-section attribute. Section containers OWN ZERO
+  // vertical padding — inner padding is handled by children. Vertical rhythm
+  // between sections is a parent `space-y-6` / `gap: var(--space-6)` (24px).
+  {
+    name: 'section-top-padding-nonzero',
+    pattern: /className=["'][^"']*(?:-section\b|\bsection-|__section\b)[^"']*\bpt-(?!0\b)\d/,
+    enforcedBy: 'scripts/enforce.js',
+    severity: 'error',
+    msg: 'Section container has non-zero pt-* — sections MUST have padding-top: 0. Move inner padding to child element.',
+    applyTo: { frontendOnly: true, excludeTests: true },
+    exclude: /enforce-ignore/,
+  },
+  {
+    name: 'section-bottom-padding-nonzero',
+    pattern: /className=["'][^"']*(?:-section\b|\bsection-|__section\b)[^"']*\bpb-(?!0\b)\d/,
+    enforcedBy: 'scripts/enforce.js',
+    severity: 'error',
+    msg: 'Section container has non-zero pb-* — sections MUST have padding-bottom: 0. Move inner padding to child element.',
+    applyTo: { frontendOnly: true, excludeTests: true },
+    exclude: /enforce-ignore/,
+  },
+  {
+    name: 'section-py-nonzero',
+    pattern: /className=["'][^"']*(?:-section\b|\bsection-|__section\b)[^"']*\bpy-(?!0\b)\d/,
+    enforcedBy: 'scripts/enforce.js',
+    severity: 'error',
+    msg: 'Section container has non-zero py-* — sections MUST have padding-block: 0. Move inner padding to child element.',
+    applyTo: { frontendOnly: true, excludeTests: true },
+    exclude: /enforce-ignore/,
+  },
+  {
+    name: 'section-inline-padding-top',
+    pattern: /style=\{[^}]*paddingTop:\s*["']?(?!0\b)\d/,
+    enforcedBy: 'scripts/enforce.js',
+    severity: 'warn',
+    msg: 'Inline paddingTop — section containers must be 0; check if this is a section element.',
+    applyTo: { frontendOnly: true, excludeTests: true },
+    exclude: /enforce-ignore/,
+  },
+  {
+    name: 'section-inline-padding-bottom',
+    pattern: /style=\{[^}]*paddingBottom:\s*["']?(?!0\b)\d/,
+    enforcedBy: 'scripts/enforce.js',
+    severity: 'warn',
+    msg: 'Inline paddingBottom — section containers must be 0; check if this is a section element.',
+    applyTo: { frontendOnly: true, excludeTests: true },
+    exclude: /enforce-ignore/,
+  },
+  // Section-group gap: when a parent uses `space-y-*` or `gap-*` to stack
+  // sections, the value MUST be 6 (= 24px = var(--space-6)). Detect common
+  // wrong values on containers tagged as section groups.
+  {
+    name: 'section-group-wrong-gap',
+    pattern: /className=["'][^"']*(?:-sections\b|section-group\b|__sections\b)[^"']*\b(?:space-y|gap)-(?:0|1|2|3|4|5|8|10|12)\b/,
+    enforcedBy: 'scripts/enforce.js',
+    severity: 'error',
+    msg: 'Section group uses wrong gap — sections stack with `space-y-6` or `gap-6` (24px = var(--space-6)).',
+    applyTo: { frontendOnly: true, excludeTests: true },
+    exclude: /enforce-ignore/,
+  },
+
+  // ── Imports from design-rent parity ─────────────────────────────────────
+  // Fetch without timeout risks hanging requests — every network call needs
+  // an AbortController with a timeout (the api() helper does this; raw fetch
+  // outside api.ts must set `signal` to an AbortController-backed signal).
+  {
+    name: 'fetch-without-timeout',
+    pattern: /\bfetch\s*\([^)]*\)(?![^;]*\bsignal\b)/,
+    enforcedBy: 'scripts/enforce.js',
+    severity: 'warn',
+    msg: 'fetch() without AbortController signal — add a timeout or use api() from @/lib/api',
+    applyTo: {
+      frontendOnly: true,
+      excludeTests: true,
+      excludeFilePatterns: [
+        /lib\/api\.ts$/,
+        /lib\/auth\.ts$/,
+        /hooks\/useOnlineStatus\.ts$/,
+        /serviceWorkerRegistration\.ts$/,
+      ],
+    },
+    exclude: /enforce-ignore|^\s*\*|^\s*\/\//,
+  },
+  // PII in logger: phone / email / pin / otp should never appear in console.log
+  // or logger.* calls. This catches the obvious cases.
+  {
+    name: 'pii-in-logger',
+    pattern: /(?:console\.(?:log|info|debug|warn|error)|logger\.(?:info|debug|warn|error))\s*\([^)]*\b(?:phone|email|pin|otp|password|mpin)\b/i,
+    enforcedBy: 'scripts/enforce.js',
+    severity: 'error',
+    msg: 'Possible PII in log — never log phone/email/pin/otp/password. Redact or omit.',
+    applyTo: { excludeTests: true },
+    exclude: /enforce-ignore|redacted|\[REDACTED\]|\*\*\*/,
+  },
+  // RTL/i18n prep: physical-direction CSS should use logical props so Hindi
+  // (and later RTL languages) work without rewrites. Warn for now.
+  {
+    name: 'physical-margin-inline',
+    pattern: /style=\{[^}]*(?:marginLeft|marginRight):/,
+    enforcedBy: 'scripts/enforce.js',
+    severity: 'warn',
+    msg: 'Inline marginLeft/Right — prefer logical marginInlineStart/End',
+    applyTo: { frontendOnly: true, excludeTests: true },
+    exclude: /enforce-ignore/,
+  },
 ];
 
 /** Token namespaces — any CSS var outside these is suspect. */

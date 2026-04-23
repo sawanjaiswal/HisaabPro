@@ -207,6 +207,58 @@ try {
   )
 }
 
+// ─── Check 7: Section layout — padding=0 and gap=24px ────────────────────────
+//
+// Every UI section container (className matches /-section\b|\bsection-|__section\b/)
+// must have vertical padding of 0. Parents stacking sections must use
+// `space-y-6` / `gap-6` (= 24px = var(--space-6)). See .claude/skills/hp-design.
+
+console.log('🔍 Check 7: Section padding=0 + section-group gap=24px')
+
+const SECTION_CLASS_RE = /-section\b|\bsection-|__section\b/
+const SECTION_PADDING_RE = /\b(?:pt|pb|py)-(?!0\b)\d/
+const SECTION_GROUP_RE = /-sections\b|section-group\b|__sections\b/
+const SECTION_GROUP_WRONG_GAP_RE = /\b(?:space-y|gap)-(?:0|1|2|3|4|5|8|10|12)\b/
+const INLINE_PADDING_Y_RE = /style=\{[^}]*(?:paddingTop|paddingBottom):\s*["']?(?!0\b)\d/
+
+let sectionViolations = 0
+
+for (const file of walkDir(FRONTEND_SRC, ['.tsx'])) {
+  if (file.includes('__tests__') || file.endsWith('.test.tsx')) continue
+  // Landing / marketing components are exempt (see SESSION_GATE.exemptPathPatterns).
+  if (file.includes('/features/landing/')) continue
+  if (/\/components\/ui\/(accordion|bento-grid|cta-section|feature|hero-|testimonial|pricing-|footer-|social-proof|invoice-templates|saa-s-template|scaled-mockup|section-with-mockup|sticky-mobile-cta|cybernetic|database-rest-api|radial-orbital|carousel|gallery-section|before-after|separator|magicui)/.test(file)) continue
+
+  const lines = readFileSync(file, 'utf8').split('\n')
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
+    if (line.includes('enforce-ignore')) continue
+
+    const classMatch = line.match(/className=["']([^"']+)["']/)
+    if (classMatch) {
+      const cls = classMatch[1]
+      if (SECTION_CLASS_RE.test(cls) && SECTION_PADDING_RE.test(cls)) {
+        warnings.push(`SECTION_PADDING: ${rel(file)}:${i + 1} — section container has non-zero py/pt/pb. Move inner padding to a CHILD element.`)
+        sectionViolations++
+      }
+      if (SECTION_GROUP_RE.test(cls) && SECTION_GROUP_WRONG_GAP_RE.test(cls)) {
+        warnings.push(`SECTION_GAP: ${rel(file)}:${i + 1} — section group must stack with \`space-y-6\` or \`gap-6\` (24px).`)
+        sectionViolations++
+      }
+    }
+    if (INLINE_PADDING_Y_RE.test(line)) {
+      warnings.push(`SECTION_INLINE_PADDING_Y: ${rel(file)}:${i + 1} — inline paddingTop/Bottom detected; section elements must be 0.`)
+      sectionViolations++
+    }
+  }
+}
+
+if (sectionViolations === 0) {
+  console.log('  ✅ Section padding + gap rules clean')
+} else {
+  console.log(`  ⚠️  ${sectionViolations} section-layout warnings (see below)`)
+}
+
 // ─── Summary ──────────────────────────────────────────────────────────────────
 
 console.log('\n' + '═'.repeat(60))
