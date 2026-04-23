@@ -30,9 +30,12 @@ const RATCHET = process.argv.includes('--ratchet')
 
 const ALLOWED_RAW_FETCH = new Set([
   'src/lib/api.ts',
+  'src/lib/api-csrf.ts',                    // CSRF bootstrap helper — split from api.ts; uses raw fetch by necessity
+  'src/lib/api-refresh.ts',                 // Token refresh helper — split from api.ts; uses raw fetch by necessity
   'src/hooks/useOnlineStatus.ts',
   'src/serviceWorkerRegistration.ts',
-  'src/lib/offline.ts',                     // queue runner — replays via fetch by design
+  'src/lib/offline.ts',                     // thin re-export — no fetch; kept for allow-list compat
+  'src/lib/offline.processor.ts',           // queue runner — replays via fetch by design
   'src/features/invoices/invoice-share.service.ts', // exportDocument → Blob (binary); api() expects JSON
   'src/features/reports/report.service.ts', // exportReport → Blob CSV download; api() expects JSON
   'src/features/reports/finance.service.ts', // exportTally → plain-text XML; api() expects JSON
@@ -46,7 +49,8 @@ const MUTATION_METHODS = ['POST', 'PUT', 'PATCH', 'DELETE']
 const LOCAL_STORAGE_ALLOWED = new Set([
   'src/lib/auth.ts',
   'src/lib/translations.ts',
-  'src/lib/offline.ts',                 // last-sync wall-clock timestamp only
+  'src/lib/offline.ts',                 // re-export hub — no localStorage directly
+  'src/lib/offline.processor.ts',       // last-sync wall-clock timestamp only
   'src/context/ThemeContext.tsx',
   'src/context/LocaleContext.tsx',
   'src/context/LanguageContext.tsx',    // language preference — UI, not entity data; cross-tab sync via storage events

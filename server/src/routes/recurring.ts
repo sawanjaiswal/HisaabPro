@@ -13,7 +13,7 @@ import {
   updateRecurringSchema,
   listRecurringSchema,
 } from '../schemas/recurring.schemas.js'
-import * as recurringService from '../services/recurring.service.js'
+import * as recurringService from '../services/recurring/index.js'
 import { requirePermission } from '../middleware/permission.js'
 import { requireFeature } from '../middleware/subscription-gate.js'
 
