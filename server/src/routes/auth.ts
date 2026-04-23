@@ -3,7 +3,7 @@ import { randomUUID } from 'crypto'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
-import { authRateLimiter } from '../middleware/rate-limit.js'
+import { authRateLimiter, devLoginRateLimiter } from '../middleware/rate-limit.js'
 import { captchaGuard, recordFailedAttempt } from '../middleware/captcha.js'
 import {
   logoutSchema, devLoginSchema, switchBusinessSchema,
@@ -68,7 +68,7 @@ router.get('/csrf-token', (req, res) => {
    */
   router.post(
     '/dev-login',
-    authRateLimiter,
+    devLoginRateLimiter,
     captchaGuard,
     validate(devLoginSchema),
     asyncHandler(async (req, res) => {

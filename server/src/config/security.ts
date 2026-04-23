@@ -51,6 +51,12 @@ export const RATE_LIMIT_AUTH_WINDOW_MS = 60 * 1000
 /** Max auth attempts per IP per window */
 export const RATE_LIMIT_AUTH_MAX = 20
 
+/** Dev-login is only enabled when ALLOW_DEV_LOGIN=true (dev/closed-testing).
+ *  Sharing a NAT (office wifi, QA harness, integration tests) blew through
+ *  the strict auth limit during normal use, so use a generous cap here. */
+export const RATE_LIMIT_DEV_LOGIN_WINDOW_MS = 60 * 1000
+export const RATE_LIMIT_DEV_LOGIN_MAX = 120
+
 /** Sensitive mutation rate limit window (ms) — 1 minute */
 export const RATE_LIMIT_SENSITIVE_WINDOW_MS = 60 * 1000
 
