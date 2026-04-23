@@ -59,11 +59,14 @@ export const createPartySchema = z.object({
   openingBalance: openingBalanceSchema.optional(),
 })
 
+// EditPartyPage repopulates the form from the API response (where empty fields
+// are returned as null), then re-submits the same shape. Accept null for every
+// optional string field so a no-op edit doesn't 400.
 export const updatePartySchema = z.object({
   name: z.string().min(1).max(200).optional(),
-  phone: z.string().regex(PHONE_REGEX, 'Valid 10-digit Indian mobile number required').optional(),
-  email: z.string().email('Invalid email address').optional(),
-  companyName: z.string().max(200).optional(),
+  phone: z.string().regex(PHONE_REGEX, 'Valid 10-digit Indian mobile number required').nullable().optional(),
+  email: z.string().email('Invalid email address').nullable().optional(),
+  companyName: z.string().max(200).nullable().optional(),
   type: z.enum(PARTY_TYPES).optional(),
   groupId: z.string().nullable().optional(),
   tags: z.array(z.string().max(50)).optional(),

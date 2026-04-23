@@ -37,16 +37,21 @@ export function getAvatarColor(name?: string | null): string {
   return PASTEL_PALETTE[Math.abs(hash) % PASTEL_PALETTE.length]
 }
 
-/** First letter of name, uppercase. Fallback: "U" */
-export function getInitial(name?: string | null): string {
-  if (!name) return 'U'
-  return name.trim()[0]?.toUpperCase() ?? 'U'
+/** First letter of name, uppercase. Fallback chain: name → phone digit → "U" */
+export function getInitial(name?: string | null, phone?: string | null): string {
+  const trimmed = name?.trim()
+  if (trimmed) return trimmed[0]!.toUpperCase()
+  const digit = phone?.replace(/\D/g, '')[0]
+  if (digit) return digit
+  return 'U'
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 interface PartyAvatarProps {
   name?: string | null
+  /** Phone — used to derive an initial when name is missing */
+  phone?: string | null
   /** sm = 32px, md = 44px (default), lg = 56px */
   size?: 'sm' | 'md' | 'lg'
   className?: string
@@ -54,14 +59,15 @@ interface PartyAvatarProps {
 
 export const PartyAvatar: React.FC<PartyAvatarProps> = ({
   name,
+  phone,
   size = 'md',
   className = '',
 }) => (
   <div
     className={`party-avatar party-avatar--${size} ${className}`}
-    style={{ background: getAvatarColor(name) }}
+    style={{ background: getAvatarColor(name || phone) }}
     aria-hidden="true"
   >
-    {getInitial(name)}
+    {getInitial(name, phone)}
   </div>
 )

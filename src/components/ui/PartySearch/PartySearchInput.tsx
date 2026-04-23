@@ -6,6 +6,7 @@ import { getParties } from '@/lib/services/party.service'
 import type { PartySummary } from '@/lib/types/party.types'
 import { PartySearchField } from './PartySearchField'
 import { PartySearchDropdown } from './PartySearchDropdown'
+import '@/features/invoices/invoice-party-search.css'
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 

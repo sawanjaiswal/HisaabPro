@@ -196,9 +196,11 @@ export const updateTermsTemplateSchema = z.object({
 
 export const validateStockSchema = z.object({
   items: z.array(z.object({
-    productId: z.string().uuid(),
+    // IDs are cuid (Prisma default), not uuid — accept any non-empty string
+    productId: z.string().min(1),
     quantity: z.number().positive(),
-    unitId: z.string().uuid(),
+    // Optional: when omitted, server falls back to the product's base unit
+    unitId: z.string().min(1).optional(),
   })).min(1).max(100),
 })
 

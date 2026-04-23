@@ -31,9 +31,12 @@ export function useStockValidation(
       return
     }
 
+    // unitId is omitted — the server falls back to each product's base unit.
+    // We don't track per-line unit selection in the UI yet; passing productId
+    // here was a bug (always rejected by the server).
     const items = lineItems
       .filter(li => li.productId && li.quantity > 0)
-      .map(li => ({ productId: li.productId, quantity: li.quantity, unitId: li.productId }))
+      .map(li => ({ productId: li.productId, quantity: li.quantity }))
 
     if (items.length === 0) {
       setStockWarnings([])

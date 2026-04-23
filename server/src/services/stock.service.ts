@@ -151,7 +151,8 @@ async function resolveValidationMode(
 interface InvoiceStockItem {
   productId: string
   quantity: number // in base units (already converted)
-  unitId: string
+  /** When omitted, the quantity is assumed to be in the product's base unit */
+  unitId?: string
 }
 
 /** Deduct stock for sale invoice items. Call within a transaction. */
@@ -307,12 +308,13 @@ export async function validateStockForInvoice(
   const businessMode = (setting?.stockValidationMode as 'WARN_ONLY' | 'HARD_BLOCK') ?? 'WARN_ONLY'
 
   // --- Batch query 3: all unit conversions in one round-trip ---
-  // Collect unique (fromUnitId, toUnitId) pairs where unit differs from product
+  // Collect unique (fromUnitId, toUnitId) pairs where unit differs from product.
+  // When unitId is omitted from the request, treat the quantity as already
+  // expressed in the product's base unit (no conversion needed).
   const conversionPairs: Array<{ fromUnitId: string; toUnitId: string }> = []
   for (const item of items) {
     const product = productMap.get(item.productId)
-    // product.id is used as toUnitId in the original code (unit base lookup)
-    if (product && item.unitId !== product.unitId) {
+    if (product && item.unitId && item.unitId !== product.unitId) {
       conversionPairs.push({ fromUnitId: item.unitId, toUnitId: product.unitId })
     }
   }
@@ -353,9 +355,10 @@ export async function validateStockForInvoice(
       continue
     }
 
-    // Convert quantity if unit differs from product's base unit
+    // Convert quantity if unit differs from product's base unit.
+    // Missing unitId → assume base unit (no conversion).
     let baseQty = item.quantity
-    if (item.unitId !== product.unitId) {
+    if (item.unitId && item.unitId !== product.unitId) {
       const factor = conversionMap.get(`${item.unitId}:${product.unitId}`)
       if (factor !== undefined) {
         baseQty = item.quantity * factor

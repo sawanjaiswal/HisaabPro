@@ -162,6 +162,20 @@ router.delete(
 )
 
 // ============================================================
+// Ledger Shares (stub — feature not yet implemented)
+// ============================================================
+
+// PartyDetailPage queries this on every load via useShareLedger.
+// Until the share-link feature ships, return an empty list so the page
+// doesn't surface 404s in the network panel.
+router.get(
+  '/:partyId/ledger/shares',
+  asyncHandler(async (_req, res) => {
+    sendSuccess(res, [])
+  })
+)
+
+// ============================================================
 // Party Pricing
 // ============================================================
 
