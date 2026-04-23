@@ -17,7 +17,7 @@ import {
   updateConversionSchema,
   unitConvertSchema,
 } from '../schemas/product.schemas.js'
-import * as unitService from '../services/unit.service.js'
+import * as unitService from '../services/unit/index.js'
 
 const router = Router()
 
