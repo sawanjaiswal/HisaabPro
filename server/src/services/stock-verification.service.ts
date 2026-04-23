@@ -1,9 +1,4 @@
-/**
- * Stock Verification Service — Feature #111
- * Snapshot system stock → count physically → detect discrepancies → apply adjustments.
- * All writes are in $transaction. Adjustments use the core adjustStock() to keep audit trail.
- */
-
+/** Stock Verification Service — snapshot, count, detect discrepancies, apply adjustments. */
 import { prisma } from '../lib/prisma.js'
 import { notFoundError, validationError } from '../lib/errors.js'
 import { adjustStock } from './stock.service.js'
@@ -15,8 +10,6 @@ import type {
   CompleteVerificationInput,
 } from '../schemas/stock-verification.schemas.js'
 
-// === Helpers ===
-
 async function requireVerification(businessId: string, verificationId: string) {
   const v = await prisma.stockVerification.findFirst({
     where: { id: verificationId, businessId },
@@ -26,12 +19,7 @@ async function requireVerification(businessId: string, verificationId: string) {
   return v
 }
 
-// === Service functions ===
-
-/**
- * Create a new verification in DRAFT status.
- * Snapshots systemQuantity (currentStock) for ALL active products.
- */
+/** Create a new verification; snapshots systemQuantity for all active products. */
 export async function createVerification(
   businessId: string,
   userId: string,
@@ -39,12 +27,11 @@ export async function createVerification(
 ) {
   logger.info('Creating stock verification', { businessId, userId })
 
-  // Fetch all active products in one query
   const products = await prisma.product.findMany({
     where: { businessId, status: 'ACTIVE' },
     select: { id: true, currentStock: true },
     orderBy: { name: 'asc' },
-    take: 2000, // verification needs all products; bounded by practical catalog size
+    take: 2000,
   })
 
   return prisma.$transaction(async (tx) => {
@@ -135,11 +122,7 @@ export async function completeVerification(
   })
 }
 
-/**
- * Apply adjustments for all discrepancies where actualQuantity was recorded.
- * Creates StockMovement records (type AUDIT) for each discrepancy != 0.
- * Idempotent — skips items already adjusted.
- */
+/** Apply adjustments for all recorded discrepancies; idempotent. */
 export async function applyAdjustments(
   businessId: string,
   verificationId: string,
@@ -150,7 +133,6 @@ export async function applyAdjustments(
     throw validationError('Verification must be completed before applying adjustments')
   }
 
-  // Fetch items that have been counted, have a non-zero discrepancy, and not yet adjusted
   const items = await prisma.stockVerificationItem.findMany({
     where: {
       verificationId,
@@ -158,17 +140,11 @@ export async function applyAdjustments(
       discrepancy: { not: 0 },
       adjusted: false,
     },
-    select: {
-      id: true,
-      productId: true,
-      discrepancy: true,
-    },
-    take: 2000, // bounded by product catalog size (matches products query limit above)
+    select: { id: true, productId: true, discrepancy: true },
+    take: 2000,
   })
 
-  if (items.length === 0) {
-    return { adjustedCount: 0 }
-  }
+  if (items.length === 0) return { adjustedCount: 0 }
 
   let adjustedCount = 0
 
@@ -178,7 +154,7 @@ export async function applyAdjustments(
       await adjustStock(tx, {
         productId: item.productId,
         businessId,
-        quantity: delta, // positive = surplus in, negative = deficit out
+        quantity: delta,
         type: delta > 0 ? 'ADJUSTMENT_IN' : 'ADJUSTMENT_OUT',
         reason: 'AUDIT',
         notes: `Stock verification ${verificationId}`,
@@ -187,18 +163,12 @@ export async function applyAdjustments(
         userId,
       })
 
-      await tx.stockVerificationItem.update({
-        where: { id: item.id },
-        data: { adjusted: true },
-      })
-
+      await tx.stockVerificationItem.update({ where: { id: item.id }, data: { adjusted: true } })
       adjustedCount++
     }
   })
 
-  logger.info('Stock verification adjustments applied', {
-    businessId, verificationId, adjustedCount,
-  })
+  logger.info('Stock verification adjustments applied', { businessId, verificationId, adjustedCount })
 
   return { adjustedCount }
 }
@@ -221,12 +191,8 @@ export async function listVerifications(
     orderBy: { createdAt: 'desc' },
     take: limit + 1,
     select: {
-      id: true,
-      status: true,
-      notes: true,
-      completedAt: true,
-      createdAt: true,
-      updatedAt: true,
+      id: true, status: true, notes: true, completedAt: true,
+      createdAt: true, updatedAt: true,
       user: { select: { id: true, name: true } },
       _count: { select: { items: true } },
     },
@@ -248,26 +214,15 @@ export async function getVerification(businessId: string, verificationId: string
   const verification = await prisma.stockVerification.findFirst({
     where: { id: verificationId, businessId },
     select: {
-      id: true,
-      status: true,
-      notes: true,
-      completedAt: true,
-      createdAt: true,
-      updatedAt: true,
+      id: true, status: true, notes: true, completedAt: true,
+      createdAt: true, updatedAt: true,
       user: { select: { id: true, name: true } },
       items: {
         select: {
-          id: true,
-          systemQuantity: true,
-          actualQuantity: true,
-          discrepancy: true,
-          adjusted: true,
-          notes: true,
+          id: true, systemQuantity: true, actualQuantity: true,
+          discrepancy: true, adjusted: true, notes: true,
           product: {
-            select: {
-              id: true, name: true, sku: true,
-              unit: { select: { symbol: true } },
-            },
+            select: { id: true, name: true, sku: true, unit: { select: { symbol: true } } },
           },
         },
         orderBy: { product: { name: 'asc' } },

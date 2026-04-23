@@ -38,7 +38,6 @@ export async function inviteStaff(
   userId: string,
   data: InviteStaffInput
 ) {
-  // Check if already a member
   const existingUser = await prisma.user.findUnique({
     where: { phone: data.phone },
     select: { id: true },
@@ -51,7 +50,6 @@ export async function inviteStaff(
     if (existingBU) throw conflictError('User is already a staff member')
   }
 
-  // Check max pending invites
   const pendingCount = await prisma.staffInvite.count({
     where: { businessId, status: 'PENDING' },
   })
@@ -59,7 +57,6 @@ export async function inviteStaff(
     throw validationError(`Maximum ${MAX_PENDING_INVITES} pending invites reached`)
   }
 
-  // Validate roleId exists in this business
   if (data.roleId) {
     const role = await prisma.role.findFirst({
       where: { id: data.roleId, businessId },

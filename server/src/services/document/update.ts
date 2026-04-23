@@ -1,7 +1,4 @@
-/**
- * Document Service — updateDocument
- */
-
+/** Document Service — updateDocument */
 import { prisma } from '../../lib/prisma.js'
 import { notFoundError, validationError } from '../../lib/errors.js'
 import { deductForSaleInvoice, addForPurchaseInvoice, reverseForInvoice, scheduleAlertChecks } from '../stock.service.js'
@@ -34,9 +31,7 @@ export async function updateDocument(
 
   const wasSaved = existing.status === 'SAVED' || existing.status === 'SHARED'
   const willBeSaved = data.status === 'SAVED' || (wasSaved && !data.status)
-
   const result = await prisma.$transaction(async (tx) => {
-    // If status was SAVED and we're updating, reverse side effects first
     if (wasSaved && (STOCK_DECREASE_TYPES.has(existing.type) || STOCK_INCREASE_TYPES.has(existing.type))) {
       await reverseForInvoice(tx, { businessId, invoiceId: documentId, userId })
     }
@@ -45,7 +40,6 @@ export async function updateDocument(
       await updateOutstanding(tx, existing.partyId, reverseDelta)
     }
 
-    // Recalculate if line items changed
     let totals = null
     if (data.lineItems) {
       const productIds = data.lineItems.map(li => li.productId)
@@ -59,7 +53,6 @@ export async function updateDocument(
         if (!productMap.has(li.productId)) throw notFoundError(`Product ${li.productId}`)
       }
 
-      // Fetch TaxCategory cess data for line items
       const taxCategoryIds = data.lineItems
         .map(li => li.taxCategoryId)
         .filter((id): id is string => !!id)
@@ -70,8 +63,6 @@ export async function updateDocument(
           })
         : []
       const taxCategoryMap = new Map(taxCategories.map(tc => [tc.id, tc]))
-
-      // Fetch business state code
       const biz = await tx.business.findUnique({
         where: { id: businessId },
         select: { stateCode: true, compositionScheme: true },
@@ -100,7 +91,6 @@ export async function updateDocument(
         isComposite: isCompositeUpdate,
       })
 
-      // Replace line items
       await tx.documentLineItem.deleteMany({ where: { documentId } })
       const lineItemData = data.lineItems.map((li, i) => {
         const product = productMap.get(li.productId)!
@@ -120,7 +110,6 @@ export async function updateDocument(
           profitPercent: calc.profitPercent,
           stockBefore: product.currentStock,
           stockAfter: product.currentStock,
-          // GST Phase 2
           taxCategoryId: li.taxCategoryId ?? null,
           hsnCode: li.hsnCode ?? null,
           sacCode: li.sacCode ?? null,
@@ -137,7 +126,6 @@ export async function updateDocument(
       })
       await tx.documentLineItem.createMany({ data: lineItemData })
 
-      // Replace charges
       if (data.additionalCharges) {
         await tx.documentAdditionalCharge.deleteMany({ where: { documentId } })
         if (data.additionalCharges.length > 0) {
@@ -154,17 +142,13 @@ export async function updateDocument(
       }
     }
 
-    // Generate number if transitioning DRAFT -> SAVED
     let numberData = null
     if (!wasSaved && willBeSaved) {
       const docDate = data.documentDate ? new Date(data.documentDate) : new Date()
       numberData = await generateNextNumber(tx, businessId, existing.type, docDate)
     }
 
-    // Update document
-    const updateData: Record<string, unknown> = {
-      updatedBy: userId,
-    }
+    const updateData: Record<string, unknown> = { updatedBy: userId }
     if (data.status) updateData.status = data.status
     if (data.partyId) updateData.partyId = data.partyId
     if (data.documentDate) updateData.documentDate = new Date(data.documentDate)
@@ -194,32 +178,24 @@ export async function updateDocument(
       updateData.totalProfit = totals.totalProfit
       updateData.profitPercent = totals.profitPercent
       updateData.balanceDue = totals.grandTotal
-      // GST Phase 2 totals
       updateData.totalTaxableValue = totals.totalTaxableValue
       updateData.totalCgst = totals.totalCgst
       updateData.totalSgst = totals.totalSgst
       updateData.totalIgst = totals.totalIgst
       updateData.totalCess = totals.totalCess
     }
-    // Phase 2 — update GST flags if provided
     if (data.placeOfSupply !== undefined) updateData.placeOfSupply = data.placeOfSupply
     if (data.isReverseCharge !== undefined) updateData.isReverseCharge = data.isReverseCharge
     if (data.isComposite !== undefined) updateData.isComposite = data.isComposite
-    // Phase 2B — TDS/TCS
     if (data.tdsRate !== undefined) updateData.tdsRate = data.tdsRate
     if (data.tdsAmount !== undefined) updateData.tdsAmount = data.tdsAmount
     if (data.tcsRate !== undefined) updateData.tcsRate = data.tcsRate
     if (data.tcsAmount !== undefined) updateData.tcsAmount = data.tcsAmount
 
-    await tx.document.update({
-      where: { id: documentId },
-      data: updateData,
-    })
+    await tx.document.update({ where: { id: documentId }, data: updateData })
 
-    // Re-apply side effects if saving
     const effectivePartyId = data.partyId || existing.partyId
     const effectiveGrandTotal = totals?.grandTotal ?? existing.grandTotal
-
     if (willBeSaved) {
       const lineItems = data.lineItems || existing.lineItems
       if (STOCK_DECREASE_TYPES.has(existing.type)) {
@@ -262,7 +238,6 @@ export async function updateDocument(
     })
   })
 
-  // Post-transaction: fire stock alert checks for all affected products
   const affectsStock = STOCK_DECREASE_TYPES.has(existing.type) || STOCK_INCREASE_TYPES.has(existing.type)
   if (affectsStock) {
     const oldProductIds = existing.lineItems.map(li => li.productId)

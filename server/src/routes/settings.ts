@@ -1,10 +1,4 @@
-/**
- * Settings & Security Routes
- * Business-scoped: /api/businesses/:businessId/...
- * User-scoped: /api/users/:userId/...
- * Static: /api/permissions/matrix
- */
-
+/** Settings & Security Routes — business-scoped, user-scoped, and static. */
 import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
@@ -35,12 +29,8 @@ import * as businessService from '../services/business.service.js'
 import * as authService from '../services/auth.service.js'
 import * as gstService from '../services/gst-settings.service.js'
 
-// === Business-scoped routes ===
-
 export const businessSettingsRouter = Router()
 businessSettingsRouter.use(auth)
-
-// --- Create Business (onboarding) ---
 
 businessSettingsRouter.post('/', validate(createBusinessSchema), asyncHandler(async (req, res) => {
   const userId = req.user!.userId
@@ -48,14 +38,10 @@ businessSettingsRouter.post('/', validate(createBusinessSchema), asyncHandler(as
   sendSuccess(res, { business }, 201)
 }))
 
-// --- List User's Businesses ---
-
 businessSettingsRouter.get('/', asyncHandler(async (req, res) => {
   const businesses = await authService.listUserBusinesses(req.user!.userId)
   sendSuccess(res, { businesses })
 }))
-
-// --- Join Business via Invite Code ---
 
 businessSettingsRouter.post('/join', sensitiveMutationLimiter, validate(joinBusinessSchema), asyncHandler(async (req, res) => {
   const { userId, phone } = req.user!
@@ -63,10 +49,7 @@ businessSettingsRouter.post('/join', sensitiveMutationLimiter, validate(joinBusi
   sendSuccess(res, result, 201)
 }))
 
-// --- Business Profile ---
-
 businessSettingsRouter.get('/:businessId', asyncHandler(async (req, res) => {
-  // Use JWT businessId — user can only view their active business profile
   const businessId = req.user!.businessId
   const business = await businessService.getBusiness(businessId)
   sendSuccess(res, business)
@@ -77,8 +60,6 @@ businessSettingsRouter.put('/:businessId', requireOwner(), validate(updateBusine
   const business = await businessService.updateBusiness(businessId, req.body)
   sendSuccess(res, business)
 }))
-
-// --- Roles ---
 
 businessSettingsRouter.get('/:businessId/roles', asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
@@ -111,8 +92,6 @@ businessSettingsRouter.delete('/:businessId/roles/:roleId', requireOwner(), asyn
   const result = await settingsService.deleteRole(businessId, String(req.params.roleId), reassignTo)
   sendSuccess(res, result)
 }))
-
-// --- Staff ---
 
 businessSettingsRouter.get('/:businessId/staff', asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
@@ -158,8 +137,6 @@ businessSettingsRouter.delete('/:businessId/staff/invite/:inviteId', requireOwne
   sendSuccess(res, data)
 }))
 
-// --- Transaction Lock ---
-
 businessSettingsRouter.get('/:businessId/settings/transaction-lock', asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const config = await settingsService.getTransactionLock(businessId)
@@ -171,8 +148,6 @@ businessSettingsRouter.put('/:businessId/settings/transaction-lock', requireOwne
   const config = await settingsService.updateTransactionLock(businessId, req.body)
   sendSuccess(res, config)
 }))
-
-// --- Approvals ---
 
 businessSettingsRouter.get('/:businessId/approvals', asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
@@ -190,16 +165,12 @@ businessSettingsRouter.put('/:businessId/approvals/:approvalId', requireOwner(),
   sendSuccess(res, data)
 }))
 
-// --- Audit Log ---
-
 businessSettingsRouter.get('/:businessId/audit-log', asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const query = auditLogSchema.parse(req.query)
   const data = await settingsService.listAuditLog(businessId, query)
   sendSuccess(res, data)
 }))
-
-// --- GST Settings ---
 
 businessSettingsRouter.get('/:businessId/gst-settings', asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
@@ -213,20 +184,14 @@ businessSettingsRouter.put('/:businessId/gst-settings', requireOwner(), validate
   sendSuccess(res, data)
 }))
 
-// --- Operation PIN ---
-
 businessSettingsRouter.post('/:businessId/operation-pin', requireOwner(), validate(setOperationPinSchema), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const data = await settingsService.setOperationPin(businessId, req.body)
   sendSuccess(res, data)
 }))
 
-// === User-scoped routes ===
-
 export const userSettingsRouter = Router()
 userSettingsRouter.use(auth)
-
-// --- App Settings ---
 
 userSettingsRouter.get('/:userId/settings', asyncHandler(async (req, res) => {
   const userId = req.user!.userId
@@ -239,8 +204,6 @@ userSettingsRouter.put('/:userId/settings', validate(updateAppSettingsSchema), a
   const data = await settingsService.updateAppSettings(userId, req.body)
   sendSuccess(res, data)
 }))
-
-// --- PIN ---
 
 userSettingsRouter.post('/:userId/pin', validate(setPinSchema), asyncHandler(async (req, res) => {
   const userId = req.user!.userId
@@ -259,8 +222,6 @@ userSettingsRouter.post('/:userId/pin/reset', validate(setPinSchema), asyncHandl
   const data = await settingsService.setPin(userId, req.body)
   sendSuccess(res, data)
 }))
-
-// === Static routes ===
 
 export const permissionsRouter = Router()
 permissionsRouter.use(auth)

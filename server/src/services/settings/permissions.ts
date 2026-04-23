@@ -1,10 +1,5 @@
-/**
- * Permissions — PERMISSION_MATRIX, system roles, ensureSystemRoles
- */
-
+/** Permissions — PERMISSION_MATRIX, system roles, ensureSystemRoles */
 import { prisma } from '../../lib/prisma.js'
-
-// === Permission Matrix (static) ===
 
 const PERMISSION_MATRIX = [
   {
@@ -139,8 +134,6 @@ export function getPermissionMatrix() {
   return { modules: PERMISSION_MATRIX }
 }
 
-// === System Roles (lazy-seeded per business) ===
-
 export const ALL_PERMISSIONS = PERMISSION_MATRIX.flatMap(m =>
   m.actions.map(a => `${m.key}.${a.key}`)
 )
@@ -151,22 +144,13 @@ const SYSTEM_ROLES: Array<{
   name: string; isSystem: boolean; priority: number
   permissions: string[]; isDefault?: boolean
 }> = [
+  { name: 'Owner', isSystem: true, priority: 100, permissions: ALL_PERMISSIONS },
   {
-    name: 'Owner',
-    isSystem: true,
-    priority: 100,
-    permissions: ALL_PERMISSIONS,
-  },
-  {
-    name: 'Partner',
-    isSystem: true,
-    priority: 90,
+    name: 'Partner', isSystem: true, priority: 90,
     permissions: ALL_PERMISSIONS.filter(p => p !== 'settings.manageStaff'),
   },
   {
-    name: 'Manager',
-    isSystem: true,
-    priority: 70,
+    name: 'Manager', isSystem: true, priority: 70,
     permissions: ALL_PERMISSIONS.filter(p =>
       !['settings.manageStaff', 'settings.modify', 'settings.manageRoles'].includes(p)
     ),

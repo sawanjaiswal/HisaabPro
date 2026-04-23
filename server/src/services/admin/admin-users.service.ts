@@ -1,16 +1,8 @@
-/**
- * Admin User Management Service
- * User listing, details, suspension, unsuspension
- */
-
+/** Admin User Management Service — listing, details, suspension */
 import { prisma } from '../../lib/prisma.js'
 import { sanitizeText } from '../../lib/sanitize.js'
 import { notFoundError, validationError } from '../../lib/errors.js'
 import { blacklistUser } from '../../lib/token-blacklist.js'
-
-// --------------------------------------------------------------------------
-// List users — cursor-based pagination
-// --------------------------------------------------------------------------
 
 export async function getAllUsers(filters: {
   cursor?: string
@@ -46,7 +38,7 @@ export async function getAllUsers(filters: {
 
   const users = await prisma.user.findMany({
     where,
-    take: take + 1, // fetch one extra to determine nextCursor
+    take: take + 1,
     ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
     select: {
       id: true,
@@ -69,16 +61,12 @@ export async function getAllUsers(filters: {
 
   let nextCursor: string | null = null
   if (users.length > take) {
-    const last = users.pop()! // remove the extra item
+    const last = users.pop()!
     nextCursor = last.id
   }
 
   return { users, nextCursor }
 }
-
-// --------------------------------------------------------------------------
-// User detail
-// --------------------------------------------------------------------------
 
 export async function getUserDetails(userId: string) {
   const user = await prisma.user.findUnique({
@@ -108,7 +96,6 @@ export async function getUserDetails(userId: string) {
 
   if (!user) throw notFoundError('User')
 
-  // Aggregate business stats across all user businesses
   const [documentStats, paymentStats, businesses] = await Promise.all([
     prisma.document.aggregate({
       where: { createdBy: userId, status: { not: 'DELETED' } },
@@ -145,10 +132,6 @@ export async function getUserDetails(userId: string) {
   }
 }
 
-// --------------------------------------------------------------------------
-// Suspend
-// --------------------------------------------------------------------------
-
 export async function suspendUser(
   userId: string,
   adminId: string,
@@ -162,7 +145,6 @@ export async function suspendUser(
   if (!user) throw notFoundError('User')
   if (user.isSuspended) throw validationError('User is already suspended')
 
-  // Update user — mark suspended
   const updated = await prisma.user.update({
     where: { id: userId },
     data: {
@@ -173,7 +155,6 @@ export async function suspendUser(
     select: { id: true, name: true, phone: true, isSuspended: true, suspendedAt: true },
   })
 
-  // Record suspension detail
   await prisma.userSuspension.upsert({
     where: { userId },
     create: {
@@ -193,15 +174,9 @@ export async function suspendUser(
     },
   })
 
-  // Invalidate all active sessions for the user
   blacklistUser(userId)
-
   return updated
 }
-
-// --------------------------------------------------------------------------
-// Unsuspend
-// --------------------------------------------------------------------------
 
 export async function unsuspendUser(
   userId: string,
@@ -226,7 +201,6 @@ export async function unsuspendUser(
     select: { id: true, name: true, phone: true, isSuspended: true },
   })
 
-  // Update suspension record with lift info
   await prisma.userSuspension.updateMany({
     where: { userId, liftedAt: null },
     data: {
@@ -238,10 +212,6 @@ export async function unsuspendUser(
 
   return updated
 }
-
-// --------------------------------------------------------------------------
-// Unlock (clear failed login lockout)
-// --------------------------------------------------------------------------
 
 export async function unlockUser(userId: string) {
   const user = await prisma.user.findUnique({

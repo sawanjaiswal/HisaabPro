@@ -1,7 +1,4 @@
-/**
- * Document Service — createDocument
- */
-
+/** Document Service — createDocument */
 import { prisma } from '../../lib/prisma.js'
 import { notFoundError, validationError } from '../../lib/errors.js'
 import { deductForSaleInvoice, addForPurchaseInvoice, scheduleAlertChecks } from '../stock.service.js'
@@ -13,21 +10,18 @@ import {
   STOCK_DECREASE_TYPES, STOCK_INCREASE_TYPES, AFFECTS_OUTSTANDING,
   getRoundOffSetting, updateOutstanding,
 } from './helpers.js'
-// SSE events auto-emitted by middleware/sse-emit.ts on successful responses
 
 export async function createDocument(
   businessId: string,
   userId: string,
   data: CreateDocumentInput
 ) {
-  // Validate party belongs to business
   const party = await prisma.party.findFirst({
     where: { id: data.partyId, businessId, isActive: true },
     select: { id: true },
   })
   if (!party) throw notFoundError('Party')
 
-  // Validate originalDocumentId for Credit/Debit Notes
   const isCreditDebitNote = data.type === 'CREDIT_NOTE' || data.type === 'DEBIT_NOTE'
   if (isCreditDebitNote && data.originalDocumentId) {
     const originalDoc = await prisma.document.findFirst({
@@ -43,22 +37,16 @@ export async function createDocument(
     }
   }
 
-  // Fetch product data for calculations (include moq for MOQ validation)
   const productIds = data.lineItems.map(li => li.productId)
   const products = await prisma.product.findMany({
     where: { id: { in: productIds }, businessId },
     select: { id: true, name: true, purchasePrice: true, currentStock: true, moq: true },
   })
   const productMap = new Map(products.map(p => [p.id, p]))
-
-  // Verify all products exist
   for (const li of data.lineItems) {
-    if (!productMap.has(li.productId)) {
-      throw notFoundError(`Product ${li.productId}`)
-    }
+    if (!productMap.has(li.productId)) throw notFoundError(`Product ${li.productId}`)
   }
 
-  // Feature #109 — MOQ validation for PURCHASE_ORDER
   if (data.type === 'PURCHASE_ORDER') {
     for (const li of data.lineItems) {
       const product = productMap.get(li.productId)!
@@ -70,7 +58,6 @@ export async function createDocument(
     }
   }
 
-  // Fetch TaxCategory data for GST calculations (cess rates come from here)
   const taxCategoryIds = data.lineItems
     .map(li => li.taxCategoryId)
     .filter((id): id is string => !!id)
@@ -82,15 +69,12 @@ export async function createDocument(
     : []
   const taxCategoryMap = new Map(taxCategories.map(tc => [tc.id, tc]))
 
-  // Fetch business state code for inter-state determination
   const business = await prisma.business.findUnique({
     where: { id: businessId },
     select: { stateCode: true, compositionScheme: true },
   })
-
   const roundOffSetting = await getRoundOffSetting(businessId)
 
-  // Build calculation inputs — include GST fields when present
   const calcItems = data.lineItems.map(li => {
     const product = productMap.get(li.productId)!
     const tc = li.taxCategoryId ? taxCategoryMap.get(li.taxCategoryId) : undefined
@@ -105,10 +89,7 @@ export async function createDocument(
       cessType: tc?.cessType ?? 'PERCENTAGE',
     }
   })
-  const calcCharges = data.additionalCharges.map(c => ({
-    type: c.type,
-    value: c.value,
-  }))
+  const calcCharges = data.additionalCharges.map(c => ({ type: c.type, value: c.value }))
 
   const isComposite = data.isComposite ?? business?.compositionScheme ?? false
   const totals = calculateDocumentTotals(calcItems, calcCharges, roundOffSetting, {
@@ -119,13 +100,11 @@ export async function createDocument(
   const isSaving = data.status === 'SAVED'
 
   const result = await prisma.$transaction(async (tx) => {
-    // Generate document number only when SAVING (not DRAFT)
     let numberData: { documentNumber: string; sequenceNumber: number; financialYear: string } | null = null
     if (isSaving) {
       numberData = await generateNextNumber(tx, businessId, data.type, new Date(data.documentDate))
     }
 
-    // Create document
     const doc = await tx.document.create({
       data: {
         businessId,
@@ -156,7 +135,6 @@ export async function createDocument(
         transportNotes: data.transportDetails?.transportNotes || null,
         createdBy: userId,
         clientId: data.clientId || null,
-        // Phase 2 — GST
         placeOfSupply: data.placeOfSupply || null,
         isReverseCharge: data.isReverseCharge || false,
         isComposite,
@@ -165,10 +143,8 @@ export async function createDocument(
         totalSgst: totals.totalSgst,
         totalIgst: totals.totalIgst,
         totalCess: totals.totalCess,
-        // Phase 2 — Credit/Debit Note
         originalDocumentId: data.originalDocumentId || null,
         creditDebitReason: data.creditDebitReason || null,
-        // Phase 2B — TDS/TCS
         tdsRate: data.tdsRate ?? 0,
         tdsAmount: data.tdsAmount ?? 0,
         tcsRate: data.tcsRate ?? 0,
@@ -176,7 +152,6 @@ export async function createDocument(
       },
     })
 
-    // Create line items
     const lineItemData = data.lineItems.map((li, i) => {
       const product = productMap.get(li.productId)!
       const calc = totals.lineResults[i]
@@ -195,7 +170,6 @@ export async function createDocument(
         profitPercent: calc.profitPercent,
         stockBefore: product.currentStock,
         stockAfter: product.currentStock,
-        // GST Phase 2
         taxCategoryId: li.taxCategoryId ?? null,
         hsnCode: li.hsnCode ?? null,
         sacCode: li.sacCode ?? null,
@@ -212,7 +186,6 @@ export async function createDocument(
     })
     await tx.documentLineItem.createMany({ data: lineItemData })
 
-    // Create additional charges
     if (data.additionalCharges.length > 0) {
       const chargeData = data.additionalCharges.map((c, i) => ({
         documentId: doc.id,
@@ -225,9 +198,7 @@ export async function createDocument(
       await tx.documentAdditionalCharge.createMany({ data: chargeData })
     }
 
-    // Side effects only when SAVING
     if (isSaving) {
-      // Stock effects
       if (STOCK_DECREASE_TYPES.has(data.type)) {
         await deductForSaleInvoice(tx, {
           businessId,
@@ -254,30 +225,19 @@ export async function createDocument(
         })
       }
 
-      // Outstanding effects
       if (AFFECTS_OUTSTANDING.has(data.type)) {
-        let outstandingDelta: number
-        if (data.type === 'SALE_INVOICE') {
-          outstandingDelta = totals.grandTotal
-        } else if (data.type === 'PURCHASE_INVOICE') {
-          outstandingDelta = -totals.grandTotal
-        } else if (data.type === 'CREDIT_NOTE') {
-          outstandingDelta = -totals.grandTotal
-        } else {
-          outstandingDelta = totals.grandTotal
-        }
+        const negative = data.type === 'PURCHASE_INVOICE' || data.type === 'CREDIT_NOTE'
+        const outstandingDelta = negative ? -totals.grandTotal : totals.grandTotal
         await updateOutstanding(tx, data.partyId, outstandingDelta)
       }
     }
 
-    // Fetch complete document for response
     return tx.document.findUniqueOrThrow({
       where: { id: doc.id },
       select: DOCUMENT_DETAIL_SELECT,
     })
   })
 
-  // Post-transaction: fire stock alert checks (never blocks response)
   if (isSaving && (STOCK_DECREASE_TYPES.has(data.type) || STOCK_INCREASE_TYPES.has(data.type))) {
     const alertProductIds = data.lineItems.map(li => li.productId)
     scheduleAlertChecks(businessId, alertProductIds)

@@ -1,9 +1,4 @@
-/**
- * Expense Service
- * Manages expense categories and expense records.
- * seedDefaultCategories is idempotent — safe to call multiple times via skipDuplicates.
- */
-
+/** Expense Service — categories and expense records (seed is idempotent). */
 import { prisma } from '../lib/prisma.js'
 import { notFoundError } from '../lib/errors.js'
 import type {
@@ -12,8 +7,6 @@ import type {
   UpdateExpenseInput,
   ListExpensesQuery,
 } from '../schemas/expense.schemas.js'
-
-// ─── Default Categories ────────────────────────────────────────────────────────
 
 const DEFAULT_CATEGORIES = [
   { name: 'Rent', icon: '🏠', color: '#EF4444', sortOrder: 1 },
@@ -44,11 +37,9 @@ export async function seedDefaultCategories(businessId: string) {
   return prisma.expenseCategory.findMany({
     where: { businessId },
     orderBy: { sortOrder: 'asc' },
-    take: 50, // bounded: typically < 50 categories per business
+    take: 50,
   })
 }
-
-// ─── Expense Categories ────────────────────────────────────────────────────────
 
 export async function createExpenseCategory(
   businessId: string,
@@ -82,14 +73,11 @@ export async function listExpenseCategories(businessId: string) {
   })
 }
 
-// ─── Expenses ──────────────────────────────────────────────────────────────────
-
 export async function createExpense(
   businessId: string,
   userId: string,
   data: CreateExpenseInput,
 ) {
-  // Verify category belongs to this business
   const category = await prisma.expenseCategory.findFirst({
     where: { id: data.categoryId, businessId, isActive: true },
     select: { id: true },
@@ -127,7 +115,6 @@ export async function updateExpense(
   })
   if (!existing) throw notFoundError('Expense')
 
-  // If categoryId changing, verify the new category belongs to this business
   if (data.categoryId) {
     const category = await prisma.expenseCategory.findFirst({
       where: { id: data.categoryId, businessId, isActive: true },
@@ -173,12 +160,7 @@ export async function listExpenses(businessId: string, query: ListExpensesQuery)
     isDeleted: false,
     ...(categoryId && { categoryId }),
     ...(paymentMode && { paymentMode }),
-    ...((from ?? to) && {
-      date: {
-        ...(from && { gte: from }),
-        ...(to && { lte: to }),
-      },
-    }),
+    ...((from ?? to) && { date: { ...(from && { gte: from }), ...(to && { lte: to }) } }),
   }
 
   const [items, total] = await Promise.all([
@@ -194,12 +176,7 @@ export async function listExpenses(businessId: string, query: ListExpensesQuery)
 
   return {
     items,
-    pagination: {
-      page,
-      limit,
-      total,
-      totalPages: Math.ceil(total / limit),
-    },
+    pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
   }
 }
 
@@ -222,15 +199,9 @@ export async function getExpenseSummary(businessId: string, from?: Date, to?: Da
   const where = {
     businessId,
     isDeleted: false,
-    ...((from ?? to) && {
-      date: {
-        ...(from && { gte: from }),
-        ...(to && { lte: to }),
-      },
-    }),
+    ...((from ?? to) && { date: { ...(from && { gte: from }), ...(to && { lte: to }) } }),
   }
 
-  // Aggregate total and per-category breakdown using DB aggregates (not findMany + reduce)
   const [totalResult, categoryGroups] = await Promise.all([
     prisma.expense.aggregate({
       where,
@@ -246,7 +217,6 @@ export async function getExpenseSummary(businessId: string, from?: Date, to?: Da
     }),
   ])
 
-  // Fetch category names for the grouped results
   const categoryIds = categoryGroups.map((g) => g.categoryId)
   const categories = await prisma.expenseCategory.findMany({
     where: { id: { in: categoryIds } },

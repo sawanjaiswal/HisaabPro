@@ -1,13 +1,5 @@
-/**
- * Unified Notification Service — Email (Resend), WhatsApp (Aisensy), Push (FCM)
- * All channels gracefully degrade when API keys are not configured.
- */
-
+/** Unified Notification Service — Email (Resend), WhatsApp (Aisensy), Push (FCM). */
 import logger from '../lib/logger.js'
-
-// ============================================================
-// Types
-// ============================================================
 
 interface EmailAttachment {
   filename: string
@@ -56,18 +48,12 @@ interface NotifyResult {
   push?: ChannelResult
 }
 
-// ============================================================
-// Lazy-initialized clients (avoid import-time crashes)
-// ============================================================
-
 let resendClient: import('resend').Resend | null = null
 
 function getResendClient(): import('resend').Resend | null {
   if (resendClient) return resendClient
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) return null
-
-  // Dynamic import already done at module level via lazy init
   const { Resend } = require('resend') as typeof import('resend')
   resendClient = new Resend(apiKey)
   return resendClient
@@ -96,10 +82,6 @@ async function getFirebaseMessaging(): Promise<import('firebase-admin').messagin
   const admin = await import('firebase-admin')
   return admin.default.messaging()
 }
-
-// ============================================================
-// Email — Resend
-// ============================================================
 
 const RESEND_FROM = process.env.RESEND_FROM_EMAIL ?? 'HisaabPro <noreply@hisaabpro.in>'
 
@@ -135,10 +117,6 @@ export async function sendEmail(opts: SendEmailOpts): Promise<ChannelResult> {
     return { success: false, error: message }
   }
 }
-
-// ============================================================
-// WhatsApp — Aisensy (REST API)
-// ============================================================
 
 const AISENSY_ENDPOINT = 'https://backend.aisensy.com/campaign/t1/api/v2'
 
@@ -184,10 +162,6 @@ export async function sendWhatsApp(opts: SendWhatsAppOpts): Promise<ChannelResul
   }
 }
 
-// ============================================================
-// Push Notification — FCM via firebase-admin
-// ============================================================
-
 export async function sendPushNotification(opts: SendPushOpts): Promise<ChannelResult> {
   if (opts.deviceTokens.length === 0) {
     return { success: false, error: 'No device tokens provided' }
@@ -215,7 +189,7 @@ export async function sendPushNotification(opts: SendPushOpts): Promise<ChannelR
       const errors = response.responses
         .filter(r => !r.success)
         .map(r => r.error?.message)
-        .slice(0, 5) // log first 5 errors max
+        .slice(0, 5)
       logger.warn('Some push notifications failed', { errors })
     }
 
@@ -232,10 +206,6 @@ export async function sendPushNotification(opts: SendPushOpts): Promise<ChannelR
     return { success: false, error: message }
   }
 }
-
-// ============================================================
-// Unified notify — dispatch to one or all channels
-// ============================================================
 
 export async function notify(opts: NotifyOpts): Promise<NotifyResult> {
   const result: NotifyResult = {}

@@ -1,9 +1,4 @@
-/**
- * Serial Number Service — Phase 4 (#100 Serial Number Tracking)
- * Per-unit tracking: each physical unit gets a unique serial.
- * Status lifecycle: AVAILABLE → SOLD → RETURNED → AVAILABLE (or DAMAGED/WARRANTY)
- */
-
+/** Serial Number Service — per-unit tracking; status AVAILABLE → SOLD → RETURNED. */
 import { prisma } from '../lib/prisma.js'
 import { notFoundError, conflictError } from '../lib/errors.js'
 import logger from '../lib/logger.js'
@@ -14,8 +9,6 @@ import type {
   ListSerialNumbersQuery,
 } from '../schemas/serial-number.schemas.js'
 
-// === Helpers ===
-
 async function requireProduct(businessId: string, productId: string) {
   const product = await prisma.product.findFirst({
     where: { id: productId, businessId },
@@ -24,8 +17,6 @@ async function requireProduct(businessId: string, productId: string) {
   if (!product) throw notFoundError('Product')
   return product
 }
-
-// === CRUD ===
 
 export async function createSerialNumber(
   businessId: string,
@@ -40,7 +31,6 @@ export async function createSerialNumber(
   })
   if (existing) throw conflictError(`Serial number "${data.serialNumber}" already exists`)
 
-  // Validate batch/godown belong to business if provided
   if (data.batchId) {
     const batch = await prisma.batch.findFirst({
       where: { id: data.batchId, businessId, productId, isDeleted: false },
@@ -79,14 +69,12 @@ export async function bulkCreateSerialNumbers(
 ) {
   await requireProduct(businessId, productId)
 
-  // Check for duplicates in one query
   const existingSerials = await prisma.serialNumber.findMany({
     where: { businessId, serialNumber: { in: data.serialNumbers } },
     select: { serialNumber: true },
   })
   const existingSet = new Set(existingSerials.map((s) => s.serialNumber))
 
-  // Also check for duplicates within the input array itself
   const inputSet = new Set<string>()
   const inputDuplicates: string[] = []
   for (const sn of data.serialNumbers) {
@@ -107,11 +95,8 @@ export async function bulkCreateSerialNumbers(
     }
   }
 
-  if (validSerials.length === 0) {
-    return { created: 0, errors }
-  }
+  if (validSerials.length === 0) return { created: 0, errors }
 
-  // Validate batch/godown if provided
   if (data.batchId) {
     const batch = await prisma.batch.findFirst({
       where: { id: data.batchId, businessId, productId, isDeleted: false },
@@ -127,9 +112,7 @@ export async function bulkCreateSerialNumbers(
     if (!godown) throw notFoundError('Godown')
   }
 
-  logger.info('Bulk creating serial numbers', {
-    businessId, productId, count: validSerials.length,
-  })
+  logger.info('Bulk creating serial numbers', { businessId, productId, count: validSerials.length })
 
   const result = await prisma.serialNumber.createMany({
     data: validSerials.map((sn) => ({
@@ -234,8 +217,6 @@ export async function lookupBySerial(businessId: string, serialNumber: string) {
   if (!serial) throw notFoundError('Serial number')
   return serial
 }
-
-// === Select objects ===
 
 const serialListSelect = {
   id: true,
