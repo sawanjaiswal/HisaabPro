@@ -102,21 +102,17 @@ export default function LoginPage() {
             </button>
           )}
 
-          {!isDevMode && (
-            <>
-              <p className="login-page__hint space-y-6">
-                <Link to={ROUTES.FORGOT_PASSWORD} style={{ color: 'var(--color-primary-500)' }}>
-                  Forgot password?
-                </Link>
-              </p>
-              <p className="login-page__hint space-y-6">
-                New here?{' '}
-                <Link to={ROUTES.REGISTER} style={{ color: 'var(--color-primary-500)' }}>
-                  Create account
-                </Link>
-              </p>
-            </>
-          )}
+          <p className="login-page__hint space-y-6">
+            <Link to={ROUTES.FORGOT_PASSWORD} style={{ color: 'var(--color-primary-500)' }}>
+              Forgot password?
+            </Link>
+          </p>
+          <p className="login-page__hint space-y-6">
+            New here?{' '}
+            <Link to={ROUTES.REGISTER} style={{ color: 'var(--color-primary-500)' }}>
+              Create account
+            </Link>
+          </p>
         </form>
       </div>
     </div>

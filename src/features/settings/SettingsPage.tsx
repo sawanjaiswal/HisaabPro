@@ -24,6 +24,7 @@ import {
   Languages,
   Receipt,
   Percent,
+  LogOut,
 } from 'lucide-react'
 import type { LucideProps } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -33,6 +34,7 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { ROUTES } from '@/config/routes.config'
 import { useTheme } from '@/context/ThemeContext'
 import { useLanguage } from '@/context/LanguageContext'
+import { useAuth } from '@/context/AuthContext'
 import { useAppSettings } from './useAppSettings'
 import { SettingsSection } from './components/SettingsSection'
 import { SettingsSkeleton } from './components/SettingsSkeleton'
@@ -89,6 +91,13 @@ export default function SettingsPage() {
   const { settings, status, updateSetting, refresh } = useAppSettings()
   const { theme, toggleTheme } = useTheme()
   const { language, setLanguage, t } = useLanguage()
+  const { handleLogout } = useAuth()
+
+  function onLogout() {
+    if (!window.confirm(t.logout + '?')) return
+    handleLogout()
+    navigate(ROUTES.LOGIN, { replace: true })
+  }
 
   function handleItemClick(item: SettingsItem) {
     if (item.type === 'navigation' && item.route) {
@@ -149,6 +158,15 @@ export default function SettingsPage() {
                 settings={{ ...settings, theme, language }}
               />
             ))}
+
+            <button
+              type="button"
+              onClick={onLogout}
+              className="settings-logout-btn"
+            >
+              <LogOut size={18} aria-hidden="true" />
+              <span>{t.logout}</span>
+            </button>
           </div>
         )}
       </PageContainer>
