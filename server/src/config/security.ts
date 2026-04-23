@@ -41,8 +41,9 @@ export const REFRESH_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000
 /** Global API rate limit window (ms) */
 export const RATE_LIMIT_GLOBAL_WINDOW_MS = 60 * 1000
 
-/** Max requests per IP in global window */
-export const RATE_LIMIT_GLOBAL_MAX = 100
+/** Max requests per IP in global window. Heartbeat paths (health, SSE, auth/me)
+ *  bypass the limiter entirely — those are background polls, not user actions. */
+export const RATE_LIMIT_GLOBAL_MAX = 600
 
 /** Auth endpoint rate limit window (ms) — 1 minute */
 export const RATE_LIMIT_AUTH_WINDOW_MS = 60 * 1000

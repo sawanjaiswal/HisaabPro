@@ -27,14 +27,18 @@ async function checkConnectivity(): Promise<boolean> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), HEARTBEAT_TIMEOUT);
 
-    const response = await fetch(HEALTH_URL, {
+    await fetch(HEALTH_URL, {
       method: 'HEAD',
       signal: controller.signal,
       cache: 'no-store',
     });
 
     clearTimeout(timeoutId);
-    return response.ok;
+    // The server *responded* — that means we're online, even if it's throttled (429),
+    // protected (401/403), or having an internal hiccup (5xx). Only treat
+    // network/timeout failures as offline. Otherwise the offline banner
+    // fires for server problems and the offline-queue triggers spuriously.
+    return true;
   } catch {
     return false;
   }

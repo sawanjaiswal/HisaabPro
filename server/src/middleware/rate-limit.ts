@@ -216,13 +216,33 @@ export const otpRateLimiter = createRateLimiter({
   eventName: 'rate_limit.otp_hit',
 })
 
-/** 100 req/min per IP — general API */
-export const apiRateLimiter = createRateLimiter({
+/**
+ * Heartbeat / background-poll paths exempt from the global IP limiter.
+ * These are fired by the client on a timer (offline detector, SSE, session check)
+ * and burn the IP budget without representing user activity. Rate-limiting them
+ * makes the entire app appear "offline" once the IP runs out of tokens.
+ *
+ * Auth endpoints are still protected by their own stricter limiter.
+ */
+const HEARTBEAT_PATHS = new Set<string>([
+  '/api/health',
+  '/api/health/detailed',
+  '/api/events/stream',
+  '/api/auth/me',
+])
+
+const _apiRateLimiter = createRateLimiter({
   windowMs: RATE_LIMIT_GLOBAL_WINDOW_MS,
   max: RATE_LIMIT_GLOBAL_MAX,
   message: 'Too many requests. Please slow down.',
   eventName: 'rate_limit.global_hit',
 })
+
+/** 600 req/min per IP — general API. Skips heartbeat polls. */
+export const apiRateLimiter = (req: Request, res: Response, next: NextFunction) => {
+  if (HEARTBEAT_PATHS.has(req.path)) return next()
+  return _apiRateLimiter(req, res, next)
+}
 
 /**
  * CRUD mutation limiter — per-user, only engages on write methods.
