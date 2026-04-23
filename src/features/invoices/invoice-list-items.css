@@ -66,7 +66,6 @@
 
 /* ─── Monetary displays — tabular numbers ───────────────────── */
 
-.invoice-hero-amount,
 .invoice-list-summary-amount,
 .txn-amount,
 .payment-status-indicator {
@@ -151,11 +150,6 @@
 /* ─── Reduced motion ────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
-  .invoice-hero,
-  .invoice-hero-amount {
-    animation: none !important;
-  }
-
   .invoice-list-row .txn-row:active {
     transform: none !important;
   }

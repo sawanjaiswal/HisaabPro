@@ -1,7 +1,7 @@
 /** Invoice list — Hero card pair (Received / Due)
  *
- * Matches dashboard hero pattern: teal card (received) + coral card (due).
- * Total amount shown as subtitle above the cards.
+ * Uses shared summary-hero CSS pattern.
+ * Teal card (received) + coral card (due) — lime card when all paid.
  */
 
 import React from 'react'
@@ -9,7 +9,6 @@ import { ChevronRight, ArrowDownLeft, Clock } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatInvoiceAmount } from '../invoice-format.utils'
 import type { DocumentListResponse } from '../invoice.types'
-import './InvoiceSummaryBar.css'
 
 interface InvoiceSummaryBarProps {
   summary: DocumentListResponse['summary']
@@ -26,44 +25,44 @@ export const InvoiceSummaryBar: React.FC<InvoiceSummaryBarProps> = ({
   const { totalAmount, totalPaid, totalDue } = summary
 
   return (
-    <div className="invoice-hero" role="list" aria-label={t.invoiceSummaryAriaLabel}>
-      <p className="invoice-hero-total">
+    <div className="summary-hero" role="list" aria-label={t.invoiceSummaryAriaLabel}>
+      <p className="summary-hero-count">
         {t.totalColon} <strong>{formatInvoiceAmount(totalAmount)}</strong>
       </p>
 
-      <div className="invoice-hero-cards">
+      <div className="summary-hero-cards">
         {/* Received — teal gradient */}
         <button
-          className="invoice-hero-card invoice-hero-card--received"
+          className="summary-hero-card summary-hero-card--teal"
           role="listitem"
           onClick={onReceivedClick}
           aria-label={`${t.receivedLabel}: ${formatInvoiceAmount(totalPaid)}`}
         >
-          <div className="invoice-hero-card-content">
-            <span className="invoice-hero-amount">{formatInvoiceAmount(totalPaid)}</span>
-            <span className="invoice-hero-label">
+          <div className="summary-hero-card-content">
+            <span className="summary-hero-amount">{formatInvoiceAmount(totalPaid)}</span>
+            <span className="summary-hero-label">
               {t.receivedLabel}
               <ArrowDownLeft size={14} aria-hidden="true" />
             </span>
           </div>
-          <ChevronRight size={20} aria-hidden="true" className="invoice-hero-chevron" />
+          <ChevronRight size={20} aria-hidden="true" className="summary-hero-chevron" />
         </button>
 
-        {/* Due — coral/red gradient */}
+        {/* Due — coral gradient, or lime when all paid */}
         <button
-          className={`invoice-hero-card invoice-hero-card--due${totalDue === 0 ? ' invoice-hero-card--clear' : ''}`}
+          className={`summary-hero-card ${totalDue === 0 ? 'summary-hero-card--lime' : 'summary-hero-card--coral'}`}
           role="listitem"
           onClick={onDueClick}
           aria-label={totalDue > 0 ? `${t.dueLabel}: ${formatInvoiceAmount(totalDue)}` : t.noAmountDue}
         >
-          <div className="invoice-hero-card-content">
-            <span className="invoice-hero-amount">{formatInvoiceAmount(totalDue)}</span>
-            <span className="invoice-hero-label">
+          <div className="summary-hero-card-content">
+            <span className="summary-hero-amount">{formatInvoiceAmount(totalDue)}</span>
+            <span className="summary-hero-label">
               {totalDue > 0 ? t.dueLabel : t.allPaidLabel}
               <Clock size={14} aria-hidden="true" />
             </span>
           </div>
-          <ChevronRight size={20} aria-hidden="true" className="invoice-hero-chevron invoice-hero-chevron--dark" />
+          <ChevronRight size={20} aria-hidden="true" className="summary-hero-chevron summary-hero-chevron--dark" />
         </button>
       </div>
     </div>

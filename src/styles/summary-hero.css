@@ -20,6 +20,18 @@
   margin-bottom: var(--space-3);
 }
 
+.summary-hero-count strong {
+  font-weight: 700;
+  color: var(--color-gray-800);
+  font-size: var(--fs-md);
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-theme="dark"] .summary-hero-count strong {
+  color: var(--color-gray-200);
+}
+
 /* Net balance line (used by payments) */
 .summary-hero-net {
   font-size: var(--fs-sm);
@@ -75,6 +87,12 @@
 
 .summary-hero-card--amber {
   background: linear-gradient(135deg, var(--gradient-amber-start) 0%, var(--gradient-amber-end) 100%);
+  color: var(--color-white-inverse);
+  animation: heroFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 140ms both;
+}
+
+.summary-hero-card--coral {
+  background: linear-gradient(135deg, var(--gradient-coral-start) 0%, var(--gradient-coral-end) 100%);
   color: var(--color-white-inverse);
   animation: heroFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 140ms both;
 }
