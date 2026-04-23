@@ -76,7 +76,7 @@
 .dashboard-alerts,
 .dashboard-starred,
 .dashboard-transactions {
-  animation: dashFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: dashFadeUp 400ms var(--ease-premium) both;
 }
 
 .dashboard-sales-hero   { animation-delay: calc(var(--dash-stagger-base) * 0); }

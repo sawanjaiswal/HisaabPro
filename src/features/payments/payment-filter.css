@@ -14,7 +14,7 @@
   flex-direction: column;
   gap: var(--space-3);
   margin-bottom: var(--space-4);
-  animation: paymentFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 60ms both;
+  animation: paymentFadeUp 400ms var(--ease-premium) 60ms both;
 }
 
 /* Horizontal scrollable row of filter pills */
@@ -52,7 +52,7 @@
     background var(--duration-fast) var(--ease-default),
     border-color var(--duration-fast) var(--ease-default),
     color var(--duration-fast) var(--ease-default),
-    transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+    transform 180ms var(--ease-premium);
   -webkit-tap-highlight-color: transparent;
 }
 

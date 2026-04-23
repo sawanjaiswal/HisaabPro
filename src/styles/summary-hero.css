@@ -7,7 +7,7 @@
 /* Container */
 .summary-hero {
   margin-bottom: var(--space-4);
-  animation: heroFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: heroFadeUp 400ms var(--ease-premium) both;
 }
 
 /* Count/subtitle above cards */
@@ -58,7 +58,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: transform var(--duration-normal) cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform var(--duration-normal) var(--ease-premium);
   -webkit-tap-highlight-color: transparent;
   font-family: var(--font-primary);
   min-height: 90px;
@@ -76,25 +76,25 @@
 .summary-hero-card--teal {
   background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
   color: var(--color-white-inverse);
-  animation: heroFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
+  animation: heroFadeUp 400ms var(--ease-premium) 80ms both;
 }
 
 .summary-hero-card--lime {
   background: var(--color-lime-accent);
   color: var(--color-dark-text);
-  animation: heroFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 140ms both;
+  animation: heroFadeUp 400ms var(--ease-premium) 140ms both;
 }
 
 .summary-hero-card--amber {
   background: linear-gradient(135deg, var(--gradient-amber-start) 0%, var(--gradient-amber-end) 100%);
   color: var(--color-white-inverse);
-  animation: heroFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 140ms both;
+  animation: heroFadeUp 400ms var(--ease-premium) 140ms both;
 }
 
 .summary-hero-card--coral {
   background: linear-gradient(135deg, var(--gradient-coral-start) 0%, var(--gradient-coral-end) 100%);
   color: var(--color-white-inverse);
-  animation: heroFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 140ms both;
+  animation: heroFadeUp 400ms var(--ease-premium) 140ms both;
 }
 
 .summary-hero-card--safe {

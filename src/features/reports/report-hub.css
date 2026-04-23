@@ -24,7 +24,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  animation: reportFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: reportFadeUp 400ms var(--ease-premium) both;
 }
 
 /* ─── Hero banner ───────────────────────────────────────────── */
@@ -37,7 +37,7 @@
   background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
   border-radius: var(--radius-xl);
   color: var(--color-white-inverse);
-  animation: reportFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 60ms both;
+  animation: reportFadeUp 400ms var(--ease-premium) 60ms both;
 }
 
 .report-hub-hero-icon {
@@ -107,8 +107,8 @@
   -webkit-tap-highlight-color: transparent;
   transition:
     box-shadow var(--duration-fast) var(--ease-default),
-    transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
-  animation: reportFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 100ms both;
+    transform 180ms var(--ease-premium);
+  animation: reportFadeUp 400ms var(--ease-premium) 100ms both;
 }
 
 /* Staggered entrance — each card appears 50ms after the previous */

@@ -31,7 +31,7 @@
 
 .payment-hero {
   margin-bottom: var(--space-4);
-  animation: paymentFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: paymentFadeUp 400ms var(--ease-premium) both;
 }
 
 .payment-hero-net {
@@ -72,7 +72,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 200ms var(--ease-premium);
   -webkit-tap-highlight-color: transparent;
   font-family: var(--font-primary);
   min-height: 90px;
@@ -87,14 +87,14 @@
 .payment-hero-card--in {
   background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
   color: var(--color-white-inverse);
-  animation: paymentFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
+  animation: paymentFadeUp 400ms var(--ease-premium) 80ms both;
 }
 
 /* Money Out — lime */
 .payment-hero-card--out {
   background: var(--color-lime-accent);
   color: var(--color-dark-text);
-  animation: paymentFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 140ms both;
+  animation: paymentFadeUp 400ms var(--ease-premium) 140ms both;
 }
 
 .payment-hero-card-content {

@@ -51,7 +51,7 @@
 
 /* Premium touch feedback on rows */
 .invoice-list-row .txn-row {
-  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 180ms var(--ease-premium);
 }
 
 .invoice-list-row .txn-row:active {

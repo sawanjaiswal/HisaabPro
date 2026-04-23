@@ -19,7 +19,7 @@
   gap: var(--space-3);
   border-bottom: 1px solid var(--color-gray-100);
   margin-bottom: var(--space-4);
-  animation: reportFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 60ms both;
+  animation: reportFadeUp 400ms var(--ease-premium) 60ms both;
 }
 
 /* ─── Filter pills ──────────────────────────────────────────── */
@@ -58,7 +58,7 @@
     background var(--duration-fast) var(--ease-default),
     border-color var(--duration-fast) var(--ease-default),
     color var(--duration-fast) var(--ease-default),
-    transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+    transform 180ms var(--ease-premium);
 }
 
 .report-filter-pill:hover {
@@ -94,7 +94,7 @@
   scrollbar-width: none;
   padding-bottom: var(--space-1);
   margin-bottom: var(--space-4);
-  animation: reportFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
+  animation: reportFadeUp 400ms var(--ease-premium) 120ms both;
 }
 
 .report-summary-bar::-webkit-scrollbar {

@@ -28,7 +28,7 @@
   font-family: var(--font-primary);
   -webkit-tap-highlight-color: transparent;
   transition:
-    transform var(--duration-fast) cubic-bezier(0.16, 1, 0.3, 1),
+    transform var(--duration-fast) var(--ease-premium),
     background-color var(--duration-fast) ease;
   width: 100%;
   text-align: left;
@@ -106,7 +106,7 @@
   font-weight: 500;
   -webkit-tap-highlight-color: transparent;
   transition:
-    transform var(--duration-fast) cubic-bezier(0.16, 1, 0.3, 1),
+    transform var(--duration-fast) var(--ease-premium),
     background-color var(--duration-fast) ease;
   min-height: 44px;
   width: 100%;
