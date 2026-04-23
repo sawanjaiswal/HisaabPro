@@ -14,7 +14,7 @@ import {
   listReconciliationsSchema,
   reconciliationEntryFilterSchema,
 } from '../schemas/reconciliation.schemas.js'
-import * as reconService from '../services/reconciliation.service.js'
+import * as reconService from '../services/reconciliation/index.js'
 
 const router = Router()
 router.use(auth)
