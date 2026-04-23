@@ -270,7 +270,9 @@
   color: var(--color-gray-600);
 }
 
-/* === PILL TABS — NexoWallet bottom nav style tabs === */
+/* === PILL TABS — NexoWallet bottom nav style tabs ===
+ * Right-edge fade-mask hints that more pills exist when the row scrolls
+ * (Invoices "Estimate" / Payment Mode "Cheque" used to clip silently). */
 .pill-tabs {
   display: flex;
   gap: var(--space-2);
@@ -278,6 +280,8 @@
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   padding: var(--space-1) var(--space-4) var(--space-1) 0;
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
 }
 
 .pill-tabs::-webkit-scrollbar { display: none; }

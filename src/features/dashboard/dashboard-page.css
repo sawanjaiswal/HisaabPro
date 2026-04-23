@@ -4,6 +4,12 @@
    background pattern, sections, section headers, skeleton.
    ============================================================ */
 
+/* The dashboard header carries its own calculator trigger, so hide the
+ * floating calculator FAB while we're on the dashboard surface. */
+:root:has(.dashboard-page) .calculator-fab.calculator-fab {
+  display: none;
+}
+
 /* ─── Dashboard-specific tokens ───────────────────────────── */
 .dashboard-page {
   /* Color aliases — intentionally different from globals (dark mode overrides below change these) */

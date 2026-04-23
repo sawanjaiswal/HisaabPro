@@ -95,6 +95,111 @@
   flex-shrink: 0;
 }
 
+/* === HEADER VARIANTS — centered title + scroll-condense (dashboard pattern) === */
+
+/* When scroll-condense is on we *start* transparent and only fill once scrolled,
+ * so the hero can bleed up under the bar. */
+.header--scroll-condense {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom-color: transparent;
+  transition: background var(--duration-normal) var(--ease-default),
+              border-color var(--duration-normal) var(--ease-default),
+              box-shadow var(--duration-normal) var(--ease-default);
+}
+
+.header--scroll-condense.is-scrolled {
+  background: var(--header-glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom-color: var(--header-border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Centered-title layout: 3-column grid keeps the title in the middle column
+ * but lets the slots claim only the space they need — no overlap regardless
+ * of how wide leading/actions grow. */
+.header--center {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  position: sticky;
+  min-height: 64px;
+  padding-top: max(var(--space-3), env(safe-area-inset-top, 12px));
+  column-gap: var(--space-2);
+}
+
+.header--center .header-leading {
+  grid-column: 1;
+  gap: var(--space-2);
+}
+
+.header--center .header-title--center {
+  grid-column: 2;
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.header--center .header-actions {
+  grid-column: 3;
+  gap: var(--space-1);
+}
+
+/* Pill-shaped 44x44 icon button used by the dashboard slot — exposed under the
+ * Header namespace so any consumer can reuse it via the `leading`/`actions` slot. */
+.header-icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: var(--overlay-white-85);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  color: var(--color-gray-700);
+  flex-shrink: 0;
+  transition: background var(--duration-fast) var(--ease-default),
+              transform var(--duration-fast) var(--ease-default);
+  box-shadow: var(--shadow-icon-btn-light);
+}
+
+.header-icon-btn:active {
+  background: var(--color-gray-100);
+  transform: scale(0.92);
+}
+
+.header-icon-btn:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+.header-icon-btn svg {
+  transition: transform var(--duration-normal) var(--ease-default);
+}
+
+[data-theme="dark"] .header-icon-btn {
+  background: var(--header-icon-btn-bg-dark);
+  color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .header-icon-btn:active {
+  background: var(--color-gray-200);
+}
+
+[data-theme="dark"] .header--scroll-condense.is-scrolled {
+  background: var(--header-glass-bg-dark);
+  box-shadow: var(--shadow-bar-bottom);
+}
+
 /* === BOTTOM NAV — Figma: white bar with circle cutout (boolean subtract) === */
 /* Figma values: bar 96px, subtract circle 88.2px diameter (41px radius scaled),
    circle center 6px above bar top. Total frame 140px. */

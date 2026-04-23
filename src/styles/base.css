@@ -96,8 +96,10 @@ textarea:focus-visible {
 }
 
 /* === PAGE CONTAINER — white drawer with rounded top for premium depth === */
+/* Bottom padding accounts for the protruding "+" FAB so the last line of
+ * content is never covered by the cradle button (~32px overhang). */
 .page-container {
-  padding: var(--space-4) var(--side-padding);
+  padding: var(--space-4) var(--side-padding) calc(var(--space-8) + 32px);
   max-width: 1200px;
   margin: 0 auto;
   background: var(--color-gray-0);
