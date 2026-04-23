@@ -59,7 +59,7 @@
   height: 24px;
   border: none;
   background: var(--color-gray-200);
-  border-radius: 9999px;
+  border-radius: var(--radius-full);
   color: var(--color-gray-500);
   cursor: pointer;
   padding: 0;

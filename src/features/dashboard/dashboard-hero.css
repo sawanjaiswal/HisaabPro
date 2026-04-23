@@ -71,7 +71,7 @@
   background: var(--dash-teal-10);
   border: none;
   border-radius: var(--radius-full);
-  padding: 10px 20px;
+  padding: var(--space-2-5) var(--space-5);
   cursor: pointer;
   font-family: var(--font-primary);
   -webkit-tap-highlight-color: transparent;
@@ -223,7 +223,7 @@
   flex-shrink: 0;
   padding: var(--space-2);
   background: var(--overlay-white-15);
-  border-radius: 9999px;
+  border-radius: var(--radius-full);
   color: var(--color-white-inverse);
 }
 
