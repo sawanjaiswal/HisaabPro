@@ -78,17 +78,17 @@ export default function ProductDetailPage() {
       <PageContainer className="space-y-6">
         {status === 'loading' && (
           <>
-            <div className="card-primary" style={{ marginBottom: 'var(--space-4)', minHeight: 140 }}>
+            <div className="card-primary product-detail-skeleton-card">
               <Skeleton height="1.5rem" width="60%" />
-              <div style={{ marginTop: 'var(--space-3)' }}>
+              <div className="product-detail-skeleton-row">
                 <Skeleton height="1rem" width="40%" />
               </div>
-              <div style={{ marginTop: 'var(--space-4)' }}>
+              <div className="product-detail-skeleton-row--lg">
                 <Skeleton height="2.5rem" width="50%" />
               </div>
             </div>
             <Skeleton height="2.5rem" borderRadius="var(--radius-full)" />
-            <div style={{ marginTop: 'var(--space-4)' }}>
+            <div className="product-detail-skeleton-row--lg">
               <Skeleton height="5rem" borderRadius="var(--radius-lg)" count={3} />
             </div>
           </>
@@ -136,36 +136,36 @@ export default function ProductDetailPage() {
               {activeTab === 'overview' && (
                 <div className="card product-info-card">
                   <div className="product-info-row">
-                    <span style={{ color: 'var(--color-gray-400)', fontSize: 'var(--fs-sm)', minWidth: 100 }}>{t.categoryLabel}</span>
-                    <span style={{ fontWeight: 500 }}>
+                    <span className="product-info-label">{t.categoryLabel}</span>
+                    <span className="product-info-value">
                       {PREDEFINED_CATEGORIES.find((c) => c.id === product.category.id)?.name ?? product.category.name}
                     </span>
                   </div>
                   <div className="product-info-row">
-                    <span style={{ color: 'var(--color-gray-400)', fontSize: 'var(--fs-sm)', minWidth: 100 }}>{t.unitLabel}</span>
-                    <span style={{ fontWeight: 500 }}>
+                    <span className="product-info-label">{t.unitLabel}</span>
+                    <span className="product-info-value">
                       {PREDEFINED_UNITS.find((u) => u.id === product.unit.id)?.name ?? product.unit.name} ({product.unit.symbol})
                     </span>
                   </div>
                   <div className="product-info-row">
-                    <span style={{ color: 'var(--color-gray-400)', fontSize: 'var(--fs-sm)', minWidth: 100 }}>{t.salePriceLabel}</span>
-                    <span style={{ fontWeight: 600 }}>{formatProductPrice(product.salePrice)}</span>
+                    <span className="product-info-label">{t.salePriceLabel}</span>
+                    <span className="product-info-value product-info-value--bold">{formatProductPrice(product.salePrice)}</span>
                   </div>
                   {product.purchasePrice !== null && (
                     <div className="product-info-row">
-                      <span style={{ color: 'var(--color-gray-400)', fontSize: 'var(--fs-sm)', minWidth: 100 }}>{t.purchasePriceLabel}</span>
-                      <span style={{ fontWeight: 500 }}>{formatProductPrice(product.purchasePrice)}</span>
+                      <span className="product-info-label">{t.purchasePriceLabel}</span>
+                      <span className="product-info-value">{formatProductPrice(product.purchasePrice)}</span>
                     </div>
                   )}
                   <div className="product-info-row">
-                    <span style={{ color: 'var(--color-gray-400)', fontSize: 'var(--fs-sm)', minWidth: 100 }}>{t.minStockLabel}</span>
-                    <span style={{ fontWeight: 500 }}>
+                    <span className="product-info-label">{t.minStockLabel}</span>
+                    <span className="product-info-value">
                       {product.minStockLevel > 0 ? `${product.minStockLevel} ${product.unit.symbol}` : t.notSet}
                     </span>
                   </div>
                   <div className="product-info-row">
-                    <span style={{ color: 'var(--color-gray-400)', fontSize: 'var(--fs-sm)', minWidth: 100 }}>{t.validationLabel}</span>
-                    <span style={{ fontWeight: 500 }}>{STOCK_VALIDATION_LABELS[product.stockValidation]}</span>
+                    <span className="product-info-label">{t.validationLabel}</span>
+                    <span className="product-info-value">{STOCK_VALIDATION_LABELS[product.stockValidation]}</span>
                   </div>
                 </div>
               )}

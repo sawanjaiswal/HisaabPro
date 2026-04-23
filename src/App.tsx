@@ -2,7 +2,7 @@ import { Suspense, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import { Capacitor } from '@capacitor/core'
 import { useQueryClient } from '@tanstack/react-query'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { ROUTES } from '@/config/routes.config'
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary'
 import { Spinner } from '@/components/feedback/Spinner'
@@ -68,6 +68,14 @@ function GuestRoute({ children }: { children: ReactNode }) {
   if (isLoading) return <Spinner fullScreen />
   if (isAuthenticated) return <Navigate to={ROUTES.DASHBOARD} replace />
   return <>{children}</>
+}
+
+/** True for /new, /edit, and /invoices/new?type=SALE-style form routes.
+ *  Used to suppress the floating calculator + feedback FABs so they don't
+ *  cover the form's own sticky save bar. */
+function useIsFormRoute(): boolean {
+  const { pathname } = useLocation()
+  return /\/(new|edit)(\/|$)/.test(pathname)
 }
 
 /** Host-based root route: landing on marketing, login on app host and native, admin on admin host */
@@ -213,10 +221,21 @@ export function App() {
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
       </Routes>
       </PageTransition>
-      <Suspense fallback={null}><CalculatorOverlay /></Suspense>
+      <FloatingWidgets />
       <ToastContainer />
       <SWUpdatePrompt />
-      <Suspense fallback={null}><FeedbackWidget /></Suspense>
     </ErrorBoundary>
+  )
+}
+
+/** Calculator + Feedback widgets — hidden on form routes so they don't
+ *  obscure form fields or the form's sticky save bar. */
+function FloatingWidgets() {
+  if (useIsFormRoute()) return null
+  return (
+    <>
+      <Suspense fallback={null}><CalculatorOverlay position="BOTTOM_LEFT" /></Suspense>
+      <Suspense fallback={null}><FeedbackWidget /></Suspense>
+    </>
   )
 }

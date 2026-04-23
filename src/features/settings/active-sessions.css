@@ -1,0 +1,85 @@
+/* === Active Sessions === */
+
+.session-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.session-skeleton {
+  height: 72px;
+  border-radius: var(--radius-lg);
+  background: var(--color-gray-100);
+  margin-bottom: var(--space-3);
+  opacity: 0.4;
+}
+
+.session-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3-5) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.session-row--current {
+  border-color: var(--color-primary-200);
+}
+
+.session-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-100);
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.session-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.session-name {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1-5);
+}
+
+.session-this-pill {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  padding: var(--space-0-5) var(--space-1-5);
+  border-radius: var(--radius-full);
+  background: var(--color-primary-100);
+  color: var(--color-primary-700);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.session-detail {
+  margin: var(--space-0-5) 0 0;
+  font-size: var(--fs-xs);
+  color: var(--color-text-secondary);
+}
+
+.session-revoke-all {
+  margin-top: var(--space-2);
+}
+
+.session-empty {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--fs-sm);
+  padding-top: var(--space-8);
+  margin: 0;
+}

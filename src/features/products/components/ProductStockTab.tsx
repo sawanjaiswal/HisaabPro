@@ -40,17 +40,13 @@ export const ProductStockTab: React.FC<ProductStockTabProps> = ({ movements, uni
       <div className="card" role="list" aria-label={t.stockMovements}>
         {movements.map((movement) => {
           const isIn = MOVEMENT_IN_TYPES.has(movement.type)
-          const qtyColor = isIn ? 'var(--color-success-600)' : 'var(--color-error-600)'
+          const directionClass = isIn ? 'in' : 'out'
           const qtyPrefix = isIn ? '+' : '-'
 
           return (
             <div key={movement.id} className="stock-movement-row" role="listitem">
               <div
-                className="stock-movement-icon"
-                style={{
-                  backgroundColor: isIn ? 'var(--color-success-50)' : 'var(--color-error-50)',
-                  color: isIn ? 'var(--color-success-600)' : 'var(--color-error-600)',
-                }}
+                className={`stock-movement-icon stock-movement-icon-${directionClass}`}
                 aria-hidden="true"
               >
                 {isIn ? <ArrowDownLeft size={16} /> : <ArrowUpRight size={16} />}
@@ -61,8 +57,8 @@ export const ProductStockTab: React.FC<ProductStockTabProps> = ({ movements, uni
                 <div className="stock-movement-date">{formatDate(movement.createdAt)}</div>
               </div>
 
-              <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                <div className="stock-movement-qty" style={{ color: qtyColor }}>
+              <div className="stock-movement-meta">
+                <div className={`stock-movement-qty stock-movement-qty--${directionClass}`}>
                   {qtyPrefix}{Math.abs(movement.quantity)} {unitSymbol}
                 </div>
                 <div className="stock-movement-balance">

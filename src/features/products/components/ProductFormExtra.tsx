@@ -44,7 +44,7 @@ export function ProductFormExtra({ form, errors, onUpdate, taxCategories = [] }:
 
       <div className="input-group">
         <label htmlFor="product-description" className="input-label">{t.descriptionLabel}</label>
-        <textarea id="product-description" className="input create-party-textarea" value={form.description ?? ''} onChange={(e) => onUpdate('description', e.target.value || undefined)} placeholder={t.additionalProductDetails} rows={3} maxLength={PRODUCT_DESCRIPTION_MAX} aria-label={t.descriptionLabel} style={{ resize: 'vertical', height: 'auto', paddingTop: 'var(--space-3)', paddingBottom: 'var(--space-3)' }} />
+        <textarea id="product-description" className="input input-textarea" value={form.description ?? ''} onChange={(e) => onUpdate('description', e.target.value || undefined)} placeholder={t.additionalProductDetails} rows={3} maxLength={PRODUCT_DESCRIPTION_MAX} aria-label={t.descriptionLabel} />
       </div>
 
       <div className="input-group">

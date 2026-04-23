@@ -34,6 +34,8 @@ export function useSubscription() {
   return {
     subscription: sub,
     isLoading: query.isPending,
+    isError: query.isError,
+    refetch: query.refetch,
     plan: (sub?.plan ?? 'FREE') as PlanTier,
     isPro: sub?.plan === 'PRO' || sub?.plan === 'BUSINESS',
     isBusiness: sub?.plan === 'BUSINESS',

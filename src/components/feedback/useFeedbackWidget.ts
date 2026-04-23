@@ -15,7 +15,13 @@ function getInitialFabPos(): FabPosition {
       };
     }
   } catch { /* ignore */ }
-  return { x: window.innerWidth - FAB_SIZE - 16, y: window.innerHeight - 150 - FAB_SIZE };
+  // Anchor above the bottom nav (64 + safe-area chin) so the FAB sits in the
+  // safe zone rather than over scrollable content.
+  const BOTTOM_NAV_CLEARANCE = 88;
+  return {
+    x: window.innerWidth - FAB_SIZE - 12,
+    y: window.innerHeight - BOTTOM_NAV_CLEARANCE - FAB_SIZE,
+  };
 }
 
 export function useFeedbackWidget() {

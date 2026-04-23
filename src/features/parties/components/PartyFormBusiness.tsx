@@ -79,7 +79,7 @@ export function PartyFormBusiness({ form, errors, onUpdate, gstinVerify }: Party
         <label htmlFor="party-notes" className="input-label">{t.notesSection}</label>
         <textarea
           id="party-notes"
-          className="input create-party-textarea"
+          className="input input-textarea"
           value={form.notes ?? ''}
           onChange={e => onUpdate('notes', e.target.value || undefined)}
           placeholder={t.partyNotesPlaceholder}

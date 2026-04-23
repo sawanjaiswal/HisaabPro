@@ -114,3 +114,19 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
+/* On-card variants — used over .card-primary backgrounds where 100% opacity is too heavy */
+.money-label--on-dark { opacity: 0.7; }
+.money-label--on-dark-subtle { opacity: 0.55; margin-top: var(--space-1); }
+
+/* Identity row meta text — slightly muted on dark hero card */
+.identity-meta { opacity: 0.8; font-size: var(--fs-sm); }
+
+/* Stock-status color modifiers */
+.money-hero--ok  { color: var(--color-success-600); }
+.money-hero--low { color: var(--color-warning-600); }
+.money-hero--out { color: var(--color-error-600); }
+
+/* Receivable / payable color modifiers */
+.money-hero--receivable { color: var(--color-success-500); }
+.money-hero--payable    { color: var(--color-error-500); }

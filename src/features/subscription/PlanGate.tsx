@@ -7,7 +7,12 @@
 
 import type { ReactNode } from 'react'
 import { useSubscription } from '@/hooks/useSubscription'
+import { useLoadTimeout } from '@/hooks/useLoadTimeout'
 import { UpgradePrompt } from '@/components/UpgradePrompt'
+import { ErrorState } from '@/components/feedback/ErrorState'
+import { AppShell } from '@/components/layout/AppShell'
+import { Header } from '@/components/layout/Header'
+import { PageContainer } from '@/components/layout/PageContainer'
 import { isFeatureAllowed, minTierFor, type FeatureFlag } from './plan-limits'
 
 interface PlanGateProps {
@@ -19,15 +24,22 @@ interface PlanGateProps {
 }
 
 export function PlanGate({ feature, featureLabel, children, fallback }: PlanGateProps) {
-  const { plan, isLoading } = useSubscription()
+  const { plan, isLoading, isError, refetch } = useSubscription()
+  const timedOut = useLoadTimeout(isLoading, 8000)
+
+  if (isError || timedOut) {
+    return (
+      <ErrorState
+        title="Couldn't verify your plan"
+        message="Check your connection and try again."
+        onRetry={() => refetch()}
+      />
+    )
+  }
 
   if (isLoading) {
     return (
-      <div
-        aria-busy="true"
-        aria-live="polite"
-        style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}
-      >
+      <div aria-busy="true" aria-live="polite" className="plan-gate-loading">
         Checking your plan…
       </div>
     )
@@ -41,9 +53,12 @@ export function PlanGate({ feature, featureLabel, children, fallback }: PlanGate
   // UpgradePrompt only supports PRO / BUSINESS today.
   const requiredPlan = required === 'FREE' ? 'PRO' : required
   return (
-    <div style={{ padding: '1rem' }}>
-      <UpgradePrompt requiredPlan={requiredPlan} feature={featureLabel} />
-    </div>
+    <AppShell>
+      <Header title={featureLabel ?? 'Upgrade required'} backTo />
+      <PageContainer>
+        <UpgradePrompt requiredPlan={requiredPlan} feature={featureLabel} />
+      </PageContainer>
+    </AppShell>
   )
 }
 

@@ -1,0 +1,58 @@
+/* === Invoice Detail — Overview Tab === */
+
+.invoice-overview-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.invoice-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.invoice-info-label {
+  font-size: var(--fs-md);
+  color: var(--color-gray-500);
+}
+
+.invoice-info-value {
+  font-size: var(--fs-md);
+  color: var(--color-gray-800);
+  font-weight: 500;
+  text-align: right;
+}
+
+.invoice-info-value--negative {
+  color: var(--color-error-600);
+}
+
+.invoice-info-row--total {
+  border-top: 1px solid var(--color-gray-100);
+  padding-top: var(--space-3);
+  margin-top: var(--space-1);
+}
+
+.invoice-info-row--total .invoice-info-label,
+.invoice-info-row--total .invoice-info-value {
+  font-weight: 700;
+  font-size: var(--fs-base);
+}
+
+.invoice-info-row--stacked {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
+
+.invoice-info-notes {
+  margin: 0;
+  line-height: 1.5;
+  color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .invoice-info-row--total {
+  border-top-color: var(--color-gray-200);
+}

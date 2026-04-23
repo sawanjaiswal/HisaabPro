@@ -40,7 +40,7 @@ export function ProductFormStock({ form, errors, onUpdate }: ProductFormStockPro
       <div className="input-group">
         <label htmlFor="product-min-stock" className="input-label">
           {t.minimumStockLevel}
-          <span style={{ color: 'var(--color-gray-400)', fontWeight: 400 }}> ({t.lowStockAlertHint})</span>
+          <span className="text-optional"> ({t.lowStockAlertHint})</span>
         </label>
         <input
           id="product-min-stock"

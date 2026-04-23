@@ -43,7 +43,6 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template, onClick })
       aria-label={`Template: ${template.name}, base ${baseLabel}${template.isDefault ? ', default' : ''}`}
       onClick={() => onClick(template.id)}
       onKeyDown={handleKeyDown}
-      style={{ minHeight: '44px' }}
     >
       <div className="template-card-preview" aria-hidden="true">
         <span

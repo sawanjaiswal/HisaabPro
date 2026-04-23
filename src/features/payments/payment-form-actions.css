@@ -66,7 +66,7 @@
 
 .payment-save-bar {
   position: fixed;
-  bottom: var(--bottom-nav-height);
+  bottom: 0;
   left: 0;
   right: 0;
   background: var(--color-gray-0);
@@ -75,6 +75,11 @@
   z-index: var(--z-sticky);
   box-shadow: var(--shadow-bar-top);
   padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+}
+
+body:has(.bnav) .payment-save-bar {
+  bottom: var(--bottom-nav-height);
+  padding-bottom: var(--space-3);
 }
 
 .payment-save-bar .btn {

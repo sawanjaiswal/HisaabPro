@@ -135,7 +135,7 @@ export default function UnitsPage() {
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   aria-label={t.search}
-                  style={{ minHeight: '44px', marginTop: 'var(--space-3)' }}
+                  style={{ marginTop: 'var(--space-3)' }}
                 />
 
                 {/* Summary */}

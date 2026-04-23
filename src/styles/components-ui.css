@@ -21,6 +21,9 @@
 .btn-md { height: 48px; padding: 0 var(--space-5); font-size: var(--fs-base); }
 .btn-lg { height: 56px; padding: 0 var(--space-6); font-size: var(--fs-base); border-radius: var(--radius-lg); }
 
+/* Full-width button — use instead of inline width: 100% */
+.btn-block { width: 100%; }
+
 .btn-primary {
   background: var(--color-primary-600);
   color: var(--color-white-inverse);
@@ -56,6 +59,25 @@
 /* === INPUTS — NexoWallet style === */
 .input-group { display: flex; flex-direction: column; gap: var(--space-1); }
 
+/* When the control after the label is a heavier element (pill group, button row),
+ * 4px is too tight — bump to 8px so the label doesn't read as glued to the control. */
+.input-group > .input-label + .pill-tabs,
+.input-group > .input-label + .pill-tabs-row {
+  margin-top: var(--space-1);
+}
+
+/* Input + adjacent action button (e.g. select unit + "add" button) */
+.input-with-action {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.input-with-action > .input { flex: 1; }
+.input-with-action__btn { flex-shrink: 0; }
+
+/* Pill-tabs that have a follow-on input below — extra bottom breathing room */
+.pill-tabs--with-input { margin-bottom: var(--space-2); }
+
 .input-label {
   font-size: var(--fs-sm);
   font-weight: 500;
@@ -67,6 +89,7 @@
 .input {
   width: 100%;
   height: 52px;
+  min-height: var(--input-min-height);
   padding: 0 var(--space-4);
   font-family: var(--font-primary);
   font-size: var(--fs-base);
@@ -86,9 +109,87 @@
 .input::placeholder { color: var(--color-gray-400); }
 .input-icon { position: absolute; left: var(--space-4); top: 50%; transform: translateY(-50%); color: var(--color-gray-500); pointer-events: none; }
 
+/* Prefixed input (e.g. ₹ / Rs before amount) — wrap input + prefix span */
+.input-prefix-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-prefix {
+  position: absolute;
+  left: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: var(--fs-base);
+  font-weight: 500;
+  color: var(--color-gray-500);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.input-prefixed { padding-left: 2.75rem; }
+.input-prefixed:focus { padding-left: calc(2.75rem - 0.5px); }
+
+/* Multiline textarea variant — auto height with sensible minimum */
+.input-textarea {
+  height: auto;
+  min-height: var(--textarea-min-height);
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
+  line-height: 1.5;
+  resize: vertical;
+}
+
+/* Force-uppercase modifier — vehicle numbers, GSTIN, etc. */
+.input-uppercase { text-transform: uppercase; }
+
 .input-error {
   font-size: var(--fs-sm);
   color: var(--color-error-500);
+  min-height: 1.2em;
+}
+
+/* Reserves error-row vertical space so form doesn't jitter when validation flips */
+.input-error-placeholder {
+  font-size: var(--fs-sm);
+  min-height: 1.2em;
+  visibility: hidden;
+}
+
+/* Vertical form stack — use instead of inline flex-column gap */
+.form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-field);
+}
+
+/* Pill-tab icon — small leading icon inside a pill button */
+.pill-tab-icon { margin-right: var(--space-1); }
+
+/* Checkbox + label row */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-md);
+  color: var(--color-gray-700);
+  cursor: pointer;
+  min-height: var(--touch-target);
+}
+
+/* Inline text utilities — replace inline color/fontWeight style props */
+.text-optional {
+  color: var(--color-gray-400);
+  font-weight: 400;
+}
+
+.text-error {
+  color: var(--color-error-600);
+}
+
+.text-muted {
+  color: var(--color-gray-400);
 }
 
 /* === CARDS — NexoWallet white on cream, very rounded === */
@@ -235,4 +336,41 @@
 
 [data-theme="dark"] .pill-tab.active-tint {
   background: var(--color-primary-bg-subtle-strong);
+}
+
+/* === UPGRADE PROMPT === */
+.upgrade-prompt {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-warning-200);
+  background: var(--color-warning-50);
+  padding: var(--space-4);
+  text-align: center;
+}
+
+.upgrade-prompt-title {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--color-warning-800);
+  margin: 0;
+}
+
+.upgrade-prompt-subtitle {
+  margin-top: var(--space-1);
+  font-size: var(--fs-xs);
+  color: var(--color-warning-600);
+}
+
+.upgrade-prompt-action {
+  margin-top: var(--space-3);
+}
+
+/* PlanGate fallback wrapper — pads UpgradePrompt away from page edges */
+.plan-gate-fallback {
+  padding: var(--space-4);
+}
+
+.plan-gate-loading {
+  padding: var(--space-8);
+  text-align: center;
+  color: var(--color-text-muted);
 }

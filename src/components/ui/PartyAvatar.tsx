@@ -27,8 +27,9 @@ const PASTEL_PALETTE = [
   '#C4DAD2', // eucalyptus
 ] as const
 
-/** Stable color from name — same name always gets same color */
-export function getAvatarColor(name: string): string {
+/** Stable color from name — same name always gets same color. Empty name → first palette entry. */
+export function getAvatarColor(name?: string | null): string {
+  if (!name) return PASTEL_PALETTE[0]
   let hash = 0
   for (let i = 0; i < name.length; i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash)
@@ -45,7 +46,7 @@ export function getInitial(name?: string | null): string {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 interface PartyAvatarProps {
-  name: string
+  name?: string | null
   /** sm = 32px, md = 44px (default), lg = 56px */
   size?: 'sm' | 'md' | 'lg'
   className?: string

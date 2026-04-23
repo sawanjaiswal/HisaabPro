@@ -100,7 +100,7 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
 
   return (
     <Modal open={isOpen} onClose={handleClose} title={t.adjustStock}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+      <div className="form-stack">
         <div className="input-group">
           <span className="input-label" id="adjust-type-label">{t.typeLabel}</span>
           <div className="pill-tabs" role="group" aria-labelledby="adjust-type-label">
@@ -111,7 +111,7 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
               aria-pressed={type === 'ADJUSTMENT_IN'}
               aria-label={t.addStockLabel}
             >
-              <Plus size={14} aria-hidden="true" style={{ marginRight: 'var(--space-1)' }} /> {t.stockIn}
+              <Plus size={14} aria-hidden="true" className="pill-tab-icon" /> {t.stockIn}
             </button>
             <button
               type="button"
@@ -120,7 +120,7 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
               aria-pressed={type === 'ADJUSTMENT_OUT'}
               aria-label={t.removeStockLabel}
             >
-              <Minus size={14} aria-hidden="true" style={{ marginRight: 'var(--space-1)' }} /> {t.stockOut}
+              <Minus size={14} aria-hidden="true" className="pill-tab-icon" /> {t.stockOut}
             </button>
           </div>
         </div>
@@ -181,18 +181,17 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
 
         <div className="input-group">
           <label htmlFor="adjust-notes" className="input-label">
-            {t.notesLabel} <span style={{ color: 'var(--color-gray-400)', fontWeight: 400 }}>({t.notesOptionalLabel})</span>
+            {t.notesLabel} <span className="text-optional">({t.notesOptionalLabel})</span>
           </label>
           <textarea
             id="adjust-notes"
-            className="input"
+            className="input input-textarea"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder={t.additionalNotes}
             rows={2}
             maxLength={NOTES_MAX}
             aria-label={t.notesForAdjustment}
-            style={{ resize: 'vertical', height: 'auto', paddingTop: 'var(--space-3)', paddingBottom: 'var(--space-3)' }}
           />
         </div>
 
@@ -202,7 +201,7 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
           loading={isSubmitting}
           onClick={handleSubmit}
           aria-label={t.confirmStockAdjust}
-          style={{ width: '100%' }}
+          className="btn-block"
         >
           {type === 'ADJUSTMENT_IN' ? t.addStockBtn : t.removeStockBtn}
         </Button>

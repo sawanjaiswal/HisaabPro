@@ -1,6 +1,6 @@
 import type { FeedbackType } from './feedback-widget.types';
 
-export const FAB_SIZE = 48;
+export const FAB_SIZE = 40;
 export const DRAG_THRESHOLD = 6;
 export const EDGE_MARGIN = 8;
 

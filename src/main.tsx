@@ -34,7 +34,9 @@ createRoot(document.getElementById('root')!).render(
             </LanguageProvider>
           </ThemeProvider>
         </BrowserRouter>
-        <ReactQueryDevtools initialIsOpen={false} />
+        {import.meta.env.DEV && (
+          <ReactQueryDevtools initialIsOpen={false} buttonPosition="top-left" />
+        )}
       </QueryClientProvider>
     </HelmetProvider>
   </StrictMode>

@@ -1,4 +1,5 @@
 import React from 'react'
+import { Input } from '@/components/ui/Input'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { Role } from '../settings.types'
 
@@ -41,97 +42,39 @@ export function StaffInviteForm({
     <form className="staff-invite-form" onSubmit={onSubmit} noValidate>
       <p className="staff-invite-form-title">{t.newStaffMember}</p>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1-5)' }}>
-        <label
-          htmlFor="invite-name"
-          style={{ fontSize: 'var(--fs-sm)', fontWeight: 500, color: 'var(--color-gray-700)' }}
-        >
-          {t.name}
-        </label>
-        <input
-          id="invite-name"
-          type="text"
-          value={name}
-          onChange={(e) => onNameChange(e.target.value)}
-          placeholder={t.staffName}
-          autoComplete="name"
-          style={{
-            width: '100%',
-            padding: 'var(--space-3)',
-            borderRadius: 'var(--radius-md)',
-            border: `1.5px solid ${errors.name ? 'var(--color-error-500)' : 'var(--color-gray-300)'}`,
-            fontSize: 'var(--fs-base)',
-            fontFamily: 'var(--font-primary)',
-            minHeight: 44,
-            outline: 'none',
-            color: 'var(--color-gray-900)',
-          }}
-        />
-        {errors.name && (
-          <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-error-600)' }} role="alert">
-            {errors.name}
-          </p>
-        )}
-      </div>
+      <Input
+        id="invite-name"
+        label={t.name}
+        type="text"
+        value={name}
+        onChange={(e) => onNameChange(e.target.value)}
+        placeholder={t.staffName}
+        autoComplete="name"
+        error={errors.name}
+      />
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1-5)' }}>
-        <label
-          htmlFor="invite-phone"
-          style={{ fontSize: 'var(--fs-sm)', fontWeight: 500, color: 'var(--color-gray-700)' }}
-        >
-          {t.phone}
-        </label>
-        <input
-          id="invite-phone"
-          type="tel"
-          value={phone}
-          onChange={(e) => onPhoneChange(e.target.value.replace(/\D/g, '').slice(0, 10))}
-          placeholder={t.tenDigitMobile}
-          autoComplete="tel"
-          inputMode="numeric"
-          maxLength={10}
-          style={{
-            width: '100%',
-            padding: 'var(--space-3)',
-            borderRadius: 'var(--radius-md)',
-            border: `1.5px solid ${errors.phone ? 'var(--color-error-500)' : 'var(--color-gray-300)'}`,
-            fontSize: 'var(--fs-base)',
-            fontFamily: 'var(--font-primary)',
-            minHeight: 44,
-            outline: 'none',
-            color: 'var(--color-gray-900)',
-          }}
-        />
-        {errors.phone && (
-          <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-error-600)' }} role="alert">
-            {errors.phone}
-          </p>
-        )}
-      </div>
+      <Input
+        id="invite-phone"
+        label={t.phone}
+        type="tel"
+        value={phone}
+        onChange={(e) => onPhoneChange(e.target.value.replace(/\D/g, '').slice(0, 10))}
+        placeholder={t.tenDigitMobile}
+        autoComplete="tel"
+        inputMode="numeric"
+        maxLength={10}
+        error={errors.phone}
+      />
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1-5)' }}>
-        <label
-          htmlFor="invite-role"
-          style={{ fontSize: 'var(--fs-sm)', fontWeight: 500, color: 'var(--color-gray-700)' }}
-        >
-          {t.roles}
-        </label>
+      <div className={`input-group${errors.roleId ? ' input-group-error' : ''}`}>
+        <label htmlFor="invite-role" className="input-label">{t.roles}</label>
         <select
           id="invite-role"
+          className="input"
           value={roleId}
           onChange={(e) => onRoleChange(e.target.value)}
-          style={{
-            width: '100%',
-            padding: 'var(--space-3)',
-            borderRadius: 'var(--radius-md)',
-            border: `1.5px solid ${errors.roleId ? 'var(--color-error-500)' : 'var(--color-gray-300)'}`,
-            fontSize: 'var(--fs-base)',
-            fontFamily: 'var(--font-primary)',
-            minHeight: 44,
-            outline: 'none',
-            color: roleId ? 'var(--color-gray-900)' : 'var(--color-gray-400)',
-            background: 'var(--color-gray-0, #fff)',
-          }}
+          aria-invalid={!!errors.roleId}
+          aria-describedby={errors.roleId ? 'invite-role-error' : undefined}
         >
           <option value="">{t.selectARoleOption}</option>
           {roles.map((role) => (
@@ -141,17 +84,14 @@ export function StaffInviteForm({
           ))}
         </select>
         {errors.roleId && (
-          <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-error-600)' }} role="alert">
+          <p id="invite-role-error" className="input-error" role="alert">
             {errors.roleId}
           </p>
         )}
       </div>
 
       {submitError && (
-        <p
-          style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-error-600)', padding: 'var(--space-3)', background: 'var(--color-red-50)', borderRadius: 'var(--radius-md)' }}
-          role="alert"
-        >
+        <p className="staff-invite-error-banner" role="alert">
           {submitError}
         </p>
       )}

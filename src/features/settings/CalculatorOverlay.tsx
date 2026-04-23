@@ -74,7 +74,7 @@ export function CalculatorOverlay({
         aria-expanded={isOpen}
         aria-haspopup="dialog"
       >
-        <Calculator size={24} aria-hidden="true" />
+        <Calculator size={20} aria-hidden="true" />
       </button>
 
       {/* Full-height calculator — only when open */}

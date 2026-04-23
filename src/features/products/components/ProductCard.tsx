@@ -78,7 +78,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      style={{ cursor: 'pointer' }}
     >
       {isBulkMode ? (
         <div

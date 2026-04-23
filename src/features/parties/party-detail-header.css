@@ -88,6 +88,46 @@
   padding-top: 0;
 }
 
+/* Icon slot inside an info row — keeps label/value in a clean column */
+.party-info-icon {
+  color: var(--color-gray-400);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.party-info-value {
+  display: block;
+  font-weight: 500;
+  color: var(--color-gray-800);
+}
+
+/* Section title with optional inline leading icon (Notes card) */
+.section-title-icon {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.section-title--mb-3 {
+  margin-bottom: var(--space-3);
+}
+
+/* Notes paragraph inside an overview card */
+.party-info-notes {
+  color: var(--color-gray-600);
+  line-height: 1.6;
+  margin: 0;
+}
+
+[data-theme="dark"] .party-info-value {
+  color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .party-info-notes {
+  color: var(--color-gray-600);
+}
+
 /* Address card within addresses tab */
 .party-address-card {
   display: flex;

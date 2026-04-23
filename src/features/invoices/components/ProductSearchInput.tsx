@@ -159,7 +159,6 @@ export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
           aria-expanded={showDropdown}
           aria-haspopup="listbox"
           aria-autocomplete="list"
-          style={{ minHeight: '44px' }}
         />
         {query.length > 0 && (
           <button

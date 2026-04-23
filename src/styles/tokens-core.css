@@ -37,6 +37,19 @@
   --space-6: 1.5rem;   /* 24px */
   --space-8: 2rem;     /* 32px */
 
+  /* Spacing — semantic layer (USE THESE, not raw --space-* in feature CSS) */
+  --gap-section:   var(--space-6);  /* 24px between page sections */
+  --gap-field:     var(--space-4);  /* 16px between form fields */
+  --gap-inline:    var(--space-2);  /* 8px chip / inline / label-value */
+  --pad-page-x:    var(--space-4);  /* 16px page horizontal padding */
+  --pad-card:      var(--space-5);  /* 20px standard card interior */
+  --pad-card-hero: var(--space-6);  /* 24px hero/feature card interior */
+
+  /* Form control heights — touch-safe minimums for inputs/textareas/buttons */
+  --touch-target:        2.75rem;  /* 44px — Apple HIG / WCAG 2.5.5 minimum */
+  --input-min-height:    2.75rem;  /* 44px — date/select shrink-protection */
+  --textarea-min-height: 5rem;     /* 80px — multiline default */
+
   /* Radius — NexoWallet uses very rounded */
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -180,7 +193,7 @@
   --z-toast: 70;
 
   /* Layout */
-  --side-padding: 16px;
+  --side-padding: var(--space-4);
   --bottom-nav-safe-inset: env(safe-area-inset-bottom, 0px);
   --bottom-nav-height: calc(72px + var(--bottom-nav-safe-inset));
 }

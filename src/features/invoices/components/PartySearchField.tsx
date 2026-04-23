@@ -50,7 +50,6 @@ export const PartySearchField: React.FC<PartySearchFieldProps> = ({
         aria-expanded={showDropdown}
         aria-haspopup="listbox"
         aria-autocomplete="list"
-        style={{ minHeight: '44px' }}
       />
       {query.length > 0 && (
         <button

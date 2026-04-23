@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button'
 import { ROUTES } from '@/config/routes.config'
 import { api } from '@/lib/api'
 import { useToast } from '@/hooks/useToast'
+import './active-sessions.css'
 
 interface Session {
   id: string
@@ -81,16 +82,7 @@ export default function ActiveSessionsPage() {
         {query.isPending && (
           <div aria-busy="true" aria-label="Loading sessions">
             {[1, 2, 3].map((n) => (
-              <div
-                key={n}
-                style={{
-                  height: 72,
-                  borderRadius: '0.75rem',
-                  background: 'var(--color-gray-100)',
-                  marginBottom: '0.75rem',
-                  opacity: 0.4,
-                }}
-              />
+              <div key={n} className="session-skeleton" />
             ))}
           </div>
         )}
@@ -104,75 +96,24 @@ export default function ActiveSessionsPage() {
         )}
 
         {query.isSuccess && (
-          <div className="stagger-enter" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div className="stagger-enter session-list">
             {sessions.map((session) => (
               <div
                 key={session.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                  padding: '0.875rem 1rem',
-                  borderRadius: '0.75rem',
-                  background: 'var(--color-surface)',
-                  border: session.isCurrent
-                    ? '1px solid var(--color-primary-200, #bfdbfe)'
-                    : '1px solid var(--color-border)',
-                }}
+                className={`session-row${session.isCurrent ? ' session-row--current' : ''}`}
               >
-                <span
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: 40,
-                    height: 40,
-                    borderRadius: '50%',
-                    background: 'var(--color-gray-100)',
-                    color: 'var(--color-text-secondary)',
-                    flexShrink: 0,
-                  }}
-                >
+                <span className="session-icon">
                   <DeviceIcon type={session.deviceType} />
                 </span>
 
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: 'var(--fs-sm)',
-                      fontWeight: 500,
-                      color: 'var(--color-text-primary)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.375rem',
-                    }}
-                  >
+                <div className="session-meta">
+                  <p className="session-name">
                     {session.deviceName}
                     {session.isCurrent && (
-                      <span
-                        style={{
-                          fontSize: 'var(--fs-xs)',
-                          fontWeight: 600,
-                          padding: '0.125rem 0.375rem',
-                          borderRadius: '9999px',
-                          background: 'var(--color-primary-100, #dbeafe)',
-                          color: 'var(--color-primary-700, #1d4ed8)',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.05em',
-                        }}
-                      >
-                        This device
-                      </span>
+                      <span className="session-this-pill">This device</span>
                     )}
                   </p>
-                  <p
-                    style={{
-                      margin: '0.125rem 0 0',
-                      fontSize: 'var(--fs-xs)',
-                      color: 'var(--color-text-secondary)',
-                    }}
-                  >
+                  <p className="session-detail">
                     {session.ipAddress} · {formatLastActive(session.lastActiveAt)}
                   </p>
                 </div>
@@ -192,13 +133,13 @@ export default function ActiveSessionsPage() {
             ))}
 
             {otherSessions.length > 1 && (
-              <div style={{ marginTop: '0.5rem' }}>
+              <div className="session-revoke-all">
                 <Button
                   variant="destructive"
                   size="md"
                   loading={revokeAllMutation.isPending}
                   onClick={() => revokeAllMutation.mutate()}
-                  style={{ width: '100%' }}
+                  className="btn-block"
                 >
                   Log Out All Other Devices
                 </Button>
@@ -206,16 +147,7 @@ export default function ActiveSessionsPage() {
             )}
 
             {sessions.length === 0 && (
-              <p
-                style={{
-                  textAlign: 'center',
-                  color: 'var(--color-text-secondary)',
-                  fontSize: 'var(--fs-sm)',
-                  paddingTop: '2rem',
-                }}
-              >
-                No active sessions found
-              </p>
+              <p className="session-empty">No active sessions found</p>
             )}
           </div>
         )}

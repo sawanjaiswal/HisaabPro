@@ -1,0 +1,119 @@
+/* === Toast Notifications === */
+
+@keyframes toast-countdown {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
+@keyframes toast-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.toast-container {
+  position: fixed;
+  bottom: calc(var(--bottom-nav-height) + var(--space-4));
+  left: var(--space-4);
+  right: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  pointer-events: none;
+  z-index: var(--z-toast);
+}
+
+.toast-slot { pointer-events: auto; }
+
+.toast {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  animation: toast-enter var(--duration-slow) var(--ease-default);
+}
+
+/* Gradient border accent — color set inline via --toast-accent */
+.toast-accent {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
+  background: var(--toast-accent, transparent);
+  opacity: 0.75;
+}
+
+.toast-body {
+  position: relative;
+  background-color: var(--toast-bg);
+  margin: 2px;
+  border-radius: calc(var(--radius-md) - 2px);
+  overflow: hidden;
+}
+
+.toast-row {
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.toast-icon { flex-shrink: 0; }
+
+.toast-message {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--toast-text);
+  flex: 1;
+  margin: 0;
+  font-family: var(--font-primary);
+}
+
+.toast-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.toast-undo {
+  padding: var(--space-1) var(--space-3);
+  background-color: var(--toast-text);
+  color: var(--toast-bg);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: var(--fs-xs);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-primary);
+}
+
+.toast-close {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: -8px;
+  color: var(--color-gray-400);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.toast-progress {
+  height: 3px;
+  background-color: var(--toast-progress-bg);
+}
+
+.toast-progress-bar {
+  height: 100%;
+  background: var(--toast-progress-fill, currentColor);
+  transform-origin: left;
+  animation: toast-countdown var(--toast-duration, 4000ms) linear forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast { animation: none; }
+  .toast-progress-bar { animation: none; }
+}

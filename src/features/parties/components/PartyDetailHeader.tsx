@@ -27,9 +27,9 @@ export const PartyDetailHeader: React.FC<PartyDetailHeaderProps> = ({ party }) =
         ? 'badge badge-supplier'
         : 'badge'
 
-  const balanceColor = isReceivable
-    ? 'var(--color-success-500)'
-    : 'var(--color-error-500)'
+  const balanceClass = isReceivable
+    ? 'money-hero money-hero--receivable'
+    : 'money-hero money-hero--payable'
 
   const balanceLabel = isReceivable ? t.toReceive : t.toPay
 
@@ -42,7 +42,7 @@ export const PartyDetailHeader: React.FC<PartyDetailHeaderProps> = ({ party }) =
 
         <div className="party-detail-meta">
           {party.phone && (
-            <span style={{ opacity: 0.8, fontSize: 'var(--fs-sm)' }}>
+            <span className="identity-meta">
               {formatPhone(party.phone)}
             </span>
           )}
@@ -53,11 +53,11 @@ export const PartyDetailHeader: React.FC<PartyDetailHeaderProps> = ({ party }) =
       </div>
 
       <div className="party-detail-balance" aria-label={`${t.outstandingBalanceColon} ${balanceText}`}>
-        <span className="money-hero" style={{ color: balanceColor }}>
+        <span className={balanceClass}>
           {balanceText}
         </span>
-        <span className="money-label" style={{ opacity: 0.7 }}>{balanceLabel}</span>
-        <span className="money-label" style={{ opacity: 0.55, marginTop: 'var(--space-1)' }}>
+        <span className="money-label money-label--on-dark">{balanceLabel}</span>
+        <span className="money-label money-label--on-dark-subtle">
           {t.totalBusiness} {formatAmount(party.totalBusiness)}
         </span>
       </div>

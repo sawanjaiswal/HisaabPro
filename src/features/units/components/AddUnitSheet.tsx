@@ -96,7 +96,6 @@ export function AddUnitSheet({ open, onClose, onSave, onUpdate, editUnit }: AddU
             }}
             maxLength={UNIT_NAME_MAX}
             autoFocus
-            style={{ minHeight: '44px' }}
           />
           {errors.name && <span className="field-error">{errors.name}</span>}
         </div>
@@ -115,7 +114,6 @@ export function AddUnitSheet({ open, onClose, onSave, onUpdate, editUnit }: AddU
               setErrors((prev) => ({ ...prev, symbol: err ?? undefined }))
             }}
             maxLength={UNIT_SYMBOL_MAX}
-            style={{ minHeight: '44px' }}
           />
           {errors.symbol && <span className="field-error">{errors.symbol}</span>}
         </div>

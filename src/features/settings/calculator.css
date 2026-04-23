@@ -135,12 +135,13 @@
 
 .calculator-fab {
   position: fixed;
+  /* Sit above bottom nav + small breathing room. */
   bottom: calc(var(--bottom-nav-height) + var(--space-3));
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background-color: var(--color-primary-500);
   color: var(--color-white-inverse);
@@ -148,9 +149,15 @@
   border: none;
   cursor: pointer;
   z-index: var(--z-overlay);
-  font-size: var(--fs-xl);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  font-size: var(--fs-lg);
+  opacity: 0.6;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
   -webkit-tap-highlight-color: transparent;
+}
+
+.calculator-fab:hover,
+.calculator-fab:focus-visible {
+  opacity: 1;
 }
 
 .calculator-fab--right {

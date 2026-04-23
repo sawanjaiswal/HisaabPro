@@ -128,6 +128,19 @@
   color: var(--color-gray-900);
 }
 
+.staff-invite-error-banner {
+  font-size: var(--fs-sm);
+  color: var(--color-error-600);
+  padding: var(--space-3);
+  background: var(--color-error-50);
+  border-radius: var(--radius-md);
+  margin: 0;
+}
+
+[data-theme="dark"] .staff-invite-error-banner {
+  background: var(--overlay-error-10);
+}
+
 /* ─── Dark Theme ─────────────────────────────────────────────────────────── */
 
 [data-theme="dark"] .staff-invite-form {

@@ -41,7 +41,6 @@ export function InvoiceDetailsSection({
           value={documentDate}
           onChange={(e) => onUpdateField('documentDate', e.target.value)}
           aria-label={t.invoiceDateAriaLabel}
-          style={{ minHeight: '44px' }}
         />
       </div>
 
@@ -58,13 +57,12 @@ export function InvoiceDetailsSection({
         <input
           id="invoice-vehicle"
           type="text"
-          className="input"
+          className="input input-uppercase"
           placeholder="MH 12 AB 1234"
           value={vehicleNumber}
           onChange={(e) => onUpdateField('vehicleNumber', e.target.value.toUpperCase())}
           aria-label={t.vehicleNumberLabel}
           maxLength={15}
-          style={{ minHeight: '44px', textTransform: 'uppercase' }}
         />
       </div>
 
@@ -72,13 +70,12 @@ export function InvoiceDetailsSection({
         <label className="label" htmlFor="invoice-notes">{t.notesLabel}</label>
         <textarea
           id="invoice-notes"
-          className="input"
+          className="input input-textarea"
           rows={3}
           placeholder={t.addNoteForCustomer}
           value={notes}
           onChange={(e) => onUpdateField('notes', e.target.value)}
           aria-label={t.invoiceNotesAriaLabel}
-          style={{ minHeight: '80px', resize: 'vertical' }}
         />
       </div>
 
@@ -86,17 +83,16 @@ export function InvoiceDetailsSection({
         <label className="label" htmlFor="invoice-terms">{t.termsConditionsLabel}</label>
         <textarea
           id="invoice-terms"
-          className="input"
+          className="input input-textarea"
           rows={3}
           placeholder={t.paymentTermsReturnPolicy}
           value={termsAndConditions}
           onChange={(e) => onUpdateField('termsAndConditions', e.target.value)}
           aria-label={t.termsConditionsAriaLabel}
-          style={{ minHeight: '80px', resize: 'vertical' }}
         />
       </div>
 
-      <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+      <label className="checkbox-label">
         <input
           type="checkbox"
           checked={includeSignature}

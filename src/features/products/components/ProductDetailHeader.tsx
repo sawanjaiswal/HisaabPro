@@ -7,7 +7,6 @@ import {
   formatProductPrice,
   formatStock,
   getStockStatus,
-  getStockColor,
 } from '../product.utils'
 import { PartyAvatar } from '../../../components/ui/PartyAvatar'
 
@@ -21,7 +20,6 @@ export const ProductDetailHeader: React.FC<ProductDetailHeaderProps> = ({ produc
   const { t } = useLanguage()
   const STOCK_STATUS_LABELS: Record<string, string> = { ok: t.inStock, low: t.lowStock, out: t.outOfStock }
   const stockStatus = getStockStatus(product.currentStock, product.minStockLevel)
-  const stockColor = getStockColor(stockStatus)
 
   return (
     <div className="card-primary party-detail-header" role="region" aria-label={t.productOverview}>
@@ -30,7 +28,7 @@ export const ProductDetailHeader: React.FC<ProductDetailHeaderProps> = ({ produc
       <div className="party-detail-info">
         <h2 className="party-detail-name">{product.name}</h2>
         <div className="party-detail-meta">
-          <span style={{ opacity: 0.8, fontSize: 'var(--fs-sm)' }}>{product.sku}</span>
+          <span className="identity-meta">{product.sku}</span>
           <span
             className={STOCK_BADGE_CLASSES[stockStatus]}
             aria-label={`${t.stockStatusPrefix}: ${STOCK_STATUS_LABELS[stockStatus]}`}
@@ -41,11 +39,11 @@ export const ProductDetailHeader: React.FC<ProductDetailHeaderProps> = ({ produc
       </div>
 
       <div className="party-detail-balance" aria-label={`${t.stockLabel}: ${formatStock(product.currentStock, product.unit.symbol)}`}>
-        <span className="money-hero" style={{ color: stockColor }}>
+        <span className={`money-hero money-hero--${stockStatus}`}>
           {formatStock(product.currentStock, product.unit.symbol)}
         </span>
-        <span className="money-label" style={{ opacity: 0.7 }}>{t.inStockLabel}</span>
-        <span className="money-label" style={{ opacity: 0.55, marginTop: 'var(--space-1)' }}>
+        <span className="money-label money-label--on-dark">{t.inStockLabel}</span>
+        <span className="money-label money-label--on-dark-subtle">
           {t.salePrefix}: {formatProductPrice(product.salePrice)}
         </span>
       </div>

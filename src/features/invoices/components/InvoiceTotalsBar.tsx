@@ -48,7 +48,7 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
         {totalDiscount > 0 && (
           <div className="invoice-summary-row" role="listitem">
             <span>{t.discount}</span>
-            <span style={{ color: 'var(--color-error-600)' }}>
+            <span className="text-error">
               -{formatInvoiceAmount(totalDiscount)}
             </span>
           </div>
@@ -64,7 +64,7 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
         {roundOff !== 0 && (
           <div className="invoice-summary-row" role="listitem">
             <span>{t.roundOff}</span>
-            <span style={{ color: roundOff < 0 ? 'var(--color-error-600)' : 'inherit' }}>
+            <span className={roundOff < 0 ? 'text-error' : ''}>
               {roundOff > 0 ? '+' : ''}{formatInvoiceAmount(Math.abs(roundOff))}
             </span>
           </div>

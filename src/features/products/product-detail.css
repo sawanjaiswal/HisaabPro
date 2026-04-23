@@ -86,6 +86,60 @@
   padding-top: 0;
 }
 
+/* Stack variant — column layout for description / barcode */
+.product-info-row--stacked {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
+
+.product-info-row--stacked-lg {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.product-info-label {
+  color: var(--color-gray-400);
+  font-size: var(--fs-sm);
+  min-width: 100px;
+}
+
+.product-info-label--full {
+  min-width: 0;
+}
+
+.product-info-value {
+  font-weight: 500;
+}
+
+.product-info-value--mono {
+  font-family: var(--font-mono);
+}
+
+.product-info-value--bold {
+  font-weight: 600;
+}
+
+/* Loading skeleton block — replaces inline minHeight/marginTop */
+.product-detail-skeleton-card {
+  margin-bottom: var(--space-4);
+  min-height: 140px;
+}
+
+.product-detail-skeleton-row {
+  margin-top: var(--space-3);
+}
+
+.product-detail-skeleton-row--lg {
+  margin-top: var(--space-4);
+}
+
+.product-info-text {
+  line-height: 1.5;
+  margin: 0;
+}
+
 /* Stock movement row */
 .stock-movement-row {
   display: flex;
@@ -136,12 +190,18 @@
   margin-top: 2px;
 }
 
-.stock-movement-qty {
-  font-weight: 600;
-  font-size: var(--fs-df);
+.stock-movement-meta {
   text-align: right;
   flex-shrink: 0;
 }
+
+.stock-movement-qty {
+  font-weight: 600;
+  font-size: var(--fs-df);
+}
+
+.stock-movement-qty--in  { color: var(--color-success-600); }
+.stock-movement-qty--out { color: var(--color-error-600); }
 
 .stock-movement-balance {
   font-size: var(--fs-xs);

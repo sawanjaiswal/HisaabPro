@@ -73,7 +73,7 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
 
       <div className="input-group">
         <span className="input-label" id="sku-mode-label">{t.sku}</span>
-        <div className="pill-tabs" role="group" aria-labelledby="sku-mode-label" style={{ marginBottom: 'var(--space-2)' }}>
+        <div className="pill-tabs pill-tabs--with-input" role="group" aria-labelledby="sku-mode-label">
           <button
             type="button"
             className={`pill-tab${form.autoGenerateSku ? ' active' : ''}`}
@@ -127,7 +127,7 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
 
       <div className="input-group">
         <label htmlFor="product-unit" className="input-label">{t.unit}</label>
-        <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
+        <div className="input-with-action">
           <select
             id="product-unit"
             className="input"
@@ -135,7 +135,6 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
             onChange={(e) => onUpdate('unitId', e.target.value)}
             aria-label={t.selectProductUnit}
             disabled={units.length === 0}
-            style={{ flex: 1 }}
           >
             {units.length === 0 && (
               <option value="">{t.loading}</option>
@@ -146,10 +145,9 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
           </select>
           <button
             type="button"
-            className="btn btn-ghost btn-sm"
+            className="btn btn-ghost btn-sm input-with-action__btn"
             onClick={() => setAddUnitOpen(true)}
             aria-label={t.addCustomUnit}
-            style={{ flexShrink: 0 }}
           >
             <Plus size={16} aria-hidden="true" />
           </button>
@@ -159,11 +157,11 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
 
       <div className="input-group">
         <span className="input-label">{t.salePriceLabel}</span>
-        <div className="create-party-prefix-input">
-          <span className="create-party-prefix" aria-hidden="true">{t.currencyPrefix}</span>
+        <div className="input-prefix-wrap">
+          <span className="input-prefix" aria-hidden="true">{t.currencyPrefix}</span>
           <input
             id="product-sale-price"
-            className={`input create-party-input-prefixed${errors.salePrice ? ' input-error-border' : ''}`}
+            className={`input input-prefixed${errors.salePrice ? ' input-error-border' : ''}`}
             type="number"
             min="0"
             step="0.01"
@@ -178,12 +176,12 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
       </div>
 
       <div className="input-group">
-        <span className="input-label">{t.purchasePriceLabel} <span style={{ color: 'var(--color-gray-400)', fontWeight: 400 }}>({t.notesOptionalLabel})</span></span>
-        <div className="create-party-prefix-input">
-          <span className="create-party-prefix" aria-hidden="true">{t.currencyPrefix}</span>
+        <span className="input-label">{t.purchasePriceLabel} <span className="text-optional">({t.notesOptionalLabel})</span></span>
+        <div className="input-prefix-wrap">
+          <span className="input-prefix" aria-hidden="true">{t.currencyPrefix}</span>
           <input
             id="product-purchase-price"
-            className="input create-party-input-prefixed"
+            className="input input-prefixed"
             type="number"
             min="0"
             step="0.01"

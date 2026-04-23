@@ -37,14 +37,20 @@
 /* Invoice summary (sticky bottom) */
 .invoice-summary-bar {
   position: sticky;
-  bottom: var(--bottom-nav-height);
+  bottom: 0;
   left: 0;
   right: 0;
   background: var(--color-gray-0);
   border-top: 1px solid var(--color-gray-100);
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-3) var(--space-4) calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
   z-index: var(--z-sticky);
   box-shadow: var(--shadow-bar-bottom);
+}
+
+/* When the bottom nav is present (non-form routes), float above it */
+body:has(.bnav) .invoice-summary-bar {
+  bottom: var(--bottom-nav-height);
+  padding-bottom: var(--space-3);
 }
 
 .invoice-summary-rows {
@@ -95,11 +101,11 @@
   flex: 1;
 }
 
-/* Invoice details section */
+/* Invoice details section — semantic gap shared with all forms */
 .invoice-details-section {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--gap-field);
   padding-bottom: var(--space-6);
 }
 

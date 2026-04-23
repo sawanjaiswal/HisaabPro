@@ -120,7 +120,6 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
             step={0.001}
             onChange={handleQuantityChange}
             aria-label={`${t.quantityFor} ${item.productName}`}
-            style={{ minHeight: '44px' }}
           />
         </div>
 
@@ -140,7 +139,6 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
             step={0.01}
             onChange={handleRateChange}
             aria-label={`${t.rateInRupeesFor} ${item.productName}`}
-            style={{ minHeight: '44px' }}
           />
         </div>
 
@@ -176,8 +174,7 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
               step={item.discountType === 'PERCENTAGE' ? 0.01 : 0.01}
               onChange={handleDiscountValueChange}
               aria-label={`${t.discount} ${item.discountType === 'AMOUNT' ? t.discountAmountFor : t.discountPercentFor} ${item.productName}`}
-              style={{ minHeight: '44px' }}
-            />
+              />
           </div>
         </div>
       </div>

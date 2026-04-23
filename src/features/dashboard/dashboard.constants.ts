@@ -17,17 +17,17 @@ export interface QuickActionConfig extends QuickAction {
 
 export const QUICK_ACTIONS: QuickActionConfig[] = [
   {
-    id:    'new-invoice',
-    labelKey: 'create',
-    icon:  'FileText',
-    route: `${ROUTES.INVOICE_CREATE}?type=SALE`,
+    id:    'view-inventory',
+    labelKey: 'inventory',
+    icon:  'Package',
+    route: ROUTES.PRODUCTS,
     color: 'var(--color-primary-600)',
   },
   {
-    id:    'send-invoice',
-    labelKey: 'send',
-    icon:  'Send',
-    route: ROUTES.INVOICES,
+    id:    'view-reports',
+    labelKey: 'reports',
+    icon:  'BarChart3',
+    route: ROUTES.REPORTS,
     color: 'var(--color-info-600)',
   },
   {
@@ -41,7 +41,7 @@ export const QUICK_ACTIONS: QuickActionConfig[] = [
     id:    'more-actions',
     labelKey: 'more',
     icon:  'MoreHorizontal',
-    route: ROUTES.SETTINGS,
+    route: ROUTES.MORE,
     color: 'var(--color-gray-600)',
   },
 ]

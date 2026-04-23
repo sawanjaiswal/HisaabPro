@@ -93,6 +93,7 @@ a.card,
 .txn-row[onclick],
 .txn-row[role="button"],
 a.txn-row {
+  cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: transform var(--duration-fast) var(--ease-default),
               box-shadow var(--duration-fast) var(--ease-default);
