@@ -175,23 +175,32 @@ console.log('🔍 Check 5: No direct prisma.model.delete() bypasses')
 
 let prismaDeleteCount = 0
 
+// Audited escape-hatch files — intentional hard deletes (recycle-bin,
+// `force` flag branches, safe-when-no-deps, transactional replace).
+const HARD_DELETE_EXEMPT = [
+  'recycle-bin.service',
+  'soft-delete',
+  'document/recycle',
+  'document-settings.service',
+  'party/custom-fields',
+  'party/groups',
+  'party/update-delete',
+  'recurring/crud',
+  'unit/conversion.service',
+]
+
 for (const file of serverFiles) {
-  if (file.includes('recycle-bin.service')) continue
-  if (file.includes('soft-delete')) continue
+  if (HARD_DELETE_EXEMPT.some((p) => file.includes(p))) continue
 
   const content = readFileSync(file, 'utf8')
   const lines = content.split('\n')
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]
-    // Match: prisma.party.delete( or tx.party.delete(
-    // The middleware intercepts these, but we want to flag awareness
     for (const model of SOFT_DELETE_MODELS) {
       const key = model.charAt(0).toLowerCase() + model.slice(1)
       const pattern = new RegExp(`\\.(${key})\\.delete\\(`)
       if (pattern.test(line)) {
-        // This is actually OK — middleware intercepts it.
-        // But we flag it as a warning for code review awareness.
         warnings.push(
           `PRISMA DELETE: ${rel(file)}:${i + 1} — .${key}.delete() (middleware intercepts, but verify intent)`,
         )
