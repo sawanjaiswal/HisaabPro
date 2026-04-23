@@ -19,7 +19,7 @@
   gap: var(--space-3);
   border-bottom: 1px solid var(--color-gray-100);
   margin-bottom: var(--space-4);
-  animation: reportFadeUp 400ms var(--ease-premium) 60ms both;
+  animation: fadeUp 400ms var(--ease-premium) 60ms both;
 }
 
 /* ─── Filter pills ──────────────────────────────────────────── */
@@ -94,7 +94,7 @@
   scrollbar-width: none;
   padding-bottom: var(--space-1);
   margin-bottom: var(--space-4);
-  animation: reportFadeUp 400ms var(--ease-premium) 120ms both;
+  animation: fadeUp 400ms var(--ease-premium) 120ms both;
 }
 
 .report-summary-bar::-webkit-scrollbar {

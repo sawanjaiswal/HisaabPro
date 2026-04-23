@@ -6,19 +6,6 @@
    tabular numbers, avatar colors, badge tints.
    ============================================================ */
 
-/* ─── Entrance animation ────────────────────────────────────── */
-
-@keyframes partyFadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* ─── Filter bar ────────────────────────────────────────────── */
 
 .party-filter-bar {
@@ -26,7 +13,7 @@
   flex-direction: column;
   gap: var(--space-3);
   margin-bottom: var(--space-4);
-  animation: partyFadeUp 400ms var(--ease-premium) 60ms both;
+  animation: fadeUp 400ms var(--ease-premium) 60ms both;
 }
 
 /* ─── Party card layout helpers ─────────────────────────────── */

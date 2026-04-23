@@ -28,18 +28,6 @@
   --dash-stagger-base: 80ms;
 }
 
-/* ─── Staggered entrance animation ───────────────────────── */
-@keyframes dashFadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* Hero amount dramatic entrance — scale from small + fade */
 @keyframes dashAmountReveal {
   0% {
@@ -76,7 +64,7 @@
 .dashboard-alerts,
 .dashboard-starred,
 .dashboard-transactions {
-  animation: dashFadeUp 400ms var(--ease-premium) both;
+  animation: fadeUp 400ms var(--ease-premium) both;
 }
 
 .dashboard-sales-hero   { animation-delay: calc(var(--dash-stagger-base) * 0); }

@@ -14,7 +14,7 @@
   flex-direction: column;
   gap: var(--space-3);
   margin-bottom: var(--space-4);
-  animation: paymentFadeUp 400ms var(--ease-premium) 60ms both;
+  animation: fadeUp 400ms var(--ease-premium) 60ms both;
 }
 
 /* Horizontal scrollable row of filter pills */

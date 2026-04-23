@@ -6,19 +6,6 @@
    expiry status badges, card layout.
    ============================================================ */
 
-/* ─── Entrance animation ────────────────────────────────────── */
-
-@keyframes batchFadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* ─── Batch card ────────────────────────────────────────────── */
 
 .batch-card {
@@ -170,7 +157,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  animation: batchFadeUp 400ms var(--ease-premium) both;
+  animation: fadeUp 400ms var(--ease-premium) both;
 }
 
 .batch-detail-skeleton {
@@ -243,7 +230,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  animation: batchFadeUp 400ms var(--ease-premium) both;
+  animation: fadeUp 400ms var(--ease-premium) both;
 }
 
 .batch-form-row {
@@ -268,7 +255,7 @@
   justify-content: center;
   padding: var(--space-4);
   z-index: var(--z-modal);
-  animation: batchFadeUp 200ms ease both;
+  animation: fadeUp 200ms ease both;
 }
 
 .batch-delete-dialog {

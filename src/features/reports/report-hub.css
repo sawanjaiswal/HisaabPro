@@ -5,26 +5,13 @@
  * CSS variables only — no hex, no rgba, no hardcoded sizes.
  */
 
-/* ─── Entrance animation ────────────────────────────────────── */
-
-@keyframes reportFadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* ─── Page wrapper ──────────────────────────────────────────── */
 
 .report-hub {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  animation: reportFadeUp 400ms var(--ease-premium) both;
+  animation: fadeUp 400ms var(--ease-premium) both;
 }
 
 /* ─── Hero banner ───────────────────────────────────────────── */
@@ -37,7 +24,7 @@
   background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
   border-radius: var(--radius-xl);
   color: var(--color-white-inverse);
-  animation: reportFadeUp 400ms var(--ease-premium) 60ms both;
+  animation: fadeUp 400ms var(--ease-premium) 60ms both;
 }
 
 .report-hub-hero-icon {
@@ -108,7 +95,7 @@
   transition:
     box-shadow var(--duration-fast) var(--ease-default),
     transform 180ms var(--ease-premium);
-  animation: reportFadeUp 400ms var(--ease-premium) 100ms both;
+  animation: fadeUp 400ms var(--ease-premium) 100ms both;
 }
 
 /* Staggered entrance — each card appears 50ms after the previous */

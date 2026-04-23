@@ -1,24 +1,11 @@
 /* Invoice Templates — Gallery (list) page styles */
 
-/* ─── Entrance animation ────────────────────────────────────── */
-
-@keyframes templateFadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* Main gallery container */
 .template-gallery {
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
-  animation: templateFadeUp 400ms var(--ease-premium) both;
+  animation: fadeUp 400ms var(--ease-premium) both;
 }
 
 /* Section wrapper (YOUR TEMPLATES / BASE TEMPLATES) */

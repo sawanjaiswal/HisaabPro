@@ -6,19 +6,6 @@
    and tinted gradient cards with scale touch feedback.
    ============================================================ */
 
-/* ─── Entrance animation ────────────────────────────────────── */
-
-@keyframes paymentFadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* ─── Page container ────────────────────────────────────────── */
 
 .payment-page {
@@ -31,7 +18,7 @@
 
 .payment-hero {
   margin-bottom: var(--space-4);
-  animation: paymentFadeUp 400ms var(--ease-premium) both;
+  animation: fadeUp 400ms var(--ease-premium) both;
 }
 
 .payment-hero-net {
@@ -87,14 +74,14 @@
 .payment-hero-card--in {
   background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
   color: var(--color-white-inverse);
-  animation: paymentFadeUp 400ms var(--ease-premium) 80ms both;
+  animation: fadeUp 400ms var(--ease-premium) 80ms both;
 }
 
 /* Money Out — lime */
 .payment-hero-card--out {
   background: var(--color-lime-accent);
   color: var(--color-dark-text);
-  animation: paymentFadeUp 400ms var(--ease-premium) 140ms both;
+  animation: fadeUp 400ms var(--ease-premium) 140ms both;
 }
 
 .payment-hero-card-content {

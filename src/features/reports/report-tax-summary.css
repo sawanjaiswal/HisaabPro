@@ -41,7 +41,7 @@
   grid-template-columns: 1fr 1fr;
   gap: var(--space-3);
   margin-bottom: var(--space-5);
-  animation: reportFadeUp 400ms var(--ease-premium) both;
+  animation: fadeUp 400ms var(--ease-premium) both;
 }
 
 .tax-summary-card {

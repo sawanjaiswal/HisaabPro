@@ -4,26 +4,13 @@
  * Mobile-first: base styles target 320px, min-width queries add tablet+ layout.
  */
 
-/* ─── Entrance animation ────────────────────────────────────────────────── */
-
-@keyframes outstandingFadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* ─── Page container ─────────────────────────────────────────────────────── */
 
 .outstanding-page {
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  animation: outstandingFadeUp 400ms var(--ease-premium) both;
+  animation: fadeUp 400ms var(--ease-premium) both;
 }
 
 /* ─── Summary cards (horizontal scroll) ─────────────────────────────────── */
@@ -54,7 +41,7 @@
   background: var(--color-primary-600);
   border-radius: var(--radius-lg);
   color: var(--color-white-inverse);
-  animation: outstandingFadeUp 400ms var(--ease-premium) 60ms both;
+  animation: fadeUp 400ms var(--ease-premium) 60ms both;
 }
 
 .outstanding-summary-card:nth-child(2) {
