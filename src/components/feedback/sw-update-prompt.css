@@ -21,8 +21,8 @@
   color: var(--color-white-inverse);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-overlay-toast);
-  z-index: 1000;
-  animation: slide-up var(--duration-normal) var(--ease-default);
+  z-index: var(--z-toast);
+  animation: sw-update-slide-up var(--duration-normal) var(--ease-default);
 }
 
 .sw-update-text {
@@ -55,7 +55,7 @@
 
 /* ─── Keyframe animations ────────────────────────────────────────────────── */
 
-@keyframes slide-up {
+@keyframes sw-update-slide-up {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }

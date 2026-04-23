@@ -214,6 +214,8 @@
   --z-modal-backdrop: 45;
   --z-modal: 50;
   --z-toast: 70;
+  --z-bnav: 100;
+  --z-bnav-fab: 101;
 
   /* Layout */
   --side-padding: var(--space-4);

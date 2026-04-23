@@ -20,12 +20,7 @@
     var(--color-gray-100) 75%
   );
   background-size: 200% 100%;
-  animation: expense-shimmer 1.4s ease-in-out infinite;
-}
-
-@keyframes expense-shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  animation: shimmer 1.4s ease-in-out infinite;
 }
 
 /* ── Filter bar ───────────────────────────────────────────────────── */

@@ -115,18 +115,13 @@
     var(--color-gray-100) 75%
   );
   background-size: 200% 100%;
-  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  animation: shimmer 1.4s ease-in-out infinite;
   height: 14px;
 }
 
 .skeleton-line--code  { width: 60px;  height: 16px; }
 .skeleton-line--rate  { width: 140px; height: 16px; }
 .skeleton-line--date  { width: 90px;  height: 12px; }
-
-@keyframes skeleton-shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
 
 /* ─── Empty state ───────────────────────────────────────────────────────────── */
 
