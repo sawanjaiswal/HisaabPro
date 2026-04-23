@@ -104,6 +104,8 @@ export async function sendReminder(
   return api<PaymentReminder>('/payments/reminders/send', {
     method: 'POST',
     body: JSON.stringify(data),
+    entityType: 'payment-reminder',
+    entityLabel: `Send ${data.channel} reminder`,
   })
 }
 
@@ -118,6 +120,8 @@ export async function sendBulkReminders(
   return api<SendBulkRemindersResponse>('/payments/reminders/send-bulk', {
     method: 'POST',
     body: JSON.stringify(data),
+    entityType: 'payment-reminder',
+    entityLabel: `Bulk reminder — ${data.partyIds.length} parties`,
   })
 }
 
@@ -155,5 +159,7 @@ export async function updateReminderConfig(
   return api<ReminderConfig>('/payments/reminders/config', {
     method: 'PUT',
     body: JSON.stringify(data),
+    entityType: 'reminder-config',
+    entityLabel: 'Reminder settings',
   })
 }

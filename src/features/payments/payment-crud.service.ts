@@ -121,6 +121,8 @@ export async function createPayment(
   return api<PaymentDetail>('/payments', {
     method: 'POST',
     body: JSON.stringify(data),
+    entityType: 'payment',
+    entityLabel: paymentLabel(data),
   })
 }
 
@@ -137,6 +139,8 @@ export async function updatePayment(
   return api<PaymentDetail>(`/payments/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
+    entityType: 'payment',
+    entityLabel: paymentLabel(data),
   })
 }
 
@@ -150,6 +154,8 @@ export async function deletePayment(
 ): Promise<PaymentDeleteResponse> {
   return api<PaymentDeleteResponse>(`/payments/${id}`, {
     method: 'DELETE',
+    entityType: 'payment',
+    entityLabel: 'Delete payment',
   })
 }
 
@@ -161,6 +167,8 @@ export async function deletePayment(
 export async function restorePayment(id: string): Promise<PaymentDetail> {
   return api<PaymentDetail>(`/payments/${id}/restore`, {
     method: 'POST',
+    entityType: 'payment',
+    entityLabel: 'Restore payment',
   })
 }
 
@@ -181,6 +189,26 @@ export async function updateAllocations(
     {
       method: 'PUT',
       body: JSON.stringify({ allocations } satisfies UpdateAllocationsRequest),
+      entityType: 'payment-allocation',
+      entityLabel: `Allocate to ${allocations.length} invoice${allocations.length === 1 ? '' : 's'}`,
     }
   )
+}
+
+// ─── Local helper ─────────────────────────────────────────────────────────────
+
+/** Compose a short queue-UI label from a payment form. */
+function paymentLabel(data: Partial<PaymentFormData>): string {
+  // PaymentType strings are e.g. PAYMENT_IN / PAYMENT_OUT in the form data
+  const dir = (data.type ?? '').toString().endsWith('_IN')
+    ? 'Received'
+    : (data.type ?? '').toString().endsWith('_OUT')
+      ? 'Paid'
+      : 'Payment'
+  if (typeof data.amount === 'number') {
+    // amount is in paise — format roughly without importing currency utils
+    const rupees = Math.round(data.amount / 100).toLocaleString('en-IN')
+    return `${dir} ₹${rupees}`
+  }
+  return dir
 }

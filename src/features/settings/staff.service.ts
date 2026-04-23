@@ -76,6 +76,8 @@ export async function inviteStaff(
       method: 'POST',
       body: JSON.stringify(data),
       signal,
+      entityType: 'staff-invite',
+      entityLabel: data.phone ? `Invite ${data.phone}` : 'Invite staff',
     }
   )
 }
@@ -97,6 +99,8 @@ export async function updateStaffRole(
       method: 'PUT',
       body: JSON.stringify({ roleId }),
       signal,
+      entityType: 'staff',
+      entityLabel: 'Update staff role',
     }
   )
 }
@@ -116,6 +120,8 @@ export async function suspendStaff(
     {
       method: 'POST',
       signal,
+      entityType: 'staff',
+      entityLabel: 'Suspend staff',
     }
   )
 }
@@ -135,6 +141,8 @@ export async function removeStaff(
     {
       method: 'DELETE',
       signal,
+      entityType: 'staff',
+      entityLabel: 'Remove staff',
     }
   )
 }
@@ -154,6 +162,8 @@ export async function resendInvite(
     {
       method: 'POST',
       signal,
+      entityType: 'staff-invite',
+      entityLabel: 'Resend invite',
     }
   )
 }

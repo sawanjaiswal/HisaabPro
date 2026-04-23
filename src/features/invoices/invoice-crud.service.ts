@@ -82,11 +82,14 @@ export interface StockValidationResult {
  * WARN = soft warning (stock low but save is allowed).
  */
 export async function validateStock(
-  items: Array<{ productId: string; quantity: number; unitId: string }>
+  items: Array<{ productId: string; quantity: number; unitId?: string }>
 ): Promise<StockValidationResult> {
   return api<StockValidationResult>('/documents/validate-stock', {
     method: 'POST',
     body: JSON.stringify({ items }),
+    offlineQueue: false,                  // pre-flight only
+    entityType: 'stock-check',
+    entityLabel: 'Stock pre-check',
   })
 }
 
@@ -132,6 +135,8 @@ export async function createDocument(
   return api<DocumentDetail>('/documents', {
     method: 'POST',
     body: JSON.stringify(data),
+    entityType: docTypeToEntity(data.type),
+    entityLabel: `New ${docTypeToEntity(data.type)}`,
   })
 }
 
@@ -148,6 +153,8 @@ export async function updateDocument(
   return api<DocumentDetail>(`/documents/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
+    entityType: data.type ? docTypeToEntity(data.type) : 'document',
+    entityLabel: data.type ? `${docTypeToEntity(data.type)} update` : 'Document update',
   })
 }
 
@@ -162,6 +169,8 @@ export async function deleteDocument(
 ): Promise<DocumentDeleteResponse> {
   return api<DocumentDeleteResponse>(`/documents/${id}`, {
     method: 'DELETE',
+    entityType: 'document',
+    entityLabel: 'Delete document',
   })
 }
 
@@ -187,6 +196,8 @@ export async function convertDocument(
   return api<DocumentDetail>(`/documents/${id}/convert`, {
     method: 'POST',
     body: JSON.stringify({ targetType }),
+    entityType: docTypeToEntity(targetType as DocumentType),
+    entityLabel: `Convert → ${targetType}`,
   })
 }
 
@@ -219,5 +230,23 @@ export async function updateNumberSeries(
   return api<NextDocumentNumber>(`/settings/documents/number-series/${type}`, {
     method: 'PUT',
     body: JSON.stringify(data),
+    entityType: 'number-series',
+    entityLabel: `${type} numbering`,
   })
+}
+
+// ─── Local helper ─────────────────────────────────────────────────────────────
+
+/** Map a DocumentType to a short noun for the offline queue UI label. */
+function docTypeToEntity(type: DocumentType): string {
+  switch (type) {
+    case 'SALE_INVOICE': return 'invoice'
+    case 'PURCHASE_INVOICE': return 'purchase'
+    case 'ESTIMATE': return 'estimate'
+    case 'PROFORMA': return 'proforma'
+    case 'SALE_ORDER': return 'sale-order'
+    case 'PURCHASE_ORDER': return 'purchase-order'
+    case 'DELIVERY_CHALLAN': return 'challan'
+    default: return 'document'
+  }
 }

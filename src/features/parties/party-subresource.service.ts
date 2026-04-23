@@ -28,6 +28,8 @@ export async function addPartyAddress(
     method: 'POST',
     body: JSON.stringify(data),
     signal,
+    entityType: 'party-address',
+    entityLabel: data.label ?? data.city ?? 'New address',
   })
 }
 
@@ -44,6 +46,8 @@ export async function updatePartyAddress(
     method: 'PUT',
     body: JSON.stringify(data),
     signal,
+    entityType: 'party-address',
+    entityLabel: data.label ?? data.city ?? 'Address update',
   })
 }
 
@@ -58,6 +62,8 @@ export async function deletePartyAddress(
   return api<void>(`/parties/${partyId}/addresses/${addressId}`, {
     method: 'DELETE',
     signal,
+    entityType: 'party-address',
+    entityLabel: 'Delete address',
   })
 }
 
@@ -77,5 +83,7 @@ export async function updatePartyPricing(
     method: 'PUT',
     body: JSON.stringify({ items }),
     signal,
+    entityType: 'party-pricing',
+    entityLabel: `${items.length} custom prices`,
   })
 }

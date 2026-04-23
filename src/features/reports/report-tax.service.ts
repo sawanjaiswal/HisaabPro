@@ -68,6 +68,8 @@ export async function exportGstReturn(
       method: 'POST',
       body: JSON.stringify({ format }),
       signal,
+      entityType: 'gst-return-export',
+      entityLabel: `Export ${returnType} ${period}`,
     }
   )
 }

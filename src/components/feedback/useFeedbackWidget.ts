@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { TIMINGS } from '../../config/timings';
 import { useOnlineStatus } from '../../hooks/useOnlineStatus';
+import { api } from '../../lib/api';
 import { FAB_SIZE, EDGE_MARGIN, DRAG_THRESHOLD } from './feedback-widget.constants';
 import type { WidgetState, FeedbackType, FabPosition, FabDragState } from './feedback-widget.types';
 
@@ -122,39 +123,18 @@ export function useFeedbackWidget() {
       },
     };
 
-    if (!isOnline) {
-      import('../../lib/offline').then(({ enqueue }) => {
-        enqueue({
-          method: 'POST',
-          path: '/feedback',
-          body: JSON.stringify(payload),
-          createdAt: Date.now(),
-          status: 'pending',
-          retryCount: 0,
-          errorMessage: null,
-          entityType: 'feedback',
-          entityLabel: `Feedback: ${feedbackType}`,
-        });
-      }).catch(() => { /* enqueue failed */ });
-      setWidgetState('queued');
-      setTimeout(() => { setWidgetState('idle'); resetWidget(); }, TIMINGS.navSuccess);
-      return;
-    }
-
     try {
-      const { API_URL } = await import('../../config/app.config');
-      await fetch(`${API_URL}/feedback`, {
+      await api('/feedback', {
         method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
+        entityType: 'feedback',
+        entityLabel: `Feedback: ${feedbackType}`,
       });
-      setWidgetState('success');
-      setTimeout(() => { setWidgetState('idle'); resetWidget(); }, TIMINGS.navSuccess);
+      setWidgetState(isOnline ? 'success' : 'queued');
     } catch {
       setWidgetState('queued');
-      setTimeout(() => { setWidgetState('idle'); resetWidget(); }, TIMINGS.navSuccess);
     }
+    setTimeout(() => { setWidgetState('idle'); resetWidget(); }, TIMINGS.navSuccess);
   }, [note, feedbackType, screenshotDataUrl, isOnline, resetWidget]);
 
   const handleClose = useCallback(() => {

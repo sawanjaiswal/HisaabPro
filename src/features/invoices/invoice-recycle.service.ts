@@ -68,6 +68,8 @@ export async function getRecycleBin(
 export async function restoreDocument(id: string): Promise<DocumentDetail> {
   return api<DocumentDetail>(`/documents/${id}/restore`, {
     method: 'POST',
+    entityType: 'document',
+    entityLabel: 'Restore document',
   })
 }
 
@@ -83,6 +85,8 @@ export async function permanentDeleteDocument(
   return api<void>(`/documents/${id}/permanent`, {
     method: 'DELETE',
     headers: options.pin ? { 'X-PIN': options.pin } : {},
+    entityType: 'document',
+    entityLabel: 'Permanently delete document',
   })
 }
 
@@ -97,5 +101,7 @@ export async function emptyRecycleBin(
   return api<EmptyRecycleBinResponse>('/documents/recycle-bin', {
     method: 'DELETE',
     headers: options.pin ? { 'X-PIN': options.pin } : {},
+    entityType: 'document',
+    entityLabel: 'Empty recycle bin',
   })
 }

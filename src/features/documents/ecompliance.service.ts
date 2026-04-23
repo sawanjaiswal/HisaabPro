@@ -36,6 +36,8 @@ export async function generateEInvoice(
     method: 'POST',
     body: JSON.stringify({ documentId }),
     headers: replayHeaders(),
+    entityType: 'e-invoice',
+    entityLabel: 'Generate e-invoice',
   })
 }
 
@@ -47,6 +49,8 @@ export async function cancelEInvoice(
     method: 'POST',
     body: JSON.stringify({ documentId, reason }),
     headers: replayHeaders(),
+    entityType: 'e-invoice',
+    entityLabel: 'Cancel e-invoice',
   })
 }
 
@@ -66,6 +70,8 @@ export async function generateEWayBill(
     method: 'POST',
     body: JSON.stringify(input),
     headers: replayHeaders(),
+    entityType: 'e-way-bill',
+    entityLabel: 'Generate e-way bill',
   })
 }
 
@@ -77,6 +83,8 @@ export async function cancelEWayBill(
     method: 'POST',
     body: JSON.stringify({ documentId, reason }),
     headers: replayHeaders(),
+    entityType: 'e-way-bill',
+    entityLabel: 'Cancel e-way bill',
   })
 }
 
@@ -89,6 +97,8 @@ export async function updateEWayBillPartB(
     method: 'PUT',
     body: JSON.stringify({ documentId, vehicleNumber, vehicleType }),
     headers: replayHeaders(),
+    entityType: 'e-way-bill',
+    entityLabel: `Update vehicle ${vehicleNumber}`,
   })
 }
 

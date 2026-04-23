@@ -13,6 +13,8 @@ export async function createLedgerShare(
     method: 'POST',
     body: JSON.stringify(data),
     signal,
+    entityType: 'ledger-share',
+    entityLabel: 'Create ledger share link',
   })
 }
 
@@ -33,6 +35,8 @@ export async function revokeLedgerShare(
   await api(`/parties/${partyId}/ledger/shares/${shareId}`, {
     method: 'DELETE',
     signal,
+    entityType: 'ledger-share',
+    entityLabel: 'Revoke ledger share',
   })
 }
 

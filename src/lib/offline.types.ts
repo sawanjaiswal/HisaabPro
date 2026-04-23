@@ -26,6 +26,12 @@ export interface SyncQueueItem {
   entityType: string
   /** Display name: "Raju Traders", "INV-0042" */
   entityLabel: string
+  /**
+   * Stable UUID assigned on first send attempt for POST mutations.
+   * Sent as X-Idempotency-Key so server-side dedup prevents double-creates
+   * when a network glitch retries a request that actually succeeded.
+   */
+  idempotencyKey?: string
 }
 
 /** Options passed to `api()` to control offline queueing */

@@ -16,6 +16,8 @@ export async function validateCouponCode(
     method: 'POST',
     body: JSON.stringify({ code, planId, planAmountPaise }),
     signal,
+    entityType: 'coupon',
+    entityLabel: `Validate ${code}`,
   })
 }
 
@@ -30,6 +32,8 @@ export async function applyCouponCode(
     method: 'POST',
     body: JSON.stringify({ code, planId, planAmountPaise, razorpaySubscriptionId }),
     signal,
+    entityType: 'coupon',
+    entityLabel: `Apply ${code}`,
   })
 }
 
@@ -41,5 +45,7 @@ export async function removeCouponCode(
     method: 'DELETE',
     body: JSON.stringify({ redemptionId }),
     signal,
+    entityType: 'coupon',
+    entityLabel: 'Remove coupon',
   })
 }

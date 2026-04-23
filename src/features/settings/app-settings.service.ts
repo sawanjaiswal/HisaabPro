@@ -42,6 +42,8 @@ export async function updateAppSettings(
       method: 'PUT',
       body: JSON.stringify(data),
       signal,
+      entityType: 'app-settings',
+      entityLabel: 'App settings',
     }
   )
 }

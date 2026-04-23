@@ -52,6 +52,8 @@ export async function createUnit(
     method: 'POST',
     body: JSON.stringify(data),
     signal,
+    entityType: 'unit',
+    entityLabel: data.name ?? 'New unit',
   })
 }
 
@@ -68,6 +70,8 @@ export async function updateUnit(
     method: 'PUT',
     body: JSON.stringify(data),
     signal,
+    entityType: 'unit',
+    entityLabel: data.name ?? 'Unit update',
   })
 }
 
@@ -82,6 +86,8 @@ export async function deleteUnit(
   return api<void>(`/units/${id}`, {
     method: 'DELETE',
     signal,
+    entityType: 'unit',
+    entityLabel: 'Delete unit',
   })
 }
 
@@ -110,6 +116,8 @@ export async function createUnitConversion(
     method: 'POST',
     body: JSON.stringify(data),
     signal,
+    entityType: 'unit-conversion',
+    entityLabel: `1 ${data.fromUnitId} → ${data.factor} ${data.toUnitId}`,
   })
 }
 
@@ -124,6 +132,8 @@ export async function deleteUnitConversion(
   return api<void>(`/unit-conversions/${id}`, {
     method: 'DELETE',
     signal,
+    entityType: 'unit-conversion',
+    entityLabel: 'Delete unit conversion',
   })
 }
 
@@ -151,5 +161,7 @@ export async function updateInventorySettings(
     method: 'PUT',
     body: JSON.stringify(data),
     signal,
+    entityType: 'inventory-settings',
+    entityLabel: 'Inventory settings',
   })
 }

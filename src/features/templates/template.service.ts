@@ -48,6 +48,8 @@ export async function createTemplate(data: TemplateFormData): Promise<InvoiceTem
   return api<InvoiceTemplate>('/templates', {
     method: 'POST',
     body: JSON.stringify(data),
+    entityType: 'template',
+    entityLabel: data.name ?? 'New template',
   })
 }
 
@@ -65,6 +67,8 @@ export async function updateTemplate(
   return api<InvoiceTemplate>(`/templates/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
+    entityType: 'template',
+    entityLabel: data.name ?? 'Template update',
   })
 }
 
@@ -76,7 +80,11 @@ export async function updateTemplate(
  * The default template cannot be deleted — the server will return a 400.
  */
 export async function deleteTemplate(id: string): Promise<void> {
-  return api<void>(`/templates/${id}`, { method: 'DELETE' })
+  return api<void>(`/templates/${id}`, {
+    method: 'DELETE',
+    entityType: 'template',
+    entityLabel: 'Delete template',
+  })
 }
 
 // ─── Template duplicate ───────────────────────────────────────────────────────
@@ -88,7 +96,11 @@ export async function deleteTemplate(id: string): Promise<void> {
  * Returns the newly created template.
  */
 export async function duplicateTemplate(id: string): Promise<InvoiceTemplate> {
-  return api<InvoiceTemplate>(`/templates/${id}/duplicate`, { method: 'POST' })
+  return api<InvoiceTemplate>(`/templates/${id}/duplicate`, {
+    method: 'POST',
+    entityType: 'template',
+    entityLabel: 'Duplicate template',
+  })
 }
 
 // ─── Set default template ─────────────────────────────────────────────────────
@@ -108,6 +120,8 @@ export async function setDefaultTemplate(
   return api<{ id: string; defaultForTypes: string[] }>(`/templates/${id}/set-default`, {
     method: 'POST',
     body: JSON.stringify({ documentTypes }),
+    entityType: 'template',
+    entityLabel: 'Set default template',
   })
 }
 
@@ -130,5 +144,7 @@ export async function updateInvoiceSettings(data: InvoiceSettings): Promise<Invo
   return api<InvoiceSettings>('/invoice-settings', {
     method: 'PUT',
     body: JSON.stringify(data),
+    entityType: 'invoice-settings',
+    entityLabel: 'Invoice settings',
   })
 }

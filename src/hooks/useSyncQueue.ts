@@ -21,6 +21,7 @@ import {
   discardItem,
   discardAllDead,
   isQueueProcessing,
+  getLastSyncAt,
 } from '@/lib/offline'
 import type { SyncQueueItem } from '@/lib/offline.types'
 
@@ -32,10 +33,12 @@ interface SyncQueueState {
   blocked: number
   total: number
   isProcessing: boolean
+  lastSyncAt: number | null
 }
 
 const EMPTY_STATE: SyncQueueState = {
   pending: 0, syncing: 0, failed: 0, dead: 0, blocked: 0, total: 0, isProcessing: false,
+  lastSyncAt: null,
 }
 
 export function useSyncQueue() {
@@ -46,7 +49,7 @@ export function useSyncQueue() {
   const refresh = useCallback(async () => {
     const counts = await getQueueCounts()
     if (!mountedRef.current) return
-    setState({ ...counts, isProcessing: isQueueProcessing() })
+    setState({ ...counts, isProcessing: isQueueProcessing(), lastSyncAt: getLastSyncAt() })
   }, [])
 
   // Subscribe to queue changes

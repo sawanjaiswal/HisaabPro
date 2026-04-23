@@ -35,6 +35,8 @@ export async function createPartyGroup(
     method: 'POST',
     body: JSON.stringify(data),
     signal,
+    entityType: 'party-group',
+    entityLabel: data.name ?? 'New party group',
   })
 }
 
@@ -50,6 +52,8 @@ export async function updatePartyGroup(
     method: 'PUT',
     body: JSON.stringify(data),
     signal,
+    entityType: 'party-group',
+    entityLabel: data.name ?? 'Party group update',
   })
 }
 
@@ -63,5 +67,7 @@ export async function deletePartyGroup(
   return api<void>(`/party-groups/${id}`, {
     method: 'DELETE',
     signal,
+    entityType: 'party-group',
+    entityLabel: 'Delete party group',
   })
 }

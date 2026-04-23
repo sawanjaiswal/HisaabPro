@@ -37,6 +37,8 @@ export async function createBankAccount(
     body: JSON.stringify(input),
     headers: replayHeaders(),
     signal,
+    entityType: 'bank-account',
+    entityLabel: input.bankName ?? 'New bank account',
   })
 }
 
@@ -50,6 +52,8 @@ export async function updateBankAccount(
     body: JSON.stringify(input),
     headers: replayHeaders(),
     signal,
+    entityType: 'bank-account',
+    entityLabel: input.bankName ?? 'Bank account update',
   })
 }
 
@@ -61,5 +65,7 @@ export async function deleteBankAccount(
     method: 'DELETE',
     headers: replayHeaders(),
     signal,
+    entityType: 'bank-account',
+    entityLabel: 'Delete bank account',
   })
 }

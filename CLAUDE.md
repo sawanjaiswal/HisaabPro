@@ -24,6 +24,15 @@ Path: `/Users/sawanjaiswal/DudhHisaab`
 - React-PDF (client-side, not Puppeteer) · Cursor pagination · Amounts in paise (integer)
 - `/f <feature>` to build · 6-layer split per feature · 4 UI states every screen
 
+## Offline (MANDATORY — see `.claude/rules/OFFLINE_RULES.md`)
+Every new feature MUST follow these patterns. `scripts/enforce-offline.mjs`
+ratchets violations — pre-commit fails if you add new ones.
+- All API calls go through `api()` from `@/lib/api` (no raw `fetch()`)
+- Mutations pass `entityType` + `entityLabel` so the offline queue UI is meaningful
+- Reads default to network-only; opt in with `cacheReads: true` only when PII-safe
+- No `localStorage` writes for entity data (use Dexie / sessionStorage)
+- Mutation handlers tolerate the optimistic `{}` return (don't deref response fields)
+
 ## Personas
 - **Raju** — Micro retailer, 0-1 staff, Rs 1-5L/month
 - **Priya** — Growing wholesaler, 2-5 staff, Rs 5-25L/month

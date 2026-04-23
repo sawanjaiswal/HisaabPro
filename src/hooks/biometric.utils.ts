@@ -72,13 +72,27 @@ export function arrayBufferToBase64Url(buffer: ArrayBuffer): string {
 
 // ── API fetch helper ──────────────────────────────────────────
 
-const API_BASE = '/api/auth/biometric'
+import { api } from '@/lib/api'
 
+const API_BASE = '/auth/biometric'
+
+/**
+ * Wraps the shared api() so biometric flows inherit CSRF, 401-refresh,
+ * replay headers, and consistent error handling. Preserves the legacy
+ * `{ success, data }` return shape callers rely on.
+ */
 export async function apiFetch<T>(path: string, opts?: RequestInit): Promise<{ success: boolean; data?: T }> {
-  const res = await fetch(`${API_BASE}${path}`, {
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    ...opts,
-  })
-  return res.json()
+  const method = (opts?.method ?? 'GET').toUpperCase()
+  const isMutation = method !== 'GET' && method !== 'HEAD'
+  try {
+    const data = await api<T>(`${API_BASE}${path}`, {
+      ...opts,
+      ...(isMutation
+        ? { entityType: 'biometric', entityLabel: `Biometric ${path.replace(/^\//, '')}` }
+        : {}),
+    })
+    return { success: true, data }
+  } catch {
+    return { success: false }
+  }
 }

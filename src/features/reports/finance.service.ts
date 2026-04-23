@@ -84,9 +84,15 @@ export async function closeFY(financialYear: string): Promise<FYClosureResult> {
   return api<FYClosureResult>('/fy-closure', {
     method: 'POST',
     body: JSON.stringify({ financialYear }),
+    entityType: 'fy-closure',
+    entityLabel: `Close FY ${financialYear}`,
   })
 }
 
 export async function reopenFY(financialYear: string): Promise<FYClosure> {
-  return api<FYClosure>(`/fy-closure/${financialYear}/reopen`, { method: 'POST' })
+  return api<FYClosure>(`/fy-closure/${financialYear}/reopen`, {
+    method: 'POST',
+    entityType: 'fy-closure',
+    entityLabel: `Reopen FY ${financialYear}`,
+  })
 }

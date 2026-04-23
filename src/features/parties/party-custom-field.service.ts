@@ -46,6 +46,8 @@ export async function createCustomField(
     method: 'POST',
     body: JSON.stringify(data),
     signal,
+    entityType: 'custom-field',
+    entityLabel: data.name ?? 'New custom field',
   })
 }
 
@@ -61,6 +63,8 @@ export async function updateCustomField(
     method: 'PUT',
     body: JSON.stringify(data),
     signal,
+    entityType: 'custom-field',
+    entityLabel: data.name ?? 'Custom field update',
   })
 }
 
@@ -75,6 +79,8 @@ export async function deleteCustomField(
   return api<void>(`/custom-fields/${id}`, {
     method: 'DELETE',
     signal,
+    entityType: 'custom-field',
+    entityLabel: 'Delete custom field',
   })
 }
 

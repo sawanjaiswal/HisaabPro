@@ -40,6 +40,8 @@ export async function createCheque(
     body: JSON.stringify(input),
     headers: replayHeaders(),
     signal,
+    entityType: 'cheque',
+    entityLabel: input.chequeNumber ? `Cheque ${input.chequeNumber}` : 'New cheque',
   })
 }
 
@@ -53,6 +55,8 @@ export async function updateChequeStatus(
     body: JSON.stringify(input),
     headers: replayHeaders(),
     signal,
+    entityType: 'cheque',
+    entityLabel: `Mark cheque ${input.status}`,
   })
 }
 
@@ -61,6 +65,8 @@ export async function deleteCheque(id: string, signal?: AbortSignal): Promise<vo
     method: 'DELETE',
     headers: replayHeaders(),
     signal,
+    entityType: 'cheque',
+    entityLabel: 'Delete cheque',
   })
 }
 

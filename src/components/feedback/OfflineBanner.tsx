@@ -1,18 +1,22 @@
 /** Offline Banner — Connection lost indicator + sync queue status
  *
  * Warm amber pill banner that slides in when offline.
- * Integrates SyncQueueIndicator to show pending offline operations.
+ * Integrates SyncQueueIndicator (shown when queue has work) and
+ * SyncStatusBadge (shown when idle so users always know sync health).
  * CSS-only animation, no Tailwind.
  */
 
 import { useState } from 'react'
 import { WifiOff, RefreshCw } from 'lucide-react'
 import { useOnlineStatus, checkOnlineNow } from '../../hooks/useOnlineStatus'
+import { useSyncQueue } from '@/hooks/useSyncQueue'
 import { SyncQueueIndicator } from './SyncQueueIndicator'
+import { SyncStatusBadge } from './SyncStatusBadge'
 import './offline-banner.css'
 
 export function OfflineBanner() {
   const isOnline = useOnlineStatus()
+  const queue = useSyncQueue()
   const [isChecking, setIsChecking] = useState(false)
 
   const handleCheckConnection = async () => {
@@ -21,9 +25,12 @@ export function OfflineBanner() {
     setIsChecking(false)
   }
 
-  // Always render SyncQueueIndicator — it handles its own visibility
-  // (shows even briefly after coming back online while queue processes)
-  if (isOnline) return <SyncQueueIndicator />
+  // Online: show queue indicator when there's work, idle badge otherwise.
+  // The Indicator already self-hides when empty, so only one is visible at a time.
+  if (isOnline) {
+    if (queue.hasItems || queue.isProcessing) return <SyncQueueIndicator />
+    return <SyncStatusBadge />
+  }
 
   return (
     <div role="status" aria-live="polite" className="offline-banner">

@@ -8,9 +8,26 @@
 import { useState, useEffect, useRef } from 'react';
 
 const HEARTBEAT_ONLINE_INTERVAL = 30_000;
-const HEARTBEAT_OFFLINE_INTERVAL = 10_000;
+const HEARTBEAT_OFFLINE_BASE = 10_000;     // 10s starting gap when offline
+const HEARTBEAT_OFFLINE_MAX  = 60_000;     // cap at 60s for long outages
 const HEARTBEAT_TIMEOUT = 5_000;
 const CONSECUTIVE_FAILURES_THRESHOLD = 2;
+
+// Exponential backoff + ±20% jitter so a fleet of PWAs doesn't synchronize
+// probes against /health after a shared outage recovers. Online side stays
+// flat (30s) — jitter only matters while we're retrying offline.
+function jitterUnit(): number {
+  // Non-security randomness for heartbeat scheduling; value in [-1, 1).
+  const buf = new Uint32Array(1);
+  crypto.getRandomValues(buf);
+  return (buf[0] / 0xffffffff) * 2 - 1;
+}
+
+function offlineInterval(failureStreak: number): number {
+  const exp = Math.min(HEARTBEAT_OFFLINE_BASE * Math.pow(2, Math.max(0, failureStreak - 1)), HEARTBEAT_OFFLINE_MAX);
+  const jitter = exp * 0.2 * jitterUnit();
+  return Math.max(1_000, Math.round(exp + jitter));
+}
 
 function getHealthUrl(): string {
   // Use the configured API_URL from env (VITE_API_URL) — works in dev and production.
@@ -80,7 +97,7 @@ async function runHeartbeat(): Promise<void> {
 
 function scheduleNextHeartbeat(): void {
   if (heartbeatTimer) clearTimeout(heartbeatTimer);
-  const interval = globalIsOnline ? HEARTBEAT_ONLINE_INTERVAL : HEARTBEAT_OFFLINE_INTERVAL;
+  const interval = globalIsOnline ? HEARTBEAT_ONLINE_INTERVAL : offlineInterval(consecutiveFailures);
   heartbeatTimer = setTimeout(runHeartbeat, interval);
 }
 
@@ -175,6 +192,15 @@ export function useOnlineStatusWithCallbacks(callbacks?: {
   }, [isOnline]);
 
   return { isOnline };
+}
+
+/**
+ * Snapshot of the dual-signal online state for non-React consumers (axios
+ * interceptors, queue runners). Reflects the latest heartbeat result, not just
+ * navigator.onLine — so captive-wifi false positives are filtered out.
+ */
+export function getGlobalOnline(): boolean {
+  return globalIsOnline;
 }
 
 /**

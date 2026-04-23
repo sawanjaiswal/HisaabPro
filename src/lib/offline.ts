@@ -11,6 +11,7 @@ import { API_URL, TIMEOUTS } from '@/config/app.config'
 import {
   SYNC_DB_NAME,
   SYNC_DB_VERSION,
+  SYNC_DEAD_TTL_MS,
   SYNC_QUEUE_MAX_SIZE,
   SYNC_QUEUE_MAX_RETRIES,
   SYNC_RETRY_DELAYS,
@@ -117,9 +118,47 @@ export async function recoverStuckItems(): Promise<void> {
   notify()
 }
 
+/**
+ * Purge `dead` items older than SYNC_DEAD_TTL_MS. Runs at the top of every
+ * queue pass so dead-letter rows can't pile up across long offline stretches.
+ * Returns number of rows deleted (for diagnostics).
+ */
+export async function purgeStaleDead(): Promise<number> {
+  const cutoff = Date.now() - SYNC_DEAD_TTL_MS
+  const removed = await db.syncQueue
+    .where('status')
+    .equals('dead')
+    .filter((item) => item.createdAt < cutoff)
+    .delete()
+  if (removed > 0) notify()
+  return removed
+}
+
 // ─── Sync Processor ──────────────────────────────────────────────────────────
 
 let isProcessing = false
+
+/**
+ * Wall-clock timestamp of the last fully-clean queue drain (no failures).
+ * Surfaced to the UI so we can show "Synced 2m ago" when idle. Persisted
+ * across reloads via localStorage so the indicator survives a refresh.
+ */
+const LAST_SYNC_KEY = 'hisaabpro:lastSyncAt'
+
+export function getLastSyncAt(): number | null {
+  try {
+    const raw = localStorage.getItem(LAST_SYNC_KEY)
+    if (!raw) return null
+    const n = Number.parseInt(raw, 10)
+    return Number.isFinite(n) ? n : null
+  } catch {
+    return null
+  }
+}
+
+function setLastSyncAt(ts: number): void {
+  try { localStorage.setItem(LAST_SYNC_KEY, String(ts)) } catch { /* private mode */ }
+}
 
 export function isQueueProcessing(): boolean {
   return isProcessing
@@ -136,6 +175,10 @@ export async function processQueue(): Promise<void> {
   notify()
 
   try {
+    // Best-effort: clear out aged-out dead-letter rows before we start.
+    // Failure here must not abort the sync pass.
+    await purgeStaleDead().catch(() => {})
+
     // eslint-disable-next-line no-constant-condition
     while (true) {
       const next = await db.syncQueue
@@ -146,16 +189,30 @@ export async function processQueue(): Promise<void> {
 
       if (!next || !next.id) break
 
+      // Assign a stable idempotency key on first send for POSTs.
+      // Persist before the request so a crash mid-send doesn't strand
+      // a request that the server may have already accepted — the next
+      // attempt re-uses the same key and dedups against IdempotencyLog.
+      let current = next
+      if (next.method === 'POST' && !next.idempotencyKey) {
+        const key = crypto.randomUUID()
+        await db.syncQueue.update(next.id, { idempotencyKey: key })
+        current = { ...next, idempotencyKey: key }
+      }
+
       // Mark syncing
       await db.syncQueue.update(next.id, { status: 'syncing' as SyncItemStatus })
       notify()
 
       try {
-        const response = await fetch(`${API_URL}${next.path}`, {
-          method: next.method,
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+        if (current.idempotencyKey) headers['X-Idempotency-Key'] = current.idempotencyKey
+
+        const response = await fetch(`${API_URL}${current.path}`, {
+          method: current.method,
           credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: next.body,
+          headers,
+          body: current.body,
           signal: AbortSignal.timeout(TIMEOUTS.fetchMs),
         })
 
@@ -211,6 +268,10 @@ export async function processQueue(): Promise<void> {
       }
     }
   } finally {
+    // Stamp the success timestamp only if the queue is fully drained — any
+    // remaining pending/failed/dead items mean we still owe the server work.
+    const remaining = await db.syncQueue.count().catch(() => 0)
+    if (remaining === 0) setLastSyncAt(Date.now())
     isProcessing = false
     notify()
   }

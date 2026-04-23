@@ -20,3 +20,11 @@ export const SYNC_DB_NAME = 'hisaabpro-sync'
 
 /** Dexie database version */
 export const SYNC_DB_VERSION = 1
+
+/**
+ * TTL for items in the `dead` status (ms). Auto-purged on next queue run.
+ * Stops permanently-failed mutations from accumulating IndexedDB quota.
+ * 30 days is long enough that the user can review failures during their
+ * next online session, short enough that abandoned drafts don't pile up.
+ */
+export const SYNC_DEAD_TTL_MS = 30 * 24 * 60 * 60 * 1_000

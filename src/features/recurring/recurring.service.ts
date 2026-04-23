@@ -53,6 +53,8 @@ export async function createRecurring(
     body: JSON.stringify(input),
     headers: replayHeaders(),
     signal,
+    entityType: 'recurring-invoice',
+    entityLabel: `New ${input.frequency.toLowerCase()} recurring invoice`,
   })
 }
 
@@ -66,6 +68,8 @@ export async function updateRecurring(
     body: JSON.stringify(input),
     headers: replayHeaders(),
     signal,
+    entityType: 'recurring-invoice',
+    entityLabel: input.status ? `Recurring invoice ${input.status.toLowerCase()}` : 'Recurring invoice update',
   })
 }
 
@@ -77,6 +81,8 @@ export async function deleteRecurring(
     method: 'DELETE',
     headers: replayHeaders(),
     signal,
+    entityType: 'recurring-invoice',
+    entityLabel: 'Delete recurring invoice',
   })
 }
 
@@ -87,5 +93,7 @@ export async function generateDueInvoices(
     method: 'POST',
     headers: replayHeaders(),
     signal,
+    entityType: 'recurring-invoice',
+    entityLabel: 'Generate due invoices',
   })
 }

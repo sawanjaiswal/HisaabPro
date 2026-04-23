@@ -193,6 +193,20 @@ if (prismaDeleteCount === 0) {
   console.log('  ⚠️  %d prisma.delete() calls found (middleware intercepts, review intent)', prismaDeleteCount)
 }
 
+// ─── Check 6: Offline patterns (ratcheted) ───────────────────────────────────
+
+console.log('🔍 Check 6: Offline patterns (no regression vs baseline)')
+
+try {
+  execSync('node scripts/enforce-offline.mjs', { cwd: ROOT, stdio: 'inherit' })
+  console.log('  ✅ Offline-pattern baseline holds')
+} catch {
+  errors.push(
+    'OFFLINE_REGRESSION: scripts/enforce-offline.mjs flagged new violations. ' +
+    'See output above and .claude/rules/OFFLINE_RULES.md.',
+  )
+}
+
 // ─── Summary ──────────────────────────────────────────────────────────────────
 
 console.log('\n' + '═'.repeat(60))

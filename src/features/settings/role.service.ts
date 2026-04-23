@@ -72,6 +72,8 @@ export async function createRole(
       method: 'POST',
       body: JSON.stringify(data),
       signal,
+      entityType: 'role',
+      entityLabel: data.name ?? 'New role',
     }
   )
 }
@@ -93,6 +95,8 @@ export async function updateRole(
       method: 'PUT',
       body: JSON.stringify(data),
       signal,
+      entityType: 'role',
+      entityLabel: data.name ?? 'Role update',
     }
   )
 }
@@ -115,6 +119,8 @@ export async function deleteRole(
     {
       method: 'DELETE',
       signal,
+      entityType: 'role',
+      entityLabel: 'Delete role',
     }
   )
 }

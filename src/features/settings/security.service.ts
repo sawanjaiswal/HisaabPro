@@ -76,6 +76,8 @@ export async function updateTransactionLockConfig(
       method: 'PUT',
       body: JSON.stringify(data),
       signal,
+      entityType: 'transaction-lock',
+      entityLabel: 'Transaction lock settings',
     }
   )
 }
@@ -118,6 +120,8 @@ export async function reviewApproval(
       method: 'PUT',
       body: JSON.stringify({ action, operationPin }),
       signal,
+      entityType: 'approval',
+      entityLabel: action === 'APPROVE' ? 'Approve request' : 'Deny request',
     }
   )
 }
@@ -141,6 +145,8 @@ export async function setPin(
       method: 'POST',
       body: JSON.stringify(data),
       signal,
+      entityType: 'pin',
+      entityLabel: data.currentPin ? 'Change PIN' : 'Set PIN',
     }
   )
 }
@@ -161,6 +167,8 @@ export async function verifyPin(
       method: 'POST',
       body: JSON.stringify({ pin }),
       signal,
+      entityType: 'pin',
+      entityLabel: 'Verify PIN',
     }
   )
 }
@@ -181,6 +189,8 @@ export async function resetPin(
       method: 'POST',
       body: JSON.stringify(data),
       signal,
+      entityType: 'pin',
+      entityLabel: 'Reset PIN',
     }
   )
 }
@@ -203,6 +213,8 @@ export async function setOperationPin(
       method: 'POST',
       body: JSON.stringify(data),
       signal,
+      entityType: 'operation-pin',
+      entityLabel: data.currentPin ? 'Change operation PIN' : 'Set operation PIN',
     }
   )
 }

@@ -30,6 +30,8 @@ export async function startReconciliation(
     method: 'POST',
     body: JSON.stringify(payload),
     signal,
+    entityType: 'gst-reconciliation',
+    entityLabel: `Reconcile ${payload.reconType} ${payload.period}`,
   })
 }
 
@@ -80,5 +82,7 @@ export async function deleteReconciliation(
     method: 'DELETE',
     signal,
     offlineQueue: false,
+    entityType: 'gst-reconciliation',
+    entityLabel: 'Delete reconciliation',
   })
 }

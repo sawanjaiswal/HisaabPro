@@ -83,18 +83,23 @@ export async function getProducts(
   filters: Partial<ProductFilters> = {},
   signal?: AbortSignal
 ): Promise<ProductListResponse> {
-  return api<ProductListResponse>(`/products${buildProductQuery(filters)}`, { signal })
+  return api<ProductListResponse>(`/products${buildProductQuery(filters)}`, {
+    signal,
+    cacheReads: true,
+  })
 }
 
 /**
  * Fetch full detail for a single product by ID.
  * Includes recentMovements (last 10 stock movements).
+ * Server wraps in { product }; unwrap here.
  */
 export async function getProduct(
   id: string,
   signal?: AbortSignal
 ): Promise<ProductDetail> {
-  return api<ProductDetail>(`/products/${id}`, { signal })
+  const { product } = await api<{ product: ProductDetail }>(`/products/${id}`, { signal })
+  return product
 }
 
 /**
@@ -105,11 +110,14 @@ export async function createProduct(
   data: ProductFormData,
   signal?: AbortSignal
 ): Promise<ProductDetail> {
-  return api<ProductDetail>('/products', {
+  const { product } = await api<{ product: ProductDetail }>('/products', {
     method: 'POST',
     body: JSON.stringify(data),
     signal,
+    entityType: 'product',
+    entityLabel: data.name ?? 'New product',
   })
+  return product
 }
 
 /**
@@ -122,11 +130,14 @@ export async function updateProduct(
   data: Partial<Omit<ProductFormData, 'openingStock' | 'autoGenerateSku'>>,
   signal?: AbortSignal
 ): Promise<ProductDetail> {
-  return api<ProductDetail>(`/products/${id}`, {
+  const { product } = await api<{ product: ProductDetail }>(`/products/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
     signal,
+    entityType: 'product',
+    entityLabel: data.name ?? 'Product update',
   })
+  return product
 }
 
 /**
@@ -140,6 +151,8 @@ export async function deleteProduct(
   return api<void>(`/products/${id}`, {
     method: 'DELETE',
     signal,
+    entityType: 'product',
+    entityLabel: 'Delete product',
   })
 }
 
@@ -159,6 +172,8 @@ export async function adjustStock(
     method: 'POST',
     body: JSON.stringify(data),
     signal,
+    entityType: 'stock-adjustment',
+    entityLabel: `${data.type === 'ADJUSTMENT_IN' ? '+' : '-'}${data.quantity} stock`,
   })
 }
 
@@ -191,10 +206,11 @@ export async function getProductByBarcode(
   signal?: AbortSignal
 ): Promise<ProductDetail | null> {
   try {
-    return await api<ProductDetail>(
+    const { product } = await api<{ product: ProductDetail | null }>(
       `/products/by-barcode/${encodeURIComponent(barcode)}`,
       { signal }
     )
+    return product
   } catch {
     return null
   }
@@ -208,5 +224,9 @@ export async function validateStock(
     method: 'POST',
     body: JSON.stringify({ items }),
     signal,
+    // Pre-flight check, never queued — must hit a live server to be meaningful
+    offlineQueue: false,
+    entityType: 'stock-check',
+    entityLabel: 'Stock pre-check',
   })
 }

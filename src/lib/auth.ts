@@ -1,4 +1,5 @@
 import { api } from './api'
+import { clearApiCache } from './api-cache'
 import type { AuthUser, BusinessSummary } from '../features/auth/auth.types'
 
 /**
@@ -13,6 +14,9 @@ import type { AuthUser, BusinessSummary } from '../features/auth/auth.types'
 export function clearAuth() {
   sessionStorage.removeItem('cachedUser')
   sessionStorage.removeItem('cachedBusinesses')
+  // Drop the offline read cache too — the next user signing in on this
+  // device must not see the previous user's PII (parties, balances, etc.).
+  void clearApiCache()
 }
 
 /** Cache user for offline access */

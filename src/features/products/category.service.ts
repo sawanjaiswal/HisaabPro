@@ -35,6 +35,8 @@ export async function createCategory(
     method: 'POST',
     body: JSON.stringify(data),
     signal,
+    entityType: 'category',
+    entityLabel: data.name ?? 'New category',
   })
 }
 
@@ -51,6 +53,8 @@ export async function updateCategory(
     method: 'PUT',
     body: JSON.stringify(data),
     signal,
+    entityType: 'category',
+    entityLabel: data.name ?? 'Category update',
   })
 }
 
@@ -67,5 +71,7 @@ export async function deleteCategory(
     method: 'DELETE',
     body: JSON.stringify({ reassignTo }),
     signal,
+    entityType: 'category',
+    entityLabel: 'Delete category',
   })
 }

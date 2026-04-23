@@ -54,17 +54,22 @@ export async function getParties(
   filters: Partial<PartyFilters> = {},
   signal?: AbortSignal
 ): Promise<PartyListResponse> {
-  return api<PartyListResponse>(`/parties${buildPartyQuery(filters)}`, { signal })
+  return api<PartyListResponse>(`/parties${buildPartyQuery(filters)}`, {
+    signal,
+    cacheReads: true,
+  })
 }
 
 /**
  * Fetch full detail for a single party by ID.
+ * Server wraps in { party }; unwrap here.
  */
 export async function getParty(
   id: string,
   signal?: AbortSignal
 ): Promise<PartyDetail> {
-  return api<PartyDetail>(`/parties/${id}`, { signal })
+  const { party } = await api<{ party: PartyDetail }>(`/parties/${id}`, { signal })
+  return party
 }
 
 /**
@@ -74,11 +79,14 @@ export async function createParty(
   data: PartyFormData,
   signal?: AbortSignal
 ): Promise<PartyDetail> {
-  return api<PartyDetail>('/parties', {
+  const { party } = await api<{ party: PartyDetail }>('/parties', {
     method: 'POST',
     body: JSON.stringify(data),
     signal,
+    entityType: 'party',
+    entityLabel: data.name ?? 'New party',
   })
+  return party
 }
 
 /**
@@ -90,11 +98,14 @@ export async function updateParty(
   data: Partial<PartyFormData>,
   signal?: AbortSignal
 ): Promise<PartyDetail> {
-  return api<PartyDetail>(`/parties/${id}`, {
+  const { party } = await api<{ party: PartyDetail }>(`/parties/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
     signal,
+    entityType: 'party',
+    entityLabel: data.name ?? 'Party update',
   })
+  return party
 }
 
 /**
@@ -108,6 +119,8 @@ export async function deleteParty(
   return api<void>(`/parties/${id}${hard ? '?hard=true' : ''}`, {
     method: 'DELETE',
     signal,
+    entityType: 'party',
+    entityLabel: hard ? 'Delete party permanently' : 'Delete party',
   })
 }
 

@@ -29,6 +29,8 @@ export async function createTaxCategory(
     method: 'POST',
     body: JSON.stringify({ ...data, businessId }),
     headers: { 'Content-Type': 'application/json' },
+    entityType: 'tax-category',
+    entityLabel: data.name ?? 'New tax category',
   })
 }
 
@@ -40,6 +42,8 @@ export async function updateTaxCategory(
     method: 'PUT',
     body: JSON.stringify(data),
     headers: { 'Content-Type': 'application/json' },
+    entityType: 'tax-category',
+    entityLabel: data.name ?? 'Tax category update',
   })
 }
 
@@ -69,6 +73,8 @@ export async function validateGstinRemote(gstin: string): Promise<GstinVerifyRes
     method: 'POST',
     body: JSON.stringify({ gstin }),
     headers: { 'Content-Type': 'application/json' },
+    entityType: 'gstin',
+    entityLabel: `Validate ${gstin}`,
   })
 }
 
@@ -81,5 +87,7 @@ export async function verifyGstin(gstin: string): Promise<GstinVerifyResult> {
     method: 'POST',
     body: JSON.stringify({ gstin }),
     headers: { 'Content-Type': 'application/json' },
+    entityType: 'gstin',
+    entityLabel: `Verify ${gstin}`,
   })
 }

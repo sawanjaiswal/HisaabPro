@@ -1,7 +1,9 @@
 import { useState, useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ROUTES } from '@/config/routes.config'
+import { useAuth } from '@/context/AuthContext'
 import { PIN_MIN_LENGTH, PIN_MAX_LENGTH } from './settings.constants'
+import { setPin as setPinApi } from './security.service'
 import { isWeakPin } from './settings.utils'
 
 type SetupStep = 'enter' | 'confirm'
@@ -9,6 +11,7 @@ type SetupStep = 'enter' | 'confirm'
 export function usePinSetup() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const { user } = useAuth()
   const isOnboarding = searchParams.get('onboarding') === '1'
   const hasExistingPin = searchParams.get('change') === '1'
 
@@ -78,16 +81,15 @@ export function usePinSetup() {
         return
       }
 
+      if (!user?.id) {
+        setError('Not signed in')
+        setConfirmPin('')
+        return
+      }
+
       setIsSubmitting(true)
       try {
-        const API_URL = import.meta.env.VITE_API_URL as string
-        const res = await fetch(`${API_URL}/settings/pin`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ pin }),
-        })
-        if (!res.ok) throw new Error('Failed to save PIN')
+        await setPinApi(user.id, { newPin: pin })
         navigate(ROUTES.SETTINGS)
       } catch {
         setError('Failed to save PIN. Please try again.')
@@ -96,7 +98,7 @@ export function usePinSetup() {
         setIsSubmitting(false)
       }
     },
-    [pin, navigate],
+    [pin, navigate, user?.id],
   )
 
   // ─── Confirm pad auto-submit at matching length ──────────────────────────

@@ -40,6 +40,8 @@ export async function createOtherIncome(
     body: JSON.stringify(input),
     headers: replayHeaders(),
     signal,
+    entityType: 'other-income',
+    entityLabel: input.notes ?? input.category ?? 'New income entry',
   })
 }
 
@@ -48,6 +50,8 @@ export async function deleteOtherIncome(id: string, signal?: AbortSignal): Promi
     method: 'DELETE',
     headers: replayHeaders(),
     signal,
+    entityType: 'other-income',
+    entityLabel: 'Delete income entry',
   })
 }
 

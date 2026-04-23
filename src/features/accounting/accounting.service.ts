@@ -34,7 +34,12 @@ export async function getAccountById(
 }
 
 export async function seedDefaultAccounts(signal?: AbortSignal): Promise<void> {
-  return api<void>('/accounting/accounts/seed', { method: 'POST', signal })
+  return api<void>('/accounting/accounts/seed', {
+    method: 'POST',
+    signal,
+    entityType: 'ledger-account',
+    entityLabel: 'Seed default accounts',
+  })
 }
 
 export async function createAccount(
@@ -52,6 +57,8 @@ export async function createAccount(
     method: 'POST',
     body: JSON.stringify(data),
     signal,
+    entityType: 'ledger-account',
+    entityLabel: data.name,
   })
 }
 
@@ -81,6 +88,8 @@ export async function postJournalEntry(
   return api<JournalEntry>(`/accounting/entries/${id}/post`, {
     method: 'POST',
     signal,
+    entityType: 'journal-entry',
+    entityLabel: 'Post journal entry',
   })
 }
 
@@ -91,6 +100,8 @@ export async function voidJournalEntry(
   return api<JournalEntry>(`/accounting/entries/${id}/void`, {
     method: 'POST',
     signal,
+    entityType: 'journal-entry',
+    entityLabel: 'Void journal entry',
   })
 }
 

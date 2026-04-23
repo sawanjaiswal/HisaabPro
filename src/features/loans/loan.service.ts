@@ -40,6 +40,8 @@ export async function createLoan(
     body: JSON.stringify(input),
     headers: replayHeaders(),
     signal,
+    entityType: 'loan',
+    entityLabel: input.notes ?? `New ${input.loanType.toLowerCase()} loan`,
   })
 }
 
@@ -53,6 +55,8 @@ export async function recordLoanTransaction(
     body: JSON.stringify(input),
     headers: replayHeaders(),
     signal,
+    entityType: 'loan-transaction',
+    entityLabel: input.type ? `Record ${input.type.toLowerCase()}` : 'Loan transaction',
   })
 }
 
@@ -61,5 +65,7 @@ export async function closeLoan(id: string, signal?: AbortSignal): Promise<Loan>
     method: 'POST',
     headers: replayHeaders(),
     signal,
+    entityType: 'loan',
+    entityLabel: 'Close loan',
   })
 }

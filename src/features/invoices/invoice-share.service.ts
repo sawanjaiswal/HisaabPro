@@ -42,6 +42,8 @@ export async function shareViaWhatsApp(
   return api<ShareWhatsAppResponse>(`/documents/${id}/share/whatsapp`, {
     method: 'POST',
     body: JSON.stringify(data),
+    entityType: 'document-share',
+    entityLabel: `Share via WhatsApp to ${data.recipientPhone}`,
   })
 }
 
@@ -57,6 +59,8 @@ export async function shareViaEmail(
   return api<ShareEmailResponse>(`/documents/${id}/share/email`, {
     method: 'POST',
     body: JSON.stringify(data),
+    entityType: 'document-share',
+    entityLabel: `Email to ${data.recipientEmail}`,
   })
 }
 
@@ -70,6 +74,8 @@ export async function getShareableLink(
 ): Promise<{ url: string }> {
   return api<{ url: string }>(`/documents/${id}/share-link`, {
     method: 'POST',
+    entityType: 'document-share',
+    entityLabel: 'Generate share link',
   })
 }
 

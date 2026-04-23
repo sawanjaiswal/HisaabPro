@@ -1,6 +1,7 @@
 import { API_URL, TIMEOUTS } from '@/config/app.config'
 import { SYNC_MUTATION_METHODS, SYNC_EXCLUDED_PATHS } from './offline.constants'
 import { enqueue } from './offline'
+import { readApiCache, writeApiCache } from './api-cache'
 
 interface ApiOptions extends RequestInit {
   timeout?: number
@@ -12,6 +13,14 @@ interface ApiOptions extends RequestInit {
   entityType?: string
   /** Human-readable label for queue UI (e.g. "Raju Traders") */
   entityLabel?: string
+  /**
+   * Opt-in IDB read cache. When true, successful GET responses are cached
+   * and served back when the network is offline. Only set on endpoints
+   * whose response is safe to persist for the duration of this user's
+   * session (cleared on logout). Default: false — most endpoints stay
+   * uncached so PII never leaks across sessions.
+   */
+  cacheReads?: boolean
 }
 
 interface ApiResponse<T> {
@@ -124,6 +133,7 @@ export async function api<T>(
     offlineQueue: oq,
     entityType,
     entityLabel,
+    cacheReads,
     ...fetchOptions
   } = options
 
@@ -131,6 +141,7 @@ export async function api<T>(
   const shouldQueue = oq !== false
     && SYNC_MUTATION_METHODS.has(method)
     && !SYNC_EXCLUDED_PATHS.some((p) => path.startsWith(p))
+  const shouldCacheRead = cacheReads === true && method === 'GET'
 
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), timeout)
@@ -144,6 +155,17 @@ export async function api<T>(
   const needsCsrf = SYNC_MUTATION_METHODS.has(method) && !path.startsWith('/auth/')
   const csrf = needsCsrf ? await getCsrfToken() : null
 
+  // Replay protection: server's replayProtection middleware (mounted on documents,
+  // payments, etc.) demands a fresh nonce + timestamp on every mutation. Send
+  // them on every mutating request so individual services don't need to remember.
+  const isMutation = SYNC_MUTATION_METHODS.has(method)
+  const replayHeaders: Record<string, string> = isMutation
+    ? {
+        'X-Request-Nonce': crypto.randomUUID(),
+        'X-Request-Timestamp': Date.now().toString(),
+      }
+    : {}
+
   let response: Response
   try {
     response = await fetch(`${API_URL}${path}`, {
@@ -153,6 +175,7 @@ export async function api<T>(
       headers: {
         'Content-Type': 'application/json',
         ...(csrf ? { 'X-CSRF-Token': csrf } : {}),
+        ...replayHeaders,
         ...fetchOptions.headers,
       },
     })
@@ -177,6 +200,13 @@ export async function api<T>(
         return {} as T
       }
     }
+
+    // Network error on an opt-in read → serve from IDB if we have a fresh entry
+    if (shouldCacheRead && isOfflineError(err)) {
+      const cached = await readApiCache<T>(path)
+      if (cached !== null) return cached
+    }
+
     throw err
   } finally {
     clearTimeout(timeoutId)
@@ -238,6 +268,12 @@ export async function api<T>(
       json.error?.code || 'UNKNOWN',
       response.status
     )
+  }
+
+  // Write-through: persist successful opt-in reads for the next offline pass.
+  // Best-effort — quota / private-browsing failures must not break the call.
+  if (shouldCacheRead) {
+    void writeApiCache(path, json.data)
   }
 
   return json.data

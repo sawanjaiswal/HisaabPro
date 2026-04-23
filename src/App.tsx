@@ -10,6 +10,8 @@ import { ToastContainer } from '@/components/feedback/ToastContainer'
 import { OfflineBanner } from '@/components/feedback/OfflineBanner'
 import { SWUpdatePrompt } from '@/components/feedback/SWUpdatePrompt'
 import { PageTransition } from '@/components/layout/PageTransition'
+import { AppShell } from '@/components/layout/AppShell'
+import { DashboardSkeleton } from '@/features/dashboard/components/DashboardSkeleton'
 import { useAuth } from '@/context/AuthContext'
 import { useRoutePreload } from '@/hooks/useRoutePreload'
 import { useSSE } from '@/hooks/useSSE'
@@ -43,14 +45,27 @@ import {
   NotFound,
 } from '@/app.routes'
 
-/** Route-level ErrorBoundary + Suspense wrapper for individual pages */
-function PageRoute({ children }: { children: ReactNode }) {
+/** Route-level ErrorBoundary + Suspense wrapper for individual pages.
+ *  Pass `fallback` to override the default centered spinner — used by the
+ *  dashboard route to render a chrome-shaped skeleton instead of a bare
+ *  spinner during the lazy-chunk download. */
+function PageRoute({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
   return (
     <ErrorBoundary>
-      <Suspense fallback={<Spinner fullScreen />}>
+      <Suspense fallback={fallback ?? <Spinner fullScreen />}>
         {children}
       </Suspense>
     </ErrorBoundary>
+  )
+}
+
+/** First-paint shell for the dashboard so cold loads see the proper layout
+ *  instead of a centered spinner on an empty cream background. */
+function DashboardFallback() {
+  return (
+    <AppShell>
+      <DashboardSkeleton />
+    </AppShell>
   )
 }
 
@@ -70,12 +85,12 @@ function GuestRoute({ children }: { children: ReactNode }) {
   return <>{children}</>
 }
 
-/** True for /new, /edit, and /invoices/new?type=SALE-style form routes.
- *  Used to suppress the floating calculator + feedback FABs so they don't
- *  cover the form's own sticky save bar. */
-function useIsFormRoute(): boolean {
+/** True only on the dashboard root. The Calculator + Feedback FABs are
+ *  visual noise on every other screen (compete with the primary "+" FAB
+ *  and overlap content), so we restrict them to the home surface. */
+function useIsDashboardRoute(): boolean {
   const { pathname } = useLocation()
-  return /\/(new|edit)(\/|$)/.test(pathname)
+  return pathname === ROUTES.DASHBOARD
 }
 
 /** Host-based root route: landing on marketing, login on app host and native, admin on admin host */
@@ -120,7 +135,7 @@ export function App() {
         <Route path={ROUTES.VERIFY_OTP} element={<PageRoute><VerifyOtp /></PageRoute>} />
         <Route path={ROUTES.FORGOT_PASSWORD} element={<PageRoute><GuestRoute><ForgotPassword /></GuestRoute></PageRoute>} />
         <Route path={ROUTES.ONBOARDING} element={<PageRoute><ProtectedRoute><Onboarding /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.DASHBOARD} element={<PageRoute><ProtectedRoute><Dashboard /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.DASHBOARD} element={<PageRoute fallback={<DashboardFallback />}><ProtectedRoute><Dashboard /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PARTIES} element={<PageRoute><ProtectedRoute><PlanGate feature="parties" featureLabel="Parties"><Parties /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PARTY_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="parties" featureLabel="Parties"><CreateParty /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PARTY_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="parties" featureLabel="Parties"><PartyDetail /></PlanGate></ProtectedRoute></PageRoute>} />
@@ -137,6 +152,8 @@ export function App() {
         <Route path={ROUTES.TEMPLATE_EDIT} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Invoice Templates"><TemplateEditor /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PAYMENTS} element={<PageRoute><ProtectedRoute><PlanGate feature="payments" featureLabel="Payments"><Payments /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PAYMENT_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="payments" featureLabel="Payments"><RecordPayment /></PlanGate></ProtectedRoute></PageRoute>} />
+        {/* Common deep-link guess that would otherwise match :id and trigger a 404. */}
+        <Route path="/payments/outstanding" element={<Navigate to={ROUTES.OUTSTANDING} replace />} />
         <Route path={ROUTES.PAYMENT_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="payments" featureLabel="Payments"><PaymentDetail /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PAYMENT_EDIT} element={<PageRoute><ProtectedRoute><PlanGate feature="payments" featureLabel="Payments"><EditPayment /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.OUTSTANDING} element={<PageRoute><ProtectedRoute><PlanGate feature="payments" featureLabel="Outstanding"><Outstanding /></PlanGate></ProtectedRoute></PageRoute>} />
@@ -228,10 +245,10 @@ export function App() {
   )
 }
 
-/** Calculator + Feedback widgets — hidden on form routes so they don't
- *  obscure form fields or the form's sticky save bar. */
+/** Calculator + Feedback widgets — only on the dashboard so they don't
+ *  compete with the primary "+" FAB or obscure list/form content. */
 function FloatingWidgets() {
-  if (useIsFormRoute()) return null
+  if (!useIsDashboardRoute()) return null
   return (
     <>
       <Suspense fallback={null}><CalculatorOverlay position="BOTTOM_LEFT" /></Suspense>

@@ -41,6 +41,8 @@ export async function createExpense(
     body: JSON.stringify(input),
     headers: replayHeaders(),
     signal,
+    entityType: 'expense',
+    entityLabel: input.notes ?? 'New expense',
   })
 }
 
@@ -49,6 +51,8 @@ export async function deleteExpense(id: string, signal?: AbortSignal): Promise<v
     method: 'DELETE',
     headers: replayHeaders(),
     signal,
+    entityType: 'expense',
+    entityLabel: 'Delete expense',
   })
 }
 
@@ -67,6 +71,8 @@ export async function createExpenseCategory(
     body: JSON.stringify(input),
     headers: replayHeaders(),
     signal,
+    entityType: 'expense-category',
+    entityLabel: input.name ?? 'New category',
   })
 }
 
@@ -75,6 +81,8 @@ export async function seedExpenseCategories(signal?: AbortSignal): Promise<void>
     method: 'POST',
     headers: replayHeaders(),
     signal,
+    entityType: 'expense-category',
+    entityLabel: 'Seed default categories',
   })
 }
 
