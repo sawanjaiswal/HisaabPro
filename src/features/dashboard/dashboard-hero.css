@@ -57,7 +57,7 @@
 
 .dashboard-sales-hero--zero {
   padding: var(--space-4) 0 var(--space-2);
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .dashboard-sales-hero--zero .dashboard-sales-label::after {
@@ -96,12 +96,12 @@
 
 /* Breathing room between hero and outstanding */
 .dashboard-sales-hero + .dashboard-hero {
-  margin-top: 4px;
+  margin-top: var(--space-1);
 }
 
 /* More space before action grid */
 .dashboard-hero + .dashboard-action-grid {
-  margin-top: 8px;
+  margin-top: var(--space-2);
 }
 
 .dashboard-hero {
@@ -208,7 +208,7 @@
   letter-spacing: 0.04em;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .dashboard-hero-arrow {
@@ -221,7 +221,7 @@
 
 .dashboard-hero-chevron {
   flex-shrink: 0;
-  padding: 8px;
+  padding: var(--space-2);
   background: var(--overlay-white-15);
   border-radius: 9999px;
   color: var(--color-white-inverse);

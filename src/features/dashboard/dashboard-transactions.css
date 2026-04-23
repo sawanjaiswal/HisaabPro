@@ -285,7 +285,7 @@
 .dashboard-txn-add-btn {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   padding: 6px 14px;
   border-radius: 40px;
   background: var(--dash-teal-start);

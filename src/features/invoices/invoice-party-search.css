@@ -179,7 +179,7 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   padding: 1px 6px;
-  border-radius: var(--radius-full, 9999px);
+  border-radius: var(--radius-full);
 }
 
 .party-search-type-badge--customer {

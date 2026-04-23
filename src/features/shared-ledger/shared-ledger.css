@@ -118,7 +118,7 @@
 .share-ledger-item-meta span {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .share-ledger-item-actions {

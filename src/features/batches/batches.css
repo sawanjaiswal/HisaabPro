@@ -88,7 +88,7 @@
 .batch-card-expiry {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   font-size: var(--fs-xs);
   color: var(--color-gray-400);
 }
@@ -96,7 +96,7 @@
 .batch-card-prices {
   display: flex;
   gap: var(--space-3);
-  margin-top: 4px;
+  margin-top: var(--space-1);
 }
 
 .batch-card-price {
@@ -267,7 +267,7 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-4);
-  z-index: var(--z-modal, 1000);
+  z-index: var(--z-modal);
   animation: batchFadeUp 200ms ease both;
 }
 
@@ -280,7 +280,7 @@
 }
 
 .batch-delete-title {
-  font-size: var(--fs-lg, 1.125rem);
+  font-size: var(--fs-lg);
   font-weight: 700;
   color: var(--color-gray-900);
   margin: 0 0 var(--space-2);

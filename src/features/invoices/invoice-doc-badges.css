@@ -100,7 +100,7 @@
 .payment-status-indicator {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   padding: 2px var(--space-2);
   border-radius: var(--radius-full);
   font-size: var(--fs-2xs);

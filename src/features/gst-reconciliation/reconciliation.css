@@ -591,8 +591,8 @@
 
 .recon-fab {
   position: fixed;
-  bottom: calc(var(--bottom-nav-height, 90px) + var(--space-4));
-  right: var(--side-padding, 16px);
+  bottom: calc(var(--bottom-nav-height) + var(--space-4));
+  right: var(--side-padding);
   width: 52px;
   height: 52px;
   border-radius: var(--radius-full);

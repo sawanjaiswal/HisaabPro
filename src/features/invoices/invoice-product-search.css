@@ -176,7 +176,7 @@
 .product-search-add-btn {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-primary-500);

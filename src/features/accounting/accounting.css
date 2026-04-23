@@ -246,7 +246,7 @@
 .je-card-amounts {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
   align-items: flex-end;
   flex-shrink: 0;
 }

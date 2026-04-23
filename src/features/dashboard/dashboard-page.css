@@ -183,7 +183,7 @@
   font-family: var(--font-primary);
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   min-height: 44px;
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-full);
@@ -224,7 +224,7 @@
 
 @media (min-width: 768px) {
   .dashboard-page {
-    --dash-side-padding: 24px;
+    --dash-side-padding: var(--space-6);
   }
 }
 

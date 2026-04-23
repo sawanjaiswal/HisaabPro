@@ -11,7 +11,7 @@
 .report-filter-bar {
   position: sticky;
   top: 0;
-  z-index: var(--z-index-sticky, 10);
+  z-index: var(--z-sticky);
   background: var(--color-gray-50);
   padding: var(--space-3) 0;
   display: flex;

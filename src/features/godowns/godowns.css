@@ -215,7 +215,7 @@
   font-size: var(--fs-df);
   font-weight: 600;
   color: var(--color-gray-800);
-  margin-bottom: 4px;
+  margin-bottom: var(--space-1);
 }
 
 .godown-transfer-row__route {
@@ -224,7 +224,7 @@
   gap: var(--space-2);
   font-size: var(--fs-sm);
   color: var(--color-gray-600);
-  margin-bottom: 4px;
+  margin-bottom: var(--space-1);
 }
 
 .godown-transfer-row__meta {
@@ -246,7 +246,7 @@
 }
 
 .godown-transfer-row__notes {
-  margin-top: 4px;
+  margin-top: var(--space-1);
   font-size: var(--fs-xs);
   color: var(--color-gray-400);
   font-style: italic;
