@@ -1,12 +1,4 @@
-/**
- * Journal Entries — create, post, void, get, list.
- *
- * Key invariants:
- *   - Every posted entry: total debit === total credit
- *   - Balance mutations only happen on post and void
- *   - All balance mutations use $transaction for atomicity
- *   - Entry numbers are FY-scoped: "JE-2526-001"
- */
+/** Journal Entries — create, post, void, get, list. */
 
 import { prisma } from '../../lib/prisma.js'
 import { notFoundError, validationError } from '../../lib/errors.js'

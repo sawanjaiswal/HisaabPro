@@ -96,8 +96,8 @@ async function generateOneInvoice(schedule: DueSchedule, now: Date) {
       select: { id: true },
     })
 
-    await cloneLineItems(tx, newDoc.id, template.lineItems)
-    await cloneAdditionalCharges(tx, newDoc.id, template.additionalCharges)
+    await cloneLineItems(tx as never, newDoc.id, template.lineItems)
+    await cloneAdditionalCharges(tx as never, newDoc.id, template.additionalCharges)
 
     const nextRunDate = calculateNextRunDate(
       schedule.nextRunDate,
