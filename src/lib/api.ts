@@ -2,6 +2,8 @@ import { API_URL, TIMEOUTS } from '@/config/app.config'
 import { SYNC_MUTATION_METHODS, SYNC_EXCLUDED_PATHS } from './offline.constants'
 import { enqueue } from './offline'
 import { readApiCache, writeApiCache } from './api-cache'
+import { getCsrfToken, invalidateCsrfToken } from './api-csrf'
+import { attemptTokenRefresh } from './api-refresh'
 
 interface ApiOptions extends RequestInit {
   timeout?: number
@@ -27,90 +29,6 @@ interface ApiResponse<T> {
   success: boolean
   data: T
   error?: { code: string; message: string }
-}
-
-// ─── CSRF double-submit token (fetched once, cached in memory) ──────────────
-
-let csrfToken: string | null = null
-let csrfPromise: Promise<string | null> | null = null
-
-async function getCsrfToken(): Promise<string | null> {
-  if (csrfToken) return csrfToken
-  if (csrfPromise) return csrfPromise
-  csrfPromise = (async () => {
-    try {
-      const res = await fetch(`${API_URL}/auth/csrf-token`, { credentials: 'include' })
-      if (!res.ok) return null
-      const body = await res.json().catch(() => null) as { data?: { csrfToken?: string } } | null
-      csrfToken = body?.data?.csrfToken ?? res.headers.get('x-csrf-token')
-      return csrfToken
-    } catch {
-      return null
-    } finally {
-      csrfPromise = null
-    }
-  })()
-  return csrfPromise
-}
-
-function invalidateCsrfToken() { csrfToken = null }
-
-// ─── Token refresh queue — prevents multiple concurrent refresh calls ────────
-
-let isRefreshing = false
-let refreshQueue: Array<{ resolve: () => void; reject: (err: Error) => void }> = []
-
-function waitForRefresh(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    refreshQueue.push({ resolve, reject })
-  })
-}
-
-function flushRefreshQueue(error?: Error) {
-  const queue = [...refreshQueue]
-  refreshQueue = []
-  queue.forEach(({ resolve, reject }) => (error ? reject(error) : resolve()))
-}
-
-async function attemptTokenRefresh(): Promise<boolean> {
-  if (isRefreshing) {
-    await waitForRefresh()
-    return true
-  }
-
-  isRefreshing = true
-
-  try {
-    const response = await fetch(`${API_URL}/auth/refresh`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-    })
-
-    if (response.ok) {
-      let json: { success?: boolean } | null = null
-      try {
-        json = await response.json()
-      } catch {
-        // Malformed JSON from refresh endpoint — treat as failure
-      }
-      if (json?.success) {
-        isRefreshing = false
-        flushRefreshQueue()
-        return true
-      }
-    }
-
-    // Refresh failed — clear cached user (let React Router handle redirect)
-    sessionStorage.removeItem('cachedUser')
-    isRefreshing = false
-    flushRefreshQueue(new Error('Refresh failed'))
-    return false
-  } catch {
-    isRefreshing = false
-    flushRefreshQueue(new Error('Refresh network error'))
-    return false
-  }
 }
 
 // ─── Main API wrapper ────────────────────────────────────────────────────────
