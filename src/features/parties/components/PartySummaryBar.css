@@ -25,7 +25,7 @@
 
 .party-hero-card {
   border: none;
-  border-radius: 20px;
+  border-radius: var(--radius-xl);
   padding: var(--space-4);
   cursor: pointer;
   display: flex;

@@ -151,7 +151,7 @@
 .product-search-result-sku {
   font-size: var(--fs-2xs);
   color: var(--color-gray-400);
-  font-family: monospace;
+  font-family: var(--font-mono);
 }
 
 .product-search-result-stock {

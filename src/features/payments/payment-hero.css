@@ -66,8 +66,8 @@
 
 .payment-hero-card {
   border: none;
-  border-radius: 20px;
-  padding: 20px;
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
   cursor: pointer;
   display: flex;
   align-items: center;

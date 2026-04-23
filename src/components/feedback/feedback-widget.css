@@ -31,7 +31,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px 12px;
+  padding: var(--space-4) var(--space-5) var(--space-3);
   border-bottom: 1px solid var(--color-gray-100);
 }
 
@@ -46,7 +46,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px;
+  padding: var(--space-1);
   display: flex;
   color: var(--color-gray-400);
 }
@@ -57,7 +57,7 @@
 
 /* ─── Screenshot ───────────────────────────────────────────────────────────── */
 .feedback-screenshot-wrap {
-  padding: 12px 20px 0;
+  padding: var(--space-3) var(--space-5) 0;
 }
 
 .feedback-screenshot {
@@ -72,12 +72,12 @@
 /* ─── Type pills ───────────────────────────────────────────────────────────── */
 .feedback-pills {
   display: flex;
-  gap: 8px;
-  padding: 12px 20px 8px;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5) var(--space-2);
 }
 
 .feedback-pill {
-  padding: 6px 16px;
+  padding: 6px var(--space-4);
   border-radius: var(--radius-full);
   border: 1px solid var(--color-gray-200);
   background: transparent;
@@ -97,7 +97,7 @@
 
 /* ─── Textarea + Send ──────────────────────────────────────────────────────── */
 .feedback-body {
-  padding: 8px 20px 20px;
+  padding: var(--space-2) var(--space-5) var(--space-5);
 }
 
 .feedback-textarea {
@@ -121,8 +121,8 @@
 
 .feedback-send {
   width: 100%;
-  margin-top: 12px;
-  padding: 12px;
+  margin-top: var(--space-3);
+  padding: var(--space-3);
   border-radius: var(--radius-md);
   border: none;
   background: var(--color-gray-900);
@@ -133,7 +133,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .feedback-send:disabled {
@@ -147,8 +147,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px 24px;
-  gap: 12px;
+  padding: var(--space-8) var(--space-6);
+  gap: var(--space-3);
 }
 
 .feedback-result-icon--success { color: var(--color-success-500); }

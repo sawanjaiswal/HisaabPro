@@ -33,9 +33,9 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: 20px;
+  padding: var(--space-5);
   background: linear-gradient(135deg, var(--gradient-teal-start) 0%, var(--gradient-teal-end) 100%);
-  border-radius: 20px;
+  border-radius: var(--radius-xl);
   color: var(--color-white-inverse);
   animation: reportFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 60ms both;
 }
