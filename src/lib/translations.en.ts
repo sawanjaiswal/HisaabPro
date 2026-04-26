@@ -30,6 +30,10 @@ export const en = {
   // ─── Auth ─────────────────────────────────────────────────────────────────
   login:           'Login',
   logout:          'Logout',
+  signOutConfirm:  'Are you sure you want to sign out?',
+  menu:            'Menu',
+  openMenu:        'Open menu',
+  closeMenu:       'Close menu',
   username:        'Username',
   password:        'Password',
   welcome:         'Welcome',

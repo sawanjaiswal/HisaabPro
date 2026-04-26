@@ -96,7 +96,7 @@
   border: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: color var(--duration-snappy) var(--ease-default), transform 0.12s ease;
+  transition: color 150ms var(--ease-default), transform 0.12s ease;
 }
 
 .bnav__tab:hover {
@@ -115,6 +115,16 @@
 
 .bnav__tab--active {
   color: var(--color-primary-400);
+}
+
+.bnav__tab--active .bnav__icon {
+  animation: tab-pop 200ms var(--ease-spring) both;
+}
+
+@keyframes tab-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 
 .bnav__icon {

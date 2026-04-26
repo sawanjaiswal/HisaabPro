@@ -68,19 +68,13 @@ textarea:focus-visible {
 
 /* === PAGE TRANSITIONS — smooth mount animation === */
 @keyframes page-enter {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* Standalone pages (login, onboarding, 404) without AppShell */
 .page-enter {
-  animation: page-enter var(--duration-slow) var(--ease-default) both;
+  animation: page-enter 180ms var(--ease-default) both;
 }
 
 /* Landing page has fixed-position header — transform in page-enter breaks fixed positioning */
@@ -107,14 +101,13 @@ textarea:focus-visible {
   min-height: calc(100dvh - 56px - var(--bottom-nav-height));
   box-shadow: var(--shadow-drawer-inset);
   position: relative;
-  animation: drawer-rise var(--duration-slow) var(--ease-default) both;
-  animation-delay: 80ms;
+  animation: drawer-rise 220ms var(--ease-spring) both;
 }
 
 @keyframes drawer-rise {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -125,5 +118,5 @@ textarea:focus-visible {
 /* Hero area sits ABOVE the white drawer, in the gradient zone */
 .page-hero {
   padding: var(--space-4) var(--side-padding) var(--space-5);
-  animation: page-enter var(--duration-slow) var(--ease-default) both;
+  animation: page-enter 180ms var(--ease-default) both;
 }

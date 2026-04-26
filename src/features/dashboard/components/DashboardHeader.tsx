@@ -70,7 +70,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             type="button"
             className="header-icon-btn"
             onClick={onMenuClick}
-            aria-label="Open menu"
+            aria-label={t.openMenu}
           >
             <Menu size={20} aria-hidden="true" />
           </button>

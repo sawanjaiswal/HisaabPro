@@ -9,7 +9,7 @@
 .menu-drawer-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--backdrop-color);
   animation: menu-backdrop-in 0.2s ease both;
 }
 
@@ -25,7 +25,7 @@
   display: flex;
   flex-direction: column;
   background: var(--color-gray-0);
-  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-modal);
   animation: menu-slide-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
   overflow: hidden;
 }
@@ -54,8 +54,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border: none;
   border-radius: var(--radius-full);
   background: var(--color-gray-100);
@@ -171,7 +171,7 @@
 /* Dark theme */
 [data-theme="dark"] .menu-drawer-panel {
   background: var(--color-gray-900);
-  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-modal);
 }
 
 [data-theme="dark"] .menu-drawer-header {

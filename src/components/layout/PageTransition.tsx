@@ -1,10 +1,6 @@
-/** PageTransition — Smooth page enter animation on route change
- *
- * Wraps page content and re-keys on pathname so the CSS enter
- * animation replays on every navigation. CSS-only, no framer-motion.
- */
+/** PageTransition — Smooth page enter animation + scroll-to-top on route change */
 
-import type { ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { useLocation } from 'react-router-dom'
 
 interface PageTransitionProps {
@@ -13,6 +9,10 @@ interface PageTransitionProps {
 
 export function PageTransition({ children }: PageTransitionProps) {
   const { pathname } = useLocation()
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [pathname])
 
   return (
     <div key={pathname} className="page-enter">

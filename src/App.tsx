@@ -11,6 +11,7 @@ import { OfflineBanner } from '@/components/feedback/OfflineBanner'
 import { SWUpdatePrompt } from '@/components/feedback/SWUpdatePrompt'
 import { PageTransition } from '@/components/layout/PageTransition'
 import { AppShell } from '@/components/layout/AppShell'
+import { BottomNav } from '@/components/layout/BottomNav'
 import { DashboardSkeleton } from '@/features/dashboard/components/DashboardSkeleton'
 import { useAuth } from '@/context/AuthContext'
 import { useRoutePreload } from '@/hooks/useRoutePreload'
@@ -85,6 +86,16 @@ function GuestRoute({ children }: { children: ReactNode }) {
 function useIsDashboardRoute(): boolean {
   const { pathname } = useLocation()
   return pathname === ROUTES.DASHBOARD
+}
+
+/** Routes where BottomNav should be hidden (form/detail workflows) */
+const NAV_HIDDEN_PATTERNS = /\/(new|edit)(\/|$)|\/pos\b/
+
+function PersistentNav() {
+  const { pathname } = useLocation()
+  const { isAuthenticated } = useAuth()
+  if (!isAuthenticated || NAV_HIDDEN_PATTERNS.test(pathname)) return null
+  return <BottomNav />
 }
 
 /** Host-based root route: landing on marketing, login on app host and native, admin on admin host */
@@ -229,6 +240,7 @@ export function App() {
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
       </Routes>
       </PageTransition>
+      <PersistentNav />
       <FloatingWidgets />
       <ToastContainer />
       <SWUpdatePrompt />

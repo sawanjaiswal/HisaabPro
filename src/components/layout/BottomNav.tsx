@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { Home, FileText, Users, Package, Plus } from 'lucide-react'
 import type { ComponentType, SVGProps } from 'react'
 import { ROUTES } from '@/config/routes.config'
+import { useLanguage } from '@/hooks/useLanguage'
 import './BottomNav.css'
 
 type IconType = ComponentType<SVGProps<SVGSVGElement> & { size?: number }>
@@ -12,16 +13,6 @@ interface NavItem {
   icon: IconType
   label: string
 }
-
-const LEFT_ITEMS: readonly NavItem[] = [
-  { to: ROUTES.DASHBOARD, icon: Home, label: 'Home' },
-  { to: ROUTES.INVOICES, icon: FileText, label: 'Invoices' },
-] as const
-
-const RIGHT_ITEMS: readonly NavItem[] = [
-  { to: ROUTES.PRODUCTS, icon: Package, label: 'Products' },
-  { to: ROUTES.PARTIES, icon: Users, label: 'Parties' },
-] as const
 
 function NavTab({ to, icon: Icon, label }: NavItem) {
   return (
@@ -45,16 +36,27 @@ function NavTab({ to, icon: Icon, label }: NavItem) {
 
 export function BottomNav() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
+
+  const leftItems: readonly NavItem[] = [
+    { to: ROUTES.DASHBOARD, icon: Home, label: t.dashboard ?? 'Home' },
+    { to: ROUTES.INVOICES, icon: FileText, label: t.invoices },
+  ]
+
+  const rightItems: readonly NavItem[] = [
+    { to: ROUTES.PRODUCTS, icon: Package, label: t.products },
+    { to: ROUTES.PARTIES, icon: Users, label: t.parties },
+  ]
 
   return createPortal(
     <>
       <nav className="bnav" aria-label="Main navigation">
         <ul className="bnav__items">
-          {LEFT_ITEMS.map((item) => (
+          {leftItems.map((item) => (
             <NavTab key={item.to} {...item} />
           ))}
           <li className="bnav__notch-gap" aria-hidden="true" />
-          {RIGHT_ITEMS.map((item) => (
+          {rightItems.map((item) => (
             <NavTab key={item.to} {...item} />
           ))}
         </ul>
@@ -63,8 +65,8 @@ export function BottomNav() {
         type="button"
         className="bnav__fab"
         onClick={() => navigate(`${ROUTES.INVOICE_CREATE}?type=SALE`)}
-        aria-label="Create new invoice"
-        title="Create new invoice"
+        aria-label={t.createInvoice ?? 'Create new invoice'}
+        title={t.createInvoice ?? 'Create new invoice'}
       >
         <Plus size={24} strokeWidth={2.75} aria-hidden="true" />
       </button>

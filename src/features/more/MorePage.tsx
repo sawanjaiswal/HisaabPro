@@ -60,16 +60,16 @@ export default function MorePage() {
 
         <button type="button" className="more-logout-btn" onClick={() => setConfirmLogout(true)}>
           <LogOut size={18} aria-hidden="true" />
-          Sign out
+          {t.logout}
         </button>
 
         <ConfirmDialog
           open={confirmLogout}
           onClose={() => setConfirmLogout(false)}
           onConfirm={() => { setConfirmLogout(false); handleLogout() }}
-          title="Sign out"
-          description="Are you sure you want to sign out?"
-          confirmLabel="Sign out"
+          title={t.logout}
+          description={t.signOutConfirm}
+          confirmLabel={t.logout}
         />
       </PageContainer>
     </AppShell>

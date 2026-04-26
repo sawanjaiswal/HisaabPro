@@ -34,19 +34,6 @@
   top: 0;
   z-index: var(--z-sticky);
   min-height: 56px;
-  /* Subtle slide-in from top on page enter */
-  animation: header-enter var(--duration-normal) var(--ease-default) both;
-}
-
-@keyframes header-enter {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 /* Left group: back chevron + title */

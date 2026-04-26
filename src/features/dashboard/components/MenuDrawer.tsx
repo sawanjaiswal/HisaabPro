@@ -6,6 +6,7 @@ import { MORE_MENU_ITEMS, MORE_MENU_GROUPS } from '@/features/more/more.constant
 import { ICON_REGISTRY } from '@/features/more/more.icons'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useAuth } from '@/context/AuthContext'
+import { useLanguage } from '@/hooks/useLanguage'
 import type React from 'react'
 import './MenuDrawer.css'
 
@@ -17,6 +18,7 @@ interface MenuDrawerProps {
 export function MenuDrawer({ open, onClose }: MenuDrawerProps) {
   const navigate = useNavigate()
   const { handleLogout } = useAuth()
+  const { t } = useLanguage()
   const panelRef = useRef<HTMLDivElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
   const [confirmLogout, setConfirmLogout] = useState(false)
@@ -51,15 +53,15 @@ export function MenuDrawer({ open, onClose }: MenuDrawerProps) {
   if (!open) return null
 
   return createPortal(
-    <div className="menu-drawer-root" role="dialog" aria-modal="true" aria-label="Menu">
+    <div className="menu-drawer-root" role="dialog" aria-modal="true" aria-label={t.menu}>
       {/* Backdrop */}
       <div className="menu-drawer-backdrop" onClick={onClose} aria-hidden="true" />
 
       {/* Panel slides in from right */}
       <div className="menu-drawer-panel" ref={panelRef}>
         <div className="menu-drawer-header">
-          <span className="menu-drawer-title">Menu</span>
-          <button type="button" className="menu-drawer-close" onClick={onClose} aria-label="Close menu" ref={closeRef}>
+          <span className="menu-drawer-title">{t.menu}</span>
+          <button type="button" className="menu-drawer-close" onClick={onClose} aria-label={t.closeMenu} ref={closeRef}>
             <X size={20} aria-hidden="true" />
           </button>
         </div>
@@ -104,7 +106,7 @@ export function MenuDrawer({ open, onClose }: MenuDrawerProps) {
         <div className="menu-drawer-footer">
           <button type="button" className="menu-drawer-logout" onClick={handleSignOut}>
             <LogOut size={18} aria-hidden="true" />
-            Sign out
+            {t.logout}
           </button>
         </div>
       </div>
@@ -113,9 +115,9 @@ export function MenuDrawer({ open, onClose }: MenuDrawerProps) {
         open={confirmLogout}
         onClose={() => setConfirmLogout(false)}
         onConfirm={() => { setConfirmLogout(false); onClose(); handleLogout() }}
-        title="Sign out"
-        description="Are you sure you want to sign out?"
-        confirmLabel="Sign out"
+        title={t.logout}
+        description={t.signOutConfirm}
+        confirmLabel={t.logout}
       />
     </div>,
     document.body,
