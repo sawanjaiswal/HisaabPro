@@ -9,6 +9,9 @@
  * 3. Soft-delete safety: no raw DELETE on protected models
  * 4. No console.log in production code (allow in tests/scripts)
  * 5. No prisma.model.delete() calls (middleware handles it, but catch bypasses)
+ * 6. Offline patterns (ratcheted vs baseline)
+ * 7. Section padding=0 + section-group gap=24px
+ * 8. No raw hex inside CSS gradient functions
  *
  * Exit code 0 = pass, 1 = fail with details.
  * Run: node scripts/enforce.js [--fix]
@@ -280,6 +283,39 @@ if (sectionViolations === 0) {
   console.log('  ✅ Section padding + gap rules clean')
 } else {
   console.log(`  ⚠️  ${sectionViolations} section-layout warnings (see below)`)
+}
+
+// ─── Check 8: No raw hex inside CSS gradient functions ────────────────────────
+//
+// Gradients in component CSS must use design tokens. Raw hex bypasses the
+// theme system and breaks dark mode. Token files (`tokens-*.css`) and landing
+// surfaces are exempt — those define values or are marketing-only.
+
+console.log('🔍 Check 8: No raw hex in CSS gradient functions')
+
+const GRADIENT_HEX_RE = /(linear|radial|conic)-gradient\([^)]*#[0-9a-fA-F]{3,8}/
+let gradientHexCount = 0
+
+for (const file of walkDir(FRONTEND_SRC, ['.css'])) {
+  if (/\/tokens-/.test(file)) continue
+  if (file.includes('/features/landing/')) continue
+
+  const lines = readFileSync(file, 'utf8').split('\n')
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].includes('enforce-ignore')) continue
+    if (GRADIENT_HEX_RE.test(lines[i])) {
+      errors.push(
+        `GRADIENT_HEX: ${rel(file)}:${i + 1} — gradient uses raw hex, use var(--color-*) tokens`,
+      )
+      gradientHexCount++
+    }
+  }
+}
+
+if (gradientHexCount === 0) {
+  console.log('  ✅ No raw hex in CSS gradients')
+} else {
+  console.log(`  ❌ ${gradientHexCount} gradient(s) with raw hex`)
 }
 
 // ─── Summary ──────────────────────────────────────────────────────────────────

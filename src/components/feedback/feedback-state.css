@@ -65,7 +65,7 @@
 .feedback-state--lg {
   justify-content: center;
   min-height: 100dvh;
-  background: linear-gradient(180deg, #f8f7f4 0%, #faf9f6 40%, #fdfdfc 100%);
+  background: linear-gradient(180deg, var(--color-gray-50) 0%, var(--color-gray-50) 40%, var(--color-gray-0) 100%);
   background-attachment: fixed;
 }
 
@@ -115,7 +115,7 @@
 /* ─── Dark theme overrides ───────────────────────────────────────────────── */
 
 [data-theme="dark"] .feedback-state--lg {
-  background: linear-gradient(180deg, #0B0F15 0%, #0E1420 40%, #111827 100%);
+  background: linear-gradient(180deg, var(--color-gray-0) 0%, var(--color-gray-0) 40%, var(--color-gray-50) 100%);
 }
 
 [data-theme="dark"] .feedback-btn--ghost:active {

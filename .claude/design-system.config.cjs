@@ -36,6 +36,15 @@ const BANNED_PATTERNS = [
     exclude: /enforce-ignore/,
   },
   {
+    name: 'gradient-hex-in-css',
+    pattern: /(linear|radial|conic)-gradient\([^)]*#[0-9a-fA-F]{3,8}/,
+    enforcedBy: 'scripts/enforce.js',
+    severity: 'error',
+    msg: 'Gradient with raw hex — use var(--color-*) tokens (theme-safe)',
+    applyTo: { cssOnly: true },
+    exclude: /tokens-|\/features\/landing\/|enforce-ignore/,
+  },
+  {
     name: 'tailwind-color-class',
     pattern: /className=["'][^"']*\b(bg|text|border)-(red|green|blue|yellow|gray|pink|cyan|amber|orange|purple|indigo|rose|emerald|teal|sky|violet|fuchsia|lime)-\d/,
     enforcedBy: 'scripts/enforce.js',
