@@ -1,35 +1,47 @@
-/** Dashboard header — composes the unified <Header /> with the dashboard's
- *  centered-title + multi-icon layout. No bespoke styles — just props. */
-
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Bell, Calculator, Settings as SettingsIcon, Sun, Moon } from 'lucide-react'
+import { Bell, Calculator, Menu, Sun, Moon } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
+import { SyncStatusBadge } from '@/components/feedback/SyncStatusBadge'
 import { useTheme } from '@/context/ThemeContext'
 import { useLanguage } from '@/hooks/useLanguage'
-import { ROUTES } from '@/config/routes.config'
-import { BusinessAvatar } from '@/features/business/BusinessAvatar'
+import { APP_NAME } from '@/config/app.config'
+import './DashboardHeader.css'
 
 interface DashboardHeaderProps {
   onNotificationsClick?: () => void
   onCalculatorClick?: () => void
+  onMenuClick?: () => void
 }
 
 export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   onNotificationsClick,
   onCalculatorClick,
+  onMenuClick,
 }) => {
   const { theme, toggleTheme } = useTheme()
   const { t } = useLanguage()
-  const navigate = useNavigate()
 
   return (
     <Header
-      centerTitle
       scrollCondense
       leading={
+        <div className="dashboard-header-brand">
+          <img
+            src="/favicon.svg"
+            alt=""
+            className="dashboard-header-logo"
+            aria-hidden="true"
+            width={28}
+            height={28}
+          />
+          <div className="dashboard-header-brand-text">
+            <span className="dashboard-header-appname">{APP_NAME}</span>
+            <SyncStatusBadge />
+          </div>
+        </div>
+      }
+      actions={
         <>
-          <BusinessAvatar />
           <button
             type="button"
             className="header-icon-btn"
@@ -38,10 +50,6 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           >
             {theme === 'dark' ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
           </button>
-        </>
-      }
-      actions={
-        <>
           <button
             type="button"
             className="header-icon-btn"
@@ -61,10 +69,10 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           <button
             type="button"
             className="header-icon-btn"
-            onClick={() => navigate(ROUTES.SETTINGS)}
-            aria-label={t.settings}
+            onClick={onMenuClick}
+            aria-label="Open menu"
           >
-            <SettingsIcon size={20} aria-hidden="true" />
+            <Menu size={20} aria-hidden="true" />
           </button>
         </>
       }

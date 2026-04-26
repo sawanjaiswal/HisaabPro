@@ -1,6 +1,6 @@
 import { createPortal } from 'react-dom'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Home, FileText, Users, Package, Plus, LayoutGrid } from 'lucide-react'
+import { Home, FileText, Users, Package, Plus } from 'lucide-react'
 import type { ComponentType, SVGProps } from 'react'
 import { ROUTES } from '@/config/routes.config'
 import './BottomNav.css'
@@ -21,7 +21,6 @@ const LEFT_ITEMS: readonly NavItem[] = [
 const RIGHT_ITEMS: readonly NavItem[] = [
   { to: ROUTES.PRODUCTS, icon: Package, label: 'Products' },
   { to: ROUTES.PARTIES, icon: Users, label: 'Parties' },
-  { to: ROUTES.MORE, icon: LayoutGrid, label: 'More' },
 ] as const
 
 function NavTab({ to, icon: Icon, label }: NavItem) {
