@@ -39,6 +39,7 @@ const ALLOWED_RAW_FETCH = new Set([
   'src/features/invoices/invoice-share.service.ts', // exportDocument → Blob (binary); api() expects JSON
   'src/features/reports/report.service.ts', // exportReport → Blob CSV download; api() expects JSON
   'src/features/reports/finance.service.ts', // exportTally → plain-text XML; api() expects JSON
+  'src/lib/auth.ts',                         // warmupServer() — fire-and-forget health ping to wake cold-start server
 ])
 
 const SKIP_PATH_FRAGMENTS = ['__tests__', '/test/', '.test.', '.spec.', '/scripts/']

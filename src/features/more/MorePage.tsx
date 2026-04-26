@@ -1,9 +1,11 @@
 import type React from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { LogOut } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { MORE_MENU_ITEMS, MORE_MENU_GROUPS } from './more.constants'
 import { ICON_REGISTRY } from './more.icons'
 import { ROUTES } from '@/config/routes.config'
@@ -15,6 +17,7 @@ export default function MorePage() {
   const { t } = useLanguage()
   const navigate = useNavigate()
   const { handleLogout } = useAuth()
+  const [confirmLogout, setConfirmLogout] = useState(false)
 
   return (
     <AppShell>
@@ -55,10 +58,19 @@ export default function MorePage() {
           })}
         </nav>
 
-        <button type="button" className="more-logout-btn" onClick={handleLogout}>
+        <button type="button" className="more-logout-btn" onClick={() => setConfirmLogout(true)}>
           <LogOut size={18} aria-hidden="true" />
           Sign out
         </button>
+
+        <ConfirmDialog
+          open={confirmLogout}
+          onClose={() => setConfirmLogout(false)}
+          onConfirm={() => { setConfirmLogout(false); handleLogout() }}
+          title="Sign out"
+          description="Are you sure you want to sign out?"
+          confirmLabel="Sign out"
+        />
       </PageContainer>
     </AppShell>
   )

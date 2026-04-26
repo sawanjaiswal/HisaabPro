@@ -1,9 +1,10 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { X, LogOut } from 'lucide-react'
 import { createPortal } from 'react-dom'
 import { MORE_MENU_ITEMS, MORE_MENU_GROUPS } from '@/features/more/more.constants'
 import { ICON_REGISTRY } from '@/features/more/more.icons'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useAuth } from '@/context/AuthContext'
 import type React from 'react'
 import './MenuDrawer.css'
@@ -17,6 +18,13 @@ export function MenuDrawer({ open, onClose }: MenuDrawerProps) {
   const navigate = useNavigate()
   const { handleLogout } = useAuth()
   const panelRef = useRef<HTMLDivElement>(null)
+  const closeRef = useRef<HTMLButtonElement>(null)
+  const [confirmLogout, setConfirmLogout] = useState(false)
+
+  // Focus the close button when drawer opens
+  useEffect(() => {
+    if (open) closeRef.current?.focus()
+  }, [open])
 
   // Close on Escape
   useEffect(() => {
@@ -38,10 +46,7 @@ export function MenuDrawer({ open, onClose }: MenuDrawerProps) {
     onClose()
   }
 
-  const handleSignOut = () => {
-    onClose()
-    handleLogout()
-  }
+  const handleSignOut = () => setConfirmLogout(true)
 
   if (!open) return null
 
@@ -54,7 +59,7 @@ export function MenuDrawer({ open, onClose }: MenuDrawerProps) {
       <div className="menu-drawer-panel" ref={panelRef}>
         <div className="menu-drawer-header">
           <span className="menu-drawer-title">Menu</span>
-          <button type="button" className="menu-drawer-close" onClick={onClose} aria-label="Close menu">
+          <button type="button" className="menu-drawer-close" onClick={onClose} aria-label="Close menu" ref={closeRef}>
             <X size={20} aria-hidden="true" />
           </button>
         </div>
@@ -103,6 +108,15 @@ export function MenuDrawer({ open, onClose }: MenuDrawerProps) {
           </button>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmLogout}
+        onClose={() => setConfirmLogout(false)}
+        onConfirm={() => { setConfirmLogout(false); onClose(); handleLogout() }}
+        title="Sign out"
+        description="Are you sure you want to sign out?"
+        confirmLabel="Sign out"
+      />
     </div>,
     document.body,
   )
