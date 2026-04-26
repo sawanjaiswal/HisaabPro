@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useMemo, useCallback } 
 import type { ReactNode } from 'react'
 import type { AuthUser, BusinessSummary } from '../features/auth/auth.types'
 import * as authLib from '../lib/auth'
+import { API_URL } from '../config/app.config'
 
 interface AuthContextType {
   user: AuthUser | null
@@ -24,6 +25,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
   const [switchingBusinessId, setSwitchingBusinessId] = useState<string | null>(null)
   const isSwitching = switchingBusinessId !== null
+
+  // On mount: fire a best-effort health ping to wake a cold-start server
+  // (e.g. Render free tier spins down after inactivity). This runs in parallel
+  // with the session check so the server is warm when the user clicks Sign In.
+  useEffect(() => {
+    void fetch(`${API_URL}/health`, { credentials: 'include' }).catch(() => {})
+  }, [])
 
   // On mount: check for existing session via cached user + server verification
   useEffect(() => {

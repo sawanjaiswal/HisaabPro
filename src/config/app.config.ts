@@ -44,6 +44,8 @@ export const THEME_COLOR = '#0f3638' as const
 /** Timeouts */
 export const TIMEOUTS = {
   fetchMs: 10_000,
+  /** Auth endpoints on cold-start hosts (Render free tier) can take 30-60s */
+  authMs: 35_000,
   debounceMs: 300,
   toastMs: 4_000,
   retryDelayMs: [1_000, 3_000],

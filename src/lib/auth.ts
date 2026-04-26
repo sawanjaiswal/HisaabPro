@@ -1,5 +1,6 @@
 import { api } from './api'
 import { clearApiCache } from './api-cache'
+import { TIMEOUTS } from '@/config/app.config'
 import type { AuthUser, BusinessSummary } from '../features/auth/auth.types'
 
 /**
@@ -75,6 +76,7 @@ export async function login(
       password,
       ...(captchaToken ? { captchaToken } : {}),
     }),
+    timeout: TIMEOUTS.authMs,
     signal,
   })
   const businessId = raw.activeBusiness?.id ?? raw.businesses[0]?.id ?? null
@@ -106,6 +108,7 @@ export async function devLogin(
       ...(captchaToken ? { captchaToken } : {}),
       deviceInfo: `${navigator.userAgent.slice(0, 200)}`,
     }),
+    timeout: TIMEOUTS.authMs,
     signal,
   })
   const businessId = raw.activeBusiness?.id ?? raw.businesses[0]?.id ?? null
@@ -146,7 +149,7 @@ export async function getMe(signal?: AbortSignal): Promise<{
     user: { id: string; phone: string; name: string | null; email: string | null }
     businesses: BusinessSummary[]
     activeBusiness: BusinessSummary | null
-  }>('/auth/me', { signal })
+  }>('/auth/me', { signal, timeout: TIMEOUTS.authMs })
   const businessId = raw.activeBusiness?.id ?? raw.businesses[0]?.id ?? null
   return {
     user: { ...raw.user, businessId },

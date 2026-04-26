@@ -122,6 +122,49 @@
   justify-content: center;
 }
 
+/* ─── Login Tips (shown during server cold-start retries) ─────────────────── */
+
+.login-tips {
+  overflow: hidden;
+}
+
+.login-tips__card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-primary-50);
+  border: 1px solid var(--color-primary-100);
+  border-radius: var(--radius-md);
+  transition: opacity 0.3s var(--ease-default);
+}
+
+.login-tips__card--fade {
+  opacity: 0;
+}
+
+.login-tips__icon {
+  font-size: var(--fs-xl);
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.login-tips__text {
+  font-size: var(--fs-md);
+  color: var(--color-primary-700);
+  line-height: 1.5;
+  margin: 0;
+}
+
+[data-theme="dark"] .login-tips__card {
+  background: color-mix(in srgb, var(--color-primary-900) 40%, transparent);
+  border-color: var(--color-primary-800);
+}
+
+[data-theme="dark"] .login-tips__text {
+  color: var(--color-primary-200);
+}
+
 /* Phone Step (OTP — commented out for dev) */
 .auth-form {
   display: flex;

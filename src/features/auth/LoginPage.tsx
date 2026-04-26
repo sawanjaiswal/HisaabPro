@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { SEO } from '../../components/layout/SEO'
 import { Turnstile } from '../../components/ui/Turnstile'
@@ -8,11 +9,49 @@ import './LoginPage.css'
 
 const isDevMode = AUTH_MODE === 'dev-login'
 
+const TIPS = [
+  { icon: '🧾', text: 'Send GST-ready invoices via WhatsApp in seconds' },
+  { icon: '📦', text: 'Track stock levels and get low-inventory alerts' },
+  { icon: '📴', text: 'Works fully offline — syncs automatically when back online' },
+  { icon: '💸', text: 'Accept UPI, cash, and card payments in one place' },
+  { icon: '📊', text: 'Daily, weekly, and monthly business reports at a glance' },
+  { icon: '🖨️', text: 'Print on 58mm and 80mm thermal printers instantly' },
+]
+
+function LoginTips({ visible }: { visible: boolean }) {
+  const [index, setIndex] = useState(0)
+  const [fading, setFading] = useState(false)
+
+  useEffect(() => {
+    if (!visible) return
+    const id = setInterval(() => {
+      setFading(true)
+      setTimeout(() => {
+        setIndex(i => (i + 1) % TIPS.length)
+        setFading(false)
+      }, 300)
+    }, 3_000)
+    return () => clearInterval(id)
+  }, [visible])
+
+  if (!visible) return null
+
+  const tip = TIPS[index]
+  return (
+    <div className="login-tips" aria-live="polite">
+      <div className={`login-tips__card${fading ? ' login-tips__card--fade' : ''}`}>
+        <span className="login-tips__icon">{tip.icon}</span>
+        <p className="login-tips__text">{tip.text}</p>
+      </div>
+    </div>
+  )
+}
+
 export default function LoginPage() {
   const {
     identifier, setIdentifier,
     password, setPassword,
-    loading, error,
+    loading, isRetrying, error,
     captchaRequired, setCaptchaToken,
     handleLogin,
     showBiometric, biometricLoading, handleBiometric,
@@ -87,8 +126,10 @@ export default function LoginPage() {
             className="login-page__submit"
             disabled={!isValid || loading}
           >
-            {loading ? 'Signing in…' : 'Sign In'}
+            {isRetrying ? 'Connecting to server…' : loading ? 'Signing in…' : 'Sign In'}
           </button>
+
+          <LoginTips visible={isRetrying} />
 
           {showBiometric && (
             <button

@@ -99,6 +99,14 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:4000',
         changeOrigin: true,
+        configure(proxy) {
+          proxy.on('error', (_err, _req, res) => {
+            if ('writeHead' in res) {
+              res.writeHead(502, { 'Content-Type': 'application/json' })
+              res.end(JSON.stringify({ success: false, error: { code: 'BACKEND_DOWN', message: 'API server is not reachable' } }))
+            }
+          })
+        },
       },
     },
   },

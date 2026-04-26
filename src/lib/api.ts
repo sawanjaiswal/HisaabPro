@@ -62,7 +62,10 @@ export async function api<T>(
   const shouldCacheRead = cacheReads === true && method === 'GET'
 
   const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), timeout)
+  const timeoutId = setTimeout(
+    () => controller.abort(new DOMException('Request timed out', 'TimeoutError')),
+    timeout,
+  )
 
   if (options.signal) {
     options.signal.addEventListener('abort', () => controller.abort(), { once: true })
@@ -99,6 +102,18 @@ export async function api<T>(
     })
   } catch (err) {
     clearTimeout(timeoutId)
+
+    // Timeout or intentional abort — surface a clear message instead of the raw DOM string
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      const isTimeout = err.message === 'Request timed out'
+      throw new ApiError(
+        isTimeout
+          ? 'Request timed out — please check your connection and try again'
+          : 'Request was cancelled',
+        isTimeout ? 'TIMEOUT' : 'ABORTED',
+        0,
+      )
+    }
 
     // Network error on a mutation → queue it offline
     if (shouldQueue && isOfflineError(err)) {

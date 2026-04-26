@@ -1,17 +1,20 @@
 import type React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { LogOut } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { MORE_MENU_ITEMS, MORE_MENU_GROUPS } from './more.constants'
 import { ICON_REGISTRY } from './more.icons'
 import { ROUTES } from '@/config/routes.config'
+import { useAuth } from '@/context/AuthContext'
 import './more.css'
 import { useLanguage } from '@/hooks/useLanguage'
 
 export default function MorePage() {
   const { t } = useLanguage()
   const navigate = useNavigate()
+  const { handleLogout } = useAuth()
 
   return (
     <AppShell>
@@ -51,6 +54,11 @@ export default function MorePage() {
             )
           })}
         </nav>
+
+        <button type="button" className="more-logout-btn" onClick={handleLogout}>
+          <LogOut size={18} aria-hidden="true" />
+          Sign out
+        </button>
       </PageContainer>
     </AppShell>
   )

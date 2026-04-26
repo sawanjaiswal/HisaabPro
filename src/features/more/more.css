@@ -85,6 +85,38 @@
   }
 }
 
+.more-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px solid var(--color-error-200);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-error-600);
+  font-size: var(--fs-base);
+  font-weight: 500;
+  font-family: var(--font-primary);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-default);
+  margin-bottom: var(--space-4);
+}
+
+.more-logout-btn:active {
+  background: var(--color-error-50);
+}
+
+[data-theme="dark"] .more-logout-btn {
+  border-color: var(--color-error-800);
+  color: var(--color-error-400);
+}
+
+[data-theme="dark"] .more-logout-btn:active {
+  background: color-mix(in srgb, var(--color-error-900) 40%, transparent);
+}
+
 /* --- Dark mode --- */
 [data-theme="dark"] .more-section-title {
   color: var(--color-gray-400);
