@@ -1,24 +1,25 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { SEO } from '../../components/layout/SEO'
 import { Turnstile } from '../../components/ui/Turnstile'
 import { APP_NAME, AUTH_MODE } from '../../config/app.config'
 import { useLogin } from './useLogin'
+import { useLanguage } from '@/context/LanguageContext'
 import { ROUTES } from '@/config/routes.config'
 import './LoginPage.css'
 
 const isDevMode = AUTH_MODE === 'dev-login'
 
-const TIPS = [
-  { icon: '🧾', text: 'Send GST-ready invoices via WhatsApp in seconds' },
-  { icon: '📦', text: 'Track stock levels and get low-inventory alerts' },
-  { icon: '📴', text: 'Works fully offline — syncs automatically when back online' },
-  { icon: '💸', text: 'Accept UPI, cash, and card payments in one place' },
-  { icon: '📊', text: 'Daily, weekly, and monthly business reports at a glance' },
-  { icon: '🖨️', text: 'Print on 58mm and 80mm thermal printers instantly' },
-]
-
 function LoginTips({ visible }: { visible: boolean }) {
+  const { t } = useLanguage()
+  const tips = useMemo(() => [
+    { icon: '🧾', text: t.loginTip1 },
+    { icon: '📦', text: t.loginTip2 },
+    { icon: '📴', text: t.loginTip3 },
+    { icon: '💸', text: t.loginTip4 },
+    { icon: '📊', text: t.loginTip5 },
+    { icon: '🖨️', text: t.loginTip6 },
+  ], [t])
   const [index, setIndex] = useState(0)
   const [fading, setFading] = useState(false)
 
@@ -27,16 +28,16 @@ function LoginTips({ visible }: { visible: boolean }) {
     const id = setInterval(() => {
       setFading(true)
       setTimeout(() => {
-        setIndex(i => (i + 1) % TIPS.length)
+        setIndex(i => (i + 1) % tips.length)
         setFading(false)
       }, 300)
     }, 3_000)
     return () => clearInterval(id)
-  }, [visible])
+  }, [visible, tips.length])
 
   if (!visible) return null
 
-  const tip = TIPS[index]
+  const tip = tips[index]
   return (
     <div className="login-tips" aria-live="polite">
       <div className={`login-tips__card${fading ? ' login-tips__card--fade' : ''}`}>
@@ -48,6 +49,7 @@ function LoginTips({ visible }: { visible: boolean }) {
 }
 
 export default function LoginPage() {
+  const { t } = useLanguage()
   const {
     identifier, setIdentifier,
     password, setPassword,
@@ -61,12 +63,12 @@ export default function LoginPage() {
 
   return (
     <div className="login-page">
-      <SEO title="Login" />
+      <SEO title={t.login} />
 
       <div className="login-page__card stagger-enter">
         <div className="login-page__header">
           <h1 className="login-page__title">{APP_NAME}</h1>
-          <p className="login-page__subtitle">Sign in to your account</p>
+          <p className="login-page__subtitle">{t.signInToAccount}</p>
         </div>
 
         <form
@@ -78,7 +80,7 @@ export default function LoginPage() {
         >
           <div className="login-page__field">
             <label className="login-page__label" htmlFor="identifier">
-              {isDevMode ? 'Username' : 'Phone or Email'}
+              {isDevMode ? t.username : t.phoneOrEmail}
             </label>
             <div className="login-page__input-wrapper">
               <input
@@ -86,7 +88,7 @@ export default function LoginPage() {
                 type="text"
                 inputMode={isDevMode ? 'text' : 'tel'}
                 className="login-page__input"
-                placeholder={isDevMode ? 'admin or demo' : 'Mobile number or email'}
+                placeholder={isDevMode ? t.adminOrDemoHint : t.mobileOrEmailHint}
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 autoComplete="username"
@@ -96,13 +98,13 @@ export default function LoginPage() {
           </div>
 
           <div className="login-page__field">
-            <label className="login-page__label" htmlFor="password">Password</label>
+            <label className="login-page__label" htmlFor="password">{t.password}</label>
             <div className="login-page__input-wrapper">
               <input
                 id="password"
                 type="password"
                 className="login-page__input"
-                placeholder="Your password"
+                placeholder={t.yourPasswordHint}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
@@ -126,7 +128,7 @@ export default function LoginPage() {
             className="login-page__submit"
             disabled={!isValid || loading}
           >
-            {isRetrying ? 'Connecting to server…' : loading ? 'Signing in…' : 'Sign In'}
+            {isRetrying ? t.connectingToServer : loading ? t.signingIn : t.signIn}
           </button>
 
           <LoginTips visible={isRetrying} />
@@ -134,24 +136,23 @@ export default function LoginPage() {
           {showBiometric && (
             <button
               type="button"
-              className="login-page__submit"
-              style={{ background: 'var(--color-gray-100)', color: 'var(--color-gray-700)', marginTop: 0 }}
+              className="login-page__submit login-page__submit--biometric"
               disabled={biometricLoading}
               onClick={handleBiometric}
             >
-              {biometricLoading ? 'Authenticating…' : 'Use Fingerprint / Face ID'}
+              {biometricLoading ? t.authenticating : t.useBiometric}
             </button>
           )}
 
           <p className="login-page__hint">
-            <Link to={ROUTES.FORGOT_PASSWORD} style={{ color: 'var(--color-primary-500)' }}>
-              Forgot password?
+            <Link to={ROUTES.FORGOT_PASSWORD} className="login-page__link">
+              {t.forgotPassword}
             </Link>
           </p>
           <p className="login-page__hint">
-            New here?{' '}
-            <Link to={ROUTES.REGISTER} style={{ color: 'var(--color-primary-500)' }}>
-              Create account
+            {t.newHere}{' '}
+            <Link to={ROUTES.REGISTER} className="login-page__link">
+              {t.createAccount}
             </Link>
           </p>
         </form>

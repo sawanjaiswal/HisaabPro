@@ -111,10 +111,24 @@
   cursor: not-allowed;
 }
 
+.login-page__submit--biometric {
+  background: var(--color-gray-100);
+  color: var(--color-gray-700);
+  margin-top: 0;
+}
+
+.login-page__submit--biometric:hover:not(:disabled) {
+  background: var(--color-gray-200);
+}
+
 .login-page__hint {
   font-size: var(--fs-xs);
   color: var(--color-gray-400);
   text-align: center;
+}
+
+.login-page__link {
+  color: var(--color-primary-500);
 }
 
 .login-page__captcha {

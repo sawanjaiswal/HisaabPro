@@ -20,8 +20,8 @@
   --dash-text-secondary: var(--color-gray-600);
   --dash-text-muted: var(--color-gray-500);
   --dash-teal-10: var(--overlay-primary-10);
-  --dash-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.03);
-  --dash-avatar-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --dash-card-shadow: var(--shadow-card);
+  --dash-avatar-shadow: var(--shadow-md);
   /* Spacing — use global tokens directly */
   --dash-side-padding: var(--side-padding);
   --dash-section-gap: var(--space-6);
