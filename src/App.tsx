@@ -1,24 +1,16 @@
-import { Suspense, useEffect } from 'react'
-import type { ReactNode } from 'react'
-import { Capacitor } from '@capacitor/core'
+import { useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { ROUTES } from '@/config/routes.config'
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary'
-import { Spinner } from '@/components/feedback/Spinner'
 import { ToastContainer } from '@/components/feedback/ToastContainer'
 import { OfflineBanner } from '@/components/feedback/OfflineBanner'
 import { SWUpdatePrompt } from '@/components/feedback/SWUpdatePrompt'
 import { PageTransition } from '@/components/layout/PageTransition'
-import { AppShell } from '@/components/layout/AppShell'
-import { BottomNav } from '@/components/layout/BottomNav'
-import { DashboardSkeleton } from '@/features/dashboard/components/DashboardSkeleton'
-import { useAuth } from '@/context/AuthContext'
 import { useRoutePreload } from '@/hooks/useRoutePreload'
 import { useSSE } from '@/hooks/useSSE'
 import { PlanGate } from '@/features/subscription/PlanGate'
 import {
-  CalculatorOverlay, FeedbackWidget,
   Login, Register, VerifyOtp, ForgotPassword, Onboarding, Dashboard,
   Parties, CreateParty, PartyDetail, EditParty,
   Products, CreateProduct, ProductDetail, EditProduct,
@@ -37,7 +29,7 @@ import {
   ProfitLoss, BalanceSheet, CashFlow, AgingReport, ProfitabilityReport,
   DiscountReport, TallyExport, FYClosure,
   More, BillScan, BulkImport, PublicLedger, ItemsLibrary, DataImport,
-  SmartGreetings, Units, JoinBusiness, CreateBusiness, Landing,
+  SmartGreetings, Units, JoinBusiness, CreateBusiness,
   AdminCoupons, AdminCouponDetail,
   Batches, CreateBatch, BatchDetail,
   Godowns, CreateGodown, EditGodown, GodownDetail, GodownTransfer,
@@ -45,71 +37,10 @@ import {
   Serials, CreateSerial, BulkCreateSerial, SerialLookup, Pos,
   NotFound,
 } from '@/app.routes'
-
-/** Route-level ErrorBoundary + Suspense wrapper for individual pages. */
-function PageRoute({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
-  return (
-    <ErrorBoundary>
-      <Suspense fallback={fallback ?? <Spinner fullScreen />}>
-        {children}
-      </Suspense>
-    </ErrorBoundary>
-  )
-}
-
-/** First-paint shell for the dashboard cold load. */
-function DashboardFallback() {
-  return (
-    <AppShell>
-      <DashboardSkeleton />
-    </AppShell>
-  )
-}
-
-/** Redirect to login if not authenticated */
-function ProtectedRoute({ children }: { children: ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuth()
-  if (isLoading) return <Spinner fullScreen />
-  if (!isAuthenticated) return <Navigate to={ROUTES.LOGIN} replace />
-  return <>{children}</>
-}
-
-/** Redirect to dashboard if already authenticated */
-function GuestRoute({ children }: { children: ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuth()
-  if (isLoading) return <Spinner fullScreen />
-  if (isAuthenticated) return <Navigate to={ROUTES.DASHBOARD} replace />
-  return <>{children}</>
-}
-
-/** True only on the dashboard root (scopes Calculator + Feedback FABs). */
-function useIsDashboardRoute(): boolean {
-  const { pathname } = useLocation()
-  return pathname === ROUTES.DASHBOARD
-}
-
-/** Routes where BottomNav should be hidden (form/detail workflows) */
-const NAV_HIDDEN_PATTERNS = /\/(new|edit)(\/|$)|\/pos\b/
-
-function PersistentNav() {
-  const { pathname } = useLocation()
-  const { isAuthenticated } = useAuth()
-  if (!isAuthenticated || NAV_HIDDEN_PATTERNS.test(pathname)) return null
-  return <BottomNav />
-}
-
-/** Host-based root route: landing on marketing, login on app host and native, admin on admin host */
-function HomeGate() {
-  const isNative = Capacitor.isNativePlatform()
-  const host = typeof window !== 'undefined' ? window.location.hostname : ''
-  if (isNative || host === 'app.hisaabpro.in') {
-    return <GuestRoute><Login /></GuestRoute>
-  }
-  if (host === 'admin.hisaabpro.in') {
-    return <ProtectedRoute><AdminCoupons /></ProtectedRoute>
-  }
-  return <GuestRoute><Landing /></GuestRoute>
-}
+import {
+  PageRoute, DashboardFallback, ProtectedRoute, GuestRoute,
+  HomeGate, PersistentNav, FloatingWidgets,
+} from '@/app.guards'
 
 export function App() {
   useRoutePreload()
@@ -117,9 +48,7 @@ export function App() {
   const queryClient = useQueryClient()
   useEffect(() => {
     const handler = () => {
-      if (document.visibilityState === 'visible') {
-        queryClient.invalidateQueries()
-      }
+      if (document.visibilityState === 'visible') queryClient.invalidateQueries()
     }
     document.addEventListener('visibilitychange', handler)
     return () => document.removeEventListener('visibilitychange', handler)
@@ -130,7 +59,7 @@ export function App() {
       <OfflineBanner />
       <PageTransition>
       <Routes>
-        <Route path={ROUTES.HOME} element={<ErrorBoundary><Suspense fallback={<div className="min-h-screen bg-black" />}><HomeGate /></Suspense></ErrorBoundary>} />
+        <Route path={ROUTES.HOME} element={<ErrorBoundary><PageRoute><HomeGate /></PageRoute></ErrorBoundary>} />
         <Route path={ROUTES.PRICING} element={<Navigate to="/#pricing" replace />} />
         <Route path={ROUTES.LOGIN} element={<PageRoute><GuestRoute><Login /></GuestRoute></PageRoute>} />
         <Route path={ROUTES.REGISTER} element={<PageRoute><GuestRoute><Register /></GuestRoute></PageRoute>} />
@@ -154,7 +83,6 @@ export function App() {
         <Route path={ROUTES.TEMPLATE_EDIT} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Invoice Templates"><TemplateEditor /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PAYMENTS} element={<PageRoute><ProtectedRoute><PlanGate feature="payments" featureLabel="Payments"><Payments /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PAYMENT_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="payments" featureLabel="Payments"><RecordPayment /></PlanGate></ProtectedRoute></PageRoute>} />
-        {/* Common deep-link guess that would otherwise match :id and trigger a 404. */}
         <Route path="/payments/outstanding" element={<Navigate to={ROUTES.OUTSTANDING} replace />} />
         <Route path={ROUTES.PAYMENT_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="payments" featureLabel="Payments"><PaymentDetail /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PAYMENT_EDIT} element={<PageRoute><ProtectedRoute><PlanGate feature="payments" featureLabel="Payments"><EditPayment /></PlanGate></ProtectedRoute></PageRoute>} />
@@ -218,8 +146,6 @@ export function App() {
         <Route path={ROUTES.CREATE_BUSINESS} element={<PageRoute><ProtectedRoute><CreateBusiness /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.ADMIN_COUPONS} element={<PageRoute><ProtectedRoute><AdminCoupons /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.ADMIN_COUPON_DETAIL} element={<PageRoute><ProtectedRoute><AdminCouponDetail /></ProtectedRoute></PageRoute>} />
-
-        {/* Phase 4 — Advanced Inventory */}
         <Route path={ROUTES.BATCH_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="batchTracking" featureLabel="Batch Tracking"><CreateBatch /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.BATCHES} element={<PageRoute><ProtectedRoute><PlanGate feature="batchTracking" featureLabel="Batch Tracking"><Batches /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.BATCH_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="batchTracking" featureLabel="Batch Tracking"><BatchDetail /></PlanGate></ProtectedRoute></PageRoute>} />
@@ -235,7 +161,6 @@ export function App() {
         <Route path={ROUTES.SERIAL_NUMBERS} element={<PageRoute><ProtectedRoute><PlanGate feature="serialTracking" featureLabel="Serial Numbers"><Serials /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SERIAL_LOOKUP} element={<PageRoute><ProtectedRoute><PlanGate feature="serialTracking" featureLabel="Serial Numbers"><SerialLookup /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.POS} element={<PageRoute><ProtectedRoute><PlanGate feature="posMode" featureLabel="POS"><Pos /></PlanGate></ProtectedRoute></PageRoute>} />
-
         <Route path={ROUTES.PUBLIC_LEDGER} element={<PageRoute><PublicLedger /></PageRoute>} />
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
       </Routes>
@@ -245,16 +170,5 @@ export function App() {
       <ToastContainer />
       <SWUpdatePrompt />
     </ErrorBoundary>
-  )
-}
-
-/** Calculator + Feedback widgets, dashboard-only. */
-function FloatingWidgets() {
-  if (!useIsDashboardRoute()) return null
-  return (
-    <>
-      <Suspense fallback={null}><CalculatorOverlay position="BOTTOM_LEFT" /></Suspense>
-      <Suspense fallback={null}><FeedbackWidget /></Suspense>
-    </>
   )
 }
