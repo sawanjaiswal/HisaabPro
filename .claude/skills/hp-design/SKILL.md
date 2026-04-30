@@ -194,8 +194,8 @@ If Phase 0 is skipped, pre-tool-gate rejects every Write/Edit to a UI file.
 | Badge | `<Badge variant="success\|error\|warning\|info\|default">` | Custom pill |
 | 4 states | `<Skeleton>` / `<EmptyState>` / `<ErrorState>` / `<Spinner>` | Custom loading/error/empty |
 | Toggle | checkbox with toggle CSS | Custom checkbox |
-| Avatar | `<PartyAvatar>` or `<avatar>` | Custom avatar div |
-| Accordion | `<accordion>` | Custom collapsible |
+| Avatar | `<PartyAvatar>` or `<Avatar>` | Custom avatar div |
+| Accordion | `<Accordion>` | Custom collapsible |
 | Error banner | `<ErrorState message={error} />` | Custom error div |
 | Offline indicator | `<OfflineBanner>` | Custom offline div |
 | Toast | `useToast()` from ToastContainer | `alert()` |
