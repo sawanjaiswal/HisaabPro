@@ -220,4 +220,7 @@ export const hiExt7 = {
   // ─── Share — Template Picker ───────────────────────────────────────────
   template:                  'टेम्पलेट',
   chooseTemplate:            'टेम्पलेट चुनें',
+
+  // ─── Dashboard — Cash Strip ────────────────────────────────────────────
+  todaysCashFlow:            'आज का कैश फ्लो',
 } as const

@@ -257,4 +257,7 @@ export const enExt7 = {
   // ─── Share — Template Picker ───────────────────────────────────────────
   template:                  'Template',
   chooseTemplate:            'Choose template',
+
+  // ─── Dashboard — Cash Strip ────────────────────────────────────────────
+  todaysCashFlow:            "Today's cash flow",
 } as const

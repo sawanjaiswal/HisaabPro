@@ -317,3 +317,79 @@
   background-size: 200% 100%;
   animation: dashHeroShimmer 1.5s ease-in-out infinite;
 }
+
+/* ─── Today's cash strip ────────────────────────────────────────────────── */
+.dashboard-cash-strip {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 var(--space-4);
+  padding: var(--space-3);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.dashboard-cash-cell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.dashboard-cash-cell-divider {
+  width: 1px;
+  align-self: stretch;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.dashboard-cash-cell__icon {
+  flex-shrink: 0;
+  border-radius: 50%;
+  padding: 4px;
+  width: 22px;
+  height: 22px;
+}
+
+.dashboard-cash-cell__icon--in {
+  color: var(--color-success-200, #a7f3d0);
+  background: rgba(16, 185, 129, 0.18);
+}
+
+.dashboard-cash-cell__icon--out {
+  color: var(--color-error-200, #fecaca);
+  background: rgba(239, 68, 68, 0.18);
+}
+
+.dashboard-cash-cell__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dashboard-cash-cell__label {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.72);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.dashboard-cash-cell__value {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-cash-cell__value--neg {
+  color: var(--color-error-200, #fecaca);
+}

@@ -26,6 +26,7 @@ import { DashboardQuickActions } from './components/DashboardQuickActions'
 import { AlertStrip } from './components/AlertStrip'
 import { TopDebtors } from './components/TopDebtors'
 import { RecentActivityFeed } from './components/RecentActivityFeed'
+import { TodayCashStrip } from './components/TodayCashStrip'
 import { DashboardSkeleton } from './components/DashboardSkeleton'
 import type { RecentActivityItem } from './dashboard.types'
 import './dashboard-page.css'
@@ -140,6 +141,14 @@ export default function DashboardPage() {
                   </button>
                 )}
               </div>
+
+              {(data.today.paymentsReceivedAmount > 0 || data.today.paymentsMadeAmount > 0 || data.today.netCashFlow !== 0) && (
+                <TodayCashStrip
+                  paymentsIn={data.today.paymentsReceivedAmount}
+                  paymentsOut={data.today.paymentsMadeAmount}
+                  netCashFlow={data.today.netCashFlow}
+                />
+              )}
 
               <OutstandingHero
                 receivableTotal={data.outstanding.receivable.total}
