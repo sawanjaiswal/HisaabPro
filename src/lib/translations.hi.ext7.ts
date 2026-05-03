@@ -213,4 +213,7 @@ export const hiExt7 = {
   bulkRemindOnlyReceivable:  'बल्क रिमाइंडर केवल बकाया पार्टियों के लिए उपलब्ध हैं।',
   bulkSelectedReceivableOnly:'फोन नंबर के बिना पार्टियाँ छोड़ी जाएँगी।',
   failedSendReminders:       'रिमाइंडर भेजने में विफल',
+
+  // ─── Low Stock ─────────────────────────────────────────────────────────
+  lowStockOnly:              'कम स्टॉक',
 } as const

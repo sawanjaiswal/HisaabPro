@@ -250,4 +250,7 @@ export const enExt7 = {
   bulkRemindOnlyReceivable:  'Bulk reminders are available only for receivable parties.',
   bulkSelectedReceivableOnly:'Reminders skip parties without a phone number.',
   failedSendReminders:       'Failed to send reminders',
+
+  // ─── Low Stock ─────────────────────────────────────────────────────────
+  lowStockOnly:              'Low Stock',
 } as const

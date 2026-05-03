@@ -8,7 +8,7 @@
 //
 // Pattern ported from Rent-Income (frontend/src/services/api/playstore-mock-adapter.ts).
 
-const DB_KEY = 'hp_offline_mock_db_v3'
+const DB_KEY = 'hp_offline_mock_db_v4'
 
 // Detect Capacitor native webview (https://localhost) OR explicit env flag.
 export const OFFLINE_MOCK: boolean =
@@ -184,6 +184,20 @@ function seed(): OfflineDB {
     status: 'ACTIVE',
     createdAt: nowIso(),
   }
+  // Pre-seeded low-stock product so reviewers can see the alert filter at work.
+  const lowStockProduct: MockProduct = {
+    id: uid('prod'),
+    name: 'Sugar 1kg',
+    sku: 'SUG-1KG',
+    category: { id: 'cat_general', name: 'General' },
+    unit: { id: 'unit_kg', name: 'Kilogram', symbol: 'kg' },
+    salePrice: 5500,
+    purchasePrice: 4200,
+    currentStock: 3,
+    minStockLevel: 10,
+    status: 'ACTIVE',
+    createdAt: nowIso(),
+  }
   const document: MockDocument = {
     id: uid('doc'),
     documentNumber: 'INV-001',
@@ -221,7 +235,7 @@ function seed(): OfflineDB {
     ],
     parties: [partyA, partyB],
     documents: [document],
-    products: [product],
+    products: [product, lowStockProduct],
     payments: [],
   }
 }
@@ -557,11 +571,23 @@ export function handleMockRequest(
 
   // ─── Products ──────────────────────────────────────────────────────────────
   if (path === '/products' && m === 'GET') {
+    const lowStockOnly = param(rawPath, 'lowStockOnly') === 'true'
+    const search = (param(rawPath, 'search') ?? '').toLowerCase()
+    const categoryId = param(rawPath, 'categoryId')
+
+    const isLowStock = (p: MockProduct) => p.minStockLevel > 0 && p.currentStock <= p.minStockLevel
+
+    let products = db.products
+    if (search) products = products.filter((p) => p.name.toLowerCase().includes(search) || p.sku.toLowerCase().includes(search))
+    if (categoryId) products = products.filter((p) => p.category.id === categoryId)
+    if (lowStockOnly) products = products.filter(isLowStock)
+
     const totalStockValue = db.products.reduce((s, p) => s + p.currentStock * (p.purchasePrice ?? 0), 0)
-    const lowStockCount = db.products.filter((p) => p.minStockLevel > 0 && p.currentStock <= p.minStockLevel).length
+    const lowStockCount = db.products.filter(isLowStock).length
+
     return {
-      products: db.products,
-      pagination: { page: 1, limit: db.products.length || 20, total: db.products.length, totalPages: 1 },
+      products,
+      pagination: { page: 1, limit: products.length || 20, total: products.length, totalPages: 1 },
       summary: {
         totalProducts: db.products.length,
         lowStockCount,

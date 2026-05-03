@@ -127,6 +127,9 @@ export default function ProductsPage() {
             onSearchChange={setSearch}
             activeCategoryId={filters.categoryId ?? 'ALL'}
             onCategoryChange={handleCategoryChange}
+            lowStockOnly={filters.lowStockOnly ?? false}
+            onLowStockToggle={(value) => setFilter('lowStockOnly', value)}
+            lowStockCount={data?.summary?.lowStockCount}
           />
         )}
 
