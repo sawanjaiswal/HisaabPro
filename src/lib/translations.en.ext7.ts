@@ -240,4 +240,14 @@ export const enExt7 = {
   filterByType:              'Filter by type',
   searchByPartyOrRef:        'Search by party or reference...',
   searchPayments:            'Search payments',
+
+  // ─── Bulk Reminders ────────────────────────────────────────────────────
+  sendBulkReminders:         'Send Reminders',
+  sendingReminders:          'Sending reminders…',
+  reminderSentCount:          'reminder sent',
+  remindersSentCount:        'reminders sent',
+  remindersFailedCount:      'failed',
+  bulkRemindOnlyReceivable:  'Bulk reminders are available only for receivable parties.',
+  bulkSelectedReceivableOnly:'Reminders skip parties without a phone number.',
+  failedSendReminders:       'Failed to send reminders',
 } as const

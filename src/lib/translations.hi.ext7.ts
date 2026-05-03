@@ -203,4 +203,14 @@ export const hiExt7 = {
   updatePaymentBtn:          'भुगतान अपडेट करें',
   updatePaymentLabel:        'भुगतान अपडेट करें',
   updatingPayment:           'भुगतान अपडेट हो रहा है',
+
+  // ─── Bulk Reminders ────────────────────────────────────────────────────
+  sendBulkReminders:         'रिमाइंडर भेजें',
+  sendingReminders:          'रिमाइंडर भेज रहे हैं…',
+  reminderSentCount:         'रिमाइंडर भेजा गया',
+  remindersSentCount:        'रिमाइंडर भेजे गए',
+  remindersFailedCount:      'विफल',
+  bulkRemindOnlyReceivable:  'बल्क रिमाइंडर केवल बकाया पार्टियों के लिए उपलब्ध हैं।',
+  bulkSelectedReceivableOnly:'फोन नंबर के बिना पार्टियाँ छोड़ी जाएँगी।',
+  failedSendReminders:       'रिमाइंडर भेजने में विफल',
 } as const

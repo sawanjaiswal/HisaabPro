@@ -594,6 +594,94 @@ export function handleMockRequest(
   }
 
   // ─── Payments ──────────────────────────────────────────────────────────────
+  // ─── Outstanding ───────────────────────────────────────────────────────────
+  if (path.startsWith('/payments/outstanding/list') && m === 'GET') {
+    const typeFilter = param(rawPath, 'type') // RECEIVABLE | PAYABLE | undefined
+    const overdueOnly = param(rawPath, 'overdue') === 'true'
+    const search = (param(rawPath, 'search') ?? '').toLowerCase()
+
+    const partiesWithBalance = db.parties.filter((p) => p.outstandingBalance !== 0)
+    const mapped = partiesWithBalance.map((p) => {
+      const isReceivable = p.outstandingBalance > 0
+      return {
+        partyId: p.id,
+        partyName: p.name,
+        partyPhone: p.phone ?? '',
+        partyType: p.type,
+        outstanding: Math.abs(p.outstandingBalance),
+        type: (isReceivable ? 'RECEIVABLE' : 'PAYABLE') as 'RECEIVABLE' | 'PAYABLE',
+        invoiceCount: db.documents.filter((d) => d.party.id === p.id && d.balanceDue > 0).length || 1,
+        oldestDueDate: null,
+        daysOverdue: 0,
+        lastPaymentDate: null,
+        lastReminderDate: null,
+        aging: { current: Math.abs(p.outstandingBalance), days1to30: 0, days31to60: 0, days61to90: 0, days90plus: 0 },
+      }
+    })
+
+    const filtered = mapped.filter((row) => {
+      if (typeFilter === 'RECEIVABLE' && row.type !== 'RECEIVABLE') return false
+      if (typeFilter === 'PAYABLE' && row.type !== 'PAYABLE') return false
+      if (overdueOnly && row.daysOverdue <= 0) return false
+      if (search && !row.partyName.toLowerCase().includes(search)) return false
+      return true
+    })
+
+    const totalReceivable = mapped.filter((r) => r.type === 'RECEIVABLE').reduce((s, r) => s + r.outstanding, 0)
+    const totalPayable = mapped.filter((r) => r.type === 'PAYABLE').reduce((s, r) => s + r.outstanding, 0)
+
+    return {
+      parties: filtered,
+      pagination: { page: 1, limit: filtered.length || 20, total: filtered.length, totalPages: 1 },
+      totals: {
+        totalReceivable,
+        totalPayable,
+        net: totalReceivable - totalPayable,
+        overdueReceivable: 0,
+        overduePayable: 0,
+      },
+      aging: {
+        current: totalReceivable + totalPayable,
+        days1to30: 0,
+        days31to60: 0,
+        days61to90: 0,
+        days90plus: 0,
+      },
+    }
+  }
+
+  // ─── Reminders ─────────────────────────────────────────────────────────────
+  if (path === '/payments/reminders/send-bulk' && m === 'POST') {
+    const partyIds = Array.isArray(body.partyIds) ? (body.partyIds as string[]) : []
+    const channel = (body.channel as string) ?? 'WHATSAPP'
+    const results = partyIds.map((pid) => {
+      const party = db.parties.find((p) => p.id === pid)
+      const hasPhone = !!party?.phone && party.phone.trim() !== ''
+      return {
+        partyId: pid,
+        partyName: party?.name ?? 'Unknown',
+        status: hasPhone ? ('SENT' as const) : ('FAILED' as const),
+        failureReason: hasPhone ? null : 'No phone number on file',
+      }
+    })
+    void channel
+    return {
+      sent: results.filter((r) => r.status === 'SENT').length,
+      failed: results.filter((r) => r.status === 'FAILED').length,
+      results,
+    }
+  }
+
+  if (path === '/payments/reminders/send' && m === 'POST') {
+    return {
+      id: uid('rem'),
+      partyId: String(body.partyId ?? ''),
+      channel: body.channel ?? 'WHATSAPP',
+      status: 'SENT',
+      sentAt: nowIso(),
+    }
+  }
+
   if (path === '/payments' && m === 'GET') {
     return {
       payments: db.payments,
