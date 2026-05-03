@@ -1,10 +1,12 @@
 import { api } from './api'
 import { clearApiCache } from './api-cache'
+import { OFFLINE_MOCK } from './playstore-mock'
 import { TIMEOUTS, API_URL } from '@/config/app.config'
 import type { AuthUser, BusinessSummary } from '../features/auth/auth.types'
 
 /** Fire-and-forget GET /health to wake a cold-start server before login. */
 export function warmupServer(): void {
+  if (OFFLINE_MOCK) return
   void fetch(`${API_URL}/health`, { credentials: 'include' }).catch(() => {})
 }
 

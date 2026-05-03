@@ -8,6 +8,7 @@ import { useEffect, useRef } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/context/AuthContext'
 import { API_URL } from '@/config/app.config'
+import { OFFLINE_MOCK } from '@/lib/playstore-mock'
 
 /** Map SSE entity types to query key prefixes for cache invalidation */
 const ENTITY_KEY_MAP: Record<string, string[]> = {
@@ -36,6 +37,9 @@ export function useSSE() {
 
   useEffect(() => {
     if (!isAuthenticated) return
+    // Play Store mock build runs without a backend — there's no SSE stream to
+    // connect to, and the failed connection would spam the console.
+    if (OFFLINE_MOCK) return
 
     const stopPolling = () => {
       if (pollingRef.current !== null) {

@@ -4,6 +4,7 @@ import { enqueue } from './offline'
 import { readApiCache, writeApiCache } from './api-cache'
 import { getCsrfToken, invalidateCsrfToken } from './api-csrf'
 import { attemptTokenRefresh } from './api-refresh'
+import { OFFLINE_MOCK, handleMockRequest, defaultMockResponse, UNHANDLED } from './playstore-mock'
 
 interface ApiOptions extends RequestInit {
   timeout?: number
@@ -56,6 +57,15 @@ export async function api<T>(
   } = options
 
   const method = (fetchOptions.method ?? 'GET').toUpperCase()
+
+  // Play Store closed-testing build — short-circuit every call to the in-memory
+  // mock layer. No network, no backend, fully usable without internet.
+  if (OFFLINE_MOCK) {
+    const mocked = handleMockRequest(method, path, fetchOptions.body as BodyInit | null | undefined)
+    if (mocked === UNHANDLED) return defaultMockResponse(method) as T
+    return mocked as T
+  }
+
   const shouldQueue = oq !== false
     && SYNC_MUTATION_METHODS.has(method)
     && !SYNC_EXCLUDED_PATHS.some((p) => path.startsWith(p))

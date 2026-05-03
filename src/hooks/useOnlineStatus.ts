@@ -40,6 +40,9 @@ function getHealthUrl(): string {
 const HEALTH_URL = getHealthUrl();
 
 async function checkConnectivity(): Promise<boolean> {
+  // Play Store mock build runs without a backend — skip the heartbeat probe
+  // (it would 502 forever and pollute the console).
+  if (import.meta.env.VITE_OFFLINE_MOCK === '1') return true;
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), HEARTBEAT_TIMEOUT);

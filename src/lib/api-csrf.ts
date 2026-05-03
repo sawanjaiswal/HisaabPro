@@ -1,4 +1,5 @@
 import { API_URL } from '@/config/app.config'
+import { OFFLINE_MOCK } from './playstore-mock'
 
 // ─── CSRF double-submit token (fetched once, cached in memory) ──────────────
 
@@ -6,6 +7,7 @@ let csrfToken: string | null = null
 let csrfPromise: Promise<string | null> | null = null
 
 export async function getCsrfToken(): Promise<string | null> {
+  if (OFFLINE_MOCK) return 'mock-csrf'
   if (csrfToken) return csrfToken
   if (csrfPromise) return csrfPromise
   csrfPromise = (async () => {
