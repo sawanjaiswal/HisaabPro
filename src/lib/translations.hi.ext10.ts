@@ -119,6 +119,18 @@ export const hiExt10 = {
   ofLabel:                  'का',
 
   // Onboarding
+  onboardingWelcomeTitle:   '{appName} में आपका स्वागत है',
+  onboardingWelcomeSubtitle:'60 सेकंड में अपना व्यापार सेट करें और सब कुछ एक जगह से प्रबंधित करें',
+  onboardingFeatureInvoiceTitle:    'GST बिल',
+  onboardingFeatureInvoiceDesc:     'पेशेवर बिल बनाएं और तुरंत WhatsApp पर भेजें',
+  onboardingFeaturePartyTitle:      'पार्टी खाता',
+  onboardingFeaturePartyDesc:       'हर ग्राहक और आपूर्तिकर्ता का जमा/उधार ट्रैक करें',
+  onboardingFeaturePaymentTitle:    'भुगतान और बकाया',
+  onboardingFeaturePaymentDesc:     'भुगतान दर्ज करें, बकाया देखें, रिमाइंडर भेजें',
+  onboardingFeatureReportTitle:     'P&L रिपोर्ट',
+  onboardingFeatureReportDesc:      'लाभ-हानि, बैलेंस शीट, कैश फ्लो एक नज़र में',
+  onboardingGetStarted:     'शुरू करें',
+  onboardingBack:           'वापस',
   onboardingTitle:          'अपना व्यापार सेट करें',
   onboardingSubtitle:       '{appName} में आपका स्वागत है। शुरू करने के लिए अपने व्यापार का विवरण दर्ज करें।',
   onboardingBusinessName:   'व्यापार का नाम *',

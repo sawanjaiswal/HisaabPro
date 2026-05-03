@@ -119,6 +119,18 @@ export const enExt10 = {
   ofLabel:                  'of',
 
   // Onboarding
+  onboardingWelcomeTitle:   'Welcome to {appName}',
+  onboardingWelcomeSubtitle:'Set up your business in 60 seconds and start managing everything from one place',
+  onboardingFeatureInvoiceTitle:    'GST Invoices',
+  onboardingFeatureInvoiceDesc:     'Create professional invoices & share on WhatsApp instantly',
+  onboardingFeaturePartyTitle:      'Party Ledger',
+  onboardingFeaturePartyDesc:       'Track credit/debit for every customer and supplier',
+  onboardingFeaturePaymentTitle:    'Payments & Dues',
+  onboardingFeaturePaymentDesc:     'Record payments, track outstanding, send reminders',
+  onboardingFeatureReportTitle:     'P&L Reports',
+  onboardingFeatureReportDesc:      'Profit & loss, balance sheet, cash flow at a glance',
+  onboardingGetStarted:     'Get Started',
+  onboardingBack:           'Back',
   onboardingTitle:          'Set up your business',
   onboardingSubtitle:       'Welcome to {appName}. Enter your business details to get started.',
   onboardingBusinessName:   'Business Name *',

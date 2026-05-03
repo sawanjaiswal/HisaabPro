@@ -103,3 +103,67 @@
 [data-theme="dark"] .onboarding-select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23959BA6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
 }
+
+/* ─── Welcome step ──────────────────────────────────────────────────────── */
+.onboarding-welcome-card { max-width: 420px; }
+
+.onboarding-welcome-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--color-primary-50);
+}
+
+.onboarding-welcome-icon__svg {
+  width: 32px;
+  height: 32px;
+  color: var(--color-primary-500);
+}
+
+.onboarding-feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.onboarding-feature-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.onboarding-feature-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-50);
+  color: var(--color-primary-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.onboarding-feature-title {
+  font-weight: 600;
+  font-size: var(--fs-md);
+  color: var(--color-gray-800);
+  margin-bottom: 2px;
+}
+
+.onboarding-feature-desc {
+  font-size: var(--fs-sm);
+  color: var(--color-gray-500);
+  line-height: 1.4;
+}
+
+.onboarding-back-btn {
+  background: none;
+  border: none;
+  color: var(--color-gray-500);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  text-align: center;
+  padding: var(--space-1);
+}
