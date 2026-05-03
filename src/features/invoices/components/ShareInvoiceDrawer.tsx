@@ -9,13 +9,14 @@
  * All monetary values in PAISE — display via formatInvoiceAmount.
  */
 
-import { useState, useCallback } from 'react'
-import { MessageCircle, Download, Link, Printer } from 'lucide-react'
+import { useState, useCallback, useMemo } from 'react'
+import { MessageCircle, Download, Link, Printer, FileText } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
 import { useToast } from '@/hooks/useToast'
 import { useLanguage } from '@/hooks/useLanguage'
 import { shareViaWhatsApp, exportDocument, getShareableLink } from '../invoice.service'
 import { formatInvoiceAmount } from '../invoice-format.utils'
+import { useTemplates } from '@/features/templates/useTemplates'
 import { ShareActionRow } from './ShareActionRow'
 import '../invoice-detail-share-drawer.css'
 
@@ -63,6 +64,17 @@ export function ShareInvoiceDrawer({
   const toast = useToast()
   const { t } = useLanguage()
   const [loading, setLoading] = useState<LoadingKey>(null)
+  const { templates } = useTemplates()
+  const defaultTemplateId = useMemo(
+    () =>
+      templates.find((tpl) => tpl.defaultForTypes.includes('SALE_INVOICE'))?.id ??
+      templates.find((tpl) => tpl.isDefault)?.id ??
+      templates[0]?.id ??
+      '',
+    [templates]
+  )
+  const [templateId, setTemplateId] = useState<string>('')
+  const activeTemplateId = templateId || defaultTemplateId
 
   // ── WhatsApp ──────────────────────────────────────────────────────────────
 
@@ -77,9 +89,10 @@ export function ShareInvoiceDrawer({
 
     try {
       const result = await shareViaWhatsApp(documentId, {
-        format: 'IMAGE',
+        format: 'PDF',
         recipientPhone: phone ?? '',
         message,
+        templateId: activeTemplateId || undefined,
       })
 
       // Open the server-generated WhatsApp deep link
@@ -91,7 +104,7 @@ export function ShareInvoiceDrawer({
     } finally {
       setLoading(null)
     }
-  }, [loading, partyPhone, grandTotal, partyName, documentNumber, documentId, toast, onClose])
+  }, [loading, partyPhone, grandTotal, partyName, documentNumber, documentId, activeTemplateId, toast, onClose])
 
   // ── PDF download ──────────────────────────────────────────────────────────
 
@@ -100,7 +113,7 @@ export function ShareInvoiceDrawer({
     setLoading('pdf')
 
     try {
-      const blob = await exportDocument(documentId, 'PDF')
+      const blob = await exportDocument(documentId, 'PDF', activeTemplateId || undefined)
       const url = URL.createObjectURL(blob)
       const anchor = document.createElement('a')
       anchor.href = url
@@ -114,7 +127,7 @@ export function ShareInvoiceDrawer({
     } finally {
       setLoading(null)
     }
-  }, [loading, documentId, documentNumber, toast, onClose])
+  }, [loading, documentId, documentNumber, activeTemplateId, toast, onClose])
 
   // ── Copy link ─────────────────────────────────────────────────────────────
 
@@ -154,7 +167,7 @@ export function ShareInvoiceDrawer({
     setLoading('pdf') // reuse pdf spinner for print since we fetch a PDF
 
     try {
-      const blob = await exportDocument(documentId, 'PDF')
+      const blob = await exportDocument(documentId, 'PDF', activeTemplateId || undefined)
       const url = URL.createObjectURL(blob)
       const printWindow = window.open(url, '_blank', 'noopener,noreferrer')
       if (printWindow) {
@@ -173,7 +186,7 @@ export function ShareInvoiceDrawer({
     } finally {
       setLoading(null)
     }
-  }, [loading, documentId, toast, onClose])
+  }, [loading, documentId, activeTemplateId, toast, onClose])
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -181,6 +194,29 @@ export function ShareInvoiceDrawer({
 
   return (
     <Drawer open={open} onClose={onClose} title={t.shareInvoice} size="sm">
+      {templates.length > 1 && (
+        <div className="share-template-picker">
+          <label htmlFor="share-template-select" className="share-template-picker-label">
+            <FileText size={16} aria-hidden="true" />
+            {t.template}
+          </label>
+          <select
+            id="share-template-select"
+            className="share-template-picker-select"
+            value={activeTemplateId}
+            onChange={(e) => setTemplateId(e.target.value)}
+            disabled={isDisabled}
+            aria-label={t.chooseTemplate}
+          >
+            {templates.map((tpl) => (
+              <option key={tpl.id} value={tpl.id}>
+                {tpl.name}
+                {tpl.defaultForTypes.includes('SALE_INVOICE') ? ` · ${t.defaultLabel}` : ''}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       <ul className="share-action-list" role="list" aria-label={t.shareOptionsAriaLabel}>
         <ShareActionRow
           icon={<MessageCircle size={22} aria-hidden="true" />}

@@ -18,6 +18,8 @@ export interface ShareWhatsAppRequest {
   format: 'IMAGE' | 'PDF'
   recipientPhone: string
   message: string
+  /** Optional template override — falls back to business default when omitted */
+  templateId?: string
 }
 
 export interface ShareEmailRequest {

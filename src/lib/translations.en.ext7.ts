@@ -253,4 +253,8 @@ export const enExt7 = {
 
   // ─── Low Stock ─────────────────────────────────────────────────────────
   lowStockOnly:              'Low Stock',
+
+  // ─── Share — Template Picker ───────────────────────────────────────────
+  template:                  'Template',
+  chooseTemplate:            'Choose template',
 } as const

@@ -216,4 +216,8 @@ export const hiExt7 = {
 
   // ─── Low Stock ─────────────────────────────────────────────────────────
   lowStockOnly:              'कम स्टॉक',
+
+  // ─── Share — Template Picker ───────────────────────────────────────────
+  template:                  'टेम्पलेट',
+  chooseTemplate:            'टेम्पलेट चुनें',
 } as const
