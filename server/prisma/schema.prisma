@@ -175,6 +175,12 @@ model Business {
   // Business-Verticals Phase 4 — Bakery/tailor vertical
   customOrders CustomOrder[]
 
+  // Payments & Collections Hub
+  paymentLinks        PaymentLink[]
+  promisesToPay       PromiseToPay[]
+  reminderLogs        ReminderLog[]
+  collectionCadences  CollectionCadence[]
+
   usersLastActive User[]        @relation("UserLastActiveBusiness")
   subscription    Subscription?
 
@@ -296,6 +302,9 @@ model Party {
   paymentReminders  PaymentReminder[]
   jobs              Job[]
   customOrders      CustomOrder[]
+  paymentLinks      PaymentLink[]
+  promisesToPay     PromiseToPay[]
+  reminderLogs      ReminderLog[]
 
   @@unique([businessId, phone])
   @@index([businessId, type, isActive])
@@ -739,6 +748,11 @@ model Document {
   paymentReminders   PaymentReminder[]
   serialNumbers      SerialNumber[]
 
+  // Payments & Collections Hub
+  paymentLinks   PaymentLink[]  @relation("PaymentLinkInvoice")
+  promisesToPay  PromiseToPay[] @relation("PtpInvoice")
+  reminderLogs   ReminderLog[]  @relation("ReminderLogInvoice")
+
   // Business-Verticals Phase 3 — set when this Document was produced by converting a Job
   jobOrigin Job? @relation("JobInvoice")
 
@@ -1017,6 +1031,191 @@ model ReminderConfig {
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 }
 
+// === Payments & Collections Hub ===
+
+enum PromiseToPayStatus {
+  OPEN
+  KEPT
+  BROKEN
+  CANCELLED
+}
+
+enum PaymentLinkStatus {
+  CREATED
+  ACTIVE
+  PAID
+  PARTIALLY_PAID
+  EXPIRED
+  CANCELLED
+  FAILED
+}
+
+enum ReminderChannel {
+  WHATSAPP
+  SMS
+  PUSH
+  EMAIL
+}
+
+enum ReminderDispatchStatus {
+  QUEUED
+  DISPATCHED
+  DELIVERED
+  FAILED
+}
+
+enum CadenceTrigger {
+  ON_DUE_DATE
+  AFTER_DUE_DAYS
+  AFTER_LAST_REMINDER_DAYS
+}
+
+model PromiseToPay {
+  id            String             @id @default(cuid())
+  businessId    String
+  partyId       String
+  invoiceId     String?
+
+  amountPaise   Int
+  promiseDate   DateTime
+  status        PromiseToPayStatus @default(OPEN)
+  notes         String?            @db.VarChar(500)
+
+  keptAt        DateTime?
+  brokenAt      DateTime?
+  cancelledAt   DateTime?
+  cancelReason  String?            @db.VarChar(500)
+
+  satisfyingPaymentIds String[] @default([])
+
+  clientId      String?  @unique
+
+  isDeleted     Boolean  @default(false)
+  deletedAt     DateTime?
+  deletedBy     String?
+  createdBy     String
+  updatedBy     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  business Business  @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  party    Party     @relation(fields: [partyId], references: [id], onDelete: Restrict)
+  invoice  Document? @relation("PtpInvoice", fields: [invoiceId], references: [id], onDelete: SetNull)
+
+  @@index([businessId, status])
+  @@index([businessId, partyId])
+  @@index([businessId, promiseDate, status])
+  @@index([businessId, isDeleted])
+  @@index([clientId])
+}
+
+model PaymentLink {
+  id           String            @id @default(cuid())
+  businessId   String
+  invoiceId    String
+  partyId      String
+
+  razorpayLinkId        String?  @unique
+  shortUrl              String?
+  amountPaise           Int
+  currency              String   @default("INR") @db.VarChar(3)
+  status                PaymentLinkStatus @default(CREATED)
+
+  expireBy              DateTime
+  expiredAt             DateTime?
+  paidAt                DateTime?
+  paidAmountPaise       Int      @default(0)
+  cancelledAt           DateTime?
+
+  description           String?  @db.VarChar(280)
+  notifyChannels        String[] @default([])
+
+  createIdempotencyKey  String?  @unique
+
+  lastWebhookEvent      String?  @db.VarChar(64)
+  lastWebhookAt         DateTime?
+
+  isDeleted    Boolean  @default(false)
+  deletedAt    DateTime?
+  deletedBy    String?
+  createdBy    String
+  updatedBy    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  business Business  @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  invoice  Document  @relation("PaymentLinkInvoice", fields: [invoiceId], references: [id], onDelete: Restrict)
+  party    Party     @relation(fields: [partyId], references: [id], onDelete: Restrict)
+
+  @@index([businessId, status])
+  @@index([businessId, invoiceId])
+  @@index([businessId, partyId])
+  @@index([expireBy, status])
+  @@index([businessId, isDeleted])
+}
+
+model ReminderLog {
+  id          String                @id @default(cuid())
+  businessId  String
+  partyId     String
+  invoiceId   String?
+
+  origin      String                @db.VarChar(20)
+  bulkBatchId String?               @db.VarChar(40)
+  cadenceId   String?
+
+  channel     ReminderChannel
+  status      ReminderDispatchStatus @default(QUEUED)
+
+  renderedMessage String            @db.Text
+  templateKey     String?           @db.VarChar(40)
+
+  recipientPhone  String?           @db.VarChar(20)
+  dispatchedAt    DateTime?
+  failedAt        DateTime?
+  failureReason   String?           @db.VarChar(500)
+
+  snapshotOutstandingPaise Int
+
+  createdBy   String
+  createdAt   DateTime @default(now())
+
+  business Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  party    Party     @relation(fields: [partyId], references: [id], onDelete: Restrict)
+  invoice  Document? @relation("ReminderLogInvoice", fields: [invoiceId], references: [id], onDelete: SetNull)
+
+  @@index([businessId, partyId, createdAt])
+  @@index([businessId, invoiceId, createdAt])
+  @@index([businessId, status, createdAt])
+  @@index([businessId, bulkBatchId])
+}
+
+model CollectionCadence {
+  id                String          @id @default(cuid())
+  businessId        String
+  name              String          @db.VarChar(80)
+  enabled           Boolean         @default(false)
+  trigger           CadenceTrigger
+  triggerOffsetDays Int             @default(0)
+  channel           ReminderChannel @default(WHATSAPP)
+  templateKey       String          @db.VarChar(40)
+  quietHoursStart   String          @default("21:00") @db.VarChar(5)
+  quietHoursEnd     String          @default("09:00") @db.VarChar(5)
+
+  filters           Json            @default("{}")
+
+  isDeleted  Boolean  @default(false)
+  deletedAt  DateTime?
+  createdBy  String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  business  Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, name])
+  @@index([businessId, enabled])
+}
+
 // === Settings & Security ===
 
 model Role {
@@ -1110,7 +1309,8 @@ model AuditLog {
   entityType  String
   entityId    String
   entityLabel String?
-  userId      String
+  userId      String?           // nullable: cron/system actors use systemActor instead
+  systemActor String?           @db.VarChar(50)   // MB-7: identifies cron job or system process
   changes     Json?
   reason      String?
   ipAddress   String?
@@ -1118,7 +1318,7 @@ model AuditLog {
   createdAt   DateTime @default(now())
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  user     User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  user     User?    @relation(fields: [userId], references: [id], onDelete: Restrict)
 
   // Immutable — no updatedAt
   @@index([businessId, createdAt])

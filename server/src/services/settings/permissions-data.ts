@@ -150,6 +150,16 @@ export const PERMISSION_MATRIX = [
       { key: 'delete', label: 'Delete Custom Orders' },
     ],
   },
+  // Payments & Collections Hub
+  {
+    key: 'collections', label: 'Collections',
+    actions: [
+      { key: 'view',    label: 'View Collections Dashboard' },
+      { key: 'remind',  label: 'Send Payment Reminders' },
+      { key: 'collect', label: 'Create/Manage Payment Links' },
+      { key: 'ptp',     label: 'Record and Track Payment Promises' },
+    ],
+  },
 ]
 
 export const ALL_PERMISSIONS = PERMISSION_MATRIX.flatMap(m =>
@@ -180,6 +190,8 @@ export const SYSTEM_ROLES: Array<{
       'parties.view', 'payments.view', 'payments.record',
       'reports.view', 'templates.view', 'fields.viewPartyPhone',
       'jobs.view', 'jobs.create', 'jobs.edit',
+      // Collections: view + remind + ptp (NOT collect — no payment links)
+      'collections.view', 'collections.remind', 'collections.ptp',
     ],
   },
   {
