@@ -50,9 +50,12 @@ describe('validateInvoiceForm', () => {
     termsAndConditions: '',
     vehicleNumber: '',
     includeSignature: false,
-    lineItems: [{ productId: 'p1', quantity: 2, rate: 10000, discountType: 'PERCENTAGE', discountValue: 0 }],
+    lineItems: [{ productId: 'p1', quantity: 2, rate: 10000, discountType: 'PERCENTAGE', discountValue: 0, taxCategoryId: null, hsnCode: '' }],
     additionalCharges: [],
     transportDetails: null,
+    taxPricingMode: 'EXCLUSIVE' as const,
+    isReverseCharge: false,
+    supplyType: 'B2C_SMALL',
   }
 
   it('returns empty errors for valid form', () => {
@@ -77,7 +80,7 @@ describe('validateInvoiceForm', () => {
 
   it('validates individual line item fields', () => {
     const badItems = [
-      { productId: '', productName: '', quantity: 0, rate: -1, discountType: 'PERCENTAGE' as const, discountValue: 0 },
+      { productId: '', productName: '', quantity: 0, rate: -1, discountType: 'PERCENTAGE' as const, discountValue: 0, taxCategoryId: null, hsnCode: '' },
     ]
     const errors = validateInvoiceForm({ ...validForm, lineItems: badItems }, false)
     expect(errors['lineItems.0.productId']).toBeTruthy()
@@ -109,6 +112,9 @@ describe('normalizeFormPayload', () => {
     lineItems: [],
     additionalCharges: [],
     transportDetails: null,
+    taxPricingMode: 'EXCLUSIVE' as const,
+    isReverseCharge: false,
+    supplyType: 'B2C_SMALL',
   }
 
   it('sets status to target status', () => {

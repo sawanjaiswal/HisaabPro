@@ -63,6 +63,8 @@ export function EditInvoiceForm({
       rate: ratePaise,
       discountType: 'PERCENTAGE',
       discountValue: 0,
+      taxCategoryId: null,
+      hsnCode: '',
     })
   }, [form.lineItems, addLineItem])
 

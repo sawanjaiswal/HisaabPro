@@ -21,6 +21,7 @@ import type {
   DocumentSummary,
   TransportDetails,
 } from './invoice-document.types'
+import type { TaxPricingMode } from '../tax/tax.types'
 
 // ─── API Responses ────────────────────────────────────────────────────────────
 
@@ -116,6 +117,10 @@ export interface LineItemFormData {
   discountType: DiscountType
   /** 0-100 for PERCENTAGE, paise for AMOUNT */
   discountValue: number
+  /** GST Phase 2 — tax category for this line; null = Exempt / not set */
+  taxCategoryId: string | null
+  /** GST Phase 2 — HSN or SAC code for this line */
+  hsnCode: string
 }
 
 /** Additional charge as entered in the form — `amount` is calculated by the hook */
@@ -147,6 +152,14 @@ export interface DocumentFormData {
   additionalCharges: AdditionalChargeFormData[]
   /** Only used for DELIVERY_CHALLAN */
   transportDetails?: TransportDetails | null
+  /** GST Phase 2 — 2-char state code or "OOS"; required when gstEnabled */
+  placeOfSupply?: string
+  /** GST Phase 2 — how tax is priced (exclusive = added on top, inclusive = baked in) */
+  taxPricingMode: TaxPricingMode
+  /** GST Phase 2 — reverse charge mechanism flag */
+  isReverseCharge: boolean
+  /** GST Phase 2 — supply type for GSTR categorization */
+  supplyType: string
 }
 
 // ─── Document Conversion ──────────────────────────────────────────────────────

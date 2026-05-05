@@ -19,6 +19,8 @@ import { InvoiceTotalsBar } from './components/InvoiceTotalsBar'
 import { InvoiceItemsSection } from './components/InvoiceItemsSection'
 import { InvoiceDetailsSection } from './components/InvoiceDetailsSection'
 import { InvoiceChargesSection } from './components/InvoiceChargesSection'
+import { GstInvoiceHeader } from './components/GstInvoiceHeader'
+import { UntaggedTaxDialog } from './components/UntaggedTaxDialog'
 import { FORM_SECTIONS } from './invoice.constants'
 import './invoice-party-search.css'
 import './invoice-line-items.css'
@@ -46,6 +48,10 @@ export default function CreateInvoicePage() {
     hasStockBlocks,
     handleSubmit,
     handleSaveDraft,
+    gstEnabled,
+    showUntaggedDialog,
+    confirmUntaggedSubmit,
+    dismissUntaggedDialog,
   } = useInvoiceForm('SALE_INVOICE')
 
   const location = useLocation()
@@ -59,10 +65,9 @@ export default function CreateInvoicePage() {
 
     const names: Record<string, string> = {}
     for (const item of state.scannedItems) {
-      // Use a scan-prefixed ID so items render with names
       const scanId = item.productId || `scan-${crypto.randomUUID()}`
       names[scanId] = item.productName
-      addLineItem({ productId: scanId, quantity: item.quantity, rate: item.rate, discountType: item.discountType, discountValue: item.discountValue })
+      addLineItem({ productId: scanId, quantity: item.quantity, rate: item.rate, discountType: item.discountType, discountValue: item.discountValue, taxCategoryId: null, hsnCode: '' })
     }
     setProductNames((prev) => ({ ...prev, ...names }))
 
@@ -70,7 +75,6 @@ export default function CreateInvoicePage() {
       updateField('documentDate', state.scannedDate)
     }
 
-    // Clear navigation state so refresh doesn't re-add
     window.history.replaceState({}, '')
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -89,6 +93,8 @@ export default function CreateInvoicePage() {
       rate: ratePaise,
       discountType: 'PERCENTAGE',
       discountValue: 0,
+      taxCategoryId: null,
+      hsnCode: '',
     })
   }, [form.lineItems, addLineItem])
 
@@ -96,10 +102,14 @@ export default function CreateInvoicePage() {
     setShowProductSearch((v) => !v)
   }, [])
 
+  const formTitle = gstEnabled && form.supplyType === 'B2C_SMALL'
+    ? t.newInvoice
+    : t.newInvoice
+
   return (
     <AppShell>
       <Header
-        title={t.newInvoice}
+        title={formTitle}
         backTo={ROUTES.INVOICES}
         actions={
           <Button variant="ghost" size="sm" onClick={() => nav(ROUTES.BILL_SCAN)} aria-label={t.scanBillAddItems}>
@@ -110,6 +120,14 @@ export default function CreateInvoicePage() {
       />
 
       <PageContainer className="invoice-details-section stagger-enter py-0 space-y-6">
+        {gstEnabled && (
+          <GstInvoiceHeader
+            form={form}
+            errors={errors}
+            onUpdateField={updateField}
+          />
+        )}
+
         <nav className="pill-tabs" role="tablist" aria-label={t.invoiceFormSections}>
           {FORM_SECTIONS.map((section) => (
             <button
@@ -140,6 +158,8 @@ export default function CreateInvoicePage() {
               errors={errors}
               stockWarnings={stockWarnings}
               hasStockBlocks={hasStockBlocks}
+              gstEnabled={gstEnabled}
+              compositionScheme={false}
               onPartyChange={handlePartyChange}
               onProductSelect={handleProductSelect}
               onUpdateLineItem={updateLineItem}
@@ -184,6 +204,13 @@ export default function CreateInvoicePage() {
         onSaveDraft={handleSaveDraft}
         showProfit={false}
       />
+
+      {showUntaggedDialog && (
+        <UntaggedTaxDialog
+          onConfirm={confirmUntaggedSubmit}
+          onCancel={dismissUntaggedDialog}
+        />
+      )}
     </AppShell>
   )
 }

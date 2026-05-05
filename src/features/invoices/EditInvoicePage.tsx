@@ -34,6 +34,8 @@ function detailToFormData(detail: DocumentDetail): DocumentFormData {
       rate: li.rate,
       discountType: li.discountType,
       discountValue: li.discountValue,
+      taxCategoryId: null,
+      hsnCode: '',
     })),
     additionalCharges: detail.additionalCharges.map((ch) => ({
       name: ch.name,
@@ -41,6 +43,10 @@ function detailToFormData(detail: DocumentDetail): DocumentFormData {
       value: ch.value,
     })),
     transportDetails: detail.transportDetails ?? null,
+    taxPricingMode: detail.taxPricingMode ?? 'EXCLUSIVE',
+    isReverseCharge: detail.isReverseCharge ?? false,
+    supplyType: detail.supplyType ?? 'B2C_SMALL',
+    placeOfSupply: detail.placeOfSupply ?? undefined,
   }
 }
 

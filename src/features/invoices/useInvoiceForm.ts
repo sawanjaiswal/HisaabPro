@@ -6,6 +6,7 @@
  *
  * Pure logic (validation, initial state, payload normalization) lives in
  * invoice-form.utils.ts. Types/interfaces in invoice-form.types.ts.
+ * GST Phase 2 extensions live in useGstInvoice.ts.
  */
 
 import { useState, useCallback, useMemo } from 'react'
@@ -27,6 +28,7 @@ import type {
 import type { UseInvoiceFormOptions, UseInvoiceFormReturn, FormSection } from './invoice-form.types'
 import { buildInitialForm, validateInvoiceForm, normalizeFormPayload } from './invoice-form.utils'
 import { useStockValidation } from './useStockValidation'
+import { useGstInvoice } from './useGstInvoice'
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
@@ -53,8 +55,6 @@ export function useInvoiceForm(
     value: DocumentFormData[K],
   ) => {
     setForm((prev) => ({ ...prev, [key]: value }))
-
-    // Clear field error on change
     setErrors((prev) => {
       if (!prev[key as string]) return prev
       const next = { ...prev }
@@ -66,12 +66,7 @@ export function useInvoiceForm(
   // ─── Line item operations ──────────────────────────────────────────────────
 
   const addLineItem = useCallback((item: LineItemFormData) => {
-    setForm((prev) => ({
-      ...prev,
-      lineItems: [...prev.lineItems, item],
-    }))
-
-    // Clear line item error when at least one item is added
+    setForm((prev) => ({ ...prev, lineItems: [...prev.lineItems, item] }))
     setErrors((prev) => {
       if (!prev.lineItems) return prev
       const next = { ...prev }
@@ -82,46 +77,30 @@ export function useInvoiceForm(
 
   const updateLineItem = useCallback((index: number, patch: Partial<LineItemFormData>) => {
     setForm((prev) => {
-      const updated = prev.lineItems.map((item, i) =>
-        i === index ? { ...item, ...patch } : item,
-      )
+      const updated = prev.lineItems.map((item, i) => i === index ? { ...item, ...patch } : item)
       return { ...prev, lineItems: updated }
     })
   }, [])
 
   const removeLineItem = useCallback((index: number) => {
-    setForm((prev) => ({
-      ...prev,
-      lineItems: prev.lineItems.filter((_, i) => i !== index),
-    }))
+    setForm((prev) => ({ ...prev, lineItems: prev.lineItems.filter((_, i) => i !== index) }))
   }, [])
 
   // ─── Additional charge operations ─────────────────────────────────────────
 
   const addCharge = useCallback((charge: AdditionalChargeFormData) => {
-    setForm((prev) => ({
-      ...prev,
-      additionalCharges: [...prev.additionalCharges, charge],
-    }))
+    setForm((prev) => ({ ...prev, additionalCharges: [...prev.additionalCharges, charge] }))
   }, [])
 
-  const updateCharge = useCallback((
-    index: number,
-    patch: Partial<AdditionalChargeFormData>,
-  ) => {
+  const updateCharge = useCallback((index: number, patch: Partial<AdditionalChargeFormData>) => {
     setForm((prev) => {
-      const updated = prev.additionalCharges.map((charge, i) =>
-        i === index ? { ...charge, ...patch } : charge,
-      )
+      const updated = prev.additionalCharges.map((ch, i) => i === index ? { ...ch, ...patch } : ch)
       return { ...prev, additionalCharges: updated }
     })
   }, [])
 
   const removeCharge = useCallback((index: number) => {
-    setForm((prev) => ({
-      ...prev,
-      additionalCharges: prev.additionalCharges.filter((_, i) => i !== index),
-    }))
+    setForm((prev) => ({ ...prev, additionalCharges: prev.additionalCharges.filter((_, i) => i !== index) }))
   }, [])
 
   // ─── Real-time totals ─────────────────────────────────────────────────────
@@ -134,26 +113,31 @@ export function useInvoiceForm(
       discountValue: item.discountValue,
       purchasePricePaise: 0,
     }))
-
     const chargeCalcs: ChargeCalc[] = form.additionalCharges.map((charge) => ({
       type: charge.type,
       value: charge.value,
     }))
-
     return calculateInvoiceTotals(lineItemCalcs, chargeCalcs, roundOffSetting)
   }, [form.lineItems, form.additionalCharges, roundOffSetting])
 
-  // ─── Stock validation (debounced, via dedicated hook) ─────────────────────
+  // ─── Stock validation ─────────────────────────────────────────────────────
 
   const { stockWarnings, hasStockBlocks } = useStockValidation(form.lineItems, type)
 
   // ─── Validation ───────────────────────────────────────────────────────────
 
+  const { gstEnabled } = useGstInvoice({
+    form,
+    isSubmitting: false,
+    doSubmit: async () => { /* placeholder — overridden below */ },
+    setLineItems: (updater) => setForm((prev) => ({ ...prev, lineItems: updater(prev.lineItems) })),
+  })
+
   const validate = useCallback((): boolean => {
-    const next = validateInvoiceForm(form, hasStockBlocks)
+    const next = validateInvoiceForm(form, hasStockBlocks, gstEnabled)
     setErrors(next)
     return Object.keys(next).length === 0
-  }, [form, hasStockBlocks])
+  }, [form, hasStockBlocks, gstEnabled])
 
   // ─── Submit mutation ──────────────────────────────────────────────────────
 
@@ -169,7 +153,6 @@ export function useInvoiceForm(
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.invoices.all() })
-
       if (result.mode === 'edit') {
         toast.success('Invoice updated')
         navigate(`/invoices/${result.editId}`)
@@ -187,23 +170,37 @@ export function useInvoiceForm(
 
   const isSubmitting = submitMutation.isPending
 
-  const submitWithStatus = useCallback(async (
-    targetStatus: 'SAVED' | 'DRAFT',
-  ) => {
+  const doSubmitSaved = useCallback(async () => {
+    await submitMutation.mutateAsync('SAVED')
+  }, [submitMutation])
+
+  // ─── GST Phase 2 extensions ───────────────────────────────────────────────
+
+  const {
+    showUntaggedDialog,
+    confirmUntaggedSubmit,
+    dismissUntaggedDialog,
+    applyInclusivePricing,
+    gstAwareSubmit,
+  } = useGstInvoice({
+    form,
+    isSubmitting,
+    doSubmit: doSubmitSaved,
+    setLineItems: (updater) => setForm((prev) => ({ ...prev, lineItems: updater(prev.lineItems) })),
+  })
+
+  const submitWithStatus = useCallback(async (targetStatus: 'SAVED' | 'DRAFT') => {
     if (targetStatus === 'SAVED' && !validate()) return
     if (isSubmitting) return
-    await submitMutation.mutateAsync(targetStatus)
-  }, [validate, isSubmitting, submitMutation])
+    if (targetStatus === 'SAVED') {
+      await gstAwareSubmit(targetStatus)
+    } else {
+      await submitMutation.mutateAsync(targetStatus)
+    }
+  }, [validate, isSubmitting, gstAwareSubmit, submitMutation])
 
-  const handleSubmit = useCallback(async () => {
-    await submitWithStatus('SAVED')
-  }, [submitWithStatus])
-
-  const handleSaveDraft = useCallback(async () => {
-    await submitWithStatus('DRAFT')
-  }, [submitWithStatus])
-
-  // ─── Reset ────────────────────────────────────────────────────────────────
+  const handleSubmit = useCallback(async () => { await submitWithStatus('SAVED') }, [submitWithStatus])
+  const handleSaveDraft = useCallback(async () => { await submitWithStatus('DRAFT') }, [submitWithStatus])
 
   const reset = useCallback(() => {
     setForm(initialData ?? buildInitialForm(type))
@@ -212,26 +209,12 @@ export function useInvoiceForm(
   }, [type, initialData])
 
   return {
-    form,
-    errors,
-    isSubmitting,
-    isEditMode,
-    activeSection,
-    setActiveSection,
-    updateField,
-    addLineItem,
-    updateLineItem,
-    removeLineItem,
-    addCharge,
-    updateCharge,
-    removeCharge,
-    totals,
-    stockWarnings,
-    hasStockBlocks,
-    validate,
-    handleSubmit,
-    handleSaveDraft,
-    reset,
+    form, errors, isSubmitting, isEditMode, activeSection, setActiveSection,
+    updateField, addLineItem, updateLineItem, removeLineItem,
+    addCharge, updateCharge, removeCharge,
+    totals, stockWarnings, hasStockBlocks, validate,
+    handleSubmit, handleSaveDraft, reset,
+    gstEnabled, showUntaggedDialog, confirmUntaggedSubmit, dismissUntaggedDialog, applyInclusivePricing,
   }
 }
 

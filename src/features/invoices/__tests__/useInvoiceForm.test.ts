@@ -39,6 +39,8 @@ function makeLineItem(overrides: Partial<LineItemFormData> = {}): LineItemFormDa
     rate: 10000, // 100.00 rupees in paise
     discountType: 'PERCENTAGE',
     discountValue: 0,
+    taxCategoryId: null,
+    hsnCode: '',
     ...overrides,
   }
 }

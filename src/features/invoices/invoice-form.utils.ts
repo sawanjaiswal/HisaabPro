@@ -28,6 +28,11 @@ export function buildInitialForm(type: DocumentType): DocumentFormData {
     lineItems: [],
     additionalCharges: [],
     transportDetails: null,
+    // GST Phase 2 defaults
+    placeOfSupply: undefined,
+    taxPricingMode: 'EXCLUSIVE',
+    isReverseCharge: false,
+    supplyType: 'B2C_SMALL',
   }
 }
 
@@ -36,6 +41,7 @@ export function buildInitialForm(type: DocumentType): DocumentFormData {
 export function validateInvoiceForm(
   form: DocumentFormData,
   hasStockBlocks: boolean,
+  gstEnabled = false,
 ): Record<string, string> {
   const errors: Record<string, string> = {}
 
@@ -49,6 +55,11 @@ export function validateInvoiceForm(
 
   if (form.lineItems.length === 0) {
     errors.lineItems = 'At least one item is required'
+  }
+
+  // GST Phase 2 — place of supply required when GST enabled
+  if (gstEnabled && !form.placeOfSupply) {
+    errors.placeOfSupply = 'Place of supply is required when GST is enabled'
   }
 
   form.lineItems.forEach((item, index) => {
@@ -69,6 +80,11 @@ export function validateInvoiceForm(
   }
 
   return errors
+}
+
+/** Returns true if any line item has taxCategoryId = null (untagged) */
+export function hasUntaggedTaxLines(form: DocumentFormData): boolean {
+  return form.lineItems.some((item) => item.taxCategoryId === null)
 }
 
 // ─── Payload normalization (pure — returns cleaned form data) ───────────────

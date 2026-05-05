@@ -1,6 +1,7 @@
 /** Invoice Items Section — shared between Create & Edit Invoice pages
  *
  * Renders: party search, line item editors, stock warnings, product search toggle.
+ * GST Phase 2: TaxPickerColumn + HsnTypeahead conditionally rendered per line.
  * All amounts in PAISE.
  */
 
@@ -9,6 +10,8 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { LineItemEditor } from './LineItemEditor'
 import { PartySearchInput } from './PartySearchInput'
 import { ProductSearchInput } from './ProductSearchInput'
+import { TaxPickerColumn } from './TaxPickerColumn'
+import { HsnTypeahead } from './HsnTypeahead'
 import { calculateLineTotal } from '../invoice-calc.utils'
 import { calculateLineProfit } from '../invoice-totals.utils'
 import type { LineItemFormData } from '../invoice.types'
@@ -22,6 +25,10 @@ interface InvoiceItemsSectionProps {
   errors: Record<string, string>
   stockWarnings: StockValidationItem[]
   hasStockBlocks: boolean
+  /** GST Phase 2 — when true, tax picker and HSN columns are shown */
+  gstEnabled?: boolean
+  /** GST Phase 2 — when true, tax picker is hidden (composition scheme) */
+  compositionScheme?: boolean
   onPartyChange: (id: string, name: string) => void
   onProductSelect: (productId: string, ratePaise: number, productName: string) => void
   onUpdateLineItem: (index: number, item: Partial<LineItemFormData>) => void
@@ -37,6 +44,8 @@ export function InvoiceItemsSection({
   errors,
   stockWarnings,
   hasStockBlocks,
+  gstEnabled = false,
+  compositionScheme = false,
   onPartyChange,
   onProductSelect,
   onUpdateLineItem,
@@ -68,21 +77,41 @@ export function InvoiceItemsSection({
           discountAmount,
         )
         return (
-          <LineItemEditor
-            key={item.productId}
-            item={{
-              ...item,
-              productName: productNames[item.productId] ?? `${t.item} ${index + 1}`,
-              discountAmount,
-              lineTotal,
-              profit,
-              profitPercent,
-            }}
-            index={index}
-            onUpdate={onUpdateLineItem}
-            onRemove={onRemoveLineItem}
-            showProfit={false}
-          />
+          <div key={item.productId} className="line-item-with-gst">
+            <LineItemEditor
+              item={{
+                ...item,
+                productName: productNames[item.productId] ?? `${t.item} ${index + 1}`,
+                discountAmount,
+                lineTotal,
+                profit,
+                profitPercent,
+              }}
+              index={index}
+              onUpdate={onUpdateLineItem}
+              onRemove={onRemoveLineItem}
+              showProfit={false}
+            />
+
+            {gstEnabled && (
+              <div className="line-item-gst-row">
+                {!compositionScheme && (
+                  <TaxPickerColumn
+                    lineIndex={index}
+                    taxCategoryId={item.taxCategoryId}
+                    isNewLine={true}
+                    compositionScheme={compositionScheme}
+                    onChange={(id) => onUpdateLineItem(index, { taxCategoryId: id })}
+                  />
+                )}
+                <HsnTypeahead
+                  lineIndex={index}
+                  value={item.hsnCode ?? ''}
+                  onSelect={(code, _rate) => onUpdateLineItem(index, { hsnCode: code })}
+                />
+              </div>
+            )}
+          </div>
         )
       })}
 

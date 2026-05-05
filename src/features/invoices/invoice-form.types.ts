@@ -54,6 +54,12 @@ export interface UseInvoiceFormReturn {
   handleSubmit: () => Promise<void>
   handleSaveDraft: () => Promise<void>
   reset: () => void
+  // GST Phase 2
+  gstEnabled: boolean
+  showUntaggedDialog: boolean
+  confirmUntaggedSubmit: () => Promise<void>
+  dismissUntaggedDialog: () => void
+  applyInclusivePricing: (taxRateBP: number) => void
 }
 
 // Re-export types needed by sub-components
