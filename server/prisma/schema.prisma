@@ -2559,3 +2559,17 @@ model CustomOrderAdvance {
 
   @@index([customOrderId])
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PR 4 — Webhook Event Deduplication (MB-1)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/// Idempotency store for inbound webhooks.
+/// INSERT before processing; ON CONFLICT DO NOTHING; if 0 rows → replay.
+model WebhookEvent {
+  id          String   @id @default(cuid())
+  eventId     String   @unique
+  source      String?  @db.VarChar(20)
+  payload     Json?
+  processedAt DateTime @default(now())
+}

@@ -1,0 +1,179 @@
+/**
+ * Webhook handler: payment_link.paid
+ *
+ * Implements MB-1 (replay dedupe), MB-2 (tenant trust), MB-5 (amount gate).
+ * All writes happen in one Prisma transaction.
+ */
+
+import { prisma } from '../../lib/prisma.js'
+import logger from '../../lib/logger.js'
+
+interface RazorpayPaymentLinkPaidEvent {
+  id: string                        // Razorpay event id (used for MB-1 dedupe)
+  event: string
+  payload: {
+    payment_link: {
+      entity: {
+        id: string                   // razorpayLinkId
+        amount: number               // paise
+        status: string
+      }
+    }
+    payment: {
+      entity: {
+        id: string                   // razorpay_payment_id
+        amount: number               // paise actually collected
+        method: string
+      }
+    }
+  }
+}
+
+/**
+ * Process payment_link.paid webhook.
+ *
+ * Returns { noOp: true } on duplicate event id (MB-1).
+ * Resolves tenant from PaymentLink row, never from payload notes (MB-2).
+ */
+export async function processWebhookPaymentLinkPaid(
+  event: RazorpayPaymentLinkPaidEvent,
+  rawPayload: unknown,
+) {
+  const rzLinkId = event.payload.payment_link.entity.id
+  const rzPaymentId = event.payload.payment.entity.id
+  const paidAmountPaise = event.payload.payment.entity.amount
+  const rzMethod = event.payload.payment.entity.method
+
+  // MB-1: Idempotency — INSERT WebhookEvent; if conflict, skip.
+  const inserted = await prisma.$executeRaw`
+    INSERT INTO "WebhookEvent" ("id", "eventId", "source", "payload", "processedAt")
+    VALUES (gen_random_uuid()::text, ${event.id}, 'razorpay', ${JSON.stringify(rawPayload)}::jsonb, NOW())
+    ON CONFLICT ("eventId") DO NOTHING
+  `
+
+  if (inserted === 0) {
+    logger.info('payment_link.webhook.replay_skipped', { eventId: event.id })
+    return { noOp: true }
+  }
+
+  // MB-2: Resolve businessId from our DB, not from payload notes
+  const link = await prisma.paymentLink.findUnique({
+    where: { razorpayLinkId: rzLinkId },
+    select: {
+      id: true,
+      businessId: true,
+      invoiceId: true,
+      partyId: true,
+      amountPaise: true,
+      status: true,
+      createdBy: true,   // use as payment.createdBy (system webhook proxy)
+    },
+  })
+
+  if (!link) {
+    logger.warn('payment_link.webhook.link_not_found', { rzLinkId, eventId: event.id })
+    // Acknowledge to Razorpay; nothing to process
+    return { noOp: true, reason: 'link_not_found' }
+  }
+
+  if (link.status === 'PAID') {
+    logger.info('payment_link.webhook.already_paid', { linkId: link.id })
+    return { noOp: true, reason: 'already_paid' }
+  }
+
+  const WEBHOOK_ACTOR = 'webhook:razorpay'
+  // Use the payment link creator as the payment's createdBy (FK constraint).
+  // The systemActor field in AuditLog records the true actor.
+  const paymentCreatedBy = link.createdBy
+
+  await prisma.$transaction(async (tx) => {
+    // Create Payment row — use actual paid amount (MB-5: don't trust link amount)
+    const payment = await tx.payment.create({
+      data: {
+        businessId: link.businessId,
+        type: 'PAYMENT_IN',
+        partyId: link.partyId,
+        amount: paidAmountPaise,
+        date: new Date(),
+        mode: normalizeMode(rzMethod),
+        referenceNumber: rzPaymentId,
+        notes: `Razorpay payment link ${rzLinkId}`,
+        createdBy: paymentCreatedBy,
+      },
+    })
+
+    // Allocate payment to invoice
+    await tx.paymentAllocation.create({
+      data: {
+        paymentId: payment.id,
+        invoiceId: link.invoiceId,
+        amount: paidAmountPaise,
+      },
+    })
+
+    // Update invoice balanceDue + paidAmount
+    await tx.document.update({
+      where: { id: link.invoiceId },
+      data: {
+        paidAmount: { increment: paidAmountPaise },
+        balanceDue: { decrement: paidAmountPaise },
+      },
+    })
+
+    // Update party outstanding (payment in reduces receivable)
+    await tx.party.update({
+      where: { id: link.partyId },
+      data: {
+        outstandingBalance: { increment: -paidAmountPaise },
+        lastTransactionAt: new Date(),
+      },
+    })
+
+    // Mark link PAID
+    await tx.paymentLink.update({
+      where: { id: link.id },
+      data: {
+        status: 'PAID',
+        paidAt: new Date(),
+        paidAmountPaise,
+        lastWebhookEvent: event.id,
+        lastWebhookAt: new Date(),
+        updatedBy: WEBHOOK_ACTOR,
+      },
+    })
+
+    // Audit log with systemActor
+    await tx.auditLog.create({
+      data: {
+        businessId: link.businessId,
+        action: 'PAYMENT_LINK_PAID',
+        entityType: 'PaymentLink',
+        entityId: link.id,
+        entityLabel: rzLinkId,
+        systemActor: WEBHOOK_ACTOR,
+        changes: {
+          rzPaymentId,
+          paidAmountPaise,
+          paymentId: payment.id,
+        },
+      },
+    })
+  })
+
+  logger.info('payment_link.webhook.processed', {
+    linkId: link.id,
+    rzPaymentId,
+    paidAmountPaise,
+  })
+
+  return { noOp: false, linkId: link.id }
+}
+
+/** Map Razorpay method strings to our Payment.mode values (lowercase per spec). */
+function normalizeMode(method: string): string {
+  const m = method.toLowerCase()
+  if (m === 'upi') return 'upi'
+  if (m === 'card' || m === 'credit_card') return 'credit_card'
+  if (m === 'netbanking') return 'bank_transfer'
+  return 'other'
+}

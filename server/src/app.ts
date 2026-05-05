@@ -68,6 +68,7 @@ import adminRoutes from './routes/admin/index.js'
 import recycleBinRoutes from './routes/recycle-bin.js'
 import eventRoutes from './routes/events.js'
 import collectionsAgingRoutes from './routes/collections/aging.route.js'
+import paymentLinksRoutes from './routes/payments/payment-links.route.js'
 import sessionRoutes from './routes/sessions.js'
 import exportRoutes from './routes/export.js'
 import { subscriptionRouter } from './routes/subscription.js'
@@ -181,6 +182,7 @@ export function createApp() {
   app.use('/api/jobs', jobRoutes)
   app.use('/api/custom-orders', customOrderRoutes)
   app.use('/api/settings/documents', documentSettingsRoutes)
+  app.use('/api/payments/payment-links', paymentLinksRoutes)
   app.use('/api/payments', paymentRoutes)
   app.use('/api/dashboard', dashboardRoutes)
   app.use('/api/reports', reportRoutes)

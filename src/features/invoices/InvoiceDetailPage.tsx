@@ -7,7 +7,7 @@
 
 import { useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Pencil, Trash2, Share2, FileText, ImageDown } from 'lucide-react'
+import { Pencil, Trash2, Share2, FileText, ImageDown, Link } from 'lucide-react'
 import { ROUTES } from '@/config/routes.config'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -27,6 +27,7 @@ import { InvoiceOverviewPanel } from './components/InvoiceOverviewPanel'
 import { InvoiceItemsPanel } from './components/InvoiceItemsPanel'
 import { InvoiceSharePanel } from './components/InvoiceSharePanel'
 import { ShareInvoiceDrawer } from './components/ShareInvoiceDrawer'
+import { PaymentLinkSheet } from '@/features/collections/components/PaymentLinkSheet'
 import { EComplianceSection } from '@/features/documents/components/EComplianceSection'
 import { ECOMPLIANCE_DOCUMENT_TYPES } from './invoice.constants'
 import type { EComplianceDocumentType } from '@/features/documents/ecompliance.types'
@@ -47,6 +48,7 @@ export default function InvoiceDetailPage() {
   const [shareOpen, setShareOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [paymentLinkOpen, setPaymentLinkOpen] = useState(false)
 
   const handleDelete = () => {
     setIsDeleting(true)
@@ -84,6 +86,15 @@ export default function InvoiceDetailPage() {
       >
         <Share2 size={18} aria-hidden="true" />
       </button>
+      {document && ['SAVED', 'SHARED'].includes(document.status) && document.balanceDue > 0 && (
+        <button
+          className="btn btn-ghost btn-sm"
+          aria-label="Get Payment Link"
+          onClick={() => setPaymentLinkOpen(true)}
+        >
+          <Link size={18} aria-hidden="true" />
+        </button>
+      )}
       <button
         className="btn btn-ghost btn-sm"
         aria-label={isExporting ? t.exportingImage : t.exportAsImage}
@@ -205,6 +216,19 @@ export default function InvoiceDetailPage() {
           partyName={document.party.name}
           partyPhone={document.party.phone ?? undefined}
           grandTotal={document.grandTotal}
+        />
+      )}
+
+      {document && (['SAVED', 'SHARED'].includes(document.status) && document.balanceDue > 0) && (
+        <PaymentLinkSheet
+          open={paymentLinkOpen}
+          onClose={() => setPaymentLinkOpen(false)}
+          invoiceId={documentId}
+          invoiceNumber={document.documentNumber ?? documentId}
+          balanceDue={document.balanceDue}
+          partyName={document.party.name}
+          partyPhone={document.party.phone ?? undefined}
+          businessName=""
         />
       )}
       </AppShell>
