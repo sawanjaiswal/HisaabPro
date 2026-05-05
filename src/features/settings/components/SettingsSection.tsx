@@ -15,6 +15,10 @@ import {
   Calculator,
   Moon,
   Languages,
+  Briefcase,
+  Ruler,
+  Receipt,
+  Percent,
 } from 'lucide-react'
 import type { LucideProps } from 'lucide-react'
 import type { SettingsSection as SettingsSectionType, SettingsItem, AppSettings } from '../settings.types'
@@ -38,6 +42,10 @@ const ICON_MAP: Record<string, IconComponent> = {
   Calculator,
   Moon,
   Languages,
+  Briefcase,
+  Ruler,
+  Receipt,
+  Percent,
 }
 
 interface SettingsSectionProps {

@@ -1,6 +1,10 @@
 import { z } from 'zod'
 
-const BUSINESS_TYPES = ['general', 'retail', 'wholesale', 'manufacturing', 'services', 'restaurant', 'pharmacy', 'other'] as const
+const BUSINESS_TYPES = [
+  'general', 'retail', 'wholesale', 'manufacturing', 'services',
+  'restaurant', 'pharmacy', 'bakery', 'salon', 'clinic',
+  'tailor', 'freelancer', 'other',
+] as const
 
 export const createBusinessSchema = z.object({
   name: z.string().min(2, 'Business name must be at least 2 characters').max(100, 'Business name must be under 100 characters'),

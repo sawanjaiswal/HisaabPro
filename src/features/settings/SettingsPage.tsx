@@ -25,6 +25,8 @@ import {
   Languages,
   Receipt,
   Percent,
+  Briefcase,
+  Ruler,
   LogOut,
 } from 'lucide-react'
 import type { LucideProps } from 'lucide-react'
@@ -64,6 +66,8 @@ const ICON_MAP: Record<string, IconComponent> = {
   Languages,
   Receipt,
   Percent,
+  Briefcase,
+  Ruler,
 }
 
 function getNextDateFormat(current: DateFormat): DateFormat {

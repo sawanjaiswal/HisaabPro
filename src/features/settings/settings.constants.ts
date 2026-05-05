@@ -129,6 +129,14 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     title: 'Business',
     items: [
       {
+        id: 'business-type',
+        label: 'Business Type',
+        description: 'Switch between retail, services, restaurant, bakery and more',
+        icon: 'Briefcase',
+        route: ROUTES.BUSINESS_TYPE,
+        type: 'navigation',
+      },
+      {
         id: 'units',
         label: 'Units',
         description: 'Manage measurement units (kg, pcs, box, etc.)',

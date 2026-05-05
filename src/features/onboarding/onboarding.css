@@ -167,3 +167,63 @@
   text-align: center;
   padding: var(--space-1);
 }
+
+/* ─── Vertical picker (Phase 1: Business Verticals) ─────────────────────── */
+.vertical-picker {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  width: 100%;
+}
+@media (min-width: 480px) {
+  .vertical-picker { grid-template-columns: repeat(3, 1fr); }
+}
+.vertical-picker__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-2);
+  background: var(--color-gray-0);
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+  min-height: 110px;
+}
+.vertical-picker__card:hover {
+  border-color: var(--color-primary-300);
+  box-shadow: var(--shadow-sm);
+}
+.vertical-picker__card:active { transform: scale(0.98); }
+.vertical-picker__card.is-active {
+  border-color: var(--color-primary-500);
+  background: var(--color-primary-50);
+  box-shadow: 0 0 0 2px var(--color-primary-100);
+}
+.vertical-picker__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-50);
+  color: var(--color-primary-600);
+}
+.vertical-picker__card.is-active .vertical-picker__icon {
+  background: var(--color-primary-600);
+  color: var(--color-gray-0);
+}
+.vertical-picker__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-gray-900);
+  line-height: 1.2;
+}
+.vertical-picker__desc {
+  font-size: 11px;
+  color: var(--color-gray-500);
+  line-height: 1.3;
+}

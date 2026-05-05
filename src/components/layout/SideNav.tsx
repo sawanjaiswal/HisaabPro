@@ -18,6 +18,7 @@ import { ROUTES } from '@/config/routes.config'
 import { CALCULATOR_TOGGLE_EVENT, OPEN_SIDE_NAV_EVENT } from '@/config/events.config'
 import { MORE_MENU_ITEMS, MORE_MENU_GROUPS } from '@/features/more/more.constants'
 import { ICON_REGISTRY } from '@/features/more/more.icons'
+import { useVertical } from '@/hooks/useVertical'
 import { getBusinessInitials, getBusinessColor } from '@/features/business/business.utils'
 import './side-nav.css'
 import type React from 'react'
@@ -27,6 +28,7 @@ export function SideNav() {
   const { user, businesses, switchBusiness, isSwitching, switchingBusinessId, handleLogout } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const { t } = useLanguage()
+  const vertical = useVertical()
   const [open, setOpen] = useState(false)
   const [confirmLogout, setConfirmLogout] = useState(false)
   const closeRef = useRef<HTMLButtonElement>(null)
@@ -173,9 +175,11 @@ export function SideNav() {
             </section>
           )}
 
-          {/* Full app menu */}
+          {/* Full app menu — filtered by active business vertical */}
           {MORE_MENU_GROUPS.map((group) => {
-            const items = MORE_MENU_ITEMS.filter((item) => item.group === group.id)
+            const items = MORE_MENU_ITEMS.filter(
+              (item) => item.group === group.id && !vertical.hiddenNavKeys.has(item.navKey),
+            )
             if (items.length === 0) return null
             return (
               <section key={group.id} className="side-nav-section">

@@ -89,6 +89,7 @@ export const SmartGreetings = lazy(() => import('@/features/smart-greetings/Smar
 export const Units = lazy(() => import('@/features/units/UnitsPage'))
 export const JoinBusiness = lazy(() => import('@/features/business/JoinBusinessPage'))
 export const CreateBusiness = lazy(() => import('@/features/business/CreateBusinessPage'))
+export const BusinessType = lazy(() => import('@/features/business/BusinessTypePage'))
 export const Landing = lazy(() => import('@/features/landing/LandingPage'))
 export const AdminCoupons = lazy(() => import('@/features/admin/coupons/CouponsPage'))
 export const AdminCouponDetail = lazy(() => import('@/features/admin/coupons/CouponDetailPage'))

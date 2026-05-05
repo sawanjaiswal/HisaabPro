@@ -4,11 +4,12 @@ import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
 import { APP_NAME } from '../../config/app.config'
 import { useLanguage } from '../../context/LanguageContext'
-import { BUSINESS_TYPES } from './onboarding.constants'
+import type { BusinessType } from '@/config/verticals.config'
+import { VerticalPicker } from './components/VerticalPicker'
 import { useOnboarding } from './useOnboarding'
 import './onboarding.css'
 
-type Step = 'welcome' | 'setup'
+type Step = 'welcome' | 'pickType' | 'setup'
 
 const ICON_INVOICE = (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
@@ -92,10 +93,46 @@ export default function OnboardingPage() {
             variant="primary"
             size="lg"
             className="onboarding-submit"
+            onClick={() => setStep('pickType')}
+          >
+            {t.onboardingGetStarted}
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  if (step === 'pickType') {
+    return (
+      <div className="onboarding-page space-y-6">
+        <SEO title={t.pickBusinessType} />
+        <div className="onboarding-card stagger-enter">
+          <div className="onboarding-header">
+            <h1 className="onboarding-title">{t.pickBusinessType}</h1>
+            <p className="onboarding-subtitle">{t.pickBusinessTypeDesc}</p>
+          </div>
+
+          <VerticalPicker
+            value={businessType as BusinessType}
+            onChange={(type) => setBusinessType(type)}
+          />
+
+          <Button
+            type="button"
+            variant="primary"
+            size="lg"
+            className="onboarding-submit"
             onClick={() => setStep('setup')}
           >
             {t.onboardingGetStarted}
           </Button>
+          <button
+            type="button"
+            className="onboarding-back-btn"
+            onClick={() => setStep('welcome')}
+          >
+            {t.onboardingBack}
+          </button>
         </div>
       </div>
     )
@@ -139,26 +176,6 @@ export default function OnboardingPage() {
             required
           />
 
-          <div className="input-group">
-            <label htmlFor="businessType" className="input-label">
-              {t.onboardingBusinessType}
-            </label>
-            <select
-              id="businessType"
-              className="input onboarding-select"
-              value={businessType}
-              onChange={(e) => setBusinessType(e.target.value)}
-              disabled={loading}
-              aria-label={t.onboardingBusinessType}
-            >
-              {BUSINESS_TYPES.map((type) => (
-                <option key={type.value} value={type.value}>
-                  {t[type.labelKey]}
-                </option>
-              ))}
-            </select>
-          </div>
-
           <Input
             id="phone"
             label={t.onboardingPhone}
@@ -193,7 +210,7 @@ export default function OnboardingPage() {
           <button
             type="button"
             className="onboarding-back-btn"
-            onClick={() => setStep('welcome')}
+            onClick={() => setStep('pickType')}
           >
             {t.onboardingBack}
           </button>
