@@ -40,6 +40,7 @@ import hsnRoutes from './routes/hsn.js'
 import gstinRoutes from './routes/gstin.js'
 import taxReportRoutes from './routes/tax-reports.js'
 import gstReturnRoutes from './routes/gst-returns.js'
+import gstSettingsRoutes from './routes/gst-settings.route.js'
 import tdsTcsRoutes from './routes/tds-tcs.js'
 import einvoiceRoutes from './routes/einvoice.js'
 import ewaybillRoutes from './routes/ewaybill.js'
@@ -190,6 +191,7 @@ export function createApp() {
   app.use('/api/hsn', hsnRoutes)
   app.use('/api/gstin', gstinRoutes)
   app.use('/api/reports', taxReportRoutes)
+  app.use('/api/gst/settings', gstSettingsRoutes)
   app.use('/api/gst/returns', gstReturnRoutes)
   app.use('/api/gst/reconciliation', reconciliationRoutes)
   app.use('/api/reports', tdsTcsRoutes)

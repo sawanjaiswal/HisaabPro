@@ -196,7 +196,8 @@ businessSettingsRouter.get('/:businessId/gst-settings', asyncHandler(async (req,
 
 businessSettingsRouter.put('/:businessId/gst-settings', requireOwner(), validate(updateGstSettingsSchema), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
-  const data = await gstService.updateGstSettings(businessId, req.body)
+  const userId = req.user!.userId
+  const data = await gstService.updateGstSettings(businessId, req.body, userId)
   sendSuccess(res, data)
 }))
 
