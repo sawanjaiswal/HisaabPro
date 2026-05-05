@@ -6,7 +6,8 @@
  * Form fields split into GstFormFields to keep this file ≤ 250 lines.
  */
 
-import { Receipt, Save } from 'lucide-react'
+import { Receipt, Save, Database } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -39,6 +40,7 @@ function GstSkeleton() {
 
 export default function GstSettingsPage() {
   const { t } = useLanguage()
+  const navigate = useNavigate()
   const { settings, status, refresh, updateGst, isSaving } = useGstSettings()
   const {
     form, patch, gstinValidation, handleGstinBlur, handleSubmit, dirty,
@@ -107,6 +109,24 @@ export default function GstSettingsPage() {
                 compositionRates={COMPOSITION_RATES}
                 rateLabel={rateLabel}
               />
+
+              {/* Backfill wizard link — only when GST is enabled */}
+              {form.gstEnabled && (
+                <button
+                  type="button"
+                  className="gsv2-card gsv2-nav-link"
+                  onClick={() => navigate(ROUTES.GST_BACKFILL)}
+                  aria-label={t.backfillNavLabel}
+                >
+                  <span className="gsv2-card-icon" aria-hidden="true">
+                    <Database size={20} />
+                  </span>
+                  <span className="gsv2-nav-link-body">
+                    <span className="gsv2-card-title">{t.backfillNavLabel}</span>
+                    <span className="gsv2-row-desc">{t.backfillNavDesc}</span>
+                  </span>
+                </button>
+              )}
 
               {/* Save button — appears only when dirty */}
               {dirty && (

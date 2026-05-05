@@ -122,4 +122,7 @@ export const ROUTES = {
 
   // Account
   SETTINGS_SESSIONS: '/settings/sessions',
+
+  // GST Phase 2 — Backfill Wizard
+  GST_BACKFILL: '/gst/backfill',
 } as const

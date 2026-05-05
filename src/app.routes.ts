@@ -126,3 +126,6 @@ export const CustomOrderDetail = lazy(() => import('@/features/custom-orders/pag
 export const CustomOrderEdit = lazy(() => import('@/features/custom-orders/pages/CustomOrderEditPage'))
 
 export const NotFound = lazy(() => import('@/components/feedback/NotFoundPage'))
+
+// GST Phase 2 — Backfill Wizard
+export const BackfillWizard = lazy(() => import('@/features/gst-returns/BackfillWizardPage'))

@@ -38,6 +38,7 @@ import {
   Serials, CreateSerial, BulkCreateSerial, SerialLookup, Pos,
   Jobs, JobNew, JobDetail, JobEdit,
   CustomOrders, CustomOrderNew, CustomOrderDetail, CustomOrderEdit,
+  BackfillWizard,
   NotFound,
 } from '@/app.routes'
 import {
@@ -122,6 +123,7 @@ export function App() {
         <Route path={ROUTES.RECURRING} element={<PageRoute><ProtectedRoute><PlanGate feature="recurringInvoices" featureLabel="Recurring Invoices"><RecurringList /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.GST_RECONCILIATION} element={<PageRoute><ProtectedRoute><GstReconciliationList /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.GST_RECONCILIATION_DETAIL} element={<PageRoute><ProtectedRoute><GstReconciliationDetail /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.GST_BACKFILL} element={<PageRoute><ProtectedRoute><BackfillWizard /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.CHART_OF_ACCOUNTS} element={<PageRoute><ProtectedRoute><PlanGate feature="accounting" featureLabel="Chart of Accounts"><ChartOfAccounts /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.JOURNAL_ENTRIES} element={<PageRoute><ProtectedRoute><PlanGate feature="accounting" featureLabel="Journal Entries"><JournalEntries /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.TRIAL_BALANCE} element={<PageRoute><ProtectedRoute><PlanGate feature="accounting" featureLabel="Trial Balance"><TrialBalance /></PlanGate></ProtectedRoute></PageRoute>} />

@@ -1,0 +1,383 @@
+/* Backfill Wizard — mobile-first, 320px primary */
+
+/* ── Stepper ─────────────────────────────────────────────────────────────── */
+.bfw-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4) 0 var(--space-6);
+}
+
+.bfw-step-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-border);
+  transition: background 0.2s, transform 0.2s;
+}
+
+.bfw-step-dot--active {
+  background: var(--color-primary);
+  transform: scale(1.3);
+}
+
+.bfw-step-dot--done {
+  background: var(--color-primary-muted);
+}
+
+/* ── Step container ──────────────────────────────────────────────────────── */
+.bfw-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 480px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.bfw-step-desc {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+/* ── Stat grid (Step 1) ──────────────────────────────────────────────────── */
+.bfw-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.bfw-stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.bfw-stat-value {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.1;
+}
+
+.bfw-stat-label {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+.bfw-stat-sub {
+  font-size: var(--text-xs);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+/* ── Form fields (Step 2) ────────────────────────────────────────────────── */
+.bfw-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.bfw-label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.bfw-select,
+.bfw-input {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  box-sizing: border-box;
+}
+
+.bfw-select:focus,
+.bfw-input:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+.bfw-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+}
+
+.bfw-checkbox {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.bfw-checkbox-label {
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+/* ── Warning / notice ────────────────────────────────────────────────────── */
+.bfw-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-error-subtle, rgba(239, 68, 68, 0.08));
+  border: 1px solid var(--color-error-border, rgba(239, 68, 68, 0.3));
+  border-radius: var(--radius-sm);
+  color: var(--color-error);
+  font-size: var(--text-sm);
+}
+
+.bfw-warning p { margin: 0; }
+
+.bfw-notice {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+}
+
+.bfw-notice--success {
+  background: var(--color-success-subtle, rgba(34, 197, 94, 0.08));
+  border: 1px solid var(--color-success-border, rgba(34, 197, 94, 0.3));
+  color: var(--color-success, #16a34a);
+}
+
+.bfw-notice--warn {
+  background: var(--color-warning-subtle, rgba(245, 158, 11, 0.08));
+  border: 1px solid var(--color-warning-border, rgba(245, 158, 11, 0.3));
+  color: var(--color-warning, #d97706);
+}
+
+/* ── Summary card (Step 3) ───────────────────────────────────────────────── */
+.bfw-summary-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.bfw-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.bfw-summary-key {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  flex: 1;
+}
+
+.bfw-summary-val {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.bfw-val--error { color: var(--color-error); }
+
+/* ── Processing (Step 4) ─────────────────────────────────────────────────── */
+.bfw-step--processing {
+  align-items: center;
+  text-align: center;
+}
+
+.bfw-processing-icon {
+  margin: var(--space-4) 0;
+  color: var(--color-primary);
+}
+
+@keyframes bfw-spin {
+  to { transform: rotate(360deg); }
+}
+
+.bfw-spin {
+  animation: bfw-spin 1s linear infinite;
+}
+
+.bfw-processing-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.bfw-processing-sub {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.bfw-progress-wrap {
+  width: 100%;
+  height: 8px;
+  background: var(--color-border);
+  border-radius: 4px;
+  overflow: hidden;
+  /* ensures it fits 320px */
+  max-width: 100%;
+}
+
+.bfw-progress-bar {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+  min-width: 4px;
+}
+
+.bfw-progress-label {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ── Complete (Step 5) ───────────────────────────────────────────────────── */
+.bfw-step--complete {
+  align-items: center;
+  text-align: center;
+}
+
+.bfw-complete-icon {
+  margin: var(--space-4) 0;
+}
+
+.bfw-icon--success { color: var(--color-success, #16a34a); }
+.bfw-icon--warn    { color: var(--color-warning, #d97706); }
+
+.bfw-complete-title {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* ── Error list ──────────────────────────────────────────────────────────── */
+.bfw-error-list {
+  width: 100%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  text-align: left;
+}
+
+.bfw-error-list-title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-error);
+  margin: 0 0 var(--space-2);
+}
+
+.bfw-error-list ul {
+  margin: 0;
+  padding-left: var(--space-4);
+}
+
+.bfw-error-item {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-1);
+  word-break: break-all;
+}
+
+.bfw-error-overflow {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin: var(--space-2) 0 0;
+}
+
+/* ── Actions ─────────────────────────────────────────────────────────────── */
+.bfw-actions {
+  margin-top: var(--space-2);
+}
+
+.bfw-actions--row {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+}
+
+.bfw-actions--col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.bfw-btn-full {
+  width: 100%;
+  justify-content: center;
+}
+
+.bfw-btn-proceed {
+  flex: 1;
+}
+
+/* ── Error state (Step 1) ────────────────────────────────────────────────── */
+.bfw-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  color: var(--color-error);
+}
+
+.bfw-error-msg {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ── Skeleton ────────────────────────────────────────────────────────────── */
+.bfw-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.bfw-skeleton-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.bfw-skeleton-line {
+  height: 14px;
+  border-radius: 4px;
+  background: var(--color-skeleton, var(--color-border));
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.bfw-skeleton-line--short  { width: 40%; }
+.bfw-skeleton-line--medium { width: 60%; }
+.bfw-skeleton-line--full   { width: 100%; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
