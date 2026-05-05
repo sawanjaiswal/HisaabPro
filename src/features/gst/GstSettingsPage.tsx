@@ -6,7 +6,7 @@
  * Form fields split into GstFormFields to keep this file ≤ 250 lines.
  */
 
-import { Receipt, Save, Database } from 'lucide-react'
+import { Receipt, Save, Database, FileText } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -124,6 +124,24 @@ export default function GstSettingsPage() {
                   <span className="gsv2-nav-link-body">
                     <span className="gsv2-card-title">{t.backfillNavLabel}</span>
                     <span className="gsv2-row-desc">{t.backfillNavDesc}</span>
+                  </span>
+                </button>
+              )}
+
+              {/* GSTR-3B link — only when GST is enabled */}
+              {form.gstEnabled && (
+                <button
+                  type="button"
+                  className="gsv2-card gsv2-nav-link"
+                  onClick={() => navigate(ROUTES.GST_GSTR3B)}
+                  aria-label={t.gstr3bNavLabel}
+                >
+                  <span className="gsv2-card-icon" aria-hidden="true">
+                    <FileText size={20} />
+                  </span>
+                  <span className="gsv2-nav-link-body">
+                    <span className="gsv2-card-title">{t.gstr3bNavLabel}</span>
+                    <span className="gsv2-row-desc">{t.gstr3bNavDesc}</span>
                   </span>
                 </button>
               )}

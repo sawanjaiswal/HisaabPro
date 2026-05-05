@@ -13,6 +13,8 @@ import type {
   BackfillStatusRes,
   Gstr1SummaryRes,
   Gstr1ExportRes,
+  Gstr3bSummaryRes,
+  Gstr3bExportRes,
 } from './gst-returns.types'
 
 /** POST /api/gst/backfill/preview — dry run, no writes */
@@ -52,6 +54,30 @@ export async function getBackfillStatus(jobId: string): Promise<BackfillStatusRe
 /** GET /api/gst/returns/GSTR1/:period — fetch cached summary from GstReturn row */
 export async function getGstr1Summary(period: string): Promise<Gstr1SummaryRes> {
   return api<Gstr1SummaryRes>(`/gst/returns/GSTR1/${period}`, { cacheReads: false })
+}
+
+// ─── GSTR-3B (PR 11) ─────────────────────────────────────────────────────────
+
+/** GET /api/gst/returns/GSTR3B/:period — fetch cached 11-row summary */
+export async function getGstr3bSummary(period: string): Promise<Gstr3bSummaryRes> {
+  return api<Gstr3bSummaryRes>(`/gst/returns/GSTR3B/${period}`, { cacheReads: false })
+}
+
+/** POST /api/gst/returns/GSTR3B/:period/export — run 11-section aggregator */
+export async function exportGstr3b(
+  period: string,
+  idempotencyKey: string,
+): Promise<Gstr3bExportRes> {
+  return api<Gstr3bExportRes>(`/gst/returns/GSTR3B/${period}/export`, {
+    method: 'POST',
+    body: JSON.stringify({ format: 'JSON' }),
+    headers: {
+      'Content-Type': 'application/json',
+      'Idempotency-Key': idempotencyKey,
+    },
+    entityType: 'gstr3b-export',
+    entityLabel: period,
+  })
 }
 
 /** POST /api/gst/returns/GSTR1/:period/export — run 8 builders + return NIC envelope */

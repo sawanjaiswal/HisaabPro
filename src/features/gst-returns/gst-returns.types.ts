@@ -60,6 +60,35 @@ export interface BackfillError {
   message: string
 }
 
+// ─── GSTR-3B (PR 11) ────────────────────────────────────────────────────────
+
+export interface Gstr3bSection {
+  section: string
+  description: string
+  taxableValue: number
+  cgst: number
+  sgst: number
+  igst: number
+  cess: number
+}
+
+export interface Gstr3bSummary {
+  period: string
+  sections: Gstr3bSection[]
+  netPayable: number
+}
+
+export interface Gstr3bSummaryRes {
+  summary: Gstr3bSummary | null
+  exportedAt: string | null
+}
+
+export interface Gstr3bExportRes {
+  jsonData: Gstr3bSummary
+  csvData: string
+  summary: Gstr3bSummary
+}
+
 // ─── Wizard state machine ────────────────────────────────────────────────────
 
 export type WizardStep =

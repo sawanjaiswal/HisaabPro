@@ -128,4 +128,7 @@ export const ROUTES = {
 
   // GST Phase 2 — GSTR-1 Export (PR 10)
   GST_GSTR1: '/gst/returns/gstr1',
+
+  // GST Phase 2 — GSTR-3B Summary (PR 11)
+  GST_GSTR3B: '/gst/returns/gstr3b',
 } as const

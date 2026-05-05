@@ -132,3 +132,6 @@ export const BackfillWizard = lazy(() => import('@/features/gst-returns/Backfill
 
 // GST Phase 2 — GSTR-1 Export (PR 10)
 export const Gstr1Page = lazy(() => import('@/features/gst-returns/Gstr1Page'))
+
+// GST Phase 2 — GSTR-3B Summary (PR 11)
+export const Gstr3bPage = lazy(() => import('@/features/gst-returns/Gstr3bPage'))

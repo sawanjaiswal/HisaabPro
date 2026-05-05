@@ -13,6 +13,7 @@ import logger from '../lib/logger.js'
 import { gstReturnSchema, gstReturnExportSchema } from '../schemas/report.schemas.js'
 import * as gstService from '../services/gst-return.service.js'
 import * as gstr1Service from '../services/gst-returns/gstr1.service.js'
+import * as gstr3bService from '../services/gst-returns/gstr3b.service.js'
 
 const router = Router()
 
@@ -49,6 +50,45 @@ router.post(
     logger.info('gstr1.export.requested', { businessId, period, idempotencyKey })
 
     const result = await gstr1Service.exportGstr1(businessId, period)
+
+    sendSuccess(res, {
+      jsonData: result.jsonData,
+      csvData: result.csvData,
+      summary: result.summary,
+    })
+  }),
+)
+
+// ─── NIC v3.0 GSTR-3B — PR 11 ───────────────────────────────────────────────
+
+/**
+ * GET /api/gst/returns/GSTR3B/:period
+ * Returns existing GstReturn summary (no re-compute). Use export to regenerate.
+ */
+router.get('/GSTR3B/:period', requirePermission('reports.view'), asyncHandler(async (req, res) => {
+  const businessId = req.user!.businessId
+  const { period } = gstReturnSchema.parse({ returnType: 'GSTR3B', period: req.params.period })
+
+  const result = await gstr3bService.getGstr3bSummary(businessId, period)
+  sendSuccess(res, result)
+}))
+
+/**
+ * POST /api/gst/returns/GSTR3B/:period/export
+ * Runs 11-section aggregator, upserts GstReturn, returns summary + CSV.
+ * Idempotency-Key header expected; rate limit enforced at 5/min.
+ */
+router.post(
+  '/GSTR3B/:period/export',
+  requirePermission('reports.download'),
+  asyncHandler(async (req, res) => {
+    const businessId = req.user!.businessId
+    const { period } = gstReturnSchema.parse({ returnType: 'GSTR3B', period: req.params.period })
+    const idempotencyKey = req.headers['idempotency-key'] as string | undefined
+
+    logger.info('gstr3b.export.requested', { businessId, period, idempotencyKey })
+
+    const result = await gstr3bService.exportGstr3b(businessId, period)
 
     sendSuccess(res, {
       jsonData: result.jsonData,
