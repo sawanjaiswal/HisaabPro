@@ -225,3 +225,20 @@ export function getVerticalProfile(type: string | null | undefined): VerticalPro
   if (!type) return VERTICAL_PROFILES.general
   return VERTICAL_PROFILES[type as BusinessType] ?? VERTICAL_PROFILES.general
 }
+
+/**
+ * Verticals that CAN see the Jobs nav. SSOT for Phase 3 visibility — kept
+ * separate from `hiddenNavKeys` because Jobs is a whitelist (most verticals
+ * hide it) rather than a blacklist (most verticals show it).
+ */
+export const JOBS_VISIBLE_VERTICALS: ReadonlySet<BusinessType> = new Set([
+  'services', 'freelancer', 'salon', 'clinic',
+])
+
+/** Single-entry visibility check used by SideNav / BottomNav. */
+export function isNavVisible(vertical: VerticalProfile, key: NavKey): boolean {
+  if (vertical.hiddenNavKeys.has(key)) return false
+  if (key === 'jobs')   return JOBS_VISIBLE_VERTICALS.has(vertical.type)
+  if (key === 'orders') return false // Phase 4 will introduce ORDERS_VISIBLE_VERTICALS
+  return true
+}

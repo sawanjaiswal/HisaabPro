@@ -18,6 +18,8 @@ const DEFAULT_PREFIXES: Record<string, string> = {
   DELIVERY_CHALLAN: 'DC',
   CREDIT_NOTE: 'CN',
   DEBIT_NOTE: 'DN',
+  // Phase 3 — Jobs
+  JOB: 'JOB',
 }
 
 /**

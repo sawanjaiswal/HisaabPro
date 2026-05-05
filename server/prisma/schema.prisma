@@ -11,14 +11,14 @@ datasource db {
 // === Foundation models — expanded per feature via /f ===
 
 model User {
-  id            String   @id @default(cuid())
-  phone         String   @unique
-  name          String?
-  email         String?  @unique
-  passwordHash  String?
-  pinHash       String?
+  id               String  @id @default(cuid())
+  phone            String  @unique
+  name             String?
+  email            String? @unique
+  passwordHash     String?
+  pinHash          String?
   biometricEnabled Boolean @default(false)
-  isActive      Boolean  @default(true)
+  isActive         Boolean @default(true)
 
   // Account lockout — Feature #64
   failedLoginAttempts Int       @default(0)
@@ -26,44 +26,44 @@ model User {
   accountLockedUntil  DateTime?
 
   // Admin suspension — Feature #7
-  isSuspended        Boolean  @default(false)
-  suspendedAt        DateTime?
-  suspendedReason    String?
+  isSuspended     Boolean   @default(false)
+  suspendedAt     DateTime?
+  suspendedReason String?
 
   // Referral wallet — Feature #3
-  referredBy                String?
-  referralBalance           Decimal  @default(0) @db.Decimal(12, 2)
-  referralBalanceInReview   Decimal  @default(0) @db.Decimal(12, 2)
-  referralTotalEarned       Decimal  @default(0) @db.Decimal(12, 2)
-  referralFraudFlags        Int      @default(0)
-  walletFrozen              Boolean  @default(false)
-  lastReferralAt            DateTime?
+  referredBy              String?
+  referralBalance         Decimal   @default(0) @db.Decimal(12, 2)
+  referralBalanceInReview Decimal   @default(0) @db.Decimal(12, 2)
+  referralTotalEarned     Decimal   @default(0) @db.Decimal(12, 2)
+  referralFraudFlags      Int       @default(0)
+  walletFrozen            Boolean   @default(false)
+  lastReferralAt          DateTime?
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Multi-business — last active business (auto-loaded on login)
-  lastActiveBusinessId  String?
-  lastActiveBusiness    Business? @relation("UserLastActiveBusiness", fields: [lastActiveBusinessId], references: [id], onDelete: SetNull)
+  lastActiveBusinessId String?
+  lastActiveBusiness   Business? @relation("UserLastActiveBusiness", fields: [lastActiveBusinessId], references: [id], onDelete: SetNull)
 
-  businessUsers  BusinessUser[]
-  refreshTokens  RefreshToken[]
-  stockMovements StockMovement[]
-  documentsCreated Document[]   @relation("DocumentCreator")
-  documentsUpdated Document[]   @relation("DocumentUpdater")
-  documentsDeleted Document[]   @relation("DocumentDeleter")
-  shareLogs        DocumentShareLog[]
-  paymentsCreated  Payment[]    @relation("PaymentCreator")
-  paymentsUpdated  Payment[]    @relation("PaymentUpdater")
-  auditLogs        AuditLog[]
-  appSettings      UserAppSettings?
-  approvalsRequested ApprovalRequest[] @relation("ApprovalRequester")
-  approvalsReviewed  ApprovalRequest[] @relation("ApprovalReviewer")
+  businessUsers      BusinessUser[]
+  refreshTokens      RefreshToken[]
+  stockMovements     StockMovement[]
+  documentsCreated   Document[]         @relation("DocumentCreator")
+  documentsUpdated   Document[]         @relation("DocumentUpdater")
+  documentsDeleted   Document[]         @relation("DocumentDeleter")
+  shareLogs          DocumentShareLog[]
+  paymentsCreated    Payment[]          @relation("PaymentCreator")
+  paymentsUpdated    Payment[]          @relation("PaymentUpdater")
+  auditLogs          AuditLog[]
+  appSettings        UserAppSettings?
+  approvalsRequested ApprovalRequest[]  @relation("ApprovalRequester")
+  approvalsReviewed  ApprovalRequest[]  @relation("ApprovalReviewer")
 
   // Referral relations
-  referredByUser     User?    @relation("UserReferrals", fields: [referredBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  referredUsers      User[]   @relation("UserReferrals")
-  referralCode       ReferralCode?
+  referredByUser            User?                @relation("UserReferrals", fields: [referredBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  referredUsers             User[]               @relation("UserReferrals")
+  referralCode              ReferralCode?
   referralRewardsAsReferrer ReferralReward[]     @relation("ReferralRewardsReferrer")
   referralRewardsAsReferred ReferralReward[]     @relation("ReferralRewardsReferred")
   referralEventsAsReferrer  ReferralEvent[]      @relation("ReferralEventsReferrer")
@@ -73,9 +73,9 @@ model User {
   webauthnCredentials       WebAuthnCredential[]
 
   // Phase 3 — Accounting
-  expensesCreated    Expense[]       @relation("ExpenseCreator")
-  otherIncomesCreated OtherIncome[]  @relation("OtherIncomeCreator")
-  stockVerifications StockVerification[]
+  expensesCreated     Expense[]           @relation("ExpenseCreator")
+  otherIncomesCreated OtherIncome[]       @relation("OtherIncomeCreator")
+  stockVerifications  StockVerification[]
 
   // Phase 4 — Multi-Godown transfers
   godownTransfers GodownTransfer[]
@@ -87,99 +87,102 @@ model User {
 }
 
 model Business {
-  id            String   @id @default(cuid())
-  name          String
-  phone         String?
-  email         String?
-  address       String?
-  city          String?
-  state         String?
-  pincode       String?
-  logoUrl       String?
-  businessType  String   @default("general")
-  currencyCode  String   @default("INR")
-  financialYearStart Int @default(4) // April
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                 String   @id @default(cuid())
+  name               String
+  phone              String?
+  email              String?
+  address            String?
+  city               String?
+  state              String?
+  pincode            String?
+  logoUrl            String?
+  businessType       String   @default("general")
+  currencyCode       String   @default("INR")
+  financialYearStart Int      @default(4) // April
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   // MSME compliance
-  udyamNumber        String?  // UDYAM-XX-XX-XXXXXXX format
+  udyamNumber String? // UDYAM-XX-XX-XXXXXXX format
 
   // GST — Phase 2
-  gstin              String?
-  stateCode          String?  // 2-digit, extracted from GSTIN pos 0-1
-  compositionScheme  Boolean  @default(false)
-  eInvoiceEnabled    Boolean  @default(false)
-  eWayBillEnabled    Boolean  @default(false)
-  turnoverSlab       String?  // Tracks e-invoice threshold eligibility
+  gstin             String?
+  stateCode         String? // 2-digit, extracted from GSTIN pos 0-1
+  compositionScheme Boolean @default(false)
+  eInvoiceEnabled   Boolean @default(false)
+  eWayBillEnabled   Boolean @default(false)
+  turnoverSlab      String? // Tracks e-invoice threshold eligibility
 
-  businessUsers    BusinessUser[]
-  parties          Party[]
-  partyGroups      PartyGroup[]
-  customFields     CustomFieldDefinition[]
-  categories       Category[]
-  units            Unit[]
-  products         Product[]
-  unitConversions  UnitConversion[]
-  stockMovements   StockMovement[]
-  inventorySetting InventorySetting?
-  documents        Document[]
+  businessUsers        BusinessUser[]
+  parties              Party[]
+  partyGroups          PartyGroup[]
+  customFields         CustomFieldDefinition[]
+  categories           Category[]
+  units                Unit[]
+  products             Product[]
+  unitConversions      UnitConversion[]
+  stockMovements       StockMovement[]
+  inventorySetting     InventorySetting?
+  documents            Document[]
   documentNumberSeries DocumentNumberSeries[]
-  documentSettings DocumentSettings?
-  digitalSignature DigitalSignature?
-  termsTemplates   TermsAndConditionsTemplate[]
-  payments         Payment[]
-  paymentReminders PaymentReminder[]
-  reminderConfig   ReminderConfig?
-  roles            Role[]
-  staffInvites     StaffInvite[]
-  transactionLock  TransactionLockConfig?
-  approvals        ApprovalRequest[]
-  auditLogs        AuditLog[]
-  taxCategories    TaxCategory[]
-  gstReturns            GstReturn[]
-  gstReconciliations    GstReconciliation[]
-  recurringInvoices     RecurringInvoice[]
-  exchangeRates    ExchangeRate[]
+  documentSettings     DocumentSettings?
+  digitalSignature     DigitalSignature?
+  termsTemplates       TermsAndConditionsTemplate[]
+  payments             Payment[]
+  paymentReminders     PaymentReminder[]
+  reminderConfig       ReminderConfig?
+  roles                Role[]
+  staffInvites         StaffInvite[]
+  transactionLock      TransactionLockConfig?
+  approvals            ApprovalRequest[]
+  auditLogs            AuditLog[]
+  taxCategories        TaxCategory[]
+  gstReturns           GstReturn[]
+  gstReconciliations   GstReconciliation[]
+  recurringInvoices    RecurringInvoice[]
+  exchangeRates        ExchangeRate[]
 
   // Phase 3 — Accounting
-  ledgerAccounts        LedgerAccount[]
-  journalEntries        JournalEntry[]
-  bankAccounts          BankAccount[]
-  expenses              Expense[]
-  expenseCategories     ExpenseCategory[]
-  otherIncomes          OtherIncome[]
-  cheques               Cheque[]
-  loanAccounts          LoanAccount[]
-  fyClosures            FinancialYearClosure[]
+  ledgerAccounts    LedgerAccount[]
+  journalEntries    JournalEntry[]
+  bankAccounts      BankAccount[]
+  expenses          Expense[]
+  expenseCategories ExpenseCategory[]
+  otherIncomes      OtherIncome[]
+  cheques           Cheque[]
+  loanAccounts      LoanAccount[]
+  fyClosures        FinancialYearClosure[]
 
-  stockAlerts      StockAlert[]
+  stockAlerts        StockAlert[]
   stockVerifications StockVerification[]
 
   // Phase 4 — Batch Tracking + Multi-Godown + Serial Numbers
-  batches          Batch[]
-  godowns          Godown[]
-  godownStocks     GodownStock[]
-  godownTransfers  GodownTransfer[]
-  serialNumbers    SerialNumber[]
+  batches         Batch[]
+  godowns         Godown[]
+  godownStocks    GodownStock[]
+  godownTransfers GodownTransfer[]
+  serialNumbers   SerialNumber[]
 
-  usersLastActive  User[] @relation("UserLastActiveBusiness")
-  subscription     Subscription?
+  // Business-Verticals Phase 3 — Services jobs
+  jobs Job[]
+
+  usersLastActive User[]        @relation("UserLastActiveBusiness")
+  subscription    Subscription?
 
   @@index([name])
 }
 
 model BusinessUser {
-  id         String   @id @default(cuid())
-  userId     String
-  businessId String
-  role       String   @default("owner")
-  roleId     String?
-  isActive   Boolean  @default(true)
-  status     String   @default("ACTIVE") // ACTIVE, SUSPENDED, PENDING
+  id           String    @id @default(cuid())
+  userId       String
+  businessId   String
+  role         String    @default("owner")
+  roleId       String?
+  isActive     Boolean   @default(true)
+  status       String    @default("ACTIVE") // ACTIVE, SUSPENDED, PENDING
   lastActiveAt DateTime?
-  joinedAt   DateTime @default(now())
+  joinedAt     DateTime  @default(now())
 
   user     User     @relation(fields: [userId], references: [id], onDelete: Restrict)
   business Business @relation(fields: [businessId], references: [id], onDelete: Restrict)
@@ -190,12 +193,12 @@ model BusinessUser {
 }
 
 model RefreshToken {
-  id        String   @id @default(cuid())
-  userId    String
-  token     String   @unique
+  id         String   @id @default(cuid())
+  userId     String
+  token      String   @unique
   deviceInfo String?
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -211,7 +214,7 @@ model OtpCode {
   verified  Boolean  @default(false)
   expiresAt DateTime
   createdAt DateTime @default(now())
-  context   String?  // JSON: { purpose: 'registration'|'password_reset', name?, passwordHash? }
+  context   String? // JSON: { purpose: 'registration'|'password_reset', name?, passwordHash? }
 
   @@index([phone, verified])
   @@index([expiresAt])
@@ -231,11 +234,11 @@ model IdempotencyLog {
 model Feedback {
   id         String   @id @default(cuid())
   userId     String?
-  type       String   // bug, feature, general
+  type       String // bug, feature, general
   message    String
   rating     Int?
-  screenshot String?  // base64 or URL
-  metadata   Json?    // device info, page, etc.
+  screenshot String? // base64 or URL
+  metadata   Json? // device info, page, etc.
   status     String   @default("open") // open, reviewed, resolved
   createdAt  DateTime @default(now())
 
@@ -247,42 +250,43 @@ model Feedback {
 // === Party Management ===
 
 model Party {
-  id                String   @id @default(cuid())
-  businessId        String
-  name              String
-  phone             String?
-  email             String?
-  companyName       String?
-  type              String   @default("CUSTOMER") // CUSTOMER, SUPPLIER, BOTH
-  groupId           String?
-  tags              String[] @default([])
-  gstin             String?
-  stateCode         String?  // 2-digit, extracted from GSTIN pos 0-1
-  gstinVerified     Boolean  @default(false)
-  gstinVerifiedAt   DateTime?
-  compositionScheme Boolean  @default(false)
-  pan               String?
-  creditLimit       Int      @default(0) // in paise, 0 = no limit
-  creditLimitMode   String   @default("WARN") // WARN, BLOCK
-  outstandingBalance Int     @default(0) // in paise, positive = receivable, negative = payable
-  totalBusiness     Int      @default(0) // in paise, lifetime total
-  lastTransactionAt DateTime?
-  notes             String?
-  isActive          Boolean  @default(true)
-  isDeleted         Boolean  @default(false)
-  deletedAt         DateTime?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id                 String    @id @default(cuid())
+  businessId         String
+  name               String
+  phone              String?
+  email              String?
+  companyName        String?
+  type               String    @default("CUSTOMER") // CUSTOMER, SUPPLIER, BOTH
+  groupId            String?
+  tags               String[]  @default([])
+  gstin              String?
+  stateCode          String? // 2-digit, extracted from GSTIN pos 0-1
+  gstinVerified      Boolean   @default(false)
+  gstinVerifiedAt    DateTime?
+  compositionScheme  Boolean   @default(false)
+  pan                String?
+  creditLimit        Int       @default(0) // in paise, 0 = no limit
+  creditLimitMode    String    @default("WARN") // WARN, BLOCK
+  outstandingBalance Int       @default(0) // in paise, positive = receivable, negative = payable
+  totalBusiness      Int       @default(0) // in paise, lifetime total
+  lastTransactionAt  DateTime?
+  notes              String?
+  isActive           Boolean   @default(true)
+  isDeleted          Boolean   @default(false)
+  deletedAt          DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
-  business       Business           @relation(fields: [businessId], references: [id], onDelete: Restrict)
-  group          PartyGroup?        @relation(fields: [groupId], references: [id], onDelete: SetNull)
-  addresses      PartyAddress[]
+  business          Business                @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  group             PartyGroup?             @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  addresses         PartyAddress[]
   customFieldValues PartyCustomFieldValue[]
-  openingBalance OpeningBalance?
-  pricing        PartyPricing[]
-  documents      Document[]
-  payments       Payment[]
-  paymentReminders PaymentReminder[]
+  openingBalance    OpeningBalance?
+  pricing           PartyPricing[]
+  documents         Document[]
+  payments          Payment[]
+  paymentReminders  PaymentReminder[]
+  jobs              Job[]
 
   @@unique([businessId, phone])
   @@index([businessId, type, isActive])
@@ -293,20 +297,20 @@ model Party {
 }
 
 model PartyAddress {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   partyId   String
-  label     String   @default("Default")
+  label     String    @default("Default")
   line1     String
   line2     String?
   city      String
   state     String
   pincode   String
-  type      String   @default("BILLING") // BILLING, SHIPPING
-  isDefault Boolean  @default(false)
-  isDeleted Boolean  @default(false)
+  type      String    @default("BILLING") // BILLING, SHIPPING
+  isDefault Boolean   @default(false)
+  isDeleted Boolean   @default(false)
   deletedAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
 
@@ -315,15 +319,15 @@ model PartyAddress {
 }
 
 model PartyGroup {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   businessId  String
   name        String
   description String?
-  color       String   @default("#6B7280")
-  isDeleted   Boolean  @default(false)
+  color       String    @default("#6B7280")
+  isDeleted   Boolean   @default(false)
   deletedAt   DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Restrict)
   parties  Party[]
@@ -334,21 +338,21 @@ model PartyGroup {
 }
 
 model CustomFieldDefinition {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   businessId    String
   name          String
-  fieldType     String   // TEXT, NUMBER, DATE, DROPDOWN
-  options       String[] @default([]) // for DROPDOWN type
-  required      Boolean  @default(false)
-  showOnInvoice Boolean  @default(false)
-  entityType    String   @default("PARTY") // PARTY, PRODUCT, INVOICE
-  sortOrder     Int      @default(0)
-  isDeleted     Boolean  @default(false)
+  fieldType     String // TEXT, NUMBER, DATE, DROPDOWN
+  options       String[]  @default([]) // for DROPDOWN type
+  required      Boolean   @default(false)
+  showOnInvoice Boolean   @default(false)
+  entityType    String    @default("PARTY") // PARTY, PRODUCT, INVOICE
+  sortOrder     Int       @default(0)
+  isDeleted     Boolean   @default(false)
   deletedAt     DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  business      Business                @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  business      Business                  @relation(fields: [businessId], references: [id], onDelete: Restrict)
   values        PartyCustomFieldValue[]
   productValues ProductCustomFieldValue[]
 
@@ -373,30 +377,30 @@ model PartyCustomFieldValue {
 }
 
 model OpeningBalance {
-  id        String   @id @default(cuid())
-  partyId   String   @unique
-  amount    Int      // in paise
-  type      String   // RECEIVABLE, PAYABLE
+  id        String    @id @default(cuid())
+  partyId   String    @unique
+  amount    Int // in paise
+  type      String // RECEIVABLE, PAYABLE
   asOfDate  DateTime
   notes     String?
-  isDeleted Boolean  @default(false)
+  isDeleted Boolean   @default(false)
   deletedAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
 }
 
 model PartyPricing {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   partyId   String
   productId String
-  price     Int      // in paise
-  minQty    Int      @default(1)
-  isDeleted Boolean  @default(false)
+  price     Int // in paise
+  minQty    Int       @default(1)
+  isDeleted Boolean   @default(false)
   deletedAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   party   Party   @relation(fields: [partyId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
@@ -409,17 +413,17 @@ model PartyPricing {
 // === Inventory & Products ===
 
 model Category {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   businessId String
   name       String
-  type       String   @default("CUSTOM") // PREDEFINED, CUSTOM
-  color      String   @default("#6B7280")
-  sortOrder  Int      @default(0)
-  isHidden   Boolean  @default(false) // hide predefined without deleting
-  isDeleted  Boolean  @default(false)
+  type       String    @default("CUSTOM") // PREDEFINED, CUSTOM
+  color      String    @default("#6B7280")
+  sortOrder  Int       @default(0)
+  isHidden   Boolean   @default(false) // hide predefined without deleting
+  isDeleted  Boolean   @default(false)
   deletedAt  DateTime?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   business Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
   products Product[]
@@ -430,19 +434,19 @@ model Category {
 }
 
 model Unit {
-  id              String   @id @default(cuid())
-  businessId      String
-  name            String
-  symbol          String
-  type            String   @default("CUSTOM") // PREDEFINED, CUSTOM
-  category        String   @default("OTHER")  // WEIGHT, VOLUME, COUNT, LENGTH, AREA, SERVICE, PACKAGING, OTHER
-  decimalAllowed  Boolean  @default(true)      // false for pcs/box, true for kg/ltr
-  baseUnitId      String?                      // Self-ref: Box of 12 → pcs
-  baseUnitFactor  Float?                       // 1 box12 = 12 pcs
-  isDeleted       Boolean  @default(false)
-  deletedAt       DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String    @id @default(cuid())
+  businessId     String
+  name           String
+  symbol         String
+  type           String    @default("CUSTOM") // PREDEFINED, CUSTOM
+  category       String    @default("OTHER") // WEIGHT, VOLUME, COUNT, LENGTH, AREA, SERVICE, PACKAGING, OTHER
+  decimalAllowed Boolean   @default(true) // false for pcs/box, true for kg/ltr
+  baseUnitId     String? // Self-ref: Box of 12 → pcs
+  baseUnitFactor Float? // 1 box12 = 12 pcs
+  isDeleted      Boolean   @default(false)
+  deletedAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   business        Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
   baseUnit        Unit?            @relation("UnitBase", fields: [baseUnitId], references: [id], onDelete: SetNull)
@@ -458,15 +462,15 @@ model Unit {
 }
 
 model UnitConversion {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   businessId String
   fromUnitId String
   toUnitId   String
-  factor     Float    // 1 fromUnit = factor toUnits
-  isDeleted  Boolean  @default(false)
+  factor     Float // 1 fromUnit = factor toUnits
+  isDeleted  Boolean   @default(false)
   deletedAt  DateTime?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
   fromUnit Unit     @relation("FromUnit", fields: [fromUnitId], references: [id], onDelete: Restrict)
@@ -485,19 +489,19 @@ model Product {
   categoryId      String?
   unitId          String
   salePrice       Int       @default(0) // in paise
-  purchasePrice   Int?      // in paise
+  purchasePrice   Int? // in paise
   currentStock    Float     @default(0) // supports decimals for kg/ltr
   minStockLevel   Float     @default(0)
   stockValidation String    @default("GLOBAL") // GLOBAL, WARN_ONLY, HARD_BLOCK
   hsnCode         String?
   sacCode         String?
-  taxCategoryId   String?  // FK → TaxCategory (default GST rate for this product)
+  taxCategoryId   String? // FK → TaxCategory (default GST rate for this product)
   description     String?
-  barcode         String?   // optional barcode value (EAN13, CODE128, etc.)
-  barcodeFormat   String?   // CODE128, EAN13, EAN8, UPC, QR, CODE39
+  barcode         String? // optional barcode value (EAN13, CODE128, etc.)
+  barcodeFormat   String? // CODE128, EAN13, EAN8, UPC, QR, CODE39
   status          String    @default("ACTIVE") // ACTIVE, INACTIVE
   // Feature #108 — Item Images
-  imageUrl        String?   // primary image URL
+  imageUrl        String? // primary image URL
   images          String[]  @default([]) // up to 5 image URLs
   // Feature #109 — MOQ (min order quantity)
   moq             Int?
@@ -508,10 +512,10 @@ model Product {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  business          Business                @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  category          Category?               @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  unit              Unit                    @relation(fields: [unitId], references: [id], onDelete: Restrict)
-  taxCategory       TaxCategory?            @relation(fields: [taxCategoryId], references: [id], onDelete: SetNull)
+  business          Business                  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  category          Category?                 @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  unit              Unit                      @relation(fields: [unitId], references: [id], onDelete: Restrict)
+  taxCategory       TaxCategory?              @relation(fields: [taxCategoryId], references: [id], onDelete: SetNull)
   stockMovements    StockMovement[]
   customFieldValues ProductCustomFieldValue[]
   partyPricing      PartyPricing[]
@@ -520,10 +524,13 @@ model Product {
   verificationItems StockVerificationItem[]
 
   // Phase 4 — Batch Tracking + Multi-Godown + Serial Numbers
-  batches           Batch[]
-  godownStocks      GodownStock[]
-  godownTransfers   GodownTransfer[]
-  serialNumbers     SerialNumber[]
+  batches         Batch[]
+  godownStocks    GodownStock[]
+  godownTransfers GodownTransfer[]
+  serialNumbers   SerialNumber[]
+
+  // Business-Verticals Phase 3 — optional link from a JobItem to a catalog product
+  jobItems JobItem[] @relation("JobItemProduct")
 
   @@unique([businessId, sku])
   @@unique([businessId, barcode])
@@ -538,13 +545,13 @@ model StockMovement {
   id              String   @id @default(cuid())
   businessId      String
   productId       String
-  type            String   // OPENING, SALE, PURCHASE, ADJUSTMENT_IN, ADJUSTMENT_OUT, RETURN_IN, RETURN_OUT, REVERSAL
-  quantity         Float    // positive = in, negative = out
+  type            String // OPENING, SALE, PURCHASE, ADJUSTMENT_IN, ADJUSTMENT_OUT, RETURN_IN, RETURN_OUT, REVERSAL
+  quantity        Float // positive = in, negative = out
   balanceAfter    Float
-  reason          String?  // DAMAGE, THEFT, AUDIT, GIFT, RETURN, OTHER
+  reason          String? // DAMAGE, THEFT, AUDIT, GIFT, RETURN, OTHER
   customReason    String?
   notes           String?
-  referenceType   String?  // SALE_INVOICE, PURCHASE_INVOICE, CREDIT_NOTE, DEBIT_NOTE, ADJUSTMENT
+  referenceType   String? // SALE_INVOICE, PURCHASE_INVOICE, CREDIT_NOTE, DEBIT_NOTE, ADJUSTMENT
   referenceId     String?
   referenceNumber String?
   movementDate    DateTime @default(now())
@@ -552,14 +559,14 @@ model StockMovement {
   createdAt       DateTime @default(now())
 
   // Phase 4 — Batch Tracking + Multi-Godown (nullable, backward-compatible)
-  batchId   String?
-  godownId  String?
+  batchId  String?
+  godownId String?
 
-  business Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  product  Product   @relation(fields: [productId], references: [id], onDelete: Restrict)
-  user     User      @relation(fields: [createdBy], references: [id], onDelete: Restrict)
-  batch    Batch?    @relation(fields: [batchId], references: [id], onDelete: SetNull)
-  godown   Godown?   @relation(fields: [godownId], references: [id], onDelete: SetNull)
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  user     User     @relation(fields: [createdBy], references: [id], onDelete: Restrict)
+  batch    Batch?   @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  godown   Godown?  @relation(fields: [godownId], references: [id], onDelete: SetNull)
 
   // Immutable — no updatedAt
   @@index([productId, createdAt])
@@ -577,7 +584,7 @@ model ProductCustomFieldValue {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  product Product              @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product Product               @relation(fields: [productId], references: [id], onDelete: Cascade)
   field   CustomFieldDefinition @relation(fields: [fieldId], references: [id], onDelete: Cascade)
 
   @@unique([productId, fieldId])
@@ -605,119 +612,122 @@ model InventorySetting {
 // === Invoicing & Documents ===
 
 model Document {
-  id                     String   @id @default(cuid())
-  businessId             String
-  type                   String   // SALE_INVOICE, PURCHASE_INVOICE, ESTIMATE, PROFORMA, SALE_ORDER, PURCHASE_ORDER, DELIVERY_CHALLAN
-  status                 String   @default("DRAFT") // DRAFT, SAVED, SHARED, CONVERTED, DELETED
+  id         String @id @default(cuid())
+  businessId String
+  type       String // SALE_INVOICE, PURCHASE_INVOICE, ESTIMATE, PROFORMA, SALE_ORDER, PURCHASE_ORDER, DELIVERY_CHALLAN
+  status     String @default("DRAFT") // DRAFT, SAVED, SHARED, CONVERTED, DELETED
 
   // Numbering
-  documentNumber         String?  // Assigned on SAVE, null for DRAFT
-  sequenceNumber         Int?
-  financialYear          String?  // "2526" (April 2025 - March 2026)
+  documentNumber String? // Assigned on SAVE, null for DRAFT
+  sequenceNumber Int?
+  financialYear  String? // "2526" (April 2025 - March 2026)
 
   // Party
-  partyId                String
-  shippingAddressId      String?
+  partyId           String
+  shippingAddressId String?
 
   // Dates
-  documentDate           DateTime
-  dueDate                DateTime?
-  paymentTerms           String?  // COD, NET_7, NET_15, NET_30, NET_60, NET_90, CUSTOM
+  documentDate DateTime
+  dueDate      DateTime?
+  paymentTerms String? // COD, NET_7, NET_15, NET_30, NET_60, NET_90, CUSTOM
 
   // Totals (PAISE — integer)
-  subtotal               Int      @default(0)
-  totalDiscount          Int      @default(0)
-  totalAdditionalCharges Int      @default(0)
-  roundOff               Int      @default(0)
-  grandTotal             Int      @default(0)
+  subtotal               Int @default(0)
+  totalDiscount          Int @default(0)
+  totalAdditionalCharges Int @default(0)
+  roundOff               Int @default(0)
+  grandTotal             Int @default(0)
 
   // GST — Phase 2
-  placeOfSupply          String?  // 2-digit state code
-  supplyType             String   @default("B2B") // B2B, B2C_LARGE, B2C_SMALL, EXPORT, SEZ
-  isReverseCharge        Boolean  @default(false)
-  isComposite            Boolean  @default(false)
-  totalTaxableValue      Int      @default(0) // paise — sum of line taxableValues
-  totalCgst              Int      @default(0) // paise
-  totalSgst              Int      @default(0) // paise
-  totalIgst              Int      @default(0) // paise
-  totalCess              Int      @default(0) // paise
+  placeOfSupply     String? // 2-digit state code
+  supplyType        String  @default("B2B") // B2B, B2C_LARGE, B2C_SMALL, EXPORT, SEZ
+  isReverseCharge   Boolean @default(false)
+  isComposite       Boolean @default(false)
+  totalTaxableValue Int     @default(0) // paise — sum of line taxableValues
+  totalCgst         Int     @default(0) // paise
+  totalSgst         Int     @default(0) // paise
+  totalIgst         Int     @default(0) // paise
+  totalCess         Int     @default(0) // paise
 
   // TDS/TCS — Phase 2B (B2B invoice deductions)
-  tdsRate                Int      @default(0) // basis points
-  tdsAmount              Int      @default(0) // paise
-  tcsRate                Int      @default(0) // basis points
-  tcsAmount              Int      @default(0) // paise
+  tdsRate   Int @default(0) // basis points
+  tdsAmount Int @default(0) // paise
+  tcsRate   Int @default(0) // basis points
+  tcsAmount Int @default(0) // paise
 
   // Multi-currency — Phase 2E
-  currencyCode           String   @default("INR") @db.VarChar(3)
-  exchangeRate           Int      @default(100)   // rate * 100 (1 USD = 8400 means Rs 84.00)
-  foreignCurrencyTotal   Int      @default(0)     // amount in foreign currency minor units
+  currencyCode         String @default("INR") @db.VarChar(3)
+  exchangeRate         Int    @default(100) // rate * 100 (1 USD = 8400 means Rs 84.00)
+  foreignCurrencyTotal Int    @default(0) // amount in foreign currency minor units
 
   // Profit
-  totalCost              Int      @default(0)
-  totalProfit            Int      @default(0)
-  profitPercent          Float    @default(0)
+  totalCost     Int   @default(0)
+  totalProfit   Int   @default(0)
+  profitPercent Float @default(0)
 
   // Content
-  notes                  String?  @db.Text
-  termsAndConditions     String?  @db.Text
-  includeSignature       Boolean  @default(false)
+  notes              String? @db.Text
+  termsAndConditions String? @db.Text
+  includeSignature   Boolean @default(false)
 
   // Transport (Delivery Challan)
-  vehicleNumber          String?
-  driverName             String?
-  transportNotes         String?
+  vehicleNumber  String?
+  driverName     String?
+  transportNotes String?
 
   // Conversion chain
-  sourceDocumentId       String?  @unique
-  sourceDocument         Document? @relation("DocumentConversion", fields: [sourceDocumentId], references: [id], onDelete: SetNull)
-  convertedTo            Document? @relation("DocumentConversion")
+  sourceDocumentId String?   @unique
+  sourceDocument   Document? @relation("DocumentConversion", fields: [sourceDocumentId], references: [id], onDelete: SetNull)
+  convertedTo      Document? @relation("DocumentConversion")
 
   // Payment tracking (denormalized from payments)
-  paidAmount             Int      @default(0)
-  balanceDue             Int      @default(0)
+  paidAmount Int @default(0)
+  balanceDue Int @default(0)
 
   // Recycle bin / Soft delete
-  isDeleted              Boolean   @default(false)
-  deletedAt              DateTime?
-  deletedBy              String?
-  permanentDeleteAt      DateTime?
+  isDeleted         Boolean   @default(false)
+  deletedAt         DateTime?
+  deletedBy         String?
+  permanentDeleteAt DateTime?
 
   // Audit
-  createdBy              String
-  updatedBy              String?
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
+  createdBy String
+  updatedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Offline sync
-  clientId               String?  @unique
+  clientId String? @unique
 
   // Relations
-  business               Business          @relation(fields: [businessId], references: [id], onDelete: Restrict)
-  party                  Party             @relation(fields: [partyId], references: [id], onDelete: Restrict)
-  creator                User              @relation("DocumentCreator", fields: [createdBy], references: [id], onDelete: Restrict)
-  updater                User?             @relation("DocumentUpdater", fields: [updatedBy], references: [id])
-  deleter                User?             @relation("DocumentDeleter", fields: [deletedBy], references: [id])
+  business Business  @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  party    Party     @relation(fields: [partyId], references: [id], onDelete: Restrict)
+  creator  User      @relation("DocumentCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  updater  User?     @relation("DocumentUpdater", fields: [updatedBy], references: [id])
+  deleter  User?     @relation("DocumentDeleter", fields: [deletedBy], references: [id])
   // E-Compliance — Phase 2
-  eInvoice               EInvoice?
-  eWayBill               EWayBill?
+  eInvoice EInvoice?
+  eWayBill EWayBill?
 
   // Recurring — Phase 2
-  recurringInvoiceId     String?
-  recurringInvoice       RecurringInvoice? @relation(fields: [recurringInvoiceId], references: [id], onDelete: SetNull)
+  recurringInvoiceId String?
+  recurringInvoice   RecurringInvoice? @relation(fields: [recurringInvoiceId], references: [id], onDelete: SetNull)
 
   // Credit/Debit Note link
-  originalDocumentId     String?
-  creditDebitReason      String?  @db.VarChar(500)
-  originalDocument       Document?  @relation("CreditDebitLink", fields: [originalDocumentId], references: [id], onDelete: SetNull)
-  creditDebitNotes       Document[] @relation("CreditDebitLink")
+  originalDocumentId String?
+  creditDebitReason  String?    @db.VarChar(500)
+  originalDocument   Document?  @relation("CreditDebitLink", fields: [originalDocumentId], references: [id], onDelete: SetNull)
+  creditDebitNotes   Document[] @relation("CreditDebitLink")
 
-  lineItems              DocumentLineItem[]
-  additionalCharges      DocumentAdditionalCharge[]
-  shareLogs              DocumentShareLog[]
-  paymentAllocations     PaymentAllocation[]
-  paymentReminders       PaymentReminder[]
-  serialNumbers          SerialNumber[]
+  lineItems          DocumentLineItem[]
+  additionalCharges  DocumentAdditionalCharge[]
+  shareLogs          DocumentShareLog[]
+  paymentAllocations PaymentAllocation[]
+  paymentReminders   PaymentReminder[]
+  serialNumbers      SerialNumber[]
+
+  // Business-Verticals Phase 3 — set when this Document was produced by converting a Job
+  jobOrigin Job? @relation("JobInvoice")
 
   @@unique([businessId, type, documentNumber])
   @@index([businessId, type, status])
@@ -734,56 +744,56 @@ model Document {
 }
 
 model DocumentLineItem {
-  id             String   @id @default(cuid())
-  documentId     String
-  productId      String
-  sortOrder      Int      @default(0)
+  id         String @id @default(cuid())
+  documentId String
+  productId  String
+  sortOrder  Int    @default(0)
 
-  quantity       Float    // supports decimals (kg/ltr)
-  rate           Int      // PAISE
-  discountType   String   @default("AMOUNT") // AMOUNT, PERCENTAGE
-  discountValue  Int      @default(0) // paise for AMOUNT, basis points (x100) for PERCENTAGE
-  discountAmount Int      @default(0) // calculated paise
-  lineTotal      Int      @default(0) // (qty * rate) - discountAmount
+  quantity       Float // supports decimals (kg/ltr)
+  rate           Int // PAISE
+  discountType   String @default("AMOUNT") // AMOUNT, PERCENTAGE
+  discountValue  Int    @default(0) // paise for AMOUNT, basis points (x100) for PERCENTAGE
+  discountAmount Int    @default(0) // calculated paise
+  lineTotal      Int    @default(0) // (qty * rate) - discountAmount
 
   // GST — Phase 2 (all amounts in PAISE, rates in BASIS POINTS)
-  taxCategoryId  String?
-  hsnCode        String?
-  sacCode        String?
-  taxableValue   Int      @default(0) // paise — equals lineTotal (taxable amount after discount)
-  cgstRate       Int      @default(0) // basis points (e.g. 900 = 9%)
-  cgstAmount     Int      @default(0) // paise
-  sgstRate       Int      @default(0) // basis points
-  sgstAmount     Int      @default(0) // paise
-  igstRate       Int      @default(0) // basis points (e.g. 1800 = 18%)
-  igstAmount     Int      @default(0) // paise
-  cessRate       Int      @default(0) // basis points
-  cessAmount     Int      @default(0) // paise
+  taxCategoryId String?
+  hsnCode       String?
+  sacCode       String?
+  taxableValue  Int     @default(0) // paise — equals lineTotal (taxable amount after discount)
+  cgstRate      Int     @default(0) // basis points (e.g. 900 = 9%)
+  cgstAmount    Int     @default(0) // paise
+  sgstRate      Int     @default(0) // basis points
+  sgstAmount    Int     @default(0) // paise
+  igstRate      Int     @default(0) // basis points (e.g. 1800 = 18%)
+  igstAmount    Int     @default(0) // paise
+  cessRate      Int     @default(0) // basis points
+  cessAmount    Int     @default(0) // paise
 
   // Snapshot at time of invoice
-  purchasePrice  Int      @default(0)
-  profit         Int      @default(0)
-  profitPercent  Float    @default(0)
+  purchasePrice Int   @default(0)
+  profit        Int   @default(0)
+  profitPercent Float @default(0)
 
   // Stock snapshot
-  stockBefore    Float    @default(0)
-  stockAfter     Float    @default(0)
+  stockBefore Float @default(0)
+  stockAfter  Float @default(0)
 
-  document  Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
 
   @@index([documentId])
   @@index([productId])
 }
 
 model DocumentAdditionalCharge {
-  id         String   @id @default(cuid())
+  id         String @id @default(cuid())
   documentId String
   name       String
-  type       String   @default("FIXED") // FIXED, PERCENTAGE
-  value      Int      @default(0) // paise for FIXED, basis points for PERCENTAGE
-  amount     Int      @default(0) // calculated paise
-  sortOrder  Int      @default(0)
+  type       String @default("FIXED") // FIXED, PERCENTAGE
+  value      Int    @default(0) // paise for FIXED, basis points for PERCENTAGE
+  amount     Int    @default(0) // calculated paise
+  sortOrder  Int    @default(0)
 
   document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
@@ -793,8 +803,8 @@ model DocumentAdditionalCharge {
 model DocumentShareLog {
   id             String   @id @default(cuid())
   documentId     String
-  channel        String   // WHATSAPP, EMAIL, PRINT
-  format         String   // PDF, JPG, PNG
+  channel        String // WHATSAPP, EMAIL, PRINT
+  format         String // PDF, JPG, PNG
   recipientPhone String?
   recipientEmail String?
   fileUrl        String?
@@ -810,23 +820,23 @@ model DocumentShareLog {
 }
 
 model DocumentNumberSeries {
-  id              String   @id @default(cuid())
-  businessId      String
-  documentType    String   // SALE_INVOICE, PURCHASE_INVOICE, etc.
-  financialYear   String   // "2526"
+  id            String @id @default(cuid())
+  businessId    String
+  documentType  String // SALE_INVOICE, PURCHASE_INVOICE, etc.
+  financialYear String // "2526"
 
-  prefix          String   @default("INV")
-  suffix          String   @default("")
-  separator       String   @default("-")
-  paddingDigits   Int      @default(3)
-  currentSequence Int      @default(0)
-  startingNumber  Int      @default(1)
-  resetOnNewYear  Boolean  @default(true)
-  isDeleted       Boolean  @default(false)
+  prefix          String    @default("INV")
+  suffix          String    @default("")
+  separator       String    @default("-")
+  paddingDigits   Int       @default(3)
+  currentSequence Int       @default(0)
+  startingNumber  Int       @default(1)
+  resetOnNewYear  Boolean   @default(true)
+  isDeleted       Boolean   @default(false)
   deletedAt       DateTime?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
@@ -846,16 +856,16 @@ model DigitalSignature {
 }
 
 model TermsAndConditionsTemplate {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   businessId String
   name       String
-  content    String   @db.Text
-  isDefault  Boolean  @default(false)
-  appliesTo  String[] @default([]) // Document types this applies to
-  isDeleted  Boolean  @default(false)
+  content    String    @db.Text
+  isDefault  Boolean   @default(false)
+  appliesTo  String[]  @default([]) // Document types this applies to
+  isDeleted  Boolean   @default(false)
   deletedAt  DateTime?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
@@ -865,19 +875,19 @@ model TermsAndConditionsTemplate {
 }
 
 model DocumentSettings {
-  id                        String   @id @default(cuid())
-  businessId                String   @unique
-  defaultPaymentTerms       String   @default("COD")
-  roundOffTo                String   @default("NEAREST_1") // NONE, NEAREST_1, NEAREST_050, NEAREST_010
-  showProfitDuringBilling   Boolean  @default(true)
-  allowFutureDates          Boolean  @default(false)
-  transactionLockDays       Int      @default(0)
-  recycleBinRetentionDays   Int      @default(30)
-  autoShareOnSave           Boolean  @default(false)
-  autoShareChannel          String   @default("WHATSAPP")
-  autoShareFormat           String   @default("PDF")
-  createdAt                 DateTime @default(now())
-  updatedAt                 DateTime @updatedAt
+  id                      String   @id @default(cuid())
+  businessId              String   @unique
+  defaultPaymentTerms     String   @default("COD")
+  roundOffTo              String   @default("NEAREST_1") // NONE, NEAREST_1, NEAREST_050, NEAREST_010
+  showProfitDuringBilling Boolean  @default(true)
+  allowFutureDates        Boolean  @default(false)
+  transactionLockDays     Int      @default(0)
+  recycleBinRetentionDays Int      @default(30)
+  autoShareOnSave         Boolean  @default(false)
+  autoShareChannel        String   @default("WHATSAPP")
+  autoShareFormat         String   @default("PDF")
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 }
@@ -888,11 +898,11 @@ model Payment {
   id              String    @id @default(cuid())
   offlineId       String?   @unique
   businessId      String
-  type            String    // PAYMENT_IN, PAYMENT_OUT
+  type            String // PAYMENT_IN, PAYMENT_OUT
   partyId         String
-  amount          Int       // paise
+  amount          Int // paise
   date            DateTime
-  mode            String    // CASH, UPI, BANK_TRANSFER, CHEQUE, NEFT_RTGS_IMPS, CREDIT_CARD, OTHER
+  mode            String // CASH, UPI, BANK_TRANSFER, CHEQUE, NEFT_RTGS_IMPS, CREDIT_CARD, OTHER
   referenceNumber String?   @db.VarChar(100)
   notes           String?   @db.VarChar(500)
   isDeleted       Boolean   @default(false)
@@ -902,12 +912,12 @@ model Payment {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  business     Business            @relation(fields: [businessId], references: [id], onDelete: Restrict)
-  party        Party               @relation(fields: [partyId], references: [id], onDelete: Restrict)
-  creator      User                @relation("PaymentCreator", fields: [createdBy], references: [id], onDelete: Restrict)
-  updater      User?               @relation("PaymentUpdater", fields: [updatedBy], references: [id])
-  allocations  PaymentAllocation[]
-  discount     PaymentDiscount?
+  business    Business            @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  party       Party               @relation(fields: [partyId], references: [id], onDelete: Restrict)
+  creator     User                @relation("PaymentCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  updater     User?               @relation("PaymentUpdater", fields: [updatedBy], references: [id])
+  allocations PaymentAllocation[]
+  discount    PaymentDiscount?
 
   @@index([businessId, date])
   @@index([businessId, partyId])
@@ -918,15 +928,15 @@ model Payment {
 }
 
 model PaymentAllocation {
-  id         String   @id @default(cuid())
-  paymentId  String
-  invoiceId  String
-  amount     Int      // paise
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String   @id @default(cuid())
+  paymentId String
+  invoiceId String
+  amount    Int // paise
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  payment  Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
-  invoice  Document @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+  payment Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  invoice Document @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
 
   @@unique([paymentId, invoiceId])
   @@index([invoiceId])
@@ -935,9 +945,9 @@ model PaymentAllocation {
 model PaymentDiscount {
   id               String   @id @default(cuid())
   paymentId        String   @unique
-  type             String   // PERCENTAGE, FIXED
-  value            Float    // percentage value or fixed paise
-  calculatedAmount Int      // paise
+  type             String // PERCENTAGE, FIXED
+  value            Float // percentage value or fixed paise
+  calculatedAmount Int // paise
   reason           String?  @db.VarChar(200)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -950,7 +960,7 @@ model PaymentReminder {
   businessId    String
   partyId       String
   invoiceId     String?
-  channel       String    // WHATSAPP, SMS, PUSH
+  channel       String // WHATSAPP, SMS, PUSH
   status        String    @default("SCHEDULED")
   message       String    @db.Text
   scheduledAt   DateTime?
@@ -971,19 +981,19 @@ model PaymentReminder {
 }
 
 model ReminderConfig {
-  id                      String   @id @default(cuid())
-  businessId              String   @unique
-  enabled                 Boolean  @default(true)
-  autoRemindEnabled       Boolean  @default(false)
-  frequencyDays           Int[]    @default([1, 3, 7])
-  maxRemindersPerInvoice  Int      @default(5)
-  defaultChannel          String   @default("WHATSAPP")
-  quietHoursStart         String   @default("21:00")
-  quietHoursEnd           String   @default("09:00")
-  whatsappTemplate        String?  @db.Text
-  smsTemplate             String?  @db.Text
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
+  id                     String   @id @default(cuid())
+  businessId             String   @unique
+  enabled                Boolean  @default(true)
+  autoRemindEnabled      Boolean  @default(false)
+  frequencyDays          Int[]    @default([1, 3, 7])
+  maxRemindersPerInvoice Int      @default(5)
+  defaultChannel         String   @default("WHATSAPP")
+  quietHoursStart        String   @default("21:00")
+  quietHoursEnd          String   @default("09:00")
+  whatsappTemplate       String?  @db.Text
+  smsTemplate            String?  @db.Text
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 }
@@ -991,20 +1001,20 @@ model ReminderConfig {
 // === Settings & Security ===
 
 model Role {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   businessId  String
   name        String
   description String?
-  isSystem    Boolean  @default(false)
-  isDefault   Boolean  @default(false)
-  priority    Int      @default(0)
-  permissions String[] @default([])
-  isDeleted   Boolean  @default(false)
+  isSystem    Boolean   @default(false)
+  isDefault   Boolean   @default(false)
+  priority    Int       @default(0)
+  permissions String[]  @default([])
+  isDeleted   Boolean   @default(false)
   deletedAt   DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  business     Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  business      Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
   businessUsers BusinessUser[]
 
   @@unique([businessId, name])
@@ -1013,19 +1023,19 @@ model Role {
 }
 
 model StaffInvite {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   businessId String
   name       String
   phone      String
   roleId     String?
-  code       String   @unique
-  status     String   @default("PENDING") // PENDING, ACCEPTED, EXPIRED, CANCELLED
+  code       String    @unique
+  status     String    @default("PENDING") // PENDING, ACCEPTED, EXPIRED, CANCELLED
   expiresAt  DateTime
   invitedBy  String
-  isDeleted  Boolean  @default(false)
+  isDeleted  Boolean   @default(false)
   deletedAt  DateTime?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
@@ -1053,7 +1063,7 @@ model TransactionLockConfig {
 model ApprovalRequest {
   id               String    @id @default(cuid())
   businessId       String
-  type             String    // EDIT_LOCKED_TRANSACTION, DELETE_TRANSACTION, PRICE_OVERRIDE, DISCOUNT_OVERRIDE
+  type             String // EDIT_LOCKED_TRANSACTION, DELETE_TRANSACTION, PRICE_OVERRIDE, DISCOUNT_OVERRIDE
   entityType       String
   entityId         String
   requestedBy      String
@@ -1077,7 +1087,7 @@ model ApprovalRequest {
 model AuditLog {
   id          String   @id @default(cuid())
   businessId  String
-  action      String   // CREATE, UPDATE, DELETE, RESTORE, LOCK_OVERRIDE, PIN_RESET, ROLE_CHANGE, APPROVAL_REQUEST, APPROVAL_RESPONSE
+  action      String // CREATE, UPDATE, DELETE, RESTORE, LOCK_OVERRIDE, PIN_RESET, ROLE_CHANGE, APPROVAL_REQUEST, APPROVAL_RESPONSE
   entityType  String
   entityId    String
   entityLabel String?
@@ -1120,7 +1130,7 @@ model ReferralEvent {
   id                String   @id @default(cuid())
   referrerId        String
   referredId        String
-  eventType         String   // signup, payment_success, refund_issued, reward_credited
+  eventType         String // signup, payment_success, refund_issued, reward_credited
   eventData         Json?
   ipAddress         String?
   deviceFingerprint String?
@@ -1145,7 +1155,7 @@ model ReferralReward {
   referrerId     String
   referredId     String
   amount         Decimal   @db.Decimal(10, 2)
-  status         String    // in_review, approved, withdrawn, clawed_back
+  status         String // in_review, approved, withdrawn, clawed_back
   eligibleAt     DateTime?
   approvedAt     DateTime?
   withdrawnAt    DateTime?
@@ -1168,7 +1178,7 @@ model ReferralWithdrawal {
   userId        String
   amount        Decimal   @db.Decimal(10, 2)
   upiId         String
-  status        String    // pending, approved, rejected, failed, processing
+  status        String // pending, approved, rejected, failed, processing
   statusReason  String?
   autoApproved  Boolean   @default(false)
   approvedBy    String?
@@ -1187,19 +1197,19 @@ model ReferralWithdrawal {
 }
 
 model UserAppSettings {
-  id                  String   @id @default(cuid())
-  userId              String   @unique
-  dateFormat          String   @default("DD/MM/YYYY")
-  pinEnabled          Boolean  @default(false)
-  pinHash             String?
-  pinAttempts         Int      @default(0)
-  pinLockedUntil      DateTime?
-  biometricEnabled    Boolean  @default(false)
-  calculatorPosition  String   @default("BOTTOM_RIGHT")
-  language            String   @default("en")
-  theme               String   @default("light")
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id                 String    @id @default(cuid())
+  userId             String    @unique
+  dateFormat         String    @default("DD/MM/YYYY")
+  pinEnabled         Boolean   @default(false)
+  pinHash            String?
+  pinAttempts        Int       @default(0)
+  pinLockedUntil     DateTime?
+  biometricEnabled   Boolean   @default(false)
+  calculatorPosition String    @default("BOTTOM_RIGHT")
+  language           String    @default("en")
+  theme              String    @default("light")
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -1224,25 +1234,25 @@ enum CouponAppliesTo {
 
 /// Platform admin accounts — separate from regular User table
 model AdminUser {
-  id                   String    @id @default(cuid())
-  email                String    @unique
-  passwordHash         String
-  name                 String
-  role                 AdminRole @default(ADMIN)
-  isActive             Boolean   @default(true)
-  twoFactorEnabled     Boolean   @default(false)
-  twoFactorSecret      String?   // TOTP secret (encrypted at rest)
+  id               String    @id @default(cuid())
+  email            String    @unique
+  passwordHash     String
+  name             String
+  role             AdminRole @default(ADMIN)
+  isActive         Boolean   @default(true)
+  twoFactorEnabled Boolean   @default(false)
+  twoFactorSecret  String? // TOTP secret (encrypted at rest)
 
   // Security tracking
-  lastLoginAt          DateTime?
-  failedLoginAttempts  Int       @default(0)
-  accountLockedUntil   DateTime?
-  lastFailedLoginAt    DateTime?
+  lastLoginAt         DateTime?
+  failedLoginAttempts Int       @default(0)
+  accountLockedUntil  DateTime?
+  lastFailedLoginAt   DateTime?
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  actions    AdminAction[]
+  actions        AdminAction[]
   couponsCreated Coupon[]
 
   @@index([email])
@@ -1251,15 +1261,15 @@ model AdminUser {
 
 /// Immutable audit trail — every admin action is recorded here
 model AdminAction {
-  id          String   @id @default(cuid())
-  adminId     String
-  action      String   // SUSPEND_USER, UNSUSPEND_USER, VIEW_USER, UPDATE_SETTINGS, LOGIN, LOGOUT
-  targetType  String?  // USER, BUSINESS, SETTINGS
-  targetId    String?
-  metadata    Json     @default("{}")
-  ipAddress   String?
-  userAgent   String?
-  createdAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  adminId    String
+  action     String // SUSPEND_USER, UNSUSPEND_USER, VIEW_USER, UPDATE_SETTINGS, LOGIN, LOGOUT
+  targetType String? // USER, BUSINESS, SETTINGS
+  targetId   String?
+  metadata   Json     @default("{}")
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
 
   admin AdminUser @relation(fields: [adminId], references: [id], onDelete: Restrict)
 
@@ -1273,12 +1283,12 @@ model AdminAction {
 model UserSuspension {
   id          String    @id @default(cuid())
   userId      String    @unique
-  suspendedBy String    // AdminUser.id
+  suspendedBy String // AdminUser.id
   reason      String
   notes       String?
   suspendedAt DateTime  @default(now())
   liftedAt    DateTime?
-  liftedBy    String?   // AdminUser.id
+  liftedBy    String? // AdminUser.id
   liftNotes   String?
 
   @@index([userId])
@@ -1291,20 +1301,20 @@ model UserSuspension {
 
 /// Tax rate category — "GST 18%", "GST 5%", "Exempt", etc.
 model TaxCategory {
-  id           String   @id @default(cuid())
-  businessId   String
-  name         String   // "GST 18%", "GST 5%", "Exempt"
-  rate         Int      @default(0)  // basis points (1800 = 18.00%)
-  cessRate     Int      @default(0)  // basis points for additional cess
-  cessType     String   @default("PERCENTAGE") // PERCENTAGE, FIXED_PER_UNIT
-  hsnCode      String?  // Default HSN for this category
-  sacCode      String?  // Default SAC for this category
-  isDefault    Boolean  @default(false) // System-created defaults (0%, 5%, 12%, 18%, 28%)
-  isActive     Boolean  @default(true)
-  isDeleted    Boolean  @default(false)
-  deletedAt    DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id         String    @id @default(cuid())
+  businessId String
+  name       String // "GST 18%", "GST 5%", "Exempt"
+  rate       Int       @default(0) // basis points (1800 = 18.00%)
+  cessRate   Int       @default(0) // basis points for additional cess
+  cessType   String    @default("PERCENTAGE") // PERCENTAGE, FIXED_PER_UNIT
+  hsnCode    String? // Default HSN for this category
+  sacCode    String? // Default SAC for this category
+  isDefault  Boolean   @default(false) // System-created defaults (0%, 5%, 12%, 18%, 28%)
+  isActive   Boolean   @default(true)
+  isDeleted  Boolean   @default(false)
+  deletedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   business Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
   products Product[]
@@ -1329,18 +1339,18 @@ model HsnCode {
 
 /// E-Invoice record — IRN + QR from NIC IRP portal
 model EInvoice {
-  id             String   @id @default(cuid())
-  documentId     String   @unique
-  irn            String   @unique // 64-char hash from NIC
-  ackNumber      String   // Acknowledgement number
-  ackDate        DateTime
-  qrCodeData     String   @db.Text // Base64 or raw QR data
-  signedInvoice  Json     // Full signed invoice JSON from NIC
-  status         String   @default("GENERATED") // GENERATED, CANCELLED
-  cancelReason   String?
-  cancelledAt    DateTime?
-  rawResponse    Json?    // Full NIC response for debugging
-  createdAt      DateTime @default(now())
+  id            String    @id @default(cuid())
+  documentId    String    @unique
+  irn           String    @unique // 64-char hash from NIC
+  ackNumber     String // Acknowledgement number
+  ackDate       DateTime
+  qrCodeData    String    @db.Text // Base64 or raw QR data
+  signedInvoice Json // Full signed invoice JSON from NIC
+  status        String    @default("GENERATED") // GENERATED, CANCELLED
+  cancelReason  String?
+  cancelledAt   DateTime?
+  rawResponse   Json? // Full NIC response for debugging
+  createdAt     DateTime  @default(now())
 
   document Document @relation(fields: [documentId], references: [id], onDelete: Restrict)
 
@@ -1349,24 +1359,24 @@ model EInvoice {
 
 /// E-Way Bill record
 model EWayBill {
-  id              String   @id @default(cuid())
-  documentId      String   @unique
-  ewbNumber       String   @unique
+  id              String    @id @default(cuid())
+  documentId      String    @unique
+  ewbNumber       String    @unique
   ewbDate         DateTime
   validUpto       DateTime
-  transportMode   String   @default("ROAD") // ROAD, RAIL, AIR, SHIP
+  transportMode   String    @default("ROAD") // ROAD, RAIL, AIR, SHIP
   transporterId   String?
   transporterName String?
   vehicleNumber   String?
-  vehicleType     String?  // REGULAR, ODC (over-dimensional cargo)
-  distance        Int      @default(0) // kilometers
+  vehicleType     String? // REGULAR, ODC (over-dimensional cargo)
+  distance        Int       @default(0) // kilometers
   fromPincode     String
   toPincode       String
-  status          String   @default("ACTIVE") // ACTIVE, CANCELLED, EXTENDED
+  status          String    @default("ACTIVE") // ACTIVE, CANCELLED, EXTENDED
   cancelReason    String?
   cancelledAt     DateTime?
-  partBUpdates    Json     @default("[]") // Array of vehicle change records
-  createdAt       DateTime @default(now())
+  partBUpdates    Json      @default("[]") // Array of vehicle change records
+  createdAt       DateTime  @default(now())
 
   document Document @relation(fields: [documentId], references: [id], onDelete: Restrict)
 
@@ -1377,19 +1387,19 @@ model EWayBill {
 
 /// GST return filing tracker
 model GstReturn {
-  id                String   @id @default(cuid())
+  id                String    @id @default(cuid())
   businessId        String
-  period            String   // "2026-01" (YYYY-MM)
-  returnType        String   // GSTR1, GSTR3B, GSTR9
-  status            String   @default("DRAFT") // DRAFT, EXPORTED, FILED
+  period            String // "2026-01" (YYYY-MM)
+  returnType        String // GSTR1, GSTR3B, GSTR9
+  status            String    @default("DRAFT") // DRAFT, EXPORTED, FILED
   filedAt           DateTime?
-  jsonData          Json?    // Exported JSON data
-  summary           Json?    // Aggregated summary (tax totals, counts)
-  invoiceCount      Int      @default(0)
-  totalTaxableValue Int      @default(0) // paise
-  totalTax          Int      @default(0) // paise
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  jsonData          Json? // Exported JSON data
+  summary           Json? // Aggregated summary (tax totals, counts)
+  invoiceCount      Int       @default(0)
+  totalTaxableValue Int       @default(0) // paise
+  totalTax          Int       @default(0) // paise
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
@@ -1400,87 +1410,87 @@ model GstReturn {
 // ─── GSTR-1 Reconciliation — Phase 2E ───────────────────────────────────────
 
 model GstReconciliation {
-  id                  String   @id @default(cuid())
-  businessId          String
-  period              String   // YYYY-MM
-  reconType           String   // GSTR1_VS_BOOKS, GSTR2A_VS_BOOKS, GSTR2B_VS_BOOKS
-  status              String   @default("DRAFT") // DRAFT, IN_PROGRESS, COMPLETED
+  id         String @id @default(cuid())
+  businessId String
+  period     String // YYYY-MM
+  reconType  String // GSTR1_VS_BOOKS, GSTR2A_VS_BOOKS, GSTR2B_VS_BOOKS
+  status     String @default("DRAFT") // DRAFT, IN_PROGRESS, COMPLETED
 
   // Summary counts
-  totalInvoices       Int      @default(0)
-  matchedCount        Int      @default(0)
-  mismatchedCount     Int      @default(0)
-  missingInGstrCount  Int      @default(0)
-  extraInGstrCount    Int      @default(0)
+  totalInvoices      Int @default(0)
+  matchedCount       Int @default(0)
+  mismatchedCount    Int @default(0)
+  missingInGstrCount Int @default(0)
+  extraInGstrCount   Int @default(0)
 
   // Summary amounts (paise)
-  totalBookValue      Int      @default(0)
-  totalGstrValue      Int      @default(0)
-  differenceValue     Int      @default(0)
+  totalBookValue  Int @default(0)
+  totalGstrValue  Int @default(0)
+  differenceValue Int @default(0)
 
   // The uploaded GSTR data (JSON blob)
-  gstrData            Json?
+  gstrData Json?
 
-  completedAt         DateTime?
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  business            Business                 @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  entries             GstReconciliationEntry[]
+  business Business                 @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  entries  GstReconciliationEntry[]
 
   @@unique([businessId, period, reconType])
   @@index([businessId, period])
 }
 
 model GstReconciliationEntry {
-  id                  String   @id @default(cuid())
-  reconciliationId    String
+  id               String @id @default(cuid())
+  reconciliationId String
 
   // Our system data
-  documentId          String?
-  documentNumber      String?
-  documentDate        DateTime?
-  partyGstin          String?  @db.VarChar(15)
-  partyName           String?
-  bookTaxableValue    Int      @default(0) // paise
-  bookTaxAmount       Int      @default(0) // paise
+  documentId       String?
+  documentNumber   String?
+  documentDate     DateTime?
+  partyGstin       String?   @db.VarChar(15)
+  partyName        String?
+  bookTaxableValue Int       @default(0) // paise
+  bookTaxAmount    Int       @default(0) // paise
 
   // GSTR portal data
-  gstrInvoiceNumber   String?
-  gstrInvoiceDate     DateTime?
-  gstrTaxableValue    Int      @default(0) // paise
-  gstrTaxAmount       Int      @default(0) // paise
+  gstrInvoiceNumber String?
+  gstrInvoiceDate   DateTime?
+  gstrTaxableValue  Int       @default(0) // paise
+  gstrTaxAmount     Int       @default(0) // paise
 
   // Reconciliation result
-  matchStatus         String   // MATCHED, MISMATCHED, MISSING_IN_GSTR, EXTRA_IN_GSTR
-  taxableValueDiff    Int      @default(0) // paise (book - gstr)
-  taxAmountDiff       Int      @default(0) // paise
+  matchStatus      String // MATCHED, MISMATCHED, MISSING_IN_GSTR, EXTRA_IN_GSTR
+  taxableValueDiff Int    @default(0) // paise (book - gstr)
+  taxAmountDiff    Int    @default(0) // paise
 
-  reconciliation      GstReconciliation @relation(fields: [reconciliationId], references: [id], onDelete: Cascade)
+  reconciliation GstReconciliation @relation(fields: [reconciliationId], references: [id], onDelete: Cascade)
 
   @@index([reconciliationId, matchStatus])
 }
 
 /// Recurring invoice template — auto-generates invoices on schedule
 model RecurringInvoice {
-  id                  String    @id @default(cuid())
-  businessId          String
-  templateDocumentId  String    // Source document used as template
-  partyId             String
-  frequency           String    // WEEKLY, MONTHLY, QUARTERLY, YEARLY
-  startDate           DateTime
-  endDate             DateTime?
-  nextRunDate         DateTime
-  dayOfMonth          Int?      // 1-28 for MONTHLY
-  dayOfWeek           Int?      // 0-6 for WEEKLY (0 = Sunday)
-  autoSend            Boolean   @default(false)
-  status              String    @default("ACTIVE") // ACTIVE, PAUSED, COMPLETED
-  generatedCount      Int       @default(0)
-  lastGeneratedAt     DateTime?
-  isDeleted           Boolean   @default(false)
-  deletedAt           DateTime?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  id                 String    @id @default(cuid())
+  businessId         String
+  templateDocumentId String // Source document used as template
+  partyId            String
+  frequency          String // WEEKLY, MONTHLY, QUARTERLY, YEARLY
+  startDate          DateTime
+  endDate            DateTime?
+  nextRunDate        DateTime
+  dayOfMonth         Int? // 1-28 for MONTHLY
+  dayOfWeek          Int? // 0-6 for WEEKLY (0 = Sunday)
+  autoSend           Boolean   @default(false)
+  status             String    @default("ACTIVE") // ACTIVE, PAUSED, COMPLETED
+  generatedCount     Int       @default(0)
+  lastGeneratedAt    DateTime?
+  isDeleted          Boolean   @default(false)
+  deletedAt          DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   business  Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
   documents Document[]
@@ -1495,14 +1505,14 @@ model RecurringInvoice {
 // ---------------------------------------------------------------------------
 
 model ExchangeRate {
-  id           String   @id @default(cuid())
-  businessId   String
-  fromCurrency String   @db.VarChar(3)
-  toCurrency   String   @default("INR") @db.VarChar(3)
-  rate         Int      // rate * 10000 (e.g., 1 USD = 84.5678 INR → 845678)
+  id            String   @id @default(cuid())
+  businessId    String
+  fromCurrency  String   @db.VarChar(3)
+  toCurrency    String   @default("INR") @db.VarChar(3)
+  rate          Int // rate * 10000 (e.g., 1 USD = 84.5678 INR → 845678)
   effectiveDate DateTime
-  source       String   @default("MANUAL") // MANUAL, API
-  createdAt    DateTime @default(now())
+  source        String   @default("MANUAL") // MANUAL, API
+  createdAt     DateTime @default(now())
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
@@ -1518,33 +1528,33 @@ model ExchangeRate {
 /// Every account belongs to one of: ASSET, LIABILITY, EQUITY, INCOME, EXPENSE
 /// Sub-types give finer classification (BANK, CASH, RECEIVABLE, PAYABLE, etc.)
 model LedgerAccount {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   businessId    String
-  code          String   // "1000", "2000", etc. — user-visible account code
-  name          String   // "Cash in Hand", "Sales", "HDFC Current A/c"
-  type          String   // ASSET, LIABILITY, EQUITY, INCOME, EXPENSE
-  subType       String?  // BANK, CASH, RECEIVABLE, PAYABLE, TAX, INVENTORY, FIXED_ASSET, CAPITAL, REVENUE, PURCHASE, DIRECT_EXPENSE, INDIRECT_EXPENSE, LOAN
-  parentId      String?  // For tree hierarchy
+  code          String // "1000", "2000", etc. — user-visible account code
+  name          String // "Cash in Hand", "Sales", "HDFC Current A/c"
+  type          String // ASSET, LIABILITY, EQUITY, INCOME, EXPENSE
+  subType       String? // BANK, CASH, RECEIVABLE, PAYABLE, TAX, INVENTORY, FIXED_ASSET, CAPITAL, REVENUE, PURCHASE, DIRECT_EXPENSE, INDIRECT_EXPENSE, LOAN
+  parentId      String? // For tree hierarchy
   description   String?
-  isSystem      Boolean  @default(false) // System-created (cannot delete)
-  isActive      Boolean  @default(true)
-  isDeleted     Boolean  @default(false)
+  isSystem      Boolean   @default(false) // System-created (cannot delete)
+  isActive      Boolean   @default(true)
+  isDeleted     Boolean   @default(false)
   deletedAt     DateTime?
   // Running balance (paise) — updated on each journal entry post
   // Positive = debit-normal for ASSET/EXPENSE, credit-normal for LIABILITY/EQUITY/INCOME
-  balance       Int      @default(0)
+  balance       Int       @default(0)
   // Link to bank account (if subType=BANK)
-  bankAccountId String?  @unique
+  bankAccountId String?   @unique
   // Link to party (if subType=RECEIVABLE or PAYABLE)
   partyId       String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  business      Business        @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  parent        LedgerAccount?  @relation("AccountHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
-  children      LedgerAccount[] @relation("AccountHierarchy")
-  bankAccount   BankAccount?    @relation(fields: [bankAccountId], references: [id], onDelete: SetNull)
-  journalLines  JournalEntryLine[]
+  business     Business           @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  parent       LedgerAccount?     @relation("AccountHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children     LedgerAccount[]    @relation("AccountHierarchy")
+  bankAccount  BankAccount?       @relation(fields: [bankAccountId], references: [id], onDelete: SetNull)
+  journalLines JournalEntryLine[]
 
   @@unique([businessId, code])
   @@index([businessId, type, isActive])
@@ -1557,32 +1567,32 @@ model LedgerAccount {
 /// Journal Entry — the atomic unit of double-entry accounting
 /// Every financial event (invoice, payment, expense, adjustment) creates one
 model JournalEntry {
-  id              String    @id @default(cuid())
-  businessId      String
-  entryNumber     String    // Auto-generated: "JE-2526-001"
-  date            DateTime
-  narration       String?   @db.Text
-  type            String    // SALES, PURCHASE, RECEIPT, PAYMENT, CONTRA, JOURNAL, EXPENSE, CREDIT_NOTE, DEBIT_NOTE, OPENING
-  status          String    @default("DRAFT") // DRAFT, POSTED, VOID
+  id           String    @id @default(cuid())
+  businessId   String
+  entryNumber  String // Auto-generated: "JE-2526-001"
+  date         DateTime
+  narration    String?   @db.Text
+  type         String // SALES, PURCHASE, RECEIPT, PAYMENT, CONTRA, JOURNAL, EXPENSE, CREDIT_NOTE, DEBIT_NOTE, OPENING
+  status       String    @default("DRAFT") // DRAFT, POSTED, VOID
   // Source reference — what created this entry
-  sourceType      String?   // DOCUMENT, PAYMENT, EXPENSE, MANUAL, OPENING, FY_CLOSURE
-  sourceId        String?   // ID of the source record
-  sourceNumber    String?   // Human-readable ref (INV-2526-001, PAY-001)
+  sourceType   String? // DOCUMENT, PAYMENT, EXPENSE, MANUAL, OPENING, FY_CLOSURE
+  sourceId     String? // ID of the source record
+  sourceNumber String? // Human-readable ref (INV-2526-001, PAY-001)
   // Totals (paise) — must be equal for valid entry
-  totalDebit      Int       @default(0)
-  totalCredit     Int       @default(0)
+  totalDebit   Int       @default(0)
+  totalCredit  Int       @default(0)
   // Void info
-  voidedAt        DateTime?
-  voidedBy        String?
-  voidReason      String?
+  voidedAt     DateTime?
+  voidedBy     String?
+  voidReason   String?
   // Audit
-  createdBy       String
-  postedAt        DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdBy    String
+  postedAt     DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
-  business  Business            @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  lines     JournalEntryLine[]
+  business Business           @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  lines    JournalEntryLine[]
 
   @@unique([businessId, entryNumber])
   @@index([businessId, date])
@@ -1593,18 +1603,18 @@ model JournalEntry {
 
 /// Journal Entry Line — individual debit or credit within an entry
 model JournalEntryLine {
-  id              String   @id @default(cuid())
-  journalEntryId  String
-  accountId       String
-  debit           Int      @default(0) // paise — one of debit/credit must be > 0
-  credit          Int      @default(0) // paise
-  narration       String?  // Line-level note
-  partyId         String?  // For receivable/payable tracking
-  sortOrder       Int      @default(0)
-  createdAt       DateTime @default(now())
+  id             String   @id @default(cuid())
+  journalEntryId String
+  accountId      String
+  debit          Int      @default(0) // paise — one of debit/credit must be > 0
+  credit         Int      @default(0) // paise
+  narration      String? // Line-level note
+  partyId        String? // For receivable/payable tracking
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
 
-  journalEntry  JournalEntry  @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
-  account       LedgerAccount @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  journalEntry JournalEntry  @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
+  account      LedgerAccount @relation(fields: [accountId], references: [id], onDelete: Restrict)
 
   @@index([journalEntryId])
   @@index([accountId])
@@ -1613,25 +1623,25 @@ model JournalEntryLine {
 
 /// Bank Account — linked to a LedgerAccount with subType=BANK
 model BankAccount {
-  id              String    @id @default(cuid())
-  businessId      String
-  bankName        String
-  accountNumber   String
-  ifscCode        String?
-  branchName      String?
-  accountType     String    @default("CURRENT") // CURRENT, SAVINGS, OD, CC
-  openingBalance  Int       @default(0) // paise
-  currentBalance  Int       @default(0) // paise (updated on transactions)
-  isDefault       Boolean   @default(false)
-  isActive        Boolean   @default(true)
-  isDeleted       Boolean   @default(false)
-  deletedAt       DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id             String    @id @default(cuid())
+  businessId     String
+  bankName       String
+  accountNumber  String
+  ifscCode       String?
+  branchName     String?
+  accountType    String    @default("CURRENT") // CURRENT, SAVINGS, OD, CC
+  openingBalance Int       @default(0) // paise
+  currentBalance Int       @default(0) // paise (updated on transactions)
+  isDefault      Boolean   @default(false)
+  isActive       Boolean   @default(true)
+  isDeleted      Boolean   @default(false)
+  deletedAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
-  business        Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  ledgerAccount   LedgerAccount?
-  cheques         Cheque[]
+  business      Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  ledgerAccount LedgerAccount?
+  cheques       Cheque[]
 
   @@unique([businessId, accountNumber])
   @@index([businessId, isActive])
@@ -1643,14 +1653,14 @@ model Expense {
   id              String    @id @default(cuid())
   businessId      String
   categoryId      String
-  amount          Int       // paise
+  amount          Int // paise
   date            DateTime
-  paymentMode     String    // CASH, UPI, BANK_TRANSFER, CHEQUE, CREDIT_CARD, OTHER
-  bankAccountId   String?   // if paid from bank
-  partyId         String?   // vendor/supplier
+  paymentMode     String // CASH, UPI, BANK_TRANSFER, CHEQUE, CREDIT_CARD, OTHER
+  bankAccountId   String? // if paid from bank
+  partyId         String? // vendor/supplier
   referenceNumber String?   @db.VarChar(100)
   notes           String?   @db.Text
-  receiptUrl      String?   // attached receipt image
+  receiptUrl      String? // attached receipt image
   isRecurring     Boolean   @default(false)
   // GST on expense
   gstApplicable   Boolean   @default(false)
@@ -1665,9 +1675,9 @@ model Expense {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  business        Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  category        ExpenseCategory  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  createdByUser   User             @relation("ExpenseCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  business      Business        @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  category      ExpenseCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  createdByUser User            @relation("ExpenseCreator", fields: [createdBy], references: [id], onDelete: Restrict)
 
   @@index([businessId, date])
   @@index([businessId, categoryId])
@@ -1677,21 +1687,21 @@ model Expense {
 
 /// Expense Category — user-configurable with system defaults
 model ExpenseCategory {
-  id          String   @id @default(cuid())
-  businessId  String
-  name        String
-  icon        String?  // emoji or icon name
-  color       String   @default("#6B7280")
-  isSystem    Boolean  @default(false) // Rent, Salary, Utilities, etc.
-  isActive    Boolean  @default(true)
-  isDeleted   Boolean  @default(false)
-  deletedAt   DateTime?
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String    @id @default(cuid())
+  businessId String
+  name       String
+  icon       String? // emoji or icon name
+  color      String    @default("#6B7280")
+  isSystem   Boolean   @default(false) // Rent, Salary, Utilities, etc.
+  isActive   Boolean   @default(true)
+  isDeleted  Boolean   @default(false)
+  deletedAt  DateTime?
+  sortOrder  Int       @default(0)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
-  business  Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  expenses  Expense[]
+  business Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  expenses Expense[]
 
   @@unique([businessId, name])
   @@index([businessId, isActive])
@@ -1702,10 +1712,10 @@ model ExpenseCategory {
 model OtherIncome {
   id              String    @id @default(cuid())
   businessId      String
-  category        String    // INTEREST, RENT, COMMISSION, DISCOUNT_RECEIVED, MISCELLANEOUS
-  amount          Int       // paise
+  category        String // INTEREST, RENT, COMMISSION, DISCOUNT_RECEIVED, MISCELLANEOUS
+  amount          Int // paise
   date            DateTime
-  paymentMode     String    // CASH, UPI, BANK_TRANSFER, CHEQUE, OTHER
+  paymentMode     String // CASH, UPI, BANK_TRANSFER, CHEQUE, OTHER
   bankAccountId   String?
   partyId         String?
   referenceNumber String?   @db.VarChar(100)
@@ -1717,8 +1727,8 @@ model OtherIncome {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  business        Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  createdByUser   User      @relation("OtherIncomeCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  business      Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  createdByUser User     @relation("OtherIncomeCreator", fields: [createdBy], references: [id], onDelete: Restrict)
 
   @@index([businessId, date])
   @@index([businessId, category])
@@ -1729,12 +1739,12 @@ model OtherIncome {
 model Cheque {
   id              String    @id @default(cuid())
   businessId      String
-  type            String    // ISSUED, RECEIVED
+  type            String // ISSUED, RECEIVED
   chequeNumber    String
   bankAccountId   String
   partyId         String?
-  amount          Int       // paise
-  date            DateTime  // cheque date
+  amount          Int // paise
+  date            DateTime // cheque date
   status          String    @default("PENDING") // PENDING, CLEARED, BOUNCED, CANCELLED, RETURNED
   clearanceDate   DateTime?
   bouncedAt       DateTime?
@@ -1749,8 +1759,8 @@ model Cheque {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  business      Business    @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  bankAccount   BankAccount @relation(fields: [bankAccountId], references: [id], onDelete: Restrict)
+  business    Business    @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  bankAccount BankAccount @relation(fields: [bankAccountId], references: [id], onDelete: Restrict)
 
   @@index([businessId, status])
   @@index([businessId, type])
@@ -1761,30 +1771,30 @@ model Cheque {
 
 /// Loan Account — track loans given/taken with EMI and interest
 model LoanAccount {
-  id              String    @id @default(cuid())
-  businessId      String
-  type            String    // LOAN_GIVEN, LOAN_TAKEN
-  partyId         String?
-  loanName        String
-  principalAmount Int       // paise
-  interestRate    Int       @default(0) // basis points annual (1200 = 12%)
-  tenure          Int?      // months
-  emiAmount       Int?      // paise (monthly EMI)
-  startDate       DateTime
-  endDate         DateTime?
-  outstandingAmount Int     @default(0) // paise — remaining principal
-  totalInterestPaid Int     @default(0) // paise
-  status          String    @default("ACTIVE") // ACTIVE, CLOSED, DEFAULTED
-  journalEntryId  String?   @unique // opening entry
-  notes           String?   @db.Text
-  isDeleted       Boolean   @default(false)
-  deletedAt       DateTime?
-  createdBy       String
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id                String    @id @default(cuid())
+  businessId        String
+  type              String // LOAN_GIVEN, LOAN_TAKEN
+  partyId           String?
+  loanName          String
+  principalAmount   Int // paise
+  interestRate      Int       @default(0) // basis points annual (1200 = 12%)
+  tenure            Int? // months
+  emiAmount         Int? // paise (monthly EMI)
+  startDate         DateTime
+  endDate           DateTime?
+  outstandingAmount Int       @default(0) // paise — remaining principal
+  totalInterestPaid Int       @default(0) // paise
+  status            String    @default("ACTIVE") // ACTIVE, CLOSED, DEFAULTED
+  journalEntryId    String?   @unique // opening entry
+  notes             String?   @db.Text
+  isDeleted         Boolean   @default(false)
+  deletedAt         DateTime?
+  createdBy         String
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
-  business        Business          @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  transactions    LoanTransaction[]
+  business     Business          @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  transactions LoanTransaction[]
 
   @@index([businessId, type, status])
   @@index([businessId, isDeleted])
@@ -1792,37 +1802,37 @@ model LoanAccount {
 
 /// Loan Transaction — EMI payment, interest charge, prepayment
 model LoanTransaction {
-  id              String    @id @default(cuid())
+  id              String   @id @default(cuid())
   loanAccountId   String
-  type            String    // EMI, INTEREST, PREPAYMENT, DISBURSEMENT, CLOSURE
-  amount          Int       // paise (total)
-  principalAmount Int       @default(0) // paise (principal portion)
-  interestAmount  Int       @default(0) // paise (interest portion)
+  type            String // EMI, INTEREST, PREPAYMENT, DISBURSEMENT, CLOSURE
+  amount          Int // paise (total)
+  principalAmount Int      @default(0) // paise (principal portion)
+  interestAmount  Int      @default(0) // paise (interest portion)
   date            DateTime
-  journalEntryId  String?   @unique
+  journalEntryId  String?  @unique
   notes           String?
-  createdAt       DateTime  @default(now())
+  createdAt       DateTime @default(now())
 
-  loanAccount     LoanAccount @relation(fields: [loanAccountId], references: [id], onDelete: Cascade)
+  loanAccount LoanAccount @relation(fields: [loanAccountId], references: [id], onDelete: Cascade)
 
   @@index([loanAccountId, date])
 }
 
 /// Financial Year Closure record
 model FinancialYearClosure {
-  id              String    @id @default(cuid())
-  businessId      String
-  financialYear   String    // "2526" = April 2025 – March 2026
-  closedAt        DateTime
-  closedBy        String
+  id               String   @id @default(cuid())
+  businessId       String
+  financialYear    String // "2526" = April 2025 – March 2026
+  closedAt         DateTime
+  closedBy         String
   retainedEarnings Int      @default(0) // paise — P&L carried to Balance Sheet
-  journalEntryId  String?   @unique // closing entry
-  status          String    @default("CLOSED") // CLOSED, REOPENED
-  notes           String?   @db.Text
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  journalEntryId   String?  @unique // closing entry
+  status           String   @default("CLOSED") // CLOSED, REOPENED
+  notes            String?  @db.Text
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  business        Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
   @@unique([businessId, financialYear])
 }
@@ -1835,24 +1845,24 @@ model Coupon {
   code              String          @unique
   description       String?
   discountType      DiscountType
-  discountValue     Int             // Basis points for PERCENTAGE (2000 = 20%), paise for FIXED
-  maxUses           Int?            // null = unlimited
+  discountValue     Int // Basis points for PERCENTAGE (2000 = 20%), paise for FIXED
+  maxUses           Int? // null = unlimited
   usageCount        Int             @default(0)
   maxUsesPerUser    Int             @default(1)
-  minPurchaseAmount Int?            // paise, nullable
+  minPurchaseAmount Int? // paise, nullable
   validFrom         DateTime
-  validUntil        DateTime?       // null = no expiry
+  validUntil        DateTime? // null = no expiry
   isActive          Boolean         @default(true)
   appliesTo         CouponAppliesTo
   planFilter        String[]        @default([]) // Plan IDs, empty = all plans
-  razorpayOfferId   String?         // Linked Razorpay offer, null until synced
+  razorpayOfferId   String? // Linked Razorpay offer, null until synced
   metadata          Json            @default("{}")
-  createdBy         String          // AdminUser ID
+  createdBy         String // AdminUser ID
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
 
-  creator           AdminUser       @relation(fields: [createdBy], references: [id], onDelete: Restrict)
-  redemptions       CouponRedemption[]
+  creator     AdminUser          @relation(fields: [createdBy], references: [id], onDelete: Restrict)
+  redemptions CouponRedemption[]
 
   @@index([isActive, validFrom, validUntil])
   @@index([code])
@@ -1863,14 +1873,14 @@ model CouponRedemption {
   id                     String   @id @default(cuid())
   couponId               String
   userId                 String
-  discountApplied        Int      // paise — actual discount amount
-  planId                 String?  // Which plan was purchased
-  razorpaySubscriptionId String?  // Razorpay sub ID
+  discountApplied        Int // paise — actual discount amount
+  planId                 String? // Which plan was purchased
+  razorpaySubscriptionId String? // Razorpay sub ID
   redeemedAt             DateTime @default(now())
   metadata               Json     @default("{}")
 
-  coupon                 Coupon   @relation(fields: [couponId], references: [id], onDelete: Restrict)
-  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coupon Coupon @relation(fields: [couponId], references: [id], onDelete: Restrict)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([couponId])
   @@index([userId])
@@ -1882,15 +1892,15 @@ model CouponRedemption {
 model WebAuthnCredential {
   id           String    @id @default(cuid())
   userId       String
-  credentialId String    @unique  // base64url-encoded credential ID from browser
-  publicKey    String    // base64url-encoded SPKI public key
-  algorithm    Int       // COSE algorithm ID: -7 (ES256) or -257 (RS256)
+  credentialId String    @unique // base64url-encoded credential ID from browser
+  publicKey    String // base64url-encoded SPKI public key
+  algorithm    Int // COSE algorithm ID: -7 (ES256) or -257 (RS256)
   signCount    Int       @default(0)
-  deviceName   String?   // e.g., "Pixel 8", "iPhone 15"
+  deviceName   String? // e.g., "Pixel 8", "iPhone 15"
   createdAt    DateTime  @default(now())
   lastUsedAt   DateTime?
 
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -1901,37 +1911,36 @@ model StockAlert {
   id             String    @id @default(cuid())
   businessId     String
   productId      String
-  alertType      String    @default("LOW_STOCK")  // LOW_STOCK, OUT_OF_STOCK
-  threshold      Float     // quantity that triggered the alert
-  currentQty     Float     // quantity at time of alert
-  status         String    @default("ACTIVE")     // ACTIVE, ACKNOWLEDGED, RESOLVED
+  alertType      String    @default("LOW_STOCK") // LOW_STOCK, OUT_OF_STOCK
+  threshold      Float // quantity that triggered the alert
+  currentQty     Float // quantity at time of alert
+  status         String    @default("ACTIVE") // ACTIVE, ACKNOWLEDGED, RESOLVED
   acknowledgedAt DateTime?
   acknowledgedBy String?
   resolvedAt     DateTime?
   createdAt      DateTime  @default(now())
 
-  business       Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  product        Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([businessId, status])
   @@index([productId, status])
 }
 
-
 // === Stock Verification — Feature #111 ===
 
 model StockVerification {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   businessId  String
   verifiedBy  String
-  status      String   @default("DRAFT") // DRAFT, IN_PROGRESS, COMPLETED
+  status      String    @default("DRAFT") // DRAFT, IN_PROGRESS, COMPLETED
   notes       String?
   completedAt DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  business Business               @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  user     User                   @relation(fields: [verifiedBy], references: [id], onDelete: Restrict)
+  business Business                @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user     User                    @relation(fields: [verifiedBy], references: [id], onDelete: Restrict)
   items    StockVerificationItem[]
 
   @@index([businessId, status])
@@ -1939,17 +1948,17 @@ model StockVerification {
 }
 
 model StockVerificationItem {
-  id               String   @id @default(cuid())
-  verificationId   String
-  productId        String
-  systemQuantity   Float    // what the system says (at time of snapshot)
-  actualQuantity   Float?   // what was physically counted
-  discrepancy      Float?   // actualQuantity - systemQuantity
-  adjusted         Boolean  @default(false)
-  notes            String?
+  id             String  @id @default(cuid())
+  verificationId String
+  productId      String
+  systemQuantity Float // what the system says (at time of snapshot)
+  actualQuantity Float? // what was physically counted
+  discrepancy    Float? // actualQuantity - systemQuantity
+  adjusted       Boolean @default(false)
+  notes          String?
 
   verification StockVerification @relation(fields: [verificationId], references: [id], onDelete: Cascade)
-  product      Product            @relation(fields: [productId], references: [id], onDelete: Restrict)
+  product      Product           @relation(fields: [productId], references: [id], onDelete: Restrict)
 
   @@index([verificationId])
   @@index([productId])
@@ -1996,8 +2005,8 @@ model Batch {
   batchNumber       String
   manufacturingDate DateTime?
   expiryDate        DateTime?
-  costPrice         Int?      // paise
-  salePrice         Int?      // paise — batch-specific override
+  costPrice         Int? // paise
+  salePrice         Int? // paise — batch-specific override
   currentStock      Float     @default(0)
   notes             String?
   isDeleted         Boolean   @default(false)
@@ -2021,15 +2030,15 @@ model Batch {
 // === Phase 4 — Multi-Godown (#101 Multi-Godown) ===
 
 model Godown {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   businessId String
   name       String
   address    String?
-  isDefault  Boolean  @default(false)
-  isDeleted  Boolean  @default(false)
+  isDefault  Boolean   @default(false)
+  isDeleted  Boolean   @default(false)
   deletedAt  DateTime?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   business       Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
   stockLocations GodownStock[]
@@ -2094,8 +2103,8 @@ model Subscription {
   status         String    @default("ACTIVE") // ACTIVE, CANCELLED, PAST_DUE, TRIALING
   startDate      DateTime  @default(now())
   expiresAt      DateTime?
-  razorpaySubId  String?   // Razorpay subscription ID
-  razorpayPlanId String?   // Razorpay plan ID
+  razorpaySubId  String? // Razorpay subscription ID
+  razorpayPlanId String? // Razorpay plan ID
   cancelledAt    DateTime?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
@@ -2104,4 +2113,96 @@ model Subscription {
 
   @@index([businessId])
   @@index([status])
+}
+
+// ─── Business-Verticals Phase 3 — Jobs (services vertical) ────────────────────
+
+enum JobStatus {
+  QUOTED
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  INVOICED
+  CANCELLED
+}
+
+model Job {
+  id         String @id @default(cuid())
+  businessId String
+  partyId    String
+
+  // Numbering — assigned on first SAVE (status leaves QUOTED). Independent series: "JOB-25-26-0001".
+  jobNumber      String?
+  sequenceNumber Int?
+  financialYear  String?
+
+  // Content
+  title       String    @db.VarChar(200)
+  description String?   @db.Text
+  status      JobStatus @default(QUOTED)
+
+  // Schedule
+  scheduledAt  DateTime?
+  completedAt  DateTime?
+  cancelledAt  DateTime?
+  cancelReason String?   @db.VarChar(500)
+
+  // Totals (PAISE — integer, matches Document)
+  subtotalPaise Int @default(0)
+  discountPaise Int @default(0)
+  totalPaise    Int @default(0)
+
+  // Forward link to the SALE_INVOICE produced by convert-to-invoice
+  invoiceId String? @unique
+
+  // Offline sync (matches Document.clientId pattern)
+  clientId String? @unique
+
+  // Soft delete (matches Document/Party convention)
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+  deletedBy String?
+
+  // Audit
+  createdBy String
+  updatedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  business Business  @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  party    Party     @relation(fields: [partyId], references: [id], onDelete: Restrict)
+  invoice  Document? @relation("JobInvoice", fields: [invoiceId], references: [id], onDelete: SetNull)
+  items    JobItem[]
+
+  @@unique([businessId, jobNumber])
+  @@index([businessId, status])
+  @@index([businessId, partyId])
+  @@index([businessId, scheduledAt])
+  @@index([businessId, isDeleted])
+  @@index([clientId])
+}
+
+model JobItem {
+  id        String @id @default(cuid())
+  jobId     String
+  sortOrder Int    @default(0)
+
+  // Optional product link — services often have no SKU.
+  productId String?
+
+  description String @db.VarChar(500)
+
+  // Quantity matches HP convention: Decimal(12,3) for fractional units (hours, kg).
+  quantity Decimal @db.Decimal(12, 3)
+
+  // Money — PAISE integers, matches DocumentLineItem.
+  ratePaise     Int @default(0)
+  discountPaise Int @default(0)
+  totalPaise    Int @default(0)
+
+  job     Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  product Product? @relation("JobItemProduct", fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([jobId])
+  @@index([productId])
 }
