@@ -48,3 +48,38 @@ export interface AgingPartiesResult {
 }
 
 export type AgingBucketParam = 'current' | '31' | '61' | '91'
+
+// ─── Promise-to-Pay (PTP) ─────────────────────────────────────────────────
+
+export type PtpStatus = 'OPEN' | 'KEPT' | 'BROKEN' | 'CANCELLED'
+
+export interface Ptp {
+  id: string
+  partyId: string
+  invoiceId: string | null
+  amountPaise: number
+  promisedDate: string
+  note: string | null
+  status: PtpStatus
+  createdAt: string
+  updatedAt: string
+}
+
+export interface PtpListResult {
+  data: Ptp[]
+  nextCursor: string | null
+}
+
+export interface CreatePtpInput {
+  partyId: string
+  invoiceId?: string
+  amountPaise: number
+  promisedDate: string
+  note?: string
+}
+
+export interface UpdatePtpInput {
+  amountPaise?: number
+  promisedDate?: string
+  note?: string
+}

@@ -157,6 +157,26 @@
   font-size: 13px;
   color: var(--color-error-700);
   font-weight: 500;
+  flex: 1;
+}
+
+.broken-ptp-banner--tappable {
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: var(--color-error-bg-subtle);
+  border: 1px solid var(--color-error-200);
+  border-radius: var(--radius-md);
+}
+
+.broken-ptp-banner--tappable:hover {
+  opacity: 0.9;
+}
+
+.broken-ptp-banner__chevron {
+  color: var(--color-error-600);
+  flex-shrink: 0;
 }
 
 /* ─── Top parties list ─────────────────────────────────────────────── */

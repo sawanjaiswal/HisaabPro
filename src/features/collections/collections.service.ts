@@ -8,6 +8,11 @@ import type {
   AgingBucketResult,
   AgingPartiesResult,
   AgingBucketParam,
+  Ptp,
+  PtpListResult,
+  CreatePtpInput,
+  UpdatePtpInput,
+  PtpStatus,
 } from './collections.types'
 
 /**
@@ -17,6 +22,58 @@ import type {
 export async function getAging(): Promise<AgingBucketResult> {
   return api<AgingBucketResult>('/api/collections/aging', {
     cacheReads: true,
+  })
+}
+
+/**
+ * Create a Promise-to-Pay record.
+ */
+export async function createPtp(input: CreatePtpInput): Promise<Ptp> {
+  return api<Ptp>('/api/collections/ptp', {
+    method: 'POST',
+    body: JSON.stringify(input),
+    entityType: 'ptp',
+    entityLabel: `PTP Rs ${(input.amountPaise / 100).toFixed(0)}`,
+  })
+}
+
+/**
+ * Fetch cursor-paginated PTP list for a party.
+ */
+export async function getPtpList(
+  partyId: string,
+  status?: PtpStatus,
+  cursor?: string,
+  limit = 20
+): Promise<PtpListResult> {
+  const params = new URLSearchParams({ partyId, limit: String(limit) })
+  if (status) params.set('status', status)
+  if (cursor) params.set('cursor', cursor)
+  return api<PtpListResult>(`/api/collections/ptp?${params.toString()}`, {
+    cacheReads: false,
+  })
+}
+
+/**
+ * Update an OPEN PTP record.
+ */
+export async function updatePtp(id: string, input: UpdatePtpInput): Promise<Ptp> {
+  return api<Ptp>(`/api/collections/ptp/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(input),
+    entityType: 'ptp',
+    entityLabel: `PTP ${id}`,
+  })
+}
+
+/**
+ * Delete an OPEN PTP record.
+ */
+export async function deletePtp(id: string): Promise<void> {
+  return api<void>(`/api/collections/ptp/${id}`, {
+    method: 'DELETE',
+    entityType: 'ptp',
+    entityLabel: `PTP ${id}`,
   })
 }
 

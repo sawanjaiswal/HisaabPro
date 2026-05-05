@@ -21,6 +21,7 @@ import { PartyTransactionsTab } from './components/PartyTransactionsTab'
 import { PartyAddressesTab } from './components/PartyAddressesTab'
 import { ShareLedgerSheet } from '@/features/shared-ledger/components/ShareLedgerSheet'
 import { useShareLedger } from '@/features/shared-ledger/useShareLedger'
+import { CommitmentsSection } from '@/features/collections/CommitmentsSection'
 import '@/features/shared-ledger/shared-ledger.css'
 import './party-detail-header.css'
 
@@ -202,7 +203,12 @@ export default function PartyDetailPage() {
               </div>
 
               <div id={`panel-${activeTab}`} role="tabpanel" aria-label={`${TABS.find(tab => tab.id === activeTab)?.label ?? activeTab} ${t.tabContent}`}>
-                {activeTab === 'overview' && <PartyOverviewTab party={party} />}
+                {activeTab === 'overview' && (
+                  <>
+                    <PartyOverviewTab party={party} />
+                    <CommitmentsSection partyId={partyId} partyName={party.name} />
+                  </>
+                )}
 
                 {activeTab === 'transactions' && (
                   <PartyTransactionsTab partyId={partyId} />
