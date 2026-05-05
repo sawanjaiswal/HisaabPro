@@ -6,7 +6,6 @@
  * 4 UI states: loading, error, empty (first-time), success.
  */
 
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BarChart3 } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -15,12 +14,10 @@ import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
-import { CALCULATOR_TOGGLE_EVENT } from '@/config/events.config'
 import { useHomeDashboard } from './useDashboard'
 import { isHomeDashboardEmpty, formatCompactAmount } from './dashboard.utils'
 import { QUICK_ACTIONS } from './dashboard.constants'
 import { DashboardHeader } from './components/DashboardHeader'
-import { MenuDrawer } from './components/MenuDrawer'
 import { OutstandingHero } from './components/OutstandingHero'
 import { DashboardQuickActions } from './components/DashboardQuickActions'
 import { AlertStrip } from './components/AlertStrip'
@@ -67,16 +64,10 @@ export default function DashboardPage() {
 
   const handleLowStockClick = () => navigate(ROUTES.REPORT_STOCK_SUMMARY)
   const handleOverdueClick = () => navigate(ROUTES.OUTSTANDING)
-  const handleCalculatorClick = () => window.dispatchEvent(new Event(CALCULATOR_TOGGLE_EVENT))
-  const [menuOpen, setMenuOpen] = useState(false)
 
   return (
     <AppShell>
-      <DashboardHeader
-        onCalculatorClick={handleCalculatorClick}
-        onMenuClick={() => setMenuOpen(true)}
-      />
-      <MenuDrawer open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <DashboardHeader />
 
       <div className="dashboard-page stagger-enter space-y-6">
         {/* Background pattern overlay */}

@@ -58,6 +58,7 @@ const LOCAL_STORAGE_ALLOWED = new Set([
   'src/features/settings/calculator-settings.utils.ts', // calculator UI preferences (display/haptics/position)
   'src/components/feedback/useFeedbackWidget.ts',       // feedback FAB drag position — pure UI coord
   'src/hooks/biometric.utils.ts',       // WebAuthn credentialId + enrollment state — auth artefacts (not secrets)
+  'src/lib/playstore-mock.ts',          // in-memory mock dataset for closed-testing builds — no real backend
 ])
 
 function walk(dir, exts = ['.ts', '.tsx']) {

@@ -16,13 +16,7 @@ interface ApiOptions extends RequestInit {
   entityType?: string
   /** Human-readable label for queue UI (e.g. "Raju Traders") */
   entityLabel?: string
-  /**
-   * Opt-in IDB read cache. When true, successful GET responses are cached
-   * and served back when the network is offline. Only set on endpoints
-   * whose response is safe to persist for the duration of this user's
-   * session (cleared on logout). Default: false — most endpoints stay
-   * uncached so PII never leaks across sessions.
-   */
+  /** Opt-in IDB read cache for safe-to-persist GETs. Cleared on logout. Default: false. */
   cacheReads?: boolean
 }
 

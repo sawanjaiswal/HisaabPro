@@ -22,6 +22,12 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  min-width: 0;
+}
+
+.product-card-header .txn-name {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .product-card-right {
@@ -57,7 +63,7 @@
 
 /* Bolder amounts with tabular nums */
 .product-list-item .txn-amount {
-  font-size: var(--fs-df);
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;

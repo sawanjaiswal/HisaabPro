@@ -1,34 +1,35 @@
+/** Header — global app header. Consistent on every page.
+ *
+ * Layout: [brand | back+title]  ............ [page tools] [sync] [☰]
+ *
+ * The hamburger fires OPEN_SIDE_NAV_EVENT, picked up by the global <SideNav />
+ * mounted in App.tsx. Page-specific tools (Scan, Filter, etc.) go via the
+ * `actions` prop and render to the LEFT of the always-on sync + menu icons.
+ */
+
 import { useEffect, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, Menu } from 'lucide-react'
 import { APP_NAME } from '@/config/app.config'
-import { BusinessAvatar } from '@/features/business/BusinessAvatar'
+import { ROUTES } from '@/config/routes.config'
+import { OPEN_SIDE_NAV_EVENT } from '@/config/events.config'
+import { SyncStatusIcon } from '@/components/feedback/SyncStatusIcon'
 
 interface HeaderProps {
-  /** Page title. Defaults to APP_NAME. */
+  /** Page title — shown when `backTo` is set (sub-page mode). */
   title?: string
   /** Show a back arrow on the left — string = navigate to path; true = history.back() */
   backTo?: string | true
-  /** Right-side action buttons (edit, more, settings, etc.) */
+  /** Page-specific action icons (Scan, Filter, etc.). Render LEFT of sync + ☰. */
   actions?: ReactNode
-  /** Override the left slot. When supplied, replaces the default avatar+back arrangement
-   *  (use this for the dashboard's avatar+theme combo). */
-  leading?: ReactNode
-  /** Force-show or force-hide the business avatar. Defaults to: shown on root pages, hidden on sub-pages with a back arrow, ignored when `leading` is set. */
-  showBusinessAvatar?: boolean
-  /** Center the title using absolute positioning (dashboard variant). */
-  centerTitle?: boolean
-  /** Apply a frosted-glass background only after the user scrolls 16px+. Default: false (always-on glass). */
+  /** Apply a frosted-glass background only after the user scrolls 16px+. Default: false. */
   scrollCondense?: boolean
 }
 
 export function Header({
-  title = APP_NAME,
+  title,
   backTo,
   actions,
-  leading,
-  showBusinessAvatar,
-  centerTitle = false,
   scrollCondense = false,
 }: HeaderProps) {
   const navigate = useNavigate()
@@ -47,12 +48,10 @@ export function Header({
     else navigate(-1)
   }
 
-  // Avatar shown by default on root pages (no back), hidden on sub-pages.
-  const shouldShowAvatar = leading ? false : (showBusinessAvatar ?? backTo === undefined)
+  const openSideNav = () => window.dispatchEvent(new Event(OPEN_SIDE_NAV_EVENT))
 
   const className = [
     'header',
-    centerTitle && 'header--center',
     scrollCondense && 'header--scroll-condense',
     scrollCondense && isScrolled && 'is-scrolled',
   ].filter(Boolean).join(' ')
@@ -60,25 +59,50 @@ export function Header({
   return (
     <header className={className}>
       <div className="header-leading">
-        {leading ?? (
+        {backTo !== undefined ? (
           <>
-            {shouldShowAvatar && <BusinessAvatar />}
-            {backTo !== undefined && (
-              <button
-                type="button"
-                className="header-back"
-                onClick={handleBack}
-                aria-label="Go back"
-              >
-                <ChevronLeft size={22} aria-hidden="true" />
-              </button>
-            )}
-            {!centerTitle && <h1 className="header-title">{title}</h1>}
+            <button
+              type="button"
+              className="header-back"
+              onClick={handleBack}
+              aria-label="Go back"
+            >
+              <ChevronLeft size={22} aria-hidden="true" />
+            </button>
+            {title && <h1 className="header-title">{title}</h1>}
           </>
+        ) : (
+          <button
+            type="button"
+            className="header-brand"
+            onClick={() => navigate(ROUTES.DASHBOARD)}
+            aria-label={`${APP_NAME} home`}
+          >
+            <img
+              src="/favicon.svg"
+              alt=""
+              className="header-brand-logo"
+              width={28}
+              height={28}
+              aria-hidden="true"
+            />
+            <span className="header-brand-name">{title ?? APP_NAME}</span>
+          </button>
         )}
       </div>
-      {centerTitle && <h1 className="header-title header-title--center">{title}</h1>}
-      {actions && <div className="header-actions">{actions}</div>}
+
+      <div className="header-actions">
+        {actions}
+        <SyncStatusIcon />
+        <button
+          type="button"
+          className="header-icon-btn"
+          onClick={openSideNav}
+          aria-label="Open menu"
+        >
+          <Menu size={20} aria-hidden="true" />
+        </button>
+      </div>
     </header>
   )
 }

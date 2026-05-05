@@ -4,17 +4,15 @@ import { SEO } from '../../components/layout/SEO'
 import { APP_NAME } from '../../config/app.config'
 import { api, ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
+import {
+  type Step,
+  OTP_TTL_SEC,
+  RESEND_COOLDOWN_SEC,
+  phoneRegex,
+  maskPhone,
+  formatTime,
+} from './forgot-password.utils'
 import './LoginPage.css'
-
-type Step = 'phone' | 'verify' | 'success'
-
-const OTP_TTL_SEC = 5 * 60
-const RESEND_COOLDOWN_SEC = 30
-const phoneRegex = /^[6-9]\d{9}$/
-
-function maskPhone(phone: string) {
-  return `+91 ${phone.slice(0, 2)}XXXXXX${phone.slice(-2)}`
-}
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate()
@@ -43,7 +41,6 @@ export default function ForgotPasswordPage() {
     return () => clearInterval(t)
   }, [resendCooldown])
 
-  const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
   const handleSendOtp = async () => {
     if (submittingRef.current || loading) return
     submittingRef.current = true

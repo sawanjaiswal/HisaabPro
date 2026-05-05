@@ -5,6 +5,7 @@ import { ROUTES } from '@/config/routes.config'
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary'
 import { ToastContainer } from '@/components/feedback/ToastContainer'
 import { OfflineBanner } from '@/components/feedback/OfflineBanner'
+import { SideNav } from '@/components/layout/SideNav'
 import { SWUpdatePrompt } from '@/components/feedback/SWUpdatePrompt'
 import { PageTransition } from '@/components/layout/PageTransition'
 import { useRoutePreload } from '@/hooks/useRoutePreload'
@@ -167,6 +168,7 @@ export function App() {
       </PageTransition>
       <PersistentNav />
       <FloatingWidgets />
+      <SideNav />
       <ToastContainer />
       <SWUpdatePrompt />
     </ErrorBoundary>

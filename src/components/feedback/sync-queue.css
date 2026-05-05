@@ -1,5 +1,41 @@
 /* Sync Queue — Indicator chip + Drawer list styles */
 
+/* ─── Header sync icon button ───────────────────────────────────────────── */
+
+.sync-icon-btn {
+  position: relative;
+}
+
+.sync-icon-btn--ok      { color: var(--color-success-600); }
+.sync-icon-btn--busy    { color: var(--color-primary-500); }
+.sync-icon-btn--warning { color: var(--color-warning-600); }
+.sync-icon-btn--error   { color: var(--color-error-500); }
+.sync-icon-btn--offline { color: var(--color-gray-500); }
+
+.sync-icon-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: var(--radius-full);
+  background: var(--color-error-500);
+  color: var(--color-white-inverse);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.sync-icon-btn--warning .sync-icon-dot,
+.sync-icon-btn--busy .sync-icon-dot {
+  background: var(--color-warning-500);
+}
+
+
 /* ─── Indicator chip (in OfflineBanner row) ─────────────────────────────── */
 
 .sync-indicator {

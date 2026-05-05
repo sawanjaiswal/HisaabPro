@@ -57,11 +57,13 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
             aria-pressed={lowStockOnly}
             aria-label={lowStockOnly ? t.showAllProducts : t.lowStockOnly}
           >
-            <AlertTriangle size={14} aria-hidden="true" style={{ marginRight: 4, verticalAlign: -2 }} />
-            {t.lowStockOnly}
-            {typeof lowStockCount === 'number' && lowStockCount > 0 && (
-              <span className="pill-tab-badge" aria-hidden="true"> {lowStockCount}</span>
-            )}
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <AlertTriangle size={14} aria-hidden="true" />
+              {t.lowStockOnly}
+              {typeof lowStockCount === 'number' && lowStockCount > 0 && (
+                <span className="pill-tab-badge" aria-hidden="true">{lowStockCount}</span>
+              )}
+            </span>
           </button>
         )}
         {PREDEFINED_CATEGORIES.map((cat) => (
