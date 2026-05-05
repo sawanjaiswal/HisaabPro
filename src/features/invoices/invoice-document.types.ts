@@ -190,4 +190,8 @@ export interface DocumentDetail extends DocumentSummary {
   supplyType: string
   /** GST Phase 2 — reverse charge mechanism flag */
   isReverseCharge: boolean
+  /** GST Phase 2 PR 6 — composition scheme invoice flag */
+  isComposite: boolean
+  /** GST Phase 2 PR 6 — transient composition liability (paise), not persisted */
+  compositionLiability?: number
 }

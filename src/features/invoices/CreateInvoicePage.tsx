@@ -14,6 +14,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { Button } from '@/components/ui/Button'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
+import { useGstGate } from '@/features/gst/useGstGate'
 import { useInvoiceForm } from './useInvoiceForm'
 import { InvoiceTotalsBar } from './components/InvoiceTotalsBar'
 import { InvoiceItemsSection } from './components/InvoiceItemsSection'
@@ -26,6 +27,7 @@ import './invoice-party-search.css'
 import './invoice-line-items.css'
 import './invoice-product-search.css'
 import './invoice-summary.css'
+import './invoice-gst-banners.css'
 
 export default function CreateInvoicePage() {
   const nav = useNavigate()
@@ -54,6 +56,7 @@ export default function CreateInvoicePage() {
     dismissUntaggedDialog,
   } = useInvoiceForm('SALE_INVOICE')
 
+  const { compositionScheme } = useGstGate()
   const location = useLocation()
   const [productNames, setProductNames] = useState<Record<string, string>>({})
   const [showProductSearch, setShowProductSearch] = useState(false)
@@ -159,7 +162,7 @@ export default function CreateInvoicePage() {
               stockWarnings={stockWarnings}
               hasStockBlocks={hasStockBlocks}
               gstEnabled={gstEnabled}
-              compositionScheme={false}
+              compositionScheme={compositionScheme}
               onPartyChange={handlePartyChange}
               onProductSelect={handleProductSelect}
               onUpdateLineItem={updateLineItem}

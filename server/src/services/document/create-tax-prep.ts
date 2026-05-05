@@ -57,6 +57,19 @@ export function assertGstEnabled(
   }
 }
 
+/** Throws 400 if a composition-scheme document has any line with a tax category. */
+export function assertCompositionNoLineTax(
+  isComposite: boolean,
+  lineItems: { taxCategoryId?: string | null }[],
+): void {
+  if (!isComposite) return
+  if (lineItems.some(li => li.taxCategoryId)) {
+    throw validationError(
+      'Composition scheme invoices (Bill of Supply) must not have line-level tax categories. Remove tax from all lines.',
+    )
+  }
+}
+
 export function buildCalcItems(
   lineItems: LineItemSlice[],
   productPurchasePrices: Map<string, number>,

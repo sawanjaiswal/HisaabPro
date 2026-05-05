@@ -1,0 +1,138 @@
+/* ============================================================
+ * invoice-gst-banners.css
+ * GST Phase 2 PR 6 — Composition Mode Indicator, ITC Unavailable Banner,
+ * RCM Advisory Banner, and GST Invoice Header layout.
+ * ============================================================ */
+
+/* ─── GST Invoice Header ─────────────────────────────────────────────────── */
+
+.gst-invoice-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.gst-header-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.gst-header-chip-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.gst-header-chip-group .label {
+  font-size: var(--fs-sm);
+  color: var(--color-gray-500);
+  white-space: nowrap;
+}
+
+/* ─── Composition Mode Indicator ────────────────────────────────────────── */
+
+.composition-mode-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1-5) var(--space-3);
+  background: var(--color-amber-50, #fffbeb);
+  border: 1px solid var(--color-amber-200, #fde68a);
+  border-radius: var(--radius-full);
+  width: fit-content;
+}
+
+.composition-mode-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-amber-500, #f59e0b);
+  flex-shrink: 0;
+}
+
+.composition-mode-label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-amber-800, #92400e);
+  letter-spacing: 0.01em;
+}
+
+/* ─── ITC Unavailable Banner ─────────────────────────────────────────────── */
+
+.itc-unavailable-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-blue-50, #eff6ff);
+  border: 1px solid var(--color-blue-200, #bfdbfe);
+  border-radius: var(--radius-md);
+}
+
+.itc-unavailable-icon {
+  color: var(--color-blue-500, #3b82f6);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.itc-unavailable-text {
+  font-size: var(--fs-sm);
+  color: var(--color-blue-800, #1e40af);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* ─── RCM Advisory Banner ───────────────────────────────────────────────── */
+
+.rcm-advisory-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-blue-50, #eff6ff);
+  border: 1px solid var(--color-blue-200, #bfdbfe);
+  border-radius: var(--radius-md);
+}
+
+.rcm-advisory-icon {
+  color: var(--color-blue-500, #3b82f6);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.rcm-advisory-text {
+  font-size: var(--fs-sm);
+  color: var(--color-blue-800, #1e40af);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* ─── Dark theme overrides ──────────────────────────────────────────────── */
+
+[data-theme="dark"] .gst-invoice-header {
+  border-bottom-color: var(--color-gray-800);
+}
+
+[data-theme="dark"] .composition-mode-indicator {
+  background: color-mix(in srgb, var(--color-amber-500, #f59e0b) 12%, transparent);
+  border-color: color-mix(in srgb, var(--color-amber-500, #f59e0b) 35%, transparent);
+}
+
+[data-theme="dark"] .composition-mode-label {
+  color: var(--color-amber-300, #fcd34d);
+}
+
+[data-theme="dark"] .itc-unavailable-banner,
+[data-theme="dark"] .rcm-advisory-banner {
+  background: color-mix(in srgb, var(--color-blue-500, #3b82f6) 12%, transparent);
+  border-color: color-mix(in srgb, var(--color-blue-500, #3b82f6) 35%, transparent);
+}
+
+[data-theme="dark"] .itc-unavailable-text,
+[data-theme="dark"] .rcm-advisory-text {
+  color: var(--color-blue-300, #93c5fd);
+}

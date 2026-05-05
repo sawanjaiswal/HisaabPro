@@ -5,8 +5,10 @@ import { deductForSaleInvoice, addForPurchaseInvoice, scheduleAlertChecks } from
 import { generateNextNumber } from '../document-number.service.js'
 import { calculateChargeAmount } from '../document-calc.js'
 import {
-  assertGstEnabled, buildCalcItems, computeGstTotals, resolveSupplyType,
+  assertGstEnabled, assertCompositionNoLineTax, buildCalcItems,
+  computeGstTotals, resolveSupplyType,
 } from './create-tax-prep.js'
+import { getCompositionInvoiceInfo } from '../composition.service.js'
 import type { CreateDocumentInput } from '../../schemas/document.schemas.js'
 import { DOCUMENT_DETAIL_SELECT } from './selects.js'
 import {
@@ -83,6 +85,8 @@ export async function createDocument(
   const taxPricingMode = data.taxPricingMode ?? 'EXCLUSIVE'
   const isComposite = data.isComposite ?? business?.compositionScheme ?? false
   const isReverseCharge = data.isReverseCharge ?? false
+
+  assertCompositionNoLineTax(isComposite, data.lineItems)
   const purchasePriceMap = new Map(products.map(p => [p.id, p.purchasePrice || 0]))
 
   const calcItems = buildCalcItems(
@@ -225,5 +229,10 @@ export async function createDocument(
     scheduleAlertChecks(businessId, data.lineItems.map(li => li.productId))
   }
 
-  return result
+  // Append transient compositionLiability to response (not persisted)
+  // Append transient compositionLiability (1%/5%/6% on grandTotal) — not persisted
+  const compositionInfo = getCompositionInvoiceInfo(isComposite, 'default', result.grandTotal)
+  return compositionInfo
+    ? { ...result, compositionLiability: compositionInfo.compositionTax }
+    : result
 }

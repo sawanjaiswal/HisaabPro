@@ -1,7 +1,10 @@
-/** Edit Invoice Form — inner form component for EditInvoicePage */
+/** Edit Invoice Form — inner form component for EditInvoicePage
+ * GST Phase 2 PR 6: adds GstInvoiceHeader + composition/RCM banners.
+ */
 
 import { useState, useCallback } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { useGstGate } from '@/features/gst/useGstGate'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -10,6 +13,7 @@ import { InvoiceTotalsBar } from './InvoiceTotalsBar'
 import { InvoiceItemsSection } from './InvoiceItemsSection'
 import { InvoiceDetailsSection } from './InvoiceDetailsSection'
 import { InvoiceChargesSection } from './InvoiceChargesSection'
+import { GstInvoiceHeader } from './GstInvoiceHeader'
 import { FORM_SECTIONS } from '../invoice.constants'
 import type { DocumentFormData } from '../invoice.types'
 
@@ -45,6 +49,7 @@ export function EditInvoiceForm({
     handleSaveDraft,
   } = useInvoiceForm(initialData.type, 'NONE', { editId: invoiceId, initialData })
 
+  const { gstEnabled, compositionScheme } = useGstGate()
   const [productNames, setProductNames] = useState<Record<string, string>>(initialProductNames)
   const [showProductSearch, setShowProductSearch] = useState(false)
 
@@ -77,6 +82,14 @@ export function EditInvoiceForm({
       <Header title={t.editInvoice} backTo={`/invoices/${invoiceId}`} />
 
       <PageContainer className="invoice-details-section py-0">
+        {gstEnabled && (
+          <GstInvoiceHeader
+            form={form}
+            errors={errors}
+            onUpdateField={updateField}
+          />
+        )}
+
         <nav className="pill-tabs" role="tablist" aria-label={t.invoiceFormSections}>
           {FORM_SECTIONS.map((section) => (
             <button
@@ -107,6 +120,8 @@ export function EditInvoiceForm({
               errors={errors}
               stockWarnings={stockWarnings}
               hasStockBlocks={hasStockBlocks}
+              gstEnabled={gstEnabled}
+              compositionScheme={compositionScheme}
               onPartyChange={handlePartyChange}
               onProductSelect={handleProductSelect}
               onUpdateLineItem={updateLineItem}

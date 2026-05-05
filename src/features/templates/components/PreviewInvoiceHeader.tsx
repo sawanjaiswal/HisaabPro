@@ -1,4 +1,6 @@
-/** Invoice preview — header block with business info + invoice metadata */
+/** Invoice preview — header block with business info + invoice metadata
+ * GST Phase 2 PR 6: when isComposite=true, override label to "Bill of Supply".
+ */
 
 import React from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -9,14 +11,18 @@ interface PreviewInvoiceHeaderProps {
   headerStyle: React.CSSProperties
   layout: TemplateLayoutConfig
   fields: TemplateFieldsConfig
+  /** When true, override document type label to "Bill of Supply" */
+  isComposite?: boolean
 }
 
 export const PreviewInvoiceHeader: React.FC<PreviewInvoiceHeaderProps> = ({
   headerStyle,
   layout,
   fields,
+  isComposite = false,
 }) => {
   const { t } = useLanguage()
+  const documentTypeLabel = isComposite ? t.billOfSupplyTitle : t.taxInvoice
   return (
   <div style={headerStyle} aria-hidden="true">
     <div
@@ -50,7 +56,7 @@ export const PreviewInvoiceHeader: React.FC<PreviewInvoiceHeaderProps> = ({
       </div>
 
       <div style={{ textAlign: layout.headerStyle === 'side-by-side' ? 'right' : 'left' }}>
-        <div style={{ fontWeight: 700, fontSize: 'var(--fs-df)' }}>{t.taxInvoice}</div>
+        <div style={{ fontWeight: 700, fontSize: 'var(--fs-df)' }}>{documentTypeLabel}</div>
         {fields.invoiceNumber && (
           <div style={{ fontSize: 'var(--fs-xs)', opacity: 0.85 }}>{SAMPLE_INVOICE.number}</div>
         )}

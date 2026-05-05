@@ -533,4 +533,12 @@ export const enExt10 = {
   totalTaxLabel:            'Total Tax',
   compositionDealerNotice:  'Composition Dealer under GST',
   gstDeclarationBlockLabel: 'Declaration',
+
+  // ─── Composition Scheme & RCM — Phase 2 PR 6 ─────────────────────────────
+  billOfSupplyBadge:        'Bill of Supply (Composition Scheme)',
+  itcUnavailableLabel:      'ITC unavailable notice',
+  itcUnavailableText:       'ITC is not available under Composition Scheme. This invoice is for informational purposes only.',
+  rcmAdvisoryLabel:         'Reverse Charge advisory',
+  rcmAdvisoryText:          'Reverse Charge applies to this invoice. Buyer will self-assess GST.',
+  compositionBillPrintLine: 'This is a Bill of Supply issued under Composition Scheme',
 } as const

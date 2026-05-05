@@ -14,6 +14,7 @@ import './invoice-party-search.css'
 import './invoice-line-items.css'
 import './invoice-product-search.css'
 import './invoice-summary.css'
+import './invoice-gst-banners.css'
 
 function detailToFormData(detail: DocumentDetail): DocumentFormData {
   return {

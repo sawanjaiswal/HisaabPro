@@ -529,4 +529,12 @@ export const hiExt10 = {
   totalTaxLabel:            'कुल कर',
   compositionDealerNotice:  'GST के अंतर्गत कम्पोज़िशन डीलर',
   gstDeclarationBlockLabel: 'घोषणा',
+
+  // ─── Composition Scheme & RCM — Phase 2 PR 6 ─────────────────────────────
+  billOfSupplyBadge:        'आपूर्ति बिल (कम्पोज़िशन स्कीम)',
+  itcUnavailableLabel:      'ITC अनुपलब्ध सूचना',
+  itcUnavailableText:       'कम्पोज़िशन स्कीम के अंतर्गत ITC उपलब्ध नहीं है। यह चालान केवल सूचना हेतु है।',
+  rcmAdvisoryLabel:         'रिवर्स चार्ज सलाह',
+  rcmAdvisoryText:          'इस चालान पर रिवर्स चार्ज लागू है। खरीदार स्वयं GST का आकलन करेगा।',
+  compositionBillPrintLine: 'यह बिल कम्पोज़िशन स्कीम के अंतर्गत जारी किया गया आपूर्ति बिल है',
 } as const
