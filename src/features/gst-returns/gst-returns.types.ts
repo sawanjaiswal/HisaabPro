@@ -1,8 +1,33 @@
 /**
  * GST Returns / Backfill — Type definitions
  *
- * Amounts in paise (integer). Do not use floating-point math.
+ * Amounts in paise (integer) on the server; rupees (divided by 100) in NIC envelopes.
  */
+
+// ─── NIC v3.0 GSTR-1 Types (PR 10) ─────────────────────────────────────────
+
+export interface Gstr1Summary {
+  period: string
+  b2b: number
+  b2cl: number
+  b2cs: number
+  cdnr: number
+  cdnur: number
+  hsn: number
+  nil: number
+  exp: number
+}
+
+export interface Gstr1SummaryRes {
+  summary: Gstr1Summary | null
+  exportedAt: string | null   // ISO date string
+}
+
+export interface Gstr1ExportRes {
+  jsonData: Record<string, unknown>
+  csvData: string
+  summary: Gstr1Summary
+}
 
 export interface BackfillPreviewRes {
   untaggedProductCount: number

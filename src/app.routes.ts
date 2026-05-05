@@ -129,3 +129,6 @@ export const NotFound = lazy(() => import('@/components/feedback/NotFoundPage'))
 
 // GST Phase 2 — Backfill Wizard
 export const BackfillWizard = lazy(() => import('@/features/gst-returns/BackfillWizardPage'))
+
+// GST Phase 2 — GSTR-1 Export (PR 10)
+export const Gstr1Page = lazy(() => import('@/features/gst-returns/Gstr1Page'))

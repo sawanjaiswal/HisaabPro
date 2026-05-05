@@ -125,4 +125,7 @@ export const ROUTES = {
 
   // GST Phase 2 — Backfill Wizard
   GST_BACKFILL: '/gst/backfill',
+
+  // GST Phase 2 — GSTR-1 Export (PR 10)
+  GST_GSTR1: '/gst/returns/gstr1',
 } as const
