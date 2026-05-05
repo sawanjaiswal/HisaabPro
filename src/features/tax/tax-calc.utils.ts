@@ -84,3 +84,50 @@ export function calculateDocumentTax(
   const totalTax = totalCgst + totalSgst + totalIgst + totalCess
   return { totalTaxableValue, totalCgst, totalSgst, totalIgst, totalCess, totalTax, lineResults }
 }
+
+/**
+ * Back-calculate taxable value from a tax-inclusive line total.
+ * taxableValue = round(lineTotal × 10000 / (10000 + gstRateBP))
+ * gstAmount    = lineTotal − taxableValue
+ * Integer paise math; single rounding boundary.
+ */
+export function backCalculateInclusive(
+  lineTotalPaise: number,
+  gstRateBP: number,
+): { taxableValue: number; gstAmount: number } {
+  if (gstRateBP <= 0) return { taxableValue: lineTotalPaise, gstAmount: 0 }
+  const taxableValue = Math.round((lineTotalPaise * PAISE_BASIS_POINTS) / (PAISE_BASIS_POINTS + gstRateBP))
+  const gstAmount = lineTotalPaise - taxableValue
+  return { taxableValue, gstAmount }
+}
+
+/**
+ * Apply RCM flag to a DocumentTaxSummary.
+ * When isRcm=true, zero out all GST/Cess totals at document level
+ * (line amounts are retained for audit). Cess is zeroed too per GSTN spec.
+ */
+export function applyRcmFlag(summary: DocumentTaxSummary, isRcm: boolean): DocumentTaxSummary {
+  if (!isRcm) return summary
+  return {
+    ...summary,
+    totalCgst: 0,
+    totalSgst: 0,
+    totalIgst: 0,
+    totalCess: 0,
+    totalTax: 0,
+  }
+}
+
+/**
+ * Calculate composition scheme totals.
+ * Composition taxpayers pay a flat % on taxable turnover; no GST in lines.
+ * compositionLiability is transient — never written to line tax columns.
+ */
+export function calculateCompositionTotals(
+  lines: TaxLineInput[],
+  compositionRateBP: number,
+): { taxableTurnover: number; compositionLiability: number } {
+  const taxableTurnover = lines.reduce((sum, l) => sum + l.lineTotal, 0)
+  const compositionLiability = Math.round(taxableTurnover * compositionRateBP / PAISE_BASIS_POINTS)
+  return { taxableTurnover, compositionLiability }
+}

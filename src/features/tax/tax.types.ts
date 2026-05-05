@@ -71,3 +71,6 @@ export interface DocumentTaxSummary {
 
 /** Supply type for GSTR categorization */
 export type SupplyType = 'B2B' | 'B2C_LARGE' | 'B2C_SMALL' | 'EXPORT' | 'SEZ'
+
+/** Tax pricing mode: EXCLUSIVE = tax added on top, INCLUSIVE = tax baked into price */
+export type TaxPricingMode = 'EXCLUSIVE' | 'INCLUSIVE'

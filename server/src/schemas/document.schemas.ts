@@ -70,7 +70,10 @@ export const createDocumentSchema = z.object({
   transportDetails: transportDetailsSchema.nullable().optional(),
   clientId: z.string().optional(), // offline sync
   // Phase 2 — GST document fields (optional, backward compatible)
-  placeOfSupply: z.string().length(2).optional(),
+  placeOfSupply: z.string().refine(v => /^\d{2}$/.test(v) || v === 'OOS', {
+    message: 'placeOfSupply must be 2-digit state code or "OOS"',
+  }).optional(),
+  taxPricingMode: z.enum(['EXCLUSIVE', 'INCLUSIVE']).optional(),
   isReverseCharge: z.boolean().optional(),
   isComposite: z.boolean().optional(),
   // Credit/Debit Note — Phase 2
@@ -99,7 +102,10 @@ export const updateDocumentSchema = z.object({
   additionalCharges: z.array(additionalChargeSchema).max(10).optional(),
   transportDetails: transportDetailsSchema.nullable().optional(),
   // Phase 2 — GST document fields (optional, backward compatible)
-  placeOfSupply: z.string().length(2).optional(),
+  placeOfSupply: z.string().refine(v => /^\d{2}$/.test(v) || v === 'OOS', {
+    message: 'placeOfSupply must be 2-digit state code or "OOS"',
+  }).optional(),
+  taxPricingMode: z.enum(['EXCLUSIVE', 'INCLUSIVE']).optional(),
   isReverseCharge: z.boolean().optional(),
   isComposite: z.boolean().optional(),
   // Phase 2B — TDS/TCS (optional, for B2B invoices)

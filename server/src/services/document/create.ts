@@ -3,7 +3,10 @@ import { prisma } from '../../lib/prisma.js'
 import { notFoundError, validationError } from '../../lib/errors.js'
 import { deductForSaleInvoice, addForPurchaseInvoice, scheduleAlertChecks } from '../stock.service.js'
 import { generateNextNumber } from '../document-number.service.js'
-import { calculateDocumentTotals, calculateChargeAmount } from '../document-calc.js'
+import { calculateChargeAmount } from '../document-calc.js'
+import {
+  assertGstEnabled, buildCalcItems, computeGstTotals, resolveSupplyType,
+} from './create-tax-prep.js'
 import type { CreateDocumentInput } from '../../schemas/document.schemas.js'
 import { DOCUMENT_DETAIL_SELECT } from './selects.js'
 import {
@@ -18,7 +21,7 @@ export async function createDocument(
 ) {
   const party = await prisma.party.findFirst({
     where: { id: data.partyId, businessId, isActive: true },
-    select: { id: true },
+    select: { id: true, gstin: true },
   })
   if (!party) throw notFoundError('Party')
 
@@ -71,32 +74,27 @@ export async function createDocument(
 
   const business = await prisma.business.findUnique({
     where: { id: businessId },
-    select: { stateCode: true, compositionScheme: true },
+    select: { stateCode: true, compositionScheme: true, gstEnabled: true },
   })
   const roundOffSetting = await getRoundOffSetting(businessId)
 
-  const calcItems = data.lineItems.map(li => {
-    const product = productMap.get(li.productId)!
-    const tc = li.taxCategoryId ? taxCategoryMap.get(li.taxCategoryId) : undefined
-    return {
-      quantity: li.quantity,
-      rate: li.rate,
-      discountType: li.discountType,
-      discountValue: li.discountValue,
-      purchasePrice: product.purchasePrice || 0,
-      gstRate: li.gstRate,
-      cessRate: tc?.cessRate ?? 0,
-      cessType: tc?.cessType ?? 'PERCENTAGE',
-    }
-  })
+  assertGstEnabled(data, business)
+
+  const taxPricingMode = data.taxPricingMode ?? 'EXCLUSIVE'
+  const isComposite = data.isComposite ?? business?.compositionScheme ?? false
+  const isReverseCharge = data.isReverseCharge ?? false
+  const purchasePriceMap = new Map(products.map(p => [p.id, p.purchasePrice || 0]))
+
+  const calcItems = buildCalcItems(
+    data.lineItems, purchasePriceMap, taxCategoryMap, taxPricingMode, isComposite,
+  )
   const calcCharges = data.additionalCharges.map(c => ({ type: c.type, value: c.value }))
 
-  const isComposite = data.isComposite ?? business?.compositionScheme ?? false
-  const totals = calculateDocumentTotals(calcItems, calcCharges, roundOffSetting, {
-    businessStateCode: business?.stateCode ?? null,
-    placeOfSupply: data.placeOfSupply ?? null,
-    isComposite,
-  })
+  const totals = computeGstTotals(
+    calcItems, calcCharges, roundOffSetting, business,
+    data.placeOfSupply ?? null, isComposite, isReverseCharge,
+  )
+  const supplyType = resolveSupplyType(party.gstin ?? null, totals.grandTotal)
   const isSaving = data.status === 'SAVED'
 
   const result = await prisma.$transaction(async (tx) => {
@@ -136,8 +134,10 @@ export async function createDocument(
         createdBy: userId,
         clientId: data.clientId || null,
         placeOfSupply: data.placeOfSupply || null,
-        isReverseCharge: data.isReverseCharge || false,
+        isReverseCharge,
         isComposite,
+        taxPricingMode,
+        supplyType,
         totalTaxableValue: totals.totalTaxableValue,
         totalCgst: totals.totalCgst,
         totalSgst: totals.totalSgst,
@@ -201,46 +201,28 @@ export async function createDocument(
     if (isSaving) {
       if (STOCK_DECREASE_TYPES.has(data.type)) {
         await deductForSaleInvoice(tx, {
-          businessId,
-          invoiceId: doc.id,
-          invoiceNumber: numberData!.documentNumber,
-          items: data.lineItems.map(li => ({
-            productId: li.productId,
-            quantity: li.quantity,
-            unitId: li.unitId,
-          })),
+          businessId, invoiceId: doc.id, invoiceNumber: numberData!.documentNumber,
+          items: data.lineItems.map(li => ({ productId: li.productId, quantity: li.quantity, unitId: li.unitId })),
           userId,
         })
       } else if (STOCK_INCREASE_TYPES.has(data.type)) {
         await addForPurchaseInvoice(tx, {
-          businessId,
-          invoiceId: doc.id,
-          invoiceNumber: numberData!.documentNumber,
-          items: data.lineItems.map(li => ({
-            productId: li.productId,
-            quantity: li.quantity,
-            unitId: li.unitId,
-          })),
+          businessId, invoiceId: doc.id, invoiceNumber: numberData!.documentNumber,
+          items: data.lineItems.map(li => ({ productId: li.productId, quantity: li.quantity, unitId: li.unitId })),
           userId,
         })
       }
-
       if (AFFECTS_OUTSTANDING.has(data.type)) {
         const negative = data.type === 'PURCHASE_INVOICE' || data.type === 'CREDIT_NOTE'
-        const outstandingDelta = negative ? -totals.grandTotal : totals.grandTotal
-        await updateOutstanding(tx, data.partyId, outstandingDelta)
+        await updateOutstanding(tx, data.partyId, negative ? -totals.grandTotal : totals.grandTotal)
       }
     }
 
-    return tx.document.findUniqueOrThrow({
-      where: { id: doc.id },
-      select: DOCUMENT_DETAIL_SELECT,
-    })
+    return tx.document.findUniqueOrThrow({ where: { id: doc.id }, select: DOCUMENT_DETAIL_SELECT })
   })
 
   if (isSaving && (STOCK_DECREASE_TYPES.has(data.type) || STOCK_INCREASE_TYPES.has(data.type))) {
-    const alertProductIds = data.lineItems.map(li => li.productId)
-    scheduleAlertChecks(businessId, alertProductIds)
+    scheduleAlertChecks(businessId, data.lineItems.map(li => li.productId))
   }
 
   return result

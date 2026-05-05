@@ -169,24 +169,20 @@ export async function updateDocument(
       updateData.financialYear = numberData.financialYear
     }
     if (totals) {
-      updateData.subtotal = totals.subtotal
-      updateData.totalDiscount = totals.totalDiscount
-      updateData.totalAdditionalCharges = totals.totalAdditionalCharges
-      updateData.roundOff = totals.roundOff
-      updateData.grandTotal = totals.grandTotal
-      updateData.totalCost = totals.totalCost
-      updateData.totalProfit = totals.totalProfit
-      updateData.profitPercent = totals.profitPercent
-      updateData.balanceDue = totals.grandTotal
-      updateData.totalTaxableValue = totals.totalTaxableValue
-      updateData.totalCgst = totals.totalCgst
-      updateData.totalSgst = totals.totalSgst
-      updateData.totalIgst = totals.totalIgst
-      updateData.totalCess = totals.totalCess
+      Object.assign(updateData, {
+        subtotal: totals.subtotal, totalDiscount: totals.totalDiscount,
+        totalAdditionalCharges: totals.totalAdditionalCharges, roundOff: totals.roundOff,
+        grandTotal: totals.grandTotal, totalCost: totals.totalCost,
+        totalProfit: totals.totalProfit, profitPercent: totals.profitPercent,
+        balanceDue: totals.grandTotal, totalTaxableValue: totals.totalTaxableValue,
+        totalCgst: totals.totalCgst, totalSgst: totals.totalSgst,
+        totalIgst: totals.totalIgst, totalCess: totals.totalCess,
+      })
     }
     if (data.placeOfSupply !== undefined) updateData.placeOfSupply = data.placeOfSupply
     if (data.isReverseCharge !== undefined) updateData.isReverseCharge = data.isReverseCharge
     if (data.isComposite !== undefined) updateData.isComposite = data.isComposite
+    if (data.taxPricingMode !== undefined) updateData.taxPricingMode = data.taxPricingMode
     if (data.tdsRate !== undefined) updateData.tdsRate = data.tdsRate
     if (data.tdsAmount !== undefined) updateData.tdsAmount = data.tdsAmount
     if (data.tcsRate !== undefined) updateData.tcsRate = data.tcsRate

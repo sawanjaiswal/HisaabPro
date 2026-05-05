@@ -16,6 +16,7 @@ import type {
   ShareChannel,
   ExportFormat,
 } from './invoice-enums.types'
+import type { TaxPricingMode } from '../tax/tax.types'
 
 // ─── Document Share Log ──────────────────────────────────────────────────────
 
@@ -181,4 +182,12 @@ export interface DocumentDetail extends DocumentSummary {
   /** Sum of (qty × purchasePrice) across all line items, in PAISE */
   totalCost: number
   createdBy: { id: string; name: string }
+  /** GST Phase 2 — pricing mode used when document was created */
+  taxPricingMode: TaxPricingMode
+  /** GST Phase 2 — 2-digit place of supply state code or "OOS" */
+  placeOfSupply: string | null
+  /** GST Phase 2 — supply type for GSTR categorization */
+  supplyType: string
+  /** GST Phase 2 — reverse charge mechanism flag */
+  isReverseCharge: boolean
 }
