@@ -67,6 +67,7 @@ import razorpayRoutes, { razorpayWebhookRouter } from './routes/razorpay.js'
 import adminRoutes from './routes/admin/index.js'
 import recycleBinRoutes from './routes/recycle-bin.js'
 import eventRoutes from './routes/events.js'
+import collectionsAgingRoutes from './routes/collections/aging.route.js'
 import sessionRoutes from './routes/sessions.js'
 import exportRoutes from './routes/export.js'
 import { subscriptionRouter } from './routes/subscription.js'
@@ -221,6 +222,7 @@ export function createApp() {
   app.use('/api/events', eventRoutes)
   app.use('/api/sessions', sessionRoutes)
   app.use('/api/export', exportRoutes)
+  app.use('/api/collections/aging', collectionsAgingRoutes)
 
   app.use((_req, res) => {
     res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Route not found' } })
