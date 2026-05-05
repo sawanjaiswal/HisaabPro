@@ -131,4 +131,8 @@ export const ROUTES = {
 
   // GST Phase 2 — GSTR-3B Summary (PR 11)
   GST_GSTR3B: '/gst/returns/gstr3b',
+
+  // Payments Hub — Collections (PR 3)
+  COLLECTIONS: '/collections',
+  COLLECTIONS_BUCKET: '/collections/bucket/:bucket',
 } as const

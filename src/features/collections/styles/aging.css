@@ -1,0 +1,407 @@
+/*
+ * Aging Dashboard — design tokens and component styles.
+ * All colors reference CSS vars — no hardcoded hex.
+ * Dark mode handled via [data-theme="dark"] selectors.
+ */
+
+/* ─── Bucket color tokens ──────────────────────────────────────────── */
+:root {
+  --aging-current-bg:   var(--color-success-bg-subtle);
+  --aging-current-text: var(--color-success-700);
+  --aging-current-icon: var(--color-success-500);
+
+  --aging-31-bg:   var(--color-warning-bg-subtle);
+  --aging-31-text: var(--color-warning-700);
+  --aging-31-icon: var(--color-warning-500);
+
+  --aging-61-bg:   var(--color-orange-50, #fff7ed);
+  --aging-61-text: var(--color-orange-700, #c2410c);
+  --aging-61-icon: var(--color-orange-500, #f97316);
+
+  --aging-91-bg:   var(--color-error-bg-subtle);
+  --aging-91-text: var(--color-error-700);
+  --aging-91-icon: var(--color-error-500);
+}
+
+[data-theme='dark'] {
+  --aging-61-bg:   rgba(249, 115, 22, 0.12);
+  --aging-61-text: var(--color-orange-300, #fdba74);
+  --aging-61-icon: var(--color-orange-400, #fb923c);
+}
+
+/* ─── Total strip ──────────────────────────────────────────────────── */
+.aging-strip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 16px 16px;
+  background: var(--color-primary-50);
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+[data-theme='dark'] .aging-strip {
+  background: rgba(var(--color-primary-rgb, 20 184 166), 0.08);
+  border-bottom-color: var(--color-gray-800);
+}
+
+.aging-strip__label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.aging-strip__amount {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-gray-900);
+  line-height: 1.1;
+}
+
+[data-theme='dark'] .aging-strip__amount {
+  color: var(--color-gray-50);
+}
+
+/* ─── Bucket grid ──────────────────────────────────────────────────── */
+.aging-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 16px;
+}
+
+/* ─── Bucket tile ──────────────────────────────────────────────────── */
+.aging-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform 0.12s var(--ease-default),
+              box-shadow 0.12s var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+  min-height: 44px;
+}
+
+.aging-tile:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-card);
+}
+
+.aging-tile:active {
+  transform: scale(0.98);
+}
+
+.aging-tile--current { background: var(--aging-current-bg); border-color: var(--aging-current-icon); }
+.aging-tile--31      { background: var(--aging-31-bg);      border-color: var(--aging-31-icon); }
+.aging-tile--61      { background: var(--aging-61-bg);      border-color: var(--aging-61-icon); }
+.aging-tile--91      { background: var(--aging-91-bg);      border-color: var(--aging-91-icon); }
+
+.aging-tile__label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.aging-tile--current .aging-tile__label { color: var(--aging-current-text); }
+.aging-tile--31      .aging-tile__label { color: var(--aging-31-text); }
+.aging-tile--61      .aging-tile__label { color: var(--aging-61-text); }
+.aging-tile--91      .aging-tile__label { color: var(--aging-91-text); }
+
+.aging-tile__amount {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-gray-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+[data-theme='dark'] .aging-tile__amount {
+  color: var(--color-gray-50);
+}
+
+.aging-tile__meta {
+  font-size: 11px;
+  color: var(--color-gray-500);
+}
+
+.aging-tile__chevron {
+  align-self: flex-end;
+  opacity: 0.4;
+}
+
+/* ─── Broken PTP alert ─────────────────────────────────────────────── */
+.broken-ptp-banner {
+  margin: 0 16px 12px;
+  padding: 10px 14px;
+  background: var(--color-error-bg-subtle);
+  border: 1px solid var(--color-error-200);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.broken-ptp-banner__icon {
+  color: var(--color-error-600);
+  flex-shrink: 0;
+}
+
+.broken-ptp-banner__text {
+  font-size: 13px;
+  color: var(--color-error-700);
+  font-weight: 500;
+}
+
+/* ─── Top parties list ─────────────────────────────────────────────── */
+.aging-section {
+  padding: 0 16px 16px;
+}
+
+.aging-section__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+
+.top-parties {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--color-gray-100);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--color-gray-100);
+}
+
+[data-theme='dark'] .top-parties {
+  background: var(--color-gray-800);
+  border-color: var(--color-gray-800);
+}
+
+.top-party-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--color-gray-0);
+  min-height: 56px;
+}
+
+[data-theme='dark'] .top-party-row {
+  background: var(--color-gray-900);
+}
+
+.top-party-row__rank {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-gray-400);
+  min-width: 18px;
+  text-align: center;
+}
+
+.top-party-row__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.top-party-row__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-gray-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+[data-theme='dark'] .top-party-row__name {
+  color: var(--color-gray-50);
+}
+
+.top-party-row__sub {
+  font-size: 11px;
+  color: var(--color-gray-500);
+  margin-top: 1px;
+}
+
+.top-party-row__amount {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-error-600);
+  flex-shrink: 0;
+}
+
+/* ─── Bucket drill-down list ───────────────────────────────────────── */
+.bucket-party-card {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--color-gray-100);
+  background: var(--color-gray-0);
+}
+
+[data-theme='dark'] .bucket-party-card {
+  background: var(--color-gray-900);
+  border-bottom-color: var(--color-gray-800);
+}
+
+.bucket-party-card__name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-gray-900);
+  margin-bottom: 4px;
+}
+
+[data-theme='dark'] .bucket-party-card__name {
+  color: var(--color-gray-50);
+}
+
+.bucket-party-card__phone {
+  font-size: 12px;
+  color: var(--color-gray-500);
+  margin-bottom: 8px;
+}
+
+.bucket-party-card__amounts {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bucket-party-card__bucket-amt {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-error-600);
+}
+
+.bucket-party-card__total {
+  font-size: 12px;
+  color: var(--color-gray-500);
+  text-align: right;
+}
+
+.bucket-party-card__meta {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--color-gray-500);
+}
+
+.bucket-party-card__ptp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--color-error-bg-subtle);
+  color: var(--color-error-700);
+}
+
+/* ─── Loading skeleton ─────────────────────────────────────────────── */
+.aging-skeleton {
+  padding: 0;
+}
+
+.skeleton-block {
+  background: linear-gradient(
+    90deg,
+    var(--color-gray-100) 25%,
+    var(--color-gray-50) 50%,
+    var(--color-gray-100) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: var(--radius-md);
+}
+
+[data-theme='dark'] .skeleton-block {
+  background: linear-gradient(
+    90deg,
+    var(--color-gray-800) 25%,
+    var(--color-gray-700) 50%,
+    var(--color-gray-800) 75%
+  );
+  background-size: 200% 100%;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-strip {
+  height: 100px;
+  margin-bottom: 16px;
+}
+
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 0 16px 16px;
+}
+
+.skeleton-tile {
+  height: 96px;
+  border-radius: var(--radius-lg);
+}
+
+.skeleton-row {
+  height: 56px;
+  margin: 0 16px 4px;
+  border-radius: var(--radius-md);
+}
+
+/* ─── Empty state ──────────────────────────────────────────────────── */
+.aging-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 32px;
+  text-align: center;
+  gap: 12px;
+}
+
+.aging-empty__icon {
+  color: var(--color-success-500);
+  margin-bottom: 4px;
+}
+
+.aging-empty__title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-gray-900);
+}
+
+[data-theme='dark'] .aging-empty__title {
+  color: var(--color-gray-50);
+}
+
+.aging-empty__desc {
+  font-size: 14px;
+  color: var(--color-gray-500);
+  max-width: 240px;
+}
+
+/* ─── Stale data banner ────────────────────────────────────────────── */
+.aging-stale-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 16px;
+  background: var(--color-warning-bg-subtle);
+  font-size: 12px;
+  color: var(--color-warning-700);
+}

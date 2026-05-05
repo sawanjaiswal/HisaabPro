@@ -41,6 +41,8 @@ import {
   BackfillWizard,
   Gstr1Page,
   Gstr3bPage,
+  AgingDashboardPage,
+  AgingBucketListPage,
   NotFound,
 } from '@/app.routes'
 import {
@@ -180,6 +182,8 @@ export function App() {
         <Route path={ROUTES.ORDER_DETAIL} element={<PageRoute><ProtectedRoute><CustomOrderDetail /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.ORDER_EDIT}   element={<PageRoute><ProtectedRoute><CustomOrderEdit /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PUBLIC_LEDGER} element={<PageRoute><PublicLedger /></PageRoute>} />
+        <Route path={ROUTES.COLLECTIONS} element={<PageRoute><ProtectedRoute><AgingDashboardPage /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.COLLECTIONS_BUCKET} element={<PageRoute><ProtectedRoute><AgingBucketListPage /></ProtectedRoute></PageRoute>} />
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
       </Routes>
       </PageTransition>

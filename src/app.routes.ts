@@ -135,3 +135,7 @@ export const Gstr1Page = lazy(() => import('@/features/gst-returns/Gstr1Page'))
 
 // GST Phase 2 — GSTR-3B Summary (PR 11)
 export const Gstr3bPage = lazy(() => import('@/features/gst-returns/Gstr3bPage'))
+
+// Payments Hub PR 3 — Collections / Aging Dashboard
+export const AgingDashboardPage = lazy(() => import('@/features/collections/pages/AgingDashboard'))
+export const AgingBucketListPage = lazy(() => import('@/features/collections/pages/AgingBucketList'))

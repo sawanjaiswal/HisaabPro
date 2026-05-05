@@ -1,6 +1,6 @@
 import { createPortal } from 'react-dom'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Home, FileText, Users, Package, Plus } from 'lucide-react'
+import { Home, FileText, Users, Package, Plus, Wallet } from 'lucide-react'
 import type { ComponentType, SVGProps } from 'react'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -46,6 +46,7 @@ export function BottomNav() {
   const rightItems: readonly NavItem[] = [
     { to: ROUTES.PRODUCTS, icon: Package, label: t.products },
     { to: ROUTES.PARTIES, icon: Users, label: t.parties },
+    { to: ROUTES.COLLECTIONS, icon: Wallet, label: t.collectionsNav ?? 'Collections' },
   ]
 
   return createPortal(
