@@ -167,6 +167,9 @@ model Business {
   // Business-Verticals Phase 3 — Services jobs
   jobs Job[]
 
+  // Business-Verticals Phase 4 — Bakery/tailor vertical
+  customOrders CustomOrder[]
+
   usersLastActive User[]        @relation("UserLastActiveBusiness")
   subscription    Subscription?
 
@@ -287,6 +290,7 @@ model Party {
   payments          Payment[]
   paymentReminders  PaymentReminder[]
   jobs              Job[]
+  customOrders      CustomOrder[]
 
   @@unique([businessId, phone])
   @@index([businessId, type, isActive])
@@ -532,6 +536,9 @@ model Product {
   // Business-Verticals Phase 3 — optional link from a JobItem to a catalog product
   jobItems JobItem[] @relation("JobItemProduct")
 
+  // Business-Verticals Phase 4 — optional link from a CustomOrderItem to a catalog product
+  customOrderItems CustomOrderItem[] @relation("CustomOrderItemProduct")
+
   @@unique([businessId, sku])
   @@unique([businessId, barcode])
   @@index([businessId, status])
@@ -728,6 +735,9 @@ model Document {
 
   // Business-Verticals Phase 3 — set when this Document was produced by converting a Job
   jobOrigin Job? @relation("JobInvoice")
+
+  // Business-Verticals Phase 4 — set when this Document was produced by converting a CustomOrder
+  customOrderOrigin CustomOrder? @relation("CustomOrderInvoice")
 
   @@unique([businessId, type, documentNumber])
   @@index([businessId, type, status])
@@ -2205,4 +2215,137 @@ model JobItem {
 
   @@index([jobId])
   @@index([productId])
+}
+
+// ─── Business-Verticals Phase 4 — Custom Orders (bakery / tailor verticals) ────
+
+enum CustomOrderStatus {
+  RECEIVED            // taken from customer; advance optional
+  IN_PRODUCTION       // shop has started work
+  READY               // ready for pickup / dispatch
+  DELIVERED           // handed over; not yet billed
+  INVOICED            // converted to a SALE_INVOICE Document
+  CANCELLED
+}
+
+model CustomOrder {
+  id             String            @id @default(cuid())
+  businessId     String
+  partyId        String
+
+  // Numbering — assigned on create. Independent series: "ORD-25-26-0001".
+  orderNumber    String?
+  sequenceNumber Int?
+  financialYear  String?
+
+  // Content
+  title  String            @db.VarChar(200)
+  notes  String?           @db.Text
+  status CustomOrderStatus @default(RECEIVED)
+
+  // Delivery
+  deliveryAt      DateTime?
+  deliverySlot    String?   @db.VarChar(40)
+  deliveryAddress String?   @db.VarChar(500)
+  deliveredAt     DateTime?
+
+  // Lifecycle audit timestamps
+  productionStartedAt DateTime?
+  readyAt             DateTime?
+  cancelledAt         DateTime?
+  cancelReason        String?   @db.VarChar(500)
+
+  // Totals (PAISE — Int, matches Document/Job)
+  subtotalPaise Int @default(0)
+  discountPaise Int @default(0)
+  totalPaise    Int @default(0)
+
+  // Advance — denormalised sum of CustomOrderAdvance rows
+  advancePaise Int @default(0)
+
+  // balancePaise = totalPaise - advancePaise. Persisted for queryability.
+  balancePaise Int @default(0)
+
+  // Forward link to the SALE_INVOICE produced by convert-to-invoice
+  invoiceId String? @unique
+
+  // Offline sync (matches Document.clientId / Job.clientId pattern)
+  clientId String? @unique
+
+  // Soft delete
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+  deletedBy String?
+
+  // Audit
+  createdBy String
+  updatedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  business Business           @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  party    Party              @relation(fields: [partyId], references: [id], onDelete: Restrict)
+  invoice  Document?          @relation("CustomOrderInvoice", fields: [invoiceId], references: [id], onDelete: SetNull)
+  items    CustomOrderItem[]
+  advances CustomOrderAdvance[]
+
+  @@unique([businessId, orderNumber])
+  @@index([businessId, status])
+  @@index([businessId, partyId])
+  @@index([businessId, deliveryAt])
+  @@index([businessId, isDeleted])
+  @@index([clientId])
+}
+
+model CustomOrderItem {
+  id            String @id @default(cuid())
+  customOrderId String
+  sortOrder     Int    @default(0)
+
+  // Optional product link — bakery/tailor items often have no SKU.
+  productId String?
+
+  description String @db.VarChar(500)
+
+  // Per-item spec JSON (free-form, driven by CustomFieldDefinition rows)
+  spec Json?
+
+  // Quantity: Decimal(12,3) for fractional units
+  quantity Decimal @db.Decimal(12, 3)
+
+  // Money — PAISE Int
+  ratePaise     Int @default(0)
+  discountPaise Int @default(0)
+  totalPaise    Int @default(0)
+
+  customOrder CustomOrder @relation(fields: [customOrderId], references: [id], onDelete: Cascade)
+  product     Product?    @relation("CustomOrderItemProduct", fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([customOrderId])
+  @@index([productId])
+}
+
+model CustomOrderAdvance {
+  id            String @id @default(cuid())
+  customOrderId String
+
+  // Money received against this order before the invoice exists
+  amountPaise Int
+
+  // Payment method — string to avoid enum coupling; validated in Zod
+  method    String    @db.VarChar(40)
+  reference String?   @db.VarChar(120)
+  receivedAt DateTime @default(now())
+  notes     String?   @db.VarChar(500)
+
+  // Stamped with the Payment.id when the order converts to invoice
+  paymentId String?
+
+  // Audit
+  createdBy String
+  createdAt DateTime @default(now())
+
+  customOrder CustomOrder @relation(fields: [customOrderId], references: [id], onDelete: Cascade)
+
+  @@index([customOrderId])
 }

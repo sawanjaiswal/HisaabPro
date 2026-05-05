@@ -20,6 +20,8 @@ const DEFAULT_PREFIXES: Record<string, string> = {
   DEBIT_NOTE: 'DN',
   // Phase 3 — Jobs
   JOB: 'JOB',
+  // Phase 4 — Custom Orders
+  CUSTOM_ORDER: 'ORD',
 }
 
 /**

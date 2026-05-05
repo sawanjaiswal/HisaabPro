@@ -69,6 +69,7 @@ import sessionRoutes from './routes/sessions.js'
 import exportRoutes from './routes/export.js'
 import { subscriptionRouter } from './routes/subscription.js'
 import jobRoutes from './routes/jobs.js'
+import customOrderRoutes from './routes/custom-orders.js'
 
 export function createApp() {
   const app = express()
@@ -175,6 +176,7 @@ export function createApp() {
   app.use('/api/settings/inventory', inventorySettingsRoutes)
   app.use('/api/documents', documentRoutes)
   app.use('/api/jobs', jobRoutes)
+  app.use('/api/custom-orders', customOrderRoutes)
   app.use('/api/settings/documents', documentSettingsRoutes)
   app.use('/api/payments', paymentRoutes)
   app.use('/api/dashboard', dashboardRoutes)

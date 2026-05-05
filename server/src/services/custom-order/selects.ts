@@ -1,0 +1,80 @@
+/**
+ * Custom Order Service — Prisma select objects for list and detail queries
+ */
+
+export const CUSTOM_ORDER_LIST_SELECT = {
+  id: true,
+  orderNumber: true,
+  title: true,
+  status: true,
+  partyId: true,
+  deliveryAt: true,
+  deliverySlot: true,
+  totalPaise: true,
+  advancePaise: true,
+  balancePaise: true,
+  invoiceId: true,
+  updatedAt: true,
+  party: {
+    select: { id: true, name: true, phone: true },
+  },
+} as const
+
+export const CUSTOM_ORDER_DETAIL_SELECT = {
+  id: true,
+  orderNumber: true,
+  title: true,
+  status: true,
+  partyId: true,
+  deliveryAt: true,
+  deliverySlot: true,
+  deliveryAddress: true,
+  totalPaise: true,
+  advancePaise: true,
+  balancePaise: true,
+  invoiceId: true,
+  updatedAt: true,
+  notes: true,
+  subtotalPaise: true,
+  discountPaise: true,
+  productionStartedAt: true,
+  readyAt: true,
+  deliveredAt: true,
+  cancelledAt: true,
+  cancelReason: true,
+  clientId: true,
+  createdAt: true,
+  createdBy: true,
+  updatedBy: true,
+  isDeleted: true,
+  deletedAt: true,
+  party: {
+    select: { id: true, name: true, phone: true },
+  },
+  items: {
+    select: {
+      id: true,
+      sortOrder: true,
+      productId: true,
+      description: true,
+      spec: true,
+      quantity: true,
+      ratePaise: true,
+      discountPaise: true,
+      totalPaise: true,
+    },
+    orderBy: { sortOrder: 'asc' as const },
+  },
+  advances: {
+    select: {
+      id: true,
+      amountPaise: true,
+      method: true,
+      reference: true,
+      receivedAt: true,
+      notes: true,
+      paymentId: true,
+    },
+    orderBy: { createdAt: 'asc' as const },
+  },
+} as const

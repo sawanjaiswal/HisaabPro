@@ -140,6 +140,16 @@ export const PERMISSION_MATRIX = [
       { key: 'delete', label: 'Delete Jobs' },
     ],
   },
+  // Phase 4 — Custom Orders (bakery / tailor vertical)
+  {
+    key: 'orders', label: 'Custom Orders',
+    actions: [
+      { key: 'view',   label: 'View Custom Orders' },
+      { key: 'create', label: 'Create Custom Orders' },
+      { key: 'edit',   label: 'Edit Custom Orders' },
+      { key: 'delete', label: 'Delete Custom Orders' },
+    ],
+  },
 ]
 
 export const ALL_PERMISSIONS = PERMISSION_MATRIX.flatMap(m =>
