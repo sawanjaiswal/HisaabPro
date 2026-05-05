@@ -22,6 +22,7 @@ import { PartyAddressesTab } from './components/PartyAddressesTab'
 import { ShareLedgerSheet } from '@/features/shared-ledger/components/ShareLedgerSheet'
 import { useShareLedger } from '@/features/shared-ledger/useShareLedger'
 import { CommitmentsSection } from '@/features/collections/CommitmentsSection'
+import { StatementPDFPreview } from '@/features/collections/StatementPDFPreview'
 import '@/features/shared-ledger/shared-ledger.css'
 import './party-detail-header.css'
 
@@ -45,6 +46,7 @@ export default function PartyDetailPage() {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [shareOpen, setShareOpen] = useState(false)
+  const [stmtOpen, setStmtOpen] = useState(false)
   const shareLedger = useShareLedger(partyId)
 
   const handleEdit = () => navigate(`/parties/${partyId}/edit`)
@@ -159,7 +161,7 @@ export default function PartyDetailPage() {
                 </button>
                 <button
                   className="party-quick-action-btn"
-                  onClick={() => navigate(`/reports/party-statement/${partyId}`)}
+                  onClick={() => setStmtOpen(true)}
                   aria-label={t.viewStatementLabel}
                 >
                   <MessageSquare size={18} aria-hidden="true" />
@@ -184,6 +186,16 @@ export default function PartyDetailPage() {
                   onRevoke={shareLedger.revokeShare}
                   onCopy={shareLedger.copyLink}
                   onClose={() => setShareOpen(false)}
+                />
+              )}
+              {stmtOpen && (
+                <StatementPDFPreview
+                  open={stmtOpen}
+                  onClose={() => setStmtOpen(false)}
+                  partyId={partyId}
+                  partyName={party.name}
+                  partyPhone={party.phone}
+                  businessName={party.companyName ?? party.name}
                 />
               )}
 

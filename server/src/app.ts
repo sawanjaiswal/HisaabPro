@@ -69,6 +69,7 @@ import recycleBinRoutes from './routes/recycle-bin.js'
 import eventRoutes from './routes/events.js'
 import collectionsAgingRoutes from './routes/collections/aging.route.js'
 import collectionsPtpRoutes from './routes/collections/ptp.route.js'
+import collectionsStatementRoutes from './routes/collections/statement.route.js'
 import paymentLinksRoutes from './routes/payments/payment-links.route.js'
 import remindersRoute from './routes/payments/reminders.route.js'
 import sessionRoutes from './routes/sessions.js'
@@ -230,6 +231,7 @@ export function createApp() {
   app.use('/api/export', exportRoutes)
   app.use('/api/collections/aging', collectionsAgingRoutes)
   app.use('/api/collections/ptp', collectionsPtpRoutes)
+  app.use('/api/collections/statement', collectionsStatementRoutes)
 
   // Register cron jobs (no-op in test env via NODE_ENV check inside)
   if (process.env.NODE_ENV !== 'test') {
