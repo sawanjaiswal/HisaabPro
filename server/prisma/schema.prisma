@@ -114,6 +114,11 @@ model Business {
   eWayBillEnabled   Boolean @default(false)
   turnoverSlab      String? // Tracks e-invoice threshold eligibility
 
+  // GST Phase 2 — new fields (migration: 20260505190000_gst_phase_2_fields)
+  gstEnabled          Boolean @default(false)
+  taxPricingMode      String  @default("EXCLUSIVE") @db.VarChar(20) // EXCLUSIVE | INCLUSIVE
+  gstDeclarationText  String? @db.Text // null = use in-code default per SCOPE §8.4
+
   businessUsers        BusinessUser[]
   parties              Party[]
   partyGroups          PartyGroup[]
@@ -655,6 +660,7 @@ model Document {
   totalSgst         Int     @default(0) // paise
   totalIgst         Int     @default(0) // paise
   totalCess         Int     @default(0) // paise
+  taxPricingMode    String  @default("EXCLUSIVE") @db.VarChar(20) // EXCLUSIVE | INCLUSIVE — GST Phase 2
 
   // TDS/TCS — Phase 2B (B2B invoice deductions)
   tdsRate   Int @default(0) // basis points
@@ -898,6 +904,9 @@ model DocumentSettings {
   autoShareFormat         String   @default("PDF")
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
+
+  // GST Phase 2 — new field (migration: 20260505190000_gst_phase_2_fields)
+  taxPricingMode String @default("EXCLUSIVE") @db.VarChar(20) // EXCLUSIVE | INCLUSIVE
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 }
@@ -1342,6 +1351,7 @@ model HsnCode {
   defaultRate    Int     @default(0) // basis points — default GST rate
   cessApplicable Boolean @default(false)
   cessRate       Int     @default(0) // basis points
+  uqc            String  @default("NOS") @db.VarChar(10) // Unit Quantity Code per CGST — GST Phase 2
 
   @@index([chapter])
   @@index([description])
