@@ -11,6 +11,9 @@ import logger from '../lib/logger.js'
 import { extractStateCode } from './gstin.utils.js'
 import type { PatchGstSettingsInput } from '../middleware/validate-gst-settings.js'
 
+// Transaction client type inferred from the prisma instance used in this file
+type TxClient = Parameters<Parameters<typeof prisma.$transaction>[0]>[0]
+
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
 export interface GstSettingsData {
@@ -55,18 +58,40 @@ function maskSettingsForAudit(settings: Partial<GstSettingsData>): Record<string
 // ─── onGstFirstEnabled ─────────────────────────────────────────────────────────
 
 /**
- * When gstEnabled flips false→true: update all InvoiceTemplate rows for this
- * business to enable GST display blocks where the field is currently undefined
- * (never overwrite an explicit false).
- *
- * NOTE: InvoiceTemplate model is introduced in PR 5 (templates). This function
- * is a no-op until that migration ships. The signature and transaction hook are
- * wired here so PR 5 can fill in the body without changing the call site.
+ * Sets gstTaxSummary/gstDeclaration/columns.hsn.visible=true on existing templates
+ * when gstEnabled first flips true. Only sets keys that are currently absent
+ * (never overwrites explicit false). No-op until invoice_template table ships.
  */
-async function onGstFirstEnabled(businessId: string): Promise<void> {
-  // PR 5 body: update DocumentTemplate rows where fields.gstTaxSummary === undefined
-  // and columns.hsn.visible === undefined. Never overwrites explicit false.
-  logger.info('GST_FIRST_ENABLED_HOOK: template update deferred to PR 5', { businessId })
+async function onGstFirstEnabled(businessId: string, tx: TxClient): Promise<void> {
+  // Guard: stay a no-op until the invoice_template migration lands
+  const rows = await prisma.$queryRaw<Array<{ exists: boolean }>>`
+    SELECT EXISTS (
+      SELECT 1 FROM information_schema.tables
+      WHERE table_schema = current_schema()
+        AND table_name = 'invoice_template'
+    ) AS "exists"
+  `
+  if (!rows[0]?.exists) {
+    logger.info('GST_FIRST_ENABLED_HOOK: table not migrated — skipping', { businessId })
+    return
+  }
+
+  // jsonb_set create_missing=true: adds key only when absent (no explicit false overwrite)
+  await tx.$executeRaw`
+    UPDATE invoice_template
+    SET config = jsonb_set(jsonb_set(jsonb_set(
+      config,
+      '{fields,gstTaxSummary}',  'true'::jsonb, true),
+      '{fields,gstDeclaration}', 'true'::jsonb, true),
+      '{columns,hsn,visible}',   'true'::jsonb, true)
+    WHERE "businessId" = ${businessId}
+      AND (
+        config -> 'fields' -> 'gstTaxSummary' IS NULL
+        OR config -> 'fields' -> 'gstDeclaration' IS NULL
+        OR config -> 'columns' -> 'hsn' -> 'visible' IS NULL
+      )
+  `
+  logger.info('GST_FIRST_ENABLED_HOOK: template GST flags set', { businessId })
 }
 
 // ─── getGstSettings ────────────────────────────────────────────────────────────
@@ -147,7 +172,7 @@ export async function updateGstSettings(
     })
 
     if (willFlipEnabled) {
-      await onGstFirstEnabled(businessId)
+      await onGstFirstEnabled(businessId, tx)
     }
 
     // Build masked before/after snapshots for AuditLog (MB-4)

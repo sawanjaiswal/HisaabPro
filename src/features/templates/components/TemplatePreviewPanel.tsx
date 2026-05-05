@@ -10,7 +10,20 @@ import { PreviewLineItems } from './PreviewLineItems'
 import { PreviewTotalsSummary } from './PreviewTotalsSummary'
 import { PreviewPaymentStamp } from './PreviewPaymentStamp'
 import { PreviewCopyLabel } from './PreviewCopyLabel'
+import { TaxSummaryBlock } from './TaxSummaryBlock'
+import { GstDeclarationBlock } from './GstDeclarationBlock'
 import { SAMPLE_ITEMS } from './templatePreview.constants'
+
+// Sample GST tax data for the preview (intra-state 18% GST on sample total)
+const PREVIEW_TAX = {
+  totalCgst: 78075,  // 9% of 867500 paise
+  totalSgst: 78075,  // 9% of 867500 paise
+  totalIgst: 0,
+  totalCess: 0,
+  cgstRate: 900,     // 9% in basis points
+  sgstRate: 900,
+  igstRate: 0,
+}
 
 interface TemplatePreviewPanelProps {
   config: TemplateConfig
@@ -138,6 +151,16 @@ export const TemplatePreviewPanel: React.FC<TemplatePreviewPanelProps> = ({ conf
             accentColor={colors.accent}
           />
 
+          {/* GST Tax Summary block — between subtotal and grand total area */}
+          <TaxSummaryBlock
+            enabled={fields.gstTaxSummary === true}
+            compositionScheme={false}
+            interState={false}
+            pageSize={printSettings?.pageSize ?? 'A4'}
+            borderColor={borderColor}
+            {...PREVIEW_TAX}
+          />
+
           {/* Footer text */}
           {config.footerText && (
             <div
@@ -153,6 +176,15 @@ export const TemplatePreviewPanel: React.FC<TemplatePreviewPanelProps> = ({ conf
               {config.footerText}
             </div>
           )}
+
+          {/* GST Declaration block — after terms/footer */}
+          <GstDeclarationBlock
+            enabled={fields.gstDeclaration === true}
+            gstDeclarationText={null}
+            compositionScheme={false}
+            isReverseCharge={false}
+            borderColor={borderColor}
+          />
 
         </div>
       </div>

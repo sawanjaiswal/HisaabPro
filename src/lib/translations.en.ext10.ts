@@ -527,4 +527,10 @@ export const enExt10 = {
   untaggedTaxConfirm:       'Save anyway',
   untaggedTaxCancel:        'Go back and fix',
   billOfSupplyTitle:        'Bill of Supply',
+
+  // ─── GST Template Engine — Phase 2 PR 5 ─────────────────────────────────
+  taxSummaryHeader:         'Tax Summary',
+  totalTaxLabel:            'Total Tax',
+  compositionDealerNotice:  'Composition Dealer under GST',
+  gstDeclarationBlockLabel: 'Declaration',
 } as const

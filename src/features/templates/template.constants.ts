@@ -66,3 +66,52 @@ export const COLOR_PRESETS: { name: string; hex: string }[] = [
 
 /** @deprecated Use MAX_TEMPLATE_NAME_LENGTH */
 export const TEMPLATE_NAME_MAX = MAX_TEMPLATE_NAME_LENGTH
+
+// ─── GST Phase 2 — Declaration text defaults ─────────────────────────────────
+
+/**
+ * Default declaration for regular GST-registered dealers.
+ * Rendered when compositionScheme is false and no custom declaration text is set.
+ */
+export const STANDARD_GST_DECLARATION =
+  'We hereby declare that this invoice shows the actual price of the goods described ' +
+  'and that all particulars are true and correct. This is a computer generated invoice ' +
+  'and does not require a physical signature.'
+
+/**
+ * Declaration for composition scheme dealers (Section 10, CGST Act, 2017).
+ * Printed on Bill of Supply instead of a regular tax invoice.
+ */
+export const COMPOSITION_GST_DECLARATION =
+  'I/We hereby declare that this Bill of Supply is being issued by a taxpayer registered ' +
+  'under the Composition Levy (Section 10 of the CGST Act, 2017). Tax is not applicable ' +
+  'on goods/services covered under composition scheme.'
+
+/**
+ * Appended to the declaration when the invoice is subject to Reverse Charge Mechanism (RCM).
+ */
+export const RCM_DECLARATION_APPENDIX =
+  'Reverse Charge Applicable: The recipient of this supply is liable to pay tax under ' +
+  'Reverse Charge Mechanism (RCM) as applicable under the GST Act.'
+
+// ─── GST Phase 2 — QR code sizing ────────────────────────────────────────────
+
+import type { PageSize } from './template-layout.types'
+
+/** IRN QR code sizes in millimetres per paper size. 0 = hidden (too narrow). */
+export const IRN_QR_SIZE_MM: Record<PageSize, number> = {
+  A4:           40,
+  A5:           35,
+  THERMAL_80MM: 30,
+  THERMAL_58MM:  0,
+  LETTER:       40,
+}
+
+/** UPI QR code sizes in millimetres per paper size (fallback for non-GST docs). 0 = hidden. */
+export const UPI_QR_SIZE_MM: Record<PageSize, number> = {
+  A4:           35,
+  A5:           30,
+  THERMAL_80MM: 25,
+  THERMAL_58MM:  0,
+  LETTER:       35,
+}

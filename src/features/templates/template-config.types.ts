@@ -92,6 +92,11 @@ export interface TemplateFieldsConfig {
   udyamNumber: boolean
   totalQuantity: boolean
   copyLabel: boolean
+  // GST Phase 2 — render blocks
+  /** Renders CGST/SGST/IGST/Cess subtotal table between subtotal and grand total */
+  gstTaxSummary?: boolean
+  /** Renders declaration text block after terms */
+  gstDeclaration?: boolean
 }
 
 /** Typography section of TemplateConfig */

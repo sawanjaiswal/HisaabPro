@@ -78,6 +78,9 @@ const DEFAULT_FIELDS_CONFIG: TemplateFieldsConfig = {
   udyamNumber:        false,
   totalQuantity:      true,
   copyLabel:          false,
+  // GST Phase 2 — render blocks (true by default for new templates)
+  gstTaxSummary:      true,
+  gstDeclaration:     true,
 }
 
 const DEFAULT_TYPOGRAPHY_CONFIG: TemplateTypographyConfig = {

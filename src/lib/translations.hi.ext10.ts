@@ -523,4 +523,10 @@ export const hiExt10 = {
   untaggedTaxConfirm:       'फिर भी सहेजें',
   untaggedTaxCancel:        'वापस जाएं और ठीक करें',
   billOfSupplyTitle:        'आपूर्ति बिल',
+
+  // ─── GST Template Engine — Phase 2 PR 5 ─────────────────────────────────
+  taxSummaryHeader:         'कर सारांश',
+  totalTaxLabel:            'कुल कर',
+  compositionDealerNotice:  'GST के अंतर्गत कम्पोज़िशन डीलर',
+  gstDeclarationBlockLabel: 'घोषणा',
 } as const
