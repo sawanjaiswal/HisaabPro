@@ -7,6 +7,7 @@
 
 import { prisma } from '../../lib/prisma.js'
 import logger from '../../lib/logger.js'
+import { markPtpKept } from './promise-to-pay-eval.service.js'
 
 interface RazorpayPaymentLinkPaidEvent {
   id: string                        // Razorpay event id (used for MB-1 dedupe)
@@ -165,6 +166,35 @@ export async function processWebhookPaymentLinkPaid(
     rzPaymentId,
     paidAmountPaise,
   })
+
+  // Hook: mark any OPEN PTP on this invoice as KEPT (MB-7 systemActor, non-blocking)
+  if (link.invoiceId) {
+    try {
+      const openPtps = await prisma.promiseToPay.findMany({
+        where: {
+          businessId: link.businessId,
+          invoiceId: link.invoiceId,
+          status: 'OPEN',
+          isDeleted: false,
+        },
+        select: { id: true },
+      })
+      for (const ptp of openPtps) {
+        const newPayment = await prisma.payment.findFirst({
+          where: { businessId: link.businessId, referenceNumber: rzPaymentId },
+          select: { id: true },
+        })
+        if (newPayment) {
+          await markPtpKept(link.businessId, ptp.id, newPayment.id, null, 'webhook:razorpay')
+        }
+      }
+    } catch (e) {
+      logger.error('payment_link.webhook.ptp_hook_error', {
+        linkId: link.id,
+        error: e instanceof Error ? e.message : String(e),
+      })
+    }
+  }
 
   return { noOp: false, linkId: link.id }
 }
