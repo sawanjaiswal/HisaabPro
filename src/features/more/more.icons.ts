@@ -17,6 +17,7 @@ import {
   Camera,
   Upload,
   Users,
+  Briefcase,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -39,4 +40,5 @@ export const ICON_REGISTRY: Record<string, LucideIcon> = {
   Camera,
   Upload,
   Users,
+  Briefcase,
 }

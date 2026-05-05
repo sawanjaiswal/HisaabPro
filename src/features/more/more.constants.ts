@@ -28,6 +28,9 @@ export const MORE_MENU_GROUPS: MoreMenuGroup[] = [
 ]
 
 export const MORE_MENU_ITEMS: MoreMenuItem[] = [
+  // Services vertical — Jobs (only shown for service verticals via isNavVisible)
+  { id: 'jobs', navKey: 'jobs', label: 'Jobs', description: 'Work orders & tracking', icon: 'Briefcase', route: ROUTES.JOBS, color: 'var(--color-primary-50)', group: 'efficiency' },
+
   // Efficiency — save time, do more
   { id: 'bill-scan', navKey: 'bill-scan', label: 'Scan Bill', description: 'OCR scan to invoice', icon: 'Camera', route: ROUTES.BILL_SCAN, color: 'var(--color-primary-50)', group: 'efficiency' },
   { id: 'recurring', navKey: 'recurring', label: 'Recurring', description: 'Auto-repeat invoices', icon: 'Repeat', route: ROUTES.RECURRING, color: 'var(--color-primary-50)', group: 'efficiency' },

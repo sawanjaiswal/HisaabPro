@@ -113,4 +113,10 @@ export const Pos = lazy(() => import('@/features/pos/PosPage'))
 
 export const StaffPermissions = lazy(() => import('@/features/settings/StaffPermissionsPage'))
 
+// Phase 3 — Jobs
+export const Jobs = lazy(() => import('@/features/jobs/pages/JobsListPage'))
+export const JobNew = lazy(() => import('@/features/jobs/pages/JobNewPage'))
+export const JobDetail = lazy(() => import('@/features/jobs/pages/JobDetailPage'))
+export const JobEdit = lazy(() => import('@/features/jobs/pages/JobEditPage'))
+
 export const NotFound = lazy(() => import('@/components/feedback/NotFoundPage'))

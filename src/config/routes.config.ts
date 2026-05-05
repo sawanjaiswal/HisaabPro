@@ -105,6 +105,12 @@ export const ROUTES = {
   SERIAL_BULK: '/products/:productId/serials/bulk',
   SERIAL_LOOKUP: '/serial-lookup',
 
+  // Phase 3 — Jobs (services vertical)
+  JOBS:       '/jobs',
+  JOB_NEW:    '/jobs/new',
+  JOB_DETAIL: '/jobs/:id',
+  JOB_EDIT:   '/jobs/:id/edit',
+
   // POS
   POS: '/pos',
 
