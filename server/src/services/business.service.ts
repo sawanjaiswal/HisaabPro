@@ -10,6 +10,8 @@ import logger from '../lib/logger.js'
 import { DEFAULT_CATEGORIES } from '../config/defaults.js'
 import type { CreateBusinessInput } from '../schemas/business.schemas.js'
 import { ensureSystemRoles } from './settings.service.js'
+import { applyVerticalDefaults } from './verticals/defaults.js'
+import { cloneBusinessSettings } from './business-clone.helper.js'
 
 const MAX_BUSINESSES = 10
 
@@ -91,101 +93,7 @@ export async function createBusiness(userId: string, data: CreateBusinessInput) 
 
     // 4. Clone settings from source business (if requested)
     if (data.cloneFromBusinessId) {
-      const sourceId = data.cloneFromBusinessId
-
-      // Clone DocumentSettings
-      const srcDocSettings = await tx.documentSettings.findUnique({
-        where: { businessId: sourceId },
-      })
-      if (srcDocSettings) {
-        await tx.documentSettings.create({
-          data: {
-            businessId: created.id,
-            defaultPaymentTerms: srcDocSettings.defaultPaymentTerms,
-            roundOffTo: srcDocSettings.roundOffTo,
-            showProfitDuringBilling: srcDocSettings.showProfitDuringBilling,
-            allowFutureDates: srcDocSettings.allowFutureDates,
-            transactionLockDays: srcDocSettings.transactionLockDays,
-            recycleBinRetentionDays: srcDocSettings.recycleBinRetentionDays,
-            autoShareOnSave: srcDocSettings.autoShareOnSave,
-            autoShareChannel: srcDocSettings.autoShareChannel,
-            autoShareFormat: srcDocSettings.autoShareFormat,
-          },
-        })
-      }
-
-      // Clone CustomFieldDefinitions
-      const srcCustomFields = await tx.customFieldDefinition.findMany({
-        where: { businessId: sourceId },
-      })
-      if (srcCustomFields.length > 0) {
-        await tx.customFieldDefinition.createMany({
-          data: srcCustomFields.map((f) => ({
-            businessId: created.id,
-            name: f.name,
-            fieldType: f.fieldType,
-            options: f.options,
-            required: f.required,
-            showOnInvoice: f.showOnInvoice,
-            entityType: f.entityType,
-            sortOrder: f.sortOrder,
-          })),
-        })
-      }
-
-      // Clone TermsAndConditionsTemplates
-      const srcTerms = await tx.termsAndConditionsTemplate.findMany({
-        where: { businessId: sourceId },
-      })
-      if (srcTerms.length > 0) {
-        await tx.termsAndConditionsTemplate.createMany({
-          data: srcTerms.map((t) => ({
-            businessId: created.id,
-            name: t.name,
-            content: t.content,
-            isDefault: t.isDefault,
-            appliesTo: t.appliesTo,
-          })),
-        })
-      }
-
-      // Clone DocumentNumberSeries (reset currentSequence to 0)
-      const srcDocSeries = await tx.documentNumberSeries.findMany({
-        where: { businessId: sourceId },
-      })
-      if (srcDocSeries.length > 0) {
-        await tx.documentNumberSeries.createMany({
-          data: srcDocSeries.map((s) => ({
-            businessId: created.id,
-            documentType: s.documentType,
-            financialYear: s.financialYear,
-            prefix: s.prefix,
-            suffix: s.suffix,
-            separator: s.separator,
-            paddingDigits: s.paddingDigits,
-            currentSequence: 0, // reset — new business starts fresh
-            startingNumber: s.startingNumber,
-            resetOnNewYear: s.resetOnNewYear,
-          })),
-        })
-      }
-
-      // Clone ExchangeRates
-      const srcRates = await tx.exchangeRate.findMany({
-        where: { businessId: sourceId },
-      })
-      if (srcRates.length > 0) {
-        await tx.exchangeRate.createMany({
-          data: srcRates.map((r) => ({
-            businessId: created.id,
-            fromCurrency: r.fromCurrency,
-            toCurrency: r.toCurrency,
-            rate: r.rate,
-            effectiveDate: r.effectiveDate,
-            source: r.source,
-          })),
-        })
-      }
+      await cloneBusinessSettings(tx, data.cloneFromBusinessId, created.id)
     }
 
     return created
@@ -193,6 +101,9 @@ export async function createBusiness(userId: string, data: CreateBusinessInput) 
 
   // Seed system roles for the new business
   await ensureSystemRoles(business.id)
+
+  // Seed vertical-specific InventorySetting defaults (no-op for 'general' etc.)
+  await applyVerticalDefaults(business.id, business.businessType ?? 'general')
 
   logger.info('Business created', { businessId: business.id, userId })
   return business

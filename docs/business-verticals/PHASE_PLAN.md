@@ -147,7 +147,7 @@ Phases 3 & 4 each require their own approved design plan before schema work.
 
 | Phase | Status   | Owner | Started     | Shipped |
 |-------|----------|-------|-------------|---------|
-| 1     | building | Sawan | 2026-05-05  | —       |
-| 2     | planned  | Sawan | —           | —       |
+| 1     | shipped  | Sawan | 2026-05-05  | 2026-05-05 |
+| 2     | shipped  | Sawan | 2026-05-05  | 2026-05-05 |
 | 3     | planned  | Sawan | —           | —       |
 | 4     | planned  | Sawan | —           | —       |

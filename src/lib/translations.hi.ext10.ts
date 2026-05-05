@@ -182,6 +182,9 @@ export const hiExt10 = {
   switchBusinessTypeTitle:  'व्यापार का प्रकार बदलें?',
   switchBusinessTypeWarn:   'कुछ मेन्यू आइटम छिपेंगे या दिखेंगे। आपका डेटा डिलीट नहीं होगा। आप कभी भी वापस बदल सकते हैं।',
   switchBusinessTypeBtn:    'बदलें',
+  applyVerticalDefaults:    'इस व्यवसाय प्रकार की डिफ़ॉल्ट सेटिंग्स भी लागू करें',
+  verticalDefaultsTitle:    'अनुशंसित सेटिंग्स',
+  verticalDefaultsApplied:  'डिफ़ॉल्ट सेटिंग्स लागू कीं',
 
   // ─── Currency Prefix ─────────────────────────────────────────────────────
   currencyPrefix:           'Rs',

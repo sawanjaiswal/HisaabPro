@@ -186,6 +186,9 @@ export const enExt10 = {
   switchBusinessTypeTitle:  'Switch business type?',
   switchBusinessTypeWarn:   'Some menu items will be hidden or shown. Your data is not deleted. You can switch back anytime.',
   switchBusinessTypeBtn:    'Switch',
+  applyVerticalDefaults:    'Also apply default settings for this business type',
+  verticalDefaultsTitle:    'Recommended settings',
+  verticalDefaultsApplied:  'Defaults applied',
 
   // ─── Currency Prefix ─────────────────────────────────────────────────────
   currencyPrefix:           'Rs',

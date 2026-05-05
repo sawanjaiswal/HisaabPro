@@ -26,6 +26,7 @@ import { requireOwner } from '../middleware/permission.js'
 import { requirePlan, requireQuota } from '../middleware/subscription-gate.js'
 import * as settingsService from '../services/settings.service.js'
 import * as businessService from '../services/business.service.js'
+import { applyVerticalDefaults, getDefaultsFor } from '../services/verticals/defaults.js'
 import * as authService from '../services/auth.service.js'
 import * as gstService from '../services/gst-settings.service.js'
 
@@ -59,6 +60,21 @@ businessSettingsRouter.put('/:businessId', requireOwner(), validate(updateBusine
   const businessId = req.user!.businessId
   const business = await businessService.updateBusiness(businessId, req.body)
   sendSuccess(res, business)
+}))
+
+// Vertical defaults — preview the summary for a given type (no DB write).
+businessSettingsRouter.get('/:businessId/vertical-defaults', asyncHandler(async (req, res) => {
+  const type = String(req.query.type ?? '')
+  const defaults = getDefaultsFor(type)
+  sendSuccess(res, { applied: !!defaults, summary: defaults?.summary ?? [] })
+}))
+
+// Vertical defaults — apply the active business's vertical defaults to InventorySetting.
+businessSettingsRouter.post('/:businessId/apply-vertical-defaults', requireOwner(), asyncHandler(async (req, res) => {
+  const businessId = req.user!.businessId
+  const business = await businessService.getBusiness(businessId)
+  const result = await applyVerticalDefaults(businessId, business.businessType ?? 'general')
+  sendSuccess(res, result)
 }))
 
 businessSettingsRouter.get('/:businessId/roles', asyncHandler(async (req, res) => {
