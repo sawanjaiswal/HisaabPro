@@ -119,4 +119,10 @@ export const JobNew = lazy(() => import('@/features/jobs/pages/JobNewPage'))
 export const JobDetail = lazy(() => import('@/features/jobs/pages/JobDetailPage'))
 export const JobEdit = lazy(() => import('@/features/jobs/pages/JobEditPage'))
 
+// Phase 4 — Custom Orders (bakery / tailor vertical)
+export const CustomOrders = lazy(() => import('@/features/custom-orders/pages/CustomOrdersListPage'))
+export const CustomOrderNew = lazy(() => import('@/features/custom-orders/pages/CustomOrderNewPage'))
+export const CustomOrderDetail = lazy(() => import('@/features/custom-orders/pages/CustomOrderDetailPage'))
+export const CustomOrderEdit = lazy(() => import('@/features/custom-orders/pages/CustomOrderEditPage'))
+
 export const NotFound = lazy(() => import('@/components/feedback/NotFoundPage'))

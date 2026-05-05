@@ -235,10 +235,15 @@ export const JOBS_VISIBLE_VERTICALS: ReadonlySet<BusinessType> = new Set([
   'services', 'freelancer', 'salon', 'clinic',
 ])
 
+/** Verticals that CAN see the Custom Orders nav (Phase 4 — whitelist like JOBS). */
+export const ORDERS_VISIBLE_VERTICALS: ReadonlySet<BusinessType> = new Set<BusinessType>([
+  'bakery', 'tailor',
+])
+
 /** Single-entry visibility check used by SideNav / BottomNav. */
 export function isNavVisible(vertical: VerticalProfile, key: NavKey): boolean {
   if (vertical.hiddenNavKeys.has(key)) return false
   if (key === 'jobs')   return JOBS_VISIBLE_VERTICALS.has(vertical.type)
-  if (key === 'orders') return false // Phase 4 will introduce ORDERS_VISIBLE_VERTICALS
+  if (key === 'orders') return ORDERS_VISIBLE_VERTICALS.has(vertical.type)
   return true
 }

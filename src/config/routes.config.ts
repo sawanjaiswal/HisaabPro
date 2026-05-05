@@ -111,6 +111,12 @@ export const ROUTES = {
   JOB_DETAIL: '/jobs/:id',
   JOB_EDIT:   '/jobs/:id/edit',
 
+  // Phase 4 — Custom Orders (bakery / tailor vertical)
+  ORDERS:       '/orders',
+  ORDER_NEW:    '/orders/new',
+  ORDER_DETAIL: '/orders/:id',
+  ORDER_EDIT:   '/orders/:id/edit',
+
   // POS
   POS: '/pos',
 
