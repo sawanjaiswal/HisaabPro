@@ -10,7 +10,7 @@ import {
   STOCK_DECREASE_TYPES, STOCK_INCREASE_TYPES, AFFECTS_OUTSTANDING,
   getRoundOffSetting, updateOutstanding, getOutstandingDelta, getOutstandingReverseDelta,
 } from './helpers.js'
-import { assertCompositionNoLineTax } from './create-tax-prep.js'
+import { assertCompositionNoLineTax, assertCompositionNoInterState } from './create-tax-prep.js'
 
 export async function updateDocument(
   businessId: string,
@@ -74,6 +74,7 @@ export async function updateDocument(
       const isCompositeUpdate = data.isComposite ?? existing.isComposite ?? biz?.compositionScheme ?? false
 
       assertCompositionNoLineTax(isCompositeUpdate, data.lineItems)
+      assertCompositionNoInterState(isCompositeUpdate, biz?.stateCode ?? null, placeOfSupply)
       const calcItems = data.lineItems.map(li => {
         const tc = li.taxCategoryId ? taxCategoryMap.get(li.taxCategoryId) : undefined
         return {

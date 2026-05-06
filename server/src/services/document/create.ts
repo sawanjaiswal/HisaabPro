@@ -5,8 +5,8 @@ import { deductForSaleInvoice, addForPurchaseInvoice, scheduleAlertChecks } from
 import { generateNextNumber } from '../document-number.service.js'
 import { calculateChargeAmount } from '../document-calc.js'
 import {
-  assertGstEnabled, assertCompositionNoLineTax, buildCalcItems,
-  computeGstTotals, resolveSupplyType,
+  assertGstEnabled, assertCompositionNoLineTax, assertCompositionNoInterState,
+  buildCalcItems, computeGstTotals, resolveSupplyType,
 } from './create-tax-prep.js'
 import { getCompositionInvoiceInfo } from '../composition.service.js'
 import type { CreateDocumentInput } from '../../schemas/document.schemas.js'
@@ -69,6 +69,7 @@ export async function createDocument(
   const isReverseCharge = data.isReverseCharge ?? false
 
   assertCompositionNoLineTax(isComposite, data.lineItems)
+  assertCompositionNoInterState(isComposite, business?.stateCode ?? null, data.placeOfSupply ?? null)
   const purchasePriceMap = new Map(products.map(p => [p.id, p.purchasePrice || 0]))
 
   const calcItems = buildCalcItems(

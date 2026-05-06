@@ -70,6 +70,27 @@ export function assertCompositionNoLineTax(
   }
 }
 
+/**
+ * Throws 400 if a composition-scheme document is inter-state.
+ * Composition dealers cannot make inter-state outward supplies (GST rules).
+ */
+export function assertCompositionNoInterState(
+  isComposite: boolean,
+  businessStateCode: string | null,
+  placeOfSupply: string | null,
+): void {
+  if (!isComposite) return
+  if (
+    businessStateCode &&
+    placeOfSupply &&
+    businessStateCode.trim() !== placeOfSupply.trim()
+  ) {
+    throw validationError(
+      'Composition taxpayers cannot make inter-state outward supplies.',
+    )
+  }
+}
+
 export function buildCalcItems(
   lineItems: LineItemSlice[],
   productPurchasePrices: Map<string, number>,
