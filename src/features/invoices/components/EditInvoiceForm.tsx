@@ -14,6 +14,7 @@ import { InvoiceItemsSection } from './InvoiceItemsSection'
 import { InvoiceDetailsSection } from './InvoiceDetailsSection'
 import { InvoiceChargesSection } from './InvoiceChargesSection'
 import { GstInvoiceHeader } from './GstInvoiceHeader'
+import { StockShortageBanner } from './StockShortageBanner'
 import { FORM_SECTIONS } from '../invoice.constants'
 import type { DocumentFormData } from '../invoice.types'
 
@@ -47,6 +48,8 @@ export function EditInvoiceForm({
     hasStockBlocks,
     handleSubmit,
     handleSaveDraft,
+    stockShortageItems,
+    clearStockShortage,
   } = useInvoiceForm(initialData.type, 'NONE', { editId: invoiceId, initialData })
 
   const { gstEnabled, compositionScheme } = useGstGate()
@@ -82,6 +85,10 @@ export function EditInvoiceForm({
       <Header title={t.editInvoice} backTo={`/invoices/${invoiceId}`} />
 
       <PageContainer className="invoice-details-section py-0">
+        {stockShortageItems.length > 0 && (
+          <StockShortageBanner items={stockShortageItems} onDismiss={clearStockShortage} />
+        )}
+
         {gstEnabled && (
           <GstInvoiceHeader
             form={form}

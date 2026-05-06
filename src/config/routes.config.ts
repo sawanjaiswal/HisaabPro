@@ -138,4 +138,11 @@ export const ROUTES = {
   // Payments Hub — Collections (PR 3)
   COLLECTIONS: '/collections',
   COLLECTIONS_BUCKET: '/collections/bucket/:bucket',
+
+  // Inventory Phase 2 — Purchase + Alerts
+  INVENTORY_ALERTS: '/inventory/alerts',
+  PURCHASES: '/purchases',
+  PURCHASE_DETAIL: '/purchases/:id',
+  PURCHASE_NEW: '/purchases/new',
+  PURCHASE_EDIT: '/purchases/:id/edit',
 } as const

@@ -28,6 +28,16 @@ export interface UseInvoiceFormOptions {
   initialData?: DocumentFormData
 }
 
+// ─── Stock shortage (409 INSUFFICIENT_STOCK from save) ───────────────────────
+
+export interface StockShortageItem {
+  productId: string
+  productName: string
+  available: number
+  requested: number
+  unit?: string
+}
+
 // ─── Hook return type ─────────────────────────────────────────────────────────
 
 export interface UseInvoiceFormReturn {
@@ -54,6 +64,9 @@ export interface UseInvoiceFormReturn {
   handleSubmit: () => Promise<void>
   handleSaveDraft: () => Promise<void>
   reset: () => void
+  // Stock shortage (409 from save)
+  stockShortageItems: StockShortageItem[]
+  clearStockShortage: () => void
   // GST Phase 2
   gstEnabled: boolean
   showUntaggedDialog: boolean

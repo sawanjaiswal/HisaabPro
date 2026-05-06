@@ -15,6 +15,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { queryKeys } from '@/lib/query-keys'
 import { ROUTES } from '@/config/routes.config'
+import { ApiError } from '@/lib/api'
 import { createDocument, updateDocument } from './invoice.service'
 import { calculateInvoiceTotals } from './invoice-totals.utils'
 import type { InvoiceTotals, LineItemCalc, ChargeCalc } from './invoice-calc.utils'
@@ -25,7 +26,7 @@ import type {
   AdditionalChargeFormData,
   RoundOffSetting,
 } from './invoice.types'
-import type { UseInvoiceFormOptions, UseInvoiceFormReturn, FormSection } from './invoice-form.types'
+import type { UseInvoiceFormOptions, UseInvoiceFormReturn, FormSection, StockShortageItem } from './invoice-form.types'
 import { buildInitialForm, validateInvoiceForm, normalizeFormPayload } from './invoice-form.utils'
 import { useStockValidation } from './useStockValidation'
 import { useGstInvoice } from './useGstInvoice'
@@ -47,6 +48,7 @@ export function useInvoiceForm(
   const [form, setForm] = useState<DocumentFormData>(() => initialData ?? buildInitialForm(type))
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [activeSection, setActiveSection] = useState<FormSection>('items')
+  const [stockShortageItems, setStockShortageItems] = useState<StockShortageItem[]>([])
 
   // ─── Field update ──────────────────────────────────────────────────────────
 
@@ -152,6 +154,7 @@ export function useInvoiceForm(
       return { mode: 'create' as const, targetStatus }
     },
     onSuccess: (result) => {
+      setStockShortageItems([])
       queryClient.invalidateQueries({ queryKey: queryKeys.invoices.all() })
       if (result.mode === 'edit') {
         toast.success('Invoice updated')
@@ -163,7 +166,15 @@ export function useInvoiceForm(
         toast.success('Draft saved')
       }
     },
-    onError: () => {
+    onError: (err) => {
+      if (err instanceof ApiError && err.code === 'INSUFFICIENT_STOCK') {
+        const payload = err.detail as { items?: StockShortageItem[] } | undefined
+        if (payload?.items?.length) {
+          setStockShortageItems(payload.items)
+          setActiveSection('items')
+          return
+        }
+      }
       toast.error(isEditMode ? 'Failed to update invoice.' : 'Failed to save invoice. Please try again.')
     },
   })
@@ -206,7 +217,10 @@ export function useInvoiceForm(
     setForm(initialData ?? buildInitialForm(type))
     setErrors({})
     setActiveSection('items')
+    setStockShortageItems([])
   }, [type, initialData])
+
+  const clearStockShortage = useCallback(() => setStockShortageItems([]), [])
 
   return {
     form, errors, isSubmitting, isEditMode, activeSection, setActiveSection,
@@ -214,6 +228,7 @@ export function useInvoiceForm(
     addCharge, updateCharge, removeCharge,
     totals, stockWarnings, hasStockBlocks, validate,
     handleSubmit, handleSaveDraft, reset,
+    stockShortageItems, clearStockShortage,
     gstEnabled, showUntaggedDialog, confirmUntaggedSubmit, dismissUntaggedDialog, applyInclusivePricing,
   }
 }

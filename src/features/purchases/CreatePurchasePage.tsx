@@ -1,38 +1,33 @@
-/** Create Invoice — Page (lazy loaded)
+/** Create Purchase Invoice — Page (lazy loaded)
  *
- * Follows CreatePartyPage.tsx pattern: pill tabs for sections,
- * sticky bottom totals bar with save actions.
- * Sections: Items · Details · Charges
+ * Wraps the existing invoice form with type=PURCHASE_INVOICE.
+ * Shows "Stock will be added on save" hint.
+ * Follows CreateInvoicePage pattern exactly.
  */
 
-import { useState, useCallback, useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { Camera } from 'lucide-react'
+import { useCallback, useState } from 'react'
+import { Package } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
-import { Button } from '@/components/ui/Button'
-import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
-import { useGstGate } from '@/features/gst/useGstGate'
-import { useInvoiceForm } from './useInvoiceForm'
-import { InvoiceTotalsBar } from './components/InvoiceTotalsBar'
-import { InvoiceItemsSection } from './components/InvoiceItemsSection'
-import { InvoiceDetailsSection } from './components/InvoiceDetailsSection'
-import { InvoiceChargesSection } from './components/InvoiceChargesSection'
-import { GstInvoiceHeader } from './components/GstInvoiceHeader'
-import { UntaggedTaxDialog } from './components/UntaggedTaxDialog'
-import { StockShortageBanner } from './components/StockShortageBanner'
-import { FORM_SECTIONS } from './invoice.constants'
-import './invoice-party-search.css'
-import './invoice-line-items.css'
-import './invoice-product-search.css'
-import './invoice-summary.css'
-import './invoice-gst-banners.css'
+import { useInvoiceForm } from '@/features/invoices/useInvoiceForm'
+import { InvoiceTotalsBar } from '@/features/invoices/components/InvoiceTotalsBar'
+import { InvoiceItemsSection } from '@/features/invoices/components/InvoiceItemsSection'
+import { InvoiceDetailsSection } from '@/features/invoices/components/InvoiceDetailsSection'
+import { InvoiceChargesSection } from '@/features/invoices/components/InvoiceChargesSection'
+import { FORM_SECTIONS } from '@/features/invoices/invoice.constants'
+import { ROUTES } from '@/config/routes.config'
+import '@/features/invoices/invoice-party-search.css'
+import '@/features/invoices/invoice-line-items.css'
+import '@/features/invoices/invoice-product-search.css'
+import '@/features/invoices/invoice-summary.css'
 
-export default function CreateInvoicePage() {
-  const nav = useNavigate()
+export default function CreatePurchasePage() {
   const { t } = useLanguage()
+  const [productNames, setProductNames] = useState<Record<string, string>>({})
+  const [showProductSearch, setShowProductSearch] = useState(false)
+
   const {
     form,
     errors,
@@ -51,38 +46,7 @@ export default function CreateInvoicePage() {
     hasStockBlocks,
     handleSubmit,
     handleSaveDraft,
-    gstEnabled,
-    showUntaggedDialog,
-    confirmUntaggedSubmit,
-    dismissUntaggedDialog,
-    stockShortageItems,
-    clearStockShortage,
-  } = useInvoiceForm('SALE_INVOICE')
-
-  const { compositionScheme } = useGstGate()
-  const location = useLocation()
-  const [productNames, setProductNames] = useState<Record<string, string>>({})
-  const [showProductSearch, setShowProductSearch] = useState(false)
-
-  // Pre-populate from bill scan navigation state
-  useEffect(() => {
-    const state = location.state as { scannedItems?: Array<{ productId: string; productName: string; quantity: number; rate: number; discountType: 'PERCENTAGE'; discountValue: number }>; scannedDate?: string } | null
-    if (!state?.scannedItems?.length) return
-
-    const names: Record<string, string> = {}
-    for (const item of state.scannedItems) {
-      const scanId = item.productId || `scan-${crypto.randomUUID()}`
-      names[scanId] = item.productName
-      addLineItem({ productId: scanId, quantity: item.quantity, rate: item.rate, discountType: item.discountType, discountValue: item.discountValue, taxCategoryId: null, hsnCode: '' })
-    }
-    setProductNames((prev) => ({ ...prev, ...names }))
-
-    if (state.scannedDate) {
-      updateField('documentDate', state.scannedDate)
-    }
-
-    window.history.replaceState({}, '')
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  } = useInvoiceForm('PURCHASE_INVOICE')
 
   const handlePartyChange = useCallback((id: string, _name: string) => {
     updateField('partyId', id)
@@ -91,7 +55,6 @@ export default function CreateInvoicePage() {
   const handleProductSelect = useCallback((productId: string, ratePaise: number, productName: string) => {
     const alreadyAdded = form.lineItems.some((item) => item.productId === productId)
     if (alreadyAdded) return
-
     setProductNames((prev) => ({ ...prev, [productId]: productName }))
     addLineItem({
       productId,
@@ -108,37 +71,31 @@ export default function CreateInvoicePage() {
     setShowProductSearch((v) => !v)
   }, [])
 
-  const formTitle = gstEnabled && form.supplyType === 'B2C_SMALL'
-    ? t.newInvoice
-    : t.newInvoice
-
   return (
     <AppShell>
-      <Header
-        title={formTitle}
-        backTo={ROUTES.INVOICES}
-        actions={
-          <Button variant="ghost" size="sm" onClick={() => nav(ROUTES.BILL_SCAN)} aria-label={t.scanBillAddItems}>
-            <Camera size={18} aria-hidden="true" />
-            <span>{t.scan}</span>
-          </Button>
-        }
-      />
+      <Header title={t.newPurchase} backTo={ROUTES.PURCHASES} />
+
+      {/* "Stock will be added on save" hint */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 'var(--space-2)',
+          padding: 'var(--space-2) var(--space-4)',
+          background: 'var(--color-surface-secondary)',
+          borderBottom: '1px solid var(--color-border)',
+          fontSize: 'var(--text-xs)',
+          color: 'var(--color-text-muted)',
+        }}
+        role="status"
+        aria-live="polite"
+      >
+        <Package size={14} aria-hidden="true" />
+        <span>{t.stockWillBeAdded}</span>
+      </div>
 
       <PageContainer className="invoice-details-section stagger-enter py-0 space-y-6">
-        {stockShortageItems.length > 0 && (
-          <StockShortageBanner items={stockShortageItems} onDismiss={clearStockShortage} />
-        )}
-
-        {gstEnabled && (
-          <GstInvoiceHeader
-            form={form}
-            errors={errors}
-            onUpdateField={updateField}
-          />
-        )}
-
-        <nav className="pill-tabs" role="tablist" aria-label={t.invoiceFormSections}>
+        <nav className="pill-tabs" role="tablist" aria-label={t.purchaseFormSections}>
           {FORM_SECTIONS.map((section) => (
             <button
               key={section.id}
@@ -168,8 +125,8 @@ export default function CreateInvoicePage() {
               errors={errors}
               stockWarnings={stockWarnings}
               hasStockBlocks={hasStockBlocks}
-              gstEnabled={gstEnabled}
-              compositionScheme={compositionScheme}
+              gstEnabled={false}
+              compositionScheme={false}
               onPartyChange={handlePartyChange}
               onProductSelect={handleProductSelect}
               onUpdateLineItem={updateLineItem}
@@ -214,13 +171,6 @@ export default function CreateInvoicePage() {
         onSaveDraft={handleSaveDraft}
         showProfit={false}
       />
-
-      {showUntaggedDialog && (
-        <UntaggedTaxDialog
-          onConfirm={confirmUntaggedSubmit}
-          onCancel={dismissUntaggedDialog}
-        />
-      )}
     </AppShell>
   )
 }

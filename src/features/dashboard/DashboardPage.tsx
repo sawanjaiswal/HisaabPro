@@ -62,7 +62,7 @@ export default function DashboardPage() {
 
   const handleViewAllOutstanding = () => navigate(ROUTES.OUTSTANDING)
 
-  const handleLowStockClick = () => navigate(ROUTES.REPORT_STOCK_SUMMARY)
+  const handleLowStockClick = () => navigate(ROUTES.INVENTORY_ALERTS)
   const handleOverdueClick = () => navigate(ROUTES.OUTSTANDING)
 
   return (

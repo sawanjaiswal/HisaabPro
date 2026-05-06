@@ -167,13 +167,15 @@ export async function api<T>(
     }
   }
 
-  // 409 conflict — another user modified the record while offline
+  // 409 conflict — another user modified the record while offline, or stock shortage
   if (response.status === 409) {
-    const conflictBody = await response.json().catch(() => null)
+    const conflictBody = await response.json().catch(() => null) as { error?: { code?: string; message?: string; items?: unknown } } | null
+    const errCode = conflictBody?.error?.code ?? 'CONFLICT'
     throw new ApiError(
       conflictBody?.error?.message || 'This record was modified by another user. Please refresh and try again.',
-      'CONFLICT',
-      409
+      errCode,
+      409,
+      conflictBody?.error,
     )
   }
 
@@ -233,12 +235,10 @@ function inferEntityType(path: string): string {
 }
 
 export class ApiError extends Error {
-  constructor(
-    message: string,
-    public code: string,
-    public status: number
-  ) {
+  public detail?: unknown // e.g. INSUFFICIENT_STOCK items array
+  constructor(message: string, public code: string, public status: number, detail?: unknown) {
     super(message)
     this.name = 'ApiError'
+    this.detail = detail
   }
 }

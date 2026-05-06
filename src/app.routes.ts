@@ -115,6 +115,11 @@ export const Pos = lazy(() => import('@/features/pos/PosPage'))
 
 export const StaffPermissions = lazy(() => import('@/features/settings/StaffPermissionsPage'))
 
+// Inventory Phase 2 — Purchase + Alerts
+export const Purchases = lazy(() => import('@/features/purchases/PurchasesPage'))
+export const CreatePurchase = lazy(() => import('@/features/purchases/CreatePurchasePage'))
+export const StockAlerts = lazy(() => import('@/features/products/StockAlertsPage'))
+
 // Phase 3 — Jobs
 export const Jobs = lazy(() => import('@/features/jobs/pages/JobsListPage'))
 export const JobNew = lazy(() => import('@/features/jobs/pages/JobNewPage'))

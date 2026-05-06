@@ -32,6 +32,7 @@ import {
   More, BillScan, BulkImport, PublicLedger, ItemsLibrary, DataImport,
   SmartGreetings, Units, JoinBusiness, CreateBusiness, BusinessType,
   AdminCoupons, AdminCouponDetail,
+  Purchases, CreatePurchase, StockAlerts,
   Batches, CreateBatch, BatchDetail,
   Godowns, CreateGodown, EditGodown, GodownDetail, GodownTransfer,
   StockVerifications, VerificationDetail,
@@ -187,6 +188,12 @@ export function App() {
         <Route path={ROUTES.PUBLIC_LEDGER} element={<PageRoute><PublicLedger /></PageRoute>} />
         <Route path={ROUTES.COLLECTIONS} element={<PageRoute><ProtectedRoute><AgingDashboardPage /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.COLLECTIONS_BUCKET} element={<PageRoute><ProtectedRoute><AgingBucketListPage /></ProtectedRoute></PageRoute>} />
+        {/* Inventory Phase 2 */}
+        <Route path={ROUTES.PURCHASES} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Purchases"><Purchases /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PURCHASE_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Purchases"><CreatePurchase /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PURCHASE_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Purchases"><InvoiceDetail /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PURCHASE_EDIT} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Purchases"><EditInvoice /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.INVENTORY_ALERTS} element={<PageRoute><ProtectedRoute><PlanGate feature="products" featureLabel="Stock Alerts"><StockAlerts /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
       </Routes>
       </PageTransition>

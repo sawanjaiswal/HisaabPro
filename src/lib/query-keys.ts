@@ -141,4 +141,11 @@ export const queryKeys = {
     me: () => ['user', 'me'] as const,
     businesses: () => ['user', 'businesses'] as const,
   },
+  stockAlerts: {
+    all: () => ['stock-alerts'] as const,
+    list: (status?: string) => ['stock-alerts', 'list', status ?? 'OPEN'] as const,
+  },
+  stockValueReport: {
+    list: (filters?: Record<string, string>) => ['stock-value-report', filters] as const,
+  },
 } as const

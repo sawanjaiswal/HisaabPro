@@ -239,17 +239,10 @@ async function resolveAlerts(businessId: string, productId: string): Promise<voi
     },
   })
 
-  if (result.count > 0) {
-    logger.info('Stock alerts auto-resolved', { productId, count: result.count })
-  }
+  if (result.count > 0) logger.info('Stock alerts auto-resolved', { productId, count: result.count })
 }
 
 /** Get count of active alerts for a business (dashboard badge). */
 export async function getActiveAlertCount(businessId: string): Promise<number> {
-  return prisma.stockAlert.count({
-    where: {
-      businessId,
-      status: 'ACTIVE',
-    },
-  })
+  return prisma.stockAlert.count({ where: { businessId, status: 'ACTIVE' } })
 }
