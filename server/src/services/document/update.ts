@@ -220,6 +220,7 @@ export async function updateDocument(
             productId: li.productId,
             quantity: li.quantity,
             unitId: li.productId,
+            unitCostPaise: (li as { productId: string; quantity: number; rate?: number }).rate,
           })),
           userId,
         })

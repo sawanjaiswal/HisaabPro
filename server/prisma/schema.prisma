@@ -526,6 +526,8 @@ model Product {
   moq             Int?
   // Inventory Phase 2 — reorder threshold (null = not set; 0 = explicit zero)
   reorderQty      Float?
+  // Inventory Phase 2 — weighted-average purchase cost (paise). Updated on every SAVED purchase.
+  weightedAvgCostPaise BigInt @default(0)
   // Feature #103 — Label Printing
   labelTemplate   String?   @default("standard") // "standard" | "compact" | "barcode-only"
   isDeleted       Boolean   @default(false)

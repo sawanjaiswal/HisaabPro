@@ -214,7 +214,7 @@ export async function createDocument(
       } else if (STOCK_INCREASE_TYPES.has(data.type)) {
         stockMovements = await addForPurchaseInvoice(tx, {
           businessId, invoiceId: doc.id, invoiceNumber: numberData!.documentNumber,
-          items: data.lineItems.map(li => ({ productId: li.productId, quantity: li.quantity, unitId: li.unitId })),
+          items: data.lineItems.map(li => ({ productId: li.productId, quantity: li.quantity, unitId: li.unitId, unitCostPaise: li.rate })),
           userId,
         })
       }

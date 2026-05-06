@@ -16,6 +16,8 @@ export interface InvoiceStockItem {
   quantity: number // in base units (already converted)
   /** When omitted, the quantity is assumed to be in the product's base unit */
   unitId?: string
+  /** Unit purchase cost in paise. Required for purchase invoices to update weighted-avg cost. */
+  unitCostPaise?: number
 }
 
 /** Deduct stock for sale invoice items. Call within a transaction.
@@ -103,7 +105,20 @@ export async function deductForSaleInvoice(
   return results
 }
 
-/** Add stock for purchase invoice items. Call within a transaction. */
+/** Weighted-avg cost (paise) with banker's rounding. Returns unitCost when prevQty <= 0. */
+function computeWeightedAvg(prevQty: number, prevAvgPaise: bigint, inQty: number, unitCostPaise: number): bigint {
+  if (prevQty <= 0) return BigInt(unitCostPaise)
+  const raw = (prevQty * Number(prevAvgPaise) + inQty * unitCostPaise) / (prevQty + inQty)
+  const floor = Math.floor(raw)
+  const frac = raw - floor
+  const rounded = frac < 0.5 ? floor : frac > 0.5 ? floor + 1 : floor % 2 === 0 ? floor : floor + 1
+  return BigInt(rounded)
+}
+
+/** Add stock for purchase invoice items. Call within a transaction.
+ * Updates weightedAvgCostPaise per item when unitCostPaise > 0.
+ * On reversal: cost is NOT recalculated backwards (intentional — lossy).
+ */
 export async function addForPurchaseInvoice(
   tx: TxClient,
   params: {
@@ -124,6 +139,7 @@ export async function addForPurchaseInvoice(
 
   const results = []
   for (const item of params.items) {
+    // adjustStock locks the row via FOR UPDATE and updates currentStock
     const result = await adjustStock(tx, {
       productId: item.productId,
       businessId: params.businessId,
@@ -135,6 +151,32 @@ export async function addForPurchaseInvoice(
       userId: params.userId,
       cachedBusinessValidationMode,
     })
+
+    // Update weighted-average cost when a valid unit cost is provided
+    if (item.unitCostPaise !== undefined && item.unitCostPaise > 0) {
+      const prevQty = result.previousStock // stock BEFORE this increment (from adjustStock)
+      const product = await tx.product.findUnique({
+        where: { id: item.productId },
+        select: { weightedAvgCostPaise: true },
+      })
+      const prevAvg = product?.weightedAvgCostPaise ?? BigInt(0)
+      const newAvg = computeWeightedAvg(prevQty, prevAvg, item.quantity, item.unitCostPaise)
+
+      await tx.product.update({
+        where: { id: item.productId },
+        data: { weightedAvgCostPaise: newAvg },
+      })
+
+      logger.info('Weighted-avg cost updated', {
+        productId: item.productId,
+        prevQty,
+        prevAvg: Number(prevAvg),
+        newAvg: Number(newAvg),
+        inQty: item.quantity,
+        unitCostPaise: item.unitCostPaise,
+      })
+    }
+
     results.push(result.movement)
   }
   return results
