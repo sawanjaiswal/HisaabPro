@@ -3,8 +3,8 @@
  * 4 UI states: loading skeleton · error · empty (0 runs) · success.
  */
 
-import { useParams } from 'react-router-dom'
-import { RefreshCw } from 'lucide-react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { RefreshCw, Pencil } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -21,6 +21,7 @@ import '../styles/recurring-detail.css'
 
 export default function RecurringDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const { t } = useLanguage()
 
   const {
@@ -76,6 +77,16 @@ export default function RecurringDetailPage() {
       <Header
         title={schedule.name ?? schedule.partyName ?? (t.recurringInvoices ?? 'Recurring')}
         backTo={ROUTES.RECURRING}
+        actions={
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={() => navigate(`/recurring/${id}/edit`)}
+            aria-label={t.recurringEdit ?? 'Edit'}
+          >
+            <Pencil size={18} aria-hidden="true" />
+          </button>
+        }
       />
 
       <PageContainer className="space-y-6">

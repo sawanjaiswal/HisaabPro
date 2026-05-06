@@ -61,6 +61,7 @@ export const EditTaxCategory = lazy(() => import('@/features/tax/EditTaxCategory
 export const CurrencySettings = lazy(() => import('@/features/settings/currency/CurrencySettingsPage'))
 export const RecurringList = lazy(() => import('@/features/recurring/pages/RecurringListPage'))
 export const RecurringDetail = lazy(() => import('@/features/recurring/pages/RecurringDetailPage'))
+export const RecurringForm = lazy(() => import('@/features/recurring/pages/RecurringFormPage'))
 export const GstReconciliationList = lazy(() => import('@/features/gst-reconciliation/ReconciliationListPage'))
 export const GstReconciliationDetail = lazy(() => import('@/features/gst-reconciliation/ReconciliationDetailPage'))
 export const ChartOfAccounts = lazy(() => import('@/features/accounting/ChartOfAccountsPage'))

@@ -23,7 +23,7 @@ import {
   Settings, Roles, RoleBuilder, Staff, StaffInvite, StaffPermissions,
   TransactionControls, AuditLog, ActiveSessions, PinSetup, Shortcuts,
   GstSettings, TaxCategories, CreateTaxCategory, EditTaxCategory,
-  CurrencySettings, RecurringList, RecurringDetail,
+  CurrencySettings, RecurringList, RecurringDetail, RecurringForm,
   GstReconciliationList, GstReconciliationDetail,
   ChartOfAccounts, JournalEntries, TrialBalance,
   BankAccounts, Expenses, OtherIncome, Cheques, Loans, LoanDetail,
@@ -125,6 +125,8 @@ export function App() {
         <Route path={ROUTES.SETTINGS_CURRENCY} element={<PageRoute><ProtectedRoute><CurrencySettings /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_UNITS} element={<PageRoute><ProtectedRoute><Units /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.RECURRING} element={<PageRoute><ProtectedRoute><PlanGate feature="recurringInvoices" featureLabel="Recurring Invoices"><RecurringList /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.RECURRING_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="recurringInvoices" featureLabel="Recurring Invoices"><RecurringForm /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.RECURRING_EDIT} element={<PageRoute><ProtectedRoute><PlanGate feature="recurringInvoices" featureLabel="Recurring Invoices"><RecurringForm /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.RECURRING_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="recurringInvoices" featureLabel="Recurring Invoices"><RecurringDetail /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.GST_RECONCILIATION} element={<PageRoute><ProtectedRoute><GstReconciliationList /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.GST_RECONCILIATION_DETAIL} element={<PageRoute><ProtectedRoute><GstReconciliationDetail /></ProtectedRoute></PageRoute>} />

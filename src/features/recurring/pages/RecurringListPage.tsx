@@ -4,7 +4,6 @@
  * Cards are clickable to navigate to detail.
  */
 
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { RefreshCw, Plus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -16,7 +15,6 @@ import { ROUTES } from '@/config/routes.config'
 import { useRecurringList } from '../hooks/useRecurringList'
 import { useRecurringActions } from '../hooks/useRecurringActions'
 import { RecurringCard } from '../components/RecurringCard'
-import { RecurringCreateDrawer } from '../components/RecurringCreateDrawer'
 import {
   RECURRING_STATUS_FILTER_OPTIONS,
   RECURRING_PAGE_LIMIT,
@@ -28,10 +26,9 @@ export default function RecurringListPage() {
   const navigate = useNavigate()
   const { items, total, page, status, statusFilter, setStatusFilter, setPage, refresh } =
     useRecurringList()
-  const { handleCreate, handlePause, handleResume, handleDelete, handleGenerate, generating } =
+  const { handlePause, handleResume, handleDelete, handleGenerate, generating } =
     useRecurringActions(refresh)
 
-  const [drawerOpen, setDrawerOpen] = useState(false)
   const totalPages = Math.ceil(total / RECURRING_PAGE_LIMIT)
 
   // ── Loading state ───────────────────────────────────────────────────────
@@ -116,7 +113,7 @@ export default function RecurringListPage() {
             <button
               type="button"
               className="recurring-btn recurring-btn--primary"
-              onClick={() => setDrawerOpen(true)}
+              onClick={() => navigate(ROUTES.RECURRING_NEW)}
               aria-label={t.createNewSchedule ?? 'Create new schedule'}
             >
               <Plus size={14} aria-hidden="true" />
@@ -138,7 +135,7 @@ export default function RecurringListPage() {
             <button
               type="button"
               className="recurring-btn recurring-btn--primary"
-              onClick={() => setDrawerOpen(true)}
+              onClick={() => navigate(ROUTES.RECURRING_NEW)}
             >
               <Plus size={14} aria-hidden="true" />
               {t.createFirstSchedule ?? 'Create your first schedule'}
@@ -190,11 +187,6 @@ export default function RecurringListPage() {
         )}
       </PageContainer>
 
-      <RecurringCreateDrawer
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        onSubmit={handleCreate}
-      />
     </AppShell>
   )
 }

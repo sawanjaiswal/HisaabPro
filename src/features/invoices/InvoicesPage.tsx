@@ -36,6 +36,7 @@ export default function InvoicesPage() {
   const toast = useToast()
   const [activeType, setActiveType] = useState<DocumentType | 'ALL'>('ALL')
   const [activeStatus, setActiveStatus] = useState<DocumentStatus | 'ALL'>('ALL')
+  const [autoGenOnly, setAutoGenOnly] = useState(false)
   const bulk = useBulkSelect()
   const [isBulkDeleting, setIsBulkDeleting] = useState(false)
 
@@ -91,7 +92,6 @@ export default function InvoicesPage() {
     }
   }
 
-  const allDocIds = data?.documents.map((d) => d.id) ?? []
 
   const bulkActions: BulkAction[] = [
     {
@@ -110,6 +110,10 @@ export default function InvoicesPage() {
   ]
 
   const typeLabel = activeType === 'ALL' ? t.invoices : DOCUMENT_TYPE_LABELS[activeType]
+  const visibleDocuments = autoGenOnly
+    ? (data?.documents ?? []).filter((d) => Boolean(d.recurringInvoiceId))
+    : (data?.documents ?? [])
+  const allDocIds = visibleDocuments.map((d) => d.id)
 
   return (
     <AppShell>
@@ -133,14 +137,26 @@ export default function InvoicesPage() {
 
       <PageContainer className="space-y-6">
         {!bulk.isActive && (
-          <InvoiceFilterBar
-            search={filters.search ?? ''}
-            onSearchChange={setSearch}
-            activeType={activeType}
-            onTypeChange={handleTypeChange}
-            activeStatus={activeStatus}
-            onStatusChange={handleStatusChange}
-          />
+          <>
+            <InvoiceFilterBar
+              search={filters.search ?? ''}
+              onSearchChange={setSearch}
+              activeType={activeType}
+              onTypeChange={handleTypeChange}
+              activeStatus={activeStatus}
+              onStatusChange={handleStatusChange}
+            />
+            <div className="invoice-filter-pills" role="group" aria-label="Additional filters">
+              <button
+                type="button"
+                className={`invoice-filter-pill${autoGenOnly ? ' invoice-filter-pill--active' : ''}`}
+                onClick={() => setAutoGenOnly((v) => !v)}
+                aria-pressed={autoGenOnly}
+              >
+                {t.recurringFilterAutoGen ?? 'Auto-Generated'}
+              </button>
+            </div>
+          </>
         )}
 
         {status === 'loading' && <InvoiceListSkeleton />}
@@ -172,11 +188,11 @@ export default function InvoicesPage() {
           </div>
         )}
 
-        {status === 'success' && data && data.documents.length > 0 && (
+        {status === 'success' && data && visibleDocuments.length > 0 && (
           <>
           <h2 className="sr-only">{t.invoiceListHeading}</h2>
           <div className="invoice-list stagger-list" role="list" aria-label={t.invoices}>
-            {data.documents.map((doc) => (
+            {visibleDocuments.map((doc) => (
               <div
                 key={doc.id}
                 className={`invoice-list-row${bulk.isSelected(doc.id) ? ' bulk-selected' : ''}`}

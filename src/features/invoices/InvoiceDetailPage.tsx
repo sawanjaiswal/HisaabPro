@@ -7,7 +7,7 @@
 
 import { useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Pencil, Trash2, Share2, FileText, ImageDown, Link } from 'lucide-react'
+import { Pencil, Trash2, Share2, FileText, ImageDown, Link, RefreshCw } from 'lucide-react'
 import { ROUTES } from '@/config/routes.config'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -107,6 +107,7 @@ export default function InvoiceDetailPage() {
           <ImageDown size={18} aria-hidden="true" />
         )}
       </button>
+      {document && ['SAVED', 'SHARED'].includes(document.status) && <button className="btn btn-ghost btn-sm" aria-label={t.recurringFromInvoiceCta ?? 'Set as Recurring'} onClick={() => navigate(`/recurring/new?fromInvoiceId=${documentId}`)}><RefreshCw size={18} aria-hidden="true" /></button>}
       <button
         className="btn btn-ghost btn-sm"
         aria-label={t.deleteInvoice}

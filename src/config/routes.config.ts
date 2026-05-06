@@ -57,6 +57,8 @@ export const ROUTES = {
   SETTINGS_CURRENCY: '/settings/currency',
   RECURRING: '/recurring',
   RECURRING_DETAIL: '/recurring/:id',
+  RECURRING_NEW: '/recurring/new',
+  RECURRING_EDIT: '/recurring/:id/edit',
   GST_RECONCILIATION: '/gst/reconciliation',
   GST_RECONCILIATION_DETAIL: '/gst/reconciliation/:id',
   CHART_OF_ACCOUNTS: '/accounting/chart-of-accounts',
