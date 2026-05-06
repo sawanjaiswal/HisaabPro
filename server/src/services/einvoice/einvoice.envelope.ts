@@ -39,8 +39,23 @@ export interface EnvelopeInput {
   totalSgst: number // paise
   totalIgst: number // paise
   totalCess: number // paise
-  business: { gstin: string | null; name: string; address?: string | null; stateCode?: string | null }
-  party: { gstin: string | null; name: string; stateCode?: string | null }
+  business: {
+    gstin: string | null
+    name: string
+    address?: string | null
+    stateCode?: string | null
+    // F-24: seller pincode + city to replace hardcoded Pin:0 / Loc:'N/A'
+    pincode?: string | null
+    city?: string | null
+  }
+  party: {
+    gstin: string | null
+    name: string
+    stateCode?: string | null
+    // F-24: buyer pincode + city (from default billing address, if available)
+    pincode?: string | null
+    city?: string | null
+  }
   lines: EnvelopeLineItem[]
 }
 
@@ -127,8 +142,9 @@ export function buildIrnEnvelope(input: EnvelopeInput): Record<string, unknown> 
       LglNm: business.name,
       TrdNm: business.name,
       Addr1: business.address ?? 'N/A',
-      Loc: 'N/A',
-      Pin: 0,
+      // F-24: use seller city/pincode when available; fall back gracefully
+      Loc: business.city ?? 'N/A',
+      Pin: business.pincode ? Number(business.pincode) : 0,
       Stcd: business.stateCode ?? (business.gstin.slice(0, 2)),
     },
     BuyerDtls: {
@@ -137,8 +153,9 @@ export function buildIrnEnvelope(input: EnvelopeInput): Record<string, unknown> 
       TrdNm: party.name,
       Pos: input.placeOfSupply ?? (party.gstin.slice(0, 2)),
       Addr1: 'N/A',
-      Loc: 'N/A',
-      Pin: 0,
+      // F-24: use buyer city/pincode from billing address when available
+      Loc: party.city ?? 'N/A',
+      Pin: party.pincode ? Number(party.pincode) : 0,
       Stcd: party.stateCode ?? (party.gstin.slice(0, 2)),
     },
     ValDtls: {

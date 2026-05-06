@@ -15,9 +15,8 @@ import { buildEwbEnvelope } from './ewaybill.envelope.js'
 import * as nicClient from './ewaybill.nic-client.js'
 import { isEwbStubMode } from './ewaybill.token-store.js'
 import { loadEwbDocument, assertThreshold } from './ewaybill.doc-loader.js'
+import { NIC_CANCEL_WINDOW_MS } from '../../lib/nic-thresholds.js'
 import type { Prisma } from '@prisma/client'
-
-const CANCEL_WINDOW_MS = 24 * 60 * 60 * 1000
 
 type PartAInputs = {
   transportMode: 'ROAD' | 'RAIL' | 'AIR' | 'SHIP'
@@ -186,7 +185,7 @@ export async function cancelEWayBill(
       code: EWAYBILL_ERRORS.ALREADY_CANCELLED,
     })
   }
-  if (Date.now() - record.ewbDate.getTime() > CANCEL_WINDOW_MS) {
+  if (Date.now() - record.ewbDate.getTime() > NIC_CANCEL_WINDOW_MS) {
     throw new AppError(ErrorCode.VALIDATION_ERROR, 400, 'Cancel window expired (24h)', {
       code: EWAYBILL_ERRORS.CANCEL_WINDOW_EXPIRED,
     })

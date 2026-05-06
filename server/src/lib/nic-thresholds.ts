@@ -10,6 +10,22 @@
  * Usage: getEwbThreshold(stateCode, isInterState)
  */
 
+// ─── Shared NIC constants (F-19) ─────────────────────────────────────────────
+
+/**
+ * E-Invoice + E-Way Bill cancel window: 24 hours.
+ * NIC doc ref: IRP API v1.03 §7.2 (e-invoice), EWB API §5.1 (e-way bill).
+ */
+export const NIC_CANCEL_WINDOW_MS = 24 * 60 * 60 * 1000
+
+/**
+ * Daily IRN generation quota: hard limit 1000, soft-warn at 950.
+ * NIC API returns HTTP 429 once hard limit is hit; warn earlier to avoid
+ * unexpected failures for the business during peak billing hours.
+ */
+export const NIC_QUOTA_HARD = 1000
+export const NIC_QUOTA_WARN = 950
+
 // State codes: '27' = Maharashtra, '29' = Karnataka, etc.
 // Advisory comments note which circular/notification applies.
 const INTRA_STATE_THRESHOLDS: Record<string, number> = {

@@ -43,6 +43,9 @@ export function useCreatePaymentLink() {
       )
     },
     onSuccess: (_data, vars) => {
+      // F-22: invalidate both the keyed row and the full list so paid status
+      // reflects immediately on the invoice list page.
+      void qc.invalidateQueries({ queryKey: ['invoices'] })
       void qc.invalidateQueries({ queryKey: ['invoices', vars.invoiceId] })
       void qc.invalidateQueries({ queryKey: ['payment-links', vars.invoiceId] })
     },

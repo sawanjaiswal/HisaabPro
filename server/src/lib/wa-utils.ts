@@ -20,14 +20,24 @@ export function buildWaLink(phone: string, message: string): string | null {
 
 /**
  * Mask a phone for audit logs.
- * +91XXXXX1234  (always shows last 4 digits; prefix fixed to +91)
+ * Returns +<cc>XXXXX<last4> where <cc> is the detected country code.
  *
- * Input may be raw digits (10-digit Indian number) or include country code.
- * We always show +91XXXXX<last4>.
+ * F-28: detect country code (1-3 digits before the trailing 10-digit subscriber
+ * number) rather than hardcoding +91. A US number like 15551234567 now correctly
+ * renders as +1XXXXX4567 in audit logs instead of the misleading +91XXXXX4567.
+ *
+ * Heuristic: if digits > 10 chars, the first (len-10) digits are the country code.
+ * If exactly 10 digits, assume no country code (Indian domestic format).
  */
 export function maskPhone(phone: string): string {
   const digits = phone.replace(/\D/g, '')
   const last4 = digits.slice(-4)
+  if (digits.length > 10) {
+    const ccLen = digits.length - 10
+    const cc = digits.slice(0, ccLen)
+    return `+${cc}XXXXX${last4}`
+  }
+  // 10-digit — assume Indian domestic (no country code prefix in input)
   return `+91XXXXX${last4}`
 }
 

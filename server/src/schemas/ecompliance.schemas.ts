@@ -15,7 +15,17 @@ export const cancelEInvoiceSchema = z.object({
   /** NIC cancel reason codes: 1=Duplicate, 2=Data Entry Mistake, 3=Order Cancelled, 4=Other */
   reason: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
   remarks: z.string().max(100).default(''),
-}).strict()
+}).strict().superRefine((data, ctx) => {
+  // F-20: NIC requires a meaningful remark when reason=4 (Other); empty string
+  // guarantees a NIC rejection and wastes quota.
+  if (data.reason === 4 && data.remarks.trim() === '') {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['remarks'],
+      message: 'remarks is required when reason is 4 (Other)',
+    })
+  }
+})
 
 // ─── E-Way Bill ──────────────────────────────────────────────────────────────
 

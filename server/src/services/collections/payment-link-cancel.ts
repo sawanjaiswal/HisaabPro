@@ -25,13 +25,21 @@ export async function cancelPaymentLink(
 
   // Cancel on Razorpay if we have a real link id
   if (link.razorpayLinkId) {
-    await cancelLink(link.razorpayLinkId).catch((err: Error) => {
+    await cancelLink(link.razorpayLinkId).catch((err: Error & { razorpayCode?: string }) => {
+      // F-26: if Razorpay says the link was already paid, surface a 409 so the
+      // caller knows — marking our row CANCELLED while customer already paid would
+      // lose the payment from our records.
+      if (err.razorpayCode === 'BAD_REQUEST_ERROR' && err.message.includes('already paid')) {
+        throw conflictError(
+          'Payment link has already been paid. Cancellation not allowed.',
+        )
+      }
       logger.warn('payment_link.cancel_rzp_error', {
         linkId,
         razorpayLinkId: link.razorpayLinkId,
         message: err.message,
       })
-      // Non-fatal: Razorpay may have already expired/cancelled it
+      // Non-fatal for other errors: Razorpay may have already expired/cancelled it
     })
   }
 

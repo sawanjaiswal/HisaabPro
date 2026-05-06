@@ -6,7 +6,7 @@
  * getAgingParties:     cursor-paginated party list for a single bucket.
  */
 
-import { getOrCompute } from '../../lib/cache.js'
+import { getOrCompute, invalidate } from '../../lib/cache.js'
 import logger from '../../lib/logger.js'
 import {
   fetchAgingRows,
@@ -15,7 +15,9 @@ import {
   type BucketRow,
 } from './aging-query.js'
 
-const CACHE_TTL = 300 // 5 minutes
+// F-27: shortened from 300s to 30s — in-process Map cache is wrong under
+// multi-replica deploys; 30s limits staleness until a Redis swap is done.
+const CACHE_TTL = 30
 
 export type AgingBucket = 'current' | 'bucket_31' | 'bucket_61' | 'bucket_91'
 
@@ -125,7 +127,35 @@ export async function getAgingBuckets(businessId: string): Promise<AgingBucketRe
   return getOrCompute(key, CACHE_TTL, () => computeAgingBuckets(businessId, new Date()))
 }
 
+/**
+ * F-27: Explicit invalidation hook — call after any Payment write so aging
+ * caches don't show stale data on the same replica that processed the payment.
+ */
+export function invalidateAgingCache(businessId: string): void {
+  invalidate(`aging:${businessId}`)
+}
+
 // ─── Cursor-paginated parties in a bucket ───────────────────────────────────
+
+/**
+ * Opaque cursor: encodes `bucketAmount|partyId` so new data inserted between
+ * page requests doesn't cause a findIndex(-1) restart.
+ * F-15 / F-31: composite cursor on (bucketAmount DESC, partyId ASC).
+ */
+function encodeCursor(bucketAmount: number, partyId: string): string {
+  return Buffer.from(`${bucketAmount}|${partyId}`).toString('base64url')
+}
+
+function decodeCursor(cursor: string): { bucketAmount: number; partyId: string } | null {
+  try {
+    const raw = Buffer.from(cursor, 'base64url').toString()
+    const sep = raw.lastIndexOf('|')
+    if (sep === -1) return null
+    return { bucketAmount: Number(raw.slice(0, sep)), partyId: raw.slice(sep + 1) }
+  } catch {
+    return null
+  }
+}
 
 export async function getAgingParties(
   businessId: string,
@@ -173,20 +203,30 @@ export async function getAgingParties(
 
   // Filter to parties that actually appear in the requested bucket
   const bucketPartyIds = new Set(bucketRows.map(r => r.partyId))
-  let parties = Array.from(partyMap.values())
+  // F-31: sort by (bucketAmount DESC, partyId ASC) for stable composite cursor
+  const parties = Array.from(partyMap.values())
     .filter(p => bucketPartyIds.has(p.partyId))
-    .sort((a, b) => b.bucketAmount - a.bucketAmount)
+    .sort((a, b) => b.bucketAmount - a.bucketAmount || a.partyId.localeCompare(b.partyId))
 
-  // Cursor: skip everything up to and including the cursor partyId
+  // F-31: composite cursor — find position by (bucketAmount, partyId) not just partyId
+  let start = 0
   if (cursor) {
-    const idx = parties.findIndex(p => p.partyId === cursor)
-    if (idx !== -1) parties = parties.slice(idx + 1)
+    const decoded = decodeCursor(cursor)
+    if (decoded) {
+      const idx = parties.findIndex(
+        p => p.bucketAmount === decoded.bucketAmount && p.partyId === decoded.partyId
+      )
+      if (idx !== -1) start = idx + 1
+      // If idx === -1 (data changed between pages), default to start=0 is intentional
+      // and the caller can detect it by receiving items they already saw.
+    }
   }
 
-  const page = parties.slice(0, limit + 1)
-  const hasMore = page.length > limit
-  const data = hasMore ? page.slice(0, limit) : page
-  const nextCursor = hasMore ? (data[data.length - 1]?.partyId ?? null) : null
+  const slice = parties.slice(start, start + limit + 1)
+  const hasMore = slice.length > limit
+  const data = hasMore ? slice.slice(0, limit) : slice
+  const last = data[data.length - 1]
+  const nextCursor = hasMore && last ? encodeCursor(last.bucketAmount, last.partyId) : null
 
   return { data, nextCursor }
 }

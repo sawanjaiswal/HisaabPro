@@ -20,13 +20,13 @@ interface BusinessInfo {
   gstin: string | null
   name: string
   address: string | null
-  stateCode: string | null
+  stateCode: string | null  // 2-digit GSTIN state code (NOT pincode prefix)
 }
 
 interface PartyInfo {
   gstin: string | null
   name: string
-  stateCode: string | null
+  stateCode: string | null  // 2-digit GSTIN state code
 }
 
 export interface TransporterDetails {
@@ -103,7 +103,9 @@ export function buildEwbEnvelope(input: EwbEnvelopeInput): Record<string, unknow
     vehicleType: veh.vehicleType ?? 'REGULAR',
     fromPincode: Number(veh.fromPincode),
     toPincode: Number(veh.toPincode),
-    actFromStateCode: Number(veh.fromPincode.slice(0, 2)),
-    actToStateCode: Number(veh.toPincode.slice(0, 2)),
+    // F-21: pincode prefix ≠ GSTIN state code (e.g. Delhi=11 pincode, 07 state).
+    // Use the business/party stateCode from GSTIN, fallback to fromStateCode already set above.
+    actFromStateCode: Number(business.stateCode ?? business.gstin?.slice(0, 2) ?? '0'),
+    actToStateCode: Number(party.stateCode ?? party.gstin?.slice(0, 2) ?? '0'),
   }
 }

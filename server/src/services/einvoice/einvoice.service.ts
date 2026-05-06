@@ -1,10 +1,4 @@
-/**
- * E-Invoice public service API.
- * MB-1: EInvoice always scoped by businessId — 404 if cross-tenant.
- * MB-4: AuditLog writes use maskGstin().
- * Quota: 1000/day soft-warn at 950.
- * 24h cancel window enforced.
- */
+/** E-Invoice public service API. MB-1: scoped by businessId. MB-4: maskGstin(). */
 
 import crypto from 'crypto'
 import { prisma } from '../../lib/prisma.js'
@@ -15,11 +9,8 @@ import { maskGstin, EINVOICE_ERRORS } from './einvoice.errors.js'
 import { buildIrnEnvelope } from './einvoice.envelope.js'
 import { generateViaClient, cancelViaClient } from './einvoice.nic-client.js'
 import { isStubMode } from './einvoice.token-store.js'
+import { NIC_CANCEL_WINDOW_MS, NIC_QUOTA_HARD, NIC_QUOTA_WARN } from '../../lib/nic-thresholds.js'
 import type { Prisma } from '@prisma/client'
-
-const CANCEL_WINDOW_MS = 24 * 60 * 60 * 1000
-const QUOTA_HARD = 1000
-const QUOTA_WARN = 950
 
 // ─── Quota check (daily count via Prisma aggregate) ──────────────────────────
 
@@ -29,12 +20,12 @@ async function checkDailyQuota(businessId: string): Promise<void> {
   const count = await prisma.eInvoice.count({
     where: { document: { businessId }, createdAt: { gte: today } },
   })
-  if (count >= QUOTA_HARD) {
+  if (count >= NIC_QUOTA_HARD) {
     throw new AppError(ErrorCode.RATE_LIMITED, 429, 'Daily e-invoice quota (1000) exceeded', {
       code: EINVOICE_ERRORS.QUOTA_EXCEEDED,
     })
   }
-  if (count >= QUOTA_WARN) {
+  if (count >= NIC_QUOTA_WARN) {
     logger.warn('EINVOICE_QUOTA_WARN', { businessId, count })
   }
 }
@@ -50,8 +41,18 @@ export async function generateIrn(
   const doc = await prisma.document.findFirst({
     where: { id: documentId, businessId, deletedAt: null },
     include: {
-      party: { select: { gstin: true, name: true, stateCode: true } },
-      business: { select: { gstin: true, name: true, address: true, stateCode: true } },
+      // F-24: include pincode/city for seller; include default billing address for buyer
+      party: {
+        select: {
+          gstin: true, name: true, stateCode: true,
+          addresses: {
+            take: 1,
+            where: { isDefault: true, isDeleted: false, type: 'BILLING' },
+            select: { pincode: true, city: true },
+          },
+        },
+      },
+      business: { select: { gstin: true, name: true, address: true, stateCode: true, pincode: true, city: true } },
       eInvoice: true,
       lineItems: {
         select: {
@@ -83,6 +84,9 @@ export async function generateIrn(
 
   await checkDailyQuota(businessId)
 
+  // F-24: buyer pincode/city from default billing address (fallback null = NIC-tolerated)
+  const buyerAddr = doc.party.addresses?.[0] ?? null
+
   const envelope = buildIrnEnvelope({
     documentId: doc.id,
     documentNumber: doc.documentNumber ?? doc.id,
@@ -96,8 +100,14 @@ export async function generateIrn(
     totalSgst: doc.totalSgst,
     totalIgst: doc.totalIgst,
     totalCess: doc.totalCess,
-    business: doc.business,
-    party: doc.party,
+    business: doc.business, // includes pincode + city from Prisma select (F-24)
+    party: {
+      gstin: doc.party.gstin,
+      name: doc.party.name,
+      stateCode: doc.party.stateCode,
+      pincode: buyerAddr?.pincode ?? null,
+      city: buyerAddr?.city ?? null,
+    },
     lines: doc.lineItems.map((li) => ({
       productName: li.product.name,
       hsnCode: li.product.hsnCode,
@@ -149,7 +159,8 @@ export async function generateIrn(
     action: 'EINVOICE_GENERATED',
     entityType: 'EInvoice',
     entityId: eInvoice.id,
-    entityLabel: nicResult.irn,
+    // F-29: use documentNumber as label (IRN is 64 chars — hard to scan in audit UI)
+    entityLabel: doc.documentNumber ?? eInvoice.id,
     userId,
     changes: {
       irn: nicResult.irn,
@@ -185,7 +196,7 @@ export async function cancelIrn(
   }
 
   // 24h cancel window
-  if (Date.now() - record.ackDate.getTime() > CANCEL_WINDOW_MS) {
+  if (Date.now() - record.ackDate.getTime() > NIC_CANCEL_WINDOW_MS) {
     throw new AppError(ErrorCode.VALIDATION_ERROR, 400, 'Cancel window expired (24h)', {
       code: EINVOICE_ERRORS.CANCEL_WINDOW_EXPIRED,
     })

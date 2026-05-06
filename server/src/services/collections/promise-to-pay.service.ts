@@ -102,7 +102,9 @@ export async function createPtp(
         action: 'PTP_CREATED',
         entityType: 'PromiseToPay',
         entityId: created.id,
-        entityLabel: notes ? notes.substring(0, 200) : `PTP ${created.id}`,
+        // F-25: replace newlines before truncation so multi-line notes don't
+        // break audit table layout in admin UI.
+        entityLabel: notes ? notes.replace(/\n/g, ' ').substring(0, 200) : `PTP ${created.id}`,
         userId,
         changes: { amountPaise, promiseDate, partyId, invoiceId },
       },

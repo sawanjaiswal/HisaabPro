@@ -26,16 +26,17 @@ router.use(requirePermission('collections.view'))
 
 // ─── Validation schemas ──────────────────────────────────────────────────────
 
-const VALID_BUCKETS = ['current', '31', '61', '91'] as const
-type BucketParam = typeof VALID_BUCKETS[number]
-
-// Map URL param → internal bucket key
-const BUCKET_MAP: Record<BucketParam, 'current' | 'bucket_31' | 'bucket_61' | 'bucket_91'> = {
+// Map URL param → internal bucket key (single source of truth — F-30)
+const BUCKET_MAP = {
   current:   'current',
   '31':      'bucket_31',
   '61':      'bucket_61',
   '91':      'bucket_91',
-}
+} as const
+
+// F-30: derive VALID_BUCKETS from BUCKET_MAP so they can't drift independently.
+type BucketParam = keyof typeof BUCKET_MAP
+const VALID_BUCKETS = Object.keys(BUCKET_MAP) as [BucketParam, ...BucketParam[]]
 
 const partiesQuerySchema = z.object({
   bucket: z.enum(VALID_BUCKETS, {

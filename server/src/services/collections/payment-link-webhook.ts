@@ -8,6 +8,7 @@
 import { prisma } from '../../lib/prisma.js'
 import logger from '../../lib/logger.js'
 import { markPtpKept } from './promise-to-pay-eval.service.js'
+import { invalidateAgingCache } from './aging.service.js'
 
 interface RazorpayPaymentLinkPaidEvent {
   id: string                        // Razorpay event id (used for MB-1 dedupe)
@@ -126,10 +127,11 @@ export async function processWebhookPaymentLinkPaid(
     })
 
     // Update party outstanding (payment in reduces receivable)
+    // F-23: use decrement (idiomatic + avoids accidental sign bugs in review)
     await tx.party.update({
       where: { id: link.partyId },
       data: {
-        outstandingBalance: { increment: -paidAmountPaise },
+        outstandingBalance: { decrement: paidAmountPaise },
         lastTransactionAt: new Date(),
       },
     })
@@ -181,6 +183,9 @@ export async function processWebhookPaymentLinkPaid(
     paidAmountPaise,
   })
 
+  // F-27: invalidate aging cache for this business after payment lands
+  invalidateAgingCache(link.businessId)
+
   // Hook: mark any OPEN PTP on this invoice as KEPT (MB-7 systemActor, non-blocking)
   if (link.invoiceId) {
     try {
@@ -193,14 +198,20 @@ export async function processWebhookPaymentLinkPaid(
         },
         select: { id: true },
       })
-      for (const ptp of openPtps) {
-        const newPayment = await prisma.payment.findFirst({
-          where: { businessId: link.businessId, referenceNumber: rzPaymentId },
-          select: { id: true },
-        })
-        if (newPayment) {
-          await markPtpKept(link.businessId, ptp.id, newPayment.id, null, 'webhook:razorpay')
-        }
+      // Resolve payment id once — no per-PTP lookup needed
+      const newPayment = openPtps.length > 0
+        ? await prisma.payment.findFirst({
+            where: { businessId: link.businessId, referenceNumber: rzPaymentId },
+            select: { id: true },
+          })
+        : null
+      // F-32: run markPtpKept concurrently instead of sequentially
+      if (newPayment) {
+        await Promise.all(
+          openPtps.map(ptp =>
+            markPtpKept(link.businessId, ptp.id, newPayment.id, null, 'webhook:razorpay')
+          )
+        )
       }
     } catch (e) {
       logger.error('payment_link.webhook.ptp_hook_error', {
