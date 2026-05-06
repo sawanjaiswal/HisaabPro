@@ -26,7 +26,7 @@ import type {
   AdditionalChargeFormData,
   RoundOffSetting,
 } from './invoice.types'
-import type { UseInvoiceFormOptions, UseInvoiceFormReturn, FormSection, StockShortageItem } from './invoice-form.types'
+import type { UseInvoiceFormOptions, UseInvoiceFormReturn, FormSection, StockShortageItem, BatchErrorCode } from './invoice-form.types'
 import { buildInitialForm, validateInvoiceForm, normalizeFormPayload } from './invoice-form.utils'
 import { useStockValidation } from './useStockValidation'
 import { useGstInvoice } from './useGstInvoice'
@@ -49,6 +49,8 @@ export function useInvoiceForm(
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [activeSection, setActiveSection] = useState<FormSection>('items')
   const [stockShortageItems, setStockShortageItems] = useState<StockShortageItem[]>([])
+  const [batchErrorCode, setBatchErrorCode] = useState<BatchErrorCode | null>(null)
+  const [batchErrorLineIndex, setBatchErrorLineIndex] = useState<number | null>(null)
 
   // ─── Field update ──────────────────────────────────────────────────────────
 
@@ -155,11 +157,20 @@ export function useInvoiceForm(
     },
     onSuccess: (result) => {
       setStockShortageItems([])
+      setBatchErrorCode(null)
+      setBatchErrorLineIndex(null)
+
+      // BAT-05: WARN_ONLY — response may include expiry warnings
+      const raw = result as { mode: string; targetStatus: string; editId?: string; warnings?: { type: string }[] }
+      if (raw.warnings?.some((w) => w.type === 'EXPIRED_BATCH')) {
+        toast.warning('Sale recorded with expired batch — review at /alerts')
+      }
+
       queryClient.invalidateQueries({ queryKey: queryKeys.invoices.all() })
-      if (result.mode === 'edit') {
+      if (raw.mode === 'edit' && raw.editId) {
         toast.success('Invoice updated')
-        navigate(`/invoices/${result.editId}`)
-      } else if (result.targetStatus === 'SAVED') {
+        navigate(`/invoices/${raw.editId}`)
+      } else if (raw.targetStatus === 'SAVED') {
         toast.success('Invoice saved')
         navigate(ROUTES.INVOICES)
       } else {
@@ -174,6 +185,13 @@ export function useInvoiceForm(
           setActiveSection('items')
           return
         }
+      }
+      // BAT-05: batch expiry 409 codes
+      const batchCodes: BatchErrorCode[] = ['EXPIRED_BATCH', 'ALL_BATCHES_EXPIRED', 'INSUFFICIENT_BATCH_STOCK']
+      if (err instanceof ApiError && batchCodes.includes(err.code as BatchErrorCode)) {
+        setBatchErrorCode(err.code as BatchErrorCode)
+        setActiveSection('items')
+        return
       }
       toast.error(isEditMode ? 'Failed to update invoice.' : 'Failed to save invoice. Please try again.')
     },
@@ -221,6 +239,10 @@ export function useInvoiceForm(
   }, [type, initialData])
 
   const clearStockShortage = useCallback(() => setStockShortageItems([]), [])
+  const clearBatchError = useCallback(() => {
+    setBatchErrorCode(null)
+    setBatchErrorLineIndex(null)
+  }, [])
 
   return {
     form, errors, isSubmitting, isEditMode, activeSection, setActiveSection,
@@ -229,6 +251,7 @@ export function useInvoiceForm(
     totals, stockWarnings, hasStockBlocks, validate,
     handleSubmit, handleSaveDraft, reset,
     stockShortageItems, clearStockShortage,
+    batchErrorCode, batchErrorLineIndex, clearBatchError,
     gstEnabled, showUntaggedDialog, confirmUntaggedSubmit, dismissUntaggedDialog, applyInclusivePricing,
   }
 }

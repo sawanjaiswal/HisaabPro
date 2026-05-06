@@ -121,6 +121,10 @@ export interface LineItemFormData {
   taxCategoryId: string | null
   /** GST Phase 2 — HSN or SAC code for this line */
   hsnCode: string
+  /** BAT-05 — selected batch id; null means server FEFO auto-select */
+  batchId?: string | null
+  /** BAT-05 — true when this product requires batch picking on sale */
+  batchTracking?: boolean
 }
 
 /** Additional charge as entered in the form — `amount` is calculated by the hook */

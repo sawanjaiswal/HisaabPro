@@ -38,6 +38,10 @@ export interface StockShortageItem {
   unit?: string
 }
 
+// ─── Batch error codes (BAT-05) ──────────────────────────────────────────────
+
+export type BatchErrorCode = 'EXPIRED_BATCH' | 'ALL_BATCHES_EXPIRED' | 'INSUFFICIENT_BATCH_STOCK'
+
 // ─── Hook return type ─────────────────────────────────────────────────────────
 
 export interface UseInvoiceFormReturn {
@@ -67,6 +71,10 @@ export interface UseInvoiceFormReturn {
   // Stock shortage (409 from save)
   stockShortageItems: StockShortageItem[]
   clearStockShortage: () => void
+  // Batch expiry (409 from save — BAT-05)
+  batchErrorCode: BatchErrorCode | null
+  batchErrorLineIndex: number | null
+  clearBatchError: () => void
   // GST Phase 2
   gstEnabled: boolean
   showUntaggedDialog: boolean

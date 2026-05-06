@@ -20,6 +20,8 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { api } from '@/lib/api'
 import { queryKeys } from '@/lib/query-keys'
 import { ROUTES } from '@/config/routes.config'
+import { ExpiryAlertCard } from './ExpiryAlertCard'
+import type { ExpiryAlertCardData } from './ExpiryAlertCard'
 
 interface StockAlert {
   id: string
@@ -43,9 +45,19 @@ interface AlertListResponse {
   pagination: { nextCursor: string | null }
 }
 
+interface ExpiryAlertListResponse {
+  alerts: ExpiryAlertCardData[]
+  total: number
+  pagination: { nextCursor: string | null }
+}
+
 async function fetchAlerts(status?: string): Promise<AlertListResponse> {
   const qs = status ? `?status=${status}` : '?status=OPEN'
   return api<AlertListResponse>(`/stock-alerts${qs}`, { cacheReads: true })
+}
+
+async function fetchExpiryAlerts(): Promise<ExpiryAlertListResponse> {
+  return api<ExpiryAlertListResponse>(`/inventory/expiry-alerts?status=ACTIVE`, { cacheReads: true })
 }
 
 async function dismissAlert(id: string): Promise<void> {
@@ -70,6 +82,11 @@ export default function StockAlertsPage() {
   const { data, status, refetch } = useQuery({
     queryKey: queryKeys.stockAlerts.list('OPEN'),
     queryFn: () => fetchAlerts('OPEN'),
+  })
+
+  const { data: expiryData, status: expiryStatus } = useQuery({
+    queryKey: ['expiry-alerts', 'ACTIVE'],
+    queryFn: () => fetchExpiryAlerts(),
   })
 
   const dismissMutation = useMutation({
@@ -128,12 +145,28 @@ export default function StockAlertsPage() {
           />
         )}
 
+        {/* BAT-05: Expiry alerts section */}
+        {expiryStatus === 'success' && expiryData && expiryData.alerts.length > 0 && (
+          <>
+            <h2 style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--color-text-muted)', margin: 0, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+              {t.expiryAlertsTitle}
+            </h2>
+            <div role="list" className="space-y-3" aria-label={t.expiryAlertsTitle}>
+              {expiryData.alerts.map((alert) => (
+                <ExpiryAlertCard key={alert.id} alert={alert} />
+              ))}
+            </div>
+          </>
+        )}
+
         {status === 'success' && data && data.alerts.length > 0 && (
           <>
             <div role="status" aria-live="polite" className="sr-only">
               {data.total} {t.stockAlertsHeading}
             </div>
-            <h2 className="sr-only">{t.stockAlertsHeading}</h2>
+            <h2 style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--color-text-muted)', margin: 0, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+              {t.stockAlertsHeading}
+            </h2>
             <div role="list" className="space-y-3" aria-label={t.stockAlertsTitle}>
               {data.alerts.map((alert) => (
                 <div

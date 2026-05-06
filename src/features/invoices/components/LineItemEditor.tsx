@@ -1,8 +1,9 @@
 /** Create Invoice — single editable line item row */
 
-import React, { useCallback } from 'react'
-import { Trash2 } from 'lucide-react'
+import React, { useCallback, useState } from 'react'
+import { Trash2, Package } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { BatchPicker } from '@/features/inventory/components/BatchPicker'
 import type { LineItemFormData, DiscountType } from '../invoice.types'
 import { formatInvoiceAmount, paiseToRupees, rupeesToPaise } from '../invoice-format.utils'
 import { calculateLineTotal } from '../invoice-calc.utils'
@@ -21,6 +22,8 @@ interface LineItemEditorProps {
   onUpdate: (index: number, updates: Partial<LineItemFormData>) => void
   onRemove: (index: number) => void
   showProfit: boolean
+  /** BAT-05 — expired batch policy forwarded from business settings */
+  expiredBatchPolicy?: 'HARD_BLOCK' | 'WARN_ONLY'
 }
 
 const DISCOUNT_TYPES: DiscountType[] = ['AMOUNT', 'PERCENTAGE']
@@ -31,8 +34,10 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
   onUpdate,
   onRemove,
   showProfit,
+  expiredBatchPolicy = 'WARN_ONLY',
 }) => {
   const { t } = useLanguage()
+  const [showBatchPicker, setShowBatchPicker] = useState(false)
   const handleQuantityChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const qty = parseFloat(e.target.value)
@@ -102,6 +107,46 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
           <Trash2 size={16} aria-hidden="true" />
         </button>
       </div>
+
+      {/* BAT-05: batch pick button for batch-tracked products */}
+      {item.batchTracking && (
+        <div style={{ marginBottom: 'var(--space-2)' }}>
+          <button
+            type="button"
+            onClick={() => setShowBatchPicker(true)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 'var(--space-1)',
+              fontSize: 'var(--text-xs)',
+              color: item.batchId ? 'var(--color-primary)' : 'var(--color-text-muted)',
+              background: 'none',
+              border: '1px dashed var(--color-border)',
+              borderRadius: 'var(--radius-sm)',
+              padding: '4px 10px',
+              cursor: 'pointer',
+              minHeight: 44,
+            }}
+            aria-label={item.batchId ? `Batch selected — ${t.pickBatch}` : t.pickBatch}
+          >
+            <Package size={12} aria-hidden="true" />
+            {item.batchId ? `${t.pickBatch} ✓` : t.pickBatch}
+          </button>
+        </div>
+      )}
+
+      {showBatchPicker && item.batchTracking && (
+        <BatchPicker
+          productId={item.productId}
+          expiredBatchPolicy={expiredBatchPolicy}
+          selectedBatchId={item.batchId ?? null}
+          onSelect={(id) => {
+            onUpdate(index, { batchId: id })
+            setShowBatchPicker(false)
+          }}
+          onClose={() => setShowBatchPicker(false)}
+        />
+      )}
 
       <div className="line-item-fields">
         <div className="line-item-field">

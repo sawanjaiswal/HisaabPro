@@ -23,6 +23,7 @@ import { InvoiceChargesSection } from './components/InvoiceChargesSection'
 import { GstInvoiceHeader } from './components/GstInvoiceHeader'
 import { UntaggedTaxDialog } from './components/UntaggedTaxDialog'
 import { StockShortageBanner } from './components/StockShortageBanner'
+import { ExpiredBatchBanner } from '@/features/inventory/components/ExpiredBatchBanner'
 import { FORM_SECTIONS } from './invoice.constants'
 import './invoice-party-search.css'
 import './invoice-line-items.css'
@@ -57,6 +58,8 @@ export default function CreateInvoicePage() {
     dismissUntaggedDialog,
     stockShortageItems,
     clearStockShortage,
+    batchErrorCode,
+    clearBatchError,
   } = useInvoiceForm('SALE_INVOICE')
 
   const { compositionScheme } = useGstGate()
@@ -128,6 +131,17 @@ export default function CreateInvoicePage() {
       <PageContainer className="invoice-details-section stagger-enter py-0 space-y-6">
         {stockShortageItems.length > 0 && (
           <StockShortageBanner items={stockShortageItems} onDismiss={clearStockShortage} />
+        )}
+
+        {batchErrorCode && (
+          <ExpiredBatchBanner
+            code={batchErrorCode}
+            onDismiss={clearBatchError}
+            onReopenPicker={() => {
+              clearBatchError()
+              // Picker is opened via LineItemEditor's internal state on the relevant line
+            }}
+          />
         )}
 
         {gstEnabled && (
