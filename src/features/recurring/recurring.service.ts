@@ -5,17 +5,19 @@
  *   X-Request-Timestamp  — Unix ms, server validates within ±5 min window
  *
  * Every fetch accepts an AbortSignal so the calling hook can cancel on cleanup,
- * preventing stale responses from corrupting state (RESILIENCE_RULES).
+ * preventing stale responses from corrupting state.
+ * api() already prepends /api — paths here start with /recurring.
  */
 
 import { api } from '@/lib/api'
 import type {
   RecurringInvoice,
   RecurringListResponse,
+  RecurringRunsResponse,
   CreateRecurringInput,
   UpdateRecurringInput,
 } from './recurring.types'
-import { RECURRING_PAGE_LIMIT } from './recurring.constants'
+import { RECURRING_PAGE_LIMIT, RECURRING_RUNS_PAGE_LIMIT } from './recurring.constants'
 
 function replayHeaders(): HeadersInit {
   return {
@@ -34,14 +36,20 @@ export async function listRecurring(
     limit: String(RECURRING_PAGE_LIMIT),
   })
   if (status !== 'ALL') params.set('status', status)
-  return api<RecurringListResponse>(`/recurring?${params}`, { signal })
+  return api<RecurringListResponse>(`/recurring?${params}`, {
+    signal,
+    cacheReads: true,
+  })
 }
 
 export async function getRecurring(
   id: string,
   signal?: AbortSignal
 ): Promise<RecurringInvoice> {
-  return api<RecurringInvoice>(`/recurring/${id}`, { signal })
+  return api<RecurringInvoice>(`/recurring/${id}`, {
+    signal,
+    cacheReads: true,
+  })
 }
 
 export async function createRecurring(
@@ -61,6 +69,7 @@ export async function createRecurring(
 export async function updateRecurring(
   id: string,
   input: UpdateRecurringInput,
+  entityLabel: string,
   signal?: AbortSignal
 ): Promise<RecurringInvoice> {
   return api<RecurringInvoice>(`/recurring/${id}`, {
@@ -69,21 +78,79 @@ export async function updateRecurring(
     headers: replayHeaders(),
     signal,
     entityType: 'recurring-invoice',
-    entityLabel: input.status ? `Recurring invoice ${input.status.toLowerCase()}` : 'Recurring invoice update',
+    entityLabel,
+  })
+}
+
+export async function pauseRecurring(
+  id: string,
+  entityLabel: string,
+  signal?: AbortSignal
+): Promise<RecurringInvoice> {
+  return api<RecurringInvoice>(`/recurring/${id}/pause`, {
+    method: 'POST',
+    headers: replayHeaders(),
+    signal,
+    entityType: 'recurring-invoice',
+    entityLabel,
+  })
+}
+
+export async function resumeRecurring(
+  id: string,
+  entityLabel: string,
+  signal?: AbortSignal
+): Promise<RecurringInvoice> {
+  return api<RecurringInvoice>(`/recurring/${id}/resume`, {
+    method: 'POST',
+    headers: replayHeaders(),
+    signal,
+    entityType: 'recurring-invoice',
+    entityLabel,
+  })
+}
+
+export async function generateNow(
+  id: string,
+  entityLabel: string,
+  idempotencyKey: string,
+  signal?: AbortSignal
+): Promise<{ documentId: string; runId: string; nextRunDate: string }> {
+  return api(`/recurring/${id}/generate-now`, {
+    method: 'POST',
+    headers: {
+      ...replayHeaders(),
+      'idempotency-key': idempotencyKey,
+    },
+    signal,
+    entityType: 'recurring-invoice',
+    entityLabel,
   })
 }
 
 export async function deleteRecurring(
   id: string,
+  entityLabel: string,
   signal?: AbortSignal
-): Promise<void> {
-  return api<void>(`/recurring/${id}`, {
+): Promise<{ deleted: boolean; hard: boolean }> {
+  return api<{ deleted: boolean; hard: boolean }>(`/recurring/${id}`, {
     method: 'DELETE',
     headers: replayHeaders(),
     signal,
     entityType: 'recurring-invoice',
-    entityLabel: 'Delete recurring invoice',
+    entityLabel,
   })
+}
+
+export async function listRuns(
+  id: string,
+  cursor?: string,
+  signal?: AbortSignal
+): Promise<RecurringRunsResponse> {
+  const params = new URLSearchParams({ limit: String(RECURRING_RUNS_PAGE_LIMIT) })
+  if (cursor) params.set('cursor', cursor)
+  // NOT cached — run history changes on every generation
+  return api<RecurringRunsResponse>(`/recurring/${id}/runs?${params}`, { signal })
 }
 
 export async function generateDueInvoices(

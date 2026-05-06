@@ -1,4 +1,4 @@
-/** Recurring -- CRUD actions + manual generate hook */
+/** Recurring -- CRUD actions + manual generate hook (list page) */
 
 import { useCallback } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -7,7 +7,8 @@ import { ApiError } from '@/lib/api'
 import { queryKeys } from '@/lib/query-keys'
 import {
   createRecurring,
-  updateRecurring,
+  pauseRecurring,
+  resumeRecurring,
   deleteRecurring,
   generateDueInvoices,
 } from '../recurring.service'
@@ -35,7 +36,7 @@ export function useRecurringActions(refresh: () => void) {
   })
 
   const pauseMutation = useMutation({
-    mutationFn: (id: string) => updateRecurring(id, { status: 'PAUSED' }),
+    mutationFn: (id: string) => pauseRecurring(id, 'Recurring schedule'),
     onSuccess: () => {
       toast.success('Schedule paused.')
       invalidate()
@@ -47,7 +48,7 @@ export function useRecurringActions(refresh: () => void) {
   })
 
   const resumeMutation = useMutation({
-    mutationFn: (id: string) => updateRecurring(id, { status: 'ACTIVE' }),
+    mutationFn: (id: string) => resumeRecurring(id, 'Recurring schedule'),
     onSuccess: () => {
       toast.success('Schedule resumed.')
       invalidate()
@@ -59,7 +60,7 @@ export function useRecurringActions(refresh: () => void) {
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteRecurring(id),
+    mutationFn: (id: string) => deleteRecurring(id, 'Recurring schedule'),
     onSuccess: () => {
       toast.success('Schedule deleted.')
       invalidate()

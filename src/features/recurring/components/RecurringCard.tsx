@@ -22,6 +22,7 @@ interface RecurringCardProps {
   onPause: (id: string) => void
   onResume: (id: string) => void
   onDelete: (id: string) => void
+  onClick?: () => void
 }
 
 export const RecurringCard: React.FC<RecurringCardProps> = ({
@@ -29,12 +30,20 @@ export const RecurringCard: React.FC<RecurringCardProps> = ({
   onPause,
   onResume,
   onDelete,
+  onClick,
 }) => {
   const { t } = useLanguage()
   const badgeVariant = STATUS_BADGE_VARIANTS[item.status]
 
   return (
-    <div className="recurring-card">
+    <div
+      className="recurring-card"
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onClick={onClick}
+      onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') onClick() } : undefined}
+      style={onClick ? { cursor: 'pointer' } : undefined}
+    >
       <div className="recurring-card__header">
         <div className="recurring-card__title-row">
           <span className="recurring-card__frequency">
