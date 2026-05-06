@@ -12,6 +12,7 @@ import { prisma } from './prisma.js'
 import logger from './logger.js'
 import { evaluateOpenPtps } from '../services/collections/promise-to-pay-eval.service.js'
 import { runRecurringTick } from '../services/recurring/recurring-runner.service.js'
+import { deleteRunsOlderThan } from '../services/recurring/runs.js'
 import os from 'os'
 
 let initialized = false
@@ -40,8 +41,15 @@ export function initCronJobs(): void {
     { timezone: 'Asia/Kolkata' },
   )
 
+  // Daily 03:00 IST — clean up RecurringInvoiceRun rows older than 90 days
+  cron.schedule(
+    '0 3 * * *',
+    () => void runRecurringRunsCleanup(),
+    { timezone: 'Asia/Kolkata' },
+  )
+
   logger.info('cron.registered', {
-    jobs: ['ptp-evaluator @ 01:00 IST', 'recurring-generator @ */15 IST'],
+    jobs: ['ptp-evaluator @ 01:00 IST', 'recurring-generator @ */15 IST', 'recurring-runs-cleanup @ 03:00 IST'],
   })
 }
 
@@ -100,4 +108,16 @@ export async function runPtpEvaluator(): Promise<void> {
   }
 
   logger.info('ptp-evaluator.complete')
+}
+
+export async function runRecurringRunsCleanup(): Promise<void> {
+  logger.info('recurring-runs-cleanup.start')
+  try {
+    const deleted = await deleteRunsOlderThan(90)
+    logger.info('recurring-runs-cleanup.complete', { deleted })
+  } catch (e) {
+    logger.error('recurring-runs-cleanup.error', {
+      error: e instanceof Error ? e.message : String(e),
+    })
+  }
 }

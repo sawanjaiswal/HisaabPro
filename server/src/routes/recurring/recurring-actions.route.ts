@@ -9,6 +9,7 @@
 
 import { Router } from 'express'
 import { requirePermission } from '../../middleware/permission.js'
+import { idempotencyCheck } from '../../middleware/idempotency.js'
 import { asyncHandler } from '../../middleware/asyncHandler.js'
 import { sendSuccess, sendError } from '../../lib/response.js'
 import logger from '../../lib/logger.js'
@@ -101,14 +102,9 @@ router.post(
 
 router.post(
   '/generate-now',
+  idempotencyCheck(),
   requirePermission('recurring.manage'),
   asyncHandler(async (req, res) => {
-    const idempKey = req.headers['x-idempotency-key'] as string | undefined
-    if (!idempKey) {
-      sendError(res, 'X-Idempotency-Key header is required', 'MISSING_IDEMPOTENCY_KEY', 400)
-      return
-    }
-
     const { businessId, userId } = req.user!
     const scheduleId = String(req.params.id)
 

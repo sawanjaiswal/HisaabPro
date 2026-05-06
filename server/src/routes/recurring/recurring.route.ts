@@ -18,6 +18,7 @@ import { auth } from '../../middleware/auth.js'
 import { requirePermission } from '../../middleware/permission.js'
 import { requireFeature } from '../../middleware/subscription-gate.js'
 import { asyncHandler } from '../../middleware/asyncHandler.js'
+import { idempotencyCheck } from '../../middleware/idempotency.js'
 import { validate } from '../../middleware/validate.js'
 import { sendSuccess, sendError } from '../../lib/response.js'
 import {
@@ -58,14 +59,10 @@ function handleServiceError(res: Response, err: unknown): void {
 
 router.post(
   '/',
+  idempotencyCheck(),
   requirePermission('recurring.manage'),
   validate(createRecurringSchema),
   asyncHandler(async (req, res) => {
-    const idempKey = req.headers['x-idempotency-key'] as string | undefined
-    if (!idempKey) {
-      sendError(res, 'X-Idempotency-Key header is required', 'MISSING_IDEMPOTENCY_KEY', 400)
-      return
-    }
     const { businessId, userId } = req.user!
     try {
       const recurring = await createRecurring(businessId, userId, req.body)

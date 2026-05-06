@@ -120,7 +120,7 @@ export async function generateNow(
     method: 'POST',
     headers: {
       ...replayHeaders(),
-      'idempotency-key': idempotencyKey,
+      'x-idempotency-key': idempotencyKey,
     },
     signal,
     entityType: 'recurring-invoice',
