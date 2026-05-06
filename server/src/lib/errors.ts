@@ -45,6 +45,7 @@ export enum ErrorCode {
 
   // Conflict (409)
   DUPLICATE_ENTRY = 'DUPLICATE_ENTRY',
+  STOCK_SHORTAGE = 'STOCK_SHORTAGE',
 
   // Rate Limit (429)
   RATE_LIMITED = 'RATE_LIMITED',
@@ -110,6 +111,27 @@ export function insufficientStockError(
     requestedQty,
     deficit,
   })
+}
+
+export interface StockShortageItem {
+  productId: string
+  productName: string
+  requested: number
+  available: number
+}
+
+/**
+ * 409 STOCK_SHORTAGE — thrown when one or more sale invoice line items
+ * cannot be fulfilled due to insufficient stock under HARD_BLOCK mode.
+ * Collects ALL shortfalls so the caller sees every problem at once.
+ */
+export function stockShortageError(items: StockShortageItem[]) {
+  return new AppError(
+    ErrorCode.STOCK_SHORTAGE,
+    409,
+    `Insufficient stock for ${items.length} item(s)`,
+    { items }
+  )
 }
 
 export function conflictError(message: string) {

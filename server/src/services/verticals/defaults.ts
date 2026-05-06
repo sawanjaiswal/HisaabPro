@@ -108,6 +108,34 @@ export const VERTICAL_DEFAULTS: Record<string, VerticalDefaults> = {
       'Turn off low-stock alerts',
     ],
   },
+
+  retail: {
+    inventory: {
+      stockValidationMode: 'HARD_BLOCK',
+      lowStockAlertEnabled: true,
+      lowStockAlertFrequency: 'DAILY',
+      decimalPrecisionQty: 0,
+    },
+    summary: [
+      'Block sales beyond available stock',
+      'Daily low-stock alerts',
+      'Whole-number quantities',
+    ],
+  },
+
+  wholesale: {
+    inventory: {
+      stockValidationMode: 'HARD_BLOCK',
+      lowStockAlertEnabled: true,
+      lowStockAlertFrequency: 'DAILY',
+      decimalPrecisionQty: 2,
+    },
+    summary: [
+      'Block sales beyond available stock',
+      'Daily low-stock alerts',
+      'Two decimal places for quantities (e.g. 12.50 kg)',
+    ],
+  },
 }
 
 export function getDefaultsFor(type: string): VerticalDefaults | null {

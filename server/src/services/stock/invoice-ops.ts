@@ -6,6 +6,7 @@
 import type { ExtendedPrismaClient } from '../../lib/prisma.js'
 import { adjustStock } from './core.js'
 import { checkAndCreateAlerts } from '../stock-alert.service.js'
+import { stockShortageError } from '../../lib/errors.js'
 import logger from '../../lib/logger.js'
 
 type TxClient = Parameters<Parameters<ExtendedPrismaClient['$transaction']>[0]>[0]
@@ -17,7 +18,15 @@ export interface InvoiceStockItem {
   unitId?: string
 }
 
-/** Deduct stock for sale invoice items. Call within a transaction. */
+/** Deduct stock for sale invoice items. Call within a transaction.
+ *
+ * Collects ALL shortfalls across every line item before throwing, so the
+ * caller receives a single 409 STOCK_SHORTAGE with the full `items[]` array
+ * rather than stopping at the first insufficient product.
+ *
+ * TOCTOU-safe: each product row is locked via SELECT…FOR UPDATE inside
+ * adjustStock before the availability check and update occur.
+ */
 export async function deductForSaleInvoice(
   tx: TxClient,
   params: {
@@ -36,6 +45,46 @@ export async function deductForSaleInvoice(
   const cachedBusinessValidationMode =
     (invSetting?.stockValidationMode as 'WARN_ONLY' | 'HARD_BLOCK') ?? 'WARN_ONLY'
 
+  // Phase 1 (HARD_BLOCK only): pre-flight — collect ALL insufficient items.
+  // We lock each row, compute availability, and accumulate shortfalls.
+  // If any shortfall exists we throw ONE error with the full list before
+  // writing any stock changes.
+  if (cachedBusinessValidationMode === 'HARD_BLOCK') {
+    type Row = { id: string; name: string; current_stock: number; stock_validation: string }
+    const shortfalls: Array<{ productId: string; productName: string; requested: number; available: number }> = []
+
+    for (const item of params.items) {
+      const rows = await tx.$queryRaw<Row[]>`
+        SELECT id, name, "currentStock" as current_stock, "stockValidation" as stock_validation
+        FROM "Product"
+        WHERE id = ${item.productId} AND "businessId" = ${params.businessId}
+        FOR UPDATE`
+
+      if (!rows[0]) continue // caught later by adjustStock
+
+      const available = Number(rows[0].current_stock)
+      const effectiveMode =
+        rows[0].stock_validation !== 'GLOBAL'
+          ? rows[0].stock_validation
+          : cachedBusinessValidationMode
+
+      if (effectiveMode === 'HARD_BLOCK' && available < item.quantity) {
+        shortfalls.push({
+          productId: item.productId,
+          productName: rows[0].name,
+          requested: item.quantity,
+          available,
+        })
+      }
+    }
+
+    if (shortfalls.length > 0) {
+      throw stockShortageError(shortfalls)
+    }
+  }
+
+  // Phase 2: apply adjustments (rows already locked above for HARD_BLOCK;
+  // for WARN_ONLY adjustStock will lock them individually).
   const results = []
   for (const item of params.items) {
     const result = await adjustStock(tx, {

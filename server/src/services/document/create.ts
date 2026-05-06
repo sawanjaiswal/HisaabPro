@@ -203,19 +203,30 @@ export async function createDocument(
     }
 
     if (isSaving) {
+      let stockMovements: Array<{ productId: string; balanceAfter: number }> = []
+
       if (STOCK_DECREASE_TYPES.has(data.type)) {
-        await deductForSaleInvoice(tx, {
+        stockMovements = await deductForSaleInvoice(tx, {
           businessId, invoiceId: doc.id, invoiceNumber: numberData!.documentNumber,
           items: data.lineItems.map(li => ({ productId: li.productId, quantity: li.quantity, unitId: li.unitId })),
           userId,
         })
       } else if (STOCK_INCREASE_TYPES.has(data.type)) {
-        await addForPurchaseInvoice(tx, {
+        stockMovements = await addForPurchaseInvoice(tx, {
           businessId, invoiceId: doc.id, invoiceNumber: numberData!.documentNumber,
           items: data.lineItems.map(li => ({ productId: li.productId, quantity: li.quantity, unitId: li.unitId })),
           userId,
         })
       }
+
+      // Fix stockAfter: set post-adjustment balanceAfter from each movement (was == stockBefore)
+      if (stockMovements.length > 0) {
+        const balanceMap = new Map(stockMovements.map(m => [m.productId, Number(m.balanceAfter)]))
+        for (const [productId, stockAfter] of balanceMap) {
+          await tx.documentLineItem.updateMany({ where: { documentId: doc.id, productId }, data: { stockAfter } })
+        }
+      }
+
       if (AFFECTS_OUTSTANDING.has(data.type)) {
         const negative = data.type === 'PURCHASE_INVOICE' || data.type === 'CREDIT_NOTE'
         await updateOutstanding(tx, data.partyId, negative ? -totals.grandTotal : totals.grandTotal)
@@ -229,7 +240,6 @@ export async function createDocument(
     scheduleAlertChecks(businessId, data.lineItems.map(li => li.productId))
   }
 
-  // Append transient compositionLiability to response (not persisted)
   // Append transient compositionLiability (1%/5%/6% on grandTotal) — not persisted
   const compositionInfo = getCompositionInvoiceInfo(isComposite, 'default', result.grandTotal)
   return compositionInfo
