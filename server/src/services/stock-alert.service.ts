@@ -29,7 +29,7 @@ export async function checkAndCreateAlerts(
   const [product, setting] = await Promise.all([
     prisma.product.findUnique({
       where: { id: productId },
-      select: { id: true, name: true, currentStock: true, minStockLevel: true },
+      select: { id: true, name: true, currentStock: true, minStockLevel: true, reorderQty: true },
     }),
     prisma.inventorySetting.findUnique({
       where: { businessId },
@@ -41,10 +41,21 @@ export async function checkAndCreateAlerts(
   if (setting && !setting.lowStockAlertEnabled) return
 
   const currentStock = Number(product.currentStock)
-  const threshold = Number(product.minStockLevel)
+  const minLevel = Number(product.minStockLevel)
+  const reorderQty = product.reorderQty !== null ? Number(product.reorderQty) : null
 
-  // Stock is above threshold — resolve any active alerts
-  if (currentStock > threshold) {
+  // Check both threshold conditions (either triggers an alert)
+  const minLevelBreached = minLevel > 0 && currentStock <= minLevel
+  const reorderBreached = reorderQty !== null && currentStock <= reorderQty
+  const isBreached = minLevelBreached || reorderBreached
+
+  // Use the higher of the two thresholds as the representative threshold
+  const threshold = reorderQty !== null
+    ? Math.max(minLevel, reorderQty)
+    : minLevel
+
+  // Stock is above both thresholds — resolve any active alerts
+  if (!isBreached) {
     await resolveAlerts(businessId, productId)
     return
   }
@@ -106,7 +117,32 @@ export async function checkAndCreateAlerts(
     alertType,
     currentStock,
     threshold,
+    minStockLevel: minLevel,
+    reorderQty,
   })
+}
+
+/**
+ * Evaluate alerts for a batch of products.
+ * Convenience wrapper for callers that already have a list of product IDs.
+ * Each check is independent; failures are logged, not re-thrown.
+ */
+export async function evaluateAlertsForProducts(
+  businessId: string,
+  productIds: string[]
+): Promise<void> {
+  const unique = [...new Set(productIds)]
+  for (const productId of unique) {
+    try {
+      await checkAndCreateAlerts(businessId, productId)
+    } catch (err) {
+      logger.error('evaluateAlertsForProducts: check failed', {
+        businessId,
+        productId,
+        error: (err as Error).message,
+      })
+    }
+  }
 }
 
 /** List alerts for a business with cursor pagination. */

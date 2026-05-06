@@ -17,6 +17,7 @@ import {
   exportReportSchema,
 } from '../schemas/report.schemas.js'
 import * as reportService from '../services/report.service.js'
+import { getStockValueReport } from '../services/stock/value-report.service.js'
 
 const router = Router()
 
@@ -82,6 +83,43 @@ router.get(
     const query = paymentHistorySchema.parse(req.query)
     const result = await reportService.getPaymentHistory(businessId, query)
     sendSuccess(res, result)
+  })
+)
+
+/** GET /api/reports/stock-value — Weighted-avg stock value report (INV-04) */
+router.get(
+  '/stock-value',
+  requirePermission('inventory.view'),
+  asyncHandler(async (req, res) => {
+    const businessId = req.user!.businessId
+    if (!businessId) {
+      sendSuccess(res, {
+        items: [],
+        summary: { totalValuePaise: '0', productCount: 0 },
+        nextCursor: null,
+      })
+      return
+    }
+
+    const cursor = req.query.cursor as string | undefined
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : undefined
+    const categoryId = req.query.categoryId as string | undefined
+
+    const report = await getStockValueReport(businessId, { cursor, limit, categoryId })
+
+    sendSuccess(res, {
+      items: report.items.map((item) => ({
+        ...item,
+        weightedAvgCostPaise: item.weightedAvgCostPaise.toString(),
+        lineValuePaise: item.lineValuePaise.toString(),
+      })),
+      summary: {
+        totalValuePaise: report.totalValuePaise.toString(),
+        productCount: report.productCount,
+        asOf: report.asOf.toISOString(),
+      },
+      nextCursor: report.nextCursor,
+    })
   })
 )
 
