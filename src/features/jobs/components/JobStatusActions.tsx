@@ -1,6 +1,7 @@
 /** JobStatusActions — buttons mapping current → allowed transitions */
 
 import { useState } from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { getNextStatuses } from '../jobs.utils'
 import { useTransitionJob } from '../hooks/useTransitionJob'
 import type { JobStatus } from '../jobs.types'
@@ -11,19 +12,20 @@ interface JobStatusActionsProps {
   currentStatus: JobStatus
 }
 
-const STATUS_BUTTON_LABELS: Record<JobStatus, string> = {
-  QUOTED:      'Mark Quoted',
-  SCHEDULED:   'Schedule',
-  IN_PROGRESS: 'Start Work',
-  COMPLETED:   'Mark Completed',
-  INVOICED:    'Mark Invoiced',
-  CANCELLED:   'Cancel Job',
-}
-
 export function JobStatusActions({ jobId, jobTitle, currentStatus }: JobStatusActionsProps) {
+  const { t } = useLanguage()
   const [cancelReason, setCancelReason] = useState('')
   const [showCancelPrompt, setShowCancelPrompt] = useState(false)
   const { mutate, isPending } = useTransitionJob()
+
+  const STATUS_BUTTON_LABELS: Record<JobStatus, string> = {
+    QUOTED:      t.jobActionMarkQuoted,
+    SCHEDULED:   t.jobActionSchedule,
+    IN_PROGRESS: t.jobActionStartWork,
+    COMPLETED:   t.jobActionMarkCompleted,
+    INVOICED:    t.jobActionMarkInvoiced,
+    CANCELLED:   t.jobActionCancelJob,
+  }
 
   const nextStatuses = getNextStatuses(currentStatus)
   if (nextStatuses.length === 0) return null
@@ -67,16 +69,16 @@ export function JobStatusActions({ jobId, jobTitle, currentStatus }: JobStatusAc
       {showCancelPrompt && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', padding: 'var(--space-3)', background: 'var(--color-error-50)', borderRadius: 8 }}>
           <label style={{ fontSize: 'var(--fs-sm)', fontWeight: 500, color: 'var(--color-error-700)' }}>
-            Reason for cancellation *
+            {t.jobCancelReasonLabel} *
           </label>
           <input
             type="text"
             className="input"
             value={cancelReason}
             onChange={(e) => setCancelReason(e.target.value)}
-            placeholder="Enter reason..."
+            placeholder={t.jobCancelReasonRequired}
             maxLength={500}
-            aria-label="Cancellation reason"
+            aria-label={t.jobCancelReasonLabel}
           />
           <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
             <button
@@ -86,7 +88,7 @@ export function JobStatusActions({ jobId, jobTitle, currentStatus }: JobStatusAc
               disabled={!cancelReason.trim() || isPending}
               style={{ minHeight: 44 }}
             >
-              Confirm Cancel
+              {t.jobConfirmCancel}
             </button>
             <button
               type="button"
@@ -94,7 +96,7 @@ export function JobStatusActions({ jobId, jobTitle, currentStatus }: JobStatusAc
               onClick={() => { setShowCancelPrompt(false); setCancelReason('') }}
               style={{ minHeight: 44 }}
             >
-              Back
+              {t.jobCancelBack}
             </button>
           </div>
         </div>

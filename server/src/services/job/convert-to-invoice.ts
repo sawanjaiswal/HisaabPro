@@ -35,12 +35,13 @@ export async function convertJobToInvoice(
   })
   if (!job) throw notFoundError('Job')
 
-  // Already invoiced — replay-safe: return existing invoice
+  // Already invoiced — idempotent: return the existing invoice instead of throwing
+  // so that retried offline requests receive success rather than a 409.
   if (job.invoiceId) {
     const existing = await prisma.document.findUnique({
       where: { id: job.invoiceId },
     })
-    if (existing) throw conflictError('Job is already invoiced (ALREADY_INVOICED)')
+    if (existing) return existing
   }
 
   if (job.status === 'CANCELLED') {

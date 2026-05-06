@@ -6,6 +6,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useJob } from '../hooks/useJob'
 import { JobStatusPill } from '../components/JobStatusPill'
 import { JobStatusActions } from '../components/JobStatusActions'
@@ -37,16 +38,17 @@ export default function JobDetailPage() {
   const { id = '' } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { data: job, status, refetch } = useJob(id)
+  const { t } = useLanguage()
   const isOnline = navigator.onLine
 
-  if (status === 'pending') return <AppShell><Header title="Job Details" /><DetailSkeleton /></AppShell>
+  if (status === 'pending') return <AppShell><Header title={t.jobDetailTitle} /><DetailSkeleton /></AppShell>
 
   if (status === 'error' || !job) {
     return (
       <AppShell>
-        <Header title="Job Details" />
+        <Header title={t.jobDetailTitle} />
         <PageContainer>
-          <ErrorState title="Could not load job" message="Check your connection and try again" onRetry={refetch} />
+          <ErrorState title={t.couldNotLoadJob} message={t.jobLoadRetryHint} onRetry={refetch} />
         </PageContainer>
       </AppShell>
     )
@@ -112,16 +114,16 @@ export default function JobDetailPage() {
 
         {/* Status actions */}
         {job.status !== 'INVOICED' && job.status !== 'CANCELLED' && (
-          <Section title="Actions">
+          <Section title={t.jobActionsSection}>
             <JobStatusActions jobId={id} jobTitle={job.title} currentStatus={job.status} />
           </Section>
         )}
 
         {/* Convert to invoice CTA */}
         {job.status === 'COMPLETED' && !job.invoiceId && (
-          <Section title="Invoice">
+          <Section title={t.jobInvoiceSection}>
             <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', margin: 0 }}>
-              This job is complete. Create an invoice to bill the customer.
+              {t.jobCompleteInvoiceHint}
             </p>
             <JobConvertButton jobId={id} jobTitle={job.title} isOnline={isOnline} />
           </Section>
@@ -129,20 +131,20 @@ export default function JobDetailPage() {
 
         {/* Already invoiced */}
         {job.invoiceId && (
-          <Section title="Invoice">
+          <Section title={t.jobInvoiceSection}>
             <button
               type="button"
               className="btn btn-ghost btn-sm"
               onClick={() => navigate(`/invoices/${job.invoiceId}`)}
               style={{ alignSelf: 'flex-start', minHeight: 44 }}
             >
-              View Invoice
+              {t.viewInvoice}
             </button>
           </Section>
         )}
 
         {/* Line items */}
-        <Section title="Items">
+        <Section title={t.jobItemsSection}>
           <JobItemsList items={job.items} />
         </Section>
 
@@ -150,12 +152,12 @@ export default function JobDetailPage() {
         <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 'var(--space-1)', alignItems: 'flex-end' }}>
           {job.discountPaise > 0 && (
             <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: 'var(--fs-sm)', color: 'var(--color-error-600)' }}>
-              <span>Discount</span>
+              <span>{t.jobDiscountLabel}</span>
               <span>-₹{formatPaise(job.discountPaise)}</span>
             </div>
           )}
           <div style={{ display: 'flex', gap: 'var(--space-4)', fontWeight: 700, fontSize: 'var(--fs-md)', color: 'var(--color-text)' }}>
-            <span>Total</span>
+            <span>{t.jobTotalLabel}</span>
             <span>₹{formatPaise(job.totalPaise)}</span>
           </div>
         </div>
@@ -164,7 +166,7 @@ export default function JobDetailPage() {
         {job.status === 'CANCELLED' && job.cancelReason && (
           <div style={{ padding: 'var(--space-3)', background: 'var(--color-error-50)', borderRadius: 8 }}>
             <p style={{ margin: 0, fontSize: 'var(--fs-sm)', color: 'var(--color-error-700)' }}>
-              <strong>Cancelled:</strong> {job.cancelReason}
+              <strong>{t.jobCancelledLabel}</strong> {job.cancelReason}
             </p>
           </div>
         )}

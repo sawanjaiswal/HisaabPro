@@ -34,33 +34,56 @@ export async function listJobs(businessId: string, query: ListJobsQuery) {
     }
   }
 
+  const andClauses: Record<string, unknown>[] = []
+
   if (q) {
-    where.OR = [
-      { title: { contains: q, mode: 'insensitive' } },
-      { description: { contains: q, mode: 'insensitive' } },
-      { party: { name: { contains: q, mode: 'insensitive' } } },
-    ]
+    andClauses.push({
+      OR: [
+        { title: { contains: q, mode: 'insensitive' } },
+        { description: { contains: q, mode: 'insensitive' } },
+        { party: { name: { contains: q, mode: 'insensitive' } } },
+      ],
+    })
   }
 
   // Cursor pagination on (updatedAt, id)
   if (cursor) {
     const [cursorUpdatedAt, cursorId] = cursor.split('_')
-    where.OR = [
-      { updatedAt: { lt: new Date(cursorUpdatedAt) } },
-      { updatedAt: new Date(cursorUpdatedAt), id: { lt: cursorId } },
-    ]
+    andClauses.push({
+      OR: [
+        { updatedAt: { lt: new Date(cursorUpdatedAt) } },
+        { updatedAt: new Date(cursorUpdatedAt), id: { lt: cursorId } },
+      ],
+    })
   }
 
-  const items = await prisma.job.findMany({
+  if (andClauses.length > 0) {
+    where.AND = andClauses
+  }
+
+  const rawItems = await prisma.job.findMany({
     where,
     select: JOB_LIST_SELECT,
     orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
     take: limit + 1,
   })
 
+  const items = rawItems.map((job) => ({
+    id: job.id,
+    jobNumber: job.jobNumber,
+    title: job.title,
+    status: job.status,
+    partyId: job.partyId,
+    partyName: job.party?.name ?? '',
+    scheduledAt: job.scheduledAt,
+    totalPaise: job.totalPaise,
+    invoiceId: job.invoiceId,
+    updatedAt: job.updatedAt,
+  }))
+
   let nextCursor: string | null = null
-  if (items.length > limit) {
-    const last = items[limit - 1]
+  if (rawItems.length > limit) {
+    const last = rawItems[limit - 1]
     nextCursor = `${last.updatedAt.toISOString()}_${last.id}`
     items.splice(limit)
   }

@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { PartySearchInput } from '@/features/invoices/components/PartySearchInput'
 import { formatPaise, totalsFromItems } from '../jobs.utils'
 import type { CreateJobInput, CreateJobItemInput } from '../api/jobs.api.types'
@@ -39,7 +40,9 @@ function fromDetail(detail: JobDetail): { partyId: string; title: string; descri
   }
 }
 
-export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel = 'Save Job' }: JobFormProps) {
+export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: JobFormProps) {
+  const { t } = useLanguage()
+  const resolvedSubmitLabel = submitLabel ?? t.saveJob
   const init = initialData ? fromDetail(initialData) : { partyId: '', title: '', description: '', scheduledAt: '', items: [makeItem()] }
 
   const [partyId, setPartyId]         = useState(init.partyId)
@@ -65,11 +68,11 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel = 'Sa
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {}
-    if (!partyId) errs.partyId = 'Customer / supplier is required'
-    if (!title.trim()) errs.title = 'Job title is required'
-    if (items.length === 0) errs.items = 'At least one item is required'
+    if (!partyId) errs.partyId = t.jobItemRequired
+    if (!title.trim()) errs.title = t.jobTitleRequired
+    if (items.length === 0) errs.items = t.jobAtLeastOneItem
     for (const it of items) {
-      if (!it.description.trim()) { errs.items = 'All items need a description'; break }
+      if (!it.description.trim()) { errs.items = t.jobItemDescRequired; break }
     }
     setErrors(errs)
     return Object.keys(errs).length === 0
@@ -96,14 +99,14 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel = 'Sa
 
       {/* Title */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-        <label className="label" htmlFor="job-title">Job Title *</label>
+        <label className="label" htmlFor="job-title">{t.jobTitleLabel} *</label>
         <input
           id="job-title"
           type="text"
           className="input"
           value={title}
           onChange={(e) => { setTitle(e.target.value); if (e.target.value) setErrors((p) => { const n = { ...p }; delete n.title; return n }) }}
-          placeholder="e.g. AC Repair, Website Design"
+          placeholder={t.jobTitlePlaceholder}
           maxLength={200}
           aria-required="true"
           aria-invalid={Boolean(errors.title)}
@@ -113,13 +116,13 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel = 'Sa
 
       {/* Description */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-        <label className="label" htmlFor="job-desc">Description (optional)</label>
+        <label className="label" htmlFor="job-desc">{t.jobDescLabel}</label>
         <textarea
           id="job-desc"
           className="input"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Job details, scope of work..."
+          placeholder={t.jobDescPlaceholder}
           rows={3}
           maxLength={5000}
           style={{ resize: 'vertical', minHeight: 80 }}
@@ -128,7 +131,7 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel = 'Sa
 
       {/* Scheduled date */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-        <label className="label" htmlFor="job-scheduled">Scheduled Date &amp; Time (optional)</label>
+        <label className="label" htmlFor="job-scheduled">{t.jobScheduledLabel}</label>
         <input
           id="job-scheduled"
           type="datetime-local"
@@ -141,14 +144,14 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel = 'Sa
       {/* Line items */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span className="label" style={{ margin: 0 }}>Items *</span>
+          <span className="label" style={{ margin: 0 }}>{t.jobItemsLabel} *</span>
           {errors.items && <span className="field-error" role="alert">{errors.items}</span>}
         </div>
 
         {items.map((item, idx) => (
           <div key={item._key} style={{ border: '1px solid var(--color-border)', borderRadius: 8, padding: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)', fontWeight: 500 }}>Item {idx + 1}</span>
+              <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)', fontWeight: 500 }}>{t.jobItemLabel} {idx + 1}</span>
               {items.length > 1 && (
                 <button type="button" onClick={() => removeItem(item._key)} aria-label="Remove item" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-error-600)', minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Trash2 size={16} aria-hidden="true" />
@@ -160,13 +163,13 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel = 'Sa
               className="input"
               value={item.description}
               onChange={(e) => updateItem(item._key, 'description', e.target.value)}
-              placeholder="Description / service name"
+              placeholder={t.jobItemDescPlaceholder}
               maxLength={500}
-              aria-label={`Item ${idx + 1} description`}
+              aria-label={`${t.jobItemLabel} ${idx + 1} description`}
             />
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-2)' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <label style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>Qty</label>
+                <label style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>{t.jobItemQtyLabel}</label>
                 <input
                   type="number"
                   className="input"
@@ -174,11 +177,11 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel = 'Sa
                   min="0"
                   step="0.001"
                   onChange={(e) => updateItem(item._key, 'quantity', e.target.value)}
-                  aria-label={`Item ${idx + 1} quantity`}
+                  aria-label={`${t.jobItemLabel} ${idx + 1} quantity`}
                 />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <label style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>Rate (₹)</label>
+                <label style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>{t.jobItemRateLabel}</label>
                 <input
                   type="number"
                   className="input"
@@ -186,11 +189,11 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel = 'Sa
                   min="0"
                   step="0.01"
                   onChange={(e) => updateItem(item._key, 'ratePaise', Math.round(parseFloat(e.target.value || '0') * 100))}
-                  aria-label={`Item ${idx + 1} rate`}
+                  aria-label={`${t.jobItemLabel} ${idx + 1} rate`}
                 />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <label style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>Discount (₹)</label>
+                <label style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>{t.jobItemDiscountLabel}</label>
                 <input
                   type="number"
                   className="input"
@@ -198,7 +201,7 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel = 'Sa
                   min="0"
                   step="0.01"
                   onChange={(e) => updateItem(item._key, 'discountPaise', Math.round(parseFloat(e.target.value || '0') * 100))}
-                  aria-label={`Item ${idx + 1} discount`}
+                  aria-label={`${t.jobItemLabel} ${idx + 1} discount`}
                 />
               </div>
             </div>
@@ -206,24 +209,24 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel = 'Sa
         ))}
 
         <button type="button" className="btn btn-ghost btn-sm" onClick={addItem} style={{ alignSelf: 'flex-start', minHeight: 44 }}>
-          <Plus size={16} aria-hidden="true" /> Add Item
+          <Plus size={16} aria-hidden="true" /> {t.jobAddItem}
         </button>
       </div>
 
       {/* Totals summary */}
       <div style={{ borderTop: '2px solid var(--color-border)', paddingTop: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 'var(--space-1)', alignItems: 'flex-end' }}>
         <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
-          <span>Subtotal:</span>
+          <span>{t.jobSubtotalLabel}</span>
           <span>₹{formatPaise(totals.subtotalPaise)}</span>
         </div>
         {totals.discountPaise > 0 && (
           <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: 'var(--fs-sm)', color: 'var(--color-error-600)' }}>
-            <span>Discount:</span>
+            <span>{t.jobDiscountLabel}</span>
             <span>-₹{formatPaise(totals.discountPaise)}</span>
           </div>
         )}
         <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: 'var(--fs-md)', fontWeight: 700, color: 'var(--color-text)' }}>
-          <span>Total:</span>
+          <span>{t.jobTotalLabel}</span>
           <span>₹{formatPaise(totals.totalPaise)}</span>
         </div>
       </div>
@@ -234,7 +237,7 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel = 'Sa
         disabled={isSubmitting}
         style={{ minHeight: 48, width: '100%' }}
       >
-        {isSubmitting ? 'Saving...' : submitLabel}
+        {isSubmitting ? t.savingJob : resolvedSubmitLabel}
       </button>
     </form>
   )
