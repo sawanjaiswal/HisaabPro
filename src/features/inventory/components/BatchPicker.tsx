@@ -25,7 +25,12 @@ function formatExpiry(iso: string): string {
   return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
-function ExpiryBadge({ isExpired, expiryDate }: { isExpired: boolean; expiryDate: string | null }) {
+function ExpiryBadge({ isExpired, expiryDate, expiredLabel, daysLeftLabel }: {
+  isExpired: boolean
+  expiryDate: string | null
+  expiredLabel: string
+  daysLeftLabel: string
+}) {
   if (!expiryDate) return null
   const today = new Date()
   const exp = new Date(expiryDate)
@@ -34,14 +39,14 @@ function ExpiryBadge({ isExpired, expiryDate }: { isExpired: boolean; expiryDate
   if (isExpired) {
     return (
       <span style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-danger)', background: 'var(--color-danger-surface, #fff1f0)', borderRadius: 'var(--radius-sm)', padding: '2px 6px', whiteSpace: 'nowrap' }}>
-        Expired
+        {expiredLabel}
       </span>
     )
   }
   if (daysLeft <= 30) {
     return (
       <span style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-warning)', background: 'var(--color-warning-surface, #fffbeb)', borderRadius: 'var(--radius-sm)', padding: '2px 6px', whiteSpace: 'nowrap' }}>
-        {daysLeft}d left
+        {daysLeft}{daysLeftLabel}
       </span>
     )
   }
@@ -106,9 +111,9 @@ function BatchRow({
             </span>
           )}
           <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>
-            Avail: <strong style={{ color: batch.currentStock === 0 ? 'var(--color-danger)' : 'var(--color-text-primary)' }}>{batch.currentStock}</strong>
+            {t.batchPickerAvail}: <strong style={{ color: batch.currentStock === 0 ? 'var(--color-danger)' : 'var(--color-text-primary)' }}>{batch.currentStock}</strong>
           </span>
-          <ExpiryBadge isExpired={batch.isExpired} expiryDate={batch.expiryDate} />
+          <ExpiryBadge isExpired={batch.isExpired} expiryDate={batch.expiryDate} expiredLabel={t.expired} daysLeftLabel="d" />
         </div>
       </div>
       {selected && (
@@ -170,7 +175,7 @@ export function BatchPicker({
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close batch picker"
+            aria-label={t.batchPickerClose}
             style={{ minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}
           >
             <X size={20} aria-hidden="true" />
@@ -191,14 +196,14 @@ export function BatchPicker({
           <div role="alert" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', color: 'var(--color-danger)', fontSize: 'var(--text-sm)' }}>
             <AlertTriangle size={16} aria-hidden="true" />
             <span>{error}</span>
-            <button type="button" onClick={refetch} className="btn btn-sm" style={{ marginLeft: 'auto' }}>Retry</button>
+            <button type="button" onClick={refetch} className="btn btn-sm" style={{ marginLeft: 'auto' }}>{t.batchPickerRetry}</button>
           </div>
         )}
 
         {/* Empty */}
         {status === 'success' && batches.length === 0 && (
           <div style={{ textAlign: 'center', padding: 'var(--space-6)', color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)' }}>
-            No available batches for this product.
+            {t.batchPickerNoneAvailable}
           </div>
         )}
 

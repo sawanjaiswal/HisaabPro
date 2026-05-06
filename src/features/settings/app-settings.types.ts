@@ -87,4 +87,6 @@ export interface SettingsItem {
   route?: string
   type: 'navigation' | 'toggle' | 'select'
   value?: string | boolean
+  /** When true, hide this item for verticals where stockTracking !== true */
+  requiresStock?: boolean
 }

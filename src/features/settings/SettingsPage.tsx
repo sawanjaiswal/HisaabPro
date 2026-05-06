@@ -27,6 +27,7 @@ import {
   Percent,
   Briefcase,
   Ruler,
+  Package,
   LogOut,
 } from 'lucide-react'
 import type { LucideProps } from 'lucide-react'
@@ -39,6 +40,7 @@ import { ROUTES } from '@/config/routes.config'
 import { useTheme } from '@/context/ThemeContext'
 import { useLanguage } from '@/context/LanguageContext'
 import { useAuth } from '@/context/AuthContext'
+import { useVertical } from '@/hooks/useVertical'
 import { useAppSettings } from './useAppSettings'
 import { SettingsSection } from './components/SettingsSection'
 import { SettingsSkeleton } from './components/SettingsSkeleton'
@@ -68,6 +70,7 @@ const ICON_MAP: Record<string, IconComponent> = {
   Percent,
   Briefcase,
   Ruler,
+  Package,
 }
 
 function getNextDateFormat(current: DateFormat): DateFormat {
@@ -98,7 +101,10 @@ export default function SettingsPage() {
   const { theme, toggleTheme } = useTheme()
   const { language, setLanguage, t } = useLanguage()
   const { handleLogout } = useAuth()
+  const vertical = useVertical()
   const [confirmLogout, setConfirmLogout] = useState(false)
+
+  const hasStock = vertical.defaults?.stockTracking === true
 
   function onLogout() {
     setConfirmLogout(true)
@@ -161,14 +167,20 @@ export default function SettingsPage() {
 
         {status === 'success' && (
           <div className="settings-page stagger-enter space-y-6">
-            {SETTINGS_SECTIONS.map((section) => (
-              <SettingsSection
-                key={section.id}
-                section={section}
-                onItemClick={handleItemClick}
-                settings={{ ...settings, theme, language }}
-              />
-            ))}
+            {SETTINGS_SECTIONS.map((section) => {
+              const filteredItems = section.items.filter(
+                (item) => !item.requiresStock || hasStock
+              )
+              if (filteredItems.length === 0) return null
+              return (
+                <SettingsSection
+                  key={section.id}
+                  section={{ ...section, items: filteredItems }}
+                  onItemClick={handleItemClick}
+                  settings={{ ...settings, theme, language }}
+                />
+              )
+            })}
 
             <button
               type="button"

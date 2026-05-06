@@ -114,6 +114,7 @@ export const SerialLookup = lazy(() => import('@/features/serial-numbers/SerialL
 export const Pos = lazy(() => import('@/features/pos/PosPage'))
 
 export const StaffPermissions = lazy(() => import('@/features/settings/StaffPermissionsPage'))
+export const InventorySettings = lazy(() => import('@/features/settings/InventorySettingsPage'))
 
 // Inventory Phase 2 — Purchase + Alerts
 export const Purchases = lazy(() => import('@/features/purchases/PurchasesPage'))

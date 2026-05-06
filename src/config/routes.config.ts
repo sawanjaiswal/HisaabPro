@@ -86,6 +86,7 @@ export const ROUTES = {
   SMART_GREETINGS: '/greetings',
   SETTINGS_UNITS: '/settings/units',
   SETTINGS_PERMISSIONS: '/settings/permissions',
+  SETTINGS_INVENTORY: '/settings/inventory',
   JOIN_BUSINESS: '/join',
   CREATE_BUSINESS: '/business/create',
   BUSINESS_TYPE: '/business/type',

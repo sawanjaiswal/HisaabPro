@@ -8,7 +8,7 @@ import { prisma } from '../lib/prisma.js'
 import { conflictError, validationError } from '../lib/errors.js'
 import logger from '../lib/logger.js'
 import { DEFAULT_CATEGORIES } from '../config/defaults.js'
-import type { CreateBusinessInput } from '../schemas/business.schemas.js'
+import type { CreateBusinessInput, UpdateBusinessInput } from '../schemas/business.schemas.js'
 import { ensureSystemRoles } from './settings.service.js'
 import { applyVerticalDefaults } from './verticals/defaults.js'
 import { cloneBusinessSettings } from './business-clone.helper.js'
@@ -125,6 +125,9 @@ const BUSINESS_SELECT = {
   isActive: true,
   createdAt: true,
   updatedAt: true,
+  // Inventory settings (BAT-07)
+  expiryAlertDays: true,
+  expiredBatchPolicy: true,
 } as const
 
 export async function getBusiness(businessId: string) {
@@ -138,7 +141,7 @@ export async function getBusiness(businessId: string) {
 
 export async function updateBusiness(
   businessId: string,
-  data: Partial<Omit<CreateBusinessInput, never>>
+  data: UpdateBusinessInput
 ) {
   const business = await prisma.business.update({
     where: { id: businessId },
@@ -151,6 +154,9 @@ export async function updateBusiness(
       ...(data.city !== undefined && { city: data.city }),
       ...(data.state !== undefined && { state: data.state }),
       ...(data.pincode !== undefined && { pincode: data.pincode }),
+      // Inventory settings (BAT-07)
+      ...(data.expiryAlertDays !== undefined && { expiryAlertDays: data.expiryAlertDays }),
+      ...(data.expiredBatchPolicy !== undefined && { expiredBatchPolicy: data.expiredBatchPolicy }),
     },
     select: BUSINESS_SELECT,
   })

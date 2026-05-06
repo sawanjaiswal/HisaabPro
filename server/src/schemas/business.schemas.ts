@@ -27,7 +27,10 @@ export const updateBusinessSchema = z.object({
   city: z.string().max(100).nullable().optional(),
   state: z.string().max(100).nullable().optional(),
   pincode: z.string().max(20).nullable().optional(),
-})
+  // Inventory settings (BAT-07)
+  expiryAlertDays: z.number().int().min(1).max(365).optional(),
+  expiredBatchPolicy: z.enum(['WARN_ONLY', 'HARD_BLOCK']).optional(),
+}).strict()
 
 // Inferred types
 export type CreateBusinessInput = z.infer<typeof createBusinessSchema>

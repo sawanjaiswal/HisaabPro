@@ -144,6 +144,15 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
         route: ROUTES.SETTINGS_UNITS,
         type: 'navigation',
       },
+      {
+        id: 'inventory',
+        label: 'Inventory',
+        description: 'Expiry alerts and expired batch policy',
+        icon: 'Package',
+        route: ROUTES.SETTINGS_INVENTORY,
+        type: 'navigation',
+        requiresStock: true,
+      },
     ],
   },
   {

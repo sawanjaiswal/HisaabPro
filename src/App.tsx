@@ -38,7 +38,7 @@ import {
   Godowns, CreateGodown, EditGodown, GodownDetail, GodownTransfer,
   StockVerifications, VerificationDetail,
   Serials, CreateSerial, BulkCreateSerial, SerialLookup, Pos,
-  Jobs, JobNew, JobDetail, JobEdit,
+  Jobs, JobNew, JobDetail, JobEdit, InventorySettings,
   CustomOrders, CustomOrderNew, CustomOrderDetail, CustomOrderEdit,
   BackfillWizard,
   Gstr1Page,
@@ -126,6 +126,7 @@ export function App() {
         <Route path={ROUTES.SETTINGS_TAX_RATE_EDIT} element={<PageRoute><ProtectedRoute><EditTaxCategory /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_CURRENCY} element={<PageRoute><ProtectedRoute><CurrencySettings /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_UNITS} element={<PageRoute><ProtectedRoute><Units /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_INVENTORY} element={<PageRoute><ProtectedRoute><InventorySettings /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.RECURRING} element={<PageRoute><ProtectedRoute><PlanGate feature="recurringInvoices" featureLabel="Recurring Invoices"><RecurringList /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.RECURRING_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="recurringInvoices" featureLabel="Recurring Invoices"><RecurringForm /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.RECURRING_EDIT} element={<PageRoute><ProtectedRoute><PlanGate feature="recurringInvoices" featureLabel="Recurring Invoices"><RecurringForm /></PlanGate></ProtectedRoute></PageRoute>} />
