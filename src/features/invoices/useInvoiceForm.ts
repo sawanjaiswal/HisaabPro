@@ -26,12 +26,11 @@ import type {
   AdditionalChargeFormData,
   RoundOffSetting,
 } from './invoice.types'
-import type { UseInvoiceFormOptions, UseInvoiceFormReturn, FormSection, StockShortageItem, BatchErrorCode } from './invoice-form.types'
+import type { UseInvoiceFormOptions, UseInvoiceFormReturn, FormSection, StockShortageItem } from './invoice-form.types'
 import { buildInitialForm, validateInvoiceForm, normalizeFormPayload } from './invoice-form.utils'
 import { useStockValidation } from './useStockValidation'
 import { useGstInvoice } from './useGstInvoice'
-
-// ─── Hook ─────────────────────────────────────────────────────────────────────
+import { useInvoiceFormBatchErrors } from './useInvoiceFormBatchErrors'
 
 export function useInvoiceForm(
   type: DocumentType = 'SALE_INVOICE',
@@ -49,8 +48,7 @@ export function useInvoiceForm(
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [activeSection, setActiveSection] = useState<FormSection>('items')
   const [stockShortageItems, setStockShortageItems] = useState<StockShortageItem[]>([])
-  const [batchErrorCode, setBatchErrorCode] = useState<BatchErrorCode | null>(null)
-  const [batchErrorLineIndex, setBatchErrorLineIndex] = useState<number | null>(null)
+  const { batchErrorCode, batchErrorLineIndex, clearBatchError, onBatchError } = useInvoiceFormBatchErrors()
 
   // ─── Field update ──────────────────────────────────────────────────────────
 
@@ -127,9 +125,6 @@ export function useInvoiceForm(
   // ─── Stock validation ─────────────────────────────────────────────────────
 
   const { stockWarnings, hasStockBlocks } = useStockValidation(form.lineItems, type)
-
-  // ─── Validation ───────────────────────────────────────────────────────────
-
   const { gstEnabled } = useGstInvoice({
     form,
     isSubmitting: false,
@@ -157,8 +152,7 @@ export function useInvoiceForm(
     },
     onSuccess: (result) => {
       setStockShortageItems([])
-      setBatchErrorCode(null)
-      setBatchErrorLineIndex(null)
+      clearBatchError()
 
       // BAT-05: WARN_ONLY — response may include expiry warnings
       const raw = result as { mode: string; targetStatus: string; editId?: string; warnings?: { type: string }[] }
@@ -187,9 +181,7 @@ export function useInvoiceForm(
         }
       }
       // BAT-05: batch expiry 409 codes
-      const batchCodes: BatchErrorCode[] = ['EXPIRED_BATCH', 'ALL_BATCHES_EXPIRED', 'INSUFFICIENT_BATCH_STOCK']
-      if (err instanceof ApiError && batchCodes.includes(err.code as BatchErrorCode)) {
-        setBatchErrorCode(err.code as BatchErrorCode)
+      if (onBatchError(err)) {
         setActiveSection('items')
         return
       }
@@ -239,10 +231,6 @@ export function useInvoiceForm(
   }, [type, initialData])
 
   const clearStockShortage = useCallback(() => setStockShortageItems([]), [])
-  const clearBatchError = useCallback(() => {
-    setBatchErrorCode(null)
-    setBatchErrorLineIndex(null)
-  }, [])
 
   return {
     form, errors, isSubmitting, isEditMode, activeSection, setActiveSection,
@@ -257,5 +245,4 @@ export function useInvoiceForm(
 }
 
 // Re-export types for consumers
-export type { FormSection, UseInvoiceFormOptions, UseInvoiceFormReturn } from './invoice-form.types'
-export type { PaymentTerms, DocumentType, RoundOffSetting } from './invoice-form.types'
+export type { FormSection, UseInvoiceFormOptions, UseInvoiceFormReturn, PaymentTerms, DocumentType, RoundOffSetting } from './invoice-form.types'

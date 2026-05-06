@@ -235,23 +235,6 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
   },
 ]
 
-// ─── Defaults ─────────────────────────────────────────────────────────────────
+// ─── Defaults (moved to settings-inventory.constants.ts) ──────────────────────
 
-export const DEFAULT_APP_SETTINGS = {
-  dateFormat:          'DD/MM/YYYY' as const,
-  pinEnabled:          false,
-  biometricEnabled:    false,
-  operationPinSet:     false,
-  calculatorPosition:  'BOTTOM_RIGHT' as const,
-  language:            'en',
-  theme:               'light' as const,
-}
-
-export const DEFAULT_TRANSACTION_LOCK_CONFIG = {
-  lockAfterDays:                 null,
-  requireApprovalForEdit:        false,
-  requireApprovalForDelete:      false,
-  priceChangeThresholdPercent:   null,
-  discountThresholdPercent:      null,
-  operationPinSet:               false,
-}
+export { DEFAULT_APP_SETTINGS, DEFAULT_TRANSACTION_LOCK_CONFIG } from './settings-inventory.constants'
