@@ -1,6 +1,8 @@
 /** PauseConfirmSheet — bottom sheet confirmation for pausing a schedule */
 
+import { useRef } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface PauseConfirmSheetProps {
   open: boolean
@@ -18,6 +20,8 @@ export function PauseConfirmSheet({
   onConfirm,
 }: PauseConfirmSheetProps) {
   const { t } = useLanguage()
+  const sheetRef = useRef<HTMLDivElement>(null)
+  useFocusTrap(sheetRef, { active: open, onEscape: onCancel, disabled: isPausing })
 
   if (!open) return null
 
@@ -30,6 +34,7 @@ export function PauseConfirmSheet({
         aria-hidden="true"
       />
       <div
+        ref={sheetRef}
         className="recurring-sheet"
         role="dialog"
         aria-modal="true"

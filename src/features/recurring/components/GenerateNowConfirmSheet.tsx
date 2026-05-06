@@ -1,7 +1,9 @@
 /** GenerateNowConfirmSheet — bottom sheet confirmation for generate-now action */
 
+import { useRef } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatDate } from '@/lib/format'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface GenerateNowConfirmSheetProps {
   open: boolean
@@ -21,6 +23,8 @@ export function GenerateNowConfirmSheet({
   onConfirm,
 }: GenerateNowConfirmSheetProps) {
   const { t } = useLanguage()
+  const sheetRef = useRef<HTMLDivElement>(null)
+  useFocusTrap(sheetRef, { active: open, onEscape: onCancel, disabled: isGenerating })
 
   if (!open) return null
 
@@ -33,6 +37,7 @@ export function GenerateNowConfirmSheet({
         aria-hidden="true"
       />
       <div
+        ref={sheetRef}
         className="recurring-sheet"
         role="dialog"
         aria-modal="true"

@@ -1,10 +1,13 @@
 /**
  * EWayBillUpdatePartBDialog — vehicle update form + history list.
+ *
+ * A11y: Focus trap + Escape handler + label association.
  */
 
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { useUpdatePartB } from './useEWayBill'
 import type { PartBEntry } from './e-way-bill.types'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface Props {
   open: boolean
@@ -21,6 +24,9 @@ export const EWayBillUpdatePartBDialog: React.FC<Props> = ({ open, documentId, p
   const update = useUpdatePartB(documentId)
   const [vehicleNumber, setVehicleNumber] = useState('')
   const [vehicleType, setVehicleType] = useState<'REGULAR' | 'ODC'>('REGULAR')
+  const dialogRef = useRef<HTMLDivElement>(null)
+
+  useFocusTrap(dialogRef, { active: open, onEscape: onDismiss, disabled: update.isPending })
 
   if (!open) return null
 
@@ -38,37 +44,64 @@ export const EWayBillUpdatePartBDialog: React.FC<Props> = ({ open, documentId, p
     )
   }
 
+  function handleDismiss() {
+    onDismiss()
+  }
+
+  const titleId = 'ewb-partb-title'
+
   return (
-    <div role="dialog" aria-modal="true" aria-label="Update Part B — Vehicle Details" style={{
-      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 1000,
-      display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
-    }}>
-      <div style={{ background: '#fff', borderRadius: '16px 16px 0 0', width: '100%', maxWidth: 480, padding: '1.5rem', maxHeight: '85vh', overflowY: 'auto' }}>
-        <h2 style={{ fontWeight: 700, fontSize: '1.125rem', marginBottom: '1rem' }}>Update Part B — Vehicle</h2>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      style={{
+        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 1000,
+        display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget && !update.isPending) handleDismiss()
+      }}
+    >
+      <div
+        ref={dialogRef}
+        style={{ background: '#fff', borderRadius: '16px 16px 0 0', width: '100%', maxWidth: 480, padding: '1.5rem', maxHeight: '85vh', overflowY: 'auto' }}
+      >
+        <h2 id={titleId} style={{ fontWeight: 700, fontSize: '1.125rem', marginBottom: '1rem' }}>Update Part B — Vehicle</h2>
 
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
-            <label style={{ fontSize: '0.875rem' }}>
-              New Vehicle Number <span style={{ color: '#dc2626' }}>*</span>
+            <div>
+              <label htmlFor="ewb-vehicle-number" style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem' }}>
+                New Vehicle Number <span style={{ color: '#dc2626' }}>*</span>
+              </label>
               <input
+                id="ewb-vehicle-number"
                 value={vehicleNumber}
                 onChange={(e) => setVehicleNumber(e.target.value)}
                 className="input"
                 placeholder="MH12AB5678"
                 maxLength={20}
                 required
-                style={{ marginTop: '0.25rem', width: '100%' }}
+                style={{ width: '100%' }}
               />
-            </label>
+            </div>
 
-            <label style={{ fontSize: '0.875rem' }}>
-              Vehicle Type
-              <select value={vehicleType} onChange={(e) => setVehicleType(e.target.value as 'REGULAR' | 'ODC')}
-                className="input" style={{ marginTop: '0.25rem', width: '100%' }}>
+            <div>
+              <label htmlFor="ewb-partb-vehicle-type" style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem' }}>
+                Vehicle Type
+              </label>
+              <select
+                id="ewb-partb-vehicle-type"
+                value={vehicleType}
+                onChange={(e) => setVehicleType(e.target.value as 'REGULAR' | 'ODC')}
+                className="input"
+                style={{ width: '100%' }}
+              >
                 <option value="REGULAR">Regular</option>
                 <option value="ODC">ODC (Over-Dimensional Cargo)</option>
               </select>
-            </label>
+            </div>
           </div>
 
           {update.error && (
@@ -78,7 +111,7 @@ export const EWayBillUpdatePartBDialog: React.FC<Props> = ({ open, documentId, p
           )}
 
           <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
-            <button type="button" className="btn btn-secondary btn-md" onClick={onDismiss} style={{ flex: 1 }}>
+            <button type="button" className="btn btn-secondary btn-md" onClick={handleDismiss} disabled={update.isPending} style={{ flex: 1 }}>
               Cancel
             </button>
             <button type="submit" className="btn btn-primary btn-md" disabled={update.isPending} style={{ flex: 1 }}>
