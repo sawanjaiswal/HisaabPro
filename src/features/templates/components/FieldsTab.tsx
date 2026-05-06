@@ -61,6 +61,23 @@ export const FieldsTab: React.FC<FieldsTabProps> = ({ config, onChange }) => {
         <ToggleRow label={t.qrCodeLabel}             checked={f.qrCode}               ariaLabel={t.showQrCode}               onChange={(v) => patchFields({ qrCode: v })} />
         <ToggleRow label={t.watermarkLabel}          checked={f.watermark}            ariaLabel={t.showWatermark}            onChange={(v) => patchFields({ watermark: v })} />
       </Section>
+
+      <Section title={t.gstTemplateSection}>
+        <ToggleRow
+          label={t.gstTaxSummaryLabel}
+          sublabel={t.gstTaxSummaryDesc}
+          checked={f.gstTaxSummary === true}
+          ariaLabel={t.showGstTaxSummary}
+          onChange={(v) => patchFields({ gstTaxSummary: v })}
+        />
+        <ToggleRow
+          label={t.gstDeclarationToggleLabel}
+          sublabel={t.gstDeclarationToggleDesc}
+          checked={f.gstDeclaration === true}
+          ariaLabel={t.showGstDeclaration}
+          onChange={(v) => patchFields({ gstDeclaration: v })}
+        />
+      </Section>
     </>
   )
 }
