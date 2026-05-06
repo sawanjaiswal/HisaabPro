@@ -38,4 +38,22 @@ export function getNicIrpCreds(): NicIrpCreds {
   }
 }
 
+// ─── NIC EWB credentials ──────────────────────────────────────────────────────
+
+interface NicEwbCreds {
+  username: string
+  password: string
+}
+
+/**
+ * Read NIC EWB credentials from environment.
+ * Throws NicNotConfiguredError when missing (caller short-circuits to stub mode).
+ */
+export function getNicEwbCreds(): NicEwbCreds {
+  const username = process.env.NIC_EWB_USERNAME
+  const password = process.env.NIC_EWB_PASSWORD
+  if (!username || !password) throw new NicNotConfiguredError()
+  return { username, password }
+}
+
 export { NicNotConfiguredError }

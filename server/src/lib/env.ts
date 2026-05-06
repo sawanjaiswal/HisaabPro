@@ -29,11 +29,19 @@ export function validateNicEnv(): void {
     )
   }
 
-  const hasCredentials = Boolean(process.env.NIC_IRP_USERNAME)
-  if (!hasCredentials) {
+  const hasIrpCreds = Boolean(process.env.NIC_IRP_USERNAME)
+  if (!hasIrpCreds) {
     logger.warn('NIC_STUB_MODE_ACTIVE: NIC_IRP_USERNAME not set — e-invoice running in stub mode')
   } else {
     logger.info('NIC_IRP_CONFIGURED', { env: nicEnv })
+  }
+
+  // EWB credentials (optional — stub mode when absent)
+  const hasEwbCreds = Boolean(process.env.NIC_EWB_USERNAME)
+  if (!hasEwbCreds) {
+    logger.warn('NIC_EWB_STUB_MODE_ACTIVE: NIC_EWB_USERNAME not set — e-way bill running in stub mode')
+  } else {
+    logger.info('NIC_EWB_CONFIGURED', { env: nicEnv })
   }
 }
 

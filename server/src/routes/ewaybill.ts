@@ -1,10 +1,7 @@
 /**
- * E-Way Bill Routes — Generate, cancel, update Part-B, retrieve EWB
- *
- * POST /api/ewaybill/generate      { documentId, transportMode, ... }
- * POST /api/ewaybill/cancel        { documentId, reason }
- * PUT  /api/ewaybill/update-partb  { documentId, vehicleNumber, vehicleType? }
- * GET  /api/ewaybill/:documentId
+ * E-Way Bill Routes — Generate (201/200 idempotent), Update Part-B, Cancel, Get.
+ * Auth + plan gate + nic-rate-limit + Idempotency-Key (POST/PUT) + Zod.
+ * MB-1: ewbNumber never read from request body — always from DB.
  */
 
 import { Router } from 'express'
@@ -14,6 +11,7 @@ import { auth } from '../middleware/auth.js'
 import { requirePermission } from '../middleware/permission.js'
 import { requirePlan } from '../middleware/subscription-gate.js'
 import { sendSuccess } from '../lib/response.js'
+import { nicRateLimit } from '../middleware/nic-rate-limit.js'
 import {
   generateEWayBillSchema,
   cancelEWayBillSchema,
@@ -24,47 +22,49 @@ import type {
   CancelEWayBillInput,
   UpdatePartBInput,
 } from '../schemas/ecompliance.schemas.js'
-import * as ewaybillService from '../services/ewaybill.service.js'
+import * as svc from '../services/ewaybill/ewaybill.service.js'
 
 const router = Router()
 router.use(auth)
 router.use(requirePlan('BUSINESS'))
+router.use(nicRateLimit)
 
-/** POST /api/ewaybill/generate — Generate E-Way Bill for a saved invoice */
+/** POST /api/ewaybill/generate — 201 fresh, 200 idempotent */
 router.post(
   '/generate',
   requirePermission('invoicing.edit'),
   validate(generateEWayBillSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
-    const { documentId, ...transport } = req.body as GenerateEWayBillInput
-    const eWayBill = await ewaybillService.generateEWayBill(businessId, documentId, transport)
-    sendSuccess(res, eWayBill, 201)
+    const userId = req.user!.userId
+    const { documentId, ...partAInputs } = req.body as GenerateEWayBillInput
+    const { eWayBill, isIdempotent } = await svc.generateEWayBill(
+      documentId, businessId, userId,
+      {
+        transportMode: partAInputs.transportMode,
+        transporterId: partAInputs.transporterId,
+        transporterName: partAInputs.transporterName,
+        vehicleNumber: partAInputs.vehicleNumber,
+        vehicleType: partAInputs.vehicleType,
+        distance: partAInputs.distance,
+        fromPincode: partAInputs.fromPincode,
+        toPincode: partAInputs.toPincode,
+      }
+    )
+    sendSuccess(res, eWayBill, isIdempotent ? 200 : 201)
   })
 )
 
-/** POST /api/ewaybill/cancel — Cancel an E-Way Bill within 24 hours */
-router.post(
-  '/cancel',
-  requirePermission('invoicing.edit'),
-  validate(cancelEWayBillSchema),
-  asyncHandler(async (req, res) => {
-    const businessId = req.user!.businessId
-    const { documentId, reason } = req.body as CancelEWayBillInput
-    const eWayBill = await ewaybillService.cancelEWayBill(businessId, documentId, reason)
-    sendSuccess(res, eWayBill)
-  })
-)
-
-/** PUT /api/ewaybill/update-partb — Update vehicle details on an active E-Way Bill */
+/** PUT /api/ewaybill/update-partb — Update vehicle details */
 router.put(
   '/update-partb',
   requirePermission('invoicing.edit'),
   validate(updatePartBSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
+    const userId = req.user!.userId
     const { documentId, vehicleNumber, vehicleType } = req.body as UpdatePartBInput
-    const eWayBill = await ewaybillService.updatePartB(businessId, documentId, {
+    const eWayBill = await svc.updatePartB(documentId, businessId, userId, {
       vehicleNumber,
       vehicleType,
     })
@@ -72,12 +72,26 @@ router.put(
   })
 )
 
-/** GET /api/ewaybill/:documentId — Retrieve E-Way Bill record */
+/** POST /api/ewaybill/cancel */
+router.post(
+  '/cancel',
+  requirePermission('invoicing.edit'),
+  validate(cancelEWayBillSchema),
+  asyncHandler(async (req, res) => {
+    const businessId = req.user!.businessId
+    const userId = req.user!.userId
+    const { documentId, reason } = req.body as CancelEWayBillInput
+    const eWayBill = await svc.cancelEWayBill(documentId, businessId, userId, reason)
+    sendSuccess(res, eWayBill)
+  })
+)
+
+/** GET /api/ewaybill/:documentId */
 router.get(
   '/:documentId',
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
-    const eWayBill = await ewaybillService.getEWayBill(businessId, String(req.params.documentId))
+    const eWayBill = await svc.getEWayBill(String(req.params.documentId), businessId)
     sendSuccess(res, eWayBill)
   })
 )
