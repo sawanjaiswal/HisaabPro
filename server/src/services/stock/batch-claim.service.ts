@@ -21,6 +21,7 @@ import {
   type BatchForPolicy,
 } from './expiry-policy.js'
 import type { BatchClaim, BatchCandidateRow, BatchUpdateRow } from './batch-claim.types.js'
+import { resolveBatchAlerts } from './batch-expiry-alerts.service.js'
 
 export type { BatchClaim } from './batch-claim.types.js'
 
@@ -195,6 +196,20 @@ export async function claimBatchesFEFO(
     })
 
     remaining -= take
+
+    // Inline auto-resolve: when this claim drains the batch to 0, immediately
+    // resolve any open EXPIRY_NEAR / EXPIRY_PASSED alerts so they don't linger
+    // until the next 06:00 IST cron run.
+    const newStock = Number(updated[0].currentStock)
+    if (newStock <= 0) {
+      const resolved = await resolveBatchAlerts(tx, candidate.id)
+      if (resolved > 0) {
+        logger.info('FEFO batch sold-out: expiry alerts auto-resolved', {
+          batchId: candidate.id,
+          resolved,
+        })
+      }
+    }
 
     logger.info('FEFO batch claim segment', {
       batchId: candidate.id,
