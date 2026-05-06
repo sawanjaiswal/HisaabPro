@@ -5,6 +5,7 @@
 
 import type { ExtendedPrismaClient } from '../../lib/prisma.js'
 import { adjustStock } from './core.js'
+import { claimBatchesFEFO } from './batch-claim.service.js'
 import { checkAndCreateAlerts } from '../stock-alert.service.js'
 import { stockShortageError } from '../../lib/errors.js'
 import logger from '../../lib/logger.js'
@@ -18,6 +19,17 @@ export interface InvoiceStockItem {
   unitId?: string
   /** Unit purchase cost in paise. Required for purchase invoices to update weighted-avg cost. */
   unitCostPaise?: number
+  /**
+   * Set true for products with batchTracking === true (fetched from Product row by caller).
+   * When true, deductForSaleInvoice will use FEFO batch claim instead of product-level adjustStock.
+   */
+  batchTracking?: boolean
+  /**
+   * Client-supplied batchId (batch picker selection). When set and batchTracking is true,
+   * the claim is directed at this specific batch. When absent, server runs FEFO.
+   * (Full client-supplied path including policy enforcement is wired in BAT-03.)
+   */
+  batchId?: string
 }
 
 /** Deduct stock for sale invoice items. Call within a transaction.
@@ -89,18 +101,77 @@ export async function deductForSaleInvoice(
   // for WARN_ONLY adjustStock will lock them individually).
   const results = []
   for (const item of params.items) {
-    const result = await adjustStock(tx, {
-      productId: item.productId,
-      businessId: params.businessId,
-      quantity: -item.quantity,
-      type: 'SALE',
-      referenceType: 'SALE_INVOICE',
-      referenceId: params.invoiceId,
-      referenceNumber: params.invoiceNumber,
-      userId: params.userId,
-      cachedBusinessValidationMode,
-    })
-    results.push(result.movement)
+    if (item.batchTracking) {
+      // Batch-tracked path — FEFO claim + one StockMovement per batch segment
+      const claims = await claimBatchesFEFO(tx, item.productId, item.quantity)
+
+      for (const claim of claims) {
+        // Emit one StockMovement per batch claim segment (a single sale line
+        // can produce multiple movements when FEFO splits across batches).
+        const movement = await tx.stockMovement.create({
+          data: {
+            businessId: params.businessId,
+            productId: item.productId,
+            type: 'SALE',
+            quantity: -claim.qtyTaken,
+            // balanceAfter at batch level is tracked in Batch.currentStock;
+            // product-level balanceAfter is updated via a separate adjustStock call below.
+            balanceAfter: 0, // placeholder — updated after product-level deduct
+            batchId: claim.batchId,
+            referenceType: 'SALE_INVOICE',
+            referenceId: params.invoiceId,
+            referenceNumber: params.invoiceNumber,
+            movementDate: new Date(),
+            createdBy: params.userId,
+          },
+        })
+        results.push(movement)
+
+        logger.info('Batch FEFO movement emitted', {
+          batchId: claim.batchId,
+          qtyTaken: claim.qtyTaken,
+          costPriceAtClaim: claim.costPriceAtClaim?.toString() ?? null,
+          invoiceId: params.invoiceId,
+        })
+      }
+
+      // Also deduct from product-level currentStock so product stock rollup
+      // stays in sync with batch totals (product = sum of all its batch stocks).
+      const productResult = await adjustStock(tx, {
+        productId: item.productId,
+        businessId: params.businessId,
+        quantity: -item.quantity,
+        type: 'SALE',
+        referenceType: 'SALE_INVOICE',
+        referenceId: params.invoiceId,
+        referenceNumber: params.invoiceNumber,
+        userId: params.userId,
+        cachedBusinessValidationMode,
+      })
+
+      // Back-fill balanceAfter on batch movements with the product-level balance
+      const productBalanceAfter = productResult.newStock
+      for (const mov of results.slice(results.length - claims.length)) {
+        await tx.stockMovement.update({
+          where: { id: mov.id },
+          data: { balanceAfter: productBalanceAfter },
+        })
+      }
+    } else {
+      // Non-batch path — unchanged Phase 2.0 logic
+      const result = await adjustStock(tx, {
+        productId: item.productId,
+        businessId: params.businessId,
+        quantity: -item.quantity,
+        type: 'SALE',
+        referenceType: 'SALE_INVOICE',
+        referenceId: params.invoiceId,
+        referenceNumber: params.invoiceNumber,
+        userId: params.userId,
+        cachedBusinessValidationMode,
+      })
+      results.push(result.movement)
+    }
   }
   return results
 }
