@@ -110,8 +110,9 @@ router.get(
     sendSuccess(res, {
       items: report.items.map((item) => ({
         ...item,
-        weightedAvgCostPaise: item.weightedAvgCostPaise.toString(),
-        lineValuePaise: item.lineValuePaise.toString(),
+        unitCostPaise: item.unitCostPaise.toString(),
+        totalPaise: item.totalPaise.toString(),
+        expiryDate: item.expiryDate ? item.expiryDate.toISOString() : null,
       })),
       summary: {
         totalValuePaise: report.totalValuePaise.toString(),

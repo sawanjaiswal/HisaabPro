@@ -1,26 +1,29 @@
 /**
- * INV-04 — Stock Value Report Service Tests
+ * INV-04 — Stock Value Report Service Tests (updated for BAT-06)
  *
- * Tests getStockValueReport:
- *   - Empty result when no products
- *   - lineValuePaise = currentStock × weightedAvgCostPaise
- *   - Ordered by lineValuePaise DESC, id ASC
+ * The service now delegates to runValueQuery / runValueSummary (raw SQL).
+ * These tests mock prisma.$queryRaw directly.
+ *
+ * Tests:
+ *   - Empty result when no rows returned
+ *   - totalPaise = currentStock × unitCostPaise
+ *   - Ordering is preserved from DB (service doesn't re-sort)
  *   - Cursor pagination: nextCursor set when hasMore, absent on last page
- *   - Products with weightedAvgCostPaise=0 included (value=0)
- *   - totalValuePaise equals sum of all line values (BigInt safe)
+ *   - Products with unitCostPaise=0 included (value=0)
+ *   - totalValuePaise equals sum from summary query
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-// ── Hoisted mocks ────────────────────────────────────────────────────────────
+// ── Hoisted mocks ─────────────────────────────────────────────────────────────
 
-const { mockFindMany } = vi.hoisted(() => ({
-  mockFindMany: vi.fn(),
+const { mockQueryRaw } = vi.hoisted(() => ({
+  mockQueryRaw: vi.fn(),
 }))
 
 vi.mock('../../../lib/prisma.js', () => ({
   prisma: {
-    product: { findMany: mockFindMany },
+    $queryRaw: mockQueryRaw,
   },
 }))
 
@@ -30,16 +33,39 @@ vi.mock('../../../lib/logger.js', () => ({
 
 import { getStockValueReport } from '../value-report.service.js'
 
-// ── Helpers ─────────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-function makeProduct(
-  id: string,
+function makeRow(
+  productId: string,
   name: string,
   currentStock: number,
-  weightedAvgCostPaise: bigint,
+  unitCostPaise: bigint,
   sku: string | null = null
 ) {
-  return { id, name, sku, currentStock, weightedAvgCostPaise }
+  return {
+    kind: 'product' as const,
+    productId,
+    productName: name,
+    sku,
+    unit: 'pcs',
+    batchId: null,
+    batchNumber: null,
+    expiryDate: null,
+    currentStock,
+    unitCostPaise,
+    totalPaise: BigInt(Math.floor(currentStock * Number(unitCostPaise))),
+  }
+}
+
+function makeSummary(rows: ReturnType<typeof makeRow>[]) {
+  const total = rows.reduce((s, r) => s + r.totalPaise, BigInt(0))
+  return [{ total, cnt: BigInt(rows.length) }]
+}
+
+function setupMocks(rows: ReturnType<typeof makeRow>[]) {
+  mockQueryRaw
+    .mockResolvedValueOnce(rows)           // runValueQuery
+    .mockResolvedValueOnce(makeSummary(rows)) // runValueSummary
 }
 
 const BIZ = 'biz-1'
@@ -48,11 +74,14 @@ beforeEach(() => {
   vi.clearAllMocks()
 })
 
-// ── Tests ────────────────────────────────────────────────────────────────────
+// ── Tests ─────────────────────────────────────────────────────────────────────
 
 describe('getStockValueReport — empty case', () => {
   it('returns empty result with zero totals when no products', async () => {
-    mockFindMany.mockResolvedValue([])
+    mockQueryRaw
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([{ total: BigInt(0), cnt: BigInt(0) }])
+
     const report = await getStockValueReport(BIZ)
 
     expect(report.items).toEqual([])
@@ -62,66 +91,57 @@ describe('getStockValueReport — empty case', () => {
   })
 })
 
-describe('getStockValueReport — weighted-avg formula', () => {
-  it('computes lineValuePaise = currentStock × weightedAvgCostPaise', async () => {
-    mockFindMany.mockResolvedValue([
-      makeProduct('p1', 'Rice 5kg', 10, BigInt(5000)), // 10 × 5000 = 50000
-    ])
+describe('getStockValueReport — formula', () => {
+  it('computes totalPaise = currentStock × unitCostPaise', async () => {
+    const rows = [makeRow('p1', 'Rice 5kg', 10, BigInt(5000))] // 50000
+    setupMocks(rows)
 
     const report = await getStockValueReport(BIZ)
 
     expect(report.items).toHaveLength(1)
-    expect(report.items[0].lineValuePaise).toBe(BigInt(50000))
+    expect(report.items[0].totalPaise).toBe(BigInt(50000))
     expect(report.totalValuePaise).toBe(BigInt(50000))
   })
 
-  it('handles product with zero weighted-avg cost (value = 0)', async () => {
-    mockFindMany.mockResolvedValue([
-      makeProduct('p1', 'Free Gift', 5, BigInt(0)),
-    ])
+  it('handles product with zero cost (value = 0)', async () => {
+    const rows = [makeRow('p1', 'Free Gift', 5, BigInt(0))]
+    setupMocks(rows)
 
     const report = await getStockValueReport(BIZ)
 
-    expect(report.items[0].lineValuePaise).toBe(BigInt(0))
+    expect(report.items[0].totalPaise).toBe(BigInt(0))
     expect(report.totalValuePaise).toBe(BigInt(0))
   })
 })
 
 describe('getStockValueReport — ordering', () => {
-  it('orders results by lineValuePaise DESC', async () => {
-    mockFindMany.mockResolvedValue([
-      makeProduct('p1', 'Cheap Item', 10, BigInt(100)),     // lineValue = 1000
-      makeProduct('p2', 'Expensive Item', 5, BigInt(5000)), // lineValue = 25000
-      makeProduct('p3', 'Mid Item', 8, BigInt(500)),        // lineValue = 4000
-    ])
+  it('preserves DB-ordered results (highest totalPaise first)', async () => {
+    const rows = [
+      makeRow('p2', 'Expensive', 5, BigInt(5000)), // 25000
+      makeRow('p3', 'Mid',       8, BigInt(500)),  // 4000
+      makeRow('p1', 'Cheap',    10, BigInt(100)),  // 1000
+    ]
+    setupMocks(rows)
 
     const report = await getStockValueReport(BIZ)
 
-    expect(report.items[0].productId).toBe('p2') // 25000 highest
-    expect(report.items[1].productId).toBe('p3') // 4000
-    expect(report.items[2].productId).toBe('p1') // 1000
-  })
-
-  it('breaks ties by productId ASC', async () => {
-    mockFindMany.mockResolvedValue([
-      makeProduct('p2', 'Item B', 10, BigInt(100)), // lineValue = 1000
-      makeProduct('p1', 'Item A', 10, BigInt(100)), // lineValue = 1000
-    ])
-
-    const report = await getStockValueReport(BIZ)
-
-    expect(report.items[0].productId).toBe('p1') // p1 < p2 alphabetically
-    expect(report.items[1].productId).toBe('p2')
+    expect(report.items[0].productId).toBe('p2')
+    expect(report.items[1].productId).toBe('p3')
+    expect(report.items[2].productId).toBe('p1')
   })
 })
 
 describe('getStockValueReport — pagination', () => {
   it('sets nextCursor when more results exist', async () => {
-    mockFindMany.mockResolvedValue([
-      makeProduct('p1', 'A', 10, BigInt(500)), // 5000
-      makeProduct('p2', 'B', 8, BigInt(400)),  // 3200
-      makeProduct('p3', 'C', 6, BigInt(300)),  // 1800
-    ])
+    const allRows = [
+      makeRow('p1', 'A', 10, BigInt(500)),
+      makeRow('p2', 'B', 8, BigInt(400)),
+      makeRow('p3', 'C', 6, BigInt(300)),
+    ]
+    // limit=2: runValueQuery returns limit+1=3 rows
+    mockQueryRaw
+      .mockResolvedValueOnce(allRows)
+      .mockResolvedValueOnce(makeSummary(allRows))
 
     const report = await getStockValueReport(BIZ, { limit: 2 })
 
@@ -130,10 +150,11 @@ describe('getStockValueReport — pagination', () => {
   })
 
   it('returns null nextCursor on last page', async () => {
-    mockFindMany.mockResolvedValue([
-      makeProduct('p1', 'A', 10, BigInt(500)),
-      makeProduct('p2', 'B', 8, BigInt(400)),
-    ])
+    const rows = [
+      makeRow('p1', 'A', 10, BigInt(500)),
+      makeRow('p2', 'B', 8, BigInt(400)),
+    ]
+    setupMocks(rows) // limit=5, only 2 rows → no hasMore
 
     const report = await getStockValueReport(BIZ, { limit: 5 })
 
@@ -142,33 +163,40 @@ describe('getStockValueReport — pagination', () => {
   })
 
   it('respects cursor to fetch next page', async () => {
-    const products = [
-      makeProduct('p1', 'A', 10, BigInt(500)), // 5000
-      makeProduct('p2', 'B', 8, BigInt(400)),  // 3200
-      makeProduct('p3', 'C', 6, BigInt(300)),  // 1800
+    const allRows = [
+      makeRow('p1', 'A', 10, BigInt(500)), // 5000
+      makeRow('p2', 'B', 8, BigInt(400)),  // 3200
+      makeRow('p3', 'C', 6, BigInt(300)),  // 1800
     ]
-    mockFindMany.mockResolvedValue(products)
 
-    // First page (limit=1)
+    // Page 1 (limit=1): returns 2 rows (limit+1)
+    mockQueryRaw
+      .mockResolvedValueOnce([allRows[0], allRows[1]])
+      .mockResolvedValueOnce(makeSummary(allRows))
+
     const page1 = await getStockValueReport(BIZ, { limit: 1 })
     expect(page1.items[0].productId).toBe('p1')
     expect(page1.nextCursor).not.toBeNull()
 
-    // Second page using cursor
-    mockFindMany.mockResolvedValue(products)
+    // Page 2 (limit=1): cursor sent to DB
+    mockQueryRaw
+      .mockResolvedValueOnce([allRows[1], allRows[2]])
+      .mockResolvedValueOnce(makeSummary(allRows))
+
     const page2 = await getStockValueReport(BIZ, { limit: 1, cursor: page1.nextCursor! })
     expect(page2.items[0].productId).toBe('p2')
   })
 })
 
 describe('getStockValueReport — totalValuePaise', () => {
-  it('sums all products (BigInt safe for large values)', async () => {
-    // Simulate large values that would overflow Number/int32
-    const bigCost = BigInt('999999999999') // ~10 billion paise
-    mockFindMany.mockResolvedValue([
-      makeProduct('p1', 'Gold', 1000, bigCost),
-      makeProduct('p2', 'Silver', 500, BigInt('100000')),
-    ])
+  it('sums all products from summary query (BigInt safe)', async () => {
+    const bigCost = BigInt('999999999999')
+    const rows = [
+      makeRow('p1', 'Gold',   1000, bigCost),
+      makeRow('p2', 'Silver', 500,  BigInt('100000')),
+    ]
+    // summary will have correct sum
+    setupMocks(rows)
 
     const report = await getStockValueReport(BIZ)
 

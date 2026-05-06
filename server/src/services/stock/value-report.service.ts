@@ -1,17 +1,28 @@
 /**
- * Stock Value Report Service — INV-04
+ * Stock Value Report Service — INV-04 + BAT-06
  *
- * Returns per-product weighted-average cost × currentStock totals,
- * ordered by line value descending. Cursor-paginated.
- * All monetary values in paise (BigInt).
+ * BAT-06: products with any Batch records emit one row PER BATCH (currentStock > 0).
+ * Non-batch products keep the single-row-per-product path using weightedAvgCostPaise.
+ *
+ * Cursor format: base64url("{totalPaise}:{productId}:{batchId|''}")
+ * All monetary values in paise (BigInt). No Number() wrapping of money.
  */
 
-import { prisma } from '../../lib/prisma.js'
 import logger from '../../lib/logger.js'
+import {
+  runValueQuery,
+  runValueSummary,
+  encodeCursor,
+  decodeCursor,
+} from './value-report-queries.js'
+import type { ValueRow } from './value-report-queries.js'
+
+export type { ValueRow, BatchValueRow, ProductValueRow } from './value-report-queries.js'
 
 const DEFAULT_LIMIT = 50
-const MAX_LIMIT = 200
+const MAX_LIMIT = 100
 
+// Legacy shape kept for the route handler (backward-compatible)
 export interface StockValueItem {
   productId: string
   productName: string
@@ -25,7 +36,7 @@ export interface StockValueReport {
   totalValuePaise: bigint
   productCount: number
   asOf: Date
-  items: StockValueItem[]
+  items: ValueRow[]
   nextCursor: string | null
 }
 
@@ -36,8 +47,7 @@ interface Opts {
 }
 
 /**
- * Compute stock value report for a business.
- * Formula: lineValue = currentStock × weightedAvgCostPaise (integer math, no floats for money).
+ * Compute per-batch (and per-product fallback) stock value report.
  */
 export async function getStockValueReport(
   businessId: string,
@@ -46,97 +56,29 @@ export async function getStockValueReport(
   const limit = Math.min(opts.limit ?? DEFAULT_LIMIT, MAX_LIMIT)
   const asOf = new Date()
 
-  // Decode cursor: base64("lineValue:id")
-  let cursorLineValue: bigint | null = null
-  let cursorId: string | null = null
-  if (opts.cursor) {
-    try {
-      const decoded = Buffer.from(opts.cursor, 'base64url').toString('utf8')
-      const [lv, id] = decoded.split(':')
-      cursorLineValue = BigInt(lv)
-      cursorId = id
-    } catch {
-      logger.warn('Invalid stock-value cursor ignored', { cursor: opts.cursor })
-    }
+  // Decode cursor
+  const cursor = opts.cursor ? decodeCursor(opts.cursor) : null
+  if (opts.cursor && !cursor) {
+    logger.warn('Invalid stock-value cursor ignored', { cursor: opts.cursor })
   }
 
-  const categoryFilter = opts.categoryId ? { categoryId: opts.categoryId } : {}
+  // Parallel: page rows + summary
+  const [rows, summary] = await Promise.all([
+    runValueQuery({ businessId, cursor, limit, categoryId: opts.categoryId }),
+    runValueSummary(businessId, opts.categoryId),
+  ])
 
-  // Fetch one extra row to determine hasMore
-  const rows = await prisma.product.findMany({
-    where: {
-      businessId,
-      isDeleted: false,
-      ...categoryFilter,
-    },
-    select: {
-      id: true,
-      name: true,
-      sku: true,
-      currentStock: true,
-      weightedAvgCostPaise: true,
-    },
-    orderBy: [
-      // Prisma cannot order by computed fields — we do post-sort after fetching
-      // To keep this efficient we fetch all non-deleted products for the business
-      // and apply cursor-based slicing after computing line values.
-      // For businesses with >10k products a raw SQL aggregate would be preferable;
-      // for MVP scale this is acceptable (same page reload path as stock-summary).
-      { currentStock: 'desc' },
-      { id: 'asc' },
-    ],
-  })
-
-  // Compute line values and sort by lineValue DESC, id ASC
-  type Row = {
-    productId: string
-    productName: string
-    sku: string | null
-    currentStock: number
-    weightedAvgCostPaise: bigint
-    lineValuePaise: bigint
-  }
-  const computed: Row[] = rows.map((r) => ({
-    productId: r.id,
-    productName: r.name,
-    sku: r.sku,
-    currentStock: Number(r.currentStock),
-    weightedAvgCostPaise: r.weightedAvgCostPaise,
-    lineValuePaise: BigInt(Math.round(Number(r.currentStock))) * r.weightedAvgCostPaise,
-  }))
-
-  computed.sort((a, b) => {
-    if (b.lineValuePaise > a.lineValuePaise) return 1
-    if (b.lineValuePaise < a.lineValuePaise) return -1
-    return a.productId < b.productId ? -1 : 1
-  })
-
-  // Summary (full set — before cursor slicing)
-  const totalValuePaise = computed.reduce((sum, r) => sum + r.lineValuePaise, BigInt(0))
-  const productCount = computed.length
-
-  // Apply cursor
-  let sliced = computed
-  if (cursorLineValue !== null && cursorId !== null) {
-    const idx = computed.findIndex(
-      (r) => r.lineValuePaise === cursorLineValue && r.productId === cursorId
-    )
-    sliced = idx >= 0 ? computed.slice(idx + 1) : computed
-  }
-
-  const page = sliced.slice(0, limit + 1)
-  const hasMore = page.length > limit
-  if (hasMore) page.pop()
+  const hasMore = rows.length > limit
+  const page = hasMore ? rows.slice(0, limit) : rows
 
   let nextCursor: string | null = null
   if (hasMore && page.length > 0) {
-    const last = page[page.length - 1]
-    nextCursor = Buffer.from(`${last.lineValuePaise}:${last.productId}`).toString('base64url')
+    nextCursor = encodeCursor(page[page.length - 1])
   }
 
   return {
-    totalValuePaise,
-    productCount,
+    totalValuePaise: summary.totalPaise,
+    productCount: summary.rowCount,
     asOf,
     items: page,
     nextCursor,
