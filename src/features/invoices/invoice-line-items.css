@@ -222,6 +222,245 @@
   background: var(--color-primary-50);
 }
 
+/* ─── GST Line Item Extensions (PR 4) ──────────────────────────────────── */
+
+.line-item-with-gst {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.line-item-gst-row {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-100);
+  border-top: none;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+/* Tax Picker Column */
+.tax-picker-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 120px;
+}
+
+.tax-picker-select {
+  width: 100%;
+  min-height: 44px;
+  font-size: var(--fs-sm);
+}
+
+.tax-picker-warning {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-xs);
+  color: var(--color-warning-600);
+  font-weight: 500;
+}
+
+/* HSN Typeahead */
+.hsn-typeahead {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 120px;
+}
+
+.hsn-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.hsn-icon {
+  position: absolute;
+  left: var(--space-2);
+  color: var(--color-gray-400);
+  pointer-events: none;
+}
+
+.hsn-input {
+  padding-left: var(--space-6) !important;
+  width: 100%;
+  min-height: 44px;
+  font-size: var(--fs-sm);
+}
+
+/* HSN Popover */
+.hsn-popover {
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.hsn-popover-state {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  font-size: var(--fs-sm);
+  color: var(--color-gray-500);
+}
+
+.hsn-popover-error {
+  color: var(--color-error-600);
+}
+
+.hsn-popover-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--color-gray-100);
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-primary);
+  min-height: 44px;
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+.hsn-popover-item:last-child {
+  border-bottom: none;
+}
+
+.hsn-popover-item:hover,
+.hsn-popover-item:focus {
+  background: var(--color-primary-50);
+  outline: none;
+}
+
+.hsn-code {
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  color: var(--color-gray-800);
+  flex-shrink: 0;
+}
+
+.hsn-desc {
+  font-size: var(--fs-xs);
+  color: var(--color-gray-500);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hsn-rate {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--color-primary-600);
+  flex-shrink: 0;
+}
+
+/* Place of Supply */
+.pos-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 160px;
+}
+
+/* RCM Toggle */
+.rcm-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.rcm-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.rcm-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary-500);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.rcm-label-text {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--color-gray-700);
+}
+
+.rcm-advisory {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-blue-50, #eff6ff);
+  border: 1px solid var(--color-blue-200, #bfdbfe);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-xs);
+  color: var(--color-blue-700, #1d4ed8);
+}
+
+.rcm-advisory-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--color-blue-500, #3b82f6);
+}
+
+/* Tax Pricing Chip */
+.tax-pricing-chip {
+  display: flex;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  width: fit-content;
+}
+
+.tax-chip-btn {
+  padding: var(--space-1-5) var(--space-3);
+  background: none;
+  border: none;
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  font-family: var(--font-primary);
+  color: var(--color-gray-500);
+  cursor: pointer;
+  min-height: 36px;
+  transition: all var(--duration-fast) var(--ease-default);
+}
+
+.tax-chip-btn-active {
+  background: var(--color-primary-500);
+  color: var(--color-white-inverse);
+  font-weight: 600;
+}
+
+/* Spin animation for HSN loader */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 0.8s linear infinite;
+}
+
 /* ─── Dark Theme ─────────────────────────────────────────────────────────── */
 
 [data-theme="dark"] .line-item-row {
@@ -256,6 +495,39 @@
 [data-theme="dark"] .product-search-panel {
   background: var(--overlay-primary-10);
   border-color: var(--color-primary-700);
+}
+
+[data-theme="dark"] .line-item-gst-row {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .hsn-popover {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .hsn-popover-item {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .hsn-popover-item:hover,
+[data-theme="dark"] .hsn-popover-item:focus {
+  background: var(--overlay-primary-10);
+}
+
+[data-theme="dark"] .hsn-code {
+  color: var(--color-gray-100);
+}
+
+[data-theme="dark"] .tax-pricing-chip {
+  border-color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .rcm-advisory {
+  background: color-mix(in srgb, var(--color-blue-500, #3b82f6) 12%, transparent);
+  border-color: color-mix(in srgb, var(--color-blue-500, #3b82f6) 35%, transparent);
+  color: var(--color-blue-200, #bfdbfe);
 }
 
 /* Tablet+ layout */
