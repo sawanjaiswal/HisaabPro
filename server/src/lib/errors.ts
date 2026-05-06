@@ -46,6 +46,10 @@ export enum ErrorCode {
   // Conflict (409)
   DUPLICATE_ENTRY = 'DUPLICATE_ENTRY',
   STOCK_SHORTAGE = 'STOCK_SHORTAGE',
+  EXPIRED_BATCH = 'EXPIRED_BATCH',
+  ALL_BATCHES_EXPIRED = 'ALL_BATCHES_EXPIRED',
+  INSUFFICIENT_BATCH_STOCK = 'INSUFFICIENT_BATCH_STOCK',
+  BATCH_PRODUCT_MISMATCH = 'BATCH_PRODUCT_MISMATCH',
 
   // Rate Limit (429)
   RATE_LIMITED = 'RATE_LIMITED',
@@ -136,6 +140,46 @@ export function stockShortageError(items: StockShortageItem[]) {
 
 export function conflictError(message: string) {
   return new AppError(ErrorCode.DUPLICATE_ENTRY, 409, message)
+}
+
+/** 409 EXPIRED_BATCH — single client-supplied batch is expired and policy=HARD_BLOCK */
+export function expiredBatchError(details: {
+  batchId: string
+  batchNumber: string
+  expiryDate: Date
+  productId: string
+  productName: string
+}) {
+  return new AppError(
+    ErrorCode.EXPIRED_BATCH,
+    409,
+    `Batch "${details.batchNumber}" expired on ${details.expiryDate.toISOString().split('T')[0]} and cannot be sold under the current policy`,
+    details as unknown as Record<string, unknown>
+  )
+}
+
+/** 409 ALL_BATCHES_EXPIRED — every available batch for product is expired (HARD_BLOCK) */
+export function allBatchesExpiredError(details: {
+  productId: string
+  productName: string
+  expiredBatchCount: number
+}) {
+  return new AppError(
+    ErrorCode.ALL_BATCHES_EXPIRED,
+    409,
+    `All ${details.expiredBatchCount} available batch(es) for "${details.productName}" are expired and cannot be sold under the current policy`,
+    details as unknown as Record<string, unknown>
+  )
+}
+
+/** 400 BATCH_PRODUCT_MISMATCH — client-supplied batchId belongs to different product/business */
+export function batchProductMismatchError(batchId: string, productId: string) {
+  return new AppError(
+    ErrorCode.BATCH_PRODUCT_MISMATCH,
+    400,
+    `Batch does not belong to the specified product`,
+    { batchId, productId }
+  )
 }
 
 export function rateLimitError(message = 'Too many requests', retryAfter?: number) {

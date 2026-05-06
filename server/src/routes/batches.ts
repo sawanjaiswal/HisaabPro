@@ -14,6 +14,7 @@ import {
   updateBatchSchema,
   listBatchesSchema,
   expiringBatchesSchema,
+  batchPickerQuerySchema,
 } from '../schemas/batch.schemas.js'
 import * as batchService from '../services/batch.service.js'
 
@@ -34,6 +35,26 @@ router.get(
     const query = listBatchesSchema.parse(req.query)
     const result = await batchService.listBatches(businessId, productId, query)
     sendSuccess(res, result)
+  })
+)
+
+/**
+ * GET /api/products/:productId/batches/picker?available=true
+ *
+ * BAT-03 — Batch Picker API for invoice line-item selection.
+ * Returns up to 50 batches ordered FEFO (earliest expiry first).
+ * Each row includes `isExpired` flag for UI to highlight/strike-through.
+ * Requires `inventory.view` permission.
+ */
+router.get(
+  '/products/:productId/batches/picker',
+  requirePermission('inventory.view'),
+  asyncHandler(async (req, res) => {
+    const businessId = req.user!.businessId
+    const productId = String(req.params.productId)
+    const { available } = batchPickerQuerySchema.parse(req.query)
+    const batches = await batchService.listBatchesForPicker(businessId, productId, available)
+    sendSuccess(res, { batches })
   })
 )
 

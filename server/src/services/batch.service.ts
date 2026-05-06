@@ -5,6 +5,8 @@
 
 import { prisma } from '../lib/prisma.js'
 import { notFoundError, conflictError, validationError } from '../lib/errors.js'
+import { istMidnightUtc } from '../lib/date.js'
+import { isExpired } from './stock/expiry-policy.js'
 import logger from '../lib/logger.js'
 import type { CreateBatchInput, UpdateBatchInput, ListBatchesQuery, ExpiringBatchesQuery } from '../schemas/batch.schemas.js'
 
@@ -198,33 +200,35 @@ export async function getExpiringBatches(businessId: string, query: ExpiringBatc
   }
 }
 
-// === Select objects ===
+/** BAT-03: Batch picker — FEFO order, isExpired flag, take 50 cap. */
+export async function listBatchesForPicker(businessId: string, productId: string, available: boolean) {
+  await requireProduct(businessId, productId)
+  const today = istMidnightUtc()
+  const batches = await prisma.batch.findMany({
+    where: { businessId, productId, isDeleted: false, ...(available ? { currentStock: { gt: 0 } } : {}) },
+    orderBy: [{ expiryDate: 'asc' }, { id: 'asc' }],
+    take: 50,
+    select: { id: true, batchNumber: true, expiryDate: true, currentStock: true, costPrice: true },
+  })
+  return batches.map(b => ({
+    id: b.id,
+    batchNumber: b.batchNumber,
+    expiryDate: b.expiryDate,
+    currentStock: Number(b.currentStock),
+    costPriceAtClaim: b.costPrice !== null ? Number(b.costPrice) : null,
+    isExpired: isExpired({ expiryDate: b.expiryDate }, today),
+  }))
+}
 
+// === Select objects ===
 const batchListSelect = {
-  id: true,
-  productId: true,
-  batchNumber: true,
-  manufacturingDate: true,
-  expiryDate: true,
-  costPrice: true,
-  salePrice: true,
-  currentStock: true,
-  isDeleted: true,
-  createdAt: true,
+  id: true, productId: true, batchNumber: true, manufacturingDate: true,
+  expiryDate: true, costPrice: true, salePrice: true, currentStock: true,
+  isDeleted: true, createdAt: true,
 } as const
 
 const batchDetailSelect = {
-  id: true,
-  businessId: true,
-  productId: true,
-  batchNumber: true,
-  manufacturingDate: true,
-  expiryDate: true,
-  costPrice: true,
-  salePrice: true,
-  currentStock: true,
-  notes: true,
-  isDeleted: true,
-  createdAt: true,
-  updatedAt: true,
+  id: true, businessId: true, productId: true, batchNumber: true, manufacturingDate: true,
+  expiryDate: true, costPrice: true, salePrice: true, currentStock: true,
+  notes: true, isDeleted: true, createdAt: true, updatedAt: true,
 } as const

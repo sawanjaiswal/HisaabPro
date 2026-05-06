@@ -122,6 +122,8 @@ function makeTx() {
     product: { update: mockProductUpdate, findUnique: mockProductFindUnique },
     stockMovement: { create: mockMovementCreate, findMany: mockMovementFindMany },
     inventorySetting: { findUnique: mockInvSettingFindUnique },
+    // BAT-03: expiry policy lookup (WARN_ONLY default — doesn't affect non-batch tests)
+    business: { findUnique: vi.fn().mockResolvedValue({ expiredBatchPolicy: 'WARN_ONLY' }) },
   }
 }
 

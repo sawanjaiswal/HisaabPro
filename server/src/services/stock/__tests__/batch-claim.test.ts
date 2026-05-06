@@ -14,7 +14,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import type { BatchCandidateRow } from '../batch-claim.types.js'
+// BatchCandidateRow import removed — now using extended row shape inline (BAT-03)
 
 // ---------------------------------------------------------------------------
 // In-memory batch state
@@ -116,7 +116,8 @@ function wireMocks(opts: { toctouBatchId?: string } = {}) {
         selectCalled = true
 
         // Return only in-stock, non-deleted batches in FEFO order
-        const candidates: BatchCandidateRow[] = batches
+        // BAT-03: include batchNumber, productId, productName for expiry-policy evaluator
+        const candidates = batches
           .filter((b) => !b.isDeleted && b.currentStock > 0)
           .sort((a, b) => {
             // NULLS LAST: null expiry sorts after all dated batches
@@ -130,6 +131,9 @@ function wireMocks(opts: { toctouBatchId?: string } = {}) {
             currentStock: b.currentStock,
             expiryDate: b.expiryDate,
             costPrice: b.costPrice,
+            batchNumber: b.id,
+            productId: b.productId,
+            productName: 'Test Product',
           }))
 
         return Promise.resolve(candidates)
@@ -173,7 +177,7 @@ describe('claimBatchesFEFO — BAT-02', () => {
     wireMocks()
 
     const tx = makeTx() as any
-    const claims = await claimBatchesFEFO(tx, PROD, 30)
+    const { claims } = await claimBatchesFEFO(tx, PROD, 30)
 
     expect(claims).toHaveLength(1)
     expect(claims[0].batchId).toBe('bat-a')
@@ -195,7 +199,7 @@ describe('claimBatchesFEFO — BAT-02', () => {
     wireMocks()
 
     const tx = makeTx() as any
-    const claims = await claimBatchesFEFO(tx, PROD, 50)
+    const { claims } = await claimBatchesFEFO(tx, PROD, 50)
 
     // Should drain sooner batch first (FEFO)
     expect(claims).toHaveLength(2)
@@ -221,7 +225,7 @@ describe('claimBatchesFEFO — BAT-02', () => {
     wireMocks()
 
     const tx = makeTx() as any
-    const claims = await claimBatchesFEFO(tx, PROD, 25)
+    const { claims } = await claimBatchesFEFO(tx, PROD, 25)
 
     // Past date sorts before future date in ASC order — expired batch claimed first
     expect(claims[0].batchId).toBe('bat-expired')
@@ -239,7 +243,7 @@ describe('claimBatchesFEFO — BAT-02', () => {
     wireMocks({ toctouBatchId: 'bat-raced' })
 
     const tx = makeTx() as any
-    const claims = await claimBatchesFEFO(tx, PROD, 30)
+    const { claims } = await claimBatchesFEFO(tx, PROD, 30)
 
     // Should skip bat-raced (UPDATE returns 0 rows) and claim from bat-fallback
     expect(claims).toHaveLength(1)
@@ -255,7 +259,7 @@ describe('claimBatchesFEFO — BAT-02', () => {
     wireMocks()
 
     const tx = makeTx() as any
-    const claims = await claimBatchesFEFO(tx, PROD, 20)
+    const { claims } = await claimBatchesFEFO(tx, PROD, 20)
 
     expect(claims).toHaveLength(1)
     expect(claims[0].batchId).toBe('bat-full')
@@ -270,7 +274,7 @@ describe('claimBatchesFEFO — BAT-02', () => {
     wireMocks()
 
     const tx = makeTx() as any
-    const claims = await claimBatchesFEFO(tx, PROD, 20)
+    const { claims } = await claimBatchesFEFO(tx, PROD, 20)
 
     expect(claims).toHaveLength(1)
     expect(claims[0].batchId).toBe('bat-active')
@@ -303,7 +307,7 @@ describe('claimBatchesFEFO — BAT-02', () => {
     wireMocks()
 
     const tx = makeTx() as any
-    const claims = await claimBatchesFEFO(tx, PROD, 40)
+    const { claims } = await claimBatchesFEFO(tx, PROD, 40)
 
     // bat-expiring (dated) should come before bat-no-expiry (null = NULLS LAST)
     expect(claims[0].batchId).toBe('bat-expiring')

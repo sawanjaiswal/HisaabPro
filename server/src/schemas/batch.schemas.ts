@@ -36,9 +36,15 @@ export const expiringBatchesSchema = z.object({
   limit: z.coerce.number().int().min(1).max(200).default(50),
 })
 
+/** BAT-03: batch picker query schema — strict to prevent field drift (F-04). */
+export const batchPickerQuerySchema = z.object({
+  available: z.coerce.boolean().default(false),
+}).strict()
+
 // === Inferred types ===
 
 export type CreateBatchInput = z.infer<typeof createBatchSchema>
 export type UpdateBatchInput = z.infer<typeof updateBatchSchema>
 export type ListBatchesQuery = z.infer<typeof listBatchesSchema>
 export type ExpiringBatchesQuery = z.infer<typeof expiringBatchesSchema>
+export type BatchPickerQuery = z.infer<typeof batchPickerQuerySchema>

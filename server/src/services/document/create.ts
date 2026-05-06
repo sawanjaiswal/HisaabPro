@@ -101,6 +101,9 @@ export async function createDocument(
   const supplyType = resolveSupplyType(party.gstin ?? null, totals.grandTotal)
   const isSaving = data.status === 'SAVED'
 
+  // BAT-03: capture expiry warnings that survive the tx boundary
+  let saleStockWarnings: string[] = []
+
   const result = await prisma.$transaction(async (tx) => {
     let numberData: { documentNumber: string; sequenceNumber: number; financialYear: string } | null = null
     if (isSaving) {
@@ -204,13 +207,16 @@ export async function createDocument(
 
     if (isSaving) {
       let stockMovements: Array<{ productId: string; balanceAfter: number }> = []
+      let stockWarnings: string[] = []
 
       if (STOCK_DECREASE_TYPES.has(data.type)) {
-        stockMovements = await deductForSaleInvoice(tx, {
+        const saleResult = await deductForSaleInvoice(tx, {
           businessId, invoiceId: doc.id, invoiceNumber: numberData!.documentNumber,
           items: data.lineItems.map(li => ({ productId: li.productId, quantity: li.quantity, unitId: li.unitId })),
           userId,
         })
+        stockMovements = saleResult.movements as Array<{ productId: string; balanceAfter: number }>
+        stockWarnings = saleResult.warnings
       } else if (STOCK_INCREASE_TYPES.has(data.type)) {
         stockMovements = await addForPurchaseInvoice(tx, {
           businessId, invoiceId: doc.id, invoiceNumber: numberData!.documentNumber,
@@ -225,6 +231,12 @@ export async function createDocument(
         for (const [productId, stockAfter] of balanceMap) {
           await tx.documentLineItem.updateMany({ where: { documentId: doc.id, productId }, data: { stockAfter } })
         }
+      }
+
+      // Stash warnings so they survive the tx boundary (read after $transaction resolves)
+      if (stockWarnings.length > 0) {
+        // Attached to the closure — surfaced in the route via warnings below
+        saleStockWarnings = stockWarnings
       }
 
       if (AFFECTS_OUTSTANDING.has(data.type)) {
@@ -242,7 +254,13 @@ export async function createDocument(
 
   // Append transient compositionLiability (1%/5%/6% on grandTotal) — not persisted
   const compositionInfo = getCompositionInvoiceInfo(isComposite, 'default', result.grandTotal)
-  return compositionInfo
+  const baseResult = compositionInfo
     ? { ...result, compositionLiability: compositionInfo.compositionTax }
     : result
+
+  // BAT-03: surface expiry warnings in the 200 response (WARN_ONLY policy)
+  if (saleStockWarnings.length > 0) {
+    return { ...baseResult, warnings: saleStockWarnings }
+  }
+  return baseResult
 }

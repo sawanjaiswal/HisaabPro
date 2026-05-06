@@ -134,6 +134,9 @@ function wireMocks() {
             currentStock: b.currentStock,
             expiryDate: b.expiryDate,
             costPrice: b.costPrice,
+            batchNumber: b.id,
+            productId: b.productId,
+            productName: 'Test Product',
           }))
         return Promise.resolve(candidates)
       }
@@ -176,7 +179,7 @@ describe('Batch integrity — hard-gate round-trip (BAT-02)', () => {
 
     // ─ SALE 60 (drains A=50 fully, then 10 from B) ─────────────────────────
     wireMocks()
-    const claims1 = await claimBatchesFEFO(tx, PROD, 60)
+    const { claims: claims1 } = await claimBatchesFEFO(tx, PROD, 60)
     for (const c of claims1) recordMovement(c.batchId, -c.qtyTaken)
 
     assertBatchIntegrity(INITIAL_STOCKS, 'After SALE 60')
@@ -187,7 +190,7 @@ describe('Batch integrity — hard-gate round-trip (BAT-02)', () => {
     // ─ SALE 15 (all from remaining B) ──────────────────────────────────────
     vi.clearAllMocks()
     wireMocks()
-    const claims2 = await claimBatchesFEFO(tx, PROD, 15)
+    const { claims: claims2 } = await claimBatchesFEFO(tx, PROD, 15)
     for (const c of claims2) recordMovement(c.batchId, -c.qtyTaken)
 
     assertBatchIntegrity(INITIAL_STOCKS, 'After SALE 15')

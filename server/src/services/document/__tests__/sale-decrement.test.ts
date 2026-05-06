@@ -60,6 +60,9 @@ function buildTx({
     inventorySetting: {
       findUnique: vi.fn().mockResolvedValue({ stockValidationMode: businessMode }),
     },
+    business: {
+      findUnique: vi.fn().mockResolvedValue({ expiredBatchPolicy: 'WARN_ONLY' }),
+    },
     $queryRaw: vi.fn().mockImplementation((_strings: TemplateStringsArray, productId: string) => {
       const s = stockState[productId]
       if (!s) return Promise.resolve([])
@@ -122,7 +125,7 @@ describe('deductForSaleInvoice', () => {
       stockMap: { [PROD_A]: { current: 20, name: 'Rice' } },
     })
 
-    const movements = await deductForSaleInvoice(tx as never, {
+    const { movements } = await deductForSaleInvoice(tx as never, {
       businessId: BIZ,
       invoiceId: INV,
       invoiceNumber: INV_NUM,
@@ -131,8 +134,9 @@ describe('deductForSaleInvoice', () => {
     })
 
     expect(movements).toHaveLength(1)
-    expect(movements[0].quantity).toBe(-5)
-    expect(movements[0].balanceAfter).toBe(15)
+    const m0 = movements[0] as { quantity: number; balanceAfter: number }
+    expect(m0.quantity).toBe(-5)
+    expect(m0.balanceAfter).toBe(15)
     expect(stockState[PROD_A].current).toBe(15)
   })
 
@@ -184,7 +188,7 @@ describe('deductForSaleInvoice', () => {
       stockMap: { [PROD_A]: { current: 2, name: 'Milk' } },
     })
 
-    const movements = await deductForSaleInvoice(tx as never, {
+    const { movements } = await deductForSaleInvoice(tx as never, {
       businessId: BIZ,
       invoiceId: INV,
       invoiceNumber: INV_NUM,
@@ -193,7 +197,8 @@ describe('deductForSaleInvoice', () => {
     })
 
     expect(movements).toHaveLength(1)
-    expect(movements[0].balanceAfter).toBe(-8)
+    const m0 = movements[0] as { balanceAfter: number }
+    expect(m0.balanceAfter).toBe(-8)
     expect(stockState[PROD_A].current).toBe(-8)
   })
 
@@ -206,7 +211,7 @@ describe('deductForSaleInvoice', () => {
       },
     })
 
-    const movements = await deductForSaleInvoice(tx as never, {
+    const { movements } = await deductForSaleInvoice(tx as never, {
       businessId: BIZ,
       invoiceId: INV,
       invoiceNumber: INV_NUM,
@@ -231,6 +236,9 @@ describe('deductForSaleInvoice', () => {
       return {
         inventorySetting: {
           findUnique: vi.fn().mockResolvedValue({ stockValidationMode: 'HARD_BLOCK' }),
+        },
+        business: {
+          findUnique: vi.fn().mockResolvedValue({ expiredBatchPolicy: 'WARN_ONLY' }),
         },
         $queryRaw: vi.fn().mockImplementation(() => {
           return Promise.resolve([{
