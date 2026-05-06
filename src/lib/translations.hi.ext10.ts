@@ -702,4 +702,9 @@ export const hiExt10 = {
   stmtReadyToDownload:     'विवरण तैयार है',
   stmtTransactions:        'लेन-देन',
   stmtClosingBalance:      'समापन शेष',
+
+  // ─── Aging polish (visual pass) ──────────────────────────────────────────
+  brokenPtpTapReview:      'देखने के लिए टैप करें',
+  agingAllPaidUp:          'सब भुगतान हो गया!',
+  agingAllPaidUpDesc:      'अभी कोई अतिदेय राशि नहीं। शानदार काम!',
 } as const

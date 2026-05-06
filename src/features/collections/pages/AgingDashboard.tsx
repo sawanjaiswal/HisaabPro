@@ -82,9 +82,11 @@ export default function AgingDashboard() {
         />
         <PageContainer>
           <div className="aging-empty">
-            <CheckCircle2 size={56} className="aging-empty__icon" aria-hidden="true" />
-            <h2 className="aging-empty__title">{t.allCaughtUp ?? 'All caught up!'}</h2>
-            <p className="aging-empty__desc">{t.allCaughtUpDesc ?? 'No outstanding receivables. Great work!'}</p>
+            <div className="aging-empty__icon-wrap">
+              <CheckCircle2 size={40} className="aging-empty__icon" aria-hidden="true" />
+            </div>
+            <h2 className="aging-empty__title">{t.allCaughtUp ?? 'All paid up!'}</h2>
+            <p className="aging-empty__desc">{t.allCaughtUpDesc ?? 'No overdue receivables right now. Great work!'}</p>
           </div>
         </PageContainer>
       </AppShell>

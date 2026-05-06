@@ -1,6 +1,6 @@
 /**
- * AgingBucketTile — color-coded tile for one aging bucket.
- * Navigates to drill-down list on tap.
+ * AgingBucketTile — severity-tier card for one aging bucket.
+ * Colored accent bar on top edge, big tabular amount, hover lift.
  */
 
 import { ChevronRight } from 'lucide-react'
@@ -52,10 +52,12 @@ export function AgingBucketTile({ bucket, summary, drillDownPath, partyLabel, pa
     >
       <span className="aging-tile__label">{summary.label}</span>
       <span className="aging-tile__amount">{formatPaise(summary.totalAmount)}</span>
-      <span className="aging-tile__meta">
-        {partyCount} {partyText}
-      </span>
-      <ChevronRight size={14} className="aging-tile__chevron" aria-hidden="true" />
+      <div className="aging-tile__footer">
+        <span className="aging-tile__meta">
+          {partyCount} {partyText}
+        </span>
+        <ChevronRight size={14} className="aging-tile__chevron" aria-hidden="true" />
+      </div>
     </button>
   )
 }

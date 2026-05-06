@@ -1,9 +1,9 @@
 /**
- * BrokenPtpAlert — banner shown when there are broken payment promises.
- * Optional onTap navigates to the relevant party detail.
+ * BrokenPtpAlert — amber warning banner for broken payment promises.
+ * Soft amber tint, AlertTriangle icon, left accent border.
  */
 
-import { AlertCircle, ChevronRight } from 'lucide-react'
+import { AlertTriangle, ChevronRight } from 'lucide-react'
 import '../styles/aging.css'
 
 interface Props {
@@ -18,6 +18,7 @@ export function BrokenPtpAlert({ count, label, singleLabel, onTap }: Props) {
   if (count === 0) return null
 
   const ptpWord = count === 1 ? singleLabel : label
+  const text = `${count} ${ptpWord}`
 
   if (onTap) {
     return (
@@ -25,12 +26,10 @@ export function BrokenPtpAlert({ count, label, singleLabel, onTap }: Props) {
         type="button"
         className="broken-ptp-banner broken-ptp-banner--tappable"
         onClick={onTap}
-        aria-label={`${count} ${ptpWord} — tap to view`}
+        aria-label={`${text} — tap to view`}
       >
-        <AlertCircle size={18} className="broken-ptp-banner__icon" aria-hidden="true" />
-        <p className="broken-ptp-banner__text">
-          {count} {ptpWord}
-        </p>
+        <AlertTriangle size={16} className="broken-ptp-banner__icon" aria-hidden="true" />
+        <p className="broken-ptp-banner__text">{text} — tap to review</p>
         <ChevronRight size={16} className="broken-ptp-banner__chevron" aria-hidden="true" />
       </button>
     )
@@ -38,10 +37,8 @@ export function BrokenPtpAlert({ count, label, singleLabel, onTap }: Props) {
 
   return (
     <div className="broken-ptp-banner" role="alert">
-      <AlertCircle size={18} className="broken-ptp-banner__icon" aria-hidden="true" />
-      <p className="broken-ptp-banner__text">
-        {count} {ptpWord}
-      </p>
+      <AlertTriangle size={16} className="broken-ptp-banner__icon" aria-hidden="true" />
+      <p className="broken-ptp-banner__text">{text}</p>
     </div>
   )
 }

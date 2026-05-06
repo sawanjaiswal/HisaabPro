@@ -706,4 +706,9 @@ export const enExt10 = {
   stmtReadyToDownload:     'Statement ready',
   stmtTransactions:        'transactions',
   stmtClosingBalance:      'Closing Balance',
+
+  // ─── Aging polish (visual pass) ──────────────────────────────────────────
+  brokenPtpTapReview:      'tap to review',
+  agingAllPaidUp:          'All paid up!',
+  agingAllPaidUpDesc:      'No overdue receivables right now. Great work!',
 } as const

@@ -8,7 +8,7 @@
 
 import { useEffect, useRef, useCallback, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, CheckCircle2 } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -133,6 +133,9 @@ export default function AgingBucketList() {
   if (allParties.length === 0) return (
     <AppShell><Header title={title} actions={backAction} /><PageContainer>
       <div className="aging-empty">
+        <div className="aging-empty__icon-wrap">
+          <CheckCircle2 size={40} className="aging-empty__icon" aria-hidden="true" />
+        </div>
         <h2 className="aging-empty__title">{t.agingBucketEmpty ?? 'No parties in this bucket'}</h2>
         <p className="aging-empty__desc">{t.agingBucketEmptyDesc ?? 'No outstanding amounts in this period.'}</p>
       </div>

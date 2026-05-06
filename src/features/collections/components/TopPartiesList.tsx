@@ -1,8 +1,9 @@
 /**
  * TopPartiesList — top 5 parties by outstanding amount.
- * Vertical list, works at 320px without horizontal scroll.
+ * Card layout: avatar circle (initials), name, overdue amount + days pill.
  */
 
+import { ChevronRight } from 'lucide-react'
 import { formatPaise } from '@/lib/format'
 import type { TopOutstandingParty } from '../collections.types'
 import '../styles/aging.css'
@@ -10,6 +11,14 @@ import '../styles/aging.css'
 interface Props {
   parties: TopOutstandingParty[]
   sectionTitle: string
+}
+
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/)
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase()
+  }
+  return name.slice(0, 2).toUpperCase()
 }
 
 function maskPhone(phone: string): string {
@@ -28,20 +37,31 @@ export function TopPartiesList({ parties, sectionTitle }: Props) {
     <section className="aging-section" aria-labelledby="top-parties-heading">
       <p id="top-parties-heading" className="aging-section__title">{sectionTitle}</p>
       <ul className="top-parties" aria-label={sectionTitle}>
-        {parties.map((party, idx) => (
+        {parties.map((party) => (
           <li key={party.partyId} className="top-party-row">
-            <span className="top-party-row__rank" aria-label={`Rank ${idx + 1}`}>
-              {idx + 1}
-            </span>
+            <div className="top-party-row__avatar" aria-hidden="true">
+              {getInitials(party.name)}
+            </div>
             <div className="top-party-row__info">
               <p className="top-party-row__name">{party.name}</p>
               {party.phone && (
                 <p className="top-party-row__sub">{maskPhone(party.phone)}</p>
               )}
             </div>
-            <span className="top-party-row__amount" aria-label={`Outstanding: ${formatPaise(party.totalOutstanding)}`}>
-              {formatPaise(party.totalOutstanding)}
-            </span>
+            <div className="top-party-row__right">
+              <span
+                className="top-party-row__amount"
+                aria-label={`Outstanding: ${formatPaise(party.totalOutstanding)}`}
+              >
+                {formatPaise(party.totalOutstanding)}
+              </span>
+              {party.overdueInvoiceCount > 0 && (
+                <span className="top-party-row__days-pill">
+                  {party.overdueInvoiceCount} overdue
+                </span>
+              )}
+            </div>
+            <ChevronRight size={14} className="top-party-row__chevron" aria-hidden="true" />
           </li>
         ))}
       </ul>
