@@ -160,6 +160,15 @@ export const PERMISSION_MATRIX = [
       { key: 'ptp',     label: 'Record and Track Payment Promises' },
     ],
   },
+  // Recurring Invoices
+  {
+    key: 'recurring', label: 'Recurring Invoices',
+    actions: [
+      { key: 'view',   label: 'View Recurring Schedules' },
+      { key: 'manage', label: 'Create/Edit/Delete Recurring Schedules' },
+      { key: 'pause',  label: 'Pause and Resume Recurring Schedules' },
+    ],
+  },
 ]
 
 export const ALL_PERMISSIONS = PERMISSION_MATRIX.flatMap(m =>
@@ -192,6 +201,8 @@ export const SYSTEM_ROLES: Array<{
       'jobs.view', 'jobs.create', 'jobs.edit',
       // Collections: view + remind + ptp (NOT collect — no payment links)
       'collections.view', 'collections.remind', 'collections.ptp',
+      // Recurring: view only
+      'recurring.view',
     ],
   },
   {
@@ -230,6 +241,8 @@ export const SYSTEM_ROLES: Array<{
       'accounting.view', 'accounting.create', 'accounting.edit',
       'fields.viewPurchasePrice', 'fields.viewProfitMargin', 'fields.viewPartyOutstanding',
       'jobs.view',
+      // Recurring: view only
+      'recurring.view',
     ],
   },
 ]
