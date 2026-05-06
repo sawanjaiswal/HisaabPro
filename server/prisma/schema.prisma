@@ -524,6 +524,8 @@ model Product {
   images          String[]  @default([]) // up to 5 image URLs
   // Feature #109 — MOQ (min order quantity)
   moq             Int?
+  // Inventory Phase 2 — reorder threshold (null = not set; 0 = explicit zero)
+  reorderQty      Float?
   // Feature #103 — Label Printing
   labelTemplate   String?   @default("standard") // "standard" | "compact" | "barcode-only"
   isDeleted       Boolean   @default(false)
