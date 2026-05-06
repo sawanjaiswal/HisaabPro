@@ -119,6 +119,10 @@ model Business {
   taxPricingMode      String  @default("EXCLUSIVE") @db.VarChar(20) // EXCLUSIVE | INCLUSIVE
   gstDeclarationText  String? @db.Text // null = use in-code default per SCOPE §8.4
 
+  // Phase 2.2 — Batch tracking + Expiry policy (migration: 20260507160000_inventory_batches_columns)
+  expiryAlertDays    Int?   @default(30)          // 0 = no advance alerts; null = inherit default 30
+  expiredBatchPolicy String @default("WARN_ONLY") // WARN_ONLY | HARD_BLOCK — independent of stockValidationMode
+
   businessUsers        BusinessUser[]
   parties              Party[]
   partyGroups          PartyGroup[]
@@ -2184,7 +2188,7 @@ model StockAlert {
   id             String    @id @default(cuid())
   businessId     String
   productId      String
-  alertType      String    @default("LOW_STOCK") // LOW_STOCK, OUT_OF_STOCK
+  alertType      String    @default("LOW_STOCK") // LOW_STOCK, OUT_OF_STOCK, EXPIRY_NEAR, EXPIRY_PASSED
   threshold      Float // quantity that triggered the alert
   currentQty     Float // quantity at time of alert
   status         String    @default("ACTIVE") // ACTIVE, ACKNOWLEDGED, RESOLVED
@@ -2193,11 +2197,16 @@ model StockAlert {
   resolvedAt     DateTime?
   createdAt      DateTime  @default(now())
 
+  // Phase 2.2 — link to a specific batch for EXPIRY_NEAR / EXPIRY_PASSED rows
+  batchId String?
+  batch   Batch?  @relation(fields: [batchId], references: [id], onDelete: SetNull)
+
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
   product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([businessId, status])
   @@index([productId, status])
+  @@index([businessId, batchId, alertType, status]) // cron dedupe + auto-resolve
 }
 
 // === Stock Verification — Feature #111 ===
@@ -2232,11 +2241,16 @@ model StockVerificationItem {
   adjusted       Boolean @default(false)
   notes          String?
 
+  // Phase 2.2 — optional batch reference (null = product-level count)
+  batchId String?
+  batch   Batch?  @relation(fields: [batchId], references: [id], onDelete: SetNull)
+
   verification StockVerification @relation(fields: [verificationId], references: [id], onDelete: Cascade)
   product      Product           @relation(fields: [productId], references: [id], onDelete: Restrict)
 
   @@index([verificationId])
   @@index([productId])
+  @@index([batchId])
 }
 
 // === Phase 4 — Serial Number Tracking (#100) ===
@@ -2292,14 +2306,17 @@ model Batch {
   business        Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
   product         Product          @relation(fields: [productId], references: [id], onDelete: Restrict)
   stockMovements  StockMovement[]
-  godownStocks    GodownStock[]
-  godownTransfers GodownTransfer[]
-  serialNumbers   SerialNumber[]
+  godownStocks          GodownStock[]
+  godownTransfers       GodownTransfer[]
+  serialNumbers         SerialNumber[]
+  stockAlerts           StockAlert[]           // Phase 2.2 — expiry alerts linked to this batch
+  verificationItems     StockVerificationItem[] // Phase 2.2 — per-batch verification counts
 
   @@unique([businessId, productId, batchNumber])
   @@index([businessId, productId])
   @@index([businessId, expiryDate])
   @@index([productId, isDeleted])
+  @@index([productId, expiryDate]) // FEFO selection — mirrors Batch_productId_expiryDate_idx CONCURRENTLY index
 }
 
 // === Phase 4 — Multi-Godown (#101 Multi-Godown) ===
