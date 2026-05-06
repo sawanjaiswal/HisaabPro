@@ -11,8 +11,15 @@ import cron from 'node-cron'
 import { prisma } from './prisma.js'
 import logger from './logger.js'
 import { evaluateOpenPtps } from '../services/collections/promise-to-pay-eval.service.js'
+import { runRecurringTick } from '../services/recurring/recurring-runner.service.js'
+import os from 'os'
 
 let initialized = false
+
+/** Stable worker id used for cron claim ownership. */
+function makeWorkerId(): string {
+  return `${os.hostname()}:${process.pid}`
+}
 
 export function initCronJobs(): void {
   if (initialized) return
@@ -25,12 +32,36 @@ export function initCronJobs(): void {
     { timezone: 'Asia/Kolkata' },
   )
 
-  logger.info('cron.registered', { jobs: ['ptp-evaluator @ 01:00 IST'] })
+  // Every 15 min IST — generate due recurring invoices
+  const workerId = makeWorkerId()
+  cron.schedule(
+    '*/15 * * * *',
+    () => void runRecurringGenerator(workerId),
+    { timezone: 'Asia/Kolkata' },
+  )
+
+  logger.info('cron.registered', {
+    jobs: ['ptp-evaluator @ 01:00 IST', 'recurring-generator @ */15 IST'],
+  })
 }
 
 /**
  * Exported so tests / manual CLI can call it directly.
  */
+export async function runRecurringGenerator(workerId?: string): Promise<void> {
+  const wid = workerId ?? makeWorkerId()
+  logger.info('recurring-generator.start', { workerId: wid })
+  try {
+    const summary = await runRecurringTick(wid)
+    logger.info('recurring-generator.done', { workerId: wid, ...summary })
+  } catch (e) {
+    logger.error('recurring-generator.fatal', {
+      workerId: wid,
+      error: e instanceof Error ? e.message : String(e),
+    })
+  }
+}
+
 export async function runPtpEvaluator(): Promise<void> {
   logger.info('ptp-evaluator.start')
   const asOf = new Date()
