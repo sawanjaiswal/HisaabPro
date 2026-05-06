@@ -146,6 +146,7 @@ model Business {
   gstReturns           GstReturn[]
   gstReconciliations   GstReconciliation[]
   recurringInvoices    RecurringInvoice[]
+  recurringRuns        RecurringInvoiceRun[]
   exchangeRates        ExchangeRate[]
 
   // Phase 3 — Accounting
@@ -734,6 +735,10 @@ model Document {
   // Recurring — Phase 2
   recurringInvoiceId String?
   recurringInvoice   RecurringInvoice? @relation(fields: [recurringInvoiceId], references: [id], onDelete: SetNull)
+  isRecurring        Boolean           @default(false) // true when used as a recurring template
+
+  // Recurring run back-relation (populated when this doc was auto-generated)
+  recurringRun       RecurringInvoiceRun? @relation("RecurringRunDocument")
 
   // Credit/Debit Note link
   originalDocumentId String?
@@ -1697,14 +1702,14 @@ model RecurringInvoice {
   businessId         String
   templateDocumentId String // Source document used as template
   partyId            String
-  frequency          String // WEEKLY, MONTHLY, QUARTERLY, YEARLY
+  frequency          String // DAILY|WEEKLY|MONTHLY|QUARTERLY|YEARLY
   startDate          DateTime
   endDate            DateTime?
   nextRunDate        DateTime
   dayOfMonth         Int? // 1-28 for MONTHLY
   dayOfWeek          Int? // 0-6 for WEEKLY (0 = Sunday)
   autoSend           Boolean   @default(false)
-  status             String    @default("ACTIVE") // ACTIVE, PAUSED, COMPLETED
+  status             String    @default("ACTIVE") // ACTIVE|PAUSED|COMPLETED
   generatedCount     Int       @default(0)
   lastGeneratedAt    DateTime?
   isDeleted          Boolean   @default(false)
@@ -1712,12 +1717,56 @@ model RecurringInvoice {
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 
-  business  Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  // Phase 1 additions — all nullable/defaulted for safe additive migration
+  name              String?   @db.VarChar(120)
+  autoPaymentLink   Boolean   @default(false)
+  autoReminder      Boolean   @default(false)
+  lastFailureReason String?   @db.VarChar(500)
+  cancelledAt       DateTime?
+  cancelledBy       String?
+  createdBy         String? // userId; nullable for pre-existing rows
+  updatedBy         String?
+  claimedAt         DateTime? // cron claim watermark
+  claimedBy         String?   @db.VarChar(80) // worker id (hostname:pid)
+
+  business  Business              @relation(fields: [businessId], references: [id], onDelete: Cascade)
   documents Document[]
+  runs      RecurringInvoiceRun[]
 
   @@index([businessId, status])
   @@index([nextRunDate, status])
   @@index([businessId, isDeleted])
+  @@index([businessId, partyId])
+  @@index([status, claimedAt])
+}
+
+/// One execution of a recurring invoice schedule
+model RecurringInvoiceRun {
+  id                  String    @id @default(cuid())
+  recurringInvoiceId  String
+  businessId          String
+  scheduledFor        DateTime // the original due date
+  ranAt               DateTime  @default(now())
+  status              String // SUCCESS|SUCCESS_PARTIAL|FAILED|SKIPPED
+  generatedDocumentId String?   @unique
+  paymentLinkId       String?
+  idempotencyKey      String // {recurringId}_{scheduledFor_YYYYMMDD}
+  errorMessage        String?   @db.VarChar(500)
+  warning             String?   @db.VarChar(120) // autoSend_skipped_no_phone, paymentLink_failed, gstin_mismatch, …
+  retryCount          Int       @default(0)
+  triggeredBy         String // "cron" | userId
+  isDeleted           Boolean   @default(false)
+  deletedAt           DateTime?
+  createdAt           DateTime  @default(now())
+
+  recurringInvoice  RecurringInvoice @relation(fields: [recurringInvoiceId], references: [id], onDelete: Cascade)
+  business          Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  generatedDocument Document?        @relation("RecurringRunDocument", fields: [generatedDocumentId], references: [id], onDelete: SetNull)
+
+  @@unique([idempotencyKey])
+  @@index([recurringInvoiceId, ranAt(sort: Desc)])
+  @@index([businessId, status])
+  @@index([scheduledFor, status])
 }
 
 // ---------------------------------------------------------------------------
