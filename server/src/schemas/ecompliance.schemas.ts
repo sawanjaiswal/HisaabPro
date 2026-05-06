@@ -12,7 +12,9 @@ export const generateEInvoiceSchema = z.object({
 
 export const cancelEInvoiceSchema = z.object({
   documentId: z.string().min(1, 'documentId is required'),
-  reason: z.string().min(1, 'Cancel reason is required').max(250),
+  /** NIC cancel reason codes: 1=Duplicate, 2=Data Entry Mistake, 3=Order Cancelled, 4=Other */
+  reason: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
+  remarks: z.string().max(100).default(''),
 }).strict()
 
 // ─── E-Way Bill ──────────────────────────────────────────────────────────────

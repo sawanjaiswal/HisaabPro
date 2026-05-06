@@ -1,10 +1,14 @@
 import 'dotenv/config'
 import { initSentry } from './lib/sentry.js'
+import { validateNicEnv } from './lib/env.js'
 import { createApp } from './app.js'
 import logger from './lib/logger.js'
 
 // Initialize error tracking before app starts
 initSentry()
+
+// MB-5 boot-fail: throws if NIC_ENV=prod and NODE_ENV !== production
+validateNicEnv()
 
 // ─── Process-level error handlers (catch unhandled async errors) ─────────────
 
