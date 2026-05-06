@@ -91,4 +91,44 @@ export const enExt13 = {
   // ── Dashboard tile ────────────────────────────────────────────────────────
   dashboardLowStockAlert:      'products low on stock',
   dashboardLowStockSingular:   'product low on stock',
+
+  // ── Stock verification start page (INV-07) ────────────────────────────────
+  startCountTitle:             'Start Stock Count',
+  countNameLabel:              'Count Name',
+  countNamePlaceholder:        'e.g. Monthly count — May 2026',
+  startCountBtn:               'Start Count',
+  startingCount:               'Starting...',
+  countStarted:                'Stock count started.',
+  countStartFailed:            'Could not start count. Try again.',
+  filterByCategoryLabel:       'Filter by Category (optional)',
+  filterByCategoryHint:        'Leave blank to count all products',
+
+  // ── Stock verification mobile count page (INV-07) ─────────────────────────
+  stockCountHeading:           'Stock Count',
+  itemsCountedLabel:           '{counted} of {total} counted',
+  searchProductsPlaceholder:   'Search by name or SKU...',
+  systemQtyLabel:              'System',
+  countedQtyLabel:             'Counted',
+  deltaLabel:                  'Diff',
+  finalizeCountBtn:            'Finalise Count',
+  finalizingCount:             'Finalising...',
+  countFinalized:              'Count finalised. Adjustments applied.',
+  countFinalizeFailed:         'Could not finalise count. Try again.',
+  countFinalizeTitle:          'Apply Stock Adjustments?',
+  countFinalizeDesc:           '{adjusted} products will be adjusted. Net change: {net} units.',
+  countFinalizeNoChange:       'All counts match system stock. No adjustments needed.',
+  confirmFinalize:             'Apply Adjustments',
+  deletedProductLabel:         '(deleted)',
+  noProductsFound:             'No products found for that search.',
+
+  // ── Stock value report (INV-07, csv export) ───────────────────────────────
+  exportCsvLabel:              'Export CSV',
+  csvExportToast:              'CSV downloaded.',
+  skuLabel:                    'SKU',
+
+  // ── Nav / more menu additions (INV-07) ────────────────────────────────────
+  navStockCount:               'Stock Count',
+  navStockValueReport:         'Stock Value',
+  navStockCountDesc:           'Count & verify physical stock',
+  navStockValueDesc:           'Total stock value at cost',
 }

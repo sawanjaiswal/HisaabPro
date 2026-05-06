@@ -1,0 +1,106 @@
+/* Stock Verification Start Page */
+
+.sv-start {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 480px;
+  margin: 0 auto;
+  padding-top: var(--space-4);
+}
+
+.sv-start__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-50);
+  color: var(--color-primary-600);
+  margin: 0 auto;
+}
+
+.sv-start__hint {
+  text-align: center;
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.sv-start__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.sv-start__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.sv-start__label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sv-start__required {
+  color: var(--color-error-500);
+}
+
+.sv-start__input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-base);
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--color-gray-0);
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  min-height: 48px;
+  transition: border-color var(--duration-normal) var(--ease-default);
+}
+
+.sv-start__input:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: var(--shadow-focus-primary);
+}
+
+.sv-start__field-hint {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.sv-start__submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--space-4);
+  font-size: var(--fs-base);
+  font-weight: 700;
+  color: var(--color-white-inverse);
+  background: var(--color-primary-500);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  min-height: 52px;
+  transition: background var(--duration-normal) var(--ease-default);
+}
+
+.sv-start__submit:hover:not(:disabled) {
+  background: var(--color-primary-600);
+}
+
+.sv-start__submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sv-start__submit:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}

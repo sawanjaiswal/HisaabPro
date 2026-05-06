@@ -55,6 +55,8 @@ export const MORE_MENU_ITEMS: MoreMenuItem[] = [
   { id: 'accounting', navKey: 'accounting', label: 'Accounts', description: 'Chart of accounts', icon: 'BookOpen', route: ROUTES.CHART_OF_ACCOUNTS, color: 'var(--color-primary-50)', group: 'accounting' },
   { id: 'gst', navKey: 'gst', label: 'GST', description: 'Reconciliation', icon: 'IndianRupee', route: ROUTES.GST_RECONCILIATION, color: 'var(--color-primary-50)', group: 'accounting' },
   { id: 'products', navKey: 'products', label: 'Items', description: 'Inventory & stock', icon: 'Package', route: ROUTES.PRODUCTS, color: 'var(--color-primary-50)', group: 'accounting' },
+  { id: 'stock-count', navKey: 'stock-count', label: 'Stock Count', description: 'Count & verify physical stock', icon: 'Boxes', route: ROUTES.INVENTORY_VERIFY, color: 'var(--color-secondary-50)', group: 'accounting' },
+  { id: 'stock-value-report', navKey: 'stock-value-report', label: 'Stock Value', description: 'Total stock value at cost', icon: 'TrendingUp', route: ROUTES.STOCK_VALUE_REPORT, color: 'var(--color-success-50)', group: 'accounting' },
 
   // Marketing & CRM
   { id: 'greetings', navKey: 'greetings', label: 'Greetings', description: 'Festival wishes', icon: 'MessageCircleHeart', route: ROUTES.SMART_GREETINGS, color: 'var(--color-secondary-50)', group: 'marketing' },

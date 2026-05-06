@@ -91,4 +91,44 @@ export const hiExt13 = {
   // ── Dashboard tile ────────────────────────────────────────────────────────
   dashboardLowStockAlert:      'उत्पाद कम स्टॉक में',
   dashboardLowStockSingular:   'उत्पाद कम स्टॉक में',
+
+  // ── Stock verification start page (INV-07) ────────────────────────────────
+  startCountTitle:             'स्टॉक गिनती शुरू करें',
+  countNameLabel:              'गिनती का नाम',
+  countNamePlaceholder:        'जैसे: मासिक गिनती — मई 2026',
+  startCountBtn:               'गिनती शुरू करें',
+  startingCount:               'शुरू हो रहा है...',
+  countStarted:                'स्टॉक गिनती शुरू हुई।',
+  countStartFailed:            'गिनती शुरू नहीं हुई। पुनः प्रयास करें।',
+  filterByCategoryLabel:       'श्रेणी फ़िल्टर (वैकल्पिक)',
+  filterByCategoryHint:        'सभी उत्पाद गिनने के लिए खाली छोड़ें',
+
+  // ── Stock verification mobile count page (INV-07) ─────────────────────────
+  stockCountHeading:           'स्टॉक गिनती',
+  itemsCountedLabel:           '{counted} में से {total} गिने',
+  searchProductsPlaceholder:   'नाम या SKU से खोजें...',
+  systemQtyLabel:              'सिस्टम',
+  countedQtyLabel:             'गिना',
+  deltaLabel:                  'अंतर',
+  finalizeCountBtn:            'गिनती पूरी करें',
+  finalizingCount:             'पूरा हो रहा है...',
+  countFinalized:              'गिनती पूरी हुई। समायोजन लागू।',
+  countFinalizeFailed:         'गिनती पूरी नहीं हुई। पुनः प्रयास करें।',
+  countFinalizeTitle:          'स्टॉक समायोजन लागू करें?',
+  countFinalizeDesc:           '{adjusted} उत्पाद समायोजित होंगे। कुल परिवर्तन: {net} इकाई।',
+  countFinalizeNoChange:       'सभी गिनती सिस्टम से मेल खाती है। कोई समायोजन नहीं।',
+  confirmFinalize:             'समायोजन लागू करें',
+  deletedProductLabel:         '(हटाया गया)',
+  noProductsFound:             'इस खोज के लिए कोई उत्पाद नहीं मिला।',
+
+  // ── Stock value report (INV-07, csv export) ───────────────────────────────
+  exportCsvLabel:              'CSV डाउनलोड',
+  csvExportToast:              'CSV डाउनलोड हुई।',
+  skuLabel:                    'SKU',
+
+  // ── Nav / more menu additions (INV-07) ────────────────────────────────────
+  navStockCount:               'स्टॉक गिनती',
+  navStockValueReport:         'स्टॉक मूल्य',
+  navStockCountDesc:           'भौतिक स्टॉक गिनें और सत्यापित करें',
+  navStockValueDesc:           'लागत पर कुल स्टॉक मूल्य',
 }

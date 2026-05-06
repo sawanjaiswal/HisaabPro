@@ -33,6 +33,7 @@ import {
   SmartGreetings, Units, JoinBusiness, CreateBusiness, BusinessType,
   AdminCoupons, AdminCouponDetail,
   Purchases, CreatePurchase, StockAlerts,
+  StockVerificationStart, StockVerificationRun, StockValueReport,
   Batches, CreateBatch, BatchDetail,
   Godowns, CreateGodown, EditGodown, GodownDetail, GodownTransfer,
   StockVerifications, VerificationDetail,
@@ -194,6 +195,10 @@ export function App() {
         <Route path={ROUTES.PURCHASE_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Purchases"><InvoiceDetail /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PURCHASE_EDIT} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Purchases"><EditInvoice /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.INVENTORY_ALERTS} element={<PageRoute><ProtectedRoute><PlanGate feature="products" featureLabel="Stock Alerts"><StockAlerts /></PlanGate></ProtectedRoute></PageRoute>} />
+        {/* Inventory Phase 2 — INV-07: stock count flow + value report */}
+        <Route path={ROUTES.INVENTORY_VERIFY} element={<PageRoute><ProtectedRoute><PlanGate feature="stockAdjustments" featureLabel="Stock Count"><StockVerificationStart /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.INVENTORY_VERIFY_RUN} element={<PageRoute><ProtectedRoute><PlanGate feature="stockAdjustments" featureLabel="Stock Count"><StockVerificationRun /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.STOCK_VALUE_REPORT} element={<PageRoute><ProtectedRoute><PlanGate feature="basicReports" featureLabel="Stock Value Report"><StockValueReport /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
       </Routes>
       </PageTransition>

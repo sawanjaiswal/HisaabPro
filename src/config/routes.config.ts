@@ -145,4 +145,11 @@ export const ROUTES = {
   PURCHASE_DETAIL: '/purchases/:id',
   PURCHASE_NEW: '/purchases/new',
   PURCHASE_EDIT: '/purchases/:id/edit',
+
+  // Inventory Phase 2 — Stock Verification mobile flow (INV-07)
+  INVENTORY_VERIFY: '/inventory/verify',
+  INVENTORY_VERIFY_RUN: '/inventory/verify/:id',
+
+  // Inventory Phase 2 — Stock value report (INV-07)
+  STOCK_VALUE_REPORT: '/reports/stock-value',
 } as const

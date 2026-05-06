@@ -32,8 +32,8 @@ export type NavKey =
   | 'settings'
   // bottom nav
   | 'dashboard' | 'invoices' | 'parties'
-  // future (Phase 3+)
-  | 'jobs' | 'orders' | 'batches' | 'godowns' | 'serial-numbers' | 'stock-verification'
+  // future (Phase 3+) + Inventory Phase 2
+  | 'jobs' | 'orders' | 'batches' | 'godowns' | 'serial-numbers' | 'stock-verification' | 'stock-count' | 'stock-value-report'
 
 export interface VerticalProfile {
   type: BusinessType

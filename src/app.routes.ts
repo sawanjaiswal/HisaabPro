@@ -120,6 +120,11 @@ export const Purchases = lazy(() => import('@/features/purchases/PurchasesPage')
 export const CreatePurchase = lazy(() => import('@/features/purchases/CreatePurchasePage'))
 export const StockAlerts = lazy(() => import('@/features/products/StockAlertsPage'))
 
+// Inventory Phase 2 — Stock verification mobile flow + value report (INV-07)
+export const StockVerificationStart = lazy(() => import('@/features/stock-verification/pages/StockVerificationStartPage'))
+export const StockVerificationRun = lazy(() => import('@/features/stock-verification/pages/StockVerificationRunPage'))
+export const StockValueReport = lazy(() => import('@/features/reports/StockValueReportPage'))
+
 // Phase 3 — Jobs
 export const Jobs = lazy(() => import('@/features/jobs/pages/JobsListPage'))
 export const JobNew = lazy(() => import('@/features/jobs/pages/JobNewPage'))
