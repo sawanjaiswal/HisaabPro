@@ -17,6 +17,8 @@ import {
   completeVerificationSchema,
 } from '../schemas/stock-verification.schemas.js'
 import * as verificationService from '../services/stock-verification.service.js'
+import { finalizeVerification } from '../services/stock/verification-finalize.service.js'
+import { idempotencyCheck } from '../middleware/idempotency.js'
 
 const router = Router()
 
@@ -98,6 +100,26 @@ router.post(
     const result = await verificationService.applyAdjustments(
       req.user!.businessId,
       String(req.params.id),
+      req.user!.userId
+    )
+    sendSuccess(res, result)
+  })
+)
+
+/**
+ * POST /api/stock-verification/:id/finalize
+ * Atomically applies all discrepancy adjustments and marks verification FINALIZED.
+ * Idempotent: re-calling on an already-finalized verification returns 200 with adjusted=0.
+ * Permission: inventory.count
+ */
+router.post(
+  '/:id/finalize',
+  requirePermission('inventory.count'),
+  idempotencyCheck(),
+  asyncHandler(async (req, res) => {
+    const result = await finalizeVerification(
+      String(req.params.id),
+      req.user!.businessId,
       req.user!.userId
     )
     sendSuccess(res, result)

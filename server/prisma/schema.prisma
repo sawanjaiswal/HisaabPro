@@ -2203,14 +2203,16 @@ model StockAlert {
 // === Stock Verification — Feature #111 ===
 
 model StockVerification {
-  id          String    @id @default(cuid())
-  businessId  String
-  verifiedBy  String
-  status      String    @default("DRAFT") // DRAFT, IN_PROGRESS, COMPLETED
-  notes       String?
-  completedAt DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id           String    @id @default(cuid())
+  businessId   String
+  verifiedBy   String
+  status       String    @default("DRAFT") // DRAFT, IN_PROGRESS, COMPLETED, FINALIZED
+  notes        String?
+  completedAt  DateTime?
+  finalizedAt  DateTime?
+  finalizedBy  String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   business Business                @relation(fields: [businessId], references: [id], onDelete: Cascade)
   user     User                    @relation(fields: [verifiedBy], references: [id], onDelete: Restrict)

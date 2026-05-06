@@ -23,6 +23,7 @@ export const PERMISSION_MATRIX = [
       { key: 'edit', label: 'Edit Products' },
       { key: 'delete', label: 'Delete Products' },
       { key: 'adjustStock', label: 'Adjust Stock' },
+      { key: 'count', label: 'Stock Verification / Count' },
     ],
   },
   {
@@ -216,7 +217,7 @@ export const SYSTEM_ROLES: Array<{
   {
     name: 'Stock Manager', isSystem: true, priority: 50,
     permissions: [
-      'inventory.view', 'inventory.create', 'inventory.edit', 'inventory.adjustStock',
+      'inventory.view', 'inventory.create', 'inventory.edit', 'inventory.adjustStock', 'inventory.count',
       'invoicing.view', 'parties.view', 'reports.view',
       'godowns.view', 'godowns.transfer',
       'batches.view', 'batches.create', 'batches.edit',

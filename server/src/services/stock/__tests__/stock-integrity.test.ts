@@ -156,7 +156,7 @@ function wireStateMocks() {
   )
 
   // stockMovement.create — records movement in memory
-  mockMovementCreate.mockImplementation(({ data, select }: { data: Omit<MovementRow, 'id' | 'createdAt'>; select?: object }) => {
+  mockMovementCreate.mockImplementation(({ data }: { data: Omit<MovementRow, 'id' | 'createdAt'> }) => {
     movementSeq++
     const mov: MovementRow = {
       id: `mov-${movementSeq}`,
