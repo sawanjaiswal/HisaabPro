@@ -129,9 +129,9 @@ export function CommitmentsSection({ partyId, partyName }: Props) {
                   </span>
                 </div>
                 <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', marginTop: 'var(--space-1)' }}>
-                  {t.ptpByLabel} {formatDate(ptp.promisedDate)}
+                  {t.ptpByLabel} {formatDate(ptp.promiseDate)}
                 </p>
-                {ptp.note && (
+                {ptp.notes && (
                   <p
                     style={{
                       fontSize: 'var(--text-sm)',
@@ -142,9 +142,9 @@ export function CommitmentsSection({ partyId, partyName }: Props) {
                       whiteSpace: 'nowrap',
                       maxWidth: '100%',
                     }}
-                    title={ptp.note}
+                    title={ptp.notes}
                   >
-                    {ptp.note}
+                    {ptp.notes}
                   </p>
                 )}
               </div>

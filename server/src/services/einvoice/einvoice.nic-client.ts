@@ -96,8 +96,17 @@ export function verifyJwsSignature(signedInvoice: string, nicEnv: NicEnv): void 
 
   const publicKey = nicEnv === 'prod' ? PROD_NIC_PUBLIC_KEY : SANDBOX_NIC_PUBLIC_KEY
   if (!publicKey) {
-    // TODO: when NIC provisions keys, remove this early return
-    logger.warn('NIC public key not configured — skipping JWS verify (stub-like)')
+    if (nicEnv === 'prod') {
+      // Production with no key = fail closed — trusting unsigned NIC payloads in
+      // prod is a security violation. Provision PROD_NIC_PUBLIC_KEY before go-live.
+      // Error code: EINVOICE_NIC_SIGNATURE_NOT_CONFIGURED (502)
+      throw new AppError(ErrorCode.INTERNAL_ERROR, 502,
+        'NIC production public key not configured — JWS verification required in prod',
+        { code: 'EINVOICE_NIC_SIGNATURE_NOT_CONFIGURED' },
+      )
+    }
+    // Sandbox / dev — key not yet provisioned, skip with a warning
+    logger.warn('NIC public key not configured — skipping JWS verify (sandbox only)')
     return
   }
 

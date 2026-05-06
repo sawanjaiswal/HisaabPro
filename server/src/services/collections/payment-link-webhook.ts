@@ -45,18 +45,6 @@ export async function processWebhookPaymentLinkPaid(
   const paidAmountPaise = event.payload.payment.entity.amount
   const rzMethod = event.payload.payment.entity.method
 
-  // MB-1: Idempotency — INSERT WebhookEvent; if conflict, skip.
-  const inserted = await prisma.$executeRaw`
-    INSERT INTO "WebhookEvent" ("id", "eventId", "source", "payload", "processedAt")
-    VALUES (gen_random_uuid()::text, ${event.id}, 'razorpay', ${JSON.stringify(rawPayload)}::jsonb, NOW())
-    ON CONFLICT ("eventId") DO NOTHING
-  `
-
-  if (inserted === 0) {
-    logger.info('payment_link.webhook.replay_skipped', { eventId: event.id })
-    return { noOp: true }
-  }
-
   // MB-2: Resolve businessId from our DB, not from payload notes
   const link = await prisma.paymentLink.findUnique({
     where: { razorpayLinkId: rzLinkId },
@@ -87,8 +75,24 @@ export async function processWebhookPaymentLinkPaid(
   // The systemActor field in AuditLog records the true actor.
   const paymentCreatedBy = link.createdBy
 
-  await prisma.$transaction(async (tx) => {
-    // Create Payment row — use actual paid amount (MB-5: don't trust link amount)
+  // Sentinel error class — caught below to translate into a 200 no-op
+  class DuplicateEventError extends Error {
+    constructor() { super('DUPLICATE_EVENT'); this.name = 'DuplicateEventError' }
+  }
+
+  let isDuplicate = false
+  try {
+    await prisma.$transaction(async (tx) => {
+      // MB-1: Idempotency — INSERT WebhookEvent as first tx statement so a tx
+      // rollback also rolls back the dedupe row, letting Razorpay retries land.
+      const inserted = await tx.$executeRaw`
+        INSERT INTO "WebhookEvent" ("id", "eventId", "source", "payload", "processedAt")
+        VALUES (gen_random_uuid()::text, ${event.id}, 'razorpay', ${JSON.stringify(rawPayload)}::jsonb, NOW())
+        ON CONFLICT ("eventId") DO NOTHING
+      `
+      if (inserted === 0) throw new DuplicateEventError()
+
+      // Create Payment row — use actual paid amount (MB-5: don't trust link amount)
     const payment = await tx.payment.create({
       data: {
         businessId: link.businessId,
@@ -160,6 +164,16 @@ export async function processWebhookPaymentLinkPaid(
       },
     })
   })
+  } catch (e) {
+    if (e instanceof DuplicateEventError) {
+      logger.info('payment_link.webhook.replay_skipped', { eventId: event.id })
+      isDuplicate = true
+    } else {
+      throw e
+    }
+  }
+
+  if (isDuplicate) return { noOp: true }
 
   logger.info('payment_link.webhook.processed', {
     linkId: link.id,

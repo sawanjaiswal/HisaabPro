@@ -1,7 +1,5 @@
 /**
  * Promise-to-Pay — list, markKept, and evaluateOpenPtps.
- *
- * Split from promise-to-pay.service.ts to stay ≤250 LOC.
  * MB-7: evaluateOpenPtps writes AuditLog with userId=NULL, systemActor='cron:ptp-evaluator'.
  */
 
@@ -127,15 +125,11 @@ export async function markPtpKept(
  *
  * MB-7: AuditLog uses userId=NULL, systemActor='cron:ptp-evaluator'.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function evaluateOpenPtps(
   businessId: string,
   asOf: Date,
-  tx?: Parameters<Parameters<typeof prisma.$transaction>[0]>[0],
 ) {
-  const db = tx ?? prisma
-
-  const openPtps = await db.promiseToPay.findMany({
+  const openPtps = await prisma.promiseToPay.findMany({
     where: {
       businessId,
       status: 'OPEN',
@@ -153,63 +147,93 @@ export async function evaluateOpenPtps(
 
   if (openPtps.length === 0) return
 
+  // F-13: bulk-load allocations once per business (O(B), not O(B×N))
+  const invoiceIds = openPtps.map((p) => p.invoiceId).filter((id): id is string => id !== null)
+  const partyIds = openPtps.map((p) => p.partyId)
+  const maxPromiseDate = openPtps.reduce(
+    (max, p) => (p.promiseDate > max ? p.promiseDate : max),
+    openPtps[0].promiseDate,
+  )
+
+  const bulkAllocations = await prisma.paymentAllocation.findMany({
+    where: {
+      payment: {
+        businessId,
+        date: { lte: maxPromiseDate },
+        isDeleted: false,
+      },
+      ...(invoiceIds.length > 0 || partyIds.length > 0
+        ? {
+            OR: [
+              ...(invoiceIds.length > 0 ? [{ invoiceId: { in: invoiceIds } }] : []),
+              ...(partyIds.length > 0 ? [{ payment: { partyId: { in: partyIds } } }] : []),
+            ],
+          }
+        : {}),
+    },
+    select: {
+      amount: true,
+      paymentId: true,
+      invoiceId: true,
+      payment: { select: { partyId: true, date: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+  })
+
+  const byInvoice = new Map<string, typeof bulkAllocations>()
+  const byParty = new Map<string, typeof bulkAllocations>()
+  for (const alloc of bulkAllocations) {
+    if (alloc.invoiceId) {
+      const arr = byInvoice.get(alloc.invoiceId) ?? []
+      arr.push(alloc)
+      byInvoice.set(alloc.invoiceId, arr)
+    }
+    const pid = alloc.payment.partyId
+    if (pid) {
+      const arr = byParty.get(pid) ?? []
+      arr.push(alloc)
+      byParty.set(pid, arr)
+    }
+  }
+
   for (const ptp of openPtps) {
     try {
-      // Find qualifying payments on/before promiseDate
       const allocations = ptp.invoiceId
-        ? await db.paymentAllocation.findMany({
-            where: {
-              invoiceId: ptp.invoiceId,
-              payment: {
-                businessId,
-                date: { lte: ptp.promiseDate },
-                isDeleted: false,
-              },
-            },
-            select: { amount: true, paymentId: true },
-            orderBy: { createdAt: 'desc' },
-          })
-        : await db.paymentAllocation.findMany({
-            where: {
-              payment: {
-                businessId,
-                partyId: ptp.partyId,
-                date: { lte: ptp.promiseDate },
-                isDeleted: false,
-              },
-            },
-            select: { amount: true, paymentId: true },
-            orderBy: { createdAt: 'desc' },
-          })
+        ? (byInvoice.get(ptp.invoiceId) ?? []).filter((a) => a.payment.date <= ptp.promiseDate)
+        : (byParty.get(ptp.partyId) ?? []).filter((a) => a.payment.date <= ptp.promiseDate)
 
       const totalPaid = allocations.reduce((s, a) => s + a.amount, 0)
       const isKept = totalPaid >= ptp.amountPaise
       const newStatus = isKept ? 'KEPT' : 'BROKEN'
       const mostRecentPaymentId = allocations[0]?.paymentId ?? null
 
-      await db.promiseToPay.update({
-        where: { id: ptp.id },
-        data: {
-          status: newStatus,
-          ...(isKept ? { keptAt: new Date() } : { brokenAt: new Date() }),
-          ...(isKept && mostRecentPaymentId
-            ? { satisfyingPaymentIds: { set: [mostRecentPaymentId] } }
-            : {}),
-          updatedBy: 'cron:ptp-evaluator',
-        },
-      })
+      // Each PTP's update + audit gets its own tiny $transaction so one bad
+      // PTP row doesn't roll back the others for the same business.
+      await prisma.$transaction(async (tx) => {
+        await tx.promiseToPay.update({
+          where: { id: ptp.id },
+          data: {
+            status: newStatus,
+            ...(isKept ? { keptAt: new Date() } : { brokenAt: new Date() }),
+            ...(isKept && mostRecentPaymentId
+              ? { satisfyingPaymentIds: { set: [mostRecentPaymentId] } }
+              : {}),
+            updatedBy: 'cron:ptp-evaluator',
+          },
+        })
 
-      await db.auditLog.create({
-        data: {
-          businessId,
-          action: `PTP_${newStatus}`,
-          entityType: 'PromiseToPay',
-          entityId: ptp.id,
-          entityLabel: `PTP ${ptp.id}`,
-          userId: null,
-          systemActor: 'cron:ptp-evaluator',
-          changes: { totalPaid, amountPaise: ptp.amountPaise, mostRecentPaymentId },
-        },
+        await tx.auditLog.create({
+          data: {
+            businessId,
+            action: `PTP_${newStatus}`,
+            entityType: 'PromiseToPay',
+            entityId: ptp.id,
+            entityLabel: `PTP ${ptp.id}`,
+            userId: null,
+            systemActor: 'cron:ptp-evaluator',
+            changes: { totalPaid, amountPaise: ptp.amountPaise, mostRecentPaymentId },
+          },
+        })
       })
 
       logger.info('ptp.evaluated', { ptpId: ptp.id, newStatus, businessId })

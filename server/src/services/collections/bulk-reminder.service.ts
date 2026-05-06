@@ -156,6 +156,7 @@ export async function dispatchBulkReminders(
   partyPhoneMap: Map<string, string>, // partyId → validated digits-only phone
   templateKey: TemplateKey,
   bulkBatchId: string,
+  outstandingMap: Map<string, number>, // partyId → outstandingBalance in paise
 ): Promise<{ sent: number; excluded: ExcludedParty[] }> {
   if (batch.included.length === 0) {
     return { sent: 0, excluded: batch.excluded }
@@ -173,7 +174,7 @@ export async function dispatchBulkReminders(
       renderedMessage: batch.renderedMessages.get(r.partyId) ?? '',
       templateKey,
       recipientPhone: partyPhoneMap.get(r.partyId) ?? null,
-      snapshotOutstandingPaise: 0, // will be patched below
+      snapshotOutstandingPaise: outstandingMap.get(r.partyId) ?? 0,
       dispatchedAt: new Date(),
       createdBy: userId,
     }))

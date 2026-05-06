@@ -52,10 +52,10 @@ export async function runPtpEvaluator(): Promise<void> {
 
     for (const biz of businesses) {
       try {
-        await prisma.$transaction(async (tx) => {
-          // tx type cast: evaluateOpenPtps accepts the transaction client
-          await evaluateOpenPtps(biz.id, asOf, tx as Parameters<Parameters<typeof prisma.$transaction>[0]>[0])
-        })
+        // No outer transaction: each PTP's update+audit pair gets its own
+        // tiny $transaction inside evaluateOpenPtps, so one bad PTP doesn't
+        // roll back all other PTPs for the same business.
+        await evaluateOpenPtps(biz.id, asOf)
       } catch (e) {
         logger.error('ptp-evaluator.business_error', {
           businessId: biz.id,

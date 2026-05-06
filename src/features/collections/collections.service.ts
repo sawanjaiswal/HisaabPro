@@ -20,7 +20,7 @@ import type {
  * Scoped server-side via req.user.businessId.
  */
 export async function getAging(): Promise<AgingBucketResult> {
-  return api<AgingBucketResult>('/api/collections/aging', {
+  return api<AgingBucketResult>('/collections/aging', {
     cacheReads: true,
   })
 }
@@ -29,7 +29,7 @@ export async function getAging(): Promise<AgingBucketResult> {
  * Create a Promise-to-Pay record.
  */
 export async function createPtp(input: CreatePtpInput): Promise<Ptp> {
-  return api<Ptp>('/api/collections/ptp', {
+  return api<Ptp>('/collections/ptp', {
     method: 'POST',
     body: JSON.stringify(input),
     entityType: 'ptp',
@@ -49,7 +49,7 @@ export async function getPtpList(
   const params = new URLSearchParams({ partyId, limit: String(limit) })
   if (status) params.set('status', status)
   if (cursor) params.set('cursor', cursor)
-  return api<PtpListResult>(`/api/collections/ptp?${params.toString()}`, {
+  return api<PtpListResult>(`/collections/ptp?${params.toString()}`, {
     cacheReads: false,
   })
 }
@@ -58,7 +58,7 @@ export async function getPtpList(
  * Update an OPEN PTP record.
  */
 export async function updatePtp(id: string, input: UpdatePtpInput): Promise<Ptp> {
-  return api<Ptp>(`/api/collections/ptp/${id}`, {
+  return api<Ptp>(`/collections/ptp/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(input),
     entityType: 'ptp',
@@ -70,7 +70,7 @@ export async function updatePtp(id: string, input: UpdatePtpInput): Promise<Ptp>
  * Delete an OPEN PTP record.
  */
 export async function deletePtp(id: string): Promise<void> {
-  return api<void>(`/api/collections/ptp/${id}`, {
+  return api<void>(`/collections/ptp/${id}`, {
     method: 'DELETE',
     entityType: 'ptp',
     entityLabel: `PTP ${id}`,
@@ -89,7 +89,7 @@ export async function getAgingParties(
   if (cursor) params.set('cursor', cursor)
 
   return api<AgingPartiesResult>(
-    `/api/collections/aging/parties?${params.toString()}`,
+    `/collections/aging/parties?${params.toString()}`,
     { cacheReads: false }
   )
 }

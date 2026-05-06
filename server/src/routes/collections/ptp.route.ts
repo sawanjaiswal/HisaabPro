@@ -11,6 +11,20 @@
 import { Router } from 'express'
 import type { Response } from 'express'
 import { z } from 'zod'
+
+/**
+ * Parse a date-only string (YYYY-MM-DD) as IST midnight.
+ * Prevents the UTC midnight → IST "yesterday" timezone shift.
+ * Datetime strings with explicit offsets are used as-is.
+ */
+function parseIstDate(s: string): Date {
+  // If it already carries a timezone offset, trust it
+  if (s.includes('T') && (s.includes('+') || s.includes('Z'))) {
+    return new Date(s)
+  }
+  // Date-only — anchor to IST midnight (UTC+5:30)
+  return new Date(s + 'T00:00:00+05:30')
+}
 import { auth } from '../../middleware/auth.js'
 import { requirePermission } from '../../middleware/permission.js'
 import { asyncHandler } from '../../middleware/asyncHandler.js'
@@ -107,7 +121,7 @@ router.post(
     try {
       const ptp = await createPtp(businessId, userId, {
         ...body,
-        promiseDate: new Date(body.promiseDate),
+        promiseDate: parseIstDate(body.promiseDate),
       })
       sendSuccess(res, ptp, 201)
     } catch (err) {
@@ -153,7 +167,7 @@ router.patch(
     const patch = {
       ...(body.amountPaise !== undefined ? { amountPaise: body.amountPaise } : {}),
       ...(body.notes !== undefined ? { notes: body.notes } : {}),
-      ...(body.promiseDate ? { promiseDate: new Date(body.promiseDate) } : {}),
+      ...(body.promiseDate ? { promiseDate: parseIstDate(body.promiseDate) } : {}),
     }
 
     try {

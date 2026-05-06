@@ -72,25 +72,44 @@ router.post(
       return
     }
 
+    const bulkBatchId = idempotencyKey.slice(0, 40) // cap to schema VarChar(40)
+
+    // F-08: idempotency check — if this batchId already exists return prior result
+    const existingBatch = await prisma.reminderLog.findFirst({
+      where: { bulkBatchId, businessId },
+      select: { bulkBatchId: true },
+    })
+    if (existingBatch) {
+      sendSuccess(res, {
+        sent: 0,
+        excluded: 0,
+        excludedDetails: [],
+        waLinks: [],
+        bulkBatchId,
+        idempotent: true,
+      })
+      return
+    }
+
     // Build batch: cross-tenant validation + template render (MB-3/MB-4 inside)
     const batch = await buildBulkReminderBatch(businessId, partyIds, templateKey, customMessage)
 
-    // Collect validated phones for ReminderLog storage
+    // Collect validated phones + outstanding balances for ReminderLog storage
     const partyPhoneMap = new Map<string, string>()
+    const outstandingMap = new Map<string, number>()
     if (batch.included.length > 0) {
       const parties = await prisma.party.findMany({
         where: { id: { in: batch.included.map((p) => p.partyId) }, businessId },
-        select: { id: true, phone: true },
+        select: { id: true, phone: true, outstandingBalance: true },
       })
       for (const p of parties) {
+        outstandingMap.set(p.id, p.outstandingBalance)
         if (p.phone) {
           const digits = p.phone.replace(/\D/g, '')
           if (isValidPhone(digits)) partyPhoneMap.set(p.id, digits)
         }
       }
     }
-
-    const bulkBatchId = idempotencyKey.slice(0, 40) // cap to schema VarChar(40)
 
     const result = await dispatchBulkReminders(
       businessId,
@@ -99,6 +118,7 @@ router.post(
       partyPhoneMap,
       templateKey,
       bulkBatchId,
+      outstandingMap,
     )
 
     sendSuccess(res, {

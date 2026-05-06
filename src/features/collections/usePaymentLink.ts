@@ -31,8 +31,8 @@ export function useCreatePaymentLink() {
 
   return useMutation<PaymentLink, Error, CreatePaymentLinkOpts>({
     mutationFn: async ({ invoiceId, invoiceNumber, amountPaise, expiryDays, idempotencyKey }) => {
-      const resp = await api<{ success: boolean; data: PaymentLink }>(
-        '/api/payments/payment-links',
+      return api<PaymentLink>(
+        '/payments/payment-links',
         {
           method: 'POST',
           body: JSON.stringify({ invoiceId, amountPaise, expiryDays }),
@@ -41,7 +41,6 @@ export function useCreatePaymentLink() {
           headers: { 'X-Idempotency-Key': idempotencyKey },
         },
       )
-      return resp.data
     },
     onSuccess: (_data, vars) => {
       void qc.invalidateQueries({ queryKey: ['invoices', vars.invoiceId] })
@@ -55,10 +54,9 @@ export function usePaymentLinks(invoiceId: string | undefined) {
     queryKey: ['payment-links', invoiceId],
     queryFn: async () => {
       if (!invoiceId) return []
-      const resp = await api<{ success: boolean; data: PaymentLink[] }>(
-        `/api/payments/payment-links?invoiceId=${invoiceId}`,
+      return api<PaymentLink[]>(
+        `/payments/payment-links?invoiceId=${invoiceId}`,
       )
-      return resp.data ?? []
     },
     enabled: Boolean(invoiceId),
     staleTime: 30_000,

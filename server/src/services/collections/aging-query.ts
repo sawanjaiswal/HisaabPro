@@ -26,7 +26,7 @@ export interface PtpRow {
 }
 
 /**
- * Single-query aggregation: groups all outstanding SALES_INVOICE rows by party
+ * Single-query aggregation: groups all outstanding SALE_INVOICE rows by party
  * and assigns each to a bucket based on age of effective due date vs asOf.
  * Uses Prisma $queryRaw so we can do CASE WHEN bucketing in one pass.
  */
@@ -59,8 +59,8 @@ export async function fetchAgingRows(businessId: string, asOf: Date): Promise<Bu
     JOIN "Party"    p ON p.id = d."partyId"
     WHERE
       d."businessId" = ${businessId}
-      AND d.type     = 'SALES_INVOICE'
-      AND d.status   IN ('SAVED', 'SHARED', 'COMPLETED')
+      AND d.type     = 'SALE_INVOICE'
+      AND d.status   IN ('SAVED', 'SHARED')
       AND d."isDeleted" = false
       AND d."balanceDue" > 0
     GROUP BY p.id, p.name, p.phone, bucket

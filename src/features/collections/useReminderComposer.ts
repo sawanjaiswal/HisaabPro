@@ -41,8 +41,8 @@ export function useReminderComposer() {
 
   return useMutation<BulkReminderResult, Error, BulkReminderPayload>({
     mutationFn: async ({ partyIds, channel, templateKey, customMessage, idempotencyKey }) => {
-      const resp = await api<{ success: boolean; data: BulkReminderResult }>(
-        '/api/payments/reminders/bulk',
+      return api<BulkReminderResult>(
+        '/payments/reminders/bulk',
         {
           method: 'POST',
           body: JSON.stringify({ partyIds, channel, templateKey, customMessage }),
@@ -51,7 +51,6 @@ export function useReminderComposer() {
           headers: { 'Idempotency-Key': idempotencyKey },
         },
       )
-      return resp.data
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['collections'] })

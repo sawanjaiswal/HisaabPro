@@ -58,8 +58,8 @@ export interface Ptp {
   partyId: string
   invoiceId: string | null
   amountPaise: number
-  promisedDate: string
-  note: string | null
+  promiseDate: string
+  notes: string | null
   status: PtpStatus
   createdAt: string
   updatedAt: string
@@ -74,12 +74,12 @@ export interface CreatePtpInput {
   partyId: string
   invoiceId?: string
   amountPaise: number
-  promisedDate: string
-  note?: string
+  promiseDate: string
+  notes?: string
 }
 
 export interface UpdatePtpInput {
   amountPaise?: number
-  promisedDate?: string
-  note?: string
+  promiseDate?: string
+  notes?: string
 }

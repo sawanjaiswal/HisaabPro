@@ -48,11 +48,11 @@ export async function createPtp(
     throw err
   }
 
-  // promiseDate must be strictly after today (not same day)
+  // promiseDate must be today or later (aligned with client min={todayStr})
   const today = todayStart()
   const pDate = new Date(promiseDate)
   pDate.setHours(0, 0, 0, 0)
-  if (pDate <= today) {
+  if (pDate < today) {
     const err = new Error('PROMISED_DATE_INVALID')
     ;(err as NodeJS.ErrnoException).code = 'PROMISED_DATE_INVALID'
     throw err
@@ -137,12 +137,12 @@ export async function updatePtp(
     throw err
   }
 
-  // Validate new date if provided
+  // Validate new date if provided — today or later (aligned with client)
   if (patch.promiseDate !== undefined) {
     const today = todayStart()
     const pDate = new Date(patch.promiseDate)
     pDate.setHours(0, 0, 0, 0)
-    if (pDate <= today) {
+    if (pDate < today) {
       const err = new Error('PROMISED_DATE_INVALID')
       ;(err as NodeJS.ErrnoException).code = 'PROMISED_DATE_INVALID'
       throw err

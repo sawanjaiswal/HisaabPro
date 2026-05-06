@@ -19,7 +19,7 @@ export function useStatement(
     queryFn: async () => {
       const params = new URLSearchParams({ from: from!, to: to! })
       return api<StatementData>(
-        `/api/collections/statement/${partyId}?${params.toString()}`
+        `/collections/statement/${partyId}?${params.toString()}`
       )
     },
     enabled: Boolean(partyId) && Boolean(from) && Boolean(to),

@@ -72,8 +72,8 @@ export async function generateIrn(
       code: EINVOICE_ERRORS.DOCUMENT_NOT_ELIGIBLE,
     })
   }
-  if (doc.status !== 'SAVED') {
-    throw new AppError(ErrorCode.VALIDATION_ERROR, 400, 'Document must be in SAVED status')
+  if (doc.status !== 'SAVED' && doc.status !== 'SHARED') {
+    throw new AppError(ErrorCode.VALIDATION_ERROR, 400, 'Document must be in SAVED or SHARED status')
   }
 
   // Idempotent — already generated

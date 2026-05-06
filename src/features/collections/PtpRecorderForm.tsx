@@ -27,10 +27,10 @@ export function PtpRecorderForm({ open, onClose, partyId, partyName, existingPtp
   const [amountRs, setAmountRs] = useState<string>(
     existingPtp ? String(existingPtp.amountPaise / 100) : ''
   )
-  const [promisedDate, setPromisedDate] = useState<string>(
-    existingPtp ? existingPtp.promisedDate.slice(0, 10) : ''
+  const [promiseDate, setPromiseDate] = useState<string>(
+    existingPtp ? existingPtp.promiseDate.slice(0, 10) : ''
   )
-  const [note, setNote] = useState<string>(existingPtp?.note ?? '')
+  const [notes, setNotes] = useState<string>(existingPtp?.notes ?? '')
   const [validationErr, setValidationErr] = useState<string | null>(null)
 
   const createMutation = useCreatePtp(partyId)
@@ -40,9 +40,10 @@ export function PtpRecorderForm({ open, onClose, partyId, partyName, existingPtp
   function validate(): string | null {
     const rupees = parseFloat(amountRs)
     if (!amountRs || isNaN(rupees) || rupees <= 0) return t.ptpAmountRequired
-    if (!promisedDate) return t.ptpDateRequired
-    if (promisedDate < todayStr) return t.ptpDateMustBeFuture
-    if (note.length > 500) return t.ptpNoteTooLong
+    if (!promiseDate) return t.ptpDateRequired
+    // F-10: align with server — today is allowed ("today or later", strictly >= today)
+    if (promiseDate < todayStr) return t.ptpDateMustBeFuture
+    if (notes.length > 500) return t.ptpNoteTooLong
     return null
   }
 
@@ -59,16 +60,16 @@ export function PtpRecorderForm({ open, onClose, partyId, partyName, existingPtp
         id: existingPtp.id,
         partyName,
         amountPaise,
-        promisedDate,
-        note: note.trim() || undefined,
+        promiseDate,
+        notes: notes.trim() || undefined,
       })
     } else {
       await createMutation.mutateAsync({
         partyId,
         partyName,
         amountPaise,
-        promisedDate,
-        note: note.trim() || undefined,
+        promiseDate,
+        notes: notes.trim() || undefined,
       })
     }
 
@@ -150,8 +151,8 @@ export function PtpRecorderForm({ open, onClose, partyId, partyName, existingPtp
             type="date"
             className="form-input"
             min={todayStr}
-            value={promisedDate}
-            onChange={e => setPromisedDate(e.target.value)}
+            value={promiseDate}
+            onChange={e => setPromiseDate(e.target.value)}
             required
             aria-required="true"
             disabled={isPending}
@@ -169,13 +170,13 @@ export function PtpRecorderForm({ open, onClose, partyId, partyName, existingPtp
             rows={3}
             maxLength={500}
             placeholder={t.ptpNotePlaceholder}
-            value={note}
-            onChange={e => setNote(e.target.value)}
+            value={notes}
+            onChange={e => setNotes(e.target.value)}
             disabled={isPending}
             style={{ resize: 'vertical', minHeight: 80 }}
           />
           <p className="form-hint" style={{ textAlign: 'right' }}>
-            {note.length}/500
+            {notes.length}/500
           </p>
         </div>
       </form>
