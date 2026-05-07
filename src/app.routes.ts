@@ -158,3 +158,7 @@ export const AgingBucketListPage = lazy(() => import('@/features/collections/pag
 
 // Cash Register (PR 4)
 export const CashRegister = lazy(() => import('@/features/cash-register/components/CashRegisterPage'))
+
+// Notifications Engine (PR12+PR13)
+export const Notifications = lazy(() => import('@/features/notifications/pages/NotificationsPage'))
+export const NotificationPreferences = lazy(() => import('@/features/notifications/pages/NotificationPreferencesPage'))

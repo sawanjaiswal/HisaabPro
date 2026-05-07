@@ -18,6 +18,7 @@ const SKIP_FIELDS = new Set([
   'emailBody',
   'htmlContent',
   'expression', // cash register arithmetic expressions — contain / * + - ( )
+  'deepLinkUrl', // URL fields — validated by Zod .url() + startsWith check; escape() breaks ://
 ])
 
 /**

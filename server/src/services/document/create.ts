@@ -16,6 +16,8 @@ import {
   getRoundOffSetting, updateOutstanding,
 } from './helpers.js'
 import { validateLineItemProducts } from './create-batch-validation.js'
+import { notificationManager } from '../notifications/notification-manager.js'
+import { formatPaise } from '../notifications/notification-template.service.js'
 
 export async function createDocument(
   businessId: string,
@@ -63,11 +65,9 @@ export async function createDocument(
   const roundOffSetting = await getRoundOffSetting(businessId)
 
   assertGstEnabled(data, business)
-
   const taxPricingMode = data.taxPricingMode ?? 'EXCLUSIVE'
   const isComposite = data.isComposite ?? business?.compositionScheme ?? false
   const isReverseCharge = data.isReverseCharge ?? false
-
   assertCompositionNoLineTax(isComposite, data.lineItems)
   assertCompositionNoInterState(isComposite, business?.stateCode ?? null, data.placeOfSupply ?? null)
   const purchasePriceMap = new Map(products.map(p => [p.id, p.purchasePrice || 0]))
@@ -234,6 +234,7 @@ export async function createDocument(
   if (isSaving && (STOCK_DECREASE_TYPES.has(data.type) || STOCK_INCREASE_TYPES.has(data.type))) {
     scheduleAlertChecks(businessId, data.lineItems.map(li => li.productId))
   }
+  if (isSaving && data.type === 'SALE_INVOICE') void notificationManager.notify('INVOICE_CREATED', { businessId, userId, eventKey: 'INVOICE_CREATED', locale: 'en', vars: { invoiceNo: result.documentNumber ?? '', partyName: (result as { party: { name: string } }).party.name, totalRs: formatPaise(Number(result.grandTotal)) }, entityType: 'invoice', entityId: result.id })
 
   // Append transient compositionLiability (1%/5%/6% on grandTotal) — not persisted
   const compositionInfo = getCompositionInvoiceInfo(isComposite, 'default', result.grandTotal)

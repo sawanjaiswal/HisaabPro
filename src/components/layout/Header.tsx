@@ -14,6 +14,7 @@ import { APP_NAME } from '@/config/app.config'
 import { ROUTES } from '@/config/routes.config'
 import { OPEN_SIDE_NAV_EVENT } from '@/config/events.config'
 import { SyncStatusIcon } from '@/components/feedback/SyncStatusIcon'
+import { NotificationBell } from '@/features/notifications/components/NotificationBell'
 
 interface HeaderProps {
   /** Page title — shown when `backTo` is set (sub-page mode). */
@@ -93,6 +94,7 @@ export function Header({
 
       <div className="header-actions">
         {actions}
+        <NotificationBell />
         <SyncStatusIcon />
         <button
           type="button"

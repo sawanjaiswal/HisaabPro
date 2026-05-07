@@ -156,4 +156,8 @@ export const ROUTES = {
 
   // Cash Register (PR 4)
   CASH_REGISTER: '/cash-register',
+
+  // Notifications Engine (PR12+PR13)
+  NOTIFICATIONS:              '/notifications',
+  NOTIFICATION_PREFERENCES:   '/notifications/preferences',
 } as const

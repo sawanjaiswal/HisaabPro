@@ -82,6 +82,11 @@ model User {
   // Phase 4 — Multi-Godown transfers
   godownTransfers GodownTransfer[]
 
+  // Notifications Engine
+  notifications             Notification[]
+  notificationPreferences   NotificationPreference[]
+  pushTokens                PushToken[]
+
   @@index([phone])
   @@index([referredBy])
   @@index([referralFraudFlags])
@@ -197,6 +202,13 @@ model Business {
   // Expenses Upgrade — PR1
   expenseTemplates ExpenseTemplate[]
   expenseBudgets   ExpenseBudget[]
+
+  // Notifications Engine
+  notifications            Notification[]
+  notificationJobs         NotificationJob[]
+  notificationPreferences  NotificationPreference[]
+  notificationCostTallies  NotificationCostTally[]
+  pushTokens               PushToken[]
 
   @@index([name])
 }
@@ -2792,4 +2804,159 @@ model WebhookEvent {
   source      String?  @db.VarChar(20)
   payload     Json?
   processedAt DateTime @default(now())
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Notifications Engine — PR1 (schema: 5 models + 3 enums + 9 indexes)
+// Migration: notifications_init (additive only — no DROP, no NOT NULL backfill)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+enum NotificationChannel {
+  PUSH
+  EMAIL
+  SMS
+  IN_APP
+  WHATSAPP
+}
+
+enum NotificationJobStatus {
+  QUEUED
+  PROCESSING
+  DISPATCHED
+  DELIVERED
+  FAILED
+  DEAD
+}
+
+enum NotificationDeliveryStatus {
+  UNKNOWN
+  DELIVERED
+  BOUNCED
+  REJECTED
+  EXPIRED
+}
+
+model Notification {
+  id         String   @id @default(cuid())
+  businessId String
+  userId     String
+
+  eventKey    String  @db.VarChar(60)
+  titleEn     String  @db.VarChar(160)
+  titleHi     String  @db.VarChar(160)
+  bodyEn      String  @db.Text
+  bodyHi      String  @db.Text
+
+  isRead  Boolean   @default(false)
+  readAt  DateTime?
+
+  entityType  String? @db.VarChar(40)
+  entityId    String?
+  deepLinkUrl String? @db.VarChar(255)
+
+  createdAt DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, userId, isRead, createdAt(sort: Desc)])
+  @@index([businessId, userId, createdAt(sort: Desc)])
+  @@index([createdAt])
+}
+
+model NotificationJob {
+  id         String                @id @default(cuid())
+  businessId String
+  userId     String
+
+  eventKey       String                     @db.VarChar(60)
+  channel        NotificationChannel
+  status         NotificationJobStatus      @default(QUEUED)
+  deliveryStatus NotificationDeliveryStatus @default(UNKNOWN)
+
+  idempotencyKey String @unique @db.VarChar(40)
+
+  // PII separation — §3.1: no raw phone/email/token in payload
+  recipientChannel NotificationChannel
+  pushTokenId      String?            // FK to PushToken (PUSH only)
+  recipientHash    String  @db.VarChar(64) // sha256 of recipient identifier; never raw
+
+  payload    Json   // RENDERED ONLY: { title, body, deepLinkUrl, vars }
+  externalId String? @db.VarChar(120)
+
+  scheduledAt  DateTime  @default(now())
+  claimedAt    DateTime?
+  claimedBy    String?   @db.VarChar(80)
+  processedAt  DateTime?
+  deliveredAt  DateTime?
+  failedAt     DateTime?
+  failureCode  String?   @db.VarChar(60)
+  failureReason String?  @db.VarChar(500)
+  retryCount   Int       @default(0)
+
+  costPaise Int @default(0)
+
+  createdAt DateTime @default(now())
+
+  business  Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  pushToken PushToken? @relation(fields: [pushTokenId], references: [id], onDelete: SetNull)
+
+  @@index([status, scheduledAt])
+  @@index([businessId, status, createdAt])
+  @@index([externalId])
+  @@index([userId, createdAt])
+  @@index([recipientHash, createdAt])
+  @@index([createdAt])
+}
+
+model NotificationPreference {
+  id         String              @id @default(cuid())
+  businessId String
+  userId     String
+  eventKey   String              @db.VarChar(60)
+  channel    NotificationChannel
+  enabled    Boolean             @default(true)
+
+  updatedAt DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, userId, eventKey, channel])
+  @@index([businessId, userId])
+}
+
+model NotificationCostTally {
+  id         String              @id @default(cuid())
+  businessId String
+  month      String              @db.VarChar(7) // "2026-05" IST
+  channel    NotificationChannel
+  totalPaise Int                 @default(0)
+  sentCount  Int                 @default(0)
+  updatedAt  DateTime            @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, month, channel])
+  @@index([businessId, month])
+}
+
+model PushToken {
+  id         String   @id @default(cuid())
+  businessId String
+  userId     String
+  token      String   @db.VarChar(255)
+  platform   String   @db.VarChar(20) // 'android' | 'ios' | 'web'
+  appVersion String?  @db.VarChar(40)
+  lastSeenAt DateTime @default(now())
+  isValid    Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  notificationJobs NotificationJob[]
+
+  @@unique([userId, token])
+  @@index([businessId, userId, isValid])
 }

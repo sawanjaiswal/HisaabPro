@@ -29,6 +29,8 @@
  *   GET    /api/admin/coupons/:id         — coupon detail
  *   PATCH  /api/admin/coupons/:id         — update coupon (SUPER_ADMIN)
  *   DELETE /api/admin/coupons/:id         — deactivate (SUPER_ADMIN)
+ *
+ *   POST   /api/admin/notifications/broadcast — broadcast to tier (SUPER_ADMIN)
  */
 
 import { Router } from 'express'
@@ -38,6 +40,7 @@ import adminBusinessesRoutes from './admin-businesses.js'
 import adminDashboardRoutes from './admin-dashboard.js'
 import adminSettingsRoutes from './admin-settings.js'
 import adminCouponsRoutes from './admin-coupons.js'
+import adminNotificationsBroadcastRoutes from './notifications-broadcast.js'
 
 const router = Router()
 
@@ -47,5 +50,6 @@ router.use('/businesses', adminBusinessesRoutes)
 router.use('/dashboard', adminDashboardRoutes)
 router.use('/settings', adminSettingsRoutes)
 router.use('/coupons', adminCouponsRoutes)
+router.use('/notifications', adminNotificationsBroadcastRoutes)
 
 export default router

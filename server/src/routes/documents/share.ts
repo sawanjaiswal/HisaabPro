@@ -16,6 +16,8 @@ import logger from '../../lib/logger.js'
 import { sendWhatsApp, sendEmail } from '../../services/notification.service.js'
 import { renderInvoiceShareEmail } from '../../lib/email-templates.js'
 import { generateInvoicePdf } from '../../services/pdf.service.js'
+import { notificationManager } from '../../services/notifications/notification-manager.js'
+import { formatPaise } from '../../services/notifications/notification-template.service.js'
 
 const router = Router()
 
@@ -23,7 +25,7 @@ type DocMeta = {
   status: string
   documentNumber: string
   grandTotal: number
-  party: { name: string }
+  party: { name: string; phone: string | null; email: string | null }
 }
 
 /** POST /api/documents/:id/share/whatsapp */
@@ -79,6 +81,25 @@ router.post(
         documentId,
         error: err instanceof Error ? err.message : err,
       })
+    }
+
+    try {
+      await notificationManager.notify('INVOICE_SHARED', {
+        businessId,
+        userId: req.user!.userId,
+        eventKey: 'INVOICE_SHARED',
+        locale: 'en',
+        vars: {
+          invoiceNo: docData.documentNumber,
+          partyName: docData.party.name,
+          totalRs: formatPaise(Number(docData.grandTotal)),
+          channel: 'whatsapp',
+        },
+        entityType: 'invoice',
+        entityId: documentId,
+      })
+    } catch (err) {
+      logger.warn('notify.failed', { eventKey: 'INVOICE_SHARED', err })
     }
 
     sendSuccess(res, {
@@ -160,6 +181,25 @@ router.post(
         documentId,
         error: err instanceof Error ? err.message : err,
       })
+    }
+
+    try {
+      await notificationManager.notify('INVOICE_SHARED', {
+        businessId,
+        userId: req.user!.userId,
+        eventKey: 'INVOICE_SHARED',
+        locale: 'en',
+        vars: {
+          invoiceNo: docData.documentNumber,
+          partyName: docData.party.name,
+          totalRs: formatPaise(Number(docData.grandTotal)),
+          channel: 'email',
+        },
+        entityType: 'invoice',
+        entityId: documentId,
+      })
+    } catch (err) {
+      logger.warn('notify.failed', { eventKey: 'INVOICE_SHARED', err })
     }
 
     sendSuccess(res, {

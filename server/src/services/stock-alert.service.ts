@@ -7,6 +7,7 @@
 
 import { prisma } from '../lib/prisma.js'
 import logger from '../lib/logger.js'
+import { notifyStockAlert } from './notifications/notification-hooks.js'
 
 const DEFAULT_LIMIT = 50
 const MAX_LIMIT = 200
@@ -100,25 +101,21 @@ export async function checkAndCreateAlerts(
   }
 
   // Create new alert
-  await prisma.stockAlert.create({
-    data: {
-      businessId,
-      productId,
-      alertType,
-      threshold,
-      currentQty: currentStock,
-    },
+  const newAlert = await prisma.stockAlert.create({
+    data: { businessId, productId, alertType, threshold, currentQty: currentStock },
+    select: { id: true },
   })
 
-  logger.info('Stock alert created', {
+  logger.info('Stock alert created', { businessId, productId, productName: product.name, alertType, currentStock, threshold })
+
+  // Fire notification (non-blocking, owner resolved inside hook)
+  void notifyStockAlert({
     businessId,
-    productId,
+    alertType: alertType as 'LOW_STOCK' | 'OUT_OF_STOCK',
+    alertId: newAlert.id,
     productName: product.name,
-    alertType,
     currentStock,
     threshold,
-    minStockLevel: minLevel,
-    reorderQty,
   })
 }
 

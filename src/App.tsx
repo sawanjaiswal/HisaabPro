@@ -47,6 +47,8 @@ import {
   AgingDashboardPage,
   AgingBucketListPage,
   CashRegister,
+  Notifications,
+  NotificationPreferences,
   NotFound,
 } from '@/app.routes'
 import {
@@ -206,6 +208,9 @@ export function App() {
         <Route path={ROUTES.INVENTORY_VERIFY} element={<PageRoute><ProtectedRoute><PlanGate feature="stockAdjustments" featureLabel="Stock Count"><StockVerificationStart /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.INVENTORY_VERIFY_RUN} element={<PageRoute><ProtectedRoute><PlanGate feature="stockAdjustments" featureLabel="Stock Count"><StockVerificationRun /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.STOCK_VALUE_REPORT} element={<PageRoute><ProtectedRoute><PlanGate feature="basicReports" featureLabel="Stock Value Report"><StockValueReport /></PlanGate></ProtectedRoute></PageRoute>} />
+        {/* Notifications Engine (PR12+PR13) */}
+        <Route path={ROUTES.NOTIFICATIONS} element={<PageRoute><ProtectedRoute><Notifications /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.NOTIFICATION_PREFERENCES} element={<PageRoute><ProtectedRoute><NotificationPreferences /></ProtectedRoute></PageRoute>} />
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
       </Routes>
       </PageTransition>

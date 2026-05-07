@@ -19,6 +19,8 @@ import { computeNextRunDate } from './recurring-date-math.js'
 import { TEMPLATE_SELECT, cloneLineItems, cloneAdditionalCharges } from './clone.js'
 import { buildRecurringDocumentData } from './recurring-doc-builder.js'
 import { releaseSchedule } from './recurring-claim.service.js'
+import { notificationManager } from '../notifications/notification-manager.js'
+import { formatPaise } from '../notifications/notification-template.service.js'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -178,6 +180,30 @@ export async function generateInvoiceForSchedule(
         scheduleId, partyId: schedule.partyId,
       })
       return { ...result, warning: 'autoSend_skipped_no_phone' }
+    }
+
+    // Notify RECURRING_INVOICE_GENERATED (non-blocking, outside tx)
+    if (result.status === 'SUCCESS' && result.documentId) {
+      const actorUserId = opts.actorUserId ?? null
+      if (actorUserId) {
+        try {
+          await notificationManager.notify('RECURRING_INVOICE_GENERATED', {
+            businessId: schedule.businessId,
+            userId: actorUserId,
+            eventKey: 'RECURRING_INVOICE_GENERATED',
+            locale: 'en',
+            vars: {
+              scheduleId: schedule.id,
+              documentId: result.documentId,
+              grandTotalRs: formatPaise(Number(template.grandTotal)),
+            },
+            entityType: 'invoice',
+            entityId: result.documentId,
+          })
+        } catch (err) {
+          logger.warn('notify.failed', { eventKey: 'RECURRING_INVOICE_GENERATED', err })
+        }
+      }
     }
 
     logger.info('recurring.generation.complete', { scheduleId, ...result })

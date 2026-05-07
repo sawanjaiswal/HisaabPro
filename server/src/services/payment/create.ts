@@ -6,6 +6,9 @@ import { prisma } from '../../lib/prisma.js'
 import { notFoundError, validationError } from '../../lib/errors.js'
 import { PAYMENT_DETAIL_SELECT } from './selects.js'
 import type { CreatePaymentInput } from '../../schemas/payment.schemas.js'
+import { notificationManager } from '../notifications/notification-manager.js'
+import { formatPaise } from '../notifications/notification-template.service.js'
+import logger from '../../lib/logger.js'
 
 export async function createPayment(
   businessId: string,
@@ -46,7 +49,7 @@ export async function createPayment(
       : Math.round(data.discount.value)
   }
 
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const payment = await tx.payment.create({
       data: {
         businessId,
@@ -117,4 +120,27 @@ export async function createPayment(
       select: PAYMENT_DETAIL_SELECT,
     })
   })
+
+  if (data.type === 'PAYMENT_IN') {
+    try {
+      const partyName = (result as { party: { name: string } }).party.name
+      await notificationManager.notify('PAYMENT_RECEIVED', {
+        businessId,
+        userId,
+        eventKey: 'PAYMENT_RECEIVED',
+        locale: 'en',
+        vars: {
+          partyName,
+          amountRs: formatPaise(data.amount),
+          mode: data.mode,
+        },
+        entityType: 'payment',
+        entityId: result.id,
+      })
+    } catch (err) {
+      logger.warn('notify.failed', { eventKey: 'PAYMENT_RECEIVED', err })
+    }
+  }
+
+  return result
 }

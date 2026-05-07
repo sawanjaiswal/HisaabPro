@@ -9,6 +9,8 @@ import { prisma } from '../../lib/prisma.js'
 import logger from '../../lib/logger.js'
 import { markPtpKept } from './promise-to-pay-eval.service.js'
 import { invalidateAgingCache } from './aging.service.js'
+import { notificationManager } from '../notifications/notification-manager.js'
+import { formatPaise } from '../notifications/notification-template.service.js'
 
 interface RazorpayPaymentLinkPaidEvent {
   id: string                        // Razorpay event id (used for MB-1 dedupe)
@@ -185,6 +187,14 @@ export async function processWebhookPaymentLinkPaid(
 
   // F-27: invalidate aging cache for this business after payment lands
   invalidateAgingCache(link.businessId)
+
+  // Notify PAYMENT_LINK_PAID (swallowed — never blocks caller)
+  notificationManager.notify('PAYMENT_LINK_PAID', {
+    businessId: link.businessId, userId: link.createdBy,
+    eventKey: 'PAYMENT_LINK_PAID', locale: 'en',
+    vars: { amountRs: formatPaise(paidAmountPaise), rzLinkId, rzPaymentId },
+    entityType: 'payment_link', entityId: link.id,
+  }).catch((err) => logger.warn('notify.failed', { eventKey: 'PAYMENT_LINK_PAID', err }))
 
   // Hook: mark any OPEN PTP on this invoice as KEPT (MB-7 systemActor, non-blocking)
   if (link.invoiceId) {

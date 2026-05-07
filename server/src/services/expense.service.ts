@@ -7,6 +7,8 @@ import type {
   UpdateExpenseInput,
   ListExpensesQuery,
 } from '../schemas/expense.schemas.js'
+import { notificationManager } from './notifications/notification-manager.js'
+import { formatPaise } from './notifications/notification-template.service.js'
 
 const DEFAULT_CATEGORIES = [
   { name: 'Rent', icon: '🏠', color: '#EF4444', sortOrder: 1 },
@@ -84,7 +86,7 @@ export async function createExpense(
   })
   if (!category) throw notFoundError('Expense category')
 
-  return prisma.expense.create({
+  const expense = await prisma.expense.create({
     data: {
       businessId,
       categoryId: data.categoryId,
@@ -103,6 +105,9 @@ export async function createExpense(
     },
     include: { category: { select: { id: true, name: true, icon: true, color: true } } },
   })
+
+  void notificationManager.notify('EXPENSE_RECORDED', { businessId, userId, eventKey: 'EXPENSE_RECORDED', locale: 'en', vars: { amountRs: formatPaise(Number(data.amount)), categoryName: expense.category.name }, entityType: 'expense', entityId: expense.id })
+  return expense
 }
 
 export async function updateExpense(

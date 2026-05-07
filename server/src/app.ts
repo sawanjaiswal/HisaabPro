@@ -64,6 +64,7 @@ import batchRoutes from './routes/batches.js'
 import godownRoutes from './routes/godowns.js'
 import serialNumberRoutes from './routes/serial-numbers.js'
 import razorpayRoutes, { razorpayWebhookRouter } from './routes/razorpay.js'
+import notificationsWebhookRouter from './routes/webhooks/index.js'
 import adminRoutes from './routes/admin/index.js'
 import recycleBinRoutes from './routes/recycle-bin.js'
 import eventRoutes from './routes/events.js'
@@ -77,6 +78,7 @@ import exportRoutes from './routes/export.js'
 import { subscriptionRouter } from './routes/subscription.js'
 import jobRoutes from './routes/jobs.js'
 import customOrderRoutes from './routes/custom-orders.js'
+import notificationsRoutes from './routes/notifications.js'
 import { initCronJobs } from './lib/cron-scheduler.js'
 
 export function createApp() {
@@ -126,9 +128,15 @@ export function createApp() {
 
   app.use('/api/razorpay', razorpayWebhookRouter)
 
-  // OCR route handles its own parser with 8mb limit; skip global 2mb here
+  // Notification provider webhooks — each sub-route mounts express.raw() itself;
+  // must be registered BEFORE the global JSON parser so the raw buffer is preserved.
+  app.use('/api/webhooks/notifications', notificationsWebhookRouter)
+
+  // OCR route handles its own parser with 8mb limit; skip global 2mb here.
+  // Webhook paths under /api/webhooks/notifications/* use their own raw parsers.
   app.use((req, res, next) => {
     if (req.path === '/api/expenses/ocr') return next()
+    if (req.path.startsWith('/api/webhooks/notifications/')) return next()
     return express.json({ limit: '2mb' })(req, res, next)
   })
   app.use(cookieParser())
@@ -216,7 +224,8 @@ export function createApp() {
   app.use('/api/coupons', couponRoutes)
   app.use('/api/stock-alerts', stockAlertRoutes)
   app.use('/api/stock-verification', stockVerificationRoutes)
-  app.use('/api', batchRoutes)
+  app.use('/api/batches', batchRoutes)
+  app.use('/api/products', batchRoutes)
   app.use('/api/godowns', godownRoutes)
   app.use('/api/serial-numbers', serialNumberRoutes)
   app.use('/api/razorpay', razorpayRoutes)
@@ -237,6 +246,7 @@ export function createApp() {
   app.use('/api/collections/aging', collectionsAgingRoutes)
   app.use('/api/collections/ptp', collectionsPtpRoutes)
   app.use('/api/collections/statement', collectionsStatementRoutes)
+  app.use('/api/notifications', notificationsRoutes)
 
   // Register cron jobs (no-op in test env via NODE_ENV check inside)
   if (process.env.NODE_ENV !== 'test') {

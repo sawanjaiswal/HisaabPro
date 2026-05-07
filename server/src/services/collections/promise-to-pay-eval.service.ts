@@ -5,6 +5,7 @@
 
 import { prisma } from '../../lib/prisma.js'
 import logger from '../../lib/logger.js'
+import { notifyPtpBroken } from '../notifications/notification-hooks.js'
 
 // ─── List ────────────────────────────────────────────────────────────────────
 
@@ -237,6 +238,7 @@ export async function evaluateOpenPtps(
       })
 
       logger.info('ptp.evaluated', { ptpId: ptp.id, newStatus, businessId })
+      if (!isKept) void notifyPtpBroken({ businessId, ptpId: ptp.id, amountPaise: ptp.amountPaise, promiseDate: ptp.promiseDate })
     } catch (e) {
       logger.error('ptp.evaluate_error', {
         ptpId: ptp.id,

@@ -15,6 +15,8 @@ import { prisma } from '../../lib/prisma.js'
 import logger from '../../lib/logger.js'
 import { computeNextRunDate } from './recurring.dates.js'
 import type { ExpenseFrequency } from './recurring.dates.js'
+import { notificationManager } from '../notifications/notification-manager.js'
+import { formatPaise } from '../notifications/notification-template.service.js'
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -149,8 +151,9 @@ async function processTemplate(template: TemplateRow, now: Date): Promise<boolea
   }
 
   // Create expense + advance template dates atomically
+  let createdExpenseId = ''
   await prisma.$transaction(async (tx) => {
-    await tx.expense.create({
+    const created = await tx.expense.create({
       data: {
         businessId: template.businessId,
         categoryId: template.categoryId,
@@ -164,7 +167,9 @@ async function processTemplate(template: TemplateRow, now: Date): Promise<boolea
         status: 'PENDING_CONFIRMATION',
         createdBy: template.createdBy,
       },
+      select: { id: true },
     })
+    createdExpenseId = created.id
 
     await tx.expenseTemplate.update({
       where: { id: template.id },
@@ -177,6 +182,24 @@ async function processTemplate(template: TemplateRow, now: Date): Promise<boolea
     expenseDate: expenseDate.toISOString(),
     nextRunDate: nextRunDate.toISOString(),
   })
+
+  // Notify RECURRING_EXPENSE_PENDING (non-blocking)
+  try {
+    await notificationManager.notify('RECURRING_EXPENSE_PENDING', {
+      businessId: template.businessId,
+      userId: template.createdBy,
+      eventKey: 'RECURRING_EXPENSE_PENDING',
+      locale: 'en',
+      vars: {
+        amountRs: formatPaise(template.amountPaise),
+        expenseDate: expenseDate.toISOString().slice(0, 10),
+      },
+      entityType: 'expense',
+      entityId: createdExpenseId,
+    })
+  } catch (err) {
+    logger.warn('notify.failed', { eventKey: 'RECURRING_EXPENSE_PENDING', err })
+  }
 
   return true
 }

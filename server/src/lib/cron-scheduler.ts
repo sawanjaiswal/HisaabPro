@@ -15,6 +15,8 @@ import { runRecurringTick } from '../services/recurring/recurring-runner.service
 import { deleteRunsOlderThan } from '../services/recurring/runs.js'
 import { runBatchExpiryAlerts } from '../services/stock/batch-expiry-alerts.service.js'
 import { generateRecurringExpenses } from '../services/expense/expense-recurring.cron.js'
+import { initNotificationCronJobs } from '../services/notifications/notification-cron.js'
+import { notifyPtpDueToday } from '../services/notifications/notification-hooks.js'
 import os from 'os'
 
 let initialized = false
@@ -64,6 +66,9 @@ export function initCronJobs(): void {
     { timezone: 'UTC' },
   )
 
+  // Notification engine cron jobs (PR10)
+  initNotificationCronJobs()
+
   logger.info('cron.registered', {
     jobs: [
       'ptp-evaluator @ 01:00 IST',
@@ -71,6 +76,11 @@ export function initCronJobs(): void {
       'recurring-runs-cleanup @ 03:00 IST',
       'expense-recurring-generator @ 02:30 IST',
       'batch-expiry-alerts @ 06:00 IST (30 0 UTC)',
+      'notification-drain @ */1 IST',
+      'notification-overdue-scan @ 08:00 IST',
+      'notification-subscription-expiry @ 09:00 IST',
+      'notification-retention-purge @ 02:00 IST Sunday',
+      'notification-month-roll @ 00:05 IST 1st-of-month',
     ],
   })
 }
@@ -95,6 +105,12 @@ export async function runRecurringGenerator(workerId?: string): Promise<void> {
 export async function runPtpEvaluator(): Promise<void> {
   logger.info('ptp-evaluator.start')
   const asOf = new Date()
+
+  // Today window for PTP_DUE_TODAY notifications
+  const todayStart = new Date(asOf)
+  todayStart.setHours(0, 0, 0, 0)
+  const todayEnd = new Date(asOf)
+  todayEnd.setHours(23, 59, 59, 999)
 
   let cursor: string | undefined
   const PAGE = 50
@@ -122,6 +138,24 @@ export async function runPtpEvaluator(): Promise<void> {
           businessId: biz.id,
           error: e instanceof Error ? e.message : String(e),
         })
+      }
+
+      // PTP_DUE_TODAY — notify for open PTPs due today (non-blocking)
+      try {
+        const dueTodayPtps = await prisma.promiseToPay.findMany({
+          where: {
+            businessId: biz.id,
+            status: 'OPEN',
+            isDeleted: false,
+            promiseDate: { gte: todayStart, lte: todayEnd },
+          },
+          select: { id: true, amountPaise: true, promiseDate: true },
+        })
+        for (const ptp of dueTodayPtps) {
+          void notifyPtpDueToday({ businessId: biz.id, ptpId: ptp.id, amountPaise: ptp.amountPaise, promiseDate: ptp.promiseDate })
+        }
+      } catch (e) {
+        logger.error('ptp-due-today.error', { businessId: biz.id, error: e instanceof Error ? e.message : String(e) })
       }
     }
 
