@@ -39,6 +39,7 @@ import {
   Godowns, CreateGodown, EditGodown, GodownDetail, GodownTransfer,
   StockVerifications, VerificationDetail,
   Serials, CreateSerial, BulkCreateSerial, SerialLookup, Pos,
+  PosMain, PosHistory, PosSaleDetail,
   Jobs, JobNew, JobDetail, JobEdit, InventorySettings,
   CustomOrders, CustomOrderNew, CustomOrderDetail, CustomOrderEdit,
   BackfillWizard,
@@ -186,6 +187,9 @@ export function App() {
         <Route path={ROUTES.SERIAL_NUMBERS} element={<PageRoute><ProtectedRoute><PlanGate feature="serialTracking" featureLabel="Serial Numbers"><Serials /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SERIAL_LOOKUP} element={<PageRoute><ProtectedRoute><PlanGate feature="serialTracking" featureLabel="Serial Numbers"><SerialLookup /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.POS} element={<PageRoute><ProtectedRoute><PlanGate feature="posMode" featureLabel="POS"><Pos /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path="/pos/billing" element={<PageRoute><ProtectedRoute><PlanGate feature="posMode" featureLabel="POS"><PosMain /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.POS_HISTORY} element={<PageRoute><ProtectedRoute><PlanGate feature="posMode" featureLabel="POS"><PosHistory /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.POS_SALE_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="posMode" featureLabel="POS"><PosSaleDetail /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.JOBS}       element={<PageRoute><ProtectedRoute><Jobs /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.JOB_NEW}    element={<PageRoute><ProtectedRoute><JobNew /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.JOB_DETAIL} element={<PageRoute><ProtectedRoute><JobDetail /></ProtectedRoute></PageRoute>} />

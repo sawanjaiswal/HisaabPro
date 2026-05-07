@@ -115,6 +115,9 @@ export const CreateSerial = lazy(() => import('@/features/serial-numbers/CreateS
 export const BulkCreateSerial = lazy(() => import('@/features/serial-numbers/BulkCreateSerialPage'))
 export const SerialLookup = lazy(() => import('@/features/serial-numbers/SerialLookupPage'))
 export const Pos = lazy(() => import('@/features/pos/PosPage'))
+export const PosMain = lazy(() => import('@/features/pos/pages/PosPage'))
+export const PosHistory = lazy(() => import('@/features/pos/pages/PosHistoryPage'))
+export const PosSaleDetail = lazy(() => import('@/features/pos/pages/PosSaleDetailPage'))
 
 export const StaffPermissions = lazy(() => import('@/features/settings/StaffPermissionsPage'))
 export const InventorySettings = lazy(() => import('@/features/settings/InventorySettingsPage'))

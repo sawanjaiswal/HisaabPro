@@ -180,6 +180,15 @@ export const PERMISSION_MATRIX = [
       { key: 'delete', label: 'Delete Cash Entries' },
     ],
   },
+  // POS / Point of Sale
+  {
+    key: 'pos', label: 'Point of Sale',
+    actions: [
+      { key: 'read',   label: 'View POS Sales & Products' },
+      { key: 'create', label: 'Create POS Sale (Checkout)' },
+      { key: 'void',   label: 'Void / Restore POS Sales' },
+    ],
+  },
 ]
 
 export const ALL_PERMISSIONS = PERMISSION_MATRIX.flatMap(m =>
@@ -224,6 +233,8 @@ export const SYSTEM_ROLES: Array<{
       'fields.viewPartyPhone', 'fields.viewPartyOutstanding',
       'jobs.view',
       'cashRegister.view', 'cashRegister.create',
+      // POS: read + create only (no void)
+      'pos.read', 'pos.create',
     ],
   },
   {

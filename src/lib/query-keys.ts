@@ -152,4 +152,9 @@ export const queryKeys = {
   stockValueReport: {
     list: (filters?: Record<string, string>) => ['stock-value-report', filters] as const,
   },
+  pos: {
+    products: (filters: Filters) => ['pos-products', filters] as const,
+    sales:    (filters: Filters) => ['pos-sales',    filters] as const,
+    sale:     (id: string)       => ['pos-sale-detail', id]  as const,
+  },
 } as const

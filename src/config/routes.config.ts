@@ -122,7 +122,9 @@ export const ROUTES = {
   ORDER_EDIT:   '/orders/:id/edit',
 
   // POS
-  POS: '/pos',
+  POS:             '/pos',
+  POS_HISTORY:     '/pos/history',
+  POS_SALE_DETAIL: '/pos/sales/:id',
 
   // Account
   SETTINGS_SESSIONS: '/settings/sessions',

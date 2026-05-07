@@ -79,6 +79,7 @@ import { subscriptionRouter } from './routes/subscription.js'
 import jobRoutes from './routes/jobs.js'
 import customOrderRoutes from './routes/custom-orders.js'
 import notificationsRoutes from './routes/notifications.js'
+import posRoutes from './routes/pos.js'
 import { initCronJobs } from './lib/cron-scheduler.js'
 
 export function createApp() {
@@ -247,6 +248,7 @@ export function createApp() {
   app.use('/api/collections/ptp', collectionsPtpRoutes)
   app.use('/api/collections/statement', collectionsStatementRoutes)
   app.use('/api/notifications', notificationsRoutes)
+  app.use('/api/pos', posRoutes)
 
   // Register cron jobs (no-op in test env via NODE_ENV check inside)
   if (process.env.NODE_ENV !== 'test') {

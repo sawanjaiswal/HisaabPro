@@ -87,6 +87,11 @@ model User {
   notificationPreferences   NotificationPreference[]
   pushTokens                PushToken[]
 
+  // Phase 4 — POS Billing
+  posSalesAsCashier   PosSale[] @relation("PosCashier")
+  posSalesAsVoider    PosSale[] @relation("PosVoider")
+  posSalesAsRestorer  PosSale[] @relation("PosRestorer")
+
   @@index([phone])
   @@index([referredBy])
   @@index([referralFraudFlags])
@@ -210,6 +215,11 @@ model Business {
   notificationCostTallies  NotificationCostTally[]
   pushTokens               PushToken[]
 
+  // Phase 4 — POS Billing
+  posSales           PosSale[]
+  posReceiptCounters PosReceiptCounter[]
+  posSettings        PosSetting?
+
   @@index([name])
 }
 
@@ -317,6 +327,9 @@ model Party {
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 
+  // Phase 4 — POS walk-in sentinel
+  isWalkIn Boolean @default(false)
+
   business          Business                @relation(fields: [businessId], references: [id], onDelete: Restrict)
   group             PartyGroup?             @relation(fields: [groupId], references: [id], onDelete: SetNull)
   addresses         PartyAddress[]
@@ -331,12 +344,14 @@ model Party {
   paymentLinks      PaymentLink[]
   promisesToPay     PromiseToPay[]
   reminderLogs      ReminderLog[]
+  posSales          PosSale[]
 
   @@unique([businessId, phone])
   @@index([businessId, type, isActive])
   @@index([businessId, name])
   @@index([businessId, outstandingBalance])
   @@index([businessId, isDeleted])
+  @@index([businessId, isWalkIn])
   @@index([groupId])
 }
 
@@ -583,6 +598,9 @@ model Product {
   // Business-Verticals Phase 4 — optional link from a CustomOrderItem to a catalog product
   customOrderItems CustomOrderItem[] @relation("CustomOrderItemProduct")
 
+  // Phase 4 — POS Billing
+  posSaleItems PosSaleItem[]
+
   @@unique([businessId, sku])
   @@unique([businessId, barcode])
   @@index([businessId, status])
@@ -792,6 +810,9 @@ model Document {
 
   // Business-Verticals Phase 4 — set when this Document was produced by converting a CustomOrder
   customOrderOrigin CustomOrder? @relation("CustomOrderInvoice")
+
+  // Phase 4 — POS Billing
+  posSale PosSale?
 
   @@unique([businessId, type, documentNumber])
   @@index([businessId, type, status])
@@ -2395,6 +2416,7 @@ model Batch {
   serialNumbers     SerialNumber[]
   stockAlerts       StockAlert[] // Phase 2.2 — expiry alerts linked to this batch
   verificationItems StockVerificationItem[] // Phase 2.2 — per-batch verification counts
+  posSaleItems      PosSaleItem[] // Phase 4 — POS Billing
 
   @@unique([businessId, productId, batchNumber])
   @@index([businessId, productId])
@@ -2422,6 +2444,7 @@ model Godown {
   transfersFrom  GodownTransfer[] @relation("TransferFrom")
   transfersTo    GodownTransfer[] @relation("TransferTo")
   serialNumbers  SerialNumber[]
+  posSaleItems   PosSaleItem[] // Phase 4 — POS Billing
 
   @@unique([businessId, name])
   @@index([businessId, isDeleted])
@@ -2959,4 +2982,159 @@ model PushToken {
 
   @@unique([userId, token])
   @@index([businessId, userId, isValid])
+}
+
+// === Phase 4 — POS Billing Mode (#118) ===
+
+model PosSale {
+  id            String @id @default(cuid())
+  businessId    String
+  documentId    String @unique           // FK to Document(type=POS_SALE)
+  receiptNumber String                   // "POS25-26-00001"
+  receiptSeq    Int                      // raw counter for ORDER BY
+  financialYear String                   // "25-26"
+
+  partyId     String?
+  walkInName  String?  @db.VarChar(60)
+  walkInPhone String?  @db.VarChar(15)
+
+  subtotal          Int @default(0)
+  totalDiscount     Int @default(0)
+  totalTaxableValue Int @default(0)
+  totalCgst         Int @default(0)
+  totalSgst         Int @default(0)
+  totalIgst         Int @default(0)
+  totalCess         Int @default(0)
+  grandTotal        Int @default(0)
+
+  taxPricingMode String  @default("EXCLUSIVE") @db.VarChar(20)
+  placeOfSupply  String? @db.VarChar(2)
+  supplyType     String  @default("B2C_SMALL") @db.VarChar(20)
+
+  paymentBreakdown Json @default("[]") // [{mode, amountPaise, referenceNumber, note}]
+
+  cashierId String // BusinessUser.userId
+
+  status     String    @default("ACTIVE") @db.VarChar(20) // ACTIVE | VOIDED
+  voidedAt   DateTime?
+  voidedBy   String?
+  voidReason String?   @db.VarChar(200)
+  restoredAt DateTime?
+  restoredBy String?
+
+  idempotencyKey String  @unique
+  clientId       String? @unique
+
+  saleDate  DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  business    Business     @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  document    Document     @relation(fields: [documentId], references: [id], onDelete: Restrict)
+  party       Party?       @relation(fields: [partyId], references: [id], onDelete: SetNull)
+  cashier     User         @relation("PosCashier", fields: [cashierId], references: [id], onDelete: Restrict)
+  voidUser    User?        @relation("PosVoider", fields: [voidedBy], references: [id])
+  restoreUser User?        @relation("PosRestorer", fields: [restoredBy], references: [id])
+  items       PosSaleItem[]
+  events      PosSaleEvent[]
+
+  @@unique([businessId, receiptNumber])
+  @@index([businessId, saleDate])
+  @@index([businessId, status])
+  @@index([businessId, cashierId])
+  @@index([businessId, partyId])
+  @@index([businessId, financialYear, receiptSeq])
+}
+
+model PosSaleItem {
+  id        String @id @default(cuid())
+  posSaleId String
+  sortOrder Int    @default(0)
+
+  productId   String
+  productName String  @db.VarChar(200)
+  sku         String? @db.VarChar(60)
+  hsnCode     String? @db.VarChar(10)
+  unitSymbol  String  @db.VarChar(20)
+
+  quantity      Float
+  ratePaise     Int
+  discountType  String @default("AMOUNT") @db.VarChar(20)
+  discountValue Int    @default(0)
+  discountAmount Int   @default(0)
+  lineTotal     Int    @default(0)
+
+  taxableValue Int @default(0)
+  cgstRate     Int @default(0)
+  cgstAmount   Int @default(0)
+  sgstRate     Int @default(0)
+  sgstAmount   Int @default(0)
+  igstRate     Int @default(0)
+  igstAmount   Int @default(0)
+  cessRate     Int @default(0)
+  cessAmount   Int @default(0)
+
+  batchId     String?
+  batchNumber String? @db.VarChar(60)
+  godownId    String?
+
+  note String? @db.VarChar(120)
+
+  posSale PosSale  @relation(fields: [posSaleId], references: [id], onDelete: Cascade)
+  product Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  batch   Batch?   @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  godown  Godown?  @relation(fields: [godownId], references: [id], onDelete: SetNull)
+
+  @@index([posSaleId])
+  @@index([productId])
+  @@index([batchId])
+}
+
+model PosReceiptCounter {
+  id            String @id @default(cuid())
+  businessId    String
+  financialYear String // "25-26"
+  prefix        String @default("POS")
+  separator     String @default("-")
+  paddingDigits Int    @default(5)
+  lastNumber    Int    @default(0)
+  updatedAt     DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, financialYear])
+  @@index([businessId])
+}
+
+model PosSaleEvent {
+  id        String   @id @default(cuid())
+  posSaleId String
+  type      String   @db.VarChar(40) // CREATED | VOIDED | RESTORED | RECEIPT_SHARED
+  actorId   String?
+  payload   Json?
+  createdAt DateTime @default(now())
+
+  posSale PosSale @relation(fields: [posSaleId], references: [id], onDelete: Cascade)
+
+  @@index([posSaleId, createdAt])
+  @@index([posSaleId, type])
+}
+
+model PosSetting {
+  id                   String  @id @default(cuid())
+  businessId           String  @unique
+  receiptPrefix        String  @default("POS")
+  receiptSeparator     String  @default("-")
+  receiptPaddingDigits Int     @default(5)
+  defaultPaymentMode   String  @default("CASH") @db.VarChar(20)
+  voidWindowHours      Int     @default(24)
+  defaultThermalWidth  String  @default("58MM") @db.VarChar(8)
+  autoShareOnCheckout  Boolean @default(false)
+  autoShareChannel     String  @default("WHATSAPP") @db.VarChar(20)
+  showProfitOnGrid     Boolean @default(false)
+  cashierMustSelectParty Boolean @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 }
