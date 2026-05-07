@@ -1,14 +1,17 @@
-/** AddExpenseDrawer — Form to create a new expense */
+/** AddExpenseDrawer — Form to create a new expense (with OCR + budget warn) */
 
 import { useState, useCallback } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { createExpense } from '../expense.service'
+import { checkBudget } from '../services/budget.service'
 import { PAYMENT_MODE_LABELS } from '../expense.constants'
-import type { ExpenseCategory, ExpensePaymentMode, CreateExpenseInput } from '../expense.types'
+import type { ExpenseCategory, ExpensePaymentMode, CreateExpenseInput, OcrResult } from '../expense.types'
 import { useLanguage } from '@/hooks/useLanguage'
-import { toLocalISODate } from '../../../lib/format'
+import { toLocalISODate, formatPaise } from '@/lib/format'
+import { OcrReceiptUpload } from './OcrReceiptUpload'
 
 interface AddExpenseDrawerProps {
   open: boolean
@@ -24,6 +27,9 @@ export function AddExpenseDrawer({ open, onClose, onCreated, categories }: AddEx
   const toast = useToast()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [warnOpen, setWarnOpen] = useState(false)
+  const [warnMsg, setWarnMsg] = useState('')
+
   const [form, setForm] = useState<{
     categoryId: string
     amountRupees: string
@@ -32,13 +38,18 @@ export function AddExpenseDrawer({ open, onClose, onCreated, categories }: AddEx
     notes: string
   }>({ categoryId: '', amountRupees: '', date: TODAY, paymentMode: 'CASH', notes: '' })
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (submitting) return
+  function handleOcrPrefill(result: OcrResult) {
+    setForm((f) => ({
+      ...f,
+      amountRupees: result.amountPaise ? String(result.amountPaise / 100) : f.amountRupees,
+      date: result.date ?? f.date,
+      notes: result.vendor ?? f.notes,
+      categoryId: result.suggestedCategoryId ?? f.categoryId,
+    }))
+  }
+
+  async function doSubmit() {
     const amountPaise = Math.round(parseFloat(form.amountRupees) * 100)
-    if (!amountPaise || amountPaise <= 0) { setError(t.enterValidAmount); return }
-    setSubmitting(true)
-    setError('')
     const input: CreateExpenseInput = {
       amount: amountPaise,
       date: form.date,
@@ -46,6 +57,8 @@ export function AddExpenseDrawer({ open, onClose, onCreated, categories }: AddEx
       notes: form.notes || undefined,
       categoryId: form.categoryId || undefined,
     }
+    setSubmitting(true)
+    setError('')
     try {
       await createExpense(input)
       toast.success(t.expenseRecorded)
@@ -58,45 +71,95 @@ export function AddExpenseDrawer({ open, onClose, onCreated, categories }: AddEx
     } finally {
       setSubmitting(false)
     }
+  }
+
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (submitting) return
+    const amountPaise = Math.round(parseFloat(form.amountRupees) * 100)
+    if (!amountPaise || amountPaise <= 0) { setError(t.enterValidAmount); return }
+
+    // Advisory budget check — fail open (don't block on error/offline)
+    try {
+      const check = await checkBudget(form.categoryId || null, amountPaise)
+      if (check.wouldExceed) {
+        const over = formatPaise((check.currentSpent + amountPaise) - check.budgetAmount)
+        setWarnMsg(
+          (t.expensesOverrunWarn ?? 'This will exceed your budget by %s. Continue?')
+            .replace('%s', over)
+        )
+        setWarnOpen(true)
+        return
+      }
+    } catch {
+      // Check failed (offline / error) — proceed without warning
+    }
+
+    await doSubmit()
   }, [form, submitting, toast, onCreated, onClose])
 
   return (
-    <Drawer open={open} onClose={onClose} title={t.recordExpense}>
-      <form className="expense-drawer__form py-0" onSubmit={handleSubmit}>
-        {error && <p className="expense-drawer__error py-0" role="alert">{error}</p>}
-        <div className="expense-drawer__field py-0">
-          <label className="expense-drawer__label py-0" htmlFor="expCategory">{t.categoryLabelForm}</label>
-          <select id="expCategory" className="expense-drawer__select py-0" value={form.categoryId} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}>
-            <option value="">-- {t.selectCategory} --</option>
-            {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </select>
-        </div>
-        <div className="expense-drawer__row py-0">
+    <>
+      <Drawer open={open} onClose={onClose} title={t.recordExpense}>
+        <form className="expense-drawer__form py-0" onSubmit={handleSubmit}>
+          {error && <p className="expense-drawer__error py-0" role="alert">{error}</p>}
+
+          {/* OCR scan button — above amount */}
+          <OcrReceiptUpload onPrefill={handleOcrPrefill} disabled={submitting} />
+
           <div className="expense-drawer__field py-0">
-            <label className="expense-drawer__label py-0" htmlFor="expAmount">{t.amountRsLabel}</label>
-            <input id="expAmount" type="number" min="0.01" step="0.01" required className="expense-drawer__input py-0" value={form.amountRupees} onChange={(e) => setForm((f) => ({ ...f, amountRupees: e.target.value }))} placeholder="0.00" />
+            <label className="expense-drawer__label py-0" htmlFor="expCategory">{t.categoryLabelForm}</label>
+            <select id="expCategory" className="expense-drawer__select py-0" value={form.categoryId}
+              onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}>
+              <option value="">-- {t.selectCategory} --</option>
+              {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+          </div>
+          <div className="expense-drawer__row py-0">
+            <div className="expense-drawer__field py-0">
+              <label className="expense-drawer__label py-0" htmlFor="expAmount">{t.amountRsLabel}</label>
+              <input id="expAmount" type="number" min="0.01" step="0.01" required className="expense-drawer__input py-0"
+                value={form.amountRupees} onChange={(e) => setForm((f) => ({ ...f, amountRupees: e.target.value }))} placeholder="0.00" />
+            </div>
+            <div className="expense-drawer__field py-0">
+              <label className="expense-drawer__label py-0" htmlFor="expDate">{t.dateLabel}</label>
+              <input id="expDate" type="date" required className="expense-drawer__input py-0"
+                value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
+            </div>
           </div>
           <div className="expense-drawer__field py-0">
-            <label className="expense-drawer__label py-0" htmlFor="expDate">{t.dateLabel}</label>
-            <input id="expDate" type="date" required className="expense-drawer__input py-0" value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
+            <label className="expense-drawer__label py-0" htmlFor="expMode">{t.paymentModeLabel}</label>
+            <select id="expMode" className="expense-drawer__select py-0" value={form.paymentMode}
+              onChange={(e) => setForm((f) => ({ ...f, paymentMode: e.target.value as ExpensePaymentMode }))}>
+              {(Object.entries(PAYMENT_MODE_LABELS) as [ExpensePaymentMode, string][]).map(([k, v]) => (
+                <option key={k} value={k}>{v}</option>
+              ))}
+            </select>
           </div>
-        </div>
-        <div className="expense-drawer__field py-0">
-          <label className="expense-drawer__label py-0" htmlFor="expMode">{t.paymentModeLabel}</label>
-          <select id="expMode" className="expense-drawer__select py-0" value={form.paymentMode} onChange={(e) => setForm((f) => ({ ...f, paymentMode: e.target.value as ExpensePaymentMode }))}>
-            {(Object.entries(PAYMENT_MODE_LABELS) as [ExpensePaymentMode, string][]).map(([k, v]) => (
-              <option key={k} value={k}>{v}</option>
-            ))}
-          </select>
-        </div>
-        <div className="expense-drawer__field py-0">
-          <label className="expense-drawer__label py-0" htmlFor="expNotes">{t.notesOptional}</label>
-          <input id="expNotes" className="expense-drawer__input py-0" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder={t.expenseNotesPlaceholder} />
-        </div>
-        <button type="submit" className="expense-drawer__submit-btn py-0" disabled={submitting} aria-busy={submitting}>
-          {submitting ? t.loading : t.recordExpense}
-        </button>
-      </form>
-    </Drawer>
+          <div className="expense-drawer__field py-0">
+            <label className="expense-drawer__label py-0" htmlFor="expNotes">{t.notesOptional}</label>
+            <input id="expNotes" className="expense-drawer__input py-0" value={form.notes}
+              onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+              placeholder={t.expenseNotesPlaceholder} />
+          </div>
+          <button type="submit" className="expense-drawer__submit-btn py-0" disabled={submitting} aria-busy={submitting}>
+            {submitting ? t.loading : t.recordExpense}
+          </button>
+        </form>
+      </Drawer>
+
+      {/* Warn-on-overrun dialog */}
+      <ConfirmDialog
+        open={warnOpen}
+        onClose={() => setWarnOpen(false)}
+        onConfirm={() => { setWarnOpen(false); void doSubmit() }}
+        title="Budget will be exceeded"
+        description={warnMsg}
+        confirmLabel="Continue Anyway"
+        cancelLabel={t.cancel ?? 'Cancel'}
+        isDanger={false}
+        isLoading={submitting}
+      />
+    </>
   )
 }

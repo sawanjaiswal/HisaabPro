@@ -126,7 +126,11 @@ export function createApp() {
 
   app.use('/api/razorpay', razorpayWebhookRouter)
 
-  app.use(express.json({ limit: '2mb' }))
+  // OCR route handles its own parser with 8mb limit; skip global 2mb here
+  app.use((req, res, next) => {
+    if (req.path === '/api/expenses/ocr') return next()
+    return express.json({ limit: '2mb' })(req, res, next)
+  })
   app.use(cookieParser())
 
   app.use(performanceMonitoring)

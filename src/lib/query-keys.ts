@@ -39,6 +39,10 @@ export const queryKeys = {
     all: () => ['expenses'] as const,
     list: (filters: Filters) => ['expenses', 'list', filters] as const,
     categories: () => ['expenses', 'categories'] as const,
+    pending: () => ['expenses', 'pending'] as const,
+    templates: () => ['expenses', 'templates'] as const,
+    budgets: (month: string) => ['expenses', 'budgets', month] as const,
+    trend: (months: number) => ['expenses', 'trend', months] as const,
   },
   units: {
     all: () => ['units'] as const,

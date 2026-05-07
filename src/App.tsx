@@ -27,6 +27,7 @@ import {
   GstReconciliationList, GstReconciliationDetail,
   ChartOfAccounts, JournalEntries, TrialBalance,
   BankAccounts, Expenses, OtherIncome, Cheques, Loans, LoanDetail,
+  ExpensesPending, ExpensesBudgets, ExpensesRecurring,
   ProfitLoss, BalanceSheet, CashFlow, AgingReport, ProfitabilityReport,
   DiscountReport, TallyExport, FYClosure,
   More, BillScan, BulkImport, PublicLedger, ItemsLibrary, DataImport,
@@ -142,6 +143,9 @@ export function App() {
         <Route path={ROUTES.TRIAL_BALANCE} element={<PageRoute><ProtectedRoute><PlanGate feature="accounting" featureLabel="Trial Balance"><TrialBalance /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.BANK_ACCOUNTS} element={<PageRoute><ProtectedRoute><PlanGate feature="bankAccounts" featureLabel="Bank Accounts"><BankAccounts /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.EXPENSES} element={<PageRoute><ProtectedRoute><PlanGate feature="expenses" featureLabel="Expenses"><Expenses /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path="/expenses/pending" element={<PageRoute><ProtectedRoute><PlanGate feature="expenses" featureLabel="Expenses"><ExpensesPending /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path="/expenses/budgets" element={<PageRoute><ProtectedRoute><PlanGate feature="expenses" featureLabel="Expenses"><ExpensesBudgets /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path="/expenses/recurring" element={<PageRoute><ProtectedRoute><PlanGate feature="expenses" featureLabel="Expenses"><ExpensesRecurring /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.OTHER_INCOME} element={<PageRoute><ProtectedRoute><PlanGate feature="expenses" featureLabel="Other Income"><OtherIncome /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.CHEQUES} element={<PageRoute><ProtectedRoute><PlanGate feature="cheques" featureLabel="Cheques"><Cheques /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.LOANS} element={<PageRoute><ProtectedRoute><Loans /></ProtectedRoute></PageRoute>} />

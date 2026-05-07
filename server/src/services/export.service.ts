@@ -156,7 +156,7 @@ async function exportPayments(businessId: string): Promise<string> {
 /** Export expenses as CSV */
 async function exportExpenses(businessId: string): Promise<string> {
   const expenses = await prisma.expense.findMany({
-    where: { businessId, isDeleted: false },
+    where: { businessId, isDeleted: false, status: 'CONFIRMED' as const },
     select: {
       amount: true, notes: true, date: true,
       paymentMode: true, referenceNumber: true,

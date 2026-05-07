@@ -153,12 +153,13 @@ export async function getExpense(businessId: string, expenseId: string) {
 }
 
 export async function listExpenses(businessId: string, query: ListExpensesQuery) {
-  const { categoryId, from, to, paymentMode, page, limit } = query
+  const { categoryId, from, to, paymentMode, status, page, limit } = query
   const skip = (page - 1) * limit
 
   const where = {
     businessId,
     isDeleted: false,
+    status: (status ?? 'CONFIRMED') as 'PENDING_CONFIRMATION' | 'CONFIRMED' | 'SKIPPED' | 'VOIDED',
     ...(categoryId && { categoryId }),
     ...(paymentMode && { paymentMode }),
     ...((from ?? to) && { date: { ...(from && { gte: from }), ...(to && { lte: to }) } }),
@@ -200,6 +201,7 @@ export async function getExpenseSummary(businessId: string, from?: Date, to?: Da
   const where = {
     businessId,
     isDeleted: false,
+    status: 'CONFIRMED' as const,
     ...((from ?? to) && { date: { ...(from && { gte: from }), ...(to && { lte: to }) } }),
   }
 

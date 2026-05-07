@@ -8,6 +8,8 @@ import type {
   ExpenseSummary,
   CreateExpenseInput,
   CreateExpenseCategoryInput,
+  OcrResponse,
+  PendingExpenseItem,
 } from './expense.types'
 import { EXPENSE_PAGE_LIMIT } from './expense.constants'
 
@@ -93,4 +95,39 @@ export async function getExpenseSummary(
 ): Promise<ExpenseSummary> {
   const params = new URLSearchParams({ from, to })
   return api<ExpenseSummary>(`/expenses/summary?${params}`, { signal })
+}
+
+export async function listPendingExpenses(signal?: AbortSignal): Promise<PendingExpenseItem[]> {
+  return api<PendingExpenseItem[]>('/expenses/pending', { signal })
+}
+
+export async function confirmExpense(id: string, label: string): Promise<{ id: string; status: 'CONFIRMED' }> {
+  return api<{ id: string; status: 'CONFIRMED' }>(`/expenses/${id}/confirm`, {
+    method: 'POST',
+    headers: replayHeaders(),
+    entityType: 'expense',
+    entityLabel: `Confirm ${label}`,
+  })
+}
+
+export async function skipExpense(id: string, label: string): Promise<void> {
+  return api<void>(`/expenses/${id}/skip`, {
+    method: 'POST',
+    headers: replayHeaders(),
+    entityType: 'expense',
+    entityLabel: `Skip ${label}`,
+  })
+}
+
+export async function ocrReceipt(
+  base64Image: string,
+  mimeType: string,
+  signal?: AbortSignal
+): Promise<OcrResponse> {
+  return api<OcrResponse>('/expenses/ocr', {
+    method: 'POST',
+    body: JSON.stringify({ base64Image, mimeType }),
+    signal,
+    // Never queue OCR offline — result is PII and time-sensitive
+  })
 }

@@ -20,6 +20,7 @@
     "check:soft-delete": "node ../scripts/check-soft-delete.js"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.95.1",
     "@prisma/client": "^6.2.0",
     "@sentry/node": "^10.47.0",
     "@types/node-cron": "^3.0.11",

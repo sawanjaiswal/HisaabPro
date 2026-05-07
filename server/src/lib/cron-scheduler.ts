@@ -14,6 +14,7 @@ import { evaluateOpenPtps } from '../services/collections/promise-to-pay-eval.se
 import { runRecurringTick } from '../services/recurring/recurring-runner.service.js'
 import { deleteRunsOlderThan } from '../services/recurring/runs.js'
 import { runBatchExpiryAlerts } from '../services/stock/batch-expiry-alerts.service.js'
+import { generateRecurringExpenses } from '../services/expense/expense-recurring.cron.js'
 import os from 'os'
 
 let initialized = false
@@ -49,6 +50,13 @@ export function initCronJobs(): void {
     { timezone: 'Asia/Kolkata' },
   )
 
+  // Daily 02:30 IST — generate PENDING_CONFIRMATION expenses from active templates
+  cron.schedule(
+    '30 2 * * *',
+    () => void runExpenseRecurringGenerator(),
+    { timezone: 'Asia/Kolkata' },
+  )
+
   // Daily 06:00 IST (30 0 * * * UTC) — scan batch expiry dates and create alerts
   cron.schedule(
     '30 0 * * *',
@@ -61,6 +69,7 @@ export function initCronJobs(): void {
       'ptp-evaluator @ 01:00 IST',
       'recurring-generator @ */15 IST',
       'recurring-runs-cleanup @ 03:00 IST',
+      'expense-recurring-generator @ 02:30 IST',
       'batch-expiry-alerts @ 06:00 IST (30 0 UTC)',
     ],
   })
@@ -142,6 +151,18 @@ export async function runRecurringRunsCleanup(): Promise<void> {
     logger.info('recurring-runs-cleanup.complete', { deleted })
   } catch (e) {
     logger.error('recurring-runs-cleanup.error', {
+      error: e instanceof Error ? e.message : String(e),
+    })
+  }
+}
+
+export async function runExpenseRecurringGenerator(now?: Date): Promise<void> {
+  logger.info('expense-recurring-generator.cron_fire')
+  try {
+    const summary = await generateRecurringExpenses(now)
+    logger.info('expense-recurring-generator.cron_done', summary)
+  } catch (e) {
+    logger.error('expense-recurring-generator.cron_fatal', {
       error: e instanceof Error ? e.message : String(e),
     })
   }

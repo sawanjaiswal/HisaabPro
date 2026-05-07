@@ -17,6 +17,15 @@ import {
   listExpensesSchema,
 } from '../schemas/expense.schemas.js'
 import * as expenseService from '../services/expense.service.js'
+import templateRoutes from './expense-templates.route.js'
+import budgetRoutes from './expense-budgets.route.js'
+import ocrRoutes from './expense-ocr.route.js'
+import trendRoutes from './expense-trend.route.js'
+import { idempotencyCheck } from '../middleware/idempotency.js'
+import {
+  confirmExpense,
+  skipExpense,
+} from '../services/expense/expense-confirm.service.js'
 
 const router = Router()
 
@@ -58,6 +67,37 @@ router.post(
   }),
 )
 
+// ─── Upgrade sub-routers (must be before /:id param route) ────────────────────
+
+router.use('/templates', templateRoutes)
+router.use('/budgets', budgetRoutes)
+router.use('/ocr', ocrRoutes)
+router.use('/trend', trendRoutes)
+
+/** POST /api/expenses/:id/confirm — confirm a PENDING expense (200); 409 on replay */
+router.post(
+  '/:id/confirm',
+  idempotencyCheck(),
+  requirePermission('accounting.create'),
+  asyncHandler(async (req, res) => {
+    const { businessId, userId } = req.user!
+    const result = await confirmExpense(businessId, String(req.params.id), userId)
+    sendSuccess(res, result)
+  }),
+)
+
+/** POST /api/expenses/:id/skip — soft-delete a PENDING expense (200) */
+router.post(
+  '/:id/skip',
+  idempotencyCheck(),
+  requirePermission('accounting.create'),
+  asyncHandler(async (req, res) => {
+    const { businessId, userId } = req.user!
+    const result = await skipExpense(businessId, String(req.params.id), userId)
+    sendSuccess(res, result)
+  }),
+)
+
 // ─── Expenses ─────────────────────────────────────────────────────────────────
 
 /** POST /api/expenses — Create a new expense */
@@ -92,6 +132,17 @@ router.get(
     const to = req.query.to ? new Date(String(req.query.to)) : undefined
     const summary = await expenseService.getExpenseSummary(businessId, from, to)
     sendSuccess(res, summary)
+  }),
+)
+
+/** GET /api/expenses/pending — List PENDING_CONFIRMATION expenses (must be before /:id) */
+router.get(
+  '/pending',
+  asyncHandler(async (req, res) => {
+    const businessId = req.user!.businessId
+    const query = listExpensesSchema.parse({ ...req.query, status: 'PENDING_CONFIRMATION' })
+    const result = await expenseService.listExpenses(businessId, query)
+    sendSuccess(res, result)
   }),
 )
 
