@@ -73,9 +73,11 @@ model User {
   webauthnCredentials       WebAuthnCredential[]
 
   // Phase 3 — Accounting
-  expensesCreated     Expense[]           @relation("ExpenseCreator")
-  otherIncomesCreated OtherIncome[]       @relation("OtherIncomeCreator")
-  stockVerifications  StockVerification[]
+  expensesCreated         Expense[]           @relation("ExpenseCreator")
+  otherIncomesCreated     OtherIncome[]       @relation("OtherIncomeCreator")
+  stockVerifications      StockVerification[]
+  expenseTemplatesCreated ExpenseTemplate[]   @relation("ExpenseTemplateCreator")
+  expenseBudgetsCreated   ExpenseBudget[]     @relation("ExpenseBudgetCreator")
 
   // Phase 4 — Multi-Godown transfers
   godownTransfers GodownTransfer[]
@@ -191,6 +193,10 @@ model Business {
 
   // Cash Register
   cashEntries CashEntry[]
+
+  // Expenses Upgrade — PR1
+  expenseTemplates ExpenseTemplate[]
+  expenseBudgets   ExpenseBudget[]
 
   @@index([name])
 }
@@ -1955,14 +1961,24 @@ model Expense {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  business      Business        @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  category      ExpenseCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  createdByUser User            @relation("ExpenseCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  // Expense lifecycle — status NOT NULL after PR2 backfill + constraint migration
+  status        ExpenseStatus
+  templateId    String? // FK to ExpenseTemplate
+  confirmedAt   DateTime?
+  skippedAt     DateTime?
+  ocrSourceHash String?        @db.VarChar(64) // SHA-256 hex of OCR'd receipt bytes
+
+  business      Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  category      ExpenseCategory  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  createdByUser User             @relation("ExpenseCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  template      ExpenseTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
 
   @@index([businessId, date])
   @@index([businessId, categoryId])
   @@index([businessId, isDeleted])
   @@index([businessId, isDeleted, paymentMode])
+  @@index([businessId, status, isDeleted])
+  @@index([businessId, templateId])
 }
 
 /// Expense Category — user-configurable with system defaults
@@ -1980,12 +1996,65 @@ model ExpenseCategory {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 
-  business Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  expenses Expense[]
+  business         Business          @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  expenses         Expense[]
+  expenseTemplates ExpenseTemplate[]
+  expenseBudgets   ExpenseBudget[]
 
   @@unique([businessId, name])
   @@index([businessId, isActive])
   @@index([businessId, isDeleted])
+}
+
+/// Recurring expense template — generates a PENDING_CONFIRMATION Expense row each period
+model ExpenseTemplate {
+  id          String           @id @default(cuid())
+  businessId  String
+  categoryId  String
+  amountPaise Int // paise
+  frequency   ExpenseFrequency
+  dayOfMonth  Int? // 1-28 (clamped in service for MONTHLY/YEARLY)
+  dayOfWeek   Int? // 0=Sun .. 6=Sat (WEEKLY)
+  nextRunDate DateTime
+  lastRunDate DateTime?
+  paymentMode String // CASH, UPI, BANK_TRANSFER, CHEQUE, CREDIT_CARD, OTHER
+  partyId     String? // vendor/supplier
+  note        String?          @db.Text
+  isActive    Boolean          @default(true)
+  isDeleted   Boolean          @default(false)
+  deletedAt   DateTime?
+  createdBy   String
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  business      Business        @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  category      ExpenseCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  createdByUser User            @relation("ExpenseTemplateCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  expenses      Expense[]
+
+  @@index([businessId, isActive, nextRunDate])
+  @@index([businessId, categoryId])
+}
+
+/// Monthly expense budget — advisory only; per-category or overall (null categoryId)
+model ExpenseBudget {
+  id          String    @id @default(cuid())
+  businessId  String
+  categoryId  String? // null = overall budget across all categories
+  monthYmd    String    @db.VarChar(10) // YYYY-MM-01
+  amountPaise Int // paise
+  isDeleted   Boolean   @default(false)
+  deletedAt   DateTime?
+  createdBy   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  business      Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  category      ExpenseCategory? @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  createdByUser User             @relation("ExpenseBudgetCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+
+  @@unique([businessId, categoryId, monthYmd])
+  @@index([businessId, monthYmd])
 }
 
 /// Other Income — interest, rent, misc income that's not from sales
@@ -2650,6 +2719,24 @@ enum CashEntryEventType {
   VOIDED
   RESTORED
   HARD_DELETED
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Expenses Upgrade — PR1 enums
+// ═══════════════════════════════════════════════════════════════════════════════
+
+enum ExpenseStatus {
+  PENDING_CONFIRMATION
+  CONFIRMED
+  SKIPPED
+  VOIDED
+}
+
+enum ExpenseFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
 }
 
 model CashEntry {

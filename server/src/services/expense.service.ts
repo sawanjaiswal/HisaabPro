@@ -98,6 +98,7 @@ export async function createExpense(
       gstApplicable: data.gstApplicable ?? false,
       gstRate: data.gstRate ?? 0,
       gstAmount: data.gstAmount ?? 0,
+      status: 'CONFIRMED',
       createdBy: userId,
     },
     include: { category: { select: { id: true, name: true, icon: true, color: true } } },
