@@ -1,0 +1,82 @@
+/** Cash Register — Keypad: 4×4 grid, pure presentational */
+
+import { KEYPAD_ROWS } from '../cashRegister.constants'
+import type { ExpressionAction } from '../cashRegister.types'
+
+interface Props {
+  onKey: (action: ExpressionAction) => void
+  disabled?: boolean
+}
+
+function getAction(key: string): ExpressionAction | null {
+  if (key === 'C') return { type: 'CLEAR' }
+  if (key === '⌫') return { type: 'BACKSPACE' }
+  if (key === '+' || key === '-' || key === '*' || key === '/') {
+    return { type: 'APPEND_OPERATOR', op: key }
+  }
+  if (key === '(' || key === ')') return { type: 'APPEND_PAREN', which: key }
+  // digit or decimal
+  return { type: 'APPEND_DIGIT', digit: key }
+}
+
+const KEY_LABELS: Record<string, string> = {
+  'C':  'Clear',
+  '⌫':  'Backspace',
+  '+':  'Add',
+  '-':  'Subtract',
+  '*':  'Multiply',
+  '/':  'Divide',
+  '.':  'Decimal point',
+}
+
+function keyAriaLabel(key: string): string {
+  return KEY_LABELS[key] ?? key
+}
+
+function keyClass(key: string): string {
+  const base = 'cr-keypad__key'
+  if (key === 'C') return `${base} cr-keypad__key--clear`
+  if (key === '+' || key === '-' || key === '*' || key === '/') return `${base} cr-keypad__key--op`
+  if (key === '⌫') return `${base} cr-keypad__key--back`
+  return base
+}
+
+export function Keypad({ onKey, disabled }: Props) {
+  const handleKey = (key: string) => {
+    const action = getAction(key)
+    if (action) onKey(action)
+  }
+
+  return (
+    <div className="cr-keypad" role="group" aria-label="Calculator keypad">
+      {KEYPAD_ROWS.map((row, ri) => (
+        <div key={ri} className="cr-keypad__row">
+          {row.map((key) => (
+            <button
+              key={key}
+              type="button"
+              className={keyClass(key)}
+              onClick={() => handleKey(key)}
+              disabled={disabled}
+              aria-label={keyAriaLabel(key)}
+            >
+              {key}
+            </button>
+          ))}
+        </div>
+      ))}
+      {/* Backspace row (extra row below main grid) */}
+      <div className="cr-keypad__row cr-keypad__row--extra">
+        <button
+          type="button"
+          className="cr-keypad__key cr-keypad__key--back cr-keypad__key--wide"
+          onClick={() => onKey({ type: 'BACKSPACE' })}
+          disabled={disabled}
+          aria-label="Backspace"
+        >
+          ⌫
+        </button>
+      </div>
+    </div>
+  )
+}

@@ -153,4 +153,7 @@ export const ROUTES = {
 
   // Inventory Phase 2 — Stock value report (INV-07)
   STOCK_VALUE_REPORT: '/reports/stock-value',
+
+  // Cash Register (PR 4)
+  CASH_REGISTER: '/cash-register',
 } as const

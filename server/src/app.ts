@@ -52,7 +52,7 @@ import accountingRoutes from './routes/accounting.js'
 import bankRoutes from './routes/bank.js'
 import expenseRoutes from './routes/expenses.js'
 import otherIncomeRoutes from './routes/other-income.js'
-import chequeRoutes from './routes/cheques.js'
+import cashEntriesRoutes from './routes/cash-entries.route.js'; import chequeRoutes from './routes/cheques.js'
 import financialReportRoutes from './routes/financial-reports.js'
 import loanRoutes from './routes/loans.js'
 import fyClosureRoutes from './routes/fy-closure.js'
@@ -218,6 +218,7 @@ export function createApp() {
   app.use('/api/razorpay', razorpayRoutes)
   app.use('/api/accounting', accountingRoutes)
   app.use('/api/bank-accounts', bankRoutes)
+  app.use('/api/cash-entries', cashEntriesRoutes)
   app.use('/api/expenses', expenseRoutes)
   app.use('/api/other-income', otherIncomeRoutes)
   app.use('/api/cheques', chequeRoutes)

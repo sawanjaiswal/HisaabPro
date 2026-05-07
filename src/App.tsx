@@ -45,6 +45,7 @@ import {
   Gstr3bPage,
   AgingDashboardPage,
   AgingBucketListPage,
+  CashRegister,
   NotFound,
 } from '@/app.routes'
 import {
@@ -190,6 +191,7 @@ export function App() {
         <Route path={ROUTES.PUBLIC_LEDGER} element={<PageRoute><PublicLedger /></PageRoute>} />
         <Route path={ROUTES.COLLECTIONS} element={<PageRoute><ProtectedRoute><AgingDashboardPage /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.COLLECTIONS_BUCKET} element={<PageRoute><ProtectedRoute><AgingBucketListPage /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.CASH_REGISTER} element={<PageRoute><ProtectedRoute><CashRegister /></ProtectedRoute></PageRoute>} />
         {/* Inventory Phase 2 */}
         <Route path={ROUTES.PURCHASES} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Purchases"><Purchases /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PURCHASE_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Purchases"><CreatePurchase /></PlanGate></ProtectedRoute></PageRoute>} />

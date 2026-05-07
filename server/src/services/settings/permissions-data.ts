@@ -170,6 +170,16 @@ export const PERMISSION_MATRIX = [
       { key: 'pause',  label: 'Pause and Resume Recurring Schedules' },
     ],
   },
+  // Cash Register
+  {
+    key: 'cashRegister', label: 'Cash Register',
+    actions: [
+      { key: 'view',   label: 'View Cash Register' },
+      { key: 'create', label: 'Create Cash Entries' },
+      { key: 'edit',   label: 'Edit Cash Entries' },
+      { key: 'delete', label: 'Delete Cash Entries' },
+    ],
+  },
 ]
 
 export const ALL_PERMISSIONS = PERMISSION_MATRIX.flatMap(m =>
@@ -199,7 +209,8 @@ export const SYSTEM_ROLES: Array<{
       'invoicing.view', 'invoicing.create', 'invoicing.edit', 'invoicing.share',
       'parties.view', 'payments.view', 'payments.record',
       'reports.view', 'templates.view', 'fields.viewPartyPhone',
-      'jobs.view', 'jobs.create', 'jobs.edit',
+      'jobs.view',
+      'cashRegister.view', 'cashRegister.create', 'jobs.create', 'jobs.edit',
       // Collections: view + remind + ptp (NOT collect — no payment links)
       'collections.view', 'collections.remind', 'collections.ptp',
       // Recurring: view only
@@ -212,6 +223,7 @@ export const SYSTEM_ROLES: Array<{
       'payments.view', 'payments.record', 'parties.view', 'invoicing.view',
       'fields.viewPartyPhone', 'fields.viewPartyOutstanding',
       'jobs.view',
+      'cashRegister.view', 'cashRegister.create',
     ],
   },
   {
@@ -230,6 +242,7 @@ export const SYSTEM_ROLES: Array<{
       'invoicing.view', 'invoicing.share', 'parties.view',
       'payments.view', 'payments.record', 'fields.viewPartyPhone',
       'jobs.view',
+      'cashRegister.view', 'cashRegister.create',
     ],
   },
   {
@@ -242,6 +255,7 @@ export const SYSTEM_ROLES: Array<{
       'accounting.view', 'accounting.create', 'accounting.edit',
       'fields.viewPurchasePrice', 'fields.viewProfitMargin', 'fields.viewPartyOutstanding',
       'jobs.view',
+      'cashRegister.view', 'cashRegister.create',
       // Recurring: view only
       'recurring.view',
     ],

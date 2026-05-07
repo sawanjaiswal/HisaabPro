@@ -152,3 +152,6 @@ export const Gstr3bPage = lazy(() => import('@/features/gst-returns/Gstr3bPage')
 // Payments Hub PR 3 — Collections / Aging Dashboard
 export const AgingDashboardPage = lazy(() => import('@/features/collections/pages/AgingDashboard'))
 export const AgingBucketListPage = lazy(() => import('@/features/collections/pages/AgingBucketList'))
+
+// Cash Register (PR 4)
+export const CashRegister = lazy(() => import('@/features/cash-register/components/CashRegisterPage'))

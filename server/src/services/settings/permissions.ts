@@ -17,9 +17,6 @@ export function getPermissionMatrix() {
 }
 
 export async function ensureSystemRoles(businessId: string) {
-  const existing = await prisma.role.count({ where: { businessId, isSystem: true } })
-  if (existing >= SYSTEM_ROLES.length) return
-
   for (const role of SYSTEM_ROLES) {
     await prisma.role.upsert({
       where: { businessId_name: { businessId, name: role.name } },
@@ -31,7 +28,7 @@ export async function ensureSystemRoles(businessId: string) {
         priority: role.priority,
         permissions: role.permissions,
       },
-      update: {},
+      update: { permissions: role.permissions },
     })
   }
 }

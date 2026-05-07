@@ -11,12 +11,13 @@
 import type { Request, Response, NextFunction } from 'express'
 import { sanitizeText } from '../lib/sanitize.js'
 
-// Fields that may legitimately contain HTML/rich content — skip sanitization
+// Fields that may legitimately contain HTML/rich content or arithmetic — skip sanitization
 const SKIP_FIELDS = new Set([
   'templateHtml',
   'customCss',
   'emailBody',
   'htmlContent',
+  'expression', // cash register arithmetic expressions — contain / * + - ( )
 ])
 
 /**

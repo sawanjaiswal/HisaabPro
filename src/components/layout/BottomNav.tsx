@@ -1,6 +1,6 @@
 import { createPortal } from 'react-dom'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Home, FileText, Users, Package, Plus, Wallet } from 'lucide-react'
+import { Home, FileText, Users, Package, Plus, Wallet, Calculator } from 'lucide-react'
 import type { ComponentType, SVGProps } from 'react'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -41,6 +41,7 @@ export function BottomNav() {
   const leftItems: readonly NavItem[] = [
     { to: ROUTES.DASHBOARD, icon: Home, label: t.dashboard ?? 'Home' },
     { to: ROUTES.INVOICES, icon: FileText, label: t.invoices },
+    { to: ROUTES.CASH_REGISTER, icon: Calculator, label: t.cashRegNavLabel ?? 'Cash' },
   ]
 
   const rightItems: readonly NavItem[] = [
