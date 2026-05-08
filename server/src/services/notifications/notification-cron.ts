@@ -8,6 +8,8 @@ import { claimBatch, reclaimStale } from './notification-queue.service.js'
 import { processJob } from './notification-dispatch-processor.service.js'
 import { notify } from './notification-dispatch.service.js'
 import { runRetentionPurge } from './notification-retention.service.js'
+import { runReminderTick } from '../marketing/reminder-cron.service.js'
+import { runMarketingRetentionPurge } from '../marketing/marketing-retention.service.js'
 
 // Advisory lock constant — stable across deploys
 const DRAIN_LOCK_KEY = 8_675_309
@@ -216,6 +218,20 @@ export function initNotificationCronJobs(): void {
     { timezone: 'Asia/Kolkata' },
   )
 
+  // 6. Every 30 min — reminder rule tick (Phase 5)
+  cron.schedule(
+    '*/30 * * * *',
+    () => void runReminderTick(),
+    { timezone: 'Asia/Kolkata' },
+  )
+
+  // 7. 03:00 IST daily — marketing PII retention purge (Phase 5)
+  cron.schedule('0 3 * * *', () => {
+    void runMarketingRetentionPurge()
+      .then((r) => logger.info('marketing.retention.cron_done', r))
+      .catch((err) => logger.error('marketing.retention.cron_fatal', { error: String(err) }))
+  }, { timezone: 'Asia/Kolkata' })
+
   logger.info('notification.cron.registered', {
     jobs: [
       'notification-drain @ */1 IST',
@@ -223,6 +239,8 @@ export function initNotificationCronJobs(): void {
       'subscription-expiry-scan @ 09:00 IST',
       'retention-purge @ 02:00 IST Sunday',
       'month-roll @ 00:05 IST 1st-of-month',
+      'reminder-tick @ */30 IST',
+      'marketing-retention-purge @ 03:00 IST daily',
     ],
   })
 }
