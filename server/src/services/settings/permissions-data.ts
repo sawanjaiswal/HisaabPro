@@ -189,6 +189,20 @@ export const PERMISSION_MATRIX = [
       { key: 'void',   label: 'Void / Restore POS Sales' },
     ],
   },
+  // Phase 4 — BOM / Manufacturing
+  {
+    key: 'bom', label: 'BOM / Recipes',
+    actions: [
+      { key: 'read', label: 'View Recipes & Production Runs' },
+      { key: 'edit', label: 'Create / Edit / Delete Recipes' },
+    ],
+  },
+  {
+    key: 'production', label: 'Production',
+    actions: [
+      { key: 'run', label: 'Execute & Cancel Production Runs' },
+    ],
+  },
 ]
 
 export const ALL_PERMISSIONS = PERMISSION_MATRIX.flatMap(m =>

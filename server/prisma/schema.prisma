@@ -92,6 +92,10 @@ model User {
   posSalesAsVoider    PosSale[] @relation("PosVoider")
   posSalesAsRestorer  PosSale[] @relation("PosRestorer")
 
+  // Phase 4 — BOM / Manufacturing
+  bomsCreated           Bom[]           @relation("BomCreator")
+  productionRunsCreated ProductionRun[] @relation("ProductionRunCreator")
+
   @@index([phone])
   @@index([referredBy])
   @@index([referralFraudFlags])
@@ -219,6 +223,10 @@ model Business {
   posSales           PosSale[]
   posReceiptCounters PosReceiptCounter[]
   posSettings        PosSetting?
+
+  // Phase 4 — BOM / Manufacturing
+  boms           Bom[]
+  productionRuns ProductionRun[]
 
   @@index([name])
 }
@@ -513,6 +521,7 @@ model Unit {
   products        Product[]
   conversionsFrom UnitConversion[] @relation("FromUnit")
   conversionsTo   UnitConversion[] @relation("ToUnit")
+  bomComponents   BomComponent[]
 
   @@unique([businessId, name])
   @@unique([businessId, symbol])
@@ -600,6 +609,12 @@ model Product {
 
   // Phase 4 — POS Billing
   posSaleItems PosSaleItem[]
+
+  // Phase 4 — BOM / Manufacturing
+  bomsAsFinishedGood       Bom[]                    @relation("BomFinishedGood")
+  bomComponents            BomComponent[]           @relation("BomComponentProduct")
+  productionRunsAsFinished ProductionRun[]          @relation("ProductionRunFinished")
+  productionRunComponents  ProductionRunComponent[] @relation("ProductionRunComponents")
 
   @@unique([businessId, sku])
   @@unique([businessId, barcode])
@@ -3143,4 +3158,86 @@ model PosSetting {
   updatedAt            DateTime @updatedAt
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+// === Phase 4 — BOM / Manufacturing (#115) ===
+
+model Bom {
+  id         String   @id @default(cuid())
+  businessId String
+  productId  String   // finished good
+  name       String   @db.VarChar(100)
+  version    Int      @default(1)
+  isActive   Boolean  @default(true)
+  isDefault  Boolean  @default(false)
+  notes      String?  @db.Text
+  isDeleted  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  createdBy  String
+  updatedBy  String?
+
+  business      Business        @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  product       Product         @relation("BomFinishedGood", fields: [productId], references: [id], onDelete: Restrict)
+  createdByUser User            @relation("BomCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  components    BomComponent[]
+  productionRuns ProductionRun[]
+
+  @@unique([businessId, productId, version])
+  @@index([businessId, productId])
+  @@index([businessId, isDeleted])
+}
+
+model BomComponent {
+  id                 String  @id @default(cuid())
+  bomId              String
+  componentProductId String
+  quantity           Float   // > 0; same Float convention as Product.currentStock
+  unitId             String?
+  notes              String?
+
+  bom              Bom      @relation(fields: [bomId], references: [id], onDelete: Cascade)
+  componentProduct Product  @relation("BomComponentProduct", fields: [componentProductId], references: [id], onDelete: Restrict)
+  unit             Unit?    @relation(fields: [unitId], references: [id], onDelete: SetNull)
+
+  @@unique([bomId, componentProductId])
+  @@index([bomId])
+}
+
+model ProductionRun {
+  id                String   @id @default(cuid())
+  businessId        String
+  bomId             String
+  finishedProductId String
+  quantityProduced  Float
+  runDate           DateTime
+  status            String   @default("COMPLETED") // DRAFT | COMPLETED | CANCELLED
+  notes             String?  @db.Text
+  warnings          Json?    // string[] — warn-only stock shortfalls
+  isDeleted         Boolean  @default(false)
+  createdBy         String
+  createdAt         DateTime @default(now())
+
+  business        Business                 @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  bom             Bom                      @relation(fields: [bomId], references: [id], onDelete: Restrict)
+  finishedProduct Product                  @relation("ProductionRunFinished", fields: [finishedProductId], references: [id], onDelete: Restrict)
+  createdByUser   User                     @relation("ProductionRunCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  components      ProductionRunComponent[]
+
+  @@index([businessId, runDate])
+  @@index([businessId, status])
+  @@index([businessId, isDeleted])
+}
+
+model ProductionRunComponent {
+  id                 String @id @default(cuid())
+  productionRunId    String
+  componentProductId String
+  quantityConsumed   Float
+  costSnapshotPaise  BigInt @default(0) // weightedAvgCostPaise at run time
+
+  productionRun    ProductionRun @relation(fields: [productionRunId], references: [id], onDelete: Cascade)
+  componentProduct Product       @relation("ProductionRunComponents", fields: [componentProductId], references: [id], onDelete: Restrict)
+
+  @@index([productionRunId])
 }

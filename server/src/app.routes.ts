@@ -62,6 +62,8 @@ import jobRoutes from './routes/jobs.js'
 import customOrderRoutes from './routes/custom-orders.js'
 import notificationsRoutes from './routes/notifications.js'
 import posRoutes from './routes/pos.js'
+import bomRoutes from './routes/bom.js'
+import productionRunRoutes from './routes/production-runs.js'
 
 const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/auth', authRoutes],
@@ -129,6 +131,8 @@ const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/collections/statement', collectionsStatementRoutes],
   ['/api/notifications', notificationsRoutes],
   ['/api/pos', posRoutes],
+  ['/api/bom', bomRoutes],
+  ['/api/production-runs', productionRunRoutes],
 ]
 
 export function mountFeatureRoutes(app: Express): void {
