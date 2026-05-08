@@ -18,6 +18,9 @@ const config: CapacitorConfig = {
     },
   },
   plugins: {
+    BarcodeScanning: {
+      // No additional config required — camera permission prompts are OS-driven
+    },
     SplashScreen: {
       launchAutoHide: true,
       launchShowDuration: 1500,

@@ -19,6 +19,7 @@ import { ProductCard } from './components/ProductCard'
 import { ProductListSkeleton } from './components/ProductListSkeleton'
 import { deleteProduct, getProductByBarcode } from './product.service'
 import { BarcodeScanner } from '@/components/ui/BarcodeScanner'
+import { LabelPrintDialog } from './label-print/LabelPrintDialog'
 import './barcode.css'
 import { ROUTES } from '@/config/routes.config'
 import type { BulkAction } from '@/components/ui/BulkActionBar'
@@ -32,6 +33,7 @@ export default function ProductsPage() {
   const bulk = useBulkSelect()
   const [isBulkDeleting, setIsBulkDeleting] = useState(false)
   const [scannerOpen, setScannerOpen] = useState(false)
+  const [labelPrintOpen, setLabelPrintOpen] = useState(false)
 
   const handleBarcodeScan = async (value: string) => {
     setScannerOpen(false)
@@ -80,6 +82,14 @@ export default function ProductsPage() {
 
   const allProductIds = data?.products.map((p) => p.id) ?? []
 
+  const handlePrintLabels = () => {
+    if (bulk.selectedCount === 0) {
+      toast.info('Select products first to print labels')
+      return
+    }
+    setLabelPrintOpen(true)
+  }
+
   const bulkActions: BulkAction[] = [
     {
       id: 'delete',
@@ -87,6 +97,12 @@ export default function ProductsPage() {
       icon: 'delete',
       isDanger: true,
       onClick: handleBulkDelete,
+    },
+    {
+      id: 'print-labels',
+      label: 'Print labels',
+      icon: 'export',
+      onClick: handlePrintLabels,
     },
     {
       id: 'export',
@@ -205,6 +221,12 @@ export default function ProductsPage() {
         <BarcodeScanner
           onScan={handleBarcodeScan}
           onClose={() => setScannerOpen(false)}
+        />
+      )}
+      {labelPrintOpen && (
+        <LabelPrintDialog
+          productIds={Array.from(bulk.selectedIds)}
+          onClose={() => { setLabelPrintOpen(false); bulk.clear() }}
         />
       )}
     </AppShell>

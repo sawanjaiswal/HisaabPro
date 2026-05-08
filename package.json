@@ -28,6 +28,7 @@
     "qa:lhci": "npm run build && npm run lhci"
   },
   "dependencies": {
+    "@capacitor-mlkit/barcode-scanning": "^8.1.0",
     "@capacitor/android": "^8.2.0",
     "@capacitor/core": "^8.2.0",
     "@radix-ui/react-accordion": "^1.2.12",
@@ -37,6 +38,8 @@
     "@sentry/react": "^10.47.0",
     "@tanstack/react-query": "^5.96.1",
     "@tanstack/react-query-devtools": "^5.96.1",
+    "@zxing/browser": "^0.2.0",
+    "@zxing/library": "^0.21.3",
     "clsx": "^2.1.1",
     "dexie": "^4.0.0",
     "embla-carousel-react": "^8.6.0",

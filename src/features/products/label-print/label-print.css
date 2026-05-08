@@ -1,0 +1,379 @@
+/* ─── Label Print — Dialog + Sheet layout + print media rules ─────────────── */
+
+/* ─── Dialog shell ───────────────────────────────────────────────────────── */
+
+.label-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .label-dialog-backdrop {
+    align-items: center;
+  }
+}
+
+.label-dialog {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  width: 100%;
+  max-width: 680px;
+  max-height: 92dvh;
+  display: flex;
+  flex-direction: column;
+  animation: slide-up var(--duration-normal) var(--ease-default) both;
+}
+
+@media (min-width: 640px) {
+  .label-dialog {
+    border-radius: var(--radius-xl);
+    max-height: 88dvh;
+  }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(40px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.label-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-gray-100);
+  flex-shrink: 0;
+}
+
+.label-dialog-title {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--color-gray-800);
+}
+
+.label-dialog-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: transparent;
+  color: var(--color-gray-500);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.label-dialog-close:hover  { background: var(--color-gray-100); }
+.label-dialog-close:focus-visible { outline: 2px solid var(--color-primary-500); outline-offset: 2px; }
+
+.label-dialog-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.label-dialog-footer {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--color-gray-100);
+  flex-shrink: 0;
+}
+
+.label-footer-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 48px;
+}
+
+/* ─── Options ────────────────────────────────────────────────────────────── */
+
+.label-option-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.label-option-label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-gray-600);
+}
+
+.label-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+@media (max-width: 320px) {
+  .label-chip-row {
+    flex-direction: column;
+  }
+}
+
+.label-chip {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-gray-200);
+  background: transparent;
+  font-size: var(--fs-sm);
+  color: var(--color-gray-700);
+  cursor: pointer;
+  min-height: 36px;
+  -webkit-tap-highlight-color: transparent;
+  transition: all var(--duration-fast) var(--ease-default);
+}
+
+.label-chip:hover { border-color: var(--color-primary-300); }
+.label-chip:focus-visible { outline: 2px solid var(--color-primary-500); outline-offset: 2px; }
+
+.label-chip--active {
+  border-color: var(--color-primary-500);
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+  font-weight: 600;
+}
+
+/* ─── Qty stepper ────────────────────────────────────────────────────────── */
+
+.label-qty-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.label-qty-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 44px;
+}
+
+.label-qty-name {
+  flex: 1;
+  font-size: var(--fs-sm);
+  color: var(--color-gray-700);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.label-qty-stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.label-qty-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-gray-200);
+  background: transparent;
+  color: var(--color-gray-700);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.label-qty-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.label-qty-btn:hover:not(:disabled) { border-color: var(--color-primary-400); }
+
+.label-qty-value {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--color-gray-800);
+  min-width: 28px;
+  text-align: center;
+}
+
+.label-count-text {
+  font-size: var(--fs-xs);
+  color: var(--color-gray-400);
+  margin-top: var(--space-1);
+}
+
+/* ─── Loading skeleton ───────────────────────────────────────────────────── */
+
+.label-skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.label-skeleton-row {
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--color-gray-100);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ─── Error / Empty states ───────────────────────────────────────────────── */
+
+.label-dialog-error,
+.label-dialog-empty {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--color-gray-600);
+  gap: var(--space-4);
+  min-height: 200px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .label-dialog,
+  .label-skeleton-row {
+    animation: none;
+  }
+}
+
+/* ─── 320px overflow prevention ──────────────────────────────────────────── */
+
+@media (max-width: 320px) {
+  .label-dialog-body {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .label-dialog-footer {
+    flex-direction: column;
+    padding: var(--space-3) var(--space-4);
+  }
+}
+
+/* Preview wrapper */
+.label-preview-root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 60vh;
+  background: var(--color-gray-100);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+}
+
+/* Sheet container */
+.label-sheet {
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* Row of label cells */
+.label-row {
+  display: flex;
+  flex-direction: row;
+}
+
+/* Individual label cell */
+.label-cell {
+  box-sizing: border-box;
+  border: 0.5px solid #e0e0e0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1mm;
+  break-inside: avoid;
+  page-break-inside: avoid;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.label-cell-no-barcode {
+  font-size: 6pt;
+  color: #aaa;
+  text-align: center;
+}
+
+.label-cell-name {
+  font-size: 7pt;
+  color: #111;
+  text-align: center;
+  margin: 1px 0 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  max-width: 100%;
+}
+
+.label-cell-price {
+  font-size: 8pt;
+  font-weight: 700;
+  color: #111;
+  margin: 1px 0 0;
+}
+
+/* ─── @page named sizes ────────────────────────────────────────────────────── */
+
+@page A4_label  { size: A4 portrait;     margin: 6.5mm; }
+@page A5_label  { size: A5 portrait;     margin: 4mm;   }
+@page thermal   { size: 40mm 30mm;        margin: 1mm;   }
+
+/* ─── Print media ──────────────────────────────────────────────────────────── */
+
+@media print {
+  body.printing-labels > *:not(.label-print-root) {
+    display: none !important;
+  }
+
+  .label-print-root {
+    all: initial;
+    display: block;
+  }
+
+  .label-preview-root {
+    max-height: none;
+    overflow: visible;
+    background: transparent;
+    padding: 0;
+    gap: 0;
+  }
+
+  .label-sheet {
+    box-shadow: none;
+    margin: 0;
+    page-break-after: always;
+  }
+
+  .label-sheet[data-format="A4_3x8"]     { page: A4_label;  }
+  .label-sheet[data-format="A5_2x5"]     { page: A5_label;  }
+  .label-sheet[data-format="THERMAL_40x30"] { page: thermal; }
+
+  .label-sheet:last-child { page-break-after: auto; }
+
+  html, body { width: auto; height: auto; }
+}
