@@ -163,4 +163,13 @@ export const ROUTES = {
   // Notifications Engine (PR12+PR13)
   NOTIFICATIONS:              '/notifications',
   NOTIFICATION_PREFERENCES:   '/notifications/preferences',
+
+  // Phase 4 — BOM / Manufacturing (PR4-PR6)
+  BOM:              '/bom',
+  BOM_NEW:          '/bom/new',
+  BOM_DETAIL:       '/bom/:id',
+  BOM_EDIT:         '/bom/:id/edit',
+  PRODUCTION_RUNS:  '/production-runs',
+  PRODUCTION_RUN_NEW:    '/production-runs/new',
+  PRODUCTION_RUN_DETAIL: '/production-runs/:id',
 } as const

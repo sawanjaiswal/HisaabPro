@@ -50,6 +50,8 @@ import {
   CashRegister,
   Notifications,
   NotificationPreferences,
+  BomList, BomForm, BomDetail,
+  ProductionRunList, ProductionRunForm, ProductionRunDetail,
   NotFound,
 } from '@/app.routes'
 import {
@@ -216,6 +218,14 @@ export function App() {
         {/* Notifications Engine (PR12+PR13) */}
         <Route path={ROUTES.NOTIFICATIONS} element={<PageRoute><ProtectedRoute><Notifications /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.NOTIFICATION_PREFERENCES} element={<PageRoute><ProtectedRoute><NotificationPreferences /></ProtectedRoute></PageRoute>} />
+        {/* Phase 4 — BOM / Manufacturing (PR4-PR6) */}
+        <Route path={ROUTES.BOM} element={<PageRoute><ProtectedRoute><BomList /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.BOM_NEW} element={<PageRoute><ProtectedRoute><BomForm /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.BOM_EDIT} element={<PageRoute><ProtectedRoute><BomForm /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.BOM_DETAIL} element={<PageRoute><ProtectedRoute><BomDetail /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PRODUCTION_RUNS} element={<PageRoute><ProtectedRoute><ProductionRunList /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PRODUCTION_RUN_NEW} element={<PageRoute><ProtectedRoute><ProductionRunForm /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PRODUCTION_RUN_DETAIL} element={<PageRoute><ProtectedRoute><ProductionRunDetail /></ProtectedRoute></PageRoute>} />
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
       </Routes>
       </PageTransition>

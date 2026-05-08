@@ -21,6 +21,7 @@ export interface MoreMenuGroup {
 
 export const MORE_MENU_GROUPS: MoreMenuGroup[] = [
   { id: 'efficiency', label: 'Efficiency', emoji: '\u26A1' },
+  { id: 'production', label: 'Production', emoji: '\uD83C\uDFED' },
   { id: 'money', label: 'Money & Payments', emoji: '\uD83D\uDCB0' },
   { id: 'accounting', label: 'Accounting & Tax', emoji: '\uD83D\uDCCA' },
   { id: 'marketing', label: 'Marketing & CRM', emoji: '\uD83D\uDCE3' },
@@ -33,6 +34,10 @@ export const MORE_MENU_ITEMS: MoreMenuItem[] = [
 
   // Bakery / tailor vertical — Custom Orders (only shown for those verticals via isNavVisible)
   { id: 'orders', navKey: 'orders', label: 'Custom Orders', description: 'Track orders & advances', icon: 'ShoppingBag', route: ROUTES.ORDERS, color: 'var(--color-secondary-50)', group: 'efficiency' },
+
+  // Production — BOM / Manufacturing (Phase 4)
+  { id: 'bom', navKey: 'bom', label: 'Recipes', description: 'Bills of Materials', icon: 'BookOpen', route: ROUTES.BOM, color: 'var(--color-primary-50)', group: 'production' },
+  { id: 'production-runs', navKey: 'production-runs', label: 'Production Runs', description: 'Track manufacturing', icon: 'Activity', route: ROUTES.PRODUCTION_RUNS, color: 'var(--color-secondary-50)', group: 'production' },
 
   // Efficiency — save time, do more
   { id: 'bill-scan', navKey: 'bill-scan', label: 'Scan Bill', description: 'OCR scan to invoice', icon: 'Camera', route: ROUTES.BILL_SCAN, color: 'var(--color-primary-50)', group: 'efficiency' },

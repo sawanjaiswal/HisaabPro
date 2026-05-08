@@ -21,6 +21,7 @@ import {
   Boxes,
   TrendingUp,
   ShoppingBag,
+  Activity,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -47,4 +48,5 @@ export const ICON_REGISTRY: Record<string, LucideIcon> = {
   Boxes,
   TrendingUp,
   ShoppingBag,
+  Activity,
 }

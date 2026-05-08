@@ -166,3 +166,11 @@ export const CashRegister = lazy(() => import('@/features/cash-register/componen
 // Notifications Engine (PR12+PR13)
 export const Notifications = lazy(() => import('@/features/notifications/pages/NotificationsPage'))
 export const NotificationPreferences = lazy(() => import('@/features/notifications/pages/NotificationPreferencesPage'))
+
+// Phase 4 — BOM / Manufacturing (PR4-PR6)
+export const BomList = lazy(() => import('@/features/bom/pages/BomListPage'))
+export const BomForm = lazy(() => import('@/features/bom/pages/BomFormPage'))
+export const BomDetail = lazy(() => import('@/features/bom/pages/BomDetailPage'))
+export const ProductionRunList = lazy(() => import('@/features/production-runs/pages/ProductionRunListPage'))
+export const ProductionRunForm = lazy(() => import('@/features/production-runs/pages/ProductionRunFormPage'))
+export const ProductionRunDetail = lazy(() => import('@/features/production-runs/pages/ProductionRunDetailPage'))
