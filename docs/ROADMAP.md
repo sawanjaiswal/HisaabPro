@@ -1,11 +1,11 @@
 # HisaabPro — Master Feature Roadmap
 
-> **Last Updated:** 2026-03-16
-> **Status:** Phase 1 MVP — 58/70 features built, 10 need external credentials, 2 building
+> **Last Updated:** 2026-05-08
+> **Status:** Phase 1 (60/70 code-complete, 10 blocked on creds) · Phase 2 done · Phase 3 done (1 deferred) · Phase 4 in progress (10/16) · Phase 5–7 not started
 > **Owner:** Sawan Jaiswal
 > **Architecture:** Monolith — React 19 frontend + Express backend + Prisma + PostgreSQL
-> **Total Features:** 150 across 7 phases (Phase 1: 70 features)
-> **Build Status:** Frontend 33 routes, 221+ files | Backend 120+ endpoints, 47 Prisma models
+> **Total Features:** 150 across 7 phases
+> **Build Status:** Frontend 50+ feature folders | Backend 60+ route files, ~70 Prisma models
 
 ## Status Legend
 - [ ] Not Started
@@ -237,27 +237,27 @@
 
 ## PHASE 4 — Advanced Inventory & POS (Weeks 25-30)
 **Goal:** Warehouse-grade inventory + retail POS
-**Status:** Not Started
+**Status:** In Progress (10/16 done)
 **Features:** 16
 
 | # | Feature | Status | Complexity | PRD | Notes |
 |---|---------|--------|-----------|-----|-------|
-| 105 | Barcode Generation (create barcodes for products) | [ ] | LOW | [ ] | |
-| 106 | Barcode Scanning (camera-based quick entry) | [ ] | LOW | [ ] | Capacitor camera |
-| 107 | Batch Tracking (batch-wise stock with MFD/expiry) | [ ] | MEDIUM | [ ] | |
-| 108 | Serial Number Tracking (individual item identification) | [ ] | MEDIUM | [ ] | |
-| 109 | Multi-Godown (warehouse mgmt, inter-godown transfer, stock per location) | [ ] | HIGH | [ ] | |
-| 110 | Stock Adjustment (damage, theft, audit correction with reason) | [ ] | LOW | [ ] | |
-| 111 | Label Printing (barcode + price labels, thermal printer) | [ ] | LOW | [ ] | |
-| 112 | Bulk Import/Export (items, parties, invoices, opening balances from Excel) | [ ] | MEDIUM | [ ] | Expanded from old #57 |
-| 113 | Expiry Alerts (auto-alert X days before, hide expired from POS) | [ ] | LOW | [ ] | Competitor gap |
-| 114 | Reorder Points (auto-suggest purchase orders at low stock) | [ ] | MEDIUM | [ ] | |
-| 115 | Item Conversion (raw material to finished goods, BOM) | [ ] | MEDIUM | [ ] | Manufacturing |
-| 116 | Item Images (in catalog, invoice, inventory) | [ ] | LOW | [ ] | |
-| 117 | Minimum Order Quantity (MOQ per item) | [ ] | LOW | [ ] | |
-| 118 | POS Billing Mode (fast retail: barcode scan, cash drawer, receipt print) | [ ] | HIGH | [ ] | MyBillBook feature |
-| 119 | Data Verification / Mismatch Detection (auto-detect stock & ledger discrepancies) | [ ] | MEDIUM | [ ] | Vyapar feature |
-| 120 | Party Ledger (dedicated ledger view per party — distinct from statement) | [ ] | LOW | [ ] | Accounting term |
+| 105 | Barcode Generation (create barcodes for products) | [ ] | LOW | [ ] | Not started |
+| 106 | Barcode Scanning (camera-based quick entry) | [ ] | LOW | [ ] | Needs Capacitor camera plugin |
+| 107 | Batch Tracking (batch-wise stock with MFD/expiry) | [x] | MEDIUM | [x] | BAT-01..07 · FEFO claim · batch picker · per-batch value |
+| 108 | Serial Number Tracking (individual item identification) | [x] | MEDIUM | [x] | `serial-numbers.ts` route + feature folder |
+| 109 | Multi-Godown (warehouse mgmt, inter-godown transfer, stock per location) | [x] | HIGH | [x] | `godowns.ts` route + feature folder |
+| 110 | Stock Adjustment (damage, theft, audit correction with reason) | [x] | LOW | [x] | `/stock/adjust` + immutable StockMovement + reason codes |
+| 111 | Label Printing (barcode + price labels, thermal printer) | [ ] | LOW | [ ] | Not started — depends on #105 |
+| 112 | Bulk Import/Export (items, parties, invoices, opening balances from Excel) | [~] | MEDIUM | [x] | Export shipped; `bulk-import` + `data-import` feature folders exist — needs end-to-end audit |
+| 113 | Expiry Alerts (auto-alert X days before, hide expired from POS) | [x] | LOW | [x] | BAT-04 expiry cron + batch alerts |
+| 114 | Reorder Points (auto-suggest purchase orders at low stock) | [x] | MEDIUM | [x] | Reorder alerts + Product.reorderQty + partial index |
+| 115 | Item Conversion (raw material to finished goods, BOM) | [ ] | MEDIUM | [ ] | Not started — manufacturing |
+| 116 | Item Images (in catalog, invoice, inventory) | [~] | LOW | [ ] | Image fields exist on Product; UI surfaces unverified |
+| 117 | Minimum Order Quantity (MOQ per item) | [ ] | LOW | [ ] | Not started |
+| 118 | POS Billing Mode (fast retail: barcode scan, cash drawer, receipt print) | [x] | HIGH | [x] | pos-checkout epic — sales, void/restore, receipts (58/80/A5), history |
+| 119 | Data Verification / Mismatch Detection (auto-detect stock & ledger discrepancies) | [x] | MEDIUM | [x] | stock-verification finalize · atomic batch adjustments · hard-gate test |
+| 120 | Party Ledger (dedicated ledger view per party — distinct from statement) | [~] | LOW | [ ] | Statement page exists; "ledger" framing/columns need confirmation |
 
 ---
 
@@ -308,7 +308,7 @@
 
 | # | Feature | Status | Complexity | PRD | Notes |
 |---|---------|--------|-----------|-----|-------|
-| 141 | AI Auto-Categorization (scan receipt → auto-fill expense) | [ ] | HIGH | [ ] | OCR + LLM |
+| 141 | AI Auto-Categorization (scan receipt → auto-fill expense) | [x] | HIGH | [x] | expenses-upgrade PR5 — Anthropic haiku OCR · 5MB cap · graceful unavailable |
 | 142 | Voice-Based Entry ("Add 500 sale to Rahul") | [ ] | HIGH | [ ] | Speech-to-intent |
 | 143 | WhatsApp Bot Billing (message → invoice) | [ ] | HIGH | [ ] | WhatsApp Business API |
 | 144 | Smart GST Filing Assistant (flag errors before filing) | [ ] | MEDIUM | [ ] | Rules engine |
@@ -327,12 +327,12 @@
 |-------|----------|-------|--------|
 | Phase 1 — MVP | 70 (10 reused + 60 new) | 1-12 | **60 Done, 10 Needs Credentials** |
 | Phase 2 — GST & Compliance | 20 | 13-18 | **20/20 Done** |
-| Phase 3 — Accounting & Finance | 22 | 19-24 | Done (21/22, 1 deferred) |
-| Phase 4 — Advanced Inventory & POS | 16 | 25-30 | Not Started |
+| Phase 3 — Accounting & Finance | 22 | 19-24 | **21/22 Done** (Bank Reconciliation deferred) |
+| Phase 4 — Advanced Inventory & POS | 16 | 25-30 | **10/16 Done** (barcode, label, BOM, MOQ, item-image UI, party-ledger pending) |
 | Phase 5 — Sales & Marketing | 14 | 31-36 | Not Started |
 | Phase 6 — Staff & HR | 6 | 37-42 | Not Started |
-| Phase 7 — AI & Differentiators | 10 | 43+ | Not Started |
-| **TOTAL** | **150** | **43+ weeks** | |
+| Phase 7 — AI & Differentiators | 10 | 43+ | **1/10** (receipt OCR shipped) |
+| **TOTAL** | **150** | **43+ weeks** | **~112/150 shipped** |
 
 ---
 
@@ -382,3 +382,7 @@
 | 2026-03-15 | 1 | Built all Phase 1 backend (120+ endpoints, 47 Prisma models) + frontend (33 routes, 221 files) | Claude |
 | 2026-03-16 | 1 | Security hardening: CSRF, account lockout, Redis rate limiter, httpOnly cookies, CAPTCHA, replay protection, security headers. Dark mode, i18n, invoice image export. 58/70 done | Claude |
 | 2026-03-17 | 2 | Phase 2 GST complete: 20 features built (Batch A-E). Tax engine, GSTR-1/3B/9, e-invoice, e-way bill, TDS/TCS, CN/DN, composition scheme, reverse charge, cess, HSN, multi-currency, recurring invoices, GSTR-1 reconciliation. All endpoints curl-tested (200/401/400). Frontend pages for all features. | Claude |
+| 2026-05-08 | 3 | Phase 3 financial year closure + cash-register upgrade (calculator, history, audit, idempotency). | Claude |
+| 2026-05-08 | 4 | Phase 4 jumped from 0 → 10/16. Shipped: BAT-01..07 (batches/FEFO/expiry), serial numbers, multi-godown, stock adjustment, expiry cron, reorder alerts, stock-verification finalize, POS checkout (sales/void/restore/receipts/history). Pending: barcode gen+scan, label printing, BOM, MOQ, item-image UI, party-ledger view. | Claude |
+| 2026-05-08 | 7 | Phase 7 1/10 — expense receipt OCR via Anthropic haiku shipped (`e11caf9`). | Claude |
+| 2026-05-08 | All | Roadmap freshness pass — synced statuses against actual `routes/`, `features/`, and migration log. Total ~112/150 shipped. | Claude |
