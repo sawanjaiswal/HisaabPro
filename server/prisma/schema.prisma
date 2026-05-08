@@ -228,6 +228,11 @@ model Business {
   boms           Bom[]
   productionRuns ProductionRun[]
 
+  // Phase 5 — Marketing Communications
+  marketingTemplates  MarketingTemplate[]
+  marketingCampaigns  MarketingCampaign[]
+  reminderRules       ReminderRule[]
+
   @@index([name])
 }
 
@@ -338,6 +343,11 @@ model Party {
   // Phase 4 — POS walk-in sentinel
   isWalkIn Boolean @default(false)
 
+  // Phase 5 — Marketing Communications
+  birthday            DateTime?
+  marketingOptOut     Boolean   @default(false)
+  marketingOptOutAt   DateTime?
+
   business          Business                @relation(fields: [businessId], references: [id], onDelete: Restrict)
   group             PartyGroup?             @relation(fields: [groupId], references: [id], onDelete: SetNull)
   addresses         PartyAddress[]
@@ -354,12 +364,17 @@ model Party {
   reminderLogs      ReminderLog[]
   posSales          PosSale[]
 
+  // Phase 5 — Marketing relations
+  marketingCampaignRecipients MarketingCampaignRecipient[]
+  reminderInstances           ReminderInstance[]
+
   @@unique([businessId, phone])
   @@index([businessId, type, isActive])
   @@index([businessId, name])
   @@index([businessId, outstandingBalance])
   @@index([businessId, isDeleted])
   @@index([businessId, isWalkIn])
+  @@index([businessId, marketingOptOut])
   @@index([groupId])
 }
 
@@ -3240,4 +3255,170 @@ model ProductionRunComponent {
   componentProduct Product       @relation("ProductionRunComponents", fields: [componentProductId], references: [id], onDelete: Restrict)
 
   @@index([productionRunId])
+}
+
+// ============================================================
+// Phase 5 — Marketing Communications Models
+// ============================================================
+
+enum CampaignStatus {
+  DRAFT
+  SCHEDULED
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum RecipientDispatchStatus {
+  QUEUED
+  SENT
+  FAILED
+  SKIPPED
+}
+
+enum ReminderRuleTrigger {
+  BIRTHDAY
+  PAYMENT_DUE
+  PAYMENT_OVERDUE
+  FOLLOWUP
+  INACTIVE
+}
+
+enum ReminderInstanceStatus {
+  PENDING
+  DISPATCHED
+  FAILED
+  SKIPPED
+}
+
+model MarketingTemplate {
+  id               String    @id @default(cuid())
+  businessId       String
+  name             String    @db.VarChar(100)
+  channel          String    // WHATSAPP | SMS
+  bodyEn           String    @db.Text
+  bodyHi           String?   @db.Text
+  dltTemplateId    String?   @db.VarChar(60)
+  dltRegistered    Boolean   @default(false)
+  waTemplateName   String?   @db.VarChar(80)
+  waTemplateStatus String?   @default("PENDING")
+  variables        String[]  @default([])
+  isActive         Boolean   @default(true)
+  isDeleted        Boolean   @default(false)
+  deletedAt        DateTime?
+  createdBy        String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  business  Business            @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  campaigns MarketingCampaign[]
+  rules     ReminderRule[]
+
+  @@unique([businessId, name, channel])
+  @@index([businessId, channel, isActive])
+  @@index([businessId, isDeleted])
+}
+
+model MarketingCampaign {
+  id             String         @id @default(cuid())
+  businessId     String
+  name           String         @db.VarChar(100)
+  channel        String         // WHATSAPP | SMS
+  templateId     String
+  segmentFilter  Json           @default("{}")
+  recipientCount Int            @default(0)
+  scheduledAt    DateTime?
+  startedAt      DateTime?
+  completedAt    DateTime?
+  status         CampaignStatus @default(DRAFT)
+  sentCount      Int            @default(0)
+  deliveredCount Int            @default(0)
+  failedCount    Int            @default(0)
+  totalCostPaise Int            @default(0)
+  defaultVars    Json           @default("{}")
+  isDeleted      Boolean        @default(false)
+  deletedAt      DateTime?
+  createdBy      String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  business   Business                    @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  template   MarketingTemplate           @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  recipients MarketingCampaignRecipient[]
+
+  @@index([businessId, status, scheduledAt])
+  @@index([businessId, isDeleted])
+  @@index([businessId, createdAt])
+}
+
+model MarketingCampaignRecipient {
+  id           String                  @id @default(cuid())
+  campaignId   String
+  partyId      String
+  phone        String?                 @db.VarChar(20)
+  status       RecipientDispatchStatus @default(QUEUED)
+  jobId        String?
+  skipReason   String?                 @db.VarChar(80)
+  dispatchedAt DateTime?
+  failedAt     DateTime?
+  costPaise    Int                     @default(0)
+  createdAt    DateTime                @default(now())
+
+  campaign MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  party    Party             @relation(fields: [partyId], references: [id], onDelete: Restrict)
+
+  @@unique([campaignId, partyId])
+  @@index([campaignId, status])
+  @@index([campaignId, createdAt])
+}
+
+model ReminderRule {
+  id              String              @id @default(cuid())
+  businessId      String
+  name            String              @db.VarChar(100)
+  trigger         ReminderRuleTrigger
+  offsetDays      Int                 @default(0)
+  channel         String              // WHATSAPP | SMS
+  templateId      String
+  segmentFilter   Json                @default("{}")
+  enabled         Boolean             @default(true)
+  quietHoursStart String?             @db.VarChar(5)
+  quietHoursEnd   String?             @db.VarChar(5)
+  isDeleted       Boolean             @default(false)
+  deletedAt       DateTime?
+  createdBy       String
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  business  Business           @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  template  MarketingTemplate  @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  instances ReminderInstance[]
+
+  @@index([businessId, enabled])
+  @@index([businessId, trigger, enabled])
+  @@index([businessId, isDeleted])
+}
+
+model ReminderInstance {
+  id           String                 @id @default(cuid())
+  ruleId       String
+  partyId      String
+  fireDate     DateTime
+  scheduledAt  DateTime
+  status       ReminderInstanceStatus @default(PENDING)
+  jobId        String?
+  skipReason   String?                @db.VarChar(80)
+  dispatchedAt DateTime?
+  costPaise    Int                    @default(0)
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+
+  rule  ReminderRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  party Party        @relation(fields: [partyId], references: [id], onDelete: Restrict)
+
+  @@unique([ruleId, partyId, fireDate])
+  @@index([status, scheduledAt])
+  @@index([ruleId, status])
+  @@index([partyId])
 }
