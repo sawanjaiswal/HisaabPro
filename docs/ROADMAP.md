@@ -1,7 +1,7 @@
 # HisaabPro — Master Feature Roadmap
 
 > **Last Updated:** 2026-05-08 (PM)
-> **Status:** Phase 1 (60/70 code-complete, 10 blocked on creds) · Phase 2 done · Phase 3 done (1 deferred) · Phase 4 done (16/16) · Phase 5–7 not started (Phase 7 1/10)
+> **Status:** Phase 1 (60/70 code-complete, 10 blocked on creds) · Phase 2 done · Phase 3 done (1 deferred) · Phase 4 done (16/16) · Phase 5 1/14 (3 BE-only, FE WIP) · Phase 6 not started · Phase 7 1/10
 > **Owner:** Sawan Jaiswal
 > **Architecture:** Monolith — React 19 frontend + Express backend + Prisma + PostgreSQL
 > **Total Features:** 150 across 7 phases
@@ -270,10 +270,10 @@
 |---|---------|--------|-----------|-----|-------|
 | 121 | Online Store / Digital Catalog (shareable product catalog with ordering) | [ ] | HIGH | [ ] | |
 | 122 | Sales Pipeline (Quotation > Sale Order > Delivery > Invoice, partial fulfillment) | [ ] | MEDIUM | [ ] | Merged old #62 + #69 |
-| 123 | WhatsApp Marketing (bulk promo messages to customers) | [ ] | MEDIUM | [ ] | Already have Aisensy |
-| 124 | SMS Marketing (campaigns, templates) | [ ] | LOW | [ ] | |
+| 123 | WhatsApp Marketing (bulk promo messages to customers) | [~] | MEDIUM | [x] | BE shipped (PR1-6), FE WIP |
+| 124 | SMS Marketing (campaigns, templates) | [~] | LOW | [x] | BE shipped (PR1-6), FE WIP |
 | 125 | Loyalty / Rewards Program (points per purchase) | [ ] | MEDIUM | [ ] | |
-| 126 | Service Reminders (recurring service notifications) | [ ] | LOW | [ ] | |
+| 126 | Service Reminders (recurring service notifications) | [~] | LOW | [x] | BE shipped (PR1-6), FE WIP |
 | 127 | CRM Basics (customer notes, follow-up dates, tags, last contact) | [ ] | MEDIUM | [ ] | |
 | 128 | Staff Performance & Commission (sales per staff, commission calc, attendance %) | [ ] | MEDIUM | [ ] | Merged old #68 + #74 |
 | 129 | UPI Payment Collection (QR on invoice, payment link) | [ ] | LOW | [ ] | Adapt DudhHisaab |
@@ -329,7 +329,7 @@
 | Phase 2 — GST & Compliance | 20 | 13-18 | **20/20 Done** |
 | Phase 3 — Accounting & Finance | 22 | 19-24 | **21/22 Done** (Bank Reconciliation deferred) |
 | Phase 4 — Advanced Inventory & POS | 16 | 25-30 | **16/16 Done** |
-| Phase 5 — Sales & Marketing | 14 | 31-36 | Not Started |
+| Phase 5 — Sales & Marketing | 14 | 31-36 | In Progress (3 BE shipped, FE WIP) |
 | Phase 6 — Staff & HR | 6 | 37-42 | Not Started |
 | Phase 7 — AI & Differentiators | 10 | 43+ | **1/10** (receipt OCR shipped) |
 | **TOTAL** | **150** | **43+ weeks** | **118/150 shipped** |
