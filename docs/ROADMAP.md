@@ -1,7 +1,7 @@
 # HisaabPro — Master Feature Roadmap
 
-> **Last Updated:** 2026-05-08
-> **Status:** Phase 1 (60/70 code-complete, 10 blocked on creds) · Phase 2 done · Phase 3 done (1 deferred) · Phase 4 in progress (10/16) · Phase 5–7 not started
+> **Last Updated:** 2026-05-08 (PM)
+> **Status:** Phase 1 (60/70 code-complete, 10 blocked on creds) · Phase 2 done · Phase 3 done (1 deferred) · Phase 4 done (16/16) · Phase 5–7 not started (Phase 7 1/10)
 > **Owner:** Sawan Jaiswal
 > **Architecture:** Monolith — React 19 frontend + Express backend + Prisma + PostgreSQL
 > **Total Features:** 150 across 7 phases
@@ -237,27 +237,27 @@
 
 ## PHASE 4 — Advanced Inventory & POS (Weeks 25-30)
 **Goal:** Warehouse-grade inventory + retail POS
-**Status:** In Progress (10/16 done)
+**Status:** Done (16/16)
 **Features:** 16
 
 | # | Feature | Status | Complexity | PRD | Notes |
 |---|---------|--------|-----------|-----|-------|
-| 105 | Barcode Generation (create barcodes for products) | [ ] | LOW | [ ] | Not started |
-| 106 | Barcode Scanning (camera-based quick entry) | [ ] | LOW | [ ] | Needs Capacitor camera plugin |
+| 105 | Barcode Generation (create barcodes for products) | [x] | LOW | [x] | BarcodeField + BarcodeDisplay (SVG + PNG canvas), all formats supported |
+| 106 | Barcode Scanning (camera-based quick entry) | [x] | LOW | [x] | barcode-and-label epic · @capacitor-mlkit native + @zxing/browser web fallback · POS + invoice line picker |
 | 107 | Batch Tracking (batch-wise stock with MFD/expiry) | [x] | MEDIUM | [x] | BAT-01..07 · FEFO claim · batch picker · per-batch value |
 | 108 | Serial Number Tracking (individual item identification) | [x] | MEDIUM | [x] | `serial-numbers.ts` route + feature folder |
 | 109 | Multi-Godown (warehouse mgmt, inter-godown transfer, stock per location) | [x] | HIGH | [x] | `godowns.ts` route + feature folder |
 | 110 | Stock Adjustment (damage, theft, audit correction with reason) | [x] | LOW | [x] | `/stock/adjust` + immutable StockMovement + reason codes |
-| 111 | Label Printing (barcode + price labels, thermal printer) | [ ] | LOW | [ ] | Not started — depends on #105 |
-| 112 | Bulk Import/Export (items, parties, invoices, opening balances from Excel) | [~] | MEDIUM | [x] | Export shipped; `bulk-import` + `data-import` feature folders exist — needs end-to-end audit |
+| 111 | Label Printing (barcode + price labels, thermal printer) | [x] | LOW | [x] | barcode-and-label epic · LabelPrintDialog · THERMAL_40x30 / A4_3x8 / A5_2x5 · React-PDF + window.print |
+| 112 | Bulk Import/Export (items, parties, invoices, opening balances from Excel) | [x] | MEDIUM | [x] | bulk-import (parties via CSV+contact picker) + data-import (products w/ barcode mapping) |
 | 113 | Expiry Alerts (auto-alert X days before, hide expired from POS) | [x] | LOW | [x] | BAT-04 expiry cron + batch alerts |
 | 114 | Reorder Points (auto-suggest purchase orders at low stock) | [x] | MEDIUM | [x] | Reorder alerts + Product.reorderQty + partial index |
-| 115 | Item Conversion (raw material to finished goods, BOM) | [ ] | MEDIUM | [ ] | Not started — manufacturing |
-| 116 | Item Images (in catalog, invoice, inventory) | [~] | LOW | [ ] | Image fields exist on Product; UI surfaces unverified |
-| 117 | Minimum Order Quantity (MOQ per item) | [ ] | LOW | [ ] | Not started |
+| 115 | Item Conversion (raw material to finished goods, BOM) | [x] | MEDIUM | [x] | bom-manufacturing epic · 4 new tables · atomic ProductionRun w/ FOR UPDATE · WAC propagation · cancel reverses stock |
+| 116 | Item Images (in catalog, invoice, inventory) | [x] | LOW | [x] | catalog-enrichment epic · ImageUploader (camera + gallery + resize) · catalog thumb + invoice line thumb (settings opt-in) |
+| 117 | Minimum Order Quantity (MOQ per item) | [x] | LOW | [x] | catalog-enrichment epic · Product.moq field · enforceMoq setting (block vs warn) · validation across SALE/SO/POS |
 | 118 | POS Billing Mode (fast retail: barcode scan, cash drawer, receipt print) | [x] | HIGH | [x] | pos-checkout epic — sales, void/restore, receipts (58/80/A5), history |
 | 119 | Data Verification / Mismatch Detection (auto-detect stock & ledger discrepancies) | [x] | MEDIUM | [x] | stock-verification finalize · atomic batch adjustments · hard-gate test |
-| 120 | Party Ledger (dedicated ledger view per party — distinct from statement) | [~] | LOW | [ ] | Statement page exists; "ledger" framing/columns need confirmation |
+| 120 | Party Ledger (dedicated ledger view per party — distinct from statement) | [x] | LOW | [x] | catalog-enrichment epic · /api/parties/:id/ledger · DR/CR/Running Balance · PartyLedgerTab + React-PDF export |
 
 ---
 
@@ -328,11 +328,11 @@
 | Phase 1 — MVP | 70 (10 reused + 60 new) | 1-12 | **60 Done, 10 Needs Credentials** |
 | Phase 2 — GST & Compliance | 20 | 13-18 | **20/20 Done** |
 | Phase 3 — Accounting & Finance | 22 | 19-24 | **21/22 Done** (Bank Reconciliation deferred) |
-| Phase 4 — Advanced Inventory & POS | 16 | 25-30 | **10/16 Done** (barcode, label, BOM, MOQ, item-image UI, party-ledger pending) |
+| Phase 4 — Advanced Inventory & POS | 16 | 25-30 | **16/16 Done** |
 | Phase 5 — Sales & Marketing | 14 | 31-36 | Not Started |
 | Phase 6 — Staff & HR | 6 | 37-42 | Not Started |
 | Phase 7 — AI & Differentiators | 10 | 43+ | **1/10** (receipt OCR shipped) |
-| **TOTAL** | **150** | **43+ weeks** | **~112/150 shipped** |
+| **TOTAL** | **150** | **43+ weeks** | **118/150 shipped** |
 
 ---
 
@@ -386,3 +386,4 @@
 | 2026-05-08 | 4 | Phase 4 jumped from 0 → 10/16. Shipped: BAT-01..07 (batches/FEFO/expiry), serial numbers, multi-godown, stock adjustment, expiry cron, reorder alerts, stock-verification finalize, POS checkout (sales/void/restore/receipts/history). Pending: barcode gen+scan, label printing, BOM, MOQ, item-image UI, party-ledger view. | Claude |
 | 2026-05-08 | 7 | Phase 7 1/10 — expense receipt OCR via Anthropic haiku shipped (`e11caf9`). | Claude |
 | 2026-05-08 | All | Roadmap freshness pass — synced statuses against actual `routes/`, `features/`, and migration log. Total ~112/150 shipped. | Claude |
+| 2026-05-08 (PM) | 4 | Phase 4 finished. Three epics shipped autonomously: catalog-enrichment (#117 MOQ + #116 item images + #120 party ledger), barcode-and-label (#106 native scan + #111 label print/PDF/bulk), bom-manufacturing (#115 BOM + atomic production runs + WAC propagation + cancel/reverse). Phase 4 = 16/16. Total 118/150 shipped. | Claude |
