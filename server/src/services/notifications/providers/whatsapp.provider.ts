@@ -1,52 +1,129 @@
 /**
- * Notification Engine — WhatsApp Provider STUB (PR5)
+ * Notification Engine — WhatsApp Provider (Aisensy) (PR6)
  *
- * WhatsApp deferred — wire real provider in future PR.
+ * Real implementation: POSTs to Aisensy Campaign API v2.
+ * Degrades gracefully when AISENSY_API_KEY is absent (dev stub).
  *
- * This file exists so the import path is stable and a future PR can flip
- * `isConfigured()` to return true and replace `send()` with a real
- * Aisensy / Meta Cloud API implementation.
- *
- * Current behaviour:
- *   - `isConfigured()` returns false → dispatch service will never attempt
- *     to enqueue a WHATSAPP job (guarded by `providerRegistry.isEnabled()`).
- *   - `send()` throws `NotRegisteredError` as a hard backstop in case the
- *     dispatch service guard is bypassed (e.g. in tests or future code paths).
- *   - This provider is intentionally NOT registered with `providerRegistry`
- *     because `isConfigured()` returns false and the registry would reject it
- *     as disabled anyway. Registering it here would make `isEnabled()` return
- *     false for WHATSAPP rather than throwing "no provider" — both outcomes
- *     are safe. Re-enable the register() call when real integration is wired.
+ * Provider registers itself with providerRegistry when isConfigured() = true.
+ * When unconfigured: campaigns mark all recipients SKIPPED with
+ * skipReason: 'provider_not_configured'. Campaign transitions to COMPLETED.
  */
 
 import type { NotificationProvider } from './notification-provider.js'
 import type { DispatchResult, NotificationContext, RenderedTemplate } from '../notification-types.js'
-import { NotRegisteredError } from '../notification-errors.js'
+import { NotificationErrorCode } from '../notification-errors.js'
+import { providerRegistry } from './notification-provider.js'
+import logger from '../../../lib/logger.js'
+
+const AISENSY_SEND_URL = 'https://backend.aisensy.com/campaign/t1/api/v2'
+
+interface AisensyResponse {
+  status?: string
+  messageId?: string
+  message?: string
+}
 
 const whatsappProvider: NotificationProvider = {
   name: 'WHATSAPP',
 
   isConfigured(): boolean {
-    // Returns false until Aisensy / Meta Cloud API integration is wired.
-    return false
+    return Boolean(process.env.AISENSY_API_KEY)
   },
 
   estimateCostPaise(): number {
-    // Placeholder — actual cost will depend on message type (session vs template).
-    return 0
+    return 50 // Template message cost
   },
 
-  async send(_ctx: NotificationContext, _rendered: RenderedTemplate): Promise<DispatchResult> {
-    throw new NotRegisteredError(
-      'WhatsApp provider is not configured. ' +
-        'Wire real Aisensy / Meta Cloud API integration before enabling this channel.',
-    )
+  async send(ctx: NotificationContext, rendered: RenderedTemplate): Promise<DispatchResult> {
+    const apiKey = process.env.AISENSY_API_KEY
+    if (!apiKey) {
+      return {
+        success: false,
+        costPaise: 0,
+        errorCode: NotificationErrorCode.PROVIDER_DOWN,
+        errorMessage: 'AISENSY_API_KEY not configured',
+        retryable: false,
+      }
+    }
+
+    const waTemplateName = (rendered.payload as Record<string, unknown>).waTemplateName as string | undefined
+    if (!waTemplateName) {
+      return {
+        success: false,
+        costPaise: 0,
+        errorCode: NotificationErrorCode.INVALID_RECIPIENT,
+        errorMessage: 'waTemplateName required for Aisensy send',
+        retryable: false,
+      }
+    }
+
+    // Resolve phone from party — ctx.userId is partyId for marketing sends
+    const { prisma } = await import('../../../lib/prisma.js')
+    const party = await prisma.party.findUnique({
+      where: { id: ctx.userId },
+      select: { phone: true, name: true },
+    })
+
+    if (!party?.phone) {
+      return {
+        success: false,
+        costPaise: 0,
+        errorCode: NotificationErrorCode.INVALID_RECIPIENT,
+        errorMessage: 'Party has no phone number',
+        retryable: false,
+      }
+    }
+
+    const payload = {
+      apiKey,
+      campaignName: waTemplateName,
+      destination: party.phone.replace(/\D/g, ''), // digits only
+      userName: party.name ?? 'Customer',
+      templateParams: Object.values(ctx.vars ?? {}).map(String),
+      source: 'HisaabPro',
+    }
+
+    try {
+      const resp = await fetch(AISENSY_SEND_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(10_000),
+      })
+
+      const raw = await resp.text()
+      let parsed: AisensyResponse = {}
+      try { parsed = JSON.parse(raw) as AisensyResponse } catch { /* non-JSON ok */ }
+
+      if (!resp.ok) {
+        logger.warn('aisensy.send.http_error', { status: resp.status, userId: ctx.userId })
+        return {
+          success: false,
+          costPaise: 0,
+          errorCode: resp.status >= 500 ? NotificationErrorCode.PROVIDER_DOWN : NotificationErrorCode.INVALID_RECIPIENT,
+          errorMessage: parsed.message ?? raw,
+          retryable: resp.status >= 500,
+        }
+      }
+
+      logger.info('aisensy.send.success', { userId: ctx.userId, messageId: parsed.messageId })
+      return { success: true, externalId: parsed.messageId, costPaise: 50, retryable: false }
+    } catch (err) {
+      logger.warn('aisensy.send.exception', { userId: ctx.userId, error: String(err) })
+      return {
+        success: false,
+        costPaise: 0,
+        errorCode: NotificationErrorCode.PROVIDER_DOWN,
+        errorMessage: String(err),
+        retryable: true,
+      }
+    }
   },
 }
 
-// NOTE: Not registered with providerRegistry — intentional.
-// isConfigured() returns false; registering would add a disabled entry.
-// Uncomment the line below when real integration is ready:
-//   providerRegistry.register('WHATSAPP', whatsappProvider)
+// Register only when configured
+if (whatsappProvider.isConfigured()) {
+  providerRegistry.register('WHATSAPP', whatsappProvider)
+}
 
 export { whatsappProvider }
