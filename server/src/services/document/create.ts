@@ -235,16 +235,9 @@ export async function createDocument(
     scheduleAlertChecks(businessId, data.lineItems.map(li => li.productId))
   }
   if (isSaving && data.type === 'SALE_INVOICE') void notificationManager.notify('INVOICE_CREATED', { businessId, userId, eventKey: 'INVOICE_CREATED', locale: 'en', vars: { invoiceNo: result.documentNumber ?? '', partyName: (result as { party: { name: string } }).party.name, totalRs: formatPaise(Number(result.grandTotal)) }, entityType: 'invoice', entityId: result.id })
-
   // Append transient compositionLiability (1%/5%/6% on grandTotal) — not persisted
   const compositionInfo = getCompositionInvoiceInfo(isComposite, 'default', result.grandTotal)
-  const baseResult = compositionInfo
-    ? { ...result, compositionLiability: compositionInfo.compositionTax }
-    : result
-
-  // BAT-03: surface expiry warnings in the 200 response (WARN_ONLY policy)
-  if (saleStockWarnings.length > 0) {
-    return { ...baseResult, warnings: saleStockWarnings }
-  }
+  const baseResult = compositionInfo ? { ...result, compositionLiability: compositionInfo.compositionTax } : result
+  if (saleStockWarnings.length > 0) return { ...baseResult, warnings: saleStockWarnings }
   return baseResult
 }

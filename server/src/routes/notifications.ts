@@ -231,20 +231,16 @@ router.post(
       where: { id: String(id), businessId: String(businessId), userId: String(userId) },
       select: { id: true, isRead: true },
     })
-
     if (!existing) {
       return sendError(res, 'Notification not found', 'NOT_FOUND', 404)
     }
-
     if (!existing.isRead) {
       await prisma.notification.update({
         where: { id: existing.id },
         data: { isRead: true, readAt: new Date() },
       })
     }
-
     sendSuccess(res, { ok: true })
   }),
 )
-
 export default router

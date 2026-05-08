@@ -208,7 +208,7 @@
   display:         flex;
   align-items:     center;
   justify-content: center;
-  background:      linear-gradient(135deg, var(--color-primary-100, #dbeafe), var(--color-primary-50, #eff6ff));
+  background:      linear-gradient(135deg, var(--color-primary-100), var(--color-primary-50));
 }
 
 .pos-product-card__initial {
@@ -279,7 +279,7 @@
 }
 
 .skeleton-box {
-  background:      linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background:      linear-gradient(90deg, var(--color-gray-100) 25%, var(--color-gray-200) 50%, var(--color-gray-100) 75%);
   background-size: 200% 100%;
   animation:       skeleton-shimmer 1.4s infinite;
   border-radius:   4px;

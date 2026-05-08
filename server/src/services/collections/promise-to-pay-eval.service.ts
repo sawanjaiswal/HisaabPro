@@ -236,15 +236,10 @@ export async function evaluateOpenPtps(
           },
         })
       })
-
       logger.info('ptp.evaluated', { ptpId: ptp.id, newStatus, businessId })
       if (!isKept) void notifyPtpBroken({ businessId, ptpId: ptp.id, amountPaise: ptp.amountPaise, promiseDate: ptp.promiseDate })
     } catch (e) {
-      logger.error('ptp.evaluate_error', {
-        ptpId: ptp.id,
-        businessId,
-        error: e instanceof Error ? e.message : String(e),
-      })
+      logger.error('ptp.evaluate_error', { ptpId: ptp.id, businessId, error: e instanceof Error ? e.message : String(e) })
     }
   }
 }

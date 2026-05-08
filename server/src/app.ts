@@ -1,6 +1,7 @@
 /**
  * Express app factory — separated from index.ts for testability.
  * Tests import createApp() directly without starting the server.
+ * Feature route mounts live in app.routes.ts.
  */
 
 import express from 'express'
@@ -18,73 +19,13 @@ import { fieldFilter } from './middleware/field-filter.js'
 import { sseAutoEmit } from './middleware/sse-emit.js'
 import { conflictDetection } from './middleware/conflict-detection.js'
 import { prisma } from './lib/prisma.js'
-import authRoutes from './routes/auth/index.js'
-import feedbackRoutes from './routes/feedback.js'
-import backupRoutes from './routes/backup.js'
-import partyRoutes from './routes/party.js'
-import partyGroupRoutes from './routes/party-groups.js'
-import customFieldRoutes from './routes/custom-fields.js'
-import productRoutes from './routes/products/index.js'
-import categoryRoutes from './routes/categories.js'
-import unitRoutes from './routes/units.js'
-import inventorySettingsRoutes from './routes/inventory-settings.js'
-import documentRoutes from './routes/documents/index.js'
-import documentSettingsRoutes from './routes/document-settings.js'
-import paymentRoutes from './routes/payments.js'
-import dashboardRoutes from './routes/dashboard.js'
-import reportRoutes from './routes/reports.js'
-import { businessSettingsRouter, userSettingsRouter, permissionsRouter } from './routes/settings.js'
-import referralRoutes from './routes/referral.js'
-import taxCategoryRoutes from './routes/tax-categories.js'
-import hsnRoutes from './routes/hsn.js'
-import gstinRoutes from './routes/gstin.js'
-import taxReportRoutes from './routes/tax-reports.js'
-import gstReturnRoutes from './routes/gst-returns.js'
-import gstSettingsRoutes from './routes/gst-settings.route.js'
-import gstBackfillRoutes from './routes/gst-backfill.route.js'
-import tdsTcsRoutes from './routes/tds-tcs.js'
-import einvoiceRoutes from './routes/einvoice.js'
-import ewaybillRoutes from './routes/ewaybill.js'
-import recurringRoutes from './routes/recurring/recurring.route.js'
-import currencyRoutes from './routes/currency.js'
-import reconciliationRoutes from './routes/reconciliation.js'
-import accountingRoutes from './routes/accounting.js'
-import bankRoutes from './routes/bank.js'
-import expenseRoutes from './routes/expenses.js'
-import otherIncomeRoutes from './routes/other-income.js'
-import cashEntriesRoutes from './routes/cash-entries.route.js'; import chequeRoutes from './routes/cheques.js'
-import financialReportRoutes from './routes/financial-reports.js'
-import loanRoutes from './routes/loans.js'
-import fyClosureRoutes from './routes/fy-closure.js'
-import couponRoutes from './routes/coupons.js'
-import biometricRoutes from './routes/biometric.js'
-import stockAlertRoutes from './routes/stock-alerts.js'
-import stockVerificationRoutes from './routes/stock-verification.js'
-import batchRoutes from './routes/batches.js'
-import godownRoutes from './routes/godowns.js'
-import serialNumberRoutes from './routes/serial-numbers.js'
-import razorpayRoutes, { razorpayWebhookRouter } from './routes/razorpay.js'
+import { razorpayWebhookRouter } from './routes/razorpay.js'
 import notificationsWebhookRouter from './routes/webhooks/index.js'
-import adminRoutes from './routes/admin/index.js'
-import recycleBinRoutes from './routes/recycle-bin.js'
-import eventRoutes from './routes/events.js'
-import collectionsAgingRoutes from './routes/collections/aging.route.js'
-import collectionsPtpRoutes from './routes/collections/ptp.route.js'
-import collectionsStatementRoutes from './routes/collections/statement.route.js'
-import paymentLinksRoutes from './routes/payments/payment-links.route.js'
-import remindersRoute from './routes/payments/reminders.route.js'
-import sessionRoutes from './routes/sessions.js'
-import exportRoutes from './routes/export.js'
-import { subscriptionRouter } from './routes/subscription.js'
-import jobRoutes from './routes/jobs.js'
-import customOrderRoutes from './routes/custom-orders.js'
-import notificationsRoutes from './routes/notifications.js'
-import posRoutes from './routes/pos.js'
 import { initCronJobs } from './lib/cron-scheduler.js'
+import { mountFeatureRoutes } from './app.routes.js'
 
 export function createApp() {
   const app = express()
-
   app.set('trust proxy', 1)
 
   app.use(helmet({
@@ -116,11 +57,9 @@ export function createApp() {
       'http://localhost:3001',
       'http://localhost:5173',
     ]),
-    // Production web origins
     'https://hisaabpro.in',
     'https://app.hisaabpro.in',
     'https://admin.hisaabpro.in',
-    // Capacitor Android uses https://localhost (androidScheme: 'https')
     'https://localhost',
     'capacitor://localhost',
   ]
@@ -146,9 +85,9 @@ export function createApp() {
   app.use(apiRateLimiter)
   app.use(csrfProtection)
   app.use(sanitizeInput)
-  app.use(fieldFilter) // Strip sensitive fields based on role permissions
-  app.use(sseAutoEmit) // Auto-broadcast SSE events for all mutations
-  app.use(conflictDetection) // Offline conflict detection on PUT/PATCH
+  app.use(fieldFilter)
+  app.use(sseAutoEmit)
+  app.use(conflictDetection)
 
   app.get('/api/health', (_req, res) => {
     sendSuccess(res, { status: 'ok', timestamp: new Date().toISOString() })
@@ -157,8 +96,6 @@ export function createApp() {
   app.get('/api/health/detailed', async (_req, res) => {
     const mem = process.memoryUsage()
     const uptime = process.uptime()
-
-    // DB latency check
     let dbLatencyMs = -1
     let dbStatus: 'ok' | 'slow' | 'down' = 'down'
     try {
@@ -169,7 +106,6 @@ export function createApp() {
     } catch {
       dbStatus = 'down'
     }
-
     sendSuccess(res, {
       status: dbStatus === 'down' ? 'degraded' : 'ok',
       timestamp: new Date().toISOString(),
@@ -184,73 +120,8 @@ export function createApp() {
     })
   })
 
-  app.use('/api/auth', authRoutes)
-  app.use('/api/auth/biometric', biometricRoutes)
-  app.use('/api/feedback', feedbackRoutes)
-  app.use('/api/backup', backupRoutes)
-  app.use('/api/parties', partyRoutes)
-  app.use('/api/party-groups', partyGroupRoutes)
-  app.use('/api/custom-fields', customFieldRoutes)
-  app.use('/api/products', productRoutes)
-  app.use('/api/categories', categoryRoutes)
-  app.use('/api/units', unitRoutes)
-  app.use('/api/settings/inventory', inventorySettingsRoutes)
-  app.use('/api/documents', documentRoutes)
-  app.use('/api/jobs', jobRoutes)
-  app.use('/api/custom-orders', customOrderRoutes)
-  app.use('/api/settings/documents', documentSettingsRoutes)
-  app.use('/api/payments/payment-links', paymentLinksRoutes)
-  app.use('/api/payments/reminders', remindersRoute)
-  app.use('/api/payments', paymentRoutes)
-  app.use('/api/dashboard', dashboardRoutes)
-  app.use('/api/reports', reportRoutes)
-  app.use('/api/businesses', businessSettingsRouter)
-  app.use('/api/businesses', subscriptionRouter)
-  app.use('/api/users', userSettingsRouter)
-  app.use('/api/permissions', permissionsRouter)
-  app.use('/api/referral', referralRoutes)
-  app.use('/api/tax-categories', taxCategoryRoutes)
-  app.use('/api/hsn', hsnRoutes)
-  app.use('/api/gstin', gstinRoutes)
-  app.use('/api/reports', taxReportRoutes)
-  app.use('/api/gst/settings', gstSettingsRoutes)
-  app.use('/api/gst/returns', gstReturnRoutes)
-  app.use('/api/gst/backfill', gstBackfillRoutes)
-  app.use('/api/gst/reconciliation', reconciliationRoutes)
-  app.use('/api/reports', tdsTcsRoutes)
-  app.use('/api/einvoice', einvoiceRoutes)
-  app.use('/api/ewaybill', ewaybillRoutes)
-  app.use('/api/recurring', recurringRoutes)
-  app.use('/api/currency', currencyRoutes)
-  app.use('/api/coupons', couponRoutes)
-  app.use('/api/stock-alerts', stockAlertRoutes)
-  app.use('/api/stock-verification', stockVerificationRoutes)
-  app.use('/api/batches', batchRoutes)
-  app.use('/api/products', batchRoutes)
-  app.use('/api/godowns', godownRoutes)
-  app.use('/api/serial-numbers', serialNumberRoutes)
-  app.use('/api/razorpay', razorpayRoutes)
-  app.use('/api/accounting', accountingRoutes)
-  app.use('/api/bank-accounts', bankRoutes)
-  app.use('/api/cash-entries', cashEntriesRoutes)
-  app.use('/api/expenses', expenseRoutes)
-  app.use('/api/other-income', otherIncomeRoutes)
-  app.use('/api/cheques', chequeRoutes)
-  app.use('/api/reports/financial', financialReportRoutes)
-  app.use('/api/loans', loanRoutes)
-  app.use('/api/fy-closure', fyClosureRoutes)
-  app.use('/api/admin', adminRoutes)
-  app.use('/api/recycle-bin', recycleBinRoutes)
-  app.use('/api/events', eventRoutes)
-  app.use('/api/sessions', sessionRoutes)
-  app.use('/api/export', exportRoutes)
-  app.use('/api/collections/aging', collectionsAgingRoutes)
-  app.use('/api/collections/ptp', collectionsPtpRoutes)
-  app.use('/api/collections/statement', collectionsStatementRoutes)
-  app.use('/api/notifications', notificationsRoutes)
-  app.use('/api/pos', posRoutes)
+  mountFeatureRoutes(app)
 
-  // Register cron jobs (no-op in test env via NODE_ENV check inside)
   if (process.env.NODE_ENV !== 'test') {
     initCronJobs()
   }

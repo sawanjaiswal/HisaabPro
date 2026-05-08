@@ -233,18 +233,13 @@ export async function updateDocument(
       }
     }
 
-    return tx.document.findUniqueOrThrow({
-      where: { id: documentId },
-      select: DOCUMENT_DETAIL_SELECT,
-    })
+    return tx.document.findUniqueOrThrow({ where: { id: documentId }, select: DOCUMENT_DETAIL_SELECT })
   })
-
   const affectsStock = STOCK_DECREASE_TYPES.has(existing.type) || STOCK_INCREASE_TYPES.has(existing.type)
   if (affectsStock) {
     const oldProductIds = existing.lineItems.map(li => li.productId)
     const newProductIds = data.lineItems ? data.lineItems.map(li => li.productId) : []
     scheduleAlertChecks(businessId, [...oldProductIds, ...newProductIds])
   }
-
   return result
 }

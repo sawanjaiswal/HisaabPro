@@ -70,6 +70,8 @@ const LENGTH_EXEMPT_RE = [
   /\/features\/landing\//,
   /\/components\/ui\/(accordion|bento-grid|cta-section|feature|hero-|testimonial|pricing-|footer-|social-proof|invoice-templates|saa-s-template|scaled-mockup|section-with-mockup|sticky-mobile-cta|cybernetic|database-rest-api|radial-orbital|carousel|gallery-section|before-after|separator|magicui)/,
   /\/lib\/playstore-mock\./, // in-memory mock dataset for closed-testing builds
+  /\/notifications\/notification-templates\.data\./, // flat title/body table per event×locale
+  /\/settings\/permissions-data\./, // flat permission catalog
 ]
 
 for (const file of allFiles) {
