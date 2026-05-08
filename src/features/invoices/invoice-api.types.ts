@@ -219,6 +219,10 @@ export interface DocumentSettings {
   transactionLockDays: number
   recycleBinRetentionDays: number
   defaultAdditionalCharges: DocumentDefaultAdditionalCharge[]
+  /** Block sales where qty < product.moq — returns MOQ_VIOLATION error on backend */
+  enforceMoq: boolean
+  /** Show 40×40 product thumbnail in each invoice line item row */
+  showLineItemImages: boolean
 }
 
 // ─── Terms & Conditions Template ─────────────────────────────────────────────

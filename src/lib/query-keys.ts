@@ -15,6 +15,7 @@ export const queryKeys = {
     groups: () => ['parties', 'groups'] as const,
     customFields: () => ['parties', 'custom-fields'] as const,
     transactions: (id: string, filters: Filters) => ['parties', 'transactions', id, filters] as const,
+    ledger: (id: string, params: Filters) => ['parties', 'ledger', id, params] as const,
   },
   products: {
     all: () => ['products'] as const,
@@ -122,6 +123,7 @@ export const queryKeys = {
     app: () => ['settings', 'app'] as const,
     currency: () => ['settings', 'currency'] as const,
     transactionControls: () => ['settings', 'transaction-controls'] as const,
+    documents: () => ['settings', 'documents'] as const,
   },
   tax: {
     all: () => ['tax'] as const,

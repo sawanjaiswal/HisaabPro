@@ -113,6 +113,8 @@ export interface ProductDetail extends ProductSummary {
   hsnCode: string | null    // HSN for goods  (Phase 2 GST)
   sacCode: string | null    // SAC for services (Phase 2 GST)
   stockValidation: StockValidationMode
+  /** Ordered image URLs — first is primary (shown as thumbnail) */
+  images: string[]
   customFields: CustomFieldValue[]
   recentMovements: StockMovement[]  // last 10
   updatedAt: string

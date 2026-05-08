@@ -1,4 +1,4 @@
-/** Create Product — Tax category, HSN/SAC, barcode, description, status section */
+/** Create Product — Tax category, HSN/SAC, barcode, images, description, status section */
 
 import { Input } from '@/components/ui/Input'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -6,7 +6,9 @@ import type { ProductFormData, ProductStatus } from '../product.types'
 import { PRODUCT_STATUS_LABELS, HSN_CODE_MAX, SAC_CODE_MAX, PRODUCT_DESCRIPTION_MAX } from '../product.constants'
 import type { TaxCategory } from '@/lib/types/tax.types'
 import { BarcodeField } from './BarcodeField'
+import { ImageUploader } from './ImageUploader'
 import '../barcode.css'
+import './image-uploader.css'
 
 interface ProductFormExtraProps {
   form: ProductFormData
@@ -35,6 +37,15 @@ export function ProductFormExtra({ form, errors, onUpdate, taxCategories = [] }:
           </select>
         </div>
       )}
+
+      <div className="input-group">
+        <span className="input-label">{t.productImagesLabel}</span>
+        <ImageUploader
+          value={form.pendingImages ?? []}
+          onChange={(imgs) => onUpdate('pendingImages', imgs)}
+          max={5}
+        />
+      </div>
 
       <BarcodeField form={form} errors={errors} onUpdate={onUpdate} />
 

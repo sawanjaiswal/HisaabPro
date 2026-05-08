@@ -86,6 +86,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         >
           {isSelected && <Check size={16} />}
         </div>
+      ) : product.imageUrl ? (
+        <img
+          src={product.imageUrl}
+          alt={product.name}
+          className="product-card-thumb"
+          aria-hidden="true"
+        />
       ) : (
         <PartyAvatar name={product.name} size="sm" className="txn-avatar" />
       )}
@@ -95,7 +102,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <span className="txn-name">{product.name}</span>
           <span className={badgeClass} aria-label={`${t.stockStatusPrefix}: ${badgeLabel}`}>{badgeLabel}</span>
         </div>
-        <span className="txn-date">{product.sku} · {product.category.name}</span>
+        <span className="txn-date">
+          {product.sku} · {product.category.name}
+          {(product.moq ?? 0) > 0 && (
+            <span className="product-moq-badge" aria-label={`${t.moqLabel}: ${product.moq}`}>
+              {' · '}{t.moqBadgePrefix} {product.moq}
+            </span>
+          )}
+        </span>
       </div>
 
       <div className="product-card-right">

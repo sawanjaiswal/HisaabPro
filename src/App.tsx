@@ -40,7 +40,7 @@ import {
   StockVerifications, VerificationDetail,
   Serials, CreateSerial, BulkCreateSerial, SerialLookup, Pos,
   PosMain, PosHistory, PosSaleDetail,
-  Jobs, JobNew, JobDetail, JobEdit, InventorySettings,
+  Jobs, JobNew, JobDetail, JobEdit, InventorySettings, DocumentSettings,
   CustomOrders, CustomOrderNew, CustomOrderDetail, CustomOrderEdit,
   BackfillWizard,
   Gstr1Page,
@@ -132,6 +132,7 @@ export function App() {
         <Route path={ROUTES.SETTINGS_CURRENCY} element={<PageRoute><ProtectedRoute><CurrencySettings /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_UNITS} element={<PageRoute><ProtectedRoute><Units /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_INVENTORY} element={<PageRoute><ProtectedRoute><InventorySettings /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_DOCUMENTS} element={<PageRoute><ProtectedRoute><DocumentSettings /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.RECURRING} element={<PageRoute><ProtectedRoute><PlanGate feature="recurringInvoices" featureLabel="Recurring Invoices"><RecurringList /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.RECURRING_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="recurringInvoices" featureLabel="Recurring Invoices"><RecurringForm /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.RECURRING_EDIT} element={<PageRoute><ProtectedRoute><PlanGate feature="recurringInvoices" featureLabel="Recurring Invoices"><RecurringForm /></PlanGate></ProtectedRoute></PageRoute>} />

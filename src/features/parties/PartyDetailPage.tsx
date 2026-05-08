@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Pencil, Trash2, Users, FileText, Wallet, MessageSquare, Share2 } from 'lucide-react'
+import { Pencil, Trash2, Users } from 'lucide-react'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
 import { AppShell } from '@/components/layout/AppShell'
@@ -23,10 +23,12 @@ import { ShareLedgerSheet } from '@/features/shared-ledger/components/ShareLedge
 import { useShareLedger } from '@/features/shared-ledger/useShareLedger'
 import { CommitmentsSection } from '@/features/collections/CommitmentsSection'
 import { StatementPDFPreview } from '@/features/collections/StatementPDFPreview'
+import { PartyLedgerTab } from './ledger/PartyLedgerTab'
+import { PartyQuickActions } from './components/PartyQuickActions'
 import '@/features/shared-ledger/shared-ledger.css'
 import './party-detail-header.css'
 
-type DetailTab = 'overview' | 'transactions' | 'addresses'
+type DetailTab = 'overview' | 'transactions' | 'addresses' | 'ledger'
 
 export default function PartyDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -38,6 +40,7 @@ export default function PartyDetailPage() {
     { id: 'overview', label: t.overview },
     { id: 'transactions', label: t.transactions },
     { id: 'addresses', label: t.addresses },
+    { id: 'ledger', label: t.ledgerTab },
   ]
 
   const partyId = id ?? ''
@@ -142,40 +145,11 @@ export default function PartyDetailPage() {
               <PartyDetailHeader party={party} />
 
               {/* Quick Actions — like MyBillBook */}
-              <div className="party-quick-actions" role="group" aria-label={t.quickActions}>
-                <button
-                  className="party-quick-action-btn"
-                  onClick={() => navigate(`/invoices/new?partyId=${partyId}`)}
-                  aria-label={t.createInvoiceLabel}
-                >
-                  <FileText size={18} aria-hidden="true" />
-                  <span>{t.invoice}</span>
-                </button>
-                <button
-                  className="party-quick-action-btn"
-                  onClick={() => navigate(`/payments/new?partyId=${partyId}`)}
-                  aria-label={t.recordPaymentLabel}
-                >
-                  <Wallet size={18} aria-hidden="true" />
-                  <span>{t.paymentWord}</span>
-                </button>
-                <button
-                  className="party-quick-action-btn"
-                  onClick={() => setStmtOpen(true)}
-                  aria-label={t.viewStatementLabel}
-                >
-                  <MessageSquare size={18} aria-hidden="true" />
-                  <span>{t.statement}</span>
-                </button>
-                <button
-                  className="party-quick-action-btn"
-                  onClick={() => setShareOpen(true)}
-                  aria-label={t.shareLedgerLabel}
-                >
-                  <Share2 size={18} aria-hidden="true" />
-                  <span>{t.share}</span>
-                </button>
-              </div>
+              <PartyQuickActions
+                partyId={partyId}
+                onStatement={() => setStmtOpen(true)}
+                onShare={() => setShareOpen(true)}
+              />
 
               {shareOpen && (
                 <ShareLedgerSheet
@@ -228,6 +202,14 @@ export default function PartyDetailPage() {
 
                 {activeTab === 'addresses' && (
                   <PartyAddressesTab addresses={party.addresses} />
+                )}
+
+                {activeTab === 'ledger' && (
+                  <PartyLedgerTab
+                    partyId={partyId}
+                    partyName={party.name}
+                    businessName={party.companyName ?? party.name}
+                  />
                 )}
               </div>
             </div>

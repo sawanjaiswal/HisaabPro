@@ -58,6 +58,27 @@ export function ProductFormStock({ form, errors, onUpdate }: ProductFormStockPro
       </div>
 
       <div className="input-group">
+        <label htmlFor="product-moq" className="input-label">
+          {t.moqLabel}
+          <span className="text-optional"> ({t.moqHint})</span>
+        </label>
+        <input
+          id="product-moq"
+          className={`input${errors.moq ? ' input-error-border' : ''}`}
+          type="number"
+          min="0"
+          step="1"
+          value={form.moq || ''}
+          onChange={(e) => onUpdate('moq', parseInt(e.target.value, 10) || 0)}
+          placeholder="0"
+          aria-label={t.moqLabel}
+          inputMode="numeric"
+        />
+        <p className="input-helper-text">{t.moqHelperText}</p>
+        {errors.moq && <p className="input-error" role="alert">{errors.moq}</p>}
+      </div>
+
+      <div className="input-group">
         <span className="input-label" id="stock-validation-label">{t.stockValidationMode}</span>
         <div className="pill-tabs" role="group" aria-labelledby="stock-validation-label">
           {VALIDATION_MODE_OPTIONS.map((option) => (

@@ -25,5 +25,9 @@ export interface ProductSummary {
   status: ProductStatus
   /** Phase 2 GST — associated tax category */
   taxCategory?: { id: string; name: string; rate: number } | null
+  /** Minimum Order Quantity — 0 means no limit */
+  moq?: number
+  /** Primary image URL (first in images array) */
+  imageUrl?: string | null
   createdAt: string
 }

@@ -28,6 +28,18 @@ export function LibraryItemList({ items, total, hasMore, onSelect, onLoadMore }:
       <div className="library-item-list" role="list" aria-label={t.libraryItems}>
         {items.map((item) => (
           <div key={item.id} className="library-item" role="listitem">
+            {item.imageUrl ? (
+              <img
+                src={item.imageUrl}
+                alt={item.name}
+                className="library-item-thumb"
+                aria-hidden="true"
+              />
+            ) : (
+              <div className="library-item-thumb library-item-thumb--placeholder" aria-hidden="true">
+                {item.name.charAt(0).toUpperCase()}
+              </div>
+            )}
             <div className="library-item-info">
               <span className="library-item-name">{item.name}</span>
               <span className="library-item-meta">

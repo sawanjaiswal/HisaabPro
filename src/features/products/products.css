@@ -137,6 +137,23 @@
   }
 }
 
+/* ─── Product card thumbnail ────────────────────────────────── */
+
+.product-card-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--color-gray-100);
+}
+
+/* MOQ badge inline in subtitle */
+.product-moq-badge {
+  color: var(--color-primary-400);
+  font-weight: 500;
+}
+
 /* ─── Dark Theme ────────────────────────────────────────────── */
 
 [data-theme="dark"] .product-list-item .txn-amount {

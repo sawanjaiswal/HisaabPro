@@ -8,6 +8,8 @@ export interface LibraryItem {
   unit?: string
   /** Suggested retail rate in paise (0 = no suggestion) */
   suggestedRate: number
+  /** Primary image URL — optional */
+  imageUrl?: string | null
 }
 
 export interface LibraryCategory {

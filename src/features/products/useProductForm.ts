@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/useToast'
 import { queryKeys } from '@/lib/query-keys'
 import { ROUTES } from '@/config/routes.config'
 import { createProduct, updateProduct } from './product.service'
+import { uploadProductImages } from './product-images.service'
 import { validateBarcode } from './barcode.utils'
 
 import type { ProductFormData, ProductStatus, StockValidationMode } from './product.types'
@@ -32,6 +33,7 @@ const INITIAL_FORM: ProductFormData = {
   hsnCode: '',
   description: '',
   status: 'ACTIVE',
+  moq: 0,
 }
 
 export interface UseProductFormOptions {
@@ -129,12 +131,21 @@ export function useProductForm(options: UseProductFormOptions = {}): UseProductF
     mutationFn: async () => {
       if (isEditMode && editId) {
         // openingStock and autoGenerateSku cannot be changed after creation
-        const { openingStock: _os, autoGenerateSku: _ag, ...editPayload } = form
+        const { openingStock: _os, autoGenerateSku: _ag, pendingImages, ...editPayload } = form
         await updateProduct(editId, editPayload)
+        // Upload any new images immediately in edit mode
+        if (pendingImages && pendingImages.length > 0) {
+          await uploadProductImages(editId, pendingImages)
+        }
         return { mode: 'edit' as const, editId }
       }
       // Form already stores prices in paise (ProductFormBasic multiplies by 100 on input)
-      await createProduct(form)
+      const { pendingImages, ...createPayload } = form
+      const created = await createProduct(createPayload)
+      // Upload images after product is created (need the id)
+      if (pendingImages && pendingImages.length > 0 && created?.id) {
+        await uploadProductImages(created.id, pendingImages)
+      }
       return { mode: 'create' as const }
     },
     onSuccess: (result) => {

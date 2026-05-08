@@ -42,6 +42,7 @@ export const ROUTES = {
   SETTINGS_STAFF_INVITE: '/settings/staff/invite',
   SETTINGS_SECURITY: '/settings/security',
   SETTINGS_TRANSACTION_CONTROLS: '/settings/transaction-controls',
+  SETTINGS_DOCUMENTS: '/settings/documents',
   SETTINGS_AUDIT_LOG: '/settings/audit-log',
   SETTINGS_SHORTCUTS: '/settings/shortcuts',
   SETTINGS_PIN_SETUP: '/settings/pin-setup',

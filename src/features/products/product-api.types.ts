@@ -92,6 +92,10 @@ export interface ProductFormData {
   taxCategoryId?: string | null
   description?: string
   status: ProductStatus
+  /** Minimum Order Quantity — 0 and undefined are treated identically (no limit) */
+  moq?: number
+  /** Pending local image data URLs — uploaded after product is saved */
+  pendingImages?: string[]
   customFields?: Array<{
     fieldDefId: string
     value: string
