@@ -11,6 +11,7 @@ import {
   getRoundOffSetting, updateOutstanding, getOutstandingDelta, getOutstandingReverseDelta,
 } from './helpers.js'
 import { assertCompositionNoLineTax, assertCompositionNoInterState } from './create-tax-prep.js'
+import { assertMoq, type MoqViolation } from './moq.guard.js'
 
 export async function updateDocument(
   businessId: string,
@@ -18,6 +19,7 @@ export async function updateDocument(
   userId: string,
   data: UpdateDocumentInput
 ) {
+  let moqWarnings: MoqViolation[] = []
   const existing = await prisma.document.findFirst({
     where: { id: documentId, businessId },
     select: {
@@ -46,13 +48,17 @@ export async function updateDocument(
       const productIds = data.lineItems.map(li => li.productId)
       const products = await tx.product.findMany({
         where: { id: { in: productIds }, businessId },
-        select: { id: true, purchasePrice: true, currentStock: true },
+        select: { id: true, name: true, purchasePrice: true, currentStock: true, moq: true },
       })
       const productMap = new Map(products.map(p => [p.id, p]))
 
       for (const li of data.lineItems) {
         if (!productMap.has(li.productId)) throw notFoundError(`Product ${li.productId}`)
       }
+
+      // MOQ check for applicable doc types — honours DocumentSettings.enforceMoq
+      const _s = await tx.documentSettings.findUnique({ where: { businessId }, select: { enforceMoq: true } })
+      moqWarnings = assertMoq(existing.type, data.lineItems.map(li => ({ productId: li.productId, quantity: li.quantity })), productMap, _s?.enforceMoq ?? true)
 
       const taxCategoryIds = data.lineItems
         .map(li => li.taxCategoryId)
@@ -162,11 +168,7 @@ export async function updateDocument(
     if (data.notes !== undefined) updateData.notes = data.notes
     if (data.termsAndConditions !== undefined) updateData.termsAndConditions = data.termsAndConditions
     if (data.includeSignature !== undefined) updateData.includeSignature = data.includeSignature
-    if (data.transportDetails !== undefined) {
-      updateData.vehicleNumber = data.transportDetails?.vehicleNumber || null
-      updateData.driverName = data.transportDetails?.driverName || null
-      updateData.transportNotes = data.transportDetails?.transportNotes || null
-    }
+    if (data.transportDetails !== undefined) { updateData.vehicleNumber = data.transportDetails?.vehicleNumber || null; updateData.driverName = data.transportDetails?.driverName || null; updateData.transportNotes = data.transportDetails?.transportNotes || null }
     if (numberData) {
       updateData.documentNumber = numberData.documentNumber
       updateData.sequenceNumber = numberData.sequenceNumber
@@ -241,5 +243,7 @@ export async function updateDocument(
     const newProductIds = data.lineItems ? data.lineItems.map(li => li.productId) : []
     scheduleAlertChecks(businessId, [...oldProductIds, ...newProductIds])
   }
-  return result
+  const r = result as Record<string, unknown>
+  if (moqWarnings.length === 0) return r
+  return { ...r, warnings: moqWarnings.map(v => ({ code: 'BELOW_MOQ' as const, lineIndex: v.lineIndex, productId: v.productId, productName: v.productName, moq: v.moq, qty: v.qty })) }
 }

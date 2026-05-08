@@ -817,6 +817,7 @@ model Document {
   @@unique([businessId, type, documentNumber])
   @@index([businessId, type, status])
   @@index([businessId, partyId])
+  @@index([businessId, partyId, documentDate]) // ledger window query
   @@index([businessId, documentDate])
   @@index([businessId, isDeleted])
   @@index([permanentDeleteAt])
@@ -977,6 +978,10 @@ model DocumentSettings {
   // GST Phase 2 — new field (migration: 20260505190000_gst_phase_2_fields)
   taxPricingMode String @default("EXCLUSIVE") @db.VarChar(20) // EXCLUSIVE | INCLUSIVE
 
+  // Catalog Enrichment Phase 4 — migration: 20260508120000_catalog_enrichment_settings_and_indexes
+  enforceMoq         Boolean @default(true)  // true = hard block on BELOW_MOQ; false = warning only
+  showLineItemImages Boolean @default(false) // show product thumbnails on invoice line items
+
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 }
 
@@ -1009,6 +1014,7 @@ model Payment {
 
   @@index([businessId, date])
   @@index([businessId, partyId])
+  @@index([businessId, partyId, date]) // ledger window query
   @@index([businessId, type])
   @@index([businessId, mode])
   @@index([businessId, isDeleted])

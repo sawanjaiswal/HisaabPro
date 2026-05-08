@@ -19,6 +19,8 @@ const SKIP_FIELDS = new Set([
   'htmlContent',
   'expression', // cash register arithmetic expressions — contain / * + - ( )
   'deepLinkUrl', // URL fields — validated by Zod .url() + startsWith check; escape() breaks ://
+  'imageUrl',   // may be data:image/...;base64,... — escape() breaks the prefix
+  'images',     // array of image URLs / data URLs — validated by Zod schema per-entry
 ])
 
 /**

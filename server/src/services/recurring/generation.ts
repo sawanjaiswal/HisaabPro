@@ -76,6 +76,8 @@ export async function generateDueInvoices(businessId?: string) {
 
 /** Clone one template document into a real SAVED invoice. Advances nextRunDate. */
 async function generateOneInvoice(schedule: DueSchedule, now: Date) {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error TS2321: Prisma depth limit hit — safe, TEMPLATE_SELECT is Prisma.DocumentSelect
   const template = await prisma.document.findFirst({
     where: { id: schedule.templateDocumentId, businessId: schedule.businessId },
     select: TEMPLATE_SELECT,

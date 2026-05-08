@@ -25,6 +25,7 @@ import { prisma } from '../../lib/prisma.js'
 import logger from '../../lib/logger.js'
 import { notFoundError } from '../../lib/errors.js'
 import type { PosServiceCtx, PosSaleDTO } from './pos.types.js'
+import { assertMoq } from '../document/moq.guard.js'
 import { validateCreatePosSale } from './pos.validators.js'
 import { checkIdempotency, storeIdempotency } from './pos-checkout.idempotency.js'
 import { priceLines, sumPricedLines } from './pos-checkout.pricing.js'
@@ -83,6 +84,25 @@ export async function createPosSale(
     // ── 3. Reprice lines (server-authoritative) ────────────────────────
     const pricedLines = await priceLines(tx, businessId, input.items)
     const { subtotal, totalDiscount } = sumPricedLines(pricedLines)
+
+    // ── 3b. MOQ guard for POS_SALE ─────────────────────────────────────
+    const posSettings = await tx.documentSettings.findUnique({
+      where: { businessId },
+      select: { enforceMoq: true },
+    })
+    const enforceMoq = posSettings?.enforceMoq ?? true
+    // Build productMap for assertMoq (moq comes from pricedLines product data via tx)
+    const posProductRows = await tx.product.findMany({
+      where: { id: { in: input.items.map(i => i.productId) }, businessId },
+      select: { id: true, name: true, moq: true },
+    })
+    const posMoqMap = new Map(posProductRows.map(p => [p.id, p]))
+    assertMoq(
+      POS_DOCUMENT_TYPE,
+      input.items.map(i => ({ productId: i.productId, quantity: i.quantity })),
+      posMoqMap,
+      enforceMoq,
+    )
 
     // ── 4. Resolve party ───────────────────────────────────────────────
     let partyGstin: string | null = null

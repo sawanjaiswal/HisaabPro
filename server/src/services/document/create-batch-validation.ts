@@ -1,7 +1,8 @@
 /** Batch / line-item validation helpers for createDocument */
 import { prisma } from '../../lib/prisma.js'
-import { notFoundError, validationError } from '../../lib/errors.js'
+import { notFoundError } from '../../lib/errors.js'
 import type { CreateDocumentInput } from '../../schemas/document.schemas.js'
+import { assertMoq, type MoqViolation } from './moq.guard.js'
 
 export type ProductRow = {
   id: string
@@ -12,15 +13,19 @@ export type ProductRow = {
 }
 
 /**
- * Fetches all products referenced by the line items, validates they exist
- * and (for PURCHASE_ORDER) that each quantity meets the product's MOQ.
+ * Fetches all products referenced by the line items, validates they exist,
+ * and enforces MOQ for applicable document types (SALE_INVOICE, ESTIMATE,
+ * SALE_ORDER, DELIVERY_CHALLAN, PURCHASE_ORDER, POS_SALE).
  *
- * Returns the product array and a Map keyed by product id.
+ * When DocumentSettings.enforceMoq=true → throws 400 BELOW_MOQ on violations.
+ * When DocumentSettings.enforceMoq=false → returns violations as warnings.
+ *
+ * Returns the product array, productMap, and any MOQ warnings.
  */
 export async function validateLineItemProducts(
   businessId: string,
   data: Pick<CreateDocumentInput, 'type' | 'lineItems'>,
-): Promise<{ products: ProductRow[]; productMap: Map<string, ProductRow> }> {
+): Promise<{ products: ProductRow[]; productMap: Map<string, ProductRow>; moqWarnings: MoqViolation[] }> {
   const productIds = data.lineItems.map(li => li.productId)
   const products = await prisma.product.findMany({
     where: { id: { in: productIds }, businessId },
@@ -32,16 +37,19 @@ export async function validateLineItemProducts(
     if (!productMap.has(li.productId)) throw notFoundError(`Product ${li.productId}`)
   }
 
-  if (data.type === 'PURCHASE_ORDER') {
-    for (const li of data.lineItems) {
-      const product = productMap.get(li.productId)!
-      if (product.moq !== null && product.moq !== undefined && li.quantity < product.moq) {
-        throw validationError(
-          `Quantity for "${product.name}" is below minimum order quantity of ${product.moq}`
-        )
-      }
-    }
-  }
+  // Resolve enforceMoq setting (default true if settings row absent)
+  const settings = await prisma.documentSettings.findUnique({
+    where: { businessId },
+    select: { enforceMoq: true },
+  })
+  const enforceMoq = settings?.enforceMoq ?? true
 
-  return { products, productMap }
+  const moqWarnings = assertMoq(
+    data.type,
+    data.lineItems.map(li => ({ productId: li.productId, quantity: li.quantity })),
+    productMap,
+    enforceMoq,
+  )
+
+  return { products, productMap, moqWarnings }
 }

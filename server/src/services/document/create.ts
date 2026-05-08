@@ -45,7 +45,7 @@ export async function createDocument(
     }
   }
 
-  const { products, productMap } = await validateLineItemProducts(businessId, data)
+  const { products, productMap, moqWarnings } = await validateLineItemProducts(businessId, data)
 
   const taxCategoryIds = data.lineItems
     .map(li => li.taxCategoryId)
@@ -238,6 +238,8 @@ export async function createDocument(
   // Append transient compositionLiability (1%/5%/6% on grandTotal) — not persisted
   const compositionInfo = getCompositionInvoiceInfo(isComposite, 'default', result.grandTotal)
   const baseResult = compositionInfo ? { ...result, compositionLiability: compositionInfo.compositionTax } : result
-  if (saleStockWarnings.length > 0) return { ...baseResult, warnings: saleStockWarnings }
+  const moqW = moqWarnings.map(v => ({ code: 'BELOW_MOQ' as const, lineIndex: v.lineIndex, productId: v.productId, productName: v.productName, moq: v.moq, qty: v.qty }))
+  const allWarnings = [...saleStockWarnings, ...moqW]
+  if (allWarnings.length > 0) return { ...baseResult, warnings: allWarnings }
   return baseResult
 }

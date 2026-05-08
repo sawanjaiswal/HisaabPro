@@ -7,7 +7,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
-import { userMutationLimiter } from '../middleware/rate-limit.js'
+import { userMutationLimiter, createRateLimiter } from '../middleware/rate-limit.js'
 import { requireFeature } from '../middleware/subscription-gate.js'
 import { sendSuccess } from '../lib/response.js'
 import {
@@ -21,6 +21,16 @@ import {
 } from '../schemas/party.schemas.js'
 import { requirePermission } from '../middleware/permission.js'
 import * as partyService from '../services/party.service.js'
+import { getPartyLedger } from '../services/party/ledger.service.js'
+import { ledgerQuerySchema } from '../services/party/ledger.types.js'
+
+// 30 req/min per user for ledger (read-heavy, can be intensive)
+const ledgerRateLimiter = createRateLimiter({
+  windowMs: 60_000,
+  max: 30,
+  message: 'Too many ledger requests. Please slow down.',
+  keyFn: (req) => `rl:ledger:${req.user?.userId ?? req.ip ?? 'unknown'}`,
+})
 
 const router = Router()
 
@@ -162,12 +172,29 @@ router.delete(
 )
 
 // ============================================================
-// Ledger Shares (stub — feature not yet implemented)
+// Party Ledger
 // ============================================================
 
-// PartyDetailPage queries this on every load via useShareLedger.
-// Until the share-link feature ships, return an empty list so the page
-// doesn't surface 404s in the network panel.
+/**
+ * GET /api/parties/:partyId/ledger?from=YYYY-MM-DD&to=YYYY-MM-DD
+ * Returns a running-balance ledger for a party over the given date window.
+ * Cursor-based pagination (50 rows per page by default, max 200).
+ */
+router.get(
+  '/:partyId/ledger',
+  requirePermission('parties.read'),
+  ledgerRateLimiter,
+  asyncHandler(async (req, res) => {
+    const businessId = req.user!.businessId
+    const partyId = String(req.params.partyId)
+    const query = ledgerQuerySchema.parse(req.query)
+    const data = await getPartyLedger(businessId, partyId, query)
+    sendSuccess(res, data)
+  })
+)
+
+// Ledger shares stub — kept for backward compatibility with PartyDetailPage.
+// Returns an empty list (share-link feature is a separate scope).
 router.get(
   '/:partyId/ledger/shares',
   asyncHandler(async (_req, res) => {

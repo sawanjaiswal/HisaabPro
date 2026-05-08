@@ -182,6 +182,9 @@ export const updateDocumentSettingsSchema = z.object({
   autoShareOnSave: z.boolean().optional(),
   autoShareChannel: z.enum(SHARE_CHANNELS).optional(),
   autoShareFormat: z.enum(EXPORT_FORMATS).optional(),
+  // Catalog Enrichment Phase 4
+  enforceMoq: z.boolean().optional(),
+  showLineItemImages: z.boolean().optional(),
 })
 
 // === Terms & Conditions Template ===

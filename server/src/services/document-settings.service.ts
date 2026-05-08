@@ -30,6 +30,8 @@ export async function getDocumentSettings(businessId: string) {
     autoShareOnSave: false,
     autoShareChannel: 'WHATSAPP',
     autoShareFormat: 'PDF',
+    enforceMoq: true,
+    showLineItemImages: false,
   }
 }
 
