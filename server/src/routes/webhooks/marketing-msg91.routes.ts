@@ -67,6 +67,8 @@ router.post(
     }
 
     const authHeader = (req.headers['authorization'] ?? '') as string
+    // MSG91 sends token directly or with 'Bearer ' prefix — normalise
+    const incomingToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader
     const rawBody = req.body as Buffer
 
     if (!Buffer.isBuffer(rawBody) || rawBody.length === 0) {
@@ -74,7 +76,7 @@ router.post(
       return
     }
 
-    if (!authHeader || !verifyMsg91Token(authHeader, expectedToken)) {
+    if (!incomingToken || !verifyMsg91Token(incomingToken, expectedToken)) {
       logger.warn('webhook.marketing.msg91.sig_invalid', { provider: 'msg91', ip, ts: new Date().toISOString() })
       sendError(res, 'Invalid signature', 'WEBHOOK_BAD_SIGNATURE', 401)
       return
