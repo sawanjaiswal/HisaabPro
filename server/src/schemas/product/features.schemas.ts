@@ -61,6 +61,22 @@ export const quickSaleSchema = z.object({
   partyId: z.string().min(1).optional(), // if absent → walk-in customer
 })
 
+/** Output shape for each item returned by POST /api/products/label-data */
+export const labelItemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  sku: z.string().nullable(),
+  barcode: z.string().nullable(),
+  barcodeFormat: z.string().nullable(),
+  salePrice: z.number().int(),
+  imageUrl: z.string().nullable(),
+  unit: z.string(),
+  category: z.string().nullable(),
+  template: z.string(),
+})
+
+export type LabelItem = z.infer<typeof labelItemSchema>
+
 export type ProductImageInput = z.infer<typeof productImageSchema>
 export type LabelDataInput = z.infer<typeof labelDataSchema>
 export type QuickSaleInput = z.infer<typeof quickSaleSchema>
