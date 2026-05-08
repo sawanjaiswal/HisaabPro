@@ -1,20 +1,22 @@
 /**
- * Notification Engine — Event Catalog (PR3)
+ * Notification Engine — Event Catalog (PR3 + PR5 marketing extension)
  *
  * Exports:
- *   - EVENT_KEYS const object + EventKey union type (18 events)
+ *   - EVENT_KEYS const object + EventKey union type
  *   - EventMeta interface + EVENT_META map (channels, priority, template, optIn)
  *
+ * Marketing events are defined in notification-marketing-events.ts and merged here.
  * No Prisma calls. Static data only.
  */
 
 import type { ChannelType } from './notification-types.js'
+import { MARKETING_EVENT_KEYS, MARKETING_EVENT_META } from './notification-marketing-events.js'
 
 // ---------------------------------------------------------------------------
 // Event key registry
 // ---------------------------------------------------------------------------
 
-export const EVENT_KEYS = {
+const CORE_EVENT_KEYS = {
   INVOICE_CREATED:             'INVOICE_CREATED',
   INVOICE_SHARED:              'INVOICE_SHARED',
   PAYMENT_RECEIVED:            'PAYMENT_RECEIVED',
@@ -34,6 +36,8 @@ export const EVENT_KEYS = {
   SUBSCRIPTION_EXPIRED:        'SUBSCRIPTION_EXPIRED',
   ADMIN_BROADCAST:             'ADMIN_BROADCAST',
 } as const
+
+export const EVENT_KEYS = { ...CORE_EVENT_KEYS, ...MARKETING_EVENT_KEYS } as const
 
 export type EventKey = (typeof EVENT_KEYS)[keyof typeof EVENT_KEYS]
 
@@ -219,4 +223,7 @@ export const EVENT_META: Record<EventKey, EventMeta> = {
     costEstimatePaise: 0,
     requiresEntity: false,
   },
+
+  // Phase 5 — Marketing Communications (defined in notification-marketing-events.ts)
+  ...MARKETING_EVENT_META,
 }
