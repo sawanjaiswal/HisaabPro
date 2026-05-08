@@ -21,6 +21,8 @@ import { conflictDetection } from './middleware/conflict-detection.js'
 import { prisma } from './lib/prisma.js'
 import { razorpayWebhookRouter } from './routes/razorpay.js'
 import notificationsWebhookRouter from './routes/webhooks/index.js'
+import marketingAisensyWebhookRouter from './routes/webhooks/marketing-aisensy.routes.js'
+import marketingMsg91WebhookRouter from './routes/webhooks/marketing-msg91.routes.js'
 import { initCronJobs } from './lib/cron-scheduler.js'
 import { mountFeatureRoutes } from './app.routes.js'
 
@@ -72,11 +74,16 @@ export function createApp() {
   // must be registered BEFORE the global JSON parser so the raw buffer is preserved.
   app.use('/api/webhooks/notifications', notificationsWebhookRouter)
 
+  // Marketing provider webhooks — raw body, no global JSON parser, no CORS
+  app.use('/api/webhooks/marketing/aisensy', marketingAisensyWebhookRouter)
+  app.use('/api/webhooks/marketing/msg91', marketingMsg91WebhookRouter)
+
   // OCR route handles its own parser with 8mb limit; skip global 2mb here.
   // Webhook paths under /api/webhooks/notifications/* use their own raw parsers.
   app.use((req, res, next) => {
     if (req.path === '/api/expenses/ocr') return next()
     if (req.path.startsWith('/api/webhooks/notifications/')) return next()
+    if (req.path.startsWith('/api/webhooks/marketing/')) return next()
     return express.json({ limit: '2mb' })(req, res, next)
   })
   app.use(cookieParser())
