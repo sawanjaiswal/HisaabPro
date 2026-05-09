@@ -135,18 +135,6 @@
   justify-content: center;
 }
 
-.bnav__tab--active .bnav__icon::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: currentColor;
-}
-
 .bnav__label {
   white-space: nowrap;
   text-overflow: ellipsis;
