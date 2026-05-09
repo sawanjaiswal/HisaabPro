@@ -35,7 +35,7 @@ export function ExpiredBatchBanner({ code, onDismiss, onReopenPicker }: ExpiredB
       aria-live="assertive"
       style={{
         borderRadius: 'var(--radius-lg)',
-        border: '1px solid var(--color-danger)',
+        border: '1px solid var(--color-error-500)',
         background: 'var(--color-danger-surface, #fff1f0)',
         padding: 'var(--space-3) var(--space-4)',
         marginBottom: 'var(--space-4)',
@@ -43,8 +43,8 @@ export function ExpiredBatchBanner({ code, onDismiss, onReopenPicker }: ExpiredB
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-2)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-          <AlertTriangle size={16} aria-hidden="true" style={{ color: 'var(--color-danger)', flexShrink: 0 }} />
-          <span style={{ fontWeight: 600, fontSize: 'var(--text-sm)', color: 'var(--color-danger)' }}>
+          <AlertTriangle size={16} aria-hidden="true" style={{ color: 'var(--color-error-500)', flexShrink: 0 }} />
+          <span style={{ fontWeight: 600, fontSize: 'var(--fs-sm)', color: 'var(--color-error-500)' }}>
             {title}
           </span>
         </div>
@@ -57,7 +57,7 @@ export function ExpiredBatchBanner({ code, onDismiss, onReopenPicker }: ExpiredB
           <X size={16} aria-hidden="true" />
         </button>
       </div>
-      <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-danger)', marginTop: 'var(--space-1)', marginBottom: 'var(--space-2)' }}>
+      <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-error-500)', marginTop: 'var(--space-1)', marginBottom: 'var(--space-2)' }}>
         {hint}
       </p>
       {code !== 'ALL_BATCHES_EXPIRED' && (
@@ -65,7 +65,7 @@ export function ExpiredBatchBanner({ code, onDismiss, onReopenPicker }: ExpiredB
           type="button"
           className="btn btn-sm"
           onClick={onReopenPicker}
-          style={{ fontSize: 'var(--text-sm)', minHeight: 36 }}
+          style={{ fontSize: 'var(--fs-sm)', minHeight: 36 }}
         >
           {t.pickAnotherBatch}
         </button>

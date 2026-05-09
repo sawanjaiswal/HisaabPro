@@ -13,6 +13,16 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>
+
+        <!-- Edge-to-edge: required for env(safe-area-inset-bottom) to be
+             non-zero in the WebView when the OS gesture nav / 3-button bar
+             is present. Without these, WebView lays out above the OS chrome
+             and the inset is reported as 0px. -->
+        <item name="android:fitsSystemWindows">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
 

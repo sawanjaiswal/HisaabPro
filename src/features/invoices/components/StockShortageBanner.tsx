@@ -36,7 +36,7 @@ export const StockShortageBanner: React.FC<StockShortageBannerProps> = ({ items,
       aria-live="assertive"
       style={{
         borderRadius: 'var(--radius-lg)',
-        border: '1px solid var(--color-danger)',
+        border: '1px solid var(--color-error-500)',
         background: 'var(--color-danger-surface, #fff1f0)',
         padding: 'var(--space-3) var(--space-4)',
         marginBottom: 'var(--space-4)',
@@ -44,8 +44,8 @@ export const StockShortageBanner: React.FC<StockShortageBannerProps> = ({ items,
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-2)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-          <AlertTriangle size={16} aria-hidden="true" style={{ color: 'var(--color-danger)', flexShrink: 0 }} />
-          <span style={{ fontWeight: 600, fontSize: 'var(--text-sm)', color: 'var(--color-danger)' }}>
+          <AlertTriangle size={16} aria-hidden="true" style={{ color: 'var(--color-error-500)', flexShrink: 0 }} />
+          <span style={{ fontWeight: 600, fontSize: 'var(--fs-sm)', color: 'var(--color-error-500)' }}>
             {t.errStockShortageTitle}
           </span>
         </div>
@@ -58,17 +58,17 @@ export const StockShortageBanner: React.FC<StockShortageBannerProps> = ({ items,
           <X size={16} aria-hidden="true" />
         </button>
       </div>
-      <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-danger)', marginTop: 'var(--space-1)', marginBottom: 'var(--space-2)' }}>
+      <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-error-500)', marginTop: 'var(--space-1)', marginBottom: 'var(--space-2)' }}>
         {headline}
       </p>
-      <ul style={{ margin: 0, paddingLeft: 'var(--space-4)', fontSize: 'var(--text-sm)', color: 'var(--color-text-primary)' }} aria-label={t.errStockShortageTitle}>
+      <ul style={{ margin: 0, paddingLeft: 'var(--space-4)', fontSize: 'var(--fs-sm)', color: 'var(--color-text-primary)' }} aria-label={t.errStockShortageTitle}>
         {items.map((item) => (
           <li key={item.productId} style={{ marginBottom: 'var(--space-1)' }}>
             {formatDetail(t, item)}
           </li>
         ))}
       </ul>
-      <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginTop: 'var(--space-2)' }}>
+      <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)', marginTop: 'var(--space-2)' }}>
         {t.errStockShortageHint}
       </p>
     </div>

@@ -115,7 +115,7 @@ export default function StockAlertsPage() {
     <AppShell>
       <Header title={t.stockAlertsTitle} backTo={ROUTES.PRODUCTS} />
 
-      <PageContainer className="space-y-4">
+      <PageContainer className="space-y-6">
         {status === 'pending' && (
           <div className="space-y-3" aria-busy="true">
             {[1, 2, 3].map((i) => (
@@ -148,7 +148,7 @@ export default function StockAlertsPage() {
         {/* BAT-05: Expiry alerts section */}
         {expiryStatus === 'success' && expiryData && expiryData.alerts.length > 0 && (
           <>
-            <h2 style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--color-text-muted)', margin: 0, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+            <h2 style={{ fontSize: 'var(--fs-sm)', fontWeight: 700, color: 'var(--color-text-muted)', margin: 0, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
               {t.expiryAlertsTitle}
             </h2>
             <div role="list" className="space-y-3" aria-label={t.expiryAlertsTitle}>
@@ -164,7 +164,7 @@ export default function StockAlertsPage() {
             <div role="status" aria-live="polite" className="sr-only">
               {data.total} {t.stockAlertsHeading}
             </div>
-            <h2 style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--color-text-muted)', margin: 0, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+            <h2 style={{ fontSize: 'var(--fs-sm)', fontWeight: 700, color: 'var(--color-text-muted)', margin: 0, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
               {t.stockAlertsHeading}
             </h2>
             <div role="list" className="space-y-3" aria-label={t.stockAlertsTitle}>
@@ -186,40 +186,40 @@ export default function StockAlertsPage() {
                         <AlertTriangle
                           size={16}
                           aria-hidden="true"
-                          style={{ color: alert.type === 'OUT_OF_STOCK' ? 'var(--color-danger)' : 'var(--color-warning)', flexShrink: 0 }}
+                          style={{ color: alert.type === 'OUT_OF_STOCK' ? 'var(--color-error-500)' : 'var(--color-warning)', flexShrink: 0 }}
                         />
-                        <span style={{ fontWeight: 600, fontSize: 'var(--text-base)', color: 'var(--color-text-primary)' }}>
+                        <span style={{ fontWeight: 600, fontSize: 'var(--fs-base)', color: 'var(--color-text-primary)' }}>
                           {alert.product.name}
                         </span>
                         <span
                           className={`badge ${alert.type === 'OUT_OF_STOCK' ? 'badge-danger' : 'badge-warning'}`}
-                          style={{ fontSize: 'var(--text-xs)', padding: '2px 6px', borderRadius: 'var(--radius-full)' }}
+                          style={{ fontSize: 'var(--fs-xs)', padding: '2px 6px', borderRadius: 'var(--radius-full)' }}
                         >
                           {alert.type === 'OUT_OF_STOCK' ? t.outOfStockPill : t.lowStockPill}
                         </span>
                       </div>
                       <div style={{ marginTop: 'var(--space-2)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-2)' }}>
                         <div>
-                          <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>{t.alertCurrentStock}</div>
-                          <div style={{ fontSize: 'var(--text-sm)', fontWeight: 500, color: 'var(--color-danger)' }}>
+                          <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)' }}>{t.alertCurrentStock}</div>
+                          <div style={{ fontSize: 'var(--fs-sm)', fontWeight: 500, color: 'var(--color-error-500)' }}>
                             {alert.product.currentStock} {alert.product.unit.symbol}
                           </div>
                         </div>
                         <div>
-                          <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>{t.alertMinLevel}</div>
-                          <div style={{ fontSize: 'var(--text-sm)', fontWeight: 500 }}>
+                          <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)' }}>{t.alertMinLevel}</div>
+                          <div style={{ fontSize: 'var(--fs-sm)', fontWeight: 500 }}>
                             {alert.product.minStockLevel} {alert.product.unit.symbol}
                           </div>
                         </div>
                         <div>
-                          <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>{t.alertShortfall}</div>
-                          <div style={{ fontSize: 'var(--text-sm)', fontWeight: 500, color: 'var(--color-warning)' }}>
+                          <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)' }}>{t.alertShortfall}</div>
+                          <div style={{ fontSize: 'var(--fs-sm)', fontWeight: 500, color: 'var(--color-warning)' }}>
                             {shortfall(alert)} {alert.product.unit.symbol}
                           </div>
                         </div>
                       </div>
                       {alert.product.reorderQty && alert.product.reorderQty > 0 && (
-                        <div style={{ marginTop: 'var(--space-1)', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>
+                        <div style={{ marginTop: 'var(--space-1)', fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)' }}>
                           {t.alertReorderQty}: {alert.product.reorderQty} {alert.product.unit.symbol}
                         </div>
                       )}

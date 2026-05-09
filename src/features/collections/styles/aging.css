@@ -17,9 +17,9 @@
   --aging-31-icon:   var(--color-warning-500);
 
   --aging-61-bg:     rgba(249, 115, 22, 0.10);
-  --aging-61-accent: #f97316;
-  --aging-61-text:   #c2410c;
-  --aging-61-icon:   #f97316;
+  --aging-61-accent: var(--color-warning-600);
+  --aging-61-text:   var(--color-warning-700);
+  --aging-61-icon:   var(--color-warning-600);
 
   --aging-91-bg:     var(--color-error-bg-subtle);
   --aging-91-accent: var(--color-error-500);
@@ -29,9 +29,9 @@
 
 [data-theme='dark'] {
   --aging-61-bg:     rgba(249, 115, 22, 0.12);
-  --aging-61-accent: #fb923c;
-  --aging-61-text:   #fdba74;
-  --aging-61-icon:   #fb923c;
+  --aging-61-accent: var(--color-warning-500);
+  --aging-61-text:   var(--color-warning-100);
+  --aging-61-icon:   var(--color-warning-500);
 }
 
 /* ─── Total strip ──────────────────────────────────────────────────── */

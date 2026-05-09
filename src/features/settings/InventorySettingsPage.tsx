@@ -58,10 +58,10 @@ function PolicyOption({
         {icon}
       </span>
       <span style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <span style={{ fontWeight: 600, fontSize: 'var(--text-sm)', color: 'var(--color-text-primary)' }}>
+        <span style={{ fontWeight: 600, fontSize: 'var(--fs-sm)', color: 'var(--color-text-primary)' }}>
           {label}
         </span>
-        <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', lineHeight: 1.4 }}>
+        <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)', lineHeight: 1.4 }}>
           {description}
         </span>
       </span>
@@ -121,11 +121,11 @@ export default function InventorySettingsPage() {
             <div className="card-primary" style={{ padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
               <label
                 htmlFor="expiry-alert-days"
-                style={{ fontWeight: 600, fontSize: 'var(--text-sm)', color: 'var(--color-text-primary)' }}
+                style={{ fontWeight: 600, fontSize: 'var(--fs-sm)', color: 'var(--color-text-primary)' }}
               >
                 {t.expiryAlertDaysLabel}
               </label>
-              <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', margin: 0 }}>
+              <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)', margin: 0 }}>
                 {t.expiryAlertDaysDesc}
               </p>
               <input
@@ -141,7 +141,7 @@ export default function InventorySettingsPage() {
                   padding: 'var(--space-3)',
                   border: '1.5px solid var(--color-border)',
                   borderRadius: 'var(--radius-md)',
-                  fontSize: 'var(--text-base)',
+                  fontSize: 'var(--fs-base)',
                   color: 'var(--color-text-primary)',
                   background: 'var(--color-surface)',
                   minHeight: 44,
@@ -153,10 +153,10 @@ export default function InventorySettingsPage() {
             {/* Expired batch policy */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
               <div>
-                <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)', color: 'var(--color-text-primary)', margin: '0 0 4px' }}>
+                <p style={{ fontWeight: 600, fontSize: 'var(--fs-sm)', color: 'var(--color-text-primary)', margin: '0 0 4px' }}>
                   {t.expiredBatchPolicyLabel}
                 </p>
-                <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', margin: 0 }}>
+                <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)', margin: 0 }}>
                   {t.expiredBatchPolicyDesc}
                 </p>
               </div>
@@ -187,7 +187,7 @@ export default function InventorySettingsPage() {
               className="btn btn-primary"
               disabled={isSaving}
               aria-busy={isSaving}
-              style={{ minHeight: 48, fontWeight: 600, fontSize: 'var(--text-base)' }}
+              style={{ minHeight: 48, fontWeight: 600, fontSize: 'var(--fs-base)' }}
             >
               {isSaving ? '…' : t.saveInventorySettings}
             </button>

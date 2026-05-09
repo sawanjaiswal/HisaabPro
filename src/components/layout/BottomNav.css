@@ -210,14 +210,42 @@
 /* Reserve page space so content never hides behind the bar OR the FAB.
  * Uses --bottom-nav-height which already includes bar + FAB overhang + glow + buffer.
  */
-body:has(.bnav) {
+body:has(.bnav-root) {
   padding-bottom: var(--bottom-nav-height);
+}
+
+/* Keyboard-up: hide nav out-of-view AND let the page reclaim the reserved
+ * space so the focused input has room without the OS pushing the layout. */
+body:has(.bnav-root--hidden) {
+  padding-bottom: 0;
+}
+
+.bnav-root {
+  /* container for nav + fab, lets us animate them together */
+  transition: transform 0.22s var(--ease-default), opacity 0.18s ease;
+  will-change: transform;
+}
+
+.bnav-root--hidden {
+  transform: translateY(calc(100% + env(safe-area-inset-bottom, 0px)));
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Landscape on short phones: bar still pinned to bottom, but if viewport
+ * height drops below ~480px we tighten things so we don't eat too much. */
+@media (orientation: landscape) and (max-height: 480px) {
+  :root {
+    --bnav-h: 56px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .bnav,
-  .bnav__fab {
+  .bnav__fab,
+  .bnav-root {
     animation: none;
+    transition: none;
   }
   .bnav__tab,
   .bnav__fab {

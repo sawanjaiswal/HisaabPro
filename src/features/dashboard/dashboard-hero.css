@@ -355,12 +355,12 @@
 }
 
 .dashboard-cash-cell__icon--in {
-  color: var(--color-success-200, #a7f3d0);
+  color: var(--color-success-200, var(--color-success-50));
   background: rgba(16, 185, 129, 0.18);
 }
 
 .dashboard-cash-cell__icon--out {
-  color: var(--color-error-200, #fecaca);
+  color: var(--color-error-200, var(--color-error-50));
   background: rgba(239, 68, 68, 0.18);
 }
 
@@ -382,7 +382,7 @@
 .dashboard-cash-cell__value {
   font-size: var(--fs-md);
   font-weight: 700;
-  color: #fff;
+  color: var(--color-gray-0);
   line-height: 1.2;
   margin-top: 2px;
   white-space: nowrap;
@@ -391,5 +391,5 @@
 }
 
 .dashboard-cash-cell__value--neg {
-  color: var(--color-error-200, #fecaca);
+  color: var(--color-error-200, var(--color-error-50));
 }

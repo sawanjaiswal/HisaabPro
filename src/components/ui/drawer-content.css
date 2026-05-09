@@ -87,6 +87,19 @@
   scrollbar-color: var(--color-gray-200) transparent;
 }
 
+/* When there's NO footer, the body owns the bottom edge of the sheet —
+ * add safe-area chin so content clears the gesture pill / home indicator. */
+.drawer-panel:not(:has(.drawer-footer)) .drawer-body {
+  padding-bottom: max(var(--space-5), env(safe-area-inset-bottom, var(--space-5)));
+}
+
+@media (min-width: 768px) {
+  /* Desktop modal isn't anchored to the viewport bottom — drop the inset. */
+  .drawer-panel:not(:has(.drawer-footer)) .drawer-body {
+    padding-bottom: var(--space-5);
+  }
+}
+
 .drawer-body::-webkit-scrollbar {
   width: 4px;
 }

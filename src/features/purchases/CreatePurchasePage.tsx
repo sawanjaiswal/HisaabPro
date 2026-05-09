@@ -84,7 +84,7 @@ export default function CreatePurchasePage() {
           padding: 'var(--space-2) var(--space-4)',
           background: 'var(--color-surface-secondary)',
           borderBottom: '1px solid var(--color-border)',
-          fontSize: 'var(--text-xs)',
+          fontSize: 'var(--fs-xs)',
           color: 'var(--color-text-muted)',
         }}
         role="status"

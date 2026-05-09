@@ -95,7 +95,7 @@ export function PaymentLinkSheet({
         {isLoading && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-3)', paddingTop: 'var(--space-6)' }}>
             <Loader2 size={32} className="spin" aria-hidden="true" />
-            <span style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)' }}>
+            <span style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--fs-sm)' }}>
               {mutation.isPending ? 'Generating link…' : 'Loading…'}
             </span>
           </div>
@@ -104,8 +104,8 @@ export function PaymentLinkSheet({
         {/* Error */}
         {hasError && !isLoading && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-3)', paddingTop: 'var(--space-4)' }}>
-            <AlertCircle size={28} color="var(--color-danger)" aria-hidden="true" />
-            <p style={{ color: 'var(--color-danger)', textAlign: 'center', fontSize: 'var(--text-sm)' }}>
+            <AlertCircle size={28} color="var(--color-error-500)" aria-hidden="true" />
+            <p style={{ color: 'var(--color-error-500)', textAlign: 'center', fontSize: 'var(--fs-sm)' }}>
               {mutation.error?.message || 'Could not create payment link'}
             </p>
             <button className="btn btn-secondary btn-sm" onClick={handleCreate}>
@@ -119,10 +119,10 @@ export function PaymentLinkSheet({
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
             {/* Amount */}
             <div style={{ textAlign: 'center' }}>
-              <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)', marginBottom: 'var(--space-1)' }}>
+              <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)', marginBottom: 'var(--space-1)' }}>
                 Amount due
               </p>
-              <p style={{ fontSize: 'var(--text-2xl)', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+              <p style={{ fontSize: 'var(--fs-2xl)', fontWeight: 700, color: 'var(--color-text-primary)' }}>
                 {formatCurrency(currentLink.amountPaise)}
               </p>
             </div>
@@ -130,7 +130,7 @@ export function PaymentLinkSheet({
             {/* Short URL pill */}
             <div style={{ background: 'var(--color-surface-2)', borderRadius: 'var(--radius-full)', padding: 'var(--space-2) var(--space-3)', display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
               <Link size={14} aria-hidden="true" style={{ color: 'var(--color-text-secondary)', flexShrink: 0 }} />
-              <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {currentLink.shortUrl ?? 'rzp.io/…'}
               </span>
             </div>
@@ -140,12 +140,12 @@ export function PaymentLinkSheet({
               readOnly
               value={currentLink.shortUrl ?? ''}
               aria-label="Payment link URL"
-              style={{ fontSize: 'var(--text-xs)', padding: 'var(--space-2)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'var(--color-surface)', width: '100%', boxSizing: 'border-box' }}
+              style={{ fontSize: 'var(--fs-xs)', padding: 'var(--space-2)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'var(--color-surface)', width: '100%', boxSizing: 'border-box' }}
             />
 
             {/* Expiry + status */}
             {expiry && (
-              <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)', textAlign: 'center' }}>
+              <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)', textAlign: 'center' }}>
                 {currentLink.status === 'PAID'
                   ? `Paid on ${new Date(currentLink.paidAt!).toLocaleDateString('en-IN')}`
                   : `Active — link valid until ${expiry}`}
@@ -171,7 +171,7 @@ export function PaymentLinkSheet({
         {/* No link yet — show create button */}
         {!currentLink && !isLoading && !hasError && !submitted && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', paddingTop: 'var(--space-2)' }}>
-            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', textAlign: 'center' }}>
+            <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', textAlign: 'center' }}>
               Generate a Razorpay payment link for {formatCurrency(balanceDue)}.
             </p>
             <button className="btn btn-primary btn-md" onClick={handleCreate} style={{ width: '100%' }}>

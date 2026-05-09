@@ -38,14 +38,14 @@ function ExpiryBadge({ isExpired, expiryDate, expiredLabel, daysLeftLabel }: {
 
   if (isExpired) {
     return (
-      <span style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-danger)', background: 'var(--color-danger-surface, #fff1f0)', borderRadius: 'var(--radius-sm)', padding: '2px 6px', whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: 'var(--fs-xs)', fontWeight: 600, color: 'var(--color-error-500)', background: 'var(--color-danger-surface, #fff1f0)', borderRadius: 'var(--radius-sm)', padding: '2px 6px', whiteSpace: 'nowrap' }}>
         {expiredLabel}
       </span>
     )
   }
   if (daysLeft <= 30) {
     return (
-      <span style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-warning)', background: 'var(--color-warning-surface, #fffbeb)', borderRadius: 'var(--radius-sm)', padding: '2px 6px', whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: 'var(--fs-xs)', fontWeight: 600, color: 'var(--color-warning)', background: 'var(--color-warning-surface, #fffbeb)', borderRadius: 'var(--radius-sm)', padding: '2px 6px', whiteSpace: 'nowrap' }}>
         {daysLeft}{daysLeftLabel}
       </span>
     )
@@ -94,7 +94,7 @@ function BatchRow({
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1, minWidth: 0 }}>
         <span style={{
           fontWeight: 600,
-          fontSize: 'var(--text-sm)',
+          fontSize: 'var(--fs-sm)',
           color: 'var(--color-text-primary)',
           textDecoration: batch.isExpired && policy === 'WARN_ONLY' ? 'line-through' : 'none',
           overflow: 'hidden',
@@ -105,13 +105,13 @@ function BatchRow({
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
           {batch.expiryDate && (
-            <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>
+            <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)' }}>
               <Clock size={10} style={{ display: 'inline', marginRight: 3 }} aria-hidden="true" />
               {formatExpiry(batch.expiryDate)}
             </span>
           )}
-          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>
-            {t.batchPickerAvail}: <strong style={{ color: batch.currentStock === 0 ? 'var(--color-danger)' : 'var(--color-text-primary)' }}>{batch.currentStock}</strong>
+          <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)' }}>
+            {t.batchPickerAvail}: <strong style={{ color: batch.currentStock === 0 ? 'var(--color-error-500)' : 'var(--color-text-primary)' }}>{batch.currentStock}</strong>
           </span>
           <ExpiryBadge isExpired={batch.isExpired} expiryDate={batch.expiryDate} expiredLabel={t.expired} daysLeftLabel="d" />
         </div>
@@ -169,7 +169,7 @@ export function BatchPicker({
       >
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h2 style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
+          <h2 style={{ fontSize: 'var(--fs-base)', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
             {t.pickBatch}
           </h2>
           <button
@@ -193,7 +193,7 @@ export function BatchPicker({
 
         {/* Error */}
         {status === 'error' && (
-          <div role="alert" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', color: 'var(--color-danger)', fontSize: 'var(--text-sm)' }}>
+          <div role="alert" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', color: 'var(--color-error-500)', fontSize: 'var(--fs-sm)' }}>
             <AlertTriangle size={16} aria-hidden="true" />
             <span>{error}</span>
             <button type="button" onClick={refetch} className="btn btn-sm" style={{ marginLeft: 'auto' }}>{t.batchPickerRetry}</button>
@@ -202,7 +202,7 @@ export function BatchPicker({
 
         {/* Empty */}
         {status === 'success' && batches.length === 0 && (
-          <div style={{ textAlign: 'center', padding: 'var(--space-6)', color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)' }}>
+          <div style={{ textAlign: 'center', padding: 'var(--space-6)', color: 'var(--color-text-muted)', fontSize: 'var(--fs-sm)' }}>
             {t.batchPickerNoneAvailable}
           </div>
         )}
@@ -215,7 +215,7 @@ export function BatchPicker({
             style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}
           >
             {expiredBatchPolicy === 'HARD_BLOCK' && batches.some((b) => !b.isExpired) && (
-              <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', margin: 0 }}>
+              <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)', margin: 0 }}>
                 {t.expiredBatchBlocked}
               </p>
             )}

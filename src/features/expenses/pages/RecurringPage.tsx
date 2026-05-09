@@ -60,7 +60,7 @@ export default function RecurringPage() {
   return (
     <AppShell>
       <Header title={title} backTo={ROUTES.EXPENSES} />
-      <PageContainer className="space-y-4">
+      <PageContainer className="space-y-6">
 
         {query.isPending && (
           <div aria-busy="true" className="space-y-2">

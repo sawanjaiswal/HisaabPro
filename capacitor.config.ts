@@ -31,6 +31,12 @@ const config: CapacitorConfig = {
       style: 'LIGHT',
       backgroundColor: '#F8F7F4',
     },
+    Keyboard: {
+      // Native resize: WebView height shrinks when keyboard appears, so our
+      // bottom-nav can detect it via visualViewport AND we honor the layout.
+      resize: 'native',
+      resizeOnFullScreen: true,
+    },
   },
 };
 

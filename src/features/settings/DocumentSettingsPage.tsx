@@ -18,7 +18,7 @@ export default function DocumentSettingsPage() {
   return (
     <AppShell>
       <Header title={t.documentSettingsTitle} backTo={ROUTES.SETTINGS} />
-      <PageContainer className="stagger-enter space-y-4">
+      <PageContainer className="stagger-enter space-y-6">
 
         {status === 'loading' && (
           <div aria-busy="true" aria-label={t.loading}>

@@ -58,7 +58,7 @@ export function CommitmentsSection({ partyId, partyName }: Props) {
       >
         <h3
           id="commitments-heading"
-          style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--color-text-primary)' }}
+          style={{ fontSize: 'var(--fs-base)', fontWeight: 600, color: 'var(--color-text-primary)' }}
         >
           {t.ptpSectionTitle}
         </h3>
@@ -128,13 +128,13 @@ export function CommitmentsSection({ partyId, partyName }: Props) {
                     {ptp.status}
                   </span>
                 </div>
-                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', marginTop: 'var(--space-1)' }}>
+                <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', marginTop: 'var(--space-1)' }}>
                   {t.ptpByLabel} {formatDate(ptp.promiseDate)}
                 </p>
                 {ptp.notes && (
                   <p
                     style={{
-                      fontSize: 'var(--text-sm)',
+                      fontSize: 'var(--fs-sm)',
                       color: 'var(--color-text-tertiary)',
                       marginTop: 2,
                       overflow: 'hidden',
@@ -171,7 +171,7 @@ export function CommitmentsSection({ partyId, partyName }: Props) {
                   </>
                 ) : (
                   <span
-                    style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-tertiary)', display: 'flex', alignItems: 'center', gap: 4 }}
+                    style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-tertiary)', display: 'flex', alignItems: 'center', gap: 4 }}
                     aria-label={t.ptpLockedHint}
                   >
                     <Lock size={12} aria-hidden="true" />

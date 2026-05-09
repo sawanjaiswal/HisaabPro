@@ -4,6 +4,7 @@ import { Home, FileText, Users, Package, Plus, Wallet, Calculator } from 'lucide
 import type { ComponentType, SVGProps } from 'react'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
+import { useKeyboardVisible } from '@/hooks/useKeyboardVisible'
 import './BottomNav.css'
 
 type IconType = ComponentType<SVGProps<SVGSVGElement> & { size?: number }>
@@ -37,6 +38,7 @@ function NavTab({ to, icon: Icon, label }: NavItem) {
 export function BottomNav() {
   const navigate = useNavigate()
   const { t } = useLanguage()
+  const keyboardOpen = useKeyboardVisible()
 
   const leftItems: readonly NavItem[] = [
     { to: ROUTES.DASHBOARD, icon: Home, label: t.dashboard ?? 'Home' },
@@ -51,8 +53,8 @@ export function BottomNav() {
   ]
 
   return createPortal(
-    <>
-      <nav className="bnav" aria-label="Main navigation">
+    <div className={`bnav-root${keyboardOpen ? ' bnav-root--hidden' : ''}`} data-keyboard-open={keyboardOpen ? 'true' : 'false'}>
+      <nav className="bnav" aria-label="Main navigation" aria-hidden={keyboardOpen}>
         <ul className="bnav__items">
           {leftItems.map((item) => (
             <NavTab key={item.to} {...item} />
@@ -69,10 +71,12 @@ export function BottomNav() {
         onClick={() => navigate(`${ROUTES.INVOICE_CREATE}?type=SALE`)}
         aria-label={t.createInvoice ?? 'Create new invoice'}
         title={t.createInvoice ?? 'Create new invoice'}
+        aria-hidden={keyboardOpen}
+        tabIndex={keyboardOpen ? -1 : 0}
       >
         <Plus size={24} strokeWidth={2.75} aria-hidden="true" />
       </button>
-    </>,
+    </div>,
     document.body,
   )
 }

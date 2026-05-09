@@ -34,7 +34,7 @@ export default function PendingExpensesPage() {
     return (
       <AppShell>
         <Header title={title} backTo={ROUTES.EXPENSES} />
-        <PageContainer className="space-y-3">
+        <PageContainer className="space-y-6">
           {[0, 1, 2].map((i) => <PendingCardSkeleton key={i} />)}
         </PageContainer>
       </AppShell>
@@ -61,7 +61,7 @@ export default function PendingExpensesPage() {
   return (
     <AppShell>
       <Header title={title} backTo={ROUTES.EXPENSES} />
-      <PageContainer className="space-y-3">
+      <PageContainer className="space-y-6">
         {items.length === 0 ? (
           <div className="expense-empty">
             <div className="expense-empty__icon" aria-hidden="true">

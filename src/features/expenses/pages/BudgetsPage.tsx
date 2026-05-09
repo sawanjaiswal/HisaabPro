@@ -73,7 +73,7 @@ export default function BudgetsPage() {
   return (
     <AppShell>
       <Header title={title} backTo={ROUTES.EXPENSES} />
-      <PageContainer className="space-y-4">
+      <PageContainer className="space-y-6">
 
         {/* Month navigator */}
         <div className="budgets-month-nav" role="navigation" aria-label="Month navigation">

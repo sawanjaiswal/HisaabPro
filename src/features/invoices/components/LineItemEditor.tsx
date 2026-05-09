@@ -118,7 +118,7 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 'var(--space-1)',
-              fontSize: 'var(--text-xs)',
+              fontSize: 'var(--fs-xs)',
               color: item.batchId ? 'var(--color-primary)' : 'var(--color-text-muted)',
               background: 'none',
               border: '1px dashed var(--color-border)',
