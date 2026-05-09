@@ -111,7 +111,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-6);
+  gap: var(--space-8);
   padding: var(--space-5) var(--dash-side-padding) 0;
   position: relative;
   z-index: 1;
@@ -121,6 +121,9 @@
 
 .dashboard-white-section {
   background: var(--color-gray-0);
+  /* Sits flush against the alert banner above — kill margin from the
+   * parent's `space-y-*` utility so the white drawer butts the banner. */
+  margin-top: 0 !important;
   padding: var(--dash-section-gap) var(--dash-side-padding) calc(var(--bottom-nav-height) + 2rem);
   display: flex;
   flex-direction: column;
@@ -128,7 +131,8 @@
   flex: 1;
   position: relative;
   z-index: 1;
-  border-radius: var(--space-6) var(--space-6) 0 0;
+  /* Sits flush against the alert banner above — no top rounding, no gap. */
+  border-radius: 0;
   box-shadow: var(--shadow-drawer-inset);
 }
 

@@ -21,7 +21,14 @@ import {
   Boxes,
   TrendingUp,
   ShoppingBag,
+  ShoppingCart,
   Activity,
+  Wallet,
+  AlertCircle,
+  AlertTriangle,
+  Warehouse,
+  Search,
+  Bell,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -48,5 +55,12 @@ export const ICON_REGISTRY: Record<string, LucideIcon> = {
   Boxes,
   TrendingUp,
   ShoppingBag,
+  ShoppingCart,
   Activity,
+  Wallet,
+  AlertCircle,
+  AlertTriangle,
+  Warehouse,
+  Search,
+  Bell,
 }

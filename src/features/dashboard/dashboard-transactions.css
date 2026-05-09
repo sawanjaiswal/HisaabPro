@@ -127,12 +127,20 @@
 .dashboard-txn-list {
   display: flex;
   flex-direction: column;
+  /* Establish a containment context so each row can react to ITS OWN width,
+   * not the viewport. A row rendered inside a narrow card on a wide
+   * viewport gets the same compact treatment as one on a 320px phone. */
+  container-type: inline-size;
+  container-name: txnlist;
 }
 
 .dashboard-txn-row {
-  display: flex;
+  /* Grid: avatar | info (flex) | trailing actions (auto).
+   * Grid + min-width:0 on `info` makes truncation actually fire. */
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-3);
   padding: var(--space-4) 0;
   border: none;
   background: none;
@@ -195,20 +203,31 @@
   font-weight: 500;
   color: var(--dash-text-primary);
   letter-spacing: -0.02em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.5;
+  /* No truncation — wrap to as many lines as needed, but never break
+   * mid-word (so "Kirana" stays intact). */
+  overflow-wrap: break-word;
+  word-break: normal;
+  line-height: 1.4;
 }
 
 .dashboard-txn-meta {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  font-size: var(--fs-sm);
+  font-size: 11px;
+  font-weight: 500;
   color: var(--color-gray-400);
   letter-spacing: -0.01em;
   line-height: 1.4;
+  min-width: 0;
+}
+
+/* Each meta segment (reference, date) stays whole — `nowrap` prevents
+ * mid-text breaks like "INV-2627-/001". No truncation: if the segment
+ * doesn't fit, the whole segment wraps onto the next line (which is
+ * what the container query below switches the meta to flex-column for). */
+.dashboard-txn-meta > span:not(.dashboard-txn-meta-dot) {
+  white-space: nowrap;
 }
 
 .dashboard-txn-meta-dot {
@@ -216,6 +235,14 @@
   height: 3px;
   border-radius: var(--radius-full);
   background: var(--color-gray-300);
+  flex-shrink: 0;
+}
+
+/* Trailing actions cell (Add pill + amount/status stack) */
+.dashboard-txn-trailing {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
   flex-shrink: 0;
 }
 
@@ -331,6 +358,80 @@
   color: var(--dash-text-muted);
   font-size: var(--fs-md);
   line-height: 1.5;
+}
+
+/* ─── Container-driven responsiveness ───────────────────────────
+   The row reacts to the WIDTH OF ITS LIST CONTAINER, not the viewport.
+   That way a row inside a narrow card on a desktop gets the same
+   compact treatment as one on a 320px phone. Three thresholds:
+
+   • > 380px  — full layout (default rules above)
+   • ≤ 380px  — compact: meta stacks vertically, dot hidden
+   • ≤ 320px  — ultra-compact: Add pill collapses to icon-only,
+                avatar shrinks, amount drops a step
+   ─────────────────────────────────────────────────────────────── */
+
+@container txnlist (max-width: 380px) {
+  .dashboard-txn-row {
+    gap: var(--space-2);
+  }
+
+  .dashboard-txn-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    font-size: var(--fs-2xs);
+    line-height: 1.35;
+  }
+
+  .dashboard-txn-meta-dot {
+    display: none;
+  }
+
+  .dashboard-txn-name {
+    font-size: var(--fs-sm);
+  }
+
+  .dashboard-txn-trailing {
+    gap: var(--space-2);
+  }
+
+  .dashboard-txn-status {
+    padding: 2px 6px;
+    letter-spacing: 0.02em;
+  }
+}
+
+@container txnlist (max-width: 320px) {
+  .dashboard-txn-avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .dashboard-txn-avatar-inner {
+    width: 28px;
+    height: 28px;
+    font-size: var(--fs-xs);
+  }
+
+  .dashboard-txn-amount {
+    font-size: var(--fs-sm);
+  }
+
+  /* Collapse Add pill to icon-only — hide the label, square the button */
+  .dashboard-txn-add-btn {
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .dashboard-txn-add-label {
+    display: none;
+  }
 }
 
 /* ─── Desktop ────────────────────────────────────────────────── */

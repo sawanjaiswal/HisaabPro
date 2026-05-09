@@ -69,7 +69,7 @@ export default function DashboardPage() {
     <AppShell>
       <DashboardHeader />
 
-      <div className="dashboard-page stagger-enter space-y-6">
+      <div className="dashboard-page stagger-enter">
         {/* Background pattern overlay */}
         <div className="dashboard-bg-pattern" aria-hidden="true" />
 
@@ -161,8 +161,9 @@ export default function DashboardPage() {
               onOverdueClick={handleOverdueClick}
             />
 
-            {/* White drawer section */}
-            <div className="dashboard-white-section py-0">
+            {/* White drawer section — flush against the AlertStrip above
+                (overrides parent space-y-6 gap with !mt-0). */}
+            <div className="dashboard-white-section py-0 !mt-0">
               <TopDebtors
                 debtors={data.topDebtors}
                 totalOutstanding={data.outstanding.receivable.total}
