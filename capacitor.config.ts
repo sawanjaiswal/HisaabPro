@@ -5,10 +5,6 @@ const config: CapacitorConfig = {
   appName: 'HisaabPro',
   webDir: 'dist',
   server: {
-    // During development: point to Vite dev server for live reload
-    // Comment this out for production builds
-    // url: 'http://10.67.252.234:3000',
-    // cleartext: true,
     androidScheme: 'https',
   },
   android: {
@@ -18,24 +14,16 @@ const config: CapacitorConfig = {
     },
   },
   plugins: {
-    BarcodeScanning: {
-      // No additional config required — camera permission prompts are OS-driven
-    },
+    BarcodeScanning: {},
     SplashScreen: {
       launchAutoHide: true,
       launchShowDuration: 1500,
-      backgroundColor: '#F8F7F4', // warm cream — NexoWallet bg
+      backgroundColor: '#F8F7F4',
       showSpinner: false,
     },
-    StatusBar: {
-      style: 'LIGHT',
-      backgroundColor: '#F8F7F4',
-    },
     Keyboard: {
-      // Native resize: WebView height shrinks when keyboard appears, so our
-      // bottom-nav can detect it via visualViewport AND we honor the layout.
       resize: 'native',
-      resizeOnFullScreen: true,
+      resizeOnFullScreen: false,
     },
   },
 };

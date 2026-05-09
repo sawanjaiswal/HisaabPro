@@ -10,8 +10,9 @@
  *   - FAB:        independent fixed-position element with higher z-index.
  *                 Centered horizontally, vertically straddles the bar's top
  *                 edge so half sits inside the notch and half above the bar.
- *   - Safe area:  `env(safe-area-inset-bottom)` adds chin space for iOS home
- *                 indicator / Android gesture bar without disturbing layout.
+ *   - Safe area:  Capacitor injects --safe-area-inset-bottom (and others) on
+ *                 viewport-fit=cover. The bar pads its bottom by that inset so
+ *                 content sits ABOVE the OS gesture pill / 3-button nav.
  *   - Portal:     mounted to document.body so transformed ancestors don't
  *                 demote `position: fixed` to `absolute`.
  */
@@ -23,12 +24,12 @@
 }
 
 .bnav {
-  position: fixed;
-  inset: auto 0 0 0;
-  z-index: var(--z-bnav);
+  position: relative;
+  width: 100%;
+  pointer-events: auto;
 
-  height: calc(var(--bnav-h) + env(safe-area-inset-bottom, 0px));
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  height: calc(var(--bnav-h) + var(--safe-area-inset-bottom, 0px));
+  padding-bottom: var(--safe-area-inset-bottom, 0px);
 
   background: var(--color-gray-0);
 
@@ -156,13 +157,15 @@
 /* FAB — sibling element. Center sits exactly on the bar's top edge,
  * so half settles into the notch and half floats above the bar.
  *   bottom = bar_height - fab_size / 2 + safe_area
+ * Position is absolute relative to .bnav-root (which is fixed).
  */
 .bnav__fab {
-  position: fixed;
+  position: absolute;
   left: 50%;
-  bottom: calc(var(--bnav-h) - var(--bnav-fab-size) / 2 + env(safe-area-inset-bottom, 0px));
+  bottom: calc(var(--bnav-h) - var(--bnav-fab-size) / 2 + var(--safe-area-inset-bottom, 0px));
   transform: translateX(-50%);
   z-index: var(--z-bnav-fab);
+  pointer-events: auto;
 
   width: var(--bnav-fab-size);
   height: var(--bnav-fab-size);
@@ -221,13 +224,21 @@ body:has(.bnav-root--hidden) {
 }
 
 .bnav-root {
-  /* container for nav + fab, lets us animate them together */
+  /* Fixed positioning lives on the wrapper so its transform-based slide-out
+   * animation doesn't demote fixed children to absolute (any element with a
+   * transform creates a containing block for fixed descendants). */
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-bnav);
+  pointer-events: none;
   transition: transform 0.22s var(--ease-default), opacity 0.18s ease;
   will-change: transform;
 }
 
 .bnav-root--hidden {
-  transform: translateY(calc(100% + env(safe-area-inset-bottom, 0px)));
+  transform: translateY(calc(100% + var(--safe-area-inset-bottom, 0px)));
   opacity: 0;
   pointer-events: none;
 }

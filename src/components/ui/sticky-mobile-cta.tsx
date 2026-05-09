@@ -49,7 +49,7 @@ export function StickyMobileCTA() {
     <AnimatePresence>
       {visible && (
         <motion.div
-          className="fixed bottom-0 left-0 right-0 z-[40] md:hidden backdrop-blur-xl border-t pb-[env(safe-area-inset-bottom)]"
+          className="fixed bottom-0 left-0 right-0 z-[40] md:hidden backdrop-blur-xl border-t"
           style={{
             backgroundColor: 'var(--lp-bg-nav)',
             borderColor: 'var(--lp-border-subtle)',

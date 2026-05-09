@@ -223,7 +223,29 @@
 
   /* Layout */
   --side-padding: var(--space-4);
-  --bottom-nav-safe-inset: env(safe-area-inset-bottom, 0px);
-  /* 64px bar + 28px FAB overhang + 11px FAB glow + 9px breathing buffer = 112px */
+
+  /* === Platform-shell SSOTs ===
+   * Capacitor injects --safe-area-inset-{top,bottom} CSS vars on
+   * viewport-fit=cover (Android edge-to-edge, iOS notch). Browser fallback
+   * to 0px keeps dev/CI sane.
+   *
+   * The SSOTs below are the ONLY place inset math lives. Primitives
+   * (header, BottomNav, drawers, side-nav) consume the *-safe-inset values
+   * to pad themselves; pages consume the *-height values to reserve
+   * scroll-space. Feature code never reads --safe-area-inset-* directly. */
+
+  /* Top: status bar */
+  --header-safe-inset: var(--safe-area-inset-top, 0px);
+  /* 56px design-spec header + status-bar inset = total sticky-top space.
+   * Pages that need to offset content below the header (sticky filters,
+   * scroll-into-view) consume this; primitives that pad against the top
+   * also consume this. */
+  --header-height: calc(56px + var(--header-safe-inset));
+
+  /* Bottom: BottomNav + gesture pill / 3-button nav */
+  --bottom-nav-safe-inset: var(--safe-area-inset-bottom, 0px);
+  /* 64px bar + 28px FAB overhang + 11px FAB glow + 9px breathing buffer = 112px,
+   * plus the bottom safe-area inset so page content reserves space for the
+   * gesture pill / 3-button nav. */
   --bottom-nav-height: calc(112px + var(--bottom-nav-safe-inset));
 }

@@ -12,6 +12,9 @@
  * 6. Offline patterns (ratcheted vs baseline)
  * 7. Section padding=0 + section-group gap=24px
  * 8. No raw hex inside CSS gradient functions
+ * 9. Platform shell — no env(safe-area-inset-*) refs
+ * 10. Platform shell — no raw fixed-bottom outside primitive allowlist
+ * 11. Platform shell — no deprecated Android Window APIs
  *
  * Exit code 0 = pass, 1 = fail with details.
  * Run: node scripts/enforce.js [--fix]
@@ -319,6 +322,256 @@ if (gradientHexCount === 0) {
   console.log('  ✅ No raw hex in CSS gradients')
 } else {
   console.log(`  ❌ ${gradientHexCount} gradient(s) with raw hex`)
+}
+
+// ─── Check 9: Platform shell — safe-area inset access is primitive-only ──────
+//
+// Edge-to-edge model: Capacitor injects --safe-area-inset-{top,right,bottom,
+// left} on documentElement when viewport-fit=cover is set. ONLY platform
+// primitives (header, BottomNav, drawers, side-nav) may consume those vars
+// and pad themselves. Feature code lives between the padded primitives and
+// must never reference safe-area insets — neither raw env() (which is the
+// iOS-native form Capacitor does NOT inject on Android) nor var(--safe-area-
+// inset-*). SSOT: .claude/rules/PLATFORM_SHELL.md.
+
+console.log('🔍 Check 9: Safe-area access is primitive-only')
+
+const SAFE_AREA_ENV_RE = /env\(\s*safe-area-inset-/
+const SAFE_AREA_VAR_RE = /var\(\s*--safe-area-inset-/
+
+const SAFE_AREA_PRIMITIVE_ALLOWLIST = [
+  /\/components\/layout\/BottomNav\.css$/,
+  /\/components\/layout\/side-nav\.css$/,
+  /\/components\/ui\/drawer-content\.css$/,
+  /\/components\/ui\/drawer-panel\.css$/,
+  /\/components\/ui\/bulk-action-bar\.css$/,
+  /\/components\/ui\/sticky-mobile-cta\./,
+  /\/components\/feedback\//,
+  /\/styles\/tokens-/,
+  /\/styles\/components-/,
+  /\/features\/landing\//,
+]
+
+let safeAreaCount = 0
+
+for (const file of [...walkDir(FRONTEND_SRC, ['.css']), ...walkDir(FRONTEND_SRC, ['.tsx', '.ts'])]) {
+  const lines = readFileSync(file, 'utf8').split('\n')
+  const isPrimitive = SAFE_AREA_PRIMITIVE_ALLOWLIST.some((re) => re.test(file))
+  for (let i = 0; i < lines.length; i++) {
+    const ln = lines[i]
+    if (ln.includes('enforce-ignore')) continue
+    // env(safe-area-inset-*) is banned everywhere — Capacitor injects var(),
+    // not env(). Using env() on Android yields 0 (silent no-op).
+    if (SAFE_AREA_ENV_RE.test(ln)) {
+      errors.push(
+        `PLATFORM_SHELL_SAFE_AREA_ENV: ${rel(file)}:${i + 1} — env(safe-area-inset-*) banned. Use var(--safe-area-inset-*) inside platform primitives only (see .claude/rules/PLATFORM_SHELL.md).`,
+      )
+      safeAreaCount++
+      continue
+    }
+    // var(--safe-area-inset-*) only allowed in platform primitives.
+    if (SAFE_AREA_VAR_RE.test(ln) && !isPrimitive) {
+      errors.push(
+        `PLATFORM_SHELL_SAFE_AREA_VAR: ${rel(file)}:${i + 1} — var(--safe-area-inset-*) is primitive-only. Feature code consumes already-padded primitives (see .claude/rules/PLATFORM_SHELL.md).`,
+      )
+      safeAreaCount++
+    }
+  }
+}
+
+if (safeAreaCount === 0) {
+  console.log('  ✅ Safe-area access confined to platform primitives')
+} else {
+  console.log(`  ❌ ${safeAreaCount} safe-area violation(s)`)
+}
+
+// ─── Check 10: Platform shell — fixed-bottom allowlist ────────────────────────
+//
+// Only the platform-primitive CSS files own the bottom edge of the viewport.
+// Feature CSS that reaches for `position: fixed; bottom: 0` is duplicating
+// the bottom-bar pattern and should consume <BottomActionBar> / <Drawer>.
+
+console.log('🔍 Check 10: Fixed-bottom only in platform primitives')
+
+const FIXED_BOTTOM_ALLOWLIST = [
+  /\/components\/layout\/BottomNav\.css$/,
+  /\/components\/ui\/drawer-panel\.css$/,
+  /\/components\/ui\/drawer-content\.css$/,
+  /\/components\/ui\/bulk-action-bar\.css$/,
+  /\/components\/ui\/sticky-mobile-cta\./, // landing-only marketing CTA
+  /\/components\/feedback\/sw-update-prompt\.css$/,
+  /\/components\/feedback\/feedback-widget\.css$/,
+  /\/styles\/components-/,
+  /\/features\/landing\//,
+]
+
+// Phase 3 migration debt: feature files with raw fixed-bottom that pre-date
+// the <BottomActionBar> SSOT. Any NEW file landing on this list is a hard
+// error — these files migrate to the primitive in Phase 3.
+const FIXED_BOTTOM_PHASE3_DEBT = new Set([
+  'src/features/business/business.css',
+  'src/features/payments/payment-form-actions.css',
+  'src/features/pos/pos-billing.css',
+  'src/features/pos/pos.css',
+  'src/features/recurring/styles/recurring-detail.css',
+  'src/features/settings/role-builder.css',
+  'src/features/tax/tax-category-form.css',
+])
+
+let fixedBottomCount = 0
+const allCss = walkDir(FRONTEND_SRC, ['.css'])
+
+for (const file of allCss) {
+  if (FIXED_BOTTOM_ALLOWLIST.some((re) => re.test(file))) continue
+  const content = readFileSync(file, 'utf8')
+  const lines = content.split('\n')
+  let inBlock = false
+  let hasFixed = false
+  let hasBottomZero = false
+  let blockStart = 0
+  for (let i = 0; i < lines.length; i++) {
+    const ln = lines[i]
+    if (ln.includes('enforce-ignore')) continue
+    if (ln.includes('{')) { inBlock = true; hasFixed = false; hasBottomZero = false; blockStart = i + 1 }
+    if (inBlock) {
+      if (/position:\s*fixed/.test(ln)) hasFixed = true
+      if (/^\s*bottom:\s*0/.test(ln)) hasBottomZero = true
+    }
+    if (ln.includes('}') && inBlock) {
+      if (hasFixed && hasBottomZero) {
+        const relPath = rel(file)
+        const msg = `PLATFORM_SHELL_FIXED_BOTTOM: ${relPath}:${blockStart} — raw 'position:fixed; bottom:0' outside primitive allowlist. Use <BottomActionBar> / <Drawer> (see .claude/rules/PLATFORM_SHELL.md).`
+        if (FIXED_BOTTOM_PHASE3_DEBT.has(relPath)) {
+          warnings.push(msg + ' [Phase 3 debt — migrating to <BottomActionBar>]')
+        } else {
+          errors.push(msg)
+          fixedBottomCount++
+        }
+      }
+      inBlock = false
+    }
+  }
+}
+
+if (fixedBottomCount === 0) {
+  console.log('  ✅ No raw fixed-bottom outside primitives')
+} else {
+  console.log(`  ❌ ${fixedBottomCount} raw fixed-bottom block(s)`)
+}
+
+// ─── Check 11: Platform shell — deprecated Android Window APIs ────────────────
+//
+// Android 15 deprecates setStatusBarColor / setNavigationBarColor /
+// setDecorFitsSystemWindows. Our model never calls them — config + styles only.
+
+console.log('🔍 Check 11: No deprecated Android Window APIs in MainActivity')
+
+const ANDROID_DIR = join(ROOT, 'android', 'app', 'src', 'main', 'java')
+const DEPRECATED_RE = /(setStatusBarColor|setNavigationBarColor|setDecorFitsSystemWindows|getStatusBarColor)/
+let deprecatedCount = 0
+
+const javaFiles = []
+function walkJava(dir) {
+  try {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const full = join(dir, entry.name)
+      if (entry.isDirectory()) walkJava(full)
+      else if (entry.name.endsWith('.java') || entry.name.endsWith('.kt')) javaFiles.push(full)
+    }
+  } catch {}
+}
+walkJava(ANDROID_DIR)
+
+for (const file of javaFiles) {
+  const lines = readFileSync(file, 'utf8').split('\n')
+  for (let i = 0; i < lines.length; i++) {
+    if (DEPRECATED_RE.test(lines[i])) {
+      errors.push(
+        `PLATFORM_SHELL_DEPRECATED_API: ${rel(file)}:${i + 1} — ${lines[i].match(DEPRECATED_RE)[0]} is deprecated in Android 15. Configure via styles.xml + capacitor.config.ts only.`,
+      )
+      deprecatedCount++
+    }
+  }
+}
+
+if (deprecatedCount === 0) {
+  console.log('  ✅ No deprecated Android Window APIs')
+} else {
+  console.log(`  ❌ ${deprecatedCount} deprecated API call(s)`)
+}
+
+// ─── Check 12: Platform shell — sticky/fixed top:0 only in primitives ─────────
+//
+// Status-bar inset is owned by the .header / .side-nav-header / drawer-top
+// primitives. A feature CSS file pinning a custom bar to top:0 (sticky or
+// fixed) bypasses --header-safe-inset and renders content under the OS
+// status bar on edge-to-edge Android. Mirror of check 10 (fixed-bottom).
+
+console.log('🔍 Check 12: Sticky/fixed top:0 only in platform primitives')
+
+const FIXED_TOP_ALLOWLIST = [
+  /\/styles\/components-layout\.css$/,        // .header (base + variants)
+  /\/components\/layout\/side-nav\.css$/,     // .side-nav-header
+  /\/components\/ui\/drawer-panel\.css$/,     // drawer top edge
+  /\/components\/ui\/drawer-content\.css$/,
+  /\/components\/feedback\//,                 // feedback modal / SW prompt
+  /\/styles\/components-/,                    // shared primitive styles
+  /\/features\/landing\//,                    // marketing nav
+]
+
+// Phase 4 migration debt: feature files with raw `top: 0` that pre-date
+// the --header-safe-inset SSOT. These either (a) sit inside scroll
+// containers that don't reach viewport top (legitimate, e.g. nested list
+// headers in drawers — annotate with `enforce-ignore`) or (b) are page-
+// level custom headers that overlap the OS status bar on edge-to-edge
+// (real bug — migrate to <Header> or stack `top: var(--header-height)`).
+// New files are still hard-blocked.
+const FIXED_TOP_PHASE4_DEBT = new Set([
+  'src/features/cash-register/cash-register.css',
+  'src/features/collections/styles/aging.css',
+  'src/features/pos/pos-billing.css',
+  'src/features/pos/pos.css',
+  'src/features/reports/report-shared.css',
+])
+
+let fixedTopCount = 0
+
+for (const file of allCss) {
+  if (FIXED_TOP_ALLOWLIST.some((re) => re.test(file))) continue
+  const content = readFileSync(file, 'utf8')
+  const lines = content.split('\n')
+  let inBlock = false
+  let hasFixedOrSticky = false
+  let hasTopZero = false
+  let blockStart = 0
+  for (let i = 0; i < lines.length; i++) {
+    const ln = lines[i]
+    if (ln.includes('enforce-ignore')) continue
+    if (ln.includes('{')) { inBlock = true; hasFixedOrSticky = false; hasTopZero = false; blockStart = i + 1 }
+    if (inBlock) {
+      if (/position:\s*(fixed|sticky)/.test(ln)) hasFixedOrSticky = true
+      if (/^\s*top:\s*0(\s|;|$)/.test(ln)) hasTopZero = true
+    }
+    if (ln.includes('}') && inBlock) {
+      if (hasFixedOrSticky && hasTopZero) {
+        const relPath = rel(file)
+        const msg = `PLATFORM_SHELL_FIXED_TOP: ${relPath}:${blockStart} — raw 'position:fixed|sticky; top:0' outside primitive allowlist. Use the <Header> primitive (consumes --header-safe-inset) or stack with top: var(--header-height) (see .claude/rules/PLATFORM_SHELL.md).`
+        if (FIXED_TOP_PHASE4_DEBT.has(relPath)) {
+          warnings.push(msg + ' [Phase 4 debt — migrating to <Header> / header-stacked sticky]')
+        } else {
+          errors.push(msg)
+          fixedTopCount++
+        }
+      }
+      inBlock = false
+    }
+  }
+}
+
+if (fixedTopCount === 0) {
+  console.log('  ✅ No raw top:0 outside primitives')
+} else {
+  console.log(`  ❌ ${fixedTopCount} raw top:0 block(s)`)
 }
 
 // ─── Summary ──────────────────────────────────────────────────────────────────

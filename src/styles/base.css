@@ -12,6 +12,14 @@
   html {
     font-size: 16px;
     -webkit-text-size-adjust: 100%;
+    /* Pin the document scroller. `overscroll-behavior: none` stops Chromium's
+     * rubber-band overscroll on Android — without it, the user can pull the
+     * page past its bounds and the whole viewport (including the sticky
+     * header and fixed BottomNav) momentarily translates beyond the OS bars
+     * before snapping back. Also disables pull-to-refresh, which a billing
+     * app should never invoke. Set on both html and body so neither edge of
+     * the propagation chain leaks. See PLATFORM_SHELL.md C11. */
+    overscroll-behavior: none;
   }
 
   @media (min-width: 1024px) {
@@ -26,6 +34,7 @@
     background-attachment: fixed;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
   }
 
   [data-theme="dark"] body {
@@ -58,7 +67,10 @@ textarea:focus-visible {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
+  /* `clip` (not `hidden`) prevents app-shell from becoming a scroll container,
+   * so `position: sticky` headers pin against the viewport, not against
+   * app-shell's own scroll edge. */
+  overflow-x: clip;
 }
 
 .app-shell-content {
@@ -90,10 +102,12 @@ textarea:focus-visible {
 }
 
 /* === PAGE CONTAINER — white drawer with rounded top for premium depth === */
-/* Bottom padding accounts for the protruding "+" FAB so the last line of
- * content is never covered by the cradle button (~32px overhang). */
+/* Bottom padding clears the fixed BottomNav (which sits on top of all
+ * content regardless of DOM order) plus the protruding "+" FAB cradle
+ * (~32px overhang). Without this the last line of page content scrolls
+ * under the nav and is unreachable. */
 .page-container {
-  padding: var(--space-4) var(--side-padding) calc(var(--space-8) + 32px);
+  padding: var(--space-4) var(--side-padding) calc(var(--bottom-nav-height) + var(--space-4));
   max-width: 1200px;
   margin: 0 auto;
   background: var(--color-gray-0);

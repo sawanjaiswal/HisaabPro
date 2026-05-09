@@ -115,7 +115,7 @@
   max-height: 60vh;
   overflow-y: auto;
   animation: slide-up 0.25s ease;
-  padding: var(--space-2) 0 env(safe-area-inset-bottom, 0);
+  padding: var(--space-2) 0;
 }
 
 .business-switcher-handle {

@@ -64,6 +64,7 @@ export const en = {
 
   // ─── Navigation ───────────────────────────────────────────────────────────
   dashboard:    'Dashboard',
+  home:         'Home',
   parties:      'Parties',
   products:     'Products',
   invoices:     'Invoices',

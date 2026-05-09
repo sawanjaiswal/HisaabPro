@@ -74,7 +74,6 @@
   padding: var(--space-3) var(--space-5);
   z-index: var(--z-sticky);
   box-shadow: var(--shadow-bar-top);
-  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
 }
 
 body:has(.bnav) .payment-save-bar {

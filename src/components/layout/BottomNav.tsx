@@ -1,8 +1,9 @@
 import { createPortal } from 'react-dom'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Home, FileText, Users, Package, Plus, Wallet, Calculator } from 'lucide-react'
+import { Home, FileText, Users, Plus, Menu } from 'lucide-react'
 import type { ComponentType, SVGProps } from 'react'
 import { ROUTES } from '@/config/routes.config'
+import { OPEN_SIDE_NAV_EVENT } from '@/config/events.config'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useKeyboardVisible } from '@/hooks/useKeyboardVisible'
 import './BottomNav.css'
@@ -41,16 +42,15 @@ export function BottomNav() {
   const keyboardOpen = useKeyboardVisible()
 
   const leftItems: readonly NavItem[] = [
-    { to: ROUTES.DASHBOARD, icon: Home, label: t.dashboard ?? 'Home' },
+    { to: ROUTES.DASHBOARD, icon: Home, label: t.home ?? 'Home' },
     { to: ROUTES.INVOICES, icon: FileText, label: t.invoices },
-    { to: ROUTES.CASH_REGISTER, icon: Calculator, label: t.cashRegNavLabel ?? 'Cash' },
   ]
 
   const rightItems: readonly NavItem[] = [
-    { to: ROUTES.PRODUCTS, icon: Package, label: t.products },
     { to: ROUTES.PARTIES, icon: Users, label: t.parties },
-    { to: ROUTES.COLLECTIONS, icon: Wallet, label: t.collectionsNav ?? 'Collections' },
   ]
+
+  const openSideNav = () => window.dispatchEvent(new Event(OPEN_SIDE_NAV_EVENT))
 
   return createPortal(
     <div className={`bnav-root${keyboardOpen ? ' bnav-root--hidden' : ''}`} data-keyboard-open={keyboardOpen ? 'true' : 'false'}>
@@ -63,6 +63,19 @@ export function BottomNav() {
           {rightItems.map((item) => (
             <NavTab key={item.to} {...item} />
           ))}
+          <li className="bnav__cell">
+            <button
+              type="button"
+              className="bnav__tab"
+              onClick={openSideNav}
+              aria-label={t.menu ?? 'More'}
+            >
+              <span className="bnav__icon">
+                <Menu size={22} aria-hidden="true" />
+              </span>
+              <span className="bnav__label">{t.menu ?? 'More'}</span>
+            </button>
+          </li>
         </ul>
       </nav>
       <button

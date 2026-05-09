@@ -64,6 +64,7 @@ export const hi = {
 
   // ─── Navigation ───────────────────────────────────────────────────────────
   dashboard:    'डैशबोर्ड',
+  home:         'होम',
   parties:      'पार्टियां',
   products:     'उत्पाद',
   invoices:     'बिल',

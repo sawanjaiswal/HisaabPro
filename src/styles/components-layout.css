@@ -24,7 +24,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-3) var(--side-padding);
+  /* Top padding consumes the OS status-bar inset (SSOT: --header-safe-inset)
+   * so content sits below the status bar on edge-to-edge Android (and iOS
+   * notch). Feature code never reads --safe-area-inset-top; only this
+   * primitive does. min-height uses --header-height (SSOT) so all variants
+   * stay in sync without redefining the math. */
+  padding: calc(var(--space-3) + var(--header-safe-inset))
+           var(--side-padding)
+           var(--space-3);
   /* Frosted cream glass — matches dashboard header scroll state */
   background: var(--header-glass-bg);
   backdrop-filter: blur(16px);
@@ -33,7 +40,7 @@
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
-  min-height: 56px;
+  min-height: var(--header-height);
 }
 
 /* Left group: back chevron + title, OR brand block */
@@ -146,12 +153,13 @@
  * but lets the slots claim only the space they need — no overlap regardless
  * of how wide leading/actions grow. */
 .header--center {
+  /* Layout-only override — inherits inset/min-height math from base .header.
+   * The 8px height bump (vs base 56px) comes from the natural 3-column grid
+   * sizing; no separate min-height needed. */
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   position: sticky;
-  min-height: 64px;
-  padding-top: max(var(--space-3), env(safe-area-inset-top, 12px));
   column-gap: var(--space-2);
 }
 
