@@ -1,7 +1,7 @@
 # HisaabPro — Master Feature Roadmap
 
 > **Last Updated:** 2026-05-08 (PM)
-> **Status:** Phase 1 (60/70 code-complete, 10 blocked on creds) · Phase 2 done · Phase 3 done (1 deferred) · Phase 4 done (16/16) · Phase 5 1/14 (3 BE-only, FE WIP) · Phase 6 not started · Phase 7 1/10
+> **Status (2026-05-09):** Phase 1 (60/70 code-complete, 10 blocked on creds) · Phase 2 done · Phase 3 done (1 deferred) · Phase 4 done (16/16) · Phase 5 (3 BE shipped, FE WIP — Epic A queued) · Phase 6 not started · Phase 7 2/10 (#141 OCR + #145 Vertical Modes shipped) · **Vertical features**: Jobs (services/freelancer/salon/clinic) + Custom Orders (bakery/tailor) fully wired
 > **Owner:** Sawan Jaiswal
 > **Architecture:** Monolith — React 19 frontend + Express backend + Prisma + PostgreSQL
 > **Total Features:** 150 across 7 phases
@@ -312,7 +312,7 @@
 | 142 | Voice-Based Entry ("Add 500 sale to Rahul") | [ ] | HIGH | [ ] | Speech-to-intent |
 | 143 | WhatsApp Bot Billing (message → invoice) | [ ] | HIGH | [ ] | WhatsApp Business API |
 | 144 | Smart GST Filing Assistant (flag errors before filing) | [ ] | MEDIUM | [ ] | Rules engine |
-| 145 | Industry Vertical Modes (dairy/grocery/restaurant/textile/pharmacy) | [ ] | HIGH | [ ] | Config-driven |
+| 145 | Industry Vertical Modes (13 verticals: retail/wholesale/manufacturing/services/restaurant/pharmacy/bakery/salon/clinic/tailor/freelancer/general/other) | [x] | HIGH | [x] | Config-driven via verticals.config.ts — nav filtering + terminology + defaults seeder + Jobs flow (services/freelancer/salon/clinic) + Custom Orders flow (bakery/tailor) all SHIPPED |
 | 146 | Predictive Analytics (sales forecast, cash flow prediction) | [ ] | HIGH | [ ] | ML models |
 | 147 | Auto-Reconciliation (match payments with invoices using AI) | [ ] | MEDIUM | [ ] | Fuzzy matching |
 | 148 | Smart Inventory (predict reorder, seasonal demand) | [ ] | HIGH | [ ] | Historical analysis |
@@ -329,10 +329,36 @@
 | Phase 2 — GST & Compliance | 20 | 13-18 | **20/20 Done** |
 | Phase 3 — Accounting & Finance | 22 | 19-24 | **21/22 Done** (Bank Reconciliation deferred) |
 | Phase 4 — Advanced Inventory & POS | 16 | 25-30 | **16/16 Done** |
-| Phase 5 — Sales & Marketing | 14 | 31-36 | In Progress (3 BE shipped, FE WIP) |
+| Phase 5 — Sales & Marketing | 14 | 31-36 | In Progress (3 BE shipped, FE WIP — Epic A queued) |
 | Phase 6 — Staff & HR | 6 | 37-42 | Not Started |
-| Phase 7 — AI & Differentiators | 10 | 43+ | **1/10** (receipt OCR shipped) |
-| **TOTAL** | **150** | **43+ weeks** | **118/150 shipped** |
+| Phase 7 — AI & Differentiators | 10 | 43+ | **2/10** (#141 receipt OCR + #145 Vertical Modes shipped) |
+| **TOTAL** | **150** | **43+ weeks** | **119/150 shipped** |
+
+---
+
+## VERTICAL-SPECIFIC FEATURES (audit 2026-05-09)
+
+### Shipped today
+| Vertical group | Feature | Status |
+|---|---|---|
+| Services / Freelancer / Salon / Clinic | Jobs flow (QUOTED→SCHEDULED→IN_PROGRESS→COMPLETED→INVOICED) + 4 pages + dashboard widget + convert-to-invoice | ✅ Shipped |
+| Bakery / Tailor | Custom Orders flow (RECEIVED→IN_PRODUCTION→READY→DELIVERED→INVOICED) + 4 pages + delivery date/slot + custom fields + Today/Tomorrow widgets | ✅ Shipped |
+| Pharmacy | Batch + expiry tracking ON by default, FEFO claim, daily expiry cron | ✅ Shipped |
+| Restaurant | Nav-hide serial/verify, terminology="Bill", POS access | ✅ Shipped |
+| Manufacturing | Stock + batch + serial defaults ON, BOM CRUD, ProductionRun with WAC propagation | ✅ Shipped |
+| Wholesale | Batch tracking default ON | ✅ Shipped |
+| Retail | All standard nav, stock default ON | ✅ Shipped |
+
+### Gaps by vertical (next-epic candidates)
+| Gap | Affects | Severity |
+|---|---|---|
+| **Time tracking on Jobs** (hoursEstimated, hoursActual, ratePerHour) | Services / Freelancer / Salon / Clinic | HIGH — plumber/freelancer cannot bill hourly today |
+| **Appointment calendar + slot picker** | Salon / Clinic | HIGH — no scheduling, no availability view |
+| **Staff assignment on Jobs/Orders** + commission split | Services / Bakery / Tailor / Manufacturing | MEDIUM — multi-staff job cannot split commission |
+| **Recipe / Menu cost dashboard** (BOM works, no per-recipe UI) | Restaurant / Bakery | MEDIUM — cost-per-dish needs derived view |
+| **Customer delivery reminders** (SMS/WA) | Bakery / Tailor | MEDIUM — marketing infra exists, vertical wiring missing |
+| **Table management + KOT** | Restaurant | LOW (out of MSME billing scope; deferred) |
+| **Prescription field** | Pharmacy / Clinic | LOW — can use generic custom fields today |
 
 ---
 

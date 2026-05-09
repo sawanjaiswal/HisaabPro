@@ -100,6 +100,31 @@ Razorpay · Aisensy (also unblocks Epic A webhooks) · Resend · FCM · Capacito
 
 ---
 
+### 9. Per-vertical depth (audit 2026-05-09)
+
+Verticals are wired (nav filtering, terminology, defaults, Jobs flow, Custom Orders flow). Gap is **depth per vertical**, not coverage. Candidates:
+
+| Epic | Verticals | Effort | Notes |
+|---|---|---|---|
+| **V1 — Services time tracking on Jobs** | services, freelancer, salon, clinic | ~1 wk | Add `hoursEstimated`, `hoursActual`, `ratePerHour` on Job; hour-based invoice line type. Plumber/freelancer cannot bill hourly today. |
+| **V2 — Appointments calendar** | salon, clinic | ~2 wks (HIGH) | New `Appointment` model + slot picker + availability view + link to Job. Onboarding blocker for salon/clinic. |
+| **V3 — Recipe cost dashboard** | restaurant, bakery, manufacturing | ~3 days | Derive cost-per-unit from existing BOM data. UI-only; no schema. Quick win. |
+| **V4 — Staff assignment + commission split** | services, bakery, tailor, manufacturing | ~2 wks | Assign staff to Jobs/Orders/POS sales; commission rules per product/category. Overlaps Phase 6 #128. |
+| **V5 — Customer delivery reminders** | bakery, tailor | ~3 days | Auto-trigger marketing-comms reminder N hours before delivery slot. Requires Epic A live. |
+| **V6 — Table management + KOT** | restaurant | LARGE | Out of MSME billing scope. Defer to v2 product. |
+| **V7 — Prescription field** | pharmacy, clinic | trivial | Likely solvable today via generic custom fields. Validate before scoping. |
+
+Sequencing recommendation (after Phase 5 Epic A merges):
+1. V3 (3 days, no schema, big restaurant/bakery win)
+2. V1 (1 wk, unblocks hourly billing — biggest current user complaint)
+3. V5 (3 days, depends on Epic A)
+4. V2 (2 wks, salon/clinic onboarding)
+5. V4 (2 wks, overlaps Phase 6 Staff & HR — fold together)
+
+V1, V2, V4 touch schema → mandatory `scope-writer → architect → (security if billing path) → task-manager` ceremony.
+
+---
+
 ## Open files to remember
 - `.claude/design-plan-active.md` — currently approved for `phase5-marketing-comms`. Stays valid while Epic A FE wraps. Replace before starting Epic B.
 - `docs/SCOPE_phase5_marketing_comms.md` · `docs/ARCHITECTURE_phase5_marketing_comms.md` · `docs/SECURITY_AUDIT_phase5_marketing_comms.md`
