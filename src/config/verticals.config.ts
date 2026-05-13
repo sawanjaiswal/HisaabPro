@@ -28,13 +28,9 @@ export type NavKey =
   | 'bill-scan' | 'recurring' | 'templates' | 'data-import' | 'items-library'
   | 'payments' | 'outstanding' | 'expenses' | 'other-income' | 'loans' | 'cheques' | 'bank'
   | 'reports' | 'accounting' | 'gst' | 'products'
-  | 'greetings' | 'bulk-import'
-  | 'settings'
-  // bottom nav
+  | 'greetings' | 'bulk-import' | 'marketing' | 'settings'
   | 'dashboard' | 'invoices' | 'parties'
-  // Phase 3+ + Inventory Phase 2 + Phase 4 BOM
   | 'jobs' | 'orders' | 'batches' | 'godowns' | 'serial-numbers' | 'stock-verification' | 'stock-count' | 'stock-value-report' | 'bom' | 'production-runs'
-  // POS + cash + purchases + collections + alerts + notifications + serial lookup
   | 'pos' | 'cash-register' | 'purchases' | 'collections' | 'inventory-alerts' | 'notifications' | 'serial-lookup'
 
 export interface VerticalProfile {

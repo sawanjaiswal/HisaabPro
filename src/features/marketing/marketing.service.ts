@@ -81,6 +81,8 @@ export async function previewSegment(
     method: 'POST',
     body: JSON.stringify({ filter }),
     signal,
+    entityType: 'segment-preview',
+    entityLabel: 'Audience preview',
   })
 }
 

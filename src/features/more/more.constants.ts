@@ -71,6 +71,7 @@ export const MORE_MENU_ITEMS: MoreMenuItem[] = [
   { id: 'serial-lookup', navKey: 'serial-lookup', label: 'Serial Lookup', description: 'Find by serial number', icon: 'Search', route: ROUTES.SERIAL_LOOKUP, color: 'var(--color-secondary-50)', group: 'accounting' },
 
   // Marketing & CRM
+  { id: 'marketing', navKey: 'marketing', label: 'Marketing', description: 'Campaigns & reminders', icon: 'Send', route: ROUTES.MARKETING_HUB, color: 'var(--color-primary-50)', group: 'marketing' },
   { id: 'greetings', navKey: 'greetings', label: 'Greetings', description: 'Festival wishes', icon: 'MessageCircleHeart', route: ROUTES.SMART_GREETINGS, color: 'var(--color-secondary-50)', group: 'marketing' },
   { id: 'bulk-import', navKey: 'bulk-import', label: 'Import Parties', description: 'From contacts/CSV', icon: 'Users', route: ROUTES.BULK_IMPORT_PARTIES, color: 'var(--color-primary-50)', group: 'marketing' },
 

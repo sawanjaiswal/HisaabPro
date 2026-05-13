@@ -42,16 +42,11 @@ import {
   PosMain, PosHistory, PosSaleDetail,
   Jobs, JobNew, JobDetail, JobEdit, InventorySettings, DocumentSettings,
   CustomOrders, CustomOrderNew, CustomOrderDetail, CustomOrderEdit,
-  BackfillWizard,
-  Gstr1Page,
-  Gstr3bPage,
-  AgingDashboardPage,
-  AgingBucketListPage,
-  CashRegister,
-  Notifications,
-  NotificationPreferences,
+  BackfillWizard, Gstr1Page, Gstr3bPage, AgingDashboardPage, AgingBucketListPage,
+  CashRegister, Notifications, NotificationPreferences,
   BomList, BomForm, BomDetail,
   ProductionRunList, ProductionRunForm, ProductionRunDetail,
+  MarketingHub, MarketingTemplateList, MarketingTemplateForm, MarketingCampaignList, MarketingCampaignWizard, MarketingCampaignDetail, MarketingReminderList, MarketingReminderForm, MarketingOptOuts,
   NotFound,
 } from '@/app.routes'
 import {
@@ -226,6 +221,18 @@ export function App() {
         <Route path={ROUTES.PRODUCTION_RUNS} element={<PageRoute><ProtectedRoute><ProductionRunList /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PRODUCTION_RUN_NEW} element={<PageRoute><ProtectedRoute><ProductionRunForm /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PRODUCTION_RUN_DETAIL} element={<PageRoute><ProtectedRoute><ProductionRunDetail /></ProtectedRoute></PageRoute>} />
+        {/* Phase 5 Epic A — Marketing Comms */}
+        <Route path={ROUTES.MARKETING_HUB} element={<PageRoute><ProtectedRoute><MarketingHub /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.MARKETING_TEMPLATES} element={<PageRoute><ProtectedRoute><MarketingTemplateList /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.MARKETING_TEMPLATE_NEW} element={<PageRoute><ProtectedRoute><MarketingTemplateForm /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.MARKETING_TEMPLATE_EDIT} element={<PageRoute><ProtectedRoute><MarketingTemplateForm /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.MARKETING_CAMPAIGNS} element={<PageRoute><ProtectedRoute><MarketingCampaignList /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.MARKETING_CAMPAIGN_NEW} element={<PageRoute><ProtectedRoute><MarketingCampaignWizard /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.MARKETING_CAMPAIGN_DETAIL} element={<PageRoute><ProtectedRoute><MarketingCampaignDetail /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.MARKETING_REMINDERS} element={<PageRoute><ProtectedRoute><MarketingReminderList /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.MARKETING_REMINDER_NEW} element={<PageRoute><ProtectedRoute><MarketingReminderForm /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.MARKETING_REMINDER_EDIT} element={<PageRoute><ProtectedRoute><MarketingReminderForm /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.MARKETING_OPT_OUTS} element={<PageRoute><ProtectedRoute><MarketingOptOuts /></ProtectedRoute></PageRoute>} />
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
       </Routes>
       </PageTransition>
