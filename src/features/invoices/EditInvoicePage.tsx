@@ -8,6 +8,7 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { useLanguage } from '@/hooks/useLanguage'
 import { getDocument } from './invoice.service'
+import { getDocumentCustomFieldValues } from './invoice-custom-fields.service'
 import { EditInvoiceForm } from './components/EditInvoiceForm'
 import type { DocumentFormData, DocumentDetail, PaymentTerms } from './invoice.types'
 import './invoice-party-search.css'
@@ -63,9 +64,12 @@ export default function EditInvoicePage() {
     const controller = new AbortController()
     setLoadStatus('loading')
 
-    getDocument(invoiceId, controller.signal)
-      .then((detail) => {
-        setInitialData(detailToFormData(detail))
+    Promise.all([
+      getDocument(invoiceId, controller.signal),
+      getDocumentCustomFieldValues(invoiceId, controller.signal).catch(() => ({})),
+    ])
+      .then(([detail, customFieldValues]) => {
+        setInitialData({ ...detailToFormData(detail), customFieldValues })
         const nameMap: Record<string, string> = {}
         for (const li of detail.lineItems) {
           nameMap[li.product.id] = li.product.name

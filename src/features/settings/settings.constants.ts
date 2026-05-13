@@ -153,6 +153,14 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
         type: 'navigation',
         requiresStock: true,
       },
+      {
+        id: 'document-custom-fields',
+        label: 'Custom Fields',
+        description: 'Add custom fields to invoices, estimates, orders, challans',
+        icon: 'ClipboardList',
+        route: ROUTES.SETTINGS_DOC_CUSTOM_FIELDS,
+        type: 'navigation',
+      },
     ],
   },
   {

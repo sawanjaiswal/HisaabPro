@@ -19,6 +19,7 @@ import { useInvoiceForm } from './useInvoiceForm'
 import { InvoiceTotalsBar } from './components/InvoiceTotalsBar'
 import { InvoiceItemsSection } from './components/InvoiceItemsSection'
 import { InvoiceDetailsSection } from './components/InvoiceDetailsSection'
+import { InvoiceCustomFieldsSection } from './components/InvoiceCustomFieldsSection'
 import { InvoiceChargesSection } from './components/InvoiceChargesSection'
 import { GstInvoiceHeader } from './components/GstInvoiceHeader'
 import { UntaggedTaxDialog } from './components/UntaggedTaxDialog'
@@ -193,15 +194,23 @@ export default function CreateInvoicePage() {
           )}
 
           {activeSection === 'details' && (
-            <InvoiceDetailsSection
-              documentDate={form.documentDate}
-              paymentTerms={form.paymentTerms}
-              vehicleNumber={form.vehicleNumber ?? ''}
-              notes={form.notes ?? ''}
-              termsAndConditions={form.termsAndConditions ?? ''}
-              includeSignature={form.includeSignature}
-              onUpdateField={updateField}
-            />
+            <>
+              <InvoiceDetailsSection
+                documentDate={form.documentDate}
+                paymentTerms={form.paymentTerms}
+                vehicleNumber={form.vehicleNumber ?? ''}
+                notes={form.notes ?? ''}
+                termsAndConditions={form.termsAndConditions ?? ''}
+                includeSignature={form.includeSignature}
+                onUpdateField={updateField}
+              />
+              <InvoiceCustomFieldsSection
+                documentType={form.type}
+                values={(form.customFieldValues ?? {}) as Record<string, unknown>}
+                errors={{}}
+                onChange={(v) => updateField('customFieldValues', v)}
+              />
+            </>
           )}
 
           {activeSection === 'charges' && (

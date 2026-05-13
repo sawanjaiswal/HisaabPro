@@ -43,6 +43,7 @@ export const ROUTES = {
   SETTINGS_SECURITY: '/settings/security',
   SETTINGS_TRANSACTION_CONTROLS: '/settings/transaction-controls',
   SETTINGS_DOCUMENTS: '/settings/documents',
+  SETTINGS_DOC_CUSTOM_FIELDS: '/settings/document-custom-fields',
   SETTINGS_AUDIT_LOG: '/settings/audit-log',
   SETTINGS_SHORTCUTS: '/settings/shortcuts',
   SETTINGS_PIN_SETUP: '/settings/pin-setup',

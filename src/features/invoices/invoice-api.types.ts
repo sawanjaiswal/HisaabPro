@@ -166,6 +166,8 @@ export interface DocumentFormData {
   isReverseCharge: boolean
   /** GST Phase 2 — supply type for GSTR categorization */
   supplyType: string
+  /** #134 — In-form: `{ [fieldDefId]: value }`. On wire (after normalize): `Array<{ fieldDefId, valueJson }>`. */
+  customFieldValues?: Record<string, unknown> | Array<{ fieldDefId: string; valueJson: unknown }>
 }
 
 // ─── Document Conversion ──────────────────────────────────────────────────────

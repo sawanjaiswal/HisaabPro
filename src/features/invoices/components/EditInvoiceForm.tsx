@@ -12,6 +12,7 @@ import { useInvoiceForm } from '../useInvoiceForm'
 import { InvoiceTotalsBar } from './InvoiceTotalsBar'
 import { InvoiceItemsSection } from './InvoiceItemsSection'
 import { InvoiceDetailsSection } from './InvoiceDetailsSection'
+import { InvoiceCustomFieldsSection } from './InvoiceCustomFieldsSection'
 import { InvoiceChargesSection } from './InvoiceChargesSection'
 import { GstInvoiceHeader } from './GstInvoiceHeader'
 import { StockShortageBanner } from './StockShortageBanner'
@@ -138,15 +139,23 @@ export function EditInvoiceForm({
           )}
 
           {activeSection === 'details' && (
-            <InvoiceDetailsSection
-              documentDate={form.documentDate}
-              paymentTerms={form.paymentTerms}
-              vehicleNumber={form.vehicleNumber ?? ''}
-              notes={form.notes ?? ''}
-              termsAndConditions={form.termsAndConditions ?? ''}
-              includeSignature={form.includeSignature}
-              onUpdateField={updateField}
-            />
+            <>
+              <InvoiceDetailsSection
+                documentDate={form.documentDate}
+                paymentTerms={form.paymentTerms}
+                vehicleNumber={form.vehicleNumber ?? ''}
+                notes={form.notes ?? ''}
+                termsAndConditions={form.termsAndConditions ?? ''}
+                includeSignature={form.includeSignature}
+                onUpdateField={updateField}
+              />
+              <InvoiceCustomFieldsSection
+                documentType={form.type}
+                values={(form.customFieldValues ?? {}) as Record<string, unknown>}
+                errors={{}}
+                onChange={(v) => updateField('customFieldValues', v)}
+              />
+            </>
           )}
 
           {activeSection === 'charges' && (

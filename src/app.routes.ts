@@ -122,6 +122,7 @@ export const PosSaleDetail = lazy(() => import('@/features/pos/pages/PosSaleDeta
 export const StaffPermissions = lazy(() => import('@/features/settings/StaffPermissionsPage'))
 export const InventorySettings = lazy(() => import('@/features/settings/InventorySettingsPage'))
 export const DocumentSettings = lazy(() => import('@/features/settings/DocumentSettingsPage'))
+export const DocumentCustomFields = lazy(() => import('@/features/settings/DocumentCustomFieldsPage'))
 
 // Inventory Phase 2 — Purchase + Alerts
 export const Purchases = lazy(() => import('@/features/purchases/PurchasesPage'))

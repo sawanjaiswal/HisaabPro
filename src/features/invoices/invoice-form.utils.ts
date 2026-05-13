@@ -33,6 +33,7 @@ export function buildInitialForm(type: DocumentType): DocumentFormData {
     taxPricingMode: 'EXCLUSIVE',
     isReverseCharge: false,
     supplyType: 'B2C_SMALL',
+    customFieldValues: {},
   }
 }
 
@@ -99,5 +100,16 @@ export function normalizeFormPayload(
     // Normalise empty strings to undefined so the server omits them
     notes: form.notes?.trim() || undefined,
     termsAndConditions: form.termsAndConditions?.trim() || undefined,
+    customFieldValues: serializeCustomFieldValues(form.customFieldValues),
   }
+}
+
+/** Form holds values as `{ [fieldDefId]: value }`; server expects an array. */
+function serializeCustomFieldValues(
+  values: DocumentFormData['customFieldValues'],
+): Array<{ fieldDefId: string; valueJson: unknown }> | undefined {
+  if (!values || Array.isArray(values)) return Array.isArray(values) && values.length > 0 ? values : undefined
+  const entries = Object.entries(values).filter(([, v]) => v !== undefined && v !== null && v !== '')
+  if (entries.length === 0) return undefined
+  return entries.map(([fieldDefId, valueJson]) => ({ fieldDefId, valueJson }))
 }

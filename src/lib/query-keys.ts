@@ -28,6 +28,8 @@ export const queryKeys = {
     list: (filters: Filters) => ['invoices', 'list', filters] as const,
     detail: (id: string) => ['invoices', 'detail', id] as const,
     nextNumber: (type: string) => ['invoices', 'next-number', type] as const,
+    customFieldDefs: (docType: string) => ['invoices', 'custom-field-defs', docType] as const,
+    customFieldValues: (id: string) => ['invoices', 'custom-field-values', id] as const,
   },
   payments: {
     all: () => ['payments'] as const,
@@ -124,6 +126,7 @@ export const queryKeys = {
     currency: () => ['settings', 'currency'] as const,
     transactionControls: () => ['settings', 'transaction-controls'] as const,
     documents: () => ['settings', 'documents'] as const,
+    documentCustomFields: () => ['settings', 'document-custom-fields'] as const,
   },
   tax: {
     all: () => ['tax'] as const,
