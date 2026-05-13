@@ -14,6 +14,7 @@ import { useParties } from './useParties'
 import { PartySummaryBar } from './components/PartySummaryBar'
 import { PartyFilterBar } from './components/PartyFilterBar'
 import { PartyCard } from './components/PartyCard'
+import { useOptOutSet } from '@/features/marketing/hooks/useOptOutSet'
 import { PartyListSkeleton } from './components/PartyListSkeleton'
 import { deleteParty } from './party.service'
 import { ROUTES } from '@/config/routes.config'
@@ -29,6 +30,7 @@ export default function PartiesPage() {
   const { t } = useLanguage()
   const { data, status, filters, setSearch, setFilter, refresh } = useParties()
   const bulk = useBulkSelect()
+  const optOutSet = useOptOutSet()
   const [isBulkDeleting, setIsBulkDeleting] = useState(false)
 
   const handlePartyClick = (id: string) => {
@@ -157,6 +159,7 @@ export default function PartiesPage() {
                   onLongPress={handleLongPress}
                   isSelected={bulk.isSelected(party.id)}
                   isBulkMode={bulk.isActive}
+                  isOptedOut={optOutSet.has(party.id)}
                 />
                 <div className="divider" aria-hidden="true" />
               </div>

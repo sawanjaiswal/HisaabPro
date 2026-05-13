@@ -5,6 +5,7 @@ import type { PartySummary } from '../party.types'
 import { PARTY_TYPE_LABELS } from '../party.constants'
 import { formatOutstanding, formatPhone, timeAgo } from '../party.utils'
 import { PartyAvatar } from '../../../components/ui/PartyAvatar'
+import { OptOutChip } from '@/features/marketing/components/OptOutChip'
 
 interface PartyCardProps {
   party: PartySummary
@@ -15,6 +16,8 @@ interface PartyCardProps {
   isSelected?: boolean
   /** Whether bulk select mode is active */
   isBulkMode?: boolean
+  /** Whether this party has opted out of marketing messages */
+  isOptedOut?: boolean
 }
 
 const LONG_PRESS_MS = 500
@@ -25,6 +28,7 @@ export const PartyCard: React.FC<PartyCardProps> = ({
   onLongPress,
   isSelected = false,
   isBulkMode = false,
+  isOptedOut = false,
 }) => {
   const { t } = useLanguage()
   const { text: balanceText, isReceivable } = formatOutstanding(party.outstandingBalance)
@@ -89,6 +93,7 @@ export const PartyCard: React.FC<PartyCardProps> = ({
         <div className="party-card-header">
           <span className="txn-name">{party.name}</span>
           <span className={badgeClass}>{PARTY_TYPE_LABELS[party.type]}</span>
+          {isOptedOut && <OptOutChip />}
         </div>
         {party.phone && (
           <span className="txn-date">{formatPhone(party.phone)}</span>
