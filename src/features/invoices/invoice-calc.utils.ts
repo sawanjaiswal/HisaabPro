@@ -26,6 +26,8 @@ export interface LineItemCalc {
   discountValue: number
   /** Purchase price snapshot in PAISE — used for profit calculation */
   purchasePricePaise: number
+  /** BOGO #133 — when true, line contributes 0 to subtotal/discount/tax. */
+  isFreeItem?: boolean
 }
 
 export interface ChargeCalc {
@@ -131,6 +133,7 @@ export function calculateChargeAmount(
  */
 export function calculateSubtotal(lineItems: LineItemCalc[]): number {
   return lineItems.reduce((sum, item) => {
+    if (item.isFreeItem) return sum
     const { lineTotal } = calculateLineTotal(
       item.quantity,
       item.ratePaise,
@@ -146,6 +149,7 @@ export function calculateSubtotal(lineItems: LineItemCalc[]): number {
  */
 export function calculateTotalDiscount(lineItems: LineItemCalc[]): number {
   return lineItems.reduce((sum, item) => {
+    if (item.isFreeItem) return sum
     const { discountAmount } = calculateLineTotal(
       item.quantity,
       item.ratePaise,

@@ -114,6 +114,7 @@ export function useInvoiceForm(
       discountType: item.discountType,
       discountValue: item.discountValue,
       purchasePricePaise: 0,
+      isFreeItem: item.isFreeItem,
     }))
     const chargeCalcs: ChargeCalc[] = form.additionalCharges.map((charge) => ({
       type: charge.type,

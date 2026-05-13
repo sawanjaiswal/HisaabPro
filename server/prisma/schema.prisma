@@ -895,6 +895,9 @@ model DocumentLineItem {
   stockBefore Float @default(0)
   stockAfter  Float @default(0)
 
+  // #133 BOGO — when true, line contributes 0 to totals; stock still decrements
+  isFreeItem Boolean @default(false)
+
   document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
   product  Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
 

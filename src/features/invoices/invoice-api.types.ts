@@ -125,6 +125,8 @@ export interface LineItemFormData {
   batchId?: string | null
   /** BAT-05 — true when this product requires batch picking on sale */
   batchTracking?: boolean
+  /** BOGO #133 — when true, line contributes 0 to subtotal/tax; stock still decrements */
+  isFreeItem?: boolean
 }
 
 /** Additional charge as entered in the form — `amount` is calculated by the hook */
