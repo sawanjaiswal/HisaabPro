@@ -35,6 +35,7 @@ export async function createCustomField(
         required: data.required,
         showOnInvoice: data.showOnInvoice,
         entityType: data.entityType,
+        documentTypes: data.documentTypes ?? [],
         sortOrder: data.sortOrder,
       },
       select: {
@@ -46,6 +47,7 @@ export async function createCustomField(
         required: true,
         showOnInvoice: true,
         entityType: true,
+        documentTypes: true,
         sortOrder: true,
         createdAt: true,
         updatedAt: true,
@@ -62,8 +64,12 @@ export async function createCustomField(
   }
 }
 
-export async function listCustomFields(businessId: string, entityType?: string) {
-  return prisma.customFieldDefinition.findMany({
+export async function listCustomFields(
+  businessId: string,
+  entityType?: string,
+  documentType?: string,
+) {
+  const rows = await prisma.customFieldDefinition.findMany({
     where: {
       businessId,
       ...(entityType && { entityType }),
@@ -77,12 +83,17 @@ export async function listCustomFields(businessId: string, entityType?: string) 
       required: true,
       showOnInvoice: true,
       entityType: true,
+      documentTypes: true,
       sortOrder: true,
       createdAt: true,
       updatedAt: true,
     },
     take: 100,
   })
+  // #134 — when caller passes ?documentType=INVOICE, keep only fields whose
+  // documentTypes is empty (applies-to-all) or contains the requested type.
+  if (!documentType) return rows
+  return rows.filter(r => r.documentTypes.length === 0 || r.documentTypes.includes(documentType))
 }
 
 export async function updateCustomField(
@@ -102,6 +113,7 @@ export async function updateCustomField(
       ...(data.options !== undefined && { options: data.options }),
       ...(data.required !== undefined && { required: data.required }),
       ...(data.showOnInvoice !== undefined && { showOnInvoice: data.showOnInvoice }),
+      ...(data.documentTypes !== undefined && { documentTypes: data.documentTypes }),
       ...(data.sortOrder !== undefined && { sortOrder: data.sortOrder }),
     },
     select: {
@@ -112,6 +124,7 @@ export async function updateCustomField(
       required: true,
       showOnInvoice: true,
       entityType: true,
+      documentTypes: true,
       sortOrder: true,
       updatedAt: true,
     },

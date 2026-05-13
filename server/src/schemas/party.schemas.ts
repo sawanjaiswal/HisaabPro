@@ -128,13 +128,17 @@ export const deleteGroupSchema = z.object({
 
 // === Custom field schemas ===
 
+const DOCUMENT_TYPE_FOR_CUSTOM_FIELDS = ['INVOICE', 'ESTIMATE', 'SALE_ORDER', 'DELIVERY_CHALLAN'] as const
+
 export const createCustomFieldSchema = z.object({
   name: z.string().min(1, 'Field name is required').max(100),
   fieldType: z.enum(['TEXT', 'NUMBER', 'DATE', 'DROPDOWN']),
   options: z.array(z.string().max(100)).optional(),
   required: z.boolean().default(false),
   showOnInvoice: z.boolean().default(false),
-  entityType: z.enum(['PARTY', 'PRODUCT', 'INVOICE']).default('PARTY'),
+  // #134 — DOCUMENT replaces legacy INVOICE; INVOICE kept for backward-compat reads.
+  entityType: z.enum(['PARTY', 'PRODUCT', 'DOCUMENT', 'INVOICE']).default('PARTY'),
+  documentTypes: z.array(z.enum(DOCUMENT_TYPE_FOR_CUSTOM_FIELDS)).default([]),
   sortOrder: z.number().int().min(0).default(0),
 }).superRefine((data, ctx) => {
   if (data.fieldType === 'DROPDOWN' && (!data.options || data.options.length === 0)) {
@@ -151,6 +155,7 @@ export const updateCustomFieldSchema = z.object({
   options: z.array(z.string().max(100)).optional(),
   required: z.boolean().optional(),
   showOnInvoice: z.boolean().optional(),
+  documentTypes: z.array(z.enum(DOCUMENT_TYPE_FOR_CUSTOM_FIELDS)).optional(),
   sortOrder: z.number().int().min(0).optional(),
 })
 

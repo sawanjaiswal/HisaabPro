@@ -44,7 +44,10 @@ router.get(
     const entityType = typeof req.query.entityType === 'string'
       ? req.query.entityType
       : undefined
-    const fields = await partyService.listCustomFields(businessId, entityType)
+    const documentType = typeof req.query.documentType === 'string'
+      ? req.query.documentType
+      : undefined
+    const fields = await partyService.listCustomFields(businessId, entityType, documentType)
     sendSuccess(res, { fields })
   })
 )

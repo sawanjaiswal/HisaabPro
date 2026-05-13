@@ -83,14 +83,14 @@ model User {
   godownTransfers GodownTransfer[]
 
   // Notifications Engine
-  notifications             Notification[]
-  notificationPreferences   NotificationPreference[]
-  pushTokens                PushToken[]
+  notifications           Notification[]
+  notificationPreferences NotificationPreference[]
+  pushTokens              PushToken[]
 
   // Phase 4 — POS Billing
-  posSalesAsCashier   PosSale[] @relation("PosCashier")
-  posSalesAsVoider    PosSale[] @relation("PosVoider")
-  posSalesAsRestorer  PosSale[] @relation("PosRestorer")
+  posSalesAsCashier  PosSale[] @relation("PosCashier")
+  posSalesAsVoider   PosSale[] @relation("PosVoider")
+  posSalesAsRestorer PosSale[] @relation("PosRestorer")
 
   // Phase 4 — BOM / Manufacturing
   bomsCreated           Bom[]           @relation("BomCreator")
@@ -139,35 +139,36 @@ model Business {
   expiryAlertDays    Int?   @default(30) // 0 = no advance alerts; null = inherit default 30
   expiredBatchPolicy String @default("WARN_ONLY") // WARN_ONLY | HARD_BLOCK — independent of stockValidationMode
 
-  businessUsers        BusinessUser[]
-  parties              Party[]
-  partyGroups          PartyGroup[]
-  customFields         CustomFieldDefinition[]
-  categories           Category[]
-  units                Unit[]
-  products             Product[]
-  unitConversions      UnitConversion[]
-  stockMovements       StockMovement[]
-  inventorySetting     InventorySetting?
-  documents            Document[]
-  documentNumberSeries DocumentNumberSeries[]
-  documentSettings     DocumentSettings?
-  digitalSignature     DigitalSignature?
-  termsTemplates       TermsAndConditionsTemplate[]
-  payments             Payment[]
-  paymentReminders     PaymentReminder[]
-  reminderConfig       ReminderConfig?
-  roles                Role[]
-  staffInvites         StaffInvite[]
-  transactionLock      TransactionLockConfig?
-  approvals            ApprovalRequest[]
-  auditLogs            AuditLog[]
-  taxCategories        TaxCategory[]
-  gstReturns           GstReturn[]
-  gstReconciliations   GstReconciliation[]
-  recurringInvoices    RecurringInvoice[]
-  recurringRuns        RecurringInvoiceRun[]
-  exchangeRates        ExchangeRate[]
+  businessUsers             BusinessUser[]
+  parties                   Party[]
+  partyGroups               PartyGroup[]
+  customFields              CustomFieldDefinition[]
+  documentCustomFieldValues DocumentCustomFieldValue[]
+  categories                Category[]
+  units                     Unit[]
+  products                  Product[]
+  unitConversions           UnitConversion[]
+  stockMovements            StockMovement[]
+  inventorySetting          InventorySetting?
+  documents                 Document[]
+  documentNumberSeries      DocumentNumberSeries[]
+  documentSettings          DocumentSettings?
+  digitalSignature          DigitalSignature?
+  termsTemplates            TermsAndConditionsTemplate[]
+  payments                  Payment[]
+  paymentReminders          PaymentReminder[]
+  reminderConfig            ReminderConfig?
+  roles                     Role[]
+  staffInvites              StaffInvite[]
+  transactionLock           TransactionLockConfig?
+  approvals                 ApprovalRequest[]
+  auditLogs                 AuditLog[]
+  taxCategories             TaxCategory[]
+  gstReturns                GstReturn[]
+  gstReconciliations        GstReconciliation[]
+  recurringInvoices         RecurringInvoice[]
+  recurringRuns             RecurringInvoiceRun[]
+  exchangeRates             ExchangeRate[]
 
   // Phase 3 — Accounting
   ledgerAccounts    LedgerAccount[]
@@ -213,11 +214,11 @@ model Business {
   expenseBudgets   ExpenseBudget[]
 
   // Notifications Engine
-  notifications            Notification[]
-  notificationJobs         NotificationJob[]
-  notificationPreferences  NotificationPreference[]
-  notificationCostTallies  NotificationCostTally[]
-  pushTokens               PushToken[]
+  notifications           Notification[]
+  notificationJobs        NotificationJob[]
+  notificationPreferences NotificationPreference[]
+  notificationCostTallies NotificationCostTally[]
+  pushTokens              PushToken[]
 
   // Phase 4 — POS Billing
   posSales           PosSale[]
@@ -229,9 +230,9 @@ model Business {
   productionRuns ProductionRun[]
 
   // Phase 5 — Marketing Communications
-  marketingTemplates  MarketingTemplate[]
-  marketingCampaigns  MarketingCampaign[]
-  reminderRules       ReminderRule[]
+  marketingTemplates MarketingTemplate[]
+  marketingCampaigns MarketingCampaign[]
+  reminderRules      ReminderRule[]
 
   @@index([name])
 }
@@ -344,9 +345,9 @@ model Party {
   isWalkIn Boolean @default(false)
 
   // Phase 5 — Marketing Communications
-  birthday            DateTime?
-  marketingOptOut     Boolean   @default(false)
-  marketingOptOutAt   DateTime?
+  birthday          DateTime?
+  marketingOptOut   Boolean   @default(false)
+  marketingOptOutAt DateTime?
 
   business          Business                @relation(fields: [businessId], references: [id], onDelete: Restrict)
   group             PartyGroup?             @relation(fields: [groupId], references: [id], onDelete: SetNull)
@@ -427,20 +428,46 @@ model CustomFieldDefinition {
   options       String[]  @default([]) // for DROPDOWN type
   required      Boolean   @default(false)
   showOnInvoice Boolean   @default(false)
-  entityType    String    @default("PARTY") // PARTY, PRODUCT, INVOICE
+  entityType    String    @default("PARTY") // PARTY, PRODUCT, DOCUMENT
+  // #134 — when entityType = DOCUMENT, restrict field to specific doc types.
+  // Empty array = applies to all doc types. Values: INVOICE, ESTIMATE, SALE_ORDER, DELIVERY_CHALLAN
+  documentTypes String[]  @default([])
   sortOrder     Int       @default(0)
   isDeleted     Boolean   @default(false)
   deletedAt     DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  business      Business                  @relation(fields: [businessId], references: [id], onDelete: Restrict)
-  values        PartyCustomFieldValue[]
-  productValues ProductCustomFieldValue[]
+  business       Business                   @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  values         PartyCustomFieldValue[]
+  productValues  ProductCustomFieldValue[]
+  documentValues DocumentCustomFieldValue[]
 
   @@unique([businessId, name, entityType])
   @@index([businessId, entityType])
   @@index([businessId, isDeleted])
+}
+
+// #134 — per-document custom field value (JSONB).
+// One row per (documentId, fieldDefId). On document delete: cascade.
+// On field-def delete: Restrict (we soft-delete defs, so this surfaces orphans).
+model DocumentCustomFieldValue {
+  id         String   @id @default(cuid())
+  documentId String
+  fieldDefId String
+  businessId String
+  valueJson  Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  document Document              @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  fieldDef CustomFieldDefinition @relation(fields: [fieldDefId], references: [id], onDelete: Restrict)
+  business Business              @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([documentId, fieldDefId])
+  @@index([documentId])
+  @@index([businessId, fieldDefId])
+  @@index([fieldDefId])
 }
 
 model PartyCustomFieldValue {
@@ -825,6 +852,7 @@ model Document {
 
   lineItems          DocumentLineItem[]
   additionalCharges  DocumentAdditionalCharge[]
+  customFieldValues  DocumentCustomFieldValue[]
   shareLogs          DocumentShareLog[]
   paymentAllocations PaymentAllocation[]
   paymentReminders   PaymentReminder[]
@@ -1012,7 +1040,7 @@ model DocumentSettings {
   taxPricingMode String @default("EXCLUSIVE") @db.VarChar(20) // EXCLUSIVE | INCLUSIVE
 
   // Catalog Enrichment Phase 4 — migration: 20260508120000_catalog_enrichment_settings_and_indexes
-  enforceMoq         Boolean @default(true)  // true = hard block on BELOW_MOQ; false = warning only
+  enforceMoq         Boolean @default(true) // true = hard block on BELOW_MOQ; false = warning only
   showLineItemImages Boolean @default(false) // show product thumbnails on invoice line items
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
@@ -2038,7 +2066,7 @@ model Expense {
   templateId    String? // FK to ExpenseTemplate
   confirmedAt   DateTime?
   skippedAt     DateTime?
-  ocrSourceHash String?        @db.VarChar(64) // SHA-256 hex of OCR'd receipt bytes
+  ocrSourceHash String?       @db.VarChar(64) // SHA-256 hex of OCR'd receipt bytes
 
   business      Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
   category      ExpenseCategory  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
@@ -2899,18 +2927,18 @@ enum NotificationDeliveryStatus {
 }
 
 model Notification {
-  id         String   @id @default(cuid())
+  id         String @id @default(cuid())
   businessId String
   userId     String
 
-  eventKey    String  @db.VarChar(60)
-  titleEn     String  @db.VarChar(160)
-  titleHi     String  @db.VarChar(160)
-  bodyEn      String  @db.Text
-  bodyHi      String  @db.Text
+  eventKey String @db.VarChar(60)
+  titleEn  String @db.VarChar(160)
+  titleHi  String @db.VarChar(160)
+  bodyEn   String @db.Text
+  bodyHi   String @db.Text
 
-  isRead  Boolean   @default(false)
-  readAt  DateTime?
+  isRead Boolean   @default(false)
+  readAt DateTime?
 
   entityType  String? @db.VarChar(40)
   entityId    String?
@@ -2927,7 +2955,7 @@ model Notification {
 }
 
 model NotificationJob {
-  id         String                @id @default(cuid())
+  id         String @id @default(cuid())
   businessId String
   userId     String
 
@@ -2940,21 +2968,21 @@ model NotificationJob {
 
   // PII separation — §3.1: no raw phone/email/token in payload
   recipientChannel NotificationChannel
-  pushTokenId      String?            // FK to PushToken (PUSH only)
-  recipientHash    String  @db.VarChar(64) // sha256 of recipient identifier; never raw
+  pushTokenId      String? // FK to PushToken (PUSH only)
+  recipientHash    String              @db.VarChar(64) // sha256 of recipient identifier; never raw
 
-  payload    Json   // RENDERED ONLY: { title, body, deepLinkUrl, vars }
+  payload    Json // RENDERED ONLY: { title, body, deepLinkUrl, vars }
   externalId String? @db.VarChar(120)
 
-  scheduledAt  DateTime  @default(now())
-  claimedAt    DateTime?
-  claimedBy    String?   @db.VarChar(80)
-  processedAt  DateTime?
-  deliveredAt  DateTime?
-  failedAt     DateTime?
-  failureCode  String?   @db.VarChar(60)
-  failureReason String?  @db.VarChar(500)
-  retryCount   Int       @default(0)
+  scheduledAt   DateTime  @default(now())
+  claimedAt     DateTime?
+  claimedBy     String?   @db.VarChar(80)
+  processedAt   DateTime?
+  deliveredAt   DateTime?
+  failedAt      DateTime?
+  failureCode   String?   @db.VarChar(60)
+  failureReason String?   @db.VarChar(500)
+  retryCount    Int       @default(0)
 
   costPaise Int @default(0)
 
@@ -3028,14 +3056,14 @@ model PushToken {
 model PosSale {
   id            String @id @default(cuid())
   businessId    String
-  documentId    String @unique           // FK to Document(type=POS_SALE)
-  receiptNumber String                   // "POS25-26-00001"
-  receiptSeq    Int                      // raw counter for ORDER BY
-  financialYear String                   // "25-26"
+  documentId    String @unique // FK to Document(type=POS_SALE)
+  receiptNumber String // "POS25-26-00001"
+  receiptSeq    Int // raw counter for ORDER BY
+  financialYear String // "25-26"
 
   partyId     String?
-  walkInName  String?  @db.VarChar(60)
-  walkInPhone String?  @db.VarChar(15)
+  walkInName  String? @db.VarChar(60)
+  walkInPhone String? @db.VarChar(15)
 
   subtotal          Int @default(0)
   totalDiscount     Int @default(0)
@@ -3068,12 +3096,12 @@ model PosSale {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  business    Business     @relation(fields: [businessId], references: [id], onDelete: Restrict)
-  document    Document     @relation(fields: [documentId], references: [id], onDelete: Restrict)
-  party       Party?       @relation(fields: [partyId], references: [id], onDelete: SetNull)
-  cashier     User         @relation("PosCashier", fields: [cashierId], references: [id], onDelete: Restrict)
-  voidUser    User?        @relation("PosVoider", fields: [voidedBy], references: [id])
-  restoreUser User?        @relation("PosRestorer", fields: [restoredBy], references: [id])
+  business    Business       @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  document    Document       @relation(fields: [documentId], references: [id], onDelete: Restrict)
+  party       Party?         @relation(fields: [partyId], references: [id], onDelete: SetNull)
+  cashier     User           @relation("PosCashier", fields: [cashierId], references: [id], onDelete: Restrict)
+  voidUser    User?          @relation("PosVoider", fields: [voidedBy], references: [id])
+  restoreUser User?          @relation("PosRestorer", fields: [restoredBy], references: [id])
   items       PosSaleItem[]
   events      PosSaleEvent[]
 
@@ -3096,12 +3124,12 @@ model PosSaleItem {
   hsnCode     String? @db.VarChar(10)
   unitSymbol  String  @db.VarChar(20)
 
-  quantity      Float
-  ratePaise     Int
-  discountType  String @default("AMOUNT") @db.VarChar(20)
-  discountValue Int    @default(0)
-  discountAmount Int   @default(0)
-  lineTotal     Int    @default(0)
+  quantity       Float
+  ratePaise      Int
+  discountType   String @default("AMOUNT") @db.VarChar(20)
+  discountValue  Int    @default(0)
+  discountAmount Int    @default(0)
+  lineTotal      Int    @default(0)
 
   taxableValue Int @default(0)
   cgstRate     Int @default(0)
@@ -3119,10 +3147,10 @@ model PosSaleItem {
 
   note String? @db.VarChar(120)
 
-  posSale PosSale  @relation(fields: [posSaleId], references: [id], onDelete: Cascade)
-  product Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
-  batch   Batch?   @relation(fields: [batchId], references: [id], onDelete: SetNull)
-  godown  Godown?  @relation(fields: [godownId], references: [id], onDelete: SetNull)
+  posSale PosSale @relation(fields: [posSaleId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+  batch   Batch?  @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  godown  Godown? @relation(fields: [godownId], references: [id], onDelete: SetNull)
 
   @@index([posSaleId])
   @@index([productId])
@@ -3130,13 +3158,13 @@ model PosSaleItem {
 }
 
 model PosReceiptCounter {
-  id            String @id @default(cuid())
+  id            String   @id @default(cuid())
   businessId    String
   financialYear String // "25-26"
-  prefix        String @default("POS")
-  separator     String @default("-")
-  paddingDigits Int    @default(5)
-  lastNumber    Int    @default(0)
+  prefix        String   @default("POS")
+  separator     String   @default("-")
+  paddingDigits Int      @default(5)
+  lastNumber    Int      @default(0)
   updatedAt     DateTime @updatedAt
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
@@ -3160,20 +3188,20 @@ model PosSaleEvent {
 }
 
 model PosSetting {
-  id                   String  @id @default(cuid())
-  businessId           String  @unique
-  receiptPrefix        String  @default("POS")
-  receiptSeparator     String  @default("-")
-  receiptPaddingDigits Int     @default(5)
-  defaultPaymentMode   String  @default("CASH") @db.VarChar(20)
-  voidWindowHours      Int     @default(24)
-  defaultThermalWidth  String  @default("58MM") @db.VarChar(8)
-  autoShareOnCheckout  Boolean @default(false)
-  autoShareChannel     String  @default("WHATSAPP") @db.VarChar(20)
-  showProfitOnGrid     Boolean @default(false)
-  cashierMustSelectParty Boolean @default(false)
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  id                     String   @id @default(cuid())
+  businessId             String   @unique
+  receiptPrefix          String   @default("POS")
+  receiptSeparator       String   @default("-")
+  receiptPaddingDigits   Int      @default(5)
+  defaultPaymentMode     String   @default("CASH") @db.VarChar(20)
+  voidWindowHours        Int      @default(24)
+  defaultThermalWidth    String   @default("58MM") @db.VarChar(8)
+  autoShareOnCheckout    Boolean  @default(false)
+  autoShareChannel       String   @default("WHATSAPP") @db.VarChar(20)
+  showProfitOnGrid       Boolean  @default(false)
+  cashierMustSelectParty Boolean  @default(false)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 }
@@ -3183,7 +3211,7 @@ model PosSetting {
 model Bom {
   id         String   @id @default(cuid())
   businessId String
-  productId  String   // finished good
+  productId  String // finished good
   name       String   @db.VarChar(100)
   version    Int      @default(1)
   isActive   Boolean  @default(true)
@@ -3195,10 +3223,10 @@ model Bom {
   createdBy  String
   updatedBy  String?
 
-  business      Business        @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  product       Product         @relation("BomFinishedGood", fields: [productId], references: [id], onDelete: Restrict)
-  createdByUser User            @relation("BomCreator", fields: [createdBy], references: [id], onDelete: Restrict)
-  components    BomComponent[]
+  business       Business        @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  product        Product         @relation("BomFinishedGood", fields: [productId], references: [id], onDelete: Restrict)
+  createdByUser  User            @relation("BomCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  components     BomComponent[]
   productionRuns ProductionRun[]
 
   @@unique([businessId, productId, version])
@@ -3210,13 +3238,13 @@ model BomComponent {
   id                 String  @id @default(cuid())
   bomId              String
   componentProductId String
-  quantity           Float   // > 0; same Float convention as Product.currentStock
+  quantity           Float // > 0; same Float convention as Product.currentStock
   unitId             String?
   notes              String?
 
-  bom              Bom      @relation(fields: [bomId], references: [id], onDelete: Cascade)
-  componentProduct Product  @relation("BomComponentProduct", fields: [componentProductId], references: [id], onDelete: Restrict)
-  unit             Unit?    @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  bom              Bom     @relation(fields: [bomId], references: [id], onDelete: Cascade)
+  componentProduct Product @relation("BomComponentProduct", fields: [componentProductId], references: [id], onDelete: Restrict)
+  unit             Unit?   @relation(fields: [unitId], references: [id], onDelete: SetNull)
 
   @@unique([bomId, componentProductId])
   @@index([bomId])
@@ -3231,7 +3259,7 @@ model ProductionRun {
   runDate           DateTime
   status            String   @default("COMPLETED") // DRAFT | COMPLETED | CANCELLED
   notes             String?  @db.Text
-  warnings          Json?    // string[] — warn-only stock shortfalls
+  warnings          Json? // string[] — warn-only stock shortfalls
   isDeleted         Boolean  @default(false)
   createdBy         String
   createdAt         DateTime @default(now())
@@ -3299,7 +3327,7 @@ model MarketingTemplate {
   id               String    @id @default(cuid())
   businessId       String
   name             String    @db.VarChar(100)
-  channel          String    // WHATSAPP | SMS
+  channel          String // WHATSAPP | SMS
   bodyEn           String    @db.Text
   bodyHi           String?   @db.Text
   dltTemplateId    String?   @db.VarChar(60)
@@ -3327,7 +3355,7 @@ model MarketingCampaign {
   id             String         @id @default(cuid())
   businessId     String
   name           String         @db.VarChar(100)
-  channel        String         // WHATSAPP | SMS
+  channel        String // WHATSAPP | SMS
   templateId     String
   segmentFilter  Json           @default("{}")
   recipientCount Int            @default(0)
@@ -3346,8 +3374,8 @@ model MarketingCampaign {
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
-  business   Business                    @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  template   MarketingTemplate           @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  business   Business                     @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  template   MarketingTemplate            @relation(fields: [templateId], references: [id], onDelete: Restrict)
   recipients MarketingCampaignRecipient[]
 
   @@index([businessId, status, scheduledAt])
@@ -3382,7 +3410,7 @@ model ReminderRule {
   name            String              @db.VarChar(100)
   trigger         ReminderRuleTrigger
   offsetDays      Int                 @default(0)
-  channel         String              // WHATSAPP | SMS
+  channel         String // WHATSAPP | SMS
   templateId      String
   segmentFilter   Json                @default("{}")
   enabled         Boolean             @default(true)

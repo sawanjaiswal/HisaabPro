@@ -18,6 +18,7 @@ import {
 import { validateLineItemProducts } from './create-batch-validation.js'
 import { recordFreeItemAudit } from './create-audit.js'
 import { buildLineItemData } from './line-item-builder.js'
+import { persistDocumentCustomFieldValues } from './custom-fields.js'
 import { notificationManager } from '../notifications/notification-manager.js'
 import { formatPaise } from '../notifications/notification-template.service.js'
 
@@ -146,6 +147,13 @@ export async function createDocument(
 
     const lineItemData = buildLineItemData(doc.id, data.lineItems, productMap, totals)
     await tx.documentLineItem.createMany({ data: lineItemData })
+
+    await persistDocumentCustomFieldValues(tx, {
+      businessId,
+      documentId: doc.id,
+      documentType: data.type,
+      values: data.customFieldValues ?? [],
+    })
 
     await recordFreeItemAudit(tx, {
       businessId,

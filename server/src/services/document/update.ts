@@ -13,6 +13,7 @@ import {
 import { assertCompositionNoLineTax, assertCompositionNoInterState } from './create-tax-prep.js'
 import { assertMoq, type MoqViolation } from './moq.guard.js'
 import { buildLineItemData } from './line-item-builder.js'
+import { persistDocumentCustomFieldValues } from './custom-fields.js'
 
 export async function updateDocument(
   businessId: string,
@@ -178,6 +179,15 @@ export async function updateDocument(
     if (data.tcsAmount !== undefined) updateData.tcsAmount = data.tcsAmount
 
     await tx.document.update({ where: { id: documentId }, data: updateData })
+
+    if (data.customFieldValues !== undefined) {
+      await persistDocumentCustomFieldValues(tx, {
+        businessId,
+        documentId,
+        documentType: existing.type,
+        values: data.customFieldValues,
+      })
+    }
 
     const effectivePartyId = data.partyId || existing.partyId
     const effectiveGrandTotal = totals?.grandTotal ?? existing.grandTotal

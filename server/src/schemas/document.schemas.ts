@@ -54,6 +54,13 @@ const transportDetailsSchema = z.object({
   transportNotes: z.string().max(500).nullable().optional(),
 })
 
+// === Custom Field Values (#134) ===
+
+const customFieldValueInputSchema = z.object({
+  fieldDefId: z.string().min(1),
+  valueJson: z.unknown(),
+})
+
 // === Create Document ===
 
 export const createDocumentSchema = z.object({
@@ -86,6 +93,8 @@ export const createDocumentSchema = z.object({
   tdsAmount: z.number().int().min(0).optional(),             // paise
   tcsRate: z.number().int().min(0).max(10000).optional(),   // basis points
   tcsAmount: z.number().int().min(0).optional(),             // paise
+  // #134 — invoice custom fields
+  customFieldValues: z.array(customFieldValueInputSchema).max(50).optional(),
 })
 
 // === Update Document ===
@@ -115,6 +124,8 @@ export const updateDocumentSchema = z.object({
   tdsAmount: z.number().int().min(0).optional(),             // paise
   tcsRate: z.number().int().min(0).max(10000).optional(),   // basis points
   tcsAmount: z.number().int().min(0).optional(),             // paise
+  // #134 — invoice custom fields
+  customFieldValues: z.array(customFieldValueInputSchema).max(50).optional(),
 })
 
 // === List Documents (query params) ===
