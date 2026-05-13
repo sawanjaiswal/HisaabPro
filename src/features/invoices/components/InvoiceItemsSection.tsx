@@ -8,6 +8,7 @@
 import { Plus, AlertTriangle } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { LineItemEditor } from './LineItemEditor'
+import { useBogoPermission } from '../useBogoPermission'
 import { PartySearchInput } from './PartySearchInput'
 import { ProductSearchInput } from './ProductSearchInput'
 import { TaxPickerColumn } from './TaxPickerColumn'
@@ -53,6 +54,7 @@ export function InvoiceItemsSection({
   onToggleProductSearch,
 }: InvoiceItemsSectionProps) {
   const { t } = useLanguage()
+  const canMarkFree = useBogoPermission()
   const addedProductIds = lineItems.map((item) => item.productId)
 
   return (
@@ -91,6 +93,7 @@ export function InvoiceItemsSection({
               onUpdate={onUpdateLineItem}
               onRemove={onRemoveLineItem}
               showProfit={false}
+              canMarkFree={canMarkFree}
             />
 
             {gstEnabled && (

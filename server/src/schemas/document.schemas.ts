@@ -34,6 +34,8 @@ const lineItemSchema = z.object({
   hsnCode: z.string().max(8).optional(),
   sacCode: z.string().max(8).optional(),
   gstRate: z.number().int().min(0).max(10000).optional(), // basis points
+  // #133 BOGO — when true, line contributes 0 to totals; stock still decrements
+  isFreeItem: z.boolean().optional(),
 })
 
 // === Additional Charge ===

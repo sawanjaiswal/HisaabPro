@@ -16,6 +16,8 @@ import {
   getRoundOffSetting, updateOutstanding,
 } from './helpers.js'
 import { validateLineItemProducts } from './create-batch-validation.js'
+import { recordFreeItemAudit } from './create-audit.js'
+import { buildLineItemData } from './line-item-builder.js'
 import { notificationManager } from '../notifications/notification-manager.js'
 import { formatPaise } from '../notifications/notification-template.service.js'
 
@@ -142,39 +144,17 @@ export async function createDocument(
       },
     })
 
-    const lineItemData = data.lineItems.map((li, i) => {
-      const product = productMap.get(li.productId)!
-      const calc = totals.lineResults[i]
-      return {
-        documentId: doc.id,
-        productId: li.productId,
-        sortOrder: i,
-        quantity: li.quantity,
-        rate: li.rate,
-        discountType: li.discountType,
-        discountValue: li.discountValue,
-        discountAmount: calc.discountAmount,
-        lineTotal: calc.lineTotal,
-        purchasePrice: product.purchasePrice || 0,
-        profit: calc.profit,
-        profitPercent: calc.profitPercent,
-        stockBefore: product.currentStock,
-        stockAfter: product.currentStock,
-        taxCategoryId: li.taxCategoryId ?? null,
-        hsnCode: li.hsnCode ?? null,
-        sacCode: li.sacCode ?? null,
-        taxableValue: calc.taxableValue ?? 0,
-        cgstRate: calc.cgstRate ?? 0,
-        cgstAmount: calc.cgstAmount ?? 0,
-        sgstRate: calc.sgstRate ?? 0,
-        sgstAmount: calc.sgstAmount ?? 0,
-        igstRate: calc.igstRate ?? 0,
-        igstAmount: calc.igstAmount ?? 0,
-        cessRate: calc.cessRate ?? 0,
-        cessAmount: calc.cessAmount ?? 0,
-      }
-    })
+    const lineItemData = buildLineItemData(doc.id, data.lineItems, productMap, totals)
     await tx.documentLineItem.createMany({ data: lineItemData })
+
+    await recordFreeItemAudit(tx, {
+      businessId,
+      userId,
+      documentId: doc.id,
+      documentNumber: numberData?.documentNumber ?? null,
+      lineItems: data.lineItems,
+      purchasePriceMap: purchasePriceMap as Map<string, number>,
+    })
 
     if (data.additionalCharges.length > 0) {
       const chargeData = data.additionalCharges.map((c, i) => ({

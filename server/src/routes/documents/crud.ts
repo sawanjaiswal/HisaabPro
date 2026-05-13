@@ -8,7 +8,7 @@ import { asyncHandler } from '../../middleware/asyncHandler.js'
 import { validate } from '../../middleware/validate.js'
 import { replayProtection } from '../../middleware/replay-protection.js'
 import { idempotencyCheck } from '../../middleware/idempotency.js'
-import { requirePermission } from '../../middleware/permission.js'
+import { requirePermission, requireBogoIfFreeItem } from '../../middleware/permission.js'
 import { requireQuota } from '../../middleware/subscription-gate.js'
 import { sendSuccess } from '../../lib/response.js'
 import {
@@ -61,6 +61,7 @@ router.post(
   replayProtection,
   idempotencyCheck(),
   validate(createDocumentSchema),
+  requireBogoIfFreeItem,
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const doc = await documentService.createDocument(businessId, req.user!.userId, req.body)
@@ -74,6 +75,7 @@ router.put(
   requirePermission('invoicing.edit'),
   replayProtection,
   validate(updateDocumentSchema),
+  requireBogoIfFreeItem,
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const doc = await documentService.updateDocument(

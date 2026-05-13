@@ -69,6 +69,20 @@ export function requirePermission(permission: string) {
 }
 
 /**
+ * #133 BOGO — apply invoicing.bogo only when the payload includes free items.
+ * Runs AFTER validate(), so req.body.lineItems is the parsed array.
+ * Use:
+ *   router.post('/', requirePermission('invoicing.create'), validate(schema),
+ *               requireBogoIfFreeItem, asyncHandler(...))
+ */
+export function requireBogoIfFreeItem(req: Request, res: Response, next: NextFunction): void {
+  const lines = req.body?.lineItems
+  const hasFree = Array.isArray(lines) && lines.some((l: { isFreeItem?: boolean }) => l?.isFreeItem === true)
+  if (!hasFree) return next()
+  void requirePermission('invoicing.bogo')(req, res, next)
+}
+
+/**
  * Middleware — only business owner can proceed.
  * Used for: delete business, manage staff, modify settings.
  */

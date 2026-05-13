@@ -12,6 +12,7 @@ import {
 } from './helpers.js'
 import { assertCompositionNoLineTax, assertCompositionNoInterState } from './create-tax-prep.js'
 import { assertMoq, type MoqViolation } from './moq.guard.js'
+import { buildLineItemData } from './line-item-builder.js'
 
 export async function updateDocument(
   businessId: string,
@@ -83,6 +84,19 @@ export async function updateDocument(
       assertCompositionNoInterState(isCompositeUpdate, biz?.stateCode ?? null, placeOfSupply)
       const calcItems = data.lineItems.map(li => {
         const tc = li.taxCategoryId ? taxCategoryMap.get(li.taxCategoryId) : undefined
+        // #133 BOGO — free items contribute 0 to revenue / discount / tax
+        if (li.isFreeItem) {
+          return {
+            quantity: li.quantity,
+            rate: 0,
+            discountType: li.discountType,
+            discountValue: 0,
+            purchasePrice: productMap.get(li.productId)!.purchasePrice || 0,
+            gstRate: 0,
+            cessRate: 0,
+            cessType: tc?.cessType ?? 'PERCENTAGE',
+          }
+        }
         return {
           quantity: li.quantity,
           rate: li.rate,
@@ -102,38 +116,7 @@ export async function updateDocument(
       })
 
       await tx.documentLineItem.deleteMany({ where: { documentId } })
-      const lineItemData = data.lineItems.map((li, i) => {
-        const product = productMap.get(li.productId)!
-        const calc = totals!.lineResults[i]
-        return {
-          documentId,
-          productId: li.productId,
-          sortOrder: i,
-          quantity: li.quantity,
-          rate: li.rate,
-          discountType: li.discountType,
-          discountValue: li.discountValue,
-          discountAmount: calc.discountAmount,
-          lineTotal: calc.lineTotal,
-          purchasePrice: product.purchasePrice || 0,
-          profit: calc.profit,
-          profitPercent: calc.profitPercent,
-          stockBefore: product.currentStock,
-          stockAfter: product.currentStock,
-          taxCategoryId: li.taxCategoryId ?? null,
-          hsnCode: li.hsnCode ?? null,
-          sacCode: li.sacCode ?? null,
-          taxableValue: calc.taxableValue ?? 0,
-          cgstRate: calc.cgstRate ?? 0,
-          cgstAmount: calc.cgstAmount ?? 0,
-          sgstRate: calc.sgstRate ?? 0,
-          sgstAmount: calc.sgstAmount ?? 0,
-          igstRate: calc.igstRate ?? 0,
-          igstAmount: calc.igstAmount ?? 0,
-          cessRate: calc.cessRate ?? 0,
-          cessAmount: calc.cessAmount ?? 0,
-        }
-      })
+      const lineItemData = buildLineItemData(documentId, data.lineItems, productMap, totals!)
       await tx.documentLineItem.createMany({ data: lineItemData })
 
       if (data.additionalCharges) {

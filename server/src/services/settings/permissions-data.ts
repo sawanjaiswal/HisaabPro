@@ -13,6 +13,7 @@ export const PERMISSION_MATRIX = [
       { key: 'delete', label: 'Delete Invoices' },
       { key: 'share', label: 'Share Invoices' },
       { key: 'export', label: 'Export Invoices' },
+      { key: 'bogo', label: 'Mark Free Items (BOGO)' },
     ],
   },
   {
@@ -229,7 +230,7 @@ export const SYSTEM_ROLES: Array<{
   {
     name: 'Salesman', isSystem: true, priority: 50,
     permissions: [
-      'invoicing.view', 'invoicing.create', 'invoicing.edit', 'invoicing.share',
+      'invoicing.view', 'invoicing.create', 'invoicing.edit', 'invoicing.share', 'invoicing.bogo',
       'parties.view', 'payments.view', 'payments.record',
       'reports.view', 'templates.view', 'fields.viewPartyPhone',
       'jobs.view',

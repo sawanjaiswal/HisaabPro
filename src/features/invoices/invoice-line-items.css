@@ -22,6 +22,11 @@
   position: relative;
 }
 
+.line-item-row--free {
+  background: var(--color-success-50, #f0fdf4);
+  border-color: var(--color-success-200, #bbf7d0);
+}
+
 .line-item-header {
   display: flex;
   align-items: center;

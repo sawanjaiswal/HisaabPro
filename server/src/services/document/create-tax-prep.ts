@@ -35,6 +35,8 @@ interface LineItemSlice {
   discountValue: number
   gstRate?: number
   taxCategoryId?: string
+  /** #133 BOGO — when true, line is treated as rate=0 / discount=0 (giveaway). */
+  isFreeItem?: boolean
 }
 
 export interface GstPrep {
@@ -106,6 +108,21 @@ export function buildCalcItems(
       const grossLine = Math.round(li.quantity * li.rate)
       const { taxableValue } = backCalculateInclusive(grossLine, li.gstRate)
       effectiveRate = li.quantity > 0 ? Math.round(taxableValue / li.quantity) : 0
+    }
+
+    // #133 BOGO — free items contribute 0 to revenue, discount, taxable value, and tax.
+    // Profit becomes -purchasePrice*qty (cost without revenue) naturally.
+    if (li.isFreeItem) {
+      return {
+        quantity: li.quantity,
+        rate: 0,
+        discountType: li.discountType,
+        discountValue: 0,
+        purchasePrice: productPurchasePrices.get(li.productId) || 0,
+        gstRate: 0,
+        cessRate: 0,
+        cessType: tc?.cessType ?? 'PERCENTAGE',
+      }
     }
 
     return {
