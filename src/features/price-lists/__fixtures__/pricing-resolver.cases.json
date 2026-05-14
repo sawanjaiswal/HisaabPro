@@ -1,0 +1,389 @@
+[
+  {
+    "name": "level 1 — manual override wins over everything",
+    "input": {
+      "manualOverridePaise": 8500,
+      "partyPricing": { "price": 9000, "minQty": 1 },
+      "tier": {
+        "entries": [
+          {
+            "id": "entry-abs-1",
+            "mode": "ABSOLUTE",
+            "valuePaise": 7000,
+            "percentBps": null,
+            "fixedOffPaise": null,
+            "minQty": 1,
+            "maxQty": null
+          }
+        ]
+      },
+      "productSalePrice": 10000,
+      "qty": 5
+    },
+    "expected": {
+      "resolvedPaise": 8500,
+      "source": "MANUAL",
+      "appliedEntryId": null
+    }
+  },
+  {
+    "name": "level 1 — manual override of zero is valid (free item)",
+    "input": {
+      "manualOverridePaise": 0,
+      "partyPricing": { "price": 9000, "minQty": 1 },
+      "tier": null,
+      "productSalePrice": 10000,
+      "qty": 1
+    },
+    "expected": {
+      "resolvedPaise": 0,
+      "source": "MANUAL",
+      "appliedEntryId": null
+    }
+  },
+  {
+    "name": "level 2 — party pricing wins when qty meets minQty",
+    "input": {
+      "manualOverridePaise": null,
+      "partyPricing": { "price": 8800, "minQty": 5 },
+      "tier": {
+        "entries": [
+          {
+            "id": "entry-pct-1",
+            "mode": "PERCENT_OFF",
+            "valuePaise": null,
+            "percentBps": 1000,
+            "fixedOffPaise": null,
+            "minQty": 1,
+            "maxQty": null
+          }
+        ]
+      },
+      "productSalePrice": 10000,
+      "qty": 10
+    },
+    "expected": {
+      "resolvedPaise": 8800,
+      "source": "PARTY_PRICING",
+      "appliedEntryId": null
+    }
+  },
+  {
+    "name": "level 2 — party pricing skipped when qty is below minQty",
+    "input": {
+      "manualOverridePaise": null,
+      "partyPricing": { "price": 8800, "minQty": 5 },
+      "tier": null,
+      "productSalePrice": 10000,
+      "qty": 4
+    },
+    "expected": {
+      "resolvedPaise": 10000,
+      "source": "PRODUCT_DEFAULT",
+      "appliedEntryId": null
+    }
+  },
+  {
+    "name": "level 3 — ABSOLUTE tier entry selected for matching qty range",
+    "input": {
+      "manualOverridePaise": null,
+      "partyPricing": null,
+      "tier": {
+        "entries": [
+          {
+            "id": "entry-abs-10",
+            "mode": "ABSOLUTE",
+            "valuePaise": 7500,
+            "percentBps": null,
+            "fixedOffPaise": null,
+            "minQty": 10,
+            "maxQty": 99
+          },
+          {
+            "id": "entry-abs-1",
+            "mode": "ABSOLUTE",
+            "valuePaise": 9000,
+            "percentBps": null,
+            "fixedOffPaise": null,
+            "minQty": 1,
+            "maxQty": 9
+          }
+        ]
+      },
+      "productSalePrice": 10000,
+      "qty": 25
+    },
+    "expected": {
+      "resolvedPaise": 7500,
+      "source": "TIER",
+      "appliedEntryId": "entry-abs-10"
+    }
+  },
+  {
+    "name": "level 3 — PERCENT_OFF 1500 bps = 15% off (10000 * 8500 / 10000 = 8500)",
+    "input": {
+      "manualOverridePaise": null,
+      "partyPricing": null,
+      "tier": {
+        "entries": [
+          {
+            "id": "entry-pct-15",
+            "mode": "PERCENT_OFF",
+            "valuePaise": null,
+            "percentBps": 1500,
+            "fixedOffPaise": null,
+            "minQty": 1,
+            "maxQty": null
+          }
+        ]
+      },
+      "productSalePrice": 10000,
+      "qty": 3
+    },
+    "expected": {
+      "resolvedPaise": 8500,
+      "source": "TIER",
+      "appliedEntryId": "entry-pct-15"
+    }
+  },
+  {
+    "name": "level 3 — FIXED_OFF 5000 paise (₹50) off product price",
+    "input": {
+      "manualOverridePaise": null,
+      "partyPricing": null,
+      "tier": {
+        "entries": [
+          {
+            "id": "entry-fixed-1",
+            "mode": "FIXED_OFF",
+            "valuePaise": null,
+            "percentBps": null,
+            "fixedOffPaise": 5000,
+            "minQty": 1,
+            "maxQty": null
+          }
+        ]
+      },
+      "productSalePrice": 12000,
+      "qty": 1
+    },
+    "expected": {
+      "resolvedPaise": 7000,
+      "source": "TIER",
+      "appliedEntryId": "entry-fixed-1"
+    }
+  },
+  {
+    "name": "level 3 — qty exactly at band lower boundary (minQty=10, qty=10)",
+    "input": {
+      "manualOverridePaise": null,
+      "partyPricing": null,
+      "tier": {
+        "entries": [
+          {
+            "id": "entry-band-10",
+            "mode": "ABSOLUTE",
+            "valuePaise": 7000,
+            "percentBps": null,
+            "fixedOffPaise": null,
+            "minQty": 10,
+            "maxQty": 99
+          }
+        ]
+      },
+      "productSalePrice": 10000,
+      "qty": 10
+    },
+    "expected": {
+      "resolvedPaise": 7000,
+      "source": "TIER",
+      "appliedEntryId": "entry-band-10"
+    }
+  },
+  {
+    "name": "level 3 — qty exactly at band upper boundary (maxQty=99, qty=99)",
+    "input": {
+      "manualOverridePaise": null,
+      "partyPricing": null,
+      "tier": {
+        "entries": [
+          {
+            "id": "entry-band-99",
+            "mode": "ABSOLUTE",
+            "valuePaise": 6500,
+            "percentBps": null,
+            "fixedOffPaise": null,
+            "minQty": 10,
+            "maxQty": 99
+          }
+        ]
+      },
+      "productSalePrice": 10000,
+      "qty": 99
+    },
+    "expected": {
+      "resolvedPaise": 6500,
+      "source": "TIER",
+      "appliedEntryId": "entry-band-99"
+    }
+  },
+  {
+    "name": "level 3 — qty above all defined bands falls through to product default",
+    "input": {
+      "manualOverridePaise": null,
+      "partyPricing": null,
+      "tier": {
+        "entries": [
+          {
+            "id": "entry-band-max",
+            "mode": "ABSOLUTE",
+            "valuePaise": 7000,
+            "percentBps": null,
+            "fixedOffPaise": null,
+            "minQty": 10,
+            "maxQty": 99
+          }
+        ]
+      },
+      "productSalePrice": 10000,
+      "qty": 100
+    },
+    "expected": {
+      "resolvedPaise": 10000,
+      "source": "PRODUCT_DEFAULT",
+      "appliedEntryId": null
+    }
+  },
+  {
+    "name": "level 3 — most specific band wins (highest minQty among matching entries)",
+    "input": {
+      "manualOverridePaise": null,
+      "partyPricing": null,
+      "tier": {
+        "entries": [
+          {
+            "id": "entry-band-1",
+            "mode": "ABSOLUTE",
+            "valuePaise": 9500,
+            "percentBps": null,
+            "fixedOffPaise": null,
+            "minQty": 1,
+            "maxQty": 49
+          },
+          {
+            "id": "entry-band-10",
+            "mode": "ABSOLUTE",
+            "valuePaise": 8000,
+            "percentBps": null,
+            "fixedOffPaise": null,
+            "minQty": 10,
+            "maxQty": 49
+          }
+        ]
+      },
+      "productSalePrice": 10000,
+      "qty": 20
+    },
+    "expected": {
+      "resolvedPaise": 8000,
+      "source": "TIER",
+      "appliedEntryId": "entry-band-10"
+    }
+  },
+  {
+    "name": "level 3 — FIXED_OFF clamped to 0 when discount exceeds product price",
+    "input": {
+      "manualOverridePaise": null,
+      "partyPricing": null,
+      "tier": {
+        "entries": [
+          {
+            "id": "entry-fixed-overflow",
+            "mode": "FIXED_OFF",
+            "valuePaise": null,
+            "percentBps": null,
+            "fixedOffPaise": 20000,
+            "minQty": 1,
+            "maxQty": null
+          }
+        ]
+      },
+      "productSalePrice": 10000,
+      "qty": 1
+    },
+    "expected": {
+      "resolvedPaise": 0,
+      "source": "TIER",
+      "appliedEntryId": "entry-fixed-overflow"
+    }
+  },
+  {
+    "name": "level 3 — PERCENT_OFF 10000 bps = 100% off = price is 0",
+    "input": {
+      "manualOverridePaise": null,
+      "partyPricing": null,
+      "tier": {
+        "entries": [
+          {
+            "id": "entry-pct-100",
+            "mode": "PERCENT_OFF",
+            "valuePaise": null,
+            "percentBps": 10000,
+            "fixedOffPaise": null,
+            "minQty": 1,
+            "maxQty": null
+          }
+        ]
+      },
+      "productSalePrice": 10000,
+      "qty": 2
+    },
+    "expected": {
+      "resolvedPaise": 0,
+      "source": "TIER",
+      "appliedEntryId": "entry-pct-100"
+    }
+  },
+  {
+    "name": "level 4 — product default when no manual, partyPricing, or tier",
+    "input": {
+      "manualOverridePaise": null,
+      "partyPricing": null,
+      "tier": null,
+      "productSalePrice": 15000,
+      "qty": 1
+    },
+    "expected": {
+      "resolvedPaise": 15000,
+      "source": "PRODUCT_DEFAULT",
+      "appliedEntryId": null
+    }
+  },
+  {
+    "name": "level 4 — product default when tier exists but no entry matches qty",
+    "input": {
+      "manualOverridePaise": null,
+      "partyPricing": null,
+      "tier": {
+        "entries": [
+          {
+            "id": "entry-high-band",
+            "mode": "ABSOLUTE",
+            "valuePaise": 8000,
+            "percentBps": null,
+            "fixedOffPaise": null,
+            "minQty": 100,
+            "maxQty": null
+          }
+        ]
+      },
+      "productSalePrice": 10000,
+      "qty": 5
+    },
+    "expected": {
+      "resolvedPaise": 10000,
+      "source": "PRODUCT_DEFAULT",
+      "appliedEntryId": null
+    }
+  }
+]

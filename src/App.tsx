@@ -47,7 +47,7 @@ import {
   BomList, BomForm, BomDetail,
   ProductionRunList, ProductionRunForm, ProductionRunDetail,
   MarketingHub, MarketingTemplateList, MarketingTemplateForm, MarketingCampaignList, MarketingCampaignWizard, MarketingCampaignDetail, MarketingReminderList, MarketingReminderForm, MarketingOptOuts,
-  NotFound,
+  PriceLists, PriceListDetail, NotFound,
 } from '@/app.routes'
 import {
   PageRoute, DashboardFallback, ProtectedRoute, GuestRoute,
@@ -234,6 +234,8 @@ export function App() {
         <Route path={ROUTES.MARKETING_REMINDER_NEW} element={<PageRoute><ProtectedRoute><MarketingReminderForm /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.MARKETING_REMINDER_EDIT} element={<PageRoute><ProtectedRoute><MarketingReminderForm /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.MARKETING_OPT_OUTS} element={<PageRoute><ProtectedRoute><MarketingOptOuts /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PRICE_LISTS} element={<PageRoute><ProtectedRoute><PriceLists /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PRICE_LIST_DETAIL} element={<PageRoute><ProtectedRoute><PriceListDetail /></ProtectedRoute></PageRoute>} />
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
       </Routes>
       </PageTransition>

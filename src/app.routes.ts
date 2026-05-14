@@ -186,3 +186,7 @@ export const MarketingCampaignDetail = lazy(() => import('@/features/marketing/p
 export const MarketingReminderList = lazy(() => import('@/features/marketing/pages/ReminderRuleListPage'))
 export const MarketingReminderForm = lazy(() => import('@/features/marketing/pages/ReminderRuleFormPage'))
 export const MarketingOptOuts = lazy(() => import('@/features/marketing/pages/OptOutListPage'))
+
+// #132 — Price Lists (Batch 4)
+export const PriceLists = lazy(() => import('@/features/price-lists/PriceListsPage'))
+export const PriceListDetail = lazy(() => import('@/features/price-lists/PriceListDetailPage'))

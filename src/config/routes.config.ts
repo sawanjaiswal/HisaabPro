@@ -176,6 +176,10 @@ export const ROUTES = {
   NOTIFICATIONS:              '/notifications',
   NOTIFICATION_PREFERENCES:   '/notifications/preferences',
 
+  // #132 — Price Lists (Batch 4)
+  PRICE_LISTS:       '/settings/price-lists',
+  PRICE_LIST_DETAIL: '/settings/price-lists/:id',
+
   // Phase 4 — BOM / Manufacturing (PR4-PR6)
   BOM:              '/bom',
   BOM_NEW:          '/bom/new',

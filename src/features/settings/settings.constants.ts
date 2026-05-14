@@ -161,6 +161,7 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
         route: ROUTES.SETTINGS_DOC_CUSTOM_FIELDS,
         type: 'navigation',
       },
+      { id: 'price-lists', label: 'Price Lists', description: 'Custom pricing tiers for parties or bulk quantities', icon: 'Tag', route: ROUTES.PRICE_LISTS, type: 'navigation' },
     ],
   },
   {
