@@ -20,6 +20,7 @@ import { publicRateLimiter } from '../middleware/public/rate-limit.js'
 import { resolvePublicToken, PublicLinkError } from '../middleware/resolve-public-token.js'
 import invoiceRoutes from './public/invoice.routes.js'
 import storeRoutes from './public/store.routes.js'
+import inviteRoutes from './public/invite.routes.js'
 
 const router = Router()
 
@@ -82,7 +83,7 @@ router.use('/invoice', invoiceRoutes)
 // PR4 — Online Storefront (#121)
 router.use('/store', storeRoutes)
 
-// GET /api/p/invite/:token      — PR5
-// POST /api/p/invite/:token/claim — PR5
+// PR5 — Party Invite Portal (#131)
+router.use('/invite', inviteRoutes)
 
 export default router

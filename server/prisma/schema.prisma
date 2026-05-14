@@ -99,6 +99,9 @@ model User {
   // Epic C — Public shared links issued by this user
   issuedSharedLinks SharedLink[]
 
+  // Epic C PR5 — Party invite: one User may claim at most one Party globally (MVP)
+  linkedParties Party[]
+
   @@index([phone])
   @@index([referredBy])
   @@index([referralFraudFlags])
@@ -399,6 +402,10 @@ model Party {
 
   // #132 — Price Lists
   priceList PriceList? @relation("PartyPriceList", fields: [priceListId], references: [id], onDelete: SetNull)
+
+  // Epic C PR5 — invite-claim: one User per Party (MVP); DB-level uniqueness prevents hijack
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@unique([businessId, phone])
   @@index([businessId, type, isActive])

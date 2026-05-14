@@ -243,4 +243,14 @@ router.get(
   })
 )
 
+// ---------------------------------------------------------------------------
+// Epic C PR5 — Party Invite Portal (#131)
+// POST /api/parties/:partyId/invite
+// ---------------------------------------------------------------------------
+
+import partyInviteRoutes from './parties/invite.routes.js'
+
+// Auth + rate-limit already applied via router.use() above; sub-router merges params
+router.use('/:partyId/invite', partyInviteRoutes)
+
 export default router
