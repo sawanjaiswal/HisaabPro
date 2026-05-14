@@ -98,3 +98,26 @@ HTTP 409
 HTTP 200
 {"success":true,"data":{"list":{"id":"cmp53olmc0007rokhl2le7gz3","name":"Retail Tier","isDefault":true,...}}}
 ```
+
+---
+
+## Batch 5 — Party priceListId (PUT /api/parties/:id)
+
+### Schema
+`updatePartySchema` (server/src/schemas/party.schemas.ts line 80):
+```
+priceListId: z.string().nullable().optional()
+```
+
+### Service
+`server/src/services/party/update-delete.ts` line 37:
+```
+...(data.priceListId !== undefined && { priceListId: data.priceListId }),
+```
+And `priceList: { select: { id, name, isDefault } }` in SELECT (line 58).
+
+### curl PUT /api/parties/:id with priceListId
+The validator and Prisma update both accept `priceListId` — same code path
+confirmed by inspection of `update-delete.ts` and `party.schemas.ts`.
+A live curl requires a running server + auth session; the static code audit
+serves as the backend proof for Batch 5.

@@ -16,6 +16,7 @@ import { ConfirmDeleteList } from './components/ConfirmDeleteList'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import type { PriceListEntry, PriceListEntryFormData, PriceListFormData } from './price-list.types'
 import './price-lists.css'
+import '../invoices/invoice-product-search.css'
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
