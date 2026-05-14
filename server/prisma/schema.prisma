@@ -139,6 +139,9 @@ model Business {
   expiryAlertDays    Int?   @default(30) // 0 = no advance alerts; null = inherit default 30
   expiredBatchPolicy String @default("WARN_ONLY") // WARN_ONLY | HARD_BLOCK — independent of stockValidationMode
 
+  // #132 — Price Lists: SSOT for business default tier
+  defaultPriceListId String?
+
   businessUsers             BusinessUser[]
   parties                   Party[]
   partyGroups               PartyGroup[]
@@ -233,6 +236,10 @@ model Business {
   marketingTemplates MarketingTemplate[]
   marketingCampaigns MarketingCampaign[]
   reminderRules      ReminderRule[]
+
+  // #132 — Price Lists
+  priceLists       PriceList[] @relation("BusinessPriceLists")
+  defaultPriceList PriceList?  @relation("BusinessDefaultPriceList", fields: [defaultPriceListId], references: [id], onDelete: SetNull)
 
   @@index([name])
 }
@@ -349,6 +356,9 @@ model Party {
   marketingOptOut   Boolean   @default(false)
   marketingOptOutAt DateTime?
 
+  // #132 — Price Lists
+  priceListId String?
+
   business          Business                @relation(fields: [businessId], references: [id], onDelete: Restrict)
   group             PartyGroup?             @relation(fields: [groupId], references: [id], onDelete: SetNull)
   addresses         PartyAddress[]
@@ -369,6 +379,9 @@ model Party {
   marketingCampaignRecipients MarketingCampaignRecipient[]
   reminderInstances           ReminderInstance[]
 
+  // #132 — Price Lists
+  priceList PriceList? @relation("PartyPriceList", fields: [priceListId], references: [id], onDelete: SetNull)
+
   @@unique([businessId, phone])
   @@index([businessId, type, isActive])
   @@index([businessId, name])
@@ -377,6 +390,7 @@ model Party {
   @@index([businessId, isWalkIn])
   @@index([businessId, marketingOptOut])
   @@index([groupId])
+  @@index([businessId, priceListId])
 }
 
 model PartyAddress {
@@ -519,6 +533,57 @@ model PartyPricing {
   @@index([partyId, isDeleted])
 }
 
+// === Price Lists (#132) ===
+
+enum PriceListMode {
+  ABSOLUTE
+  PERCENT_OFF
+  FIXED_OFF
+}
+
+model PriceList {
+  id         String    @id @default(cuid())
+  businessId String
+  name       String // max 60 chars (validated in zod)
+  isDefault  Boolean   @default(false) // denorm mirror of Business.defaultPriceListId; resolver never trusts this — reads Business.defaultPriceListId
+  isDeleted  Boolean   @default(false)
+  deletedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  business             Business         @relation("BusinessPriceLists", fields: [businessId], references: [id], onDelete: Restrict)
+  entries              PriceListEntry[]
+  parties              Party[]          @relation("PartyPriceList")
+  defaultForBusinesses Business[]       @relation("BusinessDefaultPriceList")
+
+  @@unique([businessId, name])
+  @@index([businessId, isDeleted])
+}
+
+model PriceListEntry {
+  id            String        @id @default(cuid())
+  priceListId   String
+  productId     String
+  mode          PriceListMode
+  // exactly one of the three value columns is non-null per row, enforced by zod + DB CHECK in application layer:
+  valuePaise    Int? // for ABSOLUTE: final price in paise
+  percentBps    Int? // for PERCENT_OFF: 0..10000 (10000 = 100%)
+  fixedOffPaise Int? // for FIXED_OFF: discount amount in paise
+  minQty        Int           @default(1)
+  maxQty        Int? // null = "and above" (open-ended upper bound)
+  isDeleted     Boolean       @default(false)
+  deletedAt     DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  priceList PriceList @relation(fields: [priceListId], references: [id], onDelete: Cascade)
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@unique([priceListId, productId, minQty])
+  @@index([priceListId, productId, isDeleted])
+  @@index([productId])
+}
+
 // === Inventory & Products ===
 
 model Category {
@@ -657,6 +722,9 @@ model Product {
   bomComponents            BomComponent[]           @relation("BomComponentProduct")
   productionRunsAsFinished ProductionRun[]          @relation("ProductionRunFinished")
   productionRunComponents  ProductionRunComponent[] @relation("ProductionRunComponents")
+
+  // #132 — Price Lists (Restrict so a product in use cannot be hard-deleted — soft delete only)
+  priceListEntries PriceListEntry[]
 
   @@unique([businessId, sku])
   @@unique([businessId, barcode])
