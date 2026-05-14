@@ -1,0 +1,286 @@
+/* ─── Public Store Page ──────────────────────────────────────────────────────── */
+
+.pub-store {
+  min-height: 100dvh;
+  background: var(--color-gray-50, #f9f8f6);
+  padding-bottom: 80px;
+}
+
+/* ─── Header ──────────────────────────────────────────────────────────────────── */
+
+.pub-store__header {
+  background: linear-gradient(160deg, var(--color-primary-500) 0%, var(--color-primary-400) 100%);
+  color: #fff;
+  padding: 32px var(--pad-page-x, 16px) 24px;
+  text-align: center;
+}
+
+.pub-store__logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto var(--space-4) auto;
+  display: block;
+  border: 3px solid rgba(255,255,255,0.3);
+}
+
+.pub-store__logo-placeholder {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  margin: 0 auto var(--space-4) auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+}
+
+.pub-store__biz-name {
+  font-size: var(--fs-2xl, 1.25rem);
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.pub-store__tagline {
+  font-size: var(--fs-df, 0.9375rem);
+  color: rgba(255,255,255,0.8);
+  margin: var(--space-2) 0 0 0;
+}
+
+/* ─── Product grid ────────────────────────────────────────────────────────────── */
+
+.pub-store__body {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--space-5) var(--pad-page-x, 16px);
+}
+
+.pub-store__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pub-store__product-card {
+  background: var(--color-gray-0, #fff);
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: 0 2px 8px rgba(26,25,23,0.06);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.pub-store__product-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  background: var(--color-gray-100);
+}
+
+.pub-store__product-img-placeholder {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: var(--color-gray-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gray-300);
+}
+
+.pub-store__product-body {
+  padding: var(--space-3);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.pub-store__product-name {
+  font-size: var(--fs-sm, 0.8125rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pub-store__product-price {
+  font-size: var(--fs-df, 0.9375rem);
+  font-weight: 700;
+  color: var(--color-primary-600, #052D35);
+}
+
+.pub-store__enquire-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  width: 100%;
+  min-height: 36px;
+  background: #25D366;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  font-size: var(--fs-sm, 0.8125rem);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 150ms;
+}
+
+.pub-store__enquire-btn:hover {
+  opacity: 0.9;
+}
+
+/* ─── UPI sticky button ───────────────────────────────────────────────────────── */
+
+.pub-store__upi-bar {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--space-3) var(--pad-page-x, 16px);
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+}
+
+.pub-store__upi-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  min-height: 48px;
+  background: var(--color-primary-500, #0b4f5e);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md, 12px);
+  font-size: var(--fs-base, 1rem);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* ─── Status screens ────────────────────────────────────────────────────────── */
+
+.pub-store-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: 64px var(--pad-page-x, 16px);
+  min-height: 60dvh;
+  text-align: center;
+}
+
+.pub-store-status__icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--color-gray-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.pub-store-status__icon--error {
+  background: var(--color-error-50, #fff0f0);
+  color: var(--color-error, #dc3545);
+}
+
+.pub-store-status__title {
+  font-size: var(--fs-xl, 1.125rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.pub-store-status__msg {
+  font-size: var(--fs-df, 0.9375rem);
+  color: var(--text-secondary);
+  max-width: 280px;
+  margin: 0;
+}
+
+.pub-store-status__retry {
+  min-height: 44px;
+  padding: 0 24px;
+  border-radius: 12px;
+  background: var(--color-primary-500, #0b4f5e);
+  color: #fff;
+  border: none;
+  font-size: var(--fs-df, 0.9375rem);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ─── Skeleton ───────────────────────────────────────────────────────────────── */
+
+.pub-store-skeleton__header {
+  height: 160px;
+  background: var(--color-primary-100, #DAEBEA);
+  animation: pub-shimmer 1.4s infinite;
+  background-size: 200% 100%;
+}
+
+.pub-store-skeleton__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 20px 16px;
+}
+
+.pub-store-skeleton__card {
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.pub-store-skeleton__img {
+  aspect-ratio: 1 / 1;
+  background: var(--color-gray-100, #f0eeeb);
+  background-size: 200% 100%;
+  animation: pub-shimmer 1.4s infinite;
+}
+
+.pub-store-skeleton__text {
+  height: 12px;
+  margin: 12px 12px 8px;
+  border-radius: 6px;
+  background: var(--color-gray-100, #f0eeeb);
+  background-size: 200% 100%;
+  animation: pub-shimmer 1.4s infinite;
+}
+
+.pub-store-skeleton__text--short {
+  width: 60%;
+  margin-top: 0;
+}
+
+@keyframes pub-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ─── 320px ──────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 359px) {
+  .pub-store__grid {
+    grid-template-columns: 1fr;
+  }
+}

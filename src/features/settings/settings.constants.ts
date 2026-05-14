@@ -162,6 +162,7 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
         type: 'navigation',
       },
       { id: 'price-lists', label: 'Price Lists', description: 'Custom pricing tiers for parties or bulk quantities', icon: 'Tag', route: ROUTES.PRICE_LISTS, type: 'navigation' },
+      { id: 'storefront', label: 'Online Store', description: 'Share your product catalogue via a public store link', icon: 'Store', route: ROUTES.STOREFRONT_SETTINGS, type: 'navigation' },
     ],
   },
   {
@@ -245,5 +246,4 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
 ]
 
 // ─── Defaults (moved to settings-inventory.constants.ts) ──────────────────────
-
 export { DEFAULT_APP_SETTINGS, DEFAULT_TRANSACTION_LOCK_CONFIG } from './settings-inventory.constants'

@@ -49,6 +49,7 @@ import {
   ProductionRunList, ProductionRunForm, ProductionRunDetail,
   MarketingHub, MarketingTemplateList, MarketingTemplateForm, MarketingCampaignList, MarketingCampaignWizard, MarketingCampaignDetail, MarketingReminderList, MarketingReminderForm, MarketingOptOuts,
   PriceLists, PriceListDetail, NotFound,
+  StorefrontSettings, PublicStorePage,
 } from '@/app.routes'
 import {
   PageRoute, DashboardFallback, ProtectedRoute, GuestRoute,
@@ -75,6 +76,7 @@ export function App() {
         <Route element={<PublicLayoutRoute />}>
           <Route path="/p/health" element={<PublicHealthPage />} />
           <Route path="/p/invoice/:token" element={<PublicInvoicePage />} />
+          <Route path="/p/store/:slug" element={<PageRoute><PublicStorePage /></PageRoute>} />
         </Route>
         <Route path={ROUTES.HOME} element={<ErrorBoundary><PageRoute><HomeGate /></PageRoute></ErrorBoundary>} />
         <Route path={ROUTES.PRICING} element={<Navigate to="/#pricing" replace />} />
@@ -241,6 +243,8 @@ export function App() {
         <Route path={ROUTES.MARKETING_OPT_OUTS} element={<PageRoute><ProtectedRoute><MarketingOptOuts /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PRICE_LISTS} element={<PageRoute><ProtectedRoute><PriceLists /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PRICE_LIST_DETAIL} element={<PageRoute><ProtectedRoute><PriceListDetail /></ProtectedRoute></PageRoute>} />
+        {/* Epic C PR4 — Online Storefront (#121) */}
+        <Route path={ROUTES.STOREFRONT_SETTINGS} element={<PageRoute><ProtectedRoute><StorefrontSettings /></ProtectedRoute></PageRoute>} />
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
       </Routes>
       </PageTransition>

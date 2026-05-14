@@ -190,3 +190,9 @@ export const MarketingOptOuts = lazy(() => import('@/features/marketing/pages/Op
 // #132 — Price Lists (Batch 4)
 export const PriceLists = lazy(() => import('@/features/price-lists/PriceListsPage'))
 export const PriceListDetail = lazy(() => import('@/features/price-lists/PriceListDetailPage'))
+
+// Epic C PR4 — Online Storefront (#121)
+export const StorefrontSettings = lazy(() => import('@/features/storefront/StorefrontSettingsPage'))
+export const PublicStorePage = lazy(() =>
+  import('@/pages/public/PublicStorePage').then(m => ({ default: m.PublicStorePage }))
+)
