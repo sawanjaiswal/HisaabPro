@@ -2,12 +2,15 @@
  *
  * Renders: party search, line item editors, stock warnings, product search toggle.
  * GST Phase 2: TaxPickerColumn + HsnTypeahead conditionally rendered per line.
+ * #132 Batch 6: usePartyTier drives client-side price resolution per line.
  * All amounts in PAISE.
  */
 
+import { useCallback } from 'react'
 import { Plus, AlertTriangle } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { LineItemEditor } from './LineItemEditor'
+import { useLinePriceMeta } from './useLinePriceMeta'
 import { useBogoPermission } from '../useBogoPermission'
 import { PartySearchInput } from './PartySearchInput'
 import { ProductSearchInput } from './ProductSearchInput'
@@ -15,8 +18,10 @@ import { TaxPickerColumn } from './TaxPickerColumn'
 import { HsnTypeahead } from './HsnTypeahead'
 import { calculateLineTotal } from '../invoice-calc.utils'
 import { calculateLineProfit } from '../invoice-totals.utils'
+import { usePartyTier } from '@/features/price-lists/use-party-tier'
 import type { LineItemFormData } from '../invoice.types'
 import type { StockValidationItem } from '../invoice.service'
+import type { PriceMode } from './useLinePriceMeta'
 
 interface InvoiceItemsSectionProps {
   partyId: string
@@ -26,12 +31,15 @@ interface InvoiceItemsSectionProps {
   errors: Record<string, string>
   stockWarnings: StockValidationItem[]
   hasStockBlocks: boolean
-  /** GST Phase 2 — when true, tax picker and HSN columns are shown */
   gstEnabled?: boolean
-  /** GST Phase 2 — when true, tax picker is hidden (composition scheme) */
   compositionScheme?: boolean
+  /**
+   * #132 Batch 6 — when true, existing invoice lines start as EDITED
+   * so rates are not auto-replaced on load.
+   */
+  isEditMode?: boolean
   onPartyChange: (id: string, name: string) => void
-  onProductSelect: (productId: string, ratePaise: number, productName: string) => void
+  onProductSelect: (productId: string, ratePaise: number, productName: string, salePricePaise?: number) => void
   onUpdateLineItem: (index: number, item: Partial<LineItemFormData>) => void
   onRemoveLineItem: (index: number) => void
   onToggleProductSearch: () => void
@@ -47,6 +55,7 @@ export function InvoiceItemsSection({
   hasStockBlocks,
   gstEnabled = false,
   compositionScheme = false,
+  isEditMode = false,
   onPartyChange,
   onProductSelect,
   onUpdateLineItem,
@@ -55,6 +64,44 @@ export function InvoiceItemsSection({
 }: InvoiceItemsSectionProps) {
   const { t } = useLanguage()
   const canMarkFree = useBogoPermission()
+
+  // ─── Price-list tier for the selected party ────────────────────────────────
+
+  const { tier, partyPricing } = usePartyTier(partyId)
+
+  // ─── Per-line price metadata (mode + salePrice at add time) ───────────────
+
+  const { lineMeta, handlePriceModeChange, appendMeta } = useLinePriceMeta({
+    lineItems,
+    partyId,
+    isEditMode,
+    tier,
+    partyPricing,
+    onUpdateLineItem,
+  })
+
+  // ─── Handlers ─────────────────────────────────────────────────────────────
+
+  // Intercept product select to record salePrice in lineMeta
+  const handleProductSelect = useCallback(
+    (productId: string, ratePaise: number, productName: string, salePricePaise?: number) => {
+      appendMeta(salePricePaise ?? ratePaise)
+      onProductSelect(productId, ratePaise, productName, salePricePaise)
+    },
+    [appendMeta, onProductSelect],
+  )
+
+  // Reset priceMode to AUTO when productId changes on existing row
+  const handleUpdateLineItem = useCallback(
+    (index: number, updates: Partial<LineItemFormData>) => {
+      if ('productId' in updates && updates.productId !== lineItems[index]?.productId) {
+        handlePriceModeChange(index, 'AUTO' as PriceMode)
+      }
+      onUpdateLineItem(index, updates)
+    },
+    [lineItems, onUpdateLineItem, handlePriceModeChange],
+  )
+
   const addedProductIds = lineItems.map((item) => item.productId)
 
   return (
@@ -78,6 +125,8 @@ export function InvoiceItemsSection({
           item.quantity,
           discountAmount,
         )
+        const meta = lineMeta[index] ?? { mode: isEditMode ? ('EDITED' as PriceMode) : ('AUTO' as PriceMode), salePrice: 0 }
+
         return (
           <div key={item.productId} className="line-item-with-gst">
             <LineItemEditor
@@ -90,10 +139,15 @@ export function InvoiceItemsSection({
                 profitPercent,
               }}
               index={index}
-              onUpdate={onUpdateLineItem}
+              onUpdate={handleUpdateLineItem}
               onRemove={onRemoveLineItem}
               showProfit={false}
               canMarkFree={canMarkFree}
+              priceTier={tier}
+              partyPricing={partyPricing}
+              productSalePrice={meta.salePrice || undefined}
+              priceMode={meta.mode}
+              onPriceModeChange={handlePriceModeChange}
             />
 
             {gstEnabled && (
@@ -146,7 +200,7 @@ export function InvoiceItemsSection({
       {showProductSearch && (
         <div className="product-search-panel py-0">
           <ProductSearchInput
-            onSelect={onProductSelect}
+            onSelect={handleProductSelect}
             addedProductIds={addedProductIds}
           />
         </div>

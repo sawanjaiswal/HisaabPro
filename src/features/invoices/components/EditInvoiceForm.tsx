@@ -130,6 +130,7 @@ export function EditInvoiceForm({
               hasStockBlocks={hasStockBlocks}
               gstEnabled={gstEnabled}
               compositionScheme={compositionScheme}
+              isEditMode={true}
               onPartyChange={handlePartyChange}
               onProductSelect={handleProductSelect}
               onUpdateLineItem={updateLineItem}

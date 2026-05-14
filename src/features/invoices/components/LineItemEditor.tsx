@@ -1,4 +1,8 @@
-/** Create Invoice — single editable line item row (orchestrator shell) */
+/** Create Invoice — single editable line item row (orchestrator shell)
+ *
+ * #132 Batch 6: accepts priceMode + tier props; delegates resolver logic
+ * to useLineItemResolver. Shows PriceSourceHint below the rate field.
+ */
 
 import React, { useCallback } from 'react'
 import { Trash2, Gift } from 'lucide-react'
@@ -8,6 +12,11 @@ import { formatInvoiceAmount } from '../invoice-format.utils'
 import { calculateLineTotal } from '../invoice-calc.utils'
 import { LineItemBatchPicker } from './LineItemBatchPicker'
 import { LineItemFields } from './LineItemFields'
+import { useLineItemResolver } from './useLineItemResolver'
+import type { PriceListDetail } from '@/features/price-lists/price-list.types'
+import type { PriceMode } from './useLinePriceMeta'
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface LineItemEditorProps {
   item: LineItemFormData & {
@@ -21,11 +30,18 @@ interface LineItemEditorProps {
   onUpdate: (index: number, updates: Partial<LineItemFormData>) => void
   onRemove: (index: number) => void
   showProfit: boolean
-  /** BAT-05 — expired batch policy forwarded from business settings */
   expiredBatchPolicy?: 'HARD_BLOCK' | 'WARN_ONLY'
-  /** #133 — gate the FREE toggle on the invoicing.bogo permission */
   canMarkFree?: boolean
+
+  // ─── #132 Batch 6 — price resolution ───────────────────────────────────
+  priceTier?: PriceListDetail | null
+  partyPricing?: Record<string, { price: number; minQty: number }> | null
+  productSalePrice?: number
+  priceMode: PriceMode
+  onPriceModeChange: (index: number, mode: PriceMode) => void
 }
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export const LineItemEditor: React.FC<LineItemEditorProps> = ({
   item,
@@ -35,13 +51,41 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
   showProfit,
   expiredBatchPolicy = 'WARN_ONLY',
   canMarkFree = false,
+  priceTier = null,
+  partyPricing = null,
+  productSalePrice,
+  priceMode,
+  onPriceModeChange,
 }) => {
   const { t } = useLanguage()
   const isFree = item.isFreeItem === true
 
+  // ─── Resolver hook ────────────────────────────────────────────────────────
+
+  const { latestResolved, resolveNow } = useLineItemResolver({
+    productId: item.productId,
+    quantity: item.quantity,
+    currentRate: item.rate,
+    isFree,
+    priceMode,
+    priceTier,
+    partyPricing: partyPricing ?? null,
+    productSalePrice,
+    onUpdate: (rate) => onUpdate(index, { rate }),
+  })
+
+  const priceSource = priceMode === 'EDITED' ? ('MANUAL' as const) : latestResolved.source
+
+  // ─── Handlers ─────────────────────────────────────────────────────────────
+
   const handleFieldsChange = useCallback(
-    (updates: Partial<LineItemFormData>) => onUpdate(index, updates),
-    [index, onUpdate],
+    (updates: Partial<LineItemFormData>) => {
+      if ('rate' in updates && updates.rate !== item.rate) {
+        onPriceModeChange(index, 'EDITED')
+      }
+      onUpdate(index, updates)
+    },
+    [index, item.rate, onUpdate, onPriceModeChange],
   )
 
   const handleBatchSelect = useCallback(
@@ -53,6 +97,14 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
     onUpdate(index, { isFreeItem: !isFree })
   }, [index, isFree, onUpdate])
 
+  const handleResetPrice = useCallback(() => {
+    onPriceModeChange(index, 'AUTO')
+    const resolved = resolveNow(item.quantity)
+    if (resolved) onUpdate(index, { rate: resolved.resolvedPaise })
+  }, [index, item.quantity, onPriceModeChange, resolveNow, onUpdate])
+
+  // ─── Totals ────────────────────────────────────────────────────────────────
+
   const { lineTotal: recalcLineTotal } = calculateLineTotal(
     item.quantity,
     item.rate,
@@ -60,11 +112,8 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
     item.discountValue,
   )
   const displayLineTotal = isFree ? 0 : recalcLineTotal
-
   const isProfit = item.profit >= 0
-  const profitClass = isProfit
-    ? 'line-item-profit line-item-profit-positive'
-    : 'line-item-profit line-item-profit-negative'
+  const profitClass = isProfit ? 'line-item-profit line-item-profit-positive' : 'line-item-profit line-item-profit-negative'
 
   return (
     <div
@@ -77,15 +126,7 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
           {isFree && (
             <span
               className="badge"
-              style={{
-                marginLeft: 8,
-                padding: '2px 6px',
-                borderRadius: 999,
-                background: 'var(--color-success-50)',
-                color: 'var(--color-success-700)',
-                fontSize: 11,
-                fontWeight: 700,
-              }}
+              style={{ marginLeft: 8, padding: '2px 6px', borderRadius: 999, background: 'var(--color-success-50)', color: 'var(--color-success-700)', fontSize: 11, fontWeight: 700 }}
             >
               {t.freeItemBadge}
             </span>
@@ -98,8 +139,8 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
               className={`btn btn-ghost btn-sm${isFree ? ' active' : ''}`}
               onClick={toggleFree}
               aria-pressed={isFree}
-              aria-label={isFree ? (t.unmarkFreeItem) : (t.markFreeItem)}
-              title={isFree ? (t.unmarkFreeItem) : (t.markFreeItem)}
+              aria-label={isFree ? t.unmarkFreeItem : t.markFreeItem}
+              title={isFree ? t.unmarkFreeItem : t.markFreeItem}
             >
               <Gift size={16} aria-hidden="true" />
             </button>
@@ -133,6 +174,10 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
         discountValue={item.discountValue}
         readOnly={isFree}
         onChange={handleFieldsChange}
+        priceSource={priceSource}
+        priceListName={priceTier?.name}
+        priceListId={priceTier?.id}
+        onResetPrice={handleResetPrice}
       />
 
       <div className="line-item-total">
@@ -143,11 +188,12 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
               {isProfit ? '+' : ''}{item.profitPercent.toFixed(1)}%
             </span>
           )}
-          <span className="line-item-total-amount">
-            {formatInvoiceAmount(displayLineTotal)}
-          </span>
+          <span className="line-item-total-amount">{formatInvoiceAmount(displayLineTotal)}</span>
         </div>
       </div>
     </div>
   )
 }
+
+// Re-export PriceMode so callers don't need to import from useLinePriceMeta
+export type { PriceMode }

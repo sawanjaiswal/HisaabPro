@@ -5,6 +5,8 @@ import { useLanguage } from '@/hooks/useLanguage'
 import type { DiscountType } from '../invoice.types'
 import { paiseToRupees, rupeesToPaise } from '../invoice-format.utils'
 import { DISCOUNT_TYPE_LABELS } from '../invoice.constants'
+import { PriceSourceHint } from '@/features/price-lists/PriceSourceHint'
+import type { PriceResolverResult } from '@/features/price-lists/pricing-resolver'
 
 const DISCOUNT_TYPES: DiscountType[] = ['AMOUNT', 'PERCENTAGE']
 
@@ -18,6 +20,14 @@ interface LineItemFieldsProps {
   /** When true, rate/discount fields are disabled (free item) */
   readOnly?: boolean
   onChange: (updates: { quantity?: number; rate?: number; discountType?: DiscountType; discountValue?: number }) => void
+  /** #132 Batch 6 — price resolution source for hint display */
+  priceSource?: PriceResolverResult['source']
+  /** #132 Batch 6 — name of the price list (when source = TIER) */
+  priceListName?: string
+  /** #132 Batch 6 — id of the price list (when source = TIER) */
+  priceListId?: string
+  /** #132 Batch 6 — called when user clicks "Reset to auto" */
+  onResetPrice?: () => void
 }
 
 export const LineItemFields: React.FC<LineItemFieldsProps> = ({
@@ -29,6 +39,10 @@ export const LineItemFields: React.FC<LineItemFieldsProps> = ({
   discountValue,
   readOnly = false,
   onChange,
+  priceSource,
+  priceListName,
+  priceListId,
+  onResetPrice,
 }) => {
   const { t } = useLanguage()
 
@@ -85,6 +99,14 @@ export const LineItemFields: React.FC<LineItemFieldsProps> = ({
           onChange={handleRate}
           aria-label={`${t.rateInRupeesFor} ${productName}`}
         />
+        {priceSource && priceSource !== 'PRODUCT_DEFAULT' && onResetPrice && (
+          <PriceSourceHint
+            source={priceSource}
+            listName={priceListName}
+            listId={priceListId}
+            onReset={onResetPrice}
+          />
+        )}
       </div>
 
       <div className="line-item-field">

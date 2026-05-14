@@ -1,0 +1,123 @@
+/* ============================================================
+ * price-source-hint.css
+ * Chip displayed below the rate field showing which pricing
+ * level resolved the current rate.
+ * Mobile-first, BEM-flavoured.
+ * ============================================================ */
+
+.price-hint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: 2px;
+  min-height: 18px;
+  flex-wrap: wrap;
+}
+
+/* ─── Badge (shared base) ─────────────────────────────────────────────────── */
+
+.price-hint__badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--fs-2xs);
+  font-weight: 500;
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+/* ─── MANUAL variant ──────────────────────────────────────────────────────── */
+
+.price-hint--manual .price-hint__badge {
+  background: var(--color-gray-100);
+  color: var(--color-gray-500);
+}
+
+/* ─── PARTY_PRICING variant ──────────────────────────────────────────────── */
+
+.price-hint--party .price-hint__badge {
+  background: var(--color-warning-50, #fffbeb);
+  color: var(--color-warning-700, #b45309);
+  border: 1px solid var(--color-warning-200, #fde68a);
+}
+
+/* ─── TIER variant ────────────────────────────────────────────────────────── */
+
+.price-hint--tier .price-hint__badge {
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+  border: 1px solid var(--color-primary-200);
+}
+
+.price-hint__tier-link {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--fs-2xs);
+  font-weight: 500;
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+  border: 1px solid var(--color-primary-200);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+.price-hint__tier-link:hover,
+.price-hint__tier-link:focus {
+  background: var(--color-primary-100);
+  outline: 2px solid var(--color-primary-300);
+  outline-offset: 1px;
+}
+
+/* ─── Reset button ────────────────────────────────────────────────────────── */
+
+.price-hint__reset {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: var(--fs-2xs);
+  font-weight: 500;
+  font-family: var(--font-primary);
+  color: var(--color-primary-500);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  min-height: 18px; /* tap target OK — not primary action; label is descriptive */
+}
+
+.price-hint__reset:hover,
+.price-hint__reset:focus {
+  color: var(--color-primary-700);
+  outline: none;
+}
+
+/* ─── Dark theme ──────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .price-hint--manual .price-hint__badge {
+  background: var(--color-gray-200);
+  color: var(--color-gray-400);
+}
+
+[data-theme="dark"] .price-hint--party .price-hint__badge {
+  background: color-mix(in srgb, var(--color-warning-500, #f59e0b) 12%, transparent);
+  color: var(--color-warning-300, #fcd34d);
+  border-color: color-mix(in srgb, var(--color-warning-500, #f59e0b) 30%, transparent);
+}
+
+[data-theme="dark"] .price-hint--tier .price-hint__badge,
+[data-theme="dark"] .price-hint__tier-link {
+  background: var(--overlay-primary-10);
+  color: var(--color-primary-300);
+  border-color: color-mix(in srgb, var(--color-primary-500) 30%, transparent);
+}
+
+[data-theme="dark"] .price-hint__tier-link:hover,
+[data-theme="dark"] .price-hint__tier-link:focus {
+  background: var(--overlay-primary-20, color-mix(in srgb, var(--color-primary-500) 20%, transparent));
+}
+
+[data-theme="dark"] .price-hint__reset {
+  color: var(--color-primary-400);
+}
