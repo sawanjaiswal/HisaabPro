@@ -116,6 +116,26 @@ export async function deletePriceListEntry(
   })
 }
 
+// ─── Bulk assign parties ──────────────────────────────────────────────────────
+
+export interface BulkAssignResponse {
+  assigned: number
+  partyPricingOverlapCount: number
+}
+
+export async function bulkAssignParties(
+  listId: string,
+  listName: string,
+  partyIds: string[],
+): Promise<BulkAssignResponse> {
+  return api<BulkAssignResponse>(`/price-lists/${listId}/bulk-assign-parties`, {
+    method: 'POST',
+    body: JSON.stringify({ partyIds }),
+    entityType: 'priceListAssign',
+    entityLabel: listName,
+  })
+}
+
 // ─── Internal helper ──────────────────────────────────────────────────────────
 
 function buildEntryBody(form: PriceListEntryFormData) {

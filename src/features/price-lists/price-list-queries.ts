@@ -13,6 +13,7 @@ import {
   createPriceListEntry,
   updatePriceListEntry,
   deletePriceListEntry,
+  bulkAssignParties,
 } from './price-list.service'
 import type { PriceListFormData, PriceListEntryFormData } from './price-list.types'
 
@@ -138,4 +139,27 @@ export function usePriceListEntryMutations(listId: string, listName: string) {
   })
 
   return { create, update, remove }
+}
+
+// ─── useBulkAssignParties ─────────────────────────────────────────────────────
+
+export function useBulkAssignParties(listId: string, listName: string) {
+  const queryClient = useQueryClient()
+  const toast = useToast()
+
+  return useMutation({
+    mutationFn: (partyIds: string[]) => bulkAssignParties(listId, listName, partyIds),
+    onSuccess: (result) => {
+      const base = `Assigned ${result.assigned} ${result.assigned === 1 ? 'party' : 'parties'} to ${listName}`
+      const overlapNote = result.partyPricingOverlapCount > 0
+        ? ` (${result.partyPricingOverlapCount} had per-product overrides that still win)`
+        : ''
+      toast.success(base + overlapNote)
+      queryClient.invalidateQueries({ queryKey: priceListKeys.all() })
+      queryClient.invalidateQueries({ queryKey: priceListKeys.detail(listId) })
+      queryClient.invalidateQueries({ queryKey: ['parties'] })
+    },
+    onError: (e) =>
+      toast.error(e instanceof ApiError ? e.message : 'Failed to assign parties'),
+  })
 }

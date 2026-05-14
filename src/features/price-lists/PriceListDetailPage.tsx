@@ -14,6 +14,7 @@ import { PriceListFormDrawer } from './components/PriceListFormDrawer'
 import { PriceListEntryFormDrawer } from './components/PriceListEntryFormDrawer'
 import { ConfirmDeleteList } from './components/ConfirmDeleteList'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { BulkAssignDrawer } from './components/BulkAssignDrawer'
 import type { PriceListEntry, PriceListEntryFormData, PriceListFormData } from './price-list.types'
 import './price-lists.css'
 import '../invoices/invoice-product-search.css'
@@ -41,6 +42,7 @@ export default function PriceListDetailPage() {
 
   const [editListOpen, setEditListOpen] = useState(false)
   const [deleteListOpen, setDeleteListOpen] = useState(false)
+  const [bulkAssignOpen, setBulkAssignOpen] = useState(false)
   const [entryDrawerOpen, setEntryDrawerOpen] = useState(false)
   const [editEntry, setEditEntry] = useState<PriceListEntry | null>(null)
   const [deleteEntry, setDeleteEntry] = useState<PriceListEntry | null>(null)
@@ -126,13 +128,12 @@ export default function PriceListDetailPage() {
                 )}
               </div>
 
-              {/* Bulk assign CTA — placeholder (wired in Batch 8) */}
+              {/* Bulk assign CTA */}
               <button
                 type="button"
                 className="btn btn-outline btn-md"
-                disabled
+                onClick={() => setBulkAssignOpen(true)}
                 aria-label={t.plBulkAssign}
-                title="Coming in a future update"
               >
                 <Share2 size={16} aria-hidden="true" />
                 {t.plBulkAssign}
@@ -181,6 +182,14 @@ export default function PriceListDetailPage() {
           )}
         </div>
       </PageContainer>
+
+      {/* Bulk assign drawer */}
+      <BulkAssignDrawer
+        open={bulkAssignOpen}
+        onClose={() => setBulkAssignOpen(false)}
+        priceListId={id}
+        listName={priceList?.name ?? ''}
+      />
 
       {/* Edit list drawer */}
       <PriceListFormDrawer

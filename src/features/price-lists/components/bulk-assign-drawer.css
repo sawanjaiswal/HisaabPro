@@ -1,0 +1,216 @@
+/* BulkAssignDrawer — BEM: bad__ */
+
+/* ─── Search ─────────────────────────────────────────────────────────────── */
+
+.bad__search-wrap {
+  position: relative;
+  margin-bottom: var(--space-2);
+}
+
+.bad__search-icon {
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.bad__search {
+  width: 100%;
+  padding: var(--space-2) var(--space-3) var(--space-2) calc(var(--space-3) + 24px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  outline: none;
+  transition: border-color 150ms;
+}
+
+.bad__search:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-bg-subtle);
+}
+
+/* ─── Helpers row ────────────────────────────────────────────────────────── */
+
+.bad__helpers {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  margin-bottom: var(--space-2);
+  padding: var(--space-1) 0;
+}
+
+.bad__helper-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-primary);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.bad__helper-btn--muted {
+  color: var(--color-text-muted);
+}
+
+/* ─── States ─────────────────────────────────────────────────────────────── */
+
+.bad__state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.bad__state-title {
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.bad__state-body {
+  font-size: var(--text-sm);
+  margin: 0;
+}
+
+.bad__skeleton {
+  height: 52px;
+  border-radius: var(--radius-md);
+  background: var(--color-gray-100);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+  margin-bottom: var(--space-2);
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ─── Party list ─────────────────────────────────────────────────────────── */
+
+.bad__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bad__row {
+  border-radius: var(--radius-md);
+  transition: background 120ms;
+}
+
+.bad__row:hover {
+  background: var(--color-surface-hover);
+}
+
+.bad__label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-2);
+  cursor: pointer;
+  width: 100%;
+  min-height: 48px;
+}
+
+.bad__checkbox {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.bad__party-name {
+  flex: 1;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bad__chip {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.bad__chip--current {
+  background: var(--color-primary-50);
+  color: var(--color-primary);
+}
+
+.bad__chip--other {
+  background: var(--color-warning-50);
+  color: var(--color-warning-700);
+}
+
+/* ─── Footer ─────────────────────────────────────────────────────────────── */
+
+.bad__footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.bad__warning {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-warning-50);
+  color: var(--color-warning-700);
+  font-size: var(--text-sm);
+}
+
+.bad__count-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.bad__count-strip > span {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.bad__cta {
+  min-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─── Mobile-first tweaks (320px) ────────────────────────────────────────── */
+
+@media (max-width: 359px) {
+  .bad__count-strip {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .bad__cta {
+    min-width: unset;
+    width: 100%;
+  }
+}
