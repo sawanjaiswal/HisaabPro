@@ -13,10 +13,6 @@ import type {
   SanitizeStorefrontProduct,
 } from './sanitize-storefront-public.js'
 
-// ---------------------------------------------------------------------------
-// Select shapes
-// ---------------------------------------------------------------------------
-
 const BUSINESS_STOREFRONT_SELECT = {
   name: true,
   phone: true,
@@ -44,10 +40,6 @@ const STOREFRONT_PRODUCT_SELECT = {
   },
 } as const
 
-// ---------------------------------------------------------------------------
-// getStorefrontSettings — for the owner's settings page
-// ---------------------------------------------------------------------------
-
 export async function getStorefrontSettings(businessId: string) {
   const business = await prisma.business.findUniqueOrThrow({
     where: { id: businessId },
@@ -69,10 +61,6 @@ export async function getStorefrontSettings(businessId: string) {
     visibleProductCount: business.storefrontProducts.filter((p) => p.visible).length,
   }
 }
-
-// ---------------------------------------------------------------------------
-// updateStorefrontSettings — PATCH /api/businesses/me/storefront
-// ---------------------------------------------------------------------------
 
 export interface UpdateStorefrontArgs {
   businessId: string
@@ -118,10 +106,6 @@ export async function updateStorefrontSettings(args: UpdateStorefrontArgs): Prom
   })
 }
 
-// ---------------------------------------------------------------------------
-// listStorefrontProducts — GET /api/businesses/me/storefront/products
-// ---------------------------------------------------------------------------
-
 export async function listStorefrontProducts(businessId: string) {
   const rows = await prisma.storefrontProduct.findMany({
     where: { businessId },
@@ -131,10 +115,6 @@ export async function listStorefrontProducts(businessId: string) {
 
   return rows
 }
-
-// ---------------------------------------------------------------------------
-// addStorefrontProducts — POST /api/businesses/me/storefront/products
-// ---------------------------------------------------------------------------
 
 export async function addStorefrontProducts(
   businessId: string,
@@ -169,10 +149,6 @@ export async function addStorefrontProducts(
   return { added: result.count, skipped: productIds.length - result.count }
 }
 
-// ---------------------------------------------------------------------------
-// removeStorefrontProduct — DELETE /api/businesses/me/storefront/products/:productId
-// ---------------------------------------------------------------------------
-
 export async function removeStorefrontProduct(
   businessId: string,
   productId: string
@@ -184,10 +160,6 @@ export async function removeStorefrontProduct(
     throw new AppError(ErrorCode.NOT_FOUND, 404, 'Storefront product not found')
   }
 }
-
-// ---------------------------------------------------------------------------
-// updateStorefrontProduct — PATCH /api/businesses/me/storefront/products/:productId
-// ---------------------------------------------------------------------------
 
 export async function updateStorefrontProduct(
   businessId: string,
@@ -206,11 +178,6 @@ export async function updateStorefrontProduct(
     throw new AppError(ErrorCode.NOT_FOUND, 404, 'Storefront product not found')
   }
 }
-
-// ---------------------------------------------------------------------------
-// getPublicStorefront — for the public GET /api/p/store/:slug
-// Returns null if store not found or not public.
-// ---------------------------------------------------------------------------
 
 export interface PublicStorefrontData {
   business: SanitizeStorefrontBusiness

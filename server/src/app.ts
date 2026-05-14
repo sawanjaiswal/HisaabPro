@@ -26,6 +26,7 @@ import marketingMsg91WebhookRouter from './routes/webhooks/marketing-msg91.route
 import { initCronJobs } from './lib/cron-scheduler.js'
 import { mountFeatureRoutes } from './app.routes.js'
 import publicRouter from './routes/public.routes.js'
+import logger from './lib/logger.js'
 
 export function createApp() {
   const app = express()
@@ -72,7 +73,7 @@ export function createApp() {
   // Public router — /api/p/* — mounted BEFORE global auth/CSRF/JSON middleware.
   // No cookie auth, no CSRF, no requireAuth for any route under this prefix.
   app.use('/api/p', publicRouter)
-  console.log('[startup] Public router mounted at /api/p')
+  logger.info('[startup] Public router mounted at /api/p')
 
   app.use('/api/razorpay', razorpayWebhookRouter)
 

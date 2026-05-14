@@ -23,6 +23,7 @@ import { requirePermission } from '../middleware/permission.js'
 import * as partyService from '../services/party.service.js'
 import { getPartyLedger } from '../services/party/ledger.service.js'
 import { ledgerQuerySchema } from '../services/party/ledger.types.js'
+import partyInviteRoutes from './parties/invite.routes.js'
 
 // 30 req/min per user for ledger (read-heavy, can be intensive)
 const ledgerRateLimiter = createRateLimiter({
@@ -39,14 +40,7 @@ router.use(auth)
 router.use(userMutationLimiter)
 router.use(requireFeature('parties'))
 
-// ============================================================
-// Parties
-// ============================================================
-
-/**
- * POST /api/parties
- * Create a new party (customer, supplier, or both)
- */
+// Parties CRUD ---------------------------------------------------------------
 router.post(
   '/',
   requirePermission('parties.create'),
@@ -58,10 +52,6 @@ router.post(
   })
 )
 
-/**
- * GET /api/parties
- * List parties with search, filters, sorting, and pagination
- */
 router.get(
   '/',
   asyncHandler(async (req, res) => {
@@ -72,129 +62,93 @@ router.get(
   })
 )
 
-/**
- * GET /api/parties/:id
- * Get full party detail including addresses, custom fields, opening balance
- */
 router.get(
   '/:id',
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
-    const partyId = String(req.params.id)
-    const party = await partyService.getParty(businessId, partyId)
+    const party = await partyService.getParty(businessId, String(req.params.id))
     sendSuccess(res, { party })
   })
 )
 
-/**
- * PUT /api/parties/:id
- * Partial update a party
- */
 router.put(
   '/:id',
   requirePermission('parties.edit'),
   validate(updatePartySchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
-    const partyId = String(req.params.id)
-    const party = await partyService.updateParty(businessId, partyId, req.body)
+    const party = await partyService.updateParty(businessId, String(req.params.id), req.body)
     sendSuccess(res, { party })
   })
 )
 
-/**
- * DELETE /api/parties/:id
- * Soft delete (isActive=false) by default. ?force=true for hard delete.
- */
 router.delete(
   '/:id',
   requirePermission('parties.delete'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
-    const partyId = String(req.params.id)
     const force = req.query.force === 'true'
-    const result = await partyService.deleteParty(businessId, partyId, force)
+    const result = await partyService.deleteParty(businessId, String(req.params.id), force)
     sendSuccess(res, result)
   })
 )
 
-// ============================================================
-// Addresses
-// ============================================================
-
-/**
- * POST /api/parties/:partyId/addresses
- * Add a new address to a party
- */
+// Addresses ------------------------------------------------------------------
 router.post(
   '/:partyId/addresses',
   requirePermission('parties.edit'),
   validate(createAddressSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
-    const partyId = String(req.params.partyId)
-    const address = await partyService.createAddress(businessId, partyId, req.body)
+    const address = await partyService.createAddress(businessId, String(req.params.partyId), req.body)
     sendSuccess(res, { address }, 201)
   })
 )
 
-/**
- * PUT /api/parties/:partyId/addresses/:addressId
- * Update an address
- */
 router.put(
   '/:partyId/addresses/:addressId',
   requirePermission('parties.edit'),
   validate(updateAddressSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
-    const partyId = String(req.params.partyId)
-    const addressId = String(req.params.addressId)
-    const address = await partyService.updateAddress(businessId, partyId, addressId, req.body)
+    const address = await partyService.updateAddress(
+      businessId,
+      String(req.params.partyId),
+      String(req.params.addressId),
+      req.body
+    )
     sendSuccess(res, { address })
   })
 )
 
-/**
- * DELETE /api/parties/:partyId/addresses/:addressId
- * Delete an address (prevents deleting last billing address)
- */
 router.delete(
   '/:partyId/addresses/:addressId',
   requirePermission('parties.delete'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
-    const partyId = String(req.params.partyId)
-    const addressId = String(req.params.addressId)
-    const result = await partyService.deleteAddress(businessId, partyId, addressId)
+    const result = await partyService.deleteAddress(
+      businessId,
+      String(req.params.partyId),
+      String(req.params.addressId)
+    )
     sendSuccess(res, result)
   })
 )
 
-// ============================================================
-// Party Ledger
-// ============================================================
-
-/**
- * GET /api/parties/:partyId/ledger?from=YYYY-MM-DD&to=YYYY-MM-DD
- * Returns a running-balance ledger for a party over the given date window.
- * Cursor-based pagination (50 rows per page by default, max 200).
- */
+// Ledger ---------------------------------------------------------------------
 router.get(
   '/:partyId/ledger',
   requirePermission('parties.read'),
   ledgerRateLimiter,
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
-    const partyId = String(req.params.partyId)
     const query = ledgerQuerySchema.parse(req.query)
-    const data = await getPartyLedger(businessId, partyId, query)
+    const data = await getPartyLedger(businessId, String(req.params.partyId), query)
     sendSuccess(res, data)
   })
 )
 
-// Ledger shares stub — kept for backward compatibility with PartyDetailPage.
-// Returns an empty list (share-link feature is a separate scope).
+// Backwards-compat stub for PartyDetailPage; real share-links is a separate scope.
 router.get(
   '/:partyId/ledger/shares',
   asyncHandler(async (_req, res) => {
@@ -202,39 +156,26 @@ router.get(
   })
 )
 
-// ============================================================
-// Party Pricing
-// ============================================================
-
-/**
- * PUT /api/parties/:partyId/pricing
- * Bulk upsert pricing overrides for a party
- */
+// Pricing --------------------------------------------------------------------
 router.put(
   '/:partyId/pricing',
   requirePermission('parties.edit'),
   validate(setPricingSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
-    const partyId = String(req.params.partyId)
-    const pricing = await partyService.setPricing(businessId, partyId, req.body)
+    const pricing = await partyService.setPricing(businessId, String(req.params.partyId), req.body)
     sendSuccess(res, { pricing })
   })
 )
 
-/**
- * GET /api/parties/:partyId/pricing
- * List pricing overrides for a party (paginated)
- */
 router.get(
   '/:partyId/pricing',
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
-    const partyId = String(req.params.partyId)
     const query = listPricingQuerySchema.parse(req.query)
     const result = await partyService.getPartyPricing(
       businessId,
-      partyId,
+      String(req.params.partyId),
       query.search,
       query.page,
       query.limit
@@ -243,14 +184,7 @@ router.get(
   })
 )
 
-// ---------------------------------------------------------------------------
-// Epic C PR5 — Party Invite Portal (#131)
-// POST /api/parties/:partyId/invite
-// ---------------------------------------------------------------------------
-
-import partyInviteRoutes from './parties/invite.routes.js'
-
-// Auth + rate-limit already applied via router.use() above; sub-router merges params
+// Invite portal (#131) -------------------------------------------------------
 router.use('/:partyId/invite', partyInviteRoutes)
 
 export default router
