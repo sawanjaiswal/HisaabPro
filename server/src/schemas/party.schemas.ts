@@ -57,6 +57,7 @@ export const createPartySchema = z.object({
   addresses: z.array(addressSchema).default([]),
   customFields: z.array(customFieldValueSchema).default([]),
   openingBalance: openingBalanceSchema.optional(),
+  priceListId: z.string().nullable().optional(),
 })
 
 // EditPartyPage repopulates the form from the API response (where empty fields
@@ -76,6 +77,7 @@ export const updatePartySchema = z.object({
   creditLimitMode: z.enum(CREDIT_LIMIT_MODES).optional(),
   notes: z.string().max(1000).nullable().optional(),
   customFields: z.array(customFieldValueSchema).optional(),
+  priceListId: z.string().nullable().optional(),
 })
 
 export const listPartiesSchema = z.object({

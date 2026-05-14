@@ -10,6 +10,7 @@ import {
   CreditCard,
   StickyNote,
   CheckCircle,
+  Tag,
 } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PartyDetail } from '../party.types'
@@ -40,6 +41,7 @@ export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => 
   const hasContactInfo = party.phone || party.email || party.companyName
   const hasBusinessInfo = party.gstin || party.pan
   const creditLimitLabel = party.creditLimitMode === 'WARN' ? t.warn : t.blockLabel
+  const priceListName = party.priceList?.name
 
   return (
     <div className="party-info-card">
@@ -98,6 +100,17 @@ export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => 
           />
         )}
       </div>
+
+      {priceListName && (
+        <div className="card" aria-label={t.partyPriceListChip}>
+          <h3 className="section-title py-0 section-title--mb-3">{t.priceListLabel}</h3>
+          <InfoRow
+            icon={<Tag size={18} />}
+            label={t.partyPriceListChip}
+            value={priceListName + (party.priceList?.isDefault ? ` (${t.priceListDefaultBadge})` : '')}
+          />
+        </div>
+      )}
 
       {party.notes && (
         <div className="card" aria-label={t.notesSection}>

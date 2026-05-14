@@ -18,4 +18,6 @@ export interface PartySummary {
   creditLimit: number
   lastTransactionAt?: string
   isActive: boolean
+  priceListId?: string | null
+  priceList?: { id: string; name: string; isDefault: boolean } | null
 }

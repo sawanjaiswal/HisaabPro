@@ -98,6 +98,9 @@ export const PartyCard: React.FC<PartyCardProps> = ({
         {party.phone && (
           <span className="txn-date">{formatPhone(party.phone)}</span>
         )}
+        {party.priceList && (
+          <span className="party-card-pl-chip">{party.priceList.name}</span>
+        )}
       </div>
 
       <div className="party-card-right">

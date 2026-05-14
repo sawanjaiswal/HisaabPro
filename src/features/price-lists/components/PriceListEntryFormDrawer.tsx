@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import { useLanguage } from '@/hooks/useLanguage'
 import { PRICE_LIST_MODES, MODE_LABELS, MODE_DESCRIPTIONS, bpsToPercent } from '../price-list.constants'
+import { PriceListProductPicker } from './PriceListProductPicker'
 import type { PriceListEntry, PriceListEntryFormData, PriceListMode } from '../price-list.types'
 
 interface PriceListEntryFormDrawerProps {
@@ -12,6 +13,12 @@ interface PriceListEntryFormDrawerProps {
   isLoading: boolean
   onClose: () => void
   onSubmit: (data: PriceListEntryFormData) => void
+}
+
+interface SelectedProduct {
+  id: string
+  name: string
+  salePrice: number
 }
 
 function entryToDisplayValue(entry: PriceListEntry): string {
@@ -32,8 +39,7 @@ export function PriceListEntryFormDrawer({
   const { t } = useLanguage()
   const isEdit = !!initial
 
-  const [productId, setProductId] = useState('')
-  const [productName, setProductName] = useState('')
+  const [selectedProduct, setSelectedProduct] = useState<SelectedProduct | null>(null)
   const [mode, setMode] = useState<PriceListMode>('ABSOLUTE')
   const [value, setValue] = useState('')
   const [minQty, setMinQty] = useState('1')
@@ -42,8 +48,11 @@ export function PriceListEntryFormDrawer({
 
   useEffect(() => {
     if (open) {
-      setProductId(initial?.productId ?? '')
-      setProductName(initial?.productName ?? '')
+      setSelectedProduct(
+        initial
+          ? { id: initial.productId, name: initial.productName, salePrice: 0 }
+          : null
+      )
       setMode(initial?.mode ?? 'ABSOLUTE')
       setValue(initial ? entryToDisplayValue(initial) : '')
       setMinQty(String(initial?.minQty ?? 1))
@@ -54,7 +63,7 @@ export function PriceListEntryFormDrawer({
 
   const validate = (): boolean => {
     const e: Record<string, string> = {}
-    if (!productId) e.product = t.plEntryProductRequired
+    if (!selectedProduct) e.product = t.plEntryProductRequired
     if (!value.trim()) e.value = t.plEntryValueRequired
     if (isNaN(parseFloat(value))) e.value = t.plEntryValueInvalid
     if (parseInt(minQty, 10) < 1) e.minQty = t.plEntryQtyMin
@@ -65,8 +74,15 @@ export function PriceListEntryFormDrawer({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!validate()) return
-    onSubmit({ productId, productName, mode, value, minQty, maxQty })
+    if (!validate() || !selectedProduct) return
+    onSubmit({
+      productId: selectedProduct.id,
+      productName: selectedProduct.name,
+      mode,
+      value,
+      minQty,
+      maxQty,
+    })
   }
 
   const valuePlaceholder = mode === 'PERCENT_OFF' ? t.plValuePlaceholderPct : t.plValuePlaceholderRs
@@ -85,25 +101,18 @@ export function PriceListEntryFormDrawer({
     <Drawer open={open} onClose={onClose} title={isEdit ? t.plEntryEditTitle : t.plEntryAddTitle} footer={footer}>
       <form id="pl-entry-form" className="pl-form" onSubmit={handleSubmit} noValidate>
 
-        {/* Product — text input for now; Batch 5 wires the product picker */}
+        {/* Product picker */}
         <div className="pl-form__field">
-          <label htmlFor="pl-entry-product" className="pl-form__label">{t.plEntryProduct}</label>
-          {isEdit ? (
-            <p className="pl-form__hint">{productName}</p>
-          ) : (
-            <>
-              <input
-                id="pl-entry-product"
-                type="text"
-                className={`input${errors.product ? ' input--error' : ''}`}
-                value={productName}
-                onChange={(e) => { setProductName(e.target.value); setProductId(e.target.value) }}
-                placeholder={t.plEntryProductPlaceholder}
-                aria-invalid={!!errors.product}
-              />
-              {errors.product && <span className="input__error" role="alert">{errors.product}</span>}
-              <p className="pl-form__hint">{t.plEntryProductHint}</p>
-            </>
+          <label className="pl-form__label">{t.plEntryProduct}</label>
+          <PriceListProductPicker
+            selected={selectedProduct}
+            onSelect={setSelectedProduct}
+            onClear={() => setSelectedProduct(null)}
+            error={errors.product}
+            readOnly={isEdit}
+          />
+          {!errors.product && (
+            <p className="pl-form__hint">{t.plEntryProductHint}</p>
           )}
         </div>
 
@@ -137,7 +146,7 @@ export function PriceListEntryFormDrawer({
             onChange={(e) => setValue(e.target.value)}
             placeholder={valuePlaceholder}
             min="0"
-            step={mode === 'PERCENT_OFF' ? '0.01' : '0.01'}
+            step="0.01"
             aria-invalid={!!errors.value}
           />
           {errors.value && <span className="input__error" role="alert">{errors.value}</span>}

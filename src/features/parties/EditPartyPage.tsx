@@ -49,6 +49,7 @@ function detailToFormData(detail: PartyDetail): PartyFormData {
           amount: paiseToRupeesNum(detail.openingBalance.amount),
         }
       : undefined,
+    priceListId: detail.priceListId ?? null,
   }
 }
 
@@ -154,7 +155,7 @@ function EditPartyForm({ partyId, initialData }: { partyId: string; initialData:
           aria-label={activeSection === 'basic' ? t.basicInfo : activeSection === 'business' ? t.business2 : t.credit}
         >
           {activeSection === 'basic' && (
-            <PartyFormBasic form={form} errors={errors} onUpdate={updateField} />
+            <PartyFormBasic form={form} errors={errors} onUpdate={updateField} isEditMode />
           )}
           {activeSection === 'business' && (
             <PartyFormBusiness form={form} errors={errors} onUpdate={updateField} gstinVerify={gstinVerify} />

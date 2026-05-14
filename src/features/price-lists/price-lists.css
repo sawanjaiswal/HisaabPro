@@ -364,6 +364,64 @@
   transform: translateX(20px);
 }
 
+/* ─── Product picker (entry form) ───────────────────────────────────────────── */
+
+.pl-product-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  position: relative;
+}
+
+.pl-product-picker__selected {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-primary-50);
+  border: 1px solid var(--color-primary-200);
+  border-radius: var(--radius-md);
+  flex-wrap: wrap;
+}
+
+.pl-product-picker__name {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pl-product-picker__price {
+  font-size: var(--text-xs);
+  color: var(--color-primary-700);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pl-product-picker__clear {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-1);
+  min-width: 32px;
+  min-height: 32px;
+  border-radius: var(--radius-sm);
+  transition: color 150ms ease;
+  flex-shrink: 0;
+}
+
+.pl-product-picker__clear:hover {
+  color: var(--color-danger-600);
+}
+
 /* ─── 320px safety ───────────────────────────────────────────────────────────── */
 
 @media (max-width: 340px) {

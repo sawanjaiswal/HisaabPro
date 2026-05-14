@@ -597,7 +597,7 @@ export const hi = {
   plEntryEditTitle:         'एंट्री संपादित करें',
   plEntryProduct:           'प्रोडक्ट',
   plEntryProductPlaceholder:'प्रोडक्ट नाम या SKU खोजें',
-  plEntryProductHint:       'प्रोडक्ट पिकर बाद में आएगा',
+  plEntryProductHint:       'अपने कैटलॉग से उत्पाद खोजें और चुनें',
   plEntryProductRequired:   'प्रोडक्ट आवश्यक है',
   plMode:                   'प्राइसिंग मोड',
   plValueLabelFixed:        'निश्चित कीमत (Rs)',

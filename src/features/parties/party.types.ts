@@ -68,6 +68,9 @@ export interface PartyDetail extends PartySummary {
   pricing: PartyPricingItem[]
   createdAt: string
   updatedAt: string
+  // price list assignment (Batch 5)
+  priceListId?: string | null
+  priceList?: { id: string; name: string; isDefault: boolean } | null
 }
 
 /** List response with pagination + summary */
@@ -159,4 +162,5 @@ export interface PartyFormData {
     asOfDate: string
     notes?: string
   }
+  priceListId?: string | null
 }

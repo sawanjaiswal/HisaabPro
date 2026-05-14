@@ -137,6 +137,24 @@
   }
 }
 
+/* ─── Price list chip on party card ────────────────────────── */
+
+.party-card-pl-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px var(--space-2);
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+  border-radius: var(--radius-full);
+  font-size: var(--fs-2xs);
+  font-weight: var(--font-medium, 500);
+  margin-top: 2px;
+  max-width: 16ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* ─── Dark Theme ────────────────────────────────────────────── */
 
 [data-theme="dark"] .party-list-item .txn-date {

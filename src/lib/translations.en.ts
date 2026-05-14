@@ -597,7 +597,7 @@ export const en = {
   plEntryEditTitle:         'Edit entry',
   plEntryProduct:           'Product',
   plEntryProductPlaceholder:'Search product name or SKU',
-  plEntryProductHint:       'Product picker wires in Batch 5',
+  plEntryProductHint:       'Search and select a product from your catalogue',
   plEntryProductRequired:   'Product is required',
   plMode:                   'Pricing mode',
   plValueLabelFixed:        'Fixed price (Rs)',

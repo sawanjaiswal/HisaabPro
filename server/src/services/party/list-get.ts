@@ -82,6 +82,8 @@ export async function listParties(businessId: string, filters: ListPartiesQuery)
         createdAt: true,
         updatedAt: true,
         group: { select: { id: true, name: true, color: true } },
+        priceListId: true,
+        priceList: { select: { id: true, name: true, isDefault: true } },
       },
     }),
     prisma.party.count({ where }),
@@ -196,6 +198,8 @@ export async function getParty(businessId: string, partyId: string) {
           notes: true,
         },
       },
+      priceListId: true,
+      priceList: { select: { id: true, name: true, isDefault: true } },
     },
   })
 

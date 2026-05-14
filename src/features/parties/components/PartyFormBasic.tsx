@@ -3,14 +3,16 @@
 import { Input } from '@/components/ui/Input'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PartyFormData, PartyType } from '../party.types'
+import { PartyFormPriceList } from './PartyFormPriceList'
 
 interface PartyFormBasicProps {
   form: PartyFormData
   errors: Record<string, string>
   onUpdate: <K extends keyof PartyFormData>(key: K, value: PartyFormData[K]) => void
+  isEditMode?: boolean
 }
 
-export function PartyFormBasic({ form, errors, onUpdate }: PartyFormBasicProps) {
+export function PartyFormBasic({ form, errors, onUpdate, isEditMode = false }: PartyFormBasicProps) {
   const { t } = useLanguage()
 
   const PARTY_TYPE_OPTIONS: { value: PartyType; label: string }[] = [
@@ -89,6 +91,8 @@ export function PartyFormBasic({ form, errors, onUpdate }: PartyFormBasicProps) 
         placeholder={t.companyPlaceholder}
         autoComplete="organization"
       />
+
+      <PartyFormPriceList value={form.priceListId} isEditMode={isEditMode} onUpdate={onUpdate} />
     </div>
   )
 }

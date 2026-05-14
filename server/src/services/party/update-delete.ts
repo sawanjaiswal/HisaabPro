@@ -34,6 +34,7 @@ export async function updateParty(
         ...(data.creditLimit !== undefined && { creditLimit: data.creditLimit }),
         ...(data.creditLimitMode !== undefined && { creditLimitMode: data.creditLimitMode }),
         ...(data.notes !== undefined && { notes: data.notes }),
+        ...(data.priceListId !== undefined && { priceListId: data.priceListId }),
       },
       select: {
         id: true,
@@ -53,6 +54,8 @@ export async function updateParty(
         notes: true,
         isActive: true,
         updatedAt: true,
+        priceListId: true,
+        priceList: { select: { id: true, name: true, isDefault: true } },
       },
     })
 

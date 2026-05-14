@@ -40,6 +40,7 @@ export async function createParty(businessId: string, data: CreatePartyInput) {
         creditLimitMode: data.creditLimitMode,
         notes: data.notes,
         outstandingBalance: openingAmount,
+        ...(data.priceListId !== undefined && { priceListId: data.priceListId }),
       },
       select: {
         id: true,
@@ -61,6 +62,8 @@ export async function createParty(businessId: string, data: CreatePartyInput) {
         isActive: true,
         createdAt: true,
         updatedAt: true,
+        priceListId: true,
+        priceList: { select: { id: true, name: true, isDefault: true } },
       },
     })
 
