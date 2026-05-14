@@ -1,16 +1,19 @@
 /** Party Detail — Quick action buttons row */
 
-import { FileText, Wallet, MessageSquare, Share2 } from 'lucide-react'
+import { FileText, Wallet, MessageSquare, Share2, UserPlus } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '@/hooks/useLanguage'
 
 interface PartyQuickActionsProps {
-  partyId: string
-  onStatement: () => void
-  onShare: () => void
+  partyId:        string
+  onStatement:    () => void
+  onShare:        () => void
+  /** Shown only when party.userId is null (portal not yet claimed) */
+  onInvite?:      () => void
+  showInvite?:    boolean
 }
 
-export function PartyQuickActions({ partyId, onStatement, onShare }: PartyQuickActionsProps) {
+export function PartyQuickActions({ partyId, onStatement, onShare, onInvite, showInvite }: PartyQuickActionsProps) {
   const navigate = useNavigate()
   const { t } = useLanguage()
 
@@ -48,6 +51,16 @@ export function PartyQuickActions({ partyId, onStatement, onShare }: PartyQuickA
         <Share2 size={18} aria-hidden="true" />
         <span>{t.share}</span>
       </button>
+      {showInvite && onInvite && (
+        <button
+          className="party-quick-action-btn"
+          onClick={onInvite}
+          aria-label={t.inviteToPortalButton}
+        >
+          <UserPlus size={18} aria-hidden="true" />
+          <span>{t.inviteToPortalButton}</span>
+        </button>
+      )}
     </div>
   )
 }

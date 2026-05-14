@@ -50,6 +50,7 @@ import {
   MarketingHub, MarketingTemplateList, MarketingTemplateForm, MarketingCampaignList, MarketingCampaignWizard, MarketingCampaignDetail, MarketingReminderList, MarketingReminderForm, MarketingOptOuts,
   PriceLists, PriceListDetail, NotFound,
   StorefrontSettings, PublicStorePage,
+  PublicInvitePage,
 } from '@/app.routes'
 import {
   PageRoute, DashboardFallback, ProtectedRoute, GuestRoute,
@@ -77,6 +78,7 @@ export function App() {
           <Route path="/p/health" element={<PublicHealthPage />} />
           <Route path="/p/invoice/:token" element={<PublicInvoicePage />} />
           <Route path="/p/store/:slug" element={<PageRoute><PublicStorePage /></PageRoute>} />
+          <Route path="/p/invite/:token" element={<PageRoute><PublicInvitePage /></PageRoute>} />
         </Route>
         <Route path={ROUTES.HOME} element={<ErrorBoundary><PageRoute><HomeGate /></PageRoute></ErrorBoundary>} />
         <Route path={ROUTES.PRICING} element={<Navigate to="/#pricing" replace />} />

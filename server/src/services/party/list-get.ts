@@ -198,6 +198,7 @@ export async function getParty(businessId: string, partyId: string) {
           notes: true,
         },
       },
+      userId: true,
       priceListId: true,
       priceList: { select: { id: true, name: true, isDefault: true } },
     },

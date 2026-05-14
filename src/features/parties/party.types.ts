@@ -71,6 +71,8 @@ export interface PartyDetail extends PartySummary {
   // price list assignment (Batch 5)
   priceListId?: string | null
   priceList?: { id: string; name: string; isDefault: boolean } | null
+  // portal binding — null = unclaimed, string = bound userId (Epic C PR5)
+  userId?: string | null
 }
 
 /** List response with pagination + summary */

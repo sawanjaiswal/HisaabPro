@@ -196,3 +196,8 @@ export const StorefrontSettings = lazy(() => import('@/features/storefront/Store
 export const PublicStorePage = lazy(() =>
   import('@/pages/public/PublicStorePage').then(m => ({ default: m.PublicStorePage }))
 )
+
+// Epic C PR5 — Party Invite-Claim (#131)
+export const PublicInvitePage = lazy(() =>
+  import('@/pages/public/PublicInvitePage').then(m => ({ default: m.PublicInvitePage }))
+)

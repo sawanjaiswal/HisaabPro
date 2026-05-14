@@ -25,6 +25,7 @@ import { CommitmentsSection } from '@/features/collections/CommitmentsSection'
 import { StatementPDFPreview } from '@/features/collections/StatementPDFPreview'
 import { PartyLedgerTab } from './ledger/PartyLedgerTab'
 import { PartyQuickActions } from './components/PartyQuickActions'
+import { InviteDrawer } from '@/features/invite-claim/InviteDrawer'
 import '@/features/shared-ledger/shared-ledger.css'
 import './party-detail-header.css'
 
@@ -50,6 +51,7 @@ export default function PartyDetailPage() {
   const [isDeleting, setIsDeleting] = useState(false)
   const [shareOpen, setShareOpen] = useState(false)
   const [stmtOpen, setStmtOpen] = useState(false)
+  const [inviteOpen, setInviteOpen] = useState(false)
   const shareLedger = useShareLedger(partyId)
 
   const handleEdit = () => navigate(`/parties/${partyId}/edit`)
@@ -149,6 +151,8 @@ export default function PartyDetailPage() {
                 partyId={partyId}
                 onStatement={() => setStmtOpen(true)}
                 onShare={() => setShareOpen(true)}
+                onInvite={() => setInviteOpen(true)}
+                showInvite={party.userId == null}
               />
 
               {shareOpen && (
@@ -160,6 +164,14 @@ export default function PartyDetailPage() {
                   onRevoke={shareLedger.revokeShare}
                   onCopy={shareLedger.copyLink}
                   onClose={() => setShareOpen(false)}
+                />
+              )}
+              {inviteOpen && (
+                <InviteDrawer
+                  partyId={partyId}
+                  partyName={party.name}
+                  partyPhone={party.phone}
+                  onClose={() => setInviteOpen(false)}
                 />
               )}
               {stmtOpen && (
