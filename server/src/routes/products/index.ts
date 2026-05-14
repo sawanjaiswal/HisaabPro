@@ -18,6 +18,7 @@ import bulkRouter from './bulk.js'
 import stockRouter from './stock.js'
 import imagesRouter from './images.js'
 import crudRouter from './crud.js'
+import { pricePreviewRouter } from '../price-list-assign.routes.js'
 
 const router = Router()
 
@@ -29,6 +30,8 @@ router.use(requireFeature('products'))
 router.use('/', bulkRouter)
 router.use('/', stockRouter)
 router.use('/', imagesRouter)
+// Price preview — must come before /:id CRUD to avoid param capture on /price-preview
+router.use('/:id/price-preview', pricePreviewRouter)
 // CRUD last because it includes bare /:id.
 router.use('/', crudRouter)
 

@@ -65,6 +65,9 @@ import posRoutes from './routes/pos.js'
 import bomRoutes from './routes/bom.js'
 import productionRunRoutes from './routes/production-runs.js'
 import marketingRoutes from './routes/marketing.js'
+import priceListRoutes from './routes/price-lists.routes.js'
+import priceListEntriesRoutes from './routes/price-list-entries.routes.js'
+import { assignRouter as priceListAssignRoutes } from './routes/price-list-assign.routes.js'
 
 const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/auth', authRoutes],
@@ -135,6 +138,9 @@ const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/bom', bomRoutes],
   ['/api/production-runs', productionRunRoutes],
   ['/api/marketing', marketingRoutes],
+  ['/api/price-lists', priceListRoutes],
+  ['/api/price-lists/:id/entries', priceListEntriesRoutes],
+  ['/api/price-lists/:id/bulk-assign-parties', priceListAssignRoutes],
 ]
 
 export function mountFeatureRoutes(app: Express): void {
