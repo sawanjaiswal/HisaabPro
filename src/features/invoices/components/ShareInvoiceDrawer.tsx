@@ -13,6 +13,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { useTemplates } from '@/features/templates/useTemplates'
 import { ShareActionRow } from './ShareActionRow'
 import { useShareInvoice } from './useShareInvoice'
+import { ShareLinksSection } from './ShareLinksSection'
 import '../invoice-detail-share-drawer.css'
 
 export interface ShareInvoiceDrawerProps {
@@ -129,6 +130,8 @@ export function ShareInvoiceDrawer({
           isLast
         />
       </ul>
+
+      <ShareLinksSection documentId={documentId} documentNumber={documentNumber} />
     </Drawer>
   )
 }
