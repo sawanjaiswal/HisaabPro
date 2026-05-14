@@ -21,6 +21,7 @@ import { StockAdjustModal } from './components/StockAdjustModal'
 import { formatProductPrice } from './product.utils'
 import { PREDEFINED_CATEGORIES, PREDEFINED_UNITS, STOCK_VALIDATION_LABELS } from './product.constants'
 import { ProductInfoTab } from './components/ProductInfoTab'
+import { ProductPricePreviewPanel } from './components/ProductPricePreviewPanel'
 import './product-detail.css'
 import './barcode.css'
 
@@ -134,6 +135,7 @@ export default function ProductDetailPage() {
 
             <div id={`panel-${activeTab}`} role="tabpanel" aria-label={`${activeTab} ${t.tabContent}`}>
               {activeTab === 'overview' && (
+                <>
                 <div className="card product-info-card">
                   <div className="product-info-row">
                     <span className="product-info-label">{t.categoryLabel}</span>
@@ -168,6 +170,11 @@ export default function ProductDetailPage() {
                     <span className="product-info-value">{STOCK_VALIDATION_LABELS[product.stockValidation]}</span>
                   </div>
                 </div>
+                <ProductPricePreviewPanel
+                  productId={product.id}
+                  salePrice={product.salePrice}
+                />
+                </>
               )}
 
               {activeTab === 'stock' && (

@@ -1,0 +1,242 @@
+/* ProductPricePreviewPanel — Price across lists card */
+
+/* ─── Card wrapper ─────────────────────────────────────────────────────────── */
+
+.ppp-panel {
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ─── Header row ───────────────────────────────────────────────────────────── */
+
+.ppp-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ppp-header-icon {
+  color: var(--color-primary-500);
+  flex-shrink: 0;
+}
+
+.ppp-title {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--color-gray-800);
+  margin: 0;
+}
+
+/* ─── Baseline (sale price) row ────────────────────────────────────────────── */
+
+.ppp-baseline-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-3);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-100);
+}
+
+.ppp-baseline-label {
+  font-size: var(--fs-sm);
+  color: var(--color-gray-500);
+}
+
+.ppp-baseline-value {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--color-gray-800);
+}
+
+/* ─── List sections ────────────────────────────────────────────────────────── */
+
+.ppp-lists {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.ppp-list-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.ppp-list-name-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ppp-list-name {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-gray-700);
+}
+
+.ppp-default-badge {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--color-primary-600);
+  background: var(--color-primary-50);
+  border: 1px solid var(--color-primary-200);
+  border-radius: var(--radius-full);
+  padding: 1px var(--space-2);
+  line-height: 1.4;
+}
+
+/* ─── Entry table ──────────────────────────────────────────────────────────── */
+
+.ppp-entry-table {
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.ppp-entry-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-gray-50);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ppp-entry-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: var(--space-2);
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--color-gray-100);
+  font-size: var(--fs-sm);
+}
+
+.ppp-entry-row:hover {
+  background: var(--color-gray-50);
+}
+
+.ppp-qty-range {
+  color: var(--color-gray-600);
+  font-variant-numeric: tabular-nums;
+}
+
+.ppp-mode-label {
+  color: var(--color-gray-500);
+}
+
+.ppp-price-resolved {
+  font-weight: 600;
+  color: var(--color-success-600);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.ppp-entry-price-col {
+  text-align: right;
+}
+
+/* ─── No-entries muted row ─────────────────────────────────────────────────── */
+
+.ppp-no-entries {
+  font-size: var(--fs-sm);
+  color: var(--color-gray-400);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-md);
+  margin: 0;
+}
+
+/* ─── Loading skeleton ─────────────────────────────────────────────────────── */
+
+.ppp-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ppp-skeleton-rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* ─── Empty state ──────────────────────────────────────────────────────────── */
+
+.ppp-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-4);
+  text-align: center;
+}
+
+.ppp-empty-text {
+  font-size: var(--fs-sm);
+  color: var(--color-gray-400);
+  margin: 0;
+}
+
+.ppp-empty-link {
+  color: var(--color-primary-600);
+}
+
+/* ─── Dark theme ───────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .ppp-title {
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .ppp-baseline-row {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .ppp-baseline-value {
+  color: var(--color-gray-100);
+}
+
+[data-theme="dark"] .ppp-list-name {
+  color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .ppp-entry-table {
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .ppp-entry-header {
+  background: var(--color-gray-100);
+}
+
+[data-theme="dark"] .ppp-entry-row {
+  border-top-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .ppp-entry-row:hover {
+  background: var(--color-gray-100);
+}
+
+[data-theme="dark"] .ppp-no-entries {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-400);
+}
+
+/* ─── Mobile first / responsive ────────────────────────────────────────────── */
+
+@media (min-width: 480px) {
+  .ppp-entry-header,
+  .ppp-entry-row {
+    grid-template-columns: 100px 1fr auto;
+  }
+}
