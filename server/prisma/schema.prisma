@@ -145,6 +145,9 @@ model Business {
   // #132 — Price Lists: SSOT for business default tier
   defaultPriceListId String?
 
+  // Epic C PR2 — #129 UPI QR on invoice (migration: epic_c_business_upi_vpa)
+  upiVpa String? @db.VarChar(320) // VPA format: name@bank
+
   businessUsers             BusinessUser[]
   parties                   Party[]
   partyGroups               PartyGroup[]

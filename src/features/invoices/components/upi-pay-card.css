@@ -1,0 +1,146 @@
+/* ─── UpiPayCard — 4 states: no-vpa / loading / paid / success ──────────────── */
+
+.upi-pay-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Header row */
+.upi-pay-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.upi-pay-card__icon {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.upi-pay-card__title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.upi-pay-card__subtitle {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* QR wrapper */
+.upi-pay-card__qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.upi-pay-card__qr-canvas {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  /* hard border so QR reader can find quiet zone */
+  border: 3px solid var(--color-surface);
+  outline: 1px solid var(--color-border);
+}
+
+.upi-pay-card__amount-line {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+/* CTA deep-link button */
+.upi-pay-card__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  width: 100%;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  transition: opacity 0.15s;
+  min-height: 44px; /* touch target */
+}
+
+.upi-pay-card__cta:hover,
+.upi-pay-card__cta:focus-visible {
+  opacity: 0.88;
+}
+
+/* No-VPA state — subtle link */
+.upi-pay-card--no-vpa {
+  align-items: flex-start;
+}
+
+.upi-pay-card__no-vpa-text {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.upi-pay-card__no-vpa-link {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: underline;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  margin-top: var(--space-1);
+}
+
+/* Paid badge */
+.upi-pay-card__paid-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: var(--color-success-surface, #ecfdf5);
+  color: var(--color-success, #059669);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+}
+
+/* Loading skeleton pulse */
+.upi-pay-card__skeleton {
+  width: 160px;
+  height: 160px;
+  border-radius: var(--radius-md);
+  background: var(--color-skeleton, #e5e7eb);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* 320px safety */
+@media (max-width: 320px) {
+  .upi-pay-card {
+    padding: var(--space-3);
+  }
+
+  .upi-pay-card__cta {
+    font-size: var(--text-xs);
+  }
+}

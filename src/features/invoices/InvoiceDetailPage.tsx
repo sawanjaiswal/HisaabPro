@@ -1,9 +1,4 @@
-/** Invoice Detail — Page (lazy loaded)
- *
- * Thin composition layer: hero header card,
- * pill tabs (Overview / Items / Share), 4 UI states.
- * All tab content lives in sub-components.
- */
+/** Invoice Detail — Page (lazy loaded). Tabs: Overview / Items / Share. 4 UI states. */
 
 import { useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -34,6 +29,8 @@ import { PaymentLinkSheet } from '@/features/collections/components/PaymentLinkS
 import { EComplianceSection } from '@/features/documents/components/EComplianceSection'
 import { ECOMPLIANCE_DOCUMENT_TYPES } from './invoice.constants'
 import type { EComplianceDocumentType } from '@/features/documents/ecompliance.types'
+import { UpiPayCard } from './components/UpiPayCard'
+import { useBusinessVpa } from './hooks/useBusinessVpa'
 import './invoice-detail-items.css'
 import './invoice-detail-summary.css'
 import './invoice-detail-share-log.css'
@@ -44,6 +41,7 @@ export default function InvoiceDetailPage() {
   const navigate = useNavigate()
   const documentId = id ?? ''
   const { document, status, activeTab, setActiveTab, refresh } = useInvoiceDetail(documentId)
+  const businessVpa = useBusinessVpa()
 
   const toast = useToast()
   const { t } = useLanguage()
@@ -184,6 +182,17 @@ export default function InvoiceDetailPage() {
               )}
             </div>
             </div>{/* /invoice-export-capture */}
+
+            {/* UpiPayCard: outside previewRef — not captured in image export */}
+            {activeTab === 'overview' && ['SAVED', 'SHARED'].includes(document.status) && (
+              <UpiPayCard
+                vpa={businessVpa}
+                payeeName={document.party.name}
+                amountPaise={document.balanceDue}
+                txnRef={document.documentNumber}
+                txnNote={`Invoice ${document.documentNumber}`}
+              />
+            )}
           </>
         )}
       </PageContainer>

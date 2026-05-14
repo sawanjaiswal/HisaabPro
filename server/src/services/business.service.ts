@@ -128,6 +128,8 @@ const BUSINESS_SELECT = {
   // Inventory settings (BAT-07)
   expiryAlertDays: true,
   expiredBatchPolicy: true,
+  // Epic C PR2
+  upiVpa: true,
 } as const
 
 export async function getBusiness(businessId: string) {
@@ -157,6 +159,8 @@ export async function updateBusiness(
       // Inventory settings (BAT-07)
       ...(data.expiryAlertDays !== undefined && { expiryAlertDays: data.expiryAlertDays }),
       ...(data.expiredBatchPolicy !== undefined && { expiredBatchPolicy: data.expiredBatchPolicy }),
+      // Epic C PR2 — UPI VPA (null = clear the field)
+      ...(data.upiVpa !== undefined && { upiVpa: data.upiVpa }),
     },
     select: BUSINESS_SELECT,
   })

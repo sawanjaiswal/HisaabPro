@@ -30,6 +30,16 @@ export const updateBusinessSchema = z.object({
   // Inventory settings (BAT-07)
   expiryAlertDays: z.number().int().min(1).max(365).optional(),
   expiredBatchPolicy: z.enum(['WARN_ONLY', 'HARD_BLOCK']).optional(),
+  // Epic C PR2 — #129 UPI QR: VPA field (nullable to allow clearing)
+  upiVpa: z
+    .string()
+    .max(320)
+    .regex(
+      /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z][a-zA-Z]{1,64}$/,
+      'UPI ID format: name@bank'
+    )
+    .nullable()
+    .optional(),
 }).strict()
 
 // Inferred types

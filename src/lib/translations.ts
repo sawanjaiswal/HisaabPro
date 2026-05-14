@@ -65,9 +65,11 @@ import { enExt29 } from './translations.en.ext29'
 import { hiExt29 } from './translations.hi.ext29'
 import { enExt30 } from './translations.en.ext30'
 import { hiExt30 } from './translations.hi.ext30'
+import { enExt31 } from './translations.en.ext31'
+import { hiExt31 } from './translations.hi.ext31'
 
-const en = { ...enBase, ...enExt1, ...enExt2, ...enExt3, ...enExt4, ...enExt5, ...enExt6, ...enExt7, ...enExt8, ...enExt9, ...enExt10, ...enExt11, ...enExt12, ...enExt13, ...enExt14, ...enExt15, ...enExt16, ...enExt17, ...enExt18, ...enExt19, ...enExt20, ...enExt21, ...enExt22, ...enExt23, ...enExt24, ...enExt25, ...enExt26, ...enExt27, ...enExt28, ...enExt29, ...enExt30 } as const
-const hi = { ...hiBase, ...hiExt1, ...hiExt2, ...hiExt3, ...hiExt4, ...hiExt5, ...hiExt6, ...hiExt7, ...hiExt8, ...hiExt9, ...hiExt10, ...hiExt11, ...hiExt12, ...hiExt13, ...hiExt14, ...hiExt15, ...hiExt16, ...hiExt17, ...hiExt18, ...hiExt19, ...hiExt20, ...hiExt21, ...hiExt22, ...hiExt23, ...hiExt24, ...hiExt25, ...hiExt26, ...hiExt27, ...hiExt28, ...hiExt29, ...hiExt30 } as const
+const en = { ...enBase, ...enExt1, ...enExt2, ...enExt3, ...enExt4, ...enExt5, ...enExt6, ...enExt7, ...enExt8, ...enExt9, ...enExt10, ...enExt11, ...enExt12, ...enExt13, ...enExt14, ...enExt15, ...enExt16, ...enExt17, ...enExt18, ...enExt19, ...enExt20, ...enExt21, ...enExt22, ...enExt23, ...enExt24, ...enExt25, ...enExt26, ...enExt27, ...enExt28, ...enExt29, ...enExt30, ...enExt31 } as const
+const hi = { ...hiBase, ...hiExt1, ...hiExt2, ...hiExt3, ...hiExt4, ...hiExt5, ...hiExt6, ...hiExt7, ...hiExt8, ...hiExt9, ...hiExt10, ...hiExt11, ...hiExt12, ...hiExt13, ...hiExt14, ...hiExt15, ...hiExt16, ...hiExt17, ...hiExt18, ...hiExt19, ...hiExt20, ...hiExt21, ...hiExt22, ...hiExt23, ...hiExt24, ...hiExt25, ...hiExt26, ...hiExt27, ...hiExt28, ...hiExt29, ...hiExt30, ...hiExt31 } as const
 
 const translations = { en, hi } as const
 
