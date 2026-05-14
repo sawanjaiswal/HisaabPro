@@ -96,6 +96,9 @@ model User {
   bomsCreated           Bom[]           @relation("BomCreator")
   productionRunsCreated ProductionRun[] @relation("ProductionRunCreator")
 
+  // Epic C — Public shared links issued by this user
+  issuedSharedLinks SharedLink[]
+
   @@index([phone])
   @@index([referredBy])
   @@index([referralFraudFlags])
@@ -240,6 +243,9 @@ model Business {
   // #132 — Price Lists
   priceLists       PriceList[] @relation("BusinessPriceLists")
   defaultPriceList PriceList?  @relation("BusinessDefaultPriceList", fields: [defaultPriceListId], references: [id], onDelete: SetNull)
+
+  // Epic C — Public shared links
+  sharedLinks SharedLink[]
 
   @@index([name])
 }
@@ -3520,4 +3526,27 @@ model ReminderInstance {
   @@index([status, scheduledAt])
   @@index([ruleId, status])
   @@index([partyId])
+}
+
+// Epic C — PR1: Opaque public-link tokens (hash at rest; plaintext NEVER stored)
+model SharedLink {
+  id             String    @id @default(cuid())
+  tokenHash      String    @unique // sha256(32-byte opaque token) hex; plaintext never persisted
+  resourceType   String // "INVOICE" | "INVITE" | "STORE"
+  resourceId     String // cuid of invoice / party / etc.
+  businessId     String
+  issuedById     String
+  expiresAt      DateTime?
+  revokedAt      DateTime?
+  claimedAt      DateTime? // one-shot links (INVITE) — set atomically on consume
+  lastAccessedAt DateTime?
+  accessCount    Int       @default(0)
+  metadata       Json? // per-resource extras (e.g. invoice number for display)
+  createdAt      DateTime  @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  issuedBy User     @relation(fields: [issuedById], references: [id])
+
+  @@index([businessId, resourceType])
+  @@index([resourceId])
 }
