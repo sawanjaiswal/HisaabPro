@@ -7,7 +7,7 @@
 
 import { useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Pencil, Trash2, Share2, FileText, ImageDown, Link, RefreshCw } from 'lucide-react'
+import { FileText } from 'lucide-react'
 import { ROUTES } from '@/config/routes.config'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -23,10 +23,13 @@ import { useInvoiceDetail } from './useInvoiceDetail'
 import { deleteDocument } from './invoice.service'
 import { DETAIL_TABS } from './invoice.constants'
 import { InvoiceDetailHeader } from './components/InvoiceDetailHeader'
+import { InvoiceDetailHeaderActions } from './components/InvoiceDetailHeaderActions'
 import { InvoiceOverviewPanel } from './components/InvoiceOverviewPanel'
 import { InvoiceItemsPanel } from './components/InvoiceItemsPanel'
 import { InvoiceSharePanel } from './components/InvoiceSharePanel'
 import { ShareInvoiceDrawer } from './components/ShareInvoiceDrawer'
+import { ConvertDocumentDrawer } from './components/ConvertDocumentDrawer'
+import { ALLOWED_CONVERSIONS } from './invoice.constants'
 import { PaymentLinkSheet } from '@/features/collections/components/PaymentLinkSheet'
 import { EComplianceSection } from '@/features/documents/components/EComplianceSection'
 import { ECOMPLIANCE_DOCUMENT_TYPES } from './invoice.constants'
@@ -49,6 +52,14 @@ export default function InvoiceDetailPage() {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [paymentLinkOpen, setPaymentLinkOpen] = useState(false)
+  const [convertOpen, setConvertOpen] = useState(false)
+
+  const canConvert = !!(
+    document
+    && ['SAVED', 'SHARED'].includes(document.status)
+    && (ALLOWED_CONVERSIONS[document.type] ?? []).length > 0
+    && !document.convertedTo
+  )
 
   const handleDelete = () => {
     setIsDeleting(true)
@@ -74,49 +85,18 @@ export default function InvoiceDetailPage() {
   }
 
   const headerActions = (
-    <>
-      <button className="btn btn-ghost btn-sm" onClick={() => navigate(`/invoices/${documentId}/edit`)} aria-label={t.editInvoice}>
-        <Pencil size={18} aria-hidden="true" />
-      </button>
-      <button
-        className="btn btn-ghost btn-sm"
-        aria-label={t.shareInvoice}
-        onClick={() => setShareOpen(true)}
-        disabled={status !== 'success' || !document}
-      >
-        <Share2 size={18} aria-hidden="true" />
-      </button>
-      {document && ['SAVED', 'SHARED'].includes(document.status) && document.balanceDue > 0 && (
-        <button
-          className="btn btn-ghost btn-sm"
-          aria-label="Get Payment Link"
-          onClick={() => setPaymentLinkOpen(true)}
-        >
-          <Link size={18} aria-hidden="true" />
-        </button>
-      )}
-      <button
-        className="btn btn-ghost btn-sm"
-        aria-label={isExporting ? t.exportingImage : t.exportAsImage}
-        onClick={handleExportImage}
-        disabled={isExporting || status !== 'success' || !document}
-      >
-        {isExporting ? (
-          <span className="export-spinner" aria-hidden="true" />
-        ) : (
-          <ImageDown size={18} aria-hidden="true" />
-        )}
-      </button>
-      {document && ['SAVED', 'SHARED'].includes(document.status) && <button className="btn btn-ghost btn-sm" aria-label={t.recurringFromInvoiceCta ?? 'Set as Recurring'} onClick={() => navigate(`/recurring/new?fromInvoiceId=${documentId}`)}><RefreshCw size={18} aria-hidden="true" /></button>}
-      <button
-        className="btn btn-ghost btn-sm"
-        aria-label={t.deleteInvoice}
-        onClick={() => setDeleteOpen(true)}
-        disabled={status !== 'success' || !document}
-      >
-        <Trash2 size={18} aria-hidden="true" />
-      </button>
-    </>
+    <InvoiceDetailHeaderActions
+      documentId={documentId}
+      document={document}
+      status={status}
+      isExporting={isExporting}
+      canConvert={canConvert}
+      onShare={() => setShareOpen(true)}
+      onPaymentLink={() => setPaymentLinkOpen(true)}
+      onExportImage={handleExportImage}
+      onConvert={() => setConvertOpen(true)}
+      onDelete={() => setDeleteOpen(true)}
+    />
   )
 
   return (
@@ -230,6 +210,18 @@ export default function InvoiceDetailPage() {
           partyName={document.party.name}
           partyPhone={document.party.phone ?? undefined}
           businessName=""
+        />
+      )}
+      {document && canConvert && (
+        <ConvertDocumentDrawer
+          open={convertOpen}
+          onClose={() => setConvertOpen(false)}
+          documentId={documentId}
+          sourceType={document.type}
+          onConverted={(newId) => {
+            setConvertOpen(false)
+            navigate(`/invoices/${newId}/edit`)
+          }}
         />
       )}
       </AppShell>

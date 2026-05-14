@@ -559,4 +559,13 @@ export const hi = {
   fieldNameRequired:            'फ़ील्ड का नाम आवश्यक है',
   dropdownNeedsOptions:         'ड्रॉपडाउन फ़ील्ड को कम से कम एक विकल्प चाहिए',
   selectOption:                 'एक विकल्प चुनें',
+
+  // Document conversion (#122)
+  convertDocument:              'दस्तावेज़ बदलें',
+  convertCta:                   'बदलें',
+  convertFromLabel:             'इस से बदला जा रहा है',
+  convertToLabel:               'इसमें बदलें',
+  convertNote:                  'एक नया ड्राफ़्ट बनेगा। मूल दस्तावेज़ "बदला गया" चिह्नित होगा।',
+  convertedToDraft:             'बदला गया — नया ड्राफ़्ट बनाया गया',
+  convertFailed:                'दस्तावेज़ बदलने में विफल',
 } as const

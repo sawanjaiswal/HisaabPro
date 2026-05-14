@@ -559,4 +559,13 @@ export const en = {
   fieldNameRequired:            'Field name is required',
   dropdownNeedsOptions:         'Dropdown fields need at least one option',
   selectOption:                 'Select an option',
+
+  // Document conversion (#122)
+  convertDocument:              'Convert document',
+  convertCta:                   'Convert',
+  convertFromLabel:             'Converting from',
+  convertToLabel:               'Convert to',
+  convertNote:                  'A new draft will be created. The source document will be marked as converted.',
+  convertedToDraft:             'Converted — new draft created',
+  convertFailed:                'Failed to convert document',
 } as const
