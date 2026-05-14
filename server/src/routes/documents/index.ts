@@ -19,6 +19,7 @@ import quickSaleRouter from './quick-sale.js'
 import convertRestoreRouter from './convert-restore.js'
 import shareRouter from './share.js'
 import customFieldsRouter from './custom-fields.js'
+import shareLinksRouter from '../document-share-links.routes.js'
 
 const router = Router()
 
@@ -33,5 +34,6 @@ router.use('/', crudRouter)        // /, /recycle-bin, /:id (CRUD)
 router.use('/', convertRestoreRouter) // /:id/convert, /:id/restore, /:id/permanent
 router.use('/', shareRouter)       // /:id/share/whatsapp, /:id/share/email
 router.use('/', customFieldsRouter) // /:id/custom-fields (GET, PUT) — #134
+router.use('/', shareLinksRouter)   // /:id/share-links (POST, GET, PATCH) — #130
 
 export default router
