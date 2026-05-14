@@ -250,6 +250,15 @@ model Business {
   // Epic C — Public shared links
   sharedLinks SharedLink[]
 
+  // Epic C PR4 — Online Storefront (#121, migration: epic_c_storefront_fields)
+  storefrontSlug      String?  @unique         // null = not configured; stored lowercased at write time
+  storefrontIsPublic  Boolean  @default(false)
+  storefrontTagline   String?                  // max 80 chars (enforced by Zod)
+  storefrontTheme     String   @default("LIGHT") // "LIGHT" | "DARK"
+  storefrontWhatsapp  String?                  // E.164 digits without +; falls back to Business.phone
+
+  storefrontProducts  StorefrontProduct[]
+
   @@index([name])
 }
 
@@ -735,6 +744,9 @@ model Product {
   // #132 — Price Lists (Restrict so a product in use cannot be hard-deleted — soft delete only)
   priceListEntries PriceListEntry[]
 
+  // Epic C PR4 — Online Storefront back-relation
+  storefrontProducts StorefrontProduct[]
+
   @@unique([businessId, sku])
   @@unique([businessId, barcode])
   @@index([businessId, status])
@@ -742,6 +754,23 @@ model Product {
   @@index([businessId, name])
   @@index([businessId, currentStock, minStockLevel])
   @@index([businessId, isDeleted])
+}
+
+// Epic C PR4 — Online Storefront join table (#121, migration: epic_c_storefront_fields)
+model StorefrontProduct {
+  id           String   @id @default(cuid())
+  businessId   String
+  productId    String
+  priceVisible Boolean  @default(true)
+  sortOrder    Int      @default(0)
+  visible      Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, productId])
+  @@index([businessId, sortOrder])
 }
 
 model StockMovement {

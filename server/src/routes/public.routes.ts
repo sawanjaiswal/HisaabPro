@@ -19,6 +19,7 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { publicRateLimiter } from '../middleware/public/rate-limit.js'
 import { resolvePublicToken, PublicLinkError } from '../middleware/resolve-public-token.js'
 import invoiceRoutes from './public/invoice.routes.js'
+import storeRoutes from './public/store.routes.js'
 
 const router = Router()
 
@@ -78,7 +79,9 @@ if (process.env.NODE_ENV !== 'production') {
 
 router.use('/invoice', invoiceRoutes)
 
-// GET /api/p/store/:slug        — PR4
+// PR4 — Online Storefront (#121)
+router.use('/store', storeRoutes)
+
 // GET /api/p/invite/:token      — PR5
 // POST /api/p/invite/:token/claim — PR5
 

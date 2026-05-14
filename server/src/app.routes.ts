@@ -68,6 +68,7 @@ import marketingRoutes from './routes/marketing.js'
 import priceListRoutes from './routes/price-lists.routes.js'
 import priceListEntriesRoutes from './routes/price-list-entries.routes.js'
 import { assignRouter as priceListAssignRoutes } from './routes/price-list-assign.routes.js'
+import storefrontRoutes from './routes/storefront.routes.js'
 
 const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/auth', authRoutes],
@@ -141,6 +142,9 @@ const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/price-lists', priceListRoutes],
   ['/api/price-lists/:id/entries', priceListEntriesRoutes],
   ['/api/price-lists/:id/bulk-assign-parties', priceListAssignRoutes],
+
+  // Epic C PR4 — Online Storefront (#121)
+  ['/api/businesses/me/storefront', storefrontRoutes],
 ]
 
 export function mountFeatureRoutes(app: Express): void {
