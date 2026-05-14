@@ -627,4 +627,12 @@ export const hi = {
   plEntryMaxQtyGte:         'Max Qty >= Min Qty होनी चाहिए',
   plEntryDeleteTitle:       'एंट्री हटाएं',
   plEntryDeleteDesc:        'एंट्री हटाएं',
+
+  // ─── Public Surface (Epic C) ───────────────────────────────────────────
+  publicSurfaceReady:       'सार्वजनिक सतह तैयार',
+  poweredByHisaabPro:       'हिसाबप्रो द्वारा संचालित',
+  publicTermsLink:          'नियम',
+  publicPrivacyLink:        'गोपनीयता',
+  languageToggleEn:         'EN',
+  languageToggleHi:         'HI',
 } as const

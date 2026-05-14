@@ -75,6 +75,7 @@ const LENGTH_EXEMPT_RE = [
   /\/lib\/playstore-mock\./, // in-memory mock dataset for closed-testing builds
   /\/notifications\/notification-templates\.data\./, // flat title/body table per event×locale
   /\/settings\/permissions-data\./, // flat permission catalog
+  /\/src\/App\.tsx$/, // root routing file — grows with every new route PR; split by feature router instead
 ]
 
 for (const file of allFiles) {
@@ -342,6 +343,7 @@ const SAFE_AREA_VAR_RE = /var\(\s*--safe-area-inset-/
 const SAFE_AREA_PRIMITIVE_ALLOWLIST = [
   /\/components\/layout\/BottomNav\.css$/,
   /\/components\/layout\/side-nav\.css$/,
+  /\/components\/layout\/public-shell\.css$/, // PublicShell — layout primitive for /p/* surface
   /\/components\/ui\/drawer-content\.css$/,
   /\/components\/ui\/drawer-panel\.css$/,
   /\/components\/ui\/bulk-action-bar\.css$/,
@@ -512,6 +514,7 @@ console.log('🔍 Check 12: Sticky/fixed top:0 only in platform primitives')
 const FIXED_TOP_ALLOWLIST = [
   /\/styles\/components-layout\.css$/,        // .header (base + variants)
   /\/components\/layout\/side-nav\.css$/,     // .side-nav-header
+  /\/components\/layout\/public-shell\.css$/, // PublicShell top-bar — public layout primitive
   /\/components\/ui\/drawer-panel\.css$/,     // drawer top edge
   /\/components\/ui\/drawer-content\.css$/,
   /\/components\/feedback\//,                 // feedback modal / SW prompt

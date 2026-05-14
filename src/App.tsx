@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Routes, Route, Navigate } from 'react-router-dom'
+import { PublicLayoutRoute, PublicHealthPage } from '@/pages/public'
 import { ROUTES } from '@/config/routes.config'
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary'
 import { ToastContainer } from '@/components/feedback/ToastContainer'
@@ -71,6 +72,7 @@ export function App() {
       <OfflineBanner />
       <PageTransition>
       <Routes>
+        <Route element={<PublicLayoutRoute />}><Route path="/p/health" element={<PublicHealthPage />} /></Route>
         <Route path={ROUTES.HOME} element={<ErrorBoundary><PageRoute><HomeGate /></PageRoute></ErrorBoundary>} />
         <Route path={ROUTES.PRICING} element={<Navigate to="/#pricing" replace />} />
         <Route path={ROUTES.LOGIN} element={<PageRoute><GuestRoute><Login /></GuestRoute></PageRoute>} />

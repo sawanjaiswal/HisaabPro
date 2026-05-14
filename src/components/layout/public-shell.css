@@ -1,0 +1,211 @@
+/**
+ * public.css — Bundle-isolated styles for /p/* public pages.
+ *
+ * Rules:
+ * - No BottomNav height variables (--bottom-nav-height) — no nav on public shell.
+ * - No global HP nav styling.
+ * - Uses only design tokens from tokens-core / tokens-colors.
+ * - Follows platform-shell invariants: safe-area consumed by the shell primitives.
+ */
+
+/* ─── Shell layout ───────────────────────────────────────────────────────── */
+
+.public-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  min-height: 100vh; /* fallback */
+  background: linear-gradient(
+    180deg,
+    var(--color-cream-start) 0%,
+    var(--color-cream-mid) 50%,
+    var(--color-cream-end) 100%
+  );
+  /* safe-area consumed here — feature pages inside never reference insets */
+  padding-top: var(--safe-area-inset-top, 0px);
+  padding-bottom: var(--safe-area-inset-bottom, 0px);
+}
+
+/* ─── Top bar ────────────────────────────────────────────────────────────── */
+
+.public-shell__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3, 12px) var(--space-4, 16px);
+  border-bottom: 1px solid var(--color-border-subtle, rgba(0, 0, 0, 0.06));
+  background: var(--color-cream-start);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header, 100);
+}
+
+.public-shell__wordmark {
+  font-size: var(--text-lg, 18px);
+  font-weight: 700;
+  color: var(--color-teal-700, #0f766e);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.public-shell__wordmark:hover,
+.public-shell__wordmark:focus-visible {
+  color: var(--color-teal-800, #115e59);
+  outline: 2px solid var(--color-teal-300, #5eead4);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ─── Language toggle ────────────────────────────────────────────────────── */
+
+.public-shell__lang-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 4px);
+}
+
+.public-shell__lang-btn {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: var(--text-sm, 14px);
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  background: transparent;
+  color: var(--color-gray-500, #6b7280);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  line-height: 1.4;
+  min-width: 36px;
+  text-align: center;
+}
+
+.public-shell__lang-btn:hover {
+  background: var(--color-teal-50, #f0fdfa);
+  color: var(--color-teal-700, #0f766e);
+}
+
+.public-shell__lang-btn--active {
+  background: var(--color-teal-100, #ccfbf1);
+  color: var(--color-teal-800, #115e59);
+  border-color: var(--color-teal-300, #5eead4);
+}
+
+.public-shell__lang-btn:focus-visible {
+  outline: 2px solid var(--color-teal-400, #2dd4bf);
+  outline-offset: 2px;
+}
+
+/* ─── Main content area ──────────────────────────────────────────────────── */
+
+.public-shell__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: var(--space-5, 20px) var(--space-4, 16px);
+}
+
+.public-shell__container {
+  width: 100%;
+  max-width: 448px; /* md */
+}
+
+/* ─── Footer ─────────────────────────────────────────────────────────────── */
+
+.public-shell__footer {
+  text-align: center;
+  padding: var(--space-4, 16px) var(--space-4, 16px);
+  font-size: var(--text-xs, 12px);
+  color: var(--color-gray-400, #9ca3af);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 4px);
+  align-items: center;
+}
+
+.public-shell__footer-brand {
+  font-weight: 500;
+  color: var(--color-gray-500, #6b7280);
+}
+
+.public-shell__footer-links {
+  display: flex;
+  gap: var(--space-3, 12px);
+}
+
+.public-shell__footer-links a {
+  color: var(--color-gray-400, #9ca3af);
+  text-decoration: none;
+}
+
+.public-shell__footer-links a:hover,
+.public-shell__footer-links a:focus-visible {
+  color: var(--color-teal-600, #0d9488);
+  text-decoration: underline;
+}
+
+/* ─── Health page ────────────────────────────────────────────────────────── */
+
+.public-health {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+  gap: var(--space-4, 16px);
+  text-align: center;
+}
+
+.public-health__status {
+  font-size: var(--text-lg, 18px);
+  font-weight: 600;
+  color: var(--color-teal-700, #0f766e);
+}
+
+.public-health__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
+  padding: var(--space-2, 8px) var(--space-4, 16px);
+  background: var(--color-teal-50, #f0fdfa);
+  border: 1.5px solid var(--color-teal-200, #99f6e4);
+  border-radius: 999px;
+  font-size: var(--text-sm, 14px);
+  font-weight: 500;
+  color: var(--color-teal-800, #115e59);
+}
+
+.public-health__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-teal-500, #14b8a6);
+  flex-shrink: 0;
+}
+
+.public-health__skeleton {
+  width: 200px;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--color-gray-100, #f3f4f6);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* ─── 320px min width assurance ──────────────────────────────────────────── */
+
+@media (max-width: 360px) {
+  .public-shell__topbar {
+    padding: var(--space-3, 12px) var(--space-3, 12px);
+  }
+
+  .public-shell__wordmark {
+    font-size: var(--text-base, 16px);
+  }
+}
