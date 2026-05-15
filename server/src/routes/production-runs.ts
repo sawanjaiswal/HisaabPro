@@ -20,6 +20,7 @@ import {
   createProductionRunSchema,
   listProductionRunQuerySchema,
 } from '../schemas/bom/production-run.schemas.js'
+import { idempotencyCheck } from '../middleware/idempotency.js'
 
 const router = Router()
 
@@ -66,6 +67,7 @@ router.post(
   auth,
   requireIdempotencyKey,
   requirePermission('production.run'),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const idempotencyKey = req.idempotencyKey
     if (!idempotencyKey) {
@@ -117,6 +119,7 @@ router.post(
   '/:id/cancel',
   auth,
   requirePermission('production.run'),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const { businessId, userId } = req.user!
     try {

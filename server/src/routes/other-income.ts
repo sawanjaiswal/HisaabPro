@@ -15,6 +15,7 @@ import {
   listOtherIncomeSchema,
 } from '../schemas/other-income.schemas.js'
 import * as otherIncomeService from '../services/other-income.service.js'
+import { idempotencyCheck } from '../middleware/idempotency.js'
 
 const router = Router()
 
@@ -25,6 +26,7 @@ router.post(
   '/',
   requirePermission('accounting.create'),
   validate(createOtherIncomeSchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const income = await otherIncomeService.createOtherIncome(

@@ -10,6 +10,7 @@ import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess, sendError } from '../lib/response.js'
 import { createTaxCategorySchema, updateTaxCategorySchema } from '../schemas/tax.schemas.js'
 import * as svc from '../services/tax-category.service.js'
+import { idempotencyCheck } from '../middleware/idempotency.js'
 
 const router = Router()
 router.use(auth)
@@ -30,14 +31,14 @@ router.get('/:id', asyncHandler(async (req, res) => {
 }))
 
 /** POST /seed-defaults — Seed default GST categories if none exist */
-router.post('/seed-defaults', requirePermission('settings.modify'), asyncHandler(async (req, res) => {
+router.post('/seed-defaults', requirePermission('settings.modify'), idempotencyCheck(), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const result = await svc.seedDefaults(businessId)
   sendSuccess(res, result, result.seeded ? 201 : 200)
 }))
 
 /** POST / — Create tax category */
-router.post('/', requirePermission('settings.modify'), validate(createTaxCategorySchema), asyncHandler(async (req, res) => {
+router.post('/', requirePermission('settings.modify'), idempotencyCheck(), validate(createTaxCategorySchema), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const category = await svc.createCategory(businessId, req.body)
   sendSuccess(res, { category }, 201)

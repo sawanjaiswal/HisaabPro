@@ -19,6 +19,7 @@ import { voidPosSale, restorePosSale } from '../services/pos/pos-void.service.js
 import { validateCreatePosSale } from '../services/pos/pos.validators.js'
 import type { PosServiceCtx } from '../services/pos/pos.types.js'
 import type { PosQueryCtx } from '../services/pos/pos-query.service.js'
+import { idempotencyCheck } from '../middleware/idempotency.js'
 
 const router = Router()
 
@@ -63,6 +64,7 @@ router.post(
   auth,
   requireIdempotencyKey,
   requirePermission('pos.create'),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const ctx = getPosCtx(req)
     const input = validateCreatePosSale(req.body)
@@ -104,6 +106,7 @@ router.post(
   '/:id/void',
   auth,
   requirePermission('pos.void'),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const ctx = getPosCtx(req)
     const { reason } = voidBodySchema.parse(req.body)
@@ -118,6 +121,7 @@ router.post(
   '/:id/restore',
   auth,
   requirePermission('pos.void'),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const ctx = getPosCtx(req)
     const result = await restorePosSale(prisma, ctx, String(req.params.id))

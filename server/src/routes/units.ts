@@ -18,6 +18,7 @@ import {
   unitConvertSchema,
 } from '../schemas/product.schemas.js'
 import * as unitService from '../services/unit/index.js'
+import { idempotencyCheck } from '../middleware/idempotency.js'
 
 const router = Router()
 
@@ -42,6 +43,7 @@ router.post(
   '/',
   requirePermission('inventory.edit'),
   validate(createUnitSchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const unit = await unitService.createUnit(businessId, req.body)
@@ -163,6 +165,7 @@ router.post(
   '/conversions',
   requirePermission('inventory.edit'),
   validate(createConversionSchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const conversion = await unitService.createConversion(businessId, req.body)

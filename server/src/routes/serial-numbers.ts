@@ -17,6 +17,7 @@ import {
   serialLookupSchema,
 } from '../schemas/serial-number.schemas.js'
 import * as serialService from '../services/serial-number.service.js'
+import { idempotencyCheck } from '../middleware/idempotency.js'
 
 const router = Router()
 
@@ -58,6 +59,7 @@ router.post(
   '/product/:productId',
   requirePermission('inventory.edit'),
   validate(createSerialNumberSchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const productId = String(req.params.productId)
@@ -71,6 +73,7 @@ router.post(
   '/product/:productId/bulk',
   requirePermission('inventory.edit'),
   validate(bulkCreateSerialNumbersSchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const productId = String(req.params.productId)

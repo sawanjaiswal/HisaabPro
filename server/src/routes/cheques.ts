@@ -16,6 +16,7 @@ import {
   listChequesSchema,
 } from '../schemas/cheque.schemas.js'
 import * as chequeService from '../services/cheque.service.js'
+import { idempotencyCheck } from '../middleware/idempotency.js'
 
 const router = Router()
 
@@ -27,6 +28,7 @@ router.post(
   '/',
   requirePermission('payments.record'),
   validate(createChequeSchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const cheque = await chequeService.createCheque(businessId, req.user!.userId, req.body)

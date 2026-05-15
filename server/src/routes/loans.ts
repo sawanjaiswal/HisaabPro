@@ -15,6 +15,7 @@ import {
   recordLoanTransactionSchema,
 } from '../schemas/loan.schemas.js'
 import * as loanService from '../services/loan.service.js'
+import { idempotencyCheck } from '../middleware/idempotency.js'
 
 const router = Router()
 
@@ -25,6 +26,7 @@ router.post(
   '/',
   requirePermission('accounting.create'),
   validate(createLoanSchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const loan = await loanService.createLoanAccount(businessId, req.user!.userId, req.body)
@@ -68,6 +70,7 @@ router.post(
   '/:id/transactions',
   requirePermission('accounting.create'),
   validate(recordLoanTransactionSchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const transaction = await loanService.recordLoanTransaction(
@@ -83,6 +86,7 @@ router.post(
 router.post(
   '/:id/close',
   requirePermission('accounting.edit'),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const loan = await loanService.closeLoan(businessId, String(req.params.id))

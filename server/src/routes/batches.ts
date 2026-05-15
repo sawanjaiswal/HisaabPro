@@ -17,6 +17,7 @@ import {
   batchPickerQuerySchema,
 } from '../schemas/batch.schemas.js'
 import * as batchService from '../services/batch.service.js'
+import { idempotencyCheck } from '../middleware/idempotency.js'
 
 const router = Router()
 
@@ -63,6 +64,7 @@ router.post(
   '/products/:productId/batches',
   requirePermission('inventory.edit'),
   validate(createBatchSchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const productId = String(req.params.productId)

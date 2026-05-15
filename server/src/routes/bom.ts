@@ -20,6 +20,7 @@ import {
   updateBomSchema,
   listBomQuerySchema,
 } from '../schemas/bom/bom.schemas.js'
+import { idempotencyCheck } from '../middleware/idempotency.js'
 
 const router = Router()
 
@@ -65,6 +66,7 @@ router.post(
   '/',
   auth,
   requirePermission('bom.edit'),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const parsed = createBomSchema.safeParse(req.body)
     if (!parsed.success) {

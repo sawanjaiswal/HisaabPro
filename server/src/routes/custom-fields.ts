@@ -14,6 +14,7 @@ import {
 } from '../schemas/party.schemas.js'
 import * as partyService from '../services/party.service.js'
 import { requirePermission } from '../middleware/permission.js'
+import { idempotencyCheck } from '../middleware/idempotency.js'
 
 const router = Router()
 
@@ -26,6 +27,7 @@ router.post(
   '/',
   requirePermission('settings.modify'),
   validate(createCustomFieldSchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const field = await partyService.createCustomField(businessId, req.body)

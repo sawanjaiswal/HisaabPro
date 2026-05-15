@@ -14,6 +14,7 @@ import {
   deleteCategorySchema,
 } from '../schemas/product.schemas.js'
 import * as categoryService from '../services/category.service.js'
+import { idempotencyCheck } from '../middleware/idempotency.js'
 
 const router = Router()
 
@@ -34,6 +35,7 @@ router.post(
   '/',
   requirePermission('inventory.edit'),
   validate(createCategorySchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const category = await categoryService.createCategory(businessId, req.body)

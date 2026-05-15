@@ -11,6 +11,7 @@ import { auth } from '../middleware/auth.js'
 import { requireOwner } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import * as fyClosureService from '../services/fy-closure.service.js'
+import { idempotencyCheck } from '../middleware/idempotency.js'
 
 const router = Router()
 
@@ -27,6 +28,7 @@ router.post(
   '/',
   requireOwner(),
   validate(closeFYSchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const { financialYear } = req.body as z.infer<typeof closeFYSchema>
@@ -49,6 +51,7 @@ router.get(
 router.post(
   '/:financialYear/reopen',
   requireOwner(),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const financialYear = String(req.params.financialYear)

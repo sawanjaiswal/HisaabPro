@@ -19,6 +19,7 @@ import {
 } from '../schemas/godown.schemas.js'
 import * as godownService from '../services/godown.service.js'
 import * as godownTransferService from '../services/godown-transfer.service.js'
+import { idempotencyCheck } from '../middleware/idempotency.js'
 
 const router = Router()
 
@@ -44,6 +45,7 @@ router.post(
   '/',
   requirePermission('inventory.edit'),
   validate(createGodownSchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const godown = await godownService.createGodown(businessId, req.body)
@@ -61,6 +63,7 @@ router.post(
   '/transfer',
   requirePermission('inventory.edit'),
   validate(transferStockSchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const userId = req.user!.userId

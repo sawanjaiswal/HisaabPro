@@ -22,6 +22,7 @@ import {
   dayBookQuerySchema,
 } from '../schemas/accounting.schemas.js'
 import * as accountingService from '../services/accounting.service.js'
+import { idempotencyCheck } from '../middleware/idempotency.js'
 
 const router = Router()
 
@@ -35,6 +36,7 @@ router.post(
   '/accounts',
   requirePermission('accounting.create'),
   validate(createLedgerAccountSchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const account = await accountingService.createLedgerAccount(businessId, req.body)
@@ -57,6 +59,7 @@ router.get(
 router.post(
   '/accounts/seed',
   requirePermission('accounting.create'),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const result = await accountingService.seedDefaultAccounts(businessId)
@@ -97,6 +100,7 @@ router.post(
   '/entries',
   requirePermission('accounting.create'),
   validate(createJournalEntrySchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const entry = await accountingService.createJournalEntry(
@@ -133,6 +137,7 @@ router.get(
 router.post(
   '/entries/:id/post',
   requirePermission('accounting.edit'),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const entry = await accountingService.postJournalEntry(businessId, String(req.params.id))
@@ -145,6 +150,7 @@ router.post(
   '/entries/:id/void',
   requirePermission('accounting.delete'),
   validate(voidJournalEntrySchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const entry = await accountingService.voidJournalEntry(

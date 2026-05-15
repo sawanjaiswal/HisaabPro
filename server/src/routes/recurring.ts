@@ -16,6 +16,7 @@ import {
 import * as recurringService from '../services/recurring/index.js'
 import { requirePermission } from '../middleware/permission.js'
 import { requireFeature } from '../middleware/subscription-gate.js'
+import { idempotencyCheck } from '../middleware/idempotency.js'
 
 const router = Router()
 
@@ -27,6 +28,7 @@ router.post(
   '/',
   requirePermission('invoicing.create'),
   validate(createRecurringSchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const recurring = await recurringService.createRecurring(businessId, req.user!.userId, req.body)
@@ -49,6 +51,7 @@ router.get(
 router.post(
   '/generate',
   requirePermission('invoicing.edit'),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const result = await recurringService.generateDueInvoices(businessId)

@@ -1,6 +1,16 @@
 /** Unified Notification Service — Email (Resend), WhatsApp (Aisensy), Push (FCM). */
 import logger from '../lib/logger.js'
 
+/** Mask email local-part for logs — keep domain visible for ops debugging. */
+function maskEmail(addr: string): string {
+  const at = addr.lastIndexOf('@')
+  if (at <= 0) return '***'
+  const local = addr.slice(0, at)
+  const domain = addr.slice(at)
+  const head = local.slice(0, 1)
+  return `${head}***${domain}`
+}
+
 interface EmailAttachment {
   filename: string
   content: Buffer
@@ -105,15 +115,15 @@ export async function sendEmail(opts: SendEmailOpts): Promise<ChannelResult> {
     })
 
     if (error) {
-      logger.error('Resend email failed', { to: opts.to, error })
+      logger.error('Resend email failed', { to: maskEmail(opts.to), error })
       return { success: false, error: error.message }
     }
 
-    logger.info('Email sent', { to: opts.to, id: data?.id })
+    logger.info('Email sent', { to: maskEmail(opts.to), id: data?.id })
     return { success: true, id: data?.id }
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown email error'
-    logger.error('sendEmail exception', { to: opts.to, error: message })
+    logger.error('sendEmail exception', { to: maskEmail(opts.to), error: message })
     return { success: false, error: message }
   }
 }

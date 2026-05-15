@@ -22,6 +22,7 @@ import type {
 } from '../schemas/custom-order.schemas.js'
 import { type CustomOrderStatus } from '@prisma/client'
 import * as customOrderService from '../services/custom-order.service.js'
+import { idempotencyCheck } from '../middleware/idempotency.js'
 
 const router = Router()
 
@@ -67,6 +68,7 @@ router.post(
   '/',
   requirePermission('orders.create'),
   validate(createCustomOrderSchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const order = await customOrderService.createCustomOrder(businessId, req.user!.userId, req.body)
@@ -93,6 +95,7 @@ router.post(
   '/:id/transition',
   requirePermission('orders.edit'),
   validate(transitionCustomOrderSchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const body = req.body as TransitionCustomOrderInput
@@ -112,6 +115,7 @@ router.post(
   '/:id/advances',
   requirePermission('orders.edit'),
   validate(recordAdvanceSchema),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const input = req.body as RecordAdvanceInput
@@ -143,6 +147,7 @@ router.post(
   '/:id/convert-to-invoice',
   requirePermission('orders.edit'),
   requirePermission('invoicing.create'),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const invoice = await customOrderService.convertCustomOrderToInvoice(
@@ -169,6 +174,7 @@ router.delete(
 router.post(
   '/:id/restore',
   requirePermission('orders.delete'),
+  idempotencyCheck(),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const result = await customOrderService.restoreOrder(businessId, String(req.params.id))
