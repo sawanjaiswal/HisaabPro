@@ -21,7 +21,7 @@ import {
   Payments, RecordPayment, PaymentDetail, EditPayment, Outstanding,
   ReportsHub, SaleReport, PurchaseReport, PartyStatement, StockSummary,
   DayBook, PaymentHistory, TaxSummary, GstReturns, TdsTcsReport,
-  Settings, Roles, RoleBuilder, Staff, StaffInvite, StaffPermissions,
+  Settings, SubscriptionManage, Roles, RoleBuilder, Staff, StaffInvite, StaffPermissions,
   TransactionControls, AuditLog, ActiveSessions, PinSetup, Shortcuts,
   GstSettings, TaxCategories, CreateTaxCategory, EditTaxCategory,
   CurrencySettings, RecurringList, RecurringDetail, RecurringForm,
@@ -148,6 +148,7 @@ export function App() {
         <Route path={ROUTES.SETTINGS_SESSIONS} element={<PageRoute><ProtectedRoute><ActiveSessions /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_SHORTCUTS} element={<PageRoute><ProtectedRoute><Shortcuts /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_PIN_SETUP} element={<PageRoute><ProtectedRoute><PinSetup /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_SUBSCRIPTION} element={<PageRoute><ProtectedRoute><SubscriptionManage /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_GST} element={<PageRoute><ProtectedRoute><GstSettings /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_TAX_RATES} element={<PageRoute><ProtectedRoute><TaxCategories /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_TAX_RATE_NEW} element={<PageRoute><ProtectedRoute><CreateTaxCategory /></ProtectedRoute></PageRoute>} />

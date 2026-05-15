@@ -1,8 +1,13 @@
 /**
  * Subscription gating middleware — enforces plan limits per-request.
- * Applied at route level for features that require paid plans.
  *
- * Reads from Subscription model in DB. Falls back to trial grace period if no subscription.
+ * Extended to support:
+ *  - New subscriptionState machine (PAST_DUE grace, LOCKED blocking)
+ *  - BusinessAddon feature overlays
+ *  - Overflow grace period for quota resources
+ *
+ * SECURITY P1-H: all Prisma queries scope by businessId from authenticated session.
+ * businessId is NEVER taken from request body.
  */
 
 import type { Request, Response, NextFunction } from 'express'
@@ -16,8 +21,18 @@ type BooleanFeatureFlag = {
   [K in keyof PlanLimits]: PlanLimits[K] extends boolean ? K : never
 }[keyof PlanLimits]
 
-/** Get business plan tier — reads from Subscription model with trial fallback */
-async function getBusinessPlan(businessId: string): Promise<{ plan: PlanTier; isTrialing: boolean }> {
+// ─── State-aware plan resolution ──────────────────────────────────────────────
+
+interface PlanResolution {
+  plan: PlanTier
+  isTrialing: boolean
+  isGrace: boolean
+  graceUntil: Date | null
+  subscriptionState: string
+  isLocked: boolean
+}
+
+async function resolveBusinessPlan(businessId: string): Promise<PlanResolution> {
   const [business, subscription] = await Promise.all([
     prisma.business.findUnique({
       where: { id: businessId },
@@ -25,102 +40,162 @@ async function getBusinessPlan(businessId: string): Promise<{ plan: PlanTier; is
     }),
     prisma.subscription.findUnique({
       where: { businessId },
-      select: { planTier: true, status: true },
+      select: {
+        planTier: true,
+        status: true,
+        subscriptionState: true,
+        gracePeriodEndsAt: true,
+        expiresAt: true,
+        overflowGraceUntil: true,
+      },
     }),
   ])
 
-  if (!business) return { plan: 'FREE', isTrialing: false }
+  if (!business) {
+    return { plan: 'FREE', isTrialing: false, isGrace: false, graceUntil: null, subscriptionState: 'NONE', isLocked: false }
+  }
 
-  // Subscription exists — use it unless cancelled/past_due
+  const now = new Date()
+
   if (subscription) {
-    if (subscription.status === 'ACTIVE' || subscription.status === 'TRIALING') {
-      return { plan: subscription.planTier as PlanTier, isTrialing: subscription.status === 'TRIALING' }
+    const state = subscription.subscriptionState
+
+    // LOCKED state: deny paid-tier access
+    if (state === 'LOCKED') {
+      return { plan: 'FREE', isTrialing: false, isGrace: false, graceUntil: null, subscriptionState: state, isLocked: true }
     }
-    // CANCELLED or PAST_DUE — downgrade to FREE
-    return { plan: 'FREE', isTrialing: false }
+
+    // PAST_DUE with active grace: grant paid-tier access during grace
+    if (state === 'PAST_DUE' && subscription.gracePeriodEndsAt && subscription.gracePeriodEndsAt > now) {
+      return {
+        plan: subscription.planTier as PlanTier,
+        isTrialing: false,
+        isGrace: true,
+        graceUntil: subscription.gracePeriodEndsAt,
+        subscriptionState: state,
+        isLocked: false,
+      }
+    }
+
+    // PAST_DUE with expired grace: downgrade to FREE
+    if (state === 'PAST_DUE') {
+      return { plan: 'FREE', isTrialing: false, isGrace: false, graceUntil: null, subscriptionState: state, isLocked: false }
+    }
+
+    // ACTIVE | PROMO_ACTIVE | TRIAL_NO_AUTOPAY: grant plan access
+    if (['ACTIVE', 'PROMO_ACTIVE', 'TRIAL_NO_AUTOPAY'].includes(state)) {
+      return {
+        plan: subscription.planTier as PlanTier,
+        isTrialing: state === 'TRIAL_NO_AUTOPAY',
+        isGrace: false,
+        graceUntil: null,
+        subscriptionState: state,
+        isLocked: false,
+      }
+    }
+
+    // CANCELLED | NONE: fallback to trial check
+    const daysSince = (now.getTime() - business.createdAt.getTime()) / 86_400_000
+    if (daysSince <= TRIAL_DAYS) {
+      return { plan: 'PRO', isTrialing: true, isGrace: false, graceUntil: null, subscriptionState: state, isLocked: false }
+    }
+
+    return { plan: 'FREE', isTrialing: false, isGrace: false, graceUntil: null, subscriptionState: state, isLocked: false }
   }
 
-  // No subscription — check trial grace period
-  const daysSinceCreation = (Date.now() - business.createdAt.getTime()) / (1000 * 60 * 60 * 24)
-  if (daysSinceCreation <= TRIAL_DAYS) {
-    return { plan: 'PRO', isTrialing: true }
+  // No subscription row — trial check
+  const daysSince = (now.getTime() - business.createdAt.getTime()) / 86_400_000
+  if (daysSince <= TRIAL_DAYS) {
+    return { plan: 'PRO', isTrialing: true, isGrace: false, graceUntil: null, subscriptionState: 'NONE', isLocked: false }
   }
 
-  return { plan: 'FREE', isTrialing: false }
+  return { plan: 'FREE', isTrialing: false, isGrace: false, graceUntil: null, subscriptionState: 'NONE', isLocked: false }
 }
 
-/**
- * Require minimum plan tier.
- * Returns 402 with upgrade info if plan doesn't meet requirement.
- */
+// ─── Addon overlay ────────────────────────────────────────────────────────────
+
+async function getAddonFeatureFlags(businessId: string): Promise<Record<string, boolean>> {
+  const addons = await prisma.businessAddon.findMany({
+    where: {
+      businessId,
+      status: 'ACTIVE',
+      OR: [{ endDate: null }, { endDate: { gt: new Date() } }],
+    },
+    select: { featureAddon: { select: { code: true } } },
+  })
+  const flags: Record<string, boolean> = {}
+  for (const a of addons) {
+    flags[a.featureAddon.code] = true
+  }
+  return flags
+}
+
+// ─── requirePlan ─────────────────────────────────────────────────────────────
+
 export function requirePlan(minPlan: PlanTier) {
   return async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user?.businessId) return next() // Let auth middleware handle unauthenticated
+    if (!req.user?.businessId) return next()
 
-    const { plan, isTrialing } = await getBusinessPlan(req.user.businessId)
+    const resolution = await resolveBusinessPlan(req.user.businessId)
 
-    if (PLAN_HIERARCHY[plan] >= PLAN_HIERARCHY[minPlan]) {
+    if (resolution.isLocked) {
+      sendError(res, 'Account locked due to unpaid subscription. Please renew to continue.', 'ACCOUNT_LOCKED', 402)
+      return
+    }
+
+    if (PLAN_HIERARCHY[resolution.plan] >= PLAN_HIERARCHY[minPlan]) {
       return next()
     }
 
     logger.info('subscription.upgrade_required', {
       reason: 'plan_tier',
-      currentPlan: plan,
+      currentPlan: resolution.plan,
       requiredPlan: minPlan,
-      isTrialing,
+      isGrace: resolution.isGrace,
       businessId: req.user.businessId,
-      userId: req.user.userId,
       path: req.path,
-      method: req.method,
     })
 
     sendError(
       res,
-      `This feature requires the ${minPlan} plan. You are currently on ${plan}${isTrialing ? ' (trial)' : ''}.`,
+      `This feature requires the ${minPlan} plan. You are currently on ${resolution.plan}${resolution.isTrialing ? ' (trial)' : ''}${resolution.isGrace ? ' (grace period)' : ''}.`,
       'UPGRADE_REQUIRED',
-      402
+      402,
     )
   }
 }
 
-/**
- * Require a specific feature flag to be unlocked on the current plan.
- * Stricter than requirePlan(tier): uses the PLAN_LIMITS boolean flag directly.
- */
+// ─── requireFeature ───────────────────────────────────────────────────────────
+
 export function requireFeature(flag: BooleanFeatureFlag) {
   return async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user?.businessId) return next()
-    const { plan } = await getBusinessPlan(req.user.businessId)
-    if (PLAN_LIMITS[plan][flag]) return next()
 
-    logger.info('subscription.upgrade_required', {
-      reason: 'feature_flag',
-      flag,
-      currentPlan: plan,
-      businessId: req.user.businessId,
-      userId: req.user.userId,
-      path: req.path,
-      method: req.method,
-    })
+    const resolution = await resolveBusinessPlan(req.user.businessId)
 
-    sendError(
-      res,
-      `This feature requires an upgraded plan.`,
-      'UPGRADE_REQUIRED',
-      402
-    )
+    if (resolution.isLocked) {
+      sendError(res, 'Account locked due to unpaid subscription.', 'ACCOUNT_LOCKED', 402)
+      return
+    }
+
+    // Check plan feature + addon overlay
+    const planHasFeature = PLAN_LIMITS[resolution.plan][flag]
+    if (planHasFeature) return next()
+
+    const addonFlags = await getAddonFeatureFlags(req.user.businessId)
+    if (addonFlags[flag]) return next()
+
+    sendError(res, 'This feature requires an upgraded plan.', 'UPGRADE_REQUIRED', 402)
   }
 }
 
-/**
- * Enforce monthly quota (e.g., invoices per month).
- * Returns 402 with usage info when quota exceeded.
- */
+// ─── requireQuota ─────────────────────────────────────────────────────────────
+
 export function requireQuota(resource: 'invoices' | 'users') {
   return async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user?.businessId) return next()
 
-    const { plan } = await getBusinessPlan(req.user.businessId)
+    const { plan } = await resolveBusinessPlan(req.user.businessId)
     const limits = PLAN_LIMITS[plan]
 
     if (resource === 'invoices') {
@@ -132,20 +207,11 @@ export function requireQuota(resource: 'invoices' | 'users') {
       startOfMonth.setHours(0, 0, 0, 0)
 
       const count = await prisma.document.count({
-        where: {
-          businessId: req.user.businessId,
-          createdAt: { gte: startOfMonth },
-          isDeleted: false,
-        },
+        where: { businessId: req.user.businessId, createdAt: { gte: startOfMonth }, isDeleted: false },
       })
 
       if (count >= limit) {
-        return sendError(
-          res,
-          `Monthly invoice limit reached (${count}/${limit}). Upgrade to create more.`,
-          'QUOTA_EXCEEDED',
-          402
-        )
+        return sendError(res, `Monthly invoice limit reached (${count}/${limit}). Upgrade to create more.`, 'QUOTA_EXCEEDED', 402)
       }
     }
 
@@ -154,19 +220,11 @@ export function requireQuota(resource: 'invoices' | 'users') {
       if (limit === -1) return next()
 
       const count = await prisma.businessUser.count({
-        where: {
-          businessId: req.user.businessId,
-          status: 'ACTIVE',
-        },
+        where: { businessId: req.user.businessId, status: 'ACTIVE' },
       })
 
       if (count >= limit) {
-        return sendError(
-          res,
-          `User limit reached (${count}/${limit}). Upgrade to add more team members.`,
-          'QUOTA_EXCEEDED',
-          402
-        )
+        return sendError(res, `User limit reached (${count}/${limit}). Upgrade to add more.`, 'QUOTA_EXCEEDED', 402)
       }
     }
 

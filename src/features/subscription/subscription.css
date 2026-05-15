@@ -1,0 +1,33 @@
+/**
+ * subscription.css — feature-scoped styling for the Subscription Manage page
+ * and its drawers. All values reference CSS variables — no raw hex.
+ */
+
+.subscription-plan-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.subscription-plan-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-100) 0%,
+    transparent 60%
+  );
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.subscription-section {
+  /* Section template per hp-design rules: section owns NO vertical padding. */
+  padding-block: 0;
+}
+
+@media (min-width: 768px) {
+  .subscription-plan-card {
+    padding: 24px;
+  }
+}

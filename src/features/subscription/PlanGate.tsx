@@ -1,11 +1,12 @@
 /**
  * <PlanGate feature="accounting"> — renders children only when the current
- * plan unlocks the given feature. Otherwise renders <UpgradePrompt>.
- *
- * Wrap paid screens in App.tsx to prevent a 402 round-trip.
+ * plan unlocks the given feature AND the subscription is in a serviceable
+ * state. LOCKED + paywalled features get the UpgradeDrawer fallback; PAST_DUE
+ * with active grace continues to render children but the OverflowBanner
+ * upstream tells the user upgrade is coming.
  */
 
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { useSubscription } from '@/hooks/useSubscription'
 import { useLoadTimeout } from '@/hooks/useLoadTimeout'
 import { UpgradePrompt } from '@/components/UpgradePrompt'
@@ -14,6 +15,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { isFeatureAllowed, minTierFor, type FeatureFlag } from './plan-limits'
+import { UpgradeDrawer } from './UpgradeDrawer'
 
 interface PlanGateProps {
   feature: FeatureFlag
@@ -24,8 +26,9 @@ interface PlanGateProps {
 }
 
 export function PlanGate({ feature, featureLabel, children, fallback }: PlanGateProps) {
-  const { plan, isLoading, isError, refetch } = useSubscription()
+  const { plan, state, isInGrace, isLoading, isError, refetch } = useSubscription()
   const timedOut = useLoadTimeout(isLoading, 8000)
+  const [upgradeOpen, setUpgradeOpen] = useState(false)
 
   if (isError || timedOut) {
     return (
@@ -45,18 +48,41 @@ export function PlanGate({ feature, featureLabel, children, fallback }: PlanGate
     )
   }
 
-  if (isFeatureAllowed(plan, feature)) return <>{children}</>
+  // LOCKED state: refuse paid features regardless of plan limits table.
+  const locked = state === 'LOCKED'
+  const allowed = !locked && isFeatureAllowed(plan, feature)
+
+  // In grace, allow access but rely on upstream OverflowBanner for nudging.
+  if (allowed || (isInGrace && isFeatureAllowed(plan, feature))) {
+    return <>{children}</>
+  }
 
   if (fallback) return <>{fallback}</>
 
   const required = minTierFor(feature)
   // UpgradePrompt only supports PRO / BUSINESS today.
-  const requiredPlan = required === 'FREE' ? 'PRO' : required
+  const requiredPlan =
+    required === 'FREE' ? 'PRO' : required === 'PRO_MAX' ? 'BUSINESS' : required
   return (
     <AppShell>
       <Header title={featureLabel ?? 'Upgrade required'} backTo />
       <PageContainer>
         <UpgradePrompt requiredPlan={requiredPlan} feature={featureLabel} />
+        <div className="mt-4 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setUpgradeOpen(true)}
+            className="text-[var(--fs-sm)] underline"
+            style={{ color: 'var(--color-primary-500)' }}
+          >
+            See all plans
+          </button>
+        </div>
+        <UpgradeDrawer
+          open={upgradeOpen}
+          onClose={() => setUpgradeOpen(false)}
+          triggerFeature={featureLabel}
+        />
       </PageContainer>
     </AppShell>
   )

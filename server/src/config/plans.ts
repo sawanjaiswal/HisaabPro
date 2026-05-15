@@ -1,9 +1,9 @@
 /**
  * Subscription plan definitions — SSOT for gating logic.
- * Tier hierarchy: FREE < PRO < BUSINESS
+ * Tier hierarchy: FREE < PRO < BUSINESS < PRO_MAX
  */
 
-export type PlanTier = 'FREE' | 'PRO' | 'BUSINESS'
+export type PlanTier = 'FREE' | 'PRO' | 'BUSINESS' | 'PRO_MAX'
 
 export interface PlanLimits {
   maxUsers: number           // -1 = unlimited
@@ -15,25 +15,21 @@ export interface PlanLimits {
   tallyExport: boolean
   eInvoicing: boolean
   prioritySupport: boolean
-  // Paid-gating v2 (2026-04-21)
-  advancedReports: boolean   // P&L, Balance Sheet, Cash Flow, Aging, Profitability, Discounts
-  accounting: boolean        // CoA, Journal, Trial Balance, Bank, Loans, Cheques
+  advancedReports: boolean
+  accounting: boolean
   recurringInvoices: boolean
   batchTracking: boolean
   serialTracking: boolean
-  taxReports: boolean        // GST returns + TDS/TCS reconciliation
-
-  // Universal gating v3 (2026-04-21) — currently free on every tier, flags exist
-  // so any one can be flipped to `false` for FREE without touching product code.
-  invoicing: boolean         // sale invoices, estimates, proforma, DC
-  products: boolean          // catalog + stock
-  parties: boolean           // customers/suppliers
-  payments: boolean          // payment record + allocations
+  taxReports: boolean
+  invoicing: boolean
+  products: boolean
+  parties: boolean
+  payments: boolean
   expenses: boolean
-  basicReports: boolean      // sales/purchase/inventory summaries
-  bulkImport: boolean        // CSV import
-  backup: boolean            // data export / backup
-  bankAccounts: boolean      // non-accounting bank ledger
+  basicReports: boolean
+  bulkImport: boolean
+  backup: boolean
+  bankAccounts: boolean
   cheques: boolean
   stockAdjustments: boolean
   paymentReminders: boolean
@@ -44,6 +40,7 @@ export const PLAN_HIERARCHY: Record<PlanTier, number> = {
   FREE: 0,
   PRO: 1,
   BUSINESS: 2,
+  PRO_MAX: 3,
 }
 
 export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
@@ -63,7 +60,6 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     batchTracking: false,
     serialTracking: false,
     taxReports: false,
-    // Universal flags — free today. Flip to false to gate on FREE.
     invoicing: true,
     products: true,
     parties: true,
@@ -109,6 +105,36 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     barcodes: true,
   },
   BUSINESS: {
+    maxUsers: -1,
+    maxInvoicesPerMonth: -1,
+    gstFeatures: true,
+    customRoles: true,
+    multiGodown: true,
+    posMode: true,
+    tallyExport: true,
+    eInvoicing: true,
+    prioritySupport: true,
+    advancedReports: true,
+    accounting: true,
+    recurringInvoices: true,
+    batchTracking: true,
+    serialTracking: true,
+    taxReports: true,
+    invoicing: true,
+    products: true,
+    parties: true,
+    payments: true,
+    expenses: true,
+    basicReports: true,
+    bulkImport: true,
+    backup: true,
+    bankAccounts: true,
+    cheques: true,
+    stockAdjustments: true,
+    paymentReminders: true,
+    barcodes: true,
+  },
+  PRO_MAX: {
     maxUsers: -1,
     maxInvoicesPerMonth: -1,
     gstFeatures: true,

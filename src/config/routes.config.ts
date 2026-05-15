@@ -47,6 +47,7 @@ export const ROUTES = {
   SETTINGS_AUDIT_LOG: '/settings/audit-log',
   SETTINGS_SHORTCUTS: '/settings/shortcuts',
   SETTINGS_PIN_SETUP: '/settings/pin-setup',
+  SETTINGS_SUBSCRIPTION: '/settings/subscription',
   SETTINGS_GST: '/settings/gst',
   SETTINGS_TAX_RATES: '/settings/tax-rates',
   SETTINGS_TAX_RATE_NEW: '/settings/tax-rates/new',

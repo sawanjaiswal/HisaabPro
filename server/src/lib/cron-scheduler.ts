@@ -17,6 +17,9 @@ import { runBatchExpiryAlerts } from '../services/stock/batch-expiry-alerts.serv
 import { generateRecurringExpenses } from '../services/expense/expense-recurring.cron.js'
 import { initNotificationCronJobs } from '../services/notifications/notification-cron.js'
 import { notifyPtpDueToday } from '../services/notifications/notification-hooks.js'
+import { runGraceExpiryJob } from '../services/subscription/cron-grace-expiry.js'
+import { runTrialEndJob } from '../services/subscription/cron-trial-end.js'
+import { runMandateReminderJob } from '../services/subscription/cron-mandate-reminder.js'
 import os from 'os'
 
 let initialized = false
@@ -66,6 +69,27 @@ export function initCronJobs(): void {
     { timezone: 'UTC' },
   )
 
+  // Subscription: grace expiry + overflow enforce @ 06:00 IST
+  cron.schedule(
+    '0 6 * * *',
+    () => void runGraceExpiryJob().catch((e) => logger.error('cron.grace_expiry.fatal', { error: e instanceof Error ? e.message : String(e) })),
+    { timezone: 'Asia/Kolkata' },
+  )
+
+  // Subscription: trial end check @ 07:00 IST
+  cron.schedule(
+    '0 7 * * *',
+    () => void runTrialEndJob().catch((e) => logger.error('cron.trial_end.fatal', { error: e instanceof Error ? e.message : String(e) })),
+    { timezone: 'Asia/Kolkata' },
+  )
+
+  // Subscription: mandate pending reminder @ 08:00 IST
+  cron.schedule(
+    '0 8 * * *',
+    () => void runMandateReminderJob().catch((e) => logger.error('cron.mandate_reminder.fatal', { error: e instanceof Error ? e.message : String(e) })),
+    { timezone: 'Asia/Kolkata' },
+  )
+
   // Notification engine cron jobs (PR10)
   initNotificationCronJobs()
 
@@ -81,9 +105,13 @@ export function initCronJobs(): void {
       'notification-subscription-expiry @ 09:00 IST',
       'notification-retention-purge @ 02:00 IST Sunday',
       'notification-month-roll @ 00:05 IST 1st-of-month',
+      'subscription-grace-expiry @ 06:00 IST',
+      'subscription-trial-end @ 07:00 IST',
+      'subscription-mandate-reminder @ 08:00 IST',
     ],
   })
 }
+
 
 /**
  * Exported so tests / manual CLI can call it directly.

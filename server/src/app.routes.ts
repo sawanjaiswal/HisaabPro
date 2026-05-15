@@ -58,6 +58,9 @@ import remindersRoute from './routes/payments/reminders.route.js'
 import sessionRoutes from './routes/sessions.js'
 import exportRoutes from './routes/export.js'
 import { subscriptionRouter } from './routes/subscription.js'
+import { mandateRouter } from './routes/subscription/mandate.routes.js'
+import { subscriptionsAdminRouter } from './routes/admin/subscriptions.admin.js'
+import { entitlementPubkeyRouter } from './routes/auth/entitlement-pubkey.route.js'
 import jobRoutes from './routes/jobs.js'
 import customOrderRoutes from './routes/custom-orders.js'
 import notificationsRoutes from './routes/notifications.js'
@@ -93,6 +96,10 @@ const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/reports', reportRoutes],
   ['/api/businesses', businessSettingsRouter],
   ['/api/businesses', subscriptionRouter],
+  ['/api/subscription/mandate', mandateRouter],
+  ['/api/subscription', subscriptionRouter],
+  ['/api/admin/subscriptions', subscriptionsAdminRouter],
+  ['/api/auth/entitlement-pubkey', entitlementPubkeyRouter],
   ['/api/users', userSettingsRouter],
   ['/api/permissions', permissionsRouter],
   ['/api/referral', referralRoutes],

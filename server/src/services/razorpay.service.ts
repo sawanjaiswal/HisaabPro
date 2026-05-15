@@ -10,13 +10,7 @@ import crypto from 'node:crypto'
 import logger from '../lib/logger.js'
 import { validationError } from '../lib/errors.js'
 import type { WebhookPayload } from './razorpay-webhook.service.js'
-import {
-  handleSubscriptionActivated,
-  handleSubscriptionCharged,
-  handleSubscriptionCancelled,
-  handleSubscriptionPaused,
-  handlePaymentFailedOnSubscription,
-} from './razorpay-webhook.service.js'
+import { processWebhookEvent } from './razorpay-webhook.service.js'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -184,40 +178,8 @@ export async function handleWebhook(
   }
 
   const payload: WebhookPayload = JSON.parse(bodyString)
-  const { event } = payload
 
-  logger.info('razorpay.webhook_received', { event })
+  logger.info('razorpay.webhook_received', { event: payload.event, eventId: payload.id })
 
-  switch (event) {
-    case 'subscription.activated':
-      await handleSubscriptionActivated(payload)
-      break
-
-    case 'subscription.charged':
-      await handleSubscriptionCharged(payload)
-      break
-
-    case 'subscription.cancelled':
-    case 'subscription.completed':
-      await handleSubscriptionCancelled(payload)
-      break
-
-    case 'subscription.paused':
-      await handleSubscriptionPaused(payload)
-      break
-
-    case 'payment.failed':
-      await handlePaymentFailedOnSubscription(payload)
-      break
-
-    case 'payment.captured':
-      logger.info('razorpay.payment_captured', {
-        paymentId: payload.payload.payment?.entity.id,
-        subscriptionId: payload.payload.payment?.entity.subscription_id ?? null,
-      })
-      break
-
-    default:
-      logger.info('razorpay.webhook_unhandled', { event })
-  }
+  await processWebhookEvent(payload)
 }

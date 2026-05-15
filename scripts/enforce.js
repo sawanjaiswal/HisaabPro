@@ -579,6 +579,94 @@ if (fixedTopCount === 0) {
   console.log(`  ❌ ${fixedTopCount} raw top:0 block(s)`)
 }
 
+// ─── Check 13: Subscription Writer SSOT — ban direct prisma.subscription.update outside writer ──
+//
+// SECURITY P1-D: Only subscription.writer*.ts may call prisma.subscription.update/upsert.
+// Webhook handlers, route handlers, and other services must go through applySubscriptionEvent().
+// Same for prisma.subscriptionEvent.create (immutable ledger).
+
+console.log('🔍 Check 13: Subscription Writer SSOT (no direct prisma.subscription.update outside writer)')
+
+const WRITER_ALLOWLIST = [
+  'services/subscription/subscription.writer',
+  'services/subscription/subscription-admin.service',
+  'services/subscription/checkout-session.service',
+  'services/subscription/downgrade.service',
+  'services/subscription/ensure-free-subscription',
+  'services/subscription/overflow-grace.service',
+  'services/subscription/cron-grace-expiry',
+  'services/subscription/cron-trial-end',
+]
+
+const WRITER_BANNED_PATTERNS = [
+  /prisma\.subscription\.update\s*\(/,
+  /prisma\.subscription\.upsert\s*\(/,
+  /prisma\.subscriptionEvent\.update\s*\(/,
+  /prisma\.subscriptionEvent\.delete\s*\(/,
+]
+
+let writerViolationCount = 0
+
+for (const file of serverFiles) {
+  // Skip the writer allowlist files + test files
+  const isAllowlisted = WRITER_ALLOWLIST.some((p) => file.includes(p))
+  if (isAllowlisted) continue
+  if (file.includes('__tests__') || file.includes('.test.')) continue
+
+  const content = readFileSync(file, 'utf8')
+  const lines = content.split('\n')
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
+    if (line.trim().startsWith('//')) continue
+    for (const pattern of WRITER_BANNED_PATTERNS) {
+      if (pattern.test(line)) {
+        errors.push(
+          `WRITER_SSOT_VIOLATION: ${rel(file)}:${i + 1} — direct Subscription mutation outside writer. Use applySubscriptionEvent() instead.`,
+        )
+        writerViolationCount++
+      }
+    }
+  }
+}
+
+if (writerViolationCount === 0) {
+  console.log('  ✅ Subscription Writer SSOT intact')
+} else {
+  console.log(`  ❌ ${writerViolationCount} Writer SSOT violation(s)`)
+}
+
+// ─── Check 14: JWT never in logs ─────────────────────────────────────────────
+//
+// SECURITY P1-G: Entitlement JWT must never appear in logger calls.
+// Pattern bans logger.* calls with jwt/token variable names in subscription services.
+
+console.log('🔍 Check 14: JWT not in logger calls (subscription services)')
+
+const JWT_LOG_BAN_RE = /logger\.\w+\s*\(\s*['"`]?\w*['"`]?\s*,?\s*\{[^}]*(token|jwt|signed)[^}]*\}/i
+const JWT_LOG_FILES = walkDir(join(SERVER_SRC, 'services', 'subscription'))
+let jwtLogCount = 0
+
+for (const file of JWT_LOG_FILES) {
+  if (file.includes('__tests__') || file.includes('.test.')) continue
+  const lines = readFileSync(file, 'utf8').split('\n')
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].includes('enforce-ignore')) continue
+    if (JWT_LOG_BAN_RE.test(lines[i])) {
+      errors.push(
+        `JWT_IN_LOG: ${rel(file)}:${i + 1} — JWT/token value in logger call (P1-G). Never log signed tokens.`,
+      )
+      jwtLogCount++
+    }
+  }
+}
+
+if (jwtLogCount === 0) {
+  console.log('  ✅ No JWT values in subscription service logs')
+} else {
+  console.log(`  ❌ ${jwtLogCount} JWT-in-log violation(s)`)
+}
+
 // ─── Summary ──────────────────────────────────────────────────────────────────
 
 console.log('\n' + '═'.repeat(60))

@@ -5,7 +5,7 @@
  * `server/src/__tests__/plan-limits.test.ts` prevents silent drift.
  */
 
-export type PlanTier = 'FREE' | 'PRO' | 'BUSINESS'
+export type PlanTier = 'FREE' | 'PRO' | 'BUSINESS' | 'PRO_MAX'
 
 export interface PlanLimits {
   maxUsers: number
@@ -46,6 +46,7 @@ export const PLAN_HIERARCHY: Record<PlanTier, number> = {
   FREE: 0,
   PRO: 1,
   BUSINESS: 2,
+  PRO_MAX: 3,
 }
 
 export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
@@ -139,6 +140,36 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     paymentReminders: true,
     barcodes: true,
   },
+  PRO_MAX: {
+    maxUsers: -1,
+    maxInvoicesPerMonth: -1,
+    gstFeatures: true,
+    customRoles: true,
+    multiGodown: true,
+    posMode: true,
+    tallyExport: true,
+    eInvoicing: true,
+    prioritySupport: true,
+    advancedReports: true,
+    accounting: true,
+    recurringInvoices: true,
+    batchTracking: true,
+    serialTracking: true,
+    taxReports: true,
+    invoicing: true,
+    products: true,
+    parties: true,
+    payments: true,
+    expenses: true,
+    basicReports: true,
+    bulkImport: true,
+    backup: true,
+    bankAccounts: true,
+    cheques: true,
+    stockAdjustments: true,
+    paymentReminders: true,
+    barcodes: true,
+  },
 }
 
 export function isFeatureAllowed(plan: PlanTier, flag: FeatureFlag): boolean {
@@ -149,5 +180,6 @@ export function isFeatureAllowed(plan: PlanTier, flag: FeatureFlag): boolean {
 export function minTierFor(flag: FeatureFlag): PlanTier {
   if (PLAN_LIMITS.PRO[flag]) return 'PRO'
   if (PLAN_LIMITS.BUSINESS[flag]) return 'BUSINESS'
-  return 'BUSINESS'
+  if (PLAN_LIMITS.PRO_MAX[flag]) return 'PRO_MAX'
+  return 'PRO_MAX'
 }

@@ -1,4 +1,47 @@
 /**
+ * Entitlement JWT + Subscription env helpers.
+ * All optional — services degrade gracefully when keys are absent.
+ */
+
+/** RS256 private key PEM for signing entitlement JWTs. Optional. */
+export function getEntitlementPrivateKey(): string | undefined {
+  return process.env.ENTITLEMENT_PRIVATE_KEY
+}
+
+/** RS256 public key PEM for verifying entitlement JWTs. Optional. */
+export function getEntitlementPublicKey(): string | undefined {
+  return process.env.ENTITLEMENT_PUBLIC_KEY
+}
+
+/** Previous RS256 public key PEM for key rotation window. Optional. */
+export function getEntitlementKeyPrev(): string | undefined {
+  return process.env.ENTITLEMENT_KEY_PREV
+}
+
+/** Razorpay PRO_MAX plan ID. Optional — prints warning if absent. */
+export function getRazorpayPlanProMax(): string | undefined {
+  const id = process.env.RAZORPAY_PLAN_PRO_MAX
+  if (!id) {
+    // warn on first call only
+    process.env._RAZORPAY_PRO_MAX_WARNED ??= 'true'
+    if (process.env._RAZORPAY_PRO_MAX_WARNED === 'true') {
+      process.env._RAZORPAY_PRO_MAX_WARNED = 'warned'
+    }
+  }
+  return id
+}
+
+/** Overflow grace period days. Default 3. */
+export function getOverflowGraceDays(): number {
+  return parseInt(process.env.SUBSCRIPTION_OVERFLOW_GRACE_DAYS ?? '3', 10)
+}
+
+/** Subscription grace period days (for PAST_DUE). Default 7. */
+export function getSubscriptionGraceDays(): number {
+  return parseInt(process.env.SUBSCRIPTION_GRACE_PERIOD_DAYS ?? '7', 10)
+}
+
+/**
  * NIC environment contract validator.
  * Called once at server boot. MB-5 boot-fail: prod creds in non-prod env throws.
  *

@@ -253,6 +253,11 @@ model Business {
   // Epic C — Public shared links
   sharedLinks SharedLink[]
 
+  // subscription-port — new relations
+  subscriptionEvents SubscriptionEvent[]
+  businessAddons     BusinessAddon[]
+  upiMandates        UpiMandate[]
+
   // Epic C PR4 — Online Storefront (#121, migration: epic_c_storefront_fields)
   storefrontSlug      String?  @unique         // null = not configured; stored lowercased at write time
   storefrontIsPublic  Boolean  @default(false)
@@ -2684,7 +2689,7 @@ model GodownTransfer {
 model Subscription {
   id             String    @id @default(cuid())
   businessId     String    @unique
-  planTier       String    @default("FREE") // FREE, PRO, BUSINESS
+  planTier       String    @default("FREE") // FREE, PRO, BUSINESS, PRO_MAX
   status         String    @default("ACTIVE") // ACTIVE, CANCELLED, PAST_DUE, TRIALING
   startDate      DateTime  @default(now())
   expiresAt      DateTime?
@@ -2694,10 +2699,111 @@ model Subscription {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
-  business Business @relation(fields: [businessId], references: [id])
+  // --- subscription-port columns (Step 3: NOT NULL where backfilled) ---
+  subscriptionState       String    @default("NONE") // NONE | PROMO_ACTIVE | TRIAL_NO_AUTOPAY | ACTIVE | PAST_DUE | LOCKED | CANCELLED
+  mandateId               String?   // FK to UpiMandate.id (added after UpiMandate table exists)
+  gracePeriodEndsAt       DateTime?
+  trialEndsAt             DateTime?
+  autoRenew               Boolean   @default(false)
+  nextBillingAt           DateTime?
+  paymentMethod           String    @default("MANUAL") // UPI_AUTOPAY | CARD | MANUAL | RAZORPAY
+  lastEntitlementIssuedAt DateTime?
+  pendingDowngradeTier    String?   // scheduled downgrade target tier
+  overflowGraceUntil      DateTime? // when overflow grace period ends
+  lastWebhookEventId      String?   // last Razorpay event ID processed
+
+  business           Business            @relation(fields: [businessId], references: [id])
+  subscriptionEvents SubscriptionEvent[]
+  upiMandates        UpiMandate[]
 
   @@index([businessId])
   @@index([status])
+  @@index([subscriptionState])
+  @@index([nextBillingAt])
+  @@index([gracePeriodEndsAt])
+}
+
+// === subscription-port — New tables (Step 5) ===
+
+/// Immutable audit ledger for all subscription state transitions.
+model SubscriptionEvent {
+  id               String   @id @default(cuid())
+  businessId       String
+  subscriptionId   String
+  eventType        String   // CHECKOUT | ACTIVATE | RENEW | CANCEL | REACTIVATE | TRIAL_START | TRIAL_END | ADMIN_GRANT | MANDATE_CREATE | MANDATE_REVOKE | ADDON_PURCHASE | ADDON_REVOKE | STATE_TRANSITION | OVERFLOW_ENTER | OVERFLOW_EXIT
+  fromState        String?
+  toState          String?
+  payload          Json     @default("{}")
+  razorpayEventId  String?  @unique // IDEMPOTENCY KEY — sparse unique (nullable)
+  actorUserId      String?  // for admin actions
+  actorType        String   // USER | SYSTEM | WEBHOOK | ADMIN | CRON
+  createdAt        DateTime @default(now())
+
+  business     Business     @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Restrict)
+
+  @@index([businessId, createdAt])
+  @@index([subscriptionId, createdAt])
+  @@index([eventType])
+}
+
+/// Catalog of optional feature add-ons that businesses can purchase.
+model FeatureAddon {
+  id                  String   @id @default(cuid())
+  code                String   @unique
+  displayName         String
+  description         String?
+  priceMonthlyPaise   Int
+  priceYearlyPaise    Int?
+  razorpayPlanId      String?
+  requiresPlanTier    String?  // gate by base plan (e.g. 'PRO')
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  businessAddons BusinessAddon[]
+}
+
+/// Join table: which businesses have purchased which add-ons.
+model BusinessAddon {
+  id             String    @id @default(cuid())
+  businessId     String
+  featureAddonId String
+  startDate      DateTime
+  endDate        DateTime?
+  status         String    @default("ACTIVE") // ACTIVE | EXPIRED | CANCELLED
+  razorpaySubId  String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  business     Business     @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  featureAddon FeatureAddon @relation(fields: [featureAddonId], references: [id], onDelete: Restrict)
+
+  @@unique([businessId, featureAddonId, startDate])
+  @@index([businessId, status])
+}
+
+/// UPI Autopay mandate records.
+model UpiMandate {
+  id                String    @id @default(cuid())
+  businessId        String
+  subscriptionId    String
+  razorpayMandateId String?   @unique
+  razorpayTokenId   String?
+  status            String    @default("PENDING") // PENDING | ACTIVE | PAUSED | REVOKED | FAILED
+  maxAmountPaise    Int
+  frequency         String    // MONTHLY | YEARLY
+  nextChargeAt      DateTime?
+  lastChargeAt      DateTime?
+  vpaLast4          String?   // masked — last 4 chars of VPA only, never full VPA
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  business     Business     @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Restrict)
+
+  @@index([businessId, status])
+  @@index([status, nextChargeAt])
 }
 
 // ─── Business-Verticals Phase 3 — Jobs (services vertical) ────────────────────
