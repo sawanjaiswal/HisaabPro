@@ -117,6 +117,25 @@
   z-index: 1;
 }
 
+/* Cap inner content width at desktop so cards don't stretch infinitely.
+ * Gradient background stays full-bleed; children center via flex parent. */
+@media (min-width: 768px) {
+  .dashboard-top-section > * {
+    width: 100%;
+    max-width: var(--content-max-dashboard);
+  }
+}
+
+/* Desktop: arrange OutstandingHero + QuickActions side-by-side so the
+ * top section is denser at wide viewports. AlertStrip stays full-width. */
+@media (min-width: 1024px) {
+  .dashboard-top-section {
+    /* Section keeps its flex column for the sales hero & cash strip on
+     * top, then a grid container child can present hero + actions. */
+    gap: var(--space-6);
+  }
+}
+
 /* ─── White drawer section (lower half) ──────────────────────── */
 
 .dashboard-white-section {
@@ -134,6 +153,22 @@
   /* Sits flush against the alert banner above — no top rounding, no gap. */
   border-radius: 0;
   box-shadow: var(--shadow-drawer-inset);
+}
+
+/* Desktop: two-column layout (TopDebtors | RecentActivityFeed).
+ * White background stays full-bleed; content is capped to dashboard
+ * max-width via expanded side padding. */
+@media (min-width: 1024px) {
+  .dashboard-white-section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    column-gap: var(--space-6);
+    row-gap: var(--space-6);
+    padding-inline: max(
+      var(--dash-side-padding),
+      calc((100% - var(--content-max-dashboard)) / 2)
+    );
+  }
 }
 
 /* ─── Section headers ──────────────────────────────────────── */

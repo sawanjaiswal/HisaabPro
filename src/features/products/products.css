@@ -183,3 +183,53 @@
 [data-theme="dark"] .stock-badge-out {
   background: var(--color-error-bg-subtle);
 }
+
+/* ─── Desktop grid (≥md) — rows become card cells ───────────── */
+
+@media (min-width: 768px) {
+  .product-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  .product-list-item {
+    background: var(--color-gray-0);
+    border: 1px solid var(--color-gray-100);
+    border-radius: var(--radius-xl);
+    padding: var(--space-2) var(--space-3);
+    box-shadow: var(--shadow-subtle);
+    transition: box-shadow 180ms var(--ease-premium),
+                transform 180ms var(--ease-premium);
+  }
+
+  .product-list-item:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-1px);
+  }
+
+  .product-list-item + .product-list-item {
+    margin-top: 0;
+  }
+
+  .product-list-item .divider {
+    display: none;
+  }
+}
+
+@media (min-width: 1280px) {
+  .product-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1536px) {
+  .product-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+[data-theme="dark"] .product-list-item {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}

@@ -134,3 +134,14 @@ textarea:focus-visible {
   padding: var(--space-4) var(--side-padding) var(--space-5);
   animation: page-enter 180ms var(--ease-default) both;
 }
+
+/* Cap hero content width on desktop so summary bars don't stretch
+ * across an 1800px viewport. Mirrors PageContainer variant=list. */
+@media (min-width: 768px) {
+  .page-hero {
+    width: 100%;
+    max-width: var(--content-max-list);
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

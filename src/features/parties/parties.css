@@ -168,3 +168,47 @@
 [data-theme="dark"] .party-list-item.bulk-selected {
   background: var(--color-primary-bg-subtle);
 }
+
+/* ─── Desktop grid (≥md) — rows become card cells ───────────── */
+
+@media (min-width: 768px) {
+  .party-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  .party-list-item {
+    background: var(--color-gray-0);
+    border: 1px solid var(--color-gray-100);
+    border-radius: var(--radius-xl);
+    padding: var(--space-2) var(--space-3);
+    box-shadow: var(--shadow-subtle);
+    transition: box-shadow 180ms var(--ease-premium),
+                transform 180ms var(--ease-premium);
+  }
+
+  .party-list-item:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-1px);
+  }
+
+  .party-list-item + .party-list-item {
+    margin-top: 0;
+  }
+
+  .party-list-item .divider {
+    display: none;
+  }
+}
+
+@media (min-width: 1280px) {
+  .party-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+[data-theme="dark"] .party-list-item {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
