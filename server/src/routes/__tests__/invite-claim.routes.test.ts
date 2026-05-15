@@ -398,5 +398,5 @@ describe('Concurrent claim race', () => {
     consumed.forEach((r) => {
       expect(r.body.error?.code).toBe('LINK_CONSUMED')
     })
-  })
+  }, 30000) // 50 parallel bcrypt.hash @ rounds 12 needs more than the 10s default
 })

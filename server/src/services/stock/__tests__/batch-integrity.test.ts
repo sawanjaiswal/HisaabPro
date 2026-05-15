@@ -153,7 +153,11 @@ function wireMocks() {
 }
 
 function makeTx() {
-  return { $queryRaw: mockQueryRaw }
+  return {
+    $queryRaw: mockQueryRaw,
+    stockMovement: { create: mockMovementCreate, update: mockMovementUpdate },
+    stockAlert: { updateMany: vi.fn().mockResolvedValue({ count: 0 }) },
+  }
 }
 
 /** Record a movement in the in-memory log. */

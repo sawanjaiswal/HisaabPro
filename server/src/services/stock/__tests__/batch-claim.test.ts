@@ -91,6 +91,9 @@ function makeTx() {
       create: mockMovementCreate,
       update: mockMovementUpdate,
     },
+    stockAlert: {
+      updateMany: vi.fn().mockResolvedValue({ count: 0 }),
+    },
   }
 }
 

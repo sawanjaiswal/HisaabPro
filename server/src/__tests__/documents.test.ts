@@ -291,6 +291,10 @@ describe('Document Routes — /api/documents', () => {
     const { prisma } = await import('../lib/prisma.js')
     const mockPrisma = prisma as unknown as Record<string, Record<string, ReturnType<typeof vi.fn>>>
 
+    // requirePlan('BUSINESS') subscription gate — mock BUSINESS plan
+    mockPrisma.business.findUnique.mockResolvedValue({ createdAt: new Date() })
+    mockPrisma.subscription.findUnique.mockResolvedValue({ planTier: 'BUSINESS', status: 'ACTIVE' })
+
     // Mock party lookup (walk-in upsert)
     mockPrisma.party.upsert = vi.fn().mockResolvedValue({ id: 'walkin-1' })
     // Mock product lookup

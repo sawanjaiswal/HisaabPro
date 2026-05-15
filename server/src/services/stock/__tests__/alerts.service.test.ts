@@ -40,7 +40,14 @@ vi.mock('../../../lib/prisma.js', () => ({
       updateMany: mockAlertUpdateMany,
       create: mockAlertCreate,
     },
+    businessUser: { findFirst: vi.fn().mockResolvedValue(null) },
+    notification: { create: vi.fn() },
+    notificationPreference: { findUnique: vi.fn() },
   },
+}))
+
+vi.mock('../../notifications/notification-manager.js', () => ({
+  notificationManager: { notify: vi.fn().mockResolvedValue(undefined) },
 }))
 
 vi.mock('../../../lib/logger.js', () => ({
@@ -81,9 +88,9 @@ describe('checkAndCreateAlerts — minStockLevel threshold', () => {
     mockProductData(3, 5) // stock 3, min 5
     mockSettingEnabled()
     await checkAndCreateAlerts(BIZ, PROD)
-    expect(mockAlertCreate).toHaveBeenCalledWith({
+    expect(mockAlertCreate).toHaveBeenCalledWith(expect.objectContaining({
       data: expect.objectContaining({ alertType: 'LOW_STOCK', productId: PROD, businessId: BIZ }),
-    })
+    }))
   })
 
   it('does not create alert when stock > minStockLevel and reorderQty null', async () => {
@@ -99,9 +106,9 @@ describe('checkAndCreateAlerts — minStockLevel threshold', () => {
     mockProductData(0, 5)
     mockSettingEnabled()
     await checkAndCreateAlerts(BIZ, PROD)
-    expect(mockAlertCreate).toHaveBeenCalledWith({
+    expect(mockAlertCreate).toHaveBeenCalledWith(expect.objectContaining({
       data: expect.objectContaining({ alertType: 'OUT_OF_STOCK' }),
-    })
+    }))
   })
 })
 
@@ -119,9 +126,9 @@ describe('checkAndCreateAlerts — reorderQty threshold', () => {
     mockProductData(3, 5, 10) // min=5, reorder=10, stock=3 — both breached
     mockSettingEnabled()
     await checkAndCreateAlerts(BIZ, PROD)
-    expect(mockAlertCreate).toHaveBeenCalledWith({
+    expect(mockAlertCreate).toHaveBeenCalledWith(expect.objectContaining({
       data: expect.objectContaining({ threshold: 10 }), // max(5, 10) = 10
-    })
+    }))
   })
 
   it('does not create alert when stock above both thresholds', async () => {

@@ -84,6 +84,9 @@ export function mockAuthPass() {
 export function mockOwnerPermission() {
   mockAuthPass()
   mockPrisma.businessUser.findUnique.mockResolvedValue(TEST_OWNER_BU)
+  // Plan-gate mocks: BUSINESS plan (covers requirePlan('BUSINESS')/('PRO') middleware)
+  mockPrisma.business.findUnique.mockResolvedValue({ createdAt: new Date() })
+  mockPrisma.subscription.findUnique.mockResolvedValue({ planTier: 'BUSINESS', status: 'ACTIVE' })
 }
 
 /** Setup permission middleware for staff with specific permissions */

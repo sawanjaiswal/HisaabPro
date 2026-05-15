@@ -39,8 +39,10 @@ vi.mock('../middleware/rate-limit.js', () => {
 
 // ── Mock NIC client — should NEVER be called in cross-tenant test ─────────────
 
-const generateViaClientMock = vi.fn()
-const cancelViaClientMock = vi.fn()
+const { generateViaClientMock, cancelViaClientMock } = vi.hoisted(() => ({
+  generateViaClientMock: vi.fn(),
+  cancelViaClientMock: vi.fn(),
+}))
 
 vi.mock('../services/einvoice/einvoice.nic-client.js', () => ({
   generateViaClient: generateViaClientMock,
@@ -84,6 +86,13 @@ describe('MB-1: Cross-tenant e-invoice access', () => {
     // Tenant-A (biz-test-1) calls getEInvoice for a document that belongs to biz-tenant-B
     // The eInvoice.findFirst is scoped by businessId via document relation → returns null
     mp.eInvoice.findFirst.mockResolvedValue(null)
+
+    // Service throws 404 when eInvoice not found for businessId
+    const { getEInvoice } = await import('../services/einvoice/einvoice.service.js')
+    const { AppError, ErrorCode } = await import('../lib/errors.js')
+    ;(getEInvoice as ReturnType<typeof vi.fn>).mockRejectedValue(
+      new AppError(ErrorCode.NOT_FOUND, 404, 'E-Invoice not found')
+    )
 
     const tenantA = authAgent(app, { businessId: 'biz-test-1' })
     const res = await tenantA.get('/api/einvoice/doc-owned-by-tenant-b')

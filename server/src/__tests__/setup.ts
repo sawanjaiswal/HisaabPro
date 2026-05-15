@@ -5,30 +5,37 @@
 
 import { vi } from 'vitest'
 
-// Mock Prisma globally — every test gets a fresh mock
+// Mock Prisma globally — Proxy auto-stubs any model.method() with vi.fn() so
+// tests never crash on "undefined.findUnique" for newer models added to schema.
+// Individual tests still override per-method via vi.mocked(prisma.x.y).mockResolvedValue(...).
 vi.mock('../lib/prisma.js', () => {
-  const mockPrisma = {
-    user: { findUnique: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn(), delete: vi.fn(), count: vi.fn() },
-    business: { findUnique: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn() },
-    businessUser: { findUnique: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn() },
-    party: { findUnique: vi.fn(), findFirst: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn(), delete: vi.fn(), count: vi.fn() },
-    partyAddress: { findMany: vi.fn(), create: vi.fn(), update: vi.fn(), delete: vi.fn(), count: vi.fn() },
-    product: { findUnique: vi.fn(), findFirst: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn(), delete: vi.fn(), count: vi.fn() },
-    document: { findUnique: vi.fn(), findFirst: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn(), delete: vi.fn(), count: vi.fn() },
-    documentLineItem: { findMany: vi.fn(), createMany: vi.fn(), deleteMany: vi.fn() },
-    payment: { findUnique: vi.fn(), findFirst: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn(), delete: vi.fn(), count: vi.fn() },
-    paymentAllocation: { findMany: vi.fn(), createMany: vi.fn(), deleteMany: vi.fn() },
-    stockMovement: { findMany: vi.fn(), create: vi.fn(), count: vi.fn() },
-    category: { findMany: vi.fn(), create: vi.fn() },
-    unit: { findMany: vi.fn(), create: vi.fn() },
-    taxCategory: { findUnique: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn(), delete: vi.fn(), count: vi.fn() },
-    role: { findUnique: vi.fn(), findMany: vi.fn() },
-    refreshToken: { findUnique: vi.fn(), create: vi.fn(), delete: vi.fn(), deleteMany: vi.fn() },
-    $transaction: vi.fn((fn: unknown) => typeof fn === 'function' ? fn(mockPrisma) : Promise.resolve(fn)),
+  const modelCache = new Map<string, Record<string, ReturnType<typeof vi.fn>>>()
+  const makeModel = () => new Proxy({}, {
+    get(target: Record<string, ReturnType<typeof vi.fn>>, method: string) {
+      if (!(method in target)) target[method] = vi.fn()
+      return target[method]
+    },
+  }) as Record<string, ReturnType<typeof vi.fn>>
+
+  let proxy: Record<string, unknown>
+  const mockPrisma: Record<string, unknown> = {
+    $transaction: vi.fn((fn: unknown) => typeof fn === 'function' ? (fn as (tx: unknown) => unknown)(proxy) : Promise.resolve(fn)),
     $queryRaw: vi.fn(),
     $executeRaw: vi.fn(),
+    $queryRawUnsafe: vi.fn(),
+    $executeRawUnsafe: vi.fn(),
+    $connect: vi.fn(),
+    $disconnect: vi.fn(),
   }
-  return { prisma: mockPrisma }
+  proxy = new Proxy(mockPrisma, {
+    get(target, prop: string) {
+      if (prop in target) return target[prop]
+      if (typeof prop !== 'string' || prop.startsWith('$') || prop.startsWith('_')) return undefined
+      if (!modelCache.has(prop)) modelCache.set(prop, makeModel())
+      return modelCache.get(prop)
+    },
+  })
+  return { prisma: proxy }
 })
 
 // Mock logger to silence output during tests
@@ -36,7 +43,7 @@ vi.mock('../lib/logger.js', () => ({
   default: {
     info: vi.fn(),
     warn: vi.fn(),
-    error: vi.fn(),
+    error: process.env.DEBUG_TEST ? console.error : vi.fn(),
     debug: vi.fn(),
   },
 }))
