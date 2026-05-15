@@ -136,7 +136,7 @@ export default function ProductsPage() {
         </div>
       )}
 
-      <PageContainer className="space-y-6">
+      <PageContainer variant="list" className="space-y-6">
         {!bulk.isActive && (
           <ProductFilterBar
             search={filters.search}

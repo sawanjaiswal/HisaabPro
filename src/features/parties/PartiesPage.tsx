@@ -104,7 +104,7 @@ export default function PartiesPage() {
         </div>
       )}
 
-      <PageContainer className="space-y-6">
+      <PageContainer variant="list" className="space-y-6">
         {!bulk.isActive && (
           <PartyFilterBar
             search={filters.search}
