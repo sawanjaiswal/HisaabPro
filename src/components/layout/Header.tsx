@@ -98,7 +98,7 @@ export function Header({
         <SyncStatusIcon />
         <button
           type="button"
-          className="header-icon-btn"
+          className="header-icon-btn lg:hidden"
           onClick={openSideNav}
           aria-label="Open menu"
         >

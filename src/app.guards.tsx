@@ -9,6 +9,7 @@ import { ErrorBoundary } from '@/components/feedback/ErrorBoundary'
 import { Spinner } from '@/components/feedback/Spinner'
 import { AppShell } from '@/components/layout/AppShell'
 import { BottomNav } from '@/components/layout/BottomNav'
+import { SideNavRail } from '@/components/layout/SideNavRail'
 import { DashboardSkeleton } from '@/features/dashboard/components/DashboardSkeleton'
 import { useAuth } from '@/context/AuthContext'
 import { CalculatorOverlay, FeedbackWidget, Login, Landing, AdminCoupons } from '@/app.routes'
@@ -63,7 +64,12 @@ export function PersistentNav() {
   const { pathname } = useLocation()
   const { isAuthenticated } = useAuth()
   if (!isAuthenticated || NAV_HIDDEN_PATTERNS.test(pathname)) return null
-  return <BottomNav />
+  return (
+    <>
+      <SideNavRail />
+      <BottomNav />
+    </>
+  )
 }
 
 export function FloatingWidgets() {

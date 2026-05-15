@@ -1,0 +1,28 @@
+/**
+ * Responsive tokens — Wave 0 of the responsive sweep.
+ *
+ * Breakpoints match Tailwind defaults so utility classes (md:, lg:, xl:)
+ * stay in sync with the values below. JS code that needs to match them
+ * (e.g. matchMedia) should reference the var via getComputedStyle.
+ */
+
+:root {
+  /* Breakpoints — match Tailwind defaults */
+  --bp-sm: 640px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+  --bp-2xl: 1536px;
+
+  /* Persistent SideNav rail (≥lg) */
+  --side-nav-width: 280px;
+
+  /* Page-content max-widths per archetype */
+  --content-max-form: 42rem;      /* max-w-2xl  */
+  --content-max-detail: 64rem;    /* max-w-4xl  */
+  --content-max-dashboard: 80rem; /* max-w-6xl  */
+  --content-max-list: 96rem;      /* max-w-screen-2xl */
+
+  /* ListDetailLayout list-rail width ≥lg */
+  --list-rail-width: 22rem;       /* 352px */
+}

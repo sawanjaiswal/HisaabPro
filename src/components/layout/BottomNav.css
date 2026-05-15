@@ -231,6 +231,16 @@ body:has(.bnav-root--hidden) {
   pointer-events: none;
 }
 
+/* Hide BottomNav at ≥lg — SideNavRail takes over as the primary nav. */
+@media (min-width: 1024px) {
+  .bnav-root {
+    display: none;
+  }
+  body:has(.bnav-root) {
+    padding-bottom: 0;
+  }
+}
+
 /* Landscape on short phones: bar still pinned to bottom, but if viewport
  * height drops below ~480px we tighten things so we don't eat too much. */
 @media (orientation: landscape) and (max-height: 480px) {

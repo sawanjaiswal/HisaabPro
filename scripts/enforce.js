@@ -397,6 +397,7 @@ console.log('🔍 Check 10: Fixed-bottom only in platform primitives')
 
 const FIXED_BOTTOM_ALLOWLIST = [
   /\/components\/layout\/BottomNav\.css$/,
+  /\/components\/layout\/side-nav-rail\.css$/,
   /\/components\/ui\/drawer-panel\.css$/,
   /\/components\/ui\/drawer-content\.css$/,
   /\/components\/ui\/bulk-action-bar\.css$/,
@@ -514,6 +515,7 @@ console.log('🔍 Check 12: Sticky/fixed top:0 only in platform primitives')
 const FIXED_TOP_ALLOWLIST = [
   /\/styles\/components-layout\.css$/,        // .header (base + variants)
   /\/components\/layout\/side-nav\.css$/,     // .side-nav-header
+  /\/components\/layout\/side-nav-rail\.css$/, // SideNavRail — persistent left rail at ≥lg
   /\/components\/layout\/public-shell\.css$/, // PublicShell top-bar — public layout primitive
   /\/components\/ui\/drawer-panel\.css$/,     // drawer top edge
   /\/components\/ui\/drawer-content\.css$/,
