@@ -71,7 +71,7 @@ export default function TemplateGalleryPage() {
     <AppShell>
       <Header title={t.invoiceTemplates} backTo={ROUTES.SETTINGS} />
 
-      <PageContainer className="space-y-6">
+      <PageContainer variant="list" className="space-y-6">
         {status === 'loading' && <TemplateGallerySkeleton />}
 
         {status === 'error' && (

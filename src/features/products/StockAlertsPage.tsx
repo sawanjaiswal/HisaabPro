@@ -115,7 +115,7 @@ export default function StockAlertsPage() {
     <AppShell>
       <Header title={t.stockAlertsTitle} backTo={ROUTES.PRODUCTS} />
 
-      <PageContainer className="space-y-6">
+      <PageContainer variant="list" className="space-y-6">
         {status === 'pending' && (
           <div className="space-y-3" aria-busy="true">
             {[1, 2, 3].map((i) => (

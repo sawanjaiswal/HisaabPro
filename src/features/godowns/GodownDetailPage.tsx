@@ -81,7 +81,7 @@ export default function GodownDetailPage() {
         }
       />
 
-      <PageContainer className="space-y-6">
+      <PageContainer variant="detail" className="space-y-6">
         {status === 'loading' && (
           <div className="godown-detail-skeleton">
             <Skeleton height="1.5rem" width="60%" />

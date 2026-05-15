@@ -70,7 +70,7 @@ export default function PartyStatementPage() {
     <AppShell>
       <Header title={pageTitle} backTo={ROUTES.REPORTS} />
 
-      <PageContainer className="space-y-6">
+      <PageContainer variant="list" className="space-y-6">
         {/* Loading */}
         {status === 'loading' && <ReportSkeleton rows={6} />}
 

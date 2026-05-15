@@ -89,7 +89,7 @@ export default function RecurringDetailPage() {
         }
       />
 
-      <PageContainer className="space-y-6">
+      <PageContainer variant="detail" className="space-y-6">
         {/* Header card */}
         <RecurringDetailHeader schedule={schedule} />
 

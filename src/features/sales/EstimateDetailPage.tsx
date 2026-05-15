@@ -66,7 +66,7 @@ export default function EstimateDetailPage() {
         }
       />
 
-      <PageContainer className="space-y-6">
+      <PageContainer variant="detail" className="space-y-6">
         {status === 'loading' && (
           <>
             <div className="card-primary" style={{ minHeight: 160 }}>

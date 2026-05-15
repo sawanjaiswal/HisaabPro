@@ -66,7 +66,7 @@ export default function ReportsHubPage() {
         </section>
       </div>
 
-      <PageContainer className="space-y-6">
+      <PageContainer variant="dashboard" className="space-y-6">
         <div className="report-hub">
           <div className="report-hub-grid stagger-list">
             {REPORT_CATEGORIES.map((category) => {

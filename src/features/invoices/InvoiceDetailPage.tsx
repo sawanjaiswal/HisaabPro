@@ -105,7 +105,7 @@ export default function InvoiceDetailPage() {
       <AppShell>
         <Header title={t.invoiceDetail} backTo={ROUTES.INVOICES} actions={headerActions} />
 
-      <PageContainer className="space-y-6">
+      <PageContainer variant="detail" className="space-y-6">
         {status === 'loading' && <InvoiceDetailSkeleton />}
 
         {status === 'error' && (

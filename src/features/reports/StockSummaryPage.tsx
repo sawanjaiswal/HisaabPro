@@ -91,7 +91,7 @@ export default function StockSummaryPage() {
     <AppShell>
       <Header title={t.stockSummary} backTo={ROUTES.REPORTS} />
 
-      <PageContainer className="space-y-6">
+      <PageContainer variant="list" className="space-y-6">
         <StockSummaryFilterBar
           searchDefault={filters.search ?? ''}
           activeStatusFilter={activeStatusFilter}

@@ -38,7 +38,7 @@ export default function ItemsLibraryPage() {
     <AppShell>
       <Header title={t.itemsLibrary} backTo={ROUTES.PRODUCTS} />
 
-      <PageContainer className="space-y-6">
+      <PageContainer variant="list" className="space-y-6">
         <div className="library-search fade-up">
           <Search size={18} className="library-search-icon" aria-hidden="true" />
           <input

@@ -100,7 +100,7 @@ export default function ProfitLossPage() {
   return (
     <AppShell>
       <Header title={t.profitAndLoss} backTo={ROUTES.REPORTS} />
-      <PageContainer className="space-y-6">
+      <PageContainer variant="list" className="space-y-6">
         <div className="finance-date-bar fade-up">
           <span className="finance-date-bar__label">{t.from}</span>
           <input type="date" className="finance-date-bar__input" value={dateRange.from} onChange={(e) => setDateRange((r) => ({ ...r, from: e.target.value }))} aria-label={t.fromDate} />

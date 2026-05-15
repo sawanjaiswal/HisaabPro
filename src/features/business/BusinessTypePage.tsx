@@ -96,7 +96,7 @@ export default function BusinessTypePage() {
   return (
     <AppShell>
       <Header title={t.changeBusinessType} backTo={ROUTES.SETTINGS} />
-      <PageContainer className="space-y-6">
+      <PageContainer variant="form" className="space-y-6">
         <div className="space-y-6">
           <p style={{ color: 'var(--color-gray-500)', fontSize: 'var(--fs-sm)' }}>
             {t.pickBusinessTypeDesc}

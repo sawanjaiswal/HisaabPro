@@ -102,7 +102,7 @@ export default function RecurringFormPage() {
         backTo={isEdit ? `/recurring/${id}` : ROUTES.RECURRING}
       />
 
-      <PageContainer className="space-y-6">
+      <PageContainer variant="form" className="space-y-6">
         <form id="recurring-form" onSubmit={handleSubmit} noValidate>
           <RecurringFormFields
             form={form}

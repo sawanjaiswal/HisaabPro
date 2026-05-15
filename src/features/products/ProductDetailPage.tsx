@@ -76,7 +76,7 @@ export default function ProductDetailPage() {
       <AppShell>
         <Header title={t.productDetail} backTo={ROUTES.PRODUCTS} actions={headerActions} />
 
-      <PageContainer className="space-y-6">
+      <PageContainer variant="detail" className="space-y-6">
         {status === 'loading' && (
           <>
             <div className="card-primary product-detail-skeleton-card">

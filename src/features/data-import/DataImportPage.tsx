@@ -43,7 +43,7 @@ export default function DataImportPage() {
         }
       />
 
-      <PageContainer className="space-y-6">
+      <PageContainer variant="form" className="space-y-6">
         {status === 'idle' && (
           <SourceSelector
             dataType={dataType}

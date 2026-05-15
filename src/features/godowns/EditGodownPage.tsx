@@ -58,7 +58,7 @@ export default function EditGodownPage() {
     return (
       <AppShell>
         <Header title={t.editGodown} backTo={backTo} />
-        <PageContainer className="space-y-6">
+        <PageContainer variant="form" className="space-y-6">
           <Skeleton height="3.5rem" borderRadius="var(--radius-md)" count={3} />
         </PageContainer>
       </AppShell>
@@ -69,7 +69,7 @@ export default function EditGodownPage() {
     return (
       <AppShell>
         <Header title={t.editGodown} backTo={backTo} />
-        <PageContainer className="space-y-6">
+        <PageContainer variant="form" className="space-y-6">
           <ErrorState
             title={t.couldNotLoadGodown}
             message={t.checkConnectionRetry}

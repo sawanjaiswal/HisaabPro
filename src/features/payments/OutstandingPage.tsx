@@ -144,7 +144,7 @@ export default function OutstandingPage() {
         backTo={ROUTES.DASHBOARD}
       />
 
-      <PageContainer className="space-y-6">
+      <PageContainer variant="list" className="space-y-6">
         {/* Summary cards */}
         {status === 'success' && data && <OutstandingSummaryBar totals={data.totals} />}
 

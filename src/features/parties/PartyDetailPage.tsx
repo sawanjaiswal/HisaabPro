@@ -95,7 +95,7 @@ export default function PartyDetailPage() {
       <AppShell>
         <Header title={t.partyDetails} backTo={ROUTES.PARTIES} actions={headerActions} />
 
-        <PageContainer className="space-y-6">
+        <PageContainer variant="detail" className="space-y-6">
           {status === 'loading' && (
             <>
               <div className="card-primary" style={{ marginBottom: 'var(--space-4)', minHeight: 140 }}>
