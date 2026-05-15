@@ -67,7 +67,7 @@ export default function ExpensesPage() {
     return (
       <AppShell>
         <Header title={t.expenses ?? 'Expenses'} backTo={ROUTES.DASHBOARD} />
-        <PageContainer className="space-y-6">
+        <PageContainer variant="list" className="space-y-6">
           <div className="expense-skeleton" aria-busy="true">
             {['sk-1', 'sk-2', 'sk-3', 'sk-4'].map((k) => <div key={k} className="expense-skeleton__card" />)}
           </div>
@@ -80,7 +80,7 @@ export default function ExpensesPage() {
     return (
       <AppShell>
         <Header title={t.expenses ?? 'Expenses'} backTo={ROUTES.DASHBOARD} />
-        <PageContainer className="space-y-6">
+        <PageContainer variant="list" className="space-y-6">
           <ErrorState title={t.couldNotLoadExpenses} message={t.checkConnectionRetry} onRetry={refresh} />
         </PageContainer>
       </AppShell>
@@ -90,7 +90,7 @@ export default function ExpensesPage() {
   return (
     <AppShell>
       <Header title={t.expenses ?? 'Expenses'} backTo={ROUTES.DASHBOARD} />
-      <PageContainer className="space-y-6">
+      <PageContainer variant="list" className="space-y-6">
 
         {/* Trend card */}
         <CashflowTrendCard />

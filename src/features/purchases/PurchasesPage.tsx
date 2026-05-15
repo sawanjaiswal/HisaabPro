@@ -36,7 +36,7 @@ export default function PurchasesPage() {
     <AppShell>
       <Header title={t.purchasesTitle} backTo={ROUTES.MORE} />
 
-      <PageContainer className="space-y-6">
+      <PageContainer variant="list" className="space-y-6">
         <div className="search-bar">
           <input
             type="search"

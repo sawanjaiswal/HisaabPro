@@ -85,6 +85,18 @@
   }
 }
 
+@media (min-width: 1024px) {
+  .more-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .more-grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
+
 .more-logout-btn {
   display: flex;
   align-items: center;
