@@ -3,6 +3,7 @@
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Send, FileText, Bell, ShieldOff } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
+import { useLanguage } from '@/hooks/useLanguage'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import { listCampaigns, listTemplates, listReminderRules } from '../marketing.service'
 
@@ -69,6 +70,7 @@ function NavTile({ icon, title, description, route, color, cta }: NavTileProps) 
 
 export default function MarketingHubPage() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
 
   const campaignQuery = useQuery({
     queryKey: ['marketing', 'campaigns', 'list', ''],
@@ -98,20 +100,20 @@ export default function MarketingHubPage() {
     <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-        <button type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(-1)} aria-label="Back">
+        <button type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(-1)} aria-label={t.marketingBack}>
           <ArrowLeft size={20} aria-hidden="true" />
         </button>
         <div>
-          <h1 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>Marketing</h1>
-          <p style={{ fontSize: '13px', color: 'var(--color-gray-500)', margin: 0 }}>Campaigns, templates & reminders</p>
+          <h1 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>{t.marketing}</h1>
+          <p style={{ fontSize: '13px', color: 'var(--color-gray-500)', margin: 0 }}>{t.marketingSubtitle}</p>
         </div>
       </div>
 
       {/* Stats */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '24px' }}>
-        <StatCard label="Campaigns" value={campaigns.length} loading={loading} />
-        <StatCard label="Templates" value={templates.length} loading={loading} />
-        <StatCard label="Active Reminders" value={activeReminders} loading={loading} />
+        <StatCard label={t.marketingCampaigns} value={campaigns.length} loading={loading} />
+        <StatCard label={t.marketingTemplates} value={templates.length} loading={loading} />
+        <StatCard label={t.marketingActiveReminders} value={activeReminders} loading={loading} />
       </div>
 
       {/* Quick actions */}
@@ -133,7 +135,7 @@ export default function MarketingHubPage() {
             marginBottom: '10px',
           }}
         >
-          New Campaign
+          {t.marketingNewCampaign}
         </button>
       </div>
 
@@ -141,35 +143,35 @@ export default function MarketingHubPage() {
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
         <NavTile
           icon={<Send size={20} color="var(--color-primary-600)" aria-hidden="true" />}
-          title="Campaigns"
-          description="Bulk WhatsApp & SMS blasts"
+          title={t.marketingCampaigns}
+          description={t.marketingCampaignsDesc}
           route={MARKETING_ROUTES.CAMPAIGNS}
           color="var(--color-primary-50)"
-          cta="View all"
+          cta={t.marketingViewAll}
         />
         <NavTile
           icon={<FileText size={20} color="var(--color-secondary-600, #7c3aed)" aria-hidden="true" />}
-          title="Templates"
-          description="Reusable message templates"
+          title={t.marketingTemplatesNav}
+          description={t.marketingTemplatesDesc}
           route={MARKETING_ROUTES.TEMPLATES}
           color="var(--color-secondary-50, #f5f3ff)"
-          cta="Manage"
+          cta={t.marketingManage}
         />
         <NavTile
           icon={<Bell size={20} color="var(--color-warning-600, #d97706)" aria-hidden="true" />}
-          title="Reminders"
-          description="Automatic follow-up rules"
+          title={t.marketingReminders}
+          description={t.marketingRemindersDesc}
           route={MARKETING_ROUTES.REMINDERS}
           color="var(--color-warning-50, #fffbeb)"
-          cta="Set up"
+          cta={t.marketingSetUp}
         />
         <NavTile
           icon={<ShieldOff size={20} color="var(--color-error-600, #dc2626)" aria-hidden="true" />}
-          title="Opt-outs"
-          description="Manage unsubscribes"
+          title={t.marketingOptOuts}
+          description={t.marketingOptOutsDesc}
           route={MARKETING_ROUTES.OPT_OUTS}
           color="var(--color-error-50, #fef2f2)"
-          cta="View"
+          cta={t.marketingView}
         />
       </div>
     </div>

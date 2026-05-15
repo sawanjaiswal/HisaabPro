@@ -1,16 +1,17 @@
 /** DltWarningCard — SMS DLT compliance warning */
 
+import { useLanguage } from '@/hooks/useLanguage'
+
 interface Props {
   hasDltId: boolean
   isRegistered: boolean
 }
 
 export function DltWarningCard({ hasDltId, isRegistered }: Props) {
+  const { t } = useLanguage()
   if (hasDltId && isRegistered) return null
 
-  const message = !hasDltId
-    ? 'DLT Template ID required before this template can be used in an SMS campaign. Add it below and register with TRAI via MSG91 portal.'
-    : 'DLT Template ID is saved but not yet confirmed as registered. Set "DLT Registered" when your TRAI registration is complete. You can still launch if DLT ID is provided.'
+  const message = !hasDltId ? t.marketingDltMissingMsg : t.marketingDltUnregisteredMsg
 
   return (
     <div

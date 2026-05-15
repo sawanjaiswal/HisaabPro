@@ -1,5 +1,6 @@
 /** ChannelBadge — WhatsApp / SMS channel indicator */
 
+import { useLanguage } from '@/hooks/useLanguage'
 import type { MarketingChannel } from '../marketing.types'
 import { CHANNEL_LABEL, CHANNEL_COLOR } from '../marketing.constants'
 
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export function ChannelBadge({ channel, size = 'sm' }: Props) {
+  const { t } = useLanguage()
   const color = CHANNEL_COLOR[channel]
   const label = CHANNEL_LABEL[channel]
 
@@ -28,7 +30,7 @@ export function ChannelBadge({ channel, size = 'sm' }: Props) {
         background: `color-mix(in srgb, ${color} 12%, transparent)`,
         border: `1px solid color-mix(in srgb, ${color} 30%, transparent)`,
       } as React.CSSProperties}
-      aria-label={`Channel: ${label}`}
+      aria-label={`${t.marketingChannelAria}: ${label}`}
     >
       {channel === 'WHATSAPP' ? (
         <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

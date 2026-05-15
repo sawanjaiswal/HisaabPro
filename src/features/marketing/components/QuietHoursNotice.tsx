@@ -1,5 +1,6 @@
 /** QuietHoursNotice — banner showing TRAI quiet hours enforcement */
 
+import { useLanguage } from '@/hooks/useLanguage'
 import { QUIET_HOURS_START, QUIET_HOURS_END } from '../marketing.constants'
 
 interface Props {
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export function QuietHoursNotice({ start = QUIET_HOURS_START, end = QUIET_HOURS_END }: Props) {
+  const { t } = useLanguage()
   return (
     <div
       style={{
@@ -28,7 +30,7 @@ export function QuietHoursNotice({ start = QUIET_HOURS_START, end = QUIET_HOURS_
         <polyline points="12,6 12,12 16,14"/>
       </svg>
       <span>
-        <strong>Quiet hours enforced:</strong> Messages scheduled between {end} and {start} will be delivered after {end} IST as required by TRAI regulations.
+        <strong>{t.marketingQuietHoursEnforced}:</strong> {start}–{end} · {t.marketingQuietHoursMessage}
       </span>
     </div>
   )

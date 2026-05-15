@@ -3,6 +3,7 @@
 import { useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
+import { useLanguage } from '@/hooks/useLanguage'
 import { ApiError } from '@/lib/api'
 import {
   listTemplates, getTemplate,
@@ -26,6 +27,7 @@ export const templateKeys = {
 
 export function useMarketingTemplateList(channel?: MarketingChannel) {
   const toast = useToast()
+  const { t } = useLanguage()
   const queryClient = useQueryClient()
 
   const query = useQuery({
@@ -34,9 +36,7 @@ export function useMarketingTemplateList(channel?: MarketingChannel) {
   })
 
   if (query.error && !query.isFetching) {
-    const msg = query.error instanceof ApiError
-      ? query.error.message
-      : 'Failed to load templates'
+    const msg = query.error instanceof ApiError ? query.error.message : t.marketingLoadFailed
     toast.error(msg)
   }
 
@@ -54,6 +54,7 @@ export function useMarketingTemplateList(channel?: MarketingChannel) {
 
 export function useMarketingTemplateDetail(id: string) {
   const toast = useToast()
+  const { t } = useLanguage()
   const queryClient = useQueryClient()
 
   const query = useQuery({
@@ -63,9 +64,7 @@ export function useMarketingTemplateDetail(id: string) {
   })
 
   if (query.error && !query.isFetching) {
-    const msg = query.error instanceof ApiError
-      ? query.error.message
-      : 'Failed to load template'
+    const msg = query.error instanceof ApiError ? query.error.message : t.marketingTemplateLoadFailed
     toast.error(msg)
   }
 
@@ -83,16 +82,17 @@ export function useMarketingTemplateDetail(id: string) {
 
 export function useCreateTemplate() {
   const toast = useToast()
+  const { t } = useLanguage()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: (payload: CreateTemplatePayload) => createTemplate(payload),
     onSuccess: () => {
-      toast.success('Template saved.')
+      toast.success(t.marketingTemplateSaved)
       void queryClient.invalidateQueries({ queryKey: templateKeys.all() })
     },
     onError: (err) => {
-      const msg = err instanceof ApiError ? err.message : 'Could not save template.'
+      const msg = err instanceof ApiError ? err.message : t.marketingTemplateSaveFailed
       toast.error(msg)
     },
   })
@@ -102,16 +102,17 @@ export function useCreateTemplate() {
 
 export function useUpdateTemplate(id: string, name: string) {
   const toast = useToast()
+  const { t } = useLanguage()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: (payload: UpdateTemplatePayload) => updateTemplate(id, name, payload),
     onSuccess: () => {
-      toast.success('Template saved.')
+      toast.success(t.marketingTemplateSaved)
       void queryClient.invalidateQueries({ queryKey: templateKeys.all() })
     },
     onError: (err) => {
-      const msg = err instanceof ApiError ? err.message : 'Could not save template.'
+      const msg = err instanceof ApiError ? err.message : t.marketingTemplateSaveFailed
       toast.error(msg)
     },
   })
@@ -121,6 +122,7 @@ export function useUpdateTemplate(id: string, name: string) {
 
 export function useDeleteTemplate() {
   const toast = useToast()
+  const { t } = useLanguage()
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -129,7 +131,7 @@ export function useDeleteTemplate() {
       void queryClient.invalidateQueries({ queryKey: templateKeys.all() })
     },
     onError: (err) => {
-      const msg = err instanceof ApiError ? err.message : 'Could not delete template.'
+      const msg = err instanceof ApiError ? err.message : t.marketingTemplateDeleteFailed
       toast.error(msg)
     },
   })

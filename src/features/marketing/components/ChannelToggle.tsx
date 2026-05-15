@@ -1,5 +1,6 @@
 /** ChannelToggle — icon toggle between WhatsApp and SMS channels */
 
+import { useLanguage } from '@/hooks/useLanguage'
 import type { MarketingChannel } from '../marketing.types'
 import { CHANNEL_LABEL, CHANNEL_COLOR } from '../marketing.constants'
 
@@ -12,8 +13,9 @@ interface Props {
 const CHANNELS: MarketingChannel[] = ['WHATSAPP', 'SMS']
 
 export function ChannelToggle({ value, onChange, disabled = false }: Props) {
+  const { t } = useLanguage()
   return (
-    <div className="channel-toggle" role="group" aria-label="Select channel">
+    <div className="channel-toggle" role="group" aria-label={t.marketingSelectChannel}>
       {CHANNELS.map((ch) => {
         const active = value === ch
         const color = CHANNEL_COLOR[ch]

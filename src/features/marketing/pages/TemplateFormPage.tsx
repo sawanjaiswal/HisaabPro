@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useMarketingTemplateDetail, useCreateTemplate, useUpdateTemplate } from '../hooks/useMarketingTemplates'
 import { DltWarningCard } from '../components/DltWarningCard'
 import { ChannelToggle } from '../components/ChannelToggle'
@@ -15,6 +16,7 @@ const SMS_CHAR_MAX = 160
 export default function TemplateFormPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const isEdit = !!id
 
   const { template, status: detailStatus } = useMarketingTemplateDetail(id ?? '')
@@ -70,7 +72,7 @@ export default function TemplateFormPage() {
 
   if (isEdit && detailStatus === 'loading') {
     return (
-      <div className="page-container" style={{ padding: '16px' }} aria-busy="true" aria-label="Loading template">
+      <div className="page-container" style={{ padding: '16px' }} aria-busy="true" aria-label={t.marketingTemplates}>
         {[0, 1, 2, 3].map((i) => <div key={i} style={{ height: 48, borderRadius: 8, background: 'var(--color-gray-100)', marginBottom: 12, animation: 'pulse 1.5s infinite' }} />)}
       </div>
     )
@@ -80,11 +82,11 @@ export default function TemplateFormPage() {
     <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-        <button type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.TEMPLATES)} aria-label="Back to Templates">
+        <button type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.TEMPLATES)} aria-label={t.marketingBackToTemplates}>
           <ArrowLeft size={20} aria-hidden="true" />
         </button>
         <h1 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>
-          {isEdit ? 'Edit Template' : 'New Template'}
+          {isEdit ? t.marketingEditTemplate : t.marketingNewTemplate}
         </h1>
       </div>
 
@@ -94,23 +96,23 @@ export default function TemplateFormPage() {
       <form onSubmit={(e) => { void handleSubmit(e) }} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
         {/* Channel */}
         <div>
-          <p style={labelStyle}>Send via</p>
+          <p style={labelStyle}>{t.marketingSendVia}</p>
           <div style={{ display: 'flex', gap: '10px' }}>
             <ChannelToggle value={channel} onChange={(ch) => { setChannel(ch); setDltTemplateId(''); setWaTemplateName('') }} disabled={isEdit} />
           </div>
-          {isEdit && <div style={{ fontSize: '12px', color: 'var(--color-gray-400)', marginTop: '4px' }}>Channel cannot be changed after creation</div>}
+          {isEdit && <div style={{ fontSize: '12px', color: 'var(--color-gray-400)', marginTop: '4px' }}>{t.marketingChannelCannotChange}</div>}
         </div>
 
         {/* Name */}
         <div>
-          <label htmlFor="tmpl-name" style={labelStyle}>Template Name *</label>
-          <input id="tmpl-name" type="text" value={name} onChange={(e) => setName(e.target.value)} required maxLength={100} placeholder="e.g. Diwali Offer" style={inputStyle} aria-required="true" />
+          <label htmlFor="tmpl-name" style={labelStyle}>{t.marketingTemplateName} *</label>
+          <input id="tmpl-name" type="text" value={name} onChange={(e) => setName(e.target.value)} required maxLength={100} placeholder={t.marketingTemplateNamePh} style={inputStyle} aria-required="true" />
         </div>
 
         {/* Body */}
         <div>
           <label htmlFor="tmpl-body" style={labelStyle}>
-            Message Body *
+            {t.marketingMessageBody} *
             {channel === 'SMS' && (
               <span style={{ float: 'right', fontSize: '12px', fontWeight: 400, color: charCount > SMS_CHAR_WARN ? 'var(--color-error-600)' : 'var(--color-gray-400)' }}>
                 {charCount}/{SMS_CHAR_MAX}
@@ -124,44 +126,44 @@ export default function TemplateFormPage() {
             required
             maxLength={channel === 'SMS' ? SMS_CHAR_MAX : 1000}
             rows={5}
-            placeholder="Dear {{customerName}}, ..."
+            placeholder={t.marketingMessageBodyPh}
             style={{ ...inputStyle, resize: 'vertical', minHeight: '100px' }}
             aria-required="true"
             aria-describedby={channel === 'SMS' ? 'sms-char-note' : undefined}
           />
           {channel === 'SMS' && charCount > SMS_CHAR_WARN && (
             <div id="sms-char-note" style={{ fontSize: '12px', color: 'var(--color-warning-600)', marginTop: '4px' }}>
-              SMS over {SMS_CHAR_WARN} chars may split into 2 messages.
+              {t.marketingSmsCharOver140}
             </div>
           )}
         </div>
 
         {/* Variables */}
         <div>
-          <label htmlFor="tmpl-vars" style={labelStyle}>Variable Names (comma separated)</label>
-          <input id="tmpl-vars" type="text" value={variables} onChange={(e) => setVariables(e.target.value)} placeholder="customerName, amount, dueDate" style={inputStyle} />
-          <div style={{ fontSize: '12px', color: 'var(--color-gray-400)', marginTop: '4px' }}>Use {'{{variableName}}'} in your message body</div>
+          <label htmlFor="tmpl-vars" style={labelStyle}>{t.marketingVariableNames}</label>
+          <input id="tmpl-vars" type="text" value={variables} onChange={(e) => setVariables(e.target.value)} placeholder={t.marketingVariableNamesPh} style={inputStyle} />
+          <div style={{ fontSize: '12px', color: 'var(--color-gray-400)', marginTop: '4px' }}>{t.marketingVariableNamesHelper}</div>
         </div>
 
         {/* Channel-specific */}
         {channel === 'SMS' && (
           <>
             <div>
-              <label htmlFor="tmpl-dlt" style={labelStyle}>DLT Template ID</label>
-              <input id="tmpl-dlt" type="text" value={dltTemplateId} onChange={(e) => setDltTemplateId(e.target.value)} placeholder="Registered DLT Template ID" maxLength={60} style={inputStyle} />
+              <label htmlFor="tmpl-dlt" style={labelStyle}>{t.marketingDltTemplateId}</label>
+              <input id="tmpl-dlt" type="text" value={dltTemplateId} onChange={(e) => setDltTemplateId(e.target.value)} placeholder={t.marketingDltTemplateIdPh} maxLength={60} style={inputStyle} />
             </div>
             <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '14px', color: 'var(--color-gray-700)' }}>
               <input type="checkbox" checked={dltRegistered} onChange={(e) => setDltRegistered(e.target.checked)} style={{ width: '18px', height: '18px', accentColor: 'var(--color-primary-600)' }} />
-              DLT Registration confirmed with TRAI
+              {t.marketingDltRegisteredCheck}
             </label>
           </>
         )}
 
         {channel === 'WHATSAPP' && (
           <div>
-            <label htmlFor="tmpl-wa" style={labelStyle}>WhatsApp Template Name (from Meta)</label>
-            <input id="tmpl-wa" type="text" value={waTemplateName} onChange={(e) => setWaTemplateName(e.target.value)} placeholder="e.g. diwali_offer_2026" maxLength={80} style={inputStyle} />
-            <div style={{ fontSize: '12px', color: 'var(--color-gray-400)', marginTop: '4px' }}>Must match exactly the approved name in your Meta Business Manager</div>
+            <label htmlFor="tmpl-wa" style={labelStyle}>{t.marketingWaTemplateName}</label>
+            <input id="tmpl-wa" type="text" value={waTemplateName} onChange={(e) => setWaTemplateName(e.target.value)} placeholder={t.marketingWaTemplateNamePh} maxLength={80} style={inputStyle} />
+            <div style={{ fontSize: '12px', color: 'var(--color-gray-400)', marginTop: '4px' }}>{t.marketingWaTemplateHelper}</div>
           </div>
         )}
 
@@ -180,7 +182,7 @@ export default function TemplateFormPage() {
             marginTop: '8px',
           }}
         >
-          {isPending ? 'Saving...' : 'Save Template'}
+          {isPending ? t.marketingSaving : t.marketingSaveTemplate}
         </button>
       </form>
     </div>
