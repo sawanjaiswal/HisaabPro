@@ -128,6 +128,21 @@ export const ROUTES = {
   JOB_DETAIL: '/jobs/:id',
   JOB_EDIT:   '/jobs/:id/edit',
 
+  // Phase 5 Epic B — Sales Pipeline (#122)
+  SALES:                  '/sales',
+  ESTIMATES:              '/sales/estimates',
+  ESTIMATE_NEW:           '/sales/estimates/new',
+  ESTIMATE_DETAIL:        '/sales/estimates/:id',
+  ESTIMATE_EDIT:          '/sales/estimates/:id/edit',
+  SALE_ORDERS:            '/sales/orders',
+  SALE_ORDER_NEW:         '/sales/orders/new',
+  SALE_ORDER_DETAIL:      '/sales/orders/:id',
+  SALE_ORDER_EDIT:        '/sales/orders/:id/edit',
+  DELIVERY_CHALLANS:      '/sales/challans',
+  DELIVERY_CHALLAN_NEW:   '/sales/challans/new',
+  DELIVERY_CHALLAN_DETAIL:'/sales/challans/:id',
+  DELIVERY_CHALLAN_EDIT:  '/sales/challans/:id/edit',
+
   // Phase 4 — Custom Orders (bakery / tailor vertical)
   ORDERS:       '/orders',
   ORDER_NEW:    '/orders/new',

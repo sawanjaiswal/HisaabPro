@@ -51,6 +51,10 @@ import {
   PriceLists, PriceListDetail, NotFound,
   StorefrontSettings, PublicStorePage,
   PublicInvitePage,
+  // Phase 5 Epic B — Sales Pipeline
+  SalesHub, SalesEstimatesPage, SalesSaleOrdersPage, SalesDeliveryChallansPage,
+  EstimateDetail, SaleOrderDetail, ChallanDetail,
+  CreateEstimate, CreateSaleOrder, CreateChallan,
 } from '@/app.routes'
 import {
   PageRoute, DashboardFallback, ProtectedRoute, GuestRoute,
@@ -100,6 +104,19 @@ export function App() {
         <Route path={ROUTES.INVOICE_CREATE} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Invoices"><CreateInvoice /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.INVOICE_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Invoices"><InvoiceDetail /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.INVOICE_EDIT} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Invoices"><EditInvoice /></PlanGate></ProtectedRoute></PageRoute>} />
+
+        {/* Phase 5 Epic B — Sales Pipeline (#122) */}
+        <Route path={ROUTES.SALES} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Sales"><SalesHub /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.ESTIMATES} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Estimates"><SalesEstimatesPage /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.ESTIMATE_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Estimates"><CreateEstimate /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.ESTIMATE_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Estimates"><EstimateDetail /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SALE_ORDERS} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Sale Orders"><SalesSaleOrdersPage /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SALE_ORDER_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Sale Orders"><CreateSaleOrder /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SALE_ORDER_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Sale Orders"><SaleOrderDetail /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.DELIVERY_CHALLANS} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Delivery Challans"><SalesDeliveryChallansPage /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.DELIVERY_CHALLAN_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Delivery Challans"><CreateChallan /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.DELIVERY_CHALLAN_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Delivery Challans"><ChallanDetail /></PlanGate></ProtectedRoute></PageRoute>} />
+
         <Route path={ROUTES.TEMPLATES} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Invoice Templates"><TemplateGallery /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.TEMPLATE_EDIT} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Invoice Templates"><TemplateEditor /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PAYMENTS} element={<PageRoute><ProtectedRoute><PlanGate feature="payments" featureLabel="Payments"><Payments /></PlanGate></ProtectedRoute></PageRoute>} />

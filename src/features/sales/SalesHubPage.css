@@ -1,0 +1,49 @@
+/* ─── Sales Hub — top-tab bar ────────────────────────────────────────────────── */
+
+.sales-hub-tabs {
+  position: sticky;
+  z-index: 10;
+  display: flex;
+  gap: 0;
+  background-color: var(--color-gray-0);
+  border-bottom: 1px solid var(--color-gray-150);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sales-hub-tabs::-webkit-scrollbar { display: none; }
+
+.sales-hub-tab {
+  flex: 0 0 auto;
+  padding: 12px 16px;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.sales-hub-tab--active {
+  color: var(--color-primary-600);
+  border-bottom-color: var(--color-primary-500);
+  font-weight: 600;
+}
+
+.sales-hub-tab:focus-visible {
+  outline: 2px solid var(--color-primary-400);
+  outline-offset: -2px;
+}
+
+/* ─── Content panel ─────────────────────────────────────────────────────────── */
+
+.sales-hub-content {
+  /* AppShell provides the full-height scroll container.
+     The tab bar offset is handled by the sticky top above. */
+  flex: 1;
+  min-height: 0;
+}

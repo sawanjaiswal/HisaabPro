@@ -1,6 +1,6 @@
 import { createPortal } from 'react-dom'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Home, FileText, Users, Plus, Menu } from 'lucide-react'
+import { Home, ShoppingCart, Users, Plus, Menu } from 'lucide-react'
 import type { ComponentType, SVGProps } from 'react'
 import { ROUTES } from '@/config/routes.config'
 import { OPEN_SIDE_NAV_EVENT } from '@/config/events.config'
@@ -43,7 +43,7 @@ export function BottomNav() {
 
   const leftItems: readonly NavItem[] = [
     { to: ROUTES.DASHBOARD, icon: Home, label: t.home ?? 'Home' },
-    { to: ROUTES.INVOICES, icon: FileText, label: t.invoices },
+    { to: ROUTES.SALES, icon: ShoppingCart, label: t.salesHub ?? 'Sales' },
   ]
 
   const rightItems: readonly NavItem[] = [

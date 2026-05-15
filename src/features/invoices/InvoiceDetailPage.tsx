@@ -9,7 +9,6 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
-import { Skeleton } from '@/components/feedback/Skeleton'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useToast } from '@/hooks/useToast'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -19,6 +18,7 @@ import { deleteDocument } from './invoice.service'
 import { DETAIL_TABS } from './invoice.constants'
 import { InvoiceDetailHeader } from './components/InvoiceDetailHeader'
 import { InvoiceDetailHeaderActions } from './components/InvoiceDetailHeaderActions'
+import { InvoiceDetailSkeleton } from './components/InvoiceDetailSkeleton'
 import { InvoiceOverviewPanel } from './components/InvoiceOverviewPanel'
 import { InvoiceItemsPanel } from './components/InvoiceItemsPanel'
 import { InvoiceSharePanel } from './components/InvoiceSharePanel'
@@ -31,6 +31,8 @@ import { ECOMPLIANCE_DOCUMENT_TYPES } from './invoice.constants'
 import type { EComplianceDocumentType } from '@/features/documents/ecompliance.types'
 import { UpiPayCard } from './components/UpiPayCard'
 import { useBusinessVpa } from './hooks/useBusinessVpa'
+import { PipelineTimeline } from '@/features/sales/components/PipelineTimeline'
+import { useDocumentLineage } from '@/features/sales/useDocumentLineage'
 import './invoice-detail-items.css'
 import './invoice-detail-summary.css'
 import './invoice-detail-share-log.css'
@@ -42,6 +44,7 @@ export default function InvoiceDetailPage() {
   const documentId = id ?? ''
   const { document, status, activeTab, setActiveTab, refresh } = useInvoiceDetail(documentId)
   const businessVpa = useBusinessVpa()
+  const { steps: lineageSteps, isLoading: lineageLoading, isError: lineageError } = useDocumentLineage(documentId)
 
   const toast = useToast()
   const { t } = useLanguage()
@@ -103,23 +106,7 @@ export default function InvoiceDetailPage() {
         <Header title={t.invoiceDetail} backTo={ROUTES.INVOICES} actions={headerActions} />
 
       <PageContainer className="space-y-6">
-        {status === 'loading' && (
-          <>
-            <div className="card-primary" style={{ marginBottom: 'var(--space-4)', minHeight: 160 }}>
-              <Skeleton height="1.5rem" width="60%" />
-              <div style={{ marginTop: 'var(--space-3)' }}>
-                <Skeleton height="1rem" width="40%" />
-              </div>
-              <div style={{ marginTop: 'var(--space-4)' }}>
-                <Skeleton height="2.5rem" width="50%" />
-              </div>
-            </div>
-            <Skeleton height="2.5rem" borderRadius="var(--radius-full)" />
-            <div style={{ marginTop: 'var(--space-4)' }}>
-              <Skeleton height="5rem" borderRadius="var(--radius-lg)" count={3} />
-            </div>
-          </>
-        )}
+        {status === 'loading' && <InvoiceDetailSkeleton />}
 
         {status === 'error' && (
           <ErrorState
@@ -151,6 +138,13 @@ export default function InvoiceDetailPage() {
             <div role="status" aria-live="polite" className="sr-only">
               {t.invoice} {document.documentNumber} {t.invoiceLoadedSr}
             </div>
+
+            <PipelineTimeline
+              steps={lineageSteps}
+              isLoading={lineageLoading}
+              isError={lineageError}
+            />
+
             <div ref={previewRef} className="invoice-export-capture stagger-enter">
             <InvoiceDetailHeader document={document} />
 

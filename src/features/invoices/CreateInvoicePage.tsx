@@ -5,8 +5,8 @@
  * Sections: Items · Details · Charges
  */
 
-import { useState, useCallback, useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useState, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Camera } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -16,6 +16,9 @@ import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useGstGate } from '@/features/gst/useGstGate'
 import { useInvoiceForm } from './useInvoiceForm'
+import { useBillScanPrefill } from './useBillScanPrefill'
+import { getCreateTitle } from '@/features/sales/sales.utils'
+import type { DocumentType } from './invoice.types'
 import { InvoiceTotalsBar } from './components/InvoiceTotalsBar'
 import { InvoiceItemsSection } from './components/InvoiceItemsSection'
 import { InvoiceDetailsSection } from './components/InvoiceDetailsSection'
@@ -32,7 +35,14 @@ import './invoice-product-search.css'
 import './invoice-summary.css'
 import './invoice-gst-banners.css'
 
-export default function CreateInvoicePage() {
+interface CreateInvoicePageProps {
+  /** Document type override — defaults to SALE_INVOICE.
+   * Used by Estimate / Sale Order / Delivery Challan create routes
+   * which share this same form engine (architect Q3 decision). */
+  type?: DocumentType
+}
+
+export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoicePageProps) {
   const nav = useNavigate()
   const { t } = useLanguage()
   const {
@@ -61,32 +71,13 @@ export default function CreateInvoicePage() {
     clearStockShortage,
     batchErrorCode,
     clearBatchError,
-  } = useInvoiceForm('SALE_INVOICE')
+  } = useInvoiceForm(type)
 
   const { compositionScheme } = useGstGate()
-  const location = useLocation()
   const [productNames, setProductNames] = useState<Record<string, string>>({})
   const [showProductSearch, setShowProductSearch] = useState(false)
 
-  // Pre-populate from bill scan navigation state
-  useEffect(() => {
-    const state = location.state as { scannedItems?: Array<{ productId: string; productName: string; quantity: number; rate: number; discountType: 'PERCENTAGE'; discountValue: number }>; scannedDate?: string } | null
-    if (!state?.scannedItems?.length) return
-
-    const names: Record<string, string> = {}
-    for (const item of state.scannedItems) {
-      const scanId = item.productId || `scan-${crypto.randomUUID()}`
-      names[scanId] = item.productName
-      addLineItem({ productId: scanId, quantity: item.quantity, rate: item.rate, discountType: item.discountType, discountValue: item.discountValue, taxCategoryId: null, hsnCode: '' })
-    }
-    setProductNames((prev) => ({ ...prev, ...names }))
-
-    if (state.scannedDate) {
-      updateField('documentDate', state.scannedDate)
-    }
-
-    window.history.replaceState({}, '')
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  useBillScanPrefill({ addLineItem, updateField, setProductNames })
 
   const handlePartyChange = useCallback((id: string, _name: string) => {
     updateField('partyId', id)
@@ -112,15 +103,20 @@ export default function CreateInvoicePage() {
     setShowProductSearch((v) => !v)
   }, [])
 
-  const formTitle = gstEnabled && form.supplyType === 'B2C_SMALL'
+  const formTitle = type === 'SALE_INVOICE'
     ? t.newInvoice
-    : t.newInvoice
+    : getCreateTitle(type)
 
   return (
     <AppShell>
       <Header
         title={formTitle}
-        backTo={ROUTES.INVOICES}
+        backTo={
+          type === 'ESTIMATE'         ? '/sales/estimates'
+          : type === 'SALE_ORDER'     ? '/sales/orders'
+          : type === 'DELIVERY_CHALLAN' ? '/sales/challans'
+          : ROUTES.INVOICES
+        }
         actions={
           <Button variant="ghost" size="sm" onClick={() => nav(ROUTES.BILL_SCAN)} aria-label={t.scanBillAddItems}>
             <Camera size={18} aria-hidden="true" />

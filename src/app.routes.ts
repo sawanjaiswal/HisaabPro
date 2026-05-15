@@ -201,3 +201,16 @@ export const PublicStorePage = lazy(() =>
 export const PublicInvitePage = lazy(() =>
   import('@/pages/public/PublicInvitePage').then(m => ({ default: m.PublicInvitePage }))
 )
+
+// Phase 5 Epic B — Sales Pipeline (#122)
+export const SalesHub = lazy(() => import('@/features/sales/SalesHubPage'))
+export const SalesEstimatesPage = lazy(() => import('@/features/sales/EstimatesPage'))
+export const SalesSaleOrdersPage = lazy(() => import('@/features/sales/SaleOrdersPage'))
+export const SalesDeliveryChallansPage = lazy(() => import('@/features/sales/DeliveryChallansPage'))
+export const EstimateDetail = lazy(() => import('@/features/sales/EstimateDetailPage'))
+export const SaleOrderDetail = lazy(() => import('@/features/sales/SaleOrderDetailPage'))
+export const ChallanDetail = lazy(() => import('@/features/sales/ChallanDetailPage'))
+// Thin entry-point wrappers for create routes — each file passes `type` to CreateInvoicePage
+export const CreateEstimate = lazy(() => import('@/features/sales/create/CreateEstimatePage'))
+export const CreateSaleOrder = lazy(() => import('@/features/sales/create/CreateSaleOrderPage'))
+export const CreateChallan = lazy(() => import('@/features/sales/create/CreateChallanPage'))

@@ -20,6 +20,7 @@ import convertRestoreRouter from './convert-restore.js'
 import shareRouter from './share.js'
 import customFieldsRouter from './custom-fields.js'
 import shareLinksRouter from '../document-share-links.routes.js'
+import lineageRouter from './lineage.js'
 
 const router = Router()
 
@@ -35,5 +36,6 @@ router.use('/', convertRestoreRouter) // /:id/convert, /:id/restore, /:id/perman
 router.use('/', shareRouter)       // /:id/share/whatsapp, /:id/share/email
 router.use('/', customFieldsRouter) // /:id/custom-fields (GET, PUT) — #134
 router.use('/', shareLinksRouter)   // /:id/share-links (POST, GET, PATCH) — #130
+router.use('/', lineageRouter)      // /:id/lineage (GET) — #122 PR1
 
 export default router

@@ -1,0 +1,145 @@
+/* ─── PipelineTimeline — horizontal step strip ──────────────────────────────── */
+
+.pipeline {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  padding: 12px 0;
+  scrollbar-width: none;
+}
+.pipeline::-webkit-scrollbar { display: none; }
+
+/* ─── Step node ─────────────────────────────────────────────────────────────── */
+
+.pipeline__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.pipeline__node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.pipeline__node--static {
+  cursor: default;
+}
+
+.pipeline__badge {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background-color: var(--color-gray-100);
+  color: var(--text-secondary);
+  border: 2px solid transparent;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.pipeline__badge--current {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-700);
+  border-color: var(--color-primary-400);
+}
+
+.pipeline__label {
+  font-size: 10px;
+  color: var(--text-muted);
+  max-width: 56px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pipeline__label--current {
+  color: var(--color-primary-600);
+  font-weight: 600;
+}
+
+/* ─── Connector arrow ───────────────────────────────────────────────────────── */
+
+.pipeline__arrow {
+  width: 24px;
+  height: 2px;
+  background-color: var(--color-gray-200);
+  position: relative;
+  flex-shrink: 0;
+  margin-top: -20px; /* align with badge centre */
+}
+
+.pipeline__arrow::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: -3px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid var(--color-gray-300);
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+}
+
+/* ─── Loading shimmer ───────────────────────────────────────────────────────── */
+
+.pipeline__skeleton {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 12px 0;
+}
+
+.pipeline__skeleton-node {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, var(--color-gray-100) 25%, var(--color-gray-50) 50%, var(--color-gray-100) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.pipeline__skeleton-arrow {
+  width: 24px;
+  height: 2px;
+  background-color: var(--color-gray-100);
+  margin-top: 0;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ─── Wrapper card ──────────────────────────────────────────────────────────── */
+
+.pipeline-card {
+  background-color: var(--color-gray-0);
+  border: 1px solid var(--color-gray-150);
+  border-radius: var(--radius-lg);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.pipeline-card__title {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
