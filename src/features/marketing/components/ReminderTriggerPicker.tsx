@@ -1,7 +1,7 @@
 /** ReminderTriggerPicker — trigger type selector */
 
+import { useLanguage } from '@/hooks/useLanguage'
 import type { ReminderRuleTrigger } from '../marketing.types'
-import { TRIGGER_LABEL } from '../marketing.constants'
 
 interface Props {
   value: ReminderRuleTrigger
@@ -11,17 +11,26 @@ interface Props {
 
 const TRIGGERS: ReminderRuleTrigger[] = ['BIRTHDAY', 'PAYMENT_DUE', 'PAYMENT_OVERDUE', 'FOLLOWUP', 'INACTIVE']
 
-const TRIGGER_DESCRIPTION: Record<ReminderRuleTrigger, string> = {
-  BIRTHDAY:         'Send a wish on the customer\'s birthday',
-  PAYMENT_DUE:      'Remind before invoice due date',
-  PAYMENT_OVERDUE:  'Follow up after invoice due date passes unpaid',
-  FOLLOWUP:         'Send a follow-up X days after the last transaction',
-  INACTIVE:         'Re-engage customers inactive for X days',
+const LABEL_KEY: Record<ReminderRuleTrigger, 'marketingTriggerBirthdayLabel' | 'marketingTriggerPaymentDueLabel' | 'marketingTriggerPaymentOverdueLabel' | 'marketingTriggerFollowupLabel' | 'marketingTriggerInactiveLabel'> = {
+  BIRTHDAY:         'marketingTriggerBirthdayLabel',
+  PAYMENT_DUE:      'marketingTriggerPaymentDueLabel',
+  PAYMENT_OVERDUE:  'marketingTriggerPaymentOverdueLabel',
+  FOLLOWUP:         'marketingTriggerFollowupLabel',
+  INACTIVE:         'marketingTriggerInactiveLabel',
+}
+
+const DESC_KEY: Record<ReminderRuleTrigger, 'marketingTriggerBirthdayDesc' | 'marketingTriggerPaymentDueDesc' | 'marketingTriggerPaymentOverdueDesc' | 'marketingTriggerFollowupDesc' | 'marketingTriggerInactiveDesc'> = {
+  BIRTHDAY:         'marketingTriggerBirthdayDesc',
+  PAYMENT_DUE:      'marketingTriggerPaymentDueDesc',
+  PAYMENT_OVERDUE:  'marketingTriggerPaymentOverdueDesc',
+  FOLLOWUP:         'marketingTriggerFollowupDesc',
+  INACTIVE:         'marketingTriggerInactiveDesc',
 }
 
 export function ReminderTriggerPicker({ value, onChange, disabled = false }: Props) {
+  const { t } = useLanguage()
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }} role="radiogroup" aria-label="Reminder trigger type">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }} role="radiogroup" aria-label={t.marketingTriggerGroupAria}>
       {TRIGGERS.map((trigger) => {
         const active = value === trigger
         return (
@@ -47,10 +56,10 @@ export function ReminderTriggerPicker({ value, onChange, disabled = false }: Pro
             }}
           >
             <span style={{ fontWeight: 600, fontSize: '14px', color: active ? 'var(--color-primary-700)' : 'var(--color-gray-800)' }}>
-              {TRIGGER_LABEL[trigger]}
+              {t[LABEL_KEY[trigger]]}
             </span>
             <span style={{ fontSize: '12px', color: active ? 'var(--color-primary-600)' : 'var(--color-gray-400)' }}>
-              {TRIGGER_DESCRIPTION[trigger]}
+              {t[DESC_KEY[trigger]]}
             </span>
           </button>
         )

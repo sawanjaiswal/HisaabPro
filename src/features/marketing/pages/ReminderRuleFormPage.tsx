@@ -3,16 +3,19 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useReminderRuleDetail, useCreateReminderRule, useUpdateReminderRule } from '../hooks/useReminderRules'
 import { useMarketingTemplateList } from '../hooks/useMarketingTemplates'
 import { ReminderTriggerPicker } from '../components/ReminderTriggerPicker'
 import { ChannelToggle } from '../components/ChannelToggle'
+import { CHANNEL_LABEL } from '../marketing.constants'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import type { MarketingChannel, ReminderRuleTrigger } from '../marketing.types'
 
 export default function ReminderRuleFormPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const isEdit = !!id
 
   const { rule, status: detailStatus } = useReminderRuleDetail(id ?? '')
@@ -55,30 +58,35 @@ export default function ReminderRuleFormPage() {
 
   if (isEdit && detailStatus === 'loading') {
     return (
-      <div className="page-container" style={{ padding: '16px' }} aria-busy="true" aria-label="Loading rule">
+      <div className="page-container" style={{ padding: '16px' }} aria-busy="true" aria-label={t.marketingLoadingRuleAria}>
         {[0, 1, 2, 3].map((i) => <div key={i} style={{ height: 48, borderRadius: 8, background: 'var(--color-gray-100)', marginBottom: 12, animation: 'pulse 1.5s infinite' }} />)}
       </div>
     )
   }
 
-  const activeTemplates = templates.filter((t) => t.isActive)
+  const activeTemplates = templates.filter((tpl) => tpl.isActive)
+  const offsetLabel = trigger === 'BIRTHDAY' ? t.marketingDaysBeforeBirthday :
+    trigger === 'PAYMENT_DUE' ? t.marketingDaysBeforeDue :
+    trigger === 'PAYMENT_OVERDUE' ? t.marketingDaysAfterDue :
+    trigger === 'FOLLOWUP' ? t.marketingDaysAfterLastTxn :
+    t.marketingDaysOfInactivity
 
   return (
     <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-        <button type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.REMINDERS)} aria-label="Back to Reminders">
+        <button type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.REMINDERS)} aria-label={t.marketingBackToRemindersAria}>
           <ArrowLeft size={20} aria-hidden="true" />
         </button>
         <h1 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>
-          {isEdit ? 'Edit Rule' : 'New Reminder Rule'}
+          {isEdit ? t.marketingEditReminderRule : t.marketingNewReminderRule}
         </h1>
       </div>
 
       <form onSubmit={(e) => { void handleSubmit(e) }} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {/* Name */}
         <div>
-          <label htmlFor="rule-name" style={labelStyle}>Rule Name *</label>
+          <label htmlFor="rule-name" style={labelStyle}>{t.marketingRuleNameLabel}</label>
           <input
             id="rule-name"
             type="text"
@@ -86,7 +94,7 @@ export default function ReminderRuleFormPage() {
             onChange={(e) => setName(e.target.value)}
             required
             maxLength={100}
-            placeholder="e.g. Birthday Wish"
+            placeholder={t.marketingRuleNamePh}
             style={inputStyle}
             aria-required="true"
           />
@@ -94,18 +102,14 @@ export default function ReminderRuleFormPage() {
 
         {/* Trigger */}
         <div>
-          <p style={labelStyle}>Trigger *</p>
+          <p style={labelStyle}>{t.marketingTriggerLabel}</p>
           <ReminderTriggerPicker value={trigger} onChange={setTrigger} />
         </div>
 
         {/* Offset days */}
         <div>
           <label htmlFor="rule-offset" style={labelStyle}>
-            {trigger === 'BIRTHDAY' ? 'Days before birthday' :
-             trigger === 'PAYMENT_DUE' ? 'Days before due date' :
-             trigger === 'PAYMENT_OVERDUE' ? 'Days after due date' :
-             trigger === 'FOLLOWUP' ? 'Days after last transaction' :
-             'Days of inactivity'}
+            {offsetLabel}
           </label>
           <input
             id="rule-offset"
@@ -120,7 +124,7 @@ export default function ReminderRuleFormPage() {
 
         {/* Channel */}
         <div>
-          <p style={labelStyle}>Send via</p>
+          <p style={labelStyle}>{t.marketingSendViaLabel}</p>
           <div style={{ display: 'flex', gap: '10px' }}>
             <ChannelToggle value={channel} onChange={(ch) => { setChannel(ch); setTemplateId('') }} disabled={isEdit} />
           </div>
@@ -128,10 +132,10 @@ export default function ReminderRuleFormPage() {
 
         {/* Template */}
         <div>
-          <label htmlFor="rule-template" style={labelStyle}>Template *</label>
+          <label htmlFor="rule-template" style={labelStyle}>{t.marketingTemplateLabel}</label>
           {activeTemplates.length === 0 ? (
             <div style={{ padding: '12px', borderRadius: '8px', background: 'var(--color-warning-50)', border: '1px solid var(--color-warning-200)', fontSize: '13px', color: 'var(--color-warning-700)' }}>
-              No active {channel} templates. Create a template first.
+              {t.marketingNoActiveChannelTpl.replace('{{channel}}', CHANNEL_LABEL[channel])}
             </div>
           ) : (
             <select
@@ -142,9 +146,9 @@ export default function ReminderRuleFormPage() {
               style={{ ...inputStyle, appearance: 'auto' }}
               aria-required="true"
             >
-              <option value="">Select template…</option>
-              {activeTemplates.map((t) => (
-                <option key={t.id} value={t.id}>{t.name}</option>
+              <option value="">{t.marketingSelectTemplatePh}</option>
+              {activeTemplates.map((tpl) => (
+                <option key={tpl.id} value={tpl.id}>{tpl.name}</option>
               ))}
             </select>
           )}
@@ -165,7 +169,7 @@ export default function ReminderRuleFormPage() {
             marginTop: '8px',
           }}
         >
-          {isPending ? 'Saving...' : 'Save Rule'}
+          {isPending ? t.marketingSavingRule : t.marketingSaveRule}
         </button>
       </form>
     </div>

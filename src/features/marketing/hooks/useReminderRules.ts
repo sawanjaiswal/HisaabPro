@@ -3,6 +3,7 @@
 import { useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
+import { useLanguage } from '@/hooks/useLanguage'
 import { ApiError } from '@/lib/api'
 import { listReminderRules, getReminderRule } from '../marketing.service'
 import { createReminderRule, updateReminderRule, deleteReminderRule, toggleReminderRule } from '../marketing-crud.service'
@@ -56,16 +57,17 @@ export function useReminderRuleDetail(id: string) {
 
 export function useCreateReminderRule() {
   const toast = useToast()
+  const { t } = useLanguage()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: (payload: CreateReminderRulePayload) => createReminderRule(payload),
     onSuccess: () => {
-      toast.success('Reminder rule saved.')
+      toast.success(t.marketingRuleSaved)
       void queryClient.invalidateQueries({ queryKey: reminderKeys.all() })
     },
     onError: (err) => {
-      const msg = err instanceof ApiError ? err.message : 'Could not save rule. Please try again.'
+      const msg = err instanceof ApiError ? err.message : t.marketingRuleSaveFailed
       toast.error(msg)
     },
   })
@@ -75,16 +77,17 @@ export function useCreateReminderRule() {
 
 export function useUpdateReminderRule(id: string, name: string) {
   const toast = useToast()
+  const { t } = useLanguage()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: (payload: Partial<CreateReminderRulePayload>) => updateReminderRule(id, name, payload),
     onSuccess: () => {
-      toast.success('Reminder rule saved.')
+      toast.success(t.marketingRuleSaved)
       void queryClient.invalidateQueries({ queryKey: reminderKeys.all() })
     },
     onError: (err) => {
-      const msg = err instanceof ApiError ? err.message : 'Could not save rule. Please try again.'
+      const msg = err instanceof ApiError ? err.message : t.marketingRuleSaveFailed
       toast.error(msg)
     },
   })
@@ -94,6 +97,7 @@ export function useUpdateReminderRule(id: string, name: string) {
 
 export function useDeleteReminderRule() {
   const toast = useToast()
+  const { t } = useLanguage()
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -102,7 +106,7 @@ export function useDeleteReminderRule() {
       void queryClient.invalidateQueries({ queryKey: reminderKeys.all() })
     },
     onError: (err) => {
-      const msg = err instanceof ApiError ? err.message : 'Could not delete rule.'
+      const msg = err instanceof ApiError ? err.message : t.marketingRuleDeleteFailed
       toast.error(msg)
     },
   })
@@ -112,6 +116,7 @@ export function useDeleteReminderRule() {
 
 export function useToggleReminderRule() {
   const toast = useToast()
+  const { t } = useLanguage()
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -120,7 +125,7 @@ export function useToggleReminderRule() {
       void queryClient.invalidateQueries({ queryKey: reminderKeys.all() })
     },
     onError: (err) => {
-      const msg = err instanceof ApiError ? err.message : 'Could not update rule.'
+      const msg = err instanceof ApiError ? err.message : t.marketingRuleToggleFailed
       toast.error(msg)
     },
   })

@@ -5,7 +5,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 
 export function OptOutChip() {
   const { t } = useLanguage()
-  const label = t.optOutListTitle ?? 'Opt-out'
+  const label = t.marketingOptOutChipLabel
   return (
     <span
       className="badge"
