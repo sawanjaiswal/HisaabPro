@@ -148,16 +148,16 @@ export async function sendWhatsApp(opts: SendWhatsAppOpts): Promise<ChannelResul
 
     if (!response.ok) {
       const body = await response.text()
-      logger.error('Aisensy WhatsApp failed', { phone: opts.phone, status: response.status, body })
+      logger.error('Aisensy WhatsApp failed', { phone: opts.phone.slice(-4), status: response.status, body })
       return { success: false, error: `Aisensy returned ${response.status}` }
     }
 
     const data = await response.json() as { id?: string }
-    logger.info('WhatsApp sent', { phone: opts.phone, id: data.id })
+    logger.info('WhatsApp sent', { phone: opts.phone.slice(-4), id: data.id })
     return { success: true, id: data.id }
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown WhatsApp error'
-    logger.error('sendWhatsApp exception', { phone: opts.phone, error: message })
+    logger.error('sendWhatsApp exception', { phone: opts.phone.slice(-4), error: message })
     return { success: false, error: message }
   }
 }

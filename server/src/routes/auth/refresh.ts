@@ -5,7 +5,7 @@ import { sendSuccess, sendError } from '../../lib/response.js'
 import { isBlacklisted, blacklistToken } from '../../lib/token-blacklist.js'
 import { decodeToken } from '../../lib/jwt.js'
 import * as authService from '../../services/auth.service.js'
-import { REFRESH_TOKEN_COOKIE } from '../../config/security.js'
+import { REFRESH_TOKEN_COOKIE, ALLOWED_ORIGINS } from '../../config/security.js'
 
 const router = Router()
 
@@ -20,6 +20,15 @@ router.post(
   '/refresh',
   authRateLimiter,
   asyncHandler(async (req, res) => {
+    // P1.1 — Origin allowlist gate. Refresh is CSRF-exempt (FE refresh queue
+    // can't carry the token), so we instead reject cross-origin POSTs to stop
+    // any malicious site from rotating a logged-in user's session.
+    const origin = req.get('origin') ?? req.get('referer')
+    if (origin && !ALLOWED_ORIGINS.some((allowed) => origin.startsWith(allowed))) {
+      sendError(res, 'Origin not allowed', 'ORIGIN_FORBIDDEN', 403)
+      return
+    }
+
     // Cookie-first, then body fallback
     const refreshToken: string | undefined =
       (req.cookies?.[REFRESH_TOKEN_COOKIE] as string | undefined) ?? req.body?.refreshToken

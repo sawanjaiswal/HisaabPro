@@ -10,7 +10,8 @@ import logger from '../../../lib/logger.js'
 import type { ClaimBody } from '../../../validators/invite.validators.js'
 import { handlePublicLinkError } from './helpers.js'
 
-const PASSWORD_BCRYPT_ROUNDS = 10
+// P3.11 — OWASP 2026 minimum (target ≥ 250ms per hash on commodity hw)
+const PASSWORD_BCRYPT_ROUNDS = 12
 
 export async function claimHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
   const rawToken = req.params['token'] as string

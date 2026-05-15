@@ -17,13 +17,13 @@ export const setExchangeRateSchema = z.object({
   rate: z.number().int().positive(),
   effectiveDate: z.string().date('Must be a valid date (YYYY-MM-DD)'),
   source: z.enum(['MANUAL', 'API']).default('MANUAL'),
-})
+}).strict()
 
 export const listExchangeRatesSchema = z.object({
   fromCurrency: currencyCodeSchema.optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(200).default(20),
-})
+}).strict()
 
 export const convertAmountSchema = z.object({
   fromCurrency: currencyCodeSchema,
@@ -31,11 +31,11 @@ export const convertAmountSchema = z.object({
   amount: z.number().int().nonnegative('Amount must be a non-negative integer'),
   // Optional — defaults to today on the server side
   date: z.string().date().optional(),
-})
+}).strict()
 
 export const getExchangeRateSchema = z.object({
   date: z.string().date().optional(),
-})
+}).strict()
 
 export type SetExchangeRateInput = z.infer<typeof setExchangeRateSchema>
 export type ListExchangeRatesInput = z.infer<typeof listExchangeRatesSchema>

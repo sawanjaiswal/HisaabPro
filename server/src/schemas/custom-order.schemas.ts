@@ -23,7 +23,7 @@ const customOrderItemSchema = z.object({
   ),
   ratePaise: z.number().int().nonnegative(),
   discountPaise: z.number().int().nonnegative().optional().default(0),
-})
+}).strict()
 
 export const createCustomOrderSchema = z.object({
   partyId: z.string().cuid(),
@@ -35,14 +35,14 @@ export const createCustomOrderSchema = z.object({
   discountPaise: z.number().int().nonnegative().optional().default(0),
   items: z.array(customOrderItemSchema).min(1).max(200),
   clientId: z.string().min(1).max(64).optional(),
-})
+}).strict()
 
 export const updateCustomOrderSchema = createCustomOrderSchema.partial().omit({ clientId: true })
 
 export const transitionCustomOrderSchema = z.object({
   toStatus: z.enum(['RECEIVED', 'IN_PRODUCTION', 'READY', 'DELIVERED', 'CANCELLED']),
   reason: z.string().max(500).optional(),
-}).refine(
+}).strict().refine(
   data => data.toStatus !== 'CANCELLED' || (data.reason !== undefined && data.reason.length > 0),
   { message: 'reason is required when cancelling an order', path: ['reason'] }
 )
@@ -53,7 +53,7 @@ export const recordAdvanceSchema = z.object({
   reference: z.string().max(120).nullable().optional(),
   receivedAt: z.string().datetime().optional(),
   notes: z.string().max(500).nullable().optional(),
-})
+}).strict()
 
 export const listCustomOrdersSchema = z.object({
   status: z.enum(CUSTOM_ORDER_STATUSES).optional(),
@@ -64,7 +64,7 @@ export const listCustomOrdersSchema = z.object({
   hasBalance: z.coerce.boolean().optional(),
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(100).default(50),
-})
+}).strict()
 
 export type CreateCustomOrderInput = z.infer<typeof createCustomOrderSchema>
 export type UpdateCustomOrderInput = z.infer<typeof updateCustomOrderSchema>

@@ -19,6 +19,8 @@ vi.mock('../../middleware/rate-limit.js', () => {
     sensitiveMutationLimiter: pass,
     couponValidateRateLimiter: pass,
     couponIpRateLimiter: pass,
+    devLoginRateLimiter: pass,
+    userMutationLimiter: pass,
     createRateLimiter: () => pass,
   }
 })

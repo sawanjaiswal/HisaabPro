@@ -21,13 +21,13 @@ import {
 const allocationSchema = z.object({
   invoiceId: z.string().min(1),
   amount: z.number().int().positive(),
-})
+}).strict()
 
 const discountSchema = z.object({
   type: z.enum(DISCOUNT_TYPES),
   value: z.number().positive(),
   reason: z.string().max(200).optional(),
-})
+}).strict()
 
 export const createPaymentSchema = z.object({
   type: z.enum(PAYMENT_TYPES),
@@ -40,7 +40,7 @@ export const createPaymentSchema = z.object({
   allocations: z.array(allocationSchema).max(50).default([]),
   discount: discountSchema.optional(),
   offlineId: z.string().optional(),
-})
+}).strict()
 
 export const updatePaymentSchema = z.object({
   amount: z.number().int().min(1).max(9_999_999_900).optional(),
@@ -48,7 +48,7 @@ export const updatePaymentSchema = z.object({
   mode: z.enum(PAYMENT_MODES).optional(),
   referenceNumber: z.string().max(100).nullable().optional(),
   notes: z.string().max(500).nullable().optional(),
-})
+}).strict()
 
 export const listPaymentsSchema = z.object({
   type: z.enum(PAYMENT_TYPES).optional(),
@@ -61,13 +61,13 @@ export const listPaymentsSchema = z.object({
   sortOrder: z.enum(SORT_ORDER).default('desc'),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-})
+}).strict()
 
 // === Allocations ===
 
 export const updateAllocationsSchema = z.object({
   allocations: z.array(allocationSchema).max(50),
-})
+}).strict()
 
 // === Outstanding ===
 
@@ -79,7 +79,7 @@ export const listOutstandingSchema = z.object({
   sortOrder: z.enum(SORT_ORDER).default('desc'),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-})
+}).strict()
 
 // === Reminders ===
 
@@ -88,13 +88,13 @@ export const sendReminderSchema = z.object({
   invoiceId: z.string().optional(),
   channel: z.enum(REMINDER_CHANNELS),
   message: z.string().max(1000).optional(),
-})
+}).strict()
 
 export const sendBulkRemindersSchema = z.object({
   partyIds: z.array(z.string().min(1)).min(1).max(50),
   channel: z.enum(REMINDER_CHANNELS),
   message: z.string().max(1000).optional(),
-})
+}).strict()
 
 export const listRemindersSchema = z.object({
   partyId: z.string().optional(),
@@ -105,7 +105,7 @@ export const listRemindersSchema = z.object({
   dateTo: z.string().optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-})
+}).strict()
 
 export const updateReminderConfigSchema = z.object({
   enabled: z.boolean().optional(),
@@ -117,7 +117,7 @@ export const updateReminderConfigSchema = z.object({
   quietHoursEnd: z.string().regex(/^\d{2}:\d{2}$/).optional(),
   whatsappTemplate: z.string().max(1000).optional(),
   smsTemplate: z.string().max(1000).optional(),
-})
+}).strict()
 
 // === Inferred types ===
 

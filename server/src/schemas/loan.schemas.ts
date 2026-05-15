@@ -21,7 +21,7 @@ export const createLoanSchema = z.object({
   startDate: z.coerce.date({ message: 'startDate must be a valid date' }),
   endDate: z.coerce.date({ message: 'endDate must be a valid date' }).optional(),
   notes: z.string().max(2000).optional(),
-})
+}).strict()
 
 export type CreateLoanInput = z.infer<typeof createLoanSchema>
 
@@ -32,7 +32,7 @@ export const listLoansSchema = z.object({
   status: z.enum(LOAN_STATUSES).optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-})
+}).strict()
 
 export type ListLoansQuery = z.infer<typeof listLoansSchema>
 
@@ -45,6 +45,6 @@ export const recordLoanTransactionSchema = z.object({
   interestAmount: z.number().int().min(0).optional(),
   date: z.coerce.date({ message: 'date must be a valid date' }),
   notes: z.string().max(1000).optional(),
-})
+}).strict()
 
 export type RecordLoanTransactionInput = z.infer<typeof recordLoanTransactionSchema>

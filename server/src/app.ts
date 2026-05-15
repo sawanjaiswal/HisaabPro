@@ -14,6 +14,7 @@ import { errorHandler } from './middleware/errorHandler.js'
 import { performanceMonitoring } from './middleware/performance.js'
 import { apiRateLimiter } from './middleware/rate-limit.js'
 import { csrfProtection } from './middleware/csrf.js'
+import { ALLOWED_ORIGINS } from './config/security.js'
 import { sanitizeInput } from './middleware/sanitize-input.js'
 import { fieldFilter } from './middleware/field-filter.js'
 import { sseAutoEmit } from './middleware/sse-emit.js'
@@ -55,19 +56,7 @@ export function createApp() {
       : false,
   }))
 
-  const allowedOrigins = [
-    ...(process.env.CORS_ORIGIN?.split(',') || [
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'http://localhost:5173',
-    ]),
-    'https://hisaabpro.in',
-    'https://app.hisaabpro.in',
-    'https://admin.hisaabpro.in',
-    'https://localhost',
-    'capacitor://localhost',
-  ]
-  app.use(cors({ origin: allowedOrigins, credentials: true }))
+  app.use(cors({ origin: [...ALLOWED_ORIGINS], credentials: true }))
   app.use(compression())
 
   // Public router — /api/p/* — mounted BEFORE global auth/CSRF/JSON middleware.

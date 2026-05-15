@@ -18,7 +18,7 @@ export const createChequeSchema = z.object({
   amount: z.number().int().min(1),
   date: z.coerce.date({ message: 'date must be a valid date' }),
   notes: z.string().optional(),
-})
+}).strict()
 
 export type CreateChequeInput = z.infer<typeof createChequeSchema>
 
@@ -29,7 +29,7 @@ export const updateChequeStatusSchema = z.object({
   clearanceDate: z.coerce.date().optional(),
   bounceCharges: z.number().int().min(0).optional(),
   bounceReason: z.string().max(500).optional(),
-})
+}).strict()
 
 export type UpdateChequeStatusInput = z.infer<typeof updateChequeStatusSchema>
 
@@ -43,6 +43,6 @@ export const listChequesSchema = z.object({
   to: z.coerce.date().optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-})
+}).strict()
 
 export type ListChequesQuery = z.infer<typeof listChequesSchema>

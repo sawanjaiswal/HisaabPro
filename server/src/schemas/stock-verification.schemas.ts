@@ -7,22 +7,22 @@ import { z } from 'zod'
 
 export const createVerificationSchema = z.object({
   notes: z.string().max(500).optional(),
-})
+}).strict()
 
 export const updateVerificationItemSchema = z.object({
   actualQuantity: z.number().min(0, 'Actual quantity cannot be negative'),
   notes: z.string().max(500).optional(),
-})
+}).strict()
 
 export const listVerificationsSchema = z.object({
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(100).default(20),
   status: z.enum(['DRAFT', 'IN_PROGRESS', 'COMPLETED']).optional(),
-})
+}).strict()
 
 export const completeVerificationSchema = z.object({
   notes: z.string().max(500).optional(),
-})
+}).strict()
 
 // === Inferred types ===
 

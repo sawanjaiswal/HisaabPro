@@ -14,7 +14,7 @@ export const recycleBinQuerySchema = z.object({
   ),
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(50).default(20),
-})
+}).strict()
 
 export const recycleBinParamsSchema = z.object({
   entityType: z.string().refine(
@@ -22,4 +22,4 @@ export const recycleBinParamsSchema = z.object({
     { message: 'Invalid entity type' },
   ),
   id: z.string().min(1),
-})
+}).strict()

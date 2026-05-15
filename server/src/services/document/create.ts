@@ -227,7 +227,8 @@ export async function createDocument(
       }
     }
 
-    return tx.document.findUniqueOrThrow({ where: { id: doc.id }, select: DOCUMENT_DETAIL_SELECT })
+    // P3.12 — defense-in-depth: scope by businessId on re-fetch
+    return tx.document.findFirstOrThrow({ where: { id: doc.id, businessId }, select: DOCUMENT_DETAIL_SELECT })
   })
 
   if (isSaving && (STOCK_DECREASE_TYPES.has(data.type) || STOCK_INCREASE_TYPES.has(data.type))) {

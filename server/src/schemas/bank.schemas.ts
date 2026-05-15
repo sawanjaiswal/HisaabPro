@@ -16,7 +16,7 @@ export const createBankAccountSchema = z.object({
   accountType: z.enum(ACCOUNT_TYPES).default('CURRENT'),
   openingBalance: z.number().int().default(0),
   isDefault: z.boolean().default(false),
-})
+}).strict()
 
 export type CreateBankAccountInput = z.infer<typeof createBankAccountSchema>
 
@@ -35,6 +35,6 @@ export const listBankAccountsSchema = z.object({
     .transform((v) => (v === undefined ? undefined : v === 'true')),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-})
+}).strict()
 
 export type ListBankAccountsQuery = z.infer<typeof listBankAccountsSchema>

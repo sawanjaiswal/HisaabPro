@@ -20,7 +20,7 @@ export const gstrPortalEntrySchema = z.object({
   // Rupees (float) from portal — converted to paise in service
   taxableValue: z.number().min(0),
   taxAmount: z.number().min(0),
-})
+}).strict()
 
 export type GstrPortalEntry = z.infer<typeof gstrPortalEntrySchema>
 
@@ -30,7 +30,7 @@ export const startReconciliationSchema = z.object({
   period: z.string().regex(/^\d{4}-\d{2}$/, 'Period must be YYYY-MM'),
   reconType: z.enum(RECON_TYPES),
   gstrData: z.array(gstrPortalEntrySchema).min(1, 'At least one GSTR entry required'),
-})
+}).strict()
 
 export type StartReconciliationInput = z.infer<typeof startReconciliationSchema>
 
@@ -41,7 +41,7 @@ export const listReconciliationsSchema = z.object({
   status: z.enum(RECON_STATUSES).optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(50).default(20),
-})
+}).strict()
 
 export type ListReconciliationsQuery = z.infer<typeof listReconciliationsSchema>
 
@@ -51,7 +51,7 @@ export const reconciliationEntryFilterSchema = z.object({
   matchStatus: z.enum(MATCH_STATUSES).optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(50),
-})
+}).strict()
 
 export type ReconciliationEntryFilter = z.infer<typeof reconciliationEntryFilterSchema>
 

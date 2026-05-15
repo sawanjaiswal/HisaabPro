@@ -25,19 +25,19 @@ const addressSchema = z.object({
   pincode: z.string().regex(PINCODE_REGEX, 'Pincode must be 6 digits'),
   type: z.enum(ADDRESS_TYPES).default('BILLING'),
   isDefault: z.boolean().default(false),
-})
+}).strict()
 
 const customFieldValueSchema = z.object({
   fieldId: z.string().min(1),
   value: z.string().min(1, 'Custom field value is required'),
-})
+}).strict()
 
 const openingBalanceSchema = z.object({
   amount: z.number().int().min(0, 'Opening balance must be non-negative'),
   type: z.enum(OPENING_BALANCE_TYPES),
   asOfDate: z.string().datetime({ message: 'asOfDate must be a valid ISO date' }),
   notes: z.string().max(500).optional(),
-})
+}).strict()
 
 // === Party schemas ===
 
@@ -58,7 +58,7 @@ export const createPartySchema = z.object({
   customFields: z.array(customFieldValueSchema).default([]),
   openingBalance: openingBalanceSchema.optional(),
   priceListId: z.string().nullable().optional(),
-})
+}).strict()
 
 // EditPartyPage repopulates the form from the API response (where empty fields
 // are returned as null), then re-submits the same shape. Accept null for every
@@ -78,7 +78,7 @@ export const updatePartySchema = z.object({
   notes: z.string().max(1000).nullable().optional(),
   customFields: z.array(customFieldValueSchema).optional(),
   priceListId: z.string().nullable().optional(),
-})
+}).strict()
 
 export const listPartiesSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
@@ -93,7 +93,7 @@ export const listPartiesSchema = z.object({
   tags: z.union([z.string(), z.array(z.string())]).transform((v) =>
     Array.isArray(v) ? v : [v]
   ).optional(),
-})
+}).strict()
 
 // === Address schemas ===
 
@@ -108,7 +108,7 @@ export const updateAddressSchema = z.object({
   pincode: z.string().regex(PINCODE_REGEX, 'Pincode must be 6 digits').optional(),
   type: z.enum(ADDRESS_TYPES).optional(),
   isDefault: z.boolean().optional(),
-})
+}).strict()
 
 // === Party group schemas ===
 
@@ -116,17 +116,17 @@ export const createGroupSchema = z.object({
   name: z.string().min(1, 'Group name is required').max(100),
   description: z.string().max(500).optional(),
   color: z.string().regex(HEX_COLOR_REGEX, 'Color must be a valid hex code (e.g. #6B7280)').default('#6B7280'),
-})
+}).strict()
 
 export const updateGroupSchema = z.object({
   name: z.string().min(1).max(100).optional(),
   description: z.string().max(500).nullable().optional(),
   color: z.string().regex(HEX_COLOR_REGEX, 'Color must be a valid hex code').optional(),
-})
+}).strict()
 
 export const deleteGroupSchema = z.object({
   reassignTo: z.string().optional(),
-})
+}).strict()
 
 // === Custom field schemas ===
 
@@ -142,7 +142,7 @@ export const createCustomFieldSchema = z.object({
   entityType: z.enum(['PARTY', 'PRODUCT', 'DOCUMENT', 'INVOICE']).default('PARTY'),
   documentTypes: z.array(z.enum(DOCUMENT_TYPE_FOR_CUSTOM_FIELDS)).default([]),
   sortOrder: z.number().int().min(0).default(0),
-}).superRefine((data, ctx) => {
+}).strict().superRefine((data, ctx) => {
   if (data.fieldType === 'DROPDOWN' && (!data.options || data.options.length === 0)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
@@ -159,7 +159,7 @@ export const updateCustomFieldSchema = z.object({
   showOnInvoice: z.boolean().optional(),
   documentTypes: z.array(z.enum(DOCUMENT_TYPE_FOR_CUSTOM_FIELDS)).optional(),
   sortOrder: z.number().int().min(0).optional(),
-})
+}).strict()
 
 // === Pricing schemas ===
 
@@ -167,17 +167,17 @@ const pricingItemSchema = z.object({
   productId: z.string().min(1, 'Product ID is required'),
   price: z.number().int().positive('Price must be a positive integer (in paise)'),
   minQty: z.number().int().min(1).default(1),
-})
+}).strict()
 
 export const setPricingSchema = z.object({
   pricing: z.array(pricingItemSchema).min(1, 'At least one pricing entry is required'),
-})
+}).strict()
 
 export const listPricingQuerySchema = z.object({
   search: z.string().max(100).optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(200).default(50),
-})
+}).strict()
 
 // === Inferred types ===
 

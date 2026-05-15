@@ -12,11 +12,11 @@ import { z } from 'zod'
 export const adminLoginSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(1, 'Password is required'),
-})
+}).strict()
 
 export const adminRefreshSchema = z.object({
   refreshToken: z.string().min(1, 'Refresh token is required'),
-})
+}).strict()
 
 // --------------------------------------------------------------------------
 // User management
@@ -25,18 +25,18 @@ export const adminRefreshSchema = z.object({
 export const suspendUserSchema = z.object({
   reason: z.string().min(5, 'Suspension reason must be at least 5 characters').max(500),
   notes: z.string().max(500).optional(),
-})
+}).strict()
 
 export const unsuspendUserSchema = z.object({
   notes: z.string().max(500).optional(),
-})
+}).strict()
 
 export const listUsersQuerySchema = z.object({
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(100).default(20),
   search: z.string().max(100).optional(),
   status: z.enum(['all', 'active', 'inactive', 'suspended']).default('all'),
-})
+}).strict()
 
 // --------------------------------------------------------------------------
 // Business management
@@ -47,7 +47,7 @@ export const listBusinessesQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
   search: z.string().max(100).optional(),
   status: z.enum(['all', 'active', 'inactive']).default('all'),
-})
+}).strict()
 
 // --------------------------------------------------------------------------
 // Dashboard
@@ -55,7 +55,7 @@ export const listBusinessesQuerySchema = z.object({
 
 export const dashboardPeriodQuerySchema = z.object({
   period: z.enum(['7', '30', '90']).default('30'),
-})
+}).strict()
 
 // --------------------------------------------------------------------------
 // Settings
@@ -64,7 +64,7 @@ export const dashboardPeriodQuerySchema = z.object({
 export const updatePlatformSettingSchema = z.object({
   key: z.string().min(1).max(100),
   value: z.string().max(1000),
-})
+}).strict()
 
 // --------------------------------------------------------------------------
 // Type exports

@@ -9,19 +9,19 @@ export const createGodownSchema = z.object({
   name: z.string().min(1, 'Godown name is required').max(100),
   address: z.string().max(500).optional(),
   isDefault: z.boolean().default(false),
-})
+}).strict()
 
 export const updateGodownSchema = z.object({
   name: z.string().min(1).max(100).optional(),
   address: z.string().max(500).nullable().optional(),
   isDefault: z.boolean().optional(),
-})
+}).strict()
 
 export const godownStockQuerySchema = z.object({
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(200).default(50),
   search: z.string().max(100).optional(),
-})
+}).strict()
 
 export const transferStockSchema = z.object({
   productId: z.string().min(1, 'Product is required'),
@@ -30,7 +30,7 @@ export const transferStockSchema = z.object({
   quantity: z.number().int().positive('Quantity must be a positive integer'),
   batchId: z.string().optional(),
   notes: z.string().max(500).optional(),
-})
+}).strict()
 
 export const transferHistorySchema = z.object({
   productId: z.string().optional(),
@@ -39,7 +39,7 @@ export const transferHistorySchema = z.object({
   limit: z.coerce.number().int().min(1).max(200).default(50),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
-})
+}).strict()
 
 // === Inferred types ===
 

@@ -21,7 +21,7 @@ export const dashboardStatsSchema = z.object({
   range: z.enum(DASHBOARD_RANGES).default('today'),
   from: z.string().optional(),
   to: z.string().optional(),
-})
+}).strict()
 
 // === Invoice Report ===
 
@@ -36,7 +36,7 @@ export const invoiceReportSchema = z.object({
   sortBy: z.enum(REPORT_SORT_BY).default('date_desc'),
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-})
+}).strict()
 
 // === Party Statement ===
 
@@ -45,7 +45,7 @@ export const partyStatementSchema = z.object({
   to: z.string().optional(),
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(200).default(50),
-})
+}).strict()
 
 // === Stock Summary ===
 
@@ -56,7 +56,7 @@ export const stockSummarySchema = z.object({
   sortBy: z.enum(STOCK_SORT).default('name_asc'),
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-})
+}).strict()
 
 // === Day Book ===
 
@@ -65,7 +65,7 @@ export const dayBookSchema = z.object({
   type: z.enum(DAY_BOOK_TYPES).optional(),
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(200).default(50),
-})
+}).strict()
 
 // === Payment History ===
 
@@ -79,7 +79,7 @@ export const paymentHistorySchema = z.object({
   sortBy: z.enum(REPORT_SORT_BY).default('date_desc'),
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-})
+}).strict()
 
 // === Report Export ===
 
@@ -95,7 +95,7 @@ export const exportReportSchema = z.object({
     businessName: z.string().optional(),
     dateFormat: z.string().default('DD/MM/YYYY'),
   }).optional(),
-})
+}).strict()
 
 // === Tax / GST Reports — Phase 2 ===
 
@@ -104,30 +104,30 @@ const GST_RETURN_TYPES = ['GSTR1', 'GSTR3B', 'GSTR9'] as const
 export const taxSummarySchema = z.object({
   from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-})
+}).strict()
 
 export const hsnSummarySchema = z.object({
   from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-})
+}).strict()
 
 export const taxLedgerSchema = z.object({
   from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(200).default(50),
-})
+}).strict()
 
 export const gstReturnSchema = z.object({
   returnType: z.enum(GST_RETURN_TYPES),
   period: z.string().regex(/^\d{4}-\d{2}$/, 'Period must be YYYY-MM'),
-})
+}).strict()
 
 export const gstReturnExportSchema = z.object({
   returnType: z.enum(GST_RETURN_TYPES),
   period: z.string().regex(/^\d{4}-\d{2}$/),
   format: z.enum(['JSON', 'CSV']).default('JSON'),
-})
+}).strict()
 
 // === TDS/TCS Summary Report ===
 
@@ -136,7 +136,7 @@ export const tdsTcsSummarySchema = z.object({
   to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'to must be YYYY-MM-DD'),
   partyId: z.string().optional(),
   type: z.enum(['tds', 'tcs', 'all']).default('all'),
-})
+}).strict()
 
 // === Inferred types ===
 

@@ -10,7 +10,7 @@ export const createSerialNumberSchema = z.object({
   batchId: z.string().optional(),
   godownId: z.string().optional(),
   notes: z.string().max(500).optional(),
-})
+}).strict()
 
 export const bulkCreateSerialNumbersSchema = z.object({
   serialNumbers: z
@@ -19,23 +19,23 @@ export const bulkCreateSerialNumbersSchema = z.object({
     .max(200, 'Maximum 200 serial numbers per request'),
   batchId: z.string().optional(),
   godownId: z.string().optional(),
-})
+}).strict()
 
 export const updateSerialNumberSchema = z.object({
   notes: z.string().max(500).nullable().optional(),
   status: z.enum(['AVAILABLE', 'SOLD', 'RETURNED', 'DAMAGED', 'WARRANTY']).optional(),
-})
+}).strict()
 
 export const listSerialNumbersSchema = z.object({
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(200).default(50),
   status: z.enum(['AVAILABLE', 'SOLD', 'RETURNED', 'DAMAGED', 'WARRANTY']).optional(),
   search: z.string().max(100).optional(),
-})
+}).strict()
 
 export const serialLookupSchema = z.object({
   serial: z.string().min(1).max(100),
-})
+}).strict()
 
 // === Inferred types ===
 

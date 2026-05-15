@@ -20,7 +20,7 @@ const jobItemSchema = z.object({
   ),
   ratePaise: z.number().int().nonnegative(),
   discountPaise: z.number().int().nonnegative().optional().default(0),
-})
+}).strict()
 
 export const createJobSchema = z.object({
   partyId: z.string().cuid(),
@@ -29,14 +29,14 @@ export const createJobSchema = z.object({
   scheduledAt: z.string().datetime().nullable().optional(),
   items: z.array(jobItemSchema).min(1).max(200),
   clientId: z.string().min(1).max(64).optional(),
-})
+}).strict()
 
 export const updateJobSchema = createJobSchema.partial().omit({ clientId: true })
 
 export const transitionJobSchema = z.object({
   toStatus: z.enum(['QUOTED', 'SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
   reason: z.string().max(500).optional(),
-}).refine(
+}).strict().refine(
   data => data.toStatus !== 'CANCELLED' || (data.reason !== undefined && data.reason.length > 0),
   { message: 'reason is required when cancelling a job', path: ['reason'] }
 )
@@ -49,7 +49,7 @@ export const listJobsSchema = z.object({
   scheduledTo: z.string().datetime().optional(),
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(100).default(50),
-})
+}).strict()
 
 export type CreateJobInput = z.infer<typeof createJobSchema>
 export type UpdateJobInput = z.infer<typeof updateJobSchema>

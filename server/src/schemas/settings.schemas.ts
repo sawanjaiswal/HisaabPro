@@ -16,14 +16,14 @@ export const createRoleSchema = z.object({
   description: z.string().max(200).optional(),
   permissions: z.array(z.string()).default([]),
   isDefault: z.boolean().default(false),
-})
+}).strict()
 
 export const updateRoleSchema = z.object({
   name: z.string().min(1).max(50).optional(),
   description: z.string().max(200).nullable().optional(),
   permissions: z.array(z.string()).optional(),
   isDefault: z.boolean().optional(),
-})
+}).strict()
 
 // === Staff ===
 
@@ -33,11 +33,11 @@ export const inviteStaffSchema = z.object({
   name: z.string().min(1).max(100),
   phone: z.string().regex(phoneRegex, 'Valid 10-digit Indian mobile number required'),
   roleId: z.string().min(1),
-})
+}).strict()
 
 export const updateStaffRoleSchema = z.object({
   roleId: z.string().min(1),
-})
+}).strict()
 
 // === Transaction Lock ===
 
@@ -47,14 +47,14 @@ export const updateTransactionLockSchema = z.object({
   requireApprovalForDelete: z.boolean().optional(),
   priceChangeThresholdPercent: z.number().min(0).max(100).nullable().optional(),
   discountThresholdPercent: z.number().min(0).max(100).nullable().optional(),
-})
+}).strict()
 
 // === Approvals ===
 
 export const reviewApprovalSchema = z.object({
   action: z.enum(APPROVAL_ACTIONS),
   reviewNote: z.string().max(500).optional(),
-})
+}).strict()
 
 // === Audit Log ===
 
@@ -66,7 +66,7 @@ export const auditLogSchema = z.object({
   to: z.string().optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(200).default(50),
-})
+}).strict()
 
 // === App Settings ===
 
@@ -77,23 +77,23 @@ export const updateAppSettingsSchema = z.object({
   calculatorPosition: z.enum(['BOTTOM_RIGHT', 'BOTTOM_LEFT']).optional(),
   language: z.string().max(5).optional(),
   theme: z.enum(['light', 'dark']).optional(),
-})
+}).strict()
 
 // === PIN ===
 
 export const setPinSchema = z.object({
   currentPin: z.string().min(4).max(6).optional(),
   newPin: z.string().min(4).max(6),
-})
+}).strict()
 
 export const verifyPinSchema = z.object({
   pin: z.string().min(4).max(6),
-})
+}).strict()
 
 export const setOperationPinSchema = z.object({
   currentPin: z.string().min(4).max(6).optional(),
   newPin: z.string().min(4).max(6),
-})
+}).strict()
 
 // === GST Settings ===
 
@@ -105,7 +105,7 @@ export const updateGstSettingsSchema = z.object({
   compositionScheme: z.boolean().optional(),
   eInvoiceEnabled: z.boolean().optional(),
   eWayBillEnabled: z.boolean().optional(),
-})
+}).strict()
 
 // === Inferred types ===
 

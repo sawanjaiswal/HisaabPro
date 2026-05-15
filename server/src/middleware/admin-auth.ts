@@ -146,13 +146,17 @@ export async function requireAdmin(req: Request, res: Response, next: NextFuncti
       return
     }
 
-    // Catch JWT role vs DB role mismatch (role downgrade while token still live)
+    // P2.6 — Catch JWT role vs DB role mismatch (role downgrade while token
+    // still live). Force re-auth to prevent confused-deputy attacks where JWT
+    // claims SUPER_ADMIN but admin.role has been downgraded to ADMIN.
     if (admin.role !== decoded.role) {
       logger.warn('Admin role mismatch: JWT claims role but DB disagrees', {
         adminId: decoded.adminId,
         jwtRole: decoded.role,
         dbRole: admin.role,
       })
+      sendError(res, 'Account verification required', 'ACCOUNT_REVERIFY_REQUIRED', 401)
+      return
     }
 
     req.admin = {

@@ -86,6 +86,23 @@ export const CSRF_HEADER_NAME = 'x-csrf-token'
 /** CSRF cookie max-age (ms) — 24 hours */
 export const CSRF_COOKIE_TTL_MS = 24 * 60 * 60 * 1000
 
+// --- Origin allowlist (CORS + same-site verification) ---
+
+/** Origins allowed to call the API. Used by CORS middleware AND Origin-header
+ *  checks on cookie-only endpoints (refresh) where CSRF is not feasible. */
+export const ALLOWED_ORIGINS: readonly string[] = [
+  ...(process.env.CORS_ORIGIN?.split(',') ?? [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:5173',
+  ]),
+  'https://hisaabpro.in',
+  'https://app.hisaabpro.in',
+  'https://admin.hisaabpro.in',
+  'https://localhost',
+  'capacitor://localhost',
+]
+
 // --- Multi-business ---
 
 /** Maximum active businesses per user */

@@ -9,7 +9,7 @@ import { blacklistToken } from '../../lib/token-blacklist.js'
 import { decodeToken } from '../../lib/jwt.js'
 import logger from '../../lib/logger.js'
 import * as authService from '../../services/auth.service.js'
-import { ACCESS_TOKEN_COOKIE } from '../../config/security.js'
+import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from '../../config/security.js'
 
 const router = Router()
 
@@ -39,6 +39,16 @@ router.post(
       const decoded = decodeToken(rawAccessToken)
       const ttl = decoded?.exp ? decoded.exp * 1000 - Date.now() : 15 * 60 * 1000
       if (ttl > 0) blacklistToken(rawAccessToken, ttl)
+    }
+
+    // P3.15 — blacklist old refresh token too. Otherwise an attacker who
+    // captured the prior refresh during the switch window can rotate back
+    // to the prior business.
+    const rawRefreshToken = req.cookies?.[REFRESH_TOKEN_COOKIE] as string | undefined
+    if (rawRefreshToken) {
+      const decoded = decodeToken(rawRefreshToken)
+      const ttl = decoded?.exp ? decoded.exp * 1000 - Date.now() : 7 * 24 * 60 * 60 * 1000
+      if (ttl > 0) blacklistToken(rawRefreshToken, ttl)
     }
 
     const result = await authService.switchBusiness(userId, phone, targetBusinessId)

@@ -15,7 +15,7 @@ export const createTaxCategorySchema = z.object({
   cessType: z.enum(['PERCENTAGE', 'FIXED_PER_UNIT']).default('PERCENTAGE'),
   hsnCode: z.string().max(8).optional(),
   sacCode: z.string().max(8).optional(),
-})
+}).strict()
 
 export const updateTaxCategorySchema = z.object({
   name: z.string().min(1).max(100).optional(),
@@ -25,20 +25,20 @@ export const updateTaxCategorySchema = z.object({
   hsnCode: z.string().max(8).optional().nullable(),
   sacCode: z.string().max(8).optional().nullable(),
   isActive: z.boolean().optional(),
-})
+}).strict()
 
 // ─── GSTIN ────────────────────────────────────────────────────────────────────
 
 export const verifyGstinSchema = z.object({
   gstin: z.string().length(15),
-})
+}).strict()
 
 // ─── HSN Search ───────────────────────────────────────────────────────────────
 
 export const hsnSearchSchema = z.object({
   q: z.string().min(1).max(100),
   limit: z.coerce.number().int().min(1).max(50).default(20),
-})
+}).strict()
 
 // ─── Inferred types ───────────────────────────────────────────────────────────
 

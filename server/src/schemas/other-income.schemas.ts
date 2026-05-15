@@ -25,7 +25,7 @@ export const createOtherIncomeSchema = z.object({
   partyId: z.string().optional(),
   referenceNumber: z.string().max(100).optional(),
   notes: z.string().optional(),
-})
+}).strict()
 
 export type CreateOtherIncomeInput = z.infer<typeof createOtherIncomeSchema>
 
@@ -43,6 +43,6 @@ export const listOtherIncomeSchema = z.object({
   to: z.coerce.date().optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-})
+}).strict()
 
 export type ListOtherIncomeQuery = z.infer<typeof listOtherIncomeSchema>

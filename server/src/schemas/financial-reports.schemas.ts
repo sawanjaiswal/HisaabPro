@@ -9,7 +9,7 @@ import { z } from 'zod'
 export const periodQuerySchema = z.object({
   from: z.coerce.date({ message: 'from must be a valid date' }),
   to: z.coerce.date({ message: 'to must be a valid date' }),
-})
+}).strict()
 
 export type PeriodQuery = z.infer<typeof periodQuerySchema>
 
@@ -17,7 +17,7 @@ export type PeriodQuery = z.infer<typeof periodQuerySchema>
 
 export const balanceSheetQuerySchema = z.object({
   asOf: z.coerce.date({ message: 'asOf must be a valid date' }),
-})
+}).strict()
 
 export type BalanceSheetQuery = z.infer<typeof balanceSheetQuerySchema>
 
@@ -26,7 +26,7 @@ export type BalanceSheetQuery = z.infer<typeof balanceSheetQuerySchema>
 export const agingQuerySchema = z.object({
   type: z.enum(['RECEIVABLE', 'PAYABLE']),
   asOf: z.coerce.date({ message: 'asOf must be a valid date' }).optional(),
-})
+}).strict()
 
 export type AgingQuery = z.infer<typeof agingQuerySchema>
 
@@ -36,7 +36,7 @@ export const profitabilityQuerySchema = z.object({
   from: z.coerce.date({ message: 'from must be a valid date' }),
   to: z.coerce.date({ message: 'to must be a valid date' }),
   groupBy: z.enum(['PARTY', 'PRODUCT', 'DOCUMENT']).default('PARTY'),
-})
+}).strict()
 
 export type ProfitabilityQuery = z.infer<typeof profitabilityQuerySchema>
 
@@ -45,7 +45,7 @@ export type ProfitabilityQuery = z.infer<typeof profitabilityQuerySchema>
 export const cashFlowQuerySchema = z.object({
   from: z.coerce.date({ message: 'from must be a valid date' }),
   to: z.coerce.date({ message: 'to must be a valid date' }),
-})
+}).strict()
 
 export type CashFlowQuery = z.infer<typeof cashFlowQuerySchema>
 
@@ -54,7 +54,7 @@ export type CashFlowQuery = z.infer<typeof cashFlowQuerySchema>
 export const tallyExportQuerySchema = z.object({
   from: z.coerce.date({ message: 'from must be a valid date' }),
   to: z.coerce.date({ message: 'to must be a valid date' }),
-})
+}).strict()
 
 export type TallyExportQuery = z.infer<typeof tallyExportQuerySchema>
 
@@ -63,6 +63,6 @@ export type TallyExportQuery = z.infer<typeof tallyExportQuerySchema>
 export const discountQuerySchema = z.object({
   from: z.coerce.date({ message: 'from must be a valid date' }),
   to: z.coerce.date({ message: 'to must be a valid date' }),
-})
+}).strict()
 
 export type DiscountQuery = z.infer<typeof discountQuerySchema>

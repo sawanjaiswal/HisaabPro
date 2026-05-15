@@ -46,7 +46,7 @@ router.post(
   asyncHandler(async (req, res) => {
     const result = await authService.verifyRegistration(req.body)
     if (!result.verified) {
-      logger.warn('auth.verify_registration_failed', { ip: req.ip, phone: req.body.phone })
+      logger.warn('auth.verify_registration_failed', { ip: req.ip, phone: (req.body.phone as string | undefined)?.slice(-4) })
       recordFailedAttempt(req.ip ?? 'unknown')
       sendError(res, result.message, 'OTP_INVALID', 400)
       return

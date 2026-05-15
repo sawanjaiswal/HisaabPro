@@ -7,7 +7,7 @@ import { z } from 'zod'
 
 const MAX_RANGE_MS = 365 * 24 * 60 * 60 * 1000 // 1 year in ms
 
-export const previewBackfillSchema = z.object({}).passthrough()
+export const previewBackfillSchema = z.object({}).strict()
 
 export const executeBackfillSchema = z.object({
   defaultTaxCategoryId: z
@@ -24,6 +24,6 @@ export const executeBackfillSchema = z.object({
       { message: 'dateRange cannot exceed 1 year' },
     ),
   setPositionFromParty: z.boolean().default(false),
-})
+}).strict()
 
 export type ExecuteBackfillInput = z.infer<typeof executeBackfillSchema>

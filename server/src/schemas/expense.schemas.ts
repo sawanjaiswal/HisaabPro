@@ -13,7 +13,7 @@ export const createExpenseCategorySchema = z.object({
   icon: z.string().max(50).optional(),
   color: z.string().max(20).optional(),
   sortOrder: z.number().int().min(0).optional(),
-})
+}).strict()
 
 export type CreateExpenseCategoryInput = z.infer<typeof createExpenseCategorySchema>
 
@@ -31,7 +31,7 @@ export const createExpenseSchema = z.object({
   gstApplicable: z.boolean().optional().default(false),
   gstRate: z.number().int().min(0).optional().default(0),
   gstAmount: z.number().int().min(0).optional().default(0),
-})
+}).strict()
 
 export type CreateExpenseInput = z.infer<typeof createExpenseSchema>
 
@@ -51,6 +51,6 @@ export const listExpensesSchema = z.object({
   status: z.enum(['PENDING_CONFIRMATION', 'CONFIRMED', 'SKIPPED', 'VOIDED']).optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-})
+}).strict()
 
 export type ListExpensesQuery = z.infer<typeof listExpensesSchema>

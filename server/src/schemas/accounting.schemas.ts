@@ -30,7 +30,7 @@ const journalEntryLineSchema = z.object({
   credit: z.number().int('credit must be an integer (paise)').min(0, 'credit must be >= 0').default(0),
   narration: z.string().max(500).optional(),
   partyId: z.string().optional(),
-})
+}).strict()
 
 // ─── Create Journal Entry ──────────────────────────────────────────────────────
 
@@ -68,7 +68,7 @@ export const listJournalEntriesSchema = z.object({
   status: z.enum(ENTRY_STATUSES).optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-})
+}).strict()
 
 // ─── Create Ledger Account ─────────────────────────────────────────────────────
 
@@ -79,7 +79,7 @@ export const createLedgerAccountSchema = z.object({
   subType: z.string().max(50).optional(),
   parentId: z.string().optional(),
   description: z.string().max(500).optional(),
-})
+}).strict()
 
 // ─── Update Ledger Account ─────────────────────────────────────────────────────
 
@@ -91,7 +91,7 @@ export const updateLedgerAccountSchema = z.object({
   parentId: z.string().nullable().optional(),
   description: z.string().max(500).nullable().optional(),
   isActive: z.boolean().optional(),
-})
+}).strict()
 
 // ─── List Ledger Accounts ──────────────────────────────────────────────────────
 
@@ -101,32 +101,32 @@ export const listLedgerAccountsSchema = z.object({
   isActive: z.coerce.boolean().optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(50),
-})
+}).strict()
 
 // ─── Trial Balance Query ───────────────────────────────────────────────────────
 
 export const trialBalanceQuerySchema = z.object({
   asOf: z.coerce.date().optional(),
-})
+}).strict()
 
 // ─── Void Entry ────────────────────────────────────────────────────────────────
 
 export const voidJournalEntrySchema = z.object({
   reason: z.string().min(1, 'reason is required').max(500),
-})
+}).strict()
 
 // ─── Ledger Report Query ───────────────────────────────────────────────────────
 
 export const ledgerReportQuerySchema = z.object({
   from: z.coerce.date().optional(),
   to: z.coerce.date().optional(),
-})
+}).strict()
 
 // ─── Day Book Query ────────────────────────────────────────────────────────────
 
 export const dayBookQuerySchema = z.object({
   date: z.coerce.date({ required_error: 'date is required' }),
-})
+}).strict()
 
 // ─── Inferred Types ────────────────────────────────────────────────────────────
 

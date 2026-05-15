@@ -234,7 +234,8 @@ export async function updateDocument(
       }
     }
 
-    return tx.document.findUniqueOrThrow({ where: { id: documentId }, select: DOCUMENT_DETAIL_SELECT })
+    // P3.12 — defense-in-depth: re-scope by businessId even though tx pre-check already did
+    return tx.document.findFirstOrThrow({ where: { id: documentId, businessId }, select: DOCUMENT_DETAIL_SELECT })
   })
   const affectsStock = STOCK_DECREASE_TYPES.has(existing.type) || STOCK_INCREASE_TYPES.has(existing.type)
   if (affectsStock) {

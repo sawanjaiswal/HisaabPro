@@ -75,8 +75,11 @@ export async function launchCampaign(
   })
 
   // Materialise recipients in chunks
+  // P3.13 — defense-in-depth: partyIds come from resolvePartyIds(businessId,...)
+  // so already tenant-scoped, but explicit businessId on the where prevents
+  // future refactor from breaking the invariant.
   const parties = await prisma.party.findMany({
-    where: { id: { in: partyIds } },
+    where: { id: { in: partyIds }, businessId },
     select: { id: true, phone: true },
   })
 

@@ -23,6 +23,7 @@ vi.mock('../lib/prisma.js', () => {
     unit: { findMany: vi.fn(), create: vi.fn() },
     taxCategory: { findUnique: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn(), delete: vi.fn(), count: vi.fn() },
     role: { findUnique: vi.fn(), findMany: vi.fn() },
+    refreshToken: { findUnique: vi.fn(), create: vi.fn(), delete: vi.fn(), deleteMany: vi.fn() },
     $transaction: vi.fn((fn: unknown) => typeof fn === 'function' ? fn(mockPrisma) : Promise.resolve(fn)),
     $queryRaw: vi.fn(),
     $executeRaw: vi.fn(),
@@ -56,6 +57,8 @@ vi.mock('../middleware/rate-limit.js', () => {
     sensitiveMutationLimiter: passthrough,
     couponValidateRateLimiter: passthrough,
     couponIpRateLimiter: passthrough,
+    devLoginRateLimiter: passthrough,
+    userMutationLimiter: passthrough,
     createRateLimiter: () => passthrough,
   }
 })

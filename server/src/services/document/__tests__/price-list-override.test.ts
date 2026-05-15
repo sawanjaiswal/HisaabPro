@@ -33,6 +33,7 @@ vi.mock('../../../lib/prisma.js', () => ({
       create: mockDocumentCreate,
       findFirst: mockDocumentFindFirst,
       findUniqueOrThrow: mockDocumentFindUniqueOrThrow,
+      findFirstOrThrow: mockDocumentFindUniqueOrThrow,
       update: mockDocumentUpdate,
     },
     taxCategory: { findMany: mockTaxCategoryFindMany },
@@ -42,6 +43,7 @@ vi.mock('../../../lib/prisma.js', () => ({
       document: {
         create: mockDocumentCreate,
         findUniqueOrThrow: mockDocumentFindUniqueOrThrow,
+        findFirstOrThrow: mockDocumentFindUniqueOrThrow,
         update: mockDocumentUpdate,
       },
       documentLineItem: { createMany: vi.fn(), deleteMany: vi.fn() },

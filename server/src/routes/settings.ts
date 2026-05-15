@@ -5,21 +5,9 @@ import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { sensitiveMutationLimiter } from '../middleware/rate-limit.js'
 import { sendSuccess } from '../lib/response.js'
+import { assertBusinessIdMatch } from '../lib/assert-business-match.js'
 import { validationError } from '../lib/errors.js'
-import {
-  createRoleSchema,
-  updateRoleSchema,
-  inviteStaffSchema,
-  updateStaffRoleSchema,
-  updateTransactionLockSchema,
-  reviewApprovalSchema,
-  auditLogSchema,
-  updateAppSettingsSchema,
-  setPinSchema,
-  verifyPinSchema,
-  setOperationPinSchema,
-  updateGstSettingsSchema,
-} from '../schemas/settings.schemas.js'
+import { createRoleSchema, updateRoleSchema, inviteStaffSchema, updateStaffRoleSchema, updateTransactionLockSchema, reviewApprovalSchema, auditLogSchema, updateAppSettingsSchema, setPinSchema, verifyPinSchema, setOperationPinSchema, updateGstSettingsSchema } from '../schemas/settings.schemas.js'
 import { joinBusinessSchema } from '../schemas/auth.schemas.js'
 import { createBusinessSchema, updateBusinessSchema } from '../schemas/business.schemas.js'
 import { requireOwner } from '../middleware/permission.js'
@@ -51,14 +39,14 @@ businessSettingsRouter.post('/join', sensitiveMutationLimiter, validate(joinBusi
 }))
 
 businessSettingsRouter.get('/:businessId', asyncHandler(async (req, res) => {
-  const businessId = req.user!.businessId
-  const business = await businessService.getBusiness(businessId)
+  if (!assertBusinessIdMatch(req, res)) return
+  const business = await businessService.getBusiness(req.user!.businessId)
   sendSuccess(res, business)
 }))
 
 businessSettingsRouter.put('/:businessId', requireOwner(), validate(updateBusinessSchema), asyncHandler(async (req, res) => {
-  const businessId = req.user!.businessId
-  const business = await businessService.updateBusiness(businessId, req.body)
+  if (!assertBusinessIdMatch(req, res)) return
+  const business = await businessService.updateBusiness(req.user!.businessId, req.body)
   sendSuccess(res, business)
 }))
 
