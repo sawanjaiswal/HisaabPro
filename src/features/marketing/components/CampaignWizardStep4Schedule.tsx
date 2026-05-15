@@ -1,5 +1,6 @@
 /** CampaignWizardStep4 — Schedule (send now vs future) */
 
+import { useLanguage } from '@/hooks/useLanguage'
 import { QuietHoursNotice } from './QuietHoursNotice'
 
 interface Props {
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function CampaignWizardStep4Schedule({ sendNow, scheduledAt, onSendNowChange, onScheduledAtChange }: Props) {
+  const { t } = useLanguage()
   const handleToggle = (nowMode: boolean) => {
     onSendNowChange(nowMode)
     if (nowMode) onScheduledAtChange(null)
@@ -30,9 +32,9 @@ export function CampaignWizardStep4Schedule({ sendNow, scheduledAt, onSendNowCha
           onClick={() => handleToggle(true)}
           style={optionStyle(sendNow)}
         >
-          <div style={{ fontWeight: 600, fontSize: '15px' }}>Send Now</div>
+          <div style={{ fontWeight: 600, fontSize: '15px' }}>{t.marketingSendNowTitle}</div>
           <div style={{ fontSize: '13px', color: sendNow ? 'var(--color-primary-600)' : 'var(--color-gray-400)', marginTop: '2px' }}>
-            Dispatch immediately after launch
+            {t.marketingSendNowDesc}
           </div>
         </button>
 
@@ -43,9 +45,9 @@ export function CampaignWizardStep4Schedule({ sendNow, scheduledAt, onSendNowCha
           onClick={() => handleToggle(false)}
           style={optionStyle(!sendNow)}
         >
-          <div style={{ fontWeight: 600, fontSize: '15px' }}>Schedule for later</div>
+          <div style={{ fontWeight: 600, fontSize: '15px' }}>{t.marketingScheduleLaterTitle}</div>
           <div style={{ fontSize: '13px', color: !sendNow ? 'var(--color-primary-600)' : 'var(--color-gray-400)', marginTop: '2px' }}>
-            Pick a date and time (IST)
+            {t.marketingScheduleLaterDesc}
           </div>
         </button>
       </div>
@@ -53,7 +55,7 @@ export function CampaignWizardStep4Schedule({ sendNow, scheduledAt, onSendNowCha
       {!sendNow && (
         <div>
           <label htmlFor="schedule-datetime" style={labelStyle}>
-            Schedule date &amp; time (IST) *
+            {t.marketingScheduleDatetimeLabel} *
           </label>
           <input
             id="schedule-datetime"

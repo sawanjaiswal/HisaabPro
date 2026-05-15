@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Plus, RefreshCw } from 'lucide-react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useCampaignList } from '../hooks/useCampaigns'
 import { CampaignStatusBadge } from '../components/CampaignStatusBadge'
 import { ChannelBadge } from '../components/ChannelBadge'
@@ -10,17 +11,21 @@ import { MARKETING_ROUTES } from '../marketing.constants'
 import { formatDate, formatPaiseAsRupees } from '../marketing.utils'
 import type { CampaignStatus } from '../marketing.types'
 
-const STATUS_FILTERS: Array<{ label: string; value: CampaignStatus | '' }> = [
-  { label: 'All', value: '' },
-  { label: 'Draft', value: 'DRAFT' },
-  { label: 'Scheduled', value: 'SCHEDULED' },
-  { label: 'Running', value: 'RUNNING' },
-  { label: 'Completed', value: 'COMPLETED' },
+type FilterValue = CampaignStatus | ''
+
+type FilterKey = 'marketingAllFilter' | 'marketingStatusDraft' | 'marketingStatusScheduled' | 'marketingStatusRunning' | 'marketingStatusCompleted'
+
+const FILTERS: Array<{ value: FilterValue; key: FilterKey }> = [
+  { value: '',          key: 'marketingAllFilter' },
+  { value: 'DRAFT',     key: 'marketingStatusDraft' },
+  { value: 'SCHEDULED', key: 'marketingStatusScheduled' },
+  { value: 'RUNNING',   key: 'marketingStatusRunning' },
+  { value: 'COMPLETED', key: 'marketingStatusCompleted' },
 ]
 
-function CampaignSkeleton() {
+function CampaignSkeleton({ ariaLabel }: { ariaLabel: string }) {
   return (
-    <div aria-busy="true" aria-label="Loading campaigns">
+    <div aria-busy="true" aria-label={ariaLabel}>
       {[0, 1, 2].map((i) => (
         <div key={i} style={{ height: 80, borderRadius: 12, background: 'var(--color-gray-100)', marginBottom: 10, animation: 'pulse 1.5s infinite' }} />
       ))}
@@ -30,62 +35,63 @@ function CampaignSkeleton() {
 
 export default function CampaignListPage() {
   const navigate = useNavigate()
-  const [statusFilter, setStatusFilter] = useState<CampaignStatus | ''>('')
+  const { t } = useLanguage()
+  const [statusFilter, setStatusFilter] = useState<FilterValue>('')
   const { campaigns, status, refresh } = useCampaignList(statusFilter)
 
   return (
     <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-        <button type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.HUB)} aria-label="Back to Marketing">
+        <button type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.HUB)} aria-label={t.marketingBackToMarketingAria}>
           <ArrowLeft size={20} aria-hidden="true" />
         </button>
-        <h1 style={{ flex: 1, fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>Campaigns</h1>
+        <h1 style={{ flex: 1, fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>{t.marketingCampaignsTitle}</h1>
         <button
           type="button"
           onClick={() => navigate(MARKETING_ROUTES.CAMPAIGN_NEW)}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
-          aria-label="New Campaign"
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer', minHeight: '44px' }}
+          aria-label={t.marketingNewAria}
         >
-          <Plus size={16} aria-hidden="true" /> New
+          <Plus size={16} aria-hidden="true" /> {t.marketingNew}
         </button>
       </div>
 
       {/* Status filter chips */}
       <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', marginBottom: '20px' }}>
-        {STATUS_FILTERS.map((f) => (
+        {FILTERS.map(({ value: f, key }) => (
           <button
-            key={f.value}
+            key={f || 'all'}
             type="button"
-            onClick={() => setStatusFilter(f.value)}
+            onClick={() => setStatusFilter(f)}
             style={{
               padding: '6px 14px',
               borderRadius: '999px',
-              border: `1px solid ${statusFilter === f.value ? 'var(--color-primary-600)' : 'var(--color-gray-300)'}`,
-              background: statusFilter === f.value ? 'var(--color-primary-600)' : 'white',
-              color: statusFilter === f.value ? 'white' : 'var(--color-gray-600)',
-              fontWeight: statusFilter === f.value ? 700 : 400,
+              border: `1px solid ${statusFilter === f ? 'var(--color-primary-600)' : 'var(--color-gray-300)'}`,
+              background: statusFilter === f ? 'var(--color-primary-600)' : 'white',
+              color: statusFilter === f ? 'white' : 'var(--color-gray-600)',
+              fontWeight: statusFilter === f ? 700 : 400,
               fontSize: '13px',
               cursor: 'pointer',
               whiteSpace: 'nowrap',
               flexShrink: 0,
             }}
-            aria-pressed={statusFilter === f.value}
+            aria-pressed={statusFilter === f}
           >
-            {f.label}
+            {t[key]}
           </button>
         ))}
       </div>
 
       {/* Loading */}
-      {status === 'loading' && <CampaignSkeleton />}
+      {status === 'loading' && <CampaignSkeleton ariaLabel={t.marketingLoadingCampaignsAria} />}
 
       {/* Error */}
       {status === 'error' && (
         <div style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--color-error-600)', fontSize: '14px' }}>
-          <div>Could not load campaigns. Tap to retry.</div>
-          <button type="button" onClick={refresh} style={{ marginTop: '12px', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--color-error-300)', background: 'white', color: 'var(--color-error-600)', cursor: 'pointer', fontSize: '14px' }}>
-            <RefreshCw size={14} aria-hidden="true" /> Retry
+          <div>{t.marketingCampaignsLoadFailed}</div>
+          <button type="button" onClick={refresh} style={{ marginTop: '12px', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--color-error-300)', background: 'white', color: 'var(--color-error-600)', cursor: 'pointer', fontSize: '14px', minHeight: '44px' }}>
+            <RefreshCw size={14} aria-hidden="true" /> {t.marketingRetry}
           </button>
         </div>
       )}
@@ -98,10 +104,10 @@ export default function CampaignListPage() {
               <path d="M22 2L11 13" /><path d="M22 2L15 22 11 13 2 9l20-7z" />
             </svg>
           </div>
-          <div style={{ fontWeight: 600, color: 'var(--color-gray-700)', marginBottom: '8px' }}>No campaigns yet</div>
-          <div style={{ fontSize: '13px', marginBottom: '20px' }}>Create your first campaign to reach your customers</div>
-          <button type="button" onClick={() => navigate(MARKETING_ROUTES.CAMPAIGN_NEW)} style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
-            Create your first campaign
+          <div style={{ fontWeight: 600, color: 'var(--color-gray-700)', marginBottom: '8px' }}>{t.marketingNoCampaignsYet}</div>
+          <div style={{ fontSize: '13px', marginBottom: '20px' }}>{t.marketingNoCampaignsDesc}</div>
+          <button type="button" onClick={() => navigate(MARKETING_ROUTES.CAMPAIGN_NEW)} style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer', minHeight: '44px' }}>
+            {t.marketingCreateFirstCampaign}
           </button>
         </div>
       )}
@@ -122,9 +128,9 @@ export default function CampaignListPage() {
                 <CampaignStatusBadge status={c.status} />
               </div>
               <div style={{ display: 'flex', gap: '16px', fontSize: '13px', color: 'var(--color-gray-500)' }}>
-                <span>Sent: {c.sentCount.toLocaleString('en-IN')}</span>
-                {c.failedCount > 0 && <span style={{ color: 'var(--color-error-600)' }}>Failed: {c.failedCount.toLocaleString('en-IN')}</span>}
-                {c.totalCostPaise > 0 && <span>Cost: {formatPaiseAsRupees(c.totalCostPaise)}</span>}
+                <span>{t.marketingSent}: {c.sentCount.toLocaleString('en-IN')}</span>
+                {c.failedCount > 0 && <span style={{ color: 'var(--color-error-600)' }}>{t.marketingFailedLabel}: {c.failedCount.toLocaleString('en-IN')}</span>}
+                {c.totalCostPaise > 0 && <span>{t.marketingCost}: {formatPaiseAsRupees(c.totalCostPaise)}</span>}
                 <span style={{ marginLeft: 'auto' }}>{formatDate(c.createdAt)}</span>
               </div>
             </button>

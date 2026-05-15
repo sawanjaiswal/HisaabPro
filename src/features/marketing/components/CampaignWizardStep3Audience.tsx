@@ -1,5 +1,6 @@
 /** CampaignWizardStep3 — Audience / Segment builder */
 
+import { useLanguage } from '@/hooks/useLanguage'
 import { AudiencePicker } from './AudiencePicker'
 import { useSegmentPreview } from '../hooks/useSegmentPreview'
 import type { SegmentFilter } from '../marketing.types'
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function CampaignWizardStep3Audience({ value, onChange }: Props) {
+  const { t } = useLanguage()
   const { preview, tooLarge } = useSegmentPreview(value)
 
   return (
@@ -28,7 +30,7 @@ export function CampaignWizardStep3Audience({ value, onChange }: Props) {
             fontSize: '13px',
           }}
         >
-          Audience too large (max 10,000). Add more filters to narrow your selection.
+          {t.marketingAudienceTooLarge}
         </div>
       )}
 
@@ -44,20 +46,20 @@ export function CampaignWizardStep3Audience({ value, onChange }: Props) {
             fontSize: '13px',
           }}
         >
-          No customers match these filters. Adjust filters to continue.
+          {t.marketingAudienceNoMatch}
         </div>
       )}
 
       {!tooLarge && preview != null && preview.sample.length > 0 && (
         <div>
           <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-gray-500)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-            Sample Recipients
+            {t.marketingSampleRecipients}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {preview.sample.slice(0, 5).map((p) => (
               <div key={p.id} style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '8px 10px', borderRadius: '8px', background: 'var(--color-gray-50)', fontSize: '13px' }}>
                 <span style={{ fontWeight: 600, color: 'var(--color-gray-800)', flex: 1 }}>{p.name}</span>
-                <span style={{ color: 'var(--color-gray-400)' }}>{p.phone ?? 'No phone'}</span>
+                <span style={{ color: 'var(--color-gray-400)' }}>{p.phone ?? t.marketingNoPhone}</span>
               </div>
             ))}
           </div>

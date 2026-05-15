@@ -1,6 +1,7 @@
 /** useSegmentPreview — debounced segment count fetch */
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
 import { previewSegment } from '../marketing.service'
 import { SEGMENT_PREVIEW_DEBOUNCE_MS } from '../marketing.constants'
 import { isTooLarge } from '../marketing.utils'
@@ -15,6 +16,7 @@ interface UseSegmentPreviewResult {
 }
 
 export function useSegmentPreview(filter: SegmentFilter): UseSegmentPreviewResult {
+  const { t } = useLanguage()
   const [preview, setPreview] = useState<SegmentPreviewResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -22,6 +24,7 @@ export function useSegmentPreview(filter: SegmentFilter): UseSegmentPreviewResul
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const filterRef = useRef(filter)
   filterRef.current = filter
+  const errorMsg = t.marketingSegmentPreviewError
 
   const run = useCallback(() => {
     if (abortRef.current) abortRef.current.abort()
@@ -38,10 +41,10 @@ export function useSegmentPreview(filter: SegmentFilter): UseSegmentPreviewResul
       })
       .catch((err: unknown) => {
         if ((err as { name?: string }).name === 'AbortError') return
-        setError('Could not estimate audience. Check your filters.')
+        setError(errorMsg)
       })
       .finally(() => setLoading(false))
-  }, [])
+  }, [errorMsg])
 
   useEffect(() => {
     if (timerRef.current) clearTimeout(timerRef.current)

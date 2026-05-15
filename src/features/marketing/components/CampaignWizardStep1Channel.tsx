@@ -1,5 +1,6 @@
 /** CampaignWizardStep1 — Name and Channel */
 
+import { useLanguage } from '@/hooks/useLanguage'
 import { ChannelToggle } from './ChannelToggle'
 import type { MarketingChannel } from '../marketing.types'
 
@@ -11,16 +12,17 @@ interface Props {
 }
 
 export function CampaignWizardStep1Channel({ name, channel, onNameChange, onChannelChange }: Props) {
+  const { t } = useLanguage()
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <div>
-        <label htmlFor="campaign-name" style={labelStyle}>Campaign Name *</label>
+        <label htmlFor="campaign-name" style={labelStyle}>{t.marketingCampaignName} *</label>
         <input
           id="campaign-name"
           type="text"
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
-          placeholder="e.g. Diwali Offer 2026"
+          placeholder={t.marketingCampaignNamePh}
           maxLength={100}
           autoFocus
           style={{
@@ -41,7 +43,7 @@ export function CampaignWizardStep1Channel({ name, channel, onNameChange, onChan
       </div>
 
       <div>
-        <p style={labelStyle}>Send via</p>
+        <p style={labelStyle}>{t.marketingSendVia}</p>
         <div style={{ display: 'flex', gap: '12px' }}>
           <ChannelToggle value={channel} onChange={onChannelChange} />
         </div>

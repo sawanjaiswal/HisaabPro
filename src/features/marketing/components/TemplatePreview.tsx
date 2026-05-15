@@ -1,5 +1,6 @@
 /** TemplatePreview — substituted template body preview card */
 
+import { useLanguage } from '@/hooks/useLanguage'
 import { substituteVars } from '../marketing.utils'
 import type { MarketingTemplate } from '../marketing.types'
 
@@ -17,6 +18,7 @@ const SAMPLE_VARS: Record<string, string> = {
 }
 
 export function TemplatePreview({ template, vars }: Props) {
+  const { t } = useLanguage()
   const substituted = substituteVars(template.bodyEn, { ...SAMPLE_VARS, ...vars })
 
   return (
@@ -38,13 +40,13 @@ export function TemplatePreview({ template, vars }: Props) {
           marginBottom: '8px',
         }}
       >
-        Message Preview
+        {t.marketingMessagePreview}
       </div>
       <div
         style={{
           padding: '12px 14px',
           borderRadius: '8px',
-          background: template.channel === 'WHATSAPP' ? '#dcf8c6' : 'white',
+          background: template.channel === 'WHATSAPP' ? 'var(--color-success-50)' : 'white',
           border: '1px solid var(--color-gray-200)',
           fontSize: '14px',
           lineHeight: '1.6',
@@ -57,7 +59,7 @@ export function TemplatePreview({ template, vars }: Props) {
       </div>
       {template.variables.length > 0 && (
         <div style={{ marginTop: '10px', fontSize: '12px', color: 'var(--color-gray-500)' }}>
-          Variables: {template.variables.map((v) => `{{${v}}}`).join(', ')}
+          {t.marketingVariablesLabel}: {template.variables.map((v) => `{{${v}}}`).join(', ')}
         </div>
       )}
     </div>

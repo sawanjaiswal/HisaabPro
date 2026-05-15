@@ -1,5 +1,6 @@
 /** AudiencePicker — segment filter builder with live count preview */
 
+import { useLanguage } from '@/hooks/useLanguage'
 import type { SegmentFilter } from '../marketing.types'
 import { useSegmentPreview } from '../hooks/useSegmentPreview'
 
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export function AudiencePicker({ value, onChange }: Props) {
+  const { t } = useLanguage()
   const { preview, loading, error, tooLarge } = useSegmentPreview(value)
 
   const update = <K extends keyof SegmentFilter>(key: K, val: SegmentFilter[K] | undefined) => {
@@ -25,29 +27,29 @@ export function AudiencePicker({ value, onChange }: Props) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       {/* Party type */}
       <div>
-        <label style={labelStyle} htmlFor="seg-party-type">Party Type</label>
+        <label style={labelStyle} htmlFor="seg-party-type">{t.marketingPartyType}</label>
         <select
           id="seg-party-type"
           value={value.partyType ?? 'CUSTOMER'}
           onChange={(e) => update('partyType', e.target.value as SegmentFilter['partyType'])}
           style={selectStyle}
         >
-          <option value="CUSTOMER">Customers</option>
-          <option value="SUPPLIER">Suppliers</option>
-          <option value="BOTH">All Contacts</option>
+          <option value="CUSTOMER">{t.marketingPartyCustomer}</option>
+          <option value="SUPPLIER">{t.marketingPartySupplier}</option>
+          <option value="BOTH">{t.marketingPartyBoth}</option>
         </select>
       </div>
 
       {/* Tags */}
       <div>
-        <label style={labelStyle} htmlFor="seg-tags">Tags (comma separated)</label>
+        <label style={labelStyle} htmlFor="seg-tags">{t.marketingTagsLabel}</label>
         <input
           id="seg-tags"
           type="text"
-          placeholder="e.g. vip, wholesale"
+          placeholder={t.marketingTagsPh}
           value={value.tags?.join(', ') ?? ''}
           onChange={(e) => {
-            const tags = e.target.value.split(',').map((t) => t.trim()).filter(Boolean)
+            const tags = e.target.value.split(',').map((tag) => tag.trim()).filter(Boolean)
             update('tags', tags.length > 0 ? tags : undefined)
           }}
           style={inputStyle}
@@ -56,11 +58,11 @@ export function AudiencePicker({ value, onChange }: Props) {
 
       {/* City */}
       <div>
-        <label style={labelStyle} htmlFor="seg-city">City contains</label>
+        <label style={labelStyle} htmlFor="seg-city">{t.marketingCityLabel}</label>
         <input
           id="seg-city"
           type="text"
-          placeholder="e.g. Mumbai"
+          placeholder={t.marketingCityPh}
           value={value.cityContains ?? ''}
           onChange={(e) => update('cityContains', e.target.value || undefined)}
           maxLength={60}
@@ -70,13 +72,13 @@ export function AudiencePicker({ value, onChange }: Props) {
 
       {/* Inactive days */}
       <div>
-        <label style={labelStyle} htmlFor="seg-inactive">Inactive for (days)</label>
+        <label style={labelStyle} htmlFor="seg-inactive">{t.marketingInactiveDaysLabel}</label>
         <input
           id="seg-inactive"
           type="number"
           min={0}
           max={3650}
-          placeholder="e.g. 30"
+          placeholder={t.marketingInactiveDaysPh}
           value={value.inactiveDays ?? ''}
           onChange={(e) => update('inactiveDays', e.target.value ? parseInt(e.target.value, 10) : undefined)}
           style={inputStyle}
@@ -85,12 +87,12 @@ export function AudiencePicker({ value, onChange }: Props) {
 
       {/* Outstanding */}
       <div>
-        <label style={labelStyle} htmlFor="seg-outstanding">Outstanding balance more than (Rs)</label>
+        <label style={labelStyle} htmlFor="seg-outstanding">{t.marketingOutstandingLabel}</label>
         <input
           id="seg-outstanding"
           type="number"
           min={0}
-          placeholder="e.g. 5000"
+          placeholder={t.marketingOutstandingPh}
           value={value.outstandingGtePaise != null ? Math.floor(value.outstandingGtePaise / 100) : ''}
           onChange={(e) => {
             const rupees = parseInt(e.target.value, 10)
@@ -108,13 +110,13 @@ export function AudiencePicker({ value, onChange }: Props) {
           onChange={(e) => update('birthdayThisWeek', e.target.checked || undefined)}
           style={{ width: '18px', height: '18px', accentColor: 'var(--color-primary-600)' }}
         />
-        Birthday this week
+        {t.marketingBirthdayThisWeek}
       </label>
 
       {/* Preview chip */}
       <div style={{ marginTop: '4px' }}>
         {loading && (
-          <span style={chipStyle('var(--color-gray-400)')}>Counting recipients...</span>
+          <span style={chipStyle('var(--color-gray-400)')}>{t.marketingCountingRecipients}</span>
         )}
         {!loading && error && (
           <span style={chipStyle('var(--color-error-600)', 'var(--color-error-50)')}>{error}</span>
@@ -125,13 +127,13 @@ export function AudiencePicker({ value, onChange }: Props) {
             tooLarge ? 'var(--color-error-50)' : 'var(--color-primary-50)',
           )}>
             {tooLarge
-              ? '10,000+ customers (too large — add more filters)'
-              : `~${preview.count.toLocaleString('en-IN')} customers`
+              ? t.marketingTooLargeChip
+              : `~${preview.count.toLocaleString('en-IN')} ${t.marketingApproxCustomers}`
             }
           </span>
         )}
         {!loading && !error && preview == null && (
-          <span style={chipStyle('var(--color-gray-400)')}>Enter filters to preview audience</span>
+          <span style={chipStyle('var(--color-gray-400)')}>{t.marketingEnterFilters}</span>
         )}
       </div>
     </div>

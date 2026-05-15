@@ -3,6 +3,7 @@
 import { useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
+import { useLanguage } from '@/hooks/useLanguage'
 import { ApiError } from '@/lib/api'
 import { listCampaigns, getCampaign } from '../marketing.service'
 import { createCampaign, updateCampaign, cancelCampaign } from '../marketing-crud.service'
@@ -48,6 +49,7 @@ export function useCampaignList(status?: CampaignStatus | '') {
 export function useCreateCampaign() {
   const toast = useToast()
   const queryClient = useQueryClient()
+  const { t } = useLanguage()
 
   return useMutation({
     mutationFn: ({ payload, idempotencyKey }: { payload: CreateCampaignPayload; idempotencyKey: string }) =>
@@ -57,7 +59,7 @@ export function useCreateCampaign() {
     },
     onError: (err) => {
       const code = err instanceof ApiError ? (err as ApiError & { code?: string }).code : undefined
-      toast.error(getMarketingErrorMessage(code ?? '', err instanceof ApiError ? err.message : undefined))
+      toast.error(getMarketingErrorMessage(code ?? '', err instanceof ApiError ? err.message : t.marketingCampaignLaunchFailed))
     },
   })
 }
@@ -80,15 +82,16 @@ export function useUpdateCampaign(id: string, name: string) {
 export function useCancelCampaign() {
   const toast = useToast()
   const queryClient = useQueryClient()
+  const { t } = useLanguage()
 
   return useMutation({
     mutationFn: ({ id, name }: { id: string; name: string }) => cancelCampaign(id, name),
     onSuccess: () => {
-      toast.success('Campaign cancelled.')
+      toast.success(t.marketingCampaignCancelled)
       void queryClient.invalidateQueries({ queryKey: campaignKeys.all() })
     },
     onError: (err) => {
-      const msg = err instanceof ApiError ? err.message : 'Could not cancel campaign.'
+      const msg = err instanceof ApiError ? err.message : t.marketingCampaignCancelFailed
       toast.error(msg)
     },
   })

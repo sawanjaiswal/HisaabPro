@@ -1,5 +1,6 @@
 /** CampaignWizardStep5 — Preview and launch */
 
+import { useLanguage } from '@/hooks/useLanguage'
 import { TemplatePreview } from './TemplatePreview'
 import { ChannelBadge } from './ChannelBadge'
 import { QuietHoursNotice } from './QuietHoursNotice'
@@ -15,11 +16,18 @@ interface Props {
 }
 
 export function CampaignWizardStep5Preview({ state, onLaunch, launching }: Props) {
+  const { t } = useLanguage()
   const { template } = useMarketingTemplateDetail(state.templateId)
   const { preview, loading: countLoading, tooLarge } = useSegmentPreview(state.segmentFilter)
 
   const count = preview?.count ?? 0
   const canLaunch = !tooLarge && count > 0 && !launching
+
+  const audienceText = countLoading
+    ? t.marketingCountingShort
+    : tooLarge
+      ? t.marketingTooLargeShort
+      : `~${count.toLocaleString('en-IN')} ${t.marketingApproxCustomers}`
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -27,29 +35,29 @@ export function CampaignWizardStep5Preview({ state, onLaunch, launching }: Props
       <div style={{ padding: '16px', borderRadius: '12px', background: 'var(--color-gray-50)', border: '1px solid var(--color-gray-200)' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '14px' }}>
           <div style={rowStyle}>
-            <span style={keyStyle}>Campaign</span>
+            <span style={keyStyle}>{t.marketingCampaignRow}</span>
             <span style={{ fontWeight: 600, color: 'var(--color-gray-800)' }}>{state.name}</span>
           </div>
           <div style={rowStyle}>
-            <span style={keyStyle}>Channel</span>
+            <span style={keyStyle}>{t.marketingChannelRow}</span>
             <ChannelBadge channel={state.channel} />
           </div>
           <div style={rowStyle}>
-            <span style={keyStyle}>Template</span>
+            <span style={keyStyle}>{t.marketingTemplateRow}</span>
             <span style={{ color: 'var(--color-gray-700)' }}>{template?.name ?? '—'}</span>
           </div>
           <div style={rowStyle}>
-            <span style={keyStyle}>Audience</span>
+            <span style={keyStyle}>{t.marketingAudienceRow}</span>
             <span style={{ fontWeight: 600, color: tooLarge ? 'var(--color-error-600)' : 'var(--color-gray-800)' }}>
-              {countLoading ? 'Counting...' : tooLarge ? '10,000+ (too large)' : `~${count.toLocaleString('en-IN')} customers`}
+              {audienceText}
             </span>
           </div>
           <div style={rowStyle}>
-            <span style={keyStyle}>Schedule</span>
+            <span style={keyStyle}>{t.marketingScheduleRow}</span>
             <span style={{ color: 'var(--color-gray-700)' }}>{formatScheduledAt(state.scheduledAt)}</span>
           </div>
           <div style={rowStyle}>
-            <span style={keyStyle}>Est. cost</span>
+            <span style={keyStyle}>{t.marketingEstCostRow}</span>
             <span style={{ color: 'var(--color-gray-700)' }}>
               {count > 0 && !tooLarge ? formatCostEstimate(state.channel, count) : '—'}
             </span>
@@ -66,12 +74,12 @@ export function CampaignWizardStep5Preview({ state, onLaunch, launching }: Props
       {/* Errors */}
       {tooLarge && (
         <div role="alert" style={alertStyle('error')}>
-          Audience too large. Go back and add more filters.
+          {t.marketingAudienceTooLargeBack}
         </div>
       )}
       {!countLoading && count === 0 && !tooLarge && (
         <div role="alert" style={alertStyle('warning')}>
-          No customers match these filters. Go back to adjust your audience.
+          {t.marketingAudienceNoMatchBack}
         </div>
       )}
 
@@ -96,7 +104,7 @@ export function CampaignWizardStep5Preview({ state, onLaunch, launching }: Props
         }}
         aria-disabled={!canLaunch}
       >
-        {launching ? 'Launching...' : 'Launch Campaign'}
+        {launching ? t.marketingLaunching : t.marketingLaunchCampaign}
       </button>
     </div>
   )
