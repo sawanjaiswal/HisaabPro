@@ -1,30 +1,40 @@
 # Backlog — resume 2026-05-15
 
-> Snapshot at 2026-05-15 08:50 IST. Phase 4 complete (118/150). Phase 5 Epic A backend shipped, FE paused mid-scaffold. **Phase 5 Epic B SHIPPED** (#122 sales pipeline, #132 price-list override, #133 BOGO custom-role, #134 invoice custom fields) — commits `6193d28` + `3626a0c` on `hisaabpro`. Master deployed to Render+Vercel at commit `89610b0`.
+> Snapshot at 2026-05-15 19:30 IST. Phase 4 complete (118/150). **Phase 5 Epic A SHIPPED** (Marketing FE — 3 slices, 36 files, +221 EN/HI keys). **Phase 5 Epic B SHIPPED** (#122/#132/#133/#134). **Subscription port SHIPPED** (DH gating model: state machine, UPI Autopay, offline JWT, PRO_MAX tier — commit `3530e79`). Master deployed to Render+Vercel at commit `89610b0`.
 
 ## Resume order
 
-### 1. Phase 5 Epic A — Marketing Comms FE *(in progress, paused)*
-Backend live (PR1-6 commits `3ea2cdc`..`5c2e3ca`). FE scaffolding partial in `src/features/marketing/`.
+### 1. Phase 5 Epic A — Marketing Comms FE ✅ SHIPPED 2026-05-15
 
-**What exists:**
-- `marketing.types.ts`, `marketing.constants.ts`, `marketing.utils.ts`, `marketing.errors.ts`
-- `marketing.service.ts`, `marketing-crud.service.ts`
-- `hooks/useMarketingTemplates.ts`
+Three slices on `hisaabpro`:
+- Slice 1 — Hub + Templates — commit `9b1f096` (+63 EN/HI keys)
+- Slice 2 — Campaigns wizard (3 pages + 5 wizard step components + AudiencePicker + RecipientTable + status badges + 4 hooks) — commit `016a1c8` (+108 keys)
+- Slice 3 — Reminders + Opt-outs + party-row chip — commit `9d281de` (+50 keys)
 
-**What's missing:**
-- pages/: `MarketingHubPage`, `TemplateListPage`, `TemplateFormPage`, `CampaignListPage`, `CampaignWizardPage` (5-step), `CampaignDetailPage`, `ReminderRuleListPage`, `ReminderRuleFormPage`, `OptOutListPage`
-- components/: `AudiencePicker` (reusable, with debounced segment preview), wizard step components, status badges, quiet-hours notice, DLT warning
-- hooks/: `useMarketingCampaign`, `useCampaignWizard`, `useReminderRules`, `useSegmentPreview`
-- nav entry under `marketing.read` perm
-- i18n keys → `src/lib/translations.{en,hi}.ext27.ts`
-- Opt-out chip on Party rows (small touch on existing party feature)
-
-**Acceptance:** see `.claude/design-plan-active.md` (frontend section). 4 UI states + 320px + i18n + ≤250 LOC + entityType/entityLabel on every mutation.
-
-**Resume command:** continue Agent `DudhHisaab-Frontend-Builder` (path is HisaabPro) with the prompt drafted earlier — pages + components + nav + i18n + opt-out chip + commit + push.
+Backend was already live (PR1-6 commits `3ea2cdc`..`5c2e3ca`). FE delivered i18n compliance, design-token-only colors, 4 UI states per page, real Hindi translations, EN/HI parity 980:980, ≤250 LOC/file, all enforce/tsc/offline gates green.
 
 **Render env to set before launch endpoint goes live:** `MARKETING_ENABLED=true`, `AISENSY_WEBHOOK_SECRET`, `AISENSY_API_KEY`, `MSG91_WEBHOOK_TOKEN`.
+
+---
+
+### 1b. Subscription port ✅ SHIPPED 2026-05-15
+
+Commit `3530e79` on `hisaabpro` (mission `subscription-port`).
+
+- 7-state state machine (19 transitions) with writer SSOT + pg_advisory_xact_lock
+- 4 new tables: SubscriptionEvent (immutable audit, unique razorpayEventId for idempotency), FeatureAddon, BusinessAddon, UpiMandate
+- UPI Autopay mandate flow (create/status/cancel) with VPA last-4 masking
+- RS256 offline entitlement JWT (24h TTL, trustedTime clock-rewind detect) + public-key endpoint
+- Overflow grace period + cron jobs (trial-end, mandate-reminder, grace-expiry)
+- Razorpay webhook hardening: HMAC + 5-min replay + businessId resolved server-side
+- Admin grant routes (requireSuperAdmin + rate-limit + ledger row per action)
+- FE: state-aware PlanGate, OverflowBanner, MandateSetupDrawer, SubscriptionManagePage at `/settings/subscription`
+- enforce.js +2 checks (Writer-SSOT-ban, JWT-in-logs-ban)
+- 5-step Prisma migration (nullable add → backfill → NOT NULL → indexes → new tables)
+
+PRDs: `PRDs/subscription-port-{SCOPE,ARCHITECTURE,SECURITY,TASKS}.md`. Mission archive: `.claude/missions/subscription-port.md`.
+
+**Render env to set before activation:** `ENTITLEMENT_JWT_PRIVATE_KEY` (RS256 PEM), `ENTITLEMENT_JWT_PUBLIC_KEY` (SPKI PEM), `RAZORPAY_WEBHOOK_SECRET`.
 
 ---
 

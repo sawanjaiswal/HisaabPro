@@ -1,0 +1,18 @@
+{
+  "name": "HisaabPro",
+  "agents": {
+    "db": "backend",
+    "api": "backend",
+    "frontend": "frontend",
+    "admin": "frontend"
+  },
+  "designSkill": "hp-design",
+  "enforcement": {
+    "enforce": "scripts/enforce.js",
+    "offline": "scripts/enforce-offline.mjs"
+  },
+  "ports": {
+    "backend": 4000,
+    "frontend": 5173
+  }
+}
