@@ -55,9 +55,40 @@ export async function createLoanAccount(
 export async function getLoanAccount(businessId: string, loanId: string) {
   const loan = await prisma.loanAccount.findFirst({
     where: { id: loanId, businessId },
-    include: {
+    select: {
+      id: true,
+      businessId: true,
+      type: true,
+      partyId: true,
+      loanName: true,
+      principalAmount: true,
+      interestRate: true,
+      tenure: true,
+      emiAmount: true,
+      startDate: true,
+      endDate: true,
+      outstandingAmount: true,
+      totalInterestPaid: true,
+      status: true,
+      journalEntryId: true,
+      notes: true,
+      createdBy: true,
+      createdAt: true,
+      updatedAt: true,
       transactions: {
         orderBy: { date: 'asc' },
+        select: {
+          id: true,
+          loanAccountId: true,
+          type: true,
+          amount: true,
+          principalAmount: true,
+          interestAmount: true,
+          date: true,
+          journalEntryId: true,
+          notes: true,
+          createdAt: true,
+        },
       },
     },
   })
