@@ -1,0 +1,120 @@
+/* PriceListOverrideSelector — chip + picker sheet styles (Epic B PR2) */
+
+/* ─── Skeleton chip (loading state) ──────────────────────────────────────── */
+.price-override-skeleton {
+  height: 34px;
+  width: 140px;
+  border-radius: var(--radius-full);
+  background: var(--color-neutral-100, #f3f4f6);
+  animation: shimmer 1.4s infinite linear;
+  background-size: 200% 100%;
+  background-image: linear-gradient(
+    90deg,
+    var(--color-neutral-100, #f3f4f6) 25%,
+    var(--color-neutral-200, #e5e7eb) 50%,
+    var(--color-neutral-100, #f3f4f6) 75%
+  );
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ─── Chip ───────────────────────────────────────────────────────────────── */
+.price-override-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-primary-200);
+  background: var(--color-primary-50);
+  color: var(--color-primary-500);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+  white-space: nowrap;
+  max-width: 220px;
+}
+
+.price-override-chip:hover {
+  background: var(--color-primary-100);
+  border-color: var(--color-primary-300);
+}
+
+.price-override-chip:focus-visible {
+  outline: 2px solid var(--color-primary-400);
+  outline-offset: 2px;
+}
+
+/* Applied (user override active) */
+.price-override-chip--applied {
+  background: var(--color-primary-100);
+  border-color: var(--color-primary-400);
+  color: var(--color-primary-600);
+}
+
+.price-override-chip__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.price-override-chip__reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  padding: 2px;
+  cursor: pointer;
+  color: var(--color-primary-400);
+  border-radius: var(--radius-sm);
+  transition: color 120ms ease;
+  flex-shrink: 0;
+}
+
+.price-override-chip__reset:hover { color: var(--color-error-500); }
+.price-override-chip__reset:focus-visible { outline: 2px solid var(--color-primary-400); outline-offset: 1px; }
+
+/* ─── Picker list (rendered inside a drawer/sheet) ───────────────────────── */
+.price-override-picker__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4) 0;
+}
+
+.price-override-picker__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  background: var(--color-surface-primary, #fff);
+  transition: background 100ms ease, border-color 100ms ease;
+}
+
+.price-override-picker__item:hover {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-100);
+}
+
+.price-override-picker__item--selected {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-400);
+}
+
+.price-override-picker__item-name {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.price-override-picker__item-hint {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}

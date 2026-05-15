@@ -22,7 +22,7 @@ export async function getMe(userId: string, activeBusinessId?: string) {
           role: true,
           status: true,
           lastActiveAt: true,
-          roleRef: { select: { id: true, name: true } },
+          roleRef: { select: { id: true, name: true, permissions: true } },
           business: { select: { id: true, name: true, businessType: true } },
         },
         orderBy: { joinedAt: 'asc' },
@@ -39,6 +39,8 @@ export async function getMe(userId: string, activeBusinessId?: string) {
     role: bu.role,
     roleId: bu.roleRef?.id ?? null,
     roleName: bu.roleRef?.name ?? bu.role,
+    // Owners bypass all permission checks; include permissions array for custom roles
+    permissions: bu.role === 'owner' ? [] : (bu.roleRef?.permissions ?? []),
     status: bu.status,
     lastActiveAt: bu.lastActiveAt,
   }))
@@ -98,7 +100,7 @@ export async function listUserBusinesses(userId: string) {
       role: true,
       status: true,
       lastActiveAt: true,
-      roleRef: { select: { id: true, name: true } },
+      roleRef: { select: { id: true, name: true, permissions: true } },
       business: { select: { id: true, name: true, businessType: true } },
     },
     orderBy: { joinedAt: 'asc' },
@@ -111,6 +113,7 @@ export async function listUserBusinesses(userId: string) {
     businessType: bu.business.businessType,
     role: bu.role,
     roleName: bu.roleRef?.name ?? bu.role,
+    permissions: bu.role === 'owner' ? [] : (bu.roleRef?.permissions ?? []),
     status: bu.status,
     lastActiveAt: bu.lastActiveAt,
   }))

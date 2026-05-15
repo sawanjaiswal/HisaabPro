@@ -95,7 +95,9 @@ export const createDocumentSchema = z.object({
   tcsAmount: z.number().int().min(0).optional(),             // paise
   // #134 — invoice custom fields
   customFieldValues: z.array(customFieldValueInputSchema).max(50).optional(),
-})
+  // Epic B PR2 — per-invoice price-list tier override (security 2.2: .cuid() not .uuid())
+  priceListId: z.string().cuid().nullable().optional(),
+}).strict()
 
 // === Update Document ===
 
@@ -126,7 +128,9 @@ export const updateDocumentSchema = z.object({
   tcsAmount: z.number().int().min(0).optional(),             // paise
   // #134 — invoice custom fields
   customFieldValues: z.array(customFieldValueInputSchema).max(50).optional(),
-})
+  // Epic B PR2 — per-invoice price-list tier override (security 2.2: .cuid() not .uuid())
+  priceListId: z.string().cuid().nullable().optional(),
+}).strict()
 
 // === List Documents (query params) ===
 

@@ -81,6 +81,8 @@ export interface UseInvoiceFormReturn {
   confirmUntaggedSubmit: () => Promise<void>
   dismissUntaggedDialog: () => void
   applyInclusivePricing: (taxRateBP: number) => void
+  // Epic B PR2 — price-list override (null = party default)
+  priceListId: string | null
 }
 
 // Re-export types needed by sub-components

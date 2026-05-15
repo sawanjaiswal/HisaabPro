@@ -34,6 +34,12 @@ export async function updateDocument(
   if (existing.status === 'CONVERTED') throw validationError('Cannot edit a converted document')
   if (existing.status === 'DELETED') throw validationError('Cannot edit a deleted document')
 
+  // Security 2.1: verify priceListId belongs to this business (cross-tenant guard)
+  if (data.priceListId) {
+    const ownedList = await prisma.priceList.findFirst({ where: { id: data.priceListId, businessId, isDeleted: false }, select: { id: true } })
+    if (!ownedList) throw notFoundError('Price list')
+  }
+
   const wasSaved = existing.status === 'SAVED' || existing.status === 'SHARED'
   const willBeSaved = data.status === 'SAVED' || (wasSaved && !data.status)
   const result = await prisma.$transaction(async (tx) => {
@@ -177,9 +183,9 @@ export async function updateDocument(
     if (data.tdsAmount !== undefined) updateData.tdsAmount = data.tdsAmount
     if (data.tcsRate !== undefined) updateData.tcsRate = data.tcsRate
     if (data.tcsAmount !== undefined) updateData.tcsAmount = data.tcsAmount
-
+    // Epic B PR2: null clears override; undefined = not sent (don't touch existing)
+    if (data.priceListId !== undefined) updateData.priceListId = data.priceListId ?? null
     await tx.document.update({ where: { id: documentId }, data: updateData })
-
     if (data.customFieldValues !== undefined) {
       await persistDocumentCustomFieldValues(tx, {
         businessId,

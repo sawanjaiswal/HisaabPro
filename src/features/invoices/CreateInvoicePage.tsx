@@ -71,6 +71,7 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
     clearStockShortage,
     batchErrorCode,
     clearBatchError,
+    priceListId,
   } = useInvoiceForm(type)
 
   const { compositionScheme } = useGstGate()
@@ -181,6 +182,8 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
               hasStockBlocks={hasStockBlocks}
               gstEnabled={gstEnabled}
               compositionScheme={compositionScheme}
+              priceListId={priceListId}
+              onPriceListChange={(id) => updateField('priceListId', id)}
               onPartyChange={handlePartyChange}
               onProductSelect={handleProductSelect}
               onUpdateLineItem={updateLineItem}

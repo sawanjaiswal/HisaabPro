@@ -168,6 +168,7 @@ export interface DocumentFormData {
   supplyType: string
   /** #134 — In-form: `{ [fieldDefId]: value }`. On wire (after normalize): `Array<{ fieldDefId, valueJson }>`. */
   customFieldValues?: Record<string, unknown> | Array<{ fieldDefId: string; valueJson: unknown }>
+  priceListId?: string | null // Epic B PR2 — override; null = party default; stored for audit traceability
 }
 
 // ─── Document Conversion ──────────────────────────────────────────────────────
@@ -230,7 +231,6 @@ export interface DocumentSettings {
 }
 
 // ─── Terms & Conditions Template ─────────────────────────────────────────────
-
 export interface TermsTemplate {
   id: string
   name: string

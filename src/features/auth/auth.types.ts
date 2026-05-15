@@ -14,6 +14,8 @@ export interface BusinessSummary {
   role: string
   roleId: string | null
   roleName: string
+  /** Permission slugs granted by the user's custom role for this business. Empty for owners (owners bypass all checks server-side). */
+  permissions: string[]
   status: string
   lastActiveAt: string | null
 }

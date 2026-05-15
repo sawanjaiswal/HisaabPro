@@ -37,6 +37,7 @@ const MOCK_BIZ = {
   role: 'owner',
   roleId: null as string | null,
   roleName: 'owner',
+  permissions: [] as string[],
   status: 'active',
   lastActiveAt: null as Date | null,
 }

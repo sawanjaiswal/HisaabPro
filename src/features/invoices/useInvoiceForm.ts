@@ -1,12 +1,6 @@
-/** Create / Edit Invoice — Form state hook
- *
- * TanStack Query v5 migration. Submit paths (save/draft) wrapped in
- * useMutation for automatic error handling and cache invalidation.
- * All amounts in PAISE.
- *
- * Pure logic (validation, initial state, payload normalization) lives in
- * invoice-form.utils.ts. Types/interfaces in invoice-form.types.ts.
- * GST Phase 2 extensions live in useGstInvoice.ts.
+/** Create / Edit Invoice — Form state hook (TanStack Query v5).
+ * All amounts in PAISE. Pure logic in invoice-form.utils.ts.
+ * Types in invoice-form.types.ts. GST Phase 2 in useGstInvoice.ts.
  */
 
 import { useState, useCallback, useMemo } from 'react'
@@ -242,6 +236,7 @@ export function useInvoiceForm(
     stockShortageItems, clearStockShortage,
     batchErrorCode, batchErrorLineIndex, clearBatchError,
     gstEnabled, showUntaggedDialog, confirmUntaggedSubmit, dismissUntaggedDialog, applyInclusivePricing,
+    priceListId: form.priceListId ?? null, // Epic B PR2 override
   }
 }
 

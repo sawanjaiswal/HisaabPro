@@ -580,6 +580,7 @@ model PriceList {
   entries              PriceListEntry[]
   parties              Party[]          @relation("PartyPriceList")
   defaultForBusinesses Business[]       @relation("BusinessDefaultPriceList")
+  documentOverrides    Document[]       @relation("DocumentPriceListOverride")
 
   @@unique([businessId, name])
   @@index([businessId, isDeleted])
@@ -915,6 +916,10 @@ model Document {
   driverName     String?
   transportNotes String?
 
+  // Price-list per-invoice override (Epic B PR2) — nullable FK; null = use Party or Business default
+  priceListId String?
+  priceList   PriceList? @relation("DocumentPriceListOverride", fields: [priceListId], references: [id], onDelete: SetNull)
+
   // Conversion chain
   sourceDocumentId String?   @unique
   sourceDocument   Document? @relation("DocumentConversion", fields: [sourceDocumentId], references: [id], onDelete: SetNull)
@@ -998,6 +1003,7 @@ model Document {
   @@index([businessId, type, status, documentDate])
   @@index([businessId, dueDate])
   @@index([businessId, balanceDue])
+  @@index([priceListId])
 }
 
 model DocumentLineItem {

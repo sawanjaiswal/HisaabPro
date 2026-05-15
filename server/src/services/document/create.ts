@@ -33,6 +33,15 @@ export async function createDocument(
   })
   if (!party) throw notFoundError('Party')
 
+  // Security 2.1 — cross-tenant guard: verify priceListId belongs to this business
+  if (data.priceListId) {
+    const ownedList = await prisma.priceList.findFirst({
+      where: { id: data.priceListId, businessId, isDeleted: false },
+      select: { id: true },
+    })
+    if (!ownedList) throw notFoundError('Price list')
+  }
+
   const isCreditDebitNote = data.type === 'CREDIT_NOTE' || data.type === 'DEBIT_NOTE'
   if (isCreditDebitNote && data.originalDocumentId) {
     const originalDoc = await prisma.document.findFirst({
@@ -142,6 +151,8 @@ export async function createDocument(
         tdsAmount: data.tdsAmount ?? 0,
         tcsRate: data.tcsRate ?? 0,
         tcsAmount: data.tcsAmount ?? 0,
+        // Epic B PR2 — price-list override (already cross-tenant-verified above)
+        priceListId: data.priceListId ?? null,
       },
     })
 

@@ -34,6 +34,8 @@ export function buildInitialForm(type: DocumentType): DocumentFormData {
     isReverseCharge: false,
     supplyType: 'B2C_SMALL',
     customFieldValues: {},
+    // Epic B PR2 — price-list override (null = use party's default)
+    priceListId: null,
   }
 }
 

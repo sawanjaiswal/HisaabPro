@@ -79,6 +79,8 @@ export const DOCUMENT_DETAIL_SELECT = {
   originalDocumentId: true,
   creditDebitReason: true,
   sourceDocumentId: true,
+  // Epic B PR2 — price-list override (included so FE can pre-fill the override selector)
+  priceListId: true,
   clientId: true,
   deletedAt: true,
   createdBy: true,

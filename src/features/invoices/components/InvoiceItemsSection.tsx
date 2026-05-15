@@ -1,9 +1,7 @@
-/** Invoice Items Section — shared between Create & Edit Invoice pages
- *
- * Renders: party search, line item editors, stock warnings, product search toggle.
- * GST Phase 2: TaxPickerColumn + HsnTypeahead conditionally rendered per line.
+/** Invoice Items Section — party search + price-list override chip (Epic B PR2)
+ * + line item editors, stock warnings, product search toggle.
+ * GST Phase 2: TaxPickerColumn + HsnTypeahead conditionally per line.
  * #132 Batch 6: usePartyTier drives client-side price resolution per line.
- * All amounts in PAISE.
  */
 
 import { useCallback } from 'react'
@@ -19,6 +17,8 @@ import { HsnTypeahead } from './HsnTypeahead'
 import { calculateLineTotal } from '../invoice-calc.utils'
 import { calculateLineProfit } from '../invoice-totals.utils'
 import { usePartyTier } from '@/features/price-lists/use-party-tier'
+import { usePriceListOverride } from '@/features/pricing/usePriceListOverride'
+import { PriceListOverrideSelector } from '@/features/pricing/components/PriceListOverrideSelector'
 import type { LineItemFormData } from '../invoice.types'
 import type { StockValidationItem } from '../invoice.service'
 import type { PriceMode } from './useLinePriceMeta'
@@ -33,11 +33,12 @@ interface InvoiceItemsSectionProps {
   hasStockBlocks: boolean
   gstEnabled?: boolean
   compositionScheme?: boolean
-  /**
-   * #132 Batch 6 — when true, existing invoice lines start as EDITED
-   * so rates are not auto-replaced on load.
-   */
+  /** #132 Batch 6 — when true, existing lines start as EDITED so rates are not auto-replaced. */
   isEditMode?: boolean
+  /** Epic B PR2 — current price-list override id from form state (null = party default) */
+  priceListId?: string | null
+  /** Epic B PR2 — called when user changes the tier override */
+  onPriceListChange?: (id: string | null) => void
   onPartyChange: (id: string, name: string) => void
   onProductSelect: (productId: string, ratePaise: number, productName: string, salePricePaise?: number) => void
   onUpdateLineItem: (index: number, item: Partial<LineItemFormData>) => void
@@ -45,44 +46,38 @@ interface InvoiceItemsSectionProps {
   onToggleProductSearch: () => void
 }
 
+// Stable no-op for optional onPriceListChange
+const noop = (_id: string | null) => { /* no-op */ }
+
 export function InvoiceItemsSection({
-  partyId,
-  lineItems,
-  productNames,
-  showProductSearch,
-  errors,
-  stockWarnings,
-  hasStockBlocks,
-  gstEnabled = false,
-  compositionScheme = false,
-  isEditMode = false,
-  onPartyChange,
-  onProductSelect,
-  onUpdateLineItem,
-  onRemoveLineItem,
-  onToggleProductSearch,
+  partyId, lineItems, productNames, showProductSearch, errors,
+  stockWarnings, hasStockBlocks, gstEnabled = false,
+  compositionScheme = false, isEditMode = false,
+  priceListId = null, onPriceListChange,
+  onPartyChange, onProductSelect, onUpdateLineItem,
+  onRemoveLineItem, onToggleProductSearch,
 }: InvoiceItemsSectionProps) {
   const { t } = useLanguage()
   const canMarkFree = useBogoPermission()
 
-  // ─── Price-list tier for the selected party ────────────────────────────────
+  const { tier: partyTier, partyPricing, status: tierStatus } = usePartyTier(partyId)
+  const partyDefaultListId = tierStatus === 'success' ? (partyTier?.id ?? null) : null
 
-  const { tier, partyPricing } = usePartyTier(partyId)
-
-  // ─── Per-line price metadata (mode + salePrice at add time) ───────────────
-
-  const { lineMeta, handlePriceModeChange, appendMeta } = useLinePriceMeta({
-    lineItems,
-    partyId,
-    isEditMode,
-    tier,
-    partyPricing,
-    onUpdateLineItem,
+  const {
+    availableLists, listsLoading, effectiveTier,
+    selectedListId, displayName, isOverridden, setOverride, resetOverride,
+  } = usePriceListOverride({
+    partyDefaultListId,
+    initialOverrideId: priceListId,
+    onOverrideChange: onPriceListChange ?? noop,
   })
 
-  // ─── Handlers ─────────────────────────────────────────────────────────────
+  const tier = effectiveTier ?? partyTier
 
-  // Intercept product select to record salePrice in lineMeta
+  const { lineMeta, handlePriceModeChange, appendMeta } = useLinePriceMeta({
+    lineItems, partyId, isEditMode, tier, partyPricing, onUpdateLineItem,
+  })
+
   const handleProductSelect = useCallback(
     (productId: string, ratePaise: number, productName: string, salePricePaise?: number) => {
       appendMeta(salePricePaise ?? ratePaise)
@@ -91,7 +86,6 @@ export function InvoiceItemsSection({
     [appendMeta, onProductSelect],
   )
 
-  // Reset priceMode to AUTO when productId changes on existing row
   const handleUpdateLineItem = useCallback(
     (index: number, updates: Partial<LineItemFormData>) => {
       if ('productId' in updates && updates.productId !== lineItems[index]?.productId) {
@@ -106,38 +100,33 @@ export function InvoiceItemsSection({
 
   return (
     <div className="line-items-section py-0">
-      <PartySearchInput
-        value={partyId}
-        onChange={onPartyChange}
-        error={errors.partyId}
-      />
+      <PartySearchInput value={partyId} onChange={onPartyChange} error={errors.partyId} />
+
+      {partyId && (
+        <PriceListOverrideSelector
+          availableLists={availableLists}
+          loading={listsLoading}
+          selectedListId={selectedListId}
+          partyDefaultListId={partyDefaultListId}
+          displayName={displayName}
+          isOverridden={isOverridden}
+          onSelect={setOverride}
+          onReset={resetOverride}
+        />
+      )}
 
       {lineItems.map((item, index) => {
         const { lineTotal, discountAmount } = calculateLineTotal(
-          item.quantity,
-          item.rate,
-          item.discountType,
-          item.discountValue,
+          item.quantity, item.rate, item.discountType, item.discountValue,
         )
-        const { profit, profitPercent } = calculateLineProfit(
-          item.rate,
-          0,
-          item.quantity,
-          discountAmount,
-        )
+        const { profit, profitPercent } = calculateLineProfit(item.rate, 0, item.quantity, discountAmount)
         const meta = lineMeta[index] ?? { mode: isEditMode ? ('EDITED' as PriceMode) : ('AUTO' as PriceMode), salePrice: 0 }
 
         return (
           <div key={item.productId} className="line-item-with-gst">
             <LineItemEditor
-              item={{
-                ...item,
-                productName: productNames[item.productId] ?? `${t.item} ${index + 1}`,
-                discountAmount,
-                lineTotal,
-                profit,
-                profitPercent,
-              }}
+              item={{ ...item, productName: productNames[item.productId] ?? `${t.item} ${index + 1}`,
+                discountAmount, lineTotal, profit, profitPercent }}
               index={index}
               onUpdate={handleUpdateLineItem}
               onRemove={onRemoveLineItem}
@@ -149,7 +138,6 @@ export function InvoiceItemsSection({
               priceMode={meta.mode}
               onPriceModeChange={handlePriceModeChange}
             />
-
             {gstEnabled && (
               <div className="line-item-gst-row">
                 {!compositionScheme && (
@@ -172,9 +160,7 @@ export function InvoiceItemsSection({
         )
       })}
 
-      {errors.lineItems && (
-        <span className="field-error" role="alert">{errors.lineItems}</span>
-      )}
+      {errors.lineItems && <span className="field-error" role="alert">{errors.lineItems}</span>}
 
       {stockWarnings.length > 0 && (
         <div className={`stock-warnings${hasStockBlocks ? ' stock-warnings--block' : ''}`} role="alert">
@@ -193,16 +179,11 @@ export function InvoiceItemsSection({
         </div>
       )}
 
-      {errors.stock && (
-        <span className="field-error" role="alert">{errors.stock}</span>
-      )}
+      {errors.stock && <span className="field-error" role="alert">{errors.stock}</span>}
 
       {showProductSearch && (
         <div className="product-search-panel py-0">
-          <ProductSearchInput
-            onSelect={handleProductSelect}
-            addedProductIds={addedProductIds}
-          />
+          <ProductSearchInput onSelect={handleProductSelect} addedProductIds={addedProductIds} />
         </div>
       )}
 

@@ -51,6 +51,7 @@ export function EditInvoiceForm({
     handleSaveDraft,
     stockShortageItems,
     clearStockShortage,
+    priceListId,
   } = useInvoiceForm(initialData.type, 'NONE', { editId: invoiceId, initialData })
 
   const { gstEnabled, compositionScheme } = useGstGate()
@@ -131,6 +132,8 @@ export function EditInvoiceForm({
               gstEnabled={gstEnabled}
               compositionScheme={compositionScheme}
               isEditMode={true}
+              priceListId={priceListId}
+              onPriceListChange={(id) => updateField('priceListId', id)}
               onPartyChange={handlePartyChange}
               onProductSelect={handleProductSelect}
               onUpdateLineItem={updateLineItem}
