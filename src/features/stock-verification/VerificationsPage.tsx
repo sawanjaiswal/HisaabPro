@@ -43,7 +43,7 @@ export default function VerificationsPage() {
         }
       />
 
-      <PageContainer>
+      <PageContainer variant="list">
         <nav className="sv-tabs stagger-filters" aria-label={t.status}>
           {FILTER_TABS.map((tab) => (
             <button

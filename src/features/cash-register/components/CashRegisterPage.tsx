@@ -7,6 +7,7 @@
 
 import { useState, useCallback } from 'react'
 import { AppShell } from '@/components/layout/AppShell'
+import { PageContainer } from '@/components/layout/PageContainer'
 import { Header } from '@/components/layout/Header'
 import { useAuth } from '@/context/AuthContext'
 import { useCashCalculator } from '../useCashCalculator'
@@ -94,6 +95,7 @@ export default function CashRegisterPage() {
       {/* Tab panels */}
       {tab === 'calculator' ? (
         <div role="tabpanel" aria-label="Calculator tab">
+          <PageContainer variant="form" asDiv>
           <CalculatorPanel
             expression={calc.expression}
             liveTotalPaise={calc.liveTotalPaise}
@@ -106,15 +108,18 @@ export default function CashRegisterPage() {
             isSubmitting={calc.isSubmitting}
             isOffline={isOffline}
           />
+          </PageContainer>
         </div>
       ) : (
         <div role="tabpanel" aria-label="History tab">
+          <PageContainer variant="list" asDiv>
           <HistoryPanel
             onEdit={setEditingId}
             onVoid={setVoidingId}
             onRestore={(id) => void handleRestore(id)}
             onDelete={setDeletingId}
           />
+          </PageContainer>
         </div>
       )}
 

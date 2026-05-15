@@ -77,7 +77,7 @@ export const DocumentListPage: React.FC<DocumentListPageProps> = ({
         }
       />
 
-      <PageContainer className="space-y-4">
+      <PageContainer variant="list" className="space-y-4">
         <DocumentListFilterBar
           search={filterState.search}
           activeStatus={filterState.status}
