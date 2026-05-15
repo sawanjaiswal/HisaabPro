@@ -20,6 +20,8 @@ import {
   listPricingQuerySchema,
 } from '../schemas/party.schemas.js'
 import { requirePermission } from '../middleware/permission.js'
+import { replayProtection } from '../middleware/replay-protection.js'
+import { idempotencyCheck } from '../middleware/idempotency.js'
 import * as partyService from '../services/party.service.js'
 import { getPartyLedger } from '../services/party/ledger.service.js'
 import { ledgerQuerySchema } from '../services/party/ledger.types.js'
@@ -44,6 +46,8 @@ router.use(requireFeature('parties'))
 router.post(
   '/',
   requirePermission('parties.create'),
+  replayProtection,
+  idempotencyCheck(),
   validate(createPartySchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
