@@ -1,6 +1,6 @@
-# Backlog — resume 2026-05-09
+# Backlog — resume 2026-05-15
 
-> Snapshot at 2026-05-08 14:19 IST. Phase 4 complete (118/150). Phase 5 Epic A backend shipped, FE paused mid-scaffold. Master deployed to Render+Vercel at commit `89610b0`.
+> Snapshot at 2026-05-15 08:50 IST. Phase 4 complete (118/150). Phase 5 Epic A backend shipped, FE paused mid-scaffold. **Phase 5 Epic B SHIPPED** (#122 sales pipeline, #132 price-list override, #133 BOGO custom-role, #134 invoice custom fields) — commits `6193d28` + `3626a0c` on `hisaabpro`. Master deployed to Render+Vercel at commit `89610b0`.
 
 ## Resume order
 
@@ -28,16 +28,16 @@ Backend live (PR1-6 commits `3ea2cdc`..`5c2e3ca`). FE scaffolding partial in `sr
 
 ---
 
-### 2. Phase 5 Epic B — Sales workflow
-Roadmap items: #122 sales pipeline · #133 BOGO/free items · #132 multiple price lists · #134 invoice custom fields.
+### 2. Phase 5 Epic B — Sales workflow ✅ SHIPPED 2026-05-15
 
-Run `/start-epic phase-5-sales-workflow` — full ceremony (scope-writer → architect → BE → FE).
+Commits `6193d28` (PR1) + `3626a0c` (PR2+3+4) on `hisaabpro`.
 
-Notes:
-- #122 partially exists already (estimate→sale-order→delivery→invoice models present in schema; check if conversion flow shipped). Audit before designing.
-- #132 must integrate with party-wise pricing already in place (don't duplicate).
-- #133 needs invoice line schema additive col (`isFreeItem Boolean`).
-- #134 schema: `BusinessCustomFieldDef` + `DocumentCustomFieldValue` per-business JSONB.
+- **#122 Sales pipeline** — lineage service walks sourceDocumentId/convertedTo (businessId-scoped, 10-hop cap); SalesHub + Estimate/SaleOrder/Challan list+detail+create pages; PipelineTimeline on every detail; CreateInvoicePage reused via `type?: DocumentType` prop.
+- **#132 Multiple price lists** — additive `Document.priceListId` nullable FK; cross-tenant guard in create/update services; `usePriceListOverride` + `PriceListOverrideSelector` drawer (4 UI states).
+- **#133 BOGO custom-role** — `roleRef.permissions` projected into `BusinessSummary.permissions`; `useBogoPermission` widened to allow `invoicing.bogo`.
+- **#134 Invoice custom fields** — react-pdf `PdfCustomFieldsSection` rendered between line-items and totals; filtered by `showOnInvoice` + `documentTypes` + businessId.
+
+Security findings 1.1, 2.1, 2.2, 3.2, 4.1 all FIXED (see `docs/SECURITY_AUDIT_EPIC_B.md`). Translation ext35 (sales), ext36 (price-list), ext37 (PDF custom fields) added.
 
 ---
 

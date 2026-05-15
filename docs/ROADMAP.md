@@ -269,7 +269,7 @@
 | # | Feature | Status | Complexity | PRD | Notes |
 |---|---------|--------|-----------|-----|-------|
 | 121 | Online Store / Digital Catalog (shareable product catalog with ordering) | [ ] | HIGH | [ ] | |
-| 122 | Sales Pipeline (Quotation > Sale Order > Delivery > Invoice, partial fulfillment) | [ ] | MEDIUM | [ ] | Merged old #62 + #69 |
+| 122 | Sales Pipeline (Quotation > Sale Order > Delivery > Invoice, partial fulfillment) | [x] | MEDIUM | [x] | Shipped 2026-05-15 (`6193d28`) — lineage svc + sales hub + 3 list/detail/create flows |
 | 123 | WhatsApp Marketing (bulk promo messages to customers) | [~] | MEDIUM | [x] | BE shipped (PR1-6), FE WIP |
 | 124 | SMS Marketing (campaigns, templates) | [~] | LOW | [x] | BE shipped (PR1-6), FE WIP |
 | 125 | Loyalty / Rewards Program (points per purchase) | [ ] | MEDIUM | [ ] | |
@@ -279,9 +279,9 @@
 | 129 | UPI Payment Collection (QR on invoice, payment link) | [ ] | LOW | [ ] | Adapt DudhHisaab |
 | 130 | Web Invoice Links (shareable URL — customer views in browser) | [ ] | LOW | [ ] | Vyapar feature |
 | 131 | Invite Parties (self-service registration link for customers) | [ ] | LOW | [ ] | Vyapar feature |
-| 132 | Multiple Price Lists (named lists: MRP, wholesale, dealer, export) | [ ] | MEDIUM | [ ] | Beyond party-wise pricing |
-| 133 | Free Item Quantity (buy X get Y free — tracked on invoice) | [ ] | LOW | [ ] | Vyapar feature |
-| 134 | Invoice Custom Fields (user-defined additional fields on invoices) | [ ] | LOW | [ ] | |
+| 132 | Multiple Price Lists (named lists: MRP, wholesale, dealer, export) | [x] | MEDIUM | [x] | Shipped 2026-05-15 (`3626a0c`) — per-invoice override on top of party-wise pricing |
+| 133 | Free Item Quantity (buy X get Y free — tracked on invoice) | [x] | LOW | [x] | Shipped 2026-05-15 (`3626a0c`) — BOGO custom-role permission (`invoicing.bogo`) wired |
+| 134 | Invoice Custom Fields (user-defined additional fields on invoices) | [x] | LOW | [x] | Shipped 2026-05-15 (`3626a0c`) — react-pdf section, showOnInvoice + documentTypes filters |
 
 ---
 
