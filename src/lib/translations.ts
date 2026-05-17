@@ -79,9 +79,16 @@ import { enExt36 } from './translations.en.ext36'
 import { hiExt36 } from './translations.hi.ext36'
 import { enExt37 } from './translations.en.ext37'
 import { hiExt37 } from './translations.hi.ext37'
+// Epic D — Phase 5 PR1 (skeleton mount; populated in PRs 3-6)
+import { enExt38 } from './translations.en.ext38'
+import { hiExt38 } from './translations.hi.ext38'
+import { enExt39 } from './translations.en.ext39'
+import { hiExt39 } from './translations.hi.ext39'
+import { enExt40 } from './translations.en.ext40'
+import { hiExt40 } from './translations.hi.ext40'
 
-const en = { ...enBase, ...enExt1, ...enExt2, ...enExt3, ...enExt4, ...enExt5, ...enExt6, ...enExt7, ...enExt8, ...enExt9, ...enExt10, ...enExt11, ...enExt12, ...enExt13, ...enExt14, ...enExt15, ...enExt16, ...enExt17, ...enExt18, ...enExt19, ...enExt20, ...enExt21, ...enExt22, ...enExt23, ...enExt24, ...enExt25, ...enExt26, ...enExt27, ...enExt28, ...enExt29, ...enExt30, ...enExt31, ...enExt32, ...enExt33, ...enExt34, ...enExt35, ...enExt36, ...enExt37 } as const
-const hi = { ...hiBase, ...hiExt1, ...hiExt2, ...hiExt3, ...hiExt4, ...hiExt5, ...hiExt6, ...hiExt7, ...hiExt8, ...hiExt9, ...hiExt10, ...hiExt11, ...hiExt12, ...hiExt13, ...hiExt14, ...hiExt15, ...hiExt16, ...hiExt17, ...hiExt18, ...hiExt19, ...hiExt20, ...hiExt21, ...hiExt22, ...hiExt23, ...hiExt24, ...hiExt25, ...hiExt26, ...hiExt27, ...hiExt28, ...hiExt29, ...hiExt30, ...hiExt31, ...hiExt32, ...hiExt33, ...hiExt34, ...hiExt35, ...hiExt36, ...hiExt37 } as const
+const en = { ...enBase, ...enExt1, ...enExt2, ...enExt3, ...enExt4, ...enExt5, ...enExt6, ...enExt7, ...enExt8, ...enExt9, ...enExt10, ...enExt11, ...enExt12, ...enExt13, ...enExt14, ...enExt15, ...enExt16, ...enExt17, ...enExt18, ...enExt19, ...enExt20, ...enExt21, ...enExt22, ...enExt23, ...enExt24, ...enExt25, ...enExt26, ...enExt27, ...enExt28, ...enExt29, ...enExt30, ...enExt31, ...enExt32, ...enExt33, ...enExt34, ...enExt35, ...enExt36, ...enExt37, ...enExt38, ...enExt39, ...enExt40 } as const
+const hi = { ...hiBase, ...hiExt1, ...hiExt2, ...hiExt3, ...hiExt4, ...hiExt5, ...hiExt6, ...hiExt7, ...hiExt8, ...hiExt9, ...hiExt10, ...hiExt11, ...hiExt12, ...hiExt13, ...hiExt14, ...hiExt15, ...hiExt16, ...hiExt17, ...hiExt18, ...hiExt19, ...hiExt20, ...hiExt21, ...hiExt22, ...hiExt23, ...hiExt24, ...hiExt25, ...hiExt26, ...hiExt27, ...hiExt28, ...hiExt29, ...hiExt30, ...hiExt31, ...hiExt32, ...hiExt33, ...hiExt34, ...hiExt35, ...hiExt36, ...hiExt37, ...hiExt38, ...hiExt39, ...hiExt40 } as const
 
 const translations = { en, hi } as const
 
