@@ -240,6 +240,17 @@ try {
   )
 }
 
+// ─── Check 6b: Audit coverage SSOT (report-only in PR1B; PR7 flips to --block)
+// See ARCHITECTURE_PHASE6_STAFF_HR §7 + server/src/lib/audit/audit-coverage.ts.
+console.log('🔍 Check 6b: Audit coverage SSOT')
+try {
+  execSync('node scripts/enforce-audit-coverage.mjs', { cwd: ROOT, stdio: 'inherit' })
+  console.log('  ✅ Audit-coverage SSOT scan complete')
+} catch {
+  // PR1B is report-only; a non-zero exit here only fires under --block (PR7).
+  errors.push('AUDIT_COVERAGE_VIOLATION: scripts/enforce-audit-coverage.mjs reported missing audit-writes.')
+}
+
 // ─── Check 7: Section layout — padding=0 and gap=24px ────────────────────────
 //
 // Every UI section container (className matches /-section\b|\bsection-|__section\b/)

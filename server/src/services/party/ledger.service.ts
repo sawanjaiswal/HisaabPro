@@ -10,6 +10,8 @@
 
 import { prisma } from '../../lib/prisma.js'
 import { notFoundError } from '../../lib/errors.js'
+import { paymentTypeDirection } from '../../lib/payment-types.js'
+import type { PaymentType } from '../../../../shared/enums.js'
 import type { LedgerQuery, LedgerRow, LedgerVoucherType } from './ledger.types.js'
 import { encodeCursor, decodeCursor } from './ledger.types.js'
 
@@ -95,7 +97,8 @@ export async function getPartyLedger(
     if (mapping) openingBalance += mapping.sign * Number(d.grandTotal)
   }
   for (const p of payBefore) {
-    openingBalance += p.type === 'PAYMENT_IN' ? -Number(p.amount) : Number(p.amount)
+    // paymentTypeDirection mirrors customer-outstanding sign (M6 v2.1); PAYROLL_*=0.
+    openingBalance += paymentTypeDirection(p.type as PaymentType) * Number(p.amount)
   }
   for (const j of jeBefore) {
     openingBalance += Number(j.debit) - Number(j.credit)
