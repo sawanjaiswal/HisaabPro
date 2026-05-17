@@ -36,6 +36,26 @@ export enum ErrorCode {
   DOCUMENT_LOCKED = 'DOCUMENT_LOCKED',
   CONVERSION_NOT_ALLOWED = 'CONVERSION_NOT_ALLOWED',
 
+  // Phase 6 — Staff & HR (M8 + tenancy + PIN closures; ARCHITECTURE §6.2)
+  // 400 — public payment-create rejected for payroll types (single rejection path)
+  INVALID_PAYMENT_TYPE = 'INVALID_PAYMENT_TYPE',
+  // 400 — POST /api/parties rejected for type='STAFF' (M7 server-create-only)
+  INVALID_PARTY_TYPE = 'INVALID_PARTY_TYPE',
+  // 403 — requireRecentPin gate: missing/expired/tampered pin_gate_grace cookie
+  PIN_REQUIRED = 'PIN_REQUIRED',
+  // 403 — requireActiveBusiness gate failures
+  NO_BUSINESS = 'NO_BUSINESS',
+  NO_MEMBERSHIP = 'NO_MEMBERSHIP',
+  MEMBER_SUSPENDED = 'MEMBER_SUSPENDED',
+  FIRM_SUSPENDED = 'FIRM_SUSPENDED',
+  // 409 — payroll state-machine violations
+  PAYROLL_ALREADY_FINALIZED = 'PAYROLL_ALREADY_FINALIZED',
+  PAYROLL_ALREADY_REVERSED = 'PAYROLL_ALREADY_REVERSED',
+  PAYROLL_PERIOD_OVERLAP = 'PAYROLL_PERIOD_OVERLAP',
+  // 423 — PIN lockout (per device, per phone)
+  PIN_LOCKED_DEVICE = 'PIN_LOCKED_DEVICE',
+  PIN_LOCKED_PHONE = 'PIN_LOCKED_PHONE',
+
   // Coupon (400)
   COUPON_NOT_FOUND = 'COUPON_NOT_FOUND',
   COUPON_EXPIRED = 'COUPON_EXPIRED',
@@ -125,70 +145,21 @@ export function insufficientStockError(
   })
 }
 
-export interface StockShortageItem {
-  productId: string
-  productName: string
-  requested: number
-  available: number
-}
-
-/**
- * 409 STOCK_SHORTAGE — thrown when one or more sale invoice line items
- * cannot be fulfilled due to insufficient stock under HARD_BLOCK mode.
- * Collects ALL shortfalls so the caller sees every problem at once.
- */
-export function stockShortageError(items: StockShortageItem[]) {
-  return new AppError(
-    ErrorCode.STOCK_SHORTAGE,
-    409,
-    `Insufficient stock for ${items.length} item(s)`,
-    { items }
-  )
-}
-
 export function conflictError(message: string) {
   return new AppError(ErrorCode.DUPLICATE_ENTRY, 409, message)
 }
 
-/** 409 EXPIRED_BATCH — single client-supplied batch is expired and policy=HARD_BLOCK */
-export function expiredBatchError(details: {
-  batchId: string
-  batchNumber: string
-  expiryDate: Date
-  productId: string
-  productName: string
-}) {
-  return new AppError(
-    ErrorCode.EXPIRED_BATCH,
-    409,
-    `Batch "${details.batchNumber}" expired on ${details.expiryDate.toISOString().split('T')[0]} and cannot be sold under the current policy`,
-    details as unknown as Record<string, unknown>
-  )
-}
-
-/** 409 ALL_BATCHES_EXPIRED — every available batch for product is expired (HARD_BLOCK) */
-export function allBatchesExpiredError(details: {
-  productId: string
-  productName: string
-  expiredBatchCount: number
-}) {
-  return new AppError(
-    ErrorCode.ALL_BATCHES_EXPIRED,
-    409,
-    `All ${details.expiredBatchCount} available batch(es) for "${details.productName}" are expired and cannot be sold under the current policy`,
-    details as unknown as Record<string, unknown>
-  )
-}
-
-/** 400 BATCH_PRODUCT_MISMATCH — client-supplied batchId belongs to different product/business */
-export function batchProductMismatchError(batchId: string, productId: string) {
-  return new AppError(
-    ErrorCode.BATCH_PRODUCT_MISMATCH,
-    400,
-    `Batch does not belong to the specified product`,
-    { batchId, productId }
-  )
-}
+// Batch/stock-shortage factories moved to ./errors-batch.ts (Phase 6 PR1A
+// file-layer discipline: errors.ts must stay ≤250 lines). Re-exported below
+// so existing `import { stockShortageError } from '../../lib/errors.js'`
+// call sites keep working.
+export type { StockShortageItem } from './errors-batch.js'
+export {
+  stockShortageError,
+  expiredBatchError,
+  allBatchesExpiredError,
+  batchProductMismatchError,
+} from './errors-batch.js'
 
 export function rateLimitError(message = 'Too many requests', retryAfter?: number) {
   return new AppError(ErrorCode.RATE_LIMITED, 429, message, retryAfter ? { retryAfter } : undefined)

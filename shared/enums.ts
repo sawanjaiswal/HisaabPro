@@ -65,7 +65,20 @@ export type FinancialYearFormat = (typeof FINANCIAL_YEAR_FORMATS)[number]
 
 // ─── Parties ────────────────────────────────────────────────────────────────
 
-export const PARTY_TYPES = ['CUSTOMER', 'SUPPLIER', 'BOTH'] as const
+/**
+ * Party.type allowed values.
+ *
+ * STAFF (added in Phase 6, M7 closure v2.2) — paired Party row created in the
+ * same $transaction as an Employee (see ARCHITECTURE_PHASE6_STAFF_HR §8.5).
+ * STAFF parties exist purely as payroll routing aliases to satisfy
+ * Payment.partyId NOT NULL; they are HIDDEN from every customer-facing
+ * surface (list-get, dashboard, party reports, FE pickers) and SURFACED only
+ * in the HR/Employee management UI via `GET /api/parties?includeStaff=true`.
+ *
+ * POST /api/parties REFUSES type='STAFF' — STAFF parties are server-created
+ * only via Employee pairing (architecture §8.5 + §2.2 filter policy table).
+ */
+export const PARTY_TYPES = ['CUSTOMER', 'SUPPLIER', 'BOTH', 'STAFF'] as const
 export type PartyType = (typeof PARTY_TYPES)[number]
 
 export const ADDRESS_TYPES = ['BILLING', 'SHIPPING'] as const
@@ -79,8 +92,26 @@ export type OpeningBalanceType = (typeof OPENING_BALANCE_TYPES)[number]
 
 // ─── Payments ───────────────────────────────────────────────────────────────
 
-export const PAYMENT_TYPES = ['PAYMENT_IN', 'PAYMENT_OUT'] as const
+/**
+ * Payment.type — full allowed-values set (server-side internal writes use this).
+ *
+ * - PAYMENT_IN / PAYMENT_OUT  — customer-facing money flows (the historic set).
+ * - PAYROLL_OUT (Phase 6) — money paid TO an employee on payroll FINALIZE.
+ * - PAYROLL_IN  (Phase 6) — inverse-direction-same-amount reversal row written
+ *   when a finalized Payroll is rolled back (architecture §8.3). NEVER negative.
+ *
+ * Public payment-create endpoint accepts only CUSTOMER_PAYMENT_TYPES; payroll
+ * service-internal writes (prisma.payment.create) use the full PAYMENT_TYPES
+ * set. See `shared/payment-types.ts` for the pure helpers + the M8 single-
+ * rejection assert (which lives server-side in `server/src/lib/payment-types.ts`
+ * because it imports AppError from server-only code).
+ */
+export const PAYMENT_TYPES = ['PAYMENT_IN', 'PAYMENT_OUT', 'PAYROLL_OUT', 'PAYROLL_IN'] as const
 export type PaymentType = (typeof PAYMENT_TYPES)[number]
+
+/** Public surface — POST /api/payments accepts only these (S7 + M8 closures). */
+export const CUSTOMER_PAYMENT_TYPES = ['PAYMENT_IN', 'PAYMENT_OUT'] as const
+export type CustomerPaymentType = (typeof CUSTOMER_PAYMENT_TYPES)[number]
 
 export const PAYMENT_MODES = [
   'CASH', 'UPI', 'BANK_TRANSFER', 'CHEQUE', 'NEFT_RTGS_IMPS', 'CREDIT_CARD', 'OTHER',
