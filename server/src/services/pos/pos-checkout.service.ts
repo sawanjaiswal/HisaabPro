@@ -1,24 +1,9 @@
 /**
- * POS Checkout — Main Orchestrator
- *
- * createPosSale(ctx, rawInput) → PosSaleDTO
- *
- * All mutations are inside a single Prisma $transaction:
- *  1. Idempotency check
- *  2. clientId uniqueness guard
- *  3. Load PosSetting
- *  4. Reprice lines (server-authoritative)
- *  5. Resolve party (provided or walk-in sentinel)
- *  6. Apply tax engine
- *  7. Guards: drift ≤ tolerance + payment sum
- *  8. Allocate receipt number
- *  9. Claim inventory
- * 10. Create Document (POS_SALE)
- * 11. Persist PosSale + PosSaleItem (via pos-checkout.persist.ts)
- * 12. Cash entry (feature-flagged)
- * 13. PosSaleEvent CREATED
- * 14. Store idempotency
- * 15. Return DTO
+ * POS Checkout — orchestrator. All mutations live in a single Prisma
+ * $transaction: idempotency check → clientId guard → reprice + MOQ → party →
+ * tax → drift/payment guards → receipt → inventory → Document → PosSale +
+ * items → loyalty redeem + accrue → cash → event → idempotency store.
+ * Post-commit analytics fire via queueMicrotask (architecture §3.8).
  */
 
 import { prisma } from '../../lib/prisma.js'
@@ -26,7 +11,7 @@ import logger from '../../lib/logger.js'
 import { notFoundError } from '../../lib/errors.js'
 import type { PosServiceCtx, PosSaleDTO } from './pos.types.js'
 import { assertMoq } from '../document/moq.guard.js'
-import { validateCreatePosSale } from './pos.validators.js'
+import { validateCreatePosSale, validateLoyaltyOnCheckout } from './pos.validators.js'
 import { checkIdempotency, storeIdempotency } from './pos-checkout.idempotency.js'
 import { priceLines, sumPricedLines } from './pos-checkout.pricing.js'
 import { applyTax, deriveSupplyType } from './pos-checkout.tax.js'
@@ -35,6 +20,14 @@ import { allocateNumber } from './pos-checkout.receipt.js'
 import { claimInventory } from './pos-checkout.inventory.js'
 import { createCashEntry } from './pos-checkout.cash.js'
 import { persistPosSale, buildPosSaleDTO } from './pos-checkout.persist.js'
+import {
+  applyCheckoutLoyalty,
+  emitCheckoutLoyaltyAnalytics,
+} from './pos-checkout.loyalty.js'
+import {
+  applyCheckoutCommission,
+  emitCheckoutCommissionAnalytics,
+} from './pos-checkout.commission.js'
 import {
   totalMismatchError,
   paymentSumMismatchError,
@@ -52,24 +45,23 @@ export async function createPosSale(
 ): Promise<PosSaleDTO> {
   const { businessId, userId } = ctx
 
-  // ── 1. Validate input via Zod ──────────────────────────────────────────
   const input = validateCreatePosSale(rawInput)
 
-  // Load business info outside tx (read-only)
+  // Loyalty-aware async validation (NEW_S2 + S1) runs BEFORE the tx opens so
+  // cross-tenant partyId throws 400 without consuming the idempotency key.
+  await validateLoyaltyOnCheckout(businessId, input)
+
   const business = await prisma.business.findUnique({
     where: { id: businessId },
     select: { stateCode: true, taxPricingMode: true },
   })
   if (!business) throw notFoundError('Business')
-
   const taxPricingMode = input.taxPricingMode ?? business.taxPricingMode ?? 'EXCLUSIVE'
 
   return prisma.$transaction(async (tx) => {
-    // ── 1b. Idempotency check ──────────────────────────────────────────
     const idempResult = await checkIdempotency(tx, businessId, input.idempotencyKey)
     if (idempResult.hit) return idempResult.response
 
-    // ── 1c. clientId uniqueness guard ─────────────────────────────────
     if (input.clientId) {
       const dup = await tx.posSale.findUnique({
         where: { clientId: input.clientId },
@@ -78,37 +70,29 @@ export async function createPosSale(
       if (dup) throw duplicateClientIdError(input.clientId)
     }
 
-    // ── 2. Load PosSetting ─────────────────────────────────────────────
     const posSetting = await tx.posSetting.findUnique({ where: { businessId } })
 
-    // ── 3. Reprice lines (server-authoritative) ────────────────────────
+    // Reprice + MOQ guard (server-authoritative pricing)
     const pricedLines = await priceLines(tx, businessId, input.items)
     const { subtotal, totalDiscount } = sumPricedLines(pricedLines)
-
-    // ── 3b. MOQ guard for POS_SALE ─────────────────────────────────────
-    const posSettings = await tx.documentSettings.findUnique({
-      where: { businessId },
-      select: { enforceMoq: true },
+    const docSettings = await tx.documentSettings.findUnique({
+      where: { businessId }, select: { enforceMoq: true },
     })
-    const enforceMoq = posSettings?.enforceMoq ?? true
-    // Build productMap for assertMoq (moq comes from pricedLines product data via tx)
-    const posProductRows = await tx.product.findMany({
+    const moqRows = await tx.product.findMany({
       where: { id: { in: input.items.map(i => i.productId) }, businessId },
       select: { id: true, name: true, moq: true },
     })
-    const posMoqMap = new Map(posProductRows.map(p => [p.id, p]))
     assertMoq(
       POS_DOCUMENT_TYPE,
       input.items.map(i => ({ productId: i.productId, quantity: i.quantity })),
-      posMoqMap,
-      enforceMoq,
+      new Map(moqRows.map(p => [p.id, p])),
+      docSettings?.enforceMoq ?? true,
     )
 
-    // ── 4. Resolve party ───────────────────────────────────────────────
+    // Resolve party (provided or walk-in sentinel)
     let partyGstin: string | null = null
     let partyStateCode: string | null = null
     let partyId: string
-
     if (input.partyId) {
       const party = await tx.party.findFirst({
         where: { id: input.partyId, businessId },
@@ -133,42 +117,29 @@ export async function createPosSale(
       supplyType,
     }
 
-    // ── 5. Tax engine ──────────────────────────────────────────────────
+    // Tax engine + drift/payment guards
     const { taxedLines, taxSummary, grandTotal, interState } = applyTax(
       pricedLines,
       business.stateCode ?? null,
       partyResolution,
       taxPricingMode as 'EXCLUSIVE' | 'INCLUSIVE'
     )
-
-    // ── 6. Guards ──────────────────────────────────────────────────────
     const drift = Math.abs(grandTotal - input.clientGrandTotal)
     if (drift > TOTAL_DRIFT_TOLERANCE_PAISE) {
       throw totalMismatchError(grandTotal, input.clientGrandTotal, drift)
     }
     const paymentSum = input.payments.reduce((s, p) => s + p.amountPaise, 0)
     if (paymentSum !== grandTotal) throw paymentSumMismatchError(paymentSum, grandTotal)
-
     const saleDate = input.saleDate ? new Date(input.saleDate) : new Date()
 
-    // ── 7. Allocate receipt number ─────────────────────────────────────
+    // Receipt allocation + inventory claim
     const { receiptNumber, receiptSeq, financialYear } = await allocateNumber(
-      tx,
-      businessId,
-      posSetting
+      tx, businessId, posSetting
     )
-
-    // ── 8. Claim inventory ─────────────────────────────────────────────
     const inventoryResult = await claimInventory(
-      tx,
-      businessId,
-      userId,
-      taxedLines,
-      `pending:${receiptNumber}`,
-      receiptNumber
+      tx, businessId, userId, taxedLines, `pending:${receiptNumber}`, receiptNumber
     )
 
-    // ── 9. Create Document row ─────────────────────────────────────────
     const document = await tx.document.create({
       data: {
         businessId,
@@ -197,48 +168,57 @@ export async function createPosSale(
       select: { id: true },
     })
 
-    // ── 10. Persist PosSale + PosSaleItem ──────────────────────────────
+    // Persist PosSale + items
     const persistParams = {
-      businessId,
-      userId,
-      documentId: document.id,
-      receiptNumber,
-      receiptSeq,
-      financialYear,
-      partyResolution,
-      input,
-      taxedLines,
-      taxSummary,
-      subtotal,
-      totalDiscount,
-      grandTotal,
-      taxPricingMode,
-      saleDate,
-      inventoryResult,
+      businessId, userId, documentId: document.id, receiptNumber, receiptSeq,
+      financialYear, partyResolution, input, taxedLines, taxSummary,
+      subtotal, totalDiscount, grandTotal, taxPricingMode, saleDate, inventoryResult,
     }
-
     const { posSaleId, batchNumberMap } = await persistPosSale(tx, persistParams)
 
-    // ── 11. Cash entry (feature-flagged) ───────────────────────────────
+    // Loyalty 10.5/10.6 — redemption + accrual on the same tx-client so any
+    // throw rolls back both PosSale and LoyaltyLedger rows. Helper isolated
+    // in pos-checkout.loyalty.ts to keep this orchestrator ≤ 250 LOC.
+    const loyaltyOutcome = await applyCheckoutLoyalty(tx, {
+      businessId, posSaleId, partyId: partyResolution.partyId,
+      input, subtotal, saleDate,
+    })
+
+    // Commission 10.7 — staff commission accrual (Epic D PR5). Inside the
+    // same tx so commission rows roll back with the sale. Cashier (userId) is
+    // the staff per Locked Decision Q12. Helper isolated in
+    // pos-checkout.commission.ts to keep this orchestrator ≤ 250 LOC.
+    const commissionOutcome = await applyCheckoutCommission(tx, {
+      businessId, staffUserId: userId, posSaleId, saleDate,
+    })
+
     await createCashEntry(
       tx, businessId, userId, posSaleId, receiptNumber, input.payments, input.idempotencyKey
     )
 
-    // ── 12. PosSaleEvent CREATED ───────────────────────────────────────
     await tx.posSaleEvent.create({
       data: {
-        posSaleId,
-        type: POS_EVENT_CREATED,
-        actorId: userId,
+        posSaleId, type: POS_EVENT_CREATED, actorId: userId,
         payload: { receiptNumber, grandTotal, interState },
       },
     })
 
-    // ── 13. Build DTO and store idempotency ────────────────────────────
     const dto: PosSaleDTO = buildPosSaleDTO(posSaleId, document.id, persistParams, batchNumberMap)
     await storeIdempotency(tx, businessId, input.idempotencyKey, dto, userId)
 
     logger.info('POS sale created', { businessId, posSaleId, receiptNumber, grandTotal })
+
+    // Post-commit telemetry — queueMicrotask defers emission until AFTER
+    // $transaction resolves (architecture §3.8 side-effect rule).
+    queueMicrotask(() => {
+      emitCheckoutLoyaltyAnalytics(loyaltyOutcome, {
+        businessId, posSaleId, partyId: partyResolution.partyId,
+      })
+      emitCheckoutCommissionAnalytics(commissionOutcome, {
+        businessId, posSaleId, staffUserId: userId,
+      })
+    })
+
     return dto
   })
 }

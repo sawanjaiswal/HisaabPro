@@ -7,6 +7,7 @@ import type {
   PosListResponse,
   PosProductsResponse,
   PaymentSplit,
+  PaymentMode,
   PosCartItem,
   PosHistoryFilters,
   ShareReceiptResponse,
@@ -44,11 +45,23 @@ export function buildCreateSalePayload(
       unitPrice: i.unitPrice,
       ...(i.discount > 0 ? { discount: i.discount } : {}),
     })),
-    payments: payments.map((p) => ({
-      mode:   p.mode,
-      amount: p.amount,
-      ...(p.referenceNumber ? { referenceNumber: p.referenceNumber } : {}),
-    })),
+    payments: payments.map((p) => {
+      // Loyalty splits must use the lowercase wire-mode + `pointsRedeemed`
+      // (server validator: pos.validators.ts paymentModeSchema + posPaymentSchema).
+      if (p.mode === 'LOYALTY_REDEMPTION') {
+        return {
+          mode: 'loyalty_redemption' as PaymentMode,
+          amount: p.amount,
+          ...(p.referenceNumber ? { referenceNumber: p.referenceNumber } : {}),
+          ...(p.pointsRedeemed ? { pointsRedeemed: p.pointsRedeemed } : {}),
+        }
+      }
+      return {
+        mode: p.mode,
+        amount: p.amount,
+        ...(p.referenceNumber ? { referenceNumber: p.referenceNumber } : {}),
+      }
+    }),
     partyId,
     walkInName,
     walkInPhone,

@@ -122,6 +122,11 @@ export const PosSaleDetail = lazy(() => import('@/features/pos/pages/PosSaleDeta
 
 export const StaffPermissions = lazy(() => import('@/features/settings/StaffPermissionsPage'))
 export const InventorySettings = lazy(() => import('@/features/settings/InventorySettingsPage'))
+export const LoyaltyProgramPage = lazy(() => import('@/features/loyalty/pages/LoyaltyProgramPage'))
+// Epic D #128 — Commission frontend (rules + ledger + leaderboard)
+export const CommissionSettings = lazy(() => import('@/features/commission/pages/CommissionSettingsPage'))
+export const CommissionLedger = lazy(() => import('@/features/commission/pages/CommissionLedgerPage'))
+export const CommissionLeaderboard = lazy(() => import('@/features/commission/pages/LeaderboardPage'))
 export const DocumentSettings = lazy(() => import('@/features/settings/DocumentSettingsPage'))
 export const DocumentCustomFields = lazy(() => import('@/features/settings/DocumentCustomFieldsPage'))
 
@@ -176,6 +181,9 @@ export const BomDetail = lazy(() => import('@/features/bom/pages/BomDetailPage')
 export const ProductionRunList = lazy(() => import('@/features/production-runs/pages/ProductionRunListPage'))
 export const ProductionRunForm = lazy(() => import('@/features/production-runs/pages/ProductionRunFormPage'))
 export const ProductionRunDetail = lazy(() => import('@/features/production-runs/pages/ProductionRunDetailPage'))
+
+// Phase 5 Epic D #127 — CRM Basics
+export const FollowUps = lazy(() => import('@/features/crm/pages/FollowUpsPage'))
 
 // Phase 5 Epic A — Marketing Comms
 export const MarketingHub = lazy(() => import('@/features/marketing/pages/MarketingHubPage'))

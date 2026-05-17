@@ -19,6 +19,7 @@ export async function listParties(businessId: string, filters: ListPartiesQuery)
     sortBy,
     sortOrder,
     tags,
+    tag,
   } = filters
 
   const skip = (page - 1) * limit
@@ -36,7 +37,15 @@ export async function listParties(businessId: string, filters: ListPartiesQuery)
     where.outstandingBalance = hasOutstanding ? { not: 0 } : { equals: 0 }
   }
 
-  if (tags && tags.length > 0) {
+  // CRM #127 — single-tag query param (?tag=vip) coexists with multi-tag
+  // hasSome (?tags=vip&tags=priority). When both present, single tag is a
+  // narrower AND filter; we merge by treating `tag` as a `has` over the
+  // existing hasSome set (resulting in: row contains EVERY listed tag).
+  if (tag) {
+    where.tags = where.tags
+      ? { ...(where.tags as Prisma.StringNullableListFilter), has: tag }
+      : { has: tag }
+  } else if (tags && tags.length > 0) {
     where.tags = { hasSome: tags }
   }
 

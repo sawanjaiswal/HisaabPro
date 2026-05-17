@@ -73,6 +73,10 @@ export interface PartyDetail extends PartySummary {
   priceList?: { id: string; name: string; isDefault: boolean } | null
   // portal binding — null = unclaimed, string = bound userId (Epic C PR5)
   userId?: string | null
+  // CRM (#127) — server returns these on detail; client patches via PATCH.
+  followUpAt?: string | null
+  lastContactedAt?: string | null
+  loyaltyOptOut?: boolean
 }
 
 /** List response with pagination + summary */
@@ -106,6 +110,10 @@ export interface PartyFilters {
   isActive: boolean
   sortBy: 'name' | 'outstanding' | 'recentTransaction' | 'createdAt'
   sortOrder: 'asc' | 'desc'
+  // CRM #127 — single-tag narrow filter (TagFilterBar chips).
+  // Coexists server-side with multi-tag `tags[]` (hasSome). Empty string means
+  // "no tag filter" so the chip-bar can reset cleanly.
+  tag?: string
 }
 
 /** Party transaction ledger entry — combined invoices + payments */

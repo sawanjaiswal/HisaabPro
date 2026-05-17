@@ -1,0 +1,432 @@
+/**
+ * Commission #128 — component-scoped styles.
+ *
+ * All values are CSS tokens (`var(--...)`) — no raw hex / Tailwind palette
+ * (PAGE_AUDIT_CHECKLIST §B). Dark-mode parity is automatic via tokens-dark.css.
+ *
+ * Sections:
+ *   1. Rule form (form layout + S2 banners)
+ *   2. Rule list (cards + actions)
+ *   3. Ledger (period picker + row + summary)
+ *   4. Leaderboard (sort row + rank chip)
+ *   5. Widget (dashboard staff section)
+ */
+
+/* ── 1. Rule form ───────────────────────────────────────────────────────── */
+
+.commission-rule-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.commission-rule-form__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+@media (min-width: 640px) {
+  .commission-rule-form__row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.commission-rule-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.commission-rule-form__label {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.commission-rule-form__select {
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  color: var(--text-primary);
+  font-size: var(--fs-md);
+}
+
+.commission-rule-form__select:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+.commission-rule-form__hint {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  margin-top: var(--space-1);
+}
+
+.commission-rule-form__toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--color-gray-100);
+}
+
+.commission-rule-form__toggle-label {
+  font-size: var(--fs-md);
+  color: var(--text-primary);
+}
+
+.commission-rule-form__footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: var(--space-2);
+}
+
+/* S2 — rate cap banners */
+.commission-rule-form__banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-sm);
+  margin-top: var(--space-2);
+}
+
+.commission-rule-form__banner--warn {
+  background: var(--color-warning-50);
+  border: 1px solid var(--color-warning-100);
+  color: var(--color-warning-700);
+}
+
+.commission-rule-form__banner--block {
+  background: var(--color-error-50);
+  border: 1px solid var(--color-error-100);
+  color: var(--color-error-700);
+}
+
+/* ── 2. Rule list ───────────────────────────────────────────────────────── */
+
+.commission-rule-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.commission-rule-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+}
+
+.commission-rule-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.commission-rule-card__title-block {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.commission-rule-card__name {
+  font-weight: 600;
+  font-size: var(--fs-md);
+  color: var(--text-primary);
+}
+
+.commission-rule-card__inactive {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-100);
+}
+
+.commission-rule-card__actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.commission-rule-card__meta {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+.commission-rule-card__staff {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+/* ── 3. Ledger ──────────────────────────────────────────────────────────── */
+
+.commission-settings__description {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-4);
+}
+
+.commission-ledger {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.commission-ledger__period-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.commission-ledger__period-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+.commission-ledger__period-input {
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  color: var(--text-primary);
+  font-size: var(--fs-sm);
+}
+
+.commission-ledger__summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+
+.commission-ledger__summary-amount {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.commission-ledger__summary-meta {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.commission-ledger__row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+}
+
+.commission-ledger__row-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.commission-ledger__row-amount {
+  font-weight: 600;
+  font-size: var(--fs-md);
+}
+
+.commission-ledger__row-amount--positive {
+  color: var(--color-success-700);
+}
+
+.commission-ledger__row-amount--negative {
+  color: var(--color-error-700);
+}
+
+.commission-ledger__row-date {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.commission-ledger__row-meta {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+.commission-ledger__load-more {
+  align-self: center;
+  margin-top: var(--space-3);
+}
+
+/* ── 4. Leaderboard ─────────────────────────────────────────────────────── */
+
+.commission-leaderboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.commission-leaderboard__sort-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.commission-leaderboard__sort-label {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+.commission-leaderboard__sort-select {
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  color: var(--text-primary);
+  font-size: var(--fs-sm);
+}
+
+.commission-leaderboard__period-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.commission-leaderboard__period-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+.commission-leaderboard__period-input {
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+  color: var(--text-primary);
+  font-size: var(--fs-sm);
+}
+
+.commission-leaderboard__period-display {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+.commission-leaderboard__rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+
+/* ── 5. Widget (dashboard staff section) ────────────────────────────────── */
+
+.dashboard-staff-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+}
+
+.dashboard-staff-section__heading {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.commission-widget {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.commission-widget:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+.commission-widget__top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.commission-widget__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+}
+
+.commission-widget__title-block {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.commission-widget__title {
+  font-weight: 600;
+  font-size: var(--fs-md);
+  color: var(--text-primary);
+}
+
+.commission-widget__period {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.commission-widget__chevron {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.commission-widget__amount {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.commission-widget__amount-value {
+  font-variant-numeric: tabular-nums;
+}
+
+.commission-widget__meta {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}

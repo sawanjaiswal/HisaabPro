@@ -12,6 +12,12 @@ import { AppError, ErrorCode, notFoundError } from '../../lib/errors.js'
 import type { PosServiceCtx } from './pos.types.js'
 import { DEFAULT_VOID_WINDOW_HOURS, POS_STOCK_REFERENCE_TYPE } from './pos.constants.js'
 import { isCashRegisterEnabled } from './pos-checkout.cash.js'
+import { voidForPosSale, restoreForPosSale } from './pos-loyalty-symmetry.js'
+import {
+  voidCommissionForPosSale,
+  restoreCommissionForPosSale,
+} from './pos-commission-symmetry.js'
+import { emitPosVoidAnalytics } from './pos-void-analytics.js'
 import logger from '../../lib/logger.js'
 
 const DEFAULT_RESTORE_WINDOW_HOURS = 4
@@ -142,6 +148,19 @@ export async function voidPosSale(
     await reverseStock(tx, ctx.businessId, ctx.userId, posSaleId, sale.receiptNumber)
     await voidCashEntry(tx, ctx.businessId, ctx.userId, sale.idempotencyKey)
 
+    // Epic D PR3 — loyalty void symmetry. Writes VD rows that cancel any
+    // AC/RD rows previously emitted for this sale. Inside the Serializable
+    // tx so void rolls back if anything else fails.
+    const loyaltySym = await voidForPosSale(tx, ctx.businessId, posSaleId)
+
+    // Epic D PR5 — commission void symmetry. Writes negation rows that cancel
+    // any POS/INVOICE commission rows previously emitted for this sale. The
+    // snapshot is DEEP-CLONED from each source row's `meta.ruleSnapshot`
+    // (architecture §4.2 / M1 — never reach back to the live rule, which may
+    // have been edited or soft-deleted between accrual and void). Same
+    // Serializable tx so rolls back together.
+    const commissionSym = await voidCommissionForPosSale(tx, ctx.businessId, posSaleId)
+
     await tx.document.update({ where: { id: sale.documentId }, data: { status: 'VOIDED' } })
     const voidedAt = now
     await tx.posSale.update({
@@ -149,10 +168,13 @@ export async function voidPosSale(
       data: { status: 'VOIDED', voidedAt, voidedBy: ctx.userId, voidReason: reason },
     })
     await tx.posSaleEvent.create({
-      data: { posSaleId, type: 'VOIDED', actorId: ctx.userId, payload: { reason, voidedBy: ctx.userId } as object },
+      data: { posSaleId, type: 'VOIDED', actorId: ctx.userId, payload: { reason, voidedBy: ctx.userId, loyalty: loyaltySym, commission: commissionSym } as object },
     })
 
     logger.info('POS sale voided', { posSaleId, businessId: ctx.businessId, reason })
+
+    emitPosVoidAnalytics({ phase: 'void', businessId: ctx.businessId, posSaleId, loyaltySym, commissionSym })
+
     return { id: posSaleId, status: 'VOIDED' as const, voidedAt, voidReason: reason }
   }, { isolationLevel: 'Serializable' })
 }
@@ -180,6 +202,17 @@ export async function restorePosSale(
     await reapplyStock(tx, ctx.businessId, ctx.userId, posSaleId, sale.receiptNumber)
     await restoreCashEntry(tx, ctx.businessId, ctx.userId, sale.idempotencyKey)
 
+    // Epic D PR3 — loyalty restore symmetry. Writes VR rows that re-create
+    // the original AC/RD ledger entries cancelled by the prior void.
+    // NET sum returns to original (architecture §3.4.1).
+    const loyaltySym = await restoreForPosSale(tx, ctx.businessId, posSaleId)
+
+    // Epic D PR5 — commission restore symmetry. Writes positive compensating
+    // rows for each prior VOID row, chain-snapshotted from the VOID row's
+    // `meta.ruleSnapshot` (M1 — never the live rule). Net sum returns to
+    // original; same Serializable tx.
+    const commissionSym = await restoreCommissionForPosSale(tx, ctx.businessId, posSaleId)
+
     await tx.document.update({ where: { id: sale.documentId }, data: { status: 'SAVED' } })
     const restoredAt = now
     await tx.posSale.update({
@@ -187,10 +220,13 @@ export async function restorePosSale(
       data: { status: 'ACTIVE', voidedAt: null, voidedBy: null, voidReason: null, restoredAt, restoredBy: ctx.userId },
     })
     await tx.posSaleEvent.create({
-      data: { posSaleId, type: 'RESTORED', actorId: ctx.userId, payload: { restoredBy: ctx.userId } as object },
+      data: { posSaleId, type: 'RESTORED', actorId: ctx.userId, payload: { restoredBy: ctx.userId, loyalty: loyaltySym, commission: commissionSym } as object },
     })
 
     logger.info('POS sale restored', { posSaleId, businessId: ctx.businessId })
+
+    emitPosVoidAnalytics({ phase: 'restore', businessId: ctx.businessId, posSaleId, loyaltySym, commissionSym })
+
     return { id: posSaleId, status: 'ACTIVE' as const, restoredAt }
   }, { isolationLevel: 'Serializable' })
 }

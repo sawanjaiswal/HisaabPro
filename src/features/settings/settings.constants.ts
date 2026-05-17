@@ -11,28 +11,15 @@ export const DATE_FORMAT_LABELS: Record<DateFormat, string> = {
 
 export const DATE_FORMATS: DateFormat[] = ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD']
 
-// ─── Lock Period Options ──────────────────────────────────────────────────────
-
-export const LOCK_PERIOD_OPTIONS = [
-  { value: null, label: 'Never' },
-  { value: 7,    label: '7 days' },
-  { value: 15,   label: '15 days' },
-  { value: 30,   label: '30 days' },
-] as const
-
-// ─── PIN Constants ────────────────────────────────────────────────────────────
-
-export const PIN_MIN_LENGTH = 4
-export const PIN_MAX_LENGTH = 6
-export const PIN_MAX_ATTEMPTS = 5
-export const PIN_LOCKOUT_MINUTES = 30
-
-/** Common weak PINs rejected on entry */
-export const WEAK_PINS: string[] = [
-  '1234', '0000', '1111', '2222', '3333',
-  '4444', '5555', '6666', '7777', '8888',
-  '9999', '4321', '1122', '2580',
-]
+// ─── Lock + PIN (re-exported from peer files) ──────────────────────────────
+export { LOCK_PERIOD_OPTIONS } from './settings-lock.constants'
+export {
+  PIN_MIN_LENGTH,
+  PIN_MAX_LENGTH,
+  PIN_MAX_ATTEMPTS,
+  PIN_LOCKOUT_MINUTES,
+  WEAK_PINS,
+} from './settings-pin.constants'
 
 // ─── Settings Hub Sections ────────────────────────────────────────────────────
 
@@ -153,6 +140,15 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
         type: 'navigation',
         requiresStock: true,
       },
+      {
+        id: 'loyalty',
+        label: 'Loyalty Program',
+        description: 'Reward repeat customers with redeemable points',
+        icon: 'Sparkles',
+        route: ROUTES.SETTINGS_LOYALTY,
+        type: 'navigation',
+      },
+      { id: 'commission', label: 'Commission', description: 'Reward staff with commission on every sale', icon: 'Trophy', route: ROUTES.SETTINGS_COMMISSION, type: 'navigation' },
       {
         id: 'document-custom-fields',
         label: 'Custom Fields',

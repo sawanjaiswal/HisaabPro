@@ -15,6 +15,7 @@ import { PartySummaryBar } from './components/PartySummaryBar'
 import { PartyFilterBar } from './components/PartyFilterBar'
 import { PartyCard } from './components/PartyCard'
 import { useOptOutSet } from '@/features/marketing/hooks/useOptOutSet'
+import { TagFilterBar } from '@/features/crm/components/TagFilterBar'
 import { PartyListSkeleton } from './components/PartyListSkeleton'
 import { deleteParty } from './party.service'
 import { ROUTES } from '@/config/routes.config'
@@ -106,12 +107,18 @@ export default function PartiesPage() {
 
       <PageContainer variant="list" className="space-y-6">
         {!bulk.isActive && (
-          <PartyFilterBar
-            search={filters.search}
-            onSearchChange={setSearch}
-            activeType={filters.type}
-            onTypeChange={handleTypeChange}
-          />
+          <>
+            <PartyFilterBar
+              search={filters.search}
+              onSearchChange={setSearch}
+              activeType={filters.type}
+              onTypeChange={handleTypeChange}
+            />
+            <TagFilterBar
+              activeTag={filters.tag ?? ''}
+              onTagChange={(value) => setFilter('tag', value || undefined)}
+            />
+          </>
         )}
 
         {status === 'loading' && <PartyListSkeleton />}

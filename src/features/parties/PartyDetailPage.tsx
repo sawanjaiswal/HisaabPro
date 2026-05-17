@@ -19,6 +19,9 @@ import { PartyDetailHeader } from './components/PartyDetailHeader'
 import { PartyOverviewTab } from './components/PartyOverviewTab'
 import { PartyTransactionsTab } from './components/PartyTransactionsTab'
 import { PartyAddressesTab } from './components/PartyAddressesTab'
+import { PartyCrmTab } from './components/PartyCrmTab'
+import { PartyDetailLoyaltyTab } from './components/PartyDetailLoyaltyTab'
+import { usePartyDetailTabs } from './usePartyDetailTabs'
 import { ShareLedgerSheet } from '@/features/shared-ledger/components/ShareLedgerSheet'
 import { useShareLedger } from '@/features/shared-ledger/useShareLedger'
 import { CommitmentsSection } from '@/features/collections/CommitmentsSection'
@@ -29,20 +32,12 @@ import { InviteDrawer } from '@/features/invite-claim/InviteDrawer'
 import '@/features/shared-ledger/shared-ledger.css'
 import './party-detail-header.css'
 
-type DetailTab = 'overview' | 'transactions' | 'addresses' | 'ledger'
-
 export default function PartyDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const toast = useToast()
   const { t } = useLanguage()
-
-  const TABS: { id: DetailTab; label: string }[] = [
-    { id: 'overview', label: t.overview },
-    { id: 'transactions', label: t.transactions },
-    { id: 'addresses', label: t.addresses },
-    { id: 'ledger', label: t.ledgerTab },
-  ]
+  const { tabs: TABS } = usePartyDetailTabs()
 
   const partyId = id ?? ''
   const { party, status, activeTab, setActiveTab, refresh } = usePartyDetail(partyId)
@@ -222,6 +217,14 @@ export default function PartyDetailPage() {
                     partyName={party.name}
                     businessName={party.companyName ?? party.name}
                   />
+                )}
+
+                {activeTab === 'crm' && (
+                  <PartyCrmTab party={party} onPatched={refresh} />
+                )}
+
+                {activeTab === 'loyalty' && (
+                  <PartyDetailLoyaltyTab partyId={partyId} />
                 )}
               </div>
             </div>

@@ -11,6 +11,7 @@ import { auth } from '../middleware/auth.js'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { requirePermission } from '../middleware/permission.js'
 import { requireIdempotencyKey } from '../middleware/requireIdempotencyKey.js'
+import { posCheckoutAuth } from '../middleware/pos-checkout-auth.js'
 import { sendSuccess } from '../lib/response.js'
 import { prisma } from '../lib/prisma.js'
 import { createPosSale } from '../services/pos/pos-checkout.service.js'
@@ -62,6 +63,10 @@ function getPosQueryCtx(req: Request): PosQueryCtx {
 router.post(
   '/',
   auth,
+  // Epic D PR3 (S3 / test 12.15) — fires only when payload includes a
+  // loyalty_redemption payment; checks loyalty.redeem permission BEFORE
+  // the idempotency key is consumed downstream.
+  posCheckoutAuth,
   requireIdempotencyKey,
   requirePermission('pos.create'),
   idempotencyCheck(),

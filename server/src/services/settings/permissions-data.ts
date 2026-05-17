@@ -204,6 +204,38 @@ export const PERMISSION_MATRIX = [
       { key: 'run', label: 'Execute & Cancel Production Runs' },
     ],
   },
+  // Phase 5 / Epic D #125 — Loyalty (architecture §6.4)
+  // `configure`  — Owner/Manager-tier program setup + manual ledger adjust
+  // `redeem`     — POS-floor staff can burn points during checkout
+  // (loyalty.view is implicit in `parties.view`; no separate key needed)
+  {
+    key: 'loyalty', label: 'Loyalty',
+    actions: [
+      { key: 'configure', label: 'Configure Loyalty Program & Manual Adjustments' },
+      { key: 'redeem',    label: 'Redeem Loyalty Points at Checkout' },
+    ],
+  },
+  // Phase 5 / Epic D #128 — Commission (architecture §6.4)
+  // `configure` — Owner/Manager: rule create/edit/delete + leaderboard config
+  // `view`      — view OWN commission ledger (self only)
+  // `view_all`  — view ANY staff member's ledger + leaderboard cross-staff
+  {
+    key: 'commission', label: 'Commission',
+    actions: [
+      { key: 'configure', label: 'Configure Commission Rules' },
+      { key: 'view',      label: 'View Own Commission Ledger' },
+      { key: 'view_all',  label: 'View Any Staff Commission & Leaderboard' },
+    ],
+  },
+  // Phase 5 / Epic D #127 — CRM follow-up scheduling (architecture §6.4)
+  // `create` — set / clear a Party.followUpAt timestamp + own the queue
+  // (CRM tag filtering is implicit in `parties.view`; no separate key)
+  {
+    key: 'crm_followup', label: 'CRM Follow-ups',
+    actions: [
+      { key: 'create', label: 'Set & Clear Party Follow-up Reminders' },
+    ],
+  },
 ]
 
 export const ALL_PERMISSIONS = PERMISSION_MATRIX.flatMap(m =>
@@ -239,6 +271,8 @@ export const SYSTEM_ROLES: Array<{
       'collections.view', 'collections.remind', 'collections.ptp',
       // Recurring: view only
       'recurring.view',
+      // Epic D — Loyalty redeem at checkout, see own commission, set follow-ups
+      'loyalty.redeem', 'commission.view', 'crm_followup.create',
     ],
   },
   {
@@ -250,6 +284,8 @@ export const SYSTEM_ROLES: Array<{
       'cashRegister.view', 'cashRegister.create',
       // POS: read + create only (no void)
       'pos.read', 'pos.create',
+      // Epic D — Loyalty redeem at checkout, see own commission, set follow-ups
+      'loyalty.redeem', 'commission.view', 'crm_followup.create',
     ],
   },
   {
@@ -284,6 +320,8 @@ export const SYSTEM_ROLES: Array<{
       'cashRegister.view', 'cashRegister.create',
       // Recurring: view only
       'recurring.view',
+      // Epic D — Read commission for payroll reconciliation (own ledger only)
+      'commission.view',
     ],
   },
 ]

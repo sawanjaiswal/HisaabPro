@@ -6,7 +6,9 @@
 
 export { createParty } from './party/create.js'
 export { listParties, getParty } from './party/list-get.js'
-export { updateParty, deleteParty } from './party/update-delete.js'
+export { updateParty, deleteParty, patchParty } from './party/update-delete.js'
+export { listTagSummary } from './party/tags.service.js'
+export { getFollowUpsDue } from './party/followups.service.js'
 export { createAddress, updateAddress, deleteAddress } from './party/addresses.js'
 export { createGroup, listGroups, updateGroup, deleteGroup } from './party/groups.js'
 export {

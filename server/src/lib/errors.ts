@@ -1,8 +1,4 @@
-/**
- * Centralized Error Handling — adapted from HisaabPro
- * AppError class, error codes, factory functions, Prisma error normalization
- */
-
+/** Centralized error handling — AppError + ErrorCode + Prisma normalization */
 import logger from './logger.js'
 
 export enum ErrorCode {
@@ -27,6 +23,13 @@ export enum ErrorCode {
   INVOICE_NOT_FOUND = 'INVOICE_NOT_FOUND',
   PRODUCT_NOT_FOUND = 'PRODUCT_NOT_FOUND',
   PAYMENT_NOT_FOUND = 'PAYMENT_NOT_FOUND',
+
+  // Epic D PR1 — see docs/ARCHITECTURE_EPIC_D_crm_loyalty.md §3.6 / SECURITY_AUDIT M3/M4/S2/NEW_S1/S2
+  STAFF_NOT_FOUND = 'STAFF_NOT_FOUND',
+  COMMISSION_RATE_EXCEEDS_MAX_100_PERCENT = 'COMMISSION_RATE_EXCEEDS_MAX_100_PERCENT',
+  INVALID_WITHIN_DAYS_RANGE = 'INVALID_WITHIN_DAYS_RANGE',
+  PARTY_NOT_IN_TENANT = 'PARTY_NOT_IN_TENANT',
+  PERMISSION_DENIED = 'PERMISSION_DENIED',
 
   // Business Logic (422)
   INSUFFICIENT_STOCK = 'INSUFFICIENT_STOCK',

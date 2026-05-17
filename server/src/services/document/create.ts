@@ -21,6 +21,7 @@ import { buildLineItemData } from './line-item-builder.js'
 import { persistDocumentCustomFieldValues } from './custom-fields.js'
 import { notificationManager } from '../notifications/notification-manager.js'
 import { formatPaise } from '../notifications/notification-template.service.js'
+import { accrueForSaleInvoice, emitDocumentCommissionAnalytics, type DocumentCommissionOutcome } from './document-commission.js'
 
 export async function createDocument(
   businessId: string,
@@ -96,8 +97,8 @@ export async function createDocument(
   const supplyType = resolveSupplyType(party.gstin ?? null, totals.grandTotal)
   const isSaving = data.status === 'SAVED'
 
-  // BAT-03: capture expiry warnings that survive the tx boundary
-  let saleStockWarnings: string[] = []
+  let saleStockWarnings: string[] = [] // BAT-03: surfaces across tx boundary
+  let commissionOutcome: DocumentCommissionOutcome | null = null // Epic D PR5 §3.8
 
   const result = await prisma.$transaction(async (tx) => {
     let numberData: { documentNumber: string; sequenceNumber: number; financialYear: string } | null = null
@@ -215,16 +216,18 @@ export async function createDocument(
         }
       }
 
-      // Stash warnings so they survive the tx boundary (read after $transaction resolves)
-      if (stockWarnings.length > 0) {
-        // Attached to the closure — surfaced in the route via warnings below
-        saleStockWarnings = stockWarnings
-      }
+      if (stockWarnings.length > 0) saleStockWarnings = stockWarnings // surface across tx boundary
 
       if (AFFECTS_OUTSTANDING.has(data.type)) {
         const negative = data.type === 'PURCHASE_INVOICE' || data.type === 'CREDIT_NOTE'
         await updateOutstanding(tx, data.partyId, negative ? -totals.grandTotal : totals.grandTotal)
       }
+
+      // Epic D PR5 §3.3 — commission accrual on SALE_INVOICE
+      commissionOutcome = await accrueForSaleInvoice(tx, {
+        businessId, staffUserId: userId, documentId: doc.id,
+        documentDate: new Date(data.documentDate), documentType: data.type,
+      })
     }
 
     // P3.12 — defense-in-depth: scope by businessId on re-fetch
@@ -235,6 +238,7 @@ export async function createDocument(
     scheduleAlertChecks(businessId, data.lineItems.map(li => li.productId))
   }
   if (isSaving && data.type === 'SALE_INVOICE') void notificationManager.notify('INVOICE_CREATED', { businessId, userId, eventKey: 'INVOICE_CREATED', locale: 'en', vars: { invoiceNo: result.documentNumber ?? '', partyName: (result as { party: { name: string } }).party.name, totalRs: formatPaise(Number(result.grandTotal)) }, entityType: 'invoice', entityId: result.id })
+  emitDocumentCommissionAnalytics(commissionOutcome, { businessId, documentId: result.id, staffUserId: userId })
   // Append transient compositionLiability (1%/5%/6% on grandTotal) — not persisted
   const compositionInfo = getCompositionInvoiceInfo(isComposite, 'default', result.grandTotal)
   const baseResult = compositionInfo ? { ...result, compositionLiability: compositionInfo.compositionTax } : result

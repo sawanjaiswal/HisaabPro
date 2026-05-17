@@ -53,6 +53,7 @@ export function authAgent(app: Express, tokenOverrides?: Partial<typeof TEST_USE
     get: (url: string) => request(app).get(url).set('Authorization', `Bearer ${token}`),
     post: (url: string) => request(app).post(url).set('Authorization', `Bearer ${token}`),
     put: (url: string) => request(app).put(url).set('Authorization', `Bearer ${token}`),
+    patch: (url: string) => request(app).patch(url).set('Authorization', `Bearer ${token}`),
     delete: (url: string) => request(app).delete(url).set('Authorization', `Bearer ${token}`),
   }
 }
@@ -63,6 +64,7 @@ export function anonAgent(app: Express) {
     get: (url: string) => request(app).get(url),
     post: (url: string) => request(app).post(url),
     put: (url: string) => request(app).put(url),
+    patch: (url: string) => request(app).patch(url),
     delete: (url: string) => request(app).delete(url),
   }
 }

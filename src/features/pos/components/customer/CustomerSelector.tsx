@@ -6,6 +6,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { WalkInForm } from './WalkInForm'
 import { api } from '@/lib/api'
 import { SEARCH_DEBOUNCE_MS } from '../../utils/pos.constants'
+import { LoyaltyBalanceChip } from '@/features/loyalty/components/LoyaltyBalanceChip'
 
 interface PartySuggestion {
   id:   string
@@ -101,6 +102,7 @@ export function CustomerSelector({
           {partyId ? (
             <div className="pos-customer__selected">
               <span className="pos-customer__selected-name">{query || (t.posCustomerSelected ?? 'Customer selected')}</span>
+              <LoyaltyBalanceChip partyId={partyId} size="sm" />
               <button type="button" onClick={onClearParty} aria-label={t.posRemoveCustomer ?? 'Remove customer'}>
                 <X size={14} aria-hidden="true" />
               </button>

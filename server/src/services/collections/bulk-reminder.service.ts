@@ -11,6 +11,7 @@ import logger from '../../lib/logger.js'
 import { AppError, ErrorCode } from '../../lib/errors.js'
 import { buildWaLink, maskPhone, isValidPhone } from '../../lib/wa-utils.js'
 import { renderTemplate, type TemplateKey, type TemplateCtx } from './reminder-templates.js'
+import { touchLastContactedMany } from '../party/last-contacted.service.js'
 
 const MAX_BATCH = 50
 
@@ -198,6 +199,13 @@ export async function dispatchBulkReminders(
     }))
 
     await tx.auditLog.createMany({ data: auditData })
+
+    // CRM #127 — bulk touch lastContactedAt in the same tx (architecture §3.5).
+    await touchLastContactedMany(
+      businessId,
+      batch.included.map((r) => r.partyId),
+      tx,
+    )
   })
 
   logger.info('bulk_reminder.dispatched', {

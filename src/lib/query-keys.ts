@@ -162,4 +162,25 @@ export const queryKeys = {
     sales:    (filters: Filters) => ['pos-sales',    filters] as const,
     sale:     (id: string)       => ['pos-sale-detail', id]  as const,
   },
+  // Epic D / CRM #127 — tag aggregate + follow-up queue (architecture §3.5)
+  crm: {
+    all: () => ['crm'] as const,
+    tags: () => ['crm', 'tags'] as const,
+    followUps: (filters: Filters) => ['crm', 'follow-ups', filters] as const,
+  },
+  // Epic D / Loyalty #125 — program (tenant-singleton) + per-party balance/ledger
+  loyalty: {
+    all: () => ['loyalty'] as const,
+    program: () => ['loyalty', 'program'] as const,
+    balance: (partyId: string) => ['loyalty', 'balance', partyId] as const,
+    ledger: (partyId: string) => ['loyalty', 'ledger', partyId] as const,
+  },
+  // Epic D / Commission #128 — rules, per-staff ledger, monthly leaderboard
+  commission: {
+    all: () => ['commission'] as const,
+    rules: (filters: Filters) => ['commission', 'rules', filters] as const,
+    rule: (id: string) => ['commission', 'rule', id] as const,
+    ledger: (filters: Filters) => ['commission', 'ledger', filters] as const,
+    leaderboard: (filters: Filters) => ['commission', 'leaderboard', filters] as const,
+  },
 } as const

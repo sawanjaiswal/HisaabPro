@@ -14,7 +14,7 @@ import { useSSE } from '@/hooks/useSSE'
 import { PlanGate } from '@/features/subscription/PlanGate'
 import {
   Login, Register, VerifyOtp, ForgotPassword, Onboarding, Dashboard,
-  Parties, CreateParty, PartyDetail, EditParty,
+  Parties, CreateParty, PartyDetail, EditParty, FollowUps,
   Products, CreateProduct, ProductDetail, EditProduct,
   Invoices, CreateInvoice, InvoiceDetail, EditInvoice,
   TemplateGallery, TemplateEditor,
@@ -41,7 +41,7 @@ import {
   StockVerifications, VerificationDetail,
   Serials, CreateSerial, BulkCreateSerial, SerialLookup, Pos,
   PosMain, PosHistory, PosSaleDetail,
-  Jobs, JobNew, JobDetail, JobEdit, InventorySettings, DocumentSettings, DocumentCustomFields,
+  Jobs, JobNew, JobDetail, JobEdit, InventorySettings, LoyaltyProgramPage, CommissionSettings, CommissionLedger, CommissionLeaderboard, DocumentSettings, DocumentCustomFields,
   CustomOrders, CustomOrderNew, CustomOrderDetail, CustomOrderEdit,
   BackfillWizard, Gstr1Page, Gstr3bPage, AgingDashboardPage, AgingBucketListPage,
   CashRegister, Notifications, NotificationPreferences,
@@ -96,6 +96,7 @@ export function App() {
         <Route path={ROUTES.PARTY_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="parties" featureLabel="Parties"><CreateParty /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PARTY_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="parties" featureLabel="Parties"><PartyDetail /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PARTY_EDIT} element={<PageRoute><ProtectedRoute><PlanGate feature="parties" featureLabel="Parties"><EditParty /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.CRM_FOLLOWUPS} element={<PageRoute><ProtectedRoute><PlanGate feature="parties" featureLabel="Parties"><FollowUps /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PRODUCTS} element={<PageRoute><ProtectedRoute><PlanGate feature="products" featureLabel="Products"><Products /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PRODUCT_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="products" featureLabel="Products"><CreateProduct /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PRODUCT_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="products" featureLabel="Products"><ProductDetail /></PlanGate></ProtectedRoute></PageRoute>} />
@@ -156,6 +157,11 @@ export function App() {
         <Route path={ROUTES.SETTINGS_CURRENCY} element={<PageRoute><ProtectedRoute><CurrencySettings /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_UNITS} element={<PageRoute><ProtectedRoute><Units /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_INVENTORY} element={<PageRoute><ProtectedRoute><InventorySettings /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_LOYALTY} element={<PageRoute><ProtectedRoute><LoyaltyProgramPage /></ProtectedRoute></PageRoute>} />
+        {/* Epic D #128 — Commission frontend */}
+        <Route path={ROUTES.SETTINGS_COMMISSION} element={<PageRoute><ProtectedRoute><CommissionSettings /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.COMMISSION_LEDGER} element={<PageRoute><ProtectedRoute><CommissionLedger /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.COMMISSION_LEADERBOARD} element={<PageRoute><ProtectedRoute><CommissionLeaderboard /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_DOCUMENTS} element={<PageRoute><ProtectedRoute><DocumentSettings /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_DOC_CUSTOM_FIELDS} element={<PageRoute><ProtectedRoute><DocumentCustomFields /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.RECURRING} element={<PageRoute><ProtectedRoute><PlanGate feature="recurringInvoices" featureLabel="Recurring Invoices"><RecurringList /></PlanGate></ProtectedRoute></PageRoute>} />

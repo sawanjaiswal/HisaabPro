@@ -14,6 +14,8 @@ export const ROUTES = {
   PARTY_NEW: '/parties/new',
   PARTY_DETAIL: '/parties/:id',
   PARTY_EDIT: '/parties/:id/edit',
+  // Epic D #127 — CRM follow-up queue (linked from Parties + Detail CRM tab).
+  CRM_FOLLOWUPS: '/crm/follow-ups',
   PRODUCTS: '/products',
   PRODUCT_NEW: '/products/new',
   PRODUCT_DETAIL: '/products/:id',
@@ -101,6 +103,11 @@ export const ROUTES = {
   SETTINGS_UNITS: '/settings/units',
   SETTINGS_PERMISSIONS: '/settings/permissions',
   SETTINGS_INVENTORY: '/settings/inventory',
+  SETTINGS_LOYALTY: '/settings/loyalty',
+  // Epic D #128 — Commission rules + ledger + leaderboard
+  SETTINGS_COMMISSION: '/settings/commission',
+  COMMISSION_LEDGER: '/commission/ledger',
+  COMMISSION_LEADERBOARD: '/commission/leaderboard',
   JOIN_BUSINESS: '/join',
   CREATE_BUSINESS: '/business/create',
   BUSINESS_TYPE: '/business/type',

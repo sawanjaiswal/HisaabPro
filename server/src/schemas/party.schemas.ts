@@ -93,6 +93,41 @@ export const listPartiesSchema = z.object({
   tags: z.union([z.string(), z.array(z.string())]).transform((v) =>
     Array.isArray(v) ? v : [v]
   ).optional(),
+  // CRM #127 — single-tag narrow filter (TagFilterBar chips). Coexists with
+  // `tags` (multi-tag hasSome); when both present, `tag` is the AND-narrow.
+  tag: z.string().min(1).max(50).optional(),
+}).strict()
+
+// === Epic D / CRM #127 — Follow-up + lightweight patch ===
+//
+// `partyPatchSchema` is the narrow allow-list for PATCH /api/parties/:id
+// (CRM-touch surface only). `followUpAt` is user-mutable; `lastContactedAt`
+// is NOT — it's only ever written by server-side share/reminder hooks
+// (architecture §3.4 / §3.6). Pattern B (.strict()) rejects tampered
+// server-only fields with a 400 VALIDATION_ERROR rather than dropping
+// them silently.
+//
+// `followUpsQuerySchema` caps `withinDays` at 365 — beyond that the
+// query risks a full-table scan on legacy tenants (security audit M3 /
+// architecture §3.5).
+
+export const partyPatchSchema = z.object({
+  followUpAt: z
+    .string()
+    .datetime({ message: 'followUpAt must be a valid ISO datetime' })
+    .nullable()
+    .optional(),
+  tags: z.array(z.string().max(50)).optional(),
+}).strict()
+
+export const followUpsQuerySchema = z.object({
+  withinDays: z.coerce
+    .number()
+    .int()
+    .min(1, 'withinDays must be >= 1')
+    .max(365, 'INVALID_WITHIN_DAYS_RANGE'),
+  cursor: z.string().min(1).optional(),
+  limit: z.coerce.number().int().min(1).max(200).default(50),
 }).strict()
 
 // === Address schemas ===
@@ -183,7 +218,9 @@ export const listPricingQuerySchema = z.object({
 
 export type CreatePartyInput = z.infer<typeof createPartySchema>
 export type UpdatePartyInput = z.infer<typeof updatePartySchema>
+export type PartyPatchInput = z.infer<typeof partyPatchSchema>
 export type ListPartiesQuery = z.infer<typeof listPartiesSchema>
+export type FollowUpsQuery = z.infer<typeof followUpsQuerySchema>
 export type CreateAddressInput = z.infer<typeof createAddressSchema>
 export type UpdateAddressInput = z.infer<typeof updateAddressSchema>
 export type CreateGroupInput = z.infer<typeof createGroupSchema>
