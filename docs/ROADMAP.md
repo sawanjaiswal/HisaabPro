@@ -1,11 +1,13 @@
 # HisaabPro — Master Feature Roadmap
 
-> **Last Updated:** 2026-05-08 (PM)
-> **Status (2026-05-09):** Phase 1 (60/70 code-complete, 10 blocked on creds) · Phase 2 done · Phase 3 done (1 deferred) · Phase 4 done (16/16) · Phase 5 (3 BE shipped, FE WIP — Epic A queued) · Phase 6 not started · Phase 7 2/10 (#141 OCR + #145 Vertical Modes shipped) · **Vertical features**: Jobs (services/freelancer/salon/clinic) + Custom Orders (bakery/tailor) fully wired
+> **Last Updated:** 2026-05-17
+> **Status (2026-05-17):** Phase 1 (60/70 code-complete, 10 blocked on creds) · Phase 2 done (20/20) · Phase 3 done (21/22, #89 deferred) · Phase 4 done (16/16) · **Phase 5 11/14 SHIPPED** (Epic A Marketing FE + Epic B Sales Workflow + Epic C Customer-Facing all on `hisaabpro`; Epic D pending) · **Subscription port SHIPPED** (DH gating model: state machine + UPI Autopay + RS256 offline JWT + PRO_MAX tier — commit `3530e79`) · Phase 6 not started · Phase 7 2/10 (#141 OCR + #145 Vertical Modes shipped) · **Vertical features**: Jobs (services/freelancer/salon/clinic) + Custom Orders (bakery/tailor) fully wired · **Responsive sweep Waves 0-7 complete** (commits `7c12683`..`5b8d3fe`)
+> **Branch:** `hisaabpro` is 57 commits ahead of `master`. Production deploy at `89610b0`. Nothing since the responsive sweep, Epic A/B/C, or subscription port has been merged to `master`.
 > **Owner:** Sawan Jaiswal
 > **Architecture:** Monolith — React 19 frontend + Express backend + Prisma + PostgreSQL
 > **Total Features:** 150 across 7 phases
-> **Build Status:** Frontend 50+ feature folders | Backend 60+ route files, ~70 Prisma models
+> **Build Status:** Frontend 60+ feature folders | Backend 70+ route files, ~75 Prisma models
+> **Total shipped:** **130/150** (+1 for subscription port code-complete)
 
 ## Status Legend
 - [ ] Not Started
@@ -40,7 +42,7 @@
 | # | Feature | Status | Source | Notes |
 |---|---------|--------|--------|-------|
 | 1 | Auth (OTP, login, JWT, refresh, 2FA, WebAuthn) | [x] | DudhHisaab | Dev login + httpOnly cookies + account lockout + CAPTCHA |
-| 2 | Subscription & Billing (Razorpay, tiers, add-ons) | [B] | DudhHisaab | Needs Razorpay credentials |
+| 2 | Subscription & Billing (Razorpay, tiers, add-ons) | [B] | DudhHisaab (ported) | **Port shipped 2026-05-15 (`3530e79`)** — 7-state machine, UPI Autopay mandate, RS256 offline JWT, PRO_MAX tier, SubscriptionEvent audit, OverflowBanner, MandateSetupDrawer, `/settings/subscription`. Still cred-blocked: needs `ENTITLEMENT_JWT_PRIVATE_KEY` + `ENTITLEMENT_JWT_PUBLIC_KEY` + `RAZORPAY_WEBHOOK_SECRET` |
 | 3 | Referral & Earn (codes, wallet, UPI withdrawal, fraud detection) | [x] | DudhHisaab | 8 endpoints, crypto code gen, fraud detection, UPI stub |
 | 4 | Notifications (push, email, WhatsApp, SMS, quiet hours) | [B] | DudhHisaab | Needs FCM + Aisensy + Resend credentials |
 | 5 | Backup (local device + Google Drive + email export, encryption, restore) | [x] | DudhHisaab | Manual backup + list + download + cooldown |
@@ -263,25 +265,25 @@
 
 ## PHASE 5 — Sales & Marketing (Weeks 31-36)
 **Goal:** Help businesses grow, not just manage
-**Status:** Not Started
+**Status:** 11/14 Done (Epic A Marketing FE + Epic B Sales Workflow + Epic C Customer-Facing all shipped; Epic D pending)
 **Features:** 14
 
 | # | Feature | Status | Complexity | PRD | Notes |
 |---|---------|--------|-----------|-----|-------|
-| 121 | Online Store / Digital Catalog (shareable product catalog with ordering) | [ ] | HIGH | [ ] | |
-| 122 | Sales Pipeline (Quotation > Sale Order > Delivery > Invoice, partial fulfillment) | [x] | MEDIUM | [x] | Shipped 2026-05-15 (`6193d28`) — lineage svc + sales hub + 3 list/detail/create flows |
-| 123 | WhatsApp Marketing (bulk promo messages to customers) | [~] | MEDIUM | [x] | BE shipped (PR1-6), FE WIP |
-| 124 | SMS Marketing (campaigns, templates) | [~] | LOW | [x] | BE shipped (PR1-6), FE WIP |
-| 125 | Loyalty / Rewards Program (points per purchase) | [ ] | MEDIUM | [ ] | |
-| 126 | Service Reminders (recurring service notifications) | [~] | LOW | [x] | BE shipped (PR1-6), FE WIP |
-| 127 | CRM Basics (customer notes, follow-up dates, tags, last contact) | [ ] | MEDIUM | [ ] | |
-| 128 | Staff Performance & Commission (sales per staff, commission calc, attendance %) | [ ] | MEDIUM | [ ] | Merged old #68 + #74 |
-| 129 | UPI Payment Collection (QR on invoice, payment link) | [ ] | LOW | [ ] | Adapt DudhHisaab |
-| 130 | Web Invoice Links (shareable URL — customer views in browser) | [ ] | LOW | [ ] | Vyapar feature |
-| 131 | Invite Parties (self-service registration link for customers) | [ ] | LOW | [ ] | Vyapar feature |
-| 132 | Multiple Price Lists (named lists: MRP, wholesale, dealer, export) | [x] | MEDIUM | [x] | Shipped 2026-05-15 (`3626a0c`) — per-invoice override on top of party-wise pricing |
-| 133 | Free Item Quantity (buy X get Y free — tracked on invoice) | [x] | LOW | [x] | Shipped 2026-05-15 (`3626a0c`) — BOGO custom-role permission (`invoicing.bogo`) wired |
-| 134 | Invoice Custom Fields (user-defined additional fields on invoices) | [x] | LOW | [x] | Shipped 2026-05-15 (`3626a0c`) — react-pdf section, showOnInvoice + documentTypes filters |
+| 121 | Online Store / Digital Catalog (shareable product catalog with ordering) | [x] | HIGH | [x] | Epic C PR4 — Shipped 2026-05-15 (`d47b84a` BE + `ea1b9ae` FE) — public `/p/store/:slug`, StorefrontSettingsPage, slug-rules, reserved-slugs guard |
+| 122 | Sales Pipeline (Quotation > Sale Order > Delivery > Invoice, partial fulfillment) | [x] | MEDIUM | [x] | Epic B PR1 — Shipped 2026-05-15 (`6193d28`) — lineage svc + sales hub + 3 list/detail/create flows |
+| 123 | WhatsApp Marketing (bulk promo messages to customers) | [x] | MEDIUM | [x] | Epic A — BE (`3ea2cdc`..`5c2e3ca`) + FE slices 1-3 (`9b1f096`/`016a1c8`/`9d281de`) — templates, campaigns wizard, recipient table, status badges, +221 EN/HI keys. Activation needs `MARKETING_ENABLED=true` + `AISENSY_API_KEY` + `AISENSY_WEBHOOK_SECRET` |
+| 124 | SMS Marketing (campaigns, templates) | [x] | LOW | [x] | Epic A — same commits as #123. MSG91 provider wired. Activation needs `MSG91_WEBHOOK_TOKEN` |
+| 125 | Loyalty / Rewards Program (points per purchase) | [ ] | MEDIUM | [ ] | Epic D. Schema: `LoyaltyProgram`, `LoyaltyLedger`. Points accrue on POS sale (hook into existing pos-checkout commit flow) |
+| 126 | Service Reminders (recurring service notifications) | [x] | LOW | [x] | Epic A slice 3 (`9d281de`) — reminder rules + 30-min cron + PII purge + opt-out chip on party rows. Activation needs Aisensy/MSG91 creds |
+| 127 | CRM Basics (customer notes, follow-up dates, tags, last contact) | [ ] | MEDIUM | [ ] | Epic D. Reuses Party model — adds `tags`, `lastContactedAt`, `followUpAt`, `notes` |
+| 128 | Staff Performance & Commission (sales per staff, commission calc, attendance %) | [ ] | MEDIUM | [ ] | Epic D. Reuses staff/role infra; commission rule per-product or per-category. Merged old #68 + #74 |
+| 129 | UPI Payment Collection (QR on invoice, payment link) | [x] | LOW | [x] | Epic C PR2 — Shipped 2026-05-15 (`a148ba3`) — UPI QR on invoice detail (`upi://pay?...`), VPA validation, adapted from DudhHisaab |
+| 130 | Web Invoice Links (shareable URL — customer views in browser) | [x] | LOW | [x] | Epic C PR3 — Shipped 2026-05-15 (`77c645a` BE + `9dbbf54` FE) — HMAC-signed `/p/inv/:token`, share drawer, ShareLink model, expiry + revocation |
+| 131 | Invite Parties (self-service registration link for customers) | [x] | LOW | [x] | Epic C PR5 — Shipped 2026-05-15 (`15fb596` BE + `ea37c19` FE) — `/p/invite/:token`, OTP gate, one-shot signup binding to businessId, party-invite service |
+| 132 | Multiple Price Lists (named lists: MRP, wholesale, dealer, export) | [x] | MEDIUM | [x] | Epic B — Shipped 2026-05-15 (`3626a0c`) — per-invoice override on top of party-wise pricing, cross-tenant guard |
+| 133 | Free Item Quantity (buy X get Y free — tracked on invoice) | [x] | LOW | [x] | Epic B — Shipped 2026-05-15 (`3626a0c`) — BOGO custom-role permission (`invoicing.bogo`) wired, audit log, FE toggle |
+| 134 | Invoice Custom Fields (user-defined additional fields on invoices) | [x] | LOW | [x] | Epic B — Shipped 2026-05-15 (`3626a0c`) — react-pdf section, showOnInvoice + documentTypes filters |
 
 ---
 
@@ -325,14 +327,32 @@
 
 | Phase | Features | Weeks | Status |
 |-------|----------|-------|--------|
-| Phase 1 — MVP | 70 (10 reused + 60 new) | 1-12 | **60 Done, 10 Needs Credentials** |
+| Phase 1 — MVP | 70 (10 reused + 60 new) | 1-12 | **60 Done, 10 Needs Credentials** (subscription #2 code now ported, still cred-blocked) |
 | Phase 2 — GST & Compliance | 20 | 13-18 | **20/20 Done** |
-| Phase 3 — Accounting & Finance | 22 | 19-24 | **21/22 Done** (Bank Reconciliation deferred) |
+| Phase 3 — Accounting & Finance | 22 | 19-24 | **21/22 Done** (Bank Reconciliation #89 deferred) |
 | Phase 4 — Advanced Inventory & POS | 16 | 25-30 | **16/16 Done** |
-| Phase 5 — Sales & Marketing | 14 | 31-36 | In Progress (3 BE shipped, FE WIP — Epic A queued) |
-| Phase 6 — Staff & HR | 6 | 37-42 | Not Started |
+| Phase 5 — Sales & Marketing | 14 | 31-36 | **11/14 Done** — Epic A Marketing FE ✅ · Epic B Sales Workflow ✅ · Epic C Customer-Facing ✅ · Epic D pending (#125 Loyalty, #127 CRM, #128 Staff Performance) |
+| Phase 6 — Staff & HR | 6 | 37-42 | Not Started (#135-#140) |
 | Phase 7 — AI & Differentiators | 10 | 43+ | **2/10** (#141 receipt OCR + #145 Vertical Modes shipped) |
-| **TOTAL** | **150** | **43+ weeks** | **119/150 shipped** |
+| **TOTAL** | **150** | **43+ weeks** | **130/150 shipped** |
+
+### Remaining work, ranked
+
+**Build (code work, no creds needed):**
+1. Phase 5 Epic D — #125 Loyalty, #127 CRM Basics, #128 Staff Performance (3 features) — natural sequel to Epic A's marketing infra
+2. Phase 6 — #135-#140 (6 features) — touches User model + auth on #138, mandatory `scope-writer → architect → security`
+3. Phase 7 — #142 Voice, #143 WA bot, #144 Smart GST, #146 Predictive, #147 Auto-recon, #148 Smart inv, #149 Competitor imports, #150 Multi-user (8 features)
+4. Phase 3 deferred — #89 Bank Reconciliation
+5. Per-vertical depth — V1 (services hourly billing) through V7 (prescription), see `BACKLOG.md` §9
+
+**Activate (code shipped, env vars needed on Render):**
+- #2 Subscription: `ENTITLEMENT_JWT_PRIVATE_KEY`, `ENTITLEMENT_JWT_PUBLIC_KEY`, `RAZORPAY_WEBHOOK_SECRET`
+- Phase 5 Epic A launch: `MARKETING_ENABLED=true`, `AISENSY_API_KEY`, `AISENSY_WEBHOOK_SECRET`, `MSG91_WEBHOOK_TOKEN`
+- #4 Notifications + #30 Auto-share + #32 Email PDF + #42 Reminders + #47 Low-stock: FCM / Aisensy / Resend / MSG91 keys (same set)
+- #59 Biometric: Capacitor plugin install
+
+**Ship (built ≠ deployed):**
+- `hisaabpro` is 57 commits ahead of `master`. Production deploy at `89610b0`. Merge to ship the responsive sweep + Epic A + B + C + subscription port to prod.
 
 ---
 
@@ -413,3 +433,5 @@
 | 2026-05-08 | 7 | Phase 7 1/10 — expense receipt OCR via Anthropic haiku shipped (`e11caf9`). | Claude |
 | 2026-05-08 | All | Roadmap freshness pass — synced statuses against actual `routes/`, `features/`, and migration log. Total ~112/150 shipped. | Claude |
 | 2026-05-08 (PM) | 4 | Phase 4 finished. Three epics shipped autonomously: catalog-enrichment (#117 MOQ + #116 item images + #120 party ledger), barcode-and-label (#106 native scan + #111 label print/PDF/bulk), bom-manufacturing (#115 BOM + atomic production runs + WAC propagation + cancel/reverse). Phase 4 = 16/16. Total 118/150 shipped. | Claude |
+| 2026-05-15 | 5 | **Phase 5 jumped from 0 → 11/14.** Epic A Marketing FE (slices 1-3, +221 EN/HI keys, commits `9b1f096`/`016a1c8`/`9d281de`). Epic B Sales Workflow shipped (#122/#132/#133/#134, commits `6193d28`+`3626a0c`). Epic C Customer-Facing shipped (#121 storefront + #129 UPI QR + #130 share links + #131 invite, commits `d78f7c9`..`237b551`). Plus subscription port (commit `3530e79`) — DH gating model with 7-state machine, UPI Autopay, RS256 offline JWT, PRO_MAX tier. Plus responsive sweep Waves 0-7 (`7c12683`..`5b8d3fe`). Plus backend audit pass — 1 P1 + 2 P2 + 2 P3 cleared, idempotency middleware on 17 POST routes. Total 130/150 shipped. | Claude |
+| 2026-05-17 | All | Deep audit + doc refresh. Found ROADMAP claimed 119/150 vs actual 130/150 — Phase 5 Epic A/B/C rows updated, totals reconciled, remaining-work breakdown added. BACKLOG section 3 (Epic C) updated from "next" to "shipped." | Claude |

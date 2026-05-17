@@ -1,8 +1,23 @@
-# Backlog — resume 2026-05-15
+# Backlog — resume 2026-05-17
 
-> Snapshot at 2026-05-15 19:30 IST. Phase 4 complete (118/150). **Phase 5 Epic A SHIPPED** (Marketing FE — 3 slices, 36 files, +221 EN/HI keys). **Phase 5 Epic B SHIPPED** (#122/#132/#133/#134). **Subscription port SHIPPED** (DH gating model: state machine, UPI Autopay, offline JWT, PRO_MAX tier — commit `3530e79`). Master deployed to Render+Vercel at commit `89610b0`.
+> Snapshot at 2026-05-17 12:25 IST. **130/150 shipped.** Phase 4 complete (16/16). **Phase 5 Epic A SHIPPED** (Marketing FE — 3 slices, 36 files, +221 EN/HI keys). **Phase 5 Epic B SHIPPED** (#122/#132/#133/#134). **Phase 5 Epic C SHIPPED** (#121/#129/#130/#131 — public surface at `/p/*`, SharedLink + HMAC tokens, UPI QR, storefront, invite/OTP). **Subscription port SHIPPED** (DH gating model: state machine, UPI Autopay, offline JWT, PRO_MAX tier — commit `3530e79`). **Responsive sweep complete** (Waves 0-7, `7c12683`..`5b8d3fe`). **Backend audit green** (0 P0/P1/P2 after `bf1d166` + `be574fd`).
+>
+> **Branch state:** `hisaabpro` is **57 commits ahead of `master`**. Production deploy at commit `89610b0`. Nothing since Phase 4 finish has been merged to master/prod.
+>
+> **Next up:** Phase 5 Epic D (#125 Loyalty + #127 CRM + #128 Staff Performance) **OR** ship-to-prod (merge `hisaabpro` → `master`, set Render env vars). See "Resume order" below.
 
 ## Resume order
+
+### 0. Ship-to-prod gate (NOT optional — recommend doing first)
+
+`hisaabpro` carries 57 commits of unshipped work. Before starting any new epic, decide whether to:
+
+- **Merge `hisaabpro` → `master`** to get Phase 5 Epic A/B/C + subscription port + responsive sweep + audit hardening into production
+- **OR keep accumulating** on `hisaabpro` and ship Epic D first (riskier — bigger blast radius if a regression slips through)
+
+Before merge: set Render env vars (`ENTITLEMENT_JWT_PRIVATE_KEY`, `ENTITLEMENT_JWT_PUBLIC_KEY`, `RAZORPAY_WEBHOOK_SECRET` for subscription; `MARKETING_ENABLED=true`, `AISENSY_API_KEY`, `AISENSY_WEBHOOK_SECRET`, `MSG91_WEBHOOK_TOKEN` for Epic A launch). Run `npx prisma migrate deploy` (subscription port added 4 new tables + UpiMandate). Smoke-test public surface at `/p/inv/<token>`, `/p/store/<slug>`, `/p/invite/<token>`.
+
+---
 
 ### 1. Phase 5 Epic A — Marketing Comms FE ✅ SHIPPED 2026-05-15
 
@@ -51,24 +66,30 @@ Security findings 1.1, 2.1, 2.2, 3.2, 4.1 all FIXED (see `docs/SECURITY_AUDIT_EP
 
 ---
 
-### 3. Phase 5 Epic C — Customer-facing
-#121 online store / digital catalog · #129 UPI on invoice · #130 web invoice links · #131 invite parties.
+### 3. Phase 5 Epic C — Customer-facing ✅ SHIPPED 2026-05-15
 
-Notes:
-- #121 is HIGH complexity — separate public-facing route surface, no auth, rate-limited. May warrant standalone epic.
-- #130 needs signed token (HMAC) on share URL with expiry. Security review required.
-- #129 — adapt DudhHisaab UPI QR component (per CLAUDE.md reuse rule).
-- #131 — invite link issues a one-shot signup token bound to businessId.
+Commits `d78f7c9`..`237b551` on `hisaabpro`. Five-PR epic delivered as scoped in `docs/SCOPE_EPIC_C_customer_facing.md` + `docs/ARCHITECTURE_EPIC_C_customer_facing.md`.
+
+- **PR1 — Shared infra** (`d78f7c9` + `35e060a` + `7fc8773`): `SharedLink` model, reserved-slugs registry, public router + `resolvePublicToken` middleware + rate limiter (60 rpm/IP), `PublicShell` + `/p/*` route scaffold + health page.
+- **#129 UPI Payment Collection** (`a148ba3`, PR2): UPI QR + `upi://pay?...` deep-link on invoice detail. VPA validation. Adapted from DudhHisaab per reuse rule.
+- **#130 Web Invoice Links** (`77c645a` BE + `9dbbf54` FE, PR3): HMAC-signed `/p/inv/:token`, share drawer, expiry + per-link revocation.
+- **#121 Online Store / Digital Catalog** (`d47b84a` BE + `ea1b9ae` FE, PR4): public `/p/store/:slug`, StorefrontSettingsPage, slug-rules + reserved-slugs guard.
+- **#131 Invite Parties** (`15fb596` BE + `ea37c19` FE, PR5): `/p/invite/:token` with OTP gate, one-shot signup token bound to businessId, party-invite service.
+- **Refactor** (`237b551`): split invite routes + tighten party/storefront under 250 LOC + logger swap.
+
+Security audit `docs/SECURITY_AUDIT_EPIC_C.md` cleared. Public surface is auth-free but rate-limited; tokens are HMAC + expiry + revocable.
 
 ---
 
-### 4. Phase 5 Epic D — CRM + loyalty
-#125 loyalty/rewards · #127 CRM basics · #128 staff performance & commission.
+### 4. Phase 5 Epic D — CRM + Loyalty (NEXT TO BUILD)
+#125 loyalty/rewards · #127 CRM basics · #128 staff performance & commission. **3 features to close Phase 5.**
 
 Notes:
 - #125 schema: `LoyaltyProgram`, `LoyaltyLedger`. Points accrue on POS sale (hook into existing pos-checkout commit flow).
 - #127 reuses Party model — just adds `tags`, `lastContactedAt`, `followUpAt`, `notes` (some may exist).
-- #128 reuses staff/role infra; commission rule per-product or per-category.
+- #128 reuses staff/role infra; commission rule per-product or per-category. Overlaps Phase 6 #128 split-staff-commission work; consider folding.
+
+Run `/start-epic phase-5-epic-d-crm-loyalty` to kick off the scope-writer → architect → security → task-manager sequence.
 
 ---
 
@@ -136,10 +157,13 @@ V1, V2, V4 touch schema → mandatory `scope-writer → architect → (security 
 ---
 
 ## Open files to remember
-- `.claude/design-plan-active.md` — currently approved for `phase5-marketing-comms`. Stays valid while Epic A FE wraps. Replace before starting Epic B.
-- `docs/SCOPE_phase5_marketing_comms.md` · `docs/ARCHITECTURE_phase5_marketing_comms.md` · `docs/SECURITY_AUDIT_phase5_marketing_comms.md`
+- `.claude/design-plan-active.md` — last approved for prior epic; **replace before starting Epic D** by running `/start-epic phase-5-epic-d-crm-loyalty`.
+- Shipped epic docs (don't archive — referenced for context): `docs/SCOPE_phase5_marketing_comms.md`, `docs/SCOPE_EPIC_B_sales_workflow.md`, `docs/SCOPE_EPIC_C_customer_facing.md`, `docs/SCOPE_132_price_lists.md`. Companion `ARCHITECTURE_*.md` + `SECURITY_AUDIT_*.md` next to each.
+- Subscription port PRDs: `PRDs/subscription-port-{SCOPE,ARCHITECTURE,SECURITY,TASKS}.md`. Mission archive: `.claude/missions/subscription-port.md`.
 
 ## Quick commands
-- Resume Epic A FE: continue the marketing FE build from scaffolding.
-- Start Epic B: `/start-epic phase-5-sales-workflow`
-- Roadmap: `docs/ROADMAP.md` — keep in sync after every epic.
+- **Ship-to-prod (recommended first):** merge `hisaabpro` → `master`, set Render env, `npx prisma migrate deploy`, smoke-test `/p/*` + `/settings/subscription`.
+- **Start Epic D:** `/start-epic phase-5-epic-d-crm-loyalty`
+- **Start vertical depth V3 (recipe cost):** `/start-epic vertical-v3-recipe-cost-dashboard`
+- **Roadmap:** `docs/ROADMAP.md` — keep in sync after every epic.
+- **Re-audit doc accuracy:** ask Claude "WHATS LEFT and whats done? deep audit, update the docs" — this re-runs the doc/code reconciliation that produced the 2026-05-17 snapshot.
