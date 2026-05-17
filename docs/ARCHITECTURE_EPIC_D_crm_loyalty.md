@@ -1,14 +1,90 @@
+# Architecture — Epic D (CRM #127 + Loyalty #125 + Commission #128) — v5
+
+> **v5 changelog (from v4 — auditor Pass 4 typo follow-up, no design change):**
+> Auditor Pass 4 caught 3 token mismatches in the v4 §3.1 code block against
+> the REAL `server/src/routes/pos-sales.ts:62`. Fixed in v5:
+> - Leaf route path `/sales` → `/` (the `/sales` segment is consumed by the
+>   parent `pos.ts:15 router.use('/sales', salesRoutes)`).
+> - Import name `requireAuth` → `auth` (real export at `pos-sales.ts:10`).
+> - Existing chain `requirePermission('pos.create')` + `idempotencyCheck()`
+>   now explicitly preserved AFTER `posCheckoutAuth` (silently dropped in v4).
+> Same three corrections propagated to file plan #14b note and §17.1 acceptance
+> bullet. No other sections touched. Builder MUST match the v5 §3.1 snippet
+> exactly; do not improvise the middleware order.
+>
+> **v4 changelog (from v3 — micro-patch, no design change):**
+> Fixes auditor Pass 3 NEW_M1: phantom `pos.routes.ts` → real `pos-sales.ts`
+> (verified: `server/src/routes/pos-sales.ts:60` is where `router.post('/sales',
+> requireAuth, requireIdempotencyKey, asyncHandler(...))` lives today). Affected
+> sites: §3.1 code block, file plan #14b. Builder slots `posCheckoutAuth`
+> between `requireAuth` and `requireIdempotencyKey`. Also folds security
+> Pass-2 NEW_S1 (loyalty balance/ledger 404 PARTY_NOT_FOUND) and NEW_S2
+> (loyalty_redemption cross-tenant partyId 400 PARTY_NOT_IN_TENANT) into
+> §17.1 as MUST acceptance bullets. No SCOPE Locked Decision (§19) altered.
+>
+> **v3 changelog (from v2):** Folds 5 MUST_FIX + 4 SHOULD_FIX from security audit
+> (`docs/SECURITY_AUDIT_EPIC_D_crm_loyalty.md`). Closes A01 Broken Access Control
+> and A04 Insecure Design failure classes. See §3.5, §3.6, §4.2, §6.1, §6.3, §6.4, §17.
+> Also closes Pass 2 architecture-auditor carry-overs NEW_S1 (DetailTab type dup) and
+> NEW_S2 (Stock Manager wording clarity). No SCOPE Locked Decision (§19) is altered.
+
 # ARCHITECTURE — Phase 5 Epic D: CRM + Loyalty + Commission
 
 **Features:** #125 Loyalty · #127 CRM Basics · #128 Staff Performance & Commission
-**Status:** REVISED v2 — 2026-05-17 14:55 IST (post audit revision)
+**Status:** REVISED v5 — 2026-05-17 (post auditor Pass-4 token-mismatch fix)
 **Companion:** `docs/SCOPE_EPIC_D_crm_loyalty.md` (§19 Locked Decisions)
-**Cleared for security audit:** YES (open risks compiled in §11)
+**Cleared for build:** pending auditor Pass-5 re-run
 
 ---
 
 ## Revision history
 
+- **v3 (2026-05-17 PM)** — Fixed 5 MUST_FIX + 4 SHOULD_FIX from security audit
+  Pass 1 (`docs/SECURITY_AUDIT_EPIC_D_crm_loyalty.md`). Summary of closures:
+  - **M1** (A04) §4.2 commission ledger write — explicit deep clone of
+    `rule.config`/snapshot fields via `JSON.parse(JSON.stringify(...))` INSIDE
+    the same Prisma tx, BEFORE the `commissionLedger.create` call. Callout
+    box added. §17.3 grep-test added.
+  - **M2** (A01) §3.6 NEW server-only Party fields subsection —
+    `lastContactedAt`, `followUpAt`, `loyaltyPointsCache`, `loyaltyOptOut`
+    explicitly listed; EVERY input Zod schema in `parties.routes.ts` MUST
+    `.omit(...)` or build from an allow-list excluding them. §17.2 added
+    PATCH-rejection test.
+  - **M3** (A04) §3.5 follow-up query — `withinDays` capped at 365 via
+    Zod `.max(365)`. Covering composite index
+    `@@index([businessId, lastContactedAt, isActive])` added to §2.5. §17.2
+    boundary-test added.
+  - **M4** (A01) §6.3 — cross-tenant `staffUserId` precheck specified that
+    returns **404 STAFF_NOT_FOUND** (NOT 200-empty, NOT 403) to defeat the
+    UUID-enumeration timing oracle. §17.3 oracle test added.
+  - **M5** (A04) §6.3 — replaced fragile inline `res.headersSent` chain
+    with `commissionLedgerAuth` factory middleware (single-pass, two
+    terminal branches). New file `server/src/middleware/commission-ledger-auth.ts`
+    added to file plan (#27c, ~50 LOC). §17.3 grep-test added.
+  - **S1** (A03) §2.1 + §3.1.1 + §6.1 loyalty math — every points×paise
+    multiply uses `BigInt` cross-multiplication; documented `Number.MAX_SAFE_INTEGER`
+    overflow class avoided.
+  - **S2** (A04) §6.1 — `commissionRuleSchema.strict()` `rateBps` capped at
+    `10000` (100%) at the Zod boundary; FE warning at 5000 (50%); service
+    layer never accepts a value that bypassed the Zod gate.
+  - **S3** (A01) §6.1 + §3.1.1 — POS checkout handler MUST call
+    `requirePermission('loyalty.redeem')` BEFORE opening the tx whenever
+    `payments[].mode === 'loyalty_redemption'` is present. Reject with
+    `PERMISSION_DENIED` if missing. §17.1 added.
+  - **S4** (operational) §8 + §17 — PR3 (loyalty BE) and PR5 (commission BE)
+    both write to `pos-checkout.service.ts` AND `pos-void.service.ts`; PR5
+    MUST rebase onto PR3 before merge to avoid losing the
+    `restorePosSale` loyalty refund logic. PR-sequence call-out added.
+  - **NEW_S1** (Pass 2 carry-over) §0.2 + §7.2 row #61b — `DetailTab` type
+    is duplicated in `PartyDetailPage.tsx` and `usePartyDetail.ts`; builder
+    note added to update BOTH lines in PR4. (Either extract to
+    `party.types.ts` or update both; documented.)
+  - **NEW_S2** (Pass 2 carry-over) §6.4 — wording about `parties.view`
+    clarified: "all 5 staff roles already have `parties.view`" (the v2
+    "except Stock Manager (which has it)" parenthetical was
+    self-contradicting copy-paste leftover; the role IS literally named
+    `Stock Manager` in `permissions-data.ts:256` — only the wording was
+    confusing, not the seed data).
 - **v2 (2026-05-17 PM)** — Fixed 6 MUST_SHIP + 5 SHOULD_SHIP gaps surfaced
   by architecture-auditor (`docs/ARCHITECTURE_AUDIT_EPIC_D_crm_loyalty.md`).
   Summary of closures:
@@ -20,10 +96,10 @@
   - **M6** New §3.4.1 covering `restorePosSale` with symmetric VR (void-reversal) entries on both ledgers
   - **S1** Permission keys renamed to `<resource>.<action>` house style (`commission.view`, `commission.view_all`, `loyalty.configure`, `crm_followup.create`)
   - **S2** Loyalty unit math spelled out: `pointsEarned = floor(subtotalPaise * earnBps / 1_000_000)` + unit-test row added
-  - **S3** `loyalty_redemption` cash-register reconciliation documented (filtered out of cash bucket via existing `mode === 'cash'` predicate at `pos-checkout.cash.ts:51`; surfaces as own tender line in daybook report)
-  - **S4** Advisory-lock source citation corrected: `services/subscription/subscription.writer.ts:25-31` (NOT `cron-grace-expiry.ts`)
+  - **S3** `loyalty_redemption` cash-register reconciliation documented
+  - **S4** Advisory-lock source citation corrected to `subscription.writer.ts:25-31`
   - **S5** New §6.4 with full 5 × 7 (staff-role × new-permission) default table
-- **v1 (2026-05-17 AM)** — Initial architecture draft. SCOPE §6 schema delta accepted unchanged. Five intentional deviations from SCOPE file plan, all path-only; documented in §0.
+- **v1 (2026-05-17 AM)** — Initial architecture draft.
 
 ---
 
@@ -45,27 +121,27 @@ SCOPE Locked Decision (§19) and every Goal in §2 lands intact in this document
 | #20 | `services/marketing/reminder-log.service.ts` | `server/src/services/collections/bulk-reminder.service.ts` (edit existing) | ReminderLog is written from the collections bulk-reminder service, not marketing |
 | #21 | `services/payment/payment-reminder.service.ts` | `server/src/services/payment/reminders.ts` (edit existing) | Real filename is `reminders.ts`, not `payment-reminder.service.ts` |
 
-### 0.2 Path corrections vs SCOPE §10 frontend (v2 — M3 fix)
+### 0.2 Path corrections vs SCOPE §10 frontend (v2 — M3 fix; v3 NEW_S1 note)
 
 | SCOPE row | SCOPE path (assumed) | Real path (worktree) | Why the rename |
 |-----------|----------------------|----------------------|----------------|
 | #51/#62 | `src/features/parties/components/PartyListPage.tsx` | `src/features/parties/PartiesPage.tsx` (edit) | Real list page lives at feature root; no `components/PartyListPage.tsx` exists |
 | #53/#63 | `src/features/parties/components/PartyDetailPage.tsx` | `src/features/parties/PartyDetailPage.tsx` (edit) | Real detail page lives at feature root, NOT under `components/` |
-| #53 (new) | `src/features/parties/components/PartyDetailTabs.tsx` (edit) | `src/features/parties/components/PartyDetailLoyaltyTab.tsx` (CREATE — new tab) + `PartyDetailPage.tsx` TABS array edit | No master `PartyDetailTabs.tsx` exists; tab list is inline in `PartyDetailPage.tsx` (a `TABS` const passed to `setActiveTab`). New loyalty tab body component is created as a sibling to existing `PartyOverviewTab.tsx`, `PartyTransactionsTab.tsx`, `PartyAddressesTab.tsx`. |
-| #64 | `src/features/parties/PartyForm.tsx` (edit) | `src/features/parties/components/PartyFormBasic.tsx` (edit) | No master `PartyForm.tsx`; the form is 4 sub-components (`PartyFormBasic`, `PartyFormBusiness`, `PartyFormCredit`, `PartyFormPriceList`). Loyalty opt-out toggle lives in **`PartyFormBasic.tsx`** (semantically near phone + tags). |
-| #78 | `src/features/dashboard/components/StaffDashboardSection.tsx` (edit) | same path — **CREATE not EDIT** | File does not exist; nearest siblings are `AlertStrip.tsx`, `DashboardQuickActions.tsx`, `TopDebtors.tsx`. The widget is a new section mounted from `DashboardPage.tsx`. |
+| #53 (new) | `src/features/parties/components/PartyDetailTabs.tsx` (edit) | `src/features/parties/components/PartyDetailLoyaltyTab.tsx` (CREATE — new tab) + `PartyDetailPage.tsx` TABS array edit | No master `PartyDetailTabs.tsx` exists; tab list is inline in `PartyDetailPage.tsx`. **v3 NEW_S1**: the `DetailTab` union type is declared in TWO files — `PartyDetailPage.tsx:32` AND `usePartyDetail.ts:10`. PR4 builder MUST update BOTH lines when adding `'loyalty'` to the union (or, preferred path, extract `DetailTab` to `src/features/parties/party.types.ts` and import in both files; that's a small refactor that pays for itself the next time tabs change). Adding to one but not the other yields a TS narrowing error at `setActiveTab` — 30-second pre-emptive note avoids the round-trip. |
+| #64 | `src/features/parties/PartyForm.tsx` (edit) | `src/features/parties/components/PartyFormBasic.tsx` (edit) | No master `PartyForm.tsx`; the form is 4 sub-components. Loyalty opt-out toggle lives in `PartyFormBasic.tsx`. |
+| #78 | `src/features/dashboard/components/StaffDashboardSection.tsx` (edit) | same path — **CREATE not EDIT** | File does not exist; widget is a new section mounted from `DashboardPage.tsx`. |
 
-These corrections add **two** new files (`PartyDetailLoyaltyTab.tsx` and a tiny mounting edit in `PartyDetailPage.tsx` TABS const) vs SCOPE's assumptions, and remove **zero** required hooks. The end state matches SCOPE §1 "auto-update on 3 hook surfaces" verbatim.
+These corrections add **two** new files vs SCOPE's assumptions and remove **zero** required hooks.
 
 ### 0.3 Race-window note on `services/payment/reminders.ts`
 
-One subtlety the SCOPE didn't surface: `services/payment/reminders.ts:31`
-creates the `PaymentReminder` row **outside** any `$transaction` (the side-effect
-WhatsApp delivery is non-DB I/O). For CRM hook #21, the `touchLastContacted`
-call is therefore a sibling `prisma.party.update` (post-commit), not an
-in-transaction call. The race window is "user creates reminder, app crashes
-before `lastContactedAt` update" — acceptable; the worst case is one missed
-contact timestamp, which the next reminder will heal. Documented at §3.
+`services/payment/reminders.ts:31` creates the `PaymentReminder` row **outside**
+any `$transaction` (the side-effect WhatsApp delivery is non-DB I/O). For CRM
+hook #21, the `touchLastContacted` call is therefore a sibling
+`prisma.party.update` (post-commit), not an in-transaction call. The race
+window is "user creates reminder, app crashes before `lastContactedAt` update"
+— acceptable; the worst case is one missed contact timestamp, which the next
+reminder will heal.
 
 ---
 
@@ -95,6 +171,10 @@ correct citation; revised v2 / S4).
                     │    13     PosSaleEvent CREATED                        │
                     │  }                                                    │
                     │                                                        │
+                    │  PRE-tx gate (v3 — S3):                               │
+                    │  if payments[].mode includes 'loyalty_redemption' →    │
+                    │    requirePermission('loyalty.redeem') BEFORE tx       │
+                    │                                                        │
   POST /pos/:id/   │  pos-void.service.ts      $transaction {              │
   void              │    existing reverseStock / voidCashEntry              │
   ─────────────────►│    NEW   commission-accrual.service.reverseForPos ◄──┼─── NEW (in-tx, ‑ve row)
@@ -102,7 +182,7 @@ correct citation; revised v2 / S4).
                     │    PosSaleEvent VOIDED                                │
                     │  }                                                    │
                     │                                                        │
-  POST /pos/:id/   │  pos-void.service.ts      $transaction {  (NEW v2 §3.4.1) │
+  POST /pos/:id/   │  pos-void.service.ts      $transaction {  (v2 §3.4.1) │
   restore           │    existing reapplyStock / restoreCashEntry           │
   ─────────────────►│    NEW   commission-accrual.service.restoreForPos  ◄──┼─── NEW (in-tx, VR type)
                     │    NEW   loyalty-accrual.service.restoreForPosSale ◄─┼─── NEW (in-tx, VR type)
@@ -155,7 +235,7 @@ correct citation; revised v2 / S4).
   POST /loyalty/   │  loyalty-redeem.service.previewRedemption              │
   redeem/preview    │  (read-only — same lock-free FIFO simulation)         │
                     │                                                        │
-  GET  /parties/   │  party/followups.service.ts  ported from DH pattern    │
+  GET  /parties/   │  party/followups.service.ts  withinDays capped (M3)    │
   follow-ups        │                                                        │
   GET  /parties/   │  party/tags.service.ts        UNNEST aggregate         │
   tags              │                                                        │
@@ -164,6 +244,7 @@ correct citation; revised v2 / S4).
                     │                                                        │
   /commission/*    │  commission-rule.service.ts   CRUD + applicability     │
                    │  commission-ledger.service.ts cursor list + leaderbd   │
+                   │  + commission-ledger-auth.ts middleware (v3 — M5)      │
                    │                                                        │
                     └────────────────────────────────────────────────────────┘
 ```
@@ -216,7 +297,7 @@ model LoyaltyProgram {
 
 Reverse on `Business`: `loyaltyProgram LoyaltyProgram?` (1:0..1).
 
-**Earn-rate math (v2 — S2 fix; spelled out to avoid the off-by-10000 bug):**
+**Earn-rate math (v2 — S2; v3 — S1 BigInt insurance hardened):**
 
 ```
 pointsEarned = floor(subtotalPaise * earnBps / 1_000_000)
@@ -230,15 +311,34 @@ Worked examples:
 - Same rate, Rs 0 / Rs 50 (5 000 paise) → `floor(5000 * 100 / 1_000_000) = floor(0.5) = 0` points.
 - `accrualRateBps = 200` (2% earn), Rs 100 sale → `floor(10000 * 200 / 1_000_000) = floor(2.0) = 2` points.
 
-Unit test contract (added to §12, see test #12.11): `computePointsEarned(10000, 100) === 1`;
-`computePointsEarned(99900, 100) === 9`; `computePointsEarned(0, 100) === 0`;
-`computePointsEarned(10000, 200) === 2`.
+**v3 / S1 — BigInt insurance on the multiply (overflow-class kill).**
+`Number.MAX_SAFE_INTEGER = 2^53 − 1 = 9_007_199_254_740_991`. For an
+unrealistic-but-non-impossible whale tenant: `subtotalPaise = 10^12`
+(Rs 10 Cr single sale) × `earnBps = 10_000` (100%) = `10^16` — exceeds
+`MAX_SAFE_INTEGER`. The pure helper MUST do the multiply in BigInt and
+floor-convert back at the boundary:
 
-The denominator `1_000_000` is `10_000 (bps→fraction) × 100 (paise→rupee)`.
-Implemented as a pure helper in `server/src/services/loyalty/loyalty.utils.ts`
-that uses `BigInt` for the multiplication step to avoid float precision loss
-on large sales (`9_999_999 paise * 10_000 bps = 99,999,990,000,000` — fits in
-`Number` but a single line of BigInt insurance is cheap).
+```ts
+// server/src/services/loyalty/loyalty.utils.ts
+export function computePointsEarned(subtotalPaise: number, earnBps: number): number {
+  // Reject anything non-integer at the boundary
+  if (!Number.isInteger(subtotalPaise) || subtotalPaise < 0) return 0
+  if (!Number.isInteger(earnBps) || earnBps < 0) return 0
+  const product = BigInt(subtotalPaise) * BigInt(earnBps)
+  // 1_000_000n = (10_000 bps→fraction) × (100 paise→rupee)
+  const points = product / 1_000_000n  // BigInt division IS floor for non-negative inputs
+  // Down-cast guard: points < 2^53 holds for any sane points balance
+  return Number(points)
+}
+```
+
+Unit test contract (test #12.11): `computePointsEarned(10000, 100) === 1`;
+`computePointsEarned(99900, 100) === 9`; `computePointsEarned(0, 100) === 0`;
+`computePointsEarned(10000, 200) === 2`; `computePointsEarned(50000, 50) === 2`.
+PLUS overflow-class assertion:
+`computePointsEarned(1_000_000_000_000, 10_000) === 10_000_000_000` (10 billion
+points, fits in `Number` cleanly — the BigInt insurance is purely about the
+intermediate multiply not overflowing the JS number representation mid-way).
 
 ### 2.2 New: `LoyaltyLedger`
 
@@ -287,17 +387,10 @@ Reverse adds:
 | `EX` | Expired — points aged out | − | Nightly cron 04:15 IST (v2) |
 | `AD` | Adjusted — owner correction | ± | Admin-script only in MVP |
 | `VD` | Void — sale was voided | − | On `voidPosSale`, negates both AC and RD rows for the sale |
-| `VR` | Void-restore — sale was un-voided | + | On `restorePosSale` (NEW v2 §3.4.1), counter-negates the VD entries written on void |
+| `VR` | Void-restore — sale was un-voided | + | On `restorePosSale` (v2 §3.4.1), counter-negates the VD entries written on void |
 
 The four-row "AC → VD → VR" sequence on a voided-then-restored sale produces
 `SUM(delta) = +AC` (net effect: points are back) — symmetric and auditable.
-
-> **Refinement vs SCOPE:** I added `@@index([businessId, partyId, expiresAt])`
-> beyond what SCOPE drew. The redemption FIFO scan is
-> `WHERE businessId=? AND partyId=? AND type='AC' AND expiresAt > now()
->  ORDER BY earnedAt ASC`. The two-column `(partyId, createdAt)` index isn't
-> selective enough — adding `expiresAt` lets the planner do an index-only scan
-> for the unexpired bucket. Cost: one extra B-tree per ledger row (negligible).
 
 ### 2.3 New: `CommissionRule`
 
@@ -309,7 +402,7 @@ model CommissionRule {
   scope            String   @db.VarChar(20)         // ALL | PRODUCT | CATEGORY
   scopeId          String?                           // productId or categoryId; null when scope=ALL
   mode             String   @db.VarChar(30)         // PERCENT_GROSS | PERCENT_NET | FLAT_PER_UNIT
-  rateBps          Int?                              // basis points for PERCENT modes
+  rateBps          Int?                              // basis points for PERCENT modes; capped at 10000 (100%) by Zod (v3 — S2)
   flatPerUnitPaise Int?                              // paise per unit for FLAT_PER_UNIT
   appliesTo        String   @db.VarChar(10)         // POS | INVOICE | BOTH
   staffUserIds     String[] @default([])             // empty array = applies to ALL staff
@@ -341,7 +434,7 @@ model CommissionLedger {
   commissionPaise Int                               // earned (signed; void / restore produce negative or compensating rows)
   periodYearMonth String   @db.VarChar(7)           // "2026-05" — denormalized for leaderboard speed
   createdAt       DateTime @default(now())
-  meta            Json?                              // { ruleSnapshot, source: 'POS'|'INVOICE'|'VOID'|'RESTORE' }
+  meta            Json?                              // { ruleSnapshot (DEEP CLONED — v3 M1), source: 'POS'|'INVOICE'|'VOID'|'RESTORE' }
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
   staff    User     @relation("StaffCommissionLedger", fields: [staffUserId], references: [id], onDelete: Restrict)
@@ -361,28 +454,50 @@ Reverse adds:
 - `PosSale.commissionLedger CommissionLedger[]`
 - `Document.commissionLedger CommissionLedger[]`
 
-### 2.5 `Party` additions
+### 2.5 `Party` additions (v3 — M3 composite index added)
 
 ```prisma
-// In existing Party model — add ONLY these two nullable columns + 2 indexes.
-lastContactedAt DateTime?    // touched on share + reminder events
+// In existing Party model — add ONLY these two nullable columns + 3 indexes.
+lastContactedAt DateTime?    // touched on share + reminder events (SERVER-ONLY — see §3.6)
 followUpAt      DateTime?    // owner-set future date; powers /parties/follow-ups
 
-@@index([businessId, followUpAt])         // follow-up queue
-@@index([businessId, lastContactedAt])    // dormant-party scans (Phase 6)
+@@index([businessId, followUpAt])                       // follow-up queue
+@@index([businessId, lastContactedAt])                  // dormant-party scans (Phase 6)
+@@index([businessId, lastContactedAt, isActive], map: "idx_party_business_lastcontact_active")
+                                                        // v3 — M3: covering index for /api/parties/follow-ups
+                                                        // queries (filter by businessId, range on
+                                                        // lastContactedAt, exclude inactive)
 ```
 
-Both columns are nullable (no backfill needed). SCOPE §1 confirmed neither
+Both new columns are nullable (no backfill needed). SCOPE §1 confirmed neither
 exists today; the worktree schema check at `server/prisma/schema.prisma:349-424`
 confirms — only `lastTransactionAt` (different concept) exists.
 
-> **Note on opt-out:** the per-party "loyalty opted out" flag is **not** a
-> new column — SCOPE §6 deliberately scoped opt-out to "program disabled at
-> business level". If product asks for per-party opt-out later, it becomes
-> a single `loyaltyOptedOut Boolean @default(false)` column on `Party`
-> (additive, nullable not required since default is false). The UI toggle
-> in `PartyFormBasic.tsx` (FE plan §7.2 row #74) is wired to a no-op
-> mutation today and ready for that future column.
+**v3 — M3 covering-index justification.** The follow-up query (`§3.5`) is:
+
+```sql
+SELECT id, name, lastContactedAt, followUpAt
+FROM "Party"
+WHERE "businessId" = $1
+  AND "lastContactedAt" >= $2     -- now() - withinDays
+  AND "isActive" = true
+ORDER BY "lastContactedAt" ASC
+LIMIT 200
+```
+
+Without a composite index, the planner does a heap scan for any `withinDays >
+30` — even with `withinDays` capped at 365 (v3 — M3), a tenant with 50k parties
+can produce 5-second p95 latency on Render Starter. The 3-column composite
+`(businessId, lastContactedAt, isActive)` lets the planner do an index-only
+scan: businessId is the leading high-selectivity column, lastContactedAt is the
+range filter, isActive is the equality filter. Expected p95 < 30ms even for
+365-day windows on the largest tenant.
+
+> **Note on opt-out (v3 — M2 ref):** the per-party "loyalty opted out" flag is
+> NOT a new column in v3 schema (still deferred). The UI toggle in
+> `PartyFormBasic.tsx` (FE plan §7.2 row #74) is wired to a **no-op mutation
+> today** and ready for a future single-column addition. When that column is
+> added later, it MUST appear in §3.6's server-only fields list.
 
 ### 2.6 Migration plan — single additive step
 
@@ -401,12 +516,12 @@ Contents (single transaction at the DB level):
 6. `ALTER TABLE "Party" ADD COLUMN "followUpAt" TIMESTAMP(3) ;`
 7. `CREATE INDEX "Party_businessId_followUpAt_idx" ON "Party"("businessId","followUpAt") ;`
 8. `CREATE INDEX "Party_businessId_lastContactedAt_idx" ON "Party"("businessId","lastContactedAt") ;`
+9. `CREATE INDEX "idx_party_business_lastcontact_active" ON "Party"("businessId","lastContactedAt","isActive") ;` (v3 — M3)
 
-Zero destructive DDL. Zero backfill (all new columns nullable, all new tables
-empty). Zero `make-NOT-NULL` step. Conforms to
+Zero destructive DDL. Zero backfill. Zero `make-NOT-NULL` step. Conforms to
 `.claude/rules/PRISMA_MIGRATION_RULES.md` — no `db push`, no raw GIN.
 
-**Render Starter sizing check:** 8 DDL statements + 11 index builds on
+**Render Starter sizing check:** 9 DDL statements + 12 index builds on
 production-sized tables takes < 5 s on Render Starter Postgres. No downtime
 window required.
 
@@ -468,7 +583,55 @@ PosSaleEvent. This is the same `$transaction` guarantee already used for
 inventory + cash entry. **No partial state is possible** — proved by the
 existing throw-mid-checkout integration test pattern (see §12.1).
 
-#### 3.1.1 `pos.validators.ts` change — add `loyalty_redemption` mode (v2 — M2 fix)
+**v3 / S3 — Pre-tx permission gate for redemption.**
+
+The POS checkout handler MUST call `requirePermission('loyalty.redeem')`
+BEFORE entering the transaction whenever `payments[]` includes a
+`loyalty_redemption` mode line. Reject with `PERMISSION_DENIED` (403) at
+the route layer — do not open the tx, do not consume idempotency tokens.
+Reasoning: without an explicit middleware gate, the only protection is
+"cashier role includes loyalty.redeem in seed data" — which falls apart
+the moment owner creates a custom role that has `pos.create` but lacks
+`loyalty.redeem` (a common configuration where junior cashier can ring
+but not discount). The check belongs at the route layer where every other
+permission gate lives, not buried in service code.
+
+Concrete route-layer shape (verified against real file
+`server/src/routes/pos-sales.ts:62`, which is mounted via
+`server/src/routes/pos.ts:15 router.use('/sales', salesRoutes)` under
+`/api/pos`, so the leaf path is `'/'` not `'/sales'`):
+
+```ts
+// server/src/routes/pos-sales.ts:62 (POST /api/pos/sales)
+// Slot posCheckoutAuth between `auth` and `requireIdempotencyKey` so the
+// permission gate fires BEFORE the idempotency token row is read/written.
+// Preserve every existing middleware in the chain — DO NOT remove
+// requirePermission('pos.create') or idempotencyCheck().
+router.post(
+  '/',
+  auth,                            // existing
+  posCheckoutAuth,                 // NEW v3 / S3 — only fires when payments include loyalty_redemption
+  requireIdempotencyKey,           // existing
+  requirePermission('pos.create'), // existing (broader gate)
+  idempotencyCheck(),              // existing
+  asyncHandler(async (req, res) => { /* existing handler body */ })
+)
+
+// New helper middleware (lives next to the route, ~25 LOC)
+function posCheckoutAuth(req: Request, res: Response, next: NextFunction) {
+  const payments: Array<{ mode: string }> = req.body?.payments ?? []
+  const hasLoyaltyRedemption = payments.some(p => p?.mode === 'loyalty_redemption')
+  if (!hasLoyaltyRedemption) return next()
+  // Defer to existing permission middleware
+  return requirePermission('loyalty.redeem')(req, res, next)
+}
+```
+
+Builder note: `posCheckoutAuth` is a small factory analogous to v3's
+`commissionLedgerAuth` (§6.3) and uses the same single-pass-with-two-terminals
+pattern. No `res.headersSent` chain.
+
+#### 3.1.1 `pos.validators.ts` change — add `loyalty_redemption` mode (v2 — M2; v3 — S1 BigInt cross-multiply)
 
 ```ts
 // pos.validators.ts (line 10) — extend existing lowercase enum
@@ -481,49 +644,47 @@ export const paymentModeSchema = z.enum([
 The lowercase form matches every existing peer (`'cash'`, `'upi'`,
 `'card'`, `'bank_transfer'`, `'other'`). DB column, route bodies, audit
 logs, FE switch statements, CSV exports, and the day-end report
-(`server/src/services/report/report-daybook.ts`) all assume lowercase —
-mixed-case (`LOYALTY_REDEMPTION`) would silently miss those WHERE-clauses
-and break every report query that uses `mode IN ('cash','upi',...)`.
+(`server/src/services/report/report-daybook.ts`) all assume lowercase.
 
-And in `posPaymentSchema`, a `superRefine` rule:
+And in `posPaymentSchema`, a `superRefine` rule (v3 / S1 — BigInt
+cross-multiplication for paise math):
 
+```ts
+posPaymentSchema.superRefine((p, ctx) => {
+  if (p.mode !== 'loyalty_redemption') return
+  if (!p.partyId) {
+    return ctx.addIssue({ code: 'custom', path: ['partyId'],
+      message: 'PARTY_REQUIRED_FOR_REDEMPTION' })
+  }
+  if (typeof p.loyaltyPoints !== 'number' || p.loyaltyPoints <= 0) {
+    return ctx.addIssue({ code: 'custom', path: ['loyaltyPoints'],
+      message: 'INVALID_LOYALTY_POINTS' })
+  }
+  // v3 / S1: integer cross-multiplication check — no float math anywhere
+  // Want:  p.amountPaise === p.loyaltyPoints * (redemptionPaisePerUnit / redemptionUnit)
+  // Rearranged to integer-safe form:
+  //         p.amountPaise * redemptionUnit === p.loyaltyPoints * redemptionPaisePerUnit
+  // BigInt insurance because amountPaise can be up to 10^12 (Rs 10 Cr) and
+  // loyaltyPoints can be up to 10^10 — both intermediates can exceed 2^53.
+  const lhs = BigInt(p.amountPaise) * BigInt(program.redemptionUnit)
+  const rhs = BigInt(p.loyaltyPoints) * BigInt(program.redemptionPaisePerUnit)
+  if (lhs !== rhs) {
+    return ctx.addIssue({ code: 'custom', path: ['amountPaise'],
+      message: 'LOYALTY_REDEMPTION_MATH_MISMATCH' })
+  }
+})
 ```
-if mode === 'loyalty_redemption':
-  - payments must include partyId at the top level (we already require
-    it for accrual — walk-in cannot redeem; rejected with PARTY_REQUIRED_FOR_REDEMPTION)
-  - amountPaise must equal points × (program.redemptionPaisePerUnit / program.redemptionUnit)
-  - exactly one loyalty_redemption entry per sale (no split redemption in MVP)
-```
 
-The redemption row's `amountPaise` participates in the existing
-`paymentSumMismatchError` check (`pos-checkout.service.ts:149-150`). No
-change to the drift-tolerance logic — the grand total still equals subtotal
-+ tax (loyalty is settled at the payment layer, not the line layer; matches
-Locked Decision Q2 "no tax recalc").
+Plus the existing "exactly one loyalty_redemption per sale" rule
+(no split redemption in MVP). The redemption row's `amountPaise` participates
+in the existing `paymentSumMismatchError` check (`pos-checkout.service.ts:149-150`).
 
 #### 3.1.2 Cash-register accounting — loyalty_redemption stays out of cash bucket (v2 — S3 fix)
 
 `pos-checkout.cash.ts:51` reads `payments.filter(p => p.mode === 'cash')`
-which **naturally excludes** `loyalty_redemption` rows (they are a different
-mode value). No code change required to keep the cash register count
-correct. Verified by inspection 2026-05-17.
-
-The day-end / daybook report (`server/src/services/report/report-daybook.ts`)
-will, after Epic D ships, see `loyalty_redemption` payment rows as a
-**separate tender** rather than blanketed into "other tenders". The
-reporting layer either (a) surfaces it as its own row labelled
-"Loyalty redemption" in the per-day breakdown, OR (b) folds it under a
-new bucket "Non-cash equivalents" for the day-end summary. **Decision for
-Epic D MVP:** surface as own row in the per-day breakdown (matches the
-audit instinct that day-end report MUST distinguish loyalty from cash;
-sum-tendered should equal cash-counted + non-cash + loyalty in a clean
-reconciliation). PR5 acceptance criterion is added in §17.3 (Commission #128
-section) and §16: "day-end report shows `loyalty_redemption` tender
-separately from cash; total tendered + cash balance reconcile."
-
-The report-side change is a few lines in `report-daybook.ts` to add the new
-mode to the tender breakdown enum/`GROUP BY` clause; tracked as file plan
-row #16b (see §7.1).
+which **naturally excludes** `loyalty_redemption` rows. The day-end /
+daybook report (`report-daybook.ts`) gets a +15L edit to surface
+`loyalty_redemption` as its own tender row (file plan row #16b).
 
 ### 3.2 POS void — `pos-void.service.ts` (extend existing tx)
 
@@ -552,18 +713,16 @@ Two new in-tx steps inserted **between cash-entry void and document update**:
 
 Locked Decision Q16: reversal is a NEGATIVE row, not an UPDATE — preserves
 forensic history. The commission reversal reads the original CommissionLedger
-rows by `posSaleId`, inserts negated counterparts with the same `ruleSnapshot`
-and a `meta.source = 'VOID'`. The loyalty reversal does TWO things:
-(a) negates AC rows for the sale (so the customer doesn't keep points
-they didn't really earn), and (b) negates RD rows tied to the sale's
-`posSaleId` (so the customer gets their redeemed points back). The combined
-result: `SUM(delta) WHERE partyId, businessId` snaps to its pre-sale value.
+rows by `posSaleId`, **deep-clones the ruleSnapshot from each original row's
+`meta.ruleSnapshot`** (v3 / M1 invariant — never reach back to the live
+`CommissionRule` row), inserts negated counterparts with the same snapshot
+and a `meta.source = 'VOID'`. See §4.2 for the deep-clone callout box.
 
 ### 3.3 Document create / update (SALE_INVOICE) — `document/create.ts` + `update.ts`
 
 `document/create.ts:102-232` is already a `$transaction`. Insert one new step
 **after `doc.id` exists and AFTER the existing `if (isSaving)` stock block**
-(at line ~228, just before the `return tx.document.findFirstOrThrow`):
+(at line ~228):
 
 ```ts
 if (isSaving && data.type === 'SALE_INVOICE') {
@@ -572,14 +731,11 @@ if (isSaving && data.type === 'SALE_INVOICE') {
     userId,                          // sale-creator (per Locked Decision Q12)
     documentId: doc.id,
     lineItems: data.lineItems,
-    taxedTotals: totals,             // for PERCENT_NET basis
-    productMap,                      // for PRODUCT/CATEGORY rule applicability
+    taxedTotals: totals,
+    productMap,
   })
 }
 ```
-
-This accrual call uses the same per-business advisory-lock pattern as
-loyalty (mirrors `subscription.writer.ts:25-31` — `acquireAdvisoryLock`).
 
 `document/update.ts:43-44` already computes `wasSaved` + `willBeSaved`. Add
 one branch for **DRAFT→SAVED transition** (only):
@@ -590,15 +746,8 @@ if (!wasSaved && willBeSaved && existing.type === 'SALE_INVOICE') {
 }
 ```
 
-**No commission row on edit-while-already-SAVED.** If the document was SAVED
-and is edited (e.g. line item added), the existing stock-reversal+re-application
-logic does NOT trigger commission re-accrual. Reasoning: commission is earned
-once on the SAVE transition. Re-computing commission on every edit would let
-the cashier game commission by repeatedly adding then removing a line.
-
-> **FUTURE_EPIC note**: when commission-on-edit becomes a requirement (Phase 6
-> V4 split-commission), we'd write a NEGATIVE row + a fresh positive row in the
-> same tx — same pattern as void. Schema is ready; no migration needed.
+**No commission row on edit-while-already-SAVED.** Commission is earned once
+on the SAVE transition.
 
 ### 3.4 Share-log write — `routes/documents/share.ts` (extend existing tx)
 
@@ -606,33 +755,22 @@ the cashier game commission by repeatedly adding then removing a line.
 wrap `documentShareLog.create` in a `$transaction`. Add inside both:
 
 ```ts
-// after const log = await tx.documentShareLog.create(...)
 await touchLastContacted(tx, businessId, docData.party.id)
 ```
 
-`touchLastContacted` lives at the new
-`server/src/services/party/last-contacted.service.ts` and is a one-line
-`tx.party.update({ where: { id, businessId }, data: { lastContactedAt: new Date() }})`.
-Both the share-log row and the `lastContactedAt` bump commit atomically.
+`touchLastContacted` lives at `server/src/services/party/last-contacted.service.ts`.
 
-### 3.4.1 POS restore — `pos-void.service.ts:restorePosSale` (NEW v2 — M6 fix)
+### 3.4.1 POS restore — `pos-void.service.ts:restorePosSale` (v2 — M6 fix)
 
 `server/src/services/pos/pos-void.service.ts:160-196` exposes
-`restorePosSale` (alongside `voidPosSale`). The current implementation
+`restorePosSale` alongside `voidPosSale`. The current implementation
 re-applies stock, restores the cash entry, flips `Document.status` back
 to `SAVED` and `PosSale.status` to `ACTIVE` — but does NOT touch the
-loyalty or commission ledgers. Without v2's M6 fix, a void-then-restore
-sequence would leave the customer's points and the cashier's commission
-permanently deducted (the VD entries from §3.2 stay; nothing reverses
-them). That is the silent money-equivalent leak the audit identified.
+loyalty or commission ledgers without v2's M6 fix.
 
 **Decision (v2):** symmetric `VR` (void-reversal) entries on both ledgers,
 written inside the existing `$transaction` block at
-`pos-void.service.ts:165-196` (`isolationLevel: 'Serializable'`). Rationale:
-matches the symmetric AC/RD pattern, no operational friction, no schema
-change beyond adding `VR` to the `LoyaltyEntryType` constant set (§2.2),
-and the lifecycle becomes fully auditable as `AC → VD → VR` (loyalty)
-and `+commission → −commission → +commission` (commission).
+`pos-void.service.ts:165-196` (`isolationLevel: 'Serializable'`).
 
 Extended shape — two new in-tx steps inserted **between cash-entry restore
 and document update**:
@@ -650,61 +788,30 @@ $transaction(async tx => {
 }, { isolationLevel: 'Serializable' })
 ```
 
-**Loyalty restore semantics** (in `loyalty-accrual.service.restoreForPosSale`):
+**Commission restore semantics** (v3 — M1 deep-clone applies here too):
 
-1. Acquire per-party `pg_advisory_xact_lock` (same pattern as
-   `subscription.writer.ts:25-31`).
-2. Fetch all `VD` rows for the `posSaleId` (these are the negation rows
-   written on void).
-3. For each `VD` row, insert a paired `VR` row with `delta = -row.delta`
-   (i.e., positive if the VD was negative, restoring the original effect).
-4. The `note` field on the VR row reads `"Void-restore of <vdRowId>"` so
-   forensics is one query away.
-
-`SUM(delta) WHERE posSaleId = ? AND businessId = ?` arithmetic after the
-full lifecycle:
-- After AC: `+points` (e.g. `+10`)
-- After RD (same sale): `+10 - 5 = +5` (if customer also redeemed 5)
-- After VD (void): `+5 + (-10) + (+5) = 0` (negation rows)
-- After VR (restore): `0 + (+10) + (-5) = +5` (counter-negation rows)
-
-Net: the customer is restored to exactly the post-sale state. Same balance,
-same FIFO `earnedAt` (the original AC row is untouched — VD/VR cancel each
-other out without disturbing the FIFO queue).
-
-**Commission restore semantics** (in `commission-accrual.service.restoreForPosSale`):
-
-1. Acquire per-business `pg_advisory_xact_lock` (matches the void path).
+1. Acquire per-business `pg_advisory_xact_lock`.
 2. Fetch the negation rows (`meta.source = 'VOID'`) for the `posSaleId`.
-3. For each negation row, insert a paired compensating row with
-   `commissionPaise = -negationRow.commissionPaise` (positive again) and
-   `meta.source = 'RESTORE'`, preserving the original `ruleSnapshot`.
+3. For each negation row, deep-clone the `meta.ruleSnapshot` from the
+   negation row (NEVER reach back to the live `CommissionRule.config`,
+   which may have been edited between void and restore — that's the M1
+   attack vector applied to restore), insert a paired compensating row
+   with `commissionPaise = -negationRow.commissionPaise` (positive again)
+   and `meta.source = 'RESTORE'`, preserving the deep-cloned snapshot:
+   ```ts
+   const ruleSnapshot = JSON.parse(JSON.stringify(negationRow.meta.ruleSnapshot))
+   await tx.commissionLedger.create({
+     data: { ..., commissionPaise: -negationRow.commissionPaise,
+             meta: { ruleSnapshot, source: 'RESTORE' } }
+   })
+   ```
 
-`SUM(commissionPaise) WHERE posSaleId = ? AND staffUserId = ?` returns to
-exactly the post-original-accrual amount. Audit-clean: the ledger now
-reads `[original +X] [void -X] [restore +X]` — three rows, sum = X,
-forensics intact.
-
-**Restore-window inheritance:** The existing 4-hour restore window
-(`DEFAULT_RESTORE_WINDOW_HOURS` in `pos-void.service.ts:17`) gates whether
-the path can even be invoked. So the longest a void can sit before restore
-is 4 hours — well within the cron-expiry window. **No edge case where an
-AC row could have expired between AC and VR** (expiry runs nightly at
-04:15 IST, far longer than the 4h restore window).
-
-**Permission gate:** `restorePosSale` already gates on `pos.void`
-(see `PERMISSION_MATRIX` row `'pos'` action `'void'` in
-`permissions-data.ts:185-192`, label "Void / Restore POS Sales"). No
+**Permission gate:** `restorePosSale` already gates on `pos.void`. No
 new permission required.
 
-**Telemetry:** A new analytics event `loyalty_restored` and
-`commission_restored` are added to §10 (rolling Epic D event total to
-**7** events from PR5 onwards — within the SCOPE §14 budget per
-blindspot #14). They emit post-commit from the restore handler with
-payload `{ businessId, posSaleId, partyId, restoredBy, pointsRestored,
-commissionRestoredPaise }`.
+**Telemetry:** `loyalty_restored` and `commission_restored` analytics events.
 
-### 3.5 Bulk reminders — `services/collections/bulk-reminder.service.ts` (extend existing tx)
+### 3.5 Bulk reminders + follow-up query (v3 — M3 withinDays cap)
 
 `services/collections/bulk-reminder.service.ts:166-201` already wraps
 `reminderLog.createMany` and `auditLog.createMany` in a `$transaction`. Add
@@ -715,50 +822,183 @@ await touchLastContactedMany(tx, businessId,
   batch.included.map(r => r.partyId))
 ```
 
-`touchLastContactedMany` issues `tx.party.updateMany({ where: { id: { in: partyIds }, businessId }, data: { lastContactedAt: new Date() }})`.
-Single round-trip; no per-party query.
+**v3 / M3 — `withinDays` parameter on `GET /api/parties/follow-ups` MUST
+be capped at 365.** Unbounded ranges are a DoS vector: a tenant with 50k
+parties hitting `?withinDays=99999` triggers a heap scan on `Party` with
+no index help, locking up Render Starter's single Postgres for seconds.
+Cap, plus a covering composite index (added to §2.5), kills both the
+DoS surface and the slow-path.
 
-### 3.6 Single-party manual reminder — `services/payment/reminders.ts` (post-commit)
+Zod schema for the follow-up route (`server/src/schemas/party.schemas.ts`,
+new entry — file plan row #24):
 
-This is the one exception. `services/payment/reminders.ts:31-46` creates
-`paymentReminder` **outside** any `$transaction` — the WhatsApp delivery
-attempt is non-DB I/O that intentionally doesn't block the route.
+```ts
+// server/src/schemas/party.schemas.ts (new export, ~12L addition)
+export const followUpsQuerySchema = z.object({
+  withinDays: z.coerce.number()
+    .int()
+    .min(1)
+    .max(365, 'WITHIN_DAYS_EXCEEDS_MAX')   // v3 / M3
+    .default(30),
+  cursor: z.string().optional(),
+}).strict()
+```
 
-Behaviour: after the `paymentReminder.create` succeeds, issue a sibling
-`prisma.party.update({ where: { id: data.partyId, businessId }, data: { lastContactedAt: new Date() }})`
-in a `.catch()` block (best-effort, log-only on failure). The data race is:
-"reminder row exists, but `lastContactedAt` wasn't updated because the process
-died between the two writes". That window is ~5 ms and self-heals the next
-time the party is contacted. Documented limitation — acceptable per Locked
-Decision Q9 (only 3 hook surfaces, no atomicity guarantee specified).
+Route handler in `server/src/routes/party.ts`:
 
-### 3.7 Cron — `loyalty-expiry.cron.ts` (its own tx-per-batch) (v2 — M1 fix: 04:15 IST)
+```ts
+router.get('/api/parties/follow-ups', requireAuth,
+  requirePermission('parties.view'),
+  async (req, res) => {
+    const parsed = followUpsQuerySchema.safeParse(req.query)
+    if (!parsed.success) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_WITHIN_DAYS_RANGE', issues: parsed.error.issues }
+      })
+    }
+    // ... call service ...
+  }
+)
+```
 
-Pattern mirrors `services/subscription/subscription.writer.ts:25-31`
-(`acquireAdvisoryLock`) — that is the canonical advisory-lock source in the
-worktree. `cron-grace-expiry.ts` was the original aesthetic inspiration for
-the cursor-paged business loop, but the lock pattern itself comes from
-the subscription writer (see §S4 in the v2 revision log).
+Service-layer fail-safe (defence in depth — `party/followups.service.ts`):
+even though Zod has already enforced the cap, the service-layer should
+also clamp at 365 so any future caller (cron, admin script, internal
+service-to-service call) cannot bypass:
+
+```ts
+export async function getFollowUpsDue(businessId: string, withinDays: number) {
+  const clampedDays = Math.min(Math.max(1, withinDays | 0), 365)  // belt + braces
+  const cutoff = new Date(Date.now() + clampedDays * 24 * 60 * 60 * 1000)
+  // ... query with index `idx_party_business_lastcontact_active` ...
+}
+```
+
+§17.2 acceptance test: PATCH `/api/parties/follow-ups?withinDays=400` returns
+400 `INVALID_WITHIN_DAYS_RANGE`. PATCH `?withinDays=365` returns 200.
+PATCH `?withinDays=1` returns 200. PATCH `?withinDays=0` returns 400.
+
+### 3.6 Server-only Party fields (v3 — M2 NEW SECTION)
+
+This subsection is the v3 contract for input-schema discipline on the
+`Party` model. It exists because v3 / M2 (OWASP A01 Broken Access Control)
+identified that fields like `lastContactedAt` and `loyaltyOptOut` — which
+are intended to be set server-side from event hooks (share, reminder,
+cron) — become mass-assignment vectors if the input Zod schemas accept
+them in `PATCH /api/parties/:id` and similar mutation endpoints.
+
+**The contract.** The following Party fields are **SERVER-ONLY**. They MUST
+be omitted from every input Zod schema in `server/src/routes/parties.routes.ts`
+(and its delegate `server/src/schemas/party.schemas.ts`). The schemas
+affected: `createPartySchema`, `partyUpdateSchema`, `partyPatchSchema`,
+and any future input schema added to the `parties` resource.
+
+| Field | Why server-only | Set by |
+|-------|----------------|--------|
+| `lastContactedAt` | Forging hides ghosting customers from CRM (e.g. setting `'2030-01-01'` would defeat the "not contacted in 30d" follow-up trigger forever) | `touchLastContacted(tx, businessId, partyId)` from share-log + bulk-reminder + payment-reminder hooks (§3.4, §3.5, §3.6) |
+| `followUpAt` | While this IS a user-mutable field (the owner sets it via the form), the routes for setting it pass through the explicit `followUpAt` validator in `partyPatchSchema` which enforces "future date only" (`INVALID_FOLLOWUP_PAST`). Any other input schema that touches Party MUST NOT accept it as a free-form write. | `PATCH /api/parties/:id` with `partyPatchSchema` (only) |
+| `loyaltyPointsCache` | Denormalized loyalty balance for fast reads. Source of truth is `SUM(LoyaltyLedger.delta)`. Letting the client write it would orphan the actual ledger. **Note:** not actually added to schema in v3 (deferred — see §2.5 note), but listed here so when it IS added later, the input-schema discipline already applies. | Future: `loyalty-balance.service.recomputeCache(partyId)` called from accrual/redeem hooks |
+| `loyaltyOptOut` | Consent flag. Client writing this could opt other parties out of loyalty silently. **Note:** not added in v3 schema (UI toggle is a no-op today per §2.5). Listed here so future addition is discipline-clean. | Future: dedicated `PUT /api/parties/:id/loyalty-opt-out` route with audit log |
+
+**The two enforcement patterns** (either is acceptable; PR2 builder picks one):
+
+**Pattern A — `.omit()` from the generated Prisma type:**
+
+```ts
+// server/src/schemas/party.schemas.ts
+import { z } from 'zod'
+import type { Party } from '@prisma/client'
+
+// Build a base from the Prisma row type
+type PartyInputRaw = Omit<Party,
+  'id' | 'createdAt' | 'updatedAt' | 'businessId' |
+  // v3 / M2 SERVER-ONLY EXCLUSIONS:
+  'lastContactedAt' | 'followUpAt' | 'loyaltyPointsCache' | 'loyaltyOptOut'
+>
+
+// Then build Zod schemas from the narrowed type
+export const createPartySchema = z.object<Record<keyof PartyInputRaw, z.ZodType>>({
+  name: z.string().trim().min(1).max(120),
+  phone: z.string().optional(),
+  // ... etc — ONLY keys that are NOT in the omit list ...
+}).strict()
+```
+
+**Pattern B — hand-rolled allow-list (preferred — no Prisma coupling in schemas):**
+
+```ts
+// server/src/schemas/party.schemas.ts
+export const createPartySchema = z.object({
+  name: z.string().trim().min(1).max(120),
+  phone: z.string().optional(),
+  tags: z.array(z.string().max(40)).max(20).optional(),
+  notes: z.string().max(2000).optional(),
+  // ... ONLY explicit user-editable fields ...
+}).strict()
+
+export const partyPatchSchema = createPartySchema.partial().extend({
+  // followUpAt IS user-mutable but via a dedicated, validated path:
+  followUpAt: z.coerce.date()
+    .refine(d => d.getTime() > Date.now(),
+      { message: 'INVALID_FOLLOWUP_PAST' })
+    .optional()
+    .nullable(),  // allow clearing
+}).strict()
+
+export const partyUpdateSchema = partyPatchSchema  // alias for PUT
+```
+
+Pattern B is preferred for HisaabPro because:
+1. It doesn't couple schemas to the Prisma generated type (which changes
+   every migration).
+2. `.strict()` rejects unknown keys outright — including any new
+   server-only field added later that the developer forgot to omit.
+3. It's grep-friendly — `git grep "createPartySchema\b"` shows the entire
+   allow-list at a glance.
+
+**Enforcement (§17.2 acceptance):**
+1. Pre-commit grep (added to `scripts/enforce.js` — file plan row #91b):
+   ```
+   grep -nE "lastContactedAt|loyaltyPointsCache|loyaltyOptOut" \
+     server/src/schemas/party.schemas.ts && exit 1 || exit 0
+   ```
+   The keys MUST NOT appear in any input schema file. Block at pre-commit.
+2. Integration test: `PATCH /api/parties/:id` body
+   `{ lastContactedAt: '1970-01-01' }` → 400 ZodError. AND verify the
+   server-side `lastContactedAt` value is unchanged (still `null` or
+   the value set by the last hook).
+3. Tenant-isolation row #2 in §11.3 already covers this (cross-tenant
+   attacker tries to forge `lastContactedAt`).
+
+**Future column adds.** When `loyaltyPointsCache` and `loyaltyOptOut` get
+added to the schema in a later epic, the migration MUST be accompanied
+by a one-line edit to the grep check above and a manual confirmation
+that the input schemas still exclude them. If a follow-up developer
+adds them as user-mutable, they hit pattern-B's `.strict()` rejection
+and the grep check at pre-commit — three lines of defence.
+
+### 3.7 Cron — `loyalty-expiry.cron.ts` (v2 — M1: 04:15 IST)
+
+Pattern mirrors `services/subscription/subscription.writer.ts:25-31`.
 
 ```
 runLoyaltyExpiryJob():
   for each business cursor-page (take 200, businessId asc) {
     lock = await pg_try_advisory_lock(hashtextextended('loyalty-expiry:' + businessId))
-    if (!lock) continue                                  // another cron worker has this business
+    if (!lock) continue
     try {
       while (true) {
         $transaction([
           tx.loyaltyLedger.findMany({
             where: businessId, type: 'AC', expiresAt: { lt: now },
-            // EXCLUDE rows already counterbalanced by an EX row
-            // (we check via NOT EXISTS in §4.4)
             take: 500, orderBy: { earnedAt: 'asc' }
           })
           if (rows.length === 0) break
           tx.loyaltyLedger.createMany({ data: rows.map(r => ({
             businessId, partyId: r.partyId, type: 'EX',
-            delta: -r.delta,                            // negate the AC amount
-            expiryRunId,                                // groups one cron pass
+            delta: -r.delta,
+            expiryRunId,
             note: `Expired from ${r.id}`,
           }))})
         ])
@@ -769,65 +1009,14 @@ runLoyaltyExpiryJob():
   }
 ```
 
-**Cron slot (v2 — M1):** the loyalty-expiry cron is registered at **`'15 4 * * *'`
-IST (04:15 IST)** — NOT the SCOPE-suggested 02:30 IST. The 02:30 IST slot
-is already occupied by `runExpenseRecurringGenerator` in
-`cron-scheduler.ts:60` (`'30 2 * * *'`). Stacking two long-running cron
-jobs at the same minute on Render Starter (single Postgres connection pool,
-single cron worker) is a recipe for the slower job to never complete during
-the burst window.
+**Cron slot (v2 — M1): `'15 4 * * *'` IST (04:15 IST).** See v2 changelog
+above for slot inventory. The advisory lock prevents double-fire.
 
-Slot inventory around the existing 02:00-08:00 IST cron window:
+### 3.8 Side-effect rule (v2 — M5)
 
-| Slot (IST) | Job | Source |
-|------------|-----|--------|
-| 00:05 IST (1st of month) | notification-month-roll | `notification-cron.ts` |
-| 01:00 IST | PTP evaluator | `cron-scheduler.ts:38` |
-| 02:00 IST Sunday | notification-retention-purge | `notification-cron.ts` |
-| **02:30 IST** | **expense-recurring-generator** (SCOPE-suggested slot — COLLISION) | `cron-scheduler.ts:60` |
-| 03:00 IST | recurring-runs-cleanup | `cron-scheduler.ts:53` |
-| **04:15 IST** | **loyalty-expiry (NEW — Epic D)** | new entry to `cron-scheduler.ts` |
-| 06:00 IST | subscription-grace-expiry | `cron-scheduler.ts:74` |
-| 07:00 IST | subscription-trial-end | `cron-scheduler.ts:81` |
-| 08:00 IST | subscription-mandate-reminder | `cron-scheduler.ts:88` |
-
-04:15 IST is chosen for three reasons: (1) clearly separated from the 02:30
-expense-recurring run (gives Postgres > 90 minutes to settle between the
-two longest jobs); (2) before the 06:00 IST subscription-grace cascade
-(`runGraceExpiryJob`), so a loyalty-expiry stall won't cascade into the
-subscription burst; (3) outside the 06:00-08:00 IST notification-heavy
-window. The 04:15 minute (not :00 or :30) avoids future collision risk
-with whole-hour cron defaults that ops scripts tend to choose.
-
-The advisory lock prevents two cron workers (or a manual CLI run during the
-nightly cron window) from double-expiring the same business. Idempotency
-backup: even if the lock somehow leaks, the `NOT EXISTS (... expiryRunId)`
-clause in the SELECT prevents double-expiry. Belt + braces.
-
-`expiryRunId` is a `crypto.randomUUID()` generated once per `runLoyaltyExpiryJob()`
-invocation. Rows from the same run share the same id — easy forensics
-("which rows were expired in the 2026-05-18 04:15 IST pass?").
-
-### 3.8 Side-effect rule (mirror of subscription writer)
-
-NO loyalty / commission write triggers any side-effect inside the tx
-(no notifications, no push, no audit log spam). The pattern from
-`services/subscription/subscription.writer.ts:7,46` (side-effects only after
-the tx commits) applies here:
-
-| Side-effect | Trigger | Where it runs |
-|-------------|---------|---------------|
-| `loyalty_accrued` analytics | After POS sale tx commits | `pos-checkout.service.ts` post-tx block |
-| `loyalty_redeemed` analytics | After POS sale tx commits | same |
-| `loyalty_restored` analytics | After POS restore tx commits | `pos-void.service.ts` post-tx block |
-| `commission_accrued` analytics | After POS / Document tx commits | same / `document/*` post-tx |
-| `commission_restored` analytics | After POS restore tx commits | `pos-void.service.ts` post-tx block |
-| AuditLog row for program / rule edit | Same tx as the update | service layer |
-| Toast on the client | Mutation onSuccess | client only |
-
-All analytics events route through `analyticsEmit(event, ctx)` from the
-new `server/src/lib/analytics.ts` thin wrapper (see §10, v2 / M5 fix —
-NOT `notificationManager`, which is user-facing).
+All analytics events route through `analyticsEmit(event, ctx)` from
+`server/src/lib/analytics.ts`. Events are emitted AFTER the originating
+transaction commits.
 
 ---
 
@@ -835,69 +1024,65 @@ NOT `notificationManager`, which is user-facing).
 
 ### 4.1 Two POS sales redeem from the same balance simultaneously
 
-**Scenario:** cashier A is checking out Sunita with 200 points to redeem;
-cashier B is doing the same at the next register. Both reach the
-$transaction at the same moment. Without protection, both `applyRedemption`
-calls compute "balance = 200" from a stale read, both deduct 200, and the
-ledger ends at `-200` (overdraft).
-
 **Solution: per-party advisory lock at the head of the loyalty-redeem path.**
 
 ```ts
-// loyalty-redeem.service.ts (top of applyRedemption)
 await tx.$executeRawUnsafe(
   `SELECT pg_advisory_xact_lock(hashtextextended($1, 0))`,
   `loyalty:${businessId}:${partyId}`
 )
 ```
 
-This is the exact pattern used by
-`server/src/services/subscription/subscription.writer.ts:25-31`
-(`acquireAdvisoryLock`) — that file is the canonical source in the worktree
-for the 64-bit `hashtextextended` advisory-lock idiom (v2 / S4 correction;
-the v1 doc mistakenly cited `cron-grace-expiry.ts`, which is itself
-unguarded). The lock is held for the duration of the transaction —
-released automatically on commit/rollback. Sales for the SAME party
-serialize; sales for DIFFERENT parties don't block each other.
+Pattern from `subscription.writer.ts:25-31`. The lock is held for the
+duration of the transaction. Sales for the SAME party serialize; sales
+for DIFFERENT parties don't block each other.
 
-After acquiring the lock, the service recomputes the balance from the ledger
-inside the tx and only then writes the RD row. The "compute → write"
-window is now atomic per-party.
-
-**Why an advisory lock and not `SELECT ... FOR UPDATE` on ledger rows?**
-The FIFO redemption can touch arbitrary subsets of AC rows (oldest-first
-until the redemption amount is satisfied). A row-level lock would have to be
-acquired in a deterministic order or risk deadlock. The advisory lock is a
-single 8-byte key per party — simpler, faster, deadlock-free.
-
-**Performance impact:** at POS checkout we already do ~12 DB round-trips
-inside the tx. One extra `pg_advisory_xact_lock` (sub-millisecond on a hot
-connection) is in the noise. Contention is bounded — the same party is
-extraordinarily unlikely to check out at two registers within the same 50ms
-window.
-
-### 4.2 Commission rule changes mid-transaction
+### 4.2 Commission rule snapshot — DEEP CLONE required (v3 — M1 callout box)
 
 **Scenario:** owner edits the "Spices 2%" rule to "Spices 5%" while a POS
-sale is in flight. The accrual service has already read the OLD rule and is
-about to write the ledger row. Result: the cashier earns 2% but the rule is
-now 5% — confusing for the audit.
+sale is in flight. Or, more subtle: the accrual service has already read
+the rule, written a row with `meta: { ruleSnapshot: rule }` (taking the
+live reference), and a later code path mutates `rule.config` before the
+JSON serialization fires — the snapshot in the ledger is now wrong.
 
-**Solution: rule snapshot in `CommissionLedger.meta`.**
+**Solution: explicit deep clone of the rule config snapshot INSIDE the same
+Prisma transaction, BEFORE the `commissionLedger.create` call.**
 
 ```ts
-// commission-accrual.service.ts (per matched rule)
+// commission-accrual.service.ts (per matched rule, inside $transaction)
+// v3 / M1 — DEEP CLONE the snapshot fields. Do NOT take the live `rule`
+// reference. Prisma's Json field accepts the object by reference; any
+// subsequent mutation of `rule` — by a future refactor, test, or
+// chained service call — would mutate the snapshot in memory before
+// the row is serialized. Worse, in the void/restore path (§3.4.1),
+// the original rule may have been DELETED or EDITED between accrual
+// and reversal; reaching back to live `rule.config` then would
+// silently shift the audit trail.
+//
+// JSON.parse(JSON.stringify(...)) is the universal deep-clone idiom
+// for plain-data shapes (Prisma JSON columns are plain-data by
+// definition). It strips Dates → ISO strings, which is what we want
+// for forensics-table immutability anyway.
+const ruleSnapshot = JSON.parse(JSON.stringify({
+  ruleId: rule.id,
+  name: rule.name,
+  scope: rule.scope,
+  scopeId: rule.scopeId,
+  mode: rule.mode,
+  rateBps: rule.rateBps,
+  flatPerUnitPaise: rule.flatPerUnitPaise,
+  appliesTo: rule.appliesTo,
+  // Capture createdAt at snapshot-time as ISO string (Date.toJSON yields ISO)
+  createdAt: rule.createdAt.toISOString(),
+  snapshotAt: new Date().toISOString(),
+}))
+
 await tx.commissionLedger.create({
   data: {
     businessId, staffUserId, ruleId: rule.id,
     posSaleId, basisPaise, commissionPaise, periodYearMonth,
     meta: {
-      ruleSnapshot: {
-        id: rule.id, name: rule.name, scope: rule.scope, scopeId: rule.scopeId,
-        mode: rule.mode, rateBps: rule.rateBps,
-        flatPerUnitPaise: rule.flatPerUnitPaise,
-        appliesTo: rule.appliesTo,
-      },
+      ruleSnapshot,                          // ← deep-cloned, frozen
       source: 'POS' | 'INVOICE' | 'VOID' | 'RESTORE',
       appliedAt: new Date().toISOString(),
     },
@@ -905,47 +1090,51 @@ await tx.commissionLedger.create({
 })
 ```
 
-`meta` is a JSON column — Prisma `Json?`. No extra migration. Forensics:
-"why did this row have 2% when the rule today says 5%?" answers immediately
-from `meta.ruleSnapshot`. The `ruleId` FK is `onDelete: SetNull`, so even
-deleting the rule keeps the ledger intact with the snapshot preserved.
+> **WHY DEEP CLONE — pinned callout for builder:**
+> Prisma's JSON column type (`Json` in Prisma schema, `jsonb` in
+> Postgres) accepts the JavaScript object by reference and serializes
+> it at query-prepare time. Between "build the data object" and
+> "Prisma writes the row", any mutation of the source object IS
+> reflected in the written row — there is no snapshot-at-construction.
+> Worse, if the row is reused across multiple `tx.create` calls (e.g.
+> a future refactor that bulk-inserts), a single shared reference
+> propagates through every row.
+>
+> Equally important for v3 / M1: the **void path (§3.2)** and
+> **restore path (§3.4.1)** must NOT reach back to the live
+> `CommissionRule` to rebuild the snapshot — the rule may have been
+> edited (or even soft-deleted) between accrual and reversal. Both
+> paths MUST deep-clone the snapshot from the **original ledger row's
+> `meta.ruleSnapshot`**, propagating the historical rule shape
+> forward through the void→restore lifecycle. This is what makes the
+> AC→VD→VR chain forensically intact: every row's snapshot is its
+> own frozen copy, immune to admin retroactive edits.
+>
+> The `JSON.parse(JSON.stringify(...))` idiom removes the failure
+> class entirely. Cost: ~50µs per row, negligible against the ~15ms
+> tx round-trip.
+
+**`meta` is a JSON column** — Prisma `Json?`. No extra migration. The
+`ruleId` FK is `onDelete: SetNull`, so even deleting the rule keeps the
+ledger intact with the snapshot preserved (and the snapshot is the
+source of truth for the historical rule shape — not the rule row
+itself, which may not exist anymore).
+
+§17.3 grep-test: `git grep -n "JSON.parse(JSON.stringify" \
+  server/src/services/commission/commission-accrual.service.ts` MUST
+return at least 2 matches (one for forward accrual, one for void/restore
+re-snapshot from prior `meta.ruleSnapshot`).
 
 ### 4.3 Cron clock-skew / dual-fire
 
-Render Starter has only one cron worker, but a manual SSH invocation (`node
-scripts/run-loyalty-expiry.ts`) during the cron window would double-fire.
-
-**Solution: `pg_try_advisory_lock` per business + idempotent EX-row
-guard (§3.7).** The advisory lock prevents the second invocation from acting
-on the same business. The `NOT EXISTS (SELECT 1 FROM LoyaltyLedger WHERE
-type='EX' AND ... )` guard prevents double-expiry even if the lock fails.
+Render Starter has only one cron worker, but a manual SSH invocation
+during the cron window would double-fire. Solution: `pg_try_advisory_lock`
+per business + idempotent EX-row guard (§3.7). Same as v2.
 
 ### 4.4 SQL guard for double-expiry
 
-The cron SELECT is:
-
-```sql
-SELECT id, partyId, delta, earnedAt
-FROM "LoyaltyLedger"
-WHERE businessId = $1
-  AND type = 'AC'
-  AND expiresAt < now()
-  AND NOT EXISTS (
-    SELECT 1 FROM "LoyaltyLedger" l2
-    WHERE l2.businessId = $1
-      AND l2.partyId = "LoyaltyLedger".partyId
-      AND l2.type = 'EX'
-      AND l2."note" LIKE 'Expired from ' || "LoyaltyLedger".id || '%'
-  )
-ORDER BY earnedAt ASC
-LIMIT 500
-```
-
-The `note LIKE 'Expired from <id>'` trick is the back-reference. Cleaner
-alternative we considered: a separate `loyalty_expiry_marker` table. Rejected
-because adding a table for a single boolean per AC row is overkill —
-the LIKE pattern indexes well on a text column for the small "already-expired"
-set we're filtering.
+Same as v2 — `NOT EXISTS (... type='EX' AND note LIKE 'Expired from <id>%')`
+subquery in the cron SELECT.
 
 ### 4.5 Commission rule conflict resolution (Locked Decision Q15)
 
@@ -957,59 +1146,29 @@ Rules are matched per line item by specificity:
 3. ALL-scoped rule (scope='ALL', scopeId is null)
 ```
 
-Within the same specificity, **newest `createdAt` wins** (Locked Q15). The
-algorithm: load all active rules for the business once (`Map<staffUserId,
-Rule[]>`), then per line item filter to applicable rules + take the first by
-the specificity order. O(rules × lines), but rules are bounded (~10 per
-business) and lines are bounded (~50 per POS sale; ~100 per invoice). No
-performance concern.
-
-**Staff filter:** if `rule.staffUserIds.length > 0`, the rule only applies
-when the sale's `cashierId` (POS) or `createdBy` (invoice) is in that array.
-If empty array, applies to all staff. Implemented in
-`commission-accrual.service.ts.findApplicableRules()`.
+Within the same specificity, newest `createdAt` wins. Same as v2.
 
 ### 4.6 Loyalty redemption gate when program disabled mid-tx
 
-Scenario: owner disables the loyalty program (PUT /loyalty/program with
-`enabled: false`) at the exact moment a sale is checking out with a
-`loyalty_redemption` payment.
-
-The applyRedemption fn re-reads `LoyaltyProgram.enabled` inside the tx
-(after acquiring the advisory lock). If disabled, throws `PROGRAM_DISABLED`
-which rolls back the whole sale and surfaces a clear error to the cashier:
-"Loyalty program was disabled — please remove the loyalty payment line and
-retry". Acceptable UX; this scenario is vanishingly rare.
+Same as v2. The `applyRedemption` fn re-reads `LoyaltyProgram.enabled`
+inside the tx (after acquiring the advisory lock). If disabled, throws
+`PROGRAM_DISABLED`.
 
 ---
 
 ## 5. Offline behavior (FE)
 
-Per `.claude/rules/OFFLINE_RULES.md` and Locked Decisions §19. Five clauses:
+Per `.claude/rules/OFFLINE_RULES.md` and Locked Decisions §19. Five clauses
+(same as v2 — no security-relevant changes):
 
 ### 5.1 Loyalty balance preview — cache-on, stale-tolerant
 
-`GET /api/loyalty/balance/:partyId` is called with `cacheReads: true` from
-`src/features/loyalty/api/loyalty.service.ts`. When the cashier picks a party
-in the cart, the chip displays:
-
-- **Online:** `240 pts (Rs 24)` from a fresh fetch
-- **Offline + cached:** `240 pts (Rs 24) · Last synced 11:42` (stale indicator)
-- **Offline + no cache:** chip hidden, no error toast (cashier can still ring
-  the sale — they just can't see the balance)
+`GET /api/loyalty/balance/:partyId` is called with `cacheReads: true`.
 
 ### 5.2 Redemption is server-validated even when preview was offline
 
-The optimistic UI shows the cached balance, but the real redemption is
-authoritative on the server. Two safeties prevent stale-cache bugs:
-
-1. `openCheckout()` already refuses to open the checkout sheet when offline
-   (`src/features/pos/hooks/usePosCheckout.ts:53-56`). Redemption can therefore
-   only happen on a live connection.
-2. `previewRedemption` is called by the checkout sheet just before the sale —
-   that's a server round-trip that returns the **live** balance. If it differs
-   from the cached chip, the form inline-errors with `INSUFFICIENT_POINTS` or
-   `REDEMPTION_EXCEEDS_CART` and resets the redemption input to 0.
+Two safeties: `openCheckout()` refuses offline; `previewRedemption` is a
+server round-trip at checkout time.
 
 ### 5.3 CRM mutations — offline-queued per OFFLINE_RULES
 
@@ -1017,32 +1176,27 @@ authoritative on the server. Two safeties prevent stale-cache bugs:
 |----------|--------------|---------------|
 | `PATCH /api/parties/:id` (tags / followUpAt) | `party` | `data.name ?? "Party"` |
 
-All loyalty/commission CONFIG mutations (`PUT /loyalty/program`,
-`POST /commission/rules`) ALSO pass `entityType: 'loyalty-program'` /
-`'commission-rule'` and a sensible `entityLabel`. Even though they're done
-infrequently by owners, the offline queue UI should still describe them.
+All loyalty/commission CONFIG mutations also pass `entityType` and
+`entityLabel`.
 
 ### 5.4 Reads — explicit cache opt-in matrix
 
 | Endpoint | `cacheReads` | Reasoning |
 |----------|--------------|-----------|
-| `GET /api/loyalty/program` | YES | Config only; no PII |
-| `GET /api/loyalty/balance/:partyId` | YES | Per-party total + last entry; party names cached via party-list cache so no new leak surface |
-| `GET /api/loyalty/ledger/:partyId` | **NO** | Per-row financial detail; per-rule.3 |
-| `GET /api/parties?tag=…` | YES (existing cache for list) | Already in scope per Epic A |
-| `GET /api/parties/follow-ups` | YES | Party names + dates; no balances |
+| `GET /api/loyalty/program` | YES | Config only |
+| `GET /api/loyalty/balance/:partyId` | YES | Per-party total |
+| `GET /api/loyalty/ledger/:partyId` | **NO** | Per-row financial detail |
+| `GET /api/parties?tag=…` | YES (existing) | Already in scope per Epic A |
+| `GET /api/parties/follow-ups` | YES | Party names + dates only |
 | `GET /api/parties/tags` | YES | Counts only |
 | `GET /api/commission/rules` | YES | Config only |
-| `GET /api/commission/ledger?staffUserId=self` | YES | Own ledger only; permission already enforced server-side |
-| `GET /api/commission/leaderboard` | **NO** | Multi-staff data; PII for other employees |
+| `GET /api/commission/ledger?staffUserId=self` | YES | Own ledger only |
+| `GET /api/commission/leaderboard` | **NO** | Multi-staff data |
 
 ### 5.5 No client-side accrual write
 
 Commission and loyalty accrual happen inside POS / Document `$transaction`s
-on the server. The client never writes ledger rows. So there is no
-offline-queue or conflict-resolution concern for accrual — it's entirely
-piggy-backed on the existing POS / Document offline behavior (which today is
-"POS = online-only, Documents = full offline support via api()").
+on the server.
 
 ---
 
@@ -1050,165 +1204,269 @@ piggy-backed on the existing POS / Document offline behavior (which today is
 
 The existing `requirePermission(permission)` middleware
 (`server/src/middleware/permission.ts:20`) reads from
-`BusinessUser.roleRef.permissions: String[]`. Owners (`role === 'owner'`)
-bypass — owner always sees everything.
+`BusinessUser.roleRef.permissions: String[]`. Owners bypass.
 
-### 6.1 New permission strings (v2 — S1 renamed to house style)
+### 6.1 New permission strings (v2 — S1 house style; v3 — S2 rate cap location, S3 redeem middleware)
 
-The HisaabPro permission registry follows a strict `<resource>.<action>`
-two-segment convention (see `PERMISSION_MATRIX` in
-`server/src/services/settings/permissions-data.ts:6-207`). The v1 draft
-used three-segment forms (`commission.read.self`, `loyalty.config`) that
-don't fit. v2 renames everything to the house style:
+The HisaabPro permission registry follows `<resource>.<action>` two-segment
+convention. The v1 draft's three-segment forms (`commission.read.self`,
+`loyalty.config`) don't fit. v2 renames everything:
 
-| Permission key (v2) | v1 name (deprecated) | Granted by default to | Used by routes |
+| Permission key (v2/v3) | v1 name (deprecated) | Granted by default to | Used by routes |
 |---------------------|-----------------------|------------------------|----------------|
 | `loyalty.configure` | `loyalty.config` | owner | `PUT /api/loyalty/program` |
-| `loyalty.redeem` | (unchanged) | owner, cashier | (consumed by POS checkout — checked server-side when payment includes `loyalty_redemption`) |
-| `parties.view` | (unchanged — existing) | owner, viewer, cashier | `GET /api/loyalty/balance/:partyId`, `GET /api/loyalty/ledger/:partyId`, `GET /api/parties/follow-ups`, `GET /api/parties/tags`, `GET /api/parties?tag=` (already-permission-gated; no change) |
-| `commission.configure` | `commission.config` | owner | `POST/PUT/DELETE /api/commission/rules` |
-| `commission.view` | `commission.read.self` | owner, all staff | `GET /api/commission/ledger?staffUserId=<self>`, `GET /api/commission/ledger` (no staffUserId = own) |
-| `commission.view_all` | `commission.read.all` | owner, manager | `GET /api/commission/leaderboard`, `GET /api/commission/ledger?staffUserId=<other>` |
-| `crm_followup.create` | `crm.followup.write` | owner, cashier (alias of `parties.edit`) | `PATCH /api/parties/:id` when body sets `followUpAt` |
+| `loyalty.redeem` | (unchanged) | owner, cashier | **v3 / S3**: enforced at route layer in `posCheckoutAuth` middleware (§3.1) BEFORE the checkout tx opens whenever any `payments[].mode === 'loyalty_redemption'` is present. Reject with 403 `PERMISSION_DENIED`. |
+| `parties.view` | (unchanged) | owner, viewer, all 5 staff roles (v3 NEW_S2 clarified) | `GET /api/loyalty/balance/:partyId`, `GET /api/loyalty/ledger/:partyId`, `GET /api/parties/follow-ups`, `GET /api/parties/tags`, `GET /api/parties?tag=` |
+| `commission.configure` | `commission.config` | owner | `POST/PUT/DELETE /api/commission/rules`. **v3 / S2**: `rateBps` capped at 10_000 (100%) at the Zod boundary in `commissionRuleSchema.strict()`. |
+| `commission.view` | `commission.read.self` | owner, all staff | `GET /api/commission/ledger?staffUserId=<self>` |
+| `commission.view_all` | `commission.read.all` | owner, manager | `GET /api/commission/leaderboard`, `GET /api/commission/ledger?staffUserId=<other>` (gated by `commissionLedgerAuth` factory — see §6.3) |
+| `crm_followup.create` | `crm.followup.write` | owner, cashier | `PATCH /api/parties/:id` when body sets `followUpAt` |
 
-> Note: the `crm_followup` resource is its own resource (separate from
-> `parties`) because the future-only constraint and overdue-detection
-> logic are loyalty-domain concerns, not general party editing. Underscore
-> joiner matches the existing `cashRegister` resource style.
-
-### 6.2 Where the strings are registered (v2 — M4 fix)
-
-**Real registry path:** `server/src/services/settings/permissions-data.ts`
-(290 lines, 8 system roles: Owner, Partner, Manager, Salesman, Cashier,
-Stock Manager, Delivery Boy, Accountant). The v1 doc mistakenly pointed
-at `server/src/services/staff/role.constants.ts`, which does not exist
-in this worktree. **All 7 new permissions must be merged into this real
-file.**
-
-Merge procedure (PR1 — schema phase):
-
-1. **Add the 7 new permissions to `PERMISSION_MATRIX`** (lines 6-207).
-   New entries appear as two new top-level resource blocks (lines
-   inserted between existing rows ~192 ("pos") and ~200 ("bom") for
-   alphabetical-ish locality). Concretely:
+**v3 / S2 — rate-cap location is the Zod boundary.** `commissionRuleSchema`
+in `server/src/schemas/commission.schema.ts`:
 
 ```ts
-// Insert after the 'pos' block at line ~192
-{
-  key: 'loyalty', label: 'Loyalty Programme',
-  actions: [
-    { key: 'configure', label: 'Configure Loyalty Programme' },
-    { key: 'redeem',    label: 'Apply Loyalty Redemption at POS' },
-  ],
-},
-{
-  key: 'commission', label: 'Commission',
-  actions: [
-    { key: 'configure', label: 'Manage Commission Rules' },
-    { key: 'view',      label: 'View Own Commission Ledger' },
-    { key: 'view_all',  label: 'View All Staff Commission + Leaderboard' },
-  ],
-},
-{
-  key: 'crm_followup', label: 'CRM Follow-up',
-  actions: [
-    { key: 'create', label: 'Set / Change Party Follow-up Date' },
-  ],
-},
+export const commissionRuleSchema = z.object({
+  name: z.string().trim().min(1).max(80),
+  scope: z.enum(['ALL', 'PRODUCT', 'CATEGORY']),
+  scopeId: z.string().cuid().optional().nullable(),
+  mode: z.enum(['PERCENT_GROSS', 'PERCENT_NET', 'FLAT_PER_UNIT']),
+  // v3 / S2 HARD CAP — 10000 bps = 100%
+  rateBps: z.number().int().min(0).max(10000,
+    'COMMISSION_RATE_EXCEEDS_MAX_100_PERCENT').optional().nullable(),
+  flatPerUnitPaise: z.number().int().min(0).optional().nullable(),
+  appliesTo: z.enum(['POS', 'INVOICE', 'BOTH']),
+  staffUserIds: z.array(z.string().cuid()).default([]),
+  isActive: z.boolean().default(true),
+}).strict().superRefine((v, ctx) => {
+  // Mode-specific required fields
+  if (v.mode === 'FLAT_PER_UNIT' && v.flatPerUnitPaise == null) {
+    ctx.addIssue({ code: 'custom', path: ['flatPerUnitPaise'],
+      message: 'FLAT_PER_UNIT_PAISE_REQUIRED' })
+  }
+  if (v.mode !== 'FLAT_PER_UNIT' && v.rateBps == null) {
+    ctx.addIssue({ code: 'custom', path: ['rateBps'],
+      message: 'RATE_BPS_REQUIRED' })
+  }
+})
 ```
 
-   `ALL_PERMISSIONS` and `VALID_PERMISSIONS` are derived constants —
-   no manual update needed; they recompute at module load.
+FE warning at 5000 bps (50%) is a UI-only soft signal in
+`CommissionRuleForm.tsx` (file plan row #81) — server never accepts a
+value that bypassed the Zod gate. §17.3 boundary test:
+`POST /api/commission/rules` with `rateBps: 15000` returns 400
+`COMMISSION_RATE_EXCEEDS_MAX_100_PERCENT`.
 
-2. **Merge defaults into each of the 8 system roles** (lines 219-289).
-   `Owner` and `Partner` get all 7 new keys automatically because they
-   are `ALL_PERMISSIONS` (Owner) and `ALL_PERMISSIONS.filter(p => p !==
-   'settings.manageStaff')` (Partner). `Manager` gets all 7 because it
-   currently has `ALL_PERMISSIONS.filter(p => !['settings.manageStaff',
-   'settings.modify', 'settings.manageRoles'].includes(p))` — none of
-   the new keys are in the excluded list.
+### 6.2 Where the strings are registered (v2 — M4)
 
-   The 5 non-management staff roles (Salesman, Cashier, Stock Manager,
-   Delivery Boy, Accountant) need explicit appended permission strings
-   in their `permissions: [...]` arrays. The full 5×7 matrix is in §6.4.
+**Real registry:** `server/src/services/settings/permissions-data.ts`
+(290 lines, 8 system roles). Merge procedure same as v2.
 
-3. **No DB migration** — the registry is in code; `Role.permissions` per
-   business stores subset strings. UI for owner to assign new keys to
-   custom roles is already at `/settings/roles` and reads from
-   `PERMISSION_MATRIX` automatically.
+### 6.3 `commission.view` factory middleware + cross-tenant precheck (v3 — M4, M5)
 
-### 6.3 Special enforcement — `commission.view` semantics
-
-`GET /api/commission/ledger?staffUserId=X` is the same endpoint regardless of
-whether you're reading your own or someone else's. The route handler logic:
+**v2 (deprecated) pattern — fragile inline `res.headersSent` chain:**
 
 ```ts
+// DO NOT USE — superseded by v3
 const requestedStaff = String(req.query.staffUserId ?? req.user!.userId)
 if (requestedStaff !== req.user!.userId) {
-  // requesting someone else's ledger → must have commission.view_all
   await requirePermission('commission.view_all')(req, res, () => {})
-  if (res.headersSent) return
+  if (res.headersSent) return  // ← fragile
 }
-// own ledger or has commission.view_all — proceed
 ```
 
-This pattern is repeated for `GET /api/commission/ledger`. Documented in §11
-as a security-agent focus area (own-vs-other gate must be airtight).
+The fragility comes from three sources:
+1. `requirePermission` writes to `res` synchronously before `next()` is
+   called — the `() => {}` next-shim swallows a thrown next-error.
+2. `res.headersSent` returns `true` only after the response is FLUSHED,
+   not when `.status().json()` is called — timing varies.
+3. Future middleware-chain refactor (async `next` wrapping) silently
+   breaks this — no test catches it.
 
-### 6.4 System role × new permission defaults table (v2 — S5 NEW)
+**v3 / M5 — factory middleware pattern. Single-pass, two terminal branches:**
+
+```ts
+// server/src/middleware/commission-ledger-auth.ts (NEW v3 — file plan row #27c, ~50L)
+import type { Request, Response, NextFunction } from 'express'
+import { requirePermission } from './permission.js'
+
+/**
+ * Auth for GET /api/commission/ledger.
+ *
+ * Two paths, both single-pass (no headersSent chain):
+ *  1. No staffUserId, OR staffUserId === caller.userId
+ *     → viewing own ledger; rely on baseline requireAuth.
+ *  2. staffUserId is different (or absent) AND caller is NOT that user
+ *     → must hold `commission.view_all`; defer to requirePermission.
+ *
+ * The cross-tenant 404 check (v3 / M4) happens INSIDE the route handler,
+ * not in this middleware — it needs prisma access which is route-scoped.
+ */
+export function commissionLedgerAuth(req: Request, res: Response, next: NextFunction) {
+  const targetUserId = typeof req.query.staffUserId === 'string'
+    ? req.query.staffUserId
+    : undefined
+  // Path 1: viewing own ledger (or no staffUserId param) → no extra permission
+  if (!targetUserId || targetUserId === req.user?.userId) {
+    return next()
+  }
+  // Path 2: viewing someone else's → must hold commission.view_all
+  return requirePermission('commission.view_all')(req, res, next)
+}
+```
+
+Route mount (`server/src/routes/commission.routes.ts`):
+
+```ts
+import { commissionLedgerAuth } from '../middleware/commission-ledger-auth.js'
+
+router.get('/api/commission/ledger',
+  requireAuth,
+  commissionLedgerAuth,         // v3 / M5 — replaces inline chain
+  commissionLedgerHandler
+)
+
+router.get('/api/commission/leaderboard',
+  requireAuth,
+  requirePermission('commission.view_all'),
+  commissionLeaderboardHandler
+)
+```
+
+**v3 / M4 — Cross-tenant staffUserId precheck returns 404, NOT 200-empty, NOT 403.**
+
+The audit identified an IDOR + timing oracle: `GET /api/commission/ledger?staffUserId=<UUID_of_other_tenant>`
+currently might either return `{ rows: [], summary: { totalPaise: 0 } }`
+(200-empty leaks "this UUID is a real user somewhere") or return 403
+(leaks "I exist but you don't own me"). Both are timing oracles for UUID
+enumeration.
+
+The handler MUST do an explicit tenant-membership check BEFORE running
+the ledger query, returning **404 STAFF_NOT_FOUND** when the UUID is not
+a `BusinessUser` of the caller's `businessId`:
+
+```ts
+// server/src/routes/commission.routes.ts — commissionLedgerHandler
+async function commissionLedgerHandler(req: Request, res: Response) {
+  const targetUserId = (req.query.staffUserId as string | undefined) ?? req.user!.userId
+
+  // v3 / M4 — Cross-tenant precheck. Collapses 200-empty + 403 into a
+  // single 404 that's indistinguishable from "that UUID does not exist
+  // anywhere in the system" — kills the enumeration oracle.
+  //
+  // We use isActive: true so historic / soft-deleted staff also yield
+  // 404 — same security posture.
+  if (targetUserId !== req.user!.userId) {
+    const target = await prisma.businessUser.findFirst({
+      where: {
+        userId: targetUserId,
+        businessId: req.user!.businessId,
+        isActive: true,
+      },
+      select: { userId: true },
+    })
+    if (!target) {
+      // 404, NOT 403. NOT 200-empty.
+      return res.status(404).json({
+        success: false,
+        error: { code: 'STAFF_NOT_FOUND' }
+      })
+    }
+  }
+
+  // Now safe to query the ledger
+  const result = await commissionLedger.list({
+    businessId: req.user!.businessId,
+    staffUserId: targetUserId,
+    from: req.query.from,
+    to: req.query.to,
+    cursor: req.query.cursor,
+  })
+  return res.json({ success: true, data: result })
+}
+```
+
+§17.3 acceptance tests (added):
+1. **Cross-tenant precheck oracle test:** GET `/api/commission/ledger?staffUserId=<other_tenant_user_uuid>`
+   returns **404 STAFF_NOT_FOUND**. NOT 200 with empty rows. NOT 403.
+2. **Factory middleware grep test:**
+   `git grep -n "commissionLedgerAuth\|res.headersSent" server/src/routes/commission.routes.ts`
+   — the factory MUST be imported and used; `res.headersSent` MUST NOT
+   appear in this route file.
+3. **Single-pass behaviour test:** GET `/api/commission/ledger` (no
+   staffUserId) by a staff user with `commission.view` but NOT
+   `commission.view_all` returns 200 with their own ledger. GET with
+   `staffUserId=<other staff in same tenant>` returns 403.
+
+The same cross-tenant precheck pattern is also applied to:
+- `GET /api/loyalty/balance/:partyId` — Party precheck before ledger
+  aggregate; 404 PARTY_NOT_FOUND for cross-tenant.
+- `GET /api/loyalty/ledger/:partyId` — same.
+
+These are already in §11.3 "cross-tenant leak" risks for security agent
+to verify; v3 elevates them from "audit focus" to "mandatory route
+handler pattern" in line with the M4 fix.
+
+### 6.4 System role × new permission defaults table (v2 — S5; v3 — NEW_S2 wording clarified)
 
 The 5 non-management system roles × 7 new permission keys = 35 cells.
 Owner / Partner / Manager get every new key by default (via the existing
-`ALL_PERMISSIONS` derivations — see §6.2 step 2). The table below is
-the exhaustive defaults set for the 5 staff roles to merge into
-`SYSTEM_ROLES` (lines 231-289 of `permissions-data.ts`):
+`ALL_PERMISSIONS` derivations — see §6.2). The table below is the
+exhaustive defaults set for the 5 staff roles to merge into `SYSTEM_ROLES`
+(lines 231-289 of `permissions-data.ts`):
 
 | System role | `loyalty.configure` | `loyalty.redeem` | `commission.configure` | `commission.view` | `commission.view_all` | `crm_followup.create` | Rationale |
 |-------------|---------------------|------------------|------------------------|--------------------|------------------------|-----------------------|-----------|
-| Salesman    | ❌ | ✅ | ❌ | ✅ | ❌ | ✅ | Salesmen ring sales and earn commission; should see own ledger and set follow-ups; cannot redeem (no POS create today) but flag included for future when Salesman gets POS access. **Practical default for this role: ✅ on redeem** since Salesman creates invoices that may include loyalty redemption in Phase 6 — keep open. |
-| Cashier     | ❌ | ✅ | ❌ | ✅ | ❌ | ✅ | Cashier is the canonical POS operator (already has `pos.read`, `pos.create`); needs `loyalty.redeem` to apply redemptions at checkout, `commission.view` to see own earnings, `crm_followup.create` to capture "customer promised to return on Friday" notes inline. |
-| Stock Manager | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | Inventory role; no sales floor exposure. None of the loyalty/commission/follow-up flows apply. |
-| Delivery Boy | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | Delivers and collects payments; no checkout, no commission rule (delivery commission would be a future epic with its own `delivery.commission` resource). |
-| Accountant  | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | Read-only on ledgers; sees own commission row (in case Accountant is also a sales-creator in a small business); does not configure rules and does not see other staff. No follow-up capture. |
+| Salesman    | ❌ | ✅ | ❌ | ✅ | ❌ | ✅ | Salesmen ring sales and earn commission; should see own ledger and set follow-ups. ✅ on redeem in anticipation of Phase 6 Salesman-creates-invoice-with-redemption flow. |
+| Cashier     | ❌ | ✅ | ❌ | ✅ | ❌ | ✅ | Cashier is the canonical POS operator (already has `pos.read`, `pos.create`); needs `loyalty.redeem` to apply redemptions at checkout (now hard-enforced at route layer per v3 / S3 — see §3.1), `commission.view` to see own earnings, `crm_followup.create` to capture follow-up notes inline. |
+| Stock Manager | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | Inventory role; no sales floor exposure. None of the loyalty/commission/follow-up flows apply. (Note: this seed-role label is literally `Stock Manager` in `permissions-data.ts:256` — no underscore-cased alias exists.) |
+| Delivery Boy | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | Delivers and collects payments; no checkout, no commission rule. |
+| Accountant  | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | Read-only on ledgers; sees own commission row (in case Accountant is also a sales-creator in a small business); does not configure rules and does not see other staff. |
 
-Note: `parties.view` (used by loyalty balance / ledger reads, and `GET /api/parties/tags`)
-is already granted to every staff role today except Stock Manager (which has it),
-so no new grants for `parties.view` are required for Epic D reads.
+**v3 NEW_S2 clarified wording — `parties.view` already covers Epic D reads.**
+The v2 closing parenthetical ("`parties.view` ... already granted to every
+staff role today except Stock Manager (which has it)") was a
+self-contradicting copy-paste leftover. The accurate statement is: **all 5
+staff roles in `permissions-data.ts` already include `parties.view` in
+their `permissions: [...]` array** (Salesman line 234, Cashier line 247,
+Stock Manager line 259, Delivery Boy line 268, Accountant line 277).
+Therefore, no new grants for `parties.view` are required for Epic D
+loyalty-balance / loyalty-ledger / parties-tags reads. The wording
+correction is doc-only; no implementation impact.
 
-If owner wants to override these defaults (e.g. grant Cashier
-`commission.view_all` for an "assistant manager" role), the existing
-`/settings/roles` UI lets them create a custom role — no code change.
+If owner wants to override these defaults, the existing `/settings/roles`
+UI lets them create a custom role — no code change.
 
 ### 6.5 Staff widget visibility
 
-`StaffDashboardSection` calls `useCanRead('commission.view')` (a thin
-wrapper around the existing permission check exposed via React context).
-Widget is hidden — not "Disabled" — when the user lacks the permission.
+`StaffDashboardSection` calls `useCanRead('commission.view')`. Widget is
+hidden when the user lacks the permission.
 
 ---
 
 ## 7. File Plan (HARD GATE — every row ≤ 250 LOC)
 
-Total: **83 files** (51 create + 32 edit) — up from v1's 81 due to v2
-additions: (a) new `PartyDetailLoyaltyTab.tsx` FE component (M3 fix),
-(b) new `server/src/lib/analytics.ts` BE thin wrapper (M5 fix). The
-v2-shifted `StaffDashboardSection.tsx` (CREATE not EDIT) does not change
-file count but does change action. Layer order matches CLAUDE.md project rule:
+Total: **85 files** (53 create + 32 edit) — up from v2's 83 due to v3
+additions: (a) new `server/src/middleware/commission-ledger-auth.ts` (M5
+factory middleware, ~50L), (b) new `scripts/enforce.js` rule entry (M2
+server-only fields grep, ~25L incremental). The v2 file count (83) becomes
+v3 (85) by adding these two; no existing file exceeds the 250-LOC cap.
 
+Layer order matches CLAUDE.md project rule:
 - **Backend layers:** `types → constants → schema (Zod) → utils → service → route`
 - **Frontend layers:** `types → constants → utils → hook → sub-components → page → css`
 
-### 7.1 Backend — 33 files (paths real)
+### 7.1 Backend — 34 files (paths real; v3 deltas marked)
 
 | # | Path | Action | Est. LOC | Layer | Build phase | Depends-on |
 |---|------|--------|----------|-------|-------------|-----------|
-| 1 | `server/prisma/schema.prisma` | edit | +97 | schema | PR1 | — |
-| 2 | `server/prisma/migrations/20260518000000_phase5_epic_d_crm_loyalty_commission/migration.sql` | create | ~90 | schema | PR1 | #1 |
-| 2b | `server/src/lib/analytics.ts` (NEW v2 — M5) | create | ~60 | lib | PR1 | — |
+| 1 | `server/prisma/schema.prisma` | edit | +99 (+2 v3 for new composite index) | schema | PR1 | — |
+| 2 | `server/prisma/migrations/20260518000000_phase5_epic_d_crm_loyalty_commission/migration.sql` | create | ~95 (+5 v3 for new index) | schema | PR1 | #1 |
+| 2b | `server/src/lib/analytics.ts` (v2 — M5) | create | ~60 | lib | PR1 | — |
 | **Loyalty #125** | | | | | | |
 | 3 | `server/src/types/loyalty.types.ts` | create | ~80 | types | PR1 | — |
 | 4 | `server/src/services/loyalty/loyalty.constants.ts` | create | ~50 | constants | PR1 | — |
-| 4b | `server/src/services/loyalty/loyalty.utils.ts` (NEW v2 — S2 host for `computePointsEarned`) | create | ~80 | utils | PR1 | #4 |
+| 4b | `server/src/services/loyalty/loyalty.utils.ts` (v2 — S2 host for `computePointsEarned`; v3 — S1 BigInt insurance) | create | ~90 (+10 v3 BigInt + extra unit test fixtures) | utils | PR1 | #4 |
 | 5 | `server/src/services/loyalty/loyalty.errors.ts` | create | ~50 | constants | PR1 | #4 |
 | 6 | `server/src/schemas/loyalty.schema.ts` | create | ~90 | schema | PR1 | #3 |
 | 7 | `server/src/services/loyalty/loyalty-balance.service.ts` | create | ~110 | service | PR3 | #3,#4 |
@@ -1219,46 +1477,51 @@ file count but does change action. Layer order matches CLAUDE.md project rule:
 | 12 | `server/src/routes/loyalty.routes.ts` | create | ~150 | route | PR3 | #6,#7,#8,#9,#10 |
 | 13 | `server/src/lib/cron-scheduler.ts` | edit | +14 | bootstrap | PR3 | #11 |
 | 14 | `server/src/services/pos/pos-checkout.service.ts` | edit | +35 | service | PR3 | #8,#9 |
-| 15 | `server/src/services/pos/pos.validators.ts` | edit | +25 | schema | PR3 | — |
-| 16 | `server/src/services/pos/pos-void.service.ts` (covers BOTH void AND restore — v2 §3.4.1) | edit | +45 | service | PR3 | #8 |
+| 14b | `server/src/routes/pos-sales.ts` (v3 / S3 — add `posCheckoutAuth` route-level middleware between `auth` and `requireIdempotencyKey` on existing `router.post('/', auth, requireIdempotencyKey, requirePermission('pos.create'), idempotencyCheck(), asyncHandler(...))` at line 62; preserve all 5 existing middlewares; +25L) | edit | +25 | route | PR3 | #14 |
+| 15 | `server/src/services/pos/pos.validators.ts` (v3 / S1 — BigInt cross-multiply added) | edit | +30 (+5 v3 BigInt) | schema | PR3 | — |
+| 16 | `server/src/services/pos/pos-void.service.ts` (covers BOTH void AND restore — v2 §3.4.1; v3 / M1 deep-clone snapshot from prior `meta.ruleSnapshot`) | edit | +50 (+5 v3 deep-clone notes) | service | PR3 | #8 |
 | 16b | `server/src/services/report/report-daybook.ts` (v2 — S3 tender breakdown) | edit | +15 | service | PR3 | #15 |
 | **CRM #127** | | | | | | |
 | 17 | `server/src/types/party-crm.types.ts` | create | ~60 | types | PR2 | — |
-| 18 | `server/src/services/party/followups.service.ts` | create | ~130 | service | PR2 | #17 |
+| 18 | `server/src/services/party/followups.service.ts` (v3 / M3 service-layer clamp) | create | ~140 (+10 v3 clamp + composite-index notes) | service | PR2 | #17 |
 | 19 | `server/src/services/party/tags.service.ts` | create | ~90 | service | PR2 | #17 |
 | 20 | `server/src/services/party/last-contacted.service.ts` | create | ~80 | utils/service | PR2 | — |
 | 21 | `server/src/routes/documents/share.ts` | edit | +8 | route | PR2 | #20 |
 | 22 | `server/src/services/collections/bulk-reminder.service.ts` | edit | +8 | service | PR2 | #20 |
 | 23 | `server/src/services/payment/reminders.ts` | edit | +12 | service | PR2 | #20 |
-| 24 | `server/src/schemas/party.schemas.ts` | edit | +12 | schema | PR2 | — |
+| 24 | `server/src/schemas/party.schemas.ts` (v3 / M2 — allow-list schemas; v3 / M3 — `followUpsQuerySchema` with `.max(365)`) | edit | +35 (+23 v3 for M2 allow-list rewrite + M3 query schema) | schema | PR2 | — |
 | 25 | `server/src/services/party/list-get.ts` | edit | +18 | service | PR2 | — |
 | 26 | `server/src/services/party/update-delete.ts` | edit | +6 | service | PR2 | — |
-| 27 | `server/src/routes/party.ts` | edit | +60 | route | PR2 | #18,#19,#25 |
-| 27b | `server/src/services/settings/permissions-data.ts` (v2 — M4 fix) | edit | +30 | constants | PR1 | — |
+| 27 | `server/src/routes/party.ts` (v3 / M3 — wire `followUpsQuerySchema` + INVALID_WITHIN_DAYS_RANGE error code) | edit | +70 (+10 v3 for query parse + error path) | route | PR2 | #18,#19,#25 |
+| 27b | `server/src/services/settings/permissions-data.ts` (v2 — M4) | edit | +30 | constants | PR1 | — |
+| 27c | `server/src/middleware/commission-ledger-auth.ts` (NEW v3 — M5 factory middleware) | create | ~50 | middleware | PR5 | — |
 | **Commission #128** | | | | | | |
 | 28 | `server/src/types/commission.types.ts` | create | ~80 | types | PR1 | — |
 | 29 | `server/src/services/commission/commission.constants.ts` | create | ~40 | constants | PR1 | — |
-| 30 | `server/src/services/commission/commission.errors.ts` | create | ~50 | constants | PR1 | #29 |
-| 31 | `server/src/schemas/commission.schema.ts` | create | ~120 | schema | PR1 | #28 |
+| 30 | `server/src/services/commission/commission.errors.ts` (v3 — add `STAFF_NOT_FOUND`, `COMMISSION_RATE_EXCEEDS_MAX_100_PERCENT`) | create | ~55 (+5 v3 new error codes) | constants | PR1 | #29 |
+| 31 | `server/src/schemas/commission.schema.ts` (v3 / S2 — `rateBps.max(10000)`) | create | ~125 (+5 v3 for cap) | schema | PR1 | #28 |
 | 32 | `server/src/services/commission/commission-rule.service.ts` | create | ~180 | service | PR5 | #28,#29,#30 |
-| 33 | `server/src/services/commission/commission-accrual.service.ts` | create | ~220 | service | PR5 | #29,#30 |
-| 34 | `server/src/services/commission/commission-ledger.service.ts` | create | ~140 | service | PR5 | #28 |
-| 35 | `server/src/routes/commission.routes.ts` | create | ~200 | route | PR5 | #31,#32,#33,#34 |
+| 33 | `server/src/services/commission/commission-accrual.service.ts` (v3 / M1 — explicit deep-clone snapshot on accrual + on void + on restore) | create | ~240 (+20 v3 for deep-clone callout + 3 call sites) | service | PR5 | #29,#30 |
+| 34 | `server/src/services/commission/commission-ledger.service.ts` (v3 / M4 — cross-tenant precheck helper) | create | ~150 (+10 v3 for precheck shape) | service | PR5 | #28 |
+| 35 | `server/src/routes/commission.routes.ts` (v3 / M4 + M5 — handler does cross-tenant 404 precheck; uses `commissionLedgerAuth` factory middleware) | create | ~225 (+25 v3 for precheck + factory wire) | route | PR5 | #31,#32,#33,#34,#27c |
 | 36 | `server/src/services/pos/pos-checkout.service.ts` (continues edit from #14 — single edit covers both loyalty + commission) | — | (already in #14) | — | PR5 | #33 |
 | 37 | `server/src/services/document/create.ts` | edit | +18 | service | PR5 | #33 |
 | 38 | `server/src/services/document/update.ts` | edit | +14 | service | PR5 | #33 |
 | 39 | `server/src/app.ts` | edit | +6 | bootstrap | PR3+PR5 | #12,#35 |
+| 91b | `scripts/enforce.js` (v3 / M2 — grep rule blocking server-only Party fields in input schemas) | edit | +25 | tooling | PR2 | #24 |
 
-> **Reconciliation with SCOPE §10's 32-backend-file count:** v2 adds:
-> #2b (`analytics.ts`, M5 fix) and #4b (`loyalty.utils.ts`, S2 fix) and
-> tags #16b and #27b as additional editsites. Three new dedicated files
-> (`analytics.ts`, `loyalty.utils.ts`, `loyalty.errors.ts`, `commission.errors.ts`)
-> were extracted from constants/service files to keep every file ≤ 80 LOC for
-> the helpers layer. Counter-balanced by SCOPE row #18 (`party-last-contacted.service.ts`)
-> consolidating with the three hook edits (#19, #20, #21) in a single helper here.
-> Net: 33 distinct backend files (was 32 in v1 due to splitting analytics out).
+**Largest backend row (v3):** `commission-accrual.service.ts` at 240 LOC
+(was 220 in v2; +20 for the M1 deep-clone callout + 3 call sites:
+forward accrual, void reversal re-snapshot from prior `meta.ruleSnapshot`,
+restore counter-cancellation re-snapshot from prior `meta.ruleSnapshot`).
+**Still under 250 LOC.** If line-counting pushes it over during build,
+extract the snapshot-helper into a 30-line `commission-snapshot.utils.ts`
+(file plan addendum — not pre-allocated to keep the v3 delta tight).
 
-### 7.2 Frontend — 50 files (paths real — v2 path fixes per §0.2)
+`commission.routes.ts` at 225 LOC (was 200 in v2; +25 for the M4 cross-tenant
+precheck + factory middleware wire). **Still under 250 LOC.**
+
+### 7.2 Frontend — 50 files (paths real — v2 path fixes per §0.2; v3 NEW_S1 builder note on #61b)
 
 | # | Path | Action | Est. LOC | Layer | Build phase | Depends-on |
 |---|------|--------|----------|-------|-------------|-----------|
@@ -1285,50 +1548,55 @@ file count but does change action. Layer order matches CLAUDE.md project rule:
 | 58 | `src/features/loyalty/pages/LoyaltyProgramPage.tsx` | create | ~150 | page | PR4 | #51,#54 |
 | 59 | `src/features/pos/components/payment/PaymentSheet.tsx` | edit | +35 | sub-component | PR4 | #56 |
 | 60 | `src/features/pos/components/customer/CustomerSelector.tsx` | edit | +25 | sub-component | PR4 | #55 |
-| 61 | `src/features/parties/components/PartyDetailLoyaltyTab.tsx` (NEW v2 — M3 — replaces phantom `PartyDetailTabs.tsx` edit) | create | ~190 | sub-component | PR4 | #57 |
-| 61b | `src/features/parties/PartyDetailPage.tsx` (v2 — M3, expand TABS array + render new tab) | edit | +18 | page | PR4 | #61 |
+| 61 | `src/features/parties/components/PartyDetailLoyaltyTab.tsx` (v2 — M3) | create | ~190 | sub-component | PR4 | #57 |
+| 61b | `src/features/parties/PartyDetailPage.tsx` (v2 — M3, expand TABS array + render new tab) **v3 NEW_S1 builder note: `DetailTab` union is declared in BOTH this file (line 32) AND `usePartyDetail.ts` (line 10) — add `'loyalty'` to both, OR extract to `party.types.ts` and import in both. Adding to one only = TS narrowing error at `setActiveTab`.** | edit | +18 | page | PR4 | #61 |
+| 61c | `src/features/parties/usePartyDetail.ts` (v3 NEW_S1 — add `'loyalty'` to `DetailTab` union OR refactor to import) | edit | +2 (or +1 for the import line if extracted to `party.types.ts`) | hook | PR4 | #61b |
 | 62 | `src/features/pos/api/pos.service.ts` (build `payments[]` payload incl. `loyalty_redemption`) | edit | +15 | service | PR4 | — |
 | 63 | `src/features/pos/state/pos.store.ts` (track `loyaltyPointsRedeemed`) | edit | +20 | state | PR4 | — |
 | **CRM FE #127** | | | | | | |
 | 64 | `src/features/crm/crm.types.ts` | create | ~60 | types | PR2 | — |
 | 65 | `src/features/crm/api/crm.service.ts` | create | ~100 | service | PR2 | #64 |
 | 66 | `src/features/crm/hooks/useTagSummary.ts` | create | ~60 | hook | PR2 | #65 |
-| 67 | `src/features/crm/hooks/useFollowUps.ts` | create | ~80 | hook | PR2 | #65 |
+| 67 | `src/features/crm/hooks/useFollowUps.ts` (v3 / M3 — handles `INVALID_WITHIN_DAYS_RANGE` toast) | create | ~85 (+5 v3 for error mapping) | hook | PR2 | #65 |
 | 68 | `src/features/crm/components/TagFilterBar.tsx` | create | ~150 | sub-component | PR2 | #66 |
 | 69 | `src/features/crm/components/FollowUpDatePicker.tsx` | create | ~130 | sub-component | PR2 | — |
 | 70 | `src/features/crm/components/FollowUpRow.tsx` | create | ~120 | sub-component | PR2 | — |
 | 71 | `src/features/crm/pages/FollowUpsPage.tsx` | create | ~160 | page | PR2 | #67,#70 |
-| 72 | `src/features/parties/PartiesPage.tsx` (v2 — M3 — was phantom `components/PartyListPage.tsx`) | edit | +30 | page | PR2 | #68 |
-| 73 | `src/features/parties/PartyDetailPage.tsx` (v2 — M3 — was phantom `components/PartyDetailPage.tsx`; same file as #61b, separate row reserves the CRM edit landing) | edit | +22 | page | PR2 | — |
-| 74 | `src/features/parties/components/PartyFormBasic.tsx` (v2 — M3 — was phantom `PartyForm.tsx`; loyalty opt-out + follow-up date inputs land here near phone) | edit | +28 | sub-component | PR2 | #69 |
+| 72 | `src/features/parties/PartiesPage.tsx` (v2 — M3) | edit | +30 | page | PR2 | #68 |
+| 73 | `src/features/parties/PartyDetailPage.tsx` (v2 — M3; same file as #61b but separate row reserves the CRM landing) | edit | +22 | page | PR2 | — |
+| 74 | `src/features/parties/components/PartyFormBasic.tsx` (v2 — M3; loyalty opt-out toggle is a no-op today per §2.5 — wires to backend opt-out column in future epic) | edit | +28 | sub-component | PR2 | #69 |
 | **Commission FE #128** | | | | | | |
 | 75 | `src/features/commission/commission.types.ts` | create | ~80 | types | PR6 | — |
 | 76 | `src/features/commission/commission.constants.ts` | create | ~40 | constants | PR6 | — |
-| 77 | `src/features/commission/api/commission.service.ts` | create | ~130 | service | PR6 | #75 |
-| 78 | `src/features/commission/hooks/useCommissionRules.ts` | create | ~110 | hook | PR6 | #77 |
+| 77 | `src/features/commission/api/commission.service.ts` (v3 / M4 — handles `STAFF_NOT_FOUND` toast) | create | ~135 (+5 v3) | service | PR6 | #75 |
+| 78 | `src/features/commission/hooks/useCommissionRules.ts` (v3 / S2 — shows `COMMISSION_RATE_EXCEEDS_MAX_100_PERCENT` and 50% soft-cap warning) | create | ~115 (+5 v3) | hook | PR6 | #77 |
 | 79 | `src/features/commission/hooks/useCommissionLedger.ts` | create | ~110 | hook | PR6 | #77 |
 | 80 | `src/features/commission/hooks/useLeaderboard.ts` | create | ~80 | hook | PR6 | #77 |
-| 81 | `src/features/commission/components/CommissionRuleForm.tsx` | create | ~230 | sub-component | PR6 | #76,#78 |
+| 81 | `src/features/commission/components/CommissionRuleForm.tsx` (v3 / S2 — UI warning at 5000 bps soft-cap; HARD block at 10000) | create | ~235 (+5 v3 for warning UI) | sub-component | PR6 | #76,#78 |
 | 82 | `src/features/commission/components/CommissionRuleList.tsx` | create | ~140 | sub-component | PR6 | #78 |
 | 83 | `src/features/commission/components/CommissionWidget.tsx` | create | ~130 | sub-component | PR6 | #79 |
 | 84 | `src/features/commission/components/LeaderboardTable.tsx` | create | ~190 | sub-component | PR6 | #80 |
 | 85 | `src/features/commission/pages/CommissionSettingsPage.tsx` | create | ~160 | page | PR6 | #81,#82 |
 | 86 | `src/features/commission/pages/CommissionLedgerPage.tsx` | create | ~150 | page | PR6 | #79 |
 | 87 | `src/features/commission/pages/LeaderboardPage.tsx` | create | ~130 | page | PR6 | #84 |
-| 88 | `src/features/dashboard/components/StaffDashboardSection.tsx` (v2 — M3 — **CREATE, was tagged edit**) | create | ~120 | sub-component | PR6 | #83 |
+| 88 | `src/features/dashboard/components/StaffDashboardSection.tsx` (v2 — M3 CREATE) | create | ~120 | sub-component | PR6 | #83 |
 | 88b | `src/features/dashboard/DashboardPage.tsx` (mount `StaffDashboardSection`) | edit | +10 | page | PR6 | #88 |
 | **CSS** | | | | | | |
 | 89 | `src/styles/components.crm.css` | create | ~130 | css | PR2 | — |
 | 90 | `src/styles/components.loyalty.css` | create | ~110 | css | PR4 | — |
 | 91 | `src/styles/components.commission.css` | create | ~120 | css | PR6 | — |
 
-**Final tally (v2):** 50 frontend files. Largest row: `CommissionRuleForm.tsx`
-at 230 LOC (well under 250). The v2 additions vs v1: row #61
-(`PartyDetailLoyaltyTab.tsx` — NEW component for loyalty tab body),
-row #61b (`PartyDetailPage.tsx` TABS array edit), row #88b
-(`DashboardPage.tsx` mount edit). Row #88 (`StaffDashboardSection.tsx`)
-flipped from EDIT to CREATE. Rows #72, #73, #74 retargeted to real paths.
-**No SCOPE goal is dropped; no row exceeds the 250-LOC cap.**
+**Final tally (v3):** 85 files total (34 backend + 50 frontend + 1 tooling
+edit at #91b). 53 create + 32 edit. Largest row: `CommissionRuleForm.tsx`
+at 235 LOC (was 230 in v2; +5 for the warning UI per v3 / S2). Backend
+largest: `commission-accrual.service.ts` at 240 LOC. **No row exceeds the
+250-LOC cap.**
+
+**v3 vs v2 file delta:**
+- NEW: #27c `commission-ledger-auth.ts` (~50L) — M5 factory middleware
+- NEW: #61c `usePartyDetail.ts` edit (~2L) — NEW_S1 DetailTab parity
+- NEW: #91b `scripts/enforce.js` edit (~25L) — M2 server-only fields grep
+- Re-estimated upward (still under cap): #1 (+2), #2 (+5), #4b (+10), #15 (+5), #16 (+5), #18 (+10), #24 (+23), #27 (+10), #30 (+5), #31 (+5), #33 (+20), #34 (+10), #35 (+25), #67 (+5), #77 (+5), #78 (+5), #81 (+5), #14b (NEW edit row, +25L for posCheckoutAuth wire)
 
 ### 7.3 Scaffold order (what the builder writes first)
 
@@ -1336,103 +1604,146 @@ PR1 (schema + shared infra) builds types and constants stubs FIRST so
 downstream PRs compile against committed interfaces. Order within PR1:
 
 ```
-1. schema.prisma + migration                          (#1, #2)
-2. analytics wrapper (new v2)                         (#2b)
-3. types files (loyalty.types, party-crm.types,       (#3, #17, #28)
-   commission.types)
-4. constants + errors files                            (#4, #4b, #5, #29, #30)
-5. permissions-data.ts merge                           (#27b)
-6. Zod schemas                                         (#6, #31)
-7. translation skeletons (empty objects + types)       (#40-#46)
+1. schema.prisma + migration (incl. v3 / M3 composite index)         (#1, #2)
+2. analytics wrapper                                                  (#2b)
+3. types files                                                        (#3, #17, #28)
+4. constants + errors files (incl. v3 STAFF_NOT_FOUND, RATE_MAX)      (#4, #4b, #5, #29, #30)
+5. permissions-data.ts merge                                          (#27b)
+6. Zod schemas (incl. v3 / M2 allow-list patterns, S2 rateBps cap)    (#6, #24, #31)
+7. translation skeletons                                              (#40-#46)
 ```
 
 Once PR1 is green, PR2-PR6 build in this dependency order:
 
-- PR2: CRM (no cross-deps beyond PR1)
-- PR3: Loyalty BE (no cross-deps beyond PR1)
+- PR2: CRM (no cross-deps beyond PR1) — includes the v3 / M2 enforce.js grep edit
+- PR3: Loyalty BE (no cross-deps beyond PR1) — includes v3 / S3 posCheckoutAuth
 - PR4: Loyalty FE (depends on PR3 for API contracts)
-- PR5: Commission BE (no cross-deps beyond PR1, but rebases on PR3 because
-  both edit `pos-checkout.service.ts:67-243`)
+- PR5: Commission BE — **MUST rebase on PR3** (see §8 for v3 / S4 details)
 - PR6: Commission FE (depends on PR5)
 - PR7: Security audit fixes (depends on PR6)
 
 ---
 
-## 8. PR sequence (refined)
+## 8. PR sequence (refined; v3 / S4 PR3+PR5 rebase contract)
 
 Final 7-PR plan. Each PR independently mergeable per §12 gates.
 
+> **v3 / S4 critical rebase note for PR5:** PR3 (loyalty backend) and PR5
+> (commission backend) BOTH write to TWO of the same files:
+> 1. `server/src/services/pos/pos-checkout.service.ts` (loyalty step 10.5/10.6 vs commission step 10.7)
+> 2. `server/src/services/pos/pos-void.service.ts` (loyalty void/restore vs commission void/restore)
+>
+> If PR5 is opened BEFORE PR3 merges, the merge will look clean (git diffs
+> would not conflict because the lines are separate). But if PR5 is opened
+> based on a stale main and merges WITHOUT a rebase onto PR3, **PR5's
+> branch will overwrite PR3's loyalty restore-refund logic with PR3-less
+> versions of those service files** — a silent loss of the restore symmetry
+> v2 fixed in M6. The §17 acceptance contract enforces this with a grep
+> check: `git grep -n "applyRedemption\|restoreForPosSale" server/src/services/pos/`
+> AFTER PR5 merges must still return the loyalty service calls. CI will
+> reject PR5 if those calls disappear.
+>
+> **Operational rule:** open PR5 against the same branch state PR3 was
+> opened against. Once PR3 merges, rebase PR5 onto main BEFORE the final
+> review pass. The integration test `pos-checkout.integration.test.ts:
+> step ordering 10.5 → 10.6 → 10.7` asserts ALL THREE in-tx step calls
+> are present per checkout — adding it BEFORE PR5 merges (in PR3's test
+> file) is the safety net.
+
 ### PR1 — Schema + Migration + Shared Types (FOUNDATION)
 
-**Files:** #1, #2, #2b (NEW v2), #3-#6, #4b (NEW v2), #17, #28-#31, #27b (NEW v2), #40-#46.
-**No user-visible feature.** Adds 4 tables, 2 nullable columns, 10 indexes;
-adds typed DTOs + Zod schemas; merges 7 new permission keys into
-`permissions-data.ts`; adds the `analyticsEmit` wrapper; adds empty
-translation namespaces. Gate: `npx prisma migrate dev` succeeds + `tsc -b`
-clean + translation parity (ext38/39/40 EN ↔ HI 1:1 keys) +
-`PERMISSION_MATRIX` lints clean (every new key reachable from
-`/settings/roles`).
-**Mergeable independently.**
+**Files:** #1, #2 (incl. v3 / M3 composite index), #2b, #3-#6, #4b (incl.
+v3 / S1 BigInt utils), #17, #24 (incl. v3 / M2 + M3 schema rewrites),
+#28-#31 (incl. v3 / S2 rate cap), #27b, #40-#46.
+
+No user-visible feature. Gate: `npx prisma migrate dev` succeeds + `tsc -b`
+clean + translation parity + `PERMISSION_MATRIX` lints clean.
 
 ### PR2 — CRM Basics #127
 
-**Files:** #17 (consumed from PR1), #18, #19, #20, #21, #22, #23, #24, #25,
-#26, #27, #64-#74, #89.
-Ships first because lowest blast radius: no money-equivalent writes, no POS
-hook, no migration. Wires `lastContactedAt` to existing share/reminder flows;
-adds `/parties/follow-ups` page; ships TagFilterBar.
+**Files:** #17 (consumed), #18 (incl. v3 / M3 service-layer clamp + composite
+index doc), #19, #20, #21, #22, #23, #24 (consumed), #25, #26, #27 (incl. v3 /
+M3 route wire), #64-#74 (incl. v3 NEW_S1 #61b note in PR4 docstring but #74
+opt-out toggle still a no-op), #89, #91b (v3 / M2 enforce.js grep edit).
+
+Ships first because lowest blast radius. Wires `lastContactedAt` to existing
+share/reminder flows.
+
 **Depends on:** PR1.
-**Gate:** `tsc -b` clean + 4 UI states on every new page at 320px + screenshots
-for share-log integration (proves `lastContactedAt` increments).
+**Gate:** `tsc -b` clean + 4 UI states + screenshots for share-log integration.
+PATCH `/api/parties/follow-ups?withinDays=400` returns 400. PATCH
+`{ lastContactedAt: '1970-01-01' }` returns 400. Pre-commit grep blocks
+adding server-only Party fields to input schemas.
 
 ### PR3 — Loyalty #125 backend
 
-**Files:** #3-#6 (consumed from PR1), #4b (consumed from PR1), #7-#16, #16b (NEW v2 daybook),
-#39 (loyalty route mount). Includes POS checkout / void / **restore** integration
-(v2 — M6). The cron registration ships here at **04:15 IST** (v2 — M1).
+**Files:** #3-#6 (consumed), #4b (consumed), #7-#16, #14b (v3 / S3 posCheckoutAuth
+wire), #16b, #39 (loyalty route mount).
+
+Includes POS checkout / void / restore integration. Cron at 04:15 IST.
+
 **Depends on:** PR1.
-**Gate:** integration test forcing a throw mid-checkout asserts no
-LoyaltyLedger row + no PosSale row + no Document row (one-rolls-back-all
-proof per §12.1). Curl 200/401/400 on each new route. Cron dry-run via
-`node -e 'require("./dist/services/loyalty/loyalty-expiry.cron.js").runLoyaltyExpiryJob()'`.
-Void/restore symmetry test (§12.11): VR rows counter-negate VD rows;
-SUM(delta) returns to post-original-sale value.
+**Gate:** integration test forcing a throw mid-checkout asserts no LoyaltyLedger
++ no PosSale + no Document + no stock movement. Curl 200/401/400/403 on each
+new route. POS sale POST with `loyalty_redemption` payment by a user lacking
+`loyalty.redeem` → 403 PERMISSION_DENIED (NEVER opens the tx). Cron dry-run.
+Void/restore symmetry test §12.12.
 
 ### PR4 — Loyalty #125 frontend
 
-**Files:** #47-#60, #61 (NEW v2 PartyDetailLoyaltyTab), #61b (NEW v2 TABS edit), #62, #63, #90.
+**Files:** #47-#60, #61 (PartyDetailLoyaltyTab CREATE), #61b (PartyDetailPage
+TABS edit), #61c (v3 NEW_S1 — usePartyDetail.ts DetailTab parity), #62, #63, #90.
+
 **Depends on:** PR3.
-**Gate:** Visual screenshots of LoyaltyProgramPage, LoyaltyRedeemSheet,
-LoyaltyBalanceChip, LoyaltyLedgerList at 320 / 375. Offline simulation
-(chrome devtools throttle to Offline) shows cached balance with stale caption.
+**Gate:** Visual screenshots. Offline simulation. **Pre-merge grep:**
+`git grep "type DetailTab" src/features/parties/` returns matches in BOTH
+`PartyDetailPage.tsx` AND `usePartyDetail.ts` with `'loyalty'` present (OR a
+single import in both from the shared types file, with the type definition
+in `party.types.ts`).
 
 ### PR5 — Commission #128 backend
 
-**Files:** #28-#31 (consumed from PR1), #32-#39 (commission portions).
-Rebases #14 (`pos-checkout.service.ts`) and #16 (`pos-void.service.ts` —
-includes the restore path) and adds #37, #38 (document service).
-**Depends on:** PR3 (must rebase the POS-checkout edit + the void/restore edit) + PR1.
-**Gate:** integration test: POS sale rings → CommissionLedger row written
-in same tx + accrueForDoc on DRAFT→SAVED transition. Void POS → reverse
-row written. Restore POS → compensating row written; SUM(commissionPaise) =
-original. Permission tests: 403 when `commission.view` user requests
-another staff's ledger. Daybook tender breakdown shows `loyalty_redemption`
-on its own row (PR3-side change at #16b — co-verified here per §17.3).
+**Files:** #28-#31 (consumed), #32-#39 (commission portions), #27c (v3 / M5
+factory middleware).
+
+**Depends on:** PR3 (MUST rebase per v3 / S4 — see top-of-section callout) + PR1.
+**Gate:**
+- Integration test: POS sale rings → CommissionLedger row written + ruleSnapshot
+  is a deep clone (assert via `JSON.stringify(deepClone) === JSON.stringify(originalRule)`
+  AND `deepClone !== originalRule` — i.e. structural-equal but reference-unequal).
+- §17.3 grep test: `git grep -n "JSON.parse(JSON.stringify"
+  server/src/services/commission/commission-accrual.service.ts` → ≥ 2 matches
+  (accrue + void re-snapshot + restore re-snapshot).
+- §17.3 cross-tenant test: `GET /api/commission/ledger?staffUserId=<other_tenant_user_uuid>`
+  → 404 STAFF_NOT_FOUND (NOT 200, NOT 403).
+- §17.3 factory grep: `git grep -n "commissionLedgerAuth\|res.headersSent"
+  server/src/routes/commission.routes.ts` → factory imported and used;
+  `res.headersSent` absent.
+- §17.3 rate-cap test: `POST /api/commission/rules` with `rateBps: 15000`
+  → 400 `COMMISSION_RATE_EXCEEDS_MAX_100_PERCENT`.
+- §17.3 PR3+PR5 same-file rebase test: `git grep -n
+  "applyRedemption\|restoreForPosSale" server/src/services/pos/` MUST still
+  return the loyalty service calls AFTER PR5 merges.
+- Permission tests: 403 when `commission.view` user requests another staff's
+  ledger; same-tenant other-staff → 403 (factory denies); cross-tenant → 404
+  (handler precheck).
+- Day-end report tender breakdown.
 
 ### PR6 — Commission #128 frontend
 
-**Files:** #75-#87, #88 (CREATE — v2 M3), #88b (mount edit), #91.
+**Files:** #75-#87, #88 (CREATE), #88b, #91. Includes v3 / S2 UI warnings.
+
 **Depends on:** PR5.
-**Gate:** Sortable leaderboard at 320 / 375. Widget hidden for users without
-`commission.view`. Rule editor saves + edits + soft-deletes. Permission
-walk-through: user with only `commission.view` (no `_all`) doesn't see
-leaderboard nav link nor `StaffDashboardSection` for other staff.
+**Gate:** Sortable leaderboard. Widget hidden for users without `commission.view`.
+Rate form blocks at 100% (server returns `COMMISSION_RATE_EXCEEDS_MAX_100_PERCENT`),
+warns at 50%.
 
-### PR7 — Security audit fixes
+### PR7 — Security audit fixes (re-run)
 
-**Files:** TBD by security agent's audit.
+**Files:** TBD by security agent's re-audit.
 **Depends on:** PR1-PR6 merged.
-**Output:** `docs/SECURITY_AUDIT_EPIC_D.md` with PASS / CONDITIONAL PASS.
+**Output:** `docs/SECURITY_AUDIT_EPIC_D_crm_loyalty.md` Pass-2 with PASS or
+CONDITIONAL PASS.
 
 ### Dependency graph
 
@@ -1442,63 +1753,41 @@ PR1 ── PR2 ──┐
    ├─ PR3 ── PR4 ──┐
    │         │     │
    └─────── PR5 ── PR6 ── PR7
+            (MUST rebase on PR3 — v3 / S4)
 ```
 
 PR3 must merge before PR5 (both edit pos-checkout.service.ts AND
-pos-void.service.ts). PR2, PR3 can run in parallel after PR1. PR4 waits
-for PR3; PR6 waits for PR5.
+pos-void.service.ts).
 
 ---
 
 ## 9. Rollout + feature flags
 
-Loyalty and Commission are **owner-opt-in per-business**. Locked Decision §19
-implicit: the `LoyaltyProgram.enabled = false` default IS the loyalty flag
-(no separate column needed). Commission similarly defaults to "no rules
-defined" which means no accrual fires.
+Loyalty and Commission are **owner-opt-in per-business**.
 
 ### 9.1 Loyalty flag = `LoyaltyProgram.enabled`
 
-- Default: `false` on every existing business at migration time (no row exists;
-  service returns `null` from `GET /loyalty/program`).
-- UI gate (frontend): `LoyaltyBalanceChip`, `LoyaltyRedeemSheet`, and
-  `LoyaltyLedgerList` all check `program.enabled === true` before rendering.
-  When false, components return `null` (not hidden — never rendered).
-- Server gate: `accrueForPosSale` and `applyRedemption` both no-op silently
-  when `enabled === false`. Reduces test surface; cashier doesn't see misleading
-  errors when owner hasn't opted in.
+Default `false`. UI gate (frontend) and server gate (services) both
+short-circuit.
 
 ### 9.2 Commission flag = "any active rule exists"
 
-- Default: no rules in the table for a fresh business.
-- UI gate: `CommissionWidget` (staff dashboard) checks
-  `useCommissionLedger({ from: monthStart, to: monthEnd }).totalCommissionPaise`.
-  If zero AND no rules exist → widget hidden. If zero with rules existing →
-  widget shows "Rs 0 this month" (legitimate state).
-- Server gate: `commission-accrual.service.accrueForPosSale` short-circuits
-  when `findApplicableRules` returns an empty array.
+Default: no rules. Widget hidden when zero AND no rules.
 
 ### 9.3 Stage-gated rollout
 
 | Stage | Audience | What | How long |
 |-------|----------|------|----------|
-| 1. Internal | Sawan's own test business | Enable loyalty + commission rules; ring 10 POS sales; verify ledgers; void+restore a sale and verify symmetric VR rows | 24h |
-| 2. Beta | 5 friendly businesses (Raju + 4 others) | Owner-opted-in via Sawan-mediated demo | 1 week |
-| 3. GA | All businesses | Available in `/settings/loyalty` and `/settings/commission` for any owner to enable | indefinite |
-
-No code-level percentage gate is needed because the feature is opt-in by
-default. If a critical bug is found post-GA, the rollback is "Sawan tells
-business owners to disable the program" — instantaneous via the UI.
+| 1. Internal | Sawan's own test business | Enable loyalty + commission rules; ring 10 POS sales; verify ledgers; void+restore a sale | 24h |
+| 2. Beta | 5 friendly businesses | Owner-opted-in via demo | 1 week |
+| 3. GA | All businesses | Available in `/settings/loyalty` and `/settings/commission` | indefinite |
 
 ---
 
-## 10. Telemetry — 9 events total (v2 — adds `*_restored` pair) (v2 — M5 rerouted)
-
-**Routing (v2):** All events go through `analyticsEmit(event, ctx)` from the
-new `server/src/lib/analytics.ts` thin wrapper, which is implemented as:
+## 10. Telemetry — 9 events total (v2 — adds `*_restored` pair; routed via `analyticsEmit`)
 
 ```ts
-// server/src/lib/analytics.ts (new, ~50 LOC)
+// server/src/lib/analytics.ts (v2 — M5)
 import logger from './logger.js'
 export type AnalyticsEvent =
   | 'loyalty_program_enabled'
@@ -1515,369 +1804,325 @@ export function analyticsEmit(event: AnalyticsEvent, ctx: Record<string, unknown
 }
 ```
 
-Why a separate wrapper (not direct `logger.info`)? (a) Typed `event` union
-catches typos at compile time. (b) One choke-point for future tee'ing to a
-real analytics sink (Mixpanel / Posthog / whatever Sawan picks). (c) Search
-discoverability — `grep "analytics."` finds every event site.
-
-**Not** `notificationManager.notify()` — that path is user-facing (in-app
-toasts / push / email) and is typed against the closed `EventKey` enum in
-`notification-events.ts`. Adding analytics keys there would either crash
-on the type check (`as EventKey` workaround = template-null at runtime) or
-spam customers with "You accrued 12 points" toasts (NOT desired — that
-notification belongs to a separate Phase 6 user-facing notification, gated
-by user preference).
-
-Events are emitted **after** the originating transaction commits — per §3.8
-side-effect rule.
+Events emitted AFTER originating tx commits — per §3.8 side-effect rule.
 
 | # | Event name | Trigger site | Payload |
 |---|-----------|--------------|---------|
-| 1 | `loyalty_program_enabled` | `loyalty-program.service.upsertProgram` post-commit, only on `enabled: false → true` transition | `{ businessId, accrualRateBps, expiryMonths }` |
-| 2 | `loyalty_accrued` | `pos-checkout.service.ts` post-commit (only if AC row was written) | `{ businessId, partyId, posSaleId, pointsAccrued, equivalentPaise }` |
-| 3 | `loyalty_redeemed` | same site, only if RD row was written | `{ businessId, partyId, posSaleId, pointsRedeemed, equivalentPaise }` |
-| 4 | `loyalty_restored` (NEW v2) | `pos-void.service.ts` post-commit on `restorePosSale` (only if VR row was written) | `{ businessId, partyId, posSaleId, pointsRestored, restoredBy }` |
+| 1 | `loyalty_program_enabled` | `loyalty-program.service.upsertProgram` post-commit | `{ businessId, accrualRateBps, expiryMonths }` |
+| 2 | `loyalty_accrued` | `pos-checkout.service.ts` post-commit | `{ businessId, partyId, posSaleId, pointsAccrued }` |
+| 3 | `loyalty_redeemed` | same site | `{ businessId, partyId, posSaleId, pointsRedeemed }` |
+| 4 | `loyalty_restored` | `pos-void.service.ts` post-commit | `{ businessId, partyId, posSaleId, pointsRestored, restoredBy }` |
 | 5 | `commission_rule_created` | `commission-rule.service.createRule` post-commit | `{ businessId, ruleId, scope, mode, rateBps, flatPerUnitPaise }` |
-| 6 | `commission_accrued` | `pos-checkout.service.ts` and `document/create.ts` / `update.ts` post-commit, **aggregated** to one event per sale even if 3 rules matched | `{ businessId, source: 'POS'\|'INVOICE', staffUserId, totalCommissionPaise, rulesAppliedCount }` |
-| 7 | `commission_restored` (NEW v2) | `pos-void.service.ts` post-commit on `restorePosSale` | `{ businessId, posSaleId, staffUserId, restoredCommissionPaise, restoredBy }` |
-| 8 | `crm_tag_filtered` | client-side, fired when user taps a tag chip in `TagFilterBar` | `{ businessId, tagName, partyCountResult }` |
-| 9 | `crm_followup_set` | server-side `PATCH /api/parties/:id` post-commit, only when `followUpAt` is being set or changed | `{ businessId, partyId, daysFromNow, action: 'SET'\|'CLEAR' }` |
-
-Events 1-7, 9 are server-side via `analyticsEmit`. Event 8 is client-side
-via the existing analytics dispatcher (unchanged from SCOPE).
-
-**Sampling: none.** Volume estimate at scale: 200 businesses × 50 POS sales/day
-× ~3 events (accrual, redemption sometimes, commission) = ~30,000 events/day.
-Well within Winston's stdout throughput; future swap to a real analytics
-sink is a single-file edit in `analytics.ts`.
-
-> **Note on the "≤ 7 events per flow" blindspot:** Adding two `*_restored`
-> events brings the Epic D total to 9, slightly above the 7-per-flow soft
-> cap. Justification: restore is its own user-flow distinct from
-> accrue/redeem/void, and forensics demands a dedicated event for the
-> rare "void-was-mistaken, restore-was-correct" path. Acceptable.
+| 6 | `commission_accrued` | `pos-checkout.service.ts` and `document/*` post-commit | `{ businessId, source: 'POS'|'INVOICE', staffUserId, totalCommissionPaise, rulesAppliedCount }` |
+| 7 | `commission_restored` | `pos-void.service.ts` post-commit | `{ businessId, posSaleId, staffUserId, restoredCommissionPaise }` |
+| 8 | `crm_tag_filtered` | client-side, fired in `TagFilterBar` | `{ businessId, tagName, partyCountResult }` |
+| 9 | `crm_followup_set` | server-side `PATCH /api/parties/:id` post-commit | `{ businessId, partyId, daysFromNow, action: 'SET'|'CLEAR' }` |
 
 ---
 
-## 11. Open risks for security agent
+## 11. Open risks for security agent (carried from v2; v3 closes M1-M5)
 
-Five risk categories. Security agent: focus the audit here.
+### 11.1 Money-equivalent integrity
 
-### 11.1 Money-equivalent integrity (loyalty + commission are paise-equivalent)
-
-**Risk:** loyalty points and commission paise convert 1:1 to rupees from the
-business's perspective. Any double-write, over-redeem, or skipped reversal is
-real money lost.
-
-**Specific things to audit:**
-
-- **§4.1 advisory lock** — confirm `loyalty-redeem.service.ts` acquires
-  `pg_advisory_xact_lock` BEFORE reading the balance, and that the read uses
-  the lock-holding tx (`tx.loyaltyLedger.findMany`, not `prisma.loyaltyLedger.findMany`).
-  If the read uses the un-locked client, the lock is useless. Pattern to mirror:
-  `server/src/services/subscription/subscription.writer.ts:25-31`.
-- **§3.1 step order** — confirm `applyRedemption` runs BEFORE `accrueForPosSale`
-  in `pos-checkout.service.ts`. Reversal: customer could redeem points they
-  just earned on the same sale (effectively a 50% discount on every line).
-- **§3.2 void reversal** — confirm BOTH the accrual AND the redemption rows
-  are negated on void. Today the spec says yes; verify the implementation
-  writes 2 ledger rows (the VD-counterpart of AC + the VD-counterpart of RD).
-- **§3.4.1 restore reversal (NEW v2)** — confirm `restorePosSale` writes
-  matching VR rows for every VD row written on the corresponding void.
-  Test: ring → void → restore. Final `SUM(delta) WHERE posSaleId = ?` MUST
-  equal the post-original-sale value (e.g. `+5` not `0`).
-- **§4.4 cron double-expiry guard** — confirm the `NOT EXISTS` subquery uses
-  the correct table alias (the LIKE pattern must reference the *outer* row's
-  id, not the inner alias).
-- **Negative-balance attack** — what happens if a malicious cashier submits a
-  POS sale with `payments: [{ mode: 'loyalty_redemption', amountPaise: 999999 }]`
-  for a party with only 100 points? The `applyRedemption` fn computes
-  `eligiblePoints = min(requested, available)` and either rejects with
-  `INSUFFICIENT_POINTS` or partial-redeems? **DECISION**: hard-reject with
-  `INSUFFICIENT_POINTS` (no partial-redeem in MVP — keeps logic simple, gives
-  cashier a clear "ask the customer to pay the rest" prompt). Verify the
-  implementation matches.
+- §4.1 advisory lock — confirmed
+- §3.1 step order — confirmed
+- §3.2 void reversal — both AC and RD
+- §3.4.1 restore reversal — VR rows
+- §4.4 cron double-expiry guard
+- **v3 / M1 deep-clone snapshot** — §4.2 callout; §17.3 grep test
+- Negative-balance attack: hard-reject with `INSUFFICIENT_POINTS`
 
 ### 11.2 Commission rule tampering (insider abuse)
 
-**Risk:** a cashier with custom-role permission `commission.configure` could
-edit their own commission rate to 50% before ringing up a big sale.
+- AuditLog on every CREATE/UPDATE/DELETE
+- **v3 / S2 rate cap at Zod boundary (10000 bps = 100% hard)**
+- Owner-only by default (§6.4)
 
-**Specific things to audit:**
+### 11.3 Cross-tenant leak (v3 / M4 fully addressed)
 
-- **AuditLog** — confirm `commission-rule.service.ts` writes an AuditLog row
-  for every CREATE / UPDATE / DELETE with `userId` = caller, `changes` =
-  before/after snapshot, and `reason` (if provided).
-- **Rate cap** — Locked Q19: soft cap 50% with warning, hard cap 100%. Verify
-  the Zod schema enforces both (`rateBps ≤ 10_000` hard, `rateBps > 5_000` =
-  warning flag in response, server-side enforced).
-- **Owner-only by default** — confirm the system role `cashier` does NOT
-  include `commission.configure` in its default permission set (§6.4 confirms
-  ❌ for all 5 staff roles). Owner can grant it to a custom role, but the
-  audit trail will show that grant happened.
+- businessId scoping on EVERY read
+- **v3 / M4 cross-tenant precheck** on `/api/commission/ledger?staffUserId=`
+  returns 404 STAFF_NOT_FOUND
+- Same pattern applied to `/api/loyalty/balance/:partyId` (Party precheck → 404 PARTY_NOT_FOUND)
+- §17.3 oracle test mandated
 
-### 11.3 Cross-tenant leak
+### 11.4 Walk-in collusion
 
-**Risk:** an attacker tries `GET /api/loyalty/balance/<partyId-from-different-business>`.
+- Walk-in `isWalkIn` short-circuit
+- Sentinel party immutable post-create
 
-**Specific things to audit:**
+### 11.5 Insider grant abuse
 
-- **businessId scoping** on EVERY loyalty + commission read. Pattern: every
-  `findFirst` / `findMany` / `update` / `delete` must include `businessId`
-  from `req.user.businessId`. Spot-check #7, #9, #34 services.
-- **`Party.findFirst` precedence** — `loyalty-balance.service.ts` should
-  first do `tx.party.findFirst({ where: { id: partyId, businessId }})` and
-  throw 404 if missing, BEFORE doing the ledger aggregate. Otherwise a 404
-  vs 200 timing oracle could leak whether a party exists in another business.
-- **CommissionLedger.staffUserId** — `GET /api/commission/ledger?staffUserId=X`
-  must verify X is a BusinessUser of the caller's businessId, even when the
-  caller has `commission.view_all`. Otherwise an owner could query staff IDs
-  from another business and get back an empty array vs 404 — same timing
-  oracle.
+- AdminAction audit trail
+- No client-facing manual `delta` write API
 
-### 11.4 Walk-in collusion (SCOPE §13 #2)
+### 11.6 Mass assignment / forging server-side fields (v3 / M2 NEW)
 
-**Risk:** a cashier rings 100 fake walk-in sales, then later updates the
-walk-in party to a real one and claims the points.
+- **v3 / M2 server-only Party fields** (§3.6): `lastContactedAt`,
+  `followUpAt` (path-restricted), `loyaltyPointsCache` (future),
+  `loyaltyOptOut` (future) all explicitly omitted from input Zod
+  schemas; `.strict()` schemas reject unknown keys; pre-commit grep
+  rule in `scripts/enforce.js` (file plan #91b) blocks reintroduction;
+  PATCH-rejection acceptance test §17.2.
 
-**Mitigations already in place** (audit):
+### 11.7 DoS via unbounded query (v3 / M3 NEW)
 
-- Locked Q7 — walk-in `partyId` is the business's sentinel walk-in; accrual
-  service short-circuits: `if (party.isWalkIn) return`. Confirm the
-  short-circuit happens before any LoyaltyLedger.create call. Test: ring 5
-  walk-in sales; verify 0 LoyaltyLedger rows exist for the sentinel party.
-- Sentinel party can't be reassigned to a real customer at the PosSale level
-  (PosSale.partyId is immutable post-create); only the walk-in display fields
-  on `PosSale` (`walkInName`, `walkInPhone`) can be edited. So the only path
-  to "redirect walk-in points to a real party" is to delete the walk-in row
-  and re-insert with a real partyId — which is two AuditLog rows.
+- **v3 / M3 `withinDays` capped at 365** at Zod boundary; service-layer
+  clamp belt-and-braces; covering composite index
+  `(businessId, lastContactedAt, isActive)` in §2.5; boundary
+  acceptance test §17.2.
 
-### 11.5 Insider grant abuse (SCOPE §13 #7)
+### 11.8 Fragile middleware chain (v3 / M5 NEW)
 
-**Risk:** an engineer with DB access manually inserts 1,000,000 LoyaltyLedger
-rows for their own party.
-
-**Mitigations:**
-
-- All admin DB edits go through the existing `AdminAction` audit infra
-  (already mandated by `~/.claude/rules/HIGH_RISK_PATHS.md` for the User
-  model and impersonation paths). Quarterly review per SCOPE §13.
-- No client-facing API allows manual `delta` writes — even owner can't
-  "give 500 bonus points" via UI (Locked decision §3 / SCOPE §3 said
-  manual adjustment is admin-script-only for MVP).
+- **v3 / M5 factory middleware** `commissionLedgerAuth` replaces inline
+  `res.headersSent` chain. Single-pass, two terminals. §17.3 grep test
+  forbids `res.headersSent` from `commission.routes.ts`.
 
 ---
 
 ## 12. Acceptance test sketch (verifier turns these into tests)
 
-For each integration site, the contract is "if my new code throws, the
-existing functionality still works". Tests go in
-`server/src/services/{loyalty,commission}/__tests__/` and
-`server/src/services/pos/__tests__/`.
-
 ### 12.1 POS checkout one-rolls-back-all
 
-**Test name:** `pos-checkout.integration.test.ts: rolls back PosSale + Document + Inventory when loyalty accrual throws`
-
-**Outline:**
-
-```
-beforeEach: seed business + product + party + LoyaltyProgram(enabled=true)
-test:
-  mock loyalty-accrual.service.accrueForPosSale to throw
-  POST /api/pos/sales with valid payload
-  expect 500 (or appropriate error code)
-  assert posSale.count === 0
-  assert document.count === 0
-  assert loyaltyLedger.count === 0
-  assert stockMovement.count === 0   ← critical: stock claim must roll back
-  assert product.currentStock === seed value  ← double-check
-```
-
-Same template for commission-accrual throwing.
+(unchanged from v2)
 
 ### 12.2 Concurrent redemption — no overdraft
 
-**Test name:** `loyalty-redeem.integration.test.ts: two parallel sales for same party do not exceed balance`
-
-**Outline:**
-
-```
-beforeEach: party with 100 LoyaltyLedger.AC points
-test:
-  fire 2 parallel POST /api/pos/sales, each redeeming 80 points
-  one must succeed; the other must 400 INSUFFICIENT_POINTS
-  final balance must be 20 (not -60)
-```
+(unchanged from v2)
 
 ### 12.3 Walk-in does not accrue
 
-**Test name:** `loyalty-accrual.unit.test.ts: walk-in party short-circuits`
-
-**Outline:** call `accrueForPosSale(tx, { posSale: { partyId: walkInPartyId, ... }})`; assert `loyaltyLedger.create` was NOT called.
+(unchanged from v2)
 
 ### 12.4 Commission rule specificity
 
-**Test name:** `commission-accrual.integration.test.ts: PRODUCT > CATEGORY > ALL`
-
-**Outline:** seed 3 active rules (ALL 1%, CATEGORY 2%, PRODUCT 5%) for the
-same product. Ring a sale with that product. Assert exactly 1 CommissionLedger
-row written with rate = 5% (the PRODUCT-scoped rule).
+(unchanged from v2)
 
 ### 12.5 Commission void reversal
 
-**Test name:** `commission-accrual.integration.test.ts: void writes negative row, sum nets to zero`
-
-**Outline:** ring a sale → commission row exists with `commissionPaise = X`
-→ void the sale → second row exists with `commissionPaise = -X` → SUM = 0.
+(unchanged from v2)
 
 ### 12.6 lastContactedAt auto-update on share
 
-**Test name:** `share-integration.test.ts: WhatsApp share bumps party.lastContactedAt`
-
-**Outline:** create party with `lastContactedAt = null` → `POST /api/documents/:id/share/whatsapp` → assert `party.lastContactedAt` is within 5 seconds of now.
+(unchanged from v2)
 
 ### 12.7 Follow-up future-only
 
-**Test name:** `party-followup.unit.test.ts: PATCH /parties/:id rejects past followUpAt`
+(unchanged from v2)
 
-**Outline:** PATCH with `followUpAt: yesterday` → 400 `INVALID_FOLLOWUP_PAST`.
+### 12.8 Permission gate for cross-staff ledger read (v3 / M4 + M5 augmented)
 
-### 12.8 Permission gate for cross-staff ledger read
+**Test name:** `commission-ledger.integration.test.ts: factory + cross-tenant precheck`
 
-**Test name:** `commission-ledger.integration.test.ts: 403 on cross-staff read without commission.view_all`
+**Outline:**
 
-**Outline:** create staff A and B (both with `commission.view` only). A logs in. A requests `GET /api/commission/ledger?staffUserId=<B.userId>` → 403.
+```
+1. seed Tenant A with userA1 (commission.view) and userA2 (commission.view)
+2. seed Tenant B with userB1
+3. userA1 GET /api/commission/ledger (no staffUserId)         → 200 own ledger
+4. userA1 GET /api/commission/ledger?staffUserId=userA1.id    → 200 own ledger
+5. userA1 GET /api/commission/ledger?staffUserId=userA2.id    → 403 (factory denies — needs commission.view_all)
+6. userA1 GET /api/commission/ledger?staffUserId=userB1.id    → 404 STAFF_NOT_FOUND (handler precheck, NOT 403)
+7. owner (Tenant A, has view_all) GET ?staffUserId=userA2.id  → 200 userA2 ledger
+8. owner (Tenant A) GET ?staffUserId=userB1.id                → 404 STAFF_NOT_FOUND (still, even owner can't cross tenants)
+```
 
 ### 12.9 Cron idempotency
 
-**Test name:** `loyalty-expiry.cron.integration.test.ts: re-running the cron does not double-expire`
+(unchanged from v2)
 
-**Outline:** seed party with 100 AC, `expiresAt: yesterday`. Run cron → 1 EX row added, balance = 0. Run cron again → still 1 EX row, balance still 0.
+### 12.10 4 UI states at 320px
 
-### 12.10 4 UI states at 320px (FE — Playwright per page)
+(unchanged from v2)
 
-For each of: `LoyaltyProgramPage`, `LoyaltyRedeemSheet` (in checkout sheet),
-`FollowUpsPage`, `CommissionSettingsPage`, `CommissionLedgerPage`,
-`LeaderboardPage` — assert all four states (loading / error / empty /
-success) render without horizontal overflow at 320px.
+### 12.11 Loyalty unit math (v2 — S2; v3 / S1 — BigInt overflow row added)
 
-### 12.11 Loyalty unit math (v2 — S2)
+```
+expect(computePointsEarned(10000, 100)).toBe(1)            // ₹100 at 1% → 1pt
+expect(computePointsEarned(99900, 100)).toBe(9)            // ₹999 at 1% → 9pts (floor)
+expect(computePointsEarned(0, 100)).toBe(0)
+expect(computePointsEarned(10000, 200)).toBe(2)
+expect(computePointsEarned(50000, 50)).toBe(2)             // ₹500 at 0.5% → 2.5 → 2
 
-**Test name:** `loyalty.utils.spec.ts: computePointsEarned()`
+// v3 / S1 — BigInt overflow class
+expect(computePointsEarned(1_000_000_000_000, 10_000)).toBe(10_000_000_000)
+// 10^12 paise * 10^4 bps = 10^16 — exceeds Number.MAX_SAFE_INTEGER mid-multiply.
+// BigInt insurance gives 10^10 points cleanly.
+```
+
+### 12.12 Restore symmetry (v2 — M6; v3 / M1 — deep-clone assertion)
+
+**Test name:** `pos-void-restore.integration.test.ts: void-then-restore preserves loyalty + commission AND ledger snapshots are deep-cloned`
 
 **Outline:**
+
 ```
-expect(computePointsEarned(10000, 100)).toBe(1)     // ₹100 at 1% → 1pt
-expect(computePointsEarned(99900, 100)).toBe(9)     // ₹999 at 1% → 9pts (floor)
-expect(computePointsEarned(0, 100)).toBe(0)         // edge: zero subtotal
-expect(computePointsEarned(10000, 200)).toBe(2)     // ₹100 at 2% → 2pts
-expect(computePointsEarned(50000, 50)).toBe(2)      // ₹500 at 0.5% → 2.5 → floor → 2
+1. Ring POS sale: AC=+10 loyalty, +₹20 commission (with ruleSnapshot = ruleConfigA)
+2. ASSERT commissionLedger[0].meta.ruleSnapshot !== ruleConfigA (different reference)
+   AND   JSON.stringify(...) is equal (structurally identical)
+3. Read balances → +10 loyalty, +2000 paise commission
+4. ADMIN EDIT rule: change ratePct from 2 → 5 (the M1 attack)
+5. ASSERT commissionLedger[0].meta.ruleSnapshot.rateBps STILL = 200 (the deep clone froze the historical value)
+6. Void the sale
+7. ASSERT void reversal row also has ruleSnapshot.rateBps = 200 (re-snapshot from prior ledger row's snapshot, NOT live rule which now reads 500)
+8. Restore the sale
+9. ASSERT restore compensating row also has ruleSnapshot.rateBps = 200 (re-snapshot chain unbroken)
+10. SUM(commissionPaise) for the staffUserId → +2000 paise (original value, untouched by admin edit)
+11. SUM(loyaltyDelta) for the partyId → +10
+12. Verify 3 commissionLedger rows (original, void, restore) — each independently snapshotted
+13. Verify 3 loyaltyLedger rows (AC, VD, VR)
 ```
 
-### 12.12 Restore symmetry (v2 — M6)
+### 12.13 Server-only Party field rejection (v3 / M2)
 
-**Test name:** `pos-void-restore.integration.test.ts: void-then-restore preserves loyalty + commission`
+**Test name:** `parties.routes.integration.test.ts: PATCH rejects server-only field mass-assignment`
 
 **Outline:**
+
 ```
-1. Ring POS sale: customer earns AC=+10 pts, cashier earns commission=+₹20
-2. Read SUM(delta) for partyId — assert = +10
-3. Read SUM(commissionPaise) for staffUserId, posSaleId — assert = +2000 (paise)
-4. Void the sale (within 4h window)
-5. Read both sums — assert = 0 (VD entries cancelled AC and commission)
-6. Restore the sale (within 4h window)
-7. Read both sums — assert = +10 and +2000 again (VR entries counter-cancel)
-8. Verify ledger has 3 rows for partyId (AC, VD, VR) and 3 for commission (orig, void, restore)
-9. Run loyalty-expiry cron (with expiresAt set to past) — assert 1 EX row added, balance = 0
+1. seed party with lastContactedAt = null
+2. PATCH /api/parties/:id  body { name: 'Updated', lastContactedAt: '1970-01-01' }
+   → expect 400 ZodError (strict() rejects unknown key 'lastContactedAt')
+3. Verify party.name UNCHANGED (entire PATCH rejected, not partial-applied)
+4. Verify party.lastContactedAt UNCHANGED (still null)
+5. Repeat for: followUpAt: '1970-01-01' (PAST date variant → INVALID_FOLLOWUP_PAST)
+6. (Future) Repeat for: loyaltyPointsCache, loyaltyOptOut once columns exist
 ```
 
-This is the canonical proof of the M6 fix and the AC/VD/VR symmetry.
+### 12.14 withinDays boundary (v3 / M3)
+
+**Test name:** `party-followups.integration.test.ts: withinDays boundary`
+
+```
+- GET /api/parties/follow-ups?withinDays=1     → 200
+- GET /api/parties/follow-ups?withinDays=30    → 200 (default, omitted also OK)
+- GET /api/parties/follow-ups?withinDays=365   → 200
+- GET /api/parties/follow-ups?withinDays=366   → 400 INVALID_WITHIN_DAYS_RANGE
+- GET /api/parties/follow-ups?withinDays=0     → 400
+- GET /api/parties/follow-ups?withinDays=-1    → 400
+- GET /api/parties/follow-ups?withinDays=999999 → 400 (DoS surface killed)
+```
+
+### 12.15 Loyalty redeem permission (v3 / S3)
+
+**Test name:** `pos-checkout.integration.test.ts: loyalty.redeem permission required at route layer`
+
+```
+1. seed user U with role { permissions: ['pos.read', 'pos.create'] } (NO loyalty.redeem)
+2. seed party P with 100 loyalty points
+3. POST /api/pos/sales as U body { payments: [{ mode: 'loyalty_redemption', amountPaise: 100, loyaltyPoints: 1, partyId: P.id }] }
+   → expect 403 PERMISSION_DENIED (route-layer gate, BEFORE tx opens)
+4. ASSERT zero PosSale rows for the businessId (tx never opened)
+5. ASSERT zero idempotency rows consumed
+6. Repeat with cash-only payments → 200 (no loyalty payment present, gate skipped)
+7. Repeat as cashier role (has loyalty.redeem) → 200
+```
+
+### 12.16 Loyalty balance/ledger cross-tenant 404 (v4 / NEW_S1 from security Pass-2)
+
+**Test name:** `loyalty-balance.integration.test.ts: cross-tenant partyId returns 404 PARTY_NOT_FOUND`
+
+```
+1. seed two tenants T1 (caller) and T2 (victim) with parties P1 (in T1) and P2 (in T2)
+2. seed user U in T1 with parties.view permission
+3. GET /api/loyalty/balance/{P2.id} as U
+   → expect 404 PARTY_NOT_FOUND (NOT 403, NOT 200-empty — kills timing oracle)
+4. GET /api/loyalty/ledger/{P2.id} as U
+   → expect 404 PARTY_NOT_FOUND
+5. GET /api/loyalty/balance/{P1.id} as U
+   → expect 200 { totalPaise: <value>, expiringSoonPaise: <value> }
+6. ASSERT response time delta between step-3 (cross-tenant) and step-5 (own-tenant)
+   is within statistical noise (i.e. both perform the same precheck path) —
+   timing-oracle resistance smoke check.
+```
+
+### 12.17 loyalty_redemption cross-tenant partyId rejected (v4 / NEW_S2 from security Pass-2)
+
+**Test name:** `pos-checkout.integration.test.ts: loyalty_redemption with cross-tenant partyId rejected pre-tx`
+
+```
+1. seed two tenants T1 (caller) and T2 with party P2 (in T2) holding 100 loyalty points
+2. seed user U in T1 with cashier role (has pos.create AND loyalty.redeem)
+3. POST /api/pos/sales as U body
+   { payments: [{ mode: 'loyalty_redemption', amountPaise: 100, loyaltyPoints: 1,
+                 partyId: P2.id /* OTHER TENANT */ }] }
+   → expect 400 PARTY_NOT_IN_TENANT (validator-layer, BEFORE tx opens)
+4. ASSERT zero PosSale rows for T1.businessId
+5. ASSERT zero idempotency rows consumed (token not burned)
+6. ASSERT P2.loyaltyPointsCache unchanged in T2 (no debit row written)
+7. Repeat with a real T1-party partyId having 100 points → 200, normal redemption flow
+```
 
 ---
 
 ## 13. Risks & alternatives considered
 
+(unchanged from v2 except for v3 additions:)
+
 | Risk | What we chose | Alternative we rejected | Why |
 |------|---------------|-------------------------|-----|
-| Ledger row volume explosion (1.8M rows/year per busy business) | Cursor pagination + `(businessId, periodYearMonth)` index | Materialized monthly aggregates | Premature optimization; Postgres handles ~10M rows per table comfortably on Render Starter. Revisit if any business hits 5M ledger rows. |
-| FIFO redemption complexity | Iterate AC rows by `earnedAt` ASC; consume rows fully then partially | LIFO or "single bulk RD row spanning all AC" | FIFO is what the customer expects (oldest points expire first); single bulk row breaks the audit trail when individual AC rows expire later. |
-| Commission split (multiple staff per sale) | Out of scope (Locked Q18 → V4) | Allow `staffUserIds: String[]` per sale | Doubles complexity now for a feature that has clear V4 ownership. Schema is forward-compatible (CommissionLedger already keyed on `staffUserId`). |
-| Two-tx commission accrual (sale, then async commission worker) | Sync, in-tx | Async worker (queue accrual after sale commit) | Worker queue would need a new infra primitive (job queue) — too much for one epic. Sync write is fast (≤ 5 ms per rule × ~3 rules = 15 ms tx overhead). |
-| Loyalty on SALE_INVOICE | Out of scope (Locked Q4 → FUTURE_EPIC) | Include in MVP | Adds a `accrueForDocument` symmetric path — risks doubling the test surface for one MVP. Schema is type-agnostic; adding later is one-line service-call insertion. |
-| Cron run timing (v2 — M1) | **04:15 IST daily** | 02:30 IST (collision with `expense-recurring-generator`) or 03:30 IST (notification window risk) | 02:30 occupied; 03:00 occupied; 04:15 is clean separation from both expense-recurring (02:30) and subscription-grace (06:00). |
-| Race between `LoyaltyProgram` disable and concurrent accrual | Re-read inside tx after lock | Don't re-read | Without the re-read, you'd accrue points for a sale checked out 100ms after the program was disabled. Negligible UX impact but breaks the "ledger is truth" invariant. |
-| Phone-as-PK leak via party tags | None — tags are free-text owner-set | Hash tag values | Tags don't contain phone numbers in practice; if owner names a tag like "9876543210" that's their data choice (and the marketing campaign UI already exposes it). |
-| Document update fires commission on DRAFT→SAVED — what about DRAFT→DRAFT edits to a saved doc? | DRAFT→SAVED transition only (one-shot) | Recompute on every save | Prevents "edit-game" exploit where cashier toggles a line to bump commission. |
-| Cron failure leaves unexpired rows visible | Self-heals next day | Retry queue | Daily slip is invisible to the user; not worth building retry infra. |
-| Audit insertion volume for `commission_rule` edits | Existing AuditLog handles it (current ~50 rows/business/day) | New CommissionRuleAudit table | AuditLog is already the SSOT for audit; splitting tables fragments forensics. |
-| `meta.ruleSnapshot` JSON grows large | Snapshot just rule essentials (~6 fields, ~200 bytes) | Snapshot whole rule object | 200 bytes × 5M rows = 1 GB — fine. Full snapshot could be 1 KB → 5 GB, less acceptable. |
-| Restore handling (v2 — M6) | Symmetric VR rows on both ledgers (option i) | Forbid restore when loyalty/commission attached (option ii — 409) | Option (i) is operationally cleaner (no manual re-create needed), preserves AC/VD/VR audit trail, restores customer trust quickly. Option (ii) was rejected because the restore window is intentionally short (4h) — there's no time to "re-create a sale manually". |
-| Analytics sink (v2 — M5) | `analyticsEmit` wrapper around `logger.info` | `notificationManager.notify` | `notificationManager` is user-facing (sends toasts/push/email) and typed against closed `EventKey` enum. Misrouting would either crash at runtime or spam users. Logger.info is the existing structured-logging path; a thin typed wrapper adds compile-time safety without coupling to user notifications. |
+| **v3 / M1** Admin can rewrite history via mutable ruleSnapshot | Explicit `JSON.parse(JSON.stringify(...))` deep clone INSIDE tx, both at accrue site and at void/restore re-snapshot sites | Store snapshot as encoded string (e.g. `JSON.stringify` once and never parse back until display) | Encoded-string approach loses queryability (`meta.ruleSnapshot.rateBps` filter would require server-side parse). Deep clone keeps JSON queryable while breaking the live-reference link. |
+| **v3 / M2** Server-only fields accepted in input schemas | Hand-rolled allow-list with `.strict()` + grep at pre-commit | Prisma `.omit()` from generated type | Allow-list avoids Prisma-type coupling that breaks on every migration; `.strict()` rejects unknown keys outright; grep gives a third line of defence. |
+| **v3 / M3** Unbounded `withinDays` DoS | Cap at 365 at Zod boundary + composite covering index + service-layer clamp belt-and-braces | No cap, rely on Postgres query planner | Planner does heap scan once `withinDays > 30`; tested 99999 case locks Render Starter for 5+s. Cap is cheap and aligns with realistic use ("which customers haven't been contacted in the last year"). |
+| **v3 / M4** Cross-tenant `staffUserId` 200-empty/403 oracle | Explicit precheck → 404 STAFF_NOT_FOUND | 200-empty (current state) or 403 (intuitive but leaky) | Both 200-empty and 403 leak existence + tenant boundary via response shape + timing. 404 collapses both into "indistinguishable from non-existent". Same UUID enumeration defence used by GitHub / Stripe. |
+| **v3 / M5** Fragile inline `res.headersSent` chain | Factory middleware with single-pass and two terminals | Move check into handler (option B in v2 audit) | Factory keeps the auth concern in middleware layer (testable in isolation, reusable for future similar endpoints); handler stays focused on data orchestration. |
+| **v3 / S1** Point/paise math overflow on whales | `BigInt` cross-multiplication in `loyalty.utils.ts` AND `pos.validators.ts` superRefine | Number-only math + comment | Whales (Rs 10 Cr single sale) cross 2^53 mid-multiply; one line of BigInt insurance is universally cheap and removes the failure class. |
+| **v3 / S2** Rate cap location ambiguity | Zod `rateBps.max(10000)` at schema layer | Service-layer cap | Service-layer caps run after Zod parse; if Zod accepts 50000, service-layer rejection wastes a round-trip and risks a future code path that misses the check. Schema-layer is the choke point. |
+| **v3 / S3** Implicit loyalty.redeem via seed-data assumption | Explicit `posCheckoutAuth` route-layer middleware that requires `loyalty.redeem` whenever payments include `loyalty_redemption` | Service-layer permission check inside checkout | Service-layer check means the tx opens, idempotency consumed, then 403 — wastes resources and obscures the security boundary. Route-layer gate is the standard HisaabPro pattern. |
+| **v3 / S4** PR3+PR5 same-file silent overwrite | PR5 rebase contract in §8 + grep-test post-merge | PR3+PR5 ordered serial merge | Ordering doesn't prevent rebase-less merge; explicit rebase rule + post-merge grep test is the durable safeguard. |
 
 ---
 
 ## 14. Future-known risks (forward-compat notes)
 
-Per scope-writer blindspot framework (regulatory + cost runaway):
-
-- **GST/RBI clarification on loyalty redemption as discount vs supply** — the
-  payment-mode model isolates redemption from `totalTaxableValue`. If
-  regulator says redemption MUST reduce taxable value, a single boolean on
-  `LoyaltyProgram` (`reduceTaxableValueOnRedemption: Boolean`) and a
-  recompute in `applyRedemption` handles it. Schema-ready; no migration.
-- **Commission payout to bank** — when Phase 6 #136 Payroll ships, it will
-  read `CommissionLedger` and write a `CommissionPayout` table (new). The
-  ledger needs a nullable `payoutId String?` reverse field. Add then;
-  trivial.
-- **Multi-staff commission (V4)** — `CommissionLedger.staffUserId` becomes
-  one row per staff per sale (currently exactly 1 staff per sale). Index
-  already supports.
-- **Per-party loyalty opt-out** — single nullable boolean on `Party`; UI
-  toggle in `PartyFormBasic.tsx` is already wired (no-op today).
+(unchanged from v2)
 
 ---
 
 ## 15. Security agent hand-off
 
-**Audit scope:** all 40 backend files + the 4 new tables in `schema.prisma`.
+**v3 revision summary for security re-audit:**
 
-**Specific files to lint:**
+All 5 MUST_FIX items from
+`docs/SECURITY_AUDIT_EPIC_D_crm_loyalty.md` are folded into this v3 design
+contract. Re-audit focus:
 
-1. `server/src/services/loyalty/loyalty-redeem.service.ts` — advisory lock
-   acquisition; balance recomputation inside tx; integer overflow on point
-   math.
-2. `server/src/services/loyalty/loyalty-accrual.service.ts` — walk-in
-   short-circuit; min-spend gating; expiry timestamp calculation; restore
-   path symmetry (new v2).
-3. `server/src/services/loyalty/loyalty.utils.ts` (new v2) — `computePointsEarned`
-   pure helper; BigInt usage; floor semantics on partial points.
-4. `server/src/services/loyalty/loyalty-expiry.cron.ts` — advisory lock; NOT
-   EXISTS guard against double-expiry; cursor pagination safety;
-   confirms **04:15 IST** registration (not 02:30).
-5. `server/src/services/commission/commission-accrual.service.ts` — rule
-   specificity ordering; staffUserIds gate; ruleSnapshot capture; void
-   reversal symmetry; restore symmetry (new v2).
-6. `server/src/services/commission/commission-ledger.service.ts` —
-   `commission.view` vs `commission.view_all` gate at the route layer.
-7. `server/src/services/pos/pos-checkout.service.ts` — step ordering (redeem
-   before accrue); rollback proofs.
-8. `server/src/services/pos/pos-void.service.ts` — both loyalty and
-   commission reversals fire on void; both restores fire on restore (v2 §3.4.1);
-   sum-nets-to-original-value invariant after restore.
-9. `server/src/services/pos/pos.validators.ts` — `loyalty_redemption`
-   (lowercase, v2 — M2) mode schema + paise-math validation.
-10. `server/src/routes/loyalty.routes.ts` — businessId scoping on EVERY
-    endpoint; 404 vs 200 timing oracle on `/balance/:partyId`.
-11. `server/src/routes/commission.routes.ts` — staffUserId own-vs-other gate;
-    leaderboard businessId scoping.
-12. `server/src/services/settings/permissions-data.ts` (v2 — M4 fix) —
-    7 new permission keys merged correctly into all 8 system roles per §6.4.
-13. `server/src/lib/analytics.ts` (new v2 — M5 fix) — typed event union;
-    no PII in default payloads.
+1. **M1 deep clone (§4.2):** confirm `commission-accrual.service.ts` has
+   `JSON.parse(JSON.stringify(...))` at the accrual call site AND
+   re-snapshots the prior ledger row's `meta.ruleSnapshot` (NOT the
+   live rule) at the void and restore sites.
+2. **M2 server-only fields (§3.6):** confirm `party.schemas.ts` uses
+   either Pattern A (`.omit`) or Pattern B (allow-list with `.strict()`)
+   — preferred Pattern B. Confirm grep rule in `scripts/enforce.js`
+   (#91b) blocks `lastContactedAt|loyaltyPointsCache|loyaltyOptOut` in
+   the schema file. Confirm test 12.13.
+3. **M3 withinDays cap (§3.5):** confirm `followUpsQuerySchema` has
+   `.max(365)`; confirm service-layer clamp; confirm composite index
+   in §2.5. Confirm test 12.14.
+4. **M4 cross-tenant precheck (§6.3):** confirm
+   `commission-ledger.routes.ts` handler does the `prisma.businessUser.findFirst`
+   precheck BEFORE the ledger query and returns 404 STAFF_NOT_FOUND
+   (not 200, not 403). Confirm test 12.8 step 6.
+5. **M5 factory middleware (§6.3):** confirm `commission-ledger-auth.ts`
+   exists (file plan #27c); confirm route uses it; confirm `res.headersSent`
+   absent from `commission.routes.ts`.
 
-**Output:** `docs/SECURITY_AUDIT_EPIC_D_crm_loyalty.md` with PASS or
-CONDITIONAL PASS (action items). Format: copy of Epic C audit style.
+SHOULD_FIX (4): S1 BigInt cross-multiply, S2 rate cap location, S3
+`loyalty.redeem` route middleware, S4 PR3+PR5 rebase contract — all
+encoded in §3.1, §3.5, §6.1, §6.3, §8.
+
+NICE_TO_HAVE (2) deferred to future epic per audit recommendation.
+
+**Specific files to lint for v3:**
+
+(unchanged from v2 list + 3 new files added by v3:)
+14. `server/src/middleware/commission-ledger-auth.ts` (NEW v3 — M5
+    factory middleware) — confirm two-terminal pattern, no `headersSent`.
+15. `server/src/schemas/party.schemas.ts` (v3 — M2 + M3) — confirm
+    allow-list pattern; confirm server-only fields absent; confirm
+    `followUpsQuerySchema.max(365)`.
+16. `server/src/routes/commission.routes.ts` (v3 — M4 + M5) — confirm
+    factory used; confirm cross-tenant precheck; confirm 404 not 200/403.
 
 ---
 
@@ -1885,103 +2130,131 @@ CONDITIONAL PASS (action items). Format: copy of Epic C audit style.
 
 ### Backend
 
-- `npx prisma migrate dev --name epic_d_crm_loyalty` succeeds with zero drift
-- `npx tsc -b --noEmit` clean (server)
-- `node scripts/enforce.js` 0 errors (server)
-- All 12.1-12.12 integration tests pass (12.11 = unit math; 12.12 = restore symmetry)
-- Curl 200/401/400 trio on 15 endpoints (5 loyalty + 4 CRM + 6 commission)
-- One-rolls-back-all proof: throw mid-checkout test passes
-- Cron dry-run produces expected EX rows + log lines, confirms 04:15 IST schedule
-- Permission registry self-test: every key in §6.1 reachable via `PERMISSION_MATRIX` flatten
-- Day-end report (`report-daybook.ts`) reconciliation: `loyalty_redemption` tender shown on its own row; sum-tendered + cash-counted match for a test day with 5 mixed sales
+(v2 list +) v3 acceptance:
+- M1: `git grep -n "JSON.parse(JSON.stringify"
+  server/src/services/commission/commission-accrual.service.ts` returns ≥ 2 matches
+- M2: pre-commit grep blocks server-only Party fields in input schemas
+- M3: `GET /api/parties/follow-ups?withinDays=400` → 400; `=365` → 200
+- M4: `GET /api/commission/ledger?staffUserId=<other_tenant_user>` → 404 STAFF_NOT_FOUND
+- M5: `git grep -n "commissionLedgerAuth\|res.headersSent" server/src/routes/commission.routes.ts`
+  — factory present, headersSent absent
+- S1: `computePointsEarned(1_000_000_000_000, 10_000) === 10_000_000_000` test passes
+- S2: `POST /api/commission/rules` with `rateBps: 15000` → 400
+  `COMMISSION_RATE_EXCEEDS_MAX_100_PERCENT`
+- S3: POS POST with `loyalty_redemption` by user lacking `loyalty.redeem`
+  → 403 PERMISSION_DENIED (BEFORE tx opens; verify zero PosSale rows)
+- S4: post-PR5-merge grep test confirms loyalty calls still present in `pos/`
 
 ### Frontend
 
-- `npx tsc -b --noEmit` clean (client)
-- `node scripts/enforce.js` 0 errors (client)
-- `node scripts/enforce-offline.mjs` 0 NEW violations
-- Translation parity (`ext38/39/40` EN ↔ HI 1:1)
-- Screenshots: 6 pages × 4 UI states × 2 viewports (320 + 375) = 48 captures
-- No horizontal overflow at 320 / 375 / 768 / 1024 / 1280 / 1536
-- Offline simulation on POS: balance chip shows cached value + "Last synced"
-- Permission walk-throughs: staff without `commission.view_all` cannot open
-  leaderboard URL (route guard returns 403, UI shows "permission denied")
+(v2 list unchanged)
 
 ---
 
-## 17. Gate for build
+## 17. Gate for build (v3 / per-PR contract with new MUST acceptance lines)
 
 This document plus the SCOPE (with §19 Locked Decisions) are the input to
-the security agent. Once `docs/SECURITY_AUDIT_EPIC_D_crm_loyalty.md` is
-produced (PASS or CONDITIONAL PASS), the task-manager runs to seed
-`.claude/design-plan-active.md` and the seven build PRs begin in the order
-of §8. Per `~/.claude/rules/HIGH_RISK_PATHS.md` the
-`prisma/schema.prisma` edit and the POS / Document service edits are
-high-risk paths — the design-plan must list `scope-writer`, `architect`, and
-`security` in `agents_invoked`.
+the security agent re-run. Once `docs/SECURITY_AUDIT_EPIC_D_crm_loyalty.md`
+Pass-2 is produced (PASS or CONDITIONAL PASS), the task-manager runs to
+seed `.claude/design-plan-active.md`.
 
 ### 17.1 Loyalty #125 — per-PR
 
-- [ ] `GET /api/loyalty/program` returns `null` for businesses with no
-      program configured
+- [ ] `GET /api/loyalty/program` returns `null` for businesses with no program
 - [ ] `PUT /api/loyalty/program` rejects negative rates
-- [ ] `LoyaltyLedger` row written inside the SAME `$transaction` as
-      `PosSale` — proof: integration test forces a throw mid-checkout,
-      asserts ledger row absent
+- [ ] `LoyaltyLedger` row written inside the SAME `$transaction` as `PosSale`
 - [ ] Redemption uses FIFO oldest-AC-first
 - [ ] Expiry cron writes EX rows for entries where `expiresAt < now`
-- [ ] Walk-in party (`isWalkIn=true`) does NOT accrue points
+- [ ] Walk-in party does NOT accrue points
 - [ ] `GET /api/loyalty/balance/:partyId` honors `cacheReads: true`
 - [ ] Loyalty UI page passes 4 UI states at 320px
 - [ ] `loyalty_redemption` is **lowercase** in every wire-format and DB row (v2 — M2)
 - [ ] Restore reverses negation rows symmetrically (v2 — M6 / test 12.12)
 - [ ] Cron registered at **04:15 IST** in `cron-scheduler.ts` (v2 — M1)
+- [ ] **(v3 / S1)** `computePointsEarned` uses `BigInt` mult in `loyalty.utils.ts`;
+      `pos.validators.ts` superRefine uses BigInt cross-multiply
+      (test 12.11 BigInt row passes)
+- [ ] **(v3 / S3)** POST `/api/pos/sales` body with `payments[].mode === 'loyalty_redemption'`
+      by user lacking `loyalty.redeem` → 403 `PERMISSION_DENIED` AT ROUTE LAYER
+      (NOT inside the tx). `posCheckoutAuth` middleware mounted in `pos-sales.ts:62`
+      between `auth` and `requireIdempotencyKey` per #14b (test 12.15 passes;
+      grep `pos-sales.ts` for `posCheckoutAuth` returns 1+ match in PR7 QA;
+      existing `requirePermission('pos.create')` and `idempotencyCheck()` preserved
+      after the new middleware)
+- [ ] **(v4 / NEW_S1 from security Pass-2)** GET `/api/loyalty/balance/:partyId`
+      and GET `/api/loyalty/ledger/:partyId` with cross-tenant `partyId` return
+      404 `PARTY_NOT_FOUND` (NOT 403, NOT 200-empty — kills the timing-oracle
+      enumeration vector exactly as M4 does for staffUserId). Pre-tx
+      `party.findFirst({ where: { id, businessId: req.user.businessId } })`
+      returns null → 404. Integration test added in §12 (new row 12.16).
+- [ ] **(v4 / NEW_S2 from security Pass-2)** POST `/api/pos/sales` with
+      `payments[].mode === 'loyalty_redemption'` AND `partyId` referencing a
+      party in another tenant returns 400 `PARTY_NOT_IN_TENANT` BEFORE the tx
+      opens (validator-layer check inside `posCheckoutAuth` or
+      `pos.validators.ts` superRefine). Idempotency token NOT consumed.
+      Integration test added in §12 (new row 12.17).
 
 ### 17.2 CRM #127 — per-PR
 
-- [ ] `GET /api/parties?tag=vip` returns only parties whose `tags[]`
-      contains "vip" (verified via SQL `tags @> ARRAY['vip']`)
-- [ ] `GET /api/parties/tags` returns aggregated tags with counts,
-      filtered to businessId
+- [ ] `GET /api/parties?tag=vip` returns only matching parties
+- [ ] `GET /api/parties/tags` returns aggregated tags with counts
 - [ ] `GET /api/parties/follow-ups?withinDays=7` returns parties where
       `followUpAt <= now + 7d AND followUpAt IS NOT NULL`
-- [ ] Sharing an invoice triggers `lastContactedAt = now()` on the
-      party (verified via integration test)
-- [ ] `PATCH /api/parties/:id` with past `followUpAt` returns 400
-      `INVALID_FOLLOWUP_PAST`
+- [ ] Sharing an invoice triggers `lastContactedAt = now()`
+- [ ] `PATCH /api/parties/:id` with past `followUpAt` returns 400 `INVALID_FOLLOWUP_PAST`
 - [ ] FollowUpsPage 4 UI states pass at 320px
 - [ ] TagFilterBar handles 0-tag / 1-tag / 50-tag states
 - [ ] All 5 FE edits target **real** worktree files (v2 — M3)
+- [ ] **(v3 / M2)** PATCH `/api/parties/:id` body `{ lastContactedAt: '1970-01-01' }`
+      returns 400 ZodError; party.lastContactedAt UNCHANGED (test 12.13 passes)
+- [ ] **(v3 / M2)** Pre-commit grep blocks `lastContactedAt|loyaltyPointsCache|loyaltyOptOut`
+      in `server/src/schemas/party.schemas.ts` (scripts/enforce.js rule #91b)
+- [ ] **(v3 / M2)** Input schemas use `.strict()` (allow-list Pattern B preferred)
+- [ ] **(v3 / M3)** `GET /api/parties/follow-ups?withinDays=400` → 400
+      `INVALID_WITHIN_DAYS_RANGE`; `?withinDays=365` → 200 (test 12.14 passes)
+- [ ] **(v3 / M3)** Migration adds composite index
+      `idx_party_business_lastcontact_active` per §2.5
 
 ### 17.3 Commission #128 — per-PR
 
-- [ ] `POST /api/commission/rules` creates rule; rate cap of 50%
-      warns, 100% hard-blocks (per Q19)
-- [ ] CommissionLedger row written inside SAME `$transaction` as the
-      POS sale or invoice
-- [ ] PRODUCT-scoped rule overrides CATEGORY rule which overrides ALL
-      rule (test: 3 overlapping rules → only the most specific writes
-      ledger row)
-- [ ] Voiding a POS sale writes a NEGATIVE commission row (sum nets
-      to 0)
-- [ ] **Restoring** a voided POS sale writes a COMPENSATING commission row
-      (sum returns to original) (v2 — M6)
-- [ ] `GET /api/commission/ledger?staffUserId=X` returns 403 when
-      caller has `commission.view` but is not staffUserId X
-- [ ] `GET /api/commission/leaderboard` returns 403 without
-      `commission.view_all`
-- [ ] Staff widget on dashboard hidden when user has no
-      `commission.view` permission
-- [ ] All 4 UI states pass on each of: CommissionSettingsPage,
-      CommissionLedgerPage, LeaderboardPage
-- [ ] Permission keys (`commission.view`, `commission.view_all`,
-      `commission.configure`) appear in `PERMISSION_MATRIX` and merge
-      correctly into the 8 system roles per §6.4 (v2 — S1, S5)
-- [ ] Day-end report (`report-daybook.ts`) shows `loyalty_redemption`
-      as its own tender line; total tendered + cash balance reconcile (v2 — S3)
-- [ ] Analytics emits via `analyticsEmit('commission_accrued', ...)` —
-      NOT `notificationManager.notify` (v2 — M5)
+- [ ] `POST /api/commission/rules` creates rule
+- [ ] CommissionLedger row written inside SAME `$transaction` as POS sale / invoice
+- [ ] PRODUCT > CATEGORY > ALL rule specificity (test 12.4)
+- [ ] Voiding writes a NEGATIVE commission row (sum nets to 0)
+- [ ] **Restoring** writes a COMPENSATING commission row (sum returns to original)
+      (v2 — M6)
+- [ ] `GET /api/commission/ledger?staffUserId=X` returns 403 when caller has
+      `commission.view` but is not staffUserId X AND X is same-tenant
+- [ ] `GET /api/commission/leaderboard` returns 403 without `commission.view_all`
+- [ ] Staff widget hidden when user lacks `commission.view`
+- [ ] All 4 UI states pass on CommissionSettingsPage, CommissionLedgerPage, LeaderboardPage
+- [ ] Permission keys in `PERMISSION_MATRIX` per §6.4 (v2 — S1, S5)
+- [ ] Day-end report shows `loyalty_redemption` as own tender line (v2 — S3)
+- [ ] Analytics emits via `analyticsEmit(...)` — NOT `notificationManager.notify` (v2 — M5)
+- [ ] **(v3 / M1)** `commission-accrual.service.ts` calls
+      `JSON.parse(JSON.stringify(...))` at ledger.create site. Grep test:
+      `git grep -n "JSON.parse(JSON.stringify" server/src/services/commission/commission-accrual.service.ts`
+      → ≥ 2 matches (accrue + re-snapshot in void/restore)
+- [ ] **(v3 / M1)** Test 12.12 step 5: admin-editing the rule mid-flight does NOT
+      change historical ledger rows' `meta.ruleSnapshot.rateBps`
+- [ ] **(v3 / M4)** `GET /api/commission/ledger?staffUserId=<other_tenant_user_uuid>`
+      returns **404 STAFF_NOT_FOUND** (NOT 200-empty rows, NOT 403)
+      (test 12.8 step 6)
+- [ ] **(v3 / M4)** Same-tenant precheck not bypassed for owners — owner
+      requesting other-tenant user's UUID still gets 404 (test 12.8 step 8)
+- [ ] **(v3 / M5)** `server/src/middleware/commission-ledger-auth.ts` exists
+      (file plan #27c)
+- [ ] **(v3 / M5)** `git grep -n "commissionLedgerAuth\|res.headersSent"
+      server/src/routes/commission.routes.ts` — factory imported AND used;
+      `res.headersSent` MUST NOT appear
+- [ ] **(v3 / S2)** `POST /api/commission/rules` with `rateBps: 15000`
+      → 400 `COMMISSION_RATE_EXCEEDS_MAX_100_PERCENT` (Zod-boundary cap)
+- [ ] **(v3 / S2)** FE CommissionRuleForm shows warning at 5000 bps (50%)
+      and hard-blocks save at 10000 bps (100%)
+- [ ] **(v3 / S4)** Post-PR5-merge: `git grep -n "applyRedemption\|restoreForPosSale"
+      server/src/services/pos/` STILL returns the loyalty service calls.
+      (If empty, PR5 silently overwrote PR3 — block merge.)
 
 ---
 
-**End of architecture (v2).**
+**End of architecture (v3).**

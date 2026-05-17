@@ -1,196 +1,85 @@
-# SECURITY AUDIT — Phase 5 Epic D (CRM + Loyalty + Commission)
+# Security Audit — Epic D — v3 verdict: PASS_WITH_GAPS
 
-> Audited 2026-05-17 13:53 IST by security agent
+> Audited 2026-05-17 14:18 IST by security agent — Pass 2
 > Worktree: `/Users/sawanjaiswal/Projects/HisaabPro-epic-d`
 > Branch: `epic/phase-5-d-crm-loyalty`
-> Against: `ARCHITECTURE_EPIC_D_crm_loyalty.md` (v2, 1,987 lines)
+> Against: `ARCHITECTURE_EPIC_D_crm_loyalty.md` (v3, 2,173 lines)
+> Supersedes: v2 audit (BLOCK, 5 MUST_FIX + 4 SHOULD_FIX)
 
-## Verdict: **BLOCK — 5 MUST_FIX**
-
-Architecture design v2 is fundamentally sound (advisory locks acquired before reads, FIFO ledger with symmetric VR rows, ruleSnapshot pinning concept, businessId scoping throughout). However, **five implementation-level specifications are missing that, if shipped as currently described, cause real money loss or staff payroll fraud**.
-
-The architecture-auditor's PASS_WITH_GAPS verdict covered design correctness; this security audit blocks on builder-facing gaps that v2 did not pin down.
-
-**task-manager MUST NOT seed `design-plan-active.md` until the 5 MUST_FIX items are addressed in `ARCHITECTURE_EPIC_D_crm_loyalty.md` v3.**
-
----
-
-## MUST_FIX (5) — blocking
-
-### M1 — `ruleSnapshot` deep-clone not specified [A04 Insecure Design]
-**Location:** ARCH §4.2, PR5 commission accrual
-
-**Risk:** Commission rules are mutable (admin can edit `ratePct`). Architecture says "snapshot rule to `meta.ruleSnapshot` for forensics" but does not specify deep-clone semantics. If the implementation does `meta: { ruleSnapshot: rule }` directly, Prisma serializes the live object reference — but the bigger risk is subsequent code paths mutating the rule object before persistence, or future migrations reshaping `meta` and silently mutating every historical commission row.
-
-**Money impact:** Admin edits rule to `ratePct: 5` (was 2). Historical ledger rows referencing the old rule now show `ruleSnapshot.ratePct: 5` if not deep-cloned at write time. Staff disputes become unwinnable; admin can rewrite history.
-
-**Required spec:**
-```ts
-const ruleSnapshot = JSON.parse(JSON.stringify({
-  ruleId: rule.id,
-  scope: rule.scope,
-  scopeId: rule.scopeId,
-  ratePct: rule.ratePct,
-  basis: rule.basis,
-  createdAt: rule.createdAt.toISOString(),
-}))
-await tx.commissionLedger.create({ data: { ..., meta: { ruleSnapshot } } })
-```
-Architecture must add: "MUST be a frozen deep clone written inside the tx; the rule row may be edited or deleted after."
-
-### M2 — `lastContactedAt` not omitted from `partyPatchSchema` [A01 Broken Access Control]
-**Location:** ARCH PR1 / partyPatchSchema additions
-
-**Risk:** Architecture §3 adds `lastContactedAt: DateTime?` to Party and says it is "set by server when /api/parties/:id/follow-ups POST is hit." But there is no explicit instruction that `lastContactedAt` MUST be omitted from the `partyPatchSchema.strict()` Zod schema. If the builder copies the existing `partyUpdateSchema` and includes the field, the client can backdate `lastContactedAt` to make a stale party look fresh — disabling the "not contacted in 30d" follow-up trigger and hiding ghosting customers from the CRM.
-
-**Required spec:** Add to ARCH §3: "`lastContactedAt`, `loyaltyPointsCache`, and `loyaltyOptOut` are server-only — explicitly omitted from every Zod `partyPatchSchema` / `partyUpdateSchema` / `createPartySchema`. ESLint rule or test must assert these fields never appear in any party-facing input schema."
-
-### M3 — `withinDays` parameter on `/api/parties/follow-ups` lacks max cap [A05 / DoS]
-**Location:** ARCH §3.5 follow-up query, PR1
-
-**Risk:** Architecture describes `GET /api/parties/follow-ups?withinDays=7` but doesn't cap the value. `withinDays=99999` against a tenant with 50k parties = full Party table scan with no index help. Tenant attacker can DoS their own tenant; competitor with leaked creds can DoS at scale.
-
-**Required spec:**
-```ts
-z.object({
-  withinDays: z.coerce.number().int().min(1).max(365),
-})
-// → 400 INVALID_WITHIN_DAYS_RANGE if out of bounds
-```
-Add covering index `(businessId, lastContactedAt, isActive)` with documented "expected scan window ≤ 365 days."
-
-### M4 — Cross-tenant `staffUserId` check on `/api/commission/ledger` not specified [A01 IDOR / timing oracle]
-**Location:** ARCH §6.3 (inline middleware), PR5
-
-**Risk:** Architecture describes `/api/commission/ledger?staffUserId=X` with logic "if `staffUserId !== req.user.userId`, requires `commission.view_all`". But the implementation pattern shown does not specify what happens when `staffUserId` is a valid UUID belonging to a DIFFERENT TENANT's staff. Two outcomes are both wrong:
-- (a) Empty array returned (200 OK) → confirms "this staff exists somewhere" via timing differences
-- (b) Generic 403 → confirms "you don't have permission to view THIS specific user" — same oracle
-
-**Required spec:**
-```ts
-const isInTenant = await prisma.businessUser.findFirst({
-  where: { userId: staffUserId, businessId: req.user.businessId, isActive: true },
-  select: { userId: true },
-})
-if (!isInTenant) return res.status(404).json({ error: 'STAFF_NOT_FOUND' })
-// Identical 404 whether the userId doesn't exist OR belongs to another tenant
-```
-Architecture must specify: "staffUserId tenant check returns 404 STAFF_NOT_FOUND (NOT 403) to avoid leaking tenant boundaries via timing."
-
-### M5 — Inline middleware pattern fragility [A04 Insecure Design]
-**Location:** ARCH §6.3
-
-**Risk:** The pattern shown:
-```ts
-if (requestedStaff !== req.user!.userId) {
-  await requirePermission('commission.view_all')(req, res, () => {})
-  if (res.headersSent) return
-}
-```
-is fragile for three reasons:
-- (a) `requirePermission` writes to `res` synchronously before `next()` is called — the `() => {}` next-shim swallows a thrown next-error
-- (b) `res.headersSent` returns `true` only after the response is FLUSHED, not when `.status().json()` is called — timing varies
-- (c) Future middleware-chain refactor (async `next` wrapping) silently breaks this — no test catches it
-
-**Required spec:** Replace with explicit factory:
-```ts
-const middleware = req.query.staffUserId && req.query.staffUserId !== req.user.userId
-  ? requirePermission('commission.view_all')
-  : (_req, _res, next) => next()
-router.get('/api/commission/ledger', requireAuth, middleware, handler)
-```
-OR move the permission check inside the handler with explicit `return res.status(403)`. Architecture must mandate one of the two patterns and forbid the `headersSent`-check approach.
+**Disposition:** task-manager MAY seed `.claude/design-plan-active.md`.
+All 5 MUST_FIX from v2 are properly encoded with concrete code snippets,
+file targets, AND grep-able §17 acceptance gates. All 4 SHOULD_FIX are
+encoded. Two NEW_SHOULD_FIX surface in v3 (loyalty-route M4 pattern parity)
+— both are non-blocking and can be folded into PR3/PR4.
 
 ---
 
-## SHOULD_FIX (4)
+## v3 review — closed items
 
-### S1 — Loyalty redemption value math should be cross-multiplied integer check [A03 Injection / Logic]
-ARCH §3.1.1, pos.validators.ts superRefine. `value = floor(points * redemptionPaisePerUnit / redemptionUnit)` with division in JavaScript can produce floating-point edge cases for unusual config. Spec must require integer cross-multiplication:
-```ts
-if (BigInt(amountPaise) * BigInt(redemptionUnit) !==
-    BigInt(points) * BigInt(redemptionPaisePerUnit)) {
-  return ctx.addIssue({ code: 'custom', message: 'LOYALTY_REDEMPTION_MATH_MISMATCH' })
-}
-```
+| ID | v3 status | Where | Acceptance gate (§17 line) | Comment |
+|----|-----------|-------|----------------------------|---------|
+| **M1** ruleSnapshot deep-clone | PASS | §4.2 (L1003-1089) callout box; §3.4.1 (L754-770) re-snapshot at restore | §17.3 L2147-2152: `git grep "JSON.parse(JSON.stringify"` ≥ 2 matches + test 12.12 step 7 asserts void-row ruleSnapshot still reflects pre-edit rule | Strong. Re-snapshot chain (accrue→void→restore) explicitly forbids reaching back to live `CommissionRule.config`. Test 12.12 (L1916-1937) walks the 13-step proof. |
+| **M2** server-only Party fields | PASS | §3.6 (L845-942) NEW section with both Pattern A `.omit` and Pattern B allow-list `.strict()` (B preferred); enforce.js #91b grep | §17.2 L2121-2125: PATCH with `lastContactedAt` → 400 ZodError + pre-commit grep blocks `lastContactedAt\|loyaltyPointsCache\|loyaltyOptOut` in `party.schemas.ts` | Strong. Three layers of defence (strict, allow-list, grep). Test 12.13 (L1939-1953) verifies entire PATCH rejected (not partial-applied). |
+| **M3** withinDays cap + index | PASS | §3.5 (L788-843) Zod `.max(365)` + service-layer clamp; §2.5 (L444) composite index `(businessId, lastContactedAt, isActive)`; migration step 9 (L497) | §17.2 L2126-2129: `?withinDays=400` → 400; `=365` → 200; index migration confirmed | Strong. Belt-and-braces (Zod + service clamp + covering index). Test 12.14 (L1955-1967) walks 7-row boundary table including DoS payload `999999`. |
+| **M4** cross-tenant 404 STAFF_NOT_FOUND | PASS | §6.3 (L1299-1349) — `businessUser.findFirst` + `isActive: true` precheck returns 404, NOT 200-empty, NOT 403 | §17.3 L2153-2157: cross-tenant uuid → 404; even owner can't cross tenants → 404 (test 12.8 steps 6 + 8) | Strong. Explicit "indistinguishable from non-existent" comment (L1316-1321). Same pattern noted for loyalty routes at L1365-1367 (but see NEW_S3 below — not as rigorously encoded). |
+| **M5** factory middleware (no `headersSent`) | PASS | §6.3 (L1249-1297) — new file `server/src/middleware/commission-ledger-auth.ts` (#27c, ~50L); single-pass two-terminal pattern explicit | §17.3 L2158-2162: factory file exists + grep forbids `res.headersSent` in `commission.routes.ts` | Strong. v2 deprecated pattern shown alongside v3 replacement (L1230-1247). `posCheckoutAuth` (L584-590) uses the same pattern for S3 — consistency. |
+| **S1** BigInt cross-multiply | PASS | §2.1 (L292-319) `computePointsEarned` uses `BigInt`; §3.1.1 (L612-638) `pos.validators.ts` superRefine uses cross-multiplication | §17.1 L2102-2104: test 12.11 (L1901-1914) overflow row `computePointsEarned(1e12, 10000) === 1e10` | Strong. Comment explicitly names `Number.MAX_SAFE_INTEGER = 2^53 − 1` and walks the overflow class. |
+| **S2** rate cap at Zod boundary | PASS | §6.1 (L1188-1215) `commissionRuleSchema.strict()` with `rateBps.max(10000, 'COMMISSION_RATE_EXCEEDS_MAX_100_PERCENT')` | §17.3 L2163-2166: `rateBps: 15000` → 400 + FE soft warning at 5000 + hard block at 10000 | Strong. Mode-specific `superRefine` enforces `flatPerUnitPaise` vs `rateBps` required-field logic. |
+| **S3** loyalty.redeem route-layer middleware | PASS | §3.1 (L566-595) `posCheckoutAuth` factory on `POST /api/pos/sales`; §6.1 row mentions enforcement | §17.1 L2105-2108: 403 BEFORE tx opens; test 12.15 (L1969-1982) asserts zero PosSale rows + zero idempotency rows consumed | Strong. Test 12.15 step 4-5 verifies tx never opened (not just rejected after-the-fact). |
+| **S4** PR3→PR5 rebase contract | PASS | §8 (L1594-1614) callout: PR5 MUST rebase on PR3 to avoid silently overwriting `restorePosSale` loyalty logic | §17.3 L2167-2169: post-PR5-merge `git grep "applyRedemption\|restoreForPosSale" server/src/services/pos/` MUST still return matches | Strong. Operational rule + CI grep gives two-layer defence against the silent-overwrite class. |
 
-### S2 — Rate cap enforcement location undefined [A04]
-SCOPE §19 Q19 says "soft cap 50% with warning, hard cap 100%" but ARCH doesn't specify whether the 100% hard cap is enforced in `commissionRuleSchema.strict()` or service layer. Architecture must specify: `commissionRuleSchema` enforces `ratePct: z.number().int().min(0).max(10000)` (basis points, 100% = 10000); warning at 5000 lives in frontend only.
-
-### S3 — `loyalty.redeem` permission server-side enforcement implicit [A01]
-ARCH §6.1 lists `loyalty.redeem` as a permission key but POS checkout flow doesn't explicitly call `requirePermission('loyalty.redeem')` middleware. Builder may rely on "cashier role includes loyalty.redeem in seed data" → any staff without loyalty.redeem in their custom role can still redeem via the POS endpoint. Architecture must specify: "POS checkout handler MUST call `requirePermission('loyalty.redeem')` when `payment.mode === 'loyalty_redemption'` is present. Reject with PERMISSION_DENIED before opening the tx."
-
-### S4 — PR3+PR5 both modify `pos-checkout.service.ts` — integration test required [A04]
-ARCH §17 acceptance criteria. PR3 adds loyalty accrual at step 10.6; PR5 adds commission accrual at step 10.7. Both touch the same transaction block. Architecture must mandate: "PR5 acceptance test: assert `tx.loyaltyLedger.create` is called exactly once AND `tx.commissionLedger.create` is called exactly once per POS sale checkout, in step-order 10.5 → 10.6 → 10.7."
+**All 5 MUST_FIX + 4 SHOULD_FIX: PASS.**
 
 ---
 
-## NICE_TO_HAVE (2)
+## NEW findings introduced or surfaced by v3
 
-### N1 — AuditLog for `loyalty.configure` mutations [A09]
-Architecture mentions AuditLog for commission rule CRUD but not for loyalty config changes (earn rate, redemption unit). Loyalty config edits affect future accrual math — should be auditable.
+| ID | Severity | Where | Issue | Recommendation |
+|----|----------|-------|-------|----------------|
+| **NEW_S1** | SHOULD_FIX | §6.3 (L1364-1371), §11.3 (L1809) | `GET /api/loyalty/balance/:partyId` and `GET /api/loyalty/ledger/:partyId` cross-tenant precheck is **mentioned** ("same pattern applied") but lacks the concrete handler code snippet that §6.3 spelled out for commission. No file-plan row for a `loyaltyLedgerAuth` factory and no §17 grep/integration test for 404 PARTY_NOT_FOUND. The M4 attack class is identical (UUID enumeration via `partyId` path-param). Builder may copy-paste the commission pattern correctly — or may slip back to 403/200-empty without a gate to catch it. | Add to §17.1: integration test `GET /api/loyalty/balance/<other_tenant_party_uuid>` → 404 PARTY_NOT_FOUND (NOT 200-empty, NOT 403). Add to file plan: an explicit `partyTenantPrecheck` helper service used by both loyalty routes. Non-blocking — same architectural pattern already proven in M4. |
+| **NEW_S2** | SHOULD_FIX | §3.1.1 + §3.1 — loyalty redemption checkout | The redemption row's `partyId` is validated for "exists" (`PARTY_REQUIRED_FOR_REDEMPTION`) but the v2 tenant-test row #4 (POST `/api/pos/checkout` with `partyId: <other_tenant_party>` should return 400 `PARTY_NOT_IN_TENANT`) has no explicit cross-tenant assertion anywhere in v3. The error code `PARTY_NOT_IN_TENANT` never appears in the doc. Service-layer fetches by `partyId + businessId` would catch it (Prisma scoping is established convention), but no §17 row tests it. Attacker scenario: leaked credential on tenant A debits points from tenant B's high-value party (debit succeeds → tenant B's points balance corrupted) — gated only by FK constraint failure, not by explicit `PARTY_NOT_IN_TENANT` semantics. | Add to §17.1: `loyalty_redemption` payment with cross-tenant `partyId` → 400 (or 404) `PARTY_NOT_IN_TENANT` BEFORE points are debited. Confirm `loyalty-redeem.service.applyRedemption` does `findFirst({ where: { id, businessId } })` not raw `findUnique({ where: { id } })`. Non-blocking — convention-level safety likely holds, but explicit gate eliminates the reviewer-vigilance dependency. |
 
-### N2 — Per-party loyalty opt-out UI toggle wired to no-op [A04]
-SCOPE §19 mentions per-party loyalty opt-out toggle. If the UI ships but the server-side check is forgotten, customers who opted out still accrue → reputation/legal risk for PII-handling. Architecture must specify: opt-out lives on `Party.loyaltyOptOut: Boolean @default(false)`, accrual service skips when true. If not implemented in v1, the UI toggle MUST NOT ship (or must be disabled).
-
----
-
-## A01–A10 Section-by-section
-
-| Class | Verdict | Notes |
-|-------|---------|-------|
-| **A01 Broken Access Control** | **FAIL** | M2 (lastContactedAt forgery), M4 (cross-tenant staffUserId oracle), S3 (loyalty.redeem implicit). businessId scoping is consistently present throughout the design — but specific implementation gaps create IDOR vectors. |
-| **A02 Cryptographic Failures** | PASS | No new crypto surface. Existing httpOnly cookie + CSRF + replay-nonce reused unchanged. |
-| **A03 Injection** | PASS_WITH_FINDINGS | All Prisma queries parameterized. S1 (BigInt math) is logic-injection adjacent. `pg_advisory_xact_lock(hashtextextended($1, 0))` IS parameterized. |
-| **A04 Insecure Design** | **FAIL** | M1, M5, S2, S4, N2. Most concerning class for Epic D — money flows depend on these specs. |
-| **A05 Security Misconfiguration** | PASS_WITH_FINDINGS | M3 (withinDays DoS cap). Helmet/CORS/CSP unchanged. |
-| **A06 Vulnerable Components** | PASS | No new dependencies introduced. |
-| **A07 Authentication Failures** | PASS | No auth surface change. `req.user.userId` shape preserved (auth.ts:75 confirmed). Owner bypass at permission.ts:51-54 unchanged. |
-| **A08 Software/Data Integrity** | PASS_WITH_FINDINGS | M1 (ruleSnapshot integrity over time). Migration immutability confirmed. |
-| **A09 Logging/Monitoring** | PASS_WITH_FINDINGS | N1 (loyalty config audit). |
-| **A10 SSRF** | N/A | No new outbound HTTP introduced. |
+Both NEW findings are SHOULD_FIX (parity gaps with already-encoded M4) — neither MUST_FIX nor a new attack class. They can be folded into PR3 acceptance without v4.
 
 ---
 
-## Cross-tenant isolation test sketch
+## A01–A10 deltas vs v2 audit
 
-| # | Attacker action | Expected outcome | Why |
-|---|----------------|------------------|------|
-| 1 | Tenant A user GET `/api/parties/{TENANT_B_PARTY_ID}/loyalty-ledger` | **404 PARTY_NOT_FOUND** | 403 leaks party existence |
-| 2 | Tenant A user POST `/api/parties/{TENANT_A_PARTY_ID}/follow-ups` body `{ lastContactedAt: "2030-01-01" }` | **200, `lastContactedAt` set server-side to `now()` only** | Forging hides stale customers (M2) |
-| 3 | Tenant A user GET `/api/commission/ledger?staffUserId={TENANT_B_USER_ID}` | **404 STAFF_NOT_FOUND** (NOT 403, NOT 200-empty-array) | Timing/error-code oracle leaks staff (M4) |
-| 4 | Tenant A user POST `/api/pos/checkout` body `payments: [{ mode: 'loyalty_redemption', partyId: TENANT_B_PARTY_ID, points: 100 }]` | **400 PARTY_NOT_IN_TENANT** | Without explicit party-tenant check, debits another tenant's points |
-| 5 | Tenant A staff (no `commission.view_all`) GET `/api/commission/rules` | **200 own-applicable only OR 403** — consistent | Inconsistent return shape allows rule enumeration |
+| Class | v2 | v3 | Delta |
+|-------|----|----|-------|
+| A01 Broken Access Control | FAIL | **PASS_WITH_FINDINGS** | M2 + M4 + S3 all closed at architecture layer. NEW_S1 + NEW_S2 carry similar pattern to loyalty routes — non-blocking. |
+| A03 Injection | PASS_WITH_FINDINGS | **PASS** | S1 BigInt cross-multiply closes the float-edge logic-injection class. |
+| A04 Insecure Design | FAIL | **PASS** | M1 (deep clone) + M5 (factory middleware) + S2 (rate cap) + S4 (rebase contract) all closed with grep tests. |
+| A05 Sec Misconfig | PASS_WITH_FINDINGS | **PASS** | M3 withinDays cap closed at Zod boundary + service clamp + covering index. |
+| A08 Data Integrity | PASS_WITH_FINDINGS | **PASS** | M1 ruleSnapshot immutability closed; void+restore chain re-snapshots from prior ledger row. |
+| Others | unchanged | unchanged | — |
 
 ---
 
-## Concrete recommendations for builder
+## Final disposition
 
-1. **Architecture v3 amendments required** before task-manager seeds `design-plan-active.md`:
-   - §3 Party schema: explicit "server-only fields" callout (`lastContactedAt`, `loyaltyPointsCache`, `loyaltyOptOut`) — must be omitted from EVERY input Zod schema.
-   - §3.5 follow-up query: cap `withinDays` at 365; add covering index spec.
-   - §4.2 commission ledger: explicit deep-clone code snippet for `ruleSnapshot`; mandate `JSON.parse(JSON.stringify(...))` inside tx.
-   - §6.1 permissions: explicit `requirePermission('loyalty.redeem')` middleware spec for POS checkout when loyalty payment present.
-   - §6.3 cross-tenant query check: replace inline `res.headersSent` pattern with factory-based middleware OR explicit handler check. 404 STAFF_NOT_FOUND for cross-tenant staffUserId.
-   - §17 acceptance: integration test mandating both `ledger.create` calls survive PR3→PR5 sequence.
+**task-manager MAY seed `.claude/design-plan-active.md`** with the v3
+architecture as the contract. The 2 NEW_SHOULD_FIX items should be added
+to PR3's acceptance checklist (loyalty cross-tenant precheck parity) — they
+do NOT block plan seeding.
 
-2. **Pre-PR Zod schema audit** (mechanical): grep all `partyPatchSchema`, `partyUpdateSchema`, `createPartySchema` for `lastContactedAt | loyaltyPointsCache | loyaltyOptOut`. Should be zero matches.
+**Carry into PR3 gate** (suggested wording for task-manager):
+1. Add §17.1 test: `GET /api/loyalty/balance/<other_tenant_party>` → 404 PARTY_NOT_FOUND
+2. Add §17.1 test: POS `loyalty_redemption` with cross-tenant `partyId` → 400 PARTY_NOT_IN_TENANT
+3. Confirm `loyalty-redeem.service.applyRedemption` uses `findFirst({ where: { id, businessId } })`
 
-3. **Add to `scripts/enforce.js`**: pattern check for server-only Party fields in `server/src/services/party/*.validators.ts`. Block at pre-commit.
-
-4. **Tenant isolation test**: implement the 5-row table above as `__tests__/security/epic-d-tenant-isolation.test.ts` BEFORE PR1 merges. Use two seeded tenants with overlapping resource counts to surface timing oracles.
-
-5. **Loyalty/commission void+restore symmetry**: assert `SUM(LoyaltyLedger.points) WHERE partyId=X` equals `partyBalanceAfter` for every sale→void→restore sequence, including offline queue replay (idempotency-key collision case).
+No v4 architecture revision required.
 
 ---
 
 ## Summary
 
-| Metric | Count |
-|--------|-------|
-| MUST_FIX | 5 |
-| SHOULD_FIX | 4 |
-| NICE_TO_HAVE | 2 |
-| Verdict | **BLOCK** |
-| Most concerning | M1 ruleSnapshot mutation — historical commission ledger rows become rewriteable by admin (staff payroll fraud vector) |
-| Next | Architect revises v2 → v3 with M1-M5 specs → re-audit (optional) → security pass-2 → task-manager seeds plan |
+| Metric | v2 | v3 |
+|--------|----|----|
+| MUST_FIX outstanding | 5 | **0** |
+| SHOULD_FIX outstanding | 4 | 2 (both NEW, both loyalty-route M4 parity) |
+| NICE_TO_HAVE | 2 | 2 (unchanged — N1 loyalty config AuditLog, N2 opt-out wired no-op) |
+| Verdict | BLOCK | **PASS_WITH_GAPS** |
+| Most concerning closed | M1 ruleSnapshot mutation | (closed) |
+| Most concerning open | — | NEW_S2 cross-tenant `partyId` in `loyalty_redemption` payment lacks explicit gate |
+| Next | v3 revision | task-manager seeds plan; PR3 picks up 2 NEW_SHOULD_FIX |
