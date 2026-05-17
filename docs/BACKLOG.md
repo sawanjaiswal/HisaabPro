@@ -1,10 +1,10 @@
 # Backlog — resume 2026-05-17
 
-> Snapshot at 2026-05-17 12:25 IST. **130/150 shipped.** Phase 4 complete (16/16). **Phase 5 Epic A SHIPPED** (Marketing FE — 3 slices, 36 files, +221 EN/HI keys). **Phase 5 Epic B SHIPPED** (#122/#132/#133/#134). **Phase 5 Epic C SHIPPED** (#121/#129/#130/#131 — public surface at `/p/*`, SharedLink + HMAC tokens, UPI QR, storefront, invite/OTP). **Subscription port SHIPPED** (DH gating model: state machine, UPI Autopay, offline JWT, PRO_MAX tier — commit `3530e79`). **Responsive sweep complete** (Waves 0-7, `7c12683`..`5b8d3fe`). **Backend audit green** (0 P0/P1/P2 after `bf1d166` + `be574fd`).
+> Snapshot at 2026-05-17 18:58 IST. **133/150 shipped — Phase 5 COMPLETE.** Phase 4 complete (16/16). **Phase 5 Epic A SHIPPED** (Marketing FE — 3 slices, 36 files, +221 EN/HI keys). **Phase 5 Epic B SHIPPED** (#122/#132/#133/#134). **Phase 5 Epic C SHIPPED** (#121/#129/#130/#131 — public surface at `/p/*`, SharedLink + HMAC tokens, UPI QR, storefront, invite/OTP). **Phase 5 Epic D SHIPPED** (#125 Loyalty + #127 CRM + #128 Commission — merge `63ccef4`, Security Pass-2 PASS, QA Gate GREEN 49/49). **Subscription port SHIPPED** (DH gating model: state machine, UPI Autopay, offline JWT, PRO_MAX tier — commit `3530e79`). **Responsive sweep complete** (Waves 0-7, `7c12683`..`5b8d3fe`). **Backend audit green** (0 P0/P1/P2 after `bf1d166` + `be574fd`).
 >
-> **Branch state:** `hisaabpro` is **57 commits ahead of `master`**. Production deploy at commit `89610b0`. Nothing since Phase 4 finish has been merged to master/prod.
+> **Branch state:** `hisaabpro` is **64 commits ahead of `master`**. Production deploy at commit `89610b0`. Nothing since Phase 4 finish has been merged to master/prod.
 >
-> **Next up:** Phase 5 Epic D (#125 Loyalty + #127 CRM + #128 Staff Performance) **OR** ship-to-prod (merge `hisaabpro` → `master`, set Render env vars). See "Resume order" below.
+> **Next up:** ship-to-prod (merge `hisaabpro` → `master`, set Render env vars) **OR** Phase 6 (#135-#140 Staff & HR — touches User model, mandatory `scope-writer → architect → security`). See "Resume order" below.
 
 ## Resume order
 
@@ -81,15 +81,18 @@ Security audit `docs/SECURITY_AUDIT_EPIC_C.md` cleared. Public surface is auth-f
 
 ---
 
-### 4. Phase 5 Epic D — CRM + Loyalty (NEXT TO BUILD)
-#125 loyalty/rewards · #127 CRM basics · #128 staff performance & commission. **3 features to close Phase 5.**
+### 4. Phase 5 Epic D — CRM + Loyalty + Commission ✅ SHIPPED 2026-05-17
+**Merge commit:** `63ccef4` (7 commits: PR1 `b61e1a1` → PR6 `4f93808`)
 
-Notes:
-- #125 schema: `LoyaltyProgram`, `LoyaltyLedger`. Points accrue on POS sale (hook into existing pos-checkout commit flow).
-- #127 reuses Party model — just adds `tags`, `lastContactedAt`, `followUpAt`, `notes` (some may exist).
-- #128 reuses staff/role infra; commission rule per-product or per-category. Overlaps Phase 6 #128 split-staff-commission work; consider folding.
+Built on isolated git worktree `/Users/sawanjaiswal/Projects/HisaabPro-epic-d` to avoid colliding with other CLI sessions, then merged into `hisaabpro`.
 
-Run `/start-epic phase-5-epic-d-crm-loyalty` to kick off the scope-writer → architect → security → task-manager sequence.
+- **#125 Loyalty** — PR3 `1bb2fcc` BE + PR4 `d8eb926` FE. `LoyaltyProgram` + `LoyaltyLedger` schemas, FIFO accrual ledger, `pg_try_advisory_xact_lock` for concurrent redemption safety, POS checkout step 10.5 (redeem) + 10.6 (accrue) inside `$transaction`, void writes VD (negative), restore writes VR (compensating), `'15 4 * * *' Asia/Kolkata` expiry cron. FE: program settings page, balance chip in PaymentSheet/CustomerSelector, redemption sheet, party-detail loyalty tab + ledger.
+- **#127 CRM Basics** — PR2 `ea27525`. Party tags (server-side, filterable) + follow-ups query with `withinDays` cap (1..365) + `lastContactedAt` service. FE: PartyCrmTab + TagFilterBar + tag chip on party detail header.
+- **#128 Staff Commission** — PR5 `340d5bc` BE + PR6 `4f93808` FE. Commission rule CRUD with PRODUCT > CATEGORY > ALL specificity, `JSON.parse(JSON.stringify(rule))` deep-clone at 2 sites (M1 — historical ledger integrity under admin edits), CommissionLedger row written inside SAME `$transaction` as POS sale or invoice, void/restore symmetry, `commissionLedgerAuth` factory middleware (M5), STAFF_NOT_FOUND 404 cross-tenant guard (M4), rate cap at 10000 bps with `COMMISSION_RATE_EXCEEDS_MAX_100_PERCENT` (S2). FE: CommissionRuleForm with yellow warn at 5000 bps + red block at 10000 bps, ledger, leaderboard (sortable), staff dashboard widget (hidden if no `commission.view` perm).
+
+Architecture-audit Pass 5 PASS · Security Pass-2 PASS (0 MUST_FIX, 1 SHOULD_FIX deferred = cron multi-pod systemic, also affects other crons — fix in cross-cutting cron-hardening epic) · QA Gate GREEN (49/49 §17 acceptance criteria, 10/10 cross-cutting gates, 3/3 mechanical: tsc clean, enforce 0 errors, vitest baseline preserved 347/353).
+
+Audit + design docs: `docs/SCOPE_EPIC_D_*.md`, `docs/ARCHITECTURE_EPIC_D_*.md` (v5), `docs/SECURITY_AUDIT_EPIC_D_*.md` (Pass 1 + Pass 2), `docs/ARCHITECTURE_AUDIT_EPIC_D_*.md`, `docs/QA_GATE_EPIC_D_*.md`, `docs/TASKS_EPIC_D_*.md`.
 
 ---
 
@@ -157,13 +160,14 @@ V1, V2, V4 touch schema → mandatory `scope-writer → architect → (security 
 ---
 
 ## Open files to remember
-- `.claude/design-plan-active.md` — last approved for prior epic; **replace before starting Epic D** by running `/start-epic phase-5-epic-d-crm-loyalty`.
-- Shipped epic docs (don't archive — referenced for context): `docs/SCOPE_phase5_marketing_comms.md`, `docs/SCOPE_EPIC_B_sales_workflow.md`, `docs/SCOPE_EPIC_C_customer_facing.md`, `docs/SCOPE_132_price_lists.md`. Companion `ARCHITECTURE_*.md` + `SECURITY_AUDIT_*.md` next to each.
+- `.claude/design-plan-active.md` — last approved for Epic D (in the worktree, gitignored); replace before starting the next epic.
+- Shipped epic docs (don't archive — referenced for context): `docs/SCOPE_phase5_marketing_comms.md`, `docs/SCOPE_EPIC_B_sales_workflow.md`, `docs/SCOPE_EPIC_C_customer_facing.md`, `docs/SCOPE_EPIC_D_crm_loyalty.md`, `docs/SCOPE_132_price_lists.md`. Companion `ARCHITECTURE_*.md` + `SECURITY_AUDIT_*.md` + `QA_GATE_EPIC_D_*.md` + `ARCHITECTURE_AUDIT_EPIC_D_*.md` next to each.
 - Subscription port PRDs: `PRDs/subscription-port-{SCOPE,ARCHITECTURE,SECURITY,TASKS}.md`. Mission archive: `.claude/missions/subscription-port.md`.
 
 ## Quick commands
-- **Ship-to-prod (recommended first):** merge `hisaabpro` → `master`, set Render env, `npx prisma migrate deploy`, smoke-test `/p/*` + `/settings/subscription`.
-- **Start Epic D:** `/start-epic phase-5-epic-d-crm-loyalty`
+- **Ship-to-prod (recommended next):** merge `hisaabpro` → `master`, set Render env, `npx prisma migrate deploy` (Epic D added 4 new tables + 2 Party columns + composite index in migration `20260518000000_phase5_epic_d_crm_loyalty_commission`), smoke-test loyalty redemption + commission ledger + party CRM tab.
+- **Worktree cleanup:** `git worktree remove /Users/sawanjaiswal/Projects/HisaabPro-epic-d` then `git branch -d epic/phase-5-d-crm-loyalty` (only after the merge is confirmed shipping).
+- **Start Phase 6:** `/start-epic phase-6-staff-hr` — touches User model + auth (#138), mandatory `scope-writer → architect → security`.
 - **Start vertical depth V3 (recipe cost):** `/start-epic vertical-v3-recipe-cost-dashboard`
 - **Roadmap:** `docs/ROADMAP.md` — keep in sync after every epic.
-- **Re-audit doc accuracy:** ask Claude "WHATS LEFT and whats done? deep audit, update the docs" — this re-runs the doc/code reconciliation that produced the 2026-05-17 snapshot.
+- **Re-audit doc accuracy:** ask Claude "WHATS LEFT and whats done? deep audit, update the docs" — this re-runs the doc/code reconciliation that produced the latest snapshot.
