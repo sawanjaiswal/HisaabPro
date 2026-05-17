@@ -93,6 +93,9 @@ export const listPartiesSchema = z.object({
   tags: z.union([z.string(), z.array(z.string())]).transform((v) =>
     Array.isArray(v) ? v : [v]
   ).optional(),
+  // CRM #127 — single-tag narrow filter (TagFilterBar chips). Coexists with
+  // `tags` (multi-tag hasSome); when both present, `tag` is the AND-narrow.
+  tag: z.string().min(1).max(50).optional(),
 }).strict()
 
 // === Epic D / CRM #127 — Follow-up + lightweight patch ===

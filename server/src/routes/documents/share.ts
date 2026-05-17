@@ -18,6 +18,7 @@ import { renderInvoiceShareEmail } from '../../lib/email-templates.js'
 import { generateInvoicePdf } from '../../services/pdf.service.js'
 import { notificationManager } from '../../services/notifications/notification-manager.js'
 import { formatPaise } from '../../services/notifications/notification-template.service.js'
+import { touchLastContacted } from '../../services/party/last-contacted.service.js'
 
 const router = Router()
 
@@ -25,7 +26,7 @@ type DocMeta = {
   status: string
   documentNumber: string
   grandTotal: number
-  party: { name: string; phone: string | null; email: string | null }
+  party: { id: string; name: string; phone: string | null; email: string | null }
 }
 
 /** POST /api/documents/:id/share/whatsapp */
@@ -60,6 +61,9 @@ router.post(
           data: { status: 'SHARED' },
         })
       }
+
+      // CRM #127 — touch lastContactedAt in the same tx (architecture §3.4).
+      await touchLastContacted(businessId, docData.party.id, tx)
 
       return log
     })
@@ -149,6 +153,9 @@ router.post(
           data: { status: 'SHARED' },
         })
       }
+
+      // CRM #127 — touch lastContactedAt in the same tx (architecture §3.4).
+      await touchLastContacted(businessId, docData.party.id, tx)
 
       return log
     })

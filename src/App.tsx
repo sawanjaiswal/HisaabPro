@@ -14,7 +14,7 @@ import { useSSE } from '@/hooks/useSSE'
 import { PlanGate } from '@/features/subscription/PlanGate'
 import {
   Login, Register, VerifyOtp, ForgotPassword, Onboarding, Dashboard,
-  Parties, CreateParty, PartyDetail, EditParty,
+  Parties, CreateParty, PartyDetail, EditParty, FollowUps,
   Products, CreateProduct, ProductDetail, EditProduct,
   Invoices, CreateInvoice, InvoiceDetail, EditInvoice,
   TemplateGallery, TemplateEditor,
@@ -96,6 +96,7 @@ export function App() {
         <Route path={ROUTES.PARTY_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="parties" featureLabel="Parties"><CreateParty /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PARTY_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="parties" featureLabel="Parties"><PartyDetail /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PARTY_EDIT} element={<PageRoute><ProtectedRoute><PlanGate feature="parties" featureLabel="Parties"><EditParty /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.CRM_FOLLOWUPS} element={<PageRoute><ProtectedRoute><PlanGate feature="parties" featureLabel="Parties"><FollowUps /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PRODUCTS} element={<PageRoute><ProtectedRoute><PlanGate feature="products" featureLabel="Products"><Products /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PRODUCT_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="products" featureLabel="Products"><CreateProduct /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PRODUCT_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="products" featureLabel="Products"><ProductDetail /></PlanGate></ProtectedRoute></PageRoute>} />

@@ -667,6 +667,64 @@ if (jwtLogCount === 0) {
   console.log(`  ❌ ${jwtLogCount} JWT-in-log violation(s)`)
 }
 
+// ─── Check 15: server-only Party fields not in input Zod schemas (M2 / #91b) ─
+//
+// Epic D CRM — `lastContactedAt`, `loyaltyPointsCache`, `loyaltyOptOut` are
+// ONLY ever written by server-side hooks (share log, reminder dispatch,
+// loyalty cache rebuild). They MUST NOT appear in any input Zod schema
+// (create/update/patch) for the Party model — Pattern B `.strict()` MUST
+// reject them with VALIDATION_ERROR (OWASP A01 mass-assignment).
+//
+// `followUpAt` IS user-mutable but ONLY via the narrow `partyPatchSchema`.
+// It MUST NOT appear in `createPartySchema` or `updatePartySchema`.
+//
+// Heuristic: locate each `export const <name>Schema = z.object({ ... }).strict()`
+// block, capture the keys it declares, and flag any forbidden key that lands
+// in a known-input schema name.
+
+console.log('🔍 Check 15: server-only Party fields blocked from input schemas (M2)')
+
+const PARTY_SCHEMA_FILE = join(SERVER_SRC, 'schemas', 'party.schemas.ts')
+const FORBIDDEN_ALL = ['lastContactedAt', 'loyaltyPointsCache', 'loyaltyOptOut']
+const FORBIDDEN_NON_PATCH = ['followUpAt'] // allowed ONLY in partyPatchSchema
+const INPUT_SCHEMA_NAMES = ['createPartySchema', 'updatePartySchema', 'partyPatchSchema']
+
+let serverOnlyLeakCount = 0
+try {
+  const schemaSrc = readFileSync(PARTY_SCHEMA_FILE, 'utf8')
+  // Split into top-level export const blocks; cheap heuristic — we only
+  // inspect blocks named in INPUT_SCHEMA_NAMES.
+  const blockRe = /export\s+const\s+(\w+Schema)\s*=\s*z\.object\(\{([\s\S]*?)\}\)\.strict\(\)/g
+  let match
+  while ((match = blockRe.exec(schemaSrc)) !== null) {
+    const [, name, body] = match
+    if (!INPUT_SCHEMA_NAMES.includes(name)) continue
+    const forbidden = name === 'partyPatchSchema'
+      ? FORBIDDEN_ALL
+      : [...FORBIDDEN_ALL, ...FORBIDDEN_NON_PATCH]
+    for (const key of forbidden) {
+      // Match key as a property name at start of line (allowing indent)
+      const keyRe = new RegExp(`^\\s*${key}\\s*:`, 'm')
+      if (keyRe.test(body)) {
+        errors.push(
+          `M2_SERVER_ONLY_FIELD_IN_INPUT_SCHEMA: ${rel(PARTY_SCHEMA_FILE)} — '${key}' must not appear in '${name}' (OWASP A01 mass-assignment; server-only field).`,
+        )
+        serverOnlyLeakCount++
+      }
+    }
+  }
+} catch (err) {
+  warnings.push(
+    `Check 15 could not read ${rel(PARTY_SCHEMA_FILE)} — ${err instanceof Error ? err.message : String(err)}`,
+  )
+}
+
+if (serverOnlyLeakCount === 0) {
+  console.log('  ✅ Input Party schemas reject server-only fields (lastContactedAt / loyaltyPointsCache / loyaltyOptOut; followUpAt patch-only)')
+} else {
+  console.log(`  ❌ ${serverOnlyLeakCount} server-only field leak(s) in input schema`)
+}
+
 // ─── Summary ──────────────────────────────────────────────────────────────────
 
 console.log('\n' + '═'.repeat(60))

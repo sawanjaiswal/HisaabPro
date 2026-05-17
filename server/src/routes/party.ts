@@ -26,6 +26,7 @@ import * as partyService from '../services/party.service.js'
 import { getPartyLedger } from '../services/party/ledger.service.js'
 import { ledgerQuerySchema } from '../services/party/ledger.types.js'
 import partyInviteRoutes from './parties/invite.routes.js'
+import crmRoutes from './parties/crm.routes.js'
 
 // 30 req/min per user for ledger (read-heavy, can be intensive)
 const ledgerRateLimiter = createRateLimiter({
@@ -65,6 +66,12 @@ router.get(
     sendSuccess(res, result)
   })
 )
+
+// CRM #127 — tags + follow-ups + narrow PATCH live in crm.routes.ts sub-router.
+// MUST be mounted BEFORE the dynamic `/:id` GET so literal paths (`/tags`,
+// `/follow-ups`) are not swallowed. PATCH inside crm.routes.ts also wins
+// over PUT below because Express dispatches by method per path.
+router.use('/', crmRoutes)
 
 router.get(
   '/:id',

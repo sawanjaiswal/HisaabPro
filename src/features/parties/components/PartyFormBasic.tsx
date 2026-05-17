@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/Input'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PartyFormData, PartyType } from '../party.types'
 import { PartyFormPriceList } from './PartyFormPriceList'
+import '@/styles/components.crm.css'
 
 interface PartyFormBasicProps {
   form: PartyFormData
@@ -93,6 +94,25 @@ export function PartyFormBasic({ form, errors, onUpdate, isEditMode = false }: P
       />
 
       <PartyFormPriceList value={form.priceListId} isEditMode={isEditMode} onUpdate={onUpdate} />
+
+      {/* CRM (#127) — opt-out toggle. UI-only in PR2 (loyaltyOptOut is a
+          server-only field per M2 .strict()); wired live in the next CRM PR
+          via the narrow PATCH /api/parties/:id route. */}
+      <div className="party-form-opt-out">
+        <label htmlFor="party-opt-out" className="party-form-opt-out__label">
+          <input
+            id="party-opt-out"
+            type="checkbox"
+            className="party-form-opt-out__input"
+            disabled
+            aria-describedby="party-opt-out-help"
+          />
+          <span>{t.crmLoyaltyOptOut}</span>
+        </label>
+        <p id="party-opt-out-help" className="party-form-opt-out__help">
+          {t.crmLoyaltyOptOutHelp}
+        </p>
+      </div>
     </div>
   )
 }

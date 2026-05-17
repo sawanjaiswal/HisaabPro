@@ -3,7 +3,7 @@
  */
 
 import { prisma } from '../../lib/prisma.js'
-import type { UpdatePartyInput } from '../../schemas/party.schemas.js'
+import type { UpdatePartyInput, PartyPatchInput } from '../../schemas/party.schemas.js'
 import { requireParty, requireGroup } from './helpers.js'
 
 export async function updateParty(
@@ -71,6 +71,37 @@ export async function updateParty(
     }
 
     return updated
+  })
+}
+
+/**
+ * CRM #127 — narrow patch for follow-up + tags (architecture §3.6).
+ * Server-only fields (`lastContactedAt`, `loyaltyPointsCache`, `loyaltyOptOut`)
+ * are blocked at the Zod layer via `.strict()`. This service only writes the
+ * keys present in PartyPatchInput.
+ */
+export async function patchParty(
+  businessId: string,
+  partyId: string,
+  data: PartyPatchInput,
+) {
+  await requireParty(businessId, partyId)
+  return prisma.party.update({
+    where: { id: partyId },
+    data: {
+      ...(data.followUpAt !== undefined && {
+        followUpAt: data.followUpAt === null ? null : new Date(data.followUpAt),
+      }),
+      ...(data.tags !== undefined && { tags: data.tags }),
+    },
+    select: {
+      id: true,
+      name: true,
+      tags: true,
+      followUpAt: true,
+      lastContactedAt: true,
+      updatedAt: true,
+    },
   })
 }
 

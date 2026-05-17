@@ -7,7 +7,7 @@ import { getParty } from './party.service'
 import type { PartyDetail } from './party.types'
 
 type DetailStatus = 'loading' | 'error' | 'success'
-type DetailTab = 'overview' | 'transactions' | 'addresses' | 'ledger'
+type DetailTab = 'overview' | 'transactions' | 'addresses' | 'ledger' | 'crm'
 
 interface UsePartyDetailReturn {
   party: PartyDetail | null

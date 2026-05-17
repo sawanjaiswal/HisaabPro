@@ -162,4 +162,10 @@ export const queryKeys = {
     sales:    (filters: Filters) => ['pos-sales',    filters] as const,
     sale:     (id: string)       => ['pos-sale-detail', id]  as const,
   },
+  // Epic D / CRM #127 — tag aggregate + follow-up queue (architecture §3.5)
+  crm: {
+    all: () => ['crm'] as const,
+    tags: () => ['crm', 'tags'] as const,
+    followUps: (filters: Filters) => ['crm', 'follow-ups', filters] as const,
+  },
 } as const

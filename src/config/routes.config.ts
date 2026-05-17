@@ -14,6 +14,8 @@ export const ROUTES = {
   PARTY_NEW: '/parties/new',
   PARTY_DETAIL: '/parties/:id',
   PARTY_EDIT: '/parties/:id/edit',
+  // Epic D #127 — CRM follow-up queue (linked from Parties + Detail CRM tab).
+  CRM_FOLLOWUPS: '/crm/follow-ups',
   PRODUCTS: '/products',
   PRODUCT_NEW: '/products/new',
   PRODUCT_DETAIL: '/products/:id',

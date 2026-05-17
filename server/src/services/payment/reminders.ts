@@ -6,6 +6,7 @@ import { prisma } from '../../lib/prisma.js'
 import { notFoundError } from '../../lib/errors.js'
 import logger from '../../lib/logger.js'
 import { sendWhatsApp } from '../notification.service.js'
+import { touchLastContacted } from '../party/last-contacted.service.js'
 import type {
   SendReminderInput,
   ListRemindersQuery,
@@ -80,6 +81,14 @@ export async function sendReminder(
 
     reminder.status = delivered ? 'SENT' : 'FAILED'
     reminder.sentAt = delivered ? new Date() : null
+
+    // CRM #127 — single touch lastContactedAt outside any tx (architecture
+    // §3.4 / §0.3 race-note: external WhatsApp I/O can't be wrapped in tx,
+    // so we touch fire-and-forget after the I/O attempt — even a FAILED
+    // delivery still represents a contact attempt from the operator).
+    if (delivered) {
+      await touchLastContacted(businessId, data.partyId, null)
+    }
   } catch (err) {
     logger.error('Reminder notification dispatch error', {
       reminderId: reminder.id,

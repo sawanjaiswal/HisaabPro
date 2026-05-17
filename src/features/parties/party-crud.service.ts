@@ -28,6 +28,7 @@ export function buildPartyQuery(filters: Partial<PartyFilters>): string {
     isActive,
     sortBy,
     sortOrder,
+    tag,
   } = filters
 
   if (page !== undefined) params.set('page', String(page))
@@ -39,6 +40,8 @@ export function buildPartyQuery(filters: Partial<PartyFilters>): string {
   if (isActive !== undefined) params.set('isActive', String(isActive))
   if (sortBy !== undefined) params.set('sortBy', sortBy)
   if (sortOrder !== undefined) params.set('sortOrder', sortOrder)
+  // CRM #127 — only forward the chip-bar tag when it's a non-empty string.
+  if (tag !== undefined && tag !== '') params.set('tag', tag)
 
   const qs = params.toString()
   return qs ? `?${qs}` : ''

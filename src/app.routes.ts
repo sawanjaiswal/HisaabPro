@@ -177,6 +177,9 @@ export const ProductionRunList = lazy(() => import('@/features/production-runs/p
 export const ProductionRunForm = lazy(() => import('@/features/production-runs/pages/ProductionRunFormPage'))
 export const ProductionRunDetail = lazy(() => import('@/features/production-runs/pages/ProductionRunDetailPage'))
 
+// Phase 5 Epic D #127 — CRM Basics
+export const FollowUps = lazy(() => import('@/features/crm/pages/FollowUpsPage'))
+
 // Phase 5 Epic A — Marketing Comms
 export const MarketingHub = lazy(() => import('@/features/marketing/pages/MarketingHubPage'))
 export const MarketingTemplateList = lazy(() => import('@/features/marketing/pages/TemplateListPage'))

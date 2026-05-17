@@ -1,0 +1,421 @@
+/**
+ * CRM (#127) — Component styles.
+ *
+ * Token-only. No raw hex, no Tailwind palette, no `dark:` classes — the
+ * theme-swap variables (tokens-dark.css) flip every value automatically.
+ * 44px tap targets enforced via min-height on every interactive element.
+ *
+ * Components in this file (ordered top→bottom):
+ *   1. .tag-filter-bar        — horizontal chip strip (PartiesPage)
+ *   2. .follow-up-row         — single party row in FollowUpsPage
+ *   3. .follow-ups-page       — page-level chrome (range bar, intro, list)
+ *   4. .follow-up-picker      — datetime-local input + clear button
+ */
+
+/* ─── 1. TagFilterBar ───────────────────────────────────────────────── */
+
+.tag-filter-bar {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: var(--space-2) 0;
+}
+
+.tag-filter-bar::-webkit-scrollbar { display: none; }
+
+.tag-filter-bar--error {
+  justify-content: flex-start;
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: var(--color-card-bg, var(--color-surface));
+  color: var(--text-secondary);
+  font-size: var(--fs-md);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard);
+}
+
+.tag-chip:hover:not(:disabled) {
+  border-color: var(--color-primary-300);
+  color: var(--text-primary);
+}
+
+.tag-chip:focus-visible {
+  outline: 2px solid var(--color-primary-400);
+  outline-offset: 2px;
+}
+
+.tag-chip--active {
+  background: var(--color-primary-500);
+  color: var(--text-inverse);
+  border-color: var(--color-primary-500);
+}
+
+.tag-chip--active:hover {
+  color: var(--text-inverse);
+}
+
+.tag-chip__label { line-height: 1; }
+.tag-chip__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.25rem;
+  padding: 0 var(--space-1-5);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.18);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.tag-chip:not(.tag-chip--active) .tag-chip__count {
+  background: var(--color-gray-100);
+  color: var(--text-secondary);
+}
+
+.tag-chip--skeleton {
+  width: 4.5rem;
+  background: var(--color-gray-100);
+  border-color: transparent;
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+
+.tag-chip--retry {
+  background: var(--color-error-bg-subtle);
+  border-color: var(--color-error-100);
+  color: var(--color-error-700);
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+
+/* ─── 2. FollowUpRow ────────────────────────────────────────────────── */
+
+.follow-up-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-card-bg, var(--color-surface));
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: var(--shadow-xs);
+  transition: transform var(--duration-fast) var(--ease-standard),
+              box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.follow-up-row:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.follow-up-row:focus-visible {
+  outline: 2px solid var(--color-primary-400);
+  outline-offset: 2px;
+}
+
+.follow-up-row__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.follow-up-row__name-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.follow-up-row__name {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.follow-up-row__status {
+  flex-shrink: 0;
+  padding: var(--space-0-5) var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.follow-up-row__status--overdue {
+  background: var(--color-error-bg-subtle);
+  color: var(--color-error-700);
+}
+
+.follow-up-row__status--today {
+  background: var(--color-warning-bg-subtle);
+  color: var(--color-warning-700);
+}
+
+.follow-up-row__status--upcoming {
+  background: var(--color-info-bg-subtle);
+  color: var(--color-info-700);
+}
+
+.follow-up-row__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1-5);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.follow-up-row__meta-value {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.follow-up-row__meta-separator { color: var(--text-muted); }
+
+.follow-up-row__phone {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── 3. FollowUpsPage chrome ───────────────────────────────────────── */
+
+.follow-ups-page__intro {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-secondary);
+}
+
+.follow-ups-page__intro-icon { color: var(--color-primary-500); }
+
+.follow-ups-page__subtitle {
+  font-size: var(--fs-sm);
+  margin: 0;
+}
+
+.follow-ups-page__range-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.follow-ups-page__range-label {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-right: var(--space-1);
+}
+
+.follow-ups-page__range-chip {
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: var(--color-card-bg, var(--color-surface));
+  color: var(--text-secondary);
+  font-size: var(--fs-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard);
+}
+
+.follow-ups-page__range-chip--active {
+  background: var(--color-primary-500);
+  color: var(--text-inverse);
+  border-color: var(--color-primary-500);
+}
+
+.follow-ups-page__range-chip:focus-visible {
+  outline: 2px solid var(--color-primary-400);
+  outline-offset: 2px;
+}
+
+.follow-ups-page__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.follow-ups-page__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.follow-ups-page__list-item { display: block; }
+
+/* ─── 4. FollowUpDatePicker ─────────────────────────────────────────── */
+
+.follow-up-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1-5);
+}
+
+.follow-up-picker__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.follow-up-picker__input-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.follow-up-picker__input {
+  flex: 1 1 auto;
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-card-bg, var(--color-surface));
+  color: var(--text-primary);
+  font-size: var(--fs-base);
+  font-family: var(--font-primary);
+}
+
+.follow-up-picker__input:focus-visible {
+  outline: 2px solid var(--color-primary-400);
+  outline-offset: 2px;
+  border-color: var(--color-primary-400);
+}
+
+.follow-up-picker__input[aria-invalid='true'] {
+  border-color: var(--color-error-500);
+}
+
+.follow-up-picker__clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.follow-up-picker__clear:hover { color: var(--text-primary); }
+
+.follow-up-picker__error {
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: var(--color-error-700);
+}
+
+/* ─── 5. PartyCrmTab ────────────────────────────────────────────────── */
+
+.party-crm-tab {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-top: var(--space-2);
+}
+
+.party-crm-tab__last-contact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-card-bg, var(--color-surface));
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.party-crm-tab__last-contact-label {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+.party-crm-tab__last-contact-value {
+  font-size: var(--fs-sm);
+  color: var(--text-primary);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.party-crm-tab__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ─── 6. PartyFormBasic — opt-out toggle ─────────────────────────────── */
+
+.party-form-opt-out {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-card-bg, var(--color-surface));
+}
+
+.party-form-opt-out__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  font-size: var(--fs-sm);
+  color: var(--text-primary);
+  cursor: not-allowed;
+}
+
+.party-form-opt-out__input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary-500);
+}
+
+.party-form-opt-out__help {
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}

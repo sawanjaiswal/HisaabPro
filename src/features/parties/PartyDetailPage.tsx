@@ -19,6 +19,7 @@ import { PartyDetailHeader } from './components/PartyDetailHeader'
 import { PartyOverviewTab } from './components/PartyOverviewTab'
 import { PartyTransactionsTab } from './components/PartyTransactionsTab'
 import { PartyAddressesTab } from './components/PartyAddressesTab'
+import { PartyCrmTab } from './components/PartyCrmTab'
 import { ShareLedgerSheet } from '@/features/shared-ledger/components/ShareLedgerSheet'
 import { useShareLedger } from '@/features/shared-ledger/useShareLedger'
 import { CommitmentsSection } from '@/features/collections/CommitmentsSection'
@@ -29,7 +30,7 @@ import { InviteDrawer } from '@/features/invite-claim/InviteDrawer'
 import '@/features/shared-ledger/shared-ledger.css'
 import './party-detail-header.css'
 
-type DetailTab = 'overview' | 'transactions' | 'addresses' | 'ledger'
+type DetailTab = 'overview' | 'transactions' | 'addresses' | 'ledger' | 'crm'
 
 export default function PartyDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -42,6 +43,7 @@ export default function PartyDetailPage() {
     { id: 'transactions', label: t.transactions },
     { id: 'addresses', label: t.addresses },
     { id: 'ledger', label: t.ledgerTab },
+    { id: 'crm', label: t.crmDetailTabCrm },
   ]
 
   const partyId = id ?? ''
@@ -222,6 +224,10 @@ export default function PartyDetailPage() {
                     partyName={party.name}
                     businessName={party.companyName ?? party.name}
                   />
+                )}
+
+                {activeTab === 'crm' && (
+                  <PartyCrmTab party={party} onPatched={refresh} />
                 )}
               </div>
             </div>
