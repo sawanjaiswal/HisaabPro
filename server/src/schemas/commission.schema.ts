@@ -27,7 +27,9 @@ import {
 
 // ─── Rule create / update (POST /commission/rules, PUT /commission/rules/:id) ─
 
-export const commissionRuleInputSchema = z.object({
+// Inner shape — exported so the PUT route can derive a `.partial().strict()`
+// from it (Zod cannot call `.partial()` on a `.superRefine()`-wrapped schema).
+export const commissionRuleInputObjectShape = {
   name: z
     .string()
     .min(COMMISSION_NAME_MIN_LEN, 'name is required')
@@ -57,66 +59,116 @@ export const commissionRuleInputSchema = z.object({
   appliesTo: z.enum(COMMISSION_APPLIES_TO_VALUES),
   staffUserIds: z.array(z.string().min(1)).default([]),
   isActive: z.boolean().default(true),
-})
-.strict()
-.superRefine((data, ctx) => {
-  // Scope vs scopeId
-  if (data.scope === 'ALL' && data.scopeId !== undefined && data.scopeId !== null) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'scopeId must be null/undefined when scope=ALL',
-      path: ['scopeId'],
-    })
-  }
-  if ((data.scope === 'PRODUCT' || data.scope === 'CATEGORY') && !data.scopeId) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: `scopeId is required when scope=${data.scope}`,
-      path: ['scopeId'],
-    })
-  }
-  // Mode vs rateBps / flatPerUnitPaise (XOR)
-  if (PERCENT_MODES.has(data.mode)) {
-    if (data.rateBps === undefined || data.rateBps === null) {
+} as const
+
+const commissionRuleInputBase = z.object(commissionRuleInputObjectShape).strict()
+
+function applyCrossFieldRefine<T extends z.ZodTypeAny>(schema: T) {
+  return schema.superRefine((data: z.infer<typeof commissionRuleInputBase>, ctx) => {
+    // Scope vs scopeId
+    if (data.scope === 'ALL' && data.scopeId !== undefined && data.scopeId !== null) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: `rateBps is required when mode=${data.mode}`,
-        path: ['rateBps'],
+        message: 'scopeId must be null/undefined when scope=ALL',
+        path: ['scopeId'],
       })
     }
-    if (data.flatPerUnitPaise !== undefined && data.flatPerUnitPaise !== null) {
+    if ((data.scope === 'PRODUCT' || data.scope === 'CATEGORY') && !data.scopeId) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: `flatPerUnitPaise must be null when mode=${data.mode}`,
-        path: ['flatPerUnitPaise'],
+        message: `scopeId is required when scope=${data.scope}`,
+        path: ['scopeId'],
       })
     }
-  }
-  if (FLAT_MODES.has(data.mode)) {
-    if (data.flatPerUnitPaise === undefined || data.flatPerUnitPaise === null) {
+    // Mode vs rateBps / flatPerUnitPaise (XOR)
+    if (PERCENT_MODES.has(data.mode)) {
+      if (data.rateBps === undefined || data.rateBps === null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `rateBps is required when mode=${data.mode}`,
+          path: ['rateBps'],
+        })
+      }
+      if (data.flatPerUnitPaise !== undefined && data.flatPerUnitPaise !== null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `flatPerUnitPaise must be null when mode=${data.mode}`,
+          path: ['flatPerUnitPaise'],
+        })
+      }
+    }
+    if (FLAT_MODES.has(data.mode)) {
+      if (data.flatPerUnitPaise === undefined || data.flatPerUnitPaise === null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'flatPerUnitPaise is required when mode=FLAT_PER_UNIT',
+          path: ['flatPerUnitPaise'],
+        })
+      }
+      if (data.rateBps !== undefined && data.rateBps !== null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'rateBps must be null when mode=FLAT_PER_UNIT',
+          path: ['rateBps'],
+        })
+      }
+    }
+    // Note: appliesTo is POS/INVOICE/BOTH (document type). Staff targeting is
+    // orthogonal — staffUserIds[] empty = all staff, non-empty = only those
+    // staff. No correlation rule needed here (architecture §2.3).
+  })
+}
+
+export const commissionRuleInputSchema = applyCrossFieldRefine(commissionRuleInputBase)
+
+/**
+ * PUT /commission/rules/:id — every field optional. Cross-field XOR rule
+ * still fires for callers who pass `mode` (paired with rate/flat). When `mode`
+ * is omitted, we cannot enforce the XOR (we'd reject every partial), so the
+ * refine is a no-op in that case.
+ */
+export const commissionRuleUpdateSchema = z
+  .object(commissionRuleInputObjectShape)
+  .strict()
+  .partial()
+  .superRefine((data, ctx) => {
+    if (data.scope === 'ALL' && data.scopeId !== undefined && data.scopeId !== null) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'flatPerUnitPaise is required when mode=FLAT_PER_UNIT',
-        path: ['flatPerUnitPaise'],
+        message: 'scopeId must be null/undefined when scope=ALL',
+        path: ['scopeId'],
       })
     }
-    if (data.rateBps !== undefined && data.rateBps !== null) {
+    if (
+      (data.scope === 'PRODUCT' || data.scope === 'CATEGORY') &&
+      data.scopeId === null
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'rateBps must be null when mode=FLAT_PER_UNIT',
-        path: ['rateBps'],
+        message: `scopeId is required when scope=${data.scope}`,
+        path: ['scopeId'],
       })
     }
-  }
-  // appliesTo=LIST requires non-empty staffUserIds
-  if (data.appliesTo === 'LIST' && data.staffUserIds.length === 0) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'staffUserIds must be non-empty when appliesTo=LIST',
-      path: ['staffUserIds'],
-    })
-  }
-})
+    // Mode-bound XOR — only enforced when `mode` is being patched.
+    if (data.mode && PERCENT_MODES.has(data.mode)) {
+      if (data.flatPerUnitPaise !== undefined && data.flatPerUnitPaise !== null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `flatPerUnitPaise must be null when mode=${data.mode}`,
+          path: ['flatPerUnitPaise'],
+        })
+      }
+    }
+    if (data.mode && FLAT_MODES.has(data.mode)) {
+      if (data.rateBps !== undefined && data.rateBps !== null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'rateBps must be null when mode=FLAT_PER_UNIT',
+          path: ['rateBps'],
+        })
+      }
+    }
+  })
 
 // ─── Ledger query (GET /commission/ledger) ─────────────────────────────────
 

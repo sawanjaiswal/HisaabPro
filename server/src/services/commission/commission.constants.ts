@@ -46,11 +46,15 @@ export const FLAT_MODES: ReadonlySet<CommissionRuleMode> = new Set(['FLAT_PER_UN
 // ─── Applies-to ─────────────────────────────────────────────────────────────
 
 /**
- * `appliesTo` controls WHICH staff receive the commission:
- *  - ALL: every staff user on the business inherits the rule
- *  - LIST: only `staffUserIds[]` receive it
+ * `appliesTo` controls WHICH document type triggers commission (architecture §2.3):
+ *  - POS: rule fires on POS sales only
+ *  - INVOICE: rule fires on Document.SALE_INVOICE save only
+ *  - BOTH: rule fires on either
+ *
+ * Staff targeting is orthogonal — `staffUserIds[]` empty = all staff, non-empty
+ * = only those staff. See architecture §2.3 + §4.5 (rule resolution).
  */
-export const COMMISSION_APPLIES_TO_VALUES = ['ALL', 'LIST'] as const
+export const COMMISSION_APPLIES_TO_VALUES = ['POS', 'INVOICE', 'BOTH'] as const
 export type CommissionAppliesTo = (typeof COMMISSION_APPLIES_TO_VALUES)[number]
 
 // ─── Validation bounds ─────────────────────────────────────────────────────

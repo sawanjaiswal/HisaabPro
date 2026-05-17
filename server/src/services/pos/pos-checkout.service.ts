@@ -25,6 +25,10 @@ import {
   emitCheckoutLoyaltyAnalytics,
 } from './pos-checkout.loyalty.js'
 import {
+  applyCheckoutCommission,
+  emitCheckoutCommissionAnalytics,
+} from './pos-checkout.commission.js'
+import {
   totalMismatchError,
   paymentSumMismatchError,
   duplicateClientIdError,
@@ -180,6 +184,14 @@ export async function createPosSale(
       input, subtotal, saleDate,
     })
 
+    // Commission 10.7 — staff commission accrual (Epic D PR5). Inside the
+    // same tx so commission rows roll back with the sale. Cashier (userId) is
+    // the staff per Locked Decision Q12. Helper isolated in
+    // pos-checkout.commission.ts to keep this orchestrator ≤ 250 LOC.
+    const commissionOutcome = await applyCheckoutCommission(tx, {
+      businessId, staffUserId: userId, posSaleId, saleDate,
+    })
+
     await createCashEntry(
       tx, businessId, userId, posSaleId, receiptNumber, input.payments, input.idempotencyKey
     )
@@ -198,11 +210,14 @@ export async function createPosSale(
 
     // Post-commit telemetry — queueMicrotask defers emission until AFTER
     // $transaction resolves (architecture §3.8 side-effect rule).
-    queueMicrotask(() =>
+    queueMicrotask(() => {
       emitCheckoutLoyaltyAnalytics(loyaltyOutcome, {
         businessId, posSaleId, partyId: partyResolution.partyId,
       })
-    )
+      emitCheckoutCommissionAnalytics(commissionOutcome, {
+        businessId, posSaleId, staffUserId: userId,
+      })
+    })
 
     return dto
   })
