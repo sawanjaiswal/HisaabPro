@@ -961,4 +961,53 @@ Each PR independently green per §12 gates. Architect may merge / split.
 
 ---
 
+## 19. Locked Decisions (Sawan, 2026-05-17 12:48 PM)
+
+All 19 clarifying questions from §11 are resolved. The 4 critical
+schema-impacting questions were confirmed via prompt; the remaining 15
+accept the scope-writer's default for each.
+
+### Loyalty (#125)
+
+| Q | Decision | Source |
+|---|----------|--------|
+| Q1 | **Per-business flat** — one `LoyaltyProgram` per businessId, no tiers or per-party rules. Tiered = FUTURE_EPIC. | Confirmed prompt |
+| Q2 | **Cash-equivalent redemption** — 1 point = configurable paise, applied as `LOYALTY_REDEMPTION` payment-mode that reduces amount-due. No tax recalc. | Confirmed prompt |
+| Q3 | **12-month expiry default**, configurable per business; null = never. Daily cron 02:30 IST. | Default accepted |
+| Q4 | **POS-only accrual for MVP**. SALE_INVOICE = FUTURE_EPIC (one-line later). | Default accepted |
+| Q5 | **No block** on redemption when party has unpaid invoices. | Default accepted |
+| Q6 | **Min-spend = 0** (any sale earns); configurable in program settings. | Default accepted |
+| Q7 | **Walk-in parties do NOT accrue**. `partyId === walkInPartyId` → skip silently. | Default accepted |
+
+### CRM (#127)
+
+| Q | Decision | Source |
+|---|----------|--------|
+| Q8 | **Free-text tags** (matches current `Party.tags[]`). Pre-defined taxonomy = FUTURE_EPIC. | Default accepted |
+| Q9 | **`lastContactedAt` auto-update on**: DocumentShareLog create, ReminderLog create, PaymentReminder create. No additions/removals. | Default accepted |
+| Q10 | **No push** for follow-ups today (no FCM creds). Pull-only FollowUpsPage. Push deferred until FCM lands. | Default accepted |
+| Q11 | **Future-only follow-up dates**; server rejects past with `INVALID_FOLLOWUP_PAST`. | Default accepted |
+
+### Commission (#128)
+
+| Q | Decision | Source |
+|---|----------|--------|
+| Q12 | **Sale-creator only** — `PosSale.cashierId` (POS) or `Document.createdBy` (invoice). Staff-on-job = Phase 6 V4. | Confirmed prompt |
+| Q13 | **All three modes**: `PERCENT_GROSS`, `PERCENT_NET`, `FLAT_PER_UNIT`. Owner picks per rule. | Default accepted |
+| Q14 | **Ship GROSS + NET both for forward-compat** (identical in non-GST mode; diverge in Phase 2 GST). | Default accepted |
+| Q15 | **Most-specific-wins** conflict resolution: PRODUCT > CATEGORY > ALL. Within same specificity → newest `createdAt`. | Default accepted |
+| Q16 | **Negative rows on void/refund** — `PosSale.VOIDED` → NEGATIVE `CommissionLedger` row reversing accrual. `SUM(commissionPaise)` always net-earned. | Default accepted |
+| Q17 | **Payout deferred to Phase 6 #136 Payroll**. Epic D accrues only. Manual UPI/cash payout + admin-script tick "paid". | Default accepted |
+| Q18 | **Keep Epic D separate from Phase 6 V4**. Single-staff MVP now; split commission = own V4 epic later. | Confirmed prompt |
+| Q19 | **Rate ceiling**: soft cap 50% with warning, hard cap 100%. | Default accepted |
+
+### Implication for architect
+
+Architect can proceed with the §6 schema delta as-drafted (4 new tables,
+2 new nullable Party columns) and the §10 file plan (81 files). No
+schema or scope changes required from these answers — all defaults were
+designed to be the canonical path.
+
+---
+
 **End of SCOPE.**
