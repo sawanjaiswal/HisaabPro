@@ -41,7 +41,7 @@ import {
   StockVerifications, VerificationDetail,
   Serials, CreateSerial, BulkCreateSerial, SerialLookup, Pos,
   PosMain, PosHistory, PosSaleDetail,
-  Jobs, JobNew, JobDetail, JobEdit, InventorySettings, LoyaltyProgramPage, DocumentSettings, DocumentCustomFields,
+  Jobs, JobNew, JobDetail, JobEdit, InventorySettings, LoyaltyProgramPage, CommissionSettings, CommissionLedger, CommissionLeaderboard, DocumentSettings, DocumentCustomFields,
   CustomOrders, CustomOrderNew, CustomOrderDetail, CustomOrderEdit,
   BackfillWizard, Gstr1Page, Gstr3bPage, AgingDashboardPage, AgingBucketListPage,
   CashRegister, Notifications, NotificationPreferences,
@@ -158,6 +158,10 @@ export function App() {
         <Route path={ROUTES.SETTINGS_UNITS} element={<PageRoute><ProtectedRoute><Units /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_INVENTORY} element={<PageRoute><ProtectedRoute><InventorySettings /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_LOYALTY} element={<PageRoute><ProtectedRoute><LoyaltyProgramPage /></ProtectedRoute></PageRoute>} />
+        {/* Epic D #128 — Commission frontend */}
+        <Route path={ROUTES.SETTINGS_COMMISSION} element={<PageRoute><ProtectedRoute><CommissionSettings /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.COMMISSION_LEDGER} element={<PageRoute><ProtectedRoute><CommissionLedger /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.COMMISSION_LEADERBOARD} element={<PageRoute><ProtectedRoute><CommissionLeaderboard /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_DOCUMENTS} element={<PageRoute><ProtectedRoute><DocumentSettings /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_DOC_CUSTOM_FIELDS} element={<PageRoute><ProtectedRoute><DocumentCustomFields /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.RECURRING} element={<PageRoute><ProtectedRoute><PlanGate feature="recurringInvoices" featureLabel="Recurring Invoices"><RecurringList /></PlanGate></ProtectedRoute></PageRoute>} />

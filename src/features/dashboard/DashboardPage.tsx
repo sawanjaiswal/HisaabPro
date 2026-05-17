@@ -25,6 +25,7 @@ import { TopDebtors } from './components/TopDebtors'
 import { RecentActivityFeed } from './components/RecentActivityFeed'
 import { TodayCashStrip } from './components/TodayCashStrip'
 import { DashboardSkeleton } from './components/DashboardSkeleton'
+import { StaffDashboardSection } from './components/StaffDashboardSection'
 import type { RecentActivityItem } from './dashboard.types'
 import './dashboard-page.css'
 import './dashboard-hero.css'
@@ -177,6 +178,8 @@ export default function DashboardPage() {
                 onAddPayment={handleAddPayment}
                 onViewAll={handleViewAllActivity}
               />
+
+              <StaffDashboardSection />
             </div>
           </>
         )}

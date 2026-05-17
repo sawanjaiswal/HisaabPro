@@ -104,6 +104,10 @@ export const ROUTES = {
   SETTINGS_PERMISSIONS: '/settings/permissions',
   SETTINGS_INVENTORY: '/settings/inventory',
   SETTINGS_LOYALTY: '/settings/loyalty',
+  // Epic D #128 — Commission rules + ledger + leaderboard
+  SETTINGS_COMMISSION: '/settings/commission',
+  COMMISSION_LEDGER: '/commission/ledger',
+  COMMISSION_LEADERBOARD: '/commission/leaderboard',
   JOIN_BUSINESS: '/join',
   CREATE_BUSINESS: '/business/create',
   BUSINESS_TYPE: '/business/type',

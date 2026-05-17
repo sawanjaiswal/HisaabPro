@@ -148,6 +148,7 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
         route: ROUTES.SETTINGS_LOYALTY,
         type: 'navigation',
       },
+      { id: 'commission', label: 'Commission', description: 'Reward staff with commission on every sale', icon: 'Trophy', route: ROUTES.SETTINGS_COMMISSION, type: 'navigation' },
       {
         id: 'document-custom-fields',
         label: 'Custom Fields',
