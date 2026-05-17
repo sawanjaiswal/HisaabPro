@@ -168,4 +168,11 @@ export const queryKeys = {
     tags: () => ['crm', 'tags'] as const,
     followUps: (filters: Filters) => ['crm', 'follow-ups', filters] as const,
   },
+  // Epic D / Loyalty #125 — program (tenant-singleton) + per-party balance/ledger
+  loyalty: {
+    all: () => ['loyalty'] as const,
+    program: () => ['loyalty', 'program'] as const,
+    balance: (partyId: string) => ['loyalty', 'balance', partyId] as const,
+    ledger: (partyId: string) => ['loyalty', 'ledger', partyId] as const,
+  },
 } as const

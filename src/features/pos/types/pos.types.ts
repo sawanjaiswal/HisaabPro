@@ -1,6 +1,15 @@
 /** POS — Full DTO types mirroring backend */
 
-export type PaymentMode = 'CASH' | 'UPI' | 'CARD' | 'CHEQUE' | 'BANK_TRANSFER' | 'CREDIT'
+// `LOYALTY_REDEMPTION` is the internal/uppercase form; pos.service.ts maps it
+// to the wire-format lowercase `loyalty_redemption` (M2 contract).
+export type PaymentMode =
+  | 'CASH'
+  | 'UPI'
+  | 'CARD'
+  | 'CHEQUE'
+  | 'BANK_TRANSFER'
+  | 'CREDIT'
+  | 'LOYALTY_REDEMPTION'
 
 export type PosSaleStatus = 'ACTIVE' | 'VOIDED'
 
@@ -119,6 +128,12 @@ export interface PaymentSplit {
   mode: PaymentMode
   amount: number           // paise
   referenceNumber?: string
+  /**
+   * Points redeemed against this split. ONLY set when `mode === 'LOYALTY_REDEMPTION'`.
+   * The server requires this when wire mode is 'loyalty_redemption' and verifies
+   * the BigInt cross-multiplication against `amountPaise`.
+   */
+  pointsRedeemed?: number
 }
 
 // ─── Filter types ────────────────────────────────────────────────────────────

@@ -1,0 +1,341 @@
+/**
+ * Loyalty (#125) — Component styles.
+ *
+ * Token-only. No raw hex, no Tailwind palette, no `dark:` classes — the
+ * theme-swap variables (tokens-dark.css) flip every value automatically.
+ * 44px tap targets enforced via min-height on every interactive element.
+ *
+ * Components in this file (ordered top→bottom):
+ *   1. .loyalty-chip          — inline points badge (POS / CustomerSelector)
+ *   2. .loyalty-redeem        — redemption drawer body layout
+ *   3. .loyalty-ledger        — ledger row + list
+ *   4. .loyalty-summary       — Party-detail tab summary card
+ *   5. .loyalty-program-form  — settings form layout
+ *   6. .loyalty-toggle-row    — settings toggle row
+ */
+
+/* ─── 1. Loyalty chip ──────────────────────────────────────────────────── */
+
+.loyalty-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  min-height: 28px;
+  padding: 0 var(--space-2-5);
+  border-radius: var(--radius-full);
+  background: var(--color-accent-soft, var(--color-surface));
+  border: 1px solid var(--color-border);
+  color: var(--text-primary);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.loyalty-chip__icon {
+  display: inline-flex;
+  color: var(--color-accent, var(--text-secondary));
+}
+
+.loyalty-chip__points {
+  font-weight: 700;
+}
+
+.loyalty-chip__suffix {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.loyalty-chip__expiring {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-left: var(--space-1);
+  padding: 0 var(--space-1-5);
+  min-height: 22px;
+  border-radius: var(--radius-full);
+  background: var(--color-warning-soft, var(--color-surface));
+  color: var(--color-warning, var(--text-secondary));
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+
+.loyalty-chip--empty {
+  background: var(--color-surface);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.loyalty-chip--loading {
+  width: 96px;
+  height: 28px;
+  border-radius: var(--radius-full);
+}
+
+/* ─── 2. Redemption drawer ─────────────────────────────────────────────── */
+
+.loyalty-redeem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.loyalty-redeem__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-variant-numeric: tabular-nums;
+}
+
+.loyalty-redeem__label {
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+}
+
+.loyalty-redeem__value {
+  color: var(--text-primary);
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+
+.loyalty-redeem__value--discount {
+  color: var(--color-accent, var(--text-primary));
+  font-weight: 700;
+}
+
+.loyalty-redeem__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.loyalty-redeem__input-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.loyalty-redeem__max-btn {
+  min-height: 44px;
+  min-width: 64px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--text-primary);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.loyalty-redeem__hint {
+  color: var(--text-secondary);
+  font-size: var(--fs-xs);
+}
+
+.loyalty-redeem__error {
+  color: var(--color-danger, var(--text-primary));
+  font-size: var(--fs-sm);
+  font-weight: 500;
+}
+
+.loyalty-redeem__footer {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+/* ─── 3. Ledger list + row ─────────────────────────────────────────────── */
+
+.loyalty-ledger {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.loyalty-ledger__row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.loyalty-ledger__icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-strong, var(--color-border));
+  color: var(--text-secondary);
+}
+
+.loyalty-ledger__icon--positive {
+  color: var(--color-success, var(--text-primary));
+}
+
+.loyalty-ledger__icon--negative {
+  color: var(--color-danger, var(--text-primary));
+}
+
+.loyalty-ledger__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.loyalty-ledger__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.loyalty-ledger__type {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.loyalty-ledger__delta {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.loyalty-ledger__delta--positive { color: var(--color-success, var(--text-primary)); }
+.loyalty-ledger__delta--negative { color: var(--color-danger, var(--text-primary)); }
+.loyalty-ledger__delta--neutral  { color: var(--text-primary); }
+
+.loyalty-ledger__meta {
+  color: var(--text-secondary);
+  font-size: var(--fs-xs);
+}
+
+.loyalty-ledger__note {
+  margin-top: var(--space-1-5);
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+}
+
+.loyalty-ledger__load-more {
+  min-height: 44px;
+  margin-top: var(--space-2);
+  align-self: center;
+}
+
+/* ─── 4. Party-detail summary card ─────────────────────────────────────── */
+
+.loyalty-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+@media (min-width: 768px) {
+  .loyalty-summary { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+.loyalty-summary__cell {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.loyalty-summary__label {
+  color: var(--text-secondary);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.loyalty-summary__value {
+  margin-top: var(--space-1);
+  color: var(--text-primary);
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.loyalty-summary__value--warn { color: var(--color-warning, var(--text-primary)); }
+
+/* ─── 5. Program form ──────────────────────────────────────────────────── */
+
+.loyalty-program-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.loyalty-program-form__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.loyalty-program-form__section-title {
+  margin: 0;
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.loyalty-program-form__hint {
+  color: var(--text-secondary);
+  font-size: var(--fs-xs);
+  margin-top: var(--space-1);
+}
+
+.loyalty-program-form__error {
+  color: var(--color-danger, var(--text-primary));
+  font-size: var(--fs-sm);
+}
+
+.loyalty-program-form__footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: var(--space-4);
+}
+
+/* ─── 6. Toggle row ────────────────────────────────────────────────────── */
+
+.loyalty-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 44px;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.loyalty-toggle-row__copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.loyalty-toggle-row__label {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.loyalty-toggle-row__desc {
+  color: var(--text-secondary);
+  font-size: var(--fs-xs);
+}

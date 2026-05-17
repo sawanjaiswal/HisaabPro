@@ -1,7 +1,7 @@
 /** POS — Bottom sheet with mode buttons + split tender */
 
 import { useState, useCallback } from 'react'
-import { X, Plus } from 'lucide-react'
+import { X, Plus, Sparkles } from 'lucide-react'
 import { PaymentModeButton } from './PaymentModeButton'
 import { SplitTenderRow } from './SplitTenderRow'
 import { UpiQrModal } from './UpiQrModal'
@@ -10,7 +10,10 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { paiseToInr } from '../../utils/pos.format'
 import { splitTotal } from '../../utils/pos.utils'
 import { PAYMENT_MODES } from '../../utils/pos.constants'
-import type { PaymentMode } from '../../types/pos.types'
+import type { PaymentMode, PaymentSplit } from '../../types/pos.types'
+import { LoyaltyBalanceChip } from '@/features/loyalty/components/LoyaltyBalanceChip'
+import { LoyaltyRedeemSheet } from '@/features/loyalty/components/LoyaltyRedeemSheet'
+import { useLoyaltyProgram } from '@/features/loyalty/hooks/useLoyaltyProgram'
 
 interface PaymentSheetProps {
   open:            boolean
@@ -30,6 +33,9 @@ export function PaymentSheet({
   const { t }  = useLanguage()
   const store  = usePosStore()
   const [showQr, setShowQr] = useState(false)
+  const [showLoyalty, setShowLoyalty] = useState(false)
+  const { program: loyaltyProgram } = useLoyaltyProgram()
+  const isLoyaltyOn = Boolean(loyaltyProgram?.enabled) && Boolean(store.partyId)
 
   // Default to single CASH split matching grand total
   const payments = store.payments.length > 0
@@ -65,6 +71,24 @@ export function PaymentSheet({
     setPayments(updated.length ? updated : [{ mode: 'CASH', amount: grandTotal }])
   }
 
+  // Existing loyalty split (if any) — caller can pre-load the input.
+  const loyaltySplit = payments.find((p) => p.mode === 'LOYALTY_REDEMPTION')
+  const handleApplyLoyalty = ({ points, paise }: { points: number; paise: number }) => {
+    // Drop any prior loyalty split, then shrink non-loyalty splits to make
+    // room. Simplest correct strategy: replace cart payments with one loyalty
+    // split + one CASH split for the remainder.
+    const remainder = Math.max(0, grandTotal - paise)
+    const next: PaymentSplit[] = [
+      { mode: 'LOYALTY_REDEMPTION', amount: paise, pointsRedeemed: points },
+    ]
+    if (remainder > 0) next.push({ mode: 'CASH', amount: remainder })
+    setPayments(next)
+  }
+  const handleRemoveLoyalty = () => {
+    const cleaned = payments.filter((p) => p.mode !== 'LOYALTY_REDEMPTION')
+    setPayments(cleaned.length ? cleaned : [{ mode: 'CASH', amount: grandTotal }])
+  }
+
   if (!open) return null
 
   const primaryMode = payments[0]?.mode ?? 'CASH'
@@ -94,6 +118,31 @@ export function PaymentSheet({
         <div className="pos-sheet__body">
           <p className="pos-sheet__total-label">{t.posGrandTotal ?? 'Total'}</p>
           <p className="pos-sheet__total-amount">{paiseToInr(grandTotal)}</p>
+
+          {/* Loyalty chip + CTA — hidden when program off / walk-in */}
+          {isLoyaltyOn && (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 'var(--space-2)',
+                margin: 'var(--space-2) 0 var(--space-3)',
+                flexWrap: 'wrap',
+              }}
+            >
+              <LoyaltyBalanceChip partyId={store.partyId} />
+              <button
+                type="button"
+                onClick={() => setShowLoyalty(true)}
+                className="btn btn-secondary btn-sm"
+                style={{ minHeight: 36, display: 'inline-flex', alignItems: 'center', gap: 6 }}
+              >
+                <Sparkles size={14} aria-hidden="true" />
+                {t.loyaltyRedeemUsePoints}
+              </button>
+            </div>
+          )}
 
           {/* Mode selector */}
           <div
@@ -170,6 +219,16 @@ export function PaymentSheet({
           onClose={() => setShowQr(false)}
         />
       )}
+
+      <LoyaltyRedeemSheet
+        open={showLoyalty}
+        partyId={store.partyId}
+        grandTotalPaise={grandTotal}
+        currentPoints={loyaltySplit?.pointsRedeemed ?? 0}
+        onClose={() => setShowLoyalty(false)}
+        onApply={handleApplyLoyalty}
+        onRemove={loyaltySplit ? handleRemoveLoyalty : undefined}
+      />
     </>
   )
 }

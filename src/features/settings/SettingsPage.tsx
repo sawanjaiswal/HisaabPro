@@ -28,6 +28,7 @@ import {
   Briefcase,
   Ruler,
   Package,
+  Sparkles,
   Store,
   LogOut,
 } from 'lucide-react'
@@ -72,6 +73,7 @@ const ICON_MAP: Record<string, IconComponent> = {
   Briefcase,
   Ruler,
   Package,
+  Sparkles,
   Store,
 }
 
