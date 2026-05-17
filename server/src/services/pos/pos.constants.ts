@@ -27,8 +27,19 @@ export const MAX_DISCOUNT_BPS = 10_000
 /** Minimum positive payment amount that counts towards the order total (paise). */
 export const MIN_PAYMENT_AMOUNT_PAISE = 1
 
-/** Supported payment modes (lowercase, matches paymentBreakdown JSON). */
-export const PAYMENT_MODES = ['cash', 'upi', 'card', 'bank_transfer', 'other'] as const
+/** Supported payment modes (lowercase, matches paymentBreakdown JSON).
+ *
+ * Epic D PR3 (M2 / S3): `loyalty_redemption` is lowercase per wire-format
+ * audit. POS routes gate it behind `loyalty.redeem` via posCheckoutAuth.
+ */
+export const PAYMENT_MODES = [
+  'cash',
+  'upi',
+  'card',
+  'bank_transfer',
+  'other',
+  'loyalty_redemption',
+] as const
 export type PaymentMode = (typeof PAYMENT_MODES)[number]
 
 /** Document type stored on the Document row. */

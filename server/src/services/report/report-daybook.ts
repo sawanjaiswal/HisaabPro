@@ -103,6 +103,18 @@ export async function getDayBook(businessId: string, query: DayBookQuery) {
   const paymentsInTotal = paymentsIn.reduce((s, i) => s + i.amount, 0)
   const paymentsOutTotal = paymentsOut.reduce((s, i) => s + i.amount, 0)
 
+  // Epic D PR3 (S3) — loyalty_redemption tender breakdown for the day.
+  // sum(|delta|) over RD rows whose createdAt falls in the day window.
+  const loyaltyRedeemedAgg = await prisma.loyaltyLedger.aggregate({
+    where: {
+      businessId,
+      type: 'RD',
+      createdAt: dateFilter,
+    },
+    _sum: { delta: true },
+  })
+  const loyaltyRedeemedPoints = Math.abs(loyaltyRedeemedAgg._sum.delta ?? 0)
+
   const prevDate = new Date(dayStart)
   prevDate.setDate(prevDate.getDate() - 1)
   const nextDate = new Date(dayStart)
@@ -122,6 +134,10 @@ export async function getDayBook(businessId: string, query: DayBookQuery) {
         expenses: { count: 0, amount: 0 },
         stockAdjustments: { count: 0, amount: 0 },
         netCashFlow: paymentsInTotal - paymentsOutTotal,
+        // Epic D PR3 — tender breakdown shows loyalty_redemption as its own
+        // line so cashiers see what portion of the day's settlement came
+        // from loyalty points vs cash/upi/card.
+        loyaltyRedemption: { points: loyaltyRedeemedPoints },
       },
       transactions,
       navigation: {

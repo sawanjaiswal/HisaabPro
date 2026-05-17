@@ -20,6 +20,7 @@ import { notifyPtpDueToday } from '../services/notifications/notification-hooks.
 import { runGraceExpiryJob } from '../services/subscription/cron-grace-expiry.js'
 import { runTrialEndJob } from '../services/subscription/cron-trial-end.js'
 import { runMandateReminderJob } from '../services/subscription/cron-mandate-reminder.js'
+import { runLoyaltyExpiryCron } from '../services/loyalty/loyalty-expiry.cron.js'
 import os from 'os'
 
 let initialized = false
@@ -90,6 +91,20 @@ export function initCronJobs(): void {
     { timezone: 'Asia/Kolkata' },
   )
 
+  // Epic D PR3 — Loyalty expiry @ 04:15 IST (architecture v5 / M1).
+  // Scans LoyaltyLedger AC rows whose expiresAt < now and writes EX rows.
+  // Idempotent: re-runs are no-ops (note sentinel '[expiry of ac:<id>]').
+  cron.schedule(
+    '15 4 * * *',
+    () =>
+      void runLoyaltyExpiryCron().catch((e) =>
+        logger.error('cron.loyalty_expiry.fatal', {
+          error: e instanceof Error ? e.message : String(e),
+        })
+      ),
+    { timezone: 'Asia/Kolkata' }
+  )
+
   // Notification engine cron jobs (PR10)
   initNotificationCronJobs()
 
@@ -108,6 +123,7 @@ export function initCronJobs(): void {
       'subscription-grace-expiry @ 06:00 IST',
       'subscription-trial-end @ 07:00 IST',
       'subscription-mandate-reminder @ 08:00 IST',
+      'loyalty-expiry @ 04:15 IST',
     ],
   })
 }

@@ -12,6 +12,8 @@ import { AppError, ErrorCode, notFoundError } from '../../lib/errors.js'
 import type { PosServiceCtx } from './pos.types.js'
 import { DEFAULT_VOID_WINDOW_HOURS, POS_STOCK_REFERENCE_TYPE } from './pos.constants.js'
 import { isCashRegisterEnabled } from './pos-checkout.cash.js'
+import { voidForPosSale, restoreForPosSale } from './pos-loyalty-symmetry.js'
+import { analyticsEmit } from '../../lib/analytics.js'
 import logger from '../../lib/logger.js'
 
 const DEFAULT_RESTORE_WINDOW_HOURS = 4
@@ -142,6 +144,11 @@ export async function voidPosSale(
     await reverseStock(tx, ctx.businessId, ctx.userId, posSaleId, sale.receiptNumber)
     await voidCashEntry(tx, ctx.businessId, ctx.userId, sale.idempotencyKey)
 
+    // Epic D PR3 — loyalty void symmetry. Writes VD rows that cancel any
+    // AC/RD rows previously emitted for this sale. Inside the Serializable
+    // tx so void rolls back if anything else fails.
+    const loyaltySym = await voidForPosSale(tx, ctx.businessId, posSaleId)
+
     await tx.document.update({ where: { id: sale.documentId }, data: { status: 'VOIDED' } })
     const voidedAt = now
     await tx.posSale.update({
@@ -149,10 +156,22 @@ export async function voidPosSale(
       data: { status: 'VOIDED', voidedAt, voidedBy: ctx.userId, voidReason: reason },
     })
     await tx.posSaleEvent.create({
-      data: { posSaleId, type: 'VOIDED', actorId: ctx.userId, payload: { reason, voidedBy: ctx.userId } as object },
+      data: { posSaleId, type: 'VOIDED', actorId: ctx.userId, payload: { reason, voidedBy: ctx.userId, loyalty: loyaltySym } as object },
     })
 
     logger.info('POS sale voided', { posSaleId, businessId: ctx.businessId, reason })
+
+    queueMicrotask(() => {
+      if (loyaltySym.vdRowsWritten > 0) {
+        analyticsEmit('loyalty_restored', {
+          businessId: ctx.businessId,
+          posSaleId,
+          phase: 'void',
+          vdRowsWritten: loyaltySym.vdRowsWritten,
+        })
+      }
+    })
+
     return { id: posSaleId, status: 'VOIDED' as const, voidedAt, voidReason: reason }
   }, { isolationLevel: 'Serializable' })
 }
@@ -180,6 +199,11 @@ export async function restorePosSale(
     await reapplyStock(tx, ctx.businessId, ctx.userId, posSaleId, sale.receiptNumber)
     await restoreCashEntry(tx, ctx.businessId, ctx.userId, sale.idempotencyKey)
 
+    // Epic D PR3 — loyalty restore symmetry. Writes VR rows that re-create
+    // the original AC/RD ledger entries cancelled by the prior void.
+    // NET sum returns to original (architecture §3.4.1).
+    const loyaltySym = await restoreForPosSale(tx, ctx.businessId, posSaleId)
+
     await tx.document.update({ where: { id: sale.documentId }, data: { status: 'SAVED' } })
     const restoredAt = now
     await tx.posSale.update({
@@ -187,10 +211,22 @@ export async function restorePosSale(
       data: { status: 'ACTIVE', voidedAt: null, voidedBy: null, voidReason: null, restoredAt, restoredBy: ctx.userId },
     })
     await tx.posSaleEvent.create({
-      data: { posSaleId, type: 'RESTORED', actorId: ctx.userId, payload: { restoredBy: ctx.userId } as object },
+      data: { posSaleId, type: 'RESTORED', actorId: ctx.userId, payload: { restoredBy: ctx.userId, loyalty: loyaltySym } as object },
     })
 
     logger.info('POS sale restored', { posSaleId, businessId: ctx.businessId })
+
+    queueMicrotask(() => {
+      if (loyaltySym.vrRowsWritten > 0) {
+        analyticsEmit('loyalty_restored', {
+          businessId: ctx.businessId,
+          posSaleId,
+          phase: 'restore',
+          vrRowsWritten: loyaltySym.vrRowsWritten,
+        })
+      }
+    })
+
     return { id: posSaleId, status: 'ACTIVE' as const, restoredAt }
   }, { isolationLevel: 'Serializable' })
 }
