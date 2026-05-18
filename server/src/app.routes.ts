@@ -76,6 +76,7 @@ import loyaltyRoutes from './routes/loyalty.routes.js'
 import commissionRoutes from './routes/commission.routes.js'
 import businessesPhase6Routes from './routes/businesses.routes.js'
 import authPinRoutes from './routes/auth-pin.routes.js'
+import auditRoutes from './routes/audit.routes.js'
 
 const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/auth', authRoutes],
@@ -172,6 +173,12 @@ const ROUTE_MOUNTS: Array<[string, Router]> = [
   // Path overlaps `/api/auth` (authRoutes) — Express dispatches by sub-path,
   // so /api/auth/pin/* lands on this router; /api/auth/login etc. on authRoutes.
   ['/api/auth/pin', authPinRoutes],
+
+  // Phase 6 PR4 — Audit search + redaction (architecture §18.5 rows 106-109).
+  // GET / + GET-POST-DELETE /redactions + POST /export. requireRecentPin
+  // gates each route; requireOwner gates audit visibility until per-feature
+  // 'audit.read'/'audit.export' permission keys ship in a later PR.
+  ['/api/audit', auditRoutes],
 ]
 
 export function mountFeatureRoutes(app: Express): void {
