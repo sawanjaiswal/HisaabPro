@@ -57,6 +57,8 @@ import {
   CreateEstimate, CreateSaleOrder, CreateChallan,
   // Phase 6 — Staff & HR (PR5 FE)
   Attendance,
+  // Phase 6 — Staff & HR (PR6 FE — Employees + Payroll + Payslip)
+  Employees, EmployeeDetail, Payroll, PayrollWizard, PayrollRunDetail, Payslip,
 } from '@/app.routes'
 import {
   PageRoute, DashboardFallback, ProtectedRoute, GuestRoute,
@@ -275,6 +277,13 @@ export function App() {
         <Route path={ROUTES.STOREFRONT_SETTINGS} element={<PageRoute><ProtectedRoute><StorefrontSettings /></ProtectedRoute></PageRoute>} />
         {/* Phase 6 — Staff & HR (PR5 FE — Attendance daily grid) */}
         <Route path={ROUTES.HR_ATTENDANCE} element={<PageRoute><ProtectedRoute><Attendance /></ProtectedRoute></PageRoute>} />
+        {/* Phase 6 — Staff & HR (PR6 FE — Employees + Payroll + Payslip) */}
+        <Route path={ROUTES.HR_EMPLOYEES} element={<PageRoute><ProtectedRoute><Employees /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.HR_EMPLOYEE_DETAIL} element={<PageRoute><ProtectedRoute><EmployeeDetail /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.HR_PAYROLL} element={<PageRoute><ProtectedRoute><Payroll /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.HR_PAYROLL_NEW} element={<PageRoute><ProtectedRoute><PayrollWizard /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.HR_PAYROLL_DETAIL} element={<PageRoute><ProtectedRoute><PayrollRunDetail /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PAYSLIP} element={<PageRoute><ProtectedRoute><Payslip /></ProtectedRoute></PageRoute>} />
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
       </Routes>
       </PageTransition>

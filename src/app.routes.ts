@@ -214,6 +214,14 @@ export const PublicInvitePage = lazy(() =>
 // Phase 6 — Staff & HR (PR5 FE — Attendance daily grid)
 export const Attendance = lazy(() => import('@/features/hr/AttendancePage'))
 
+// Phase 6 — Staff & HR (PR6 FE — Employees + Payroll + Payslip)
+export const Employees = lazy(() => import('@/features/hr/EmployeeListPage'))
+export const EmployeeDetail = lazy(() => import('@/features/hr/EmployeeDetailPage'))
+export const Payroll = lazy(() => import('@/features/hr/PayrollPage'))
+export const PayrollWizard = lazy(() => import('@/features/hr/PayrollWizardPage'))
+export const PayrollRunDetail = lazy(() => import('@/features/hr/PayrollRunDetailPage'))
+export const Payslip = lazy(() => import('@/features/hr/PayslipPage'))
+
 // Phase 5 Epic B — Sales Pipeline (#122)
 export const SalesHub = lazy(() => import('@/features/sales/SalesHubPage'))
 export const SalesEstimatesPage = lazy(() => import('@/features/sales/EstimatesPage'))

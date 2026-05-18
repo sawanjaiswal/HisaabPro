@@ -215,8 +215,12 @@ export const ROUTES = {
   PRODUCTION_RUN_NEW:    '/production-runs/new',
   PRODUCTION_RUN_DETAIL: '/production-runs/:id',
 
-  // Phase 6 — Staff & HR (PR5 ships Attendance; PR6 ships Employees pages)
+  // Phase 6 — Staff & HR (PR5 ships Attendance; PR6 ships Employees + Payroll)
   HR_ATTENDANCE:       '/hr/attendance',
-  HR_EMPLOYEES:        '/hr/employees',         // route key — page ships PR6
-  HR_EMPLOYEE_DETAIL:  '/hr/employees/:id',     // route key — page ships PR6
+  HR_EMPLOYEES:        '/hr/employees',
+  HR_EMPLOYEE_DETAIL:  '/hr/employees/:id',
+  HR_PAYROLL:          '/hr/payroll',
+  HR_PAYROLL_NEW:      '/hr/payroll/new',
+  HR_PAYROLL_DETAIL:   '/hr/payroll/:id',
+  PAYSLIP:             '/hr/payroll/:runId/payslip/:payrollId',
 } as const

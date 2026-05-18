@@ -126,6 +126,12 @@ for (const file of files) {
       upper.includes(`'${meth}'`) || upper.includes(`"${meth}"`)
     )
     if (!hasMutation) continue
+    // `offlineQueue: false` explicitly opts the call out of the queue
+    // (read-shaped POSTs like /payroll/run/preview — rate-limited compute
+    // that must fail-fast offline, not queue stale numbers for replay).
+    // Such calls don't surface in the queue UI, so entityType/Label would
+    // be dead metadata.
+    if (/offlineQueue\s*:\s*false/.test(call)) continue
     if (!/entityType\s*:/.test(call)) {
       const lineNo = src.slice(0, m.index).split('\n').length
       violations.mutationNoEntityType.push(`${rel(file)}:${lineNo}`)

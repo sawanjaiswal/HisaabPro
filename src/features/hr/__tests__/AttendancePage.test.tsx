@@ -17,7 +17,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import type { AttendanceRow, EmployeeLite } from '../hr.types'
+import type { AttendanceRow, Employee } from '../hr.types'
 
 // ─── Mocks ──────────────────────────────────────────────────────────────────
 
@@ -100,12 +100,25 @@ vi.mock('@/lib/api', () => ({
 
 // ─── Fixtures ───────────────────────────────────────────────────────────────
 
-function makeEmployee(overrides: Partial<EmployeeLite> = {}): EmployeeLite {
+/** Full Employee wire row — `useEmployees` (PR6) maps these to EmployeeLite
+ *  via `toEmployeeLite()` (sets `role = designation`, `active = !isDeleted`). */
+function makeEmployee(overrides: Partial<Employee> = {}): Employee {
   return {
     id: 'emp_1',
+    businessId: 'biz_1',
+    partyId: 'p_1',
+    userId: null,
     name: 'Raju',
-    role: 'Driver',
-    active: true,
+    phone: null,
+    designation: 'Driver',
+    dailyRate: 150000,
+    joinedAt: null,
+    leftAt: null,
+    createdById: null,
+    isDeleted: false,
+    deletedAt: null,
+    createdAt: '2026-05-01T00:00:00.000Z',
+    updatedAt: '2026-05-01T00:00:00.000Z',
     ...overrides,
   }
 }
@@ -125,15 +138,19 @@ function makeRow(overrides: Partial<AttendanceRow> = {}): AttendanceRow {
 }
 
 /** Route mockApi by path so we can prime employees + attendance + batch
- *  independently for each test. */
+ *  independently for each test.
+ *
+ *  PR6 rewrote `useEmployees` to hit `/hr/employees?limit=100` (paginated)
+ *  and return `{ rows: Employee[], nextCursor }` — we mirror that shape
+ *  here so AttendancePage still gets the data it needs. */
 function primeApi(handlers: {
   employees?: () => Promise<unknown> | unknown
   attendance?: () => Promise<unknown> | unknown
   batch?: () => Promise<unknown> | unknown
 }) {
   mockApi.mockImplementation((path: string, opts?: { method?: string }) => {
-    if (path === '/hr/employees') {
-      return Promise.resolve(handlers.employees ? handlers.employees() : { employees: [] })
+    if (path === '/hr/employees' || path.startsWith('/hr/employees?')) {
+      return Promise.resolve(handlers.employees ? handlers.employees() : { rows: [], nextCursor: null })
     }
     if (path.startsWith('/hr/attendance?')) {
       return Promise.resolve(handlers.attendance ? handlers.attendance() : { rows: [] })
@@ -180,7 +197,8 @@ describe('<AttendancePage /> — 4 UI states', () => {
   it('error state renders the ErrorState with a retry CTA', async () => {
     const { ApiError } = await import('@/lib/api')
     mockApi.mockImplementation((path: string) => {
-      if (path === '/hr/employees') return Promise.resolve({ employees: [makeEmployee()] })
+      if (path === '/hr/employees' || path.startsWith('/hr/employees?'))
+        return Promise.resolve({ rows: [makeEmployee()], nextCursor: null })
       if (path.startsWith('/hr/attendance?'))
         return Promise.reject(new ApiError('Server error', 'INTERNAL', 500))
       return Promise.reject(new Error(`Unmocked: ${path}`))
@@ -193,8 +211,8 @@ describe('<AttendancePage /> — 4 UI states', () => {
   })
 
   it('empty state renders when employees endpoint returns no rows', async () => {
-    // GET /hr/employees → { employees: [] } means showEmpty=true
-    primeApi({ employees: () => ({ employees: [] }) })
+    // GET /hr/employees → { rows: [] } means showEmpty=true
+    primeApi({ employees: () => ({ rows: [], nextCursor: null }) })
     await renderPage()
     await waitFor(() => {
       expect(screen.getByText(/Add your first employee/i)).toBeInTheDocument()
@@ -203,22 +221,15 @@ describe('<AttendancePage /> — 4 UI states', () => {
     expect(screen.getByRole('link', { name: 'Add employee' })).toBeInTheDocument()
   })
 
-  it('empty state also fires when /hr/employees 404s (PR6 not shipped)', async () => {
-    const { ApiError } = await import('@/lib/api')
-    primeApi({
-      employees: () => {
-        throw new ApiError('Not yet available', 'NOT_FOUND', 404)
-      },
-    })
-    await renderPage()
-    await waitFor(() => {
-      expect(screen.getByText(/Add your first employee/i)).toBeInTheDocument()
-    })
-  })
+  // PR5 had a fallback that treated /hr/employees 404 as "show empty state"
+  // because the BE didn't ship the endpoint until PR6. PR6 now exposes the
+  // real endpoint, so a 404 here is a configuration error and is surfaced
+  // as the error UI by `useEmployees`. The "404 = empty" test has been
+  // intentionally removed.
 
   it('success state renders an employee row and at least one attendance pill', async () => {
     primeApi({
-      employees: () => ({ employees: [makeEmployee()] }),
+      employees: () => ({ rows: [makeEmployee()], nextCursor: null }),
       attendance: () => ({ rows: [makeRow()] }),
     })
     await renderPage()
@@ -239,7 +250,7 @@ describe('<AttendancePage /> — 4 UI states', () => {
 describe('<AttendancePage /> — pending state + cycling', () => {
   it('clicking a pill marks the cell dirty and shows the save bar', async () => {
     primeApi({
-      employees: () => ({ employees: [makeEmployee()] }),
+      employees: () => ({ rows: [makeEmployee()], nextCursor: null }),
       attendance: () => ({ rows: [] }), // no persisted row → empty pill
     })
     await renderPage()
@@ -262,7 +273,7 @@ describe('<AttendancePage /> — pending state + cycling', () => {
 
   it('clicking the same cell twice stays at one pending change (dedup by cell)', async () => {
     primeApi({
-      employees: () => ({ employees: [makeEmployee()] }),
+      employees: () => ({ rows: [makeEmployee()], nextCursor: null }),
       attendance: () => ({ rows: [] }),
     })
     await renderPage()
@@ -281,7 +292,7 @@ describe('<AttendancePage /> — pending state + cycling', () => {
 
   it('Discard clears pending edits and hides the save bar', async () => {
     primeApi({
-      employees: () => ({ employees: [makeEmployee()] }),
+      employees: () => ({ rows: [makeEmployee()], nextCursor: null }),
       attendance: () => ({ rows: [] }),
     })
     await renderPage()
@@ -304,7 +315,7 @@ describe('<AttendancePage /> — pending state + cycling', () => {
 describe('<AttendancePage /> — Save flow', () => {
   it('Save posts the pending edits to /hr/attendance/batch and clears pending', async () => {
     primeApi({
-      employees: () => ({ employees: [makeEmployee()] }),
+      employees: () => ({ rows: [makeEmployee()], nextCursor: null }),
       attendance: () => ({ rows: [] }),
       batch: () => ({ written: 1, byStatus: { PRESENT: 1 } }),
     })
@@ -354,7 +365,7 @@ describe('<AttendancePage /> — Save flow', () => {
   it('Save surfaces the BE ApiError message via toast.error on 400 INVALID_EMPLOYEE_ID', async () => {
     const { ApiError } = await import('@/lib/api')
     primeApi({
-      employees: () => ({ employees: [makeEmployee()] }),
+      employees: () => ({ rows: [makeEmployee()], nextCursor: null }),
       attendance: () => ({ rows: [] }),
       batch: () => {
         throw new ApiError('Employee not in business', 'INVALID_EMPLOYEE_ID', 400)
