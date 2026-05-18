@@ -1,4 +1,4 @@
-import type { AuditAction } from './settings.types'
+import type { AuditAction } from './audit.types'
 
 // ─── Audit Log Labels ─────────────────────────────────────────────────────────
 
@@ -12,6 +12,11 @@ export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
   ROLE_CHANGE:       'Role Changed',
   APPROVAL_REQUEST:  'Approval Requested',
   APPROVAL_RESPONSE: 'Approval Responded',
+  // Phase 6 PR4
+  SUSPEND_FIRM:      'Firm Suspended',
+  REACTIVATE_FIRM:   'Firm Reactivated',
+  FINALIZE:          'Finalized',
+  REVERSE:           'Reversed',
 }
 
 export const AUDIT_ACTION_ICONS: Record<AuditAction, string> = {
@@ -24,6 +29,10 @@ export const AUDIT_ACTION_ICONS: Record<AuditAction, string> = {
   ROLE_CHANGE:       'UserCog',
   APPROVAL_REQUEST:  'ClipboardCheck',
   APPROVAL_RESPONSE: 'MessageSquare',
+  SUSPEND_FIRM:      'Pause',
+  REACTIVATE_FIRM:   'Play',
+  FINALIZE:          'CheckCircle2',
+  REVERSE:           'Undo2',
 }
 
 export const AUDIT_ACTION_COLORS: Record<AuditAction, string> = {
@@ -36,13 +45,28 @@ export const AUDIT_ACTION_COLORS: Record<AuditAction, string> = {
   ROLE_CHANGE:       'var(--color-primary-500)',
   APPROVAL_REQUEST:  'var(--color-neutral-600)',
   APPROVAL_RESPONSE: 'var(--color-neutral-500)',
+  SUSPEND_FIRM:      'var(--color-warning-600)',
+  REACTIVATE_FIRM:   'var(--color-success-600)',
+  FINALIZE:          'var(--color-primary-600)',
+  REVERSE:           'var(--color-error-500)',
 }
 
 export const AUDIT_ENTITY_LABELS: Record<string, string> = {
-  INVOICE: 'Invoice',
-  PAYMENT: 'Payment',
-  PRODUCT: 'Product',
-  PARTY:   'Party',
-  ROLE:    'Role',
-  SETTING: 'Setting',
+  INVOICE:  'Invoice',
+  PAYMENT:  'Payment',
+  PRODUCT:  'Product',
+  PARTY:    'Party',
+  ROLE:     'Role',
+  SETTING:  'Setting',
+  // Phase 6 PR4 — entity types written by suspend/reactivate/payroll flows
+  Business: 'Business',
+  Payroll:  'Payroll',
+  Employee: 'Employee',
+  PinSetup: 'PIN Setup',
 }
+
+/** Default page size for cursor-paginated search. Server caps at 100. */
+export const AUDIT_PAGE_SIZE = 20
+
+/** Debounce delay (ms) for the search-query text input. */
+export const AUDIT_SEARCH_DEBOUNCE_MS = 300

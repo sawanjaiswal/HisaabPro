@@ -1,0 +1,171 @@
+/** Audit Filter Drawer — Phase 6 PR4 FE
+ *
+ * Drawer-wrapped filter form for /settings/audit. Mirrors the BE query
+ * surface: q, action, entityType, userId, dateFrom, dateTo. Date fields
+ * use native `<input type="date">` (ISO yyyy-mm-dd, what the BE accepts).
+ *
+ * State is held locally until the user taps "Apply", then applied to the
+ * parent hook in one shot — prevents partial filter changes from kicking
+ * off intermediate requests.
+ */
+
+import { useEffect, useState } from 'react'
+import { Drawer } from '@/components/ui/Drawer'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { useLanguage } from '@/hooks/useLanguage'
+import { AUDIT_ACTION_LABELS, AUDIT_ENTITY_LABELS } from '../audit.constants'
+import type { AuditAction, AuditSearchFilters } from '../audit.types'
+
+interface AuditFilterDrawerProps {
+  open: boolean
+  onClose: () => void
+  initial: AuditSearchFilters
+  onApply: (filters: AuditSearchFilters) => void
+  onClear: () => void
+}
+
+const ACTION_OPTIONS: Array<{ value: AuditAction | ''; label: string }> = [
+  { value: '', label: '' /* filled at render via t.auditAllActions */ },
+  ...(Object.entries(AUDIT_ACTION_LABELS) as Array<[AuditAction, string]>).map(
+    ([value, label]) => ({ value, label }),
+  ),
+]
+
+const ENTITY_OPTIONS: Array<{ value: string; label: string }> = [
+  { value: '', label: '' /* filled at render via t.auditAllEntities */ },
+  ...Object.entries(AUDIT_ENTITY_LABELS).map(([value, label]) => ({ value, label })),
+]
+
+export function AuditFilterDrawer({
+  open,
+  onClose,
+  initial,
+  onApply,
+  onClear,
+}: AuditFilterDrawerProps) {
+  const { t } = useLanguage()
+  const [draft, setDraft] = useState<AuditSearchFilters>(initial)
+
+  // Reset draft to the parent's current filters every time the drawer opens —
+  // so a user who cancels mid-edit doesn't carry stale state into next open.
+  useEffect(() => {
+    if (open) setDraft(initial)
+  }, [open, initial])
+
+  const update = <K extends keyof AuditSearchFilters>(key: K, value: AuditSearchFilters[K]) => {
+    setDraft((prev) => ({ ...prev, [key]: value }))
+  }
+
+  const handleApply = () => {
+    // Normalize empty strings → undefined so the service layer omits them
+    const cleaned: AuditSearchFilters = {
+      q:          draft.q || undefined,
+      entityType: draft.entityType || undefined,
+      action:     draft.action || undefined,
+      userId:     draft.userId || undefined,
+      dateFrom:   draft.dateFrom || undefined,
+      dateTo:     draft.dateTo || undefined,
+    }
+    onApply(cleaned)
+    onClose()
+  }
+
+  const handleClear = () => {
+    setDraft({})
+    onClear()
+    onClose()
+  }
+
+  return (
+    <Drawer
+      open={open}
+      onClose={onClose}
+      title={t.auditFiltersLabel}
+      size="md"
+      footer={(
+        <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
+          <Button variant="ghost" size="md" onClick={handleClear} style={{ flex: 1 }}>
+            {t.auditClearFilters}
+          </Button>
+          <Button variant="primary" size="md" onClick={handleApply} style={{ flex: 1 }}>
+            {t.auditApplyFilters}
+          </Button>
+        </div>
+      )}
+    >
+      <div className="space-y-4">
+        <Input
+          label={t.auditSearchPlaceholder}
+          value={draft.q ?? ''}
+          onChange={(e) => update('q', e.target.value)}
+          placeholder={t.auditSearchPlaceholder}
+          type="search"
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck={false}
+        />
+
+        <div className="input-group">
+          <label htmlFor="audit-filter-action" className="input-label">
+            {t.auditActionLabel}
+          </label>
+          <select
+            id="audit-filter-action"
+            className="input"
+            value={draft.action ?? ''}
+            onChange={(e) => update('action', (e.target.value || undefined) as AuditAction | undefined)}
+            style={{ minHeight: 44 }}
+          >
+            {ACTION_OPTIONS.map((opt) => (
+              <option key={opt.value || 'all'} value={opt.value}>
+                {opt.value === '' ? t.auditAllActions : opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="audit-filter-entity" className="input-label">
+            {t.auditEntityLabel}
+          </label>
+          <select
+            id="audit-filter-entity"
+            className="input"
+            value={draft.entityType ?? ''}
+            onChange={(e) => update('entityType', e.target.value || undefined)}
+            style={{ minHeight: 44 }}
+          >
+            {ENTITY_OPTIONS.map((opt) => (
+              <option key={opt.value || 'all'} value={opt.value}>
+                {opt.value === '' ? t.auditAllEntities : opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <Input
+          label={t.auditActorLabel}
+          value={draft.userId ?? ''}
+          onChange={(e) => update('userId', e.target.value)}
+          placeholder={t.auditActorLabel}
+          autoComplete="off"
+        />
+
+        <Input
+          label={t.auditDateFromLabel}
+          type="date"
+          value={draft.dateFrom ?? ''}
+          onChange={(e) => update('dateFrom', e.target.value)}
+        />
+
+        <Input
+          label={t.auditDateToLabel}
+          type="date"
+          value={draft.dateTo ?? ''}
+          onChange={(e) => update('dateTo', e.target.value)}
+        />
+      </div>
+    </Drawer>
+  )
+}

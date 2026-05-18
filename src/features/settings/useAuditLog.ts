@@ -1,111 +1,137 @@
-/** Settings — Audit log hook (TanStack Query)
+/** Settings — Audit log hook (Phase 6 PR4 — cursor pagination + debounced q)
  *
- * Manages paginated audit log with optional filters.
- * setFilter resets to page 1. loadMore appends the next page.
- * businessId is passed as a parameter.
+ * Owns the filter state for /settings/audit. Debounces the freeform `q`
+ * input so we don't issue a request on every keystroke; cursor-paginates the
+ * results so the user explicitly opts into more rows (the audit log is
+ * sensitive — no accidental over-fetch).
+ *
+ * Server-side PIN gate is transparent: PR3's `api()` interceptor opens
+ * <PinPadSheet /> on 403 PIN_REQUIRED, verifies, then retries — the hook
+ * just awaits the resolved promise.
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { useDebounce } from '@/hooks/useDebounce'
 import { queryKeys } from '@/lib/query-keys'
-import { getAuditLog } from './audit-log.service'
-import type { AuditLogEntry, AuditLogFilters, AuditAction } from './settings.types'
+import { searchAuditLog } from './audit-log.service'
+import { AUDIT_PAGE_SIZE, AUDIT_SEARCH_DEBOUNCE_MS } from './audit.constants'
+import type { AuditSearchFilters, AuditSearchRow } from './audit.types'
 
 type Status = 'loading' | 'error' | 'success'
 
-const DEFAULT_FILTERS: AuditLogFilters = {
-  page: 1,
-  limit: 50,
-}
-
-interface AuditLogData {
-  entries: AuditLogEntry[]
-  pagination: { page: number; limit: number; total: number }
-}
-
 interface UseAuditLogReturn {
-  data: AuditLogData | null
+  /** Flat array of rows across all loaded pages (cursor accumulator) */
+  rows: AuditSearchRow[]
   status: Status
-  filters: AuditLogFilters
-  setFilter: <K extends keyof AuditLogFilters>(key: K, value: AuditLogFilters[K]) => void
+  /** Filter state — `q` here is the live (un-debounced) input value */
+  filters: AuditSearchFilters
+  setFilter: <K extends keyof AuditSearchFilters>(key: K, value: AuditSearchFilters[K]) => void
+  setFilters: (next: AuditSearchFilters) => void
+  clearFilters: () => void
+  /** `true` while the in-flight page is one of the cursor follow-ups, not the first page */
+  isFetchingMore: boolean
+  /** Show a "Load more" CTA — false when the server returned nextCursor: null */
+  hasMore: boolean
   loadMore: () => void
   refresh: () => void
 }
 
-export function useAuditLog(businessId: string): UseAuditLogReturn {
+const EMPTY_FILTERS: AuditSearchFilters = {}
+
+export function useAuditLog(): UseAuditLogReturn {
   const toast = useToast()
   const queryClient = useQueryClient()
 
-  const [filters, setFilters] = useState<AuditLogFilters>(DEFAULT_FILTERS)
-  // Accumulated entries for append-on-loadMore
-  const accumulatedRef = useRef<AuditLogEntry[]>([])
+  // Live filter state — `q` updates per keystroke; `debouncedQ` is what we send
+  const [filters, setFiltersState] = useState<AuditSearchFilters>(EMPTY_FILTERS)
+  const debouncedQ = useDebounce(filters.q ?? '', AUDIT_SEARCH_DEBOUNCE_MS)
 
-  const query = useQuery({
-    queryKey: queryKeys.settings.auditLog(filters as unknown as Record<string, unknown>),
-    queryFn: ({ signal }) => getAuditLog(businessId, filters, signal),
-    enabled: !!businessId,
+  // Effective filters sent to the BE — `q` swapped for its debounced value
+  const effectiveFilters = useMemo<AuditSearchFilters>(
+    () => ({ ...filters, q: debouncedQ || undefined }),
+    [filters, debouncedQ],
+  )
+
+  // Stable key for the query cache. Stringify intentional — small object,
+  // stable order, and React Query needs reference identity to dedupe.
+  const queryKey = useMemo(
+    () => queryKeys.settings.auditLog(effectiveFilters as Record<string, unknown>),
+    [effectiveFilters],
+  )
+
+  const query = useInfiniteQuery({
+    queryKey,
+    initialPageParam: null as string | null,
+    queryFn: ({ pageParam, signal }) =>
+      searchAuditLog(effectiveFilters, pageParam ?? null, AUDIT_PAGE_SIZE, signal),
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
   })
 
-  // Build accumulated data: on page 1 reset, on subsequent pages append
-  const rawData = query.data?.data ?? null
+  const rows = useMemo<AuditSearchRow[]>(
+    () => query.data?.pages.flatMap((page) => page.rows) ?? [],
+    [query.data],
+  )
 
-  const data: AuditLogData | null = (() => {
-    if (!rawData) return null
-
-    if (filters.page === 1) {
-      accumulatedRef.current = rawData.entries
-    } else {
-      // Append — avoid duplicates by id
-      const existingIds = new Set(accumulatedRef.current.map((e) => e.id))
-      const newEntries = rawData.entries.filter((e) => !existingIds.has(e.id))
-      accumulatedRef.current = [...accumulatedRef.current, ...newEntries]
-    }
-
-    return { entries: accumulatedRef.current, pagination: rawData.pagination }
-  })()
-
-  // Only show loading skeleton on first page
-  const status: Status = (() => {
-    if (query.isPending && filters.page === 1) return 'loading'
-    if (query.isError) return 'error'
-    if (query.isSuccess) return 'success'
-    // loadMore in progress — keep showing success (entries already visible)
-    return data ? 'success' : 'loading'
-  })()
-
-  // Show toast on fetch error
+  // Toast on error — but only once per error reference. React Query keeps the
+  // error stable across renders, so deduplication is by identity.
+  const lastErrorRef = useRef<unknown>(null)
   useEffect(() => {
-    if (query.error) {
-      const message = query.error instanceof ApiError ? query.error.message : 'Failed to load audit log'
-      toast.error(message)
+    if (!query.error) {
+      lastErrorRef.current = null
+      return
     }
-  }, [query.error]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (lastErrorRef.current === query.error) return
+    lastErrorRef.current = query.error
+    const message = query.error instanceof ApiError
+      ? query.error.message
+      : 'Failed to load audit log'
+    toast.error(message)
+  }, [query.error, toast])
 
-  const setFilter = useCallback(<K extends keyof AuditLogFilters>(
+  const status: Status = (() => {
+    if (query.isPending) return 'loading'
+    if (query.isError) return 'error'
+    return 'success'
+  })()
+
+  const setFilter = useCallback(<K extends keyof AuditSearchFilters>(
     key: K,
-    value: AuditLogFilters[K],
+    value: AuditSearchFilters[K],
   ) => {
-    setFilters((prev) => ({ ...prev, [key]: value, page: 1 }))
+    setFiltersState((prev) => ({ ...prev, [key]: value }))
+  }, [])
+
+  const setFilters = useCallback((next: AuditSearchFilters) => {
+    setFiltersState(next)
+  }, [])
+
+  const clearFilters = useCallback(() => {
+    setFiltersState(EMPTY_FILTERS)
   }, [])
 
   const loadMore = useCallback(() => {
-    if (data === null) return
-    const { page, limit, total } = data.pagination
-    const hasMore = page * limit < total
-    if (!hasMore) return
-    setFilters((prev) => ({ ...prev, page: (prev.page ?? 1) + 1 }))
-  }, [data])
+    if (query.hasNextPage && !query.isFetchingNextPage) {
+      query.fetchNextPage()
+    }
+  }, [query])
 
   const refresh = useCallback(() => {
-    accumulatedRef.current = []
-    setFilters((prev) => ({ ...prev, page: 1 }))
     queryClient.invalidateQueries({ queryKey: queryKeys.settings.all() })
   }, [queryClient])
 
-  return { data, status, filters, setFilter, loadMore, refresh }
+  return {
+    rows,
+    status,
+    filters,
+    setFilter,
+    setFilters,
+    clearFilters,
+    isFetchingMore: query.isFetchingNextPage,
+    hasMore: query.hasNextPage ?? false,
+    loadMore,
+    refresh,
+  }
 }
-
-// Re-export filter type convenience
-export type { AuditAction }

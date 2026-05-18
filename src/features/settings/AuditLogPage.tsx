@@ -1,142 +1,136 @@
-import React, { useMemo } from 'react'
-import { ClipboardList } from 'lucide-react'
+/** Audit Log Page — Phase 6 PR4 FE
+ *
+ * /settings/audit — search + filter + per-row diff drawer + redactions.
+ * Header actions: filter, export, redactions, (parent renders sync + menu).
+ *
+ * PinGateProvider auto-opens PinPadSheet on 403 PIN_REQUIRED from any
+ * `api()` call, so this page just renders the result; no special PIN UI.
+ */
+
+import { useMemo, useState, useEffect } from 'react'
+import { ClipboardList, Filter, Search, Shield } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
-import { useAuth } from '@/context/AuthContext'
 import { useAuditLog } from './useAuditLog'
 import { AuditLogEntry } from './components/AuditLogEntry'
-import { AUDIT_ACTION_LABELS, AUDIT_ENTITY_LABELS } from './audit.constants'
-import type { AuditAction } from './settings.types'
+import { AuditFilterDrawer } from './components/AuditFilterDrawer'
+import { AuditDiffDrawer } from './components/AuditDiffDrawer'
+import { AuditExportButton } from './components/AuditExportButton'
+import { AuditRedactionsManager } from './components/AuditRedactionsManager'
+import type { AuditSearchRow } from './audit.types'
 import './audit-log.css'
 
-const ACTION_FILTERS: Array<{ label: string; value: AuditAction | undefined }> = [
-  { label: 'All', value: undefined },
-  ...Object.entries(AUDIT_ACTION_LABELS).map(([key, label]) => ({
-    label,
-    value: key as AuditAction,
-  })),
-]
-
-const ENTITY_FILTERS: Array<{ label: string; value: string | undefined }> = [
-  { label: 'All', value: undefined },
-  ...Object.entries(AUDIT_ENTITY_LABELS).map(([key, label]) => ({
-    label,
-    value: key,
-  })),
-]
-
-function formatDateGroupLabel(iso: string, t: Record<string, string>): string {
-  const date = new Date(iso)
-  const now = new Date()
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  const yesterday = new Date(today.getTime() - 86_400_000)
-  const entryDay = new Date(date.getFullYear(), date.getMonth(), date.getDate())
-
-  if (entryDay.getTime() === today.getTime()) return t.todayLabel
-  if (entryDay.getTime() === yesterday.getTime()) return t.yesterdayLabel
-
-  return date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
-}
-
-function getDateKey(iso: string): string {
-  return iso.slice(0, 10) // YYYY-MM-DD
-}
-
-interface DateGroup {
-  label: string
-  dateKey: string
-  entryIds: string[]
+/** Active filter count for the filter-chip badge (excludes the live `q` input). */
+function countActive(filters: ReturnType<typeof useAuditLog>['filters']): number {
+  let n = 0
+  if (filters.entityType) n++
+  if (filters.action) n++
+  if (filters.userId) n++
+  if (filters.dateFrom) n++
+  if (filters.dateTo) n++
+  return n
 }
 
 export default function AuditLogPage() {
   const { t } = useLanguage()
-  const { user } = useAuth()
-  const businessId = user?.businessId ?? ''
-  const { data, status, filters, setFilter, loadMore, refresh } = useAuditLog(businessId)
+  const audit = useAuditLog()
+  const { rows, status, filters, setFilter, setFilters, clearFilters, hasMore, loadMore, isFetchingMore, refresh } = audit
 
-  const dateGroups = useMemo<DateGroup[]>(() => {
-    if (!data) return []
+  const [filterOpen, setFilterOpen] = useState(false)
+  const [redactionsOpen, setRedactionsOpen] = useState(false)
+  const [selected, setSelected] = useState<AuditSearchRow | null>(null)
 
-    const groupMap = new Map<string, DateGroup>()
+  const activeCount = useMemo(() => countActive(filters), [filters])
 
-    for (const entry of data.entries) {
-      const key = getDateKey(entry.createdAt)
-      if (!groupMap.has(key)) {
-        groupMap.set(key, {
-          label: formatDateGroupLabel(entry.createdAt, t),
-          dateKey: key,
-          entryIds: [],
-        })
-      }
-      groupMap.get(key)!.entryIds.push(entry.id)
-    }
+  // When the parent navigates back, close any open drawer to avoid the
+  // body-scroll lock leaking past unmount.
+  useEffect(() => () => { document.body.style.overflow = '' }, [])
 
-    return Array.from(groupMap.values())
-  }, [data, t])
-
-  const entryById = useMemo(() => {
-    if (!data) return new Map()
-    return new Map(data.entries.map((e) => [e.id, e]))
-  }, [data])
-
-  const hasMore = data !== null
-    ? data.pagination.page * data.pagination.limit < data.pagination.total
-    : false
+  const headerActions = (
+    <>
+      <button
+        type="button"
+        className="staff-action-button"
+        onClick={() => setRedactionsOpen(true)}
+        aria-label={t.auditRedactionsTitle}
+        style={{ minWidth: 44, minHeight: 44 }}
+      >
+        <Shield size={20} aria-hidden="true" />
+      </button>
+      <AuditExportButton filters={filters} variant="icon" />
+      <button
+        type="button"
+        className="staff-action-button"
+        onClick={() => setFilterOpen(true)}
+        aria-label={t.auditFiltersLabel}
+        style={{ minWidth: 44, minHeight: 44, position: 'relative' }}
+      >
+        <Filter size={20} aria-hidden="true" />
+        {activeCount > 0 && (
+          <span
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              top: 4,
+              right: 4,
+              minWidth: 16,
+              height: 16,
+              padding: '0 4px',
+              borderRadius: 'var(--radius-full)',
+              background: 'var(--color-primary-600)',
+              color: 'var(--color-gray-0)',
+              fontSize: 'var(--fs-2xs)',
+              fontWeight: 600,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {activeCount}
+          </span>
+        )}
+      </button>
+    </>
+  )
 
   return (
     <AppShell>
-      <Header title={t.auditLog} backTo={ROUTES.SETTINGS} />
-      <PageContainer className="audit-page space-y-6">
+      <Header title={t.auditLog} backTo={ROUTES.SETTINGS} actions={headerActions} />
+      <PageContainer variant="list" className="audit-page space-y-6">
 
-        <div>
-          <p className="settings-section-title py-0">
-            {t.actionFilterLabel}
-          </p>
-          <div className="audit-filters stagger-filters" role="group" aria-label={t.filterByAction}>
-            {ACTION_FILTERS.map((f) => (
-              <button
-                key={f.label}
-                type="button"
-                className={`audit-filter-chip${filters.action === f.value ? ' audit-filter-chip--active' : ''}`}
-                onClick={() => setFilter('action', f.value)}
-                aria-pressed={filters.action === f.value}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* Search input — debounced inside the hook */}
+        <Input
+          label={t.auditSearchPlaceholder}
+          value={filters.q ?? ''}
+          onChange={(e) => setFilter('q', e.target.value)}
+          placeholder={t.auditSearchPlaceholder}
+          type="search"
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck={false}
+          icon={<Search size={16} aria-hidden="true" />}
+        />
 
-        <div>
-          <p className="settings-section-title py-0">
-            {t.entityFilterLabel}
-          </p>
-          <div className="audit-filters stagger-filters" role="group" aria-label={t.filterByEntityType}>
-            {ENTITY_FILTERS.map((f) => (
-              <button
-                key={f.label}
-                type="button"
-                className={`audit-filter-chip${filters.entityType === f.value ? ' audit-filter-chip--active' : ''}`}
-                onClick={() => setFilter('entityType', f.value)}
-                aria-pressed={filters.entityType === f.value}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* 4 UI states */}
 
         {status === 'loading' && (
           <div className="audit-list" aria-busy="true" aria-label={t.loadingAuditLog}>
             {[1, 2, 3, 4, 5].map((n) => (
               <div
                 key={n}
-                style={{ height: 80, borderRadius: 'var(--radius-lg)', background: 'var(--color-gray-100)', opacity: 0.5 }}
+                style={{
+                  height: 72,
+                  borderRadius: 'var(--radius-lg)',
+                  background: 'var(--color-gray-100)',
+                  opacity: 0.5,
+                }}
               />
             ))}
           </div>
@@ -145,44 +139,39 @@ export default function AuditLogPage() {
         {status === 'error' && (
           <ErrorState
             title={t.couldNotLoadAuditLog}
-            message={t.checkConnectionRetry2}
+            message={t.auditLoadError}
             onRetry={refresh}
           />
         )}
 
-        {status === 'success' && data !== null && (
+        {status === 'success' && (
           <>
-            {data.entries.length === 0 ? (
+            {rows.length === 0 ? (
               <EmptyState
                 icon={<ClipboardList size={48} aria-hidden="true" />}
-                title={t.noAuditEntries}
+                title={t.auditNoResults}
                 description={t.auditEmptyDesc}
               />
             ) : (
               <div className="audit-list stagger-list">
-                {dateGroups.map((group) => (
-                  <React.Fragment key={group.dateKey}>
-                    <div className="audit-date-group" aria-label={`${t.entriesFrom} ${group.label}`}>
-                      <span className="audit-date-group-label">{group.label}</span>
-                      <span className="audit-date-group-line" aria-hidden="true" />
-                    </div>
-                    {group.entryIds.map((id) => {
-                      const entry = entryById.get(id)
-                      if (!entry) return null
-                      return <AuditLogEntry key={entry.id} entry={entry} />
-                    })}
-                  </React.Fragment>
+                {rows.map((row) => (
+                  <AuditLogEntry
+                    key={row.id}
+                    entry={row}
+                    onSelect={setSelected}
+                  />
                 ))}
 
                 {hasMore && (
                   <div style={{ textAlign: 'center', padding: 'var(--space-4) 0' }}>
-                    <button
-                      type="button"
+                    <Button
+                      variant="ghost"
+                      size="md"
                       onClick={loadMore}
-                      className="py-0"
+                      loading={isFetchingMore}
                     >
                       {t.loadMoreBtn}
-                    </button>
+                    </Button>
                   </div>
                 )}
               </div>
@@ -191,6 +180,25 @@ export default function AuditLogPage() {
         )}
 
       </PageContainer>
+
+      <AuditFilterDrawer
+        open={filterOpen}
+        onClose={() => setFilterOpen(false)}
+        initial={filters}
+        onApply={setFilters}
+        onClear={clearFilters}
+      />
+
+      <AuditDiffDrawer
+        open={selected !== null}
+        onClose={() => setSelected(null)}
+        entry={selected}
+      />
+
+      <AuditRedactionsManager
+        open={redactionsOpen}
+        onClose={() => setRedactionsOpen(false)}
+      />
     </AppShell>
   )
 }

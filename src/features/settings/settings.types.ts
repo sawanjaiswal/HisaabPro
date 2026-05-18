@@ -27,11 +27,19 @@ export type {
   ApprovalRequest,
   ApprovalsListResponse,
   AuditAction,
-  AuditChange,
-  AuditLogEntry,
-  AuditLogResponse,
-  AuditLogFilters,
 } from './security.types'
+
+// Phase 6 PR4 — audit search/redactions/diff
+export type {
+  AuditSearchRow,
+  AuditSearchFilters,
+  AuditSearchResponse,
+  AuditChangesPayload,
+  RedactedSentinel,
+  Redaction,
+  RedactionUpsertInput,
+  RedactionListResponse,
+} from './audit.types'
 
 export type {
   DateFormat,
