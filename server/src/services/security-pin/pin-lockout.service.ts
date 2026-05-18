@@ -29,6 +29,13 @@ import {
   PIN_LOCKOUT_MS,
 } from '../../constants/pin-auth.constants.js'
 
+/**
+ * Prisma client OR a tx callback client — same model fluent API.
+ * Mirrors the SSOT pattern used by `services/gst-settings.service.ts`
+ * and `services/custom-order/helpers.ts`.
+ */
+type PrismaLike = typeof prisma | Parameters<Parameters<typeof prisma.$transaction>[0]>[0]
+
 export interface LockState {
   /** True when the user's account is currently in lockout. */
   locked: boolean
@@ -82,14 +89,17 @@ export function assertNotLocked(state: LockState): void {
  * If no UserAppSettings row exists (user has never opened settings) we no-op
  * — there's no PIN to fail against, so no counter to bump.
  */
-export async function registerFailure(userId: string): Promise<LockState> {
-  const settings = await prisma.userAppSettings.findUnique({
+export async function registerFailure(
+  userId: string,
+  client: PrismaLike = prisma,
+): Promise<LockState> {
+  const settings = await client.userAppSettings.findUnique({
     where: { userId },
     select: { id: true },
   })
   if (!settings) return { locked: false }
 
-  const updated = await prisma.userAppSettings.update({
+  const updated = await client.userAppSettings.update({
     where: { userId },
     data: { pinAttempts: { increment: 1 } },
     select: { pinAttempts: true },
@@ -97,7 +107,7 @@ export async function registerFailure(userId: string): Promise<LockState> {
 
   if (updated.pinAttempts >= PIN_MAX_ATTEMPTS) {
     const lockedUntil = new Date(Date.now() + PIN_LOCKOUT_MS)
-    await prisma.userAppSettings.update({
+    await client.userAppSettings.update({
       where: { userId },
       data: { pinAttempts: 0, pinLockedUntil: lockedUntil },
     })
@@ -116,14 +126,17 @@ export async function registerFailure(userId: string): Promise<LockState> {
  * setters). Caller of pin-set is responsible for ensuring the row exists
  * before calling this.
  */
-export async function resetCounters(userId: string): Promise<void> {
-  const settings = await prisma.userAppSettings.findUnique({
+export async function resetCounters(
+  userId: string,
+  client: PrismaLike = prisma,
+): Promise<void> {
+  const settings = await client.userAppSettings.findUnique({
     where: { userId },
     select: { id: true },
   })
   if (!settings) return
 
-  await prisma.userAppSettings.update({
+  await client.userAppSettings.update({
     where: { userId },
     data: { pinAttempts: 0, pinLockedUntil: null },
   })

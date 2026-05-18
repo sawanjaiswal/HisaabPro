@@ -9,7 +9,7 @@ import { notFoundError } from '../../lib/errors.js'
 export async function requireParty(businessId: string, partyId: string) {
   const party = await prisma.party.findFirst({
     where: { id: partyId, businessId },
-    select: { id: true },
+    select: { id: true, name: true },
   })
   if (!party) throw notFoundError('Party')
   return party

@@ -1,5 +1,8 @@
 /**
  * Party update & delete services.
+ *
+ * Audit-coverage SSOT — every mutation here writes a `tx.auditLog.create` row
+ * inside the same `$transaction` so audit + write commit/rollback together.
  */
 
 import { prisma } from '../../lib/prisma.js'
@@ -9,6 +12,7 @@ import { requireParty, requireGroup } from './helpers.js'
 export async function updateParty(
   businessId: string,
   partyId: string,
+  userId: string,
   data: UpdatePartyInput
 ) {
   await requireParty(businessId, partyId)
@@ -70,6 +74,18 @@ export async function updateParty(
       ))
     }
 
+    await tx.auditLog.create({
+      data: {
+        businessId,
+        entityType: 'Party',
+        entityId: partyId,
+        entityLabel: updated.name.slice(0, 120),
+        userId,
+        action: 'UPDATE',
+        changes: data as Record<string, unknown>,
+      },
+    })
+
     return updated
   })
 }
@@ -108,20 +124,45 @@ export async function patchParty(
 export async function deleteParty(
   businessId: string,
   partyId: string,
+  userId: string,
   force = false
 ) {
-  await requireParty(businessId, partyId)
+  const existing = await requireParty(businessId, partyId)
 
-  if (force) {
-    // Hard delete — only allowed when no transactions exist
-    await prisma.party.delete({ where: { id: partyId } })
-    return { deleted: true, mode: 'hard' }
-  }
+  return prisma.$transaction(async (tx) => {
+    if (force) {
+      // Hard delete — only allowed when no transactions exist
+      await tx.party.delete({ where: { id: partyId } })
+      await tx.auditLog.create({
+        data: {
+          businessId,
+          entityType: 'Party',
+          entityId: partyId,
+          entityLabel: existing.name?.slice(0, 120),
+          userId,
+          action: 'DELETE',
+          changes: { mode: 'hard' },
+        },
+      })
+      return { deleted: true, mode: 'hard' }
+    }
 
-  // Soft delete
-  await prisma.party.update({
-    where: { id: partyId },
-    data: { isActive: false },
+    // Soft delete
+    await tx.party.update({
+      where: { id: partyId },
+      data: { isActive: false },
+    })
+    await tx.auditLog.create({
+      data: {
+        businessId,
+        entityType: 'Party',
+        entityId: partyId,
+        entityLabel: existing.name?.slice(0, 120),
+        userId,
+        action: 'DELETE',
+        changes: { mode: 'soft' },
+      },
+    })
+    return { deleted: true, mode: 'soft' }
   })
-  return { deleted: true, mode: 'soft' }
 }

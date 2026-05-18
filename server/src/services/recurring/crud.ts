@@ -13,7 +13,7 @@ import { calculateNextRunDate, initialNextRunDate } from './dates.js'
 
 export async function createRecurring(
   businessId: string,
-  _userId: string,
+  userId: string,
   data: CreateRecurringInput,
 ) {
   // Validate template exists and belongs to this business (must be SAVED/SHARED)
@@ -37,23 +37,37 @@ export async function createRecurring(
 
   const nextRunDate = initialNextRunDate(startDate, data.frequency, data.dayOfMonth, data.dayOfWeek)
 
-  const recurring = await prisma.recurringInvoice.create({
-    data: {
-      businessId,
-      templateDocumentId: data.templateDocumentId,
-      partyId: template.partyId,
-      frequency: data.frequency,
-      startDate,
-      endDate: endDate ?? null,
-      nextRunDate,
-      dayOfMonth: data.dayOfMonth ?? null,
-      dayOfWeek: data.dayOfWeek ?? null,
-      autoSend: data.autoSend ?? false,
-      status: 'ACTIVE',
-    },
-  })
+  return prisma.$transaction(async (tx) => {
+    const recurring = await tx.recurringInvoice.create({
+      data: {
+        businessId,
+        templateDocumentId: data.templateDocumentId,
+        partyId: template.partyId,
+        frequency: data.frequency,
+        startDate,
+        endDate: endDate ?? null,
+        nextRunDate,
+        dayOfMonth: data.dayOfMonth ?? null,
+        dayOfWeek: data.dayOfWeek ?? null,
+        autoSend: data.autoSend ?? false,
+        status: 'ACTIVE',
+      },
+    })
 
-  return recurring
+    await tx.auditLog.create({
+      data: {
+        businessId,
+        entityType: 'RecurringDocument',
+        entityId: recurring.id,
+        entityLabel: data.templateDocumentId.slice(0, 120),
+        userId,
+        action: 'CREATE',
+        changes: { templateDocumentId: data.templateDocumentId, frequency: data.frequency },
+      },
+    })
+
+    return recurring
+  })
 }
 
 export async function getRecurring(businessId: string, recurringId: string) {
@@ -103,6 +117,7 @@ export async function listRecurring(businessId: string, query: ListRecurringQuer
 export async function updateRecurring(
   businessId: string,
   recurringId: string,
+  userId: string,
   data: UpdateRecurringInput,
 ) {
   const existing = await prisma.recurringInvoice.findFirst({
@@ -138,37 +153,69 @@ export async function updateRecurring(
     )
   }
 
-  return prisma.recurringInvoice.update({
-    where: { id: recurringId },
-    data: {
-      ...(data.frequency && { frequency: data.frequency }),
-      ...(data.endDate !== undefined && { endDate: data.endDate ? new Date(data.endDate) : null }),
-      ...(data.dayOfMonth !== undefined && { dayOfMonth: data.dayOfMonth }),
-      ...(data.dayOfWeek !== undefined && { dayOfWeek: data.dayOfWeek }),
-      ...(data.autoSend !== undefined && { autoSend: data.autoSend }),
-      ...(data.status && { status: data.status }),
-      nextRunDate,
-    },
+  return prisma.$transaction(async (tx) => {
+    const updated = await tx.recurringInvoice.update({
+      where: { id: recurringId },
+      data: {
+        ...(data.frequency && { frequency: data.frequency }),
+        ...(data.endDate !== undefined && { endDate: data.endDate ? new Date(data.endDate) : null }),
+        ...(data.dayOfMonth !== undefined && { dayOfMonth: data.dayOfMonth }),
+        ...(data.dayOfWeek !== undefined && { dayOfWeek: data.dayOfWeek }),
+        ...(data.autoSend !== undefined && { autoSend: data.autoSend }),
+        ...(data.status && { status: data.status }),
+        nextRunDate,
+      },
+    })
+
+    await tx.auditLog.create({
+      data: {
+        businessId,
+        entityType: 'RecurringDocument',
+        entityId: recurringId,
+        entityLabel: null,
+        userId,
+        action: 'UPDATE',
+        changes: data as Record<string, unknown>,
+      },
+    })
+
+    return updated
   })
 }
 
-export async function deleteRecurring(businessId: string, recurringId: string) {
+export async function deleteRecurring(businessId: string, recurringId: string, userId: string) {
   const existing = await prisma.recurringInvoice.findFirst({
     where: { id: recurringId, businessId },
     select: { id: true, generatedCount: true },
   })
   if (!existing) throw notFoundError('Recurring invoice')
 
-  if (existing.generatedCount === 0) {
-    // No documents generated yet — safe hard delete
-    await prisma.recurringInvoice.delete({ where: { id: recurringId } })
-    return { deleted: true, hard: true }
-  }
+  return prisma.$transaction(async (tx) => {
+    if (existing.generatedCount === 0) {
+      // No documents generated yet — safe hard delete
+      await tx.recurringInvoice.delete({ where: { id: recurringId } })
+      await tx.auditLog.create({
+        data: {
+          businessId, entityType: 'RecurringDocument', entityId: recurringId,
+          entityLabel: null, userId, action: 'DELETE',
+          changes: { mode: 'hard', generatedCount: 0 },
+        },
+      })
+      return { deleted: true, hard: true }
+    }
 
-  // Documents exist — mark as COMPLETED (documents keep their FK via SetNull cascade)
-  await prisma.recurringInvoice.update({
-    where: { id: recurringId },
-    data: { status: 'COMPLETED' },
+    // Documents exist — mark as COMPLETED (documents keep their FK via SetNull cascade)
+    await tx.recurringInvoice.update({
+      where: { id: recurringId },
+      data: { status: 'COMPLETED' },
+    })
+    await tx.auditLog.create({
+      data: {
+        businessId, entityType: 'RecurringDocument', entityId: recurringId,
+        entityLabel: null, userId, action: 'DELETE',
+        changes: { mode: 'complete', generatedCount: existing.generatedCount },
+      },
+    })
+    return { deleted: false, completed: true }
   })
-  return { deleted: false, completed: true }
 }

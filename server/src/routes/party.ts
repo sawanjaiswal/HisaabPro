@@ -92,7 +92,8 @@ router.put(
   validate(updatePartySchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
-    const party = await partyService.updateParty(businessId, String(req.params.id), req.body)
+    const userId = req.user!.userId
+    const party = await partyService.updateParty(businessId, String(req.params.id), userId, req.body)
     sendSuccess(res, { party })
   })
 )
@@ -102,8 +103,9 @@ router.delete(
   requirePermission('parties.delete'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
+    const userId = req.user!.userId
     const force = req.query.force === 'true'
-    const result = await partyService.deleteParty(businessId, String(req.params.id), force)
+    const result = await partyService.deleteParty(businessId, String(req.params.id), userId, force)
     sendSuccess(res, result)
   })
 )

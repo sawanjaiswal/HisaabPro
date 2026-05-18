@@ -79,18 +79,33 @@ export async function issueSharedLink(args: IssueSharedLinkArgs): Promise<Issued
 export interface RevokeSharedLinkArgs {
   id: string
   businessId: string
+  userId: string
 }
 
 export async function revokeSharedLink(args: RevokeSharedLinkArgs): Promise<SafeSharedLink> {
-  const link = await prisma.sharedLink.update({
-    where: {
-      id: args.id,
-      businessId: args.businessId, // tenant scope — IDOR guard
-    },
-    data: { revokedAt: new Date() },
-  })
+  return prisma.$transaction(async (tx) => {
+    const link = await tx.sharedLink.update({
+      where: {
+        id: args.id,
+        businessId: args.businessId, // tenant scope — IDOR guard
+      },
+      data: { revokedAt: new Date() },
+    })
 
-  return stripTokenHash(link)
+    await tx.auditLog.create({
+      data: {
+        businessId: args.businessId,
+        entityType: 'SharedLink',
+        entityId: link.id,
+        entityLabel: `${link.resourceType}:${link.resourceId}`.slice(0, 120),
+        userId: args.userId,
+        action: 'REVOKE',
+        changes: { resourceType: link.resourceType, resourceId: link.resourceId },
+      },
+    })
+
+    return stripTokenHash(link)
+  })
 }
 
 // ---------------------------------------------------------------------------

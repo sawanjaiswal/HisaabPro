@@ -240,15 +240,16 @@ try {
   )
 }
 
-// ─── Check 6b: Audit coverage SSOT (report-only in PR1B; PR7 flips to --block)
-// See ARCHITECTURE_PHASE6_STAFF_HR §7 + server/src/lib/audit/audit-coverage.ts.
-console.log('🔍 Check 6b: Audit coverage SSOT')
+// ─── Check 6b: Audit coverage SSOT (BLOCKING — PR7 flipped from report-only)
+// Every service listed in server/src/lib/audit/audit-coverage.ts must contain a
+// `tx.auditLog.create(` or `prisma.auditLog.create(` call (PR7 backfill landed).
+// See ARCHITECTURE_PHASE6_STAFF_HR §7 + §18.4.
+console.log('🔍 Check 6b: Audit coverage SSOT (blocking)')
 try {
-  execSync('node scripts/enforce-audit-coverage.mjs', { cwd: ROOT, stdio: 'inherit' })
-  console.log('  ✅ Audit-coverage SSOT scan complete')
+  execSync('node scripts/enforce-audit-coverage.mjs --block', { cwd: ROOT, stdio: 'inherit' })
+  console.log('  ✅ Audit-coverage SSOT: all services write audit')
 } catch {
-  // PR1B is report-only; a non-zero exit here only fires under --block (PR7).
-  errors.push('AUDIT_COVERAGE_VIOLATION: scripts/enforce-audit-coverage.mjs reported missing audit-writes.')
+  errors.push('AUDIT_COVERAGE_VIOLATION: scripts/enforce-audit-coverage.mjs --block reported missing audit-writes.')
 }
 
 // ─── Check 7: Section layout — padding=0 and gap=24px ────────────────────────

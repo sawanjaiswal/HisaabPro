@@ -24,15 +24,35 @@ export async function getTransactionLock(businessId: string) {
   }
 }
 
-export async function updateTransactionLock(businessId: string, data: UpdateTransactionLockInput) {
-  return prisma.transactionLockConfig.upsert({
-    where: { businessId },
-    create: { businessId, ...data },
-    update: data,
-    select: {
-      lockAfterDays: true, requireApprovalForEdit: true,
-      requireApprovalForDelete: true, priceChangeThresholdPercent: true,
-      discountThresholdPercent: true,
-    },
+export async function updateTransactionLock(
+  businessId: string,
+  userId: string,
+  data: UpdateTransactionLockInput,
+) {
+  return prisma.$transaction(async (tx) => {
+    const updated = await tx.transactionLockConfig.upsert({
+      where: { businessId },
+      create: { businessId, ...data },
+      update: data,
+      select: {
+        lockAfterDays: true, requireApprovalForEdit: true,
+        requireApprovalForDelete: true, priceChangeThresholdPercent: true,
+        discountThresholdPercent: true,
+      },
+    })
+
+    await tx.auditLog.create({
+      data: {
+        businessId,
+        entityType: 'TransactionLock',
+        entityId: businessId,
+        entityLabel: null,
+        userId,
+        action: 'UPDATE',
+        changes: data as Record<string, unknown>,
+      },
+    })
+
+    return updated
   })
 }

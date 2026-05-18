@@ -49,6 +49,18 @@ export async function updatePayment(
       data: updateData,
     })
 
+    await tx.auditLog.create({
+      data: {
+        businessId,
+        entityType: 'Payment',
+        entityId: paymentId,
+        entityLabel: (data.notes ?? '').slice(0, 120) || null,
+        userId,
+        action: 'UPDATE',
+        changes: data as Record<string, unknown>,
+      },
+    })
+
     return tx.payment.findUniqueOrThrow({
       where: { id: paymentId },
       select: PAYMENT_DETAIL_SELECT,
@@ -97,6 +109,18 @@ export async function deletePayment(businessId: string, paymentId: string, userI
         updatedBy: userId,
       },
       select: { id: true, deletedAt: true },
+    })
+
+    await tx.auditLog.create({
+      data: {
+        businessId,
+        entityType: 'Payment',
+        entityId: paymentId,
+        entityLabel: null,
+        userId,
+        action: 'DELETE',
+        changes: { type: payment.type, amount: payment.amount, partyId: payment.partyId, softDeleted: true },
+      },
     })
 
     return { id: updated.id, deletedAt: updated.deletedAt }

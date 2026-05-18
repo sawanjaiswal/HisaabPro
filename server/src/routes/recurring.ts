@@ -76,9 +76,11 @@ router.put(
   validate(updateRecurringSchema),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
+    const userId = req.user!.userId
     const recurring = await recurringService.updateRecurring(
       businessId,
       String(req.params.id),
+      userId,
       req.body,
     )
     sendSuccess(res, recurring)
@@ -91,7 +93,8 @@ router.delete(
   requirePermission('invoicing.delete'),
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
-    const result = await recurringService.deleteRecurring(businessId, String(req.params.id))
+    const userId = req.user!.userId
+    const result = await recurringService.deleteRecurring(businessId, String(req.params.id), userId)
     sendSuccess(res, result)
   })
 )

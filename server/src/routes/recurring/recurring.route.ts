@@ -135,9 +135,9 @@ router.patch(
   requirePermission('recurring.manage'),
   validate(updateRecurringSchema),
   asyncHandler(async (req, res) => {
-    const { businessId } = req.user!
+    const { businessId, userId } = req.user!
     try {
-      const recurring = await updateRecurring(businessId, String(req.params.id), req.body)
+      const recurring = await updateRecurring(businessId, String(req.params.id), userId, req.body)
       sendSuccess(res, recurring)
     } catch (err) {
       handleServiceError(res, err)
@@ -151,9 +151,9 @@ router.delete(
   '/:id',
   requirePermission('recurring.manage'),
   asyncHandler(async (req, res) => {
-    const { businessId } = req.user!
+    const { businessId, userId } = req.user!
     try {
-      const result = await deleteRecurring(businessId, String(req.params.id))
+      const result = await deleteRecurring(businessId, String(req.params.id), userId)
       sendSuccess(res, result)
     } catch (err) {
       handleServiceError(res, err)

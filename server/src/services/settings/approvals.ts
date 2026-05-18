@@ -49,22 +49,38 @@ export async function reviewApproval(
 ) {
   const approval = await prisma.approvalRequest.findFirst({
     where: { id: approvalId, businessId, status: 'PENDING' },
-    select: { id: true, expiresAt: true },
+    select: { id: true, expiresAt: true, type: true },
   })
   if (!approval) throw notFoundError('Approval')
   if (approval.expiresAt < new Date()) throw validationError('Approval has expired')
 
-  return prisma.approvalRequest.update({
-    where: { id: approvalId },
-    data: {
-      status: data.action === 'APPROVE' ? 'APPROVED' : 'DENIED',
-      reviewedBy: userId,
-      reviewedAt: new Date(),
-      reviewNote: data.reviewNote || null,
-    },
-    select: {
-      id: true, type: true, status: true,
-      reviewedAt: true, reviewNote: true,
-    },
+  return prisma.$transaction(async (tx) => {
+    const updated = await tx.approvalRequest.update({
+      where: { id: approvalId },
+      data: {
+        status: data.action === 'APPROVE' ? 'APPROVED' : 'DENIED',
+        reviewedBy: userId,
+        reviewedAt: new Date(),
+        reviewNote: data.reviewNote || null,
+      },
+      select: {
+        id: true, type: true, status: true,
+        reviewedAt: true, reviewNote: true,
+      },
+    })
+
+    await tx.auditLog.create({
+      data: {
+        businessId,
+        entityType: 'ApprovalPolicy',
+        entityId: approvalId,
+        entityLabel: (approval.type ?? '').slice(0, 120) || null,
+        userId,
+        action: 'APPROVAL_RESPONSE',
+        changes: { action: data.action, reviewNote: data.reviewNote ?? null },
+      },
+    })
+
+    return updated
   })
 }

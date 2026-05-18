@@ -98,42 +98,58 @@ export async function upsertProgram(
 
   const wasEnabled = existing?.enabled ?? false
 
-  const row = await prisma.loyaltyProgram.upsert({
-    where: { businessId },
-    create: {
-      businessId,
-      enabled: input.enabled,
-      accrualRateBps: input.accrualRateBps,
-      accrualMinSpendPaise: input.accrualMinSpendPaise,
-      redemptionUnit: input.redemptionUnit,
-      redemptionPaisePerUnit: input.redemptionPaisePerUnit,
-      expiryMonths: input.expiryMonths ?? null,
-      createdBy: userId,
-    },
-    update: {
-      enabled: input.enabled,
-      accrualRateBps: input.accrualRateBps,
-      accrualMinSpendPaise: input.accrualMinSpendPaise,
-      redemptionUnit: input.redemptionUnit,
-      redemptionPaisePerUnit: input.redemptionPaisePerUnit,
-      expiryMonths: input.expiryMonths ?? null,
-    },
-    select: {
-      id: true,
-      businessId: true,
-      enabled: true,
-      accrualRateBps: true,
-      accrualMinSpendPaise: true,
-      redemptionUnit: true,
-      redemptionPaisePerUnit: true,
-      expiryMonths: true,
-      createdAt: true,
-      updatedAt: true,
-    },
+  const row = await prisma.$transaction(async (tx) => {
+    const upserted = await tx.loyaltyProgram.upsert({
+      where: { businessId },
+      create: {
+        businessId,
+        enabled: input.enabled,
+        accrualRateBps: input.accrualRateBps,
+        accrualMinSpendPaise: input.accrualMinSpendPaise,
+        redemptionUnit: input.redemptionUnit,
+        redemptionPaisePerUnit: input.redemptionPaisePerUnit,
+        expiryMonths: input.expiryMonths ?? null,
+        createdBy: userId,
+      },
+      update: {
+        enabled: input.enabled,
+        accrualRateBps: input.accrualRateBps,
+        accrualMinSpendPaise: input.accrualMinSpendPaise,
+        redemptionUnit: input.redemptionUnit,
+        redemptionPaisePerUnit: input.redemptionPaisePerUnit,
+        expiryMonths: input.expiryMonths ?? null,
+      },
+      select: {
+        id: true,
+        businessId: true,
+        enabled: true,
+        accrualRateBps: true,
+        accrualMinSpendPaise: true,
+        redemptionUnit: true,
+        redemptionPaisePerUnit: true,
+        expiryMonths: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    })
+
+    await tx.auditLog.create({
+      data: {
+        businessId,
+        entityType: 'LoyaltyProgram',
+        entityId: upserted.id,
+        entityLabel: null,
+        userId,
+        action: existing ? 'UPDATE' : 'CREATE',
+        changes: input as unknown as Record<string, unknown>,
+      },
+    })
+
+    return upserted
   })
 
   // Architecture §10 — emit ONLY on transitions to enabled (first-time or re-enable).
-  // POST-commit (we are outside any external tx here; upsert ran in autocommit).
+  // POST-commit (we are outside the tx now).
   if (input.enabled && !wasEnabled) {
     analyticsEmit('loyalty_program_enabled', {
       businessId,

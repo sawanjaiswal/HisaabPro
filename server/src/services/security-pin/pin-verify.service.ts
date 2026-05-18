@@ -84,7 +84,22 @@ export async function verifyUserPin(input: VerifyPinInput): Promise<VerifyPinRes
     // Success — reset counters and issue cookie carrying the verified pinHash's
     // fingerprint. The cookie's `pf` is sha256(pinHash)[0..12]; on PIN rotation
     // pinHash changes → pf changes → this cookie 403s on the next gated route.
-    await resetCounters(userId)
+    // Audit row + resetCounters commit atomically; if either fails we don't
+    // mint the grace cookie either.
+    await prisma.$transaction(async (tx) => {
+      await resetCounters(userId, tx)
+      await tx.auditLog.create({
+        data: {
+          businessId,
+          entityType: 'UserAppSettings',
+          entityId: userId,
+          entityLabel: null,
+          userId,
+          action: 'PIN_VERIFY_SUCCESS',
+          changes: { routeClass } as Record<string, unknown>,
+        },
+      })
+    })
     issuePinGraceCookie(res, userId, businessId, routeClass, storedHash)
 
     // SECURITY EVENT — verify_success.  We log via the standard structured logger
@@ -96,8 +111,23 @@ export async function verifyUserPin(input: VerifyPinInput): Promise<VerifyPinRes
 
   // Failure branch — increment lockout counter. registerFailure is no-op when
   // no settings row exists, so a "no PIN set" caller still gets a 401 INVALID_PIN
-  // without polluting another user's counter.
-  const lockAfter = await registerFailure(userId)
+  // without polluting another user's counter.  The failure-counter bump and
+  // the audit row commit atomically inside one tx.
+  const lockAfter = await prisma.$transaction(async (tx) => {
+    const result = await registerFailure(userId, tx)
+    await tx.auditLog.create({
+      data: {
+        businessId,
+        entityType: 'UserAppSettings',
+        entityId: userId,
+        entityLabel: null,
+        userId,
+        action: 'PIN_VERIFY_FAILURE',
+        changes: { routeClass, lockoutTriggered: result.locked } as Record<string, unknown>,
+      },
+    })
+    return result
+  })
 
   logger.warn('pin_verify.failure', {
     userId,
