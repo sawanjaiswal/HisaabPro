@@ -9,16 +9,17 @@
  * Middleware chain per architecture §11:
  *   auth → requireActiveBusiness → requireOwner → validate → handler
  *
- * NOT gated by `requireRecentPin` in PR2 — the PIN port (PR3) wires that
- * decorator across the high-risk routes (suspend included). Until then,
- * `requireOwner` is sufficient because the JWT itself proves the owner
- * was authenticated within the access-token TTL.
+ * PR3 wires `requireRecentPin('mutation')` on both endpoints — suspend and
+ * reactivate are firm-level state flips that warrant a fresh PIN confirmation
+ * within the 5-min mutation window. Order: auth → requireOwner → requireRecentPin
+ * → validate → handler.
  */
 
 import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { auth } from '../middleware/auth.js'
 import { requireOwner } from '../middleware/permission.js'
+import { requireRecentPin } from '../middleware/require-recent-pin.js'
 import { validate } from '../middleware/validate.js'
 import { sendSuccess, sendError } from '../lib/response.js'
 import { suspendBusinessSchema, reactivateBusinessSchema } from '../schemas/business.schemas.js'
@@ -44,6 +45,10 @@ router.post(
   // /reactivate without the gate refusing them. Owner-check below replaces
   // the membership liveness check.
   requireOwner(),
+  // PR3 — high-risk firm-level mutation; require a recent PIN verify within
+  // the 5-min mutation window. 403 PIN_REQUIRED on miss; FE PinGateProvider
+  // prompts, then replays the request with the fresh grace cookie.
+  requireRecentPin('mutation'),
   validate(suspendBusinessSchema),
   asyncHandler(async (req, res) => {
     // Enforce `:id` === `req.user.businessId` so an owner of biz1 cannot
@@ -74,6 +79,8 @@ router.post(
   '/:id/reactivate',
   auth,
   requireOwner(),
+  // PR3 — same gate as /suspend; reactivation is equally high-risk.
+  requireRecentPin('mutation'),
   validate(reactivateBusinessSchema),
   asyncHandler(async (req, res) => {
     if (req.params.id !== req.user!.businessId) {

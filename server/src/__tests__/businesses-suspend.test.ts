@@ -9,6 +9,13 @@
  *   - idempotent re-suspend / re-reactivate is a 200 no-op without a new
  *     audit row
  *
+ * PR3 update — both routes now sit behind requireRecentPin('mutation'). Tests
+ * that should reach the handler must (a) mock UserAppSettings.pinHash so the
+ * middleware's pf-fingerprint compare has something to hash against, and
+ * (b) carry a valid pin_gate_grace cookie minted via buildGraceCookie() with
+ * the same pinHash. Helper: seedPinGrace() returns { cookie, pinHash } and
+ * the test installs both on the agent.
+ *
  * Test architecture per server/src/__tests__/setup.ts — Prisma is auto-mocked
  * (Proxy stubs every model.method with vi.fn()). The suspend.service uses
  * `prisma.$transaction(async tx => ...)` which the setup mock unwraps by
@@ -17,21 +24,48 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import request from 'supertest'
 import { createApp } from '../app.js'
 import {
   authAgent,
   anonAgent,
+  generateTestToken,
   mockOwnerPermission,
   mockStaffPermission,
   resetMocks,
   getMockPrisma,
   TEST_USER,
 } from './helpers.js'
+import { hashPin } from '../services/security-pin/pin-hash.util.js'
+import { buildGraceCookie, COOKIE_NAME } from '../services/security-pin/pin-grace-cookie.js'
 
 const app = createApp()
 
 const SUSPEND_PATH = `/api/businesses/${TEST_USER.businessId}/suspend`
 const REACTIVATE_PATH = `/api/businesses/${TEST_USER.businessId}/reactivate`
+
+/**
+ * PR3 — mint a valid pin_gate_grace cookie + stub UserAppSettings.pinHash so
+ * requireRecentPin('mutation') passes for the TEST_USER on the active
+ * business. Call AFTER mockOwnerPermission() / mockStaffPermission() (it
+ * stacks on top of those without resetting other mocks).
+ */
+function seedPinGrace(): { cookieHeader: string } {
+  const mp = getMockPrisma()
+  const pinHash = hashPin('1234')
+  mp.userAppSettings.findUnique.mockResolvedValue({ pinHash })
+  const cookieValue = buildGraceCookie(TEST_USER.userId, TEST_USER.businessId, 'mutation', pinHash)
+  return { cookieHeader: `${COOKIE_NAME}=${cookieValue}` }
+}
+
+/** Like authAgent but ALSO attaches a fresh pin_gate_grace cookie. */
+function pinAuthAgent(method: 'post', url: string) {
+  const token = generateTestToken()
+  const { cookieHeader } = seedPinGrace()
+  return request(app)[method](url)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Cookie', cookieHeader)
+}
 
 beforeEach(() => {
   resetMocks()
@@ -53,7 +87,7 @@ describe('POST /api/businesses/:id/suspend', () => {
     })
     mockPrisma.auditLog.create.mockResolvedValue({ id: 'audit-1' })
 
-    const res = await authAgent(app).post(SUSPEND_PATH).send({ reason: 'maintenance window' })
+    const res = await pinAuthAgent('post', SUSPEND_PATH).send({ reason: 'maintenance window' })
 
     expect(res.status).toBe(200)
     expect(res.body.success).toBe(true)
@@ -97,7 +131,9 @@ describe('POST /api/businesses/:id/suspend', () => {
   it('returns 400 when reason is missing', async () => {
     mockOwnerPermission()
 
-    const res = await authAgent(app).post(SUSPEND_PATH).send({})
+    // PR3 — validate runs AFTER requireRecentPin; seed the cookie so the
+    // request reaches the Zod gate.
+    const res = await pinAuthAgent('post', SUSPEND_PATH).send({})
 
     expect(res.status).toBe(400)
     expect(res.body.success).toBe(false)
@@ -107,7 +143,7 @@ describe('POST /api/businesses/:id/suspend', () => {
   it('returns 400 when reason is empty string', async () => {
     mockOwnerPermission()
 
-    const res = await authAgent(app).post(SUSPEND_PATH).send({ reason: '   ' })
+    const res = await pinAuthAgent('post', SUSPEND_PATH).send({ reason: '   ' })
 
     expect(res.status).toBe(400)
     expect(res.body.success).toBe(false)
@@ -116,8 +152,11 @@ describe('POST /api/businesses/:id/suspend', () => {
   it('returns 403 when path :id does not match the JWT businessId (cross-tenant guard)', async () => {
     mockOwnerPermission()
 
-    const res = await authAgent(app)
-      .post('/api/businesses/biz-other/suspend')
+    // PR3 — the path-param mismatch check lives in the handler, AFTER
+    // requireRecentPin('mutation'). Cookie is bound to TEST_USER.businessId
+    // (the JWT business), which is correct: the gate passes, then the
+    // handler's own cross-tenant check fires with the path mismatch.
+    const res = await pinAuthAgent('post', '/api/businesses/biz-other/suspend')
       .send({ reason: 'cross-tenant attempt' })
 
     // requireOwner first verifies the caller is owner of req.user.businessId.
@@ -134,7 +173,7 @@ describe('POST /api/businesses/:id/suspend', () => {
       id: TEST_USER.businessId, name: 'Acme', suspendedAt: already,
     })
 
-    const res = await authAgent(app).post(SUSPEND_PATH).send({ reason: 'second call' })
+    const res = await pinAuthAgent('post', SUSPEND_PATH).send({ reason: 'second call' })
 
     expect(res.status).toBe(200)
     expect(mockPrisma.business.update).not.toHaveBeenCalled()
@@ -156,7 +195,7 @@ describe('POST /api/businesses/:id/reactivate', () => {
     })
     mockPrisma.auditLog.create.mockResolvedValue({ id: 'audit-2' })
 
-    const res = await authAgent(app).post(REACTIVATE_PATH).send({})
+    const res = await pinAuthAgent('post', REACTIVATE_PATH).send({})
 
     expect(res.status).toBe(200)
     expect(res.body.success).toBe(true)
@@ -185,7 +224,7 @@ describe('POST /api/businesses/:id/reactivate', () => {
       id: TEST_USER.businessId, name: 'Acme', suspendedAt: null,
     })
 
-    const res = await authAgent(app).post(REACTIVATE_PATH).send({})
+    const res = await pinAuthAgent('post', REACTIVATE_PATH).send({})
 
     expect(res.status).toBe(200)
     expect(mockPrisma.business.update).not.toHaveBeenCalled()

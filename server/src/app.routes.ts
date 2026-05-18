@@ -75,6 +75,7 @@ import storefrontRoutes from './routes/storefront.routes.js'
 import loyaltyRoutes from './routes/loyalty.routes.js'
 import commissionRoutes from './routes/commission.routes.js'
 import businessesPhase6Routes from './routes/businesses.routes.js'
+import authPinRoutes from './routes/auth-pin.routes.js'
 
 const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/auth', authRoutes],
@@ -166,6 +167,11 @@ const ROUTE_MOUNTS: Array<[string, Router]> = [
   // Mounts AFTER the existing businessSettingsRouter (line ~99 above) — both
   // routers live under /api/businesses and Express dispatches by path.
   ['/api/businesses', businessesPhase6Routes],
+
+  // Phase 6 PR3 — PIN verify + OTP-gated reset (architecture §18.4 row 79).
+  // Path overlaps `/api/auth` (authRoutes) — Express dispatches by sub-path,
+  // so /api/auth/pin/* lands on this router; /api/auth/login etc. on authRoutes.
+  ['/api/auth/pin', authPinRoutes],
 ]
 
 export function mountFeatureRoutes(app: Express): void {
