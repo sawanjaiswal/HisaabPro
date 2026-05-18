@@ -51,7 +51,21 @@ export const AUDIT_COVERED_SERVICES: readonly AuditCoverageEntry[] = [
   { service: 'services/shared-link.service.ts',             ops: ['revokeSharedLink'] },
   { service: 'services/recurring/crud.ts',                  ops: ['mutateRecurring'] },
   { service: 'services/loyalty/loyalty-program.service.ts', ops: ['mutateLoyaltyProgram'] },
+
+  // ── Phase 7 Import (API.7) ────────────────────────────────────────────────
+  // Every service that mutates an ImportJob writes an `import_job.*` audit
+  // row inside its $transaction. Event names per ARCH §10:
+  //   import_job.uploaded · parsed · row_dropped · dedup_resolved ·
+  //   committed · parties.imported_batch · cancelled · expired
+  { service: 'services/import/upload.service.ts',           ops: ['createImportJob'] },
+  { service: 'services/import/parse.service.ts',            ops: ['runParseAndStage'] },
+  { service: 'services/import/commit.service.ts',           ops: ['commitImportJob'] },
+  { service: 'services/import/commit.helpers.ts',           ops: ['commitChunk'] },
+  { service: 'services/import/cancel.service.ts',           ops: ['cancelImportJob'] },
+  { service: 'services/import/audit-emit.ts',               ops: ['emitUploaded', 'emitParsed', 'emitRowDropped', 'emitDedupResolved', 'emitCommitted', 'emitExpired'] },
+  { service: 'jobs/import-retention.cron.ts',               ops: ['runImportRetentionCron'] },
+  { service: 'services/import/erasure.service.ts',          ops: ['eraseImportData'] },
 ] as const
 
-/** Total covered: 16 services covering 22 distinct ops (6 Phase-6 + 16 backfill). */
+/** Total covered: 24 services (16 prior + 8 Phase-7 Import). */
 export const AUDIT_COVERAGE_COUNT = AUDIT_COVERED_SERVICES.length
