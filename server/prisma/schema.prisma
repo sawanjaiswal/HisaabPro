@@ -115,6 +115,10 @@ model User {
   auditRedactionsCreated AuditLogRedaction[] @relation("AuditRedactionCreator")
   suspendedMemberships   BusinessUser[]      @relation("BusinessUserSuspender")
 
+  // Phase 7 — Import
+  importJobs       ImportJob[]
+  importedParties  Party[]     @relation("ImportedParties")
+
   @@index([phone])
   @@index([referredBy])
   @@index([referralFraudFlags])
@@ -298,6 +302,9 @@ model Business {
   payslipSnapshots PayslipSnapshot[]
   auditRedactions  AuditLogRedaction[]
 
+  // Phase 7 — Import
+  importJobs ImportJob[]
+
   @@index([name])
 }
 
@@ -464,6 +471,14 @@ model Party {
   // Phase 6 — Staff & HR: paired STAFF Party owns one Employee row (architecture §8.5).
   employee Employee? @relation("EmployeeParty")
 
+  // Phase 7 — Import provenance (additive, nullable — legacy parties have none)
+  importJobId    String?
+  importedBy     String?
+  importJob      ImportJob?     @relation(fields: [importJobId], references: [id], onDelete: SetNull)
+  importedByUser User?          @relation("ImportedParties", fields: [importedBy], references: [id], onDelete: SetNull)
+  matchedRows    ImportJobRow[] @relation("MatchedPartyImports")
+  sourceRow      ImportJobRow?  @relation("CreatedPartyImport")
+
   @@unique([businessId, phone])
   @@index([businessId, type, isActive])
   @@index([businessId, name])
@@ -479,6 +494,9 @@ model Party {
   // v3 / M3 covering composite — backs /api/parties/follow-ups (filter by businessId,
   // range on lastContactedAt, exclude inactive) — keeps p95 < 30ms at 50k parties.
   @@index([businessId, lastContactedAt, isActive], map: "idx_party_business_lastcontact_active")
+  // Phase 7 — Import
+  @@index([importJobId])
+  @@index([businessId, importJobId])
 }
 
 model PartyAddress {
@@ -4105,4 +4123,83 @@ model AuditLogRedaction {
   creator  User     @relation("AuditRedactionCreator", fields: [createdById], references: [id], onDelete: Restrict)
 
   @@unique([businessId, entityType, fieldPath])
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Phase 7 Slice 7.1A — Bulk Import (Parties)
+// ARCH: docs/ARCHITECTURE_PHASE7_IMPORT_7_1A.md §2 (data model)
+// SECURITY: docs/SECURITY_AUDIT_PHASE7_IMPORT_7_1A.md M3 — idempotencyKey binds
+//   POST /commit body to the originating preview (anti-replay + anti-cross-job).
+// String enums (not Prisma enum types) to keep migration additive and to
+// match the orchestrator's status machine in service code.
+// ───────────────────────────────────────────────────────────────────────────
+
+model ImportJob {
+  id         String   @id @default(cuid())
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  entity String // 'parties' (future: 'products' | 'invoices' | 'payments')
+  format String // 'tally_xml' | 'vyapar_csv' | 'busy_xls' | 'generic_csv'
+  status String // UPLOADED|PARSING|PREVIEWED|COMMITTING|COMMITTED|PARTIALLY_COMMITTED|FAILED|CANCELLED|EXPIRED
+
+  // M3 — single-use server-issued token; bound 1:1 to a preview snapshot
+  commitToken    String? @unique
+  // M3 — idempotency key from client; binds /commit body to /preview output
+  idempotencyKey String?
+
+  fileName      String? // nullable so DPDP erasure can NULL it
+  fileSha256    String
+  fileSize      Int
+  rowCount      Int     @default(0)
+  errorCount    Int     @default(0)
+  columnMapping Json? // generic_csv only
+  counts        Json    @default("{}") // { total, staged, errors, warnings, duplicatesExact, duplicatesNear, committed }
+  // Raw audit array of created Party ids (full list; UI caps display at 100)
+  createdPartyIds Json     @default("[]")
+  clientVersion   String?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  committedAt DateTime?
+  // 7d for STAGED jobs; 90d for terminal jobs — cron hard-deletes after
+  expiresAt   DateTime
+
+  rows ImportJobRow[]
+  // Reverse side of Party.importJob (SetNull on delete to preserve audit history)
+  parties Party[]
+
+  @@index([businessId, fileSha256]) // re-upload detect
+  @@index([businessId, status, updatedAt]) // active-job check + cleanup
+  @@index([committedAt]) // 24h raw-PII purge cron
+  @@index([expiresAt]) // hard-delete cron
+  @@index([userId]) // uploader-scoped list (FE)
+}
+
+model ImportJobRow {
+  id    String    @id @default(cuid())
+  jobId String
+  job   ImportJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  sourceIndex Int
+  status      String // STAGED|ERROR|WARNING|DUPLICATE_EXACT|DUPLICATE_NEAR|COMMITTED|SKIPPED
+  raw         Json? // NULLED 24h post-commit
+  normalized  Json? // NULLED 24h post-commit
+  // [{ field, code, severity, message }]
+  issues      Json   @default("[]")
+  // CSV-only dedup user decision: NONE | SKIP_EXACT | OVERWRITE | CREATE_NEW
+  dedupAction String?
+
+  matchedPartyId String?
+  matchedParty   Party?  @relation("MatchedPartyImports", fields: [matchedPartyId], references: [id], onDelete: SetNull)
+  // @unique enforces "1 row → ≤1 party" at the DB level (commit-retry safe)
+  createdPartyId String? @unique
+  createdParty   Party?  @relation("CreatedPartyImport", fields: [createdPartyId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@unique([jobId, sourceIndex])
+  @@index([jobId, status])
 }
