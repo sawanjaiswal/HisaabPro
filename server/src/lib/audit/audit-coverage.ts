@@ -33,6 +33,7 @@ export interface AuditCoverageEntry {
 export const AUDIT_COVERED_SERVICES: readonly AuditCoverageEntry[] = [
   // ── Phase 6 net new (6 services) ──────────────────────────────────────────
   { service: 'services/hr/employee.service.ts',             ops: ['createEmployee', 'updateEmployee', 'deleteEmployee'] },
+  { service: 'services/hr/attendance.service.ts',           ops: ['upsertAttendanceBatch'] },
   { service: 'services/payroll/payroll-run.service.ts',     ops: ['finalizePayrollRun', 'reversePayrollRun'] },
   { service: 'services/security-pin/pin-verify.service.ts', ops: ['verifyPin'] },
 

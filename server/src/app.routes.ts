@@ -77,6 +77,7 @@ import commissionRoutes from './routes/commission.routes.js'
 import businessesPhase6Routes from './routes/businesses.routes.js'
 import authPinRoutes from './routes/auth-pin.routes.js'
 import auditRoutes from './routes/audit.routes.js'
+import hrRoutes from './routes/hr.routes.js'
 
 const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/auth', authRoutes],
@@ -179,6 +180,13 @@ const ROUTE_MOUNTS: Array<[string, Router]> = [
   // gates each route; requireOwner gates audit visibility until per-feature
   // 'audit.read'/'audit.export' permission keys ship in a later PR.
   ['/api/audit', auditRoutes],
+
+  // Phase 6 PR5 — HR / Attendance (architecture §4.1 + §18.6 rows 131-133).
+  // POST /attendance/batch (PIN-gated mutation, idempotency-keyed, one tx
+  // of N upserts + 1 audit row) + GET /attendance (range list, tenant-scoped).
+  // requireOwner gates writes & reads until 'hr.read'/'hr.write' keys ship.
+  // PR6 mounts /employees + payroll under the same /api/hr family.
+  ['/api/hr', hrRoutes],
 ]
 
 export function mountFeatureRoutes(app: Express): void {
