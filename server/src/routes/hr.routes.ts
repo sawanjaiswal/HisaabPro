@@ -19,13 +19,15 @@
 import { Router } from 'express'
 import { auth } from '../middleware/auth.js'
 import { requireActiveBusiness } from '../middleware/require-active-business.js'
+import { requireFeature } from '../middleware/require-feature.js'
 import attendanceRouter from './hr-attendance.routes.js'
 import employeesRouter from './hr-employees.routes.js'
 
 const router = Router()
 
 // All HR routes require an authenticated session with an active business.
-router.use(auth, requireActiveBusiness)
+// requireFeature('STAFF_HR') is the env-flag kill-switch — ROLLOUT_PHASE6.md §4.
+router.use(auth, requireActiveBusiness, requireFeature('STAFF_HR'))
 
 router.use('/attendance', attendanceRouter)
 router.use('/employees', employeesRouter)

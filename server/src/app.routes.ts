@@ -177,22 +177,15 @@ const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/auth/pin', authPinRoutes],
 
   // Phase 6 PR4 — Audit search + redaction (architecture §18.5 rows 106-109).
-  // GET / + GET-POST-DELETE /redactions + POST /export. requireRecentPin
-  // gates each route; requireOwner gates audit visibility until per-feature
-  // 'audit.read'/'audit.export' permission keys ship in a later PR.
+  // Feature-gated inside the router via requireFeature('STAFF_HR') after auth.
   ['/api/audit', auditRoutes],
 
   // Phase 6 PR5 — HR / Attendance (architecture §4.1 + §18.6 rows 131-133).
-  // POST /attendance/batch (PIN-gated mutation, idempotency-keyed, one tx
-  // of N upserts + 1 audit row) + GET /attendance (range list, tenant-scoped).
-  // requireOwner gates writes & reads until 'hr.read'/'hr.write' keys ship.
-  // PR6 mounts /employees under the same /api/hr family via the aggregator.
+  // Feature-gated inside the router via requireFeature('STAFF_HR') after auth.
   ['/api/hr', hrRoutes],
 
   // Phase 6 PR6 — Payroll (architecture §6.1 + §8 + §18.7 rows 149-151).
-  // POST /run/preview, POST /run/finalize, POST /run/:id/reverse,
-  // GET  /:id/snapshot. Preview is rate-limited 10/min/business per §8.4;
-  // finalize + reverse are PIN-gated mutations with idempotency keys.
+  // Feature-gated inside the router via requireFeature('STAFF_HR') after auth.
   ['/api/payroll', payrollRoutes],
 ]
 

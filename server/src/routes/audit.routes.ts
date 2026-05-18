@@ -31,6 +31,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { auth } from '../middleware/auth.js'
 import { requireActiveBusiness } from '../middleware/require-active-business.js'
+import { requireFeature } from '../middleware/require-feature.js'
 import { requireRecentPin } from '../middleware/require-recent-pin.js'
 import { requireOwner } from '../middleware/permission.js'
 import { validate } from '../middleware/validate.js'
@@ -54,7 +55,8 @@ import {
 const router = Router()
 
 // All audit routes require an authenticated, active-business session.
-router.use(auth, requireActiveBusiness)
+// requireFeature('STAFF_HR') is the env-flag kill-switch — ROLLOUT_PHASE6.md §4.
+router.use(auth, requireActiveBusiness, requireFeature('STAFF_HR'))
 
 /**
  * GET /api/audit

@@ -38,6 +38,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { auth } from '../middleware/auth.js'
 import { requireActiveBusiness } from '../middleware/require-active-business.js'
+import { requireFeature } from '../middleware/require-feature.js'
 import { requireRecentPin } from '../middleware/require-recent-pin.js'
 import { requireOwner } from '../middleware/permission.js'
 import { requireIdempotencyKey } from '../middleware/requireIdempotencyKey.js'
@@ -64,7 +65,8 @@ import { prisma } from '../lib/prisma.js'
 const router = Router()
 
 // Every payroll route requires an authenticated session with an active business.
-router.use(auth, requireActiveBusiness)
+// requireFeature('STAFF_HR') is the env-flag kill-switch — ROLLOUT_PHASE6.md §4.
+router.use(auth, requireActiveBusiness, requireFeature('STAFF_HR'))
 
 /**
  * §8.4 — payrollPreviewRateLimit = 10 calls/min per business. Heavy compute
