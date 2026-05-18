@@ -134,8 +134,8 @@ Each tamper event emits a structured log line:
   "event": "pin_gate.cookie_tamper_detected",
   "userId": "...",
   "clientIp": "...",
-  "subtype": "domain_prefix_mismatch | hmac_mismatch | cross_user
-              | cross_tenant | pf_stale | iat_expired",
+  "subtype": "hmac_mismatch | cross_user | cross_tenant
+              | pf_stale | iat_expired",
   "ts": "ISO-8601"
 }
 ```
@@ -146,11 +146,11 @@ Each tamper event emits a structured log line:
 benign (architecture §17.5: `pf_stale` is explicitly excluded from the
 tamper alert).
 
-- `domain_prefix_mismatch` → **Sev-1**: someone is presenting a
-  JWT-shaped token without the `pin-grace-cookie-v1:` prefix. Possible
-  leaked JWT replay attempt.
-- `hmac_mismatch` → **Sev-1**: cookie signature doesn't verify.
-  Either a determined attacker or a JWT_SECRET rotation race.
+- `hmac_mismatch` → **Sev-1**: cookie signature doesn't verify (covers
+  both straight HMAC-fail and missing/wrong `pin-grace-cookie-v1:`
+  domain-separation prefix — both manifest as a signature mismatch since
+  the prefix is part of the HMAC input). Either a determined attacker,
+  a leaked JWT replay attempt, or a JWT_SECRET rotation race.
 - `cross_user` → **Sev-1**: cookie issued for user A presented in user
   B's session. Means a cookie leaked between users — possibly via
   shared-device misuse or a CDN caching bug.
@@ -165,8 +165,7 @@ tamper alert).
 | Subtype | Cause | Confidence |
 |---|---|---|
 | `hmac_mismatch` clustered around a deploy timestamp | JWT_SECRET rotated and stale cookies are now being rejected — expected, will decay in 8h (grace window) | High during rotations |
-| `hmac_mismatch` sustained, no recent deploy | Active tampering attempt (rare); inspect client_ip distribution | Medium |
-| `domain_prefix_mismatch` | A leaked JWT being replayed as a cookie OR a 3rd-party library accidentally setting `pin_gate_grace` from another claim | Low, page-worthy |
+| `hmac_mismatch` sustained, no recent deploy | Active tampering attempt (rare); inspect client_ip distribution. Also covers leaked-JWT replay (missing `pin-grace-cookie-v1:` prefix in the signature input). | Medium |
 | `cross_user` clustered on a single IP | Family/staff sharing a phone after PIN-verify; not malicious | Common at retail tenants |
 | `cross_user` distributed across many IPs | Real session leak — possible CDN bug, XSS, or supply-chain compromise of the FE bundle | Page Sev-1 immediately |
 | `cross_tenant` | User switched business; cookie issued for biz1 presented after switch — UX bug, not an attack | Common, low Sev |

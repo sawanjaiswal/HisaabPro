@@ -62,13 +62,16 @@ the table in a follow-up migration. Low risk because `requireRecentPin`
 already rate-limits per business via `createPerBusinessLimiter`.
 
 **SHOULD_FIX-3 — dead `DOMAIN_PREFIX_MISMATCH` tamper-subtype constant**
-*Severity: Low · Status: deferred*
+*Severity: Low · Status: FIXED 2026-05-18 (commit follow-up)*
 
-`require-recent-pin.ts` exports a `DOMAIN_PREFIX_MISMATCH` constant in the
-tamper-subtype enum but the verification branch was folded into the generic
-`hmac_mismatch` path during PR3 review. The const is shipped but
-unreachable. Cosmetic — remove in the next refactor of PIN tamper
-telemetry.
+`security-events.ts` declared `PIN_GATE_DOMAIN_PREFIX_MISMATCH` and included
+it in the `SUSPICIOUS_EVENTS` aggregation set, but no emitter ever fires it —
+the verification branch was folded into the generic `hmac_mismatch` path
+during PR3 review (the `pin-grace-cookie-v1:` prefix is part of the HMAC
+input, so a missing prefix manifests as a signature mismatch). Removed the
+const + the SUSPICIOUS_EVENTS entry + updated the docstring; updated
+RUNBOOK_PHASE6.md §2 to drop the dead subtype row and fold its semantics
+into the `hmac_mismatch` row.
 
 ### FUTURE_EPIC (out of scope for Phase 6)
 

@@ -10,9 +10,9 @@
  * Architecture reference: ARCHITECTURE_PHASE6_STAFF_HR §10.5.
  *
  * Alert rule: `pin_gate.cookie_tamper_detected > 5/min sustained for 5min on
- * same IP` → page on-call. Only `hmac_mismatch`, `cross_user`, `cross_tenant`,
- * and `domain_prefix_mismatch` roll up into `cookie_tamper_detected`;
- * `pf_stale` is benign (legitimate PIN rotation) and is logged-only.
+ * same IP` → page on-call. Only `hmac_mismatch`, `cross_user`, and
+ * `cross_tenant` roll up into `cookie_tamper_detected`; `pf_stale` is benign
+ * (legitimate PIN rotation) and is logged-only.
  */
 
 import logger from './logger.js'
@@ -28,8 +28,6 @@ export const SECURITY_EVENT = {
   PIN_GATE_CROSS_TENANT: 'pin_gate.cross_tenant',
   /** Suspicious — HMAC signature failed verification (cookie body was modified). */
   PIN_GATE_HMAC_MISMATCH: 'pin_gate.hmac_mismatch',
-  /** Suspicious — HMAC was computed without the domain-separation prefix. */
-  PIN_GATE_DOMAIN_PREFIX_MISMATCH: 'pin_gate.domain_prefix_mismatch',
 } as const
 
 export type SecurityEvent = (typeof SECURITY_EVENT)[keyof typeof SECURITY_EVENT]
@@ -39,7 +37,6 @@ const SUSPICIOUS_EVENTS: ReadonlySet<SecurityEvent> = new Set([
   SECURITY_EVENT.PIN_GATE_CROSS_USER,
   SECURITY_EVENT.PIN_GATE_CROSS_TENANT,
   SECURITY_EVENT.PIN_GATE_HMAC_MISMATCH,
-  SECURITY_EVENT.PIN_GATE_DOMAIN_PREFIX_MISMATCH,
 ])
 
 export interface SecurityEventLabels {
