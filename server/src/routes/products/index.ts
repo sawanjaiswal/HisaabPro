@@ -12,6 +12,7 @@
 
 import { Router } from 'express'
 import { auth } from '../../middleware/auth.js'
+import { requireActiveBusiness } from '../../middleware/require-active-business.js'
 import { userMutationLimiter } from '../../middleware/rate-limit.js'
 import { requireFeature } from '../../middleware/subscription-gate.js'
 import bulkRouter from './bulk.js'
@@ -23,6 +24,8 @@ import { pricePreviewRouter } from '../price-list-assign.routes.js'
 const router = Router()
 
 router.use(auth)
+// Phase 6 #138 PR2 — tenancy gate.
+router.use(requireActiveBusiness)
 router.use(userMutationLimiter)
 router.use(requireFeature('products'))
 

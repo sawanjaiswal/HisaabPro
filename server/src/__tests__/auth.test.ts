@@ -40,6 +40,10 @@ const MOCK_BIZ = {
   permissions: [] as string[],
   status: 'active',
   lastActiveAt: null as Date | null,
+  // Phase 6 #138 PR2 — suspend state surfaced through /me.
+  suspendedAt: null as Date | null,
+  suspendedById: null as string | null,
+  businessSuspendedAt: null as Date | null,
 }
 const MOCK_ME = {
   user: MOCK_USER,

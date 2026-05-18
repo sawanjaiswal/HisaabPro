@@ -17,13 +17,26 @@ export async function getMe(userId: string, activeBusinessId?: string) {
       createdAt: true,
       lastActiveBusinessId: true,
       businessUsers: {
-        where: { isActive: true, status: 'ACTIVE' },
+        // Include suspended memberships so FE can render the "your access to
+        // this firm is paused" state. Filtering on `isActive: true` only
+        // (status='SUSPENDED' rows are still active for read but blocked at
+        // the requireActiveBusiness gate).
+        where: { isActive: true },
         select: {
           role: true,
           status: true,
           lastActiveAt: true,
+          // Phase 6 #138 PR2 — surface suspend state to FE (architecture §3.4).
+          suspendedAt: true,
+          suspendedById: true,
           roleRef: { select: { id: true, name: true, permissions: true } },
-          business: { select: { id: true, name: true, businessType: true } },
+          business: {
+            select: {
+              id: true, name: true, businessType: true,
+              // Phase 6 #138 PR2 — firm-level suspend state.
+              suspendedAt: true,
+            },
+          },
         },
         orderBy: { joinedAt: 'asc' },
       },
@@ -43,6 +56,11 @@ export async function getMe(userId: string, activeBusinessId?: string) {
     permissions: bu.role === 'owner' ? [] : (bu.roleRef?.permissions ?? []),
     status: bu.status,
     lastActiveAt: bu.lastActiveAt,
+    // Phase 6 #138 PR2 — suspend state for the FE TenantChip / suspend banner.
+    // `null` when the row is healthy; ISO timestamp when paused.
+    suspendedAt: bu.suspendedAt,
+    suspendedById: bu.suspendedById,
+    businessSuspendedAt: bu.business.suspendedAt,
   }))
 
   const currentBizId = activeBusinessId || user.lastActiveBusinessId

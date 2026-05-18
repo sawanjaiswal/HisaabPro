@@ -9,6 +9,7 @@ import { blacklistToken } from '../../lib/token-blacklist.js'
 import { decodeToken } from '../../lib/jwt.js'
 import logger from '../../lib/logger.js'
 import * as authService from '../../services/auth.service.js'
+import { emitBusinessSwitchAudit } from '../../services/auth/switch-business-audit.js'
 import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from '../../config/security.js'
 
 const router = Router()
@@ -60,6 +61,18 @@ router.post(
       userId,
       from: currentBusinessId,
       to: targetBusinessId,
+    })
+
+    // Phase 6 #138 PR2 — audit the rotation in the TARGET firm's trail so its
+    // owner can see who switched in and where they came from. Fire-and-forget;
+    // failure logs but does not block the response.
+    await emitBusinessSwitchAudit({
+      actorUserId: userId,
+      fromBusinessId: currentBusinessId || null,
+      toBusinessId: targetBusinessId,
+      toBusinessName: result.business?.name,
+      ipAddress: req.ip,
+      deviceInfo: req.headers['user-agent'],
     })
 
     sendSuccess(res, { business: result.business })

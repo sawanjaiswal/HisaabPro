@@ -7,6 +7,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { requireActiveBusiness } from '../middleware/require-active-business.js'
 import { userMutationLimiter, createRateLimiter } from '../middleware/rate-limit.js'
 import { requireFeature } from '../middleware/subscription-gate.js'
 import { sendSuccess } from '../lib/response.js'
@@ -38,8 +39,11 @@ const ledgerRateLimiter = createRateLimiter({
 
 const router = Router()
 
-// All party routes require auth
+// All party routes require auth + an active (non-suspended) firm membership.
+// Phase 6 #138 PR2 — gate fires 403 FIRM_SUSPENDED / MEMBER_SUSPENDED so the
+// FE can show "your firm has been paused" and block further mutations.
 router.use(auth)
+router.use(requireActiveBusiness)
 router.use(userMutationLimiter)
 router.use(requireFeature('parties'))
 

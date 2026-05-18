@@ -73,18 +73,50 @@ export function anonAgent(app: Express) {
 
 const mockPrisma = prisma as unknown as Record<string, Record<string, ReturnType<typeof vi.fn>>>
 
-/** Setup auth middleware to pass — mocks user.findUnique to return active user */
+/**
+ * Setup auth middleware to pass — mocks user.findUnique to return active user.
+ *
+ * Phase 6 #138 PR2 — ALSO installs a default-healthy active-business mock
+ * (mockActiveBusinessPass) so any test that authenticates a user can also
+ * traverse the `requireActiveBusiness` gate on tenant-scoped routes
+ * (parties, payments, dashboard, products, reports) without further setup.
+ *
+ * Tests that exercise the gate's failure modes (NO_MEMBERSHIP /
+ * FIRM_SUSPENDED / MEMBER_SUSPENDED) override `businessUser.findFirst`
+ * AFTER calling this helper — the later `mockResolvedValue` wins.
+ */
 export function mockAuthPass() {
   mockPrisma.user.findUnique.mockResolvedValue({
     id: TEST_USER.userId,
     isSuspended: false,
     isActive: true,
   })
+  mockActiveBusinessPass('owner')
+}
+
+/**
+ * Phase 6 #138 PR2 — make requireActiveBusiness pass.
+ *
+ * The gate (middleware/require-active-business.ts) calls
+ * `prisma.businessUser.findFirst({ where:{ userId, businessId } })` and
+ * checks for membership + member-suspendedAt + business-suspendedAt. This
+ * helper installs a default "healthy active owner" mock. Individual tests
+ * that exercise the gate failure modes override `findFirst` themselves.
+ *
+ * Idempotent — safe to call multiple times in a single test setup.
+ */
+export function mockActiveBusinessPass(role: 'owner' | 'staff' = 'owner') {
+  mockPrisma.businessUser.findFirst.mockResolvedValue({
+    role,
+    suspendedAt: null,
+    business: { suspendedAt: null, isActive: true },
+  })
 }
 
 /** Setup permission middleware to pass — mocks businessUser.findUnique as owner */
 export function mockOwnerPermission() {
   mockAuthPass()
+  mockActiveBusinessPass('owner')
   mockPrisma.businessUser.findUnique.mockResolvedValue(TEST_OWNER_BU)
   // Plan-gate mocks: BUSINESS plan (covers requirePlan('BUSINESS')/('PRO') middleware)
   mockPrisma.business.findUnique.mockResolvedValue({ createdAt: new Date() })
@@ -94,6 +126,7 @@ export function mockOwnerPermission() {
 /** Setup permission middleware for staff with specific permissions */
 export function mockStaffPermission(permissions?: string[]) {
   mockAuthPass()
+  mockActiveBusinessPass('staff')
   mockPrisma.businessUser.findUnique.mockResolvedValue(
     permissions
       ? { ...TEST_STAFF_BU, roleRef: { permissions } }
