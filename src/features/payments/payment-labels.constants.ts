@@ -15,6 +15,10 @@ import type {
 export const PAYMENT_TYPE_LABELS: Record<PaymentType, string> = {
   PAYMENT_IN:  'Payment In',
   PAYMENT_OUT: 'Payment Out',
+  // Phase 6 #136 PR1A — Payroll types are detail-view-only; never offered in
+  // customer-facing pickers (`CUSTOMER_PAYMENT_TYPES` filters those out).
+  PAYROLL_OUT: 'Salary Paid',
+  PAYROLL_IN:  'Salary Reversal',
 }
 
 // ─── Payment type badge CSS class variants ────────────────────────────────────
@@ -23,6 +27,8 @@ export const PAYMENT_TYPE_LABELS: Record<PaymentType, string> = {
 export const PAYMENT_TYPE_BADGE: Record<PaymentType, string> = {
   PAYMENT_IN:  'badge-paid',
   PAYMENT_OUT: 'badge-overdue',
+  PAYROLL_OUT: 'badge-overdue',
+  PAYROLL_IN:  'badge-paid',
 }
 
 // ─── Payment mode labels ──────────────────────────────────────────────────────

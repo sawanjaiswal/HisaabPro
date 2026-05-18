@@ -161,6 +161,11 @@
   margin: 0;
 }
 
+/* Phase 6 #138 PR2 — TenantChip row (sits between header + body, full-bleed) */
+.side-nav-tenant-chip-row {
+  padding: 0 var(--space-4) var(--space-2);
+}
+
 /* Business switcher */
 .side-nav-business-list {
   display: flex;

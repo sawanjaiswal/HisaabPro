@@ -28,6 +28,9 @@ export const PartySearchDropdown: React.FC<PartySearchDropdownProps> = ({
     CUSTOMER: t.customer,
     SUPPLIER: t.supplier,
     BOTH: t.both,
+    // Phase 6 #136 PR1A — STAFF parties never reach this picker (server
+    // filters `type != 'STAFF'` for invoice party search).
+    STAFF: 'Staff',
   }
   const trimmedQuery = debouncedQuery.trim()
 

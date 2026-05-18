@@ -147,10 +147,11 @@ export async function logout() {
   clearAuth()
 }
 
-/** Get current user profile with businesses list */
+/** Get current user profile with businesses list (incl. Phase 6 #138 suspendedAt fields) */
 export async function getMe(signal?: AbortSignal): Promise<{
   user: AuthUser
   businesses: BusinessSummary[]
+  activeBusiness: BusinessSummary | null
 }> {
   const raw = await api<{
     user: { id: string; phone: string; name: string | null; email: string | null }
@@ -161,6 +162,7 @@ export async function getMe(signal?: AbortSignal): Promise<{
   return {
     user: { ...raw.user, businessId },
     businesses: raw.businesses ?? [],
+    activeBusiness: raw.activeBusiness ?? raw.businesses[0] ?? null,
   }
 }
 

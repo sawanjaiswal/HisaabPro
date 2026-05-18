@@ -18,6 +18,11 @@ export interface BusinessSummary {
   permissions: string[]
   status: string
   lastActiveAt: string | null
+  /** Phase 6 #138 — member-level suspend timestamp (ISO 8601). null = active membership. */
+  suspendedAt?: string | null
+  suspendedById?: string | null
+  /** Phase 6 #138 — firm-level suspend timestamp (ISO 8601). null = firm active. Set by owner via /:id/suspend. */
+  businessSuspendedAt?: string | null
 }
 
 export interface AuthTokens {
