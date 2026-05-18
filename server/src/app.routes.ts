@@ -78,6 +78,7 @@ import businessesPhase6Routes from './routes/businesses.routes.js'
 import authPinRoutes from './routes/auth-pin.routes.js'
 import auditRoutes from './routes/audit.routes.js'
 import hrRoutes from './routes/hr.routes.js'
+import payrollRoutes from './routes/payroll.routes.js'
 
 const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/auth', authRoutes],
@@ -185,8 +186,14 @@ const ROUTE_MOUNTS: Array<[string, Router]> = [
   // POST /attendance/batch (PIN-gated mutation, idempotency-keyed, one tx
   // of N upserts + 1 audit row) + GET /attendance (range list, tenant-scoped).
   // requireOwner gates writes & reads until 'hr.read'/'hr.write' keys ship.
-  // PR6 mounts /employees + payroll under the same /api/hr family.
+  // PR6 mounts /employees under the same /api/hr family via the aggregator.
   ['/api/hr', hrRoutes],
+
+  // Phase 6 PR6 — Payroll (architecture §6.1 + §8 + §18.7 rows 149-151).
+  // POST /run/preview, POST /run/finalize, POST /run/:id/reverse,
+  // GET  /:id/snapshot. Preview is rate-limited 10/min/business per §8.4;
+  // finalize + reverse are PIN-gated mutations with idempotency keys.
+  ['/api/payroll', payrollRoutes],
 ]
 
 export function mountFeatureRoutes(app: Express): void {

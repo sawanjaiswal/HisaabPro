@@ -353,3 +353,214 @@ describe('GET /api/hr/attendance', () => {
     expect(call.where.businessId).toBe(TEST_USER.businessId)
   })
 })
+
+// ─── PR6 — /api/hr/employees ────────────────────────────────────────────────
+
+const EMP_PATH = '/api/hr/employees'
+
+describe('POST /api/hr/employees', () => {
+  it('returns 200 with employee + party on valid create', async () => {
+    mockOwnerPermission()
+    mockIdempotencyDefaults()
+    const mp = getMockPrisma()
+    mp.party.create.mockResolvedValue({
+      id: 'cparty00000000000000000001',
+      businessId: TEST_USER.businessId,
+      type: 'STAFF',
+      name: 'Anil',
+    })
+    mp.employee.create.mockResolvedValue({
+      id: 'cemployee0000000000000001',
+      businessId: TEST_USER.businessId,
+      partyId: 'cparty00000000000000000001',
+      name: 'Anil',
+      dailyRate: 50_000,
+    })
+    mp.auditLog.create.mockResolvedValue({ id: 'a1' })
+
+    const res = await pinAuthAgent('post', EMP_PATH)
+      .set('X-Idempotency-Key', IDEM_KEY)
+      .send({
+        name: 'Anil',
+        phone: '9876543210',
+        designation: 'Driver',
+        dailyRatePaise: 50_000,
+      })
+
+    expect(res.status).toBe(200)
+    expect(res.body.success).toBe(true)
+    expect(res.body.data.employee.id).toBe('cemployee0000000000000001')
+    expect(res.body.data.party.type).toBe('STAFF')
+  })
+
+  it('returns 401 without an auth token', async () => {
+    const res = await anonAgent(app).post(EMP_PATH)
+      .set('X-Idempotency-Key', IDEM_KEY)
+      .send({ name: 'A', dailyRatePaise: 1000 })
+
+    expect(res.status).toBe(401)
+  })
+
+  it('returns 403 PIN_REQUIRED when grace cookie absent', async () => {
+    mockOwnerPermission()
+    const token = generateTestToken()
+    const res = await request(app).post(EMP_PATH)
+      .set('Authorization', `Bearer ${token}`)
+      .set('X-Idempotency-Key', IDEM_KEY)
+      .send({ name: 'A', dailyRatePaise: 1000 })
+
+    expect(res.status).toBe(403)
+    expect(res.body.error.code).toBe('PIN_REQUIRED')
+  })
+
+  it('returns 400 on dailyRatePaise > cap', async () => {
+    mockOwnerPermission()
+    const res = await pinAuthAgent('post', EMP_PATH)
+      .set('X-Idempotency-Key', IDEM_KEY)
+      .send({ name: 'A', dailyRatePaise: 2_000_000 })
+
+    expect(res.status).toBe(400)
+    expect(res.body.error.code).toBe('VALIDATION_ERROR')
+  })
+
+  it('returns 400 on unknown body key (strict mode)', async () => {
+    mockOwnerPermission()
+    const res = await pinAuthAgent('post', EMP_PATH)
+      .set('X-Idempotency-Key', IDEM_KEY)
+      .send({ name: 'A', dailyRatePaise: 1000, partyId: 'attempted-mass-assign' })
+
+    expect(res.status).toBe(400)
+    expect(res.body.error.code).toBe('VALIDATION_ERROR')
+  })
+})
+
+describe('GET /api/hr/employees', () => {
+  it('returns 200 with rows tenant-scoped', async () => {
+    mockOwnerPermission()
+    const mp = getMockPrisma()
+    mp.employee.findMany.mockResolvedValue([
+      { id: 'emp-1', name: 'Anil', businessId: TEST_USER.businessId },
+    ])
+
+    const res = await authAgent(app).get(EMP_PATH)
+
+    expect(res.status).toBe(200)
+    expect(res.body.data.rows).toHaveLength(1)
+    const call = mp.employee.findMany.mock.calls[0]![0] as { where: { businessId: string } }
+    expect(call.where.businessId).toBe(TEST_USER.businessId)
+  })
+
+  it('returns 401 without an auth token', async () => {
+    const res = await anonAgent(app).get(EMP_PATH)
+    expect(res.status).toBe(401)
+  })
+})
+
+describe('PATCH /api/hr/employees/:id', () => {
+  it('returns 200 and patches the row', async () => {
+    mockOwnerPermission()
+    mockIdempotencyDefaults()
+    const mp = getMockPrisma()
+    mp.employee.findFirst.mockResolvedValue({
+      id: 'cemployee0000000000000001',
+      partyId: 'cparty00000000000000000001',
+      name: 'Old',
+      phone: null,
+      designation: null,
+      dailyRate: 50_000,
+      userId: null,
+      leftAt: null,
+    })
+    mp.employee.update.mockResolvedValue({
+      id: 'cemployee0000000000000001',
+      name: 'New',
+      dailyRate: 60_000,
+    })
+    mp.party.update.mockResolvedValue({ id: 'cparty00000000000000000001' })
+    mp.auditLog.create.mockResolvedValue({ id: 'a1' })
+
+    const res = await pinAuthAgent('post', `${EMP_PATH}/cemployee0000000000000001`)
+      .set('X-Idempotency-Key', IDEM_KEY)
+      // supertest PATCH via constructed request
+    void res
+
+    // Use request directly to PATCH (pinAuthAgent supports only get/post here).
+    const token = generateTestToken()
+    const { cookieHeader } = seedPinGrace('mutation')
+    const patchRes = await request(app)
+      .patch(`${EMP_PATH}/cemployee0000000000000001`)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Cookie', cookieHeader)
+      .set('X-Idempotency-Key', IDEM_KEY_2)
+      .send({ name: 'New', dailyRatePaise: 60_000 })
+
+    expect(patchRes.status).toBe(200)
+    expect(patchRes.body.data.employee.name).toBe('New')
+  })
+
+  it('returns 400 when body rejects partyId mass-assignment (strict mode)', async () => {
+    mockOwnerPermission()
+    const token = generateTestToken()
+    const { cookieHeader } = seedPinGrace('mutation')
+    const res = await request(app)
+      .patch(`${EMP_PATH}/cemployee0000000000000001`)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Cookie', cookieHeader)
+      .set('X-Idempotency-Key', IDEM_KEY)
+      .send({ partyId: 'attempted-mass-assign' })
+
+    expect(res.status).toBe(400)
+    expect(res.body.error.code).toBe('VALIDATION_ERROR')
+  })
+})
+
+describe('DELETE /api/hr/employees/:id', () => {
+  it('returns 200 and soft-deletes employee + party', async () => {
+    mockOwnerPermission()
+    mockIdempotencyDefaults()
+    const mp = getMockPrisma()
+    mp.employee.findFirst.mockResolvedValue({
+      id: 'cemployee0000000000000001',
+      partyId: 'cparty00000000000000000001',
+      name: 'Anil',
+      isDeleted: false,
+    })
+    mp.employee.update.mockResolvedValue({
+      id: 'cemployee0000000000000001',
+      isDeleted: true,
+    })
+    mp.party.update.mockResolvedValue({ id: 'cparty00000000000000000001' })
+    mp.auditLog.create.mockResolvedValue({ id: 'a1' })
+
+    const token = generateTestToken()
+    const { cookieHeader } = seedPinGrace('mutation')
+    const res = await request(app)
+      .delete(`${EMP_PATH}/cemployee0000000000000001`)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Cookie', cookieHeader)
+      .set('X-Idempotency-Key', IDEM_KEY)
+
+    expect(res.status).toBe(200)
+    expect(mp.party.update).toHaveBeenCalledWith({
+      where: { id: 'cparty00000000000000000001' },
+      data: expect.objectContaining({ isActive: false, isDeleted: true }),
+    })
+  })
+
+  it('returns 404 on missing OR cross-tenant id', async () => {
+    mockOwnerPermission()
+    mockIdempotencyDefaults()
+    const mp = getMockPrisma()
+    mp.employee.findFirst.mockResolvedValue(null)
+
+    const token = generateTestToken()
+    const { cookieHeader } = seedPinGrace('mutation')
+    const res = await request(app)
+      .delete(`${EMP_PATH}/cemployee0000000000000999`)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Cookie', cookieHeader)
+      .set('X-Idempotency-Key', IDEM_KEY)
+
+    expect(res.status).toBe(404)
+  })
+})
