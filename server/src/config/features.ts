@@ -66,6 +66,15 @@ export const FEATURES = {
     enabled: envBool('FEATURE_TRANSACTION_PIN', true),
     cohortPercent: envInt('FEATURE_TRANSACTION_PIN_COHORT_PCT', 100),
   },
+
+  /**
+   * Phase 7 slice 7.1A — Party Import. Gates: /api/imports/*.
+   * Default OFF; rollout playbook lives in ROLLOUT_PHASE7.md (#TBD).
+   */
+  DATA_IMPORT: {
+    enabled: envBool('FEATURE_DATA_IMPORT', false),
+    cohortPercent: envInt('FEATURE_DATA_IMPORT_COHORT_PCT', 0),
+  },
 } as const
 
 export type FeatureKey = keyof typeof FEATURES
