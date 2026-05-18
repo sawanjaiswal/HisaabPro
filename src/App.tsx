@@ -55,6 +55,8 @@ import {
   SalesHub, SalesEstimatesPage, SalesSaleOrdersPage, SalesDeliveryChallansPage,
   EstimateDetail, SaleOrderDetail, ChallanDetail,
   CreateEstimate, CreateSaleOrder, CreateChallan,
+  // Phase 6 — Staff & HR (PR5 FE)
+  Attendance,
 } from '@/app.routes'
 import {
   PageRoute, DashboardFallback, ProtectedRoute, GuestRoute,
@@ -271,6 +273,8 @@ export function App() {
         <Route path={ROUTES.PRICE_LIST_DETAIL} element={<PageRoute><ProtectedRoute><PriceListDetail /></ProtectedRoute></PageRoute>} />
         {/* Epic C PR4 — Online Storefront (#121) */}
         <Route path={ROUTES.STOREFRONT_SETTINGS} element={<PageRoute><ProtectedRoute><StorefrontSettings /></ProtectedRoute></PageRoute>} />
+        {/* Phase 6 — Staff & HR (PR5 FE — Attendance daily grid) */}
+        <Route path={ROUTES.HR_ATTENDANCE} element={<PageRoute><ProtectedRoute><Attendance /></ProtectedRoute></PageRoute>} />
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
       </Routes>
       </PageTransition>

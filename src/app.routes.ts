@@ -211,6 +211,9 @@ export const PublicInvitePage = lazy(() =>
   import('@/pages/public/PublicInvitePage').then(m => ({ default: m.PublicInvitePage }))
 )
 
+// Phase 6 — Staff & HR (PR5 FE — Attendance daily grid)
+export const Attendance = lazy(() => import('@/features/hr/AttendancePage'))
+
 // Phase 5 Epic B — Sales Pipeline (#122)
 export const SalesHub = lazy(() => import('@/features/sales/SalesHubPage'))
 export const SalesEstimatesPage = lazy(() => import('@/features/sales/EstimatesPage'))
