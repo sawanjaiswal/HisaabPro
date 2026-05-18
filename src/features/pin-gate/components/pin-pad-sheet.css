@@ -1,0 +1,108 @@
+/**
+ * pin-pad-sheet.css — inner layout of the PIN sheet body.
+ *
+ * Tokens only. The sheet is hosted inside <Drawer>, which already owns
+ * positioning, backdrop, safe-area insets, and the close X. We only style
+ * the body slot (subtitle + error banners + forgot link) and the footer row.
+ */
+
+.pin-pad-sheet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding-block: var(--space-2);
+}
+
+.pin-pad-sheet-subtitle {
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+  text-align: center;
+  margin: 0;
+  max-width: 320px;
+}
+
+/* ── Error banners ─────────────────────────────────────────────────────── */
+
+.pin-pad-sheet-error {
+  width: 100%;
+  max-width: 320px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.pin-pad-sheet-error--warn {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger-border, var(--color-danger));
+}
+
+.pin-pad-sheet-error--locked {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+  border: 1px solid var(--color-warning);
+}
+
+.pin-pad-sheet-error--info {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.pin-pad-sheet-error-meta {
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  opacity: 0.85;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Footer (Cancel + Verify) ──────────────────────────────────────────── */
+
+.pin-pad-sheet-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.pin-pad-sheet-footer > * {
+  flex: 1 1 0;
+}
+
+/* ── Forgot-PIN link ───────────────────────────────────────────────────── */
+
+.pin-pad-sheet-forgot {
+  background: transparent;
+  border: none;
+  color: var(--color-primary);
+  font-family: inherit;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: var(--space-2) var(--space-3);
+  min-height: 44px;
+}
+
+.pin-pad-sheet-forgot:hover:not(:disabled) {
+  color: var(--color-primary-hover, var(--color-primary));
+}
+
+.pin-pad-sheet-forgot:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.pin-pad-sheet-forgot:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

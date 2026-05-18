@@ -37,40 +37,52 @@ export async function getRole(businessId: string, roleId: string) {
   return role
 }
 
-export async function createRole(businessId: string, data: CreateRoleInput) {
+export async function createRole(businessId: string, userId: string, data: CreateRoleInput) {
   // Validate permission strings against known matrix
   const invalid = data.permissions.filter(p => !VALID_PERMISSIONS.has(p))
   if (invalid.length > 0) {
     throw validationError(`Invalid permissions: ${invalid.join(', ')}`)
   }
 
-  if (data.isDefault) {
-    await prisma.role.updateMany({
-      where: { businessId, isDefault: true },
-      data: { isDefault: false },
-    })
-  }
+  return prisma.$transaction(async (tx) => {
+    if (data.isDefault) {
+      await tx.role.updateMany({
+        where: { businessId, isDefault: true },
+        data: { isDefault: false },
+      })
+    }
 
-  return prisma.role.create({
-    data: {
-      businessId,
-      name: data.name,
-      description: data.description || null,
-      permissions: data.permissions,
-      isDefault: data.isDefault,
-    },
-    select: {
-      id: true, name: true, description: true, isSystem: true,
-      isDefault: true, priority: true, permissions: true,
-      createdAt: true, updatedAt: true,
-    },
+    const role = await tx.role.create({
+      data: {
+        businessId,
+        name: data.name,
+        description: data.description || null,
+        permissions: data.permissions,
+        isDefault: data.isDefault,
+      },
+      select: {
+        id: true, name: true, description: true, isSystem: true,
+        isDefault: true, priority: true, permissions: true,
+        createdAt: true, updatedAt: true,
+      },
+    })
+
+    await tx.auditLog.create({
+      data: {
+        businessId, entityType: 'Role', entityId: role.id,
+        entityLabel: role.name.slice(0, 120), userId, action: 'CREATE',
+        changes: { permissions: data.permissions, isDefault: data.isDefault },
+      },
+    })
+
+    return role
   })
 }
 
-export async function updateRole(businessId: string, roleId: string, data: UpdateRoleInput) {
+export async function updateRole(businessId: string, roleId: string, userId: string, data: UpdateRoleInput) {
   const role = await prisma.role.findFirst({
     where: { id: roleId, businessId },
-    select: { isSystem: true },
+    select: { isSystem: true, name: true },
   })
   if (!role) throw notFoundError('Role')
   if (role.isSystem) throw validationError('Cannot modify system roles')
@@ -82,28 +94,40 @@ export async function updateRole(businessId: string, roleId: string, data: Updat
     }
   }
 
-  if (data.isDefault) {
-    await prisma.role.updateMany({
-      where: { businessId, isDefault: true, id: { not: roleId } },
-      data: { isDefault: false },
-    })
-  }
+  return prisma.$transaction(async (tx) => {
+    if (data.isDefault) {
+      await tx.role.updateMany({
+        where: { businessId, isDefault: true, id: { not: roleId } },
+        data: { isDefault: false },
+      })
+    }
 
-  return prisma.role.update({
-    where: { id: roleId },
-    data,
-    select: {
-      id: true, name: true, description: true, isSystem: true,
-      isDefault: true, priority: true, permissions: true,
-      createdAt: true, updatedAt: true,
-    },
+    const updated = await tx.role.update({
+      where: { id: roleId },
+      data,
+      select: {
+        id: true, name: true, description: true, isSystem: true,
+        isDefault: true, priority: true, permissions: true,
+        createdAt: true, updatedAt: true,
+      },
+    })
+
+    await tx.auditLog.create({
+      data: {
+        businessId, entityType: 'Role', entityId: roleId,
+        entityLabel: updated.name.slice(0, 120), userId, action: 'UPDATE',
+        changes: data as Record<string, unknown>,
+      },
+    })
+
+    return updated
   })
 }
 
-export async function deleteRole(businessId: string, roleId: string, reassignToId: string) {
+export async function deleteRole(businessId: string, roleId: string, userId: string, reassignToId: string) {
   const role = await prisma.role.findFirst({
     where: { id: roleId, businessId },
-    select: { isSystem: true },
+    select: { isSystem: true, name: true },
   })
   if (!role) throw notFoundError('Role')
   if (role.isSystem) throw validationError('Cannot delete system roles')
@@ -124,6 +148,14 @@ export async function deleteRole(businessId: string, roleId: string, reassignToI
     await tx.role.update({
       where: { id: roleId },
       data: { isDeleted: true, deletedAt: new Date() },
+    })
+
+    await tx.auditLog.create({
+      data: {
+        businessId, entityType: 'Role', entityId: roleId,
+        entityLabel: role.name.slice(0, 120), userId, action: 'DELETE',
+        changes: { reassignedStaff: result.count, reassignToId },
+      },
     })
 
     return { reassignedStaff: result.count }

@@ -6,10 +6,24 @@ import { prisma } from '../../lib/prisma.js'
 import logger from '../../lib/logger.js'
 import type { CreatePartyInput } from '../../schemas/party.schemas.js'
 import { requireGroup } from './helpers.js'
+import { AppError, ErrorCode } from '../../lib/errors.js'
 // SSE events auto-emitted by middleware/sse-emit.ts on successful responses
 
 export async function createParty(businessId: string, data: CreatePartyInput) {
   logger.info('Creating party', { businessId, partyName: data.name })
+
+  // M7 closure (Phase 6 v2.2) — STAFF parties are server-created ONLY via the
+  // Employee pairing tx in services/hr/employee.service.ts. Reject any attempt
+  // to mint one through the public POST /api/parties surface. See
+  // ARCHITECTURE_PHASE6_STAFF_HR §8.5 (Employee↔Party STAFF pairing).
+  if (data.type === 'STAFF') {
+    throw new AppError(
+      ErrorCode.INVALID_PARTY_TYPE,
+      400,
+      'STAFF parties cannot be created via this endpoint — use the Employee flow.',
+      { reason: 'Created via Employee flow only' },
+    )
+  }
 
   // Validate groupId belongs to business if provided
   if (data.groupId) {

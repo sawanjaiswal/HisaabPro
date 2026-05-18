@@ -24,14 +24,34 @@ export async function getAppSettings(userId: string) {
   }
 }
 
-export async function updateAppSettings(userId: string, data: UpdateAppSettingsInput) {
-  return prisma.userAppSettings.upsert({
-    where: { userId },
-    create: { userId, ...data },
-    update: data,
-    select: {
-      dateFormat: true, pinEnabled: true, biometricEnabled: true,
-      calculatorPosition: true, language: true, theme: true,
-    },
+export async function updateAppSettings(
+  userId: string,
+  businessId: string,
+  data: UpdateAppSettingsInput,
+) {
+  return prisma.$transaction(async (tx) => {
+    const updated = await tx.userAppSettings.upsert({
+      where: { userId },
+      create: { userId, ...data },
+      update: data,
+      select: {
+        dateFormat: true, pinEnabled: true, biometricEnabled: true,
+        calculatorPosition: true, language: true, theme: true,
+      },
+    })
+
+    await tx.auditLog.create({
+      data: {
+        businessId,
+        entityType: 'AppSettings',
+        entityId: userId,
+        entityLabel: null,
+        userId,
+        action: 'UPDATE',
+        changes: data as Record<string, unknown>,
+      },
+    })
+
+    return updated
   })
 }

@@ -74,6 +74,11 @@ import { assignRouter as priceListAssignRoutes } from './routes/price-list-assig
 import storefrontRoutes from './routes/storefront.routes.js'
 import loyaltyRoutes from './routes/loyalty.routes.js'
 import commissionRoutes from './routes/commission.routes.js'
+import businessesPhase6Routes from './routes/businesses.routes.js'
+import authPinRoutes from './routes/auth-pin.routes.js'
+import auditRoutes from './routes/audit.routes.js'
+import hrRoutes from './routes/hr.routes.js'
+import payrollRoutes from './routes/payroll.routes.js'
 
 const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/auth', authRoutes],
@@ -160,6 +165,28 @@ const ROUTE_MOUNTS: Array<[string, Router]> = [
 
   // Epic D PR5 — Commission #128
   ['/api/commission', commissionRoutes],
+
+  // Phase 6 #138 PR2 — firm suspend/reactivate (architecture §3.5).
+  // Mounts AFTER the existing businessSettingsRouter (line ~99 above) — both
+  // routers live under /api/businesses and Express dispatches by path.
+  ['/api/businesses', businessesPhase6Routes],
+
+  // Phase 6 PR3 — PIN verify + OTP-gated reset (architecture §18.4 row 79).
+  // Path overlaps `/api/auth` (authRoutes) — Express dispatches by sub-path,
+  // so /api/auth/pin/* lands on this router; /api/auth/login etc. on authRoutes.
+  ['/api/auth/pin', authPinRoutes],
+
+  // Phase 6 PR4 — Audit search + redaction (architecture §18.5 rows 106-109).
+  // Feature-gated inside the router via requireFeature('STAFF_HR') after auth.
+  ['/api/audit', auditRoutes],
+
+  // Phase 6 PR5 — HR / Attendance (architecture §4.1 + §18.6 rows 131-133).
+  // Feature-gated inside the router via requireFeature('STAFF_HR') after auth.
+  ['/api/hr', hrRoutes],
+
+  // Phase 6 PR6 — Payroll (architecture §6.1 + §8 + §18.7 rows 149-151).
+  // Feature-gated inside the router via requireFeature('STAFF_HR') after auth.
+  ['/api/payroll', payrollRoutes],
 ]
 
 export function mountFeatureRoutes(app: Express): void {

@@ -1,0 +1,96 @@
+/* Phase 6 #138 PR2 FE — SuspendBanner
+ *
+ * Full-bleed banner above page content. Sits inside <AppShell> so it
+ * naturally falls between the global <Header> and the page <PageContainer>.
+ * No fixed positioning — feature code rule (PLATFORM_SHELL C5/C6).
+ *
+ * 2 variants: firm-suspended (danger) + member-suspended (warning).
+ */
+
+.suspend-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  margin: 0;
+  font-size: var(--fs-body-s);
+  color: var(--color-text-primary);
+}
+
+.suspend-banner__icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.suspend-banner__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.suspend-banner__title {
+  font-weight: 600;
+  margin: 0;
+  font-size: var(--fs-body);
+}
+
+.suspend-banner__desc {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--fs-body-s);
+  line-height: 1.4;
+}
+
+.suspend-banner__hint {
+  margin: 4px 0 0 0;
+  font-size: var(--fs-caption);
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.suspend-banner__actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Variants */
+.suspend-banner--firm-suspended {
+  background: var(--color-danger-soft, var(--color-surface-muted));
+  border-bottom-color: var(--color-danger, var(--color-border));
+}
+
+.suspend-banner--firm-suspended .suspend-banner__icon {
+  color: var(--color-danger-strong, var(--color-danger));
+}
+
+.suspend-banner--member-suspended {
+  background: var(--color-warning-soft, var(--color-surface-muted));
+  border-bottom-color: var(--color-warning, var(--color-border));
+}
+
+.suspend-banner--member-suspended .suspend-banner__icon {
+  color: var(--color-warning-strong, var(--color-warning));
+}
+
+/* 320px → stack actions below copy */
+@media (max-width: 640px) {
+  .suspend-banner {
+    flex-wrap: wrap;
+  }
+  .suspend-banner__actions {
+    width: 100%;
+    margin-left: 44px; /* align with body, account for icon */
+    justify-content: flex-start;
+  }
+}

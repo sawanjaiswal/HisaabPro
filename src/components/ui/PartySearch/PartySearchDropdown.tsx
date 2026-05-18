@@ -10,6 +10,9 @@ const PARTY_TYPE_LABELS: Record<PartyType, string> = {
   CUSTOMER: 'Customer',
   SUPPLIER: 'Supplier',
   BOTH: 'Both',
+  // Phase 6 #136 PR1A — STAFF parties are filtered out by the search endpoint;
+  // entry exists only for type-completeness (filter-by-absence per M7).
+  STAFF: 'Staff',
 }
 
 // ─── Props ────────────────────────────────────────────────────────────────────

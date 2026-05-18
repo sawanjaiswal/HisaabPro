@@ -53,6 +53,7 @@ vi.mock('../../../lib/prisma.js', () => ({
       business: { findUnique: mockBusinessFindUnique },
       documentSettings: { findUnique: mockDocumentSettingsFindUnique },
       product: { findMany: vi.fn().mockResolvedValue([]) },
+      auditLog: { create: vi.fn() },
     })),
   },
 }))

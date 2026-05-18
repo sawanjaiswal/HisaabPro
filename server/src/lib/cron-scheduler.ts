@@ -21,6 +21,7 @@ import { runGraceExpiryJob } from '../services/subscription/cron-grace-expiry.js
 import { runTrialEndJob } from '../services/subscription/cron-trial-end.js'
 import { runMandateReminderJob } from '../services/subscription/cron-mandate-reminder.js'
 import { runLoyaltyExpiryCron } from '../services/loyalty/loyalty-expiry.cron.js'
+import { runPinGc } from '../jobs/pin-gc.job.js'
 import os from 'os'
 
 let initialized = false
@@ -107,6 +108,7 @@ export function initCronJobs(): void {
 
   // Notification engine cron jobs (PR10)
   initNotificationCronJobs()
+  cron.schedule('30 3 * * *', () => void runPinGc().catch((e) => logger.error('cron.pin_gc.fatal', { error: e instanceof Error ? e.message : String(e) })), { timezone: 'Asia/Kolkata' })
 
   logger.info('cron.registered', {
     jobs: [
@@ -123,7 +125,7 @@ export function initCronJobs(): void {
       'subscription-grace-expiry @ 06:00 IST',
       'subscription-trial-end @ 07:00 IST',
       'subscription-mandate-reminder @ 08:00 IST',
-      'loyalty-expiry @ 04:15 IST',
+      'loyalty-expiry @ 04:15 IST', 'pin-gc @ 03:30 IST',
     ],
   })
 }

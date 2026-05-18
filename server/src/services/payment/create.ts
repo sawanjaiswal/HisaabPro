@@ -9,6 +9,7 @@ import type { CreatePaymentInput } from '../../schemas/payment.schemas.js'
 import { notificationManager } from '../notifications/notification-manager.js'
 import { formatPaise } from '../notifications/notification-template.service.js'
 import logger from '../../lib/logger.js'
+import { paymentTypeDirection } from '../../lib/payment-types.js'
 
 export async function createPayment(
   businessId: string,
@@ -100,13 +101,14 @@ export async function createPayment(
       })
     }
 
-    // Update party outstanding
-    // PAYMENT_IN reduces receivable (outstanding goes down)
-    // PAYMENT_OUT reduces payable (outstanding goes up)
+    // Update party outstanding via paymentTypeDirection() helper (M6 v2.1).
+    // +1 = PAYMENT_OUT (raises payable), -1 = PAYMENT_IN (lowers receivable),
+    //  0 = PAYROLL_OUT / PAYROLL_IN (never touches customer outstanding).
+    // Public create endpoint already rejects PAYROLL_* via Zod
+    // (CUSTOMER_PAYMENT_TYPES) + assertCustomerPaymentType — the 0 branch is
+    // exhaustiveness-only here.
     const effectiveAmount = data.amount + discountAmount
-    const outstandingDelta = data.type === 'PAYMENT_IN'
-      ? -effectiveAmount
-      : effectiveAmount
+    const outstandingDelta = paymentTypeDirection(data.type) * effectiveAmount
     await tx.party.update({
       where: { id: data.partyId },
       data: {

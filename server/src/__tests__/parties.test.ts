@@ -232,7 +232,7 @@ describe('PUT /api/parties/:id', () => {
     expect(res.status).toBe(200)
     expect(res.body.success).toBe(true)
     expect(res.body.data.party.name).toBe('Updated Name')
-    expect(partyService.updateParty).toHaveBeenCalledWith('biz-test-1', 'p-1', { name: 'Updated Name' })
+    expect(partyService.updateParty).toHaveBeenCalledWith('biz-test-1', 'p-1', expect.any(String), { name: 'Updated Name' })
   })
 })
 
@@ -247,7 +247,7 @@ describe('DELETE /api/parties/:id', () => {
     expect(res.body.success).toBe(true)
     expect(res.body.data.deleted).toBe(true)
     expect(res.body.data.mode).toBe('soft')
-    expect(partyService.deleteParty).toHaveBeenCalledWith('biz-test-1', 'p-1', false)
+    expect(partyService.deleteParty).toHaveBeenCalledWith('biz-test-1', 'p-1', expect.any(String), false)
   })
 })
 

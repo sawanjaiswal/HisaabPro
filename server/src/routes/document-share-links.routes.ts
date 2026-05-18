@@ -189,7 +189,7 @@ router.patch(
       return
     }
 
-    const revoked = await revokeSharedLink({ id: linkId, businessId })
+    const revoked = await revokeSharedLink({ id: linkId, businessId, userId: req.user!.userId })
 
     res.status(200).json({ success: true, data: revoked })
   })

@@ -51,53 +51,10 @@ export interface ApprovalsListResponse {
 }
 
 // ─── Audit Log ───────────────────────────────────────────────────────────────
-
-export type AuditAction =
-  | 'CREATE'
-  | 'UPDATE'
-  | 'DELETE'
-  | 'RESTORE'
-  | 'LOCK_OVERRIDE'
-  | 'PIN_RESET'
-  | 'ROLE_CHANGE'
-  | 'APPROVAL_REQUEST'
-  | 'APPROVAL_RESPONSE'
-
-export interface AuditChange {
-  field: string
-  before: string
-  after: string
-}
-
-export interface AuditLogEntry {
-  id: string
-  action: AuditAction
-  entityType: string
-  entityId: string
-  entityLabel: string | null
-  userId: string
-  userName: string
-  changes: AuditChange[] | null
-  reason: string | null
-  ipAddress: string | null
-  deviceInfo: string | null
-  createdAt: string
-}
-
-export interface AuditLogResponse {
-  success: boolean
-  data: {
-    entries: AuditLogEntry[]
-    pagination: { page: number; limit: number; total: number }
-  }
-}
-
-export interface AuditLogFilters {
-  userId?: string
-  entityType?: string
-  action?: AuditAction
-  from?: string
-  to?: string
-  page: number
-  limit: number
-}
+//
+// As of Phase 6 PR4 (audit search + redactions), the audit log domain types
+// live in `./audit.types.ts`. `AuditAction` is re-exported here so existing
+// consumers (`settings.types` barrel + the audit-coverage badges) keep
+// working with the wider v2.3 union (adds SUSPEND_FIRM, REACTIVATE_FIRM,
+// FINALIZE, REVERSE).
+export type { AuditAction } from './audit.types'

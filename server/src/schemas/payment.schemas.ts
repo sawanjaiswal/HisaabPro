@@ -7,6 +7,7 @@
 import { z } from 'zod'
 import {
   PAYMENT_TYPES,
+  CUSTOMER_PAYMENT_TYPES,
   PAYMENT_MODES,
   PAYMENT_DISCOUNT_TYPES as DISCOUNT_TYPES,
   PAYMENT_SORT_BY as SORT_BY,
@@ -15,6 +16,19 @@ import {
   OUTSTANDING_SORT_BY as OUTSTANDING_SORT,
   REMINDER_CHANNELS,
 } from '../../../shared/enums.js'
+
+// === Payment type — public vs internal split (Phase 6 S7 + M8 closures) ===
+//
+// PaymentTypePublic is used by POST /api/payments (customer-facing endpoint):
+// only PAYMENT_IN / PAYMENT_OUT are accepted. PaymentTypeInternal is used by
+// the payroll-service's internal `prisma.payment.create` calls: the full
+// widened set (incl. PAYROLL_OUT / PAYROLL_IN). See architecture §2.2.
+
+/** Public surface — POST /api/payments accepts only customer payment types. */
+export const PaymentTypePublic = z.enum(CUSTOMER_PAYMENT_TYPES)
+
+/** Internal surface — payroll-service writes use the widened enum. */
+export const PaymentTypeInternal = z.enum(PAYMENT_TYPES)
 
 // === Payment CRUD ===
 
@@ -30,7 +44,11 @@ const discountSchema = z.object({
 }).strict()
 
 export const createPaymentSchema = z.object({
-  type: z.enum(PAYMENT_TYPES),
+  // Public endpoint — payroll types (PAYROLL_OUT/IN) are written ONLY by the
+  // payroll-service via prisma.payment.create direct. M8 single-rejection-path:
+  // Zod rejects with 400 INVALID_INPUT here; downstream handlers double-defend
+  // via `assertCustomerPaymentType` which throws 400 INVALID_PAYMENT_TYPE.
+  type: PaymentTypePublic,
   partyId: z.string().min(1),
   amount: z.number().int().min(1).max(9_999_999_900),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),

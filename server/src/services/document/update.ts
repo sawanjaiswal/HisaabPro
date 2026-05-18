@@ -159,6 +159,19 @@ export async function updateDocument(
       }
     }
 
+    // Audit row inside the tx so it commits/rolls back with the mutation.
+    await tx.auditLog.create({
+      data: {
+        businessId,
+        entityType: 'Document',
+        entityId: documentId,
+        entityLabel: (numberData?.documentNumber ?? '').slice(0, 120) || null,
+        userId,
+        action: 'UPDATE',
+        changes: data as Record<string, unknown>,
+      },
+    })
+
     // P3.12 — defense-in-depth: re-scope by businessId even though tx pre-check already did
     return tx.document.findFirstOrThrow({ where: { id: documentId, businessId }, select: DOCUMENT_DETAIL_SELECT })
   })

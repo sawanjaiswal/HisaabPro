@@ -6,6 +6,10 @@ export const PARTY_TYPE_LABELS: Record<PartyType, string> = {
   CUSTOMER: 'Customer',
   SUPPLIER: 'Supplier',
   BOTH: 'Both',
+  // Phase 6 #136 PR1A — STAFF parties are payroll-routing only; deliberately
+  // omitted from PARTY_TYPE_OPTIONS so they never surface in customer pickers
+  // (filter-by-absence per architecture M7 closure).
+  STAFF: 'Staff',
 }
 
 export const PARTY_TYPE_OPTIONS: { value: PartyType | 'ALL'; label: string }[] = [

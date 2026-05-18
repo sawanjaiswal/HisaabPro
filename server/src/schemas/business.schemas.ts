@@ -42,7 +42,16 @@ export const updateBusinessSchema = z.object({
     .optional(),
 }).strict()
 
+// Phase 6 #138 — firm suspend/reactivate (PR2). `reason` is required on suspend
+// (lands in AuditLog.reason for the trail) and absent on reactivate.
+export const suspendBusinessSchema = z.object({
+  reason: z.string().trim().min(1, 'Reason is required').max(500, 'Reason must be under 500 characters'),
+}).strict()
+
+export const reactivateBusinessSchema = z.object({}).strict()
+
 // Inferred types
 export type CreateBusinessInput = z.infer<typeof createBusinessSchema>
 export type UpdateBusinessInput = z.infer<typeof updateBusinessSchema>
+export type SuspendBusinessInput = z.infer<typeof suspendBusinessSchema>
 export type BusinessType = (typeof BUSINESS_TYPES)[number]

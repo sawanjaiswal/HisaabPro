@@ -5,11 +5,21 @@ import { readApiCache, writeApiCache } from './api-cache'
 import { getCsrfToken, invalidateCsrfToken } from './api-csrf'
 import { attemptTokenRefresh } from './api-refresh'
 import { OFFLINE_MOCK, handleMockRequest, defaultMockResponse, UNHANDLED } from './playstore-mock'
+import { getApi403Handler } from './api-pin-gate'
+import type { PinRouteClass } from '@/features/pin-gate/pin-gate.types'
+import { isOfflineError, inferEntityType } from './api.utils'
 
 interface ApiOptions extends RequestInit {
   timeout?: number
   /** Skip the 401 refresh interceptor (used by refresh call itself) */
   _skipRefresh?: boolean
+  /**
+   * Skip the 403 PIN_REQUIRED interceptor. Set by the PIN-verify retry path
+   * and by the PIN-verify call itself to prevent infinite loops (the
+   * interceptor would otherwise re-prompt for PIN on the PIN-prompt's own
+   * 401/429 response).
+   */
+  _skipPin?: boolean
   /** Offline queue control. Set false to disable queueing for this call. */
   offlineQueue?: boolean
   /** Human-readable entity type for queue UI (e.g. "party") */
@@ -26,15 +36,10 @@ interface ApiResponse<T> {
   error?: { code: string; message: string }
 }
 
-// ─── Main API wrapper ────────────────────────────────────────────────────────
-
 /**
- * Fetch wrapper with timeout, cookie-based auth, abort support,
- * and automatic 401 token refresh with request queue.
- *
- * Auth tokens are stored in httpOnly cookies set by the server.
- * Every request includes `credentials: 'include'` so cookies are sent
- * automatically — no Authorization header needed.
+ * Fetch wrapper: timeout + cookie auth + abort + 401 refresh + 403 PIN gate +
+ * offline mutation queue + opt-in IDB read cache. Auth runs over httpOnly
+ * cookies (credentials: 'include' on every call).
  */
 export async function api<T>(
   path: string,
@@ -43,6 +48,7 @@ export async function api<T>(
   const {
     timeout = TIMEOUTS.fetchMs,
     _skipRefresh,
+    _skipPin,
     offlineQueue: oq,
     entityType,
     entityLabel,
@@ -167,6 +173,21 @@ export async function api<T>(
     }
   }
 
+  // 403 PIN_REQUIRED — PinGateProvider opens the PinPadSheet, verifies the
+  // PIN (server sets fresh pin_gate_grace cookie), then retries this request.
+  // _skipPin guards the verify call + inner retry from recursing here.
+  if (response.status === 403 && !_skipPin) {
+    const pinBody = await response.clone().json().catch(() => null) as
+      { error?: { code?: string; routeClass?: string } } | null
+    if (pinBody?.error?.code === 'PIN_REQUIRED') {
+      const handler = getApi403Handler()
+      if (handler) {
+        const routeClass = (pinBody.error.routeClass as PinRouteClass | undefined) ?? 'mutation'
+        return handler<T>(() => api<T>(path, { ...options, _skipPin: true }), routeClass)
+      }
+    }
+  }
+
   // 409 conflict — another user modified the record while offline, or stock shortage
   if (response.status === 409) {
     const conflictBody = await response.json().catch(() => null) as { error?: { code?: string; message?: string; items?: unknown } } | null
@@ -216,22 +237,6 @@ export async function api<T>(
   }
 
   return json.data
-}
-
-/** Detect network-level failures (no response at all) */
-function isOfflineError(err: unknown): boolean {
-  if (err instanceof TypeError) return true // fetch throws TypeError on network failure
-  if (!navigator.onLine) return true
-  return false
-}
-
-/** Best-effort entity type from API path (e.g. "/parties/abc" → "party") */
-function inferEntityType(path: string): string {
-  const segment = path.split('/').filter(Boolean)[0] ?? 'item'
-  // Singularise: "parties" → "party", "invoices" → "invoice"
-  if (segment.endsWith('ies')) return segment.slice(0, -3) + 'y'
-  if (segment.endsWith('s')) return segment.slice(0, -1)
-  return segment
 }
 
 export class ApiError extends Error {

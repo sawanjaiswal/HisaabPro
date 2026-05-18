@@ -79,21 +79,24 @@ businessSettingsRouter.get('/:businessId/roles/:roleId', asyncHandler(async (req
 
 businessSettingsRouter.post('/:businessId/roles', requirePlan('PRO'), requireOwner(), validate(createRoleSchema), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
-  const role = await settingsService.createRole(businessId, req.body)
+  const userId = req.user!.userId
+  const role = await settingsService.createRole(businessId, userId, req.body)
   sendSuccess(res, role, 201)
 }))
 
 businessSettingsRouter.put('/:businessId/roles/:roleId', requirePlan('PRO'), requireOwner(), validate(updateRoleSchema), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
-  const role = await settingsService.updateRole(businessId, String(req.params.roleId), req.body)
+  const userId = req.user!.userId
+  const role = await settingsService.updateRole(businessId, String(req.params.roleId), userId, req.body)
   sendSuccess(res, role)
 }))
 
 businessSettingsRouter.delete('/:businessId/roles/:roleId', requireOwner(), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
+  const userId = req.user!.userId
   const reassignTo = req.query.reassignTo as string
   if (!reassignTo) throw validationError('reassignTo query param is required')
-  const result = await settingsService.deleteRole(businessId, String(req.params.roleId), reassignTo)
+  const result = await settingsService.deleteRole(businessId, String(req.params.roleId), userId, reassignTo)
   sendSuccess(res, result)
 }))
 
@@ -124,8 +127,9 @@ businessSettingsRouter.post('/:businessId/staff/:staffId/suspend', requireOwner(
 
 businessSettingsRouter.delete('/:businessId/staff/:staffId', requireOwner(), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
+  const userId = req.user!.userId
   const staffId = String(req.params.staffId)
-  await settingsService.removeStaff(businessId, staffId)
+  await settingsService.removeStaff(businessId, staffId, userId)
   sendSuccess(res, { staffId, removedAt: new Date().toISOString() })
 }))
 
@@ -149,7 +153,8 @@ businessSettingsRouter.get('/:businessId/settings/transaction-lock', asyncHandle
 
 businessSettingsRouter.put('/:businessId/settings/transaction-lock', requireOwner(), validate(updateTransactionLockSchema), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
-  const config = await settingsService.updateTransactionLock(businessId, req.body)
+  const userId = req.user!.userId
+  const config = await settingsService.updateTransactionLock(businessId, userId, req.body)
   sendSuccess(res, config)
 }))
 
@@ -191,7 +196,8 @@ businessSettingsRouter.put('/:businessId/gst-settings', requireOwner(), validate
 
 businessSettingsRouter.post('/:businessId/operation-pin', requireOwner(), validate(setOperationPinSchema), asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
-  const data = await settingsService.setOperationPin(businessId, req.body)
+  const userId = req.user!.userId
+  const data = await settingsService.setOperationPin(businessId, userId, req.body)
   sendSuccess(res, data)
 }))
 
@@ -206,13 +212,15 @@ userSettingsRouter.get('/:userId/settings', asyncHandler(async (req, res) => {
 
 userSettingsRouter.put('/:userId/settings', validate(updateAppSettingsSchema), asyncHandler(async (req, res) => {
   const userId = req.user!.userId
-  const data = await settingsService.updateAppSettings(userId, req.body)
+  const businessId = req.user!.businessId
+  const data = await settingsService.updateAppSettings(userId, businessId, req.body)
   sendSuccess(res, data)
 }))
 
 userSettingsRouter.post('/:userId/pin', validate(setPinSchema), asyncHandler(async (req, res) => {
   const userId = req.user!.userId
-  const data = await settingsService.setPin(userId, req.body)
+  const businessId = req.user!.businessId
+  const data = await settingsService.setPin(userId, businessId, req.body)
   sendSuccess(res, data)
 }))
 
@@ -224,7 +232,8 @@ userSettingsRouter.post('/:userId/pin/verify', validate(verifyPinSchema), asyncH
 
 userSettingsRouter.post('/:userId/pin/reset', validate(setPinSchema), asyncHandler(async (req, res) => {
   const userId = req.user!.userId
-  const data = await settingsService.setPin(userId, req.body)
+  const businessId = req.user!.businessId
+  const data = await settingsService.setPin(userId, businessId, req.body)
   sendSuccess(res, data)
 }))
 

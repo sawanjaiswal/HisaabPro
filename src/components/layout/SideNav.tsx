@@ -21,12 +21,13 @@ import { ICON_REGISTRY } from '@/features/more/more.icons'
 import { useVertical } from '@/hooks/useVertical'
 import { isNavVisible } from '@/config/verticals.config'
 import { getBusinessInitials, getBusinessColor } from '@/features/business/business.utils'
+import { TenantChip } from '@/features/business/components/TenantChip'
 import './side-nav.css'
 import type React from 'react'
 
 export function SideNav() {
   const navigate = useNavigate()
-  const { user, businesses, switchBusiness, isSwitching, switchingBusinessId, handleLogout } = useAuth()
+  const { user, businesses, activeBusiness, switchBusiness, isSwitching, switchingBusinessId, handleLogout } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const { t } = useLanguage()
   const vertical = useVertical()
@@ -98,6 +99,13 @@ export function SideNav() {
             <X size={22} aria-hidden="true" />
           </button>
         </div>
+
+        {/* Phase 6 #138 PR2 — active tenant chip (suspend state visible at-a-glance). */}
+        {activeBusiness && (
+          <div className="side-nav-tenant-chip-row">
+            <TenantChip business={activeBusiness} variant="full" />
+          </div>
+        )}
 
         <div className="side-nav-body">
           {/* Quick actions: theme, calculator, notifications */}

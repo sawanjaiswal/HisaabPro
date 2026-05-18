@@ -10,15 +10,22 @@ import {
   UserCog,
   ClipboardCheck,
   MessageSquare,
+  Pause,
+  Play,
+  CheckCircle2,
+  Undo2,
+  ChevronRight,
 } from 'lucide-react'
 import type { LucideProps } from 'lucide-react'
-import type { AuditLogEntry as AuditLogEntryType, AuditAction } from '../settings.types'
+import type { AuditSearchRow, AuditAction } from '../settings.types'
 import { AUDIT_ACTION_LABELS, AUDIT_ACTION_COLORS, AUDIT_ENTITY_LABELS } from '../audit.constants'
 import { formatTimeAgo } from '../settings.utils'
 import '../audit-log.css'
 
 interface AuditLogEntryProps {
-  entry: AuditLogEntryType
+  entry: AuditSearchRow
+  /** Click handler — opens the per-row diff drawer */
+  onSelect?: (entry: AuditSearchRow) => void
 }
 
 type IconComponent = React.FC<LucideProps>
@@ -33,6 +40,10 @@ const ICON_MAP: Record<AuditAction, IconComponent> = {
   ROLE_CHANGE:       UserCog,
   APPROVAL_REQUEST:  ClipboardCheck,
   APPROVAL_RESPONSE: MessageSquare,
+  SUSPEND_FIRM:      Pause,
+  REACTIVATE_FIRM:   Play,
+  FINALIZE:          CheckCircle2,
+  REVERSE:           Undo2,
 }
 
 const ACTION_ICON_CLASS: Record<AuditAction, string> = {
@@ -45,18 +56,41 @@ const ACTION_ICON_CLASS: Record<AuditAction, string> = {
   ROLE_CHANGE:       'audit-action-icon--role-change',
   APPROVAL_REQUEST:  'audit-action-icon--update',
   APPROVAL_RESPONSE: 'audit-action-icon--update',
+  SUSPEND_FIRM:      'audit-action-icon--pin',
+  REACTIVATE_FIRM:   'audit-action-icon--restore',
+  FINALIZE:          'audit-action-icon--update',
+  REVERSE:           'audit-action-icon--delete',
 }
 
-export const AuditLogEntry: React.FC<AuditLogEntryProps> = ({ entry }) => {
+/** Headline actor — prefer userName (real user) over systemActor (cron/system) */
+function actorLabel(entry: AuditSearchRow, fallback: string): string {
+  if (entry.userName) return entry.userName
+  if (entry.systemActor) return entry.systemActor
+  return fallback
+}
+
+export const AuditLogEntry: React.FC<AuditLogEntryProps> = ({ entry, onSelect }) => {
   const { t } = useLanguage()
-  const Icon = ICON_MAP[entry.action]
-  const iconClass = ACTION_ICON_CLASS[entry.action]
-  const actionLabel = AUDIT_ACTION_LABELS[entry.action]
+  const Icon = ICON_MAP[entry.action] ?? Pencil
+  const iconClass = ACTION_ICON_CLASS[entry.action] ?? 'audit-action-icon--update'
+  const actionLabel = AUDIT_ACTION_LABELS[entry.action] ?? entry.action
   const entityLabel = AUDIT_ENTITY_LABELS[entry.entityType] ?? entry.entityType
   const displayLabel = entry.entityLabel ? `${entityLabel}: ${entry.entityLabel}` : entityLabel
+  const actor = actorLabel(entry, t.auditActorSystem)
+
+  // If the parent supplied an onSelect, render as a clickable row that opens
+  // the diff drawer. Otherwise render as a plain article (no affordance).
+  const interactive = typeof onSelect === 'function'
+  const RowTag: 'button' | 'div' = interactive ? 'button' : 'div'
 
   return (
-    <div className="audit-entry">
+    <RowTag
+      type={interactive ? 'button' : undefined}
+      className={`audit-entry${interactive ? ' audit-entry--interactive' : ''}`}
+      onClick={interactive ? () => onSelect?.(entry) : undefined}
+      aria-label={interactive ? `${actor} ${actionLabel.toLowerCase()} ${displayLabel}` : undefined}
+      style={{ minHeight: interactive ? 44 : undefined }}
+    >
       <span
         className={`audit-action-icon ${iconClass}`}
         style={{ color: AUDIT_ACTION_COLORS[entry.action] }}
@@ -67,22 +101,9 @@ export const AuditLogEntry: React.FC<AuditLogEntryProps> = ({ entry }) => {
 
       <div className="audit-entry-body">
         <p className="audit-entry-headline">
-          <strong>{entry.userName}</strong> {actionLabel.toLowerCase()} {displayLabel}
+          <strong>{actor}</strong> {actionLabel.toLowerCase()} {displayLabel}
         </p>
         <p className="audit-entry-meta">{formatTimeAgo(entry.createdAt)}</p>
-
-        {entry.changes && entry.changes.length > 0 && (
-          <div className="audit-changes" role="list" aria-label={t.changesLabel}>
-            {entry.changes.map((change) => (
-              <div key={change.field} className="audit-change-row" role="listitem">
-                <span className="audit-change-field">{change.field}</span>
-                <span className="audit-change-before">{change.before}</span>
-                <span className="audit-change-arrow" aria-hidden="true">&#8594;</span>
-                <span className="audit-change-after">{change.after}</span>
-              </div>
-            ))}
-          </div>
-        )}
 
         {entry.reason && (
           <p className="audit-entry-meta" style={{ marginTop: 'var(--space-2)' }}>
@@ -90,6 +111,14 @@ export const AuditLogEntry: React.FC<AuditLogEntryProps> = ({ entry }) => {
           </p>
         )}
       </div>
-    </div>
+
+      {interactive && (
+        <ChevronRight
+          size={18}
+          aria-hidden="true"
+          style={{ color: 'var(--color-gray-400)', flexShrink: 0 }}
+        />
+      )}
+    </RowTag>
   )
 }

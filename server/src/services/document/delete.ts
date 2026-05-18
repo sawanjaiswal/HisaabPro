@@ -15,6 +15,7 @@ export async function deleteDocument(businessId: string, documentId: string, use
     where: { id: documentId, businessId, status: { not: 'DELETED' } },
     select: {
       id: true, type: true, status: true, partyId: true, grandTotal: true,
+      documentNumber: true,
       lineItems: { select: { productId: true, quantity: true } },
     },
   })
@@ -52,6 +53,18 @@ export async function deleteDocument(businessId: string, documentId: string, use
         permanentDeleteAt,
       },
       select: { id: true, status: true, deletedAt: true, permanentDeleteAt: true },
+    })
+
+    await tx.auditLog.create({
+      data: {
+        businessId,
+        entityType: 'Document',
+        entityId: documentId,
+        entityLabel: doc.documentNumber?.slice(0, 120) ?? null,
+        userId,
+        action: 'DELETE',
+        changes: { type: doc.type, prevStatus: doc.status, softDeleted: true },
+      },
     })
 
     return updated

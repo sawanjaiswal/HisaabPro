@@ -7,6 +7,7 @@ import { queryClient } from './lib/query-client'
 import { AuthProvider } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
 import { LanguageProvider } from './context/LanguageContext'
+import { PinGateProvider } from './providers/PinGateProvider'
 import { App } from './App'
 import { initServiceWorker } from './lib/sw-register'
 import { recoverStuckItems } from './lib/offline'
@@ -28,7 +29,9 @@ createRoot(document.getElementById('root')!).render(
           <ThemeProvider>
             <LanguageProvider>
               <AuthProvider>
-                <App />
+                <PinGateProvider>
+                  <App />
+                </PinGateProvider>
               </AuthProvider>
             </LanguageProvider>
           </ThemeProvider>

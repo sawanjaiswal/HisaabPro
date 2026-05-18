@@ -7,7 +7,7 @@ import { validationError, unauthorizedError } from '../../lib/errors.js'
 import { hashPassword, verifyPassword } from '../../lib/password.js'
 import type { SetPinInput, VerifyPinInput } from '../../schemas/settings.schemas.js'
 
-export async function setPin(userId: string, data: SetPinInput) {
+export async function setPin(userId: string, businessId: string, data: SetPinInput) {
   const existing = await prisma.userAppSettings.findUnique({
     where: { userId },
     select: { pinHash: true },
@@ -22,11 +22,27 @@ export async function setPin(userId: string, data: SetPinInput) {
 
   const pinHash = await hashPassword(data.newPin)
 
-  return prisma.userAppSettings.upsert({
-    where: { userId },
-    create: { userId, pinHash, pinEnabled: true },
-    update: { pinHash, pinEnabled: true, pinAttempts: 0, pinLockedUntil: null },
-    select: { pinEnabled: true },
+  return prisma.$transaction(async (tx) => {
+    const updated = await tx.userAppSettings.upsert({
+      where: { userId },
+      create: { userId, pinHash, pinEnabled: true },
+      update: { pinHash, pinEnabled: true, pinAttempts: 0, pinLockedUntil: null },
+      select: { pinEnabled: true },
+    })
+
+    await tx.auditLog.create({
+      data: {
+        businessId,
+        entityType: 'User',
+        entityId: userId,
+        entityLabel: null,
+        userId,
+        action: 'PIN_RESET',
+        changes: { wasSet: Boolean(existing?.pinHash) },
+      },
+    })
+
+    return updated
   })
 }
 
@@ -71,6 +87,7 @@ export async function verifyPin(userId: string, data: VerifyPinInput) {
 
 export async function setOperationPin(
   businessId: string,
+  userId: string,
   data: { currentPin?: string; newPin: string }
 ) {
   const config = await prisma.transactionLockConfig.findUnique({
@@ -87,10 +104,24 @@ export async function setOperationPin(
 
   const pinHash = await hashPassword(data.newPin)
 
-  await prisma.transactionLockConfig.upsert({
-    where: { businessId },
-    create: { businessId, operationPinHash: pinHash },
-    update: { operationPinHash: pinHash },
+  await prisma.$transaction(async (tx) => {
+    await tx.transactionLockConfig.upsert({
+      where: { businessId },
+      create: { businessId, operationPinHash: pinHash },
+      update: { operationPinHash: pinHash },
+    })
+
+    await tx.auditLog.create({
+      data: {
+        businessId,
+        entityType: 'User',
+        entityId: businessId,
+        entityLabel: null,
+        userId,
+        action: 'PIN_RESET',
+        changes: { scope: 'OPERATION_PIN', wasSet: Boolean(config?.operationPinHash) },
+      },
+    })
   })
 
   return { operationPinSet: true, updatedAt: new Date().toISOString() }

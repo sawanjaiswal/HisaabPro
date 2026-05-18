@@ -1,0 +1,144 @@
+/* Phase 6 #138 PR2 FE — TenantChip
+ *
+ * 4 visual states encoded via [data-state]. Tokens only, no raw colors.
+ *   - active            → bg-surface, fg-primary
+ *   - member-suspended  → bg-warning-soft, fg-warning-strong
+ *   - firm-suspended    → bg-danger-soft, fg-danger-strong
+ *   - loading           → bg-surface-muted, fg-secondary
+ */
+
+.tenant-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-family: var(--font-body, inherit);
+  font-size: var(--fs-body-s);
+  line-height: 1.2;
+  cursor: default;
+  text-decoration: none;
+  min-height: 44px; /* tap target */
+  transition: background var(--duration-fast, 150ms) var(--ease-out, ease-out),
+              border-color var(--duration-fast, 150ms) var(--ease-out, ease-out);
+}
+
+button.tenant-chip {
+  cursor: pointer;
+}
+
+button.tenant-chip:hover:not(:disabled) {
+  background: var(--color-surface-hover, var(--color-surface));
+}
+
+button.tenant-chip:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.tenant-chip--full {
+  width: 100%;
+  justify-content: flex-start;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+}
+
+.tenant-chip--compact {
+  padding: var(--space-1) var(--space-2);
+  min-height: 36px;
+  font-size: var(--fs-caption);
+}
+
+.tenant-chip__avatar {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  color: white;
+  font-weight: 600;
+  font-size: var(--fs-caption);
+  background: var(--color-surface-muted, var(--color-surface));
+}
+
+.tenant-chip--compact .tenant-chip__avatar {
+  width: 24px;
+  height: 24px;
+  font-size: 10px;
+}
+
+.tenant-chip__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0; /* allow ellipsis */
+  flex: 1;
+}
+
+.tenant-chip__name {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tenant-chip__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-caption);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+/* State variants — token-driven */
+.tenant-chip--active {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+.tenant-chip--member-suspended {
+  background: var(--color-warning-soft, var(--color-surface));
+  border-color: var(--color-warning, var(--color-border));
+}
+
+.tenant-chip--member-suspended .tenant-chip__meta {
+  color: var(--color-warning-strong, var(--color-text-primary));
+  font-weight: 600;
+}
+
+.tenant-chip--firm-suspended {
+  background: var(--color-danger-soft, var(--color-surface));
+  border-color: var(--color-danger, var(--color-border));
+}
+
+.tenant-chip--firm-suspended .tenant-chip__meta {
+  color: var(--color-danger-strong, var(--color-danger));
+  font-weight: 600;
+}
+
+.tenant-chip--loading {
+  background: var(--color-surface-muted, var(--color-surface));
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.tenant-chip__spin {
+  animation: tenant-chip-spin 1s linear infinite;
+}
+
+@keyframes tenant-chip-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 320px: hide compact name, keep avatar + meta dot */
+@media (max-width: 360px) {
+  .tenant-chip--compact .tenant-chip__name {
+    display: none;
+  }
+}

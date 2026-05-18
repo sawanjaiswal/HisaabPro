@@ -6,6 +6,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
+import { requireActiveBusiness } from '../middleware/require-active-business.js'
 import { userMutationLimiter } from '../middleware/rate-limit.js'
 import { requireFeature } from '../middleware/subscription-gate.js'
 import { sendSuccess } from '../lib/response.js'
@@ -28,6 +29,8 @@ import * as paymentService from '../services/payment.service.js'
 const router = Router()
 
 router.use(auth)
+// Phase 6 #138 PR2 — tenancy gate (403 FIRM_SUSPENDED / MEMBER_SUSPENDED).
+router.use(requireActiveBusiness)
 router.use(userMutationLimiter)
 router.use(requireFeature('payments'))
 

@@ -6,6 +6,9 @@ import { prisma } from '../../lib/prisma.js'
 import { notFoundError } from '../../lib/errors.js'
 import { PAYMENT_DETAIL_SELECT } from './selects.js'
 import type { UpdatePaymentInput } from '../../schemas/payment.schemas.js'
+import { paymentTypeDirection } from '../../lib/payment-types.js'
+import type { PaymentType } from '../../../../shared/enums.js'
+
 
 export async function updatePayment(
   businessId: string,
@@ -20,12 +23,14 @@ export async function updatePayment(
   if (!existing) throw notFoundError('Payment')
 
   return prisma.$transaction(async (tx) => {
-    // If amount changed, update party outstanding
+    // If amount changed, update party outstanding via paymentTypeDirection
+    // (M6 v2.1). PAYROLL_* yields 0 → never touches customer outstanding.
     if (data.amount && data.amount !== existing.amount) {
       const amountDelta = data.amount - existing.amount
-      const outstandingDelta = existing.type === 'PAYMENT_IN'
-        ? -amountDelta
-        : amountDelta
+      // `existing.type` is Prisma `String` (not native enum) — narrow to the
+      // literal union. Safe because writes are Zod-validated; reads inherit
+      // the validated state.
+      const outstandingDelta = paymentTypeDirection(existing.type as PaymentType) * amountDelta
       await tx.party.update({
         where: { id: existing.partyId },
         data: { outstandingBalance: { increment: outstandingDelta } },
@@ -42,6 +47,18 @@ export async function updatePayment(
     await tx.payment.update({
       where: { id: paymentId },
       data: updateData,
+    })
+
+    await tx.auditLog.create({
+      data: {
+        businessId,
+        entityType: 'Payment',
+        entityId: paymentId,
+        entityLabel: (data.notes ?? '').slice(0, 120) || null,
+        userId,
+        action: 'UPDATE',
+        changes: data as Record<string, unknown>,
+      },
     })
 
     return tx.payment.findUniqueOrThrow({
@@ -74,12 +91,11 @@ export async function deletePayment(businessId: string, paymentId: string, userI
       })
     ))
 
-    // Reverse outstanding
+    // Reverse outstanding — apply NEGATIVE of original direction so the prior
+    // delta is undone. PAYROLL_* yields 0 (untouched). M6 v2.1.
     const discountAmount = payment.discount?.calculatedAmount || 0
     const effectiveAmount = payment.amount + discountAmount
-    const reverseDelta = payment.type === 'PAYMENT_IN'
-      ? effectiveAmount
-      : -effectiveAmount
+    const reverseDelta = -paymentTypeDirection(payment.type as PaymentType) * effectiveAmount
     await tx.party.update({
       where: { id: payment.partyId },
       data: { outstandingBalance: { increment: reverseDelta } },
@@ -93,6 +109,18 @@ export async function deletePayment(businessId: string, paymentId: string, userI
         updatedBy: userId,
       },
       select: { id: true, deletedAt: true },
+    })
+
+    await tx.auditLog.create({
+      data: {
+        businessId,
+        entityType: 'Payment',
+        entityId: paymentId,
+        entityLabel: null,
+        userId,
+        action: 'DELETE',
+        changes: { type: payment.type, amount: payment.amount, partyId: payment.partyId, softDeleted: true },
+      },
     })
 
     return { id: updated.id, deletedAt: updated.deletedAt }
@@ -122,12 +150,11 @@ export async function restorePayment(businessId: string, paymentId: string, user
       })
     ))
 
-    // Re-apply outstanding
+    // Re-apply outstanding via paymentTypeDirection (M6 v2.1). PAYROLL_*
+    // yields 0 → never touches customer outstanding (symmetric with delete).
     const discountAmount = payment.discount?.calculatedAmount || 0
     const effectiveAmount = payment.amount + discountAmount
-    const outstandingDelta = payment.type === 'PAYMENT_IN'
-      ? -effectiveAmount
-      : effectiveAmount
+    const outstandingDelta = paymentTypeDirection(payment.type as PaymentType) * effectiveAmount
     await tx.party.update({
       where: { id: payment.partyId },
       data: { outstandingBalance: { increment: outstandingDelta } },

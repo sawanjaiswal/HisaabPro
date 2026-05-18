@@ -105,6 +105,16 @@ model User {
   // Phase 5 Epic D — Commission #128 — reverse for staff commission ledger
   staffCommissionLedger CommissionLedger[] @relation("StaffCommissionLedger")
 
+  // Phase 6 — Staff & HR back-relations
+  employeesAsLogin       Employee[]          @relation("EmployeeUser")
+  employeesCreated       Employee[]          @relation("EmployeeCreator")
+  attendancesCreated     Attendance[]        @relation("AttendanceCreator")
+  payrollRunsFinalized   PayrollRun[]        @relation("PayrollRunFinalizer")
+  payrollRunsCreated     PayrollRun[]        @relation("PayrollRunCreator")
+  pinResetTokens         PinResetToken[]
+  auditRedactionsCreated AuditLogRedaction[] @relation("AuditRedactionCreator")
+  suspendedMemberships   BusinessUser[]      @relation("BusinessUserSuspender")
+
   @@index([phone])
   @@index([referredBy])
   @@index([referralFraudFlags])
@@ -262,19 +272,31 @@ model Business {
   upiMandates        UpiMandate[]
 
   // Epic C PR4 — Online Storefront (#121, migration: epic_c_storefront_fields)
-  storefrontSlug      String?  @unique         // null = not configured; stored lowercased at write time
-  storefrontIsPublic  Boolean  @default(false)
-  storefrontTagline   String?                  // max 80 chars (enforced by Zod)
-  storefrontTheme     String   @default("LIGHT") // "LIGHT" | "DARK"
-  storefrontWhatsapp  String?                  // E.164 digits without +; falls back to Business.phone
+  storefrontSlug     String? @unique // null = not configured; stored lowercased at write time
+  storefrontIsPublic Boolean @default(false)
+  storefrontTagline  String? // max 80 chars (enforced by Zod)
+  storefrontTheme    String  @default("LIGHT") // "LIGHT" | "DARK"
+  storefrontWhatsapp String? // E.164 digits without +; falls back to Business.phone
 
-  storefrontProducts  StorefrontProduct[]
+  storefrontProducts StorefrontProduct[]
 
   // Phase 5 Epic D — Loyalty #125 + Commission #128 (migration: phase5_epic_d_crm_loyalty_commission)
-  loyaltyProgram    LoyaltyProgram?
-  loyaltyLedger     LoyaltyLedger[]
-  commissionRules   CommissionRule[]
-  commissionLedger  CommissionLedger[]
+  loyaltyProgram   LoyaltyProgram?
+  loyaltyLedger    LoyaltyLedger[]
+  commissionRules  CommissionRule[]
+  commissionLedger CommissionLedger[]
+
+  // Phase 6 — firm-level suspend (architecture §3.5; requireActiveBusiness emits FIRM_SUSPENDED 403)
+  suspendedAt DateTime?
+
+  // Phase 6 — Staff & HR back-relations
+  employees        Employee[]
+  attendances      Attendance[]
+  employeeAdvances EmployeeAdvance[]
+  payrollRuns      PayrollRun[]
+  payrolls         Payroll[]
+  payslipSnapshots PayslipSnapshot[]
+  auditRedactions  AuditLogRedaction[]
 
   @@index([name])
 }
@@ -290,12 +312,21 @@ model BusinessUser {
   lastActiveAt DateTime?
   joinedAt     DateTime  @default(now())
 
-  user     User     @relation(fields: [userId], references: [id], onDelete: Restrict)
-  business Business @relation(fields: [businessId], references: [id], onDelete: Restrict)
-  roleRef  Role?    @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  // Phase 6 — member-suspend audit trail (architecture §3.5).
+  // `status='SUSPENDED'` already existed; `suspendedAt` + `suspendedById`
+  // add WHO + WHEN so requireActiveBusiness can return MEMBER_SUSPENDED with
+  // the timestamp + audit-link metadata. Nullable forever.
+  suspendedAt   DateTime?
+  suspendedById String?
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  roleRef     Role?    @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  suspendedBy User?    @relation("BusinessUserSuspender", fields: [suspendedById], references: [id], onDelete: SetNull)
 
   @@unique([userId, businessId])
   @@index([businessId])
+  @@index([businessId, suspendedAt])
 }
 
 model RefreshToken {
@@ -362,7 +393,7 @@ model Party {
   phone              String?
   email              String?
   companyName        String?
-  type               String    @default("CUSTOMER") // CUSTOMER, SUPPLIER, BOTH
+  type               String    @default("CUSTOMER") // CUSTOMER, SUPPLIER, BOTH, STAFF
   groupId            String?
   tags               String[]  @default([])
   gstin              String?
@@ -429,6 +460,9 @@ model Party {
 
   // Phase 5 Epic D — Loyalty #125 reverse
   loyaltyLedger LoyaltyLedger[]
+
+  // Phase 6 — Staff & HR: paired STAFF Party owns one Employee row (architecture §8.5).
+  employee Employee? @relation("EmployeeParty")
 
   @@unique([businessId, phone])
   @@index([businessId, type, isActive])
@@ -1204,7 +1238,7 @@ model Payment {
   id              String    @id @default(cuid())
   offlineId       String?   @unique
   businessId      String
-  type            String // PAYMENT_IN, PAYMENT_OUT
+  type            String // PAYMENT_IN, PAYMENT_OUT, PAYROLL_OUT, PAYROLL_IN (Phase 6 widening — see shared/enums.ts PAYMENT_TYPES)
   partyId         String
   amount          Int // paise
   date            DateTime
@@ -1218,12 +1252,28 @@ model Payment {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
+  // Phase 6 — payroll reversal pointer (A04.1 closure v2.3).
+  // When a finalized PayrollRun is reversed, the service writes an inverse-
+  // direction-same-amount PAYROLL_IN row pointing back at the original
+  // PAYROLL_OUT via `reversesPaymentId`. `@unique` enforces "no reversal of a
+  // reversal at the DB level — a second attempt to write the same
+  // reversesPaymentId triggers Prisma P2002, which the service translates to
+  // AppError(PAYROLL_ALREADY_REVERSED, 409). Nullable forever; existing rows
+  // (and all non-reversal payments) leave it null. See architecture §8.3.
+  reversesPaymentId String?   @unique
+  reversesPayment   Payment?  @relation("PaymentReversal", fields: [reversesPaymentId], references: [id], onDelete: SetNull)
+  reversedBy        Payment[] @relation("PaymentReversal")
+
   business    Business            @relation(fields: [businessId], references: [id], onDelete: Restrict)
   party       Party               @relation(fields: [partyId], references: [id], onDelete: Restrict)
   creator     User                @relation("PaymentCreator", fields: [createdBy], references: [id], onDelete: Restrict)
   updater     User?               @relation("PaymentUpdater", fields: [updatedBy], references: [id])
   allocations PaymentAllocation[]
   discount    PaymentDiscount?
+
+  // Phase 6 — back-relation for Payroll.paymentId + EmployeeAdvance.paymentId
+  payrolls         Payroll[]         @relation("PayrollPayment")
+  employeeAdvances EmployeeAdvance[] @relation("AdvancePayment")
 
   @@index([businessId, date])
   @@index([businessId, partyId])
@@ -1591,8 +1641,21 @@ model AuditLog {
   deviceInfo  String?
   createdAt   DateTime @default(now())
 
+  // Phase 6 — full-text search vector for /api/audit?q=... (architecture §7.5).
+  // Auto-populated by a Postgres trigger (`audit_log_search_vector_update`)
+  // from action + entityType + entityLabel + reason. GIN index is added in
+  // the same migration via raw SQL (Prisma can't emit GIN on tsvector;
+  // .claude/rules/PRISMA_MIGRATION_RULES.md).
+  searchVector Unsupported("tsvector")?
+
+  // Phase 6 — record of field paths that were redacted from `changes` before
+  // storage, per the per-business AuditLogRedaction config. JSON array shape;
+  // empty object = no redaction. Architecture §7.6.
+  redactedFields Json @default("{}")
+
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
   user     User?    @relation(fields: [userId], references: [id], onDelete: Restrict)
+  // NOTE: searchVector GIN index lives in migration.sql as raw SQL.
 
   // Immutable — no updatedAt
   @@index([businessId, createdAt])
@@ -2729,16 +2792,16 @@ model Subscription {
 
   // --- subscription-port columns (Step 3: NOT NULL where backfilled) ---
   subscriptionState       String    @default("NONE") // NONE | PROMO_ACTIVE | TRIAL_NO_AUTOPAY | ACTIVE | PAST_DUE | LOCKED | CANCELLED
-  mandateId               String?   // FK to UpiMandate.id (added after UpiMandate table exists)
+  mandateId               String? // FK to UpiMandate.id (added after UpiMandate table exists)
   gracePeriodEndsAt       DateTime?
   trialEndsAt             DateTime?
   autoRenew               Boolean   @default(false)
   nextBillingAt           DateTime?
   paymentMethod           String    @default("MANUAL") // UPI_AUTOPAY | CARD | MANUAL | RAZORPAY
   lastEntitlementIssuedAt DateTime?
-  pendingDowngradeTier    String?   // scheduled downgrade target tier
+  pendingDowngradeTier    String? // scheduled downgrade target tier
   overflowGraceUntil      DateTime? // when overflow grace period ends
-  lastWebhookEventId      String?   // last Razorpay event ID processed
+  lastWebhookEventId      String? // last Razorpay event ID processed
 
   business           Business            @relation(fields: [businessId], references: [id])
   subscriptionEvents SubscriptionEvent[]
@@ -2755,17 +2818,17 @@ model Subscription {
 
 /// Immutable audit ledger for all subscription state transitions.
 model SubscriptionEvent {
-  id               String   @id @default(cuid())
-  businessId       String
-  subscriptionId   String
-  eventType        String   // CHECKOUT | ACTIVATE | RENEW | CANCEL | REACTIVATE | TRIAL_START | TRIAL_END | ADMIN_GRANT | MANDATE_CREATE | MANDATE_REVOKE | ADDON_PURCHASE | ADDON_REVOKE | STATE_TRANSITION | OVERFLOW_ENTER | OVERFLOW_EXIT
-  fromState        String?
-  toState          String?
-  payload          Json     @default("{}")
-  razorpayEventId  String?  @unique // IDEMPOTENCY KEY — sparse unique (nullable)
-  actorUserId      String?  // for admin actions
-  actorType        String   // USER | SYSTEM | WEBHOOK | ADMIN | CRON
-  createdAt        DateTime @default(now())
+  id              String   @id @default(cuid())
+  businessId      String
+  subscriptionId  String
+  eventType       String // CHECKOUT | ACTIVATE | RENEW | CANCEL | REACTIVATE | TRIAL_START | TRIAL_END | ADMIN_GRANT | MANDATE_CREATE | MANDATE_REVOKE | ADDON_PURCHASE | ADDON_REVOKE | STATE_TRANSITION | OVERFLOW_ENTER | OVERFLOW_EXIT
+  fromState       String?
+  toState         String?
+  payload         Json     @default("{}")
+  razorpayEventId String?  @unique // IDEMPOTENCY KEY — sparse unique (nullable)
+  actorUserId     String? // for admin actions
+  actorType       String // USER | SYSTEM | WEBHOOK | ADMIN | CRON
+  createdAt       DateTime @default(now())
 
   business     Business     @relation(fields: [businessId], references: [id], onDelete: Restrict)
   subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Restrict)
@@ -2777,17 +2840,17 @@ model SubscriptionEvent {
 
 /// Catalog of optional feature add-ons that businesses can purchase.
 model FeatureAddon {
-  id                  String   @id @default(cuid())
-  code                String   @unique
-  displayName         String
-  description         String?
-  priceMonthlyPaise   Int
-  priceYearlyPaise    Int?
-  razorpayPlanId      String?
-  requiresPlanTier    String?  // gate by base plan (e.g. 'PRO')
-  isActive            Boolean  @default(true)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id                String   @id @default(cuid())
+  code              String   @unique
+  displayName       String
+  description       String?
+  priceMonthlyPaise Int
+  priceYearlyPaise  Int?
+  razorpayPlanId    String?
+  requiresPlanTier  String? // gate by base plan (e.g. 'PRO')
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   businessAddons BusinessAddon[]
 }
@@ -2820,10 +2883,10 @@ model UpiMandate {
   razorpayTokenId   String?
   status            String    @default("PENDING") // PENDING | ACTIVE | PAUSED | REVOKED | FAILED
   maxAmountPaise    Int
-  frequency         String    // MONTHLY | YEARLY
+  frequency         String // MONTHLY | YEARLY
   nextChargeAt      DateTime?
   lastChargeAt      DateTime?
-  vpaLast4          String?   // masked — last 4 chars of VPA only, never full VPA
+  vpaLast4          String? // masked — last 4 chars of VPA only, never full VPA
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
@@ -3761,21 +3824,21 @@ model LoyaltyProgram {
 }
 
 model LoyaltyLedger {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   businessId  String
   partyId     String
   // AC | RD | EX | AD | VD | VR — see services/loyalty/loyalty.constants.ts
-  type        String   @db.VarChar(20)
+  type        String    @db.VarChar(20)
   delta       Int
   // Provenance — exactly one of these is set (enforced in service layer)
   posSaleId   String?
   documentId  String?
   expiryRunId String?
   adjustedBy  String?
-  note        String?  @db.VarChar(200)
-  earnedAt    DateTime @default(now())
+  note        String?   @db.VarChar(200)
+  earnedAt    DateTime  @default(now())
   expiresAt   DateTime?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime  @default(now())
 
   business Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
   party    Party     @relation(fields: [partyId], references: [id], onDelete: Restrict)
@@ -3843,4 +3906,218 @@ model CommissionLedger {
   @@index([businessId, periodYearMonth])
   @@index([posSaleId])
   @@index([documentId])
+}
+
+// ─── Phase 6 — Staff & HR (architecture §2.1) ───────────────────────────────
+
+/// Employee — paired 1:1 with a STAFF Party (architecture §8.5). The
+/// `partyId` link is created in the same $transaction as the Employee row;
+/// neither can exist without the other. Payroll Payments carry
+/// `partyId = <paired STAFF Party id>` so customer ledger queries can
+/// exclude payroll naturally via `party.type != 'STAFF'`.
+model Employee {
+  id          String    @id @default(cuid())
+  businessId  String
+  /// Optional — set only if the employee also logs into HisaabPro as a User.
+  userId      String?
+  /// 1:1 paired STAFF Party (Party.type='STAFF'). `@unique` enforces the
+  /// invariant that one Party row owns at most one Employee row.
+  partyId     String    @unique
+  name        String
+  phone       String?
+  designation String?
+  /// Daily rate in paise — used by Payroll compute.
+  dailyRate   Int
+  joinedAt    DateTime  @default(now())
+  leftAt      DateTime?
+  isDeleted   Boolean   @default(false)
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  createdById String
+
+  business    Business          @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  user        User?             @relation("EmployeeUser", fields: [userId], references: [id], onDelete: SetNull)
+  party       Party             @relation("EmployeeParty", fields: [partyId], references: [id], onDelete: Restrict)
+  creator     User              @relation("EmployeeCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  attendances Attendance[]
+  payrolls    Payroll[]
+  advances    EmployeeAdvance[]
+
+  @@unique([businessId, partyId])
+  @@index([businessId, isDeleted])
+  @@index([businessId, name])
+}
+
+/// Attendance — one row per Employee per date. Service-layer batch upserts
+/// keep insert volume bounded.
+model Attendance {
+  id          String   @id @default(cuid())
+  businessId  String
+  employeeId  String
+  date        DateTime @db.Date
+  /// PRESENT | ABSENT | HALF_DAY | LEAVE_PAID | LEAVE_UNPAID
+  status      String
+  overtimeMin Int      @default(0)
+  note        String?
+  createdAt   DateTime @default(now())
+  createdById String
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  creator  User     @relation("AttendanceCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@unique([businessId, employeeId, date])
+  @@index([businessId, date])
+}
+
+/// EmployeeAdvance — money paid up-front to an employee against future
+/// payroll. Optional `paymentId` links back to the Payment row written when
+/// the advance was disbursed (paymentId is nullable for legacy / manual entry
+/// rows that were not coupled to a Payment).
+model EmployeeAdvance {
+  id          String    @id @default(cuid())
+  businessId  String
+  employeeId  String
+  /// Paise — always positive; the payroll-compute layer subtracts it from net.
+  amount      Int
+  grantedAt   DateTime  @default(now())
+  paidBackAt  DateTime?
+  paymentId   String?
+  note        String?
+  createdAt   DateTime  @default(now())
+  createdById String
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  payment  Payment? @relation("AdvancePayment", fields: [paymentId], references: [id], onDelete: SetNull)
+
+  @@index([businessId, employeeId])
+  @@index([businessId, paidBackAt])
+}
+
+/// PayrollRun — parent; state machine: DRAFT → FINALIZED → REVERSED (terminal).
+/// `@@unique([businessId, fromDate, toDate])` enforces "no overlapping runs
+/// for the same period" at the DB level (architecture §6.2
+/// PAYROLL_PERIOD_OVERLAP 409).
+model PayrollRun {
+  id            String    @id @default(cuid())
+  businessId    String
+  fromDate      DateTime  @db.Date
+  toDate        DateTime  @db.Date
+  /// DRAFT | FINALIZED | REVERSED
+  status        String    @default("DRAFT")
+  /// Recomputed on FINALIZE; sum of all child Payroll.netPaise.
+  totalNet      Int       @default(0)
+  finalizedAt   DateTime?
+  finalizedById String?
+  createdAt     DateTime  @default(now())
+  createdById   String
+
+  business  Business  @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  finalizer User?     @relation("PayrollRunFinalizer", fields: [finalizedById], references: [id], onDelete: SetNull)
+  creator   User      @relation("PayrollRunCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  payrolls  Payroll[]
+
+  @@unique([businessId, fromDate, toDate])
+  @@index([businessId, status])
+}
+
+/// Payroll — child; one row per Employee per PayrollRun.
+/// Mirrors the PayrollRun state machine. `paymentId` links to the Payment
+/// row written in the same $transaction as FINALIZE (nullable until then).
+model Payroll {
+  id                String   @id @default(cuid())
+  businessId        String
+  payrollRunId      String
+  employeeId        String
+  presentDays       Int
+  halfDays          Int
+  overtimeMin       Int
+  advanceTotalPaise Int
+  deductionsPaise   Int
+  /// presentDays * dailyRate + halfPay + overtimePay (paise).
+  grossPaise        Int
+  /// gross - advances - deductions (paise).
+  netPaise          Int
+  /// FK to Payment row written in the same tx as FINALIZE; null until then.
+  paymentId         String?
+  /// DRAFT | FINALIZED | REVERSED
+  status            String   @default("DRAFT")
+  createdAt         DateTime @default(now())
+
+  business   Business         @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  payrollRun PayrollRun       @relation(fields: [payrollRunId], references: [id], onDelete: Restrict)
+  employee   Employee         @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  payment    Payment?         @relation("PayrollPayment", fields: [paymentId], references: [id], onDelete: SetNull)
+  snapshot   PayslipSnapshot?
+
+  @@unique([businessId, payrollRunId, employeeId])
+  @@index([businessId, employeeId])
+}
+
+/// PayslipSnapshot — immutable legal record of the payroll line items at the
+/// moment of FINALIZE. Stored as JSON so future Employee/PayrollRun edits do
+/// NOT mutate prior payslips.
+model PayslipSnapshot {
+  id         String   @id @default(cuid())
+  businessId String
+  payrollId  String   @unique
+  /// Frozen JSON blob: { employee, period, lines, gross, deductions, net, ... }
+  payload    Json
+  createdAt  DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  payroll  Payroll  @relation(fields: [payrollId], references: [id], onDelete: Restrict)
+}
+
+/// PinPhoneLockout — DH-port verbatim. Throttles PIN-verify attempts per
+/// phone (E.164) to defeat credential stuffing. `windowStart` rolls forward
+/// on the lockout-service's sliding-window logic. NOT business-scoped (PIN is
+/// a user-level credential and lockouts must span tenants).
+model PinPhoneLockout {
+  id          String    @id @default(cuid())
+  phoneE164   String    @unique
+  attempts    Int       @default(0)
+  windowStart DateTime  @default(now())
+  lockedUntil DateTime?
+  updatedAt   DateTime  @updatedAt
+
+  @@index([phoneE164])
+}
+
+/// PinResetToken — DH-port verbatim. Single-use; `consumedAt` flips on use.
+/// `tokenHash` stored — never the raw token — so a DB leak does not enable
+/// PIN reset. Background GC job purges expired rows daily.
+model PinResetToken {
+  id         String    @id @default(cuid())
+  userId     String
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+/// AuditLogRedaction — per-business custom field redaction config. Example
+/// rows: `(Party, phone)` to redact phone numbers from audit-trail diffs;
+/// `(Invoice, metadata.bankAccount)` for a nested field path. The audit-write
+/// service consults this table BEFORE serializing the `changes` blob.
+model AuditLogRedaction {
+  id          String   @id @default(cuid())
+  businessId  String
+  entityType  String
+  fieldPath   String
+  enabled     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  createdById String
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  creator  User     @relation("AuditRedactionCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@unique([businessId, entityType, fieldPath])
 }
