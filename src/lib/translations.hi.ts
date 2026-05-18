@@ -998,4 +998,22 @@ export const hi = {
   reactivateModalCancel:         'रद्द करें',
   reactivateModalSuccess:        'व्यवसाय पुनः सक्रिय हो गया।',
   reactivateModalError:          'व्यवसाय पुनः सक्रिय नहीं हो सका।',
+
+  // PIN gate (Phase 6 PR3 FE)
+  pinPadTitleAuth:               'PIN से पुष्टि करें',
+  pinPadTitleMutation:           'इस बदलाव को अधिकृत करें',
+  pinPadTitleFinalize:           'संवेदनशील कार्य की पुष्टि करें',
+  pinPadSubtitle:                'जारी रखने के लिए अपना 4-6 अंकों का PIN दर्ज करें।',
+  pinPadCancel:                  'रद्द करें',
+  pinPadVerify:                  'पुष्टि करें',
+  pinPadVerifying:               'पुष्टि हो रही है...',
+  pinPadForgotPin:               'PIN भूल गए?',
+  pinPadIncorrectTryAgain:       'गलत PIN। कृपया फिर कोशिश करें।',
+  pinPadLocked:                  'बहुत सी गलत कोशिशें। PIN लॉक हो गया है।',
+  pinPadLockedRetryIn:           'फिर कोशिश करें',
+  pinPadConnectionError:         'PIN सत्यापित करने के लिए इंटरनेट से जुड़ें।',
+  pinPadKeyAria:                 'PIN अंक',
+  pinPadBackspaceAria:           'पिछला अंक मिटाएँ',
+  pinPadDotsAria:                'दर्ज किया गया PIN',
+  pinPadKeypadAria:              'PIN कीपैड',
 } as const

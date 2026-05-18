@@ -998,4 +998,22 @@ export const en = {
   reactivateModalCancel:         'Cancel',
   reactivateModalSuccess:        'Firm reactivated.',
   reactivateModalError:          'Could not reactivate firm.',
+
+  // PIN gate (Phase 6 PR3 FE)
+  pinPadTitleAuth:               'Confirm with PIN',
+  pinPadTitleMutation:           'Authorize this change',
+  pinPadTitleFinalize:           'Confirm sensitive action',
+  pinPadSubtitle:                'Enter your 4-6 digit PIN to continue.',
+  pinPadCancel:                  'Cancel',
+  pinPadVerify:                  'Verify',
+  pinPadVerifying:               'Verifying...',
+  pinPadForgotPin:               'Forgot PIN?',
+  pinPadIncorrectTryAgain:       'Incorrect PIN. Please try again.',
+  pinPadLocked:                  'Too many wrong attempts. PIN locked.',
+  pinPadLockedRetryIn:           'Try again in',
+  pinPadConnectionError:         'Connect to the internet to verify your PIN.',
+  pinPadKeyAria:                 'PIN digit',
+  pinPadBackspaceAria:           'Delete last digit',
+  pinPadDotsAria:                'PIN entered',
+  pinPadKeypadAria:              'PIN keypad',
 } as const
