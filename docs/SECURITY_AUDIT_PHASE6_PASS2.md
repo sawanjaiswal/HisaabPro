@@ -54,12 +54,14 @@ none of `/api/hr/*`, `/api/payroll/*`, `/api/audit/*` consults
   PIN-stuck state.
 
 **SHOULD_FIX-2 — `PinPhoneLockout` table is unused**
-*Severity: Low · Status: deferred to Phase 6.1 cleanup*
+*Severity: Low · Status: FIXED 2026-05-18 (migration 20260518160000)*
 
-Schema declares `PinPhoneLockout` but no service reads/writes it. Either
-implement the lockout window (PIN-attempt rate-limit per phone) or drop
-the table in a follow-up migration. Low risk because `requireRecentPin`
-already rate-limits per business via `createPerBusinessLimiter`.
+Schema declared `PinPhoneLockout` but no service read/wrote it — lockout
+is implemented on `UserAppSettings.{pinAttempts,pinLockedUntil}` per
+`services/security-pin/pin-lockout.service.ts`. Dropped the model from
+schema, dropped the table + 2 indexes from `hisaabpro_dev` via the
+migration, marked applied via `prisma migrate resolve`, regenerated
+client. tsc clean. No code references existed so no shim needed.
 
 **SHOULD_FIX-3 — dead `DOMAIN_PREFIX_MISMATCH` tamper-subtype constant**
 *Severity: Low · Status: FIXED 2026-05-18 (commit follow-up)*

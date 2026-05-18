@@ -4071,21 +4071,6 @@ model PayslipSnapshot {
   payroll  Payroll  @relation(fields: [payrollId], references: [id], onDelete: Restrict)
 }
 
-/// PinPhoneLockout — DH-port verbatim. Throttles PIN-verify attempts per
-/// phone (E.164) to defeat credential stuffing. `windowStart` rolls forward
-/// on the lockout-service's sliding-window logic. NOT business-scoped (PIN is
-/// a user-level credential and lockouts must span tenants).
-model PinPhoneLockout {
-  id          String    @id @default(cuid())
-  phoneE164   String    @unique
-  attempts    Int       @default(0)
-  windowStart DateTime  @default(now())
-  lockedUntil DateTime?
-  updatedAt   DateTime  @updatedAt
-
-  @@index([phoneE164])
-}
-
 /// PinResetToken — DH-port verbatim. Single-use; `consumedAt` flips on use.
 /// `tokenHash` stored — never the raw token — so a DB leak does not enable
 /// PIN reset. Background GC job purges expired rows daily.

@@ -2,8 +2,10 @@
  * PIN lockout service — per-user lockout on UserAppSettings.
  *
  * HP adaptation of DH `auth-pin/pin-lockout.service.ts`. DH uses per-device
- * (UserDevicePin) + per-phone (PinPhoneLockout) — HP has neither table.
- * Instead we use the columns already on `UserAppSettings`:
+ * (UserDevicePin) + per-phone (PinPhoneLockout) tables — HP intentionally
+ * uses neither (the orphan PinPhoneLockout table was dropped in migration
+ * 20260518160000_phase6_1_drop_pin_phone_lockout). Instead we use the
+ * columns already on `UserAppSettings`:
  *   - pinAttempts:    Int    @default(0)   (DH: attemptCount)
  *   - pinLockedUntil: DateTime?            (DH: lockedUntil)
  *
