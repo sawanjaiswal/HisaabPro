@@ -119,6 +119,7 @@ model User {
   importJobs        ImportJob[]
   importedParties   Party[]     @relation("ImportedParties")
   importedDocuments Document[]  @relation("ImportedDocuments")
+  importedPayments  Payment[]   @relation("PaymentImporter")
 
   @@index([phone])
   @@index([referredBy])
@@ -1297,6 +1298,14 @@ model Payment {
   reversesPayment   Payment?  @relation("PaymentReversal", fields: [reversesPaymentId], references: [id], onDelete: SetNull)
   reversedBy        Payment[] @relation("PaymentReversal")
 
+  // Phase 7 #149 Slice 7.1D — Payments Import provenance.
+  // Nullable forever; existing rows (and all hand-entered payments) leave both null.
+  // SetNull on ImportJob delete preserves Payment ledger across DPDP cleanup.
+  importJobId String?
+  importedBy  String?
+  importJob   ImportJob? @relation("ImportedPayments", fields: [importJobId], references: [id], onDelete: SetNull)
+  importer    User?      @relation("PaymentImporter", fields: [importedBy], references: [id], onDelete: SetNull)
+
   business    Business            @relation(fields: [businessId], references: [id], onDelete: Restrict)
   party       Party               @relation(fields: [partyId], references: [id], onDelete: Restrict)
   creator     User                @relation("PaymentCreator", fields: [createdBy], references: [id], onDelete: Restrict)
@@ -1315,6 +1324,8 @@ model Payment {
   @@index([businessId, mode])
   @@index([businessId, isDeleted])
   @@index([businessId, type, isDeleted, date])
+  @@index([importJobId])
+  @@index([businessId, importJobId])
 }
 
 model PaymentAllocation {
@@ -4190,6 +4201,8 @@ model ImportJob {
   parties   Party[]
   // Reverse side of Document.importJob (7.1C — SetNull on delete to preserve audit history)
   documents Document[]     @relation("ImportedDocuments")
+  // Reverse side of Payment.importJob (7.1D — SetNull on delete to preserve audit history)
+  payments  Payment[]      @relation("ImportedPayments")
 
   @@index([businessId, fileSha256]) // re-upload detect
   @@index([businessId, status, updatedAt]) // active-job check + cleanup
