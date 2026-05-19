@@ -33,9 +33,9 @@ import type {
 import {
   acquireBusinessLock,
   assertCommitBind,
-  commitChunk,
   lockJob,
 } from './commit.helpers.js'
+import { pickCommitChunk } from './commit-dispatcher.js'
 import { applyDedupResolutions } from './commit.resolutions.js'
 
 export interface CommitImportJobArgs {
@@ -107,9 +107,14 @@ export async function commitImportJob(
         overwrittenPartyIds = resolved.overwrittenPartyIds
       }
 
+      // 7.1B — pick parties|product branch from the locked job's entity.
+      // Lookup happens INSIDE the tx so a concurrent entity flip is
+      // impossible — the lock guarantees `job` is the row we're acting on.
+      const commitChunkFn = pickCommitChunk(job.entity)
+
       // Chunked loop — at most MAX_CREATED_PARTY_IDS retained for audit.
       for (;;) {
-        const chunk = await commitChunk(tx, {
+        const chunk = await commitChunkFn(tx, {
           jobId,
           businessId: auth.businessId,
           userId: auth.userId,

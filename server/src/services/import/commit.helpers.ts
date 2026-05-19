@@ -11,8 +11,7 @@
  */
 
 import { AppError, ErrorCode } from '../../lib/errors.js'
-import logger from '../../lib/logger.js'
-import { CHUNK_SIZE } from '../../constants/import.constants.js'
+import { prisma as rootPrisma } from '../../lib/prisma.js'
 import type { ExtendedPrismaClient } from '../../lib/prisma.js'
 import type { AuthContext } from '../../types/import.types.js'
 
@@ -40,6 +39,8 @@ export interface JobLockRow {
   idempotencyKey: string | null
   createdPartyIds: unknown
   createdEntityIds?: unknown
+  // 7.1B — discriminator consumed by commit-dispatcher.ts
+  entity: string
 }
 
 export interface ChunkResult {
@@ -71,7 +72,7 @@ export async function lockJob(
 ): Promise<JobLockRow | null> {
   const rows = await tx.$queryRaw<JobLockRow[]>`
     SELECT id, "businessId", "userId", status, "commitToken",
-           "idempotencyKey", "createdPartyIds"
+           "idempotencyKey", "createdPartyIds", entity
     FROM "ImportJob"
     WHERE id = ${jobId}
     FOR UPDATE
@@ -104,109 +105,107 @@ export function assertCommitBind(
   }
 }
 
-async function commitOneRow(
-  tx: Tx,
-  args: { row: StagedRowMin; businessId: string; userId: string; jobId: string },
-): Promise<string | null> {
-  const { row, businessId, userId, jobId } = args
-  const n = row.normalized as {
-    name: string
-    phoneE164?: string
-    email?: string
-    gstin?: string
-    address?: string
-    openingBalancePaise?: number
-  }
-  const party = await tx.party.create({
-    data: {
-      businessId,
-      name: n.name,
-      phone: n.phoneE164 ?? null,
-      email: n.email ?? null,
-      gstin: n.gstin ?? null,
-      notes: n.address ?? null,
-      importJobId: jobId,
-      importedBy: userId,
-    },
-    select: { id: true },
-  })
-  if (n.openingBalancePaise && n.openingBalancePaise !== 0) {
-    await tx.openingBalance.create({
-      data: {
-        partyId: party.id,
-        amount: Math.abs(n.openingBalancePaise),
-        type: n.openingBalancePaise > 0 ? 'RECEIVABLE' : 'PAYABLE',
-        asOfDate: new Date(),
-      },
-    })
-  }
-  // Row-level guard: only bind if still STAGED and unbound.
-  const claimed = await tx.importJobRow.updateMany({
-    where: { id: row.id, status: 'STAGED', createdPartyId: null },
-    data: { status: 'COMMITTED', createdPartyId: party.id },
-  })
-  if (claimed.count !== 1) {
-    logger.warn('import.commit.row_race', { rowId: row.id, jobId })
-    return null
-  }
-  return party.id
-}
+// ── API.8 — dedup resolutions live in commit.resolutions.ts ─────────
+// ── Parties commit chunk lives in commit-parties.service.ts ──────────
+// ── Products commit chunk lives in commit-products.service.ts ────────
+// (Split out to keep this file ≤250 LOC.)
+//
+// Back-compat re-export — pre-B1 callers (audit-coverage SSOT, existing
+// commit.service.ts dispatcher) imported `commitChunk` from this file.
+// The symbol now lives in commit-parties.service.ts; re-export here so
+// the existing import surface remains stable through the split.
+export { commitChunk } from './commit-parties.service.js'
+
+// ─────────────────────────────────────────────────────────────────────
+// Phase 7 · 7.1B — schema introspection probes
+//
+// Both probes are cached per-process: the migration state can only move
+// forward (no rollback in prod), so the FIRST positive read is the LAST
+// answer we need. Test code resets the cache via the exported helpers.
+// ─────────────────────────────────────────────────────────────────────
+
+let _hasCreatedEntityIdColumn: boolean | null = null
 
 /**
- * Commit one chunk of ≤CHUNK_SIZE rows. Emits ONE batched AuditLog row
- * per chunk (S6) rather than one row per party.
+ * M8 — introspect whether `"ImportJobRow"."createdEntityId"` exists.
+ *
+ * Used by `commit-parties.service.ts` to dual-write `createdEntityId`
+ * alongside `createdPartyId` during the expand→backfill→contract overlap.
+ * Slice 7.1B Migration B1 adds the column; until that migration ships to
+ * a given environment the dual-write is silently a no-op.
+ *
+ * Cached per process — schema additions are forward-only.
  */
-export async function commitChunk(
-  tx: Tx,
-  args: { jobId: string; businessId: string; userId: string },
-): Promise<ChunkResult> {
-  const candidates = await tx.$queryRaw<StagedRowMin[]>`
-    SELECT id, "sourceIndex", normalized, "matchedPartyId"
-    FROM "ImportJobRow"
-    WHERE "jobId" = ${args.jobId}
-      AND status = 'STAGED'
-      AND "createdPartyId" IS NULL
-    ORDER BY "sourceIndex" ASC
-    LIMIT ${CHUNK_SIZE}
-    FOR UPDATE
+export async function hasCreatedEntityIdColumn(tx: Tx): Promise<boolean> {
+  if (_hasCreatedEntityIdColumn !== null) return _hasCreatedEntityIdColumn
+  const rows = await tx.$queryRaw<{ exists: number }[]>`
+    SELECT 1 AS exists
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name   = 'ImportJobRow'
+      AND column_name  = 'createdEntityId'
+    LIMIT 1
   `
-  if (candidates.length === 0) {
-    return { createdPartyIds: [], sourceIndices: [], done: true }
-  }
-  const createdPartyIds: string[] = []
-  const sourceIndices: number[] = []
-  for (const row of candidates) {
-    const partyId = await commitOneRow(tx, {
-      row,
-      businessId: args.businessId,
-      userId: args.userId,
-      jobId: args.jobId,
-    })
-    if (partyId) {
-      createdPartyIds.push(partyId)
-      sourceIndices.push(row.sourceIndex)
-    }
-  }
-  await tx.auditLog.create({
-    data: {
-      businessId: args.businessId,
-      entityType: 'ImportJob',
-      entityId: args.jobId,
-      userId: args.userId,
-      action: 'CREATE',
-      changes: {
-        event: 'parties.imported_batch',
-        partyIds: createdPartyIds,
-        sourceIndices,
-      },
-    },
-  })
-  return {
-    createdPartyIds,
-    sourceIndices,
-    done: candidates.length < CHUNK_SIZE,
-  }
+  _hasCreatedEntityIdColumn = rows.length > 0
+  return _hasCreatedEntityIdColumn
 }
 
-// ── API.8 — dedup resolutions live in commit.resolutions.ts ─────────
-// (Split out to keep this file ≤250 LOC.)
+let _openingBalanceEnumChecked = false
+
+/**
+ * M9 — assert the `OPENING_BALANCE` precondition before opening the
+ * products commit pipeline.
+ *
+ * Two valid states pass:
+ *   (a) `StockMovementType` does NOT exist as a Postgres enum AND the
+ *       `StockMovement.type` column is `text`. In that world the literal
+ *       string 'OPENING_BALANCE' is always a valid value — nothing to
+ *       enforce. (This is the current shadow / dev / prod shape.)
+ *   (b) `StockMovementType` exists as a Postgres enum AND the
+ *       'OPENING_BALANCE' label is present.
+ *
+ * Anything else → throw `IMPORT_PRECONDITION_MISSING` (503). The commit
+ * pipeline refuses to run rather than write partial state.
+ *
+ * Cached per process — schema additions are forward-only.
+ */
+export async function assertOpeningBalanceEnum(): Promise<void> {
+  if (_openingBalanceEnumChecked) return
+  const enumRows = await rootPrisma.$queryRaw<{ has_label: boolean }[]>`
+    SELECT EXISTS (
+      SELECT 1 FROM pg_type t
+      JOIN pg_enum e ON e.enumtypid = t.oid
+      WHERE t.typname = 'StockMovementType'
+        AND e.enumlabel = 'OPENING_BALANCE'
+    ) AS has_label
+  `
+  const hasLabel = enumRows[0]?.has_label === true
+  if (hasLabel) {
+    _openingBalanceEnumChecked = true
+    return
+  }
+  // Enum may not exist at all — confirm `type` column is plain text.
+  const typeRows = await rootPrisma.$queryRaw<{ data_type: string }[]>`
+    SELECT data_type
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name   = 'StockMovement'
+      AND column_name  = 'type'
+    LIMIT 1
+  `
+  if (typeRows[0]?.data_type === 'text') {
+    _openingBalanceEnumChecked = true
+    return
+  }
+  throw new AppError(
+    ErrorCode.IMPORT_PRECONDITION_MISSING,
+    503,
+    'OPENING_BALANCE precondition not satisfied; run Phase 7 · 7.1B Migration B0',
+  )
+}
+
+/** Test-only: reset both probe caches. NOT exported from a barrel. */
+export function __resetIntrospectionCacheForTests(): void {
+  _hasCreatedEntityIdColumn = null
+  _openingBalanceEnumChecked = false
+}

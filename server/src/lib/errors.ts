@@ -92,6 +92,12 @@ export enum ErrorCode {
   // Server (500)
   INTERNAL_ERROR = 'INTERNAL_ERROR',
   DATABASE_ERROR = 'DATABASE_ERROR',
+
+  // Service Unavailable (503) — Phase 7 · 7.1B
+  // M9: pg_enum precondition for OPENING_BALANCE (or any other schema
+  // probe added later) not yet satisfied. The commit pipeline refuses
+  // to run rather than write partial state.
+  IMPORT_PRECONDITION_MISSING = 'IMPORT_PRECONDITION_MISSING',
 }
 
 export interface ApiErrorResponse {

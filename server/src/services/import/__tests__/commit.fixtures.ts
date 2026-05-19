@@ -40,6 +40,8 @@ export function buildPrisma(opts: BuildOpts = {}) {
     commitToken: VALID_TOKEN,
     idempotencyKey: VALID_IDEMP,
     createdPartyIds: [],
+    // 7.1B — commit-dispatcher routes by this discriminator.
+    entity: 'parties' as 'parties' | 'product',
     ...opts.jobOverrides,
   }
 
@@ -50,6 +52,16 @@ export function buildPrisma(opts: BuildOpts = {}) {
     $executeRaw: vi.fn(async () => 1),
     $queryRaw: vi.fn(async (strings: TemplateStringsArray) => {
       const sql = strings.join(' ')
+      // 7.1B — schema introspection probes hit information_schema /
+      // pg_type; resolve them first so they don't get misrouted to the
+      // staged-rows branch below.
+      if (sql.includes('information_schema.columns')) {
+        if (sql.includes("'createdEntityId'")) return [{ exists: 1 }]
+        return [{ data_type: 'text' }]
+      }
+      if (sql.includes('pg_type') && sql.includes('pg_enum')) {
+        return [{ has_label: false }]
+      }
       if (sql.includes('FROM "ImportJob"')) return [jobRow]
       if (sql.includes('FROM "ImportJobRow"')) {
         chunkCalls += 1

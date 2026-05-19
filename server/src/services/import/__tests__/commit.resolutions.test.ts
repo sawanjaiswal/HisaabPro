@@ -50,6 +50,8 @@ function buildPrisma(opts: FakeOpts) {
     commitToken: VALID_TOKEN,
     idempotencyKey: VALID_IDEMP,
     createdPartyIds: [],
+    // 7.1B — commit-dispatcher routes by this discriminator.
+    entity: 'parties',
   }
 
   let partyCreateCalls = 0
@@ -58,6 +60,14 @@ function buildPrisma(opts: FakeOpts) {
     $executeRaw: vi.fn(async () => 1),
     $queryRaw: vi.fn(async (strings: TemplateStringsArray, ...vals: unknown[]) => {
       const sql = strings.join(' ')
+      // 7.1B introspection probes — short-circuit before the ImportJob branch.
+      if (sql.includes('information_schema.columns')) {
+        if (sql.includes("'createdEntityId'")) return [{ exists: 1 }]
+        return [{ data_type: 'text' }]
+      }
+      if (sql.includes('pg_type') && sql.includes('pg_enum')) {
+        return [{ has_label: false }]
+      }
       if (sql.includes('FROM "ImportJob"')) return [jobRow]
       // Resolutions path: SELECT … FROM "ImportJobRow" WHERE jobId AND id = ANY
       if (sql.includes('FROM "ImportJobRow"') && sql.includes('= ANY')) {
