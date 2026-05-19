@@ -50,8 +50,12 @@ export interface GetImportJobResult {
     id: string
     status: ImportJobStatus
     format: ImportFormat
-    /** Phase 7 · 7.1B — discriminator surfaced for FE preview branching. */
-    entity: 'parties' | 'product'
+    /**
+     * Phase 7 · 7.1B/C — discriminator surfaced for FE preview branching.
+     * Invoice payloads carry nested-lines shape; FE delegates to
+     * `<InvoiceRowCard>` when this is `'invoice'`.
+     */
+    entity: 'parties' | 'product' | 'invoice'
     fileName: string | null
     rowCount: number
     errorCount: number
@@ -131,9 +135,11 @@ export async function getImportJob(
       id: job.id,
       status: job.status as ImportJobStatus,
       format: job.format as ImportFormat,
-      entity: (job.entity === 'product' ? 'product' : 'parties') as
-        | 'parties'
-        | 'product',
+      entity: (job.entity === 'product'
+        ? 'product'
+        : job.entity === 'invoice'
+          ? 'invoice'
+          : 'parties') as 'parties' | 'product' | 'invoice',
       fileName: job.fileName,
       rowCount: job.rowCount,
       errorCount: job.errorCount,

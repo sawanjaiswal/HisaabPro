@@ -41,6 +41,10 @@ import { uploadBodySchema } from '../../schemas/import.zod.js'
 import { createImportJob } from '../../services/import/upload.service.js'
 import { runParseAndStage } from '../../services/import/parse.service.js'
 import { importUpload } from './upload.middleware.js'
+import {
+  sanitiseFileName,
+  enforcePerEntityClientVersion,
+} from './create.route.helpers.js'
 
 const SYNC_PARSE_BUFFER_THRESHOLD = 500 * 1024 // 500 KB
 
@@ -52,21 +56,6 @@ const uploadRateLimit = createRateLimiter({
     `rl:imports:upload:${req.user?.userId ?? req.ip ?? 'anon'}`,
   eventName: 'import.upload.rate_limited',
 })
-
-/**
- * M2 — neutralise filename. The original arrives via `multipart/form-data`
- * Content-Disposition header which can carry control bytes, RTL-override
- * codepoints, and arbitrary path separators. We strip controls + RTL
- * overrides, slice to 255 chars, then drop leading dots so the value can
- * never look like a hidden-dotfile when surfaced in audit / logs.
- */
-function sanitiseFileName(input: string): string {
-  return input
-    // eslint-disable-next-line no-control-regex
-    .replace(/[\x00-\x1F\x7F‪-‮⁦-⁩]/g, '')
-    .slice(0, 255)
-    .replace(/^\.+/, '')
-}
 
 export const createImportRoute = Router()
 
@@ -100,9 +89,12 @@ createImportRoute.post(
     }
     const { format, entity } = parsedBody.data
 
+    // Phase 7 · 7.1C — per-entity min-client-version (AUDIT S2).
+    const clientVersion = req.header('X-Client-Version') ?? undefined
+    if (enforcePerEntityClientVersion(res, entity, clientVersion)) return
+
     const fileName = sanitiseFileName(file.originalname || 'upload')
     const auth_ = getAuth(req)
-    const clientVersion = req.header('X-Client-Version') ?? undefined
 
     let result
     try {

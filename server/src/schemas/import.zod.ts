@@ -44,10 +44,15 @@ export const uploadBodySchema = z
     format: z.enum(IMPORT_FORMATS),
     /**
      * Phase 7 · 7.1B — extended to accept `'product'` alongside `'parties'`.
+     * Phase 7 · 7.1C — extended to accept `'invoice'` (per-entity
+     * min-client-version gate enforced at the route layer, NOT here, so
+     * the Zod parse failure happens BEFORE the 426 — keeps the contract
+     * machine-readable for monitoring).
+     *
      * Default is `'parties'` so legacy clients (no `entity` field) still
      * dispatch to the parties branch unchanged.
      */
-    entity: z.enum(['parties', 'product']).default('parties'),
+    entity: z.enum(['parties', 'product', 'invoice']).default('parties'),
   })
   .strict()
 

@@ -58,6 +58,28 @@ export const IMPORT_LOCKOUT_COOLDOWN_MIN = 60
 /** Minimum HP client version that speaks the 7.1 import contract. */
 export const IMPORT_MIN_CLIENT_VERSION = '7.1.0'
 
+/**
+ * Phase 7 · 7.1C — per-entity minimum client versions.
+ *
+ * Invoice imports require `7.1.2` (introduces InvoiceRowCard + nested
+ * line preview shape; older clients render the row as garbage). Parties
+ * and product remain at the 7.1.0 floor since their preview surfaces
+ * have been stable since 7.1A/B.
+ *
+ * AUDIT S2 (architecture-audit) — per-entity floor resolves the
+ * conflict between bumping the global floor (locks legacy clients out
+ * of parties/products imports they already use) and never bumping
+ * (older clients crash on invoice payloads).
+ */
+export const IMPORT_MIN_CLIENT_VERSION_BY_ENTITY: Record<
+  'parties' | 'product' | 'invoice',
+  string
+> = {
+  parties: '7.1.0',
+  product: '7.1.0',
+  invoice: '7.1.2',
+}
+
 // ── Library pins (S2) ────────────────────────────────────────────────
 /**
  * fast-xml-parser must be ≥ 4.4.0 — earlier releases are vulnerable to

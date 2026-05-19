@@ -39,7 +39,7 @@ export interface CreateImportJobArgs {
   fileName: string
   fileSize: number
   format: ImportFormat
-  entity: 'parties' | 'product'
+  entity: 'parties' | 'product' | 'invoice'
   auth: AuthContext
   /** Optional column mapping for GENERIC_CSV — stored on the job row. */
   columnMapping?: Record<string, string> | null

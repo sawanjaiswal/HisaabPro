@@ -33,6 +33,10 @@ import {
   resolveProductMapping,
   type StagedProductRow,
 } from './product-parse.helper.js'
+import {
+  buildStagedInvoiceRows,
+  type StagedInvoiceRowOut,
+} from './invoice-parse.helper.js'
 import type {
   AuthContext,
   ImportFormat,
@@ -51,8 +55,12 @@ export interface ParseAndStageArgs {
   /** Phase 7 · 7.1B — product mapping (used when entity='product'). */
   productMapping?: ProductColumnMapping
   fileName?: string
-  /** Phase 7 · 7.1B — discriminates parties vs product pipelines. */
-  entity?: 'parties' | 'product'
+  /**
+   * Phase 7 · 7.1B/C — discriminates parties / product / invoice
+   * pipelines. Default `'parties'` preserves legacy behaviour for
+   * callers that haven't migrated to entity-aware uploads.
+   */
+  entity?: 'parties' | 'product' | 'invoice'
   auth: AuthContext
   prisma: ExtendedPrismaClient
 }
@@ -91,7 +99,7 @@ export async function runParseAndStage(
     data: { status: 'PARSING' },
   })
 
-  let staged: StagedPartyRow[] | StagedProductRow[]
+  let staged: StagedPartyRow[] | StagedProductRow[] | StagedInvoiceRowOut[]
   try {
     if (entity === 'product') {
       staged = await buildStagedProductRows({
@@ -101,6 +109,15 @@ export async function runParseAndStage(
         fileName,
         businessId: auth.businessId,
         prisma,
+      })
+    } else if (entity === 'invoice') {
+      // Phase 7 · 7.1C — invoice pipeline. FK resolution (party/product)
+      // is deferred to commit chunk (§6) so parse stays I/O-light.
+      staged = await buildStagedInvoiceRows({
+        buffer,
+        format,
+        fileName,
+        businessId: auth.businessId,
       })
     } else {
       staged = await buildStagedPartyRows({
