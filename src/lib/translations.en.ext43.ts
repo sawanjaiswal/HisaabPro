@@ -196,4 +196,48 @@ export const enExt43 = {
   importResultDownloadCsv: 'Download error CSV',
   importResultImportAnother: 'Import another file',
   importResultViewParties: 'View parties',
+
+  // ── 7.1B — Entity picker + product copy ──────────────────────────────
+  importStepEntity: '1. What are you importing?',
+  importEntityPickAriaLabel: 'What are you importing',
+  importEntityParties: 'Parties',
+  importEntityPartiesDesc: 'Customers and suppliers from your books',
+  importEntityProducts: 'Products',
+  importEntityProductsDesc: 'Item master with prices, SKUs, and stock',
+
+  importProducts: 'Import products',
+  importIntroProduct:
+    'Bring your product catalogue in from Tally, Vyapar, Busy, or a generic CSV — preview before anything is saved.',
+
+  // Product field labels (preview, dedup, row card)
+  productName: 'Name',
+  productSku: 'SKU',
+  productHsn: 'HSN',
+  productMrp: 'MRP',
+  productSalePrice: 'Sale price',
+  productPurchasePrice: 'Purchase price',
+  productGstRate: 'GST',
+  productUnit: 'Unit',
+  productOpeningStock: 'Opening stock',
+  productDescription: 'Description',
+
+  // Dedup product copy
+  importDedupTitleProduct: 'Review duplicate products',
+  importDedupIntroProduct:
+    'These rows look like products you already have. Pick what should happen for each one before committing.',
+
+  // Commit product copy
+  importCommitCountCreateProduct: 'Products to create',
+  importCommitCountOverwriteProduct: 'Products to overwrite',
+
+  // Result product copy
+  importResultBodyProduct: 'Your products are now part of your business.',
+  importResultCountSavedProduct: 'Products saved',
+  importResultViewProducts: 'View products',
+
+  // Product issue chips (shown via firstIssueMessage or future chip layer)
+  importIssue_PRICE_PRECISION_LOST: 'Price rounded to 2 decimal places',
+  importIssue_TAX_RATE_FALLBACK: 'GST rate not matched — using business default',
+  importIssue_UNIT_NOT_FOUND: 'Unit not recognised',
+  importIssue_PLACEHOLDER_NAME: 'Looks like a placeholder name',
 } as const

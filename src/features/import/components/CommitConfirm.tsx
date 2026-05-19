@@ -22,13 +22,15 @@
 import { useMemo } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
-import type { ImportPreviewRow } from '../types/import.types'
+import type { ImportEntity, ImportPreviewRow } from '../types/import.types'
 import type { DedupResolutionMap } from '../types/dedup.types'
 
 interface CommitConfirmProps {
   rows: ImportPreviewRow[]
   resolutions: DedupResolutionMap
   isCommitting: boolean
+  /** 7.1B: drives the create/overwrite labels (parties vs products). */
+  entity?: ImportEntity
   onCommit: () => void
   onBack: () => void
   t: Record<string, string>
@@ -71,11 +73,13 @@ export function CommitConfirm({
   rows,
   resolutions,
   isCommitting,
+  entity = 'parties',
   onCommit,
   onBack,
   t,
 }: CommitConfirmProps) {
   const counts = useMemo(() => tallyCounts(rows, resolutions), [rows, resolutions])
+  const isProduct = entity === 'product'
 
   return (
     <div className="space-y-4">
@@ -91,11 +95,19 @@ export function CommitConfirm({
         </p>
         <dl className="space-y-2 pt-2">
           <CommitCountRow
-            label={t.importCommitCountCreate ?? 'Parties to create'}
+            label={
+              isProduct
+                ? (t.importCommitCountCreateProduct ?? 'Products to create')
+                : (t.importCommitCountCreate ?? 'Parties to create')
+            }
             value={counts.create}
           />
           <CommitCountRow
-            label={t.importCommitCountOverwrite ?? 'Parties to overwrite'}
+            label={
+              isProduct
+                ? (t.importCommitCountOverwriteProduct ?? 'Products to overwrite')
+                : (t.importCommitCountOverwrite ?? 'Parties to overwrite')
+            }
             value={counts.overwrite}
           />
           <CommitCountRow

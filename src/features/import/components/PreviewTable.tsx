@@ -13,25 +13,21 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ROUTES } from '@/config/routes.config'
-import { formatPaise } from '@/lib/format'
 import { useToast } from '@/hooks/useToast'
 import { cancelImportJob } from '../services/import.service'
 import { usePreviewRows } from '../hooks/usePreviewRows'
 import {
   filterRows,
-  firstIssueMessage,
   isDuplicateRow,
   isErrorRow,
   isValidRow,
-  readNormalizedBalancePaise,
-  readNormalizedName,
-  readNormalizedPhone,
   type PreviewFilterKey,
 } from '../utils/preview-filters'
 import type { ImportJobView, ImportPreviewRow } from '../types/import.types'
 import { PreviewSummary } from './PreviewSummary'
 import { PreviewFilters } from './PreviewFilters'
-import { PreviewStatusBadge } from './PreviewRowCard'
+import { buildProductColumns } from './PreviewProductColumns'
+import { buildPartyColumns } from './PreviewPartyColumns'
 
 interface PreviewTableProps {
   job: ImportJobView['job']
@@ -113,59 +109,10 @@ export function PreviewTable({ job, initialRows, initialNextCursor, t, onContinu
     onContinue(hasAnyDuplicate ? 'dedup' : 'commit', pagination.rows)
   }
 
-  const columns: TableColumn<ImportPreviewRow>[] = [
-    {
-      key: 'sourceIndex',
-      header: t.importPreviewColRow ?? 'Row',
-      width: 'w-16',
-      align: 'left',
-      render: (r) => <span className="tabular-nums">{r.sourceIndex + 1}</span>,
-    },
-    {
-      key: 'name',
-      header: t.importPreviewColName ?? 'Name',
-      render: (r) => (
-        <span className="truncate inline-block max-w-[180px] align-bottom">
-          {readNormalizedName(r) || (t.importPreviewMissingName ?? '—')}
-        </span>
-      ),
-    },
-    {
-      key: 'phone',
-      header: t.importPreviewColPhone ?? 'Phone',
-      render: (r) => readNormalizedPhone(r) || (t.importPreviewMissingPhone ?? '—'),
-    },
-    {
-      key: 'balance',
-      header: t.importPreviewColBalance ?? 'Balance',
-      align: 'right',
-      render: (r) => (
-        <span className="tabular-nums">{formatPaise(readNormalizedBalancePaise(r))}</span>
-      ),
-    },
-    {
-      key: 'status',
-      header: t.importPreviewColStatus ?? 'Status',
-      render: (r) => <PreviewStatusBadge status={r.status} t={t} />,
-    },
-    {
-      key: 'reason',
-      header: t.importPreviewColReason ?? 'Reason',
-      render: (r) => {
-        const msg = firstIssueMessage(r.issues)
-        if (!msg) return <span style={{ color: 'var(--color-text-secondary)' }}>—</span>
-        return (
-          <span
-            style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--fs-xs)' }}
-            className="truncate inline-block max-w-[220px] align-bottom"
-            title={msg}
-          >
-            {msg}
-          </span>
-        )
-      },
-    },
-  ]
+  const isProduct = job.entity === 'product'
+  const columns: TableColumn<ImportPreviewRow>[] = isProduct
+    ? buildProductColumns(t)
+    : buildPartyColumns(t)
 
   return (
     <div className="space-y-4">
@@ -246,3 +193,4 @@ export function PreviewTable({ job, initialRows, initialNextCursor, t, onContinu
     </div>
   )
 }
+

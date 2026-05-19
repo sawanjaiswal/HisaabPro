@@ -5,7 +5,32 @@
 
 export type ImportFormat = 'tally_xml' | 'vyapar_csv' | 'busy_xls' | 'generic_csv'
 
-export type ImportEntity = 'parties'
+export type ImportEntity = 'parties' | 'product'
+
+/**
+ * 7.1B product-side normalized row shape (carried inside `row.normalized`).
+ * Prices arrive as JSON strings (server uses BigInt(paise) and serialises
+ * via `String(b)` to dodge JSON's no-BigInt limit — see SECURITY_AUDIT M5).
+ * Decimal(18,3) opening-stock also rides as a string for precision.
+ */
+export interface ProductNormalized {
+  name: string
+  sku: string | null
+  hsnCode: string | null
+  mrp: string | null
+  salePrice: string | null
+  purchasePrice: string | null
+  gstRateResolved: number | null
+  unitId: string | null
+  unitSourceText: string | null
+  openingStock: string
+  description: string | null
+}
+
+/** Product preview row (specialises `ImportPreviewRow.normalized`). */
+export interface ProductPreviewRow extends Omit<ImportPreviewRow, 'normalized'> {
+  normalized: ProductNormalized & Record<string, unknown>
+}
 
 export type ImportJobStatus =
   | 'UPLOADED'
@@ -83,6 +108,8 @@ export interface ImportJobView {
     id: string
     status: ImportJobStatus
     format: ImportFormat
+    /** 7.1B: which kind of records this job carries. */
+    entity: ImportEntity
     fileName: string | null
     rowCount: number
     errorCount: number

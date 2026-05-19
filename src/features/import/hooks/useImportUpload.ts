@@ -9,6 +9,7 @@ import { useMutation } from '@tanstack/react-query'
 import { uploadImport } from '../services/import.service'
 import type {
   CreateImportRes,
+  ImportEntity,
   ImportFormat,
 } from '../types/import.types'
 
@@ -20,6 +21,8 @@ export interface UseImportUploadArgs {
 export interface SubmitArgs {
   file: File
   format: ImportFormat
+  /** 7.1B: entity discriminator. Defaults to 'parties'. */
+  entity?: ImportEntity
   columnMapping?: Record<string, string>
 }
 
@@ -37,6 +40,7 @@ export function useImportUpload(args: UseImportUploadArgs = {}) {
       uploadImport({
         file: vars.file,
         format: vars.format,
+        entity: vars.entity,
         columnMapping: vars.columnMapping,
         idempotencyKey: newIdempotencyKey(),
       }),

@@ -196,4 +196,48 @@ export const hiExt43 = {
   importResultDownloadCsv: 'एरर CSV डाउनलोड करें',
   importResultImportAnother: 'और फ़ाइल इम्पोर्ट करें',
   importResultViewParties: 'पार्टियाँ देखें',
+
+  // ── 7.1B — एंटिटी पिकर + प्रोडक्ट कॉपी ──────────────────────────────
+  importStepEntity: '1. आप क्या इम्पोर्ट कर रहे हैं?',
+  importEntityPickAriaLabel: 'आप क्या इम्पोर्ट कर रहे हैं',
+  importEntityParties: 'पार्टियाँ',
+  importEntityPartiesDesc: 'आपकी किताबों के ग्राहक और सप्लायर',
+  importEntityProducts: 'प्रोडक्ट्स',
+  importEntityProductsDesc: 'दाम, SKU और स्टॉक के साथ आइटम मास्टर',
+
+  importProducts: 'प्रोडक्ट्स इम्पोर्ट करें',
+  importIntroProduct:
+    'Tally, Vyapar, Busy, या किसी भी CSV से अपना प्रोडक्ट कैटलॉग लाएँ — सेव करने से पहले प्रीव्यू देखें।',
+
+  // Product field labels
+  productName: 'नाम',
+  productSku: 'SKU',
+  productHsn: 'HSN',
+  productMrp: 'MRP',
+  productSalePrice: 'विक्रय मूल्य',
+  productPurchasePrice: 'खरीद मूल्य',
+  productGstRate: 'GST',
+  productUnit: 'इकाई',
+  productOpeningStock: 'शुरुआती स्टॉक',
+  productDescription: 'विवरण',
+
+  // Dedup product copy
+  importDedupTitleProduct: 'डुप्लीकेट प्रोडक्ट्स की समीक्षा करें',
+  importDedupIntroProduct:
+    'ये पंक्तियाँ आपके पहले से मौजूद प्रोडक्ट्स जैसी लगती हैं। कमिट करने से पहले हर एक के लिए चुनें कि क्या करना है।',
+
+  // Commit product copy
+  importCommitCountCreateProduct: 'नए बनाए जाने वाले प्रोडक्ट्स',
+  importCommitCountOverwriteProduct: 'ओवरराइट होने वाले प्रोडक्ट्स',
+
+  // Result product copy
+  importResultBodyProduct: 'आपके प्रोडक्ट्स अब बिज़नेस में जुड़ गए हैं।',
+  importResultCountSavedProduct: 'सेव हुए प्रोडक्ट्स',
+  importResultViewProducts: 'प्रोडक्ट्स देखें',
+
+  // Product issue chips
+  importIssue_PRICE_PRECISION_LOST: 'दाम 2 दशमलव तक राउंड किया गया',
+  importIssue_TAX_RATE_FALLBACK: 'GST रेट नहीं मिला — बिज़नेस डिफ़ॉल्ट इस्तेमाल हो रहा है',
+  importIssue_UNIT_NOT_FOUND: 'इकाई पहचानी नहीं गई',
+  importIssue_PLACEHOLDER_NAME: 'यह नाम प्लेसहोल्डर लगता है',
 } as const

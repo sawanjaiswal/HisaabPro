@@ -20,12 +20,13 @@ import { Card } from '@/components/ui/Card'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useToast } from '@/hooks/useToast'
+import { EntityPicker } from '../components/EntityPicker'
 import { FormatPicker } from '../components/FormatPicker'
 import { FileDropzone } from '../components/FileDropzone'
 import { useImportUpload } from '../hooks/useImportUpload'
 import { validateUpload, type FileValidationCode } from '../utils/file-validation'
 import { stashCommitToken } from '../utils/commit-token-store'
-import type { ImportFormat } from '../types/import.types'
+import type { ImportEntity, ImportFormat } from '../types/import.types'
 
 function featureEnabled(): boolean {
   // Vite-injected env var; absent in tests / non-import builds.
@@ -47,6 +48,7 @@ export default function ImportUploadPage() {
   const navigate = useNavigate()
   const toast = useToast()
 
+  const [entity, setEntity] = useState<ImportEntity | null>(null)
   const [format, setFormat] = useState<ImportFormat | null>(null)
   const [file, setFile] = useState<File | null>(null)
   const [validationCode, setValidationCode] = useState<FileValidationCode | null>(null)
@@ -73,13 +75,13 @@ export default function ImportUploadPage() {
     },
   })
 
-  const canSubmit = !!file && !!format && !upload.isUploading
+  const canSubmit = !!file && !!format && !!entity && !upload.isUploading
 
   const handleSubmit = () => {
     const result = validateUpload(file, format)
     setValidationCode(result.code)
-    if (!result.ok || !file || !format) return
-    upload.submit({ file, format })
+    if (!result.ok || !file || !format || !entity) return
+    upload.submit({ file, format, entity })
   }
 
   // Disabled feature → render a stub so the route is mountable
@@ -107,12 +109,28 @@ export default function ImportUploadPage() {
             className="font-semibold"
             style={{ fontSize: 'var(--fs-xl)', color: 'var(--color-text-primary)' }}
           >
-            {tx.importParties ?? 'Import parties'}
+            {entity === 'product'
+              ? (tx.importProducts ?? 'Import products')
+              : (tx.importParties ?? 'Import parties')}
           </h1>
           <p style={{ fontSize: 'var(--fs-md)', color: 'var(--color-text-secondary)' }}>
-            {tx.importIntro ?? 'Bring parties in from Tally, Vyapar, Busy, or a generic CSV.'}
+            {entity === 'product'
+              ? (tx.importIntroProduct ??
+                'Bring products in from Tally, Vyapar, Busy, or a generic CSV.')
+              : (tx.importIntro ?? 'Bring parties in from Tally, Vyapar, Busy, or a generic CSV.')}
           </p>
         </div>
+
+        <section className="space-y-3" aria-labelledby="import-entity-heading">
+          <h2
+            id="import-entity-heading"
+            className="font-semibold"
+            style={{ fontSize: 'var(--fs-md)', color: 'var(--color-text-primary)' }}
+          >
+            {tx.importStepEntity ?? '1. What are you importing?'}
+          </h2>
+          <EntityPicker value={entity} onChange={setEntity} disabled={upload.isUploading} />
+        </section>
 
         <section className="space-y-3" aria-labelledby="import-format-heading">
           <h2
@@ -120,9 +138,9 @@ export default function ImportUploadPage() {
             className="font-semibold"
             style={{ fontSize: 'var(--fs-md)', color: 'var(--color-text-primary)' }}
           >
-            {tx.importStepFormat ?? '1. Choose source'}
+            {tx.importStepFormat ?? '2. Choose source'}
           </h2>
-          <FormatPicker value={format} onChange={setFormat} disabled={upload.isUploading} />
+          <FormatPicker value={format} onChange={setFormat} disabled={upload.isUploading || !entity} />
         </section>
 
         <section className="space-y-3" aria-labelledby="import-file-heading">
@@ -131,7 +149,7 @@ export default function ImportUploadPage() {
             className="font-semibold"
             style={{ fontSize: 'var(--fs-md)', color: 'var(--color-text-primary)' }}
           >
-            {tx.importStepFile ?? '2. Pick file'}
+            {tx.importStepFile ?? '3. Pick file'}
           </h2>
           <FileDropzone
             file={file}

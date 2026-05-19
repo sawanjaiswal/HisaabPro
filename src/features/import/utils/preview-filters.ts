@@ -101,3 +101,51 @@ export function readNormalizedBalancePaise(row: ImportPreviewRow): number {
   const b = row.normalized?.openingBalance
   return typeof b === 'number' && Number.isFinite(b) ? b : 0
 }
+
+// ── 7.1B product accessors ───────────────────────────────────────────────
+// All product-side prices arrive as JSON strings (BigInt → String at
+// the BE boundary — SECURITY_AUDIT M5). Stocks are Decimal-as-string.
+
+export function readNormalizedSku(row: ImportPreviewRow): string {
+  const v = row.normalized?.sku
+  return typeof v === 'string' ? v : ''
+}
+
+export function readNormalizedProductName(row: ImportPreviewRow): string {
+  return readNormalizedName(row)
+}
+
+export function readNormalizedSalePrice(row: ImportPreviewRow): string | null {
+  const v = row.normalized?.salePrice
+  return typeof v === 'string' ? v : null
+}
+
+export function readNormalizedMrp(row: ImportPreviewRow): string | null {
+  const v = row.normalized?.mrp
+  return typeof v === 'string' ? v : null
+}
+
+export function readNormalizedPurchasePrice(row: ImportPreviewRow): string | null {
+  const v = row.normalized?.purchasePrice
+  return typeof v === 'string' ? v : null
+}
+
+export function readNormalizedOpeningStock(row: ImportPreviewRow): string {
+  const v = row.normalized?.openingStock
+  return typeof v === 'string' && v.length > 0 ? v : '0'
+}
+
+export function readNormalizedUnitText(row: ImportPreviewRow): string {
+  const v = row.normalized?.unitSourceText
+  return typeof v === 'string' ? v : ''
+}
+
+export function readNormalizedGstRate(row: ImportPreviewRow): number | null {
+  const v = row.normalized?.gstRateResolved
+  return typeof v === 'number' && Number.isFinite(v) ? v : null
+}
+
+export function readNormalizedHsn(row: ImportPreviewRow): string {
+  const v = row.normalized?.hsnCode
+  return typeof v === 'string' ? v : ''
+}

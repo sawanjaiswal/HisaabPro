@@ -65,13 +65,24 @@ export function CommitResult({ job, t }: CommitResultProps) {
   const navigate = useNavigate()
   const counts = readCounts(job)
   const isPartial = job.status === 'PARTIALLY_COMMITTED'
+  const isProduct = job.entity === 'product'
 
   // Token is single-use server-side; clearing it here prevents stale
   // tokens from sitting in sessionStorage until tab close.
   clearCommitToken(job.id)
 
   const onImportAnother = () => navigate(ROUTES.IMPORTS)
-  const onViewParties = () => navigate(ROUTES.PARTIES)
+  const onViewEntities = () => {
+    if (isProduct) {
+      // Deep-link to the product list filtered by this import job (BE
+      // accepts ?importJobId= — see ARCH conformance map L725).
+      const productsRoute = (ROUTES as Record<string, string | undefined>).PRODUCTS
+        ?? '/products'
+      navigate(`${productsRoute}?importJobId=${encodeURIComponent(job.id)}`)
+      return
+    }
+    navigate(ROUTES.PARTIES)
+  }
   const onDownloadCsv = () => downloadErrorCsv(job.id)
 
   return (
@@ -89,12 +100,18 @@ export function CommitResult({ job, t }: CommitResultProps) {
           {isPartial
             ? (t.importResultPartialBody ??
               'Some rows could not be saved. Download the error CSV to see what went wrong.')
-            : (t.importResultBody ?? 'Your parties are now part of your business.')}
+            : isProduct
+              ? (t.importResultBodyProduct ?? 'Your products are now part of your business.')
+              : (t.importResultBody ?? 'Your parties are now part of your business.')}
         </p>
 
         <dl className="space-y-2 pt-2">
           <ResultCountRow
-            label={t.importResultCountSaved ?? 'Parties saved'}
+            label={
+              isProduct
+                ? (t.importResultCountSavedProduct ?? 'Products saved')
+                : (t.importResultCountSaved ?? 'Parties saved')
+            }
             value={counts.created + counts.overwritten}
           />
           <ResultCountRow
@@ -131,10 +148,12 @@ export function CommitResult({ job, t }: CommitResultProps) {
         <Button
           variant="primary"
           size="lg"
-          onClick={onViewParties}
+          onClick={onViewEntities}
           className="min-h-[44px] flex-1"
         >
-          {t.importResultViewParties ?? 'View parties'}
+          {isProduct
+            ? (t.importResultViewProducts ?? 'View products')
+            : (t.importResultViewParties ?? 'View parties')}
         </Button>
       </div>
     </div>

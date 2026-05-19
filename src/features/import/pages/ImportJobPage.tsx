@@ -172,6 +172,7 @@ export default function ImportJobPage() {
                   <DedupResolution
                     rows={dedupRows}
                     initialResolutions={resolutions}
+                    entity={job.entity}
                     onBack={() => setSubView('preview')}
                     onContinue={(next) => {
                       setResolutions(next)
@@ -187,6 +188,7 @@ export default function ImportJobPage() {
                     rows={query.data.rows}
                     resolutions={resolutions}
                     isCommitting={commit.isCommitting}
+                    entity={job.entity}
                     onCommit={() => commit.commit(resolutions)}
                     onBack={() => setSubView(
                       Object.keys(resolutions).length > 0 ? 'dedup' : 'preview',

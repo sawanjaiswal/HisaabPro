@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { useDedupState } from '../hooks/useDedupState'
-import type { ImportPreviewRow } from '../types/import.types'
+import type { ImportEntity, ImportPreviewRow } from '../types/import.types'
 import type { DedupResolutionMap } from '../types/dedup.types'
 import { DedupBulkActions } from './DedupBulkActions'
 import { DedupRowCard } from './DedupRowCard'
@@ -29,6 +29,8 @@ interface DedupResolutionProps {
   rows: ImportPreviewRow[]
   /** Optional seed (back-nav from commit view). */
   initialResolutions?: DedupResolutionMap
+  /** 7.1B: which entity is being reviewed — drives copy. */
+  entity?: ImportEntity
   onBack: () => void
   onContinue: (resolutions: DedupResolutionMap) => void
   t: Record<string, string>
@@ -37,6 +39,7 @@ interface DedupResolutionProps {
 export function DedupResolution({
   rows,
   initialResolutions,
+  entity = 'parties',
   onBack,
   onContinue,
   t,
@@ -60,11 +63,16 @@ export function DedupResolution({
             className="font-semibold"
             style={{ fontSize: 'var(--fs-lg)', color: 'var(--color-text-primary)' }}
           >
-            {t.importDedupTitle ?? 'Review duplicates'}
+            {entity === 'product'
+              ? (t.importDedupTitleProduct ?? t.importDedupTitle ?? 'Review duplicate products')
+              : (t.importDedupTitle ?? 'Review duplicates')}
           </h2>
           <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
-            {t.importDedupIntro ??
-              'These rows look like parties you already have. Pick what should happen for each one before committing.'}
+            {entity === 'product'
+              ? (t.importDedupIntroProduct ??
+                'These rows look like products you already have. Pick what should happen for each one before committing.')
+              : (t.importDedupIntro ??
+                'These rows look like parties you already have. Pick what should happen for each one before committing.')}
           </p>
         </header>
 

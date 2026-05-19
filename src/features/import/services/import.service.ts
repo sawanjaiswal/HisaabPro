@@ -13,6 +13,7 @@ import type {
   CommitImportReq,
   CommitImportRes,
   CreateImportRes,
+  ImportEntity,
   ImportFormat,
   ImportJobView,
 } from '../types/import.types'
@@ -20,15 +21,17 @@ import type {
 export interface UploadImportArgs {
   file: File
   format: ImportFormat
+  /** 7.1B: which kind of records the file carries. Defaults to 'parties'. */
+  entity?: ImportEntity
   columnMapping?: Record<string, string>
   /** Unique key per submit attempt — replay-safe via idempotency middleware. */
   idempotencyKey: string
 }
 
 export async function uploadImport(args: UploadImportArgs): Promise<CreateImportRes> {
-  const { file, format, columnMapping, idempotencyKey } = args
+  const { file, format, entity = 'parties', columnMapping, idempotencyKey } = args
   const form = new FormData()
-  form.append('entity', 'parties')
+  form.append('entity', entity)
   form.append('format', format)
   form.append('clientVersion', IMPORT_MIN_CLIENT_VERSION)
   if (columnMapping) form.append('columnMapping', JSON.stringify(columnMapping))
@@ -41,7 +44,9 @@ export async function uploadImport(args: UploadImportArgs): Promise<CreateImport
     // Multipart cannot be queued — don't try.
     offlineQueue: false,
     entityType: 'import',
-    entityLabel: file.name,
+    entityLabel: entity === 'product'
+      ? `Products: ${file.name}`
+      : `Parties: ${file.name}`,
   })
 }
 
