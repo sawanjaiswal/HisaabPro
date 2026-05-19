@@ -60,7 +60,7 @@ export interface ParseAndStageArgs {
    * pipelines. Default `'parties'` preserves legacy behaviour for
    * callers that haven't migrated to entity-aware uploads.
    */
-  entity?: 'parties' | 'product' | 'invoice'
+  entity?: 'parties' | 'product' | 'invoice' | 'payments'
   auth: AuthContext
   prisma: ExtendedPrismaClient
 }

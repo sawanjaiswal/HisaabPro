@@ -55,7 +55,7 @@ export interface GetImportJobResult {
      * Invoice payloads carry nested-lines shape; FE delegates to
      * `<InvoiceRowCard>` when this is `'invoice'`.
      */
-    entity: 'parties' | 'product' | 'invoice'
+    entity: 'parties' | 'product' | 'invoice' | 'payments'
     fileName: string | null
     rowCount: number
     errorCount: number
@@ -139,7 +139,7 @@ export async function getImportJob(
         ? 'product'
         : job.entity === 'invoice'
           ? 'invoice'
-          : 'parties') as 'parties' | 'product' | 'invoice',
+          : 'parties') as 'parties' | 'product' | 'invoice' | 'payments',
       fileName: job.fileName,
       rowCount: job.rowCount,
       errorCount: job.errorCount,

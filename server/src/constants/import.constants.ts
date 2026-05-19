@@ -72,12 +72,13 @@ export const IMPORT_MIN_CLIENT_VERSION = '7.1.0'
  * (older clients crash on invoice payloads).
  */
 export const IMPORT_MIN_CLIENT_VERSION_BY_ENTITY: Record<
-  'parties' | 'product' | 'invoice',
+  'parties' | 'product' | 'invoice' | 'payments',
   string
 > = {
   parties: '7.1.0',
   product: '7.1.0',
   invoice: '7.1.2',
+  payments: '7.1.3',
 }
 
 // ── Library pins (S2) ────────────────────────────────────────────────

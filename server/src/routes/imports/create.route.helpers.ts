@@ -52,7 +52,7 @@ export function sanitiseFileName(input: string): string {
  */
 export function enforcePerEntityClientVersion(
   res: Response,
-  entity: 'parties' | 'product' | 'invoice',
+  entity: 'parties' | 'product' | 'invoice' | 'payments',
   clientVersion: string | undefined,
 ): boolean {
   const entityMin = IMPORT_MIN_CLIENT_VERSION_BY_ENTITY[entity]
