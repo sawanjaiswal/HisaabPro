@@ -49,10 +49,21 @@ export const uploadBodySchema = z
      * the Zod parse failure happens BEFORE the 426 — keeps the contract
      * machine-readable for monitoring).
      *
+     * Phase 7 · 7.1D — extended to accept `'payments'` (plural — mirrors
+     * the route enum and `ImportEntity` discriminator).
+     *
      * Default is `'parties'` so legacy clients (no `entity` field) still
      * dispatch to the parties branch unchanged.
      */
-    entity: z.enum(['parties', 'product', 'invoice']).default('parties'),
+    entity: z.enum(['parties', 'product', 'invoice', 'payments']).default('parties'),
+    /**
+     * Phase 7 · 7.1D — opt-in strict mode. When `true`, an unknown payment
+     * `mode` value rejects the row with `MODE_UNKNOWN_STRICT` instead of
+     * defaulting to `OTHER` + WARNING `MODE_UNKNOWN_DEFAULTED`. Defaults
+     * to `false` to preserve forward-compatibility with the existing
+     * lenient parties/product/invoice contracts.
+     */
+    strictMode: z.boolean().optional(),
   })
   .strict()
 

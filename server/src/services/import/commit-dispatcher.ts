@@ -16,9 +16,10 @@ import { AppError, ErrorCode } from '../../lib/errors.js'
 import { commitChunkParties } from './commit-parties.service.js'
 import { commitChunkProducts } from './commit-products.service.js'
 import { commitChunkInvoices } from './commit-invoices.service.js'
+import { commitChunkPayments } from './commit-payments/commit-payments.service.js'
 import type { ChunkResult, Tx } from './commit.helpers.js'
 
-export type ImportEntity = 'parties' | 'product' | 'invoice'
+export type ImportEntity = 'parties' | 'product' | 'invoice' | 'payments'
 
 export interface CommitChunkArgs {
   jobId: string
@@ -46,6 +47,9 @@ export function pickCommitChunk(entity: string): CommitChunkFn {
     case 'invoice':
       // 7.1C PR-C3 — real chunk-tx commit (commit-invoices.service.ts).
       return commitChunkInvoices
+    case 'payments':
+      // 7.1D PR-D3 — real chunk-tx commit (commit-payments.service.ts).
+      return commitChunkPayments
     default:
       throw new AppError(
         ErrorCode.IMPORT_JOB_NOT_COMMITTABLE,
