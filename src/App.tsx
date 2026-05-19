@@ -31,7 +31,7 @@ import {
   ExpensesPending, ExpensesBudgets, ExpensesRecurring,
   ProfitLoss, BalanceSheet, CashFlow, AgingReport, ProfitabilityReport,
   DiscountReport, TallyExport, FYClosure,
-  More, BillScan, BulkImport, PublicLedger, ItemsLibrary, DataImport,
+  More, BillScan, BulkImport, PublicLedger, ItemsLibrary, DataImport, ImportUpload, ImportJobStub,
   SmartGreetings, Units, JoinBusiness, CreateBusiness, BusinessType,
   AdminCoupons, AdminCouponDetail,
   Purchases, CreatePurchase, StockAlerts,
@@ -202,6 +202,8 @@ export function App() {
         <Route path={ROUTES.MORE} element={<PageRoute><ProtectedRoute><More /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.ITEMS_LIBRARY} element={<PageRoute><ProtectedRoute><ItemsLibrary /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.DATA_IMPORT} element={<PageRoute><ProtectedRoute><PlanGate feature="bulkImport" featureLabel="Data Import"><DataImport /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.IMPORTS} element={<PageRoute><ProtectedRoute><ImportUpload /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.IMPORT_JOB_DETAIL} element={<PageRoute><ProtectedRoute><ImportJobStub /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SMART_GREETINGS} element={<PageRoute><ProtectedRoute><SmartGreetings /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.JOIN_BUSINESS} element={<PageRoute><ProtectedRoute><JoinBusiness /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.CREATE_BUSINESS} element={<PageRoute><ProtectedRoute><CreateBusiness /></ProtectedRoute></PageRoute>} />

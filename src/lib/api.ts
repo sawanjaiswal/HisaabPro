@@ -86,9 +86,8 @@ export async function api<T>(
   const needsCsrf = SYNC_MUTATION_METHODS.has(method) && !path.startsWith('/auth/')
   const csrf = needsCsrf ? await getCsrfToken() : null
 
-  // Replay protection: server's replayProtection middleware (mounted on documents,
-  // payments, etc.) demands a fresh nonce + timestamp on every mutation. Send
-  // them on every mutating request so individual services don't need to remember.
+  // Replay protection: replayProtection middleware demands a fresh nonce +
+  // timestamp on every mutation — send them so services don't need to remember.
   const isMutation = SYNC_MUTATION_METHODS.has(method)
   const replayHeaders: Record<string, string> = isMutation
     ? {
@@ -97,6 +96,7 @@ export async function api<T>(
       }
     : {}
 
+  const isFD = typeof FormData !== 'undefined' && fetchOptions.body instanceof FormData
   let response: Response
   try {
     response = await fetch(`${API_URL}${path}`, {
@@ -104,7 +104,7 @@ export async function api<T>(
       credentials: 'include',
       signal: controller.signal,
       headers: {
-        'Content-Type': 'application/json',
+        ...(isFD ? {} : { 'Content-Type': 'application/json' }),
         ...(csrf ? { 'X-CSRF-Token': csrf } : {}),
         ...replayHeaders,
         ...fetchOptions.headers,
