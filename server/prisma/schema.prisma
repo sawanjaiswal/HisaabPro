@@ -116,8 +116,9 @@ model User {
   suspendedMemberships   BusinessUser[]      @relation("BusinessUserSuspender")
 
   // Phase 7 — Import
-  importJobs       ImportJob[]
-  importedParties  Party[]     @relation("ImportedParties")
+  importJobs        ImportJob[]
+  importedParties   Party[]     @relation("ImportedParties")
+  importedDocuments Document[]  @relation("ImportedDocuments")
 
   @@index([phone])
   @@index([referredBy])
@@ -1031,15 +1032,21 @@ model Document {
   // Offline sync
   clientId String? @unique
 
+  // Phase 7 — Import provenance (7.1C additive, nullable — legacy docs have none)
+  importJobId String?
+  importedBy  String?
+
   // Relations
-  business Business  @relation(fields: [businessId], references: [id], onDelete: Restrict)
-  party    Party     @relation(fields: [partyId], references: [id], onDelete: Restrict)
-  creator  User      @relation("DocumentCreator", fields: [createdBy], references: [id], onDelete: Restrict)
-  updater  User?     @relation("DocumentUpdater", fields: [updatedBy], references: [id])
-  deleter  User?     @relation("DocumentDeleter", fields: [deletedBy], references: [id])
+  business       Business   @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  party          Party      @relation(fields: [partyId], references: [id], onDelete: Restrict)
+  creator        User       @relation("DocumentCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  updater        User?      @relation("DocumentUpdater", fields: [updatedBy], references: [id])
+  deleter        User?      @relation("DocumentDeleter", fields: [deletedBy], references: [id])
+  importJob      ImportJob? @relation("ImportedDocuments", fields: [importJobId], references: [id], onDelete: SetNull)
+  importedByUser User?      @relation("ImportedDocuments", fields: [importedBy], references: [id], onDelete: SetNull)
   // E-Compliance — Phase 2
-  eInvoice EInvoice?
-  eWayBill EWayBill?
+  eInvoice       EInvoice?
+  eWayBill       EWayBill?
 
   // Recurring — Phase 2
   recurringInvoiceId String?
@@ -1095,6 +1102,8 @@ model Document {
   @@index([businessId, dueDate])
   @@index([businessId, balanceDue])
   @@index([priceListId])
+  // Phase 7 — Import
+  @@index([businessId, importJobId])
 }
 
 model DocumentLineItem {
@@ -4156,13 +4165,13 @@ model ImportJob {
   // M3 — idempotency key from client; binds /commit body to /preview output
   idempotencyKey String?
 
-  fileName      String? // nullable so DPDP erasure can NULL it
-  fileSha256    String
-  fileSize      Int
-  rowCount      Int     @default(0)
-  errorCount    Int     @default(0)
-  columnMapping Json? // generic_csv only
-  counts        Json    @default("{}") // { total, staged, errors, warnings, duplicatesExact, duplicatesNear, committed }
+  fileName         String? // nullable so DPDP erasure can NULL it
+  fileSha256       String
+  fileSize         Int
+  rowCount         Int     @default(0)
+  errorCount       Int     @default(0)
+  columnMapping    Json? // generic_csv only
+  counts           Json    @default("{}") // { total, staged, errors, warnings, duplicatesExact, duplicatesNear, committed }
   // Raw audit array of created entity ids (Party for entity='parties',
   // Product for entity='product'). DB column kept as `createdPartyIds`
   // (additive Migration B1 — drop renamed in PR-followup Migration D).
@@ -4176,9 +4185,11 @@ model ImportJob {
   // 7d for STAGED jobs; 90d for terminal jobs — cron hard-deletes after
   expiresAt   DateTime
 
-  rows ImportJobRow[]
+  rows      ImportJobRow[]
   // Reverse side of Party.importJob (SetNull on delete to preserve audit history)
-  parties Party[]
+  parties   Party[]
+  // Reverse side of Document.importJob (7.1C — SetNull on delete to preserve audit history)
+  documents Document[]     @relation("ImportedDocuments")
 
   @@index([businessId, fileSha256]) // re-upload detect
   @@index([businessId, status, updatedAt]) // active-job check + cleanup
@@ -4197,16 +4208,16 @@ model ImportJobRow {
   raw         Json? // NULLED 24h post-commit
   normalized  Json? // NULLED 24h post-commit
   // [{ field, code, severity, message }]
-  issues      Json   @default("[]")
+  issues      Json    @default("[]")
   // CSV-only dedup user decision: NONE | SKIP_EXACT | OVERWRITE | CREATE_NEW
   dedupAction String?
 
-  matchedPartyId String?
-  matchedParty   Party?  @relation("MatchedPartyImports", fields: [matchedPartyId], references: [id], onDelete: SetNull)
+  matchedPartyId  String?
+  matchedParty    Party?  @relation("MatchedPartyImports", fields: [matchedPartyId], references: [id], onDelete: SetNull)
   // @unique enforces "1 row → ≤1 party" at the DB level (commit-retry safe).
   // PR-followup Migration D will DROP this column once dual-write completes.
-  createdPartyId String? @unique
-  createdParty   Party?  @relation("CreatedPartyImport", fields: [createdPartyId], references: [id], onDelete: SetNull)
+  createdPartyId  String? @unique
+  createdParty    Party?  @relation("CreatedPartyImport", fields: [createdPartyId], references: [id], onDelete: SetNull)
   // Phase 7 · Slice 7.1B · Migration B1 — entity-rename EXPAND phase.
   // Backfilled from createdPartyId; dual-written by commit-parties.service.
   // Carries Product ids when entity='product'. UNIQUE is added in PR-followup
