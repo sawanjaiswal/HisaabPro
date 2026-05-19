@@ -50,6 +50,8 @@ export interface GetImportJobResult {
     id: string
     status: ImportJobStatus
     format: ImportFormat
+    /** Phase 7 · 7.1B — discriminator surfaced for FE preview branching. */
+    entity: 'parties' | 'product'
     fileName: string | null
     rowCount: number
     errorCount: number
@@ -75,6 +77,7 @@ export async function getImportJob(
       id: true,
       status: true,
       format: true,
+      entity: true,
       fileName: true,
       rowCount: true,
       errorCount: true,
@@ -128,6 +131,9 @@ export async function getImportJob(
       id: job.id,
       status: job.status as ImportJobStatus,
       format: job.format as ImportFormat,
+      entity: (job.entity === 'product' ? 'product' : 'parties') as
+        | 'parties'
+        | 'product',
       fileName: job.fileName,
       rowCount: job.rowCount,
       errorCount: job.errorCount,
