@@ -15,6 +15,7 @@
 import { AppError, ErrorCode } from '../../lib/errors.js'
 import { commitChunkParties } from './commit-parties.service.js'
 import { commitChunkProducts } from './commit-products.service.js'
+import { commitChunkInvoices } from './commit-invoices.service.js'
 import type { ChunkResult, Tx } from './commit.helpers.js'
 
 export type ImportEntity = 'parties' | 'product' | 'invoice'
@@ -36,17 +37,6 @@ export type CommitChunkFn = (tx: Tx, args: CommitChunkArgs) => Promise<ChunkResu
  * route's enum was bypassed; refusing to dispatch protects every
  * downstream invariant.
  */
-async function commitChunkInvoicesStub(): Promise<ChunkResult> {
-  // 7.1C PR-C1 placeholder — real `commitChunkInvoices` arrives in PR-C3.
-  // Returning a 409 (not 501) keeps the route's existing error envelope —
-  // the route's `entity='invoice'` Zod branch doesn't open until PR-C4.
-  throw new AppError(
-    ErrorCode.IMPORT_JOB_NOT_COMMITTABLE,
-    409,
-    "Invoice commit is not yet enabled (7.1C PR-C1 scaffold).",
-  )
-}
-
 export function pickCommitChunk(entity: string): CommitChunkFn {
   switch (entity) {
     case 'parties':
@@ -54,11 +44,8 @@ export function pickCommitChunk(entity: string): CommitChunkFn {
     case 'product':
       return commitChunkProducts
     case 'invoice':
-      // 7.1C PR-C1 — branch reserved; real implementation lands in PR-C3
-      // (`commit-invoices.service.ts`). Throwing NOT_IMPLEMENTED keeps the
-      // route-layer enum + dispatcher in lockstep without exposing a
-      // half-built commit path to /api/imports/:id/commit.
-      return commitChunkInvoicesStub
+      // 7.1C PR-C3 — real chunk-tx commit (commit-invoices.service.ts).
+      return commitChunkInvoices
     default:
       throw new AppError(
         ErrorCode.IMPORT_JOB_NOT_COMMITTABLE,

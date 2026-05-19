@@ -246,6 +246,11 @@ export async function emitProductsUpdatedFromImport(
   })
 }
 
+// 7.1C — `emitInvoicesImportedBatch` extracted to audit-emit-invoices.ts
+// to keep this file under the 250L cap. Re-export for back-compat with
+// audit-coverage scanner (which greps SOURCE_REGISTRY for the symbol).
+export { emitInvoicesImportedBatch } from './audit-emit-invoices.js'
+
 export async function emitExpired(
   client: AuditWriter,
   args: { businessId: string; userId: string; jobId: string; expiredAt: Date },

@@ -72,6 +72,19 @@ export async function eraseImportData(
       AND ("raw" IS NOT NULL OR "normalized" IS NOT NULL)
   `
 
+  // 2b) M11 — DPDP actor-scrub. Every AuditLog row that named the erased
+  // principal as the actor is updated to userId=NULL so history survives
+  // (audit log is immutable per M5) but the identity linkage is broken.
+  // Retention horizon for `invoices.imported_batch`: the row persists as
+  // long as the AuditLog row does (currently indefinite — Phase 6 audit
+  // retention policy is the SSOT). The scrub here is the DPDP carve-out
+  // applied at erasure time; no separate cron retention is owed by 7.1C.
+  await tx.$executeRaw`
+    UPDATE "AuditLog"
+    SET "userId" = NULL
+    WHERE "userId" = ${userId}
+  `
+
   const result: EraseImportDataResult = {
     jobsScrubbed: Number(jobsScrubbed),
     rowsScrubbed: Number(rowsScrubbed),

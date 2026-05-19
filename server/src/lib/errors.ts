@@ -98,6 +98,20 @@ export enum ErrorCode {
   // probe added later) not yet satisfied. The commit pipeline refuses
   // to run rather than write partial state.
   IMPORT_PRECONDITION_MISSING = 'IMPORT_PRECONDITION_MISSING',
+
+  // Phase 7 · 7.1C — Invoice commit (PR-C3)
+  // COMMIT_BLOCKED_PRODUCT_NOT_FOUND: pre-flight (post stale-re-resolve) saw
+  // at least one line with an unresolved product. The chunk throws BEFORE
+  // any Document INSERT — no partial state. Payload carries `blockedRowCount`
+  // + `missingSkuSample` (≤5, DEBUG-logged only — S5).
+  COMMIT_BLOCKED_PRODUCT_NOT_FOUND = 'COMMIT_BLOCKED_PRODUCT_NOT_FOUND',
+  // PRODUCT_DELETED_DURING_COMMIT: TOCTOU — line resolved at preview but
+  // the Product row was hard-deleted between preview and commit. Surfaced
+  // by catching Prisma P2003 on `documentLineItem.createMany` (S8).
+  PRODUCT_DELETED_DURING_COMMIT = 'PRODUCT_DELETED_DURING_COMMIT',
+  // CONCURRENT_COMMIT_RACE: row-level guard `updateMany count=0` inside
+  // commit-invoices; another commit pass already bound this row.
+  CONCURRENT_COMMIT_RACE = 'CONCURRENT_COMMIT_RACE',
 }
 
 export interface ApiErrorResponse {
