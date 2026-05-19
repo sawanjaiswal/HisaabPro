@@ -26,13 +26,17 @@ import logger from '../../lib/logger.js'
 import { emitCommitted } from './audit-emit.js'
 import { MAX_CREATED_PARTY_IDS } from '../../constants/import.constants.js'
 import type { ExtendedPrismaClient } from '../../lib/prisma.js'
-import type { AuthContext } from '../../types/import.types.js'
+import type {
+  AuthContext,
+  DedupResolution,
+} from '../../types/import.types.js'
 import {
   acquireBusinessLock,
   assertCommitBind,
   commitChunk,
   lockJob,
 } from './commit.helpers.js'
+import { applyDedupResolutions } from './commit.resolutions.js'
 
 export interface CommitImportJobArgs {
   jobId: string
@@ -40,6 +44,11 @@ export interface CommitImportJobArgs {
   commitToken: string
   idempotencyKey: string
   prisma: ExtendedPrismaClient
+  /**
+   * API.8 — optional per-row decisions for DUPLICATE_* rows. Applied
+   * inside the same $transaction as the STAGED-row commit pass.
+   */
+  dedupResolutions?: DedupResolution[]
 }
 
 export interface CommitResult {
@@ -47,14 +56,24 @@ export interface CommitResult {
   skippedCount: number
   errorCount: number
   createdPartyIds: string[]
+  /** API.8 — party ids mutated by OVERWRITE resolutions (S6 batched). */
+  overwrittenPartyIds: string[]
   partial: boolean
 }
 
 export async function commitImportJob(
   args: CommitImportJobArgs,
 ): Promise<CommitResult> {
-  const { jobId, auth, commitToken, idempotencyKey, prisma } = args
+  const {
+    jobId,
+    auth,
+    commitToken,
+    idempotencyKey,
+    prisma,
+    dedupResolutions,
+  } = args
   const allCreated: string[] = []
+  let overwrittenPartyIds: string[] = []
   let partial = false
 
   try {
@@ -69,6 +88,18 @@ export async function commitImportJob(
         where: { id: jobId },
         data: { status: 'COMMITTING', commitToken: null },
       })
+
+      // API.8 — apply per-row dedup resolutions BEFORE the STAGED pass.
+      // CREATE_NEW flips DUP → STAGED so the chunk loop picks them up.
+      // OVERWRITE updates matched parties + marks rows COMMITTED itself.
+      if (dedupResolutions && dedupResolutions.length > 0) {
+        const resolved = await applyDedupResolutions(tx, {
+          jobId,
+          auth,
+          resolutions: dedupResolutions,
+        })
+        overwrittenPartyIds = resolved.overwrittenPartyIds
+      }
 
       // Chunked loop — at most MAX_CREATED_PARTY_IDS retained for audit.
       for (;;) {
@@ -98,6 +129,7 @@ export async function commitImportJob(
           createdPartyIds: allCreated,
           counts: {
             committed: allCreated.length,
+            overwritten: overwrittenPartyIds.length,
             errors: errorRows,
             skipped: skippedRows,
           },
@@ -105,7 +137,7 @@ export async function commitImportJob(
       })
       await emitCommitted(tx, auth, {
         jobId,
-        committedCount: allCreated.length,
+        committedCount: allCreated.length + overwrittenPartyIds.length,
         skippedCount: skippedRows,
         errorCount: errorRows,
         partyIdsCount: allCreated.length,
@@ -144,10 +176,11 @@ export async function commitImportJob(
     errorCount,
   })
   return {
-    committedCount: allCreated.length,
+    committedCount: allCreated.length + overwrittenPartyIds.length,
     skippedCount,
     errorCount,
     createdPartyIds: allCreated,
+    overwrittenPartyIds,
     partial,
   }
 }

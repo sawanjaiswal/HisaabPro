@@ -206,3 +206,6 @@ export async function commitChunk(
     done: candidates.length < CHUNK_SIZE,
   }
 }
+
+// ── API.8 — dedup resolutions live in commit.resolutions.ts ─────────
+// (Split out to keep this file ≤250 LOC.)

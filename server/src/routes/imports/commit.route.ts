@@ -82,6 +82,7 @@ commitImportRoute.post(
         commitToken: parsed.data.commitToken,
         idempotencyKey,
         prisma,
+        dedupResolutions: parsed.data.dedupResolutions,
       })
       sendSuccess(res, result)
     } catch (err) {

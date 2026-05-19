@@ -72,6 +72,23 @@ export interface ParserResult {
   rejectedReason?: string
 }
 
+// ── Dedup resolution input (API.8) ───────────────────────────────────
+/**
+ * Per-row decision captured by the preview UI for DUPLICATE_* rows.
+ * `decision`:
+ *   - SKIP        no-op; row stays DUPLICATE_* (naturally excluded from commit)
+ *   - OVERWRITE   update matched party from row's normalized data
+ *   - CREATE_NEW  flip row to STAGED + null matchedPartyId (treat as new party)
+ *
+ * Validated by `dedupResolutionSchema` (server/src/schemas/import.zod.ts).
+ */
+export type DedupResolutionDecision = 'SKIP' | 'OVERWRITE' | 'CREATE_NEW'
+
+export interface DedupResolution {
+  rowId: string
+  decision: DedupResolutionDecision
+}
+
 // ── Auth helper return shape (M1) ────────────────────────────────────
 /**
  * Output of `lib/auth-helper.ts#getAuth(req)`. Guarantees both ids

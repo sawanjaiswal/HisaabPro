@@ -62,7 +62,7 @@ export const AUDIT_COVERED_SERVICES: readonly AuditCoverageEntry[] = [
   { service: 'services/import/commit.service.ts',           ops: ['commitImportJob'] },
   { service: 'services/import/commit.helpers.ts',           ops: ['commitChunk'] },
   { service: 'services/import/cancel.service.ts',           ops: ['cancelImportJob'] },
-  { service: 'services/import/audit-emit.ts',               ops: ['emitUploaded', 'emitParsed', 'emitRowDropped', 'emitDedupResolved', 'emitCommitted', 'emitExpired'] },
+  { service: 'services/import/audit-emit.ts',               ops: ['emitUploaded', 'emitParsed', 'emitRowDropped', 'emitDedupResolved', 'emitCommitted', 'emitPartiesUpdatedFromImport', 'emitExpired'] },
   { service: 'jobs/import-retention.cron.ts',               ops: ['runImportRetentionCron'] },
   { service: 'services/import/erasure.service.ts',          ops: ['eraseImportData'] },
 ] as const

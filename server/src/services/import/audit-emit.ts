@@ -149,6 +149,40 @@ export async function emitCommitted(
   })
 }
 
+/**
+ * API.8 — Emit a single batched `parties.updated_from_import` audit row
+ * covering every party mutated by an OVERWRITE resolution in this commit.
+ * Mirrors `parties.imported_batch` (S6 batched audit): one row per chunk,
+ * NOT one per party. PII-safe — only ids and counts cross the wire.
+ */
+export async function emitPartiesUpdatedFromImport(
+  client: AuditWriter,
+  args: {
+    jobId: string
+    businessId: string
+    userId: string
+    partyIds: string[]
+    source?: string
+  },
+): Promise<void> {
+  if (args.partyIds.length === 0) return
+  await client.auditLog.create({
+    data: {
+      businessId: args.businessId,
+      userId: args.userId,
+      entityType: 'ImportJob',
+      entityId: args.jobId,
+      action: 'UPDATE',
+      changes: {
+        event: 'parties.updated_from_import',
+        partyIds: args.partyIds,
+        partyIdsCount: args.partyIds.length,
+        source: args.source ?? 'import-overwrite',
+      },
+    },
+  })
+}
+
 export async function emitExpired(
   client: AuditWriter,
   args: { businessId: string; userId: string; jobId: string; expiredAt: Date },

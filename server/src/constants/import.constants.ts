@@ -33,6 +33,12 @@ export const PARSE_TIMEOUT_MS = 10_000
 export const CHUNK_SIZE = 500
 /** S8 — max created-party ids retained for rollback bookkeeping. */
 export const MAX_CREATED_PARTY_IDS = 10_000
+/**
+ * API.8 — upper bound on per-row dedup resolutions accepted in the commit
+ * payload. Mirrors MAX_ROWS so the worst case is still bounded. Beyond this
+ * the request is rejected at the zod layer before any DB work.
+ */
+export const MAX_DEDUP_RESOLUTIONS = MAX_ROWS
 
 // ── Retention / reaping ──────────────────────────────────────────────
 /** Hours after which raw uploaded payloads are purged from storage. */

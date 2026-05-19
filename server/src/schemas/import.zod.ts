@@ -11,7 +11,26 @@
  */
 
 import { z } from 'zod'
-import { IMPORT_FORMATS } from '../constants/import.constants.js'
+import {
+  IMPORT_FORMATS,
+  MAX_DEDUP_RESOLUTIONS,
+} from '../constants/import.constants.js'
+
+// ── Dedup resolution (API.8) ─────────────────────────────────────────
+/**
+ * Per-row decision the user makes on duplicate matches in the preview UI.
+ *   SKIP        — no-op (row remains DUPLICATE_* and is excluded from commit).
+ *   OVERWRITE   — update the matched party in place from row's normalized data.
+ *   CREATE_NEW  — flip to STAGED, null out matchedPartyId; treat as a new party.
+ */
+export const DEDUP_RESOLUTION_DECISIONS = ['SKIP', 'OVERWRITE', 'CREATE_NEW'] as const
+
+export const dedupResolutionSchema = z
+  .object({
+    rowId: z.string().min(1).max(64),
+    decision: z.enum(DEDUP_RESOLUTION_DECISIONS),
+  })
+  .strict()
 
 // ── POST /import/jobs (upload) ───────────────────────────────────────
 /**
@@ -38,10 +57,20 @@ export type UploadBody = z.infer<typeof uploadBodySchema>
 export const commitBodySchema = z
   .object({
     commitToken: z.string().min(20).max(40),
+    /**
+     * API.8 — optional per-row resolutions for DUPLICATE_EXACT/DUPLICATE_NEAR
+     * rows surfaced at preview. Absent = legacy behaviour (DUP rows skipped).
+     * Bounded by MAX_DEDUP_RESOLUTIONS so a malicious payload cannot OOM.
+     */
+    dedupResolutions: z
+      .array(dedupResolutionSchema)
+      .max(MAX_DEDUP_RESOLUTIONS)
+      .optional(),
   })
   .strict()
 
 export type CommitBody = z.infer<typeof commitBodySchema>
+export type DedupResolutionInput = z.infer<typeof dedupResolutionSchema>
 
 // ── POST /import/jobs/:id/cancel ─────────────────────────────────────
 /** Empty body — cancellation is idempotent and carries no payload. */

@@ -140,6 +140,61 @@ describe('POST /api/imports/:id/commit', () => {
     expect(res.body.error.code).toBe('BAD_COMMIT_TOKEN')
   })
 
+  // ── API.8 — dedupResolutions in the commit body ─────────────────────
+  it('200 happy path threads dedupResolutions[] to the service', async () => {
+    mockOwnerPermission()
+    mockIdempotencyDefaults()
+    commit.commitImportJob.mockResolvedValue({
+      committedCount: 1,
+      skippedCount: 0,
+      errorCount: 0,
+      createdPartyIds: [],
+      overwrittenPartyIds: ['party-99'],
+      partial: false,
+    })
+
+    const token = generateTestToken()
+    const res = await request(app)
+      .post('/api/imports/job-1/commit')
+      .set('Authorization', `Bearer ${token}`)
+      .set('X-Client-Version', '7.1.0')
+      .set('X-Idempotency-Key', randomUUID())
+      .send({
+        commitToken: validCommitToken(),
+        dedupResolutions: [{ rowId: 'r1', decision: 'OVERWRITE' }],
+      })
+
+    expect(res.status).toBe(200)
+    expect(res.body.success).toBe(true)
+    expect(res.body.data.overwrittenPartyIds).toEqual(['party-99'])
+    const args = commit.commitImportJob.mock.calls[0]![0] as {
+      dedupResolutions?: Array<{ rowId: string; decision: string }>
+    }
+    expect(args.dedupResolutions).toEqual([{ rowId: 'r1', decision: 'OVERWRITE' }])
+  })
+
+  it('400 when dedupResolutions[].decision is invalid', async () => {
+    mockOwnerPermission()
+    mockIdempotencyDefaults()
+
+    const token = generateTestToken()
+    const res = await request(app)
+      .post('/api/imports/job-1/commit')
+      .set('Authorization', `Bearer ${token}`)
+      .set('X-Client-Version', '7.1.0')
+      .set('X-Idempotency-Key', randomUUID())
+      .send({
+        commitToken: validCommitToken(),
+        // 'IGNORE' is not a valid decision — zod rejects at the route.
+        dedupResolutions: [{ rowId: 'r1', decision: 'IGNORE' }],
+      })
+
+    expect(res.status).toBe(400)
+    expect(res.body.success).toBe(false)
+    expect(res.body.error.code).toBe('VALIDATION_ERROR')
+    expect(commit.commitImportJob).not.toHaveBeenCalled()
+  })
+
   it('400 on .strict() — unknown body key rejected by Zod', async () => {
     mockOwnerPermission()
     mockIdempotencyDefaults()
