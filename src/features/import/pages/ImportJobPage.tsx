@@ -1,20 +1,9 @@
 /**
- * Phase 7 Slice 7.1A FE.2 — Import job orchestrator page.
- *
- * Route: /imports/:jobId  (ROUTES.IMPORT_JOB_DETAIL)
- *
- * Branches by `job.status` from the 2s polling query:
- *   UPLOADED | PARSING                 → <ParseProgress />
- *   FAILED                             → <ParseFailed />
- *   PREVIEWED                          → stub (FE.3 will render the dedup
- *                                        review screen here)
- *   COMMITTING                         → stub (FE.4)
- *   COMMITTED | PARTIALLY_COMMITTED    → stub (FE.5 will render the success
- *                                        + error-CSV download screen here)
- *   CANCELLED                          → stub
- *
- * Polling stops automatically once the status leaves the active set
- * (UPLOADED/PARSING) — see useImportJobPolling.
+ * Phase 7 Slice 7.1A FE.2-FE.5 — Import job orchestrator page.
+ * Route: /imports/:jobId  (ROUTES.IMPORT_JOB_DETAIL). Branches by
+ * job.status from the polling query. COMMITTING shows the spinner
+ * immediately (mutation in-flight) and persists across refresh —
+ * server status is SSOT, mutation state is the optimistic mirror.
  */
 
 import { useState } from 'react'
@@ -24,21 +13,21 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { Card } from '@/components/ui/Card'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { Spinner } from '@/components/feedback/Spinner'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
+import { useToast } from '@/hooks/useToast'
 import { ParseProgress } from '../components/ParseProgress'
 import { ParseFailed } from '../components/ParseFailed'
 import { PreviewTable } from '../components/PreviewTable'
 import { DedupResolution } from '../components/DedupResolution'
+import { CommitConfirm } from '../components/CommitConfirm'
+import { CommitResult } from '../components/CommitResult'
 import { useImportJobPolling } from '../hooks/useImportJobPolling'
+import { useImportCommit, MissingCommitTokenError } from '../hooks/useImportCommit'
 import type { ImportPreviewRow } from '../types/import.types'
 import type { DedupResolutionMap } from '../types/dedup.types'
 
-/**
- * Client-side sub-state while the server job is at status=PREVIEWED.
- * The user moves preview → dedup → commit without the server status
- * changing (commit only flips once the user actually triggers FE.5).
- */
 type PreviewSubView = 'preview' | 'dedup' | 'commit'
 
 function StubPanel({ title, body }: { title: string; body: string }) {
@@ -57,24 +46,58 @@ function StubPanel({ title, body }: { title: string; body: string }) {
   )
 }
 
+function CommittingPanel({ title, body }: { title: string; body: string }) {
+  return (
+    <Card variant="default" className="p-6 flex flex-col items-center text-center gap-3">
+      <Spinner size="lg" />
+      <h2
+        className="font-semibold"
+        style={{ fontSize: 'var(--fs-lg)', color: 'var(--color-text-primary)' }}
+      >
+        {title}
+      </h2>
+      <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+        {body}
+      </p>
+    </Card>
+  )
+}
+
 export default function ImportJobPage() {
   const { jobId } = useParams<{ jobId: string }>()
   const { t } = useLanguage()
   const tx = t as unknown as Record<string, string>
+  const toast = useToast()
 
   const query = useImportJobPolling(jobId)
 
-  // Lifted client-side state for the preview → dedup → commit flow.
-  // Rows are owned by PreviewTable.usePreviewRows, but we mirror the
-  // user-visible page (incl. resolutions) here so back-nav from a future
-  // commit view restores the choices instead of resetting them.
   const [subView, setSubView] = useState<PreviewSubView>('preview')
   const [dedupRows, setDedupRows] = useState<ImportPreviewRow[]>([])
   const [resolutions, setResolutions] = useState<DedupResolutionMap>({})
 
+  const commit = useImportCommit({
+    jobId: jobId ?? '',
+    onSuccess: () => {
+      // Mutation response shape may be `{}` on the api-wrapper edge cases;
+      // we do NOT deref response fields here — the polling query owns the
+      // status flip and CommitResult reads from job.counts. See OFFLINE_RULES Rule 5.
+      toast.success(tx.importCommitSuccessToast ?? 'Import committed — refreshing…')
+    },
+    onError: (err) => {
+      if (err instanceof MissingCommitTokenError) {
+        toast.error(tx.importCommitMissingToken ??
+          'This import session expired. Please upload the file again.')
+        return
+      }
+      const msg = err instanceof Error
+        ? err.message
+        : (tx.importCommitFailed ?? 'Commit failed. Please try again.')
+      toast.error(msg)
+    },
+  })
+
   const headerTitle = tx.importJobHeader ?? tx.importPageTitle ?? 'Import data'
 
-  // Missing :jobId — guard before the query renders error UI.
   if (!jobId) {
     return (
       <AppShell>
@@ -133,6 +156,17 @@ export default function ImportJobPage() {
                 <ParseFailed jobId={job.id} errorCount={job.errorCount} t={tx} />
               )
             case 'PREVIEWED':
+              // While the commit mutation is in-flight (server hasn't yet
+              // flipped status to COMMITTING) show the same spinner panel
+              // so the user sees instant feedback on tapping "Commit".
+              if (commit.isCommitting) {
+                return (
+                  <CommittingPanel
+                    title={tx.importCommittingTitle ?? 'Committing your data…'}
+                    body={tx.importCommittingBody ?? 'Saving rows to your business.'}
+                  />
+                )
+              }
               if (subView === 'dedup') {
                 return (
                   <DedupResolution
@@ -148,19 +182,16 @@ export default function ImportJobPage() {
                 )
               }
               if (subView === 'commit') {
-                // FE.5 will mount here. It reads `resolutions` and POSTs
-                // them to /api/imports/:id/commit. Until then, a stub
-                // confirms the lift-state plumbing works end-to-end.
                 return (
-                  <StubPanel
-                    title={tx.importJobCommitReadyStubTitle ?? 'Ready to commit'}
-                    body={
-                      (tx.importJobCommitReadyStubBody ??
-                        'FE.5 will send these {n} duplicate resolutions to the server.').replace(
-                        '{n}',
-                        String(Object.keys(resolutions).length),
-                      )
-                    }
+                  <CommitConfirm
+                    rows={query.data.rows}
+                    resolutions={resolutions}
+                    isCommitting={commit.isCommitting}
+                    onCommit={() => commit.commit(resolutions)}
+                    onBack={() => setSubView(
+                      Object.keys(resolutions).length > 0 ? 'dedup' : 'preview',
+                    )}
+                    t={tx}
                   />
                 )
               }
@@ -178,19 +209,14 @@ export default function ImportJobPage() {
               )
             case 'COMMITTING':
               return (
-                <StubPanel
-                  title={tx.importJobCommittingStubTitle ?? 'Committing import…'}
-                  body={tx.importJobCommittingStubBody ?? 'Saving rows to your business.'}
+                <CommittingPanel
+                  title={tx.importCommittingTitle ?? 'Committing your data…'}
+                  body={tx.importCommittingBody ?? 'Saving rows to your business.'}
                 />
               )
             case 'COMMITTED':
             case 'PARTIALLY_COMMITTED':
-              return (
-                <StubPanel
-                  title={tx.importJobCommittedStubTitle ?? 'Import committed'}
-                  body={tx.importJobCommittedStubBody ?? 'A detailed result screen is on the way.'}
-                />
-              )
+              return <CommitResult job={job} t={tx} />
             case 'CANCELLED':
               return (
                 <StubPanel

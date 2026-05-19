@@ -24,6 +24,7 @@ import { FormatPicker } from '../components/FormatPicker'
 import { FileDropzone } from '../components/FileDropzone'
 import { useImportUpload } from '../hooks/useImportUpload'
 import { validateUpload, type FileValidationCode } from '../utils/file-validation'
+import { stashCommitToken } from '../utils/commit-token-store'
 import type { ImportFormat } from '../types/import.types'
 
 function featureEnabled(): boolean {
@@ -59,6 +60,10 @@ export default function ImportUploadPage() {
 
   const upload = useImportUpload({
     onSuccess: (res) => {
+      // Stash commit token for ImportJobPage → useImportCommit (FE.5).
+      // BE does not echo the token on GET, so this is the only carrier
+      // between upload and commit. sessionStorage clears on tab close.
+      stashCommitToken(res.jobId, res.commitToken)
       toast.success(tx.importUploadSuccess ?? 'Upload received')
       navigate(importJobPath(res.jobId))
     },

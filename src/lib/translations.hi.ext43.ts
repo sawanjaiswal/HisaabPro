@@ -163,4 +163,37 @@ export const hiExt43 = {
   importJobCommitReadyStubTitle: 'कमिट के लिए तैयार',
   importJobCommitReadyStubBody:
     'FE.5 इन {n} डुप्लीकेट निर्णयों को सर्वर पर भेजेगा।',
+
+  // ── FE.5 — Commit confirm ─────────────────────────────────────────────
+  importCommitTitle: 'कमिट के लिए तैयार',
+  importCommitBody:
+    'अपने बिज़नेस में सेव करने से पहले सारांश देखें।',
+  importCommitCountCreate: 'नई पार्टियाँ बनेंगी',
+  importCommitCountOverwrite: 'ओवरराइट होंगी',
+  importCommitCountSkip: 'डुप्लीकेट छोड़ी जाएँगी',
+  importCommitBack: 'वापस',
+  importCommitAction: 'इम्पोर्ट कमिट करें',
+  importCommitting: 'आपका डेटा सेव हो रहा है…',
+  importCommitSuccessToast: 'इम्पोर्ट कमिट हो गया — रिफ़्रेश हो रहा है…',
+  importCommitFailed: 'कमिट नहीं हो सका। फिर से कोशिश करें।',
+  importCommitMissingToken:
+    'यह इम्पोर्ट सेशन समाप्त हो गया है। कृपया फ़ाइल फिर से अपलोड करें।',
+
+  // ── FE.5 — Committing panel ───────────────────────────────────────────
+  importCommittingTitle: 'आपका डेटा सेव हो रहा है…',
+  importCommittingBody:
+    'पंक्तियाँ आपके बिज़नेस में सेव हो रही हैं। बड़े इम्पोर्ट में कुछ समय लग सकता है।',
+
+  // ── FE.5 — Result view ────────────────────────────────────────────────
+  importResultTitle: 'इम्पोर्ट पूरा हुआ',
+  importResultBody: 'आपकी पार्टियाँ अब बिज़नेस में जुड़ गई हैं।',
+  importResultPartialTitle: 'इम्पोर्ट आंशिक रूप से सेव हुआ',
+  importResultPartialBody:
+    'कुछ पंक्तियाँ सेव नहीं हो सकीं। गलतियाँ देखने के लिए एरर CSV डाउनलोड करें।',
+  importResultCountSaved: 'सेव हुई पार्टियाँ',
+  importResultCountSkipped: 'छोड़ी गई डुप्लीकेट',
+  importResultCountErrors: 'गलती वाली पंक्तियाँ',
+  importResultDownloadCsv: 'एरर CSV डाउनलोड करें',
+  importResultImportAnother: 'और फ़ाइल इम्पोर्ट करें',
+  importResultViewParties: 'पार्टियाँ देखें',
 } as const

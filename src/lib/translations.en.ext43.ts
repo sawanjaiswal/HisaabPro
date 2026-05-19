@@ -165,4 +165,35 @@ export const enExt43 = {
   importJobCommitReadyStubTitle: 'Ready to commit',
   importJobCommitReadyStubBody:
     'FE.5 will send these {n} duplicate resolutions to the server.',
+
+  // ── FE.5 — Commit confirm ─────────────────────────────────────────────
+  importCommitTitle: 'Ready to commit',
+  importCommitBody: 'Review the summary before we save these rows to your business.',
+  importCommitCountCreate: 'Parties to create',
+  importCommitCountOverwrite: 'Parties to overwrite',
+  importCommitCountSkip: 'Duplicates to skip',
+  importCommitBack: 'Back',
+  importCommitAction: 'Commit import',
+  importCommitting: 'Committing your data…',
+  importCommitSuccessToast: 'Import committed — refreshing…',
+  importCommitFailed: 'Commit failed. Please try again.',
+  importCommitMissingToken:
+    'This import session expired. Please upload the file again.',
+
+  // ── FE.5 — Committing panel ───────────────────────────────────────────
+  importCommittingTitle: 'Committing your data…',
+  importCommittingBody: 'Saving rows to your business. This may take a moment for large imports.',
+
+  // ── FE.5 — Result view ────────────────────────────────────────────────
+  importResultTitle: 'Import complete',
+  importResultBody: 'Your parties are now part of your business.',
+  importResultPartialTitle: 'Import partially saved',
+  importResultPartialBody:
+    'Some rows could not be saved. Download the error CSV to see what went wrong.',
+  importResultCountSaved: 'Parties saved',
+  importResultCountSkipped: 'Duplicates skipped',
+  importResultCountErrors: 'Rows with errors',
+  importResultDownloadCsv: 'Download error CSV',
+  importResultImportAnother: 'Import another file',
+  importResultViewParties: 'View parties',
 } as const

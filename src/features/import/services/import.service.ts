@@ -7,8 +7,15 @@
  */
 
 import { api } from '@/lib/api'
+import { API_URL } from '@/config/app.config'
 import { IMPORT_MIN_CLIENT_VERSION } from '../constants/import.constants'
-import type { CreateImportRes, ImportFormat, ImportJobView } from '../types/import.types'
+import type {
+  CommitImportReq,
+  CommitImportRes,
+  CreateImportRes,
+  ImportFormat,
+  ImportJobView,
+} from '../types/import.types'
 
 export interface UploadImportArgs {
   file: File
@@ -65,4 +72,40 @@ export async function cancelImportJob(jobId: string): Promise<void> {
     entityType: 'import',
     entityLabel: 'Cancel import',
   })
+}
+
+/**
+ * POST /api/imports/:id/commit.
+ *
+ * BE requires `X-Idempotency-Key` HEADER (not body) and `commitToken` in body.
+ * Online-only — multipart-style upload, but more importantly the bind in
+ * BE M3 ties (businessId,userId,jobId,idempotencyKey) so re-queuing after
+ * an offline window would collide with subsequent legitimate retries.
+ */
+export async function commitImportJob(
+  jobId: string,
+  body: CommitImportReq,
+): Promise<CommitImportRes> {
+  const { idempotencyKey, ...payload } = body
+  return api<CommitImportRes>(`/imports/${encodeURIComponent(jobId)}/commit`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: { 'X-Idempotency-Key': idempotencyKey },
+    offlineQueue: false,
+    entityType: 'import',
+    entityLabel: `Commit import ${jobId}`,
+  })
+}
+
+/**
+ * Trigger the browser to download the error CSV. Auth is cookie-based
+ * (same-origin httpOnly access cookie), so `window.location.href` sends
+ * credentials automatically and the BE's Content-Disposition header
+ * makes the browser save the file. The route returns text/csv — the
+ * JSON-envelope `api()` wrapper cannot consume it.
+ */
+export function downloadErrorCsv(jobId: string): void {
+  if (typeof window === 'undefined') return
+  const url = `${API_URL}/imports/${encodeURIComponent(jobId)}/error-csv`
+  window.location.href = url
 }
