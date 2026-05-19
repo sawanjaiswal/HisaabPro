@@ -118,3 +118,45 @@ export interface ImportJobView {
   createdAt: string
   updatedAt: string
 }
+
+// ─────────────────────────────────────────────────────────────────────
+// Phase 7 · Slice 7.1B — PRODUCTS
+// ─────────────────────────────────────────────────────────────────────
+
+/** Raw product row emitted by a product-aware parser. */
+export interface RawProductRow {
+  sourceIndex: number
+  raw: Record<string, string>
+}
+
+/** Machine-readable issue codes for product normalization (M5-M9). */
+export type ProductIssueCode =
+  | 'NAME_REQUIRED'
+  | 'PRICE_INVALID'
+  | 'PRICE_PRECISION_LOST'
+  | 'PRICE_OUT_OF_RANGE'
+  | 'UNIT_INVALID'
+  | 'UNIT_NOT_FOUND'
+  | 'HSN_INVALID'
+  | 'DESCRIPTION_TRUNCATED'
+  | 'PRODUCT_PLACEHOLDER_NAME'
+  | 'SKU_TOO_LONG'
+  | 'OPENING_STOCK_INVALID'
+
+/**
+ * Normalized product row. Prices are `bigint` (paise) in-process; wire
+ * serialisation goes through `serializeNormalizedProduct` (M5).
+ */
+export interface NormalizedProduct {
+  name: string
+  sku?: string
+  hsnCode?: string | null
+  salePrice?: bigint
+  purchasePrice?: bigint
+  mrp?: bigint
+  unitSourceText?: string
+  unit?: string
+  openingStock: string  // Decimal-as-string preserves precision
+  description?: string
+  issues: RowIssue[]
+}

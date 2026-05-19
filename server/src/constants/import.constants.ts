@@ -99,3 +99,44 @@ export const DEDUP_ACTIONS = [
   'OVERWRITE',
   'CREATE_NEW',
 ] as const
+
+// ─────────────────────────────────────────────────────────────────────
+// Phase 7 · Slice 7.1B — PRODUCTS IMPORT (additive only)
+// ─────────────────────────────────────────────────────────────────────
+
+// ── Price (money) regex + caps (SCOPE L295-340) ──────────────────────
+/** Raw decimal string: 1-12 integer digits, ≤2 fractional. */
+export const PRICE_PRECISION_REGEX = /^\d{1,12}(\.\d{0,2})?$/
+/** Detects >2 fractional digits → WARNING PRICE_PRECISION_LOST. */
+export const PRICE_PRECISION_LOST_REGEX = /^\d{1,12}\.\d{3,}$/
+/** Strip Indian comma grouping ("1,23,456.78") before regex test. */
+export const PRICE_COMMA_STRIP = /,/g
+/** Safety-net upper bound mirrors regex (≤ MAX_SAFE_INTEGER paise). */
+export const PRICE_MAX_PAISE = BigInt(Number.MAX_SAFE_INTEGER)
+
+// ── Product field caps (SCOPE L160-168 + M6/M7) ──────────────────────
+export const SKU_MAX_LEN = 64
+export const UNIT_MAX_LEN = 64
+export const HSN_CHARSET_REGEX = /^[0-9]+$/
+export const HSN_VALID_LENGTHS = new Set([4, 6, 8])
+export const DESCRIPTION_MAX_LEN = 2000
+export const PRODUCT_PLACEHOLDER_NAMES = new Set([
+  'item 1',
+  'item',
+  'product',
+  '-',
+  'n/a',
+  'test',
+  'sample',
+  'new item',
+  'product 1',
+])
+
+// ── Dedup ────────────────────────────────────────────────────────────
+export const TRGM_THRESHOLD = 0.7
+export const TRGM_TOP_K = 5
+
+// ── Audit (PII-safe events) ──────────────────────────────────────────
+export const ACTION_PRODUCTS_IMPORTED_BATCH = 'products.imported_batch' as const
+export const ACTION_PRODUCTS_UPDATED_FROM_IMPORT =
+  'products.updated_from_import' as const

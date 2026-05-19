@@ -42,7 +42,12 @@ export const dedupResolutionSchema = z
 export const uploadBodySchema = z
   .object({
     format: z.enum(IMPORT_FORMATS),
-    entity: z.literal('parties'),
+    /**
+     * Phase 7 · 7.1B — extended to accept `'product'` alongside `'parties'`.
+     * Default is `'parties'` so legacy clients (no `entity` field) still
+     * dispatch to the parties branch unchanged.
+     */
+    entity: z.enum(['parties', 'product']).default('parties'),
   })
   .strict()
 
