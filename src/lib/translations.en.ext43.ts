@@ -137,4 +137,32 @@ export const enExt43 = {
   importPreviewContinueDedup: 'Continue to dedup',
   importPreviewContinueCommit: 'Continue to commit',
   importPreviewContinueComingSoon: 'Next step lands in FE.4 — coming soon.',
+
+  // ── FE.4 — Dedup resolution ───────────────────────────────────────────
+  importDedupTitle: 'Review duplicates',
+  importDedupIntro:
+    'These rows look like parties you already have. Pick what should happen for each one before committing.',
+  importDedupBulkAriaLabel: 'Apply to all duplicates',
+  importDedupBulkSkipAll: 'Skip all',
+  importDedupBulkOverwriteAll: 'Overwrite all',
+  importDedupBulkCreateAll: 'Create new for all',
+  importDedupCountsLine: '{skip} skip · {overwrite} overwrite · {createNew} create new',
+  importDedupMatchExact: 'Exact match',
+  importDedupMatchNear: 'Near match',
+  importDedupIncoming: 'Incoming row',
+  importDedupExisting: 'Existing party',
+  importDedupExistingFallback: 'Existing party',
+  importDedupExistingPhoneUnknown: '—',
+  importDedupChooseAriaLabel: 'Choose action for this row',
+  importDedupDecision_SKIP: 'Skip — keep existing party',
+  importDedupDecision_OVERWRITE: 'Overwrite existing party with this row',
+  importDedupDecision_CREATE_NEW: 'Create as a new party anyway',
+  importDedupBack: 'Back to preview',
+  importDedupEmptyTitle: 'No duplicates to review',
+  importDedupEmptyBody: 'You can continue straight to commit.',
+
+  // ── FE.4 — Lift-state stub (commit ready, before FE.5 lands) ──────────
+  importJobCommitReadyStubTitle: 'Ready to commit',
+  importJobCommitReadyStubBody:
+    'FE.5 will send these {n} duplicate resolutions to the server.',
 } as const

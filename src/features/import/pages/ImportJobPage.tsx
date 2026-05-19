@@ -17,6 +17,7 @@
  * (UPLOADED/PARSING) — see useImportJobPolling.
  */
 
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -28,7 +29,17 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { ParseProgress } from '../components/ParseProgress'
 import { ParseFailed } from '../components/ParseFailed'
 import { PreviewTable } from '../components/PreviewTable'
+import { DedupResolution } from '../components/DedupResolution'
 import { useImportJobPolling } from '../hooks/useImportJobPolling'
+import type { ImportPreviewRow } from '../types/import.types'
+import type { DedupResolutionMap } from '../types/dedup.types'
+
+/**
+ * Client-side sub-state while the server job is at status=PREVIEWED.
+ * The user moves preview → dedup → commit without the server status
+ * changing (commit only flips once the user actually triggers FE.5).
+ */
+type PreviewSubView = 'preview' | 'dedup' | 'commit'
 
 function StubPanel({ title, body }: { title: string; body: string }) {
   return (
@@ -52,6 +63,14 @@ export default function ImportJobPage() {
   const tx = t as unknown as Record<string, string>
 
   const query = useImportJobPolling(jobId)
+
+  // Lifted client-side state for the preview → dedup → commit flow.
+  // Rows are owned by PreviewTable.usePreviewRows, but we mirror the
+  // user-visible page (incl. resolutions) here so back-nav from a future
+  // commit view restores the choices instead of resetting them.
+  const [subView, setSubView] = useState<PreviewSubView>('preview')
+  const [dedupRows, setDedupRows] = useState<ImportPreviewRow[]>([])
+  const [resolutions, setResolutions] = useState<DedupResolutionMap>({})
 
   const headerTitle = tx.importJobHeader ?? tx.importPageTitle ?? 'Import data'
 
@@ -114,12 +133,47 @@ export default function ImportJobPage() {
                 <ParseFailed jobId={job.id} errorCount={job.errorCount} t={tx} />
               )
             case 'PREVIEWED':
+              if (subView === 'dedup') {
+                return (
+                  <DedupResolution
+                    rows={dedupRows}
+                    initialResolutions={resolutions}
+                    onBack={() => setSubView('preview')}
+                    onContinue={(next) => {
+                      setResolutions(next)
+                      setSubView('commit')
+                    }}
+                    t={tx}
+                  />
+                )
+              }
+              if (subView === 'commit') {
+                // FE.5 will mount here. It reads `resolutions` and POSTs
+                // them to /api/imports/:id/commit. Until then, a stub
+                // confirms the lift-state plumbing works end-to-end.
+                return (
+                  <StubPanel
+                    title={tx.importJobCommitReadyStubTitle ?? 'Ready to commit'}
+                    body={
+                      (tx.importJobCommitReadyStubBody ??
+                        'FE.5 will send these {n} duplicate resolutions to the server.').replace(
+                        '{n}',
+                        String(Object.keys(resolutions).length),
+                      )
+                    }
+                  />
+                )
+              }
               return (
                 <PreviewTable
                   job={job}
                   initialRows={query.data.rows}
                   initialNextCursor={query.data.nextCursor}
                   t={tx}
+                  onContinue={(nextView, rows) => {
+                    setDedupRows(rows)
+                    setSubView(nextView)
+                  }}
                 />
               )
             case 'COMMITTING':

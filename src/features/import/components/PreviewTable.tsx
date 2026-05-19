@@ -1,21 +1,9 @@
 /**
  * Phase 7 Slice 7.1A FE.3 — Preview table orchestrator.
- *
- * Composition (top → bottom):
- *   <PreviewSummary>        counts card (always visible when PREVIEWED)
- *   <PreviewFilters>        All / Valid / Errors / Duplicates chips
- *   <ResponsiveTable>       cards <md, table ≥md
- *   load-more button        cursor pagination append
- *   action row              Cancel + Continue to dedup
- *
- * State:
- *   - rows + pagination owned by usePreviewRows
- *   - active filter is local component state
- *   - cancel mutation hits the existing service
- *
- * No fixed-bottom CSS — the action row lives in normal page flow so we
- * stay inside PLATFORM_SHELL C6. Page-level bottom-nav clearance is
- * already provided by PageContainer.
+ * Composition: PreviewSummary + PreviewFilters + ResponsiveTable +
+ * load-more + Cancel/Continue. State: rows owned by usePreviewRows,
+ * filter is local. FE.4 callback `onContinue` lifts (view, rows) to
+ * ImportJobPage so the dedup view can mount without a refetch.
  */
 
 import { useMemo, useState } from 'react'
@@ -50,9 +38,17 @@ interface PreviewTableProps {
   initialRows: ImportPreviewRow[]
   initialNextCursor: string | null
   t: Record<string, string>
+  /**
+   * Called when the user clicks Continue. `nextView` reflects whether
+   * the job has any duplicates to review — pages with zero duplicates
+   * skip the dedup step. `rows` is the full set loaded so far, lifted
+   * so the parent can pass them through to <DedupResolution> without a
+   * refetch.
+   */
+  onContinue?: (nextView: 'dedup' | 'commit', rows: ImportPreviewRow[]) => void
 }
 
-export function PreviewTable({ job, initialRows, initialNextCursor, t }: PreviewTableProps) {
+export function PreviewTable({ job, initialRows, initialNextCursor, t, onContinue }: PreviewTableProps) {
   const navigate = useNavigate()
   const toast = useToast()
   const [filter, setFilter] = useState<PreviewFilterKey>('all')
@@ -108,9 +104,13 @@ export function PreviewTable({ job, initialRows, initialNextCursor, t }: Preview
   }
 
   const handleContinue = () => {
-    // FE.4 (dedup) / FE.5 (commit) wire the actual next step. For now we
-    // emit a toast so the action chain feels alive in QA.
-    toast.success(t.importPreviewContinueComingSoon ?? 'Next step lands in FE.4 — coming soon.')
+    if (!onContinue) {
+      toast.success(t.importPreviewContinueComingSoon ?? 'Next step lands in FE.4 — coming soon.')
+      return
+    }
+    // Zero-dup short-circuit: jump straight to the commit view per
+    // SCOPE §FE.4. Otherwise, hand control to the dedup view.
+    onContinue(hasAnyDuplicate ? 'dedup' : 'commit', pagination.rows)
   }
 
   const columns: TableColumn<ImportPreviewRow>[] = [

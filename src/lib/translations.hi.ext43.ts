@@ -135,4 +135,32 @@ export const hiExt43 = {
   importPreviewContinueDedup: 'डुप्लीकेट रिव्यू पर जाएँ',
   importPreviewContinueCommit: 'कमिट पर जाएँ',
   importPreviewContinueComingSoon: 'अगला स्टेप FE.4 में आ रहा है।',
+
+  // ── FE.4 — Dedup resolution ───────────────────────────────────────────
+  importDedupTitle: 'डुप्लीकेट की समीक्षा करें',
+  importDedupIntro:
+    'ये पंक्तियाँ शायद उन पार्टियों से मेल खाती हैं जो पहले से मौजूद हैं। कमिट करने से पहले हर पंक्ति के लिए कार्रवाई चुनें।',
+  importDedupBulkAriaLabel: 'सभी डुप्लीकेट पर लागू करें',
+  importDedupBulkSkipAll: 'सभी छोड़ें',
+  importDedupBulkOverwriteAll: 'सभी को ओवरराइट करें',
+  importDedupBulkCreateAll: 'सभी को नई पार्टी बनाएँ',
+  importDedupCountsLine: '{skip} छोड़ें · {overwrite} ओवरराइट · {createNew} नई बनाएँ',
+  importDedupMatchExact: 'पूरा मेल',
+  importDedupMatchNear: 'मिलता-जुलता',
+  importDedupIncoming: 'नई पंक्ति',
+  importDedupExisting: 'मौजूदा पार्टी',
+  importDedupExistingFallback: 'मौजूदा पार्टी',
+  importDedupExistingPhoneUnknown: '—',
+  importDedupChooseAriaLabel: 'इस पंक्ति के लिए कार्रवाई चुनें',
+  importDedupDecision_SKIP: 'छोड़ें — मौजूदा पार्टी बनी रहे',
+  importDedupDecision_OVERWRITE: 'इस पंक्ति से मौजूदा पार्टी को बदलें',
+  importDedupDecision_CREATE_NEW: 'फिर भी नई पार्टी के रूप में बनाएँ',
+  importDedupBack: 'प्रीव्यू पर वापस',
+  importDedupEmptyTitle: 'समीक्षा के लिए कोई डुप्लीकेट नहीं',
+  importDedupEmptyBody: 'आप सीधे कमिट पर जा सकते हैं।',
+
+  // ── FE.4 — Lift-state stub (commit ready, before FE.5 lands) ──────────
+  importJobCommitReadyStubTitle: 'कमिट के लिए तैयार',
+  importJobCommitReadyStubBody:
+    'FE.5 इन {n} डुप्लीकेट निर्णयों को सर्वर पर भेजेगा।',
 } as const
