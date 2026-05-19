@@ -65,11 +65,14 @@ export const AUDIT_COVERED_SERVICES: readonly AuditCoverageEntry[] = [
   // `commit-products.service.ts` is a 7.1B PR1 stub — full audit lands in
   // API.B3 alongside the per-row commit ladder.
   { service: 'services/import/commit-parties.service.ts',   ops: ['commitChunkParties'] },
+  // Phase 7 · 7.1B API.B3 — products commit ladder writes
+  // `products.imported_batch` (S6) inside its $transaction.
+  { service: 'services/import/commit-products.service.ts',  ops: ['commitChunkProducts'] },
   { service: 'services/import/cancel.service.ts',           ops: ['cancelImportJob'] },
-  { service: 'services/import/audit-emit.ts',               ops: ['emitUploaded', 'emitParsed', 'emitRowDropped', 'emitDedupResolved', 'emitCommitted', 'emitPartiesUpdatedFromImport', 'emitExpired'] },
+  { service: 'services/import/audit-emit.ts',               ops: ['emitUploaded', 'emitParsed', 'emitRowDropped', 'emitDedupResolved', 'emitCommitted', 'emitPartiesUpdatedFromImport', 'emitProductsImportedBatch', 'emitProductsUpdatedFromImport', 'emitExpired'] },
   { service: 'jobs/import-retention.cron.ts',               ops: ['runImportRetentionCron'] },
   { service: 'services/import/erasure.service.ts',          ops: ['eraseImportData'] },
 ] as const
 
-/** Total covered: 24 services (16 prior + 8 Phase-7 Import incl. 7.1B split). */
+/** Total covered: 25 services (16 prior + 9 Phase-7 Import incl. 7.1B split + products commit). */
 export const AUDIT_COVERAGE_COUNT = AUDIT_COVERED_SERVICES.length

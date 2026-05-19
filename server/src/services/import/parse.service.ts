@@ -19,20 +19,23 @@
 // PII: logger calls MUST NOT include raw cell content — only jobId,
 // sourceIndex, code, field (S9).
 import crypto from 'node:crypto'
-import { ParseError, parseFile } from './parsers/index.js'
+import { ParseError } from './parsers/index.js'
 import { emitParsed, emitRowDropped } from './audit-emit.js'
-import { normalizePartyRow } from './normalizers/party-normalizer.js'
+import type { ColumnMapping } from './normalizers/normalize-mappings.js'
+import type { ProductColumnMapping } from './normalizers/product-mappings.js'
 import {
-  defaultMappingFor,
-  type ColumnMapping,
-} from './normalizers/normalize-mappings.js'
-import { findExactDuplicates } from './dedup/exact-dedup.js'
-import { findNearDuplicates } from './dedup/near-dedup.js'
+  buildStagedPartyRows,
+  resolvePartyMapping,
+  type StagedPartyRow,
+} from './party-parse.helper.js'
+import {
+  buildStagedProductRows,
+  resolveProductMapping,
+  type StagedProductRow,
+} from './product-parse.helper.js'
 import type {
   AuthContext,
   ImportFormat,
-  NormalizedPartyRow,
-  RawPartyRow,
 } from '../../types/import.types.js'
 import type { ExtendedPrismaClient } from '../../lib/prisma.js'
 import logger from '../../lib/logger.js'
@@ -45,7 +48,11 @@ export interface ParseAndStageArgs {
   format: ImportFormat
   /** Required for GENERIC_CSV; ignored for the three known formats. */
   mapping?: ColumnMapping
+  /** Phase 7 · 7.1B — product mapping (used when entity='product'). */
+  productMapping?: ProductColumnMapping
   fileName?: string
+  /** Phase 7 · 7.1B — discriminates parties vs product pipelines. */
+  entity?: 'parties' | 'product'
   auth: AuthContext
   prisma: ExtendedPrismaClient
 }
@@ -56,101 +63,8 @@ export interface ParseAndStageResult {
   commitToken: string
 }
 
-/**
- * Effective mapping = caller override (Generic CSV) OR format default.
- * Throws if Generic CSV is missing a mapping — that's a programmer bug,
- * the FE mapping page guarantees the body.
- */
-function resolveMapping(
-  format: ImportFormat,
-  override: ColumnMapping | undefined,
-): ColumnMapping {
-  if (override) return override
-  const fallback = defaultMappingFor(format)
-  if (!fallback) {
-    throw new Error(
-      `parse: column mapping is required for format=${format}`,
-    )
-  }
-  return fallback
-}
-
-interface StagedRow {
-  sourceIndex: number
-  status: 'STAGED' | 'ERROR' | 'SKIPPED'
-  raw: RawPartyRow['raw']
-  normalized: NormalizedPartyRow
-  matchedPartyId?: string
-}
-
-function classifyRow(n: NormalizedPartyRow): 'STAGED' | 'ERROR' {
-  // Name is the only hard requirement; anything else surfaces as a
-  // warning chip on the preview but still gets staged for commit.
-  const hasFatal = n.issues.some((i) => i.code === 'MISSING_NAME')
-  return hasFatal ? 'ERROR' : 'STAGED'
-}
-
-/**
- * Internal: parse + normalize + dedup, returning the rows to be inserted
- * as ImportJobRow. Pure-ish (no DB writes except dedup reads via prisma).
- */
-async function buildStagedRows(args: {
-  buffer: Buffer
-  format: ImportFormat
-  mapping: ColumnMapping
-  fileName?: string
-  businessId: string
-  prisma: ExtendedPrismaClient
-}): Promise<StagedRow[]> {
-  const { buffer, format, mapping, fileName, businessId, prisma } = args
-  const parsed = await parseFile(buffer, { format, fileName })
-
-  const normalised: Array<NormalizedPartyRow & { sourceIndex: number; raw: RawPartyRow['raw'] }> =
-    parsed.rows.map((r) => ({
-      sourceIndex: r.sourceIndex,
-      raw: r.raw,
-      ...normalizePartyRow(r, mapping),
-    }))
-
-  // Dedup — both passes scoped strictly by businessId.
-  const [exact, near] = await Promise.all([
-    findExactDuplicates({ businessId, rows: normalised, prisma }),
-    findNearDuplicates({ businessId, rows: normalised, prisma }),
-  ])
-
-  return normalised.map((n) => {
-    const exactHit = exact.get(n.sourceIndex)
-    const nearHits = near.get(n.sourceIndex)
-    const normalizedView: NormalizedPartyRow = {
-      name: n.name,
-      ...(n.phoneE164 ? { phoneE164: n.phoneE164 } : {}),
-      ...(n.email ? { email: n.email } : {}),
-      ...(n.gstin ? { gstin: n.gstin } : {}),
-      ...(n.address ? { address: n.address } : {}),
-      ...(n.openingBalancePaise !== undefined
-        ? { openingBalancePaise: n.openingBalancePaise }
-        : {}),
-      issues: nearHits
-        ? [
-            ...n.issues,
-            {
-              field: 'name',
-              code: 'NEAR_DUPLICATE',
-              message: `Possibly matches existing party ${nearHits[0]!.name}`,
-            },
-          ]
-        : n.issues,
-    }
-    const row: StagedRow = {
-      sourceIndex: n.sourceIndex,
-      status: classifyRow(n),
-      raw: n.raw,
-      normalized: normalizedView,
-    }
-    if (exactHit) row.matchedPartyId = exactHit.partyId
-    return row
-  })
-}
+// Mapping / staging / classification live in party-parse.helper.ts and
+// product-parse.helper.ts. parse.service.ts orchestrates only.
 
 /**
  * End-to-end parse → normalize → dedup → stage → PREVIEWED.
@@ -159,7 +73,17 @@ async function buildStagedRows(args: {
 export async function runParseAndStage(
   args: ParseAndStageArgs,
 ): Promise<ParseAndStageResult> {
-  const { jobId, buffer, format, mapping, fileName, auth, prisma } = args
+  const {
+    jobId,
+    buffer,
+    format,
+    mapping,
+    productMapping,
+    fileName,
+    entity = 'parties',
+    auth,
+    prisma,
+  } = args
   const startedAt = Date.now()
 
   await prisma.importJob.update({
@@ -167,16 +91,27 @@ export async function runParseAndStage(
     data: { status: 'PARSING' },
   })
 
-  let staged: StagedRow[]
+  let staged: StagedPartyRow[] | StagedProductRow[]
   try {
-    staged = await buildStagedRows({
-      buffer,
-      format,
-      mapping: resolveMapping(format, mapping),
-      fileName,
-      businessId: auth.businessId,
-      prisma,
-    })
+    if (entity === 'product') {
+      staged = await buildStagedProductRows({
+        buffer,
+        format,
+        mapping: resolveProductMapping(format, productMapping),
+        fileName,
+        businessId: auth.businessId,
+        prisma,
+      })
+    } else {
+      staged = await buildStagedPartyRows({
+        buffer,
+        format,
+        mapping: resolvePartyMapping(format, mapping),
+        fileName,
+        businessId: auth.businessId,
+        prisma,
+      })
+    }
   } catch (err) {
     const code = err instanceof ParseError ? err.code : 'MALFORMED'
     const message = err instanceof Error ? err.message : 'parse failed'
@@ -191,12 +126,20 @@ export async function runParseAndStage(
     throw err
   }
 
-  const errorCount = staged.filter((r) => r.status === 'ERROR').length
-  const stagedCount = staged.length - errorCount
+  // Treat both union arms structurally — both expose status/raw/normalized.
+  const stagedAny = staged as Array<{
+    sourceIndex: number
+    status: 'STAGED' | 'ERROR' | 'SKIPPED'
+    raw: Record<string, string>
+    normalized: { issues?: unknown } & Record<string, unknown>
+    matchedPartyId?: string
+  }>
+  const errorCount = stagedAny.filter((r) => r.status === 'ERROR').length
+  const stagedCount = stagedAny.length - errorCount
 
   // Bulk insert in chunks of 500 — Prisma createMany takes Json natively.
-  for (let i = 0; i < staged.length; i += ROW_INSERT_CHUNK) {
-    const chunk = staged.slice(i, i + ROW_INSERT_CHUNK)
+  for (let i = 0; i < stagedAny.length; i += ROW_INSERT_CHUNK) {
+    const chunk = stagedAny.slice(i, i + ROW_INSERT_CHUNK)
     await prisma.importJobRow.createMany({
       data: chunk.map((r) => ({
         jobId,
@@ -204,7 +147,7 @@ export async function runParseAndStage(
         status: r.status,
         raw: r.raw as object,
         normalized: r.normalized as unknown as object,
-        issues: r.normalized.issues as unknown as object,
+        issues: (r.normalized.issues ?? []) as unknown as object,
         matchedPartyId: r.matchedPartyId ?? null,
       })),
       skipDuplicates: true,
@@ -220,11 +163,11 @@ export async function runParseAndStage(
       where: { id: jobId },
       data: {
         status: 'PREVIEWED',
-        rowCount: staged.length,
+        rowCount: stagedAny.length,
         errorCount,
         commitToken,
         counts: {
-          total: staged.length,
+          total: stagedAny.length,
           staged: stagedCount,
           errors: errorCount,
         },
@@ -232,14 +175,17 @@ export async function runParseAndStage(
     })
     await emitParsed(tx, auth, {
       jobId,
-      rowCount: staged.length,
+      rowCount: stagedAny.length,
       errorCount,
       durationMs,
     })
     // Per-row drop audits — code/field only, no raw cell content (S9).
-    for (const r of staged) {
+    for (const r of stagedAny) {
       if (r.status !== 'ERROR') continue
-      const first = r.normalized.issues[0]
+      const issues = Array.isArray(r.normalized.issues)
+        ? (r.normalized.issues as Array<{ code?: string; field?: string }>)
+        : []
+      const first = issues[0]
       await emitRowDropped(tx, auth, {
         jobId,
         sourceIndex: r.sourceIndex,
@@ -250,9 +196,9 @@ export async function runParseAndStage(
   })
   logger.info('import.parse.previewed', {
     jobId,
-    rowCount: staged.length,
+    rowCount: stagedAny.length,
     errorCount,
     durationMs,
   })
-  return { rowCount: staged.length, errorCount, commitToken }
+  return { rowCount: stagedAny.length, errorCount, commitToken }
 }
