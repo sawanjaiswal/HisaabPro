@@ -9,7 +9,7 @@
  * Token-only styling, ≥44px touch targets, focus rings via design tokens.
  */
 
-import { Users, Package } from 'lucide-react'
+import { Users, Package, FileText } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { ImportEntity } from '../types/import.types'
@@ -30,6 +30,7 @@ interface EntityOption {
 const OPTIONS: readonly EntityOption[] = [
   { value: 'parties', labelKey: 'importEntityParties', descKey: 'importEntityPartiesDesc', Icon: Users },
   { value: 'product', labelKey: 'importEntityProducts', descKey: 'importEntityProductsDesc', Icon: Package },
+  { value: 'invoice', labelKey: 'importEntityInvoices', descKey: 'importEntityInvoicesDesc', Icon: FileText },
 ] as const
 
 export function EntityPicker({ value, onChange, disabled = false }: EntityPickerProps) {
@@ -40,7 +41,7 @@ export function EntityPicker({ value, onChange, disabled = false }: EntityPicker
     <div
       role="radiogroup"
       aria-label={tx.importEntityPickAriaLabel ?? 'What are you importing'}
-      className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
     >
       {OPTIONS.map((opt) => {
         const selected = value === opt.value

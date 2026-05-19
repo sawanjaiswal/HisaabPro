@@ -16,10 +16,14 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { ApiError } from '@/lib/api'
 import { commitImportJob } from '../services/import.service'
 import { IMPORT_JOB_POLL_KEY } from './useImportJobPolling'
 import { readCommitToken } from '../utils/commit-token-store'
-import type { CommitImportRes } from '../types/import.types'
+import type {
+  CommitBlockedProductDetail,
+  CommitImportRes,
+} from '../types/import.types'
 import type { DedupResolutionMap } from '../types/dedup.types'
 
 export interface UseImportCommitArgs {
@@ -33,6 +37,40 @@ export class MissingCommitTokenError extends Error {
     super('Commit token missing — upload session lost')
     this.name = 'MissingCommitTokenError'
   }
+}
+
+/**
+ * Best-effort extractor for the 409 `COMMIT_BLOCKED_PRODUCT_NOT_FOUND`
+ * detail payload. BE wraps the `AppError.details` object as
+ * `ApiError.detail` (see src/lib/api.ts 409 handler — entire `error`
+ * object is forwarded). Returns null when the error is not the
+ * commit-blocked sentinel.
+ */
+export function readCommitBlockedDetail(
+  err: unknown,
+): CommitBlockedProductDetail | null {
+  if (!(err instanceof ApiError)) return null
+  if (err.status !== 409) return null
+  if (err.code !== 'COMMIT_BLOCKED_PRODUCT_NOT_FOUND') return null
+  const raw = err.detail as
+    | { details?: Partial<CommitBlockedProductDetail>; items?: unknown }
+    | undefined
+  // BE shape: `{ code, message, details: { blockedRowCount, missingSkuSample } }`.
+  // The api wrapper passes the whole `error` object as `detail`.
+  const details = (raw?.details ?? raw) as
+    | Partial<CommitBlockedProductDetail>
+    | undefined
+  const sample = Array.isArray(details?.missingSkuSample)
+    ? details!.missingSkuSample.filter((s): s is string => typeof s === 'string')
+    : []
+  const blocked =
+    typeof details?.blockedRowCount === 'number' ? details.blockedRowCount : 0
+  return { blockedRowCount: blocked, missingSkuSample: sample }
+}
+
+/** True iff BE returned 426 UPGRADE_REQUIRED (client-version floor missed). */
+export function isClientVersionUpgrade(err: unknown): boolean {
+  return err instanceof ApiError && err.status === 426
 }
 
 function newIdempotencyKey(): string {
