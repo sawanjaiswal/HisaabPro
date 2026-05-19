@@ -3,9 +3,12 @@
  *
  * Asserts:
  *  1. `entity='parties'` returns the parties chunk function (commits work).
- *  2. `entity='product'` returns the products stub (throws
- *      IMPORT_PRECONDITION_MISSING per M9 / API.B1 contract).
- *  3. Unknown entity throws IMPORT_JOB_NOT_COMMITTABLE.
+ *  2. `entity='product'` returns the products chunk function.
+ *  3. `entity='invoice'` (7.1C PR-C1) returns the not-yet-implemented stub
+ *      that throws 409 IMPORT_JOB_NOT_COMMITTABLE at invocation — the
+ *      branch exists in dispatch so the route's Zod (PR-C4) and the
+ *      dispatcher stay in lockstep, but the real ladder lands in PR-C3.
+ *  4. Unknown / empty entity throws IMPORT_JOB_NOT_COMMITTABLE.
  */
 
 import { describe, it, expect } from 'vitest'
@@ -23,9 +26,21 @@ describe('commit-dispatcher · pickCommitChunk', () => {
     expect(pickCommitChunk('product')).toBe(commitChunkProducts)
   })
 
+  it("entity='invoice' → returns stub that throws 409 IMPORT_JOB_NOT_COMMITTABLE at call (PR-C1 scaffold)", async () => {
+    const fn = pickCommitChunk('invoice')
+    expect(typeof fn).toBe('function')
+    await expect(
+      (fn as (tx: unknown, args: unknown) => Promise<unknown>)({}, {}),
+    ).rejects.toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.IMPORT_JOB_NOT_COMMITTABLE,
+      statusCode: 409,
+    })
+  })
+
   it("unknown entity → 409 IMPORT_JOB_NOT_COMMITTABLE", () => {
     try {
-      pickCommitChunk('invoice')
+      pickCommitChunk('bogus')
       throw new Error('expected throw')
     } catch (err) {
       expect(err).toBeInstanceOf(AppError)
@@ -47,5 +62,6 @@ describe('commit-dispatcher · branch identity', () => {
   it('repeated lookups return stable references (no per-call closure)', () => {
     expect(pickCommitChunk('parties')).toBe(pickCommitChunk('parties'))
     expect(pickCommitChunk('product')).toBe(pickCommitChunk('product'))
+    expect(pickCommitChunk('invoice')).toBe(pickCommitChunk('invoice'))
   })
 })
