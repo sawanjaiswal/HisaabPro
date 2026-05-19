@@ -45,9 +45,48 @@ export const hiExt43 = {
   // ── Disabled-feature stub ──────────────────────────────────────────────
   importFeatureDisabled: 'इस बिज़नेस के लिए डेटा इम्पोर्ट अभी उपलब्ध नहीं है।',
 
-  // ── Job-detail stub (replaced by FE.2) ─────────────────────────────────
+  // ── Job-detail stub (legacy) ───────────────────────────────────────────
   importJobStubTitle: 'इम्पोर्ट जॉब बन गई',
   importJobStubBody: 'प्रीव्यू पेज जल्द आ रहा है। Job ID:',
+
+  // ── FE.2 — Job page header + state branches ────────────────────────────
+  importJobHeader: 'इम्पोर्ट चल रहा है',
+  importJobMissingIdTitle: 'इम्पोर्ट नहीं मिला',
+  importJobMissingIdBody: 'URL में जॉब आईडी नहीं है।',
+  importJobLoadErrorTitle: 'इम्पोर्ट लोड नहीं हो सका',
+  importJobLoadErrorBody: 'कृपया फिर से कोशिश करें।',
+  importJobRetry: 'फिर कोशिश करें',
+
+  importFormat_tally_xml_short: 'Tally XML',
+  importFormat_vyapar_csv_short: 'Vyapar CSV',
+  importFormat_busy_xls_short: 'Busy Excel',
+  importFormat_generic_csv_short: 'CSV',
+
+  // ── FE.2 — Parsing state ───────────────────────────────────────────────
+  importParseProgressTitle: 'आपकी फ़ाइल पढ़ी जा रही है…',
+  importParseProgressBody:
+    'इसमें कुछ ही सेकंड लगते हैं। इस स्क्रीन पर बने रहें — प्रीव्यू तैयार होते ही दिख जाएगा।',
+  importParseProgressUnknownFile: 'अपलोड की गई फ़ाइल',
+
+  // ── FE.2 — Failed state ────────────────────────────────────────────────
+  importParseFailedTitle: 'इस फ़ाइल को पढ़ा नहीं जा सका',
+  importParseFailedBody:
+    'फ़ाइल का फ़ॉर्मेट चुने हुए सोर्स से अलग हो सकता है, या फ़ाइल खराब हो सकती है। इसे रद्द करें और नई एक्सपोर्ट से दोबारा कोशिश करें।',
+  importParseFailedErrorCount: 'गलती वाली पंक्तियाँ:',
+  importParseFailedCancelAction: 'रद्द करें और फिर से करें',
+  importParseFailedCancelled: 'इम्पोर्ट रद्द कर दिया गया। आप फिर से कोशिश कर सकते हैं।',
+  importParseFailedCancelError: 'रद्द नहीं हो सका — कृपया फिर से कोशिश करें।',
+
+  // ── FE.3 / FE.4 / FE.5 stubs ──────────────────────────────────────────
+  importJobPreviewStubTitle: 'प्रीव्यू तैयार है',
+  importJobPreviewStubBody: 'डुप्लीकेट रिव्यू स्क्रीन जल्द आ रही है।',
+  importJobCommittingStubTitle: 'इम्पोर्ट कमिट हो रहा है…',
+  importJobCommittingStubBody: 'पंक्तियाँ आपके बिज़नेस में सेव हो रही हैं।',
+  importJobCommittedStubTitle: 'इम्पोर्ट कमिट हो गया',
+  importJobCommittedStubBody: 'विस्तृत रिज़ल्ट स्क्रीन जल्द आ रही है।',
+  importJobCancelledStubTitle: 'इम्पोर्ट रद्द कर दिया गया',
+  importJobCancelledStubBody: 'कोई पंक्ति सेव नहीं हुई।',
+  importJobUnknownTitle: 'अज्ञात इम्पोर्ट स्थिति',
 
   // ── Entry point from Parties page ──────────────────────────────────────
   importEntryFromParties: 'इम्पोर्ट',

@@ -46,9 +46,49 @@ export const enExt43 = {
   // ── Disabled-feature stub ──────────────────────────────────────────────
   importFeatureDisabled: 'Data import isn’t available yet for this business.',
 
-  // ── Job-detail stub (replaced by FE.2) ─────────────────────────────────
+  // ── Job-detail stub (legacy — kept for any unmigrated callers) ────────
   importJobStubTitle: 'Import job created',
   importJobStubBody: 'The preview page is on the way. Job ID:',
+
+  // ── FE.2 — Job page header + state branches ────────────────────────────
+  importJobHeader: 'Import in progress',
+  importJobMissingIdTitle: 'Import not found',
+  importJobMissingIdBody: 'No job id in the URL.',
+  importJobLoadErrorTitle: 'Could not load this import',
+  importJobLoadErrorBody: 'Please try again.',
+  importJobRetry: 'Try again',
+
+  // Format short labels used inside ParseProgress (compact line).
+  importFormat_tally_xml_short: 'Tally XML',
+  importFormat_vyapar_csv_short: 'Vyapar CSV',
+  importFormat_busy_xls_short: 'Busy Excel',
+  importFormat_generic_csv_short: 'CSV',
+
+  // ── FE.2 — Parsing state ───────────────────────────────────────────────
+  importParseProgressTitle: 'Parsing your file…',
+  importParseProgressBody:
+    'This usually takes a few seconds. Stay on this screen — we will show the preview as soon as it is ready.',
+  importParseProgressUnknownFile: 'Uploaded file',
+
+  // ── FE.2 — Failed state ────────────────────────────────────────────────
+  importParseFailedTitle: 'We could not read this file',
+  importParseFailedBody:
+    'The file format may be different from what was selected, or the file may be corrupt. Cancel this import and try again with a fresh export.',
+  importParseFailedErrorCount: 'Rows with errors:',
+  importParseFailedCancelAction: 'Cancel and retry',
+  importParseFailedCancelled: 'Import cancelled. You can try again.',
+  importParseFailedCancelError: 'Could not cancel — please retry.',
+
+  // ── FE.3 / FE.4 / FE.5 stubs ──────────────────────────────────────────
+  importJobPreviewStubTitle: 'Preview ready',
+  importJobPreviewStubBody: 'The dedup review screen is on the way.',
+  importJobCommittingStubTitle: 'Committing import…',
+  importJobCommittingStubBody: 'Saving rows to your business.',
+  importJobCommittedStubTitle: 'Import committed',
+  importJobCommittedStubBody: 'A detailed result screen is on the way.',
+  importJobCancelledStubTitle: 'Import cancelled',
+  importJobCancelledStubBody: 'No rows were saved.',
+  importJobUnknownTitle: 'Unknown import state',
 
   // ── Entry point from Parties page ──────────────────────────────────────
   importEntryFromParties: 'Import',

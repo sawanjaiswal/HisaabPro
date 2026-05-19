@@ -38,18 +38,33 @@ export interface CreateImportRes {
   previousJobRowCount: number | null
 }
 
-/** Response shape of GET /api/imports/:id (poll). */
+/** Preview row shape (mirrors server `PreviewRow` — API.5). */
+export interface ImportPreviewRow {
+  id: string
+  sourceIndex: number
+  status: 'STAGED' | 'ERROR' | 'WARNING' | 'DUPLICATE_EXACT' | 'DUPLICATE_NEAR' | 'COMMITTED' | 'SKIPPED'
+  raw: Record<string, unknown>
+  normalized: Record<string, unknown>
+  issues: unknown
+  matchedPartyId: string | null
+  createdPartyId: string | null
+}
+
+/** Response shape of GET /api/imports/:id (poll). Mirrors server
+ *  `GetImportJobResult` in services/import/get.service.ts. */
 export interface ImportJobView {
   job: {
     id: string
-    entity: ImportEntity
-    format: ImportFormat
     status: ImportJobStatus
-    commitToken: string | null
-    counts: ImportJobCounts
-    fileName: string
+    format: ImportFormat
+    fileName: string | null
+    rowCount: number
+    errorCount: number
+    counts: ImportJobCounts | null
     createdAt: string
+    updatedAt: string
     committedAt: string | null
-    expiresAt: string
   }
+  rows: ImportPreviewRow[]
+  nextCursor: string | null
 }
