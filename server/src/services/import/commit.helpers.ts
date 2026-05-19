@@ -39,6 +39,7 @@ export interface JobLockRow {
   commitToken: string | null
   idempotencyKey: string | null
   createdPartyIds: unknown
+  createdEntityIds?: unknown
 }
 
 export interface ChunkResult {

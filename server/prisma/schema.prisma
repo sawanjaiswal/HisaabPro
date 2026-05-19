@@ -883,6 +883,12 @@ model StockMovement {
   batchId  String?
   godownId String?
 
+  // Phase 7 · Slice 7.1B · Migration B1+B2 — opening-balance idempotency.
+  // Partial UNIQUE on (importJobRowId) WHERE importJobRowId IS NOT NULL
+  // (Migration B2). On commit-retry, ON CONFLICT DO NOTHING blocks dupes.
+  importJobRowId String?
+  importJobRow   ImportJobRow? @relation("ImportRowStockMovements", fields: [importJobRowId], references: [id], onDelete: SetNull)
+
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
   product  Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
   user     User     @relation(fields: [createdBy], references: [id], onDelete: Restrict)
@@ -4157,9 +4163,12 @@ model ImportJob {
   errorCount    Int     @default(0)
   columnMapping Json? // generic_csv only
   counts        Json    @default("{}") // { total, staged, errors, warnings, duplicatesExact, duplicatesNear, committed }
-  // Raw audit array of created Party ids (full list; UI caps display at 100)
-  createdPartyIds Json     @default("[]")
-  clientVersion   String?
+  // Raw audit array of created entity ids (Party for entity='parties',
+  // Product for entity='product'). DB column kept as `createdPartyIds`
+  // (additive Migration B1 — drop renamed in PR-followup Migration D).
+  // SCOPE L216-226, Resolved Decision #15 (expand→backfill→contract).
+  createdEntityIds Json    @default("[]") @map("createdPartyIds")
+  clientVersion    String?
 
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -4194,12 +4203,22 @@ model ImportJobRow {
 
   matchedPartyId String?
   matchedParty   Party?  @relation("MatchedPartyImports", fields: [matchedPartyId], references: [id], onDelete: SetNull)
-  // @unique enforces "1 row → ≤1 party" at the DB level (commit-retry safe)
+  // @unique enforces "1 row → ≤1 party" at the DB level (commit-retry safe).
+  // PR-followup Migration D will DROP this column once dual-write completes.
   createdPartyId String? @unique
   createdParty   Party?  @relation("CreatedPartyImport", fields: [createdPartyId], references: [id], onDelete: SetNull)
+  // Phase 7 · Slice 7.1B · Migration B1 — entity-rename EXPAND phase.
+  // Backfilled from createdPartyId; dual-written by commit-parties.service.
+  // Carries Product ids when entity='product'. UNIQUE is added in PR-followup
+  // Migration D (after dual-write backfill completes).
+  createdEntityId String?
+
+  // Idempotency anchor for product opening-balance StockMovement rows.
+  stockMovements StockMovement[] @relation("ImportRowStockMovements")
 
   createdAt DateTime @default(now())
 
   @@unique([jobId, sourceIndex])
   @@index([jobId, status])
+  @@index([jobId, createdEntityId])
 }

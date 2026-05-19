@@ -56,6 +56,12 @@ export interface CommitResult {
   skippedCount: number
   errorCount: number
   createdPartyIds: string[]
+  /**
+   * Phase 7 · 7.1B — created entity ids (Party for entity='parties',
+   * Product for entity='product'). Same array as createdPartyIds during
+   * the expand→backfill→contract overlap; PR-followup drops createdPartyIds.
+   */
+  createdEntityIds: string[]
   /** API.8 — party ids mutated by OVERWRITE resolutions (S6 batched). */
   overwrittenPartyIds: string[]
   partial: boolean
@@ -126,7 +132,7 @@ export async function commitImportJob(
         data: {
           status: 'COMMITTED',
           committedAt: new Date(),
-          createdPartyIds: allCreated,
+          createdEntityIds: allCreated,
           counts: {
             committed: allCreated.length,
             overwritten: overwrittenPartyIds.length,
@@ -156,7 +162,7 @@ export async function commitImportJob(
         where: { id: jobId },
         data: {
           status: 'PARTIALLY_COMMITTED',
-          createdPartyIds: allCreated,
+          createdEntityIds: allCreated,
         },
       })
       .catch(() => undefined)
@@ -179,6 +185,7 @@ export async function commitImportJob(
     committedCount: allCreated.length + overwrittenPartyIds.length,
     skippedCount,
     errorCount,
+    createdEntityIds: allCreated,
     createdPartyIds: allCreated,
     overwrittenPartyIds,
     partial,
