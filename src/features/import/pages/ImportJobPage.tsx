@@ -27,6 +27,7 @@ import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ParseProgress } from '../components/ParseProgress'
 import { ParseFailed } from '../components/ParseFailed'
+import { PreviewTable } from '../components/PreviewTable'
 import { useImportJobPolling } from '../hooks/useImportJobPolling'
 
 function StubPanel({ title, body }: { title: string; body: string }) {
@@ -114,9 +115,11 @@ export default function ImportJobPage() {
               )
             case 'PREVIEWED':
               return (
-                <StubPanel
-                  title={tx.importJobPreviewStubTitle ?? 'Preview ready'}
-                  body={tx.importJobPreviewStubBody ?? 'The dedup review screen is on the way.'}
+                <PreviewTable
+                  job={job}
+                  initialRows={query.data.rows}
+                  initialNextCursor={query.data.nextCursor}
+                  t={tx}
                 />
               )
             case 'COMMITTING':

@@ -38,8 +38,23 @@ export async function uploadImport(args: UploadImportArgs): Promise<CreateImport
   })
 }
 
-export async function getImportJob(jobId: string): Promise<ImportJobView> {
-  return api<ImportJobView>(`/imports/${encodeURIComponent(jobId)}`)
+export interface GetImportJobOptions {
+  /** Opaque cursor returned by a previous page's `nextCursor`. */
+  cursor?: string | null
+  /** Page size (server caps at 100). */
+  limit?: number
+}
+
+export async function getImportJob(
+  jobId: string,
+  opts: GetImportJobOptions = {},
+): Promise<ImportJobView> {
+  const params = new URLSearchParams()
+  if (opts.cursor) params.set('cursor', opts.cursor)
+  if (opts.limit) params.set('limit', String(opts.limit))
+  const qs = params.toString()
+  const suffix = qs ? `?${qs}` : ''
+  return api<ImportJobView>(`/imports/${encodeURIComponent(jobId)}${suffix}`)
 }
 
 export async function cancelImportJob(jobId: string): Promise<void> {

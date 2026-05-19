@@ -90,4 +90,49 @@ export const hiExt43 = {
 
   // ── Entry point from Parties page ──────────────────────────────────────
   importEntryFromParties: 'इम्पोर्ट',
+
+  // ── FE.3 — Preview summary ─────────────────────────────────────────────
+  importPreviewSummaryTitle: 'प्रीव्यू सारांश',
+  importPreviewSummaryBody: 'अभी कुछ भी सेव नहीं हुआ है। कमिट से पहले हर पंक्ति देखें।',
+  importPreviewSummaryTotal: 'कुल पंक्तियाँ',
+  importPreviewSummaryValid: 'सही',
+  importPreviewSummaryErrors: 'गलतियाँ',
+  importPreviewSummaryDuplicates: 'डुप्लीकेट',
+
+  // ── FE.3 — Filter chips ────────────────────────────────────────────────
+  importPreviewFiltersAriaLabel: 'प्रीव्यू पंक्तियाँ फ़िल्टर करें',
+  importPreviewFilterAll: 'सभी',
+  importPreviewFilterValid: 'सही',
+  importPreviewFilterErrors: 'गलतियाँ',
+  importPreviewFilterDuplicates: 'डुप्लीकेट',
+
+  // ── FE.3 — Table columns ───────────────────────────────────────────────
+  importPreviewColRow: 'पंक्ति',
+  importPreviewColName: 'नाम',
+  importPreviewColPhone: 'फ़ोन',
+  importPreviewColBalance: 'बैलेंस',
+  importPreviewColStatus: 'स्थिति',
+  importPreviewColReason: 'कारण',
+  importPreviewMissingName: '—',
+  importPreviewMissingPhone: '—',
+
+  // ── FE.3 — Row status badges ──────────────────────────────────────────
+  importPreviewStatus_STAGED: 'सही',
+  importPreviewStatus_WARNING: 'चेतावनी',
+  importPreviewStatus_ERROR: 'गलती',
+  importPreviewStatus_DUPLICATE_EXACT: 'डुप्लीकेट',
+  importPreviewStatus_DUPLICATE_NEAR: 'मिलता-जुलता',
+  importPreviewStatus_COMMITTED: 'कमिट हो गया',
+  importPreviewStatus_SKIPPED: 'छोड़ दिया',
+
+  // ── FE.3 — Pagination + actions ───────────────────────────────────────
+  importPreviewLoadMore: 'और पंक्तियाँ लोड करें',
+  importPreviewEmptyTitle: 'इस फ़िल्टर में कोई पंक्ति नहीं',
+  importPreviewEmptyBody: 'दूसरा फ़िल्टर आज़माएँ, या सर्वर से और पंक्तियाँ लोड करें।',
+  importPreviewCancel: 'इम्पोर्ट रद्द करें',
+  importPreviewCancelled: 'इम्पोर्ट रद्द कर दिया गया। कुछ भी सेव नहीं हुआ।',
+  importPreviewCancelError: 'रद्द नहीं हो सका — कृपया फिर से कोशिश करें।',
+  importPreviewContinueDedup: 'डुप्लीकेट रिव्यू पर जाएँ',
+  importPreviewContinueCommit: 'कमिट पर जाएँ',
+  importPreviewContinueComingSoon: 'अगला स्टेप FE.4 में आ रहा है।',
 } as const

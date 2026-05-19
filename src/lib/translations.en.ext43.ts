@@ -92,4 +92,49 @@ export const enExt43 = {
 
   // ── Entry point from Parties page ──────────────────────────────────────
   importEntryFromParties: 'Import',
+
+  // ── FE.3 — Preview summary ─────────────────────────────────────────────
+  importPreviewSummaryTitle: 'Preview summary',
+  importPreviewSummaryBody: 'Nothing is saved yet. Review each row before committing.',
+  importPreviewSummaryTotal: 'Total rows',
+  importPreviewSummaryValid: 'Valid',
+  importPreviewSummaryErrors: 'Errors',
+  importPreviewSummaryDuplicates: 'Duplicates',
+
+  // ── FE.3 — Filter chips ────────────────────────────────────────────────
+  importPreviewFiltersAriaLabel: 'Filter preview rows',
+  importPreviewFilterAll: 'All',
+  importPreviewFilterValid: 'Valid',
+  importPreviewFilterErrors: 'Errors',
+  importPreviewFilterDuplicates: 'Duplicates',
+
+  // ── FE.3 — Table columns ───────────────────────────────────────────────
+  importPreviewColRow: 'Row',
+  importPreviewColName: 'Name',
+  importPreviewColPhone: 'Phone',
+  importPreviewColBalance: 'Balance',
+  importPreviewColStatus: 'Status',
+  importPreviewColReason: 'Reason',
+  importPreviewMissingName: '—',
+  importPreviewMissingPhone: '—',
+
+  // ── FE.3 — Row status badges ──────────────────────────────────────────
+  importPreviewStatus_STAGED: 'Valid',
+  importPreviewStatus_WARNING: 'Warning',
+  importPreviewStatus_ERROR: 'Error',
+  importPreviewStatus_DUPLICATE_EXACT: 'Duplicate',
+  importPreviewStatus_DUPLICATE_NEAR: 'Near duplicate',
+  importPreviewStatus_COMMITTED: 'Committed',
+  importPreviewStatus_SKIPPED: 'Skipped',
+
+  // ── FE.3 — Pagination + actions ───────────────────────────────────────
+  importPreviewLoadMore: 'Load more rows',
+  importPreviewEmptyTitle: 'No rows in this filter',
+  importPreviewEmptyBody: 'Try a different filter, or load more rows from the server.',
+  importPreviewCancel: 'Cancel import',
+  importPreviewCancelled: 'Import cancelled. Nothing was saved.',
+  importPreviewCancelError: 'Could not cancel — please retry.',
+  importPreviewContinueDedup: 'Continue to dedup',
+  importPreviewContinueCommit: 'Continue to commit',
+  importPreviewContinueComingSoon: 'Next step lands in FE.4 — coming soon.',
 } as const
