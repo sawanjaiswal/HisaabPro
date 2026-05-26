@@ -66,6 +66,8 @@ export function CommitResult({ job, t }: CommitResultProps) {
   const counts = readCounts(job)
   const isPartial = job.status === 'PARTIALLY_COMMITTED'
   const isProduct = job.entity === 'product'
+  const isInvoice = job.entity === 'invoice'
+  const isPayment = job.entity === 'payments'
 
   // Token is single-use server-side; clearing it here prevents stale
   // tokens from sitting in sessionStorage until tab close.
@@ -74,11 +76,21 @@ export function CommitResult({ job, t }: CommitResultProps) {
   const onImportAnother = () => navigate(ROUTES.IMPORTS)
   const onViewEntities = () => {
     if (isProduct) {
-      // Deep-link to the product list filtered by this import job (BE
-      // accepts ?importJobId= — see ARCH conformance map L725).
       const productsRoute = (ROUTES as Record<string, string | undefined>).PRODUCTS
         ?? '/products'
       navigate(`${productsRoute}?importJobId=${encodeURIComponent(job.id)}`)
+      return
+    }
+    if (isInvoice) {
+      const invoicesRoute = (ROUTES as Record<string, string | undefined>).INVOICES
+        ?? '/invoices'
+      navigate(`${invoicesRoute}?importJobId=${encodeURIComponent(job.id)}`)
+      return
+    }
+    if (isPayment) {
+      const paymentsRoute = (ROUTES as Record<string, string | undefined>).PAYMENTS
+        ?? '/payments'
+      navigate(`${paymentsRoute}?importJobId=${encodeURIComponent(job.id)}`)
       return
     }
     navigate(ROUTES.PARTIES)
@@ -100,17 +112,25 @@ export function CommitResult({ job, t }: CommitResultProps) {
           {isPartial
             ? (t.importResultPartialBody ??
               'Some rows could not be saved. Download the error CSV to see what went wrong.')
-            : isProduct
-              ? (t.importResultBodyProduct ?? 'Your products are now part of your business.')
-              : (t.importResultBody ?? 'Your parties are now part of your business.')}
+            : isPayment
+              ? (t.importResultBodyPayment ?? 'Your payments are now part of your business.')
+              : isInvoice
+                ? (t.importResultBodyInvoice ?? 'Your invoices are now part of your business.')
+                : isProduct
+                  ? (t.importResultBodyProduct ?? 'Your products are now part of your business.')
+                  : (t.importResultBody ?? 'Your parties are now part of your business.')}
         </p>
 
         <dl className="space-y-2 pt-2">
           <ResultCountRow
             label={
-              isProduct
-                ? (t.importResultCountSavedProduct ?? 'Products saved')
-                : (t.importResultCountSaved ?? 'Parties saved')
+              isPayment
+                ? (t.importResultCountSavedPayment ?? 'Payments saved')
+                : isInvoice
+                  ? (t.importResultCountSavedInvoice ?? 'Invoices saved')
+                  : isProduct
+                    ? (t.importResultCountSavedProduct ?? 'Products saved')
+                    : (t.importResultCountSaved ?? 'Parties saved')
             }
             value={counts.created + counts.overwritten}
           />
@@ -151,9 +171,13 @@ export function CommitResult({ job, t }: CommitResultProps) {
           onClick={onViewEntities}
           className="min-h-[44px] flex-1"
         >
-          {isProduct
-            ? (t.importResultViewProducts ?? 'View products')
-            : (t.importResultViewParties ?? 'View parties')}
+          {isPayment
+            ? (t.importResultViewPayments ?? 'View payments')
+            : isInvoice
+              ? (t.importResultViewInvoices ?? 'View invoices')
+              : isProduct
+                ? (t.importResultViewProducts ?? 'View products')
+                : (t.importResultViewParties ?? 'View parties')}
         </Button>
       </div>
     </div>

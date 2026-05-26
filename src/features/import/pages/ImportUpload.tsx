@@ -109,15 +109,25 @@ export default function ImportUploadPage() {
             className="font-semibold"
             style={{ fontSize: 'var(--fs-xl)', color: 'var(--color-text-primary)' }}
           >
-            {entity === 'product'
-              ? (tx.importProducts ?? 'Import products')
-              : (tx.importParties ?? 'Import parties')}
+            {entity === 'payments'
+              ? (tx.importPayments ?? 'Import payments')
+              : entity === 'invoice'
+                ? (tx.importInvoices ?? 'Import invoices')
+                : entity === 'product'
+                  ? (tx.importProducts ?? 'Import products')
+                  : (tx.importParties ?? 'Import parties')}
           </h1>
           <p style={{ fontSize: 'var(--fs-md)', color: 'var(--color-text-secondary)' }}>
-            {entity === 'product'
-              ? (tx.importIntroProduct ??
-                'Bring products in from Tally, Vyapar, Busy, or a generic CSV.')
-              : (tx.importIntro ?? 'Bring parties in from Tally, Vyapar, Busy, or a generic CSV.')}
+            {entity === 'payments'
+              ? (tx.importIntroPayments ??
+                'Bring receipts and payments in from Tally, Vyapar, Busy, or a generic CSV.')
+              : entity === 'invoice'
+                ? (tx.importIntroInvoice ??
+                  'Bring invoices in from Tally, Vyapar, Busy, or a generic CSV.')
+                : entity === 'product'
+                  ? (tx.importIntroProduct ??
+                    'Bring products in from Tally, Vyapar, Busy, or a generic CSV.')
+                  : (tx.importIntro ?? 'Bring parties in from Tally, Vyapar, Busy, or a generic CSV.')}
           </p>
         </div>
 

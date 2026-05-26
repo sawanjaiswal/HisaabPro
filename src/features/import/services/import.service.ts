@@ -44,10 +44,18 @@ export async function uploadImport(args: UploadImportArgs): Promise<CreateImport
     // Multipart cannot be queued — don't try.
     offlineQueue: false,
     entityType: 'import',
-    entityLabel: entity === 'product'
-      ? `Products: ${file.name}`
-      : `Parties: ${file.name}`,
+    entityLabel: entityLabelFor(entity, file.name),
   })
+}
+
+function entityLabelFor(entity: ImportEntity, fileName: string): string {
+  switch (entity) {
+    case 'product': return `Products: ${fileName}`
+    case 'invoice': return `Invoices: ${fileName}`
+    case 'payments': return `Payments: ${fileName}`
+    case 'parties':
+    default: return `Parties: ${fileName}`
+  }
 }
 
 export interface GetImportJobOptions {

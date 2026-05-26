@@ -24,6 +24,7 @@ import type {
   CommitBlockedProductDetail,
   CommitImportRes,
 } from '../types/import.types'
+import type { CommitBlockedInvoiceDetail } from '../types/payment.types'
 import type { DedupResolutionMap } from '../types/dedup.types'
 
 export interface UseImportCommitArgs {
@@ -66,6 +67,31 @@ export function readCommitBlockedDetail(
   const blocked =
     typeof details?.blockedRowCount === 'number' ? details.blockedRowCount : 0
   return { blockedRowCount: blocked, missingSkuSample: sample }
+}
+
+/**
+ * 7.1D — sibling of {@link readCommitBlockedDetail} for the
+ * `COMMIT_BLOCKED_INVOICE_NOT_FOUND` sentinel surfaced by payment imports.
+ * Returns null when the error is not that specific 409.
+ */
+export function readCommitBlockedInvoiceDetail(
+  err: unknown,
+): CommitBlockedInvoiceDetail | null {
+  if (!(err instanceof ApiError)) return null
+  if (err.status !== 409) return null
+  if (err.code !== 'COMMIT_BLOCKED_INVOICE_NOT_FOUND') return null
+  const raw = err.detail as
+    | { details?: Partial<CommitBlockedInvoiceDetail>; items?: unknown }
+    | undefined
+  const details = (raw?.details ?? raw) as
+    | Partial<CommitBlockedInvoiceDetail>
+    | undefined
+  const sample = Array.isArray(details?.missingInvoiceSample)
+    ? details!.missingInvoiceSample.filter((s): s is string => typeof s === 'string')
+    : []
+  const blocked =
+    typeof details?.blockedRowCount === 'number' ? details.blockedRowCount : 0
+  return { blockedRowCount: blocked, missingInvoiceSample: sample }
 }
 
 /** True iff BE returned 426 UPGRADE_REQUIRED (client-version floor missed). */

@@ -22,14 +22,17 @@ import {
   useImportCommit,
   MissingCommitTokenError,
   readCommitBlockedDetail,
+  readCommitBlockedInvoiceDetail,
   isClientVersionUpgrade,
 } from '../hooks/useImportCommit'
 import { CommitBlockedBanner } from '../components/CommitBlockedBanner'
 import { ResumeInvoiceImportBanner } from '../components/ResumeInvoiceImportBanner'
+import { ResumeFromInvoicesBanner } from '../components/ResumeFromInvoicesBanner'
 import type {
   CommitBlockedProductDetail,
   ImportPreviewRow,
 } from '../types/import.types'
+import type { CommitBlockedInvoiceDetail } from '../types/payment.types'
 import type { DedupResolutionMap } from '../types/dedup.types'
 
 
@@ -48,6 +51,9 @@ export default function ImportJobPage() {
   // is the single source-of-truth for disabling the commit CTA.
   const [commitBlocked, setCommitBlocked] =
     useState<CommitBlockedProductDetail | null>(null)
+  // 7.1D — 409 COMMIT_BLOCKED_INVOICE_NOT_FOUND surface state (payment jobs).
+  const [commitBlockedInvoice, setCommitBlockedInvoice] =
+    useState<CommitBlockedInvoiceDetail | null>(null)
 
   // 7.1C ARCH S3 — when this page is rendered as the product-import summary
   // after the user deep-linked from an invoice CommitBlockedBanner, the URL
@@ -55,6 +61,9 @@ export default function ImportJobPage() {
   // CTA letting the user finish products and return.
   const [searchParams] = useSearchParams()
   const resumeImportJobId = searchParams.get('resumeImportJobId')
+  // 7.1D — reverse-direction round-trip: invoice import landed here from a
+  // blocked payment commit. Show ResumeFromInvoicesBanner after success.
+  const resumePaymentJobId = searchParams.get('resumePaymentJobId')
 
   const commit = useImportCommit({
     jobId: jobId ?? '',
@@ -63,6 +72,7 @@ export default function ImportJobPage() {
       // we do NOT deref response fields here — the polling query owns the
       // status flip and CommitResult reads from job.counts. See OFFLINE_RULES Rule 5.
       setCommitBlocked(null)
+      setCommitBlockedInvoice(null)
       toast.success(tx.importCommitSuccessToast ?? 'Import committed — refreshing…')
     },
     onError: (err) => {
@@ -75,6 +85,13 @@ export default function ImportJobPage() {
       const blocked = readCommitBlockedDetail(err)
       if (blocked) {
         setCommitBlocked(blocked)
+        setSubView('preview')
+        return
+      }
+      // 7.1D: 409 sentinel — payment commit needs invoices imported first.
+      const blockedInv = readCommitBlockedInvoiceDetail(err)
+      if (blockedInv) {
+        setCommitBlockedInvoice(blockedInv)
         setSubView('preview')
         return
       }
@@ -110,11 +127,14 @@ export default function ImportJobPage() {
   }
 
   const isProductJob = query.data?.job.entity === 'product'
+  const isInvoiceJob = query.data?.job.entity === 'invoice'
+  const jobTerminalSuccess =
+    query.data?.job.status === 'COMMITTED' ||
+    query.data?.job.status === 'PARTIALLY_COMMITTED'
   const showResumeCta =
-    isProductJob &&
-    !!resumeImportJobId &&
-    (query.data?.job.status === 'COMMITTED' ||
-      query.data?.job.status === 'PARTIALLY_COMMITTED')
+    isProductJob && !!resumeImportJobId && jobTerminalSuccess
+  const showResumeFromInvoicesCta =
+    isInvoiceJob && !!resumePaymentJobId && jobTerminalSuccess
 
   return (
     <AppShell>
@@ -126,11 +146,27 @@ export default function ImportJobPage() {
             t={tx}
           />
         )}
+        {showResumeFromInvoicesCta && resumePaymentJobId && (
+          <ResumeFromInvoicesBanner
+            resumePaymentJobId={resumePaymentJobId}
+            t={tx}
+          />
+        )}
         {commitBlocked && (
           <CommitBlockedBanner
             jobId={jobId}
+            kind="product"
             detail={commitBlocked}
             onCancel={() => setCommitBlocked(null)}
+            t={tx}
+          />
+        )}
+        {commitBlockedInvoice && (
+          <CommitBlockedBanner
+            jobId={jobId}
+            kind="invoice"
+            detail={commitBlockedInvoice}
+            onCancel={() => setCommitBlockedInvoice(null)}
             t={tx}
           />
         )}

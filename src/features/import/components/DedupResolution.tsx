@@ -63,16 +63,26 @@ export function DedupResolution({
             className="font-semibold"
             style={{ fontSize: 'var(--fs-lg)', color: 'var(--color-text-primary)' }}
           >
-            {entity === 'product'
-              ? (t.importDedupTitleProduct ?? t.importDedupTitle ?? 'Review duplicate products')
-              : (t.importDedupTitle ?? 'Review duplicates')}
+            {entity === 'payments'
+              ? (t.importDedupTitlePayment ?? t.importDedupTitle ?? 'Review duplicate payments')
+              : entity === 'invoice'
+                ? (t.importDedupTitleInvoice ?? t.importDedupTitle ?? 'Review duplicate invoices')
+                : entity === 'product'
+                  ? (t.importDedupTitleProduct ?? t.importDedupTitle ?? 'Review duplicate products')
+                  : (t.importDedupTitle ?? 'Review duplicates')}
           </h2>
           <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
-            {entity === 'product'
-              ? (t.importDedupIntroProduct ??
-                'These rows look like products you already have. Pick what should happen for each one before committing.')
-              : (t.importDedupIntro ??
-                'These rows look like parties you already have. Pick what should happen for each one before committing.')}
+            {entity === 'payments'
+              ? (t.importDedupIntroPayment ??
+                'These rows look like payments you already have. Pick what should happen for each one before committing.')
+              : entity === 'invoice'
+                ? (t.importDedupIntroInvoice ??
+                  'These rows look like invoices you already have. Pick what should happen for each one before committing.')
+                : entity === 'product'
+                  ? (t.importDedupIntroProduct ??
+                    'These rows look like products you already have. Pick what should happen for each one before committing.')
+                  : (t.importDedupIntro ??
+                    'These rows look like parties you already have. Pick what should happen for each one before committing.')}
           </p>
         </header>
 

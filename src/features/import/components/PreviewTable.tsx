@@ -28,6 +28,8 @@ import { PreviewSummary } from './PreviewSummary'
 import { PreviewFilters } from './PreviewFilters'
 import { buildProductColumns } from './PreviewProductColumns'
 import { buildPartyColumns } from './PreviewPartyColumns'
+import { InvoiceRowCard } from './InvoiceRowCard'
+import { PaymentRowCard } from './PaymentRowCard'
 
 interface PreviewTableProps {
   job: ImportJobView['job']
@@ -110,6 +112,9 @@ export function PreviewTable({ job, initialRows, initialNextCursor, t, onContinu
   }
 
   const isProduct = job.entity === 'product'
+  const isInvoice = job.entity === 'invoice'
+  const isPayment = job.entity === 'payments'
+  const useCardList = isInvoice || isPayment
   const columns: TableColumn<ImportPreviewRow>[] = isProduct
     ? buildProductColumns(t)
     : buildPartyColumns(t)
@@ -129,11 +134,8 @@ export function PreviewTable({ job, initialRows, initialNextCursor, t, onContinu
       />
 
       <Card variant="default" className="p-4 space-y-3">
-        <ResponsiveTable
-          columns={columns}
-          rows={visibleRows}
-          rowKey={(r) => r.id}
-          empty={
+        {useCardList ? (
+          visibleRows.length === 0 ? (
             <EmptyState
               title={t.importPreviewEmptyTitle ?? 'No rows in this filter'}
               description={
@@ -141,8 +143,31 @@ export function PreviewTable({ job, initialRows, initialNextCursor, t, onContinu
                 'Try a different filter, or load more rows from the server.'
               }
             />
-          }
-        />
+          ) : (
+            <ul className="space-y-3 list-none p-0">
+              {visibleRows.map((r) => (
+                <li key={r.id}>
+                  {isPayment ? <PaymentRowCard row={r} t={t} /> : <InvoiceRowCard row={r} t={t} />}
+                </li>
+              ))}
+            </ul>
+          )
+        ) : (
+          <ResponsiveTable
+            columns={columns}
+            rows={visibleRows}
+            rowKey={(r) => r.id}
+            empty={
+              <EmptyState
+                title={t.importPreviewEmptyTitle ?? 'No rows in this filter'}
+                description={
+                  t.importPreviewEmptyBody ??
+                  'Try a different filter, or load more rows from the server.'
+                }
+              />
+            }
+          />
+        )}
 
         {pagination.error && (
           <p

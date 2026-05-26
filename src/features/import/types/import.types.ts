@@ -5,7 +5,7 @@
 
 export type ImportFormat = 'tally_xml' | 'vyapar_csv' | 'busy_xls' | 'generic_csv'
 
-export type ImportEntity = 'parties' | 'product' | 'invoice'
+export type ImportEntity = 'parties' | 'product' | 'invoice' | 'payments'
 
 /**
  * 7.1C invoice-side issue codes (FE mirror of

@@ -80,6 +80,8 @@ export function CommitConfirm({
 }: CommitConfirmProps) {
   const counts = useMemo(() => tallyCounts(rows, resolutions), [rows, resolutions])
   const isProduct = entity === 'product'
+  const isInvoice = entity === 'invoice'
+  const isPayment = entity === 'payments'
 
   return (
     <div className="space-y-4">
@@ -96,17 +98,25 @@ export function CommitConfirm({
         <dl className="space-y-2 pt-2">
           <CommitCountRow
             label={
-              isProduct
-                ? (t.importCommitCountCreateProduct ?? 'Products to create')
-                : (t.importCommitCountCreate ?? 'Parties to create')
+              isPayment
+                ? (t.importCommitCountCreatePayment ?? 'Payments to create')
+                : isInvoice
+                  ? (t.importCommitCountCreateInvoice ?? 'Invoices to create')
+                  : isProduct
+                    ? (t.importCommitCountCreateProduct ?? 'Products to create')
+                    : (t.importCommitCountCreate ?? 'Parties to create')
             }
             value={counts.create}
           />
           <CommitCountRow
             label={
-              isProduct
-                ? (t.importCommitCountOverwriteProduct ?? 'Products to overwrite')
-                : (t.importCommitCountOverwrite ?? 'Parties to overwrite')
+              isPayment
+                ? (t.importCommitCountOverwritePayment ?? 'Payments to overwrite')
+                : isInvoice
+                  ? (t.importCommitCountOverwriteInvoice ?? 'Invoices to overwrite')
+                  : isProduct
+                    ? (t.importCommitCountOverwriteProduct ?? 'Products to overwrite')
+                    : (t.importCommitCountOverwrite ?? 'Parties to overwrite')
             }
             value={counts.overwrite}
           />
