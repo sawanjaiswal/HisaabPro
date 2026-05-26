@@ -807,3 +807,299 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 - `docs/IDEAS_BACKLOG.md` — unsequenced future ideas
 - `docs/APP_CONFIG.md` — brand SSOT (name/domain/email)
 - `docs/DESIGN_LANGUAGE.md`, `docs/DESIGN_SYSTEM.md`, `docs/PAGE_DESIGN_GUIDE.md` — design references (Part II §16 distils into the spec)
+
+---
+
+## 24. Feature Status Matrix (audited 2026-05-26)
+
+> Authoritative per-feature × per-sub-feature status, audited against the live
+> codebase on `master` (HEAD `6134b9b`). For each row: route+service+model+page
+> are grep-verified; commit attribution uses the most recent meaningful
+> commit that touched a representative file. `[B]` cred-blocked features
+> have shipped code — listed as **In-Progress** here because production
+> activation requires env vars (Razorpay / Aisensy / FCM / MSG91 / Resend) or
+> a Capacitor plugin install.
+
+**Summary — 150 features, ~180 sub-feature rows tracked + 7 vertical-depth epics:**
+- **Done:** 132 features (all layers present + shipped on `master` @ `6134b9b`).
+- **In-Progress (cred-blocked):** 8 features (code shipped, awaiting env vars / plugin install: #2, #4, #30, #32, #42, #47, #59, #123/#124 providers).
+- **In-Progress (build, off-master):** 1 feature (#149 importers — shipped on `epic/phase-7-import`).
+- **Not Started:** 8 features (#142, #143, #144, #146, #147, #148, #150 + 7 vertical-depth epics).
+- **Deferred:** 1 feature (#89 Bank Reconciliation — folded into #147).
+- **Audit timestamp:** 2026-05-26 11:28 IST · branch `master` · HEAD `6134b9b`
+
+---
+
+### Phase 1A — Reused from DudhHisaab
+
+| # | Feature | Sub-feature | Status | Commit · Date | Evidence |
+|---|---|---|---|---|---|
+| 1 | Auth | OTP login (MSG91) | Done | `bfbe6b2` · 2026-03 | `routes/auth/login.ts` + `services/auth.service.ts` + OtpCode model + LoginPage.tsx |
+| 1 | Auth | JWT + refresh + httpOnly cookies | Done | `eb132ab` · 2026-03 | `routes/auth/refresh.ts` + RefreshToken model + 401 interceptor in `lib/api.ts` |
+| 1 | Auth | Account lockout + CAPTCHA | Done | `bfbe6b2` · 2026-03 | `services/auth.service.ts` lockout helpers; tested under `__tests__` |
+| 1 | Auth | 2FA (TOTP + WebAuthn) | Done | `bfbe6b2` · 2026-03 | `services/webauthn.service.ts` + `services/webauthn/*` + WebAuthnCredential model |
+| 1 | Auth | Dev login (closed testing) | Done | `bfbe6b2` · 2026-03 | `routes/auth/dev-login.ts` (gated by `ALLOW_DEV_LOGIN`) |
+| 2 | Subscription | State machine (7 states) + writer SSOT | In-Progress (cred-blocked) | `3530e79` · 2026-05-15 | `services/subscription/*` + Subscription/SubscriptionEvent models + SubscriptionManagePage.tsx — needs `ENTITLEMENT_JWT_PRIVATE_KEY` |
+| 2 | Subscription | Razorpay webhook | In-Progress (cred-blocked) | `3530e79` · 2026-05-15 | `services/razorpay-webhook.service.ts` + WebhookEvent — needs `RAZORPAY_WEBHOOK_SECRET` |
+| 2 | Subscription | UPI Autopay mandate | In-Progress (cred-blocked) | `3530e79` · 2026-05-15 | `routes/subscription/mandate.routes.ts` + UpiMandate + MandateSetupDrawer.tsx |
+| 2 | Subscription | Offline entitlement JWT (RS256) | In-Progress (cred-blocked) | `3530e79` · 2026-05-15 | `entitlement-pubkey.route.ts` + `entitlement-verify.utils.ts` + IDB cache |
+| 2 | Subscription | PRO_MAX tier + add-ons | In-Progress (cred-blocked) | `3530e79` · 2026-05-15 | FeatureAddon + BusinessAddon + AddonBadge.tsx |
+| 3 | Referral & Earn | Code generation + crypto | Done | `3d316be` · 2026-04 | `services/referral/*` + ReferralCode/Event/Reward/Withdrawal models |
+| 3 | Referral & Earn | Wallet + UPI withdraw (stub) | Done | `3d316be` · 2026-04 | `routes/referral.ts` 8 endpoints |
+| 3 | Referral & Earn | Fraud guards | Done | `3d316be` · 2026-04 | `services/coupon-fraud.ts` adjacent + audit in service folder |
+| 4 | Notifications | Engine (inbox + dispatch queue) | In-Progress (cred-blocked) | `bea1093` · 2026-04 | `services/notification.service.ts` + Notification/NotificationJob/PushToken models + NotificationsPage |
+| 4 | Notifications | Push (FCM) provider | In-Progress (cred-blocked) | `bea1093` · 2026-04 | `routes/webhooks/notifications-fcm.routes.ts` — needs `FCM_*` creds |
+| 4 | Notifications | WhatsApp (Aisensy) provider | In-Progress (cred-blocked) | `bea1093` · 2026-04 | `notifications-aisensy.routes.ts` — needs `AISENSY_API_KEY` |
+| 4 | Notifications | Email (Resend) provider | In-Progress (cred-blocked) | `bea1093` · 2026-04 | `notifications-resend.routes.ts` — needs `RESEND_API_KEY` |
+| 4 | Notifications | SMS (MSG91) provider | In-Progress (cred-blocked) | `bea1093` · 2026-04 | `notifications-msg91.routes.ts` — needs `MSG91_WEBHOOK_TOKEN` |
+| 4 | Notifications | Quiet hours + preferences | Done | `bea1093` · 2026-04 | NotificationPreference model + settings UI |
+| 5 | Backup | Local (manual) backup + list + download | Done | `bfbe6b2` · 2026-03 | `routes/backup.ts` + `services/backup.service.ts` |
+| 5 | Backup | Google Drive backup | Done | `bfbe6b2` · 2026-03 | `services/backup.service.ts` (Drive client) |
+| 5 | Backup | Email export | Done | `bfbe6b2` · 2026-03 | export.ts route + export.service.ts |
+| 5 | Backup | Cooldown enforcement | Done | `bfbe6b2` · 2026-03 | service-level rate guard |
+| 6 | Offline-first PWA | Service worker + Workbox cache | Done | `bfbe6b2` · 2026-03 | `serviceWorkerRegistration.ts` + `vite.config.ts` SW rules |
+| 6 | Offline-first PWA | Dexie mutation queue | Done | `bfbe6b2` · 2026-03 | `lib/offline.ts` + `lib/api-cache.ts` |
+| 6 | Offline-first PWA | OfflineBanner + sync UI | Done | `bfbe6b2` · 2026-03 | `components/feedback/OfflineBanner.tsx` |
+| 6 | Offline-first PWA | Idempotency middleware | Done | `bf1d166` · 2026-04 | `middleware/idempotency.ts` + IdempotencyLog model (17 POSTs) |
+| 7 | Admin Panel | Framework (15 endpoints) | Done | `bfbe6b2` · 2026-03 | `routes/admin/*` + AdminUser/AdminAction models + admin shell at admin.hisaabpro.in |
+| 7 | Admin Panel | SUPER_ADMIN guard | Done | `bfbe6b2` · 2026-03 | `lib/admin-auth.ts` (HIGH-RISK PATH) |
+| 7 | Admin Panel | Coupons + broadcasts + impersonation | Done | `bfbe6b2` · 2026-03 | `admin-coupons.ts` + `notifications-broadcast.ts` |
+| 8 | Dark Mode / Theming | CSS-var palette swap | Done | `2769806` · 2026-04 | `src/styles/tokens-dark.css` + theme toggle |
+| 8 | Dark Mode / Theming | Classic/Modern/Minimal variants | Done | `2769806` · 2026-04 | `tokens.css` variants + ThemePicker |
+| 9 | Multi-language (EN/HI) | 980+ keys + `useLanguage()` | Done | `bfbe6b2` · 2026-03 | `lib/translations.en.ts` + `translations.hi.ts` (parity enforced) |
+| 10 | Onboarding wizard | Business creation on first login | Done | `b69067b` · 2026-04 | `features/onboarding/` + verticals step + business defaults |
+
+### Phase 1B — Party Management
+
+| # | Feature | Sub-feature | Status | Commit · Date | Evidence |
+|---|---|---|---|---|---|
+| 11 | Party CRUD | Create/edit/delete + soft-delete | Done | `ea27525` · 2026-05 | `services/party.service.ts` + Party model + PartiesPage.tsx |
+| 12 | Party | Balances + statements | Done | `bfbe6b2` · 2026-03 | `collections/statement.route.ts` + PartyDetailPage |
+| 13 | Party | Multi-addresses | Done | `bfbe6b2` · 2026-03 | PartyAddress model + Addresses tab |
+| 14 | Party | Credit limits | Done | `bfbe6b2` · 2026-03 | `creditLimit` on Party + credit-warning logic |
+| 15 | Party | Custom fields | Done | `bfbe6b2` · 2026-03 | PartyCustomFieldValue + CustomFieldDefinition + form |
+| 16 | Party | Party-wise pricing | Done | `3626a0c` · 2026-05 | PartyPricing + `pricing-resolver.ts` |
+| 17 | Party | Opening balances | Done | `bfbe6b2` · 2026-03 | OpeningBalance model + onboarding step |
+
+### Phase 1C — Invoicing & Documents
+
+| # | Feature | Sub-feature | Status | Commit · Date | Evidence |
+|---|---|---|---|---|---|
+| 18 | Sale invoice | Create + edit + duplicate | Done | `ea27525` · 2026-05 | `services/document.service.ts` + Document(type=SALE) + invoices pages |
+| 19 | Purchase invoice | Create + edit | Done | `1b8e18f` · 2026-03 | Document(type=PURCHASE) + purchases feature folder |
+| 20 | Estimates | CRUD + convert | Done | `6193d28` · 2026-05 | `routes/documents/convert-restore.ts` + EstimatesPage |
+| 21 | Proforma | CRUD | Done | `1b8e18f` · 2026-03 | Document(type=PROFORMA) |
+| 22 | Purchase Orders | CRUD | Done | `1b8e18f` · 2026-03 | Document(type=PO) |
+| 23 | Sale Orders | CRUD + convert | Done | `6193d28` · 2026-05 | Document(type=SO) + SaleOrdersPage |
+| 24 | Delivery challan | CRUD + convert to invoice | Done | `6193d28` · 2026-05 | Document(type=CHALLAN) + DeliveryChallansPage |
+| 25 | Document numbering | Per-FY series + per-type | Done | `1b8e18f` · 2026-03 | DocumentNumberSeries + `document-number.service.ts` |
+| 26 | Additional charges | Per-doc line | Done | `1b8e18f` · 2026-03 | DocumentAdditionalCharge model |
+| 27 | Due dates | Auto + manual | Done | `1b8e18f` · 2026-03 | Document.dueDate + reminder calc |
+| 28 | Terms & Conditions | Templates | Done | `1b8e18f` · 2026-03 | TermsAndConditionsTemplate model + settings UI |
+| 29 | Digital signature | Per-business signature image | Done | `1b8e18f` · 2026-03 | DigitalSignature model + react-pdf integration |
+| 30 | Auto WA/Email share | Triggered on doc create | In-Progress (cred-blocked) | `bea1093` · 2026-04 | DocumentShareLog + `share.ts` route — needs Aisensy/Resend creds |
+| 31 | Image export | JPG/PNG | Done | `1b8e18f` · 2026-03 | client-side canvas export in template viewer |
+| 32 | Email PDF | Send invoice PDF over email | In-Progress (cred-blocked) | `bea1093` · 2026-04 | `services/pdf.service.ts` + share route — needs Resend creds |
+| 33 | Recycle bin | Soft-delete + restore | Done | `1b8e18f` · 2026-03 | `routes/recycle-bin.ts` + `services/recycle-bin.service.ts` |
+| 34 | Profit-during-sale | Margin chip on line items | Done | `1b8e18f` · 2026-03 | `document-calc.ts` margin field + UI chip |
+
+### Phase 1D — Templates & Printing
+
+| # | Feature | Sub-feature | Status | Commit · Date | Evidence |
+|---|---|---|---|---|---|
+| 35 | Templates | 5+ base templates | Done | `bfbe6b2` · 2026-03 | `features/templates/template-gallery*.configs.ts` |
+| 36 | Templates | Customization editor | Done | `bfbe6b2` · 2026-03 | TemplateConfigPage + react-pdf renderer |
+| 37 | Print settings | Per-business defaults | Done | `bfbe6b2` · 2026-03 | DocumentSettings model + settings UI |
+| 38 | Round-off | Per-invoice toggle | Done | `1b8e18f` · 2026-03 | `document-calc.ts` round-off branch |
+| 39 | Decimal precision | Per-business config | Done | `1b8e18f` · 2026-03 | DocumentSettings.decimalPlaces |
+
+### Phase 1E — Payment Tracking
+
+| # | Feature | Sub-feature | Status | Commit · Date | Evidence |
+|---|---|---|---|---|---|
+| 40 | Payment in/out | Multi-invoice allocation | Done | `5ce6d0f` · 2026-03 | `services/payment.service.ts` + Payment + PaymentAllocation |
+| 40 | Payment in/out | Cash/UPI/bank/cheque modes | Done | `5ce6d0f` · 2026-03 | Payment.mode enum + Cheque model |
+| 41 | Outstanding + aging | 4-bucket aging | Done | `5ce6d0f` · 2026-03 | `collections/aging.route.ts` + AgingReport UI |
+| 42 | Payment reminders | Auto WA/SMS | In-Progress (cred-blocked) | `9d281de` · 2026-05 | PaymentReminder + ReminderInstance — needs Aisensy/MSG91 |
+| 43 | Discount during payment | Per-allocation | Done | `5ce6d0f` · 2026-03 | PaymentDiscount model |
+
+### Phase 1F — Basic Inventory
+
+| # | Feature | Sub-feature | Status | Commit · Date | Evidence |
+|---|---|---|---|---|---|
+| 44 | Products CRUD | Paise pricing | Done | `f8a77bc` · 2026-03 | `services/product.service.ts` + Product model + products pages |
+| 45 | Stock in/out | Immutable StockMovement | Done | `f8a77bc` · 2026-03 | StockMovement model + atomic write |
+| 46 | Stock validation | GLOBAL/WARN_ONLY/HARD_BLOCK | Done | `ac04759` · 2026-03 | InventorySetting + `stock.service.ts` validation |
+| 47 | Low-stock alerts | Cron + notification | In-Progress (cred-blocked) | `bea1093` · 2026-04 | StockAlert + `stock-alert.service.ts` — needs notification creds |
+| 48 | Categories + Units | + Conversions | Done | `3ec14f4` · 2026-03 | Category + Unit + UnitConversion + units feature |
+| 49 | Item custom fields | Per-product extras | Done | `f8a77bc` · 2026-03 | ProductCustomFieldValue + UI |
+
+### Phase 1G — Dashboard & Reports
+
+| # | Feature | Sub-feature | Status | Commit · Date | Evidence |
+|---|---|---|---|---|---|
+| 50 | Dashboard | Single `/dashboard/home` endpoint | Done | `46c7bee` · 2026-04 | `routes/dashboard.ts` + DashboardPage + AlertStrip |
+| 51 | Sale/Purchase reports | + CSV export | Done | `7e7967d` · 2026-03 | `routes/reports.ts` + `report.service.ts` |
+| 52 | Party statements | PDF + CSV | Done | `7e7967d` · 2026-03 | `collections/statement.route.ts` |
+| 53 | Stock summary | Report | Done | `7e7967d` · 2026-03 | `routes/reports.ts` stock-summary |
+| 54 | Day book | Daily ledger view | Done | `7e7967d` · 2026-03 | reports + DayBookPage |
+| 55 | Payment history | Per-party log | Done | `5ce6d0f` · 2026-03 | Payment list + PartyDetailPage tab |
+
+### Phase 1H — Settings & Security
+
+| # | Feature | Sub-feature | Status | Commit · Date | Evidence |
+|---|---|---|---|---|---|
+| 56 | Custom roles | Permission matrix (JSON) | Done | `0360b96` · 2026-03 | Role model + JWT claims projection |
+| 57 | Txn lock + approvals | Cutoff date + ApprovalRequest | Done | `0360b96` · 2026-03 | TransactionLockConfig + ApprovalRequest + UI |
+| 58 | PIN/passcode | App-level lock | Done | `5f802b9` · 2026-05 | PinCredential + `routes/auth-pin.routes.ts` + PinPad.tsx |
+| 59 | Biometric | Capacitor plugin | In-Progress (cred-blocked) | `bfbe6b2` · 2026-03 | `routes/biometric.ts` + Settings UI — needs Capacitor plugin install |
+| 60 | Date format | Per-business | Done | `0360b96` · 2026-03 | UserAppSettings.dateFormat |
+| 61 | Keyboard shortcuts | Global hotkeys | Done | `0360b96` · 2026-03 | `hooks/useKeyboardShortcuts.ts` |
+| 62 | Calculator FAB | Floating button | Done | `0360b96` · 2026-03 | `components/ui/CalculatorFab.tsx` |
+
+### Phase 2 — GST & Compliance
+
+| # | Feature | Sub-feature | Status | Commit · Date | Evidence |
+|---|---|---|---|---|---|
+| 63 | GST Invoice Engine | CGST/SGST/IGST auto-calc | Done | `8924109` · 2026-04 | `services/tax-calc.ts` + `document-calc.ts` (basis points + paise) |
+| 64 | Tax categories | 5/12/18/exempt/cess | Done | `8924109` · 2026-04 | TaxCategory model + 5 seeded defaults |
+| 65 | Place of Supply | IGST vs CGST+SGST gate | Done | `8924109` · 2026-04 | `tax-calc.ts` POS branch |
+| 66 | GSTR-1 Export | JSON (B2B/B2CL/B2CS/CDNR/CDNUR) | Done | `8924109` · 2026-04 | `routes/gst-returns.ts` + GstReturn model |
+| 67 | GSTR-1 Reconciliation | 4-way match | Done | `8924109` · 2026-04 | `routes/reconciliation.ts` + GstReconciliation + ReconciliationListPage |
+| 68 | GSTR-3B | Outward + ITC + CN + net | Done | `8924109` · 2026-04 | Gstr3bPage + `gst-return.service.ts` |
+| 69 | GSTR-9 | Annual | Done | `8924109` · 2026-04 | `gst-returns.ts` gstr9 endpoint |
+| 70 | Tax reports | Summary + HSN + Ledger | Done | `8924109` · 2026-04 | `routes/tax-reports.ts` + `tax-report.service.ts` |
+| 71 | E-Invoice | IRN + QR (NIC sandbox) | Done | `8924109` · 2026-04 | `services/einvoice/*` + EInvoice model + e-invoice feature |
+| 72 | E-Way Bill | Rs 50K threshold + Part-B | Done | `8924109` · 2026-04 | `services/ewaybill/*` + EWayBill model + e-way-bill feature |
+| 73 | Reverse Charge | `isReverseCharge` flag | Done | `8924109` · 2026-04 | Document.isReverseCharge + 3B handling |
+| 74 | Composite Scheme | Flat rate "Bill of Supply" | Done | `8924109` · 2026-04 | `composition.service.ts` + composition.constants.ts |
+| 75 | Additional Cess | Per line item | Done | `8924109` · 2026-04 | DocumentLineItem.cessRate/cessAmount |
+| 76 | HSN Auto-fill | 12K pre-seeded | Done | `8924109` · 2026-04 | HsnCode + `/api/hsn/search` + trgm index |
+| 77 | TDS/TCS | Per-doc rate+amount | Done | `8924109` · 2026-04 | `services/tds-tcs.service.ts` + TdsTcsReportPage |
+| 78 | GSTIN verification | External API check | Done | `8924109` · 2026-04 | `routes/gstin.ts` + `gstin.utils.ts` |
+| 79 | Credit/Debit Notes | Bi-directional linking | Done | `8924109` · 2026-04 | Document(type=CN/DN) + stock + outstanding adj |
+| 80 | Multi-currency | 11 currencies, rate×10000 | Done | `8924109` · 2026-04 | ExchangeRate + `currency.service.ts` |
+| 81 | Recurring Invoices | 4 frequencies + scheduler | Done | `8924109` · 2026-04 | RecurringInvoice + RecurringInvoiceRun + recurring feature |
+| 82 | GST Returns viewer | Tab pills + month selector | Done | `8924109` · 2026-04 | GstReturnsPage |
+
+### Phase 3 — Accounting & Finance
+
+| # | Feature | Sub-feature | Status | Commit · Date | Evidence |
+|---|---|---|---|---|---|
+| 83 | Double-entry ledger | 15 system accounts | Done | `2b1d872` · 2026-05 | `services/accounting/*` + LedgerAccount + JournalEntry/Line |
+| 84 | P&L | Statement endpoint + UI | Done | `2b1d872` · 2026-05 | `financial-reports.service.ts` + ProfitLossPage |
+| 85 | Balance Sheet | Statement endpoint + UI | Done | `2b1d872` · 2026-05 | `financial-reports.service.ts` + BalanceSheetPage |
+| 86 | Cash Flow | Statement endpoint + UI | Done | `2b1d872` · 2026-05 | `financial-reports.service.ts` + CashFlowPage |
+| 87 | Accounting Day Book | Per-day journal view | Done | `2b1d872` · 2026-05 | accounting/index.ts + DayBookPage |
+| 88 | Journal Entries | DRAFT→POST→VOID | Done | `2b1d872` · 2026-05 | `accounting/journal-entries.ts` + JournalEntriesPage |
+| 89 | Bank Reconciliation | Match payments↔bank | Deferred | — | Folded into #147 Auto-reconciliation (Phase 7) |
+| 90 | Receipt vouchers | Voucher print | Done | `2b1d872` · 2026-05 | `routes/payments.ts` voucher endpoint |
+| 91 | Payment vouchers | Voucher print | Done | `2b1d872` · 2026-05 | same |
+| 92 | Cheque register | PENDING/CLEARED/BOUNCED/CANCELLED | Done | `2b1d872` · 2026-05 | `services/cheque.service.ts` + Cheque + cheques feature |
+| 93 | Multiple bank accounts | Per-business banks | Done | `2b1d872` · 2026-05 | BankAccount + bank-accounts feature |
+| 94 | Cash-in-hand | Cash account + entries | Done | `2b1d872` · 2026-05 | CashEntry + CashEntryEvent + cash-register feature |
+| 95 | Cash book / Bank book | Per-account ledger | Done | `2b1d872` · 2026-05 | financial-reports + bank-accounts UI |
+| 96 | Expense tracking | 10 categories | Done | `e11caf9` · 2026-04 | `services/expense/*` + Expense + ExpenseCategory + expenses feature |
+| 97 | Other income | OtherIncome model | Done | `2b1d872` · 2026-05 | `services/other-income.service.ts` + other-income feature |
+| 98 | Loans | LOAN_GIVEN/TAKEN + EMI | Done | `be574fd` · 2026-04 | `services/loan/*` + LoanAccount + LoanTransaction + loans feature |
+| 99 | FY closure | Carry-forward to RE | Done | `2b1d872` · 2026-05 | `services/fy-closure/*` + FinancialYearClosure + FYClosurePage |
+| 100 | Tally Export | XML format | Done | `2b1d872` · 2026-05 | `routes/export.ts` + export.service tally branch |
+| 101 | Aging reports | 4 buckets | Done | `2b1d872` · 2026-05 | `collections/aging.route.ts` (shared with #41) |
+| 102 | Profitability | Bill/party/product | Done | `2b1d872` · 2026-05 | `financial-reports.service.ts` profitability endpoints |
+| 103 | Discount reports | Per-doc + per-party | Done | `2b1d872` · 2026-05 | `report.service.ts` discount endpoint |
+| 104 | COGS tracking | WAC-based | Done | `2b1d872` · 2026-05 | `services/accounting/helpers.ts` cogs branch |
+
+### Phase 4 — Advanced Inventory & POS
+
+| # | Feature | Sub-feature | Status | Commit · Date | Evidence |
+|---|---|---|---|---|---|
+| 105 | Barcode generation | Per-product | Done | `0bb1db3` · 2026-04 | `barcode-and-label` arch + label printing |
+| 106 | Barcode scan | ML Kit + zxing fallback | Done | `0bb1db3` · 2026-04 | `<BarcodeScanner>` + Capacitor BarcodeScanning plugin |
+| 107 | Batch tracking | BAT-01..07 + FEFO | Done | `0bb1db3` · 2026-04 | `services/batch.service.ts` + Batch model + batches feature |
+| 108 | Serial numbers | Per-unit tracking | Done | `0bb1db3` · 2026-04 | `services/serial-number.service.ts` + SerialNumber + serial-numbers feature |
+| 109 | Multi-godown + transfers | GodownTransfer | Done | `0bb1db3` · 2026-04 | `godown.service.ts` + `godown-transfer.service.ts` + godowns feature |
+| 110 | Stock adjustment | Reason codes | Done | `0bb1db3` · 2026-04 | `stock.service.ts` adjustment branch |
+| 111 | Label printing | THERMAL_40x30 / A4_3x8 / A5_2x5 | Done | `0bb1db3` · 2026-04 | label print templates in templates feature |
+| 112 | Bulk import/export | CSV | Done | `0bb1db3` · 2026-04 | `product-bulk.service.ts` + bulk-import feature |
+| 113 | Expiry cron + alerts | Daily | Done | `0bb1db3` · 2026-04 | InventorySetting expiry policy + cron in `services/stock` |
+| 114 | Reorder points | Auto reorder flag | Done | `0bb1db3` · 2026-04 | Product.reorderPoint + stock alert |
+| 115 | BOM + ProductionRun | Atomic + WAC + reverse | Done | `0bb1db3` · 2026-04 | `services/bom/*` + Bom/BomComponent/ProductionRun + bom feature |
+| 116 | Item images | Multi-image | Done | `0bb1db3` · 2026-04 | `routes/products/images.ts` |
+| 117 | MOQ enforcement | Min order qty | Done | `0bb1db3` · 2026-04 | Product.moq + service validation |
+| 118 | POS billing mode | 58/80/A5 receipts + void/restore | Done | `264d113` · 2026-04 | `services/pos/*` + PosSale + pos feature + PosPage |
+| 119 | Stock verification | Atomic batch adjustments | Done | `0bb1db3` · 2026-04 | `stock-verification.service.ts` + StockVerification + stock-verification feature |
+| 120 | Party ledger | DR/CR + running balance + PDF | Done | `0bb1db3` · 2026-04 | `collections/statement.route.ts` + shared-ledger feature |
+
+### Phase 5 — Sales & Marketing
+
+| # | Feature | Sub-feature | Status | Commit · Date | Evidence |
+|---|---|---|---|---|---|
+| 121 | Online Store | `/p/store/:slug` | Done | `d47b84a` · 2026-05 | `routes/public/store.routes.ts` + `storefront.service.ts` + StorefrontProduct + storefront feature |
+| 121 | Online Store | Slug rules + reserved registry | Done | `ea1b9ae` · 2026-05 | `slug-rules.ts` |
+| 122 | Sales Pipeline | Estimate→SO→Challan→Invoice lineage | Done | `6193d28` · 2026-05 | `routes/documents/lineage.ts` + convert-restore.ts |
+| 123 | WhatsApp Marketing | Templates | Done | `9b1f096` · 2026-05 | `services/marketing/*` + MarketingTemplate + marketing feature |
+| 123 | WhatsApp Marketing | Campaigns wizard | Done | `016a1c8` · 2026-05 | MarketingCampaign + MarketingCampaignRecipient + CampaignWizard |
+| 123 | WhatsApp Marketing | Aisensy provider | In-Progress (cred-blocked) | `9b1f096` · 2026-05 | `marketing-aisensy.routes.ts` — needs Aisensy creds + `MARKETING_ENABLED=true` |
+| 124 | SMS Marketing | MSG91 provider | In-Progress (cred-blocked) | `9b1f096` · 2026-05 | `marketing-msg91.routes.ts` — needs MSG91 creds |
+| 125 | Loyalty | FIFO accrual + advisory-locked redeem | Done | `1bb2fcc` · 2026-05 | `services/loyalty/*` + LoyaltyProgram + LoyaltyLedger + loyalty feature |
+| 125 | Loyalty | POS step 10.5/10.6 + expiry cron | Done | `d8eb926` · 2026-05 | pos integration + loyalty cron |
+| 126 | Service Reminders | Rules + 30-min cron + opt-out | Done | `9d281de` · 2026-05 | ReminderRule + ReminderInstance + ReminderConfig + reminder cron |
+| 127 | CRM Basics | Tags + follow-ups + lastContactedAt | Done | `ea27525` · 2026-05 | `routes/collections/crm.routes.ts` + crm feature |
+| 128 | Commission | Rules CRUD + ruleSnapshot + ledger | Done | `340d5bc` · 2026-05 | `services/commission/*` + CommissionRule + CommissionLedger + commission feature |
+| 129 | UPI QR | + Deep-link on invoice | Done | `a148ba3` · 2026-05 | `services/upi-link.service.ts` + invoice template QR |
+| 130 | Web invoice links | HMAC-signed | Done | `77c645a` · 2026-05 | `routes/public/invoice.routes.ts` + SharedLink + `shared-link.service.ts` |
+| 131 | Party invite | OTP + one-shot signup binding | Done | `15fb596` · 2026-05 | `routes/public/invite/` + `party-invite.service.ts` + invite-claim feature |
+| 132 | Multiple price lists | Per-invoice override + cross-tenant guard | Done | `3626a0c` · 2026-05 | `services/price-list*.service.ts` + PriceList + PriceListEntry + price-lists feature |
+| 133 | BOGO | Custom-role permission `invoicing.bogo` | Done | `3626a0c` · 2026-05 | `pricing-resolver.ts` BOGO branch + Role permission |
+| 134 | Invoice custom fields | react-pdf section | Done | `3626a0c` · 2026-05 | DocumentCustomFieldValue + template renderer |
+
+### Phase 6 — Staff & HR + Multi-Firm + Audit + PIN
+
+| # | Feature | Sub-feature | Status | Commit · Date | Evidence |
+|---|---|---|---|---|---|
+| 135 | Staff Attendance | Employee × day matrix + batch endpoint | Done | `0e2b78a` · 2026-05 | `routes/hr-attendance.routes.ts` + Attendance + AttendancePage |
+| 136 | Payroll | Wizard + STAFF Party pairing + reversal | Done | `1b27829` · 2026-05 | `services/payroll/*` + Employee + PayrollRun + Payroll + PayrollWizardPage |
+| 137 | Salary Slips | Viewer + PDF + reverse | Done | `1b27829` · 2026-05 | PayslipSnapshot + PayslipPage |
+| 138 | Multi-firm | PR0 tenancy audit (0 leaks / 1,033 sites) | Done | `26c4665` · 2026-05 | `docs/archive/TENANCY_AUDIT.md` |
+| 138 | Multi-firm | Schema (9 tables + 28 cols) | Done | `d036036` · 2026-05 | `prisma/schema.prisma` + migration |
+| 138 | Multi-firm | `requireActiveBusiness` middleware | Done | `ce805d6` · 2026-05 | `middleware/requireActiveBusiness.ts` |
+| 138 | Multi-firm | Suspend/reactivate UX | Done | `8f0a06e` · 2026-05 | `c718490` BE + TenantChip + SuspendBanner + ReactivationModal |
+| 139 | Advanced Audit Trail | Search (websearch_to_tsquery) + diff + redaction + CSV | Done | `c0f54a2` · 2026-05 | `services/audit/*` + AuditLog + AuditLogRedaction + audit feature |
+| 139 | Advanced Audit Trail | 13 mutations backfilled + `--block` enforcer | Done | `025d037` · 2026-05 | `scripts/enforce-audit-coverage.mjs --block` |
+| 140 | Transaction PIN | `requireRecentPin` middleware | Done | `5f802b9` · 2026-05 | `middleware/requireRecentPin.ts` + PinCredential + `services/security-pin/*` |
+| 140 | Transaction PIN | PinGateProvider + PinPad + 403 interceptor | Done | `3fc3802` · 2026-05 | `features/pin-gate/*` + api.ts PIN_REQUIRED handler |
+
+### Phase 7 — AI & Differentiators
+
+| # | Feature | Sub-feature | Status | Commit · Date | Evidence |
+|---|---|---|---|---|---|
+| 141 | AI auto-categorize receipts | Anthropic Haiku OCR | Done | `e11caf9` · 2026-04 | `services/expense/expense-ocr.service.ts` + `expense-ocr.client.ts` + bill-scan feature |
+| 141 | AI auto-categorize receipts | 5 MB cap + graceful unavailable | Done | `e11caf9` · 2026-04 | `routes/expense-ocr.route.ts` + size guard |
+| 142 | Voice entry | SpeechRecognition + fallback | Not Started | — | — |
+| 143 | WhatsApp bot billing | Aisensy inbound webhook → draft | Not Started | — | — |
+| 144 | Smart GST filing assistant | Rules engine on Phase 2 data | Not Started | — | — |
+| 145 | Industry Vertical Modes | 13 verticals SSOT + nav filter + terminology | Done | `b69067b` · 2026-04 | `src/config/verticals.config.ts` + onboarding step |
+| 145 | Industry Vertical Modes | Jobs flow (services/freelancer/salon/clinic) | Done | `1d39ab0` · 2026-04 | `services/job/*` + Job + JobItem + jobs feature |
+| 145 | Industry Vertical Modes | Custom Orders (bakery/tailor) | Done | `cb9b1dc` · 2026-04 | `services/custom-order/*` + CustomOrder + custom-orders feature |
+| 146 | Predictive analytics | Sales/cash flow forecast | Not Started | — | — |
+| 147 | Auto-reconciliation | Fuzzy match payments↔invoices (absorbs #89) | Not Started | — | — |
+| 148 | Smart inventory | Velocity-based reorder | Not Started | — | — |
+| 149 | Competitor importers (Vyapar/MyBillBook/Tally) | Parties import (7.1A) | In-Progress (build) | `d44ae49` · 2026-05 | shipped on `epic/phase-7-import` branch (ImportJob + 4 parsers) — NOT on master |
+| 149 | Competitor importers | Products import (7.1B) | In-Progress (build) | `214f769` · 2026-05 | `epic/phase-7-import` branch only |
+| 149 | Competitor importers | Invoices import (7.1C) | In-Progress (build) | `4104ecd` · 2026-05 | `epic/phase-7-import` branch only |
+| 149 | Competitor importers | Payments import (7.1D) | In-Progress (build) | `1dbe3a5` · 2026-05 | `epic/phase-7-import` branch — PR-D0/D1/D2a only; D2b/D3/D4/D5 queued |
+| 150 | Real-time multi-user | WebSocket / CRDT | Not Started | — | Needs architecture spike (see §8) |
+
+### Verticals depth (post-MVP candidates — see §5)
+
+| # | Epic | Verticals | Status | Commit · Date | Evidence |
+|---|---|---|---|---|---|
+| V1 | Hourly billing on Jobs | Services/Freelancer/Salon/Clinic | Not Started | — | Listed in §5 backlog |
+| V2 | Appointment calendar + slot picker | Salon/Clinic | Not Started | — | Listed in §5 backlog |
+| V3 | Recipe cost dashboard (BOM-derived) | Restaurant/Bakery/Manufacturing | Not Started | — | Listed in §5 backlog |
+| V4 | Staff assignment + commission split | Services/Bakery/Tailor/Mfg | Not Started | — | Extends #128 |
+| V5 | Customer delivery reminders | Bakery/Tailor | Not Started | — | Depends on Epic A live |
+| V6 | Table mgmt + KOT | Restaurant | Not Started | — | Out of scope |
+| V7 | Prescription field | Pharmacy/Clinic | Not Started | — | Custom-fields today |
+
+
