@@ -51,7 +51,41 @@ export const AUDIT_COVERED_SERVICES: readonly AuditCoverageEntry[] = [
   { service: 'services/shared-link.service.ts',             ops: ['revokeSharedLink'] },
   { service: 'services/recurring/crud.ts',                  ops: ['mutateRecurring'] },
   { service: 'services/loyalty/loyalty-program.service.ts', ops: ['mutateLoyaltyProgram'] },
+
+  // ── Phase 7 Import (API.7) ────────────────────────────────────────────────
+  // Every service that mutates an ImportJob writes an `import_job.*` audit
+  // row inside its $transaction. Event names per ARCH §10:
+  //   import_job.uploaded · parsed · row_dropped · dedup_resolved ·
+  //   committed · parties.imported_batch · cancelled · expired
+  { service: 'services/import/upload.service.ts',           ops: ['createImportJob'] },
+  { service: 'services/import/parse.service.ts',            ops: ['runParseAndStage'] },
+  { service: 'services/import/commit.service.ts',           ops: ['commitImportJob'] },
+  // Phase 7 · 7.1B — commit.service.ts split. `commit.helpers.ts` no longer
+  // writes audit rows (parties chunk moved to commit-parties.service.ts);
+  // `commit-products.service.ts` is a 7.1B PR1 stub — full audit lands in
+  // API.B3 alongside the per-row commit ladder.
+  { service: 'services/import/commit-parties.service.ts',   ops: ['commitChunkParties'] },
+  // Phase 7 · 7.1B API.B3 — products commit ladder writes
+  // `products.imported_batch` (S6) inside its $transaction.
+  { service: 'services/import/commit-products.service.ts',  ops: ['commitChunkProducts'] },
+  // Phase 7 · 7.1C PR-C3 — invoice chunk commit emits `invoices.imported_batch`
+  // (ARCH §6.4) inside its $transaction. One audit row per chunk; parallel
+  // arrays preserve per-invoice provenance.
+  { service: 'services/import/commit-invoices.service.ts',  ops: ['commitChunkInvoices'] },
+  { service: 'services/import/cancel.service.ts',           ops: ['cancelImportJob'] },
+  { service: 'services/import/audit-emit.ts',               ops: ['emitUploaded', 'emitParsed', 'emitRowDropped', 'emitDedupResolved', 'emitCommitted', 'emitPartiesUpdatedFromImport', 'emitProductsImportedBatch', 'emitProductsUpdatedFromImport', 'emitInvoicesImportedBatch', 'emitExpired'] },
+  // 7.1C PR-C3 — invoice batched audit extracted from audit-emit.ts to
+  // keep that file under the 250L cap; audit-emit.ts re-exports for back-compat.
+  { service: 'services/import/audit-emit-invoices.ts',      ops: ['emitInvoicesImportedBatch'] },
+  // Phase 7 · 7.1D PR-D4 — payments commit ladder writes
+  // `payments.imported_batch` (PR-D3) inside its $transaction. The
+  // audit-emit wrapper for payments lives alongside the commit service
+  // (per-entity split to keep audit-emit.ts under cap).
+  { service: 'services/import/commit-payments/commit-payments.service.ts', ops: ['commitChunkPayments'] },
+  { service: 'services/import/commit-payments/audit-emit.ts',              ops: ['emitPaymentsImportedBatch'] },
+  { service: 'jobs/import-retention.cron.ts',               ops: ['runImportRetentionCron'] },
+  { service: 'services/import/erasure.service.ts',          ops: ['eraseImportData'] },
 ] as const
 
-/** Total covered: 16 services covering 22 distinct ops (6 Phase-6 + 16 backfill). */
+/** Total covered: 29 services (16 prior + 13 Phase-7 Import incl. 7.1B split + 7.1C invoices commit + audit-emit-invoices split + 7.1D payments commit + payments audit-emit). */
 export const AUDIT_COVERAGE_COUNT = AUDIT_COVERED_SERVICES.length

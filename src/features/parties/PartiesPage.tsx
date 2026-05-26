@@ -91,7 +91,15 @@ export default function PartiesPage() {
         title={bulk.isActive ? `${bulk.selectedCount} ${t.selected}` : t.parties}
         actions={
           !bulk.isActive ? (
-            <button className="btn btn-ghost btn-sm" onClick={() => navigate(ROUTES.BULK_IMPORT_PARTIES)} aria-label={t.importPartiesLabel}>
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={() => {
+                const flag = import.meta.env.VITE_FEATURE_DATA_IMPORT
+                const enabled = flag === 'true' || flag === true || flag === '1'
+                navigate(enabled ? ROUTES.IMPORTS : ROUTES.BULK_IMPORT_PARTIES)
+              }}
+              aria-label={t.importPartiesLabel}
+            >
               <Upload size={18} aria-hidden="true" />
               <span>{t.import}</span>
             </button>

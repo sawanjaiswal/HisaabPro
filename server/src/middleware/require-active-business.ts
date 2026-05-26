@@ -63,6 +63,19 @@ export async function requireActiveBusiness(
   const userId = req.user?.userId
   const businessId = req.user?.businessId
 
+  // M1 — assert non-empty string. `auth` may have populated `req.user`
+  // with a malformed token claim shape (older clients) and we MUST refuse
+  // to continue: dropping `undefined` into Prisma where-clauses below
+  // silently strips the userId filter and yields cross-tenant IDOR.
+  if (typeof userId !== 'string' || userId.length === 0) {
+    sendError(
+      res,
+      'req.user.userId missing — middleware order broken',
+      ErrorCode.INTERNAL_ERROR,
+      500,
+    )
+    return
+  }
   if (!userId) {
     sendError(res, 'Authentication required', ErrorCode.UNAUTHORIZED, 401)
     return

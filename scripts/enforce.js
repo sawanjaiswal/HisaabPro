@@ -21,7 +21,7 @@
  */
 
 import { execSync } from 'node:child_process'
-import { readdirSync, readFileSync, statSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative, extname } from 'node:path'
 
 const ROOT = join(import.meta.dirname, '..')
@@ -250,6 +250,48 @@ try {
   console.log('  ✅ Audit-coverage SSOT: all services write audit')
 } catch {
   errors.push('AUDIT_COVERAGE_VIOLATION: scripts/enforce-audit-coverage.mjs --block reported missing audit-writes.')
+}
+
+// ─── Check 6c: ban Promise.all inside commit-payments/** ─────────────────────
+//
+// Phase 7 · 7.1D PR-D4. The payments commit ladder is strictly sequential
+// inside the surrounding $transaction: every row touches Document.balanceDue
+// via Σ(Allocation.amount) ≤ outstanding, and the over-allocation guard
+// re-aggregates allocations per row. Running rows in parallel (Promise.all
+// on `tx`) would (a) hand the same tx client to concurrent awaiters which
+// Prisma forbids, and (b) race the Σ-overflow check across rows so the
+// last-write-wins pattern silently overshoots Document.balanceDue. Keep
+// the ladder sequential; if a perf win is needed it lives at the chunk
+// boundary (multiple chunks in parallel), not at the row boundary.
+console.log('🔍 Check 6c: ban Promise.all in commit-payments/**')
+{
+  const COMMIT_PAYMENTS_DIR = join(SERVER_SRC, 'services', 'import', 'commit-payments')
+  let promiseAllViolations = 0
+  if (existsSync(COMMIT_PAYMENTS_DIR)) {
+    const files = walkDir(COMMIT_PAYMENTS_DIR, ['.ts'])
+    for (const file of files) {
+      const src = readFileSync(file, 'utf8')
+      // Match `Promise.all(` and `Promise.allSettled(` — same race surface.
+      const lines = src.split('\n')
+      for (let i = 0; i < lines.length; i += 1) {
+        const line = lines[i]
+        if (/\bPromise\.(all|allSettled)\s*\(/.test(line)) {
+          // Allow inside line-comments only ("NEVER Promise.all" docs).
+          if (/^\s*\*|^\s*\/\//.test(line)) continue
+          errors.push(
+            `COMMIT_PAYMENTS_PROMISE_ALL: ${rel(file)}:${i + 1} — Promise.all is banned inside commit-payments/** ` +
+              `(Σ-overflow + tx-sequential invariant, PR-D4). Iterate rows sequentially with for-of/await.`,
+          )
+          promiseAllViolations += 1
+        }
+      }
+    }
+  }
+  if (promiseAllViolations === 0) {
+    console.log('  ✅ commit-payments/** is Promise.all-free')
+  } else {
+    console.log(`  ❌ ${promiseAllViolations} Promise.all violation(s) in commit-payments/**`)
+  }
 }
 
 // ─── Check 7: Section layout — padding=0 and gap=24px ────────────────────────

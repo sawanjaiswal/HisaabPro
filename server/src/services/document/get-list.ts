@@ -16,7 +16,7 @@ export async function getDocument(businessId: string, documentId: string) {
 }
 
 export async function listDocuments(businessId: string, query: ListDocumentsQuery) {
-  const { type, status, partyId, fromDate, toDate, search, sortBy, sortOrder, page, limit } = query
+  const { type, status, partyId, fromDate, toDate, search, importJobId, sortBy, sortOrder, page, limit } = query
 
   const where: Record<string, unknown> = {
     businessId,
@@ -26,6 +26,11 @@ export async function listDocuments(businessId: string, query: ListDocumentsQuer
       : { in: ['SAVED', 'SHARED'] },
   }
   if (partyId) where.partyId = partyId
+  // Phase 7 · 7.1C — scope to a single import job's documents. The
+  // `businessId` clause above is preserved so a foreign jobId returns
+  // an empty list (NOT existence disclosure; same shape as filters
+  // for unknown partyIds today).
+  if (importJobId) where.importJobId = importJobId
   if (fromDate || toDate) {
     where.documentDate = {
       ...(fromDate && { gte: new Date(fromDate) }),

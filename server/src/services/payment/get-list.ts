@@ -43,7 +43,7 @@ export async function getPayment(businessId: string, paymentId: string) {
 }
 
 export async function listPayments(businessId: string, query: ListPaymentsQuery) {
-  const { type, partyId, mode, dateFrom, dateTo, search, sortBy, sortOrder, page, limit } = query
+  const { type, partyId, mode, dateFrom, dateTo, search, importJobId, sortBy, sortOrder, page, limit } = query
 
   const where: Record<string, unknown> = {
     businessId,
@@ -52,6 +52,10 @@ export async function listPayments(businessId: string, query: ListPaymentsQuery)
   if (type) where.type = type
   if (partyId) where.partyId = partyId
   if (mode) where.mode = mode
+  // Phase 7 · 7.1D PR-D4 — importJobId filter. businessId clause above
+  // is the tenant anchor: a cross-tenant jobId yields an empty list
+  // because no row matches both filters.
+  if (importJobId) where.importJobId = importJobId
   if (dateFrom || dateTo) {
     where.date = {
       ...(dateFrom && { gte: new Date(dateFrom) }),

@@ -85,6 +85,8 @@ export const ROUTES = {
   TALLY_EXPORT: '/accounting/tally-export',
   BILL_SCAN: '/bill-scan',
   BULK_IMPORT_PARTIES: '/parties/import',
+  IMPORTS: '/imports',
+  IMPORT_JOB_DETAIL: '/imports/:jobId',
   PUBLIC_LEDGER: '/public/ledger/:token',
   ITEMS_LIBRARY: '/products/library',
   DATA_IMPORT: '/settings/import',

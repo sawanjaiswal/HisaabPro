@@ -79,8 +79,10 @@ import authPinRoutes from './routes/auth-pin.routes.js'
 import auditRoutes from './routes/audit.routes.js'
 import hrRoutes from './routes/hr.routes.js'
 import payrollRoutes from './routes/payroll.routes.js'
+import importsRoutes from './routes/imports/index.js'
 
 const ROUTE_MOUNTS: Array<[string, Router]> = [
+  ['/api/imports', importsRoutes],
   ['/api/auth', authRoutes],
   ['/api/auth/biometric', biometricRoutes],
   ['/api/feedback', feedbackRoutes],

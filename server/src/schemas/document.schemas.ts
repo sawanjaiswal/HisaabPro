@@ -141,6 +141,13 @@ export const listDocumentsSchema = z.object({
   fromDate: z.string().optional(),
   toDate: z.string().optional(),
   search: z.string().optional(),
+  /**
+   * Phase 7 · 7.1C (ARCH §13 deviation #3) — scope the list to a single
+   * import job's documents. Used by the FE "Imported invoices" link
+   * on the import summary page. cuid (Prisma default) so we accept any
+   * non-empty bounded string rather than `.uuid()`.
+   */
+  importJobId: z.string().min(1).max(64).optional(),
   sortBy: z.enum(SORT_BY).default('documentDate'),
   sortOrder: z.enum(SORT_ORDER).default('desc'),
   page: z.coerce.number().int().min(1).default(1),
@@ -204,21 +211,15 @@ export const updateDocumentSettingsSchema = z.object({
   showLineItemImages: z.boolean().optional(),
 })
 
-// === Terms & Conditions Template ===
-
-export const createTermsTemplateSchema = z.object({
-  name: z.string().min(1).max(100),
-  content: z.string().min(1).max(5000),
-  isDefault: z.boolean().default(false),
-  appliesTo: z.array(z.enum(DOCUMENT_TYPES)).default([]),
-})
-
-export const updateTermsTemplateSchema = z.object({
-  name: z.string().min(1).max(100).optional(),
-  content: z.string().min(1).max(5000).optional(),
-  isDefault: z.boolean().optional(),
-  appliesTo: z.array(z.enum(DOCUMENT_TYPES)).optional(),
-})
+// === Terms & Conditions Template (re-exported from document-terms.schemas.ts) ===
+export {
+  createTermsTemplateSchema,
+  updateTermsTemplateSchema,
+} from './document-terms.schemas.js'
+export type {
+  CreateTermsTemplateInput,
+  UpdateTermsTemplateInput,
+} from './document-terms.schemas.js'
 
 // === Validate Stock ===
 
@@ -242,5 +243,3 @@ export type ShareWhatsAppInput = z.infer<typeof shareWhatsAppSchema>
 export type ShareEmailInput = z.infer<typeof shareEmailSchema>
 export type UpdateNumberSeriesInput = z.infer<typeof updateNumberSeriesSchema>
 export type UpdateDocumentSettingsInput = z.infer<typeof updateDocumentSettingsSchema>
-export type CreateTermsTemplateInput = z.infer<typeof createTermsTemplateSchema>
-export type UpdateTermsTemplateInput = z.infer<typeof updateTermsTemplateSchema>

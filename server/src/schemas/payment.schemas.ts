@@ -75,6 +75,10 @@ export const listPaymentsSchema = z.object({
   dateFrom: z.string().optional(),
   dateTo: z.string().optional(),
   search: z.string().optional(),
+  // Phase 7 · 7.1D PR-D4 — filter by ImportJob provenance. Always
+  // composed with the businessId clause downstream so a cross-tenant
+  // importJobId returns an empty array (never another business's rows).
+  importJobId: z.string().min(1).optional(),
   sortBy: z.enum(SORT_BY).default('date'),
   sortOrder: z.enum(SORT_ORDER).default('desc'),
   page: z.coerce.number().int().min(1).default(1),

@@ -29,7 +29,11 @@ const COVERAGE_FILE = join(SERVER_SRC, 'lib', 'audit', 'audit-coverage.ts')
 
 const BLOCKING = process.argv.includes('--block')
 
-const AUDIT_CALL_RE = /\b(?:tx|prisma)\.auditLog\.(?:create|createMany)\s*\(/
+// Accept any identifier holding a prisma-like surface (tx, prisma, db,
+// client, ...) so audit-emit wrappers count. Also accept named import
+// of `emit*` helpers from `audit-emit` (Phase 7 audit-emit wrappers).
+const AUDIT_CALL_RE =
+  /(?:\b\w+\.auditLog\.(?:create|createMany)\s*\(|from\s+['"][^'"]*audit-emit[^'"]*['"]|\bemit(?:Uploaded|Parsed|RowDropped|DedupResolved|Committed|Expired|ParseTimeout|Cancelled)\s*\()/
 
 function parseCoverageList() {
   const src = readFileSync(COVERAGE_FILE, 'utf8')

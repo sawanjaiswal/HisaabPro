@@ -91,6 +91,8 @@ export const BulkImport = lazy(() => import('@/features/bulk-import/BulkImportPa
 export const PublicLedger = lazy(() => import('@/features/shared-ledger/PublicLedgerPage'))
 export const ItemsLibrary = lazy(() => import('@/features/items-library/ItemsLibraryPage'))
 export const DataImport = lazy(() => import('@/features/data-import/DataImportPage'))
+export const ImportUpload = lazy(() => import('@/features/import/pages/ImportUpload'))
+export const ImportJobStub = lazy(() => import('@/features/import/pages/ImportJobPage'))
 export const SmartGreetings = lazy(() => import('@/features/smart-greetings/SmartGreetingsPage'))
 export const Units = lazy(() => import('@/features/units/UnitsPage'))
 export const JoinBusiness = lazy(() => import('@/features/business/JoinBusinessPage'))

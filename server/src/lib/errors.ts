@@ -73,6 +73,13 @@ export enum ErrorCode {
 
   // Conflict (409)
   DUPLICATE_ENTRY = 'DUPLICATE_ENTRY',
+  // Phase 7 Import — 409 conflicts
+  ACTIVE_JOB_EXISTS = 'ACTIVE_JOB_EXISTS',
+  BAD_COMMIT_TOKEN = 'BAD_COMMIT_TOKEN',
+  IMPORT_JOB_NOT_COMMITTABLE = 'IMPORT_JOB_NOT_COMMITTABLE',
+  // 400 — API.8: a dedupResolution decision does not match the row's
+  // current dedup status (e.g. OVERWRITE on a non-duplicate STAGED row).
+  INVALID_RESOLUTION = 'INVALID_RESOLUTION',
   STOCK_SHORTAGE = 'STOCK_SHORTAGE',
   EXPIRED_BATCH = 'EXPIRED_BATCH',
   ALL_BATCHES_EXPIRED = 'ALL_BATCHES_EXPIRED',
@@ -85,6 +92,29 @@ export enum ErrorCode {
   // Server (500)
   INTERNAL_ERROR = 'INTERNAL_ERROR',
   DATABASE_ERROR = 'DATABASE_ERROR',
+
+  // Service Unavailable (503) — Phase 7 · 7.1B
+  // M9: pg_enum precondition for OPENING_BALANCE (or any other schema
+  // probe added later) not yet satisfied. The commit pipeline refuses
+  // to run rather than write partial state.
+  IMPORT_PRECONDITION_MISSING = 'IMPORT_PRECONDITION_MISSING',
+  // Phase 7 · 7.1C — Invoice commit (PR-C3)
+  // COMMIT_BLOCKED_PRODUCT_NOT_FOUND: pre-flight (post stale-re-resolve) saw
+  // at least one line with an unresolved product. The chunk throws BEFORE
+  // any Document INSERT — no partial state. Payload carries `blockedRowCount`
+  // + `missingSkuSample` (≤5, DEBUG-logged only — S5).
+  COMMIT_BLOCKED_PRODUCT_NOT_FOUND = 'COMMIT_BLOCKED_PRODUCT_NOT_FOUND',
+  // PRODUCT_DELETED_DURING_COMMIT: TOCTOU — line resolved at preview but
+  // the Product row was hard-deleted between preview and commit. Surfaced
+  // by catching Prisma P2003 on `documentLineItem.createMany` (S8).
+  PRODUCT_DELETED_DURING_COMMIT = 'PRODUCT_DELETED_DURING_COMMIT',
+  // CONCURRENT_COMMIT_RACE: row-level guard `updateMany count=0` inside
+  // commit-invoices; another commit pass already bound this row.
+  CONCURRENT_COMMIT_RACE = 'CONCURRENT_COMMIT_RACE',
+  COMMIT_BLOCKED_INVOICE_NOT_FOUND = 'COMMIT_BLOCKED_INVOICE_NOT_FOUND',
+  OVER_ALLOCATION = 'OVER_ALLOCATION',
+  ALLOCATION_INTERNAL_CONFLICT = 'ALLOCATION_INTERNAL_CONFLICT',
+  PAYMENT_MODE_INVALID = 'PAYMENT_MODE_INVALID',
 }
 
 export interface ApiErrorResponse {

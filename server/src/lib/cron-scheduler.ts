@@ -22,6 +22,7 @@ import { runTrialEndJob } from '../services/subscription/cron-trial-end.js'
 import { runMandateReminderJob } from '../services/subscription/cron-mandate-reminder.js'
 import { runLoyaltyExpiryCron } from '../services/loyalty/loyalty-expiry.cron.js'
 import { runPinGc } from '../jobs/pin-gc.job.js'
+import { runImportRetentionJob } from '../jobs/import-retention.cron.js'
 import os from 'os'
 
 let initialized = false
@@ -110,6 +111,13 @@ export function initCronJobs(): void {
   initNotificationCronJobs()
   cron.schedule('30 3 * * *', () => void runPinGc().catch((e) => logger.error('cron.pin_gc.fatal', { error: e instanceof Error ? e.message : String(e) })), { timezone: 'Asia/Kolkata' })
 
+  // Phase 7 — DPDP import retention. Hourly so the 24h post-commit
+  // raw-purge window cannot drift > 1h and orphan-PARSING reaps fire
+  // within ~ORPHAN_PARSING_REAP_MIN of crash. Wrapper never throws.
+  cron.schedule('0 * * * *', () => void runImportRetentionJob(), {
+    timezone: 'Asia/Kolkata',
+  })
+
   logger.info('cron.registered', {
     jobs: [
       'ptp-evaluator @ 01:00 IST',
@@ -126,6 +134,7 @@ export function initCronJobs(): void {
       'subscription-trial-end @ 07:00 IST',
       'subscription-mandate-reminder @ 08:00 IST',
       'loyalty-expiry @ 04:15 IST', 'pin-gc @ 03:30 IST',
+      'import-retention @ hourly IST',
     ],
   })
 }
