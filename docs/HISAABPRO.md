@@ -224,7 +224,7 @@ Merge `caa390d` (2026-05-26), 12 commits + 2 hardening (`ba56470`/`0bd1881`).
 | 146 | Predictive analytics | [ ] | Sales/cash flow forecast — **margin story** |
 | 147 | Auto-reconciliation | [ ] | Fuzzy match payments↔invoices (absorbs #89) |
 | 148 | Smart inventory | [ ] | Velocity-based reorder |
-| 149 | Competitor importers (Vyapar/MyBillBook/Tally) | [ ] | **acquisition unlock** |
+| 149 | Competitor importers (Vyapar/MyBillBook/Tally) | [x] | **acquisition unlock** — shipped 2026-05-26 `9a3c98e` (PR-D2b/D3/D4/D5) |
 | 150 | Real-time multi-user | [ ] | WebSocket + CRDT (or LWW) — **needs architecture spike** |
 
 ---
@@ -821,12 +821,11 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 > a Capacitor plugin install.
 
 **Summary — 150 features, ~180 sub-feature rows tracked + 7 vertical-depth epics:**
-- **Done:** 132 features (all layers present + shipped on `master` @ `6134b9b`).
+- **Done:** 133 features (all layers present + shipped on `master` @ `9a3c98e`).
 - **In-Progress (cred-blocked):** 8 features (code shipped, awaiting env vars / plugin install: #2, #4, #30, #32, #42, #47, #59, #123/#124 providers).
-- **In-Progress (build, off-master):** 1 feature (#149 importers — shipped on `epic/phase-7-import`).
 - **Not Started:** 8 features (#142, #143, #144, #146, #147, #148, #150 + 7 vertical-depth epics).
 - **Deferred:** 1 feature (#89 Bank Reconciliation — folded into #147).
-- **Audit timestamp:** 2026-05-26 11:28 IST · branch `master` · HEAD `6134b9b`
+- **Audit timestamp:** 2026-05-26 19:12 IST · branch `master` · HEAD `9a3c98e` (#149 merged 2026-05-26 via PR-D2b/D3/D4/D5)
 
 ---
 
@@ -1084,10 +1083,10 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | 146 | Predictive analytics | Sales/cash flow forecast | Not Started | — | — |
 | 147 | Auto-reconciliation | Fuzzy match payments↔invoices (absorbs #89) | Not Started | — | — |
 | 148 | Smart inventory | Velocity-based reorder | Not Started | — | — |
-| 149 | Competitor importers (Vyapar/MyBillBook/Tally) | Parties import (7.1A) | In-Progress (build) | `d44ae49` · 2026-05 | shipped on `epic/phase-7-import` branch (ImportJob + 4 parsers) — NOT on master |
-| 149 | Competitor importers | Products import (7.1B) | In-Progress (build) | `214f769` · 2026-05 | `epic/phase-7-import` branch only |
-| 149 | Competitor importers | Invoices import (7.1C) | In-Progress (build) | `4104ecd` · 2026-05 | `epic/phase-7-import` branch only |
-| 149 | Competitor importers | Payments import (7.1D) | In-Progress (build) | `1dbe3a5` · 2026-05 | `epic/phase-7-import` branch — PR-D0/D1/D2a only; D2b/D3/D4/D5 queued |
+| 149 | Competitor importers (Vyapar/MyBillBook/Tally) | Parties import (7.1A) | Done | `d44ae49` · 2026-05-26 | ImportJob + 4 parsers — merged to master via `9a3c98e` |
+| 149 | Competitor importers | Products import (7.1B) | Done | `214f769` · 2026-05-26 | merged to master via `9a3c98e` |
+| 149 | Competitor importers | Invoices import (7.1C) | Done | `4104ecd` · 2026-05-26 | merged to master via `9a3c98e` |
+| 149 | Competitor importers | Payments import (7.1D) | Done | `c3a5b4b`/`1a10701`/`a5425a7`/`37651d7` · 2026-05-26 | PR-D2b parsers + PR-D3 Σ-guard commit ladder + PR-D4 routes/audit + PR-D5 frontend — merged via `9a3c98e` |
 | 150 | Real-time multi-user | WebSocket / CRDT | Not Started | — | Needs architecture spike (see §8) |
 
 ### Verticals depth (post-MVP candidates — see §5)

@@ -194,3 +194,5 @@ Each workstream's status will be updated in this file under a `## Status` sectio
 - 2026-05-26 18:21 | W1 | PR-D4 dispatched (routes + 13 integration tests + enforce extensions)
 - 2026-05-26 18:30 | W1 | PR-D4 shipped `a5425a7` — 13/13 tests (9 real + 4 describe.todo for live-pg harness); audit-coverage + Promise.all-ban enforce rules live; `?importJobId=` filter on /api/payments
 - 2026-05-26 18:33 | W1 | PR-D5 dispatched (frontend: EntityPicker 4-tile, PaymentRowCard, banners, i18n EN/HI)
+- 2026-05-26 18:48 | W1 | PR-D5 shipped `37651d7` — EntityPicker 4-tile, PaymentRowCard chips, ResumeFromInvoicesBanner, EN+HI i18n
+- 2026-05-26 18:52 | W1 | **#149 MERGED to master via `9a3c98e` (`--no-ff`)** — Phase 7 importers complete. Post-merge `npm install` + `prisma generate` restored tsc=0; enforce at baseline (2 pre-existing oversized files). W1 exit gate met: `#149` flipped In-Progress → Done in §24.
