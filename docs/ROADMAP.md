@@ -1,13 +1,13 @@
 # HisaabPro — Master Feature Roadmap
 
-> **Last Updated:** 2026-05-17
-> **Status (2026-05-17):** Phase 1 (60/70 code-complete, 10 blocked on creds) · Phase 2 done (20/20) · Phase 3 done (21/22, #89 deferred) · Phase 4 done (16/16) · **Phase 5 14/14 COMPLETE** (Epic A Marketing FE + Epic B Sales Workflow + Epic C Customer-Facing + Epic D CRM/Loyalty/Commission — merge `63ccef4`) · **Subscription port SHIPPED** (DH gating model: state machine + UPI Autopay + RS256 offline JWT + PRO_MAX tier — commit `3530e79`) · Phase 6 not started · Phase 7 2/10 (#141 OCR + #145 Vertical Modes shipped) · **Vertical features**: Jobs (services/freelancer/salon/clinic) + Custom Orders (bakery/tailor) fully wired · **Responsive sweep Waves 0-7 complete** (commits `7c12683`..`5b8d3fe`)
-> **Branch:** `hisaabpro` is 64 commits ahead of `master` (Epic D merge added 7 commits). Production deploy at `89610b0`. Nothing since the responsive sweep, Epic A/B/C/D, or subscription port has been merged to `master`.
+> **Last Updated:** 2026-05-26
+> **Status (2026-05-26):** Phase 1 (60/70 code-complete, 10 blocked on creds) · Phase 2 done (20/20) · Phase 3 done (21/22, #89 deferred) · Phase 4 done (16/16) · **Phase 5 14/14 COMPLETE** (Epic A Marketing FE + Epic B Sales Workflow + Epic C Customer-Facing + Epic D CRM/Loyalty/Commission — merge `63ccef4`) · **Subscription port SHIPPED** (commit `3530e79`) · **Phase 6 6/6 COMPLETE** (Staff Attendance + Payroll + Salary Slips + Multi-firm + Audit Trail + Transaction PIN — merge `caa390d`, 12 commits, verifier + Pass-2 security PASS) · Phase 7 2/10 (#141 OCR + #145 Vertical Modes shipped) · **Vertical features**: Jobs (services/freelancer/salon/clinic) + Custom Orders (bakery/tailor) fully wired · **Responsive sweep Waves 0-7 complete**
+> **Branch:** `hisaabpro` is 38 commits ahead of `master` (Phase 6 added 12 commits on top of Epic D). Production deploy still at `89610b0`. Nothing since the responsive sweep, Epic A/B/C/D, subscription port, or Phase 6 has been merged to `master`.
 > **Owner:** Sawan Jaiswal
 > **Architecture:** Monolith — React 19 frontend + Express backend + Prisma + PostgreSQL
 > **Total Features:** 150 across 7 phases
-> **Build Status:** Frontend 60+ feature folders | Backend 70+ route files, ~75 Prisma models
-> **Total shipped:** **133/150** (+1 for subscription port code-complete)
+> **Build Status:** Frontend 60+ feature folders | Backend 70+ route files, ~84 Prisma models (Phase 6 added 9)
+> **Total shipped:** **139/150**
 
 ## Status Legend
 - [ ] Not Started
@@ -287,19 +287,21 @@
 
 ---
 
-## PHASE 6 — Staff & HR (Weeks 37-42)
-**Goal:** Manage staff from same app
-**Status:** Not Started
+## PHASE 6 — Staff & HR + Multi-Firm + Audit + PIN (Weeks 37-42)
+**Goal:** Manage staff from same app + tenant elevation + audit-trail depth + PIN gate
+**Status:** 6/6 COMPLETE (merge `caa390d`, 2026-05-26)
 **Features:** 6
 
 | # | Feature | Status | Complexity | PRD | Notes |
 |---|---------|--------|-----------|-----|-------|
-| 135 | Staff Attendance (check-in/out, leave tracking, geo-fencing) | [ ] | MEDIUM | [ ] | |
-| 136 | Payroll (salary calc, deductions, PF/ESI compliance) | [ ] | HIGH | [ ] | Labor law compliance |
-| 137 | Salary Slips (PDF generation, WhatsApp share) | [ ] | LOW | [ ] | |
-| 138 | Multi-firm Management (switch businesses, isolated data, shared parties optional) | [ ] | HIGH | [ ] | Tenant isolation |
-| 139 | Advanced Audit Trail (who changed what, when, diff view, rollback) | [ ] | MEDIUM | [ ] | Adapt DudhHisaab |
-| 140 | PIN for Transactions (require PIN to approve delete/edit/high-value txns) | [ ] | LOW | [ ] | Vyapar feature |
+| 135 | Staff Attendance (check-in/out, daily grid, range list) | [x] | MEDIUM | [x] | PR5 (`0e2b78a` BE + `2f78154` FE) — employee×day matrix, batch + range endpoints, businessId-scoped |
+| 136 | Payroll (salary calc, wizard, reversal) | [x] | HIGH | [x] | PR6 (`1b27829` BE + `a83b4d9` FE) — Employee + PayrollRun + STAFF Party pairing + reversal flow |
+| 137 | Salary Slips (PDF viewer, reverse action) | [x] | LOW | [x] | PR6 — Payslip viewer + PDF + reverse |
+| 138 | Multi-firm Management (suspend/reactivate, tenancy elevation) | [x] | HIGH | [x] | PR0 tenancy audit (`26c4665`, 0 cross-tenant leaks / 1,033 sites), PR1A schema `d036036`, PR1B middleware `ce805d6`, PR2 elevation (`c718490` BE + `8f0a06e` FE: TenantChip + SuspendBanner + ReactivationModal + requireActiveBusiness) |
+| 139 | Advanced Audit Trail (search, filter, diff, redaction, CSV) | [x] | MEDIUM | [x] | PR4 (`c0f54a2` BE + `78e1a5e` FE) — websearch_to_tsquery, redaction, buffered CSV; PR7 (`025d037`) backfilled 13 mutations + flipped `enforce-audit-coverage.mjs` to `--block` |
+| 140 | Transaction PIN (PinCredential, `requireRecentPin` middleware) | [x] | LOW | [x] | PR3 (`5f802b9` BE + `3fc3802` FE) — PIN port from DH, `/api/auth/pin/*` routes, PinGateProvider + PinPad sheet + 403 interceptor |
+
+**Rollout:** flag-gated (`FEATURE_STAFF_HR` + cohort_pct, `FEATURE_TRANSACTION_PIN` default-on for all users). 5-stage cohort ramp documented in `docs/ROLLOUT_PHASE6.md`. Verifier (`docs/VERIFIER_REPORT_PHASE6.md`): 7 mechanical proofs exit 0 (FE/BE tsc clean, enforce.js, enforce-offline, audit-coverage --block, regression greps). Security Pass-2 PASS (`docs/SECURITY_AUDIT_PHASE6_PASS2.md`, kill-switch wired). 6.1 hardening: dropped unused `PinPhoneLockout` table + removed dead `PIN_GATE_DOMAIN_PREFIX_MISMATCH` code path.
 
 ---
 
@@ -332,17 +334,16 @@
 | Phase 3 — Accounting & Finance | 22 | 19-24 | **21/22 Done** (Bank Reconciliation #89 deferred) |
 | Phase 4 — Advanced Inventory & POS | 16 | 25-30 | **16/16 Done** |
 | Phase 5 — Sales & Marketing | 14 | 31-36 | **14/14 COMPLETE** — Epic A Marketing FE ✅ · Epic B Sales Workflow ✅ · Epic C Customer-Facing ✅ · Epic D CRM/Loyalty/Commission ✅ (merge `63ccef4`) |
-| Phase 6 — Staff & HR | 6 | 37-42 | Not Started (#135-#140) |
+| Phase 6 — Staff & HR + Multi-Firm + Audit + PIN | 6 | 37-42 | **6/6 COMPLETE** — #135 Attendance ✅ · #136 Payroll ✅ · #137 Salary Slips ✅ · #138 Multi-firm ✅ · #139 Audit Trail ✅ · #140 Transaction PIN ✅ (merge `caa390d`, verifier + Pass-2 PASS) |
 | Phase 7 — AI & Differentiators | 10 | 43+ | **2/10** (#141 receipt OCR + #145 Vertical Modes shipped) |
-| **TOTAL** | **150** | **43+ weeks** | **133/150 shipped** |
+| **TOTAL** | **150** | **43+ weeks** | **139/150 shipped** |
 
 ### Remaining work, ranked
 
 **Build (code work, no creds needed):**
-1. Phase 6 — #135-#140 (6 features) — touches User model + auth on #138, mandatory `scope-writer → architect → security`
-2. Phase 7 — #142 Voice, #143 WA bot, #144 Smart GST, #146 Predictive, #147 Auto-recon, #148 Smart inv, #149 Competitor imports, #150 Multi-user (8 features)
-3. Phase 3 deferred — #89 Bank Reconciliation
-4. Per-vertical depth — V1 (services hourly billing) through V7 (prescription), see `BACKLOG.md` §9
+1. Phase 7 — #142 Voice, #143 WA bot, #144 Smart GST, #146 Predictive, #147 Auto-recon, #148 Smart inv, #149 Competitor imports, #150 Multi-user (8 features). Highest leverage: #143 → #149 → #146; highest risk: #150 (needs CRDT vs LWW architecture spike).
+2. Phase 3 deferred — #89 Bank Reconciliation (fits with #147)
+3. Per-vertical depth — V1 (services hourly billing) through V7 (prescription), see `BACKLOG.md` §9. V4 (staff assignment + commission split) now naturally extends Phase 6 #128 commission ledger.
 
 **Activate (code shipped, env vars needed on Render):**
 - #2 Subscription: `ENTITLEMENT_JWT_PRIVATE_KEY`, `ENTITLEMENT_JWT_PUBLIC_KEY`, `RAZORPAY_WEBHOOK_SECRET`
@@ -351,7 +352,7 @@
 - #59 Biometric: Capacitor plugin install
 
 **Ship (built ≠ deployed):**
-- `hisaabpro` is 57 commits ahead of `master`. Production deploy at `89610b0`. Merge to ship the responsive sweep + Epic A + B + C + subscription port to prod.
+- `hisaabpro` is 38 commits ahead of `master`. Production deploy at `89610b0`. Merge to ship the responsive sweep + Epic A + B + C + D + subscription port + **Phase 6 Staff & HR + Multi-firm + Audit + PIN** to prod. Phase 6 ramps per `docs/ROLLOUT_PHASE6.md` (5-stage cohort gate) — flags default off (`FEATURE_STAFF_HR=false`, cohort_pct=0); PIN cohort is 100% by default (PR3 enrolled all users).
 
 ---
 
@@ -434,4 +435,5 @@
 | 2026-05-08 (PM) | 4 | Phase 4 finished. Three epics shipped autonomously: catalog-enrichment (#117 MOQ + #116 item images + #120 party ledger), barcode-and-label (#106 native scan + #111 label print/PDF/bulk), bom-manufacturing (#115 BOM + atomic production runs + WAC propagation + cancel/reverse). Phase 4 = 16/16. Total 118/150 shipped. | Claude |
 | 2026-05-15 | 5 | **Phase 5 jumped from 0 → 11/14.** Epic A Marketing FE (slices 1-3, +221 EN/HI keys, commits `9b1f096`/`016a1c8`/`9d281de`). Epic B Sales Workflow shipped (#122/#132/#133/#134, commits `6193d28`+`3626a0c`). Epic C Customer-Facing shipped (#121 storefront + #129 UPI QR + #130 share links + #131 invite, commits `d78f7c9`..`237b551`). Plus subscription port (commit `3530e79`) — DH gating model with 7-state machine, UPI Autopay, RS256 offline JWT, PRO_MAX tier. Plus responsive sweep Waves 0-7 (`7c12683`..`5b8d3fe`). Plus backend audit pass — 1 P1 + 2 P2 + 2 P3 cleared, idempotency middleware on 17 POST routes. Total 130/150 shipped. | Claude |
 | 2026-05-17 | All | Deep audit + doc refresh. Found ROADMAP claimed 119/150 vs actual 130/150 — Phase 5 Epic A/B/C rows updated, totals reconciled, remaining-work breakdown added. BACKLOG section 3 (Epic C) updated from "next" to "shipped." | Claude |
+| 2026-05-26 | 6 | **Phase 6 COMPLETE (6/6).** All six tenant-shaped features merged to `hisaabpro` via `caa390d` after 12 commits + 2 hardening commits. PR0 tenancy audit (0 cross-tenant leaks / 1,033 sites, `26c4665`). PR1A/B schema + middleware (9 tables, 28 cols, `requireActiveBusiness`). PR2 #138 Multi-firm suspend/reactivate (TenantChip + SuspendBanner + ReactivationModal). PR3 #140 Transaction PIN (PinCredential + `/auth/pin/*` + PinGateProvider + PinPad + 403 interceptor). PR4 #139 Audit Trail (websearch_to_tsquery + redaction + buffered CSV + diff drawers). PR5 #135 Attendance (employee×day matrix + batch + range). PR6 #136 Payroll + #137 Salary slips (Employee + PayrollRun + Payslip + reversal). PR7 audit-backfill 13 mutations + enforcer `--block`. PR8 rollout flags + runbook + ramp playbook. Pass-2 fix wired `requireFeature('STAFF_HR')` kill-switch into 3 aggregator routers. 6.1 hardening dropped unused `PinPhoneLockout` + dead `PIN_GATE_DOMAIN_PREFIX_MISMATCH` code. Verifier: 7 mechanical proofs exit 0. Security Pass-2 PASS. Total **139/150 shipped**. | Claude |
 | 2026-05-17 | 5 | **Phase 5 COMPLETE (14/14).** Epic D shipped on isolated worktree → merged `63ccef4`. PR1 `b61e1a1` schema + migration + types + translations. PR2 `ea27525` CRM #127 (tags + follow-ups + lastContactedAt). PR3 `1bb2fcc` Loyalty #125 BE (FIFO accrual ledger, advisory-locked redeem, POS step 10.5/10.6 in $tx, 04:15 IST expiry cron, void/restore symmetry). PR4 `d8eb926` Loyalty #125 FE. PR5 `340d5bc` Commission #128 BE (ruleSnapshot deep-clone × 2 sites, PRODUCT > CATEGORY > ALL specificity, factory ledger auth, STAFF_NOT_FOUND cross-tenant guard, rate cap at 10000 bps). PR6 `4f93808` Commission #128 FE (rules CRUD + ledger + leaderboard + staff widget, S2 warn/block UX). Architecture-audit Pass 5 PASS · Security Pass-2 PASS (0 MUST, 1 SHOULD deferred = cron multi-pod systemic) · QA Gate GREEN (49/49 criteria, 10/10 cross-cutting, 3/3 mechanical). Total 133/150 shipped. | Claude |

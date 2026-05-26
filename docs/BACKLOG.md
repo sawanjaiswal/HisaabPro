@@ -1,21 +1,30 @@
-# Backlog — resume 2026-05-17
+# Backlog — resume 2026-05-26
 
-> Snapshot at 2026-05-17 18:58 IST. **133/150 shipped — Phase 5 COMPLETE.** Phase 4 complete (16/16). **Phase 5 Epic A SHIPPED** (Marketing FE — 3 slices, 36 files, +221 EN/HI keys). **Phase 5 Epic B SHIPPED** (#122/#132/#133/#134). **Phase 5 Epic C SHIPPED** (#121/#129/#130/#131 — public surface at `/p/*`, SharedLink + HMAC tokens, UPI QR, storefront, invite/OTP). **Phase 5 Epic D SHIPPED** (#125 Loyalty + #127 CRM + #128 Commission — merge `63ccef4`, Security Pass-2 PASS, QA Gate GREEN 49/49). **Subscription port SHIPPED** (DH gating model: state machine, UPI Autopay, offline JWT, PRO_MAX tier — commit `3530e79`). **Responsive sweep complete** (Waves 0-7, `7c12683`..`5b8d3fe`). **Backend audit green** (0 P0/P1/P2 after `bf1d166` + `be574fd`).
+> Snapshot at 2026-05-26 09:22 IST. **139/150 shipped — Phase 6 COMPLETE.**
+> Phase 1 (60/70 code-complete, 10 cred-blocked) · Phase 2 (20/20) · Phase 3 (21/22, #89 deferred) · Phase 4 (16/16) · **Phase 5 (14/14)** · **Phase 6 (6/6) ✅ SHIPPED** (merge `caa390d`, 9 PRs + 2 hardening commits, BE/FE/security/QA all green) · Phase 7 (2/10 — #141 OCR + #145 verticals).
 >
-> **Branch state:** `hisaabpro` is **64 commits ahead of `master`**. Production deploy at commit `89610b0`. Nothing since Phase 4 finish has been merged to master/prod.
+> **Branch state:** `hisaabpro` is **38 commits ahead of `master`**. Master HEAD `af44d50` (pre-Phase-5). Production deploy still at `89610b0`. Nothing since the responsive sweep + Phase 5 Epic A/B/C/D + subscription port + Phase 6 has been merged to master/prod.
 >
-> **Next up:** ship-to-prod (merge `hisaabpro` → `master`, set Render env vars) **OR** Phase 6 (#135-#140 Staff & HR — touches User model, mandatory `scope-writer → architect → security`). See "Resume order" below.
+> **Next up:** ship-to-prod (merge `hisaabpro` → `master`, set Render env vars, run Phase 6 migration + ramp playbook) **OR** Phase 7 AI features (#142–#150). See "Resume order" below.
 
 ## Resume order
 
-### 0. Ship-to-prod gate (NOT optional — recommend doing first)
+### 0. Ship-to-prod gate (RECOMMENDED — biggest backlog of unshipped value)
 
-`hisaabpro` carries 57 commits of unshipped work. Before starting any new epic, decide whether to:
+`hisaabpro` carries 38 commits of unshipped work spanning Phase 5 (A/B/C/D) + subscription port + responsive sweep + **Phase 6 Staff & HR + Multi-firm + Audit + PIN**. Before any new epic, decide whether to:
 
-- **Merge `hisaabpro` → `master`** to get Phase 5 Epic A/B/C + subscription port + responsive sweep + audit hardening into production
-- **OR keep accumulating** on `hisaabpro` and ship Epic D first (riskier — bigger blast radius if a regression slips through)
+- **Merge `hisaabpro` → `master`** and ramp Phase 6 per `docs/ROLLOUT_PHASE6.md` (5-stage cohort ramp: internal → 10% → 25% → 50% → 100%)
+- **OR keep accumulating** on `hisaabpro` and ship Phase 7 first (risky — Phase 6 touched every authenticated request path; longer it sits unmerged, harder to bisect a future regression)
 
-Before merge: set Render env vars (`ENTITLEMENT_JWT_PRIVATE_KEY`, `ENTITLEMENT_JWT_PUBLIC_KEY`, `RAZORPAY_WEBHOOK_SECRET` for subscription; `MARKETING_ENABLED=true`, `AISENSY_API_KEY`, `AISENSY_WEBHOOK_SECRET`, `MSG91_WEBHOOK_TOKEN` for Epic A launch). Run `npx prisma migrate deploy` (subscription port added 4 new tables + UpiMandate). Smoke-test public surface at `/p/inv/<token>`, `/p/store/<slug>`, `/p/invite/<token>`.
+**Pre-merge env vars to set on Render:**
+- Phase 6: `FEATURE_STAFF_HR=false` (off by default), `FEATURE_STAFF_HR_COHORT_PCT=0`, `FEATURE_TRANSACTION_PIN=true`, `FEATURE_TRANSACTION_PIN_COHORT_PCT=100` (PR3 already enrolled all users), `PIN_GATE_DOMAIN` (cookie domain SSOT). See `docs/ROLLOUT_PHASE6.md` §0.
+- Subscription port: `ENTITLEMENT_JWT_PRIVATE_KEY` (RS256 PEM), `ENTITLEMENT_JWT_PUBLIC_KEY` (SPKI PEM), `RAZORPAY_WEBHOOK_SECRET`
+- Epic A launch: `MARKETING_ENABLED=true`, `AISENSY_API_KEY`, `AISENSY_WEBHOOK_SECRET`, `MSG91_WEBHOOK_TOKEN`
+
+**Pre-merge migrations:** Phase 6 PR1A added 9 tables + 28 column adds (Employee, PayrollRun, Payslip, AttendanceEntry, AuditLog extensions, PinCredential, BusinessTenancy elevation cols, etc.). Subscription port added 4 tables + UpiMandate. Epic D added 4 tables + 2 Party cols. Run `npx prisma migrate deploy` and smoke-test:
+- Phase 6: PIN set/verify, attendance daily grid, payroll run + payslip PDF, audit search + CSV export, suspend/reactivate banner
+- Epic D: loyalty redemption in POS, commission ledger row on sale, party CRM tab
+- Public surface: `/p/inv/<token>`, `/p/store/<slug>`, `/p/invite/<token>`
 
 ---
 
@@ -23,151 +32,116 @@ Before merge: set Render env vars (`ENTITLEMENT_JWT_PRIVATE_KEY`, `ENTITLEMENT_J
 
 Three slices on `hisaabpro`:
 - Slice 1 — Hub + Templates — commit `9b1f096` (+63 EN/HI keys)
-- Slice 2 — Campaigns wizard (3 pages + 5 wizard step components + AudiencePicker + RecipientTable + status badges + 4 hooks) — commit `016a1c8` (+108 keys)
+- Slice 2 — Campaigns wizard — commit `016a1c8` (+108 keys)
 - Slice 3 — Reminders + Opt-outs + party-row chip — commit `9d281de` (+50 keys)
 
-Backend was already live (PR1-6 commits `3ea2cdc`..`5c2e3ca`). FE delivered i18n compliance, design-token-only colors, 4 UI states per page, real Hindi translations, EN/HI parity 980:980, ≤250 LOC/file, all enforce/tsc/offline gates green.
-
-**Render env to set before launch endpoint goes live:** `MARKETING_ENABLED=true`, `AISENSY_WEBHOOK_SECRET`, `AISENSY_API_KEY`, `MSG91_WEBHOOK_TOKEN`.
+Backend already live (PR1-6 commits `3ea2cdc`..`5c2e3ca`). Activation needs `MARKETING_ENABLED=true` + `AISENSY_API_KEY` + `AISENSY_WEBHOOK_SECRET` + `MSG91_WEBHOOK_TOKEN` on Render.
 
 ---
 
 ### 1b. Subscription port ✅ SHIPPED 2026-05-15
 
-Commit `3530e79` on `hisaabpro` (mission `subscription-port`).
-
-- 7-state state machine (19 transitions) with writer SSOT + pg_advisory_xact_lock
-- 4 new tables: SubscriptionEvent (immutable audit, unique razorpayEventId for idempotency), FeatureAddon, BusinessAddon, UpiMandate
-- UPI Autopay mandate flow (create/status/cancel) with VPA last-4 masking
-- RS256 offline entitlement JWT (24h TTL, trustedTime clock-rewind detect) + public-key endpoint
-- Overflow grace period + cron jobs (trial-end, mandate-reminder, grace-expiry)
-- Razorpay webhook hardening: HMAC + 5-min replay + businessId resolved server-side
-- Admin grant routes (requireSuperAdmin + rate-limit + ledger row per action)
-- FE: state-aware PlanGate, OverflowBanner, MandateSetupDrawer, SubscriptionManagePage at `/settings/subscription`
-- enforce.js +2 checks (Writer-SSOT-ban, JWT-in-logs-ban)
-- 5-step Prisma migration (nullable add → backfill → NOT NULL → indexes → new tables)
-
-PRDs: `PRDs/subscription-port-{SCOPE,ARCHITECTURE,SECURITY,TASKS}.md`. Mission archive: `.claude/missions/subscription-port.md`.
-
-**Render env to set before activation:** `ENTITLEMENT_JWT_PRIVATE_KEY` (RS256 PEM), `ENTITLEMENT_JWT_PUBLIC_KEY` (SPKI PEM), `RAZORPAY_WEBHOOK_SECRET`.
+Commit `3530e79` on `hisaabpro` (mission `subscription-port`). 7-state machine + UPI Autopay + RS256 offline JWT + PRO_MAX tier + SubscriptionEvent audit + OverflowBanner + MandateSetupDrawer + `/settings/subscription`. Needs `ENTITLEMENT_JWT_PRIVATE_KEY` + `ENTITLEMENT_JWT_PUBLIC_KEY` + `RAZORPAY_WEBHOOK_SECRET` on Render.
 
 ---
 
 ### 2. Phase 5 Epic B — Sales workflow ✅ SHIPPED 2026-05-15
 
-Commits `6193d28` (PR1) + `3626a0c` (PR2+3+4) on `hisaabpro`.
-
-- **#122 Sales pipeline** — lineage service walks sourceDocumentId/convertedTo (businessId-scoped, 10-hop cap); SalesHub + Estimate/SaleOrder/Challan list+detail+create pages; PipelineTimeline on every detail; CreateInvoicePage reused via `type?: DocumentType` prop.
-- **#132 Multiple price lists** — additive `Document.priceListId` nullable FK; cross-tenant guard in create/update services; `usePriceListOverride` + `PriceListOverrideSelector` drawer (4 UI states).
-- **#133 BOGO custom-role** — `roleRef.permissions` projected into `BusinessSummary.permissions`; `useBogoPermission` widened to allow `invoicing.bogo`.
-- **#134 Invoice custom fields** — react-pdf `PdfCustomFieldsSection` rendered between line-items and totals; filtered by `showOnInvoice` + `documentTypes` + businessId.
-
-Security findings 1.1, 2.1, 2.2, 3.2, 4.1 all FIXED (see `docs/SECURITY_AUDIT_EPIC_B.md`). Translation ext35 (sales), ext36 (price-list), ext37 (PDF custom fields) added.
+Commits `6193d28` + `3626a0c`. #122 Sales pipeline, #132 Multiple price lists, #133 BOGO custom-role, #134 Invoice custom fields. Security findings 1.1/2.1/2.2/3.2/4.1 all FIXED.
 
 ---
 
 ### 3. Phase 5 Epic C — Customer-facing ✅ SHIPPED 2026-05-15
 
-Commits `d78f7c9`..`237b551` on `hisaabpro`. Five-PR epic delivered as scoped in `docs/SCOPE_EPIC_C_customer_facing.md` + `docs/ARCHITECTURE_EPIC_C_customer_facing.md`.
-
-- **PR1 — Shared infra** (`d78f7c9` + `35e060a` + `7fc8773`): `SharedLink` model, reserved-slugs registry, public router + `resolvePublicToken` middleware + rate limiter (60 rpm/IP), `PublicShell` + `/p/*` route scaffold + health page.
-- **#129 UPI Payment Collection** (`a148ba3`, PR2): UPI QR + `upi://pay?...` deep-link on invoice detail. VPA validation. Adapted from DudhHisaab per reuse rule.
-- **#130 Web Invoice Links** (`77c645a` BE + `9dbbf54` FE, PR3): HMAC-signed `/p/inv/:token`, share drawer, expiry + per-link revocation.
-- **#121 Online Store / Digital Catalog** (`d47b84a` BE + `ea1b9ae` FE, PR4): public `/p/store/:slug`, StorefrontSettingsPage, slug-rules + reserved-slugs guard.
-- **#131 Invite Parties** (`15fb596` BE + `ea37c19` FE, PR5): `/p/invite/:token` with OTP gate, one-shot signup token bound to businessId, party-invite service.
-- **Refactor** (`237b551`): split invite routes + tighten party/storefront under 250 LOC + logger swap.
-
-Security audit `docs/SECURITY_AUDIT_EPIC_C.md` cleared. Public surface is auth-free but rate-limited; tokens are HMAC + expiry + revocable.
+Commits `d78f7c9`..`237b551`. SharedLink infra, #129 UPI QR, #130 Web invoice links (HMAC), #121 Online store, #131 Party invite (OTP). Public surface rate-limited (60 rpm/IP), tokens HMAC + expiry + revocable.
 
 ---
 
 ### 4. Phase 5 Epic D — CRM + Loyalty + Commission ✅ SHIPPED 2026-05-17
-**Merge commit:** `63ccef4` (7 commits: PR1 `b61e1a1` → PR6 `4f93808`)
 
-Built on isolated git worktree `/Users/sawanjaiswal/Projects/HisaabPro-epic-d` to avoid colliding with other CLI sessions, then merged into `hisaabpro`.
-
-- **#125 Loyalty** — PR3 `1bb2fcc` BE + PR4 `d8eb926` FE. `LoyaltyProgram` + `LoyaltyLedger` schemas, FIFO accrual ledger, `pg_try_advisory_xact_lock` for concurrent redemption safety, POS checkout step 10.5 (redeem) + 10.6 (accrue) inside `$transaction`, void writes VD (negative), restore writes VR (compensating), `'15 4 * * *' Asia/Kolkata` expiry cron. FE: program settings page, balance chip in PaymentSheet/CustomerSelector, redemption sheet, party-detail loyalty tab + ledger.
-- **#127 CRM Basics** — PR2 `ea27525`. Party tags (server-side, filterable) + follow-ups query with `withinDays` cap (1..365) + `lastContactedAt` service. FE: PartyCrmTab + TagFilterBar + tag chip on party detail header.
-- **#128 Staff Commission** — PR5 `340d5bc` BE + PR6 `4f93808` FE. Commission rule CRUD with PRODUCT > CATEGORY > ALL specificity, `JSON.parse(JSON.stringify(rule))` deep-clone at 2 sites (M1 — historical ledger integrity under admin edits), CommissionLedger row written inside SAME `$transaction` as POS sale or invoice, void/restore symmetry, `commissionLedgerAuth` factory middleware (M5), STAFF_NOT_FOUND 404 cross-tenant guard (M4), rate cap at 10000 bps with `COMMISSION_RATE_EXCEEDS_MAX_100_PERCENT` (S2). FE: CommissionRuleForm with yellow warn at 5000 bps + red block at 10000 bps, ledger, leaderboard (sortable), staff dashboard widget (hidden if no `commission.view` perm).
-
-Architecture-audit Pass 5 PASS · Security Pass-2 PASS (0 MUST_FIX, 1 SHOULD_FIX deferred = cron multi-pod systemic, also affects other crons — fix in cross-cutting cron-hardening epic) · QA Gate GREEN (49/49 §17 acceptance criteria, 10/10 cross-cutting gates, 3/3 mechanical: tsc clean, enforce 0 errors, vitest baseline preserved 347/353).
-
-Audit + design docs: `docs/SCOPE_EPIC_D_*.md`, `docs/ARCHITECTURE_EPIC_D_*.md` (v5), `docs/SECURITY_AUDIT_EPIC_D_*.md` (Pass 1 + Pass 2), `docs/ARCHITECTURE_AUDIT_EPIC_D_*.md`, `docs/QA_GATE_EPIC_D_*.md`, `docs/TASKS_EPIC_D_*.md`.
+Merge `63ccef4`. #125 Loyalty (FIFO accrual, advisory-locked redeem, POS step 10.5/10.6, expiry cron), #127 CRM Basics (tags + follow-ups + lastContactedAt), #128 Commission (ruleSnapshot deep-clone, PRODUCT > CATEGORY > ALL, factory ledger auth, rate-cap UX). Pass 5 architecture audit + Pass 2 security PASS + QA Gate GREEN (49/49).
 
 ---
 
-### 5. Phase 6 — Staff & HR (6 features)
-- #135 Staff attendance (clock-in/out, geofence optional)
-- #136 Payroll
-- #137 Salary slips (PDF)
-- #138 Multi-firm management (tenant switcher within one user)
-- #139 Advanced audit trail (who changed what, when)
-- #140 Transaction PIN (4-digit PIN gate on sensitive actions)
+### 5. Phase 6 — Staff & HR + Multi-Firm + Audit + PIN ✅ SHIPPED 2026-05-26
+**Merge commit:** `caa390d` (12 commits total: design ceremony `e36812e` → PR0 audit `26c4665` → PR1A/B schema+middleware `d036036`/`ce805d6` → PR2 tenancy `c718490`/`8f0a06e` → PR3 PIN `5f802b9`/`3fc3802` → PR4 audit search `c0f54a2`/`78e1a5e` → PR5 attendance `0e2b78a`/`2f78154` → PR6 employee+payroll `1b27829`/`a83b4d9` → PR7 audit-backfill+enforcer-block `025d037` → PR8 rollout flags+runbook `60651d7` → Pass-2 fix `e3a93d0` → 6.1 hardening `ba56470`/`0bd1881`)
 
-#138 touches User model + auth → mandatory `scope-writer → architect → security`.
-#139 may extend existing audit log infra (search `services/audit*` first).
-#140 reuses biometric gate pattern from DudhHisaab.
+- **#135 Staff Attendance** — PR5. Daily employee×day grid, batch + range list endpoints, businessId-scoped.
+- **#136 Payroll** — PR6. Employee model + Payroll wizard + STAFF Party pairing + reversal flow.
+- **#137 Salary Slips** — PR6. Payslip viewer + PDF generation + reverse action.
+- **#138 Multi-firm Management** — PR1A schema (BusinessTenancy elevation), PR1B middleware (`requireActiveBusiness`), PR2 suspend/reactivate flow (TenantChip + SuspendBanner + ReactivationModal). PR0 audit confirmed **0 cross-tenant leaks across 1,033 sites**.
+- **#139 Advanced Audit Trail** — PR4. Audit search (websearch_to_tsquery for safety, no plain to_tsquery), redaction layer, buffered CSV export, filter + diff drawers. PR7 backfilled 13 missing mutations + flipped `enforce-audit-coverage.mjs` to `--block`.
+- **#140 Transaction PIN** — PR3. PinCredential schema (port from DH), `/api/auth/pin/*` routes (set/verify/reset), `requireRecentPin` middleware on gated routes, PinGateProvider + PinPad sheet + api.ts 403 interceptor for re-auth.
+
+**Rollout artefacts:**
+- `docs/ROLLOUT_PHASE6.md` — 5-stage cohort ramp (internal → 10% → 25% → 50% → 100%) with promotion gates + hold/rollback triggers
+- `docs/RUNBOOK_PHASE6.md` — incident-response playbook per failure class
+- `docs/VERIFIER_REPORT_PHASE6.md` — 7 mechanical proofs all exit 0 (FE tsc, BE tsc, enforce.js, enforce-offline, audit-coverage --block, regression greps for `req.user.id` and plain `to_tsquery`)
+- `docs/SECURITY_AUDIT_PHASE6_PASS2.md` — Pass-2 PASS (kill-switch `requireFeature('STAFF_HR')` wired into 3 aggregator routers between `requireActiveBusiness` and handler)
+- Feature flags: `FEATURE_STAFF_HR` + `FEATURE_STAFF_HR_COHORT_PCT` + `FEATURE_TRANSACTION_PIN` + `FEATURE_TRANSACTION_PIN_COHORT_PCT` with djb2 sticky cohort bucketing in `server/src/config/features.ts`
+- 6.1 hardening: dropped unused `PinPhoneLockout` table (SHOULD_FIX-2) + removed dead `PIN_GATE_DOMAIN_PREFIX_MISMATCH` code path (SHOULD_FIX-3)
+
+Audit + design docs: `docs/SCOPE_PHASE6_STAFF_HR.md`, `docs/SCOPE_AUDIT_PHASE6_STAFF_HR.md`, `docs/ARCHITECTURE_PHASE6_STAFF_HR.md`, `docs/ARCHITECTURE_AUDIT_PHASE6_STAFF_HR.md`, `docs/SECURITY_AUDIT_PHASE6_STAFF_HR.md`, `docs/SECURITY_AUDIT_PHASE6_PASS2.md`, `docs/TASKS_PHASE6_STAFF_HR.md`, `docs/VERIFIER_REPORT_PHASE6.md`.
 
 ---
 
-### 6. Phase 7 — AI & Differentiators (9 remaining; #141 OCR done)
+### 6. Phase 7 — AI & Differentiators (8 remaining; #141 OCR + #145 verticals done)
 - #142 Voice entry (browser SpeechRecognition + on-device fallback)
-- #143 WhatsApp bot billing (Aisensy inbound webhook → invoice draft)
-- #144 Smart GST filing assistant (build on Phase 3 GST data)
-- #145 Industry vertical modes (preset templates per trade)
-- #146 Predictive analytics (sales/stock forecast)
+- #143 WhatsApp bot billing (Aisensy inbound webhook → invoice draft) — **high leverage / lock-in**
+- #144 Smart GST filing assistant (rules engine on Phase 2 data)
+- #146 Predictive analytics (sales/stock forecast) — **margin story**
 - #147 Auto-reconciliation (bank statement → payment match)
 - #148 Smart inventory (reorder suggestions based on velocity)
-- #149 Competitor data importers (Tally/Vyapar import)
-- #150 Real-time multi-user collaboration (presence + conflict resolution)
+- #149 Competitor data importers (Tally/Vyapar/MyBillBook) — **acquisition unlock**
+- #150 Real-time multi-user collaboration (presence + conflict resolution) — **needs architecture spike, CRDT vs LWW decision**
 
-Highest leverage: #143 (lock-in), #146 (margin story), #149 (acquisition).
-Highest risk: #150 (CRDT or LWW — needs architecture spike).
+Highest leverage next: #143 → #149 → #146. Highest risk: #150.
 
 ---
 
 ### 7. Phase 1 cred-blocked unlocks (when keys land)
-Razorpay · Aisensy (also unblocks Epic A webhooks) · Resend · FCM · Capacitor biometric.
+Razorpay (subscription port code is shipped, just needs keys) · Aisensy (also unblocks Epic A webhooks + #143) · Resend (email PDF #32 + reminders) · FCM (push #4/#42/#47) · Capacitor biometric plugin (#59) · MSG91 (SMS marketing #124 + OTP — see IDEAS_BACKLOG STPL setup).
 
 ### 8. Phase 3 deferred
-#89 Bank Reconciliation — was deferred from Phase 3, fits naturally with Phase 7 #147.
+#89 Bank Reconciliation — fits naturally with Phase 7 #147.
 
 ---
 
-### 9. Per-vertical depth (audit 2026-05-09)
+### 9. Per-vertical depth (audit 2026-05-09, still current)
 
 Verticals are wired (nav filtering, terminology, defaults, Jobs flow, Custom Orders flow). Gap is **depth per vertical**, not coverage. Candidates:
 
 | Epic | Verticals | Effort | Notes |
 |---|---|---|---|
-| **V1 — Services time tracking on Jobs** | services, freelancer, salon, clinic | ~1 wk | Add `hoursEstimated`, `hoursActual`, `ratePerHour` on Job; hour-based invoice line type. Plumber/freelancer cannot bill hourly today. |
-| **V2 — Appointments calendar** | salon, clinic | ~2 wks (HIGH) | New `Appointment` model + slot picker + availability view + link to Job. Onboarding blocker for salon/clinic. |
-| **V3 — Recipe cost dashboard** | restaurant, bakery, manufacturing | ~3 days | Derive cost-per-unit from existing BOM data. UI-only; no schema. Quick win. |
-| **V4 — Staff assignment + commission split** | services, bakery, tailor, manufacturing | ~2 wks | Assign staff to Jobs/Orders/POS sales; commission rules per product/category. Overlaps Phase 6 #128. |
-| **V5 — Customer delivery reminders** | bakery, tailor | ~3 days | Auto-trigger marketing-comms reminder N hours before delivery slot. Requires Epic A live. |
+| **V1 — Services time tracking on Jobs** | services, freelancer, salon, clinic | ~1 wk | Add `hoursEstimated`, `hoursActual`, `ratePerHour` on Job; hour-based invoice line. Plumber/freelancer cannot bill hourly today. |
+| **V2 — Appointments calendar** | salon, clinic | ~2 wks (HIGH) | New `Appointment` model + slot picker + availability view. Onboarding blocker. |
+| **V3 — Recipe cost dashboard** | restaurant, bakery, manufacturing | ~3 days | Derive cost-per-unit from existing BOM data. UI-only. Quick win. |
+| **V4 — Staff assignment + commission split** | services, bakery, tailor, manufacturing | ~2 wks | Assign staff to Jobs/Orders/POS sales. Builds on Phase 6 #128 commission ledger. |
+| **V5 — Customer delivery reminders** | bakery, tailor | ~3 days | Trigger marketing-comms reminder N hours before delivery. Requires Epic A live. |
 | **V6 — Table management + KOT** | restaurant | LARGE | Out of MSME billing scope. Defer to v2 product. |
 | **V7 — Prescription field** | pharmacy, clinic | trivial | Likely solvable today via generic custom fields. Validate before scoping. |
 
-Sequencing recommendation (after Phase 5 Epic A merges):
+Recommended sequence (post merge-to-prod):
 1. V3 (3 days, no schema, big restaurant/bakery win)
 2. V1 (1 wk, unblocks hourly billing — biggest current user complaint)
 3. V5 (3 days, depends on Epic A)
 4. V2 (2 wks, salon/clinic onboarding)
-5. V4 (2 wks, overlaps Phase 6 Staff & HR — fold together)
+5. V4 (2 wks, naturally extends Phase 6 commission ledger)
 
-V1, V2, V4 touch schema → mandatory `scope-writer → architect → (security if billing path) → task-manager` ceremony.
+V1, V2 touch schema → mandatory `scope-writer → architect → task-manager` ceremony. V4 also touches commission paths → add `security`.
 
 ---
 
 ## Open files to remember
-- `.claude/design-plan-active.md` — last approved for Epic D (in the worktree, gitignored); replace before starting the next epic.
-- Shipped epic docs (don't archive — referenced for context): `docs/SCOPE_phase5_marketing_comms.md`, `docs/SCOPE_EPIC_B_sales_workflow.md`, `docs/SCOPE_EPIC_C_customer_facing.md`, `docs/SCOPE_EPIC_D_crm_loyalty.md`, `docs/SCOPE_132_price_lists.md`. Companion `ARCHITECTURE_*.md` + `SECURITY_AUDIT_*.md` + `QA_GATE_EPIC_D_*.md` + `ARCHITECTURE_AUDIT_EPIC_D_*.md` next to each.
+- `.claude/design-plan-active.md` — last approved for Phase 6 Staff & HR. Replace before starting Phase 7 / verticals.
+- Shipped epic docs (don't archive — referenced for context):
+  - Phase 5: `docs/SCOPE_phase5_marketing_comms.md`, `docs/SCOPE_EPIC_B_sales_workflow.md`, `docs/SCOPE_EPIC_C_customer_facing.md`, `docs/SCOPE_EPIC_D_crm_loyalty.md`, companions `ARCHITECTURE_*`, `SECURITY_AUDIT_*`, `QA_GATE_EPIC_D_*`, `ARCHITECTURE_AUDIT_EPIC_D_*`.
+  - Phase 6: `docs/SCOPE_PHASE6_STAFF_HR.md`, `docs/ARCHITECTURE_PHASE6_STAFF_HR.md`, `docs/SECURITY_AUDIT_PHASE6_STAFF_HR.md` + `PASS2`, `docs/SCOPE_AUDIT_PHASE6_STAFF_HR.md`, `docs/ARCHITECTURE_AUDIT_PHASE6_STAFF_HR.md`, `docs/TASKS_PHASE6_STAFF_HR.md`, `docs/VERIFIER_REPORT_PHASE6.md`, `docs/ROLLOUT_PHASE6.md`, `docs/RUNBOOK_PHASE6.md`.
 - Subscription port PRDs: `PRDs/subscription-port-{SCOPE,ARCHITECTURE,SECURITY,TASKS}.md`. Mission archive: `.claude/missions/subscription-port.md`.
 
 ## Quick commands
-- **Ship-to-prod (recommended next):** merge `hisaabpro` → `master`, set Render env, `npx prisma migrate deploy` (Epic D added 4 new tables + 2 Party columns + composite index in migration `20260518000000_phase5_epic_d_crm_loyalty_commission`), smoke-test loyalty redemption + commission ledger + party CRM tab.
-- **Worktree cleanup:** `git worktree remove /Users/sawanjaiswal/Projects/HisaabPro-epic-d` then `git branch -d epic/phase-5-d-crm-loyalty` (only after the merge is confirmed shipping).
-- **Start Phase 6:** `/start-epic phase-6-staff-hr` — touches User model + auth (#138), mandatory `scope-writer → architect → security`.
-- **Start vertical depth V3 (recipe cost):** `/start-epic vertical-v3-recipe-cost-dashboard`
+- **Ship-to-prod (recommended next):** merge `hisaabpro` → `master`, set Render env, `npx prisma migrate deploy` (Phase 6 added 9 tables + 28 cols on top of Epic D's 4 tables + subscription port's 4 tables), then follow `docs/ROLLOUT_PHASE6.md` Stage 0 (internal 48h) → Stage 1 (10%) → … → Stage 4 (100%).
+- **Start Phase 7 #143 (WhatsApp bot billing):** `/start-epic phase-7-whatsapp-bot-billing` — touches webhook handling + Aisensy creds.
+- **Start vertical V3 (recipe cost):** `/start-epic vertical-v3-recipe-cost-dashboard`
 - **Roadmap:** `docs/ROADMAP.md` — keep in sync after every epic.
-- **Re-audit doc accuracy:** ask Claude "WHATS LEFT and whats done? deep audit, update the docs" — this re-runs the doc/code reconciliation that produced the latest snapshot.
+- **Re-audit doc accuracy:** ask Claude "WHATS LEFT and whats done? deep audit, update the docs."
