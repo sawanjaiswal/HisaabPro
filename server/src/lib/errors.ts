@@ -98,7 +98,6 @@ export enum ErrorCode {
   // probe added later) not yet satisfied. The commit pipeline refuses
   // to run rather than write partial state.
   IMPORT_PRECONDITION_MISSING = 'IMPORT_PRECONDITION_MISSING',
-
   // Phase 7 · 7.1C — Invoice commit (PR-C3)
   // COMMIT_BLOCKED_PRODUCT_NOT_FOUND: pre-flight (post stale-re-resolve) saw
   // at least one line with an unresolved product. The chunk throws BEFORE
@@ -112,6 +111,10 @@ export enum ErrorCode {
   // CONCURRENT_COMMIT_RACE: row-level guard `updateMany count=0` inside
   // commit-invoices; another commit pass already bound this row.
   CONCURRENT_COMMIT_RACE = 'CONCURRENT_COMMIT_RACE',
+  COMMIT_BLOCKED_INVOICE_NOT_FOUND = 'COMMIT_BLOCKED_INVOICE_NOT_FOUND',
+  OVER_ALLOCATION = 'OVER_ALLOCATION',
+  ALLOCATION_INTERNAL_CONFLICT = 'ALLOCATION_INTERNAL_CONFLICT',
+  PAYMENT_MODE_INVALID = 'PAYMENT_MODE_INVALID',
 }
 
 export interface ApiErrorResponse {

@@ -246,9 +246,9 @@ export async function emitProductsUpdatedFromImport(
   })
 }
 
-// 7.1C — `emitInvoicesImportedBatch` extracted to audit-emit-invoices.ts
-// to keep this file under the 250L cap. Re-export for back-compat with
-// audit-coverage scanner (which greps SOURCE_REGISTRY for the symbol).
+// 7.1D S9 / 7.1C: extracted to keep this file ≤250L. Re-exported for
+// audit-coverage scanner (greps SOURCE_REGISTRY) + back-compat.
+export { assertEqualLengths } from './audit-emit-assert.js'
 export { emitInvoicesImportedBatch } from './audit-emit-invoices.js'
 
 export async function emitExpired(
