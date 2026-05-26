@@ -192,3 +192,5 @@ Each workstream's status will be updated in this file under a `## Status` sectio
 - 2026-05-26 15:47 | W1 | PR-D3 dispatched (commit ladder + Σ-guard + S9 audit)
 - 2026-05-26 18:18 | W1 | PR-D3 shipped `1a10701` — 14/14 tests (incl. 50×Rs250 → 40+10 Σ-overflow split), tsc clean, no new enforce violations
 - 2026-05-26 18:21 | W1 | PR-D4 dispatched (routes + 13 integration tests + enforce extensions)
+- 2026-05-26 18:30 | W1 | PR-D4 shipped `a5425a7` — 13/13 tests (9 real + 4 describe.todo for live-pg harness); audit-coverage + Promise.all-ban enforce rules live; `?importJobId=` filter on /api/payments
+- 2026-05-26 18:33 | W1 | PR-D5 dispatched (frontend: EntityPicker 4-tile, PaymentRowCard, banners, i18n EN/HI)
