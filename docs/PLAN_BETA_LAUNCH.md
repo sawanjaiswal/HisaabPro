@@ -187,4 +187,8 @@ Each workstream's status will be updated in this file under a `## Status` sectio
 
 ## Status
 
-(empty — to be filled in as work progresses)
+- 2026-05-26 15:30 | W1 | PR-D2b dispatched (4 payment parsers + normalizer + dedup)
+- 2026-05-26 15:46 | W1 | PR-D2b shipped `c3a5b4b` — 22/22 tests, tsc clean, 13 files ≤250L
+- 2026-05-26 15:47 | W1 | PR-D3 dispatched (commit ladder + Σ-guard + S9 audit)
+- 2026-05-26 18:18 | W1 | PR-D3 shipped `1a10701` — 14/14 tests (incl. 50×Rs250 → 40+10 Σ-overflow split), tsc clean, no new enforce violations
+- 2026-05-26 18:21 | W1 | PR-D4 dispatched (routes + 13 integration tests + enforce extensions)
