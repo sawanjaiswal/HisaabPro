@@ -77,9 +77,15 @@ export const AUDIT_COVERED_SERVICES: readonly AuditCoverageEntry[] = [
   // 7.1C PR-C3 — invoice batched audit extracted from audit-emit.ts to
   // keep that file under the 250L cap; audit-emit.ts re-exports for back-compat.
   { service: 'services/import/audit-emit-invoices.ts',      ops: ['emitInvoicesImportedBatch'] },
+  // Phase 7 · 7.1D PR-D4 — payments commit ladder writes
+  // `payments.imported_batch` (PR-D3) inside its $transaction. The
+  // audit-emit wrapper for payments lives alongside the commit service
+  // (per-entity split to keep audit-emit.ts under cap).
+  { service: 'services/import/commit-payments/commit-payments.service.ts', ops: ['commitChunkPayments'] },
+  { service: 'services/import/commit-payments/audit-emit.ts',              ops: ['emitPaymentsImportedBatch'] },
   { service: 'jobs/import-retention.cron.ts',               ops: ['runImportRetentionCron'] },
   { service: 'services/import/erasure.service.ts',          ops: ['eraseImportData'] },
 ] as const
 
-/** Total covered: 27 services (16 prior + 11 Phase-7 Import incl. 7.1B split + 7.1C invoices commit + audit-emit-invoices split). */
+/** Total covered: 29 services (16 prior + 13 Phase-7 Import incl. 7.1B split + 7.1C invoices commit + audit-emit-invoices split + 7.1D payments commit + payments audit-emit). */
 export const AUDIT_COVERAGE_COUNT = AUDIT_COVERED_SERVICES.length
