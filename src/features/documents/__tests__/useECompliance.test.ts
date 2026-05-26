@@ -15,9 +15,13 @@ vi.mock('../ecompliance.service', () => ({
 }))
 
 import { useECompliance } from '../hooks/useECompliance'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const MOCK_EINVOICE = { irn: 'IRN123', status: 'GENERATED' }
 const MOCK_EWAYBILL = { ewbNumber: 'EWB456', status: 'GENERATED' }
+
+const wrapper = createTestWrapper()
 
 describe('useECompliance', () => {
   beforeEach(() => { vi.clearAllMocks() })
@@ -25,7 +29,7 @@ describe('useECompliance', () => {
   it('starts in loading state', () => {
     mockGetEInvoiceStatus.mockReturnValue(new Promise(() => {}))
     mockGetEWayBillStatus.mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => useECompliance('doc-1'))
+    const { result } = renderHook(() => useECompliance('doc-1'), { wrapper })
     expect(result.current.fetchState).toBe('loading')
     expect(result.current.eInvoice).toBeNull()
     expect(result.current.eWayBill).toBeNull()
@@ -34,7 +38,7 @@ describe('useECompliance', () => {
   it('fetches both statuses in parallel on mount', async () => {
     mockGetEInvoiceStatus.mockResolvedValue(MOCK_EINVOICE)
     mockGetEWayBillStatus.mockResolvedValue(MOCK_EWAYBILL)
-    const { result } = renderHook(() => useECompliance('doc-1'))
+    const { result } = renderHook(() => useECompliance('doc-1'), { wrapper })
     await waitFor(() => expect(result.current.fetchState).toBe('success'))
     expect(result.current.eInvoice).toEqual(MOCK_EINVOICE)
     expect(result.current.eWayBill).toEqual(MOCK_EWAYBILL)
@@ -43,7 +47,7 @@ describe('useECompliance', () => {
   it('sets error state on failure', async () => {
     mockGetEInvoiceStatus.mockRejectedValue(new Error('Network error'))
     mockGetEWayBillStatus.mockResolvedValue(MOCK_EWAYBILL)
-    const { result } = renderHook(() => useECompliance('doc-1'))
+    const { result } = renderHook(() => useECompliance('doc-1'), { wrapper })
     await waitFor(() => expect(result.current.fetchState).toBe('error'))
     expect(result.current.fetchError).toBe('Network error')
   })
@@ -51,7 +55,7 @@ describe('useECompliance', () => {
   it('refresh triggers re-fetch', async () => {
     mockGetEInvoiceStatus.mockResolvedValue(MOCK_EINVOICE)
     mockGetEWayBillStatus.mockResolvedValue(MOCK_EWAYBILL)
-    const { result } = renderHook(() => useECompliance('doc-1'))
+    const { result } = renderHook(() => useECompliance('doc-1'), { wrapper })
     await waitFor(() => expect(result.current.fetchState).toBe('success'))
     result.current.refresh()
     await waitFor(() => expect(mockGetEInvoiceStatus).toHaveBeenCalledTimes(2))

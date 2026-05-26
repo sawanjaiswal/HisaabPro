@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
-import type { ReactNode } from 'react'
 import { useLogin } from '../useLogin'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const mockNavigate = vi.fn()
 const mockSetUser = vi.fn()
@@ -34,9 +34,8 @@ vi.mock('@/lib/api', () => ({
   },
 }))
 
-const wrapper = ({ children }: { children: ReactNode }) => (
-  <MemoryRouter>{children}</MemoryRouter>
-)
+const wrapper = createTestWrapper()
+
 
 beforeEach(() => { vi.clearAllMocks() })
 

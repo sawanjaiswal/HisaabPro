@@ -17,11 +17,15 @@ vi.mock('../product.service', () => ({
 }))
 
 import { useProducts } from '../useProducts'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const MOCK_RESPONSE = {
   products: [{ id: '1', name: 'Product A' }],
   pagination: { page: 1, limit: 20, total: 1, totalPages: 1 },
 }
+
+const wrapper = createTestWrapper()
 
 describe('useProducts', () => {
   beforeEach(() => {
@@ -30,20 +34,20 @@ describe('useProducts', () => {
   })
 
   it('starts in loading state', () => {
-    const { result } = renderHook(() => useProducts())
+    const { result } = renderHook(() => useProducts(), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.data).toBeNull()
   })
 
   it('fetches products on mount', async () => {
-    const { result } = renderHook(() => useProducts())
+    const { result } = renderHook(() => useProducts(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.data).toEqual(MOCK_RESPONSE)
     expect(mockGetProducts).toHaveBeenCalledTimes(1)
   })
 
   it('setFilter updates filter and resets page to 1', async () => {
-    const { result } = renderHook(() => useProducts())
+    const { result } = renderHook(() => useProducts(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
 
     act(() => result.current.setFilter('status', 'INACTIVE'))
@@ -52,7 +56,7 @@ describe('useProducts', () => {
   })
 
   it('setPage changes page number', async () => {
-    const { result } = renderHook(() => useProducts())
+    const { result } = renderHook(() => useProducts(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
 
     act(() => result.current.setPage(3))
@@ -60,7 +64,7 @@ describe('useProducts', () => {
   })
 
   it('refresh triggers re-fetch', async () => {
-    const { result } = renderHook(() => useProducts())
+    const { result } = renderHook(() => useProducts(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     const callsBefore = mockGetProducts.mock.calls.length
 
@@ -69,7 +73,7 @@ describe('useProducts', () => {
   })
 
   it('handleDelete optimistically removes item from list', async () => {
-    const { result } = renderHook(() => useProducts())
+    const { result } = renderHook(() => useProducts(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
 
     act(() => result.current.handleDelete('1', 'Product A'))
@@ -80,14 +84,14 @@ describe('useProducts', () => {
 
   it('shows error toast on fetch failure', async () => {
     mockGetProducts.mockRejectedValueOnce(new Error('Network error'))
-    const { result } = renderHook(() => useProducts())
+    const { result } = renderHook(() => useProducts(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load products')
   })
 
   it('handleCreate calls createProduct and refreshes', async () => {
     mockCreateProduct.mockResolvedValue({ id: '2', name: 'New Product' })
-    const { result } = renderHook(() => useProducts())
+    const { result } = renderHook(() => useProducts(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     const callsBefore = mockGetProducts.mock.calls.length
 

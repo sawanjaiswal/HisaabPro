@@ -11,22 +11,26 @@ vi.mock('@/lib/api', () => ({
 }))
 
 import { useGstSettings } from '../useGstSettings'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const MOCK_SETTINGS = { gstin: '29ABCDE1234F1Z5', stateCode: '29', compositionScheme: false, eInvoiceEnabled: true, eWayBillEnabled: false }
+
+const wrapper = createTestWrapper()
 
 describe('useGstSettings', () => {
   beforeEach(() => { vi.clearAllMocks() })
 
   it('starts in loading state with empty settings', () => {
     mockApi.mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => useGstSettings('biz-1'))
+    const { result } = renderHook(() => useGstSettings('biz-1'), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.settings.gstin).toBeNull()
   })
 
   it('fetches settings on mount', async () => {
     mockApi.mockResolvedValue(MOCK_SETTINGS)
-    const { result } = renderHook(() => useGstSettings('biz-1'))
+    const { result } = renderHook(() => useGstSettings('biz-1'), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.settings).toEqual(MOCK_SETTINGS)
     expect(mockApi).toHaveBeenCalledWith('/businesses/biz-1/gst-settings', expect.objectContaining({ signal: expect.any(AbortSignal) }))
@@ -34,19 +38,19 @@ describe('useGstSettings', () => {
 
   it('shows error toast on fetch failure', async () => {
     mockApi.mockRejectedValue(new Error('fail'))
-    const { result } = renderHook(() => useGstSettings('biz-1'))
+    const { result } = renderHook(() => useGstSettings('biz-1'), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load GST settings')
   })
 
   it('skips fetch for empty businessId', () => {
-    renderHook(() => useGstSettings(''))
+    renderHook(() => useGstSettings(''), { wrapper })
     expect(mockApi).not.toHaveBeenCalled()
   })
 
   it('updateGst calls PUT and shows success toast', async () => {
     mockApi.mockResolvedValueOnce(MOCK_SETTINGS) // initial fetch
-    const { result } = renderHook(() => useGstSettings('biz-1'))
+    const { result } = renderHook(() => useGstSettings('biz-1'), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
 
     const updated = { ...MOCK_SETTINGS, eWayBillEnabled: true }
@@ -58,7 +62,7 @@ describe('useGstSettings', () => {
 
   it('refresh triggers re-fetch', async () => {
     mockApi.mockResolvedValue(MOCK_SETTINGS)
-    const { result } = renderHook(() => useGstSettings('biz-1'))
+    const { result } = renderHook(() => useGstSettings('biz-1'), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     act(() => { result.current.refresh() })
     await waitFor(() => expect(mockApi).toHaveBeenCalledTimes(2))

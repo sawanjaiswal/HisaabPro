@@ -1,7 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
-import type { ReactNode } from 'react'
 
 const mockNavigate = vi.fn()
 vi.mock('react-router-dom', async () => {
@@ -21,8 +19,10 @@ vi.mock('../product.service', () => ({
 
 import { useProductForm } from '../useProductForm'
 import type { ProductFormData } from '../product.types'
+import { createTestWrapper } from '@/test/query-wrapper'
 
-const wrap = ({ children }: { children: ReactNode }) => <MemoryRouter>{children}</MemoryRouter>
+
+const wrap = createTestWrapper()
 const VALID: Partial<ProductFormData> = { name: 'Test', unitId: 'u-1', salePrice: 100, purchasePrice: 50 }
 const EDIT_DATA: ProductFormData = {
   name: 'Old', autoGenerateSku: true, sku: '', categoryId: null, unitId: 'u-1',

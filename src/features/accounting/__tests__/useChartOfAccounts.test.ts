@@ -18,22 +18,26 @@ vi.mock('@/lib/api', () => ({
 }))
 
 import { useChartOfAccounts } from '../useChartOfAccounts'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const MOCK_RES = { items: [{ id: 'acc-1', name: 'Cash', type: 'ASSET' }], total: 1 }
+
+const wrapper = createTestWrapper()
 
 describe('useChartOfAccounts', () => {
   beforeEach(() => { vi.clearAllMocks() })
 
   it('starts in loading state', () => {
     mockGetAccounts.mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => useChartOfAccounts())
+    const { result } = renderHook(() => useChartOfAccounts(), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.total).toBe(0)
   })
 
   it('fetches accounts on mount', async () => {
     mockGetAccounts.mockResolvedValue(MOCK_RES)
-    const { result } = renderHook(() => useChartOfAccounts())
+    const { result } = renderHook(() => useChartOfAccounts(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.total).toBe(1)
     expect(result.current.grouped).toBeInstanceOf(Map)
@@ -42,7 +46,7 @@ describe('useChartOfAccounts', () => {
 
   it('shows error toast on failure', async () => {
     mockGetAccounts.mockRejectedValue(new Error('fail'))
-    const { result } = renderHook(() => useChartOfAccounts())
+    const { result } = renderHook(() => useChartOfAccounts(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load accounts')
   })
@@ -50,7 +54,7 @@ describe('useChartOfAccounts', () => {
   it('handleSeed calls service and refreshes', async () => {
     mockGetAccounts.mockResolvedValue(MOCK_RES)
     mockSeedAccounts.mockResolvedValue(undefined)
-    const { result } = renderHook(() => useChartOfAccounts())
+    const { result } = renderHook(() => useChartOfAccounts(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     await act(async () => { await result.current.handleSeed() })
     expect(mockSeedAccounts).toHaveBeenCalled()
@@ -60,7 +64,7 @@ describe('useChartOfAccounts', () => {
 
   it('refresh triggers re-fetch', async () => {
     mockGetAccounts.mockResolvedValue(MOCK_RES)
-    const { result } = renderHook(() => useChartOfAccounts())
+    const { result } = renderHook(() => useChartOfAccounts(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     act(() => { result.current.refresh() })
     await waitFor(() => expect(mockGetAccounts).toHaveBeenCalledTimes(2))

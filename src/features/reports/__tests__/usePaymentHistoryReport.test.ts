@@ -26,18 +26,22 @@ vi.mock('../report.utils', () => ({
 vi.mock('../report.constants', () => ({ DEFAULT_PAGE_LIMIT: 20 }))
 
 import { usePaymentHistoryReport } from '../hooks/usePaymentHistoryReport'
+import { createTestWrapper } from '@/test/query-wrapper'
+
+
+const wrapper = createTestWrapper()
 
 describe('usePaymentHistoryReport', () => {
   beforeEach(() => { vi.clearAllMocks(); mockGetPaymentHistory.mockResolvedValue(mockResponse) })
 
   it('starts in loading status', () => {
-    const { result } = renderHook(() => usePaymentHistoryReport())
+    const { result } = renderHook(() => usePaymentHistoryReport(), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.data).toBeNull()
   })
 
   it('fetches data on mount', async () => {
-    const { result } = renderHook(() => usePaymentHistoryReport())
+    const { result } = renderHook(() => usePaymentHistoryReport(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.data).toEqual(mockResponse)
     expect(mockGetPaymentHistory).toHaveBeenCalledWith(
@@ -47,7 +51,7 @@ describe('usePaymentHistoryReport', () => {
   })
 
   it('setFilter updates filters and re-fetches', async () => {
-    const { result } = renderHook(() => usePaymentHistoryReport())
+    const { result } = renderHook(() => usePaymentHistoryReport(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     act(() => result.current.setFilter('type', 'in'))
     await waitFor(() => expect(mockGetPaymentHistory).toHaveBeenCalledWith(
@@ -57,7 +61,7 @@ describe('usePaymentHistoryReport', () => {
   })
 
   it('refresh triggers re-fetch', async () => {
-    const { result } = renderHook(() => usePaymentHistoryReport())
+    const { result } = renderHook(() => usePaymentHistoryReport(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     const callCount = mockGetPaymentHistory.mock.calls.length
     act(() => result.current.refresh())
@@ -66,7 +70,7 @@ describe('usePaymentHistoryReport', () => {
 
   it('shows toast on error', async () => {
     mockGetPaymentHistory.mockRejectedValueOnce(new Error('fail'))
-    const { result } = renderHook(() => usePaymentHistoryReport())
+    const { result } = renderHook(() => usePaymentHistoryReport(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load payment history')
   })

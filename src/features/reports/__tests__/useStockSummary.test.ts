@@ -23,18 +23,22 @@ vi.mock('../report.constants', () => ({ DEFAULT_PAGE_LIMIT: 20 }))
 vi.mock('@/config/app.config', () => ({ TIMEOUTS: { debounceMs: 0 } }))
 
 import { useStockSummary } from '../hooks/useStockSummary'
+import { createTestWrapper } from '@/test/query-wrapper'
+
+
+const wrapper = createTestWrapper()
 
 describe('useStockSummary', () => {
   beforeEach(() => { vi.clearAllMocks(); mockGetStockSummary.mockResolvedValue(mockResponse) })
 
   it('starts in loading status', () => {
-    const { result } = renderHook(() => useStockSummary())
+    const { result } = renderHook(() => useStockSummary(), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.data).toBeNull()
   })
 
   it('fetches data on mount', async () => {
-    const { result } = renderHook(() => useStockSummary())
+    const { result } = renderHook(() => useStockSummary(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.data).toEqual(mockResponse)
     expect(mockGetStockSummary).toHaveBeenCalledWith(
@@ -44,7 +48,7 @@ describe('useStockSummary', () => {
   })
 
   it('setFilter updates filters and re-fetches', async () => {
-    const { result } = renderHook(() => useStockSummary())
+    const { result } = renderHook(() => useStockSummary(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     act(() => result.current.setFilter('sortBy', 'value_desc'))
     await waitFor(() => expect(mockGetStockSummary).toHaveBeenCalledWith(
@@ -54,7 +58,7 @@ describe('useStockSummary', () => {
   })
 
   it('setSearch triggers debounced re-fetch', async () => {
-    const { result } = renderHook(() => useStockSummary())
+    const { result } = renderHook(() => useStockSummary(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     act(() => result.current.setSearch('Widget'))
     await waitFor(() => expect(mockGetStockSummary).toHaveBeenCalledWith(
@@ -64,7 +68,7 @@ describe('useStockSummary', () => {
   })
 
   it('refresh triggers re-fetch', async () => {
-    const { result } = renderHook(() => useStockSummary())
+    const { result } = renderHook(() => useStockSummary(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     const callCount = mockGetStockSummary.mock.calls.length
     act(() => result.current.refresh())
@@ -73,7 +77,7 @@ describe('useStockSummary', () => {
 
   it('shows toast on error', async () => {
     mockGetStockSummary.mockRejectedValueOnce(new Error('fail'))
-    const { result } = renderHook(() => useStockSummary())
+    const { result } = renderHook(() => useStockSummary(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load stock summary')
   })

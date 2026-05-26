@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { useUnitManager } from '../useUnitManager'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const mockToast = { success: vi.fn(), error: vi.fn(), info: vi.fn() }
 vi.mock('@/hooks/useToast', () => ({ useToast: () => mockToast }))
@@ -23,18 +25,20 @@ beforeEach(() => { vi.clearAllMocks() })
 
 const MOCK_UNITS = [{ id: '1', name: 'kg', symbol: 'kg' }]
 
+const wrapper = createTestWrapper()
+
 describe('useUnitManager', () => {
   it('starts in loading state', () => {
     mockGetUnits.mockReturnValue(new Promise(() => {}))
     mockGetConversions.mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => useUnitManager())
+    const { result } = renderHook(() => useUnitManager(), { wrapper })
     expect(result.current.status).toBe('loading')
   })
 
   it('fetches units on mount', async () => {
     mockGetUnits.mockResolvedValue(MOCK_UNITS)
     mockGetConversions.mockResolvedValue([])
-    const { result } = renderHook(() => useUnitManager())
+    const { result } = renderHook(() => useUnitManager(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.units).toEqual(MOCK_UNITS)
@@ -46,7 +50,7 @@ describe('useUnitManager', () => {
     const newUnit = { id: '2', name: 'litre', symbol: 'L' }
     mockCreateUnit.mockResolvedValue(newUnit)
 
-    const { result } = renderHook(() => useUnitManager())
+    const { result } = renderHook(() => useUnitManager(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
 
     const created = await act(() => result.current.handleCreate({ name: 'litre', symbol: 'L' }))
@@ -59,7 +63,7 @@ describe('useUnitManager', () => {
     mockGetConversions.mockResolvedValue([])
     mockCreateUnit.mockRejectedValue(new Error('Duplicate'))
 
-    const { result } = renderHook(() => useUnitManager())
+    const { result } = renderHook(() => useUnitManager(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
 
     const created = await act(() => result.current.handleCreate({ name: 'kg', symbol: 'kg' }))
@@ -70,7 +74,7 @@ describe('useUnitManager', () => {
   it('search updates query and re-fetches', async () => {
     mockGetUnits.mockResolvedValue(MOCK_UNITS)
     mockGetConversions.mockResolvedValue([])
-    const { result } = renderHook(() => useUnitManager())
+    const { result } = renderHook(() => useUnitManager(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     act(() => { result.current.handleSearch('litre') })
@@ -84,7 +88,7 @@ describe('useUnitManager', () => {
     mockGetConversions.mockResolvedValue([])
     mockDeleteUnit.mockResolvedValue(undefined)
 
-    const { result } = renderHook(() => useUnitManager())
+    const { result } = renderHook(() => useUnitManager(), { wrapper })
     await waitFor(() => expect(result.current.units).toHaveLength(1))
 
     await act(() => result.current.handleDelete('1'))

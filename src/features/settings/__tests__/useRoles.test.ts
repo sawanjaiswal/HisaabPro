@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { useRoles } from '../useRoles'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const mockToast = { success: vi.fn(), error: vi.fn(), info: vi.fn() }
 vi.mock('@/hooks/useToast', () => ({ useToast: () => mockToast }))
@@ -21,23 +23,25 @@ beforeEach(() => { vi.clearAllMocks() })
 
 const MOCK_ROLES = [{ id: 'r1', name: 'Admin' }, { id: 'r2', name: 'Staff' }]
 
+const wrapper = createTestWrapper()
+
 describe('useRoles', () => {
   it('starts in loading state', () => {
     mockGetRoles.mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => useRoles('biz-1'))
+    const { result } = renderHook(() => useRoles('biz-1'), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.roles).toEqual([])
   })
 
   it('does not fetch when businessId is empty', async () => {
-    renderHook(() => useRoles(''))
+    renderHook(() => useRoles(''), { wrapper })
     await new Promise((r) => setTimeout(r, 50))
     expect(mockGetRoles).not.toHaveBeenCalled()
   })
 
   it('fetches roles on mount', async () => {
     mockGetRoles.mockResolvedValue({ data: { roles: MOCK_ROLES } })
-    const { result } = renderHook(() => useRoles('biz-1'))
+    const { result } = renderHook(() => useRoles('biz-1'), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.roles).toEqual(MOCK_ROLES)
@@ -46,7 +50,7 @@ describe('useRoles', () => {
 
   it('shows toast on error', async () => {
     mockGetRoles.mockRejectedValue(new Error('Server error'))
-    const { result } = renderHook(() => useRoles('biz-1'))
+    const { result } = renderHook(() => useRoles('biz-1'), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load roles')
@@ -55,14 +59,14 @@ describe('useRoles', () => {
   it('shows ApiError message on error', async () => {
     const { ApiError } = await import('@/lib/api')
     mockGetRoles.mockRejectedValue(new ApiError('Forbidden', 'FORBIDDEN', 403))
-    renderHook(() => useRoles('biz-1'))
+    renderHook(() => useRoles('biz-1'), { wrapper })
 
     await waitFor(() => expect(mockToast.error).toHaveBeenCalledWith('Forbidden'))
   })
 
   it('refresh triggers re-fetch', async () => {
     mockGetRoles.mockResolvedValue({ data: { roles: MOCK_ROLES } })
-    const { result } = renderHook(() => useRoles('biz-1'))
+    const { result } = renderHook(() => useRoles('biz-1'), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     mockGetRoles.mockResolvedValue({ data: { roles: [MOCK_ROLES[0]] } })

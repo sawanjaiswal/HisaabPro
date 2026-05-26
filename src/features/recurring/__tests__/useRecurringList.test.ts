@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { useRecurringList } from '../hooks/useRecurringList'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const mockToast = { success: vi.fn(), error: vi.fn(), info: vi.fn() }
 vi.mock('@/hooks/useToast', () => ({ useToast: () => mockToast }))
@@ -21,17 +23,19 @@ beforeEach(() => { vi.clearAllMocks() })
 
 const MOCK_RESPONSE = { items: [{ id: 'r1', frequency: 'MONTHLY' }], total: 1 }
 
+const wrapper = createTestWrapper()
+
 describe('useRecurringList', () => {
   it('starts in loading state with default filter ALL', () => {
     mockListRecurring.mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => useRecurringList())
+    const { result } = renderHook(() => useRecurringList(), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.statusFilter).toBe('ALL')
   })
 
   it('fetches recurring invoices on mount', async () => {
     mockListRecurring.mockResolvedValue(MOCK_RESPONSE)
-    const { result } = renderHook(() => useRecurringList())
+    const { result } = renderHook(() => useRecurringList(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.items).toEqual(MOCK_RESPONSE.items)
@@ -40,7 +44,7 @@ describe('useRecurringList', () => {
 
   it('shows toast on error', async () => {
     mockListRecurring.mockRejectedValue(new Error('fail'))
-    const { result } = renderHook(() => useRecurringList())
+    const { result } = renderHook(() => useRecurringList(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load recurring invoices')
@@ -48,7 +52,7 @@ describe('useRecurringList', () => {
 
   it('setStatusFilter resets page to 1', async () => {
     mockListRecurring.mockResolvedValue(MOCK_RESPONSE)
-    const { result } = renderHook(() => useRecurringList())
+    const { result } = renderHook(() => useRecurringList(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     act(() => { result.current.setPage(4) })
@@ -60,7 +64,7 @@ describe('useRecurringList', () => {
 
   it('refresh triggers re-fetch', async () => {
     mockListRecurring.mockResolvedValue(MOCK_RESPONSE)
-    const { result } = renderHook(() => useRecurringList())
+    const { result } = renderHook(() => useRecurringList(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     mockListRecurring.mockResolvedValue({ items: [], total: 0 })

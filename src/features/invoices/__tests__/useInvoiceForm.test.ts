@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import { createElement } from 'react'
-import { MemoryRouter } from 'react-router-dom'
 import type { LineItemFormData, AdditionalChargeFormData } from '../invoice.types'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 // ─── Mocks ──────────────────────────────────────────────────────────────────────
 
@@ -29,8 +29,8 @@ vi.mock('../useStockValidation', () => ({
 
 // ─── Helpers ────────────────────────────────────────────────────────────────────
 
-const wrapper = ({ children }: { children: React.ReactNode }) =>
-  createElement(MemoryRouter, null, children)
+const wrapper = createTestWrapper()
+
 
 function makeLineItem(overrides: Partial<LineItemFormData> = {}): LineItemFormData {
   return {

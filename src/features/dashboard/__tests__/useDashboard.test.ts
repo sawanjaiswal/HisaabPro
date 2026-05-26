@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
 import { useHomeDashboard } from '../useDashboard'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const mockGetHomeDashboard = vi.fn()
 
@@ -18,17 +20,19 @@ const MOCK_DATA = {
   topDebtors: [],
 }
 
+const wrapper = createTestWrapper()
+
 describe('useHomeDashboard', () => {
   it('starts in loading state', () => {
     mockGetHomeDashboard.mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => useHomeDashboard())
+    const { result } = renderHook(() => useHomeDashboard(), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.data).toBeNull()
   })
 
   it('fetches data on mount and sets success', async () => {
     mockGetHomeDashboard.mockResolvedValue(MOCK_DATA)
-    const { result } = renderHook(() => useHomeDashboard())
+    const { result } = renderHook(() => useHomeDashboard(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.data).toEqual(MOCK_DATA)
@@ -36,7 +40,7 @@ describe('useHomeDashboard', () => {
 
   it('sets error status on fetch failure', async () => {
     mockGetHomeDashboard.mockRejectedValue(new Error('Network error'))
-    const { result } = renderHook(() => useHomeDashboard())
+    const { result } = renderHook(() => useHomeDashboard(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(result.current.data).toBeNull()
@@ -44,7 +48,7 @@ describe('useHomeDashboard', () => {
 
   it('refresh triggers re-fetch', async () => {
     mockGetHomeDashboard.mockResolvedValue(MOCK_DATA)
-    const { result } = renderHook(() => useHomeDashboard())
+    const { result } = renderHook(() => useHomeDashboard(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     const updatedData = { ...MOCK_DATA, outstanding: { ...MOCK_DATA.outstanding, receivable: { total: 200000, partyCount: 20 } } }
@@ -57,7 +61,7 @@ describe('useHomeDashboard', () => {
   it('ignores AbortError', async () => {
     const abortError = new DOMException('Aborted', 'AbortError')
     mockGetHomeDashboard.mockRejectedValue(abortError)
-    const { result } = renderHook(() => useHomeDashboard())
+    const { result } = renderHook(() => useHomeDashboard(), { wrapper })
 
     // Should stay loading (abort is ignored, not treated as error)
     await new Promise((r) => setTimeout(r, 50))

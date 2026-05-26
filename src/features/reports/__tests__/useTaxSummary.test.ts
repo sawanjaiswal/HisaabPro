@@ -24,6 +24,10 @@ vi.mock('../report.utils', () => ({
 }))
 
 import { useTaxSummary } from '../hooks/useTaxSummary'
+import { createTestWrapper } from '@/test/query-wrapper'
+
+
+const wrapper = createTestWrapper()
 
 describe('useTaxSummary', () => {
   beforeEach(() => {
@@ -33,14 +37,14 @@ describe('useTaxSummary', () => {
   })
 
   it('starts in loading status', () => {
-    const { result } = renderHook(() => useTaxSummary())
+    const { result } = renderHook(() => useTaxSummary(), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.data.summary).toBeNull()
     expect(result.current.data.hsnSummary).toBeNull()
   })
 
   it('fetches both tax and HSN summary on mount', async () => {
-    const { result } = renderHook(() => useTaxSummary())
+    const { result } = renderHook(() => useTaxSummary(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.data.summary).toEqual(mockTaxData)
     expect(result.current.data.hsnSummary).toEqual(mockHsnData)
@@ -49,7 +53,7 @@ describe('useTaxSummary', () => {
   })
 
   it('setFilters updates filters and re-fetches', async () => {
-    const { result } = renderHook(() => useTaxSummary())
+    const { result } = renderHook(() => useTaxSummary(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     const newFilters = { from: '2025-01-01', to: '2025-12-31' }
     act(() => result.current.setFilters(newFilters))
@@ -60,7 +64,7 @@ describe('useTaxSummary', () => {
   })
 
   it('refresh triggers re-fetch', async () => {
-    const { result } = renderHook(() => useTaxSummary())
+    const { result } = renderHook(() => useTaxSummary(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     const callCount = mockGetTaxSummary.mock.calls.length
     act(() => result.current.refresh())
@@ -69,7 +73,7 @@ describe('useTaxSummary', () => {
 
   it('shows toast on error', async () => {
     mockGetTaxSummary.mockRejectedValueOnce(new Error('fail'))
-    const { result } = renderHook(() => useTaxSummary())
+    const { result } = renderHook(() => useTaxSummary(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load tax summary')
   })

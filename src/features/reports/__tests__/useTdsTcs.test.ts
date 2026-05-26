@@ -21,18 +21,22 @@ vi.mock('../report.utils', () => ({
 }))
 
 import { useTdsTcs } from '../hooks/useTdsTcs'
+import { createTestWrapper } from '@/test/query-wrapper'
+
+
+const wrapper = createTestWrapper()
 
 describe('useTdsTcs', () => {
   beforeEach(() => { vi.clearAllMocks(); mockGetTdsTcsSummary.mockResolvedValue(mockSummary) })
 
   it('starts in loading status', () => {
-    const { result } = renderHook(() => useTdsTcs())
+    const { result } = renderHook(() => useTdsTcs(), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.data).toBeNull()
   })
 
   it('fetches data on mount with default filters', async () => {
-    const { result } = renderHook(() => useTdsTcs())
+    const { result } = renderHook(() => useTdsTcs(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.data).toEqual(mockSummary)
     expect(mockGetTdsTcsSummary).toHaveBeenCalledWith(
@@ -42,7 +46,7 @@ describe('useTdsTcs', () => {
   })
 
   it('setFilters updates filters and re-fetches', async () => {
-    const { result } = renderHook(() => useTdsTcs())
+    const { result } = renderHook(() => useTdsTcs(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     const newFilters = { from: '2025-04-01', to: '2026-03-31', type: 'tds' as const }
     act(() => result.current.setFilters(newFilters))
@@ -53,7 +57,7 @@ describe('useTdsTcs', () => {
   })
 
   it('refresh triggers re-fetch', async () => {
-    const { result } = renderHook(() => useTdsTcs())
+    const { result } = renderHook(() => useTdsTcs(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     const callCount = mockGetTdsTcsSummary.mock.calls.length
     act(() => result.current.refresh())
@@ -62,7 +66,7 @@ describe('useTdsTcs', () => {
 
   it('shows toast on error', async () => {
     mockGetTdsTcsSummary.mockRejectedValueOnce(new Error('fail'))
-    const { result } = renderHook(() => useTdsTcs())
+    const { result } = renderHook(() => useTdsTcs(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load TDS/TCS report')
   })

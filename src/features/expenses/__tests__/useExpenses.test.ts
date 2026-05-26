@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { useExpenses } from '../useExpenses'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const mockToast = { success: vi.fn(), error: vi.fn(), info: vi.fn() }
 vi.mock('@/hooks/useToast', () => ({ useToast: () => mockToast }))
@@ -21,17 +23,19 @@ beforeEach(() => { vi.clearAllMocks() })
 
 const MOCK_RESPONSE = { items: [{ id: '1', amount: 5000 }], total: 1 }
 
+const wrapper = createTestWrapper()
+
 describe('useExpenses', () => {
   it('starts in loading state', () => {
     mockListExpenses.mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => useExpenses())
+    const { result } = renderHook(() => useExpenses(), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.items).toEqual([])
   })
 
   it('fetches expenses on mount', async () => {
     mockListExpenses.mockResolvedValue(MOCK_RESPONSE)
-    const { result } = renderHook(() => useExpenses())
+    const { result } = renderHook(() => useExpenses(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.items).toEqual(MOCK_RESPONSE.items)
@@ -40,7 +44,7 @@ describe('useExpenses', () => {
 
   it('shows toast on error', async () => {
     mockListExpenses.mockRejectedValue(new Error('fail'))
-    const { result } = renderHook(() => useExpenses())
+    const { result } = renderHook(() => useExpenses(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load expenses')
@@ -48,7 +52,7 @@ describe('useExpenses', () => {
 
   it('setCategoryFilter resets page to 1', async () => {
     mockListExpenses.mockResolvedValue(MOCK_RESPONSE)
-    const { result } = renderHook(() => useExpenses())
+    const { result } = renderHook(() => useExpenses(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     act(() => { result.current.setPage(3) })
@@ -60,7 +64,7 @@ describe('useExpenses', () => {
 
   it('refresh triggers re-fetch', async () => {
     mockListExpenses.mockResolvedValue(MOCK_RESPONSE)
-    const { result } = renderHook(() => useExpenses())
+    const { result } = renderHook(() => useExpenses(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     mockListExpenses.mockResolvedValue({ items: [], total: 0 })

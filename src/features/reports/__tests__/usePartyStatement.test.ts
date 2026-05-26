@@ -22,6 +22,10 @@ vi.mock('../report.service', () => ({
 vi.mock('../report.constants', () => ({ STATEMENT_PAGE_LIMIT: 50 }))
 
 import { usePartyStatement } from '../hooks/usePartyStatement'
+import { createTestWrapper } from '@/test/query-wrapper'
+
+
+const wrapper = createTestWrapper()
 
 describe('usePartyStatement', () => {
   const partyId = 'party-123'
@@ -29,13 +33,13 @@ describe('usePartyStatement', () => {
   beforeEach(() => { vi.clearAllMocks(); mockGetPartyStatement.mockResolvedValue(mockResponse) })
 
   it('starts in loading status', () => {
-    const { result } = renderHook(() => usePartyStatement(partyId))
+    const { result } = renderHook(() => usePartyStatement(partyId), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.data).toBeNull()
   })
 
   it('fetches data on mount with partyId', async () => {
-    const { result } = renderHook(() => usePartyStatement(partyId))
+    const { result } = renderHook(() => usePartyStatement(partyId), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.data).toEqual(mockResponse)
     expect(mockGetPartyStatement).toHaveBeenCalledWith(
@@ -46,14 +50,14 @@ describe('usePartyStatement', () => {
   })
 
   it('does not fetch when partyId is empty', async () => {
-    const { result } = renderHook(() => usePartyStatement(''))
+    const { result } = renderHook(() => usePartyStatement(''), { wrapper })
     // Should remain loading since the effect returns early
     expect(result.current.status).toBe('loading')
     expect(mockGetPartyStatement).not.toHaveBeenCalled()
   })
 
   it('setFilter updates filters and re-fetches', async () => {
-    const { result } = renderHook(() => usePartyStatement(partyId))
+    const { result } = renderHook(() => usePartyStatement(partyId), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     act(() => result.current.setFilter('from', '2026-01-01'))
     await waitFor(() => expect(mockGetPartyStatement).toHaveBeenCalledWith(
@@ -64,7 +68,7 @@ describe('usePartyStatement', () => {
   })
 
   it('refresh triggers re-fetch', async () => {
-    const { result } = renderHook(() => usePartyStatement(partyId))
+    const { result } = renderHook(() => usePartyStatement(partyId), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     const callCount = mockGetPartyStatement.mock.calls.length
     act(() => result.current.refresh())
@@ -73,7 +77,7 @@ describe('usePartyStatement', () => {
 
   it('shows toast on error', async () => {
     mockGetPartyStatement.mockRejectedValueOnce(new Error('fail'))
-    const { result } = renderHook(() => usePartyStatement(partyId))
+    const { result } = renderHook(() => usePartyStatement(partyId), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load party statement')
   })

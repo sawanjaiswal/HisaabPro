@@ -17,11 +17,15 @@ vi.mock('../party.service', () => ({
 }))
 
 import { useParties } from '../useParties'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const MOCK_RESPONSE = {
   parties: [{ id: '1', name: 'Party A' }],
   pagination: { page: 1, limit: 20, total: 1, totalPages: 1 },
 }
+
+const wrapper = createTestWrapper()
 
 describe('useParties', () => {
   beforeEach(() => {
@@ -30,20 +34,20 @@ describe('useParties', () => {
   })
 
   it('starts in loading state', () => {
-    const { result } = renderHook(() => useParties())
+    const { result } = renderHook(() => useParties(), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.data).toBeNull()
   })
 
   it('fetches parties on mount', async () => {
-    const { result } = renderHook(() => useParties())
+    const { result } = renderHook(() => useParties(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.data).toEqual(MOCK_RESPONSE)
     expect(mockGetParties).toHaveBeenCalledTimes(1)
   })
 
   it('setFilter updates filter and resets page to 1', async () => {
-    const { result } = renderHook(() => useParties())
+    const { result } = renderHook(() => useParties(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
 
     act(() => result.current.setFilter('type', 'SUPPLIER'))
@@ -52,7 +56,7 @@ describe('useParties', () => {
   })
 
   it('setPage changes page number', async () => {
-    const { result } = renderHook(() => useParties())
+    const { result } = renderHook(() => useParties(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
 
     act(() => result.current.setPage(2))
@@ -60,7 +64,7 @@ describe('useParties', () => {
   })
 
   it('refresh triggers re-fetch', async () => {
-    const { result } = renderHook(() => useParties())
+    const { result } = renderHook(() => useParties(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     const callsBefore = mockGetParties.mock.calls.length
 
@@ -69,7 +73,7 @@ describe('useParties', () => {
   })
 
   it('handleDelete optimistically removes item from list', async () => {
-    const { result } = renderHook(() => useParties())
+    const { result } = renderHook(() => useParties(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
 
     act(() => result.current.handleDelete('1', 'Party A'))
@@ -80,14 +84,14 @@ describe('useParties', () => {
 
   it('shows error toast on fetch failure', async () => {
     mockGetParties.mockRejectedValueOnce(new Error('Network error'))
-    const { result } = renderHook(() => useParties())
+    const { result } = renderHook(() => useParties(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load parties')
   })
 
   it('handleCreate calls createParty and refreshes', async () => {
     mockCreateParty.mockResolvedValue({ id: '2', name: 'New Party' })
-    const { result } = renderHook(() => useParties())
+    const { result } = renderHook(() => useParties(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     const callsBefore = mockGetParties.mock.calls.length
 

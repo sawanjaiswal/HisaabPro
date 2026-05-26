@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
 import { useTemplates } from '../useTemplates'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const mockToast = { success: vi.fn(), error: vi.fn(), info: vi.fn() }
 vi.mock('@/hooks/useToast', () => ({ useToast: () => mockToast }))
@@ -24,17 +26,19 @@ const MOCK_TEMPLATES = [
   { id: '2', name: 'Modern', isDefault: false },
 ]
 
+const wrapper = createTestWrapper()
+
 describe('useTemplates', () => {
   it('starts in loading state', () => {
     mockGetTemplates.mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => useTemplates())
+    const { result } = renderHook(() => useTemplates(), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.templates).toEqual([])
   })
 
   it('fetches templates on mount', async () => {
     mockGetTemplates.mockResolvedValue(MOCK_TEMPLATES)
-    const { result } = renderHook(() => useTemplates())
+    const { result } = renderHook(() => useTemplates(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.templates).toEqual(MOCK_TEMPLATES)
@@ -42,7 +46,7 @@ describe('useTemplates', () => {
 
   it('shows toast on error', async () => {
     mockGetTemplates.mockRejectedValue(new Error('Server error'))
-    const { result } = renderHook(() => useTemplates())
+    const { result } = renderHook(() => useTemplates(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load templates')
@@ -51,14 +55,14 @@ describe('useTemplates', () => {
   it('shows ApiError message on error', async () => {
     const { ApiError } = await import('@/lib/api')
     mockGetTemplates.mockRejectedValue(new ApiError('Custom msg', 'ERR', 500))
-    renderHook(() => useTemplates())
+    renderHook(() => useTemplates(), { wrapper })
 
     await waitFor(() => expect(mockToast.error).toHaveBeenCalledWith('Custom msg'))
   })
 
   it('refresh triggers re-fetch', async () => {
     mockGetTemplates.mockResolvedValue(MOCK_TEMPLATES)
-    const { result } = renderHook(() => useTemplates())
+    const { result } = renderHook(() => useTemplates(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     mockGetTemplates.mockResolvedValue([MOCK_TEMPLATES[0]])

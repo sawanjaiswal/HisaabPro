@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { useOtherIncome } from '../useOtherIncome'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const mockToast = { success: vi.fn(), error: vi.fn(), info: vi.fn() }
 vi.mock('@/hooks/useToast', () => ({ useToast: () => mockToast }))
@@ -21,17 +23,19 @@ beforeEach(() => { vi.clearAllMocks() })
 
 const MOCK_RESPONSE = { items: [{ id: 'oi1', amount: 10000 }], total: 1 }
 
+const wrapper = createTestWrapper()
+
 describe('useOtherIncome', () => {
   it('starts in loading state', () => {
     mockListOtherIncome.mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => useOtherIncome())
+    const { result } = renderHook(() => useOtherIncome(), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.items).toEqual([])
   })
 
   it('fetches other income on mount', async () => {
     mockListOtherIncome.mockResolvedValue(MOCK_RESPONSE)
-    const { result } = renderHook(() => useOtherIncome())
+    const { result } = renderHook(() => useOtherIncome(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.items).toEqual(MOCK_RESPONSE.items)
@@ -40,7 +44,7 @@ describe('useOtherIncome', () => {
 
   it('shows toast on error', async () => {
     mockListOtherIncome.mockRejectedValue(new Error('fail'))
-    const { result } = renderHook(() => useOtherIncome())
+    const { result } = renderHook(() => useOtherIncome(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load other income')
@@ -48,7 +52,7 @@ describe('useOtherIncome', () => {
 
   it('setCategoryFilter resets page to 1', async () => {
     mockListOtherIncome.mockResolvedValue(MOCK_RESPONSE)
-    const { result } = renderHook(() => useOtherIncome())
+    const { result } = renderHook(() => useOtherIncome(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     act(() => { result.current.setPage(5) })
@@ -60,7 +64,7 @@ describe('useOtherIncome', () => {
 
   it('refresh triggers re-fetch', async () => {
     mockListOtherIncome.mockResolvedValue(MOCK_RESPONSE)
-    const { result } = renderHook(() => useOtherIncome())
+    const { result } = renderHook(() => useOtherIncome(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     mockListOtherIncome.mockResolvedValue({ items: [], total: 0 })

@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { useBankAccounts } from '../useBankAccounts'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const mockToast = { success: vi.fn(), error: vi.fn(), info: vi.fn() }
 vi.mock('@/hooks/useToast', () => ({ useToast: () => mockToast }))
@@ -21,17 +23,19 @@ beforeEach(() => { vi.clearAllMocks() })
 
 const MOCK_RESPONSE = { items: [{ id: 'ba1', bankName: 'SBI', accountNumber: '1234' }], total: 1 }
 
+const wrapper = createTestWrapper()
+
 describe('useBankAccounts', () => {
   it('starts in loading state', () => {
     mockListBankAccounts.mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => useBankAccounts())
+    const { result } = renderHook(() => useBankAccounts(), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.items).toEqual([])
   })
 
   it('fetches bank accounts on mount', async () => {
     mockListBankAccounts.mockResolvedValue(MOCK_RESPONSE)
-    const { result } = renderHook(() => useBankAccounts())
+    const { result } = renderHook(() => useBankAccounts(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.items).toEqual(MOCK_RESPONSE.items)
@@ -40,7 +44,7 @@ describe('useBankAccounts', () => {
 
   it('shows toast on error', async () => {
     mockListBankAccounts.mockRejectedValue(new Error('fail'))
-    const { result } = renderHook(() => useBankAccounts())
+    const { result } = renderHook(() => useBankAccounts(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load bank accounts')
@@ -49,14 +53,14 @@ describe('useBankAccounts', () => {
   it('shows ApiError message on error', async () => {
     const { ApiError } = await import('@/lib/api')
     mockListBankAccounts.mockRejectedValue(new ApiError('DB down', 'DB_ERR', 500))
-    renderHook(() => useBankAccounts())
+    renderHook(() => useBankAccounts(), { wrapper })
 
     await waitFor(() => expect(mockToast.error).toHaveBeenCalledWith('DB down'))
   })
 
   it('refresh triggers re-fetch', async () => {
     mockListBankAccounts.mockResolvedValue(MOCK_RESPONSE)
-    const { result } = renderHook(() => useBankAccounts())
+    const { result } = renderHook(() => useBankAccounts(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     mockListBankAccounts.mockResolvedValue({ items: [], total: 0 })

@@ -16,22 +16,26 @@ vi.mock('@/lib/api', () => ({
 vi.mock('../reconciliation.constants', () => ({ RECON_PAGE_LIMIT: 20 }))
 
 import { useReconciliationList } from '../useReconciliationList'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const MOCK_RES = { data: [{ id: 'r-1', period: '2024-01' }], total: 1 }
+
+const wrapper = createTestWrapper()
 
 describe('useReconciliationList', () => {
   beforeEach(() => { vi.clearAllMocks() })
 
   it('starts in loading state', () => {
     mockList.mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => useReconciliationList())
+    const { result } = renderHook(() => useReconciliationList(), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.items).toEqual([])
   })
 
   it('fetches list on mount', async () => {
     mockList.mockResolvedValue(MOCK_RES)
-    const { result } = renderHook(() => useReconciliationList())
+    const { result } = renderHook(() => useReconciliationList(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.items).toEqual(MOCK_RES.data)
     expect(result.current.total).toBe(1)
@@ -39,7 +43,7 @@ describe('useReconciliationList', () => {
 
   it('shows error toast on failure', async () => {
     mockList.mockRejectedValue(new Error('fail'))
-    const { result } = renderHook(() => useReconciliationList())
+    const { result } = renderHook(() => useReconciliationList(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load reconciliations')
   })
@@ -47,7 +51,7 @@ describe('useReconciliationList', () => {
   it('remove calls delete and refreshes', async () => {
     mockList.mockResolvedValue(MOCK_RES)
     mockDelete.mockResolvedValue(undefined)
-    const { result } = renderHook(() => useReconciliationList())
+    const { result } = renderHook(() => useReconciliationList(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     await act(async () => { await result.current.remove('r-1') })
     expect(mockDelete).toHaveBeenCalledWith('r-1')
@@ -56,7 +60,7 @@ describe('useReconciliationList', () => {
 
   it('loadMore increments page', async () => {
     mockList.mockResolvedValue({ data: [{ id: 'r-1' }], total: 5 })
-    const { result } = renderHook(() => useReconciliationList())
+    const { result } = renderHook(() => useReconciliationList(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     act(() => { result.current.loadMore() })
     expect(result.current.page).toBe(2)

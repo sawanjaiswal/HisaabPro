@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { useLoans } from '../useLoans'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const mockToast = { success: vi.fn(), error: vi.fn(), info: vi.fn() }
 vi.mock('@/hooks/useToast', () => ({ useToast: () => mockToast }))
@@ -21,17 +23,19 @@ beforeEach(() => { vi.clearAllMocks() })
 
 const MOCK_RESPONSE = { items: [{ id: 'l1', amount: 100000 }], total: 1 }
 
+const wrapper = createTestWrapper()
+
 describe('useLoans', () => {
   it('starts in loading state', () => {
     mockListLoans.mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => useLoans())
+    const { result } = renderHook(() => useLoans(), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.items).toEqual([])
   })
 
   it('fetches loans on mount', async () => {
     mockListLoans.mockResolvedValue(MOCK_RESPONSE)
-    const { result } = renderHook(() => useLoans())
+    const { result } = renderHook(() => useLoans(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.items).toEqual(MOCK_RESPONSE.items)
@@ -40,7 +44,7 @@ describe('useLoans', () => {
 
   it('shows toast on error', async () => {
     mockListLoans.mockRejectedValue(new Error('Network error'))
-    const { result } = renderHook(() => useLoans())
+    const { result } = renderHook(() => useLoans(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load loans')
@@ -49,14 +53,14 @@ describe('useLoans', () => {
   it('shows ApiError message on error', async () => {
     const { ApiError } = await import('@/lib/api')
     mockListLoans.mockRejectedValue(new ApiError('Unauthorized', 'AUTH', 401))
-    renderHook(() => useLoans())
+    renderHook(() => useLoans(), { wrapper })
 
     await waitFor(() => expect(mockToast.error).toHaveBeenCalledWith('Unauthorized'))
   })
 
   it('refresh triggers re-fetch', async () => {
     mockListLoans.mockResolvedValue(MOCK_RESPONSE)
-    const { result } = renderHook(() => useLoans())
+    const { result } = renderHook(() => useLoans(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     mockListLoans.mockResolvedValue({ items: [], total: 0 })

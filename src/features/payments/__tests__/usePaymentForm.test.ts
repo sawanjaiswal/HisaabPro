@@ -1,7 +1,5 @@
 import { renderHook, act } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { createElement } from 'react'
-import { MemoryRouter } from 'react-router-dom'
 
 import type { PaymentFormData } from '../payment.types'
 
@@ -61,10 +59,10 @@ vi.mock('../paymentForm.helpers', () => ({
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 import { usePaymentForm } from '../usePaymentForm'
+import { createTestWrapper } from '@/test/query-wrapper'
 
-function wrapper({ children }: { children: React.ReactNode }) {
-  return createElement(MemoryRouter, null, children)
-}
+
+const wrapper = createTestWrapper()
 
 function renderPaymentForm(opts = {}) {
   return renderHook(() => usePaymentForm(opts), { wrapper })

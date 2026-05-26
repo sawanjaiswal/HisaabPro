@@ -1,7 +1,5 @@
-import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
 
 const mockToast = { success: vi.fn(), error: vi.fn(), info: vi.fn() }
 vi.mock('@/hooks/useToast', () => ({ useToast: () => mockToast }))
@@ -21,10 +19,10 @@ vi.mock('../tax.service', () => ({
 vi.mock('@/config/routes.config', () => ({ ROUTES: { SETTINGS_TAX_RATES: '/settings/tax-rates' } }))
 
 import { useTaxCategoryForm } from '../useTaxCategoryForm'
+import { createTestWrapper } from '@/test/query-wrapper'
 
-function wrapper({ children }: { children: React.ReactNode }) {
-  return <MemoryRouter>{children}</MemoryRouter>
-}
+
+const wrapper = createTestWrapper()
 
 describe('useTaxCategoryForm', () => {
   beforeEach(() => { vi.clearAllMocks() })

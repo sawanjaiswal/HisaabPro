@@ -15,12 +15,16 @@ vi.mock('../invoice.service', () => ({
 }))
 
 import { useInvoices } from '../useInvoices'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const MOCK_RESPONSE = {
   documents: [{ id: '1', documentNumber: 'INV-001' }],
   pagination: { page: 1, limit: 20, total: 1, totalPages: 1 },
   summary: { totalAmount: 10000, totalPaid: 5000, totalDue: 5000 },
 }
+
+const wrapper = createTestWrapper()
 
 describe('useInvoices', () => {
   beforeEach(() => {
@@ -29,20 +33,20 @@ describe('useInvoices', () => {
   })
 
   it('starts in loading state', () => {
-    const { result } = renderHook(() => useInvoices({ type: 'SALE_INVOICE' }))
+    const { result } = renderHook(() => useInvoices({ type: 'SALE_INVOICE' }), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.data).toBeNull()
   })
 
   it('fetches documents on mount', async () => {
-    const { result } = renderHook(() => useInvoices({ type: 'SALE_INVOICE' }))
+    const { result } = renderHook(() => useInvoices({ type: 'SALE_INVOICE' }), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.data).toEqual(MOCK_RESPONSE)
     expect(mockGetDocuments).toHaveBeenCalledTimes(1)
   })
 
   it('setFilter updates filter and resets page to 1', async () => {
-    const { result } = renderHook(() => useInvoices({ type: 'SALE_INVOICE' }))
+    const { result } = renderHook(() => useInvoices({ type: 'SALE_INVOICE' }), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
 
     act(() => result.current.setFilter('status', 'DRAFT'))
@@ -51,7 +55,7 @@ describe('useInvoices', () => {
   })
 
   it('setPage changes page number', async () => {
-    const { result } = renderHook(() => useInvoices({ type: 'SALE_INVOICE' }))
+    const { result } = renderHook(() => useInvoices({ type: 'SALE_INVOICE' }), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
 
     act(() => result.current.setPage(3))
@@ -59,7 +63,7 @@ describe('useInvoices', () => {
   })
 
   it('refresh triggers re-fetch', async () => {
-    const { result } = renderHook(() => useInvoices({ type: 'SALE_INVOICE' }))
+    const { result } = renderHook(() => useInvoices({ type: 'SALE_INVOICE' }), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     const callsBefore = mockGetDocuments.mock.calls.length
 
@@ -68,7 +72,7 @@ describe('useInvoices', () => {
   })
 
   it('handleDelete optimistically removes item from list', async () => {
-    const { result } = renderHook(() => useInvoices({ type: 'SALE_INVOICE' }))
+    const { result } = renderHook(() => useInvoices({ type: 'SALE_INVOICE' }), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
 
     act(() => result.current.handleDelete('1', 'INV-001'))
@@ -79,7 +83,7 @@ describe('useInvoices', () => {
 
   it('shows error toast on fetch failure', async () => {
     mockGetDocuments.mockRejectedValueOnce(new Error('Network error'))
-    const { result } = renderHook(() => useInvoices({ type: 'SALE_INVOICE' }))
+    const { result } = renderHook(() => useInvoices({ type: 'SALE_INVOICE' }), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load invoices')
   })

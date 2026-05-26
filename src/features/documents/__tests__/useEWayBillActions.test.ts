@@ -11,15 +11,19 @@ vi.mock('../ecompliance.service', () => ({
 }))
 
 import { useEWayBillActions } from '../hooks/useEWayBillActions'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const MOCK_RESULT = { ewbNumber: 'EWB1', ewbDate: '2024-01-01', validUntil: '2024-01-02' }
+
+const wrapper = createTestWrapper()
 
 describe('useEWayBillActions', () => {
   const onUpdate = vi.fn()
   beforeEach(() => { vi.clearAllMocks() })
 
   it('starts with all loading flags false', () => {
-    const { result } = renderHook(() => useEWayBillActions('doc-1', onUpdate))
+    const { result } = renderHook(() => useEWayBillActions('doc-1', onUpdate), { wrapper })
     expect(result.current.generatingEwb).toBe(false)
     expect(result.current.cancellingEwb).toBe(false)
     expect(result.current.updatingPartB).toBe(false)
@@ -28,7 +32,7 @@ describe('useEWayBillActions', () => {
   it('generateEwb calls service and updates state', async () => {
     mockGenerateEWB.mockResolvedValue(MOCK_RESULT)
     const input = { vehicleNumber: 'MH12AB1234', vehicleType: 'REGULAR' as const, transportMode: 'ROAD' as const, distance: 150, fromPincode: '400001', toPincode: '411001' }
-    const { result } = renderHook(() => useEWayBillActions('doc-1', onUpdate))
+    const { result } = renderHook(() => useEWayBillActions('doc-1', onUpdate), { wrapper })
     await act(async () => { await result.current.generateEwb(input) })
     expect(mockGenerateEWB).toHaveBeenCalledWith({ ...input, documentId: 'doc-1' })
     expect(onUpdate).toHaveBeenCalled()
@@ -36,7 +40,7 @@ describe('useEWayBillActions', () => {
 
   it('cancelEwb calls service with reason', async () => {
     mockCancelEWB.mockResolvedValue(undefined)
-    const { result } = renderHook(() => useEWayBillActions('doc-1', onUpdate))
+    const { result } = renderHook(() => useEWayBillActions('doc-1', onUpdate), { wrapper })
     await act(async () => { await result.current.cancelEwb('Wrong address') })
     expect(mockCancelEWB).toHaveBeenCalledWith('doc-1', 'Wrong address')
     expect(onUpdate).toHaveBeenCalled()
@@ -44,7 +48,7 @@ describe('useEWayBillActions', () => {
 
   it('updatePartB calls service with vehicle info', async () => {
     mockUpdatePartB.mockResolvedValue(undefined)
-    const { result } = renderHook(() => useEWayBillActions('doc-1', onUpdate))
+    const { result } = renderHook(() => useEWayBillActions('doc-1', onUpdate), { wrapper })
     await act(async () => { await result.current.updatePartB('MH14CD5678', 'REGULAR' as never) })
     expect(mockUpdatePartB).toHaveBeenCalledWith('doc-1', 'MH14CD5678', 'REGULAR')
     expect(onUpdate).toHaveBeenCalled()
@@ -53,7 +57,7 @@ describe('useEWayBillActions', () => {
   it('prevents concurrent cancel calls', async () => {
     let resolve: (v: unknown) => void
     mockCancelEWB.mockReturnValue(new Promise((r) => { resolve = r }))
-    const { result } = renderHook(() => useEWayBillActions('doc-1', onUpdate))
+    const { result } = renderHook(() => useEWayBillActions('doc-1', onUpdate), { wrapper })
     act(() => { result.current.cancelEwb('reason') })
     expect(result.current.cancellingEwb).toBe(true)
     await act(async () => { result.current.cancelEwb('reason2') })

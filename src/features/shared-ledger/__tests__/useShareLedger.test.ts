@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { useShareLedger } from '../useShareLedger'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const mockToast = { success: vi.fn(), error: vi.fn(), info: vi.fn() }
 vi.mock('@/hooks/useToast', () => ({ useToast: () => mockToast }))
@@ -23,10 +25,12 @@ beforeEach(() => { vi.clearAllMocks() })
 
 const MOCK_SHARES = [{ id: 's1', shareToken: 'tok1', partyId: 'p1' }]
 
+const wrapper = createTestWrapper()
+
 describe('useShareLedger', () => {
   it('starts with empty shares and loading false after fetch', async () => {
     mockListShares.mockResolvedValue(MOCK_SHARES)
-    const { result } = renderHook(() => useShareLedger('p1'))
+    const { result } = renderHook(() => useShareLedger('p1'), { wrapper })
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
     expect(result.current.shares).toEqual(MOCK_SHARES)
@@ -34,7 +38,7 @@ describe('useShareLedger', () => {
 
   it('handles load failure silently', async () => {
     mockListShares.mockRejectedValue(new Error('not available'))
-    const { result } = renderHook(() => useShareLedger('p1'))
+    const { result } = renderHook(() => useShareLedger('p1'), { wrapper })
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
     expect(result.current.shares).toEqual([])
@@ -46,7 +50,7 @@ describe('useShareLedger', () => {
     const newShare = { id: 's2', shareToken: 'tok2', partyId: 'p1' }
     mockCreateShare.mockResolvedValue(newShare)
 
-    const { result } = renderHook(() => useShareLedger('p1'))
+    const { result } = renderHook(() => useShareLedger('p1'), { wrapper })
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     const created = await act(() => result.current.createShare({ expiryDays: 7 }))
@@ -58,7 +62,7 @@ describe('useShareLedger', () => {
     mockListShares.mockResolvedValue([])
     mockCreateShare.mockRejectedValue(new Error('fail'))
 
-    const { result } = renderHook(() => useShareLedger('p1'))
+    const { result } = renderHook(() => useShareLedger('p1'), { wrapper })
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     const created = await act(() => result.current.createShare({ expiryDays: 7 }))
@@ -70,7 +74,7 @@ describe('useShareLedger', () => {
     mockListShares.mockResolvedValue(MOCK_SHARES)
     mockRevokeShare.mockResolvedValue(undefined)
 
-    const { result } = renderHook(() => useShareLedger('p1'))
+    const { result } = renderHook(() => useShareLedger('p1'), { wrapper })
     await waitFor(() => expect(result.current.shares).toHaveLength(1))
 
     await act(() => result.current.revokeShare('s1'))
@@ -80,7 +84,7 @@ describe('useShareLedger', () => {
 
   it('refresh re-loads shares', async () => {
     mockListShares.mockResolvedValue(MOCK_SHARES)
-    const { result } = renderHook(() => useShareLedger('p1'))
+    const { result } = renderHook(() => useShareLedger('p1'), { wrapper })
 
     await waitFor(() => expect(result.current.shares).toHaveLength(1))
     mockListShares.mockResolvedValue([])

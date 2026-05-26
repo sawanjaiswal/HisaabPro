@@ -25,18 +25,22 @@ vi.mock('../report.utils', () => ({
 }))
 
 import { useInvoiceReport } from '../hooks/useInvoiceReport'
+import { createTestWrapper } from '@/test/query-wrapper'
+
+
+const wrapper = createTestWrapper()
 
 describe('useInvoiceReport', () => {
   beforeEach(() => { vi.clearAllMocks(); mockGetInvoiceReport.mockResolvedValue(mockResponse) })
 
   it('starts in loading status', () => {
-    const { result } = renderHook(() => useInvoiceReport({ type: 'sale' }))
+    const { result } = renderHook(() => useInvoiceReport({ type: 'sale' }), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.data).toBeNull()
   })
 
   it('fetches data on mount with correct type', async () => {
-    const { result } = renderHook(() => useInvoiceReport({ type: 'purchase' }))
+    const { result } = renderHook(() => useInvoiceReport({ type: 'purchase' }), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.data).toEqual(mockResponse)
     expect(mockGetInvoiceReport).toHaveBeenCalledWith(
@@ -46,7 +50,7 @@ describe('useInvoiceReport', () => {
   })
 
   it('setFilter updates filters and re-fetches', async () => {
-    const { result } = renderHook(() => useInvoiceReport({ type: 'sale' }))
+    const { result } = renderHook(() => useInvoiceReport({ type: 'sale' }), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     act(() => result.current.setFilter('groupBy', 'party'))
     await waitFor(() => expect(mockGetInvoiceReport).toHaveBeenCalledWith(
@@ -56,7 +60,7 @@ describe('useInvoiceReport', () => {
   })
 
   it('refresh triggers re-fetch', async () => {
-    const { result } = renderHook(() => useInvoiceReport({ type: 'sale' }))
+    const { result } = renderHook(() => useInvoiceReport({ type: 'sale' }), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     const callCount = mockGetInvoiceReport.mock.calls.length
     act(() => result.current.refresh())
@@ -65,7 +69,7 @@ describe('useInvoiceReport', () => {
 
   it('shows toast on error', async () => {
     mockGetInvoiceReport.mockRejectedValueOnce(new Error('fail'))
-    const { result } = renderHook(() => useInvoiceReport({ type: 'sale' }))
+    const { result } = renderHook(() => useInvoiceReport({ type: 'sale' }), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load invoice report')
   })

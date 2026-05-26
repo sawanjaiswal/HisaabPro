@@ -9,22 +9,26 @@ vi.mock('../ecompliance.service', () => ({
 }))
 
 import { useEInvoiceActions } from '../hooks/useEInvoiceActions'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const MOCK_RESULT = { irn: 'IRN123', ackNumber: 'ACK1', ackDate: '2024-01-01', qrCode: 'QR' }
+
+const wrapper = createTestWrapper()
 
 describe('useEInvoiceActions', () => {
   const onUpdate = vi.fn()
   beforeEach(() => { vi.clearAllMocks() })
 
   it('starts with loading flags false', () => {
-    const { result } = renderHook(() => useEInvoiceActions('doc-1', onUpdate))
+    const { result } = renderHook(() => useEInvoiceActions('doc-1', onUpdate), { wrapper })
     expect(result.current.generatingInvoice).toBe(false)
     expect(result.current.cancellingInvoice).toBe(false)
   })
 
   it('generateInvoice calls service and updates state', async () => {
     mockGenerateEInvoice.mockResolvedValue(MOCK_RESULT)
-    const { result } = renderHook(() => useEInvoiceActions('doc-1', onUpdate))
+    const { result } = renderHook(() => useEInvoiceActions('doc-1', onUpdate), { wrapper })
     await act(async () => { await result.current.generateInvoice() })
     expect(mockGenerateEInvoice).toHaveBeenCalledWith('doc-1')
     expect(onUpdate).toHaveBeenCalled()
@@ -33,7 +37,7 @@ describe('useEInvoiceActions', () => {
 
   it('cancelInvoice calls service with reason', async () => {
     mockCancelEInvoice.mockResolvedValue(undefined)
-    const { result } = renderHook(() => useEInvoiceActions('doc-1', onUpdate))
+    const { result } = renderHook(() => useEInvoiceActions('doc-1', onUpdate), { wrapper })
     await act(async () => { await result.current.cancelInvoice('Duplicate') })
     expect(mockCancelEInvoice).toHaveBeenCalledWith('doc-1', 'Duplicate')
     expect(onUpdate).toHaveBeenCalled()
@@ -42,7 +46,7 @@ describe('useEInvoiceActions', () => {
   it('prevents concurrent generate calls', async () => {
     let resolve: (v: unknown) => void
     mockGenerateEInvoice.mockReturnValue(new Promise((r) => { resolve = r }))
-    const { result } = renderHook(() => useEInvoiceActions('doc-1', onUpdate))
+    const { result } = renderHook(() => useEInvoiceActions('doc-1', onUpdate), { wrapper })
     act(() => { result.current.generateInvoice() })
     expect(result.current.generatingInvoice).toBe(true)
     // second call is a no-op while first is in flight

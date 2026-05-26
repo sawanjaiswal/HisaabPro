@@ -1,10 +1,14 @@
 import { describe, it, expect, vi } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { mockFetch, getHook } from './useOnlineStatus.helpers'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 // ---------------------------------------------------------------------------
 // useOnlineStatusWithCallbacks
 // ---------------------------------------------------------------------------
+const wrapper = createTestWrapper()
+
 describe('useOnlineStatusWithCallbacks', () => {
   it('calls onOnline when transitioning from offline to online', async () => {
     Object.defineProperty(navigator, 'onLine', { value: false, configurable: true })
@@ -16,8 +20,7 @@ describe('useOnlineStatusWithCallbacks', () => {
     const onOffline = vi.fn()
 
     renderHook(() =>
-      useOnlineStatusWithCallbacks({ onOnline, onOffline }),
-    )
+      useOnlineStatusWithCallbacks({ onOnline, onOffline }), { wrapper })
 
     await act(async () => { await Promise.resolve() })
 
@@ -44,8 +47,7 @@ describe('useOnlineStatusWithCallbacks', () => {
     const onOffline = vi.fn()
 
     renderHook(() =>
-      useOnlineStatusWithCallbacks({ onOnline, onOffline }),
-    )
+      useOnlineStatusWithCallbacks({ onOnline, onOffline }), { wrapper })
 
     await act(async () => { await Promise.resolve() })
 
@@ -63,7 +65,7 @@ describe('useOnlineStatusWithCallbacks', () => {
     Object.defineProperty(navigator, 'onLine', { value: true, configurable: true })
 
     const { useOnlineStatusWithCallbacks } = await getHook()
-    const { result } = renderHook(() => useOnlineStatusWithCallbacks())
+    const { result } = renderHook(() => useOnlineStatusWithCallbacks(), { wrapper })
 
     await act(async () => { await Promise.resolve() })
 

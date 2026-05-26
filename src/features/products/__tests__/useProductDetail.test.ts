@@ -11,22 +11,26 @@ vi.mock('@/lib/api', () => ({
 }))
 
 import { useProductDetail } from '../useProductDetail'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const MOCK_PRODUCT = { id: 'prod-1', name: 'Widget', price: 5000 }
+
+const wrapper = createTestWrapper()
 
 describe('useProductDetail', () => {
   beforeEach(() => { vi.clearAllMocks() })
 
   it('starts in loading state', () => {
     mockGetProduct.mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => useProductDetail('prod-1'))
+    const { result } = renderHook(() => useProductDetail('prod-1'), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.product).toBeNull()
   })
 
   it('fetches product on mount and sets success', async () => {
     mockGetProduct.mockResolvedValue(MOCK_PRODUCT)
-    const { result } = renderHook(() => useProductDetail('prod-1'))
+    const { result } = renderHook(() => useProductDetail('prod-1'), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.product).toEqual(MOCK_PRODUCT)
     expect(mockGetProduct).toHaveBeenCalledWith('prod-1', expect.any(AbortSignal))
@@ -34,20 +38,20 @@ describe('useProductDetail', () => {
 
   it('shows error toast on failure', async () => {
     mockGetProduct.mockRejectedValue(new Error('Network error'))
-    const { result } = renderHook(() => useProductDetail('prod-1'))
+    const { result } = renderHook(() => useProductDetail('prod-1'), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load product')
   })
 
   it('defaults activeTab to overview', () => {
     mockGetProduct.mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => useProductDetail('prod-1'))
+    const { result } = renderHook(() => useProductDetail('prod-1'), { wrapper })
     expect(result.current.activeTab).toBe('overview')
   })
 
   it('refresh triggers re-fetch', async () => {
     mockGetProduct.mockResolvedValue(MOCK_PRODUCT)
-    const { result } = renderHook(() => useProductDetail('prod-1'))
+    const { result } = renderHook(() => useProductDetail('prod-1'), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     result.current.refresh()
     await waitFor(() => expect(mockGetProduct).toHaveBeenCalledTimes(2))

@@ -15,11 +15,15 @@ vi.mock('../payment.service', () => ({
 }))
 
 import { usePayments } from '../usePayments'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const MOCK_RESPONSE = {
   payments: [{ id: '1', partyName: 'Party A', amount: 50000 }],
   pagination: { page: 1, limit: 20, total: 1, totalPages: 1 },
 }
+
+const wrapper = createTestWrapper()
 
 describe('usePayments', () => {
   beforeEach(() => {
@@ -28,20 +32,20 @@ describe('usePayments', () => {
   })
 
   it('starts in loading state', () => {
-    const { result } = renderHook(() => usePayments())
+    const { result } = renderHook(() => usePayments(), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.data).toBeNull()
   })
 
   it('fetches payments on mount', async () => {
-    const { result } = renderHook(() => usePayments())
+    const { result } = renderHook(() => usePayments(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.data).toEqual(MOCK_RESPONSE)
     expect(mockGetPayments).toHaveBeenCalledTimes(1)
   })
 
   it('setFilter updates filter and resets page to 1', async () => {
-    const { result } = renderHook(() => usePayments())
+    const { result } = renderHook(() => usePayments(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
 
     act(() => result.current.setFilter('type', 'PAYMENT_IN'))
@@ -50,7 +54,7 @@ describe('usePayments', () => {
   })
 
   it('setPage changes page number', async () => {
-    const { result } = renderHook(() => usePayments())
+    const { result } = renderHook(() => usePayments(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
 
     act(() => result.current.setPage(4))
@@ -58,7 +62,7 @@ describe('usePayments', () => {
   })
 
   it('refresh triggers re-fetch', async () => {
-    const { result } = renderHook(() => usePayments())
+    const { result } = renderHook(() => usePayments(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     const callsBefore = mockGetPayments.mock.calls.length
 
@@ -67,7 +71,7 @@ describe('usePayments', () => {
   })
 
   it('handleDelete optimistically removes item from list', async () => {
-    const { result } = renderHook(() => usePayments())
+    const { result } = renderHook(() => usePayments(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
 
     act(() => result.current.handleDelete('1', 'PAY-001'))
@@ -78,7 +82,7 @@ describe('usePayments', () => {
 
   it('shows error toast on fetch failure', async () => {
     mockGetPayments.mockRejectedValueOnce(new Error('Network error'))
-    const { result } = renderHook(() => usePayments())
+    const { result } = renderHook(() => usePayments(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load payments')
   })

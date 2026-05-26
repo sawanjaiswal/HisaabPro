@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { useTransactionControls } from '../useTransactionControls'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const mockToast = { success: vi.fn(), error: vi.fn(), info: vi.fn() }
 vi.mock('@/hooks/useToast', () => ({ useToast: () => mockToast }))
@@ -34,17 +36,19 @@ beforeEach(() => {
 
 const MOCK_CONFIG = { lockAfterDays: 7, enabled: true }
 
+const wrapper = createTestWrapper()
+
 describe('useTransactionControls', () => {
   it('starts in loading state', () => {
     mockGetConfig.mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => useTransactionControls())
+    const { result } = renderHook(() => useTransactionControls(), { wrapper })
     expect(result.current.status).toBe('loading')
   })
 
   it('fetches config on mount', async () => {
     vi.useRealTimers()
     mockGetConfig.mockResolvedValue({ data: MOCK_CONFIG })
-    const { result } = renderHook(() => useTransactionControls())
+    const { result } = renderHook(() => useTransactionControls(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.config).toEqual(MOCK_CONFIG)
@@ -53,7 +57,7 @@ describe('useTransactionControls', () => {
   it('shows toast on fetch error', async () => {
     vi.useRealTimers()
     mockGetConfig.mockRejectedValue(new Error('fail'))
-    const { result } = renderHook(() => useTransactionControls())
+    const { result } = renderHook(() => useTransactionControls(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load settings')
@@ -63,7 +67,7 @@ describe('useTransactionControls', () => {
     vi.useRealTimers()
     mockGetConfig.mockResolvedValue({ data: MOCK_CONFIG })
     mockUpdateConfig.mockResolvedValue({})
-    const { result } = renderHook(() => useTransactionControls())
+    const { result } = renderHook(() => useTransactionControls(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
 
@@ -74,7 +78,7 @@ describe('useTransactionControls', () => {
   it('refresh triggers re-fetch', async () => {
     vi.useRealTimers()
     mockGetConfig.mockResolvedValue({ data: MOCK_CONFIG })
-    const { result } = renderHook(() => useTransactionControls())
+    const { result } = renderHook(() => useTransactionControls(), { wrapper })
 
     await waitFor(() => expect(result.current.status).toBe('success'))
     mockGetConfig.mockResolvedValue({ data: { ...MOCK_CONFIG, lockAfterDays: 30 } })

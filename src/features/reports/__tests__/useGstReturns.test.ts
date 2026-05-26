@@ -21,6 +21,10 @@ vi.mock('../report.service', () => ({
 }))
 
 import { useGstReturns } from '../hooks/useGstReturns'
+import { createTestWrapper } from '@/test/query-wrapper'
+
+
+const wrapper = createTestWrapper()
 
 describe('useGstReturns', () => {
   beforeEach(() => {
@@ -30,21 +34,21 @@ describe('useGstReturns', () => {
   })
 
   it('starts in loading status', () => {
-    const { result } = renderHook(() => useGstReturns())
+    const { result } = renderHook(() => useGstReturns(), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.data).toBeNull()
     expect(result.current.returnType).toBe('GSTR1')
   })
 
   it('fetches GSTR-1 data on mount', async () => {
-    const { result } = renderHook(() => useGstReturns())
+    const { result } = renderHook(() => useGstReturns(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.data).toEqual(mockGstr1Data)
     expect(mockGetGstReturn).toHaveBeenCalledWith('GSTR1', expect.any(String), expect.any(AbortSignal))
   })
 
   it('setReturnType changes type and re-fetches', async () => {
-    const { result } = renderHook(() => useGstReturns())
+    const { result } = renderHook(() => useGstReturns(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     act(() => result.current.setReturnType('GSTR3B'))
     await waitFor(() => expect(mockGetGstReturn).toHaveBeenCalledWith(
@@ -53,7 +57,7 @@ describe('useGstReturns', () => {
   })
 
   it('setPeriod changes period and re-fetches', async () => {
-    const { result } = renderHook(() => useGstReturns())
+    const { result } = renderHook(() => useGstReturns(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     act(() => result.current.setPeriod('2026-01'))
     await waitFor(() => expect(mockGetGstReturn).toHaveBeenCalledWith(
@@ -62,7 +66,7 @@ describe('useGstReturns', () => {
   })
 
   it('exportJson returns data for GSTR1', async () => {
-    const { result } = renderHook(() => useGstReturns())
+    const { result } = renderHook(() => useGstReturns(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     let exportResult: unknown
     await act(async () => { exportResult = await result.current.exportJson() })
@@ -71,7 +75,7 @@ describe('useGstReturns', () => {
   })
 
   it('refresh triggers re-fetch', async () => {
-    const { result } = renderHook(() => useGstReturns())
+    const { result } = renderHook(() => useGstReturns(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     const callCount = mockGetGstReturn.mock.calls.length
     act(() => result.current.refresh())
@@ -80,7 +84,7 @@ describe('useGstReturns', () => {
 
   it('shows toast on error', async () => {
     mockGetGstReturn.mockRejectedValueOnce(new Error('fail'))
-    const { result } = renderHook(() => useGstReturns())
+    const { result } = renderHook(() => useGstReturns(), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load GST return')
   })

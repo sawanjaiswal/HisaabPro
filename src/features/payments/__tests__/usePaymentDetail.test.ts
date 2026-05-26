@@ -5,7 +5,10 @@ const mockToast = { success: vi.fn(), error: vi.fn(), info: vi.fn() }
 vi.mock('@/hooks/useToast', () => ({ useToast: () => mockToast }))
 
 const mockNavigate = vi.fn()
-vi.mock('react-router-dom', () => ({ useNavigate: () => mockNavigate }))
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom')
+  return { ...actual, useNavigate: () => mockNavigate }
+})
 
 const mockGetPayment = vi.fn()
 const mockDeletePayment = vi.fn()
@@ -19,29 +22,33 @@ vi.mock('@/lib/api', () => ({
 vi.mock('@/config/routes.config', () => ({ ROUTES: { PAYMENTS: '/payments' } }))
 
 import { usePaymentDetail } from '../usePaymentDetail'
+import { createTestWrapper } from '@/test/query-wrapper'
+
 
 const MOCK_PAYMENT = { id: 'pay-1', amount: 150000, partyName: 'Test' }
+
+const wrapper = createTestWrapper()
 
 describe('usePaymentDetail', () => {
   beforeEach(() => { vi.clearAllMocks() })
 
   it('starts in loading state', () => {
     mockGetPayment.mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => usePaymentDetail('pay-1'))
+    const { result } = renderHook(() => usePaymentDetail('pay-1'), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.payment).toBeNull()
   })
 
   it('fetches payment on mount', async () => {
     mockGetPayment.mockResolvedValue(MOCK_PAYMENT)
-    const { result } = renderHook(() => usePaymentDetail('pay-1'))
+    const { result } = renderHook(() => usePaymentDetail('pay-1'), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.payment).toEqual(MOCK_PAYMENT)
   })
 
   it('shows error toast on failure', async () => {
     mockGetPayment.mockRejectedValue(new Error('fail'))
-    const { result } = renderHook(() => usePaymentDetail('pay-1'))
+    const { result } = renderHook(() => usePaymentDetail('pay-1'), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load payment')
   })
@@ -49,7 +56,7 @@ describe('usePaymentDetail', () => {
   it('handleDelete calls service and navigates', async () => {
     mockGetPayment.mockResolvedValue(MOCK_PAYMENT)
     mockDeletePayment.mockResolvedValue(undefined)
-    const { result } = renderHook(() => usePaymentDetail('pay-1'))
+    const { result } = renderHook(() => usePaymentDetail('pay-1'), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     result.current.handleDelete()
     await waitFor(() => expect(mockDeletePayment).toHaveBeenCalledWith('pay-1'))
@@ -58,7 +65,7 @@ describe('usePaymentDetail', () => {
 
   it('refresh triggers re-fetch', async () => {
     mockGetPayment.mockResolvedValue(MOCK_PAYMENT)
-    const { result } = renderHook(() => usePaymentDetail('pay-1'))
+    const { result } = renderHook(() => usePaymentDetail('pay-1'), { wrapper })
     await waitFor(() => expect(result.current.status).toBe('success'))
     result.current.refresh()
     await waitFor(() => expect(mockGetPayment).toHaveBeenCalledTimes(2))
