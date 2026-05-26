@@ -53,6 +53,28 @@ vi.mock('../middleware/csrf.js', () => ({
   csrfProtection: (_req: unknown, _res: unknown, next: () => void) => next(),
 }))
 
+// Mock replay-protection middleware (added post-launch); tests don't send
+// X-Request-Nonce / X-Request-Timestamp headers, so default-strict mode would
+// 400 every request. Pass through globally; individual tests can re-mock to
+// exercise the middleware itself.
+vi.mock('../middleware/replay-protection.js', () => ({
+  replayProtection: (_req: unknown, _res: unknown, next: () => void) => next(),
+}))
+
+// Mock subscription-gate factories to pass through. Without this the global
+// prisma-Proxy returns undefined for `business.findUnique`, which makes
+// resolveBusinessPlan return FREE → every paid-tier route 402s. Tests of the
+// gate itself re-import the real module via importOriginal (see
+// storefront-proof.test.ts for the pattern).
+vi.mock('../middleware/subscription-gate.js', () => {
+  const passthrough = (_req: unknown, _res: unknown, next: () => void) => next()
+  return {
+    requirePlan: () => passthrough,
+    requireFeature: () => passthrough,
+    requireQuota: () => passthrough,
+  }
+})
+
 // Mock rate limiters to pass through in tests
 vi.mock('../middleware/rate-limit.js', () => {
   const passthrough = (_req: unknown, _res: unknown, next: () => void) => next()

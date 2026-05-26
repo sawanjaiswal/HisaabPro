@@ -20,6 +20,10 @@ export default defineConfig({
       JWT_SECRET: 'test-secret-key-that-is-at-least-32-chars-long',
       DATABASE_URL: 'postgresql://test:test@localhost:5432/test',
       CORS_ORIGIN: 'http://localhost:5173',
+      FEATURE_STAFF_HR: 'true',
+      FEATURE_STAFF_HR_COHORT_PCT: '100',
+      FEATURE_DATA_IMPORT: 'true',
+      FEATURE_DATA_IMPORT_COHORT_PCT: '100',
     },
   },
 })

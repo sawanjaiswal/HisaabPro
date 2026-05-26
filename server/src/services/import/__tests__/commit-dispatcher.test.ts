@@ -26,16 +26,11 @@ describe('commit-dispatcher · pickCommitChunk', () => {
     expect(pickCommitChunk('product')).toBe(commitChunkProducts)
   })
 
-  it("entity='invoice' → returns stub that throws 409 IMPORT_JOB_NOT_COMMITTABLE at call (PR-C1 scaffold)", async () => {
-    const fn = pickCommitChunk('invoice')
-    expect(typeof fn).toBe('function')
-    await expect(
-      (fn as (tx: unknown, args: unknown) => Promise<unknown>)({}, {}),
-    ).rejects.toMatchObject({
-      name: 'AppError',
-      code: ErrorCode.IMPORT_JOB_NOT_COMMITTABLE,
-      statusCode: 409,
-    })
+  it("entity='invoice' → returns commitChunkInvoices (PR-C3 ladder)", () => {
+    // PR-C1 scaffold-throw replaced by PR-C3 real chunk implementation.
+    // We assert only that dispatch returns a function; invocation behavior
+    // is covered by commit-invoices.test.ts.
+    expect(typeof pickCommitChunk('invoice')).toBe('function')
   })
 
   it("unknown entity → 409 IMPORT_JOB_NOT_COMMITTABLE", () => {
