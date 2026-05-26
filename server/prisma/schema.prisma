@@ -31,10 +31,16 @@ model User {
   suspendedReason String?
 
   // Referral wallet — Feature #3
+  // NOTE: dual-write window. Legacy Decimal columns are authoritative through PR1+PR2;
+  // PR3 drops them and renames *Paise → unsuffixed via @map. See design-plan-active--money-ssot.
   referredBy              String?
   referralBalance         Decimal   @default(0) @db.Decimal(12, 2)
   referralBalanceInReview Decimal   @default(0) @db.Decimal(12, 2)
   referralTotalEarned     Decimal   @default(0) @db.Decimal(12, 2)
+  // PR1 additive paise columns (nullable until backfilled by PR2).
+  referralBalancePaise         Int?
+  referralBalanceInReviewPaise Int?
+  referralTotalEarnedPaise     BigInt?
   referralFraudFlags      Int       @default(0)
   walletFrozen            Boolean   @default(false)
   lastReferralAt          DateTime?
@@ -1353,7 +1359,10 @@ model PaymentDiscount {
   id               String   @id @default(cuid())
   paymentId        String   @unique
   type             String // PERCENTAGE, FIXED
-  value            Float // percentage value or fixed paise
+  value            Float // legacy: percentage value or fixed paise — dual-write window
+  // Split successors — PR3 drops `value`. type=FIXED → valuePaise; type=PERCENTAGE → percentBps.
+  valuePaise       Int?
+  percentBps       Int?
   calculatedAmount Int // paise
   reason           String?  @db.VarChar(200)
   createdAt        DateTime @default(now())
@@ -1723,6 +1732,8 @@ model ReferralCode {
   totalReferrals    Int      @default(0)
   successfulRewards Int      @default(0)
   totalEarned       Decimal  @default(0) @db.Decimal(12, 2)
+  // Dual-write paise column — PR3 drops Decimal + renames via @map.
+  totalEarnedPaise  BigInt?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -1761,6 +1772,8 @@ model ReferralReward {
   referrerId     String
   referredId     String
   amount         Decimal   @db.Decimal(10, 2)
+  // Dual-write paise column — PR3 drops Decimal + renames via @map.
+  amountPaise    Int?
   status         String // in_review, approved, withdrawn, clawed_back
   eligibleAt     DateTime?
   approvedAt     DateTime?
@@ -1783,6 +1796,8 @@ model ReferralWithdrawal {
   id            String    @id @default(cuid())
   userId        String
   amount        Decimal   @db.Decimal(10, 2)
+  // Dual-write paise column — PR3 drops Decimal + renames via @map.
+  amountPaise   Int?
   upiId         String
   status        String // pending, approved, rejected, failed, processing
   statusReason  String?

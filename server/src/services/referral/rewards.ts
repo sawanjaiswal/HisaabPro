@@ -6,6 +6,9 @@ import { prisma } from '../../lib/prisma.js'
 import logger from '../../lib/logger.js'
 
 const REWARD_AMOUNT = parseFloat(process.env.REFERRAL_REWARD_AMOUNT ?? '100')
+// Paise twin for dual-write during the money-SSOT migration window. PR3 drops
+// the rupee Decimal columns and this becomes the only source.
+const REWARD_AMOUNT_PAISE = Math.round(REWARD_AMOUNT * 100)
 const REVIEW_WINDOW_DAYS = parseInt(process.env.REFERRAL_REVIEW_WINDOW_DAYS ?? '7', 10)
 
 /**
@@ -56,13 +59,17 @@ export async function handleSubscriptionPayment(params: {
           referrerId: user.referredBy,
           referredId: params.userId,
           amount: REWARD_AMOUNT,
+          amountPaise: REWARD_AMOUNT_PAISE,
           status: 'in_review',
           eligibleAt,
         },
       }),
       prisma.user.update({
         where: { id: user.referredBy },
-        data: { referralBalanceInReview: { increment: REWARD_AMOUNT } },
+        data: {
+          referralBalanceInReview: { increment: REWARD_AMOUNT },
+          referralBalanceInReviewPaise: { increment: REWARD_AMOUNT_PAISE },
+        },
       }),
     ])
 
@@ -87,7 +94,7 @@ export async function processEligibleRewards(): Promise<{ count: number }> {
       status: 'in_review',
       eligibleAt: { lte: new Date() },
     },
-    select: { id: true, referrerId: true, referredId: true, amount: true },
+    select: { id: true, referrerId: true, referredId: true, amount: true, amountPaise: true },
   })
 
   if (eligible.length === 0) return { count: 0 }
@@ -96,6 +103,10 @@ export async function processEligibleRewards(): Promise<{ count: number }> {
 
   for (const reward of eligible) {
     try {
+      // Derive paise once per reward — old rows may be NULL (pre-backfill); fall
+      // back to rupees * 100 so cron-approved-before-backfill stays consistent.
+      const rupees = Number(reward.amount)
+      const rewardPaise = reward.amountPaise ?? Math.round(rupees * 100)
       await prisma.$transaction(async (tx) => {
         await tx.referralReward.update({
           where: { id: reward.id },
@@ -104,9 +115,12 @@ export async function processEligibleRewards(): Promise<{ count: number }> {
         await tx.user.update({
           where: { id: reward.referrerId },
           data: {
-            referralBalance: { increment: Number(reward.amount) },
-            referralBalanceInReview: { decrement: Number(reward.amount) },
-            referralTotalEarned: { increment: Number(reward.amount) },
+            referralBalance: { increment: rupees },
+            referralBalanceInReview: { decrement: rupees },
+            referralTotalEarned: { increment: rupees },
+            referralBalancePaise: { increment: rewardPaise },
+            referralBalanceInReviewPaise: { decrement: rewardPaise },
+            referralTotalEarnedPaise: { increment: BigInt(rewardPaise) },
           },
         })
         await tx.referralEvent.create({
@@ -114,7 +128,7 @@ export async function processEligibleRewards(): Promise<{ count: number }> {
             referrerId: reward.referrerId,
             referredId: reward.referredId,
             eventType: 'reward_credited',
-            eventData: { rewardId: reward.id, amount: Number(reward.amount) },
+            eventData: { rewardId: reward.id, amountPaise: rewardPaise },
             isSuspicious: false,
           },
         })
@@ -122,7 +136,8 @@ export async function processEligibleRewards(): Promise<{ count: number }> {
           where: { userId: reward.referrerId },
           data: {
             successfulRewards: { increment: 1 },
-            totalEarned: { increment: Number(reward.amount) },
+            totalEarned: { increment: rupees },
+            totalEarnedPaise: { increment: BigInt(rewardPaise) },
           },
         })
       })

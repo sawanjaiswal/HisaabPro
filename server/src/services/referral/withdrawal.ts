@@ -69,14 +69,21 @@ export async function requestWithdrawal(
     // Encrypt UPI ID at rest (PII protection)
     const encryptedUpiId = process.env.ENCRYPTION_KEY ? encrypt(upiId) : upiId
 
+    // Money-SSOT dual-write: derive paise twin from the rupee input. Once PR3
+    // lands, the API will accept paise directly and this conversion goes away.
+    const amountPaise = Math.round(amount * 100)
+
     const withdrawal = await tx.referralWithdrawal.create({
-      data: { userId, amount, upiId: encryptedUpiId, status, autoApproved },
+      data: { userId, amount, amountPaise, upiId: encryptedUpiId, status, autoApproved },
     })
 
     if (autoApproved) {
       await tx.user.update({
         where: { id: userId },
-        data: { referralBalance: { decrement: amount } },
+        data: {
+          referralBalance: { decrement: amount },
+          referralBalancePaise: { decrement: amountPaise },
+        },
       })
     }
 
