@@ -21,7 +21,7 @@
  */
 
 import { execSync } from 'node:child_process'
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { join, relative, extname } from 'node:path'
 
 const ROOT = join(import.meta.dirname, '..')
@@ -777,6 +777,78 @@ if (serverOnlyLeakCount === 0) {
   console.log('  ✅ Input Party schemas reject server-only fields (lastContactedAt / loyaltyPointsCache / loyaltyOptOut; followUpAt patch-only)')
 } else {
   console.log(`  ❌ ${serverOnlyLeakCount} server-only field leak(s) in input schema`)
+}
+
+// ─── Check 16: require Zod parse before `req.body` use in mutation routes ────
+// Mutation handlers (POST/PUT/PATCH) that read `req.body` MUST run a Zod
+// `.parse()` or `.safeParse()` (or `validate(...)` middleware) in the same
+// route file. This is enforced as a RATCHET — current violations are
+// snapshotted under .claude/ratchets/no-unvalidated-body.json and the count
+// can only shrink. Set RATCHET_BASELINE=1 to refresh the snapshot.
+
+console.log('\n[check 16] Routes touching req.body must validate via Zod...')
+
+const ROUTES_DIR = join(SERVER_SRC, 'routes')
+const ZOD_USE_RE = /\b(?:safeParse|\.parse\s*\(|validate\s*\(|validateBody\s*\(|requireSchema\s*\()/
+const REQ_BODY_RE = /\breq\.body\b/
+const MUTATION_VERB_RE = /\brouter\s*\.\s*(post|put|patch|delete)\s*\(/i
+
+const unvalidatedBody = []
+for (const file of walkDir(ROUTES_DIR)) {
+  if (file.includes('__tests__') || file.endsWith('.test.ts')) continue
+  let src
+  try {
+    src = readFileSync(file, 'utf8')
+  } catch { continue }
+  if (!MUTATION_VERB_RE.test(src)) continue
+  if (!REQ_BODY_RE.test(src)) continue
+  if (ZOD_USE_RE.test(src)) continue
+  unvalidatedBody.push(rel(file))
+}
+
+const RATCHET_DIR = join(ROOT, '.claude', 'ratchets')
+const ratchetFile = join(RATCHET_DIR, 'no-unvalidated-body.json')
+let baseline = { count: Number.MAX_SAFE_INTEGER, files: [] }
+try { baseline = JSON.parse(readFileSync(ratchetFile, 'utf8')) } catch {}
+
+if (process.env.RATCHET_BASELINE === '1') {
+  try { mkdirSync(RATCHET_DIR, { recursive: true }) } catch {}
+  writeFileSync(ratchetFile, JSON.stringify({ count: unvalidatedBody.length, files: unvalidatedBody.sort() }, null, 2))
+  console.log(`  📌 Baseline refreshed: ${unvalidatedBody.length} unvalidated-body route files`)
+} else if (unvalidatedBody.length > baseline.count) {
+  errors.push(`Check 16: unvalidated req.body in ${unvalidatedBody.length} route file(s) — baseline is ${baseline.count}. New offenders: ${unvalidatedBody.filter(f => !baseline.files.includes(f)).join(', ')}`)
+} else {
+  console.log(`  ✅ Unvalidated-body route files: ${unvalidatedBody.length} (baseline ${baseline.count})`)
+}
+
+// ─── Check 17: webhook routes must not JSON.stringify(req.body) before verify ─
+// Razorpay/Stripe signature verification needs the RAW request body. If a
+// webhook route calls JSON.stringify(req.body) before verification, the
+// re-serialized form will not match the provider's HMAC and every webhook
+// gets rejected — OR (worse) verification is silently bypassed.
+
+console.log('\n[check 17] Webhook routes must not re-stringify req.body before verify...')
+
+const WEBHOOK_FILE_RE = /(webhook|razorpay|stripe)/i
+const STRINGIFY_BODY_RE = /JSON\.stringify\s*\(\s*req\.body\b/
+
+const webhookStringifyOffenders = []
+for (const file of walkDir(ROUTES_DIR)) {
+  if (!WEBHOOK_FILE_RE.test(file)) continue
+  if (file.includes('__tests__') || file.endsWith('.test.ts')) continue
+  let src
+  try { src = readFileSync(file, 'utf8') } catch { continue }
+  if (STRINGIFY_BODY_RE.test(src)) {
+    webhookStringifyOffenders.push(rel(file))
+  }
+}
+
+if (webhookStringifyOffenders.length === 0) {
+  console.log('  ✅ No webhook route re-stringifies req.body before signature verify')
+} else {
+  for (const f of webhookStringifyOffenders) {
+    errors.push(`Check 17: webhook route ${f} calls JSON.stringify(req.body) — signature verify will fail or be bypassed`)
+  }
 }
 
 // ─── Summary ──────────────────────────────────────────────────────────────────

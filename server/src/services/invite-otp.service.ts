@@ -26,6 +26,7 @@ import {
   RESEND_COOLDOWN_MS,
 } from '../lib/otp.js'
 import logger from '../lib/logger.js'
+import { maskPhoneForUser } from '../lib/phone-pii.js'
 
 // ---------------------------------------------------------------------------
 // OTP verified token — short-lived JWT scoped to this invite link
@@ -130,7 +131,7 @@ export async function sendInviteOtp(params: {
     return { sent: false, message: 'Failed to send OTP. Please try again.' }
   }
 
-  return { sent: true, message: `OTP sent to ${maskPhone(phone)}` }
+  return { sent: true, message: `OTP sent to ${maskPhoneForUser(phone)}` }
 }
 
 // ---------------------------------------------------------------------------
@@ -216,12 +217,6 @@ export async function verifyInviteOtp(params: {
 // ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------
-
-function maskPhone(phone: string): string {
-  const digits = phone.replace(/\D/g, '')
-  if (digits.length < 4) return '****'
-  return `****${digits.slice(-4)}`
-}
 
 /** SHA-256 of the plaintext token — mirrors resolve-public-token.ts */
 export function sha256(input: string): string {

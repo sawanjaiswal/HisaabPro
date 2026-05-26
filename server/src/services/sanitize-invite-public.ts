@@ -13,6 +13,8 @@
  *   - No business email, bank, address, GSTIN, owner name, plan details
  */
 
+import { maskPhonePublic } from '../lib/phone-pii.js'
+
 // ---------------------------------------------------------------------------
 // DTO type
 // ---------------------------------------------------------------------------
@@ -53,15 +55,6 @@ type InviteSharedLink = {
 // Sanitizer
 // ---------------------------------------------------------------------------
 
-function maskPhone(phone: string | null): string | null {
-  if (!phone) return null
-  // Strip +91 / leading country code; keep last 4 digits
-  const digits = phone.replace(/\D/g, '')
-  if (digits.length < 4) return null
-  const last4 = digits.slice(-4)
-  return `+91 **** ${last4}`
-}
-
 export function sanitizeInvitePreview(
   link: InviteSharedLink,
   party: InviteParty,
@@ -71,7 +64,7 @@ export function sanitizeInvitePreview(
   return {
     businessName: business.name,
     partyName: party.name,
-    partyPhoneMasked: maskPhone(party.phone),
+    partyPhoneMasked: maskPhonePublic(party.phone),
     invitedAt: link.createdAt.toISOString(),
     expiresAt: link.expiresAt?.toISOString() ?? null,
     requiresOtp: existingUserWithPhone,

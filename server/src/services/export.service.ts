@@ -19,7 +19,11 @@ function toCsv(rows: ExportRow[], columns: string[]): string {
     columns.map((col) => {
       const val = row[col]
       if (val === null || val === undefined) return ''
-      const str = String(val)
+      let str = String(val)
+      // Formula-injection guard: Excel/Sheets/Numbers treat leading =,+,-,@,\t,\r as formulas.
+      if (str.length > 0 && /^[=+\-@\t\r]/.test(str)) {
+        str = `'${str}`
+      }
       if (str.includes(',') || str.includes('"') || str.includes('\n')) {
         return `"${str.replace(/"/g, '""')}"`
       }
