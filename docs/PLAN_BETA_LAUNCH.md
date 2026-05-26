@@ -44,7 +44,7 @@ For each, the code is shipped — the work is procurement + env wiring + smoke t
 | # | Feature | Action | Lead time | Smoke test |
 |---|---------|--------|-----------|------------|
 | 2 | Razorpay Subscriptions | Switch test keys → live keys; verify webhook signing key in prod env | 1 day (account already KYC'd) | Subscribe Sawan's number to ₹1 plan, confirm webhook lands |
-| 4 | Notifications engine (SMS+Email providers) | Pick MSG91 or Gupshup for SMS; SES or Resend for email; wire keys | 2-3 days | Trigger payment-received notification end-to-end |
+| 4 | Notifications engine (SMS+Email providers) | **SMS: MSG91** (DLT-registered sender ID + template approval; trial credits cover beta). **Email: Resend** (3k/mo free forever, 100/day). Wire keys in `lib/env.ts` | 2-3 days SMS · 1 day email | Trigger payment-received notification end-to-end |
 | 30 | GST e-invoice (IRP) | Register GSTIN on NIC IRP sandbox → prod; install API access | 5-7 days (NIC approval) | Generate IRN for one B2B invoice |
 | 32 | E-way bill | Same IRP creds extend to EWB API | Same as #30 | Generate EWB for one ≥₹50k invoice |
 | 42 | UPI Intent / Razorpay UPI collect | Razorpay UPI activation (separate from subs) | 2 days | Receive ₹10 payment via QR |
