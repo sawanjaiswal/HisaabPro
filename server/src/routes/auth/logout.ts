@@ -6,6 +6,7 @@ import { logoutSchema } from '../../schemas/auth.schemas.js'
 import { sendSuccess } from '../../lib/response.js'
 import { blacklistToken } from '../../lib/token-blacklist.js'
 import { decodeToken } from '../../lib/jwt.js'
+import { prisma } from '../../lib/prisma.js'
 import * as authService from '../../services/auth.service.js'
 import {
   ACCESS_TOKEN_COOKIE,
@@ -41,6 +42,14 @@ router.post(
       (req.cookies?.[REFRESH_TOKEN_COOKIE] as string | undefined) ?? req.body?.refreshToken
 
     if (refreshToken) {
+      // Mark the RefreshToken row revoked (family-rotation aware). Best-effort:
+      // if the row doesn't exist (legacy token), fall through to in-memory
+      // blacklist so the JWT itself stops working.
+      await prisma.refreshToken.updateMany({
+        where: { token: refreshToken, revokedAt: null },
+        data: { revokedAt: new Date(), revokedReason: 'logout' },
+      })
+
       const refreshDecoded = decodeToken(refreshToken)
       const refreshTtl = refreshDecoded?.exp
         ? refreshDecoded.exp * 1000 - Date.now()

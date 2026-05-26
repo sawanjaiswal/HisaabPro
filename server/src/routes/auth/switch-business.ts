@@ -7,6 +7,7 @@ import { switchBusinessSchema } from '../../schemas/auth.schemas.js'
 import { sendSuccess, sendError } from '../../lib/response.js'
 import { blacklistToken } from '../../lib/token-blacklist.js'
 import { decodeToken } from '../../lib/jwt.js'
+import { prisma } from '../../lib/prisma.js'
 import logger from '../../lib/logger.js'
 import * as authService from '../../services/auth.service.js'
 import { emitBusinessSwitchAudit } from '../../services/auth/switch-business-audit.js'
@@ -42,11 +43,15 @@ router.post(
       if (ttl > 0) blacklistToken(rawAccessToken, ttl)
     }
 
-    // P3.15 — blacklist old refresh token too. Otherwise an attacker who
-    // captured the prior refresh during the switch window can rotate back
-    // to the prior business.
+    // P3.15 — revoke old refresh token row so attacker can't rotate back
+    // to the prior business. Family-rotation aware: also blacklist the raw
+    // token in case it predates the family-rotation rollout.
     const rawRefreshToken = req.cookies?.[REFRESH_TOKEN_COOKIE] as string | undefined
     if (rawRefreshToken) {
+      await prisma.refreshToken.updateMany({
+        where: { token: rawRefreshToken, revokedAt: null },
+        data: { revokedAt: new Date(), revokedReason: 'switch-business' },
+      })
       const decoded = decodeToken(rawRefreshToken)
       const ttl = decoded?.exp ? decoded.exp * 1000 - Date.now() : 7 * 24 * 60 * 60 * 1000
       if (ttl > 0) blacklistToken(rawRefreshToken, ttl)

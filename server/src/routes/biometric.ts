@@ -14,6 +14,7 @@ import * as authService from '../services/auth.service.js'
 import * as webauthnService from '../services/webauthn.service.js'
 import logger from '../lib/logger.js'
 import { prisma } from '../lib/prisma.js'
+import { persistRefreshTokenFamily } from '../services/auth/helpers.js'
 
 const router = Router()
 
@@ -128,14 +129,10 @@ router.post(
       const businessId = user?.lastActiveBusinessId ?? ''
       const tokens = generateTokens(userId, userPhone, businessId)
 
-      // Store refresh token
-      await prisma.refreshToken.create({
-        data: {
-          userId,
-          token: tokens.refreshToken,
-          deviceInfo: 'biometric',
-          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        },
+      await persistRefreshTokenFamily({
+        userId,
+        refreshToken: tokens.refreshToken,
+        deviceInfo: 'biometric',
       })
 
       // Set httpOnly cookies

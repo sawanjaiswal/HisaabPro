@@ -1,6 +1,7 @@
 import { prisma } from '../../lib/prisma.js'
 import { generateTokens } from '../../lib/jwt.js'
 import { unauthorizedError } from '../../lib/errors.js'
+import { persistRefreshTokenFamily } from './helpers.js'
 
 /**
  * Get current user profile with businesses and active business details.
@@ -93,7 +94,12 @@ export async function switchBusiness(userId: string, phone: string, targetBusine
 
   const tokens = generateTokens(userId, phone, targetBusinessId)
 
-  // Update lastActiveBusinessId + lastActiveAt in parallel
+  await persistRefreshTokenFamily({
+    userId,
+    refreshToken: tokens.refreshToken,
+    deviceInfo: null,
+  })
+
   await Promise.all([
     prisma.user.update({
       where: { id: userId },

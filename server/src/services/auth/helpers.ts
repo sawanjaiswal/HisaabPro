@@ -2,7 +2,34 @@ import { prisma } from '../../lib/prisma.js'
 import {
   LOCKOUT_MAX_ATTEMPTS,
   LOCKOUT_DURATION_MS,
+  REFRESH_TOKEN_TTL_MS,
 } from '../../config/security.js'
+
+/**
+ * Persist a freshly minted refresh token as a family-head row.
+ * Sets family = id so reuse-detection can walk the chain from any descendant.
+ * Used by every code path that calls generateTokens() and hands the refresh
+ * token back to a client.
+ */
+export async function persistRefreshTokenFamily(args: {
+  userId: string
+  refreshToken: string
+  deviceInfo: string | null
+}): Promise<void> {
+  const created = await prisma.refreshToken.create({
+    data: {
+      userId: args.userId,
+      token: args.refreshToken,
+      deviceInfo: args.deviceInfo,
+      expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
+    },
+    select: { id: true },
+  })
+  await prisma.refreshToken.update({
+    where: { id: created.id },
+    data: { family: created.id },
+  })
+}
 
 /**
  * Resolve the active businessId for a user.

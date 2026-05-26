@@ -2,19 +2,20 @@ import { Router } from 'express'
 import { asyncHandler } from '../../middleware/asyncHandler.js'
 import { authRateLimiter } from '../../middleware/rate-limit.js'
 import { sendSuccess, sendError } from '../../lib/response.js'
-import { isBlacklisted, blacklistToken } from '../../lib/token-blacklist.js'
-import { decodeToken } from '../../lib/jwt.js'
 import * as authService from '../../services/auth.service.js'
+import { RefreshReuseError } from '../../services/auth/login.js'
 import { REFRESH_TOKEN_COOKIE, ALLOWED_ORIGINS } from '../../config/security.js'
 
 const router = Router()
 
 /**
  * POST /api/auth/refresh
- * Refresh access token. Reads refresh token from:
+ * Family-rotation refresh (RFC 6819 §5.2.2.3). Reads refresh token from:
  *   1. httpOnly cookie (preferred)
  *   2. Request body (backward-compat)
- * Rotates both cookies on success.
+ *
+ * All rotation failures collapse to a generic 401 so the client can't tell
+ * the difference between "unknown token", "reuse detected", or "user inactive".
  */
 router.post(
   '/refresh',
@@ -29,7 +30,6 @@ router.post(
       return
     }
 
-    // Cookie-first, then body fallback
     const refreshToken: string | undefined =
       (req.cookies?.[REFRESH_TOKEN_COOKIE] as string | undefined) ?? req.body?.refreshToken
 
@@ -38,31 +38,20 @@ router.post(
       return
     }
 
-    // Reject blacklisted refresh tokens
-    if (isBlacklisted(refreshToken)) {
-      sendError(res, 'Token has been revoked', 'TOKEN_REVOKED', 401)
-      return
-    }
-
     try {
       const tokens = await authService.refreshAccessToken(refreshToken)
-      if (!tokens) {
-        sendError(res, 'Account is inactive', 'ACCOUNT_INACTIVE', 401)
-        return
-      }
-
-      // Blacklist the old refresh token to prevent replay
-      const decoded = decodeToken(refreshToken)
-      const ttl = decoded?.exp ? decoded.exp * 1000 - Date.now() : 7 * 24 * 60 * 60 * 1000
-      if (ttl > 0) blacklistToken(refreshToken, ttl)
-
-      // Rotate both cookies
       authService.setTokenCookies(res, tokens)
-
       res.set('Cache-Control', 'no-store')
       sendSuccess(res, {})
-    } catch {
-      sendError(res, 'Invalid or expired refresh token', 'REFRESH_FAILED', 401)
+    } catch (err) {
+      // RefreshReuseError + verifyRefreshToken JsonWebTokenError both collapse
+      // to generic 401. Server-side reason already logged to Sentry inside the
+      // service — don't leak it back to the caller.
+      if (err instanceof RefreshReuseError || (err as Error).name === 'JsonWebTokenError' || (err as Error).name === 'TokenExpiredError') {
+        sendError(res, 'Invalid or expired refresh token', 'REFRESH_FAILED', 401)
+        return
+      }
+      throw err
     }
   })
 )

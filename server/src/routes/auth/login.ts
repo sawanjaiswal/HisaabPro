@@ -4,11 +4,10 @@ import { validate } from '../../middleware/validate.js'
 import { authRateLimiter } from '../../middleware/rate-limit.js'
 import { captchaGuard, recordFailedAttempt } from '../../middleware/captcha.js'
 import { loginSchema } from '../../schemas/auth.schemas.js'
-import { prisma } from '../../lib/prisma.js'
 import { sendSuccess, sendError } from '../../lib/response.js'
 import logger from '../../lib/logger.js'
 import * as authService from '../../services/auth.service.js'
-import { REFRESH_TOKEN_TTL_MS } from '../../config/security.js'
+import { persistRefreshTokenFamily } from '../../services/auth/helpers.js'
 
 const router = Router()
 
@@ -30,13 +29,10 @@ router.post(
       return
     }
 
-    await prisma.refreshToken.create({
-      data: {
-        userId: result.user!.id,
-        token: result.tokens!.refreshToken,
-        deviceInfo: req.headers['user-agent']?.slice(0, 200) || null,
-        expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
-      },
+    await persistRefreshTokenFamily({
+      userId: result.user!.id,
+      refreshToken: result.tokens!.refreshToken,
+      deviceInfo: req.headers['user-agent']?.slice(0, 200) || null,
     })
 
     authService.setTokenCookies(res, result.tokens!)

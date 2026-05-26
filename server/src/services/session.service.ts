@@ -1,10 +1,12 @@
 /**
  * Multi-device session management — built on RefreshToken model.
  * Lists active sessions, force-logout specific devices.
+ *
+ * Family-rotation aware: rows are revoked (revokedAt set) rather than
+ * deleted, so reuse-detection can still walk the audit chain.
  */
 
 import { prisma } from '../lib/prisma.js'
-import { blacklistUser } from '../lib/token-blacklist.js'
 
 export interface SessionInfo {
   id: string
@@ -13,11 +15,12 @@ export interface SessionInfo {
   isCurrent: boolean
 }
 
-/** List all active sessions (non-expired refresh tokens) for a user */
+/** List all active sessions (live refresh-token rows) for a user */
 export async function listSessions(userId: string, currentTokenId?: string): Promise<SessionInfo[]> {
   const tokens = await prisma.refreshToken.findMany({
     where: {
       userId,
+      revokedAt: null,
       expiresAt: { gt: new Date() },
     },
     select: {
@@ -37,29 +40,25 @@ export async function listSessions(userId: string, currentTokenId?: string): Pro
   }))
 }
 
-/** Revoke a specific session by deleting its refresh token */
+/** Revoke a specific session — flag revokedAt rather than delete row */
 export async function revokeSession(userId: string, sessionId: string): Promise<boolean> {
-  const token = await prisma.refreshToken.findFirst({
-    where: { id: sessionId, userId },
+  const result = await prisma.refreshToken.updateMany({
+    where: { id: sessionId, userId, revokedAt: null },
+    data: { revokedAt: new Date(), revokedReason: 'user-revoked' },
   })
-
-  if (!token) return false
-
-  await prisma.refreshToken.delete({ where: { id: sessionId } })
-  return true
+  return result.count > 0
 }
 
 /** Revoke ALL sessions except the current one (panic button) */
 export async function revokeAllSessions(userId: string, currentTokenId?: string): Promise<number> {
-  const where: Record<string, unknown> = { userId }
+  const where: Record<string, unknown> = { userId, revokedAt: null }
   if (currentTokenId) {
     where.id = { not: currentTokenId }
   }
 
-  const result = await prisma.refreshToken.deleteMany({ where })
-
-  // Blacklist user's existing access tokens — forces re-auth on next request
-  await blacklistUser(userId)
-
+  const result = await prisma.refreshToken.updateMany({
+    where,
+    data: { revokedAt: new Date(), revokedReason: 'revoke-all' },
+  })
   return result.count
 }

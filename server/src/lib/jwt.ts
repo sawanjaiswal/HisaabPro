@@ -1,3 +1,4 @@
+import crypto from 'node:crypto'
 import jwt from 'jsonwebtoken'
 
 if (!process.env.JWT_SECRET) {
@@ -57,4 +58,17 @@ export function verifyRefreshToken(token: string): TokenPayload {
 /** Decode without verifying (for blacklist TTL extraction) */
 export function decodeToken(token: string): { exp?: number } | null {
   return jwt.decode(token) as { exp?: number } | null
+}
+
+/**
+ * Hash a userId for log/Sentry correlation without leaking the cuid.
+ * Uses a dedicated USER_HASH_SALT (NOT JWT_SECRET) so the JWT secret can be
+ * rotated without losing Sentry forensic continuity.
+ *
+ * Fail-open: if USER_HASH_SALT is unset, falls back to JWT_SECRET so the
+ * boot path never breaks; production deploys must set USER_HASH_SALT.
+ */
+const USER_HASH_SALT: string = process.env.USER_HASH_SALT || JWT_SECRET
+export function hashUserId(userId: string): string {
+  return crypto.createHmac('sha256', USER_HASH_SALT).update(userId).digest('hex').slice(0, 16)
 }

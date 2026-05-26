@@ -10,9 +10,12 @@ import { vi } from 'vitest'
 // Individual tests still override per-method via vi.mocked(prisma.x.y).mockResolvedValue(...).
 vi.mock('../lib/prisma.js', () => {
   const modelCache = new Map<string, Record<string, ReturnType<typeof vi.fn>>>()
+  // Default fn resolves to `{}` (NOT undefined). Services that await `.create()`
+  // and read `.id` of the result get an undefined that the next mocked call
+  // tolerates, instead of TypeError-crashing on `undefined.id`.
   const makeModel = () => new Proxy({}, {
     get(target: Record<string, ReturnType<typeof vi.fn>>, method: string) {
-      if (!(method in target)) target[method] = vi.fn()
+      if (!(method in target)) target[method] = vi.fn().mockResolvedValue({})
       return target[method]
     },
   }) as Record<string, ReturnType<typeof vi.fn>>

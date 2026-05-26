@@ -5,7 +5,7 @@ import { resolvePublicTokenHelper, PublicLinkError } from '../../../middleware/r
 import { claimInvite } from '../../../services/party-invite.service.js'
 import { generateTokens } from '../../../lib/jwt.js'
 import { setTokenCookies } from '../../../services/auth/tokens.js'
-import { resolveUserBusinessId } from '../../../services/auth/helpers.js'
+import { resolveUserBusinessId, persistRefreshTokenFamily } from '../../../services/auth/helpers.js'
 import logger from '../../../lib/logger.js'
 import type { ClaimBody } from '../../../validators/invite.validators.js'
 import { handlePublicLinkError } from './helpers.js'
@@ -121,6 +121,11 @@ export async function claimHandler(req: Request, res: Response, next: NextFuncti
   }
 
   const tokens = generateTokens(userId, user.phone, businessId)
+  await persistRefreshTokenFamily({
+    userId,
+    refreshToken: tokens.refreshToken,
+    deviceInfo: req.headers['user-agent']?.slice(0, 200) || null,
+  })
   setTokenCookies(res, tokens)
 
   res.status(200).json({

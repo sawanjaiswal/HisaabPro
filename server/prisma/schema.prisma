@@ -339,17 +339,23 @@ model BusinessUser {
 }
 
 model RefreshToken {
-  id         String   @id @default(cuid())
-  userId     String
-  token      String   @unique
-  deviceInfo String?
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
+  id            String    @id @default(cuid())
+  userId        String
+  token         String    @unique
+  family        String?
+  replacedBy    String?
+  revokedAt     DateTime?
+  revokedReason String?
+  deviceInfo    String?
+  expiresAt     DateTime
+  createdAt     DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([token])
+  @@index([family])
+  @@index([userId, revokedAt, expiresAt])
 }
 
 model OtpCode {

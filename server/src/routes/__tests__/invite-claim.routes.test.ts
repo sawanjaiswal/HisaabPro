@@ -83,6 +83,7 @@ vi.mock('../../lib/prisma.js', () => ({
     user: { findUnique: vi.fn(), create: vi.fn() },
     otpCode: { findFirst: vi.fn(), create: vi.fn(), update: vi.fn() },
     businessUser: { findMany: vi.fn(), findUnique: vi.fn() },
+    refreshToken: { create: vi.fn(), update: vi.fn() },
     $transaction: vi.fn(),
   },
 }))
@@ -142,6 +143,8 @@ function setupDefaultMocks() {
   P.user.create.mockResolvedValue({ id: 'new-user-1', phone: '9876543210', name: 'New User' })
   P.businessUser.findMany.mockResolvedValue([])
   P.businessUser.findUnique.mockResolvedValue({ role: 'owner', status: 'ACTIVE', isActive: true, roleRef: { permissions: [] } })
+  P.refreshToken.create.mockResolvedValue({ id: 'rt-1' })
+  P.refreshToken.update.mockResolvedValue({ id: 'rt-1' })
 
   // Default $transaction: 1×updateMany on sharedLink, 1× on party
   ;(prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementation(

@@ -102,7 +102,10 @@ export async function resetPassword(data: ResetPasswordInput) {
   await Promise.all([
     prisma.otpCode.update({ where: { id: otpRecord.id }, data: { verified: true } }),
     prisma.user.update({ where: { id: user.id }, data: { passwordHash, failedLoginAttempts: 0, accountLockedUntil: null } }),
-    prisma.refreshToken.deleteMany({ where: { userId: user.id } }),
+    prisma.refreshToken.updateMany({
+      where: { userId: user.id, revokedAt: null },
+      data: { revokedAt: new Date(), revokedReason: 'password-reset' },
+    }),
   ])
 
   return { success: true, message: 'Password reset successfully. Please log in.' }

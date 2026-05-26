@@ -108,6 +108,7 @@ const TABLES_TO_TRUNCATE = [
   'BusinessUser',
   'StaffInvite',
   'Role',
+  'RefreshToken',
   'Business',
   'User',
 ]
