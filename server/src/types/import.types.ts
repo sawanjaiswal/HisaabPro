@@ -143,6 +143,30 @@ export type ProductIssueCode =
   | 'SKU_TOO_LONG'
   | 'OPENING_STOCK_INVALID'
 
+// ─────────────────────────────────────────────────────────────────────
+// Phase 7 · Slice 7.1D — PAYMENTS
+// ─────────────────────────────────────────────────────────────────────
+
+/**
+ * Raw payment row emitted by a payments-aware parser. Strings are
+ * already trimmed but otherwise verbatim (no coercion); the normalizer
+ * handles paise conversion, mode resolution, and tail-100 truncation.
+ *
+ * Canonical keys (parsers MUST normalise to these names):
+ *   - `date`             — source date string (any format)
+ *   - `partyName`        — party display name
+ *   - `partyPhone`       — optional party phone (10+ digits)
+ *   - `amount`           — rupee amount as string ("50000.00")
+ *   - `mode`             — source payment mode label
+ *   - `referenceNumber`  — UPI ref / cheque no / NEFT UTR
+ *   - `invoiceNumber`    — single invoice ref (multi → MULTI_ALLOCATION)
+ *   - `notes`            — optional remarks / description
+ */
+export interface RawPaymentRow {
+  sourceIndex: number
+  raw: Record<string, string>
+}
+
 /**
  * Normalized product row. Prices are `bigint` (paise) in-process; wire
  * serialisation goes through `serializeNormalizedProduct` (M5).
