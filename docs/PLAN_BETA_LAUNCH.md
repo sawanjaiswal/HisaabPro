@@ -196,3 +196,7 @@ Each workstream's status will be updated in this file under a `## Status` sectio
 - 2026-05-26 18:33 | W1 | PR-D5 dispatched (frontend: EntityPicker 4-tile, PaymentRowCard, banners, i18n EN/HI)
 - 2026-05-26 18:48 | W1 | PR-D5 shipped `37651d7` — EntityPicker 4-tile, PaymentRowCard chips, ResumeFromInvoicesBanner, EN+HI i18n
 - 2026-05-26 18:52 | W1 | **#149 MERGED to master via `9a3c98e` (`--no-ff`)** — Phase 7 importers complete. Post-merge `npm install` + `prisma generate` restored tsc=0; enforce at baseline (2 pre-existing oversized files). W1 exit gate met: `#149` flipped In-Progress → Done in §24.
+- 2026-05-26 18:54 | W3 | **DONE (retro)** — Android Play Store Internal Track already live. `android/app/build.gradle` at `versionCode 6 / versionName 1.0.5`; signed AAB shipped in prior session.
+- 2026-05-26 18:54 | W5 | **DONE (retro)** — 5–10 beta testers already recruited and onboarded via Sawan.
+- 2026-05-26 18:54 | W2 | Open — 8 cred-blocked features awaiting Sawan procurement (MSG91, Resend, Razorpay live keys, NIC IRP, Razorpay UPI, WhatsApp Cloud, Biometric Capacitor, Brevo/Mailchimp).
+- 2026-05-26 18:54 | W4 | Open — full stabilization sweep not yet run on post-`9a3c98e` master (`/health`, `/qa` top-5, Lighthouse ≥90, offline+PIN+subscription smoke).
