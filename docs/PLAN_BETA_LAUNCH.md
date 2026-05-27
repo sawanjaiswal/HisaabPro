@@ -49,7 +49,7 @@ For each, the code is shipped — the work is procurement + env wiring + smoke t
 | 32 | E-way bill | Same IRP creds extend to EWB API | Same as #30 | Generate EWB for one ≥₹50k invoice |
 | 42 | UPI Intent / Razorpay UPI collect | Razorpay UPI activation (separate from subs) | 2 days | Receive ₹10 payment via QR |
 | 47 | WhatsApp Cloud API | Meta Business verification + phone number + template approval | 7-14 days (longest pole) | Send invoice template to Sawan |
-| 59 | Biometric (Capacitor) | `npm i @capacitor/biometric-auth` + iOS/Android wiring; re-run `cap sync` | 1 day | Lock app, fingerprint unlock on test device |
+| 59 | Biometric (Capacitor) | **Deferred post-beta** — see §Activity 2026-05-27. Not a 1-day install: no first-party `@capacitor/biometric-auth` plugin, and server-side trust requires a signed-challenge protocol (likely via existing WebAuthn). Needs `/start-epic biometric-auth` with architect + security. | — | — |
 | 123/124 | Marketing providers (Brevo/Mailchimp) | OAuth app credentials, redirect URI in prod | 2 days | Push 1 contact list to provider |
 
 **Owner:** Sawan (procurement) + Backend agent (env wiring) + QA (smoke)
@@ -120,7 +120,7 @@ Day 0 (today, 2026-05-26)
 Day 1-3
   ├─ W1 PR-D2b ships
   ├─ W2: Razorpay live keys swap + smoke (#2)
-  └─ W2: Biometric Capacitor install (#59)
+  └─ ~~W2: Biometric Capacitor install (#59)~~ (deferred post-beta, 2026-05-27)
 
 Day 3-5
   ├─ W1 PR-D3 ships → merge #149 to master
@@ -199,6 +199,7 @@ Each workstream's status will be updated in this file under a `## Status` sectio
 - 2026-05-26 18:54 | W3 | **DONE (retro)** — Android Play Store Internal Track already live. `android/app/build.gradle` at `versionCode 6 / versionName 1.0.5`; signed AAB shipped in prior session.
 - 2026-05-26 18:54 | W5 | **DONE (retro)** — 5–10 beta testers already recruited and onboarded via Sawan.
 - 2026-05-26 18:54 | W2 | Open — 8 cred-blocked features awaiting Sawan procurement (MSG91, Resend, Razorpay live keys, NIC IRP, Razorpay UPI, WhatsApp Cloud, Biometric Capacitor, Brevo/Mailchimp).
+- 2026-05-27 11:11 | W2 | Survey done. **7 are pure procurement** — env hooks already in place (`server/src/lib/env.ts:110-162`), code ships in stub-mode and activates when keys land. Critical path: #47 WhatsApp (7-14d Meta verification). **#59 Biometric deferred post-beta** — the 1-day estimate was wrong: no first-party `@capacitor/biometric-auth` plugin exists, and naive client-only `verify()` produces weaker auth than PIN. Real biometric needs a signed-challenge protocol (best via existing WebAuthn surface) + 3-5d epic with architect + security agents. PIN gate is sufficient for beta. W2 is now blocked entirely on Sawan procurement; nothing left to ship in code.
 - 2026-05-26 18:54 | W4 | Open — full stabilization sweep not yet run on post-`9a3c98e` master (`/health`, `/qa` top-5, Lighthouse ≥90, offline+PIN+subscription smoke).
 - 2026-05-26 19:32 | W4 | Refactor `92ac141`: split `cron-scheduler.ts` (259→227L) + `audit-emit.ts` (288→191L) → enforce now passes clean (was 2 OVERSIZED blockers).
 - 2026-05-26 19:32 | W4 | **Gate state post-refactor**: tsc=0 (server + root), enforce exit=0. Test suites have pre-existing failures unrelated to today's work (server: 8 files / 63 tests, mostly DB-harness `tx.$executeRaw is not a function` + cross-tenant suites; frontend: 44 files / 260 tests). Verified by `git stash` reproduction at HEAD~1 — same counts. Not regressions; tracked as separate test-infra debt for W4b.
