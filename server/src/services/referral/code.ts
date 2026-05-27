@@ -62,7 +62,7 @@ export async function generateReferralCode(
 
     const link = buildReferralLink(code)
     const record = await prisma.referralCode.create({
-      data: { userId, code, link, totalReferrals: 0, successfulRewards: 0, totalEarned: 0 },
+      data: { userId, code, link, totalReferrals: 0, successfulRewards: 0 },
     })
 
     logger.info(`Referral code generated for user ${userId}: ${code}`)

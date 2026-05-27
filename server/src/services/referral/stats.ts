@@ -34,9 +34,9 @@ export async function getReferralStats(userId: string): Promise<ReferralStats> {
       prisma.user.findUnique({
         where: { id: userId },
         select: {
-          referralBalance: true,
-          referralBalanceInReview: true,
-          referralTotalEarned: true,
+          referralBalancePaise: true,
+          referralBalanceInReviewPaise: true,
+          referralTotalEarnedPaise: true,
         },
       }),
       prisma.referralCode.findUnique({
@@ -56,13 +56,15 @@ export async function getReferralStats(userId: string): Promise<ReferralStats> {
 
   if (!user) throw new Error('User not found')
 
+  // Paise is the SSOT. FE wire still in rupees — divide by 100 at the edge.
+  // (FE migration to paise tracked separately; not blocking.)
   return {
     totalReferrals: codeRecord?.totalReferrals ?? 0,
     pendingReferrals,
     qualifiedReferrals,
-    availableBalance: Number(user.referralBalance),
-    balanceInReview: Number(user.referralBalanceInReview),
-    totalEarned: Number(user.referralTotalEarned),
+    availableBalance: user.referralBalancePaise / 100,
+    balanceInReview: user.referralBalanceInReviewPaise / 100,
+    totalEarned: Number(user.referralTotalEarnedPaise) / 100,
     pendingWithdrawals,
   }
 }
@@ -98,7 +100,8 @@ export async function listRewards(
       ? `${r.referred.phone.slice(0, 2)}****${r.referred.phone.slice(-2)}`
       : 'N/A',
     status: r.status,
-    amount: Number(r.amount),
+    // FE wire still in rupees; paise is the SSOT.
+    amount: r.amountPaise / 100,
     earnedAt: r.approvedAt?.toISOString() ?? null,
     signupDate: r.referred.createdAt.toISOString(),
   }))

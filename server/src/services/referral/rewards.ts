@@ -5,7 +5,8 @@
 import { prisma } from '../../lib/prisma.js'
 import logger from '../../lib/logger.js'
 
-const REWARD_AMOUNT = parseFloat(process.env.REFERRAL_REWARD_AMOUNT ?? '100')
+// Reward amount in paise (paise is the only SSOT post-PR3).
+const REWARD_AMOUNT_PAISE = Math.round(parseFloat(process.env.REFERRAL_REWARD_AMOUNT ?? '100') * 100)
 const REVIEW_WINDOW_DAYS = parseInt(process.env.REFERRAL_REVIEW_WINDOW_DAYS ?? '7', 10)
 
 /**
@@ -55,19 +56,19 @@ export async function handleSubscriptionPayment(params: {
         data: {
           referrerId: user.referredBy,
           referredId: params.userId,
-          amount: REWARD_AMOUNT,
+          amountPaise: REWARD_AMOUNT_PAISE,
           status: 'in_review',
           eligibleAt,
         },
       }),
       prisma.user.update({
         where: { id: user.referredBy },
-        data: { referralBalanceInReview: { increment: REWARD_AMOUNT } },
+        data: { referralBalanceInReviewPaise: { increment: REWARD_AMOUNT_PAISE } },
       }),
     ])
 
     logger.info(
-      `Referral reward queued: ₹${REWARD_AMOUNT} for referrer ${user.referredBy} ` +
+      `Referral reward queued: ₹${REWARD_AMOUNT_PAISE / 100} for referrer ${user.referredBy} ` +
         `(eligible: ${eligibleAt.toISOString()})`
     )
   } catch (err) {
@@ -87,7 +88,7 @@ export async function processEligibleRewards(): Promise<{ count: number }> {
       status: 'in_review',
       eligibleAt: { lte: new Date() },
     },
-    select: { id: true, referrerId: true, referredId: true, amount: true },
+    select: { id: true, referrerId: true, referredId: true, amountPaise: true },
   })
 
   if (eligible.length === 0) return { count: 0 }
@@ -96,6 +97,7 @@ export async function processEligibleRewards(): Promise<{ count: number }> {
 
   for (const reward of eligible) {
     try {
+      const rewardPaise = reward.amountPaise
       await prisma.$transaction(async (tx) => {
         await tx.referralReward.update({
           where: { id: reward.id },
@@ -104,9 +106,9 @@ export async function processEligibleRewards(): Promise<{ count: number }> {
         await tx.user.update({
           where: { id: reward.referrerId },
           data: {
-            referralBalance: { increment: Number(reward.amount) },
-            referralBalanceInReview: { decrement: Number(reward.amount) },
-            referralTotalEarned: { increment: Number(reward.amount) },
+            referralBalancePaise: { increment: rewardPaise },
+            referralBalanceInReviewPaise: { decrement: rewardPaise },
+            referralTotalEarnedPaise: { increment: BigInt(rewardPaise) },
           },
         })
         await tx.referralEvent.create({
@@ -114,7 +116,7 @@ export async function processEligibleRewards(): Promise<{ count: number }> {
             referrerId: reward.referrerId,
             referredId: reward.referredId,
             eventType: 'reward_credited',
-            eventData: { rewardId: reward.id, amount: Number(reward.amount) },
+            eventData: { rewardId: reward.id, amountPaise: rewardPaise },
             isSuspicious: false,
           },
         })
@@ -122,7 +124,7 @@ export async function processEligibleRewards(): Promise<{ count: number }> {
           where: { userId: reward.referrerId },
           data: {
             successfulRewards: { increment: 1 },
-            totalEarned: { increment: Number(reward.amount) },
+            totalEarnedPaise: { increment: BigInt(rewardPaise) },
           },
         })
       })

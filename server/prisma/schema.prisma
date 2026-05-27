@@ -30,11 +30,11 @@ model User {
   suspendedAt     DateTime?
   suspendedReason String?
 
-  // Referral wallet — Feature #3
-  referredBy              String?
-  referralBalance         Decimal   @default(0) @db.Decimal(12, 2)
-  referralBalanceInReview Decimal   @default(0) @db.Decimal(12, 2)
-  referralTotalEarned     Decimal   @default(0) @db.Decimal(12, 2)
+  // Referral wallet — Feature #3 (money-SSOT: paise Int / BigInt, see EPIC_money-ssot)
+  referredBy                   String?
+  referralBalancePaise         Int    @default(0)
+  referralBalanceInReviewPaise Int    @default(0)
+  referralTotalEarnedPaise     BigInt @default(0)
   referralFraudFlags      Int       @default(0)
   walletFrozen            Boolean   @default(false)
   lastReferralAt          DateTime?
@@ -1353,7 +1353,11 @@ model PaymentDiscount {
   id               String   @id @default(cuid())
   paymentId        String   @unique
   type             String // PERCENTAGE, FIXED
-  value            Float // percentage value or fixed paise
+  // type=FIXED → valuePaise (paise) set, percentBps null
+  // type=PERCENTAGE → percentBps (0..10000, basis points) set, valuePaise null
+  // Enforced by CHECK constraint `payment_discount_value_xor` (migration A2).
+  valuePaise       Int?
+  percentBps       Int?
   calculatedAmount Int // paise
   reason           String?  @db.VarChar(200)
   createdAt        DateTime @default(now())
@@ -1722,7 +1726,7 @@ model ReferralCode {
   link              String
   totalReferrals    Int      @default(0)
   successfulRewards Int      @default(0)
-  totalEarned       Decimal  @default(0) @db.Decimal(12, 2)
+  totalEarnedPaise  BigInt   @default(0)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -1760,7 +1764,7 @@ model ReferralReward {
   id             String    @id @default(cuid())
   referrerId     String
   referredId     String
-  amount         Decimal   @db.Decimal(10, 2)
+  amountPaise    Int
   status         String // in_review, approved, withdrawn, clawed_back
   eligibleAt     DateTime?
   approvedAt     DateTime?
@@ -1782,7 +1786,7 @@ model ReferralReward {
 model ReferralWithdrawal {
   id            String    @id @default(cuid())
   userId        String
-  amount        Decimal   @db.Decimal(10, 2)
+  amountPaise   Int
   upiId         String
   status        String // pending, approved, rejected, failed, processing
   statusReason  String?
