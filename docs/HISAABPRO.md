@@ -2,9 +2,9 @@
 
 > **Single source of truth** for product and technical specification. Combines every prior PRD, architecture, scope, security audit, and runbook into one document. Source docs preserved under `docs/archive/` for blame/history.
 >
-> **Last updated:** 2026-05-26
+> **Last updated:** 2026-05-27
 > **Owner:** Sawan Jaiswal
-> **Status:** 139/150 features shipped (Phase 1–6 complete on `hisaabpro` branch; Phase 7 2/10; merge-to-master pending)
+> **Status:** 139/150 features shipped (Phase 1–6 complete on `master`; Phase 7 2/10). Pre-beta hardening landed 2026-05-27: money-SSOT (paise Int) merged via PR #2, refresh-token family rotation per RFC 6819, security batch A (CSV injection guard + Sentry/logger PII scrub), W4b FE test-contract sweep (1306/1306 passing).
 > **Frontend UI:** complete for all 139 shipped features (the remaining 11 are either cred-blocked backend stubs or unbuilt Phase 7 / vertical-depth epics — no UI yet).
 
 ---
@@ -395,6 +395,8 @@ Grouped by domain. Full schema at `server/prisma/schema.prisma`. 49 migrations u
 
 **Multi-tenancy invariant:** every business-owned model carries `businessId` and is queried with `where: { businessId, ... }`. Cross-tenant guard: any service that takes an entity ID must verify it belongs to `req.user.activeBusinessId` before mutating. **PR0 audit (Phase 6) confirmed 0 cross-tenant leaks across 1,033 sites.**
 
+**Money SSOT (2026-05-27, PR #2):** every monetary column is paise as `Int` (or `BigInt` for lifetime sums — `User.referralTotalEarnedPaise`, `ReferralCode.totalEarnedPaise`). Legacy `Decimal`/`Float` columns (`User.referralBalance`, `ReferralReward.amount`, `ReferralWithdrawal.amount`, `PaymentDiscount.value`, etc.) were dropped via a 3-migration ladder: additive paise columns (NULL-first) → backfill + `SET NOT NULL` with inline `COALESCE` safety + XOR `CHECK` constraint on `PaymentDiscount` (FIXED → `valuePaise`, PERCENTAGE → `percentBps` in basis points) → drop legacy columns. Wire shape (request/response JSON) still carries rupees for FE compatibility, converted at the service boundary. Never store, sum, or compare money as floating point.
+
 ---
 
 ## 11. Service & route layout
@@ -478,6 +480,7 @@ src/features/<feature>/
 - Account lockout: 5 fails → 15-min lockout. CAPTCHA after 3 fails.
 - 2FA: TOTP + WebAuthn (`WebAuthnCredential`).
 - Refresh tokens stored in `RefreshToken` (revocable).
+- **Family rotation (2026-05-27, RFC 6819 §5.2.2.3):** each refresh issues a new token in the same `family` lineage and revokes the prior one. Re-use of a revoked token = stolen credential — the entire family is invalidated and the user is forced to re-login. Implementation: `RefreshToken.familyId` + `replacedByTokenId`; detection at `services/auth/refresh.service.ts`.
 
 ### 13.2 Tenancy (Phase 6 #138)
 - `Business` is the tenant. A `User` belongs to ≥1 Business via `BusinessUser` (with `Role`).
@@ -653,9 +656,9 @@ Aggregates `SECURITY_AUDIT_*.md` per epic. All passes GREEN.
 - A04 Insecure design: writer-SSOT for subscription state. Advisory locks for serial invariants (subscription transitions, loyalty redeem). Idempotency on POSTs.
 - A05 Misconfig: `lib/env.ts` is HIGH-RISK PATH; missing required var → boot failure. Helmet headers. CSP locked.
 - A06 Vulnerable deps: monthly `npm audit`. Capacitor 8 + Prisma latest.
-- A07 Auth: account lockout after 5 fails, CAPTCHA after 3. Refresh token rotation. WebAuthn supported.
+- A07 Auth: account lockout after 5 fails, CAPTCHA after 3. **Refresh-token family rotation** (RFC 6819 §5.2.2.3, 2026-05-27 `cf9bcb6`) — reuse of a revoked refresh token invalidates the entire family + forces re-login. WebAuthn supported.
 - A08 SSRF / integrity: webhooks verify HMAC + 5-min replay + `WebhookEvent.uniqueEventId`.
-- A09 Logging: AuditLog covers 100% mutations (enforcer `--block`). PII redaction layer (`AuditLogRedaction`). No JWT/VPA/PII in `console.*` (enforce check).
+- A09 Logging: AuditLog covers 100% mutations (enforcer `--block`). PII redaction layer (`AuditLogRedaction`). No JWT/VPA/PII in `console.*` (enforce check). **Security batch A (2026-05-27 `5481f6b`):** CSV-export injection guard (formula-prefix sanitiser), Sentry/logger PII scrubber, single SSOT for phone-PII regex.
 - A10 SSRF: no user-supplied URLs server-side fetched (storefront serves only catalogue images uploaded to our R2/S3).
 
 **Public surface (`/p/*`):** auth-free, rate-limited 60 rpm/IP, HMAC tokens with expiry + revocation. Reserved-slugs registry blocks storefront slug squatting.
@@ -810,10 +813,10 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 
 ---
 
-## 24. Feature Status Matrix (audited 2026-05-26)
+## 24. Feature Status Matrix (audited 2026-05-26, header refreshed 2026-05-27)
 
 > Authoritative per-feature × per-sub-feature status, audited against the live
-> codebase on `master` (HEAD `6134b9b`). For each row: route+service+model+page
+> codebase on `master` (HEAD `6ba7c0f`, originally audited at `6134b9b`; commits since are pre-beta hardening only — money-SSOT merge, refresh-token rotation, security batch A, W4b test sweep — no feature-row changes). For each row: route+service+model+page
 > are grep-verified; commit attribution uses the most recent meaningful
 > commit that touched a representative file. `[B]` cred-blocked features
 > have shipped code — listed as **In-Progress** here because production
@@ -826,6 +829,7 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 - **Not Started:** 8 features (#142, #143, #144, #146, #147, #148, #150 + 7 vertical-depth epics).
 - **Deferred:** 1 feature (#89 Bank Reconciliation — folded into #147).
 - **Audit timestamp:** 2026-05-26 19:12 IST · branch `master` · HEAD `9a3c98e` (#149 merged 2026-05-26 via PR-D2b/D3/D4/D5)
+- **Post-audit hardening on master @ `6ba7c0f` (2026-05-27):** money-SSOT (PR #2 `7c97b33`) · refresh-token family rotation (`cf9bcb6`) · security batch A (`5481f6b`) · W4b FE test sweep (`c43babc` + `6ba7c0f`). No feature-row state changes.
 
 ---
 
