@@ -30,14 +30,8 @@ model User {
   suspendedAt     DateTime?
   suspendedReason String?
 
-  // Referral wallet — Feature #3
-  // NOTE: dual-write window. Legacy Decimal columns are authoritative through PR1+PR2;
-  // PR3 drops them and renames *Paise → unsuffixed via @map. See design-plan-active--money-ssot.
-  referredBy              String?
-  referralBalance         Decimal   @default(0) @db.Decimal(12, 2)
-  referralBalanceInReview Decimal   @default(0) @db.Decimal(12, 2)
-  referralTotalEarned     Decimal   @default(0) @db.Decimal(12, 2)
-  // Paise columns — backfilled and locked NOT NULL by PR2.
+  // Referral wallet — Feature #3 (money-SSOT: paise Int / BigInt, see EPIC_money-ssot)
+  referredBy                   String?
   referralBalancePaise         Int    @default(0)
   referralBalanceInReviewPaise Int    @default(0)
   referralTotalEarnedPaise     BigInt @default(0)
@@ -1359,8 +1353,9 @@ model PaymentDiscount {
   id               String   @id @default(cuid())
   paymentId        String   @unique
   type             String // PERCENTAGE, FIXED
-  value            Float // legacy: percentage value or fixed paise — dual-write window
-  // Split successors — PR3 drops `value`. type=FIXED → valuePaise; type=PERCENTAGE → percentBps.
+  // type=FIXED → valuePaise (paise) set, percentBps null
+  // type=PERCENTAGE → percentBps (0..10000, basis points) set, valuePaise null
+  // Enforced by CHECK constraint `payment_discount_value_xor` (migration A2).
   valuePaise       Int?
   percentBps       Int?
   calculatedAmount Int // paise
@@ -1731,8 +1726,6 @@ model ReferralCode {
   link              String
   totalReferrals    Int      @default(0)
   successfulRewards Int      @default(0)
-  totalEarned       Decimal  @default(0) @db.Decimal(12, 2)
-  // Paise column — PR2 locks NOT NULL; PR3 drops Decimal + renames via @map.
   totalEarnedPaise  BigInt   @default(0)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -1771,8 +1764,6 @@ model ReferralReward {
   id             String    @id @default(cuid())
   referrerId     String
   referredId     String
-  amount         Decimal   @db.Decimal(10, 2)
-  // Paise column — PR2 locks NOT NULL; PR3 drops Decimal + renames via @map.
   amountPaise    Int
   status         String // in_review, approved, withdrawn, clawed_back
   eligibleAt     DateTime?
@@ -1795,8 +1786,6 @@ model ReferralReward {
 model ReferralWithdrawal {
   id            String    @id @default(cuid())
   userId        String
-  amount        Decimal   @db.Decimal(10, 2)
-  // Paise column — PR2 locks NOT NULL; PR3 drops Decimal + renames via @map.
   amountPaise   Int
   upiId         String
   status        String // pending, approved, rejected, failed, processing

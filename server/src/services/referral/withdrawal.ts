@@ -32,22 +32,19 @@ export async function requestWithdrawal(
 ): Promise<{ withdrawalId: string; status: string; autoApproved: boolean; processingTime: string }> {
   // Use interactive transaction with row lock to prevent TOCTOU race
   return prisma.$transaction(async (tx) => {
-    // Lock user row to prevent concurrent withdrawal requests. Read both
-    // legacy rupees and paise; paise is the source of truth post-backfill.
+    // Lock user row to prevent concurrent withdrawal requests. Paise is SSOT.
     const amountPaise = Math.round(amount * 100)
     const [user] = await tx.$queryRaw<
-      Array<{ referral_balance: number; referral_balance_paise: number | null; wallet_frozen: boolean; referral_fraud_flags: number }>
-    >`SELECT "referralBalance" as referral_balance,
-              "referralBalancePaise" as referral_balance_paise,
+      Array<{ referral_balance_paise: number; wallet_frozen: boolean; referral_fraud_flags: number }>
+    >`SELECT "referralBalancePaise" as referral_balance_paise,
               "walletFrozen" as wallet_frozen,
               "referralFraudFlags" as referral_fraud_flags
       FROM "User" WHERE id = ${userId} FOR UPDATE`
 
     if (!user) throw new Error('User not found')
     if (user.wallet_frozen) throw new Error('Wallet is frozen. Please contact support.')
-    const availablePaise = user.referral_balance_paise ?? Math.round(Number(user.referral_balance) * 100)
-    if (amountPaise > availablePaise)
-      throw new Error(`Insufficient balance. Available: ₹${(availablePaise / 100).toFixed(2)}`)
+    if (amountPaise > user.referral_balance_paise)
+      throw new Error(`Insufficient balance. Available: ₹${(user.referral_balance_paise / 100).toFixed(2)}`)
 
     // Check pending withdrawals (within the lock)
     const pendingCount = await tx.referralWithdrawal.count({
@@ -75,18 +72,14 @@ export async function requestWithdrawal(
     // Encrypt UPI ID at rest (PII protection)
     const encryptedUpiId = process.env.ENCRYPTION_KEY ? encrypt(upiId) : upiId
 
-    // amountPaise was computed above for the balance check; reuse here.
     const withdrawal = await tx.referralWithdrawal.create({
-      data: { userId, amount, amountPaise, upiId: encryptedUpiId, status, autoApproved },
+      data: { userId, amountPaise, upiId: encryptedUpiId, status, autoApproved },
     })
 
     if (autoApproved) {
       await tx.user.update({
         where: { id: userId },
-        data: {
-          referralBalance: { decrement: amount },
-          referralBalancePaise: { decrement: amountPaise },
-        },
+        data: { referralBalancePaise: { decrement: amountPaise } },
       })
     }
 
@@ -113,7 +106,6 @@ export async function listWithdrawals(
       where: { userId },
       select: {
         id: true,
-        amount: true,
         amountPaise: true,
         upiId: true,
         status: true,
@@ -140,8 +132,8 @@ export async function listWithdrawals(
 
       return {
         id: w.id,
-        // Prefer paise; pre-backfill rows fall back to Decimal rupees.
-        amount: w.amountPaise != null ? w.amountPaise / 100 : Number(w.amount),
+        // FE wire still in rupees; paise is the SSOT.
+        amount: w.amountPaise / 100,
         // Mask UPI ID: show first 3 + last 4 chars
         upiId: rawUpi.length > 7
           ? `${rawUpi.slice(0, 3)}****${rawUpi.slice(-4)}`

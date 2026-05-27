@@ -5,10 +5,8 @@
 import { prisma } from '../../lib/prisma.js'
 import logger from '../../lib/logger.js'
 
-const REWARD_AMOUNT = parseFloat(process.env.REFERRAL_REWARD_AMOUNT ?? '100')
-// Paise twin for dual-write during the money-SSOT migration window. PR3 drops
-// the rupee Decimal columns and this becomes the only source.
-const REWARD_AMOUNT_PAISE = Math.round(REWARD_AMOUNT * 100)
+// Reward amount in paise (paise is the only SSOT post-PR3).
+const REWARD_AMOUNT_PAISE = Math.round(parseFloat(process.env.REFERRAL_REWARD_AMOUNT ?? '100') * 100)
 const REVIEW_WINDOW_DAYS = parseInt(process.env.REFERRAL_REVIEW_WINDOW_DAYS ?? '7', 10)
 
 /**
@@ -58,7 +56,6 @@ export async function handleSubscriptionPayment(params: {
         data: {
           referrerId: user.referredBy,
           referredId: params.userId,
-          amount: REWARD_AMOUNT,
           amountPaise: REWARD_AMOUNT_PAISE,
           status: 'in_review',
           eligibleAt,
@@ -66,15 +63,12 @@ export async function handleSubscriptionPayment(params: {
       }),
       prisma.user.update({
         where: { id: user.referredBy },
-        data: {
-          referralBalanceInReview: { increment: REWARD_AMOUNT },
-          referralBalanceInReviewPaise: { increment: REWARD_AMOUNT_PAISE },
-        },
+        data: { referralBalanceInReviewPaise: { increment: REWARD_AMOUNT_PAISE } },
       }),
     ])
 
     logger.info(
-      `Referral reward queued: ₹${REWARD_AMOUNT} for referrer ${user.referredBy} ` +
+      `Referral reward queued: ₹${REWARD_AMOUNT_PAISE / 100} for referrer ${user.referredBy} ` +
         `(eligible: ${eligibleAt.toISOString()})`
     )
   } catch (err) {
@@ -94,7 +88,7 @@ export async function processEligibleRewards(): Promise<{ count: number }> {
       status: 'in_review',
       eligibleAt: { lte: new Date() },
     },
-    select: { id: true, referrerId: true, referredId: true, amount: true, amountPaise: true },
+    select: { id: true, referrerId: true, referredId: true, amountPaise: true },
   })
 
   if (eligible.length === 0) return { count: 0 }
@@ -103,10 +97,7 @@ export async function processEligibleRewards(): Promise<{ count: number }> {
 
   for (const reward of eligible) {
     try {
-      // Derive paise once per reward — old rows may be NULL (pre-backfill); fall
-      // back to rupees * 100 so cron-approved-before-backfill stays consistent.
-      const rupees = Number(reward.amount)
-      const rewardPaise = reward.amountPaise ?? Math.round(rupees * 100)
+      const rewardPaise = reward.amountPaise
       await prisma.$transaction(async (tx) => {
         await tx.referralReward.update({
           where: { id: reward.id },
@@ -115,9 +106,6 @@ export async function processEligibleRewards(): Promise<{ count: number }> {
         await tx.user.update({
           where: { id: reward.referrerId },
           data: {
-            referralBalance: { increment: rupees },
-            referralBalanceInReview: { decrement: rupees },
-            referralTotalEarned: { increment: rupees },
             referralBalancePaise: { increment: rewardPaise },
             referralBalanceInReviewPaise: { decrement: rewardPaise },
             referralTotalEarnedPaise: { increment: BigInt(rewardPaise) },
@@ -136,7 +124,6 @@ export async function processEligibleRewards(): Promise<{ count: number }> {
           where: { userId: reward.referrerId },
           data: {
             successfulRewards: { increment: 1 },
-            totalEarned: { increment: rupees },
             totalEarnedPaise: { increment: BigInt(rewardPaise) },
           },
         })

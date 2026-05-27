@@ -34,11 +34,6 @@ export async function getReferralStats(userId: string): Promise<ReferralStats> {
       prisma.user.findUnique({
         where: { id: userId },
         select: {
-          referralBalance: true,
-          referralBalanceInReview: true,
-          referralTotalEarned: true,
-          // PR2: prefer paise columns; fall back to rupees while backfill
-          // hasn't run on a given env. PR3 drops the rupee columns.
           referralBalancePaise: true,
           referralBalanceInReviewPaise: true,
           referralTotalEarnedPaise: true,
@@ -61,22 +56,15 @@ export async function getReferralStats(userId: string): Promise<ReferralStats> {
 
   if (!user) throw new Error('User not found')
 
-  // Read paise first (post-backfill); FE consumes rupees today, so divide by
-  // 100 here. PR3 will flip the response shape to paise Int and the FE
-  // contract migrates with it.
-  const balancePaise = user.referralBalancePaise ?? Math.round(Number(user.referralBalance) * 100)
-  const inReviewPaise = user.referralBalanceInReviewPaise ?? Math.round(Number(user.referralBalanceInReview) * 100)
-  const earnedPaise = user.referralTotalEarnedPaise != null
-    ? Number(user.referralTotalEarnedPaise)
-    : Math.round(Number(user.referralTotalEarned) * 100)
-
+  // Paise is the SSOT. FE wire still in rupees — divide by 100 at the edge.
+  // (FE migration to paise tracked separately; not blocking.)
   return {
     totalReferrals: codeRecord?.totalReferrals ?? 0,
     pendingReferrals,
     qualifiedReferrals,
-    availableBalance: balancePaise / 100,
-    balanceInReview: inReviewPaise / 100,
-    totalEarned: earnedPaise / 100,
+    availableBalance: user.referralBalancePaise / 100,
+    balanceInReview: user.referralBalanceInReviewPaise / 100,
+    totalEarned: Number(user.referralTotalEarnedPaise) / 100,
     pendingWithdrawals,
   }
 }
@@ -112,8 +100,8 @@ export async function listRewards(
       ? `${r.referred.phone.slice(0, 2)}****${r.referred.phone.slice(-2)}`
       : 'N/A',
     status: r.status,
-    // Prefer paise; fall back to rupees on pre-backfill rows. FE shows rupees.
-    amount: r.amountPaise != null ? r.amountPaise / 100 : Number(r.amount),
+    // FE wire still in rupees; paise is the SSOT.
+    amount: r.amountPaise / 100,
     earnedAt: r.approvedAt?.toISOString() ?? null,
     signupDate: r.referred.createdAt.toISOString(),
   }))

@@ -88,15 +88,16 @@ export async function createPayment(
       ))
     }
 
-    // Create discount — dual-write `value` (legacy Float) + split successors
-    // (`valuePaise` for FIXED, `percentBps` for PERCENTAGE). PR3 drops `value`.
+    // Create discount — split storage by type: FIXED → valuePaise,
+    // PERCENTAGE → percentBps (basis points, 0..10000). CHECK XOR enforced
+    // by `payment_discount_value_xor`. Wire shape (req.body.discount.value)
+    // stays backwards-compat with FE.
     if (data.discount) {
       const isPercent = data.discount.type === 'PERCENTAGE'
       await tx.paymentDiscount.create({
         data: {
           paymentId: payment.id,
           type: data.discount.type,
-          value: data.discount.value,
           valuePaise: isPercent ? null : Math.round(data.discount.value),
           percentBps: isPercent ? Math.round(data.discount.value * 100) : null,
           calculatedAmount: discountAmount,
