@@ -88,13 +88,17 @@ export async function createPayment(
       ))
     }
 
-    // Create discount
+    // Create discount — dual-write `value` (legacy Float) + split successors
+    // (`valuePaise` for FIXED, `percentBps` for PERCENTAGE). PR3 drops `value`.
     if (data.discount) {
+      const isPercent = data.discount.type === 'PERCENTAGE'
       await tx.paymentDiscount.create({
         data: {
           paymentId: payment.id,
           type: data.discount.type,
           value: data.discount.value,
+          valuePaise: isPercent ? null : Math.round(data.discount.value),
+          percentBps: isPercent ? Math.round(data.discount.value * 100) : null,
           calculatedAmount: discountAmount,
           reason: data.discount.reason || null,
         },

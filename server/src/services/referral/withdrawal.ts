@@ -32,16 +32,22 @@ export async function requestWithdrawal(
 ): Promise<{ withdrawalId: string; status: string; autoApproved: boolean; processingTime: string }> {
   // Use interactive transaction with row lock to prevent TOCTOU race
   return prisma.$transaction(async (tx) => {
-    // Lock user row to prevent concurrent withdrawal requests
+    // Lock user row to prevent concurrent withdrawal requests. Read both
+    // legacy rupees and paise; paise is the source of truth post-backfill.
+    const amountPaise = Math.round(amount * 100)
     const [user] = await tx.$queryRaw<
-      Array<{ referral_balance: number; wallet_frozen: boolean; referral_fraud_flags: number }>
-    >`SELECT "referralBalance" as referral_balance, "walletFrozen" as wallet_frozen, "referralFraudFlags" as referral_fraud_flags
+      Array<{ referral_balance: number; referral_balance_paise: number | null; wallet_frozen: boolean; referral_fraud_flags: number }>
+    >`SELECT "referralBalance" as referral_balance,
+              "referralBalancePaise" as referral_balance_paise,
+              "walletFrozen" as wallet_frozen,
+              "referralFraudFlags" as referral_fraud_flags
       FROM "User" WHERE id = ${userId} FOR UPDATE`
 
     if (!user) throw new Error('User not found')
     if (user.wallet_frozen) throw new Error('Wallet is frozen. Please contact support.')
-    if (amount > Number(user.referral_balance))
-      throw new Error(`Insufficient balance. Available: ₹${Number(user.referral_balance)}`)
+    const availablePaise = user.referral_balance_paise ?? Math.round(Number(user.referral_balance) * 100)
+    if (amountPaise > availablePaise)
+      throw new Error(`Insufficient balance. Available: ₹${(availablePaise / 100).toFixed(2)}`)
 
     // Check pending withdrawals (within the lock)
     const pendingCount = await tx.referralWithdrawal.count({
@@ -69,10 +75,7 @@ export async function requestWithdrawal(
     // Encrypt UPI ID at rest (PII protection)
     const encryptedUpiId = process.env.ENCRYPTION_KEY ? encrypt(upiId) : upiId
 
-    // Money-SSOT dual-write: derive paise twin from the rupee input. Once PR3
-    // lands, the API will accept paise directly and this conversion goes away.
-    const amountPaise = Math.round(amount * 100)
-
+    // amountPaise was computed above for the balance check; reuse here.
     const withdrawal = await tx.referralWithdrawal.create({
       data: { userId, amount, amountPaise, upiId: encryptedUpiId, status, autoApproved },
     })
@@ -111,6 +114,7 @@ export async function listWithdrawals(
       select: {
         id: true,
         amount: true,
+        amountPaise: true,
         upiId: true,
         status: true,
         createdAt: true,
@@ -136,7 +140,8 @@ export async function listWithdrawals(
 
       return {
         id: w.id,
-        amount: Number(w.amount),
+        // Prefer paise; pre-backfill rows fall back to Decimal rupees.
+        amount: w.amountPaise != null ? w.amountPaise / 100 : Number(w.amount),
         // Mask UPI ID: show first 3 + last 4 chars
         upiId: rawUpi.length > 7
           ? `${rawUpi.slice(0, 3)}****${rawUpi.slice(-4)}`

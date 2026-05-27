@@ -37,10 +37,10 @@ model User {
   referralBalance         Decimal   @default(0) @db.Decimal(12, 2)
   referralBalanceInReview Decimal   @default(0) @db.Decimal(12, 2)
   referralTotalEarned     Decimal   @default(0) @db.Decimal(12, 2)
-  // PR1 additive paise columns (nullable until backfilled by PR2).
-  referralBalancePaise         Int?
-  referralBalanceInReviewPaise Int?
-  referralTotalEarnedPaise     BigInt?
+  // Paise columns — backfilled and locked NOT NULL by PR2.
+  referralBalancePaise         Int    @default(0)
+  referralBalanceInReviewPaise Int    @default(0)
+  referralTotalEarnedPaise     BigInt @default(0)
   referralFraudFlags      Int       @default(0)
   walletFrozen            Boolean   @default(false)
   lastReferralAt          DateTime?
@@ -1732,8 +1732,8 @@ model ReferralCode {
   totalReferrals    Int      @default(0)
   successfulRewards Int      @default(0)
   totalEarned       Decimal  @default(0) @db.Decimal(12, 2)
-  // Dual-write paise column — PR3 drops Decimal + renames via @map.
-  totalEarnedPaise  BigInt?
+  // Paise column — PR2 locks NOT NULL; PR3 drops Decimal + renames via @map.
+  totalEarnedPaise  BigInt   @default(0)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -1772,8 +1772,8 @@ model ReferralReward {
   referrerId     String
   referredId     String
   amount         Decimal   @db.Decimal(10, 2)
-  // Dual-write paise column — PR3 drops Decimal + renames via @map.
-  amountPaise    Int?
+  // Paise column — PR2 locks NOT NULL; PR3 drops Decimal + renames via @map.
+  amountPaise    Int
   status         String // in_review, approved, withdrawn, clawed_back
   eligibleAt     DateTime?
   approvedAt     DateTime?
@@ -1796,8 +1796,8 @@ model ReferralWithdrawal {
   id            String    @id @default(cuid())
   userId        String
   amount        Decimal   @db.Decimal(10, 2)
-  // Dual-write paise column — PR3 drops Decimal + renames via @map.
-  amountPaise   Int?
+  // Paise column — PR2 locks NOT NULL; PR3 drops Decimal + renames via @map.
+  amountPaise   Int
   upiId         String
   status        String // pending, approved, rejected, failed, processing
   statusReason  String?
