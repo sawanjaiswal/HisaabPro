@@ -84,15 +84,16 @@ describe('useUnitManager', () => {
   })
 
   it('deletes a unit and removes from list', async () => {
-    mockGetUnits.mockResolvedValue(MOCK_UNITS)
+    mockGetUnits.mockResolvedValueOnce(MOCK_UNITS)
     mockGetConversions.mockResolvedValue([])
     mockDeleteUnit.mockResolvedValue(undefined)
+    mockGetUnits.mockResolvedValue([]) // refetch after invalidate returns empty
 
     const { result } = renderHook(() => useUnitManager(), { wrapper })
     await waitFor(() => expect(result.current.units).toHaveLength(1))
 
     await act(() => result.current.handleDelete('1'))
-    expect(result.current.units).toHaveLength(0)
+    await waitFor(() => expect(result.current.units).toHaveLength(0))
     expect(mockToast.success).toHaveBeenCalledWith('Unit deleted')
   })
 })

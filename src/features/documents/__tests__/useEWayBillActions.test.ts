@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { renderHook, act } from '@testing-library/react'
+import { renderHook, act, waitFor } from '@testing-library/react'
 
 const mockGenerateEWB = vi.fn()
 const mockCancelEWB = vi.fn()
@@ -58,9 +58,9 @@ describe('useEWayBillActions', () => {
     let resolve: (v: unknown) => void
     mockCancelEWB.mockReturnValue(new Promise((r) => { resolve = r }))
     const { result } = renderHook(() => useEWayBillActions('doc-1', onUpdate), { wrapper })
-    act(() => { result.current.cancelEwb('reason') })
-    expect(result.current.cancellingEwb).toBe(true)
-    await act(async () => { result.current.cancelEwb('reason2') })
+    act(() => { void result.current.cancelEwb('reason') })
+    await waitFor(() => expect(result.current.cancellingEwb).toBe(true))
+    await act(async () => { void result.current.cancelEwb('reason2') })
     expect(mockCancelEWB).toHaveBeenCalledTimes(1)
     await act(async () => { resolve!(undefined) })
   })

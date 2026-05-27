@@ -132,7 +132,11 @@ export function usePaymentForm({
   const handleSubmit = useCallback(async () => {
     if (!validate()) return
     if (isSubmitting) return
-    await submitMutation.mutateAsync()
+    try {
+      await submitMutation.mutateAsync()
+    } catch {
+      // onError already toasted; swallow so callers don't see an unhandled rejection
+    }
   }, [validate, isSubmitting, submitMutation])
 
   return {

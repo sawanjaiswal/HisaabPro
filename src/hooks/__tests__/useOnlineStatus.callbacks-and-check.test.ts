@@ -86,14 +86,16 @@ describe('checkOnlineNow', () => {
     expect(result).toBe(true)
   })
 
-  it('returns false when the health endpoint returns non-ok', async () => {
+  it('returns true when the health endpoint responds with non-ok (server reachable)', async () => {
+    // Contract: any HTTP response (incl. 4xx/5xx) means the server is reachable
+    // and we are online. Only network/timeout failures count as offline — see
+    // checkConnectivity() in useOnlineStatus.ts.
     mockFetch.mockResolvedValue({ ok: false })
 
     const { checkOnlineNow } = await getHook()
 
-    // Need 2 consecutive failures to flip global state — check the raw return value
     const result1 = await act(async () => checkOnlineNow())
-    expect(result1).toBe(false)
+    expect(result1).toBe(true)
   })
 
   it('returns false when fetch throws (network error)', async () => {

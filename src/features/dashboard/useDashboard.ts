@@ -31,11 +31,17 @@ export function useHomeDashboard(): UseHomeDashboardReturn {
   })
 
   const data = query.data ?? null
-  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
+  // AbortError is fired when React Strict Mode (or rapid remount) cancels the
+  // first in-flight request — surface it as still-loading, not as a hard error,
+  // so the dashboard doesn't flash a banner on every dev refresh.
+  const isAbortError = query.error instanceof DOMException && query.error.name === 'AbortError'
+  const status: Status = query.isPending || isAbortError
+    ? 'loading'
+    : query.isError ? 'error' : 'success'
 
   // Show toast on fetch error
   useEffect(() => {
-    if (query.error) {
+    if (query.error && !isAbortError) {
       const message = query.error instanceof ApiError ? query.error.message : 'Failed to load dashboard'
       toast.error(message)
     }

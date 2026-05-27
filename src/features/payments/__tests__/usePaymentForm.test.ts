@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react'
+import { renderHook, act, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 import type { PaymentFormData } from '../payment.types'
@@ -204,6 +204,6 @@ describe('usePaymentForm', () => {
       resolvePayment!({ id: 'pay-1' })
       await firstSubmit!
     })
-    expect(result.current.isSubmitting).toBe(false)
+    await waitFor(() => expect(result.current.isSubmitting).toBe(false))
   })
 })

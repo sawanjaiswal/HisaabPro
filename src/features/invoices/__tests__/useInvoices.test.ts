@@ -76,7 +76,7 @@ describe('useInvoices', () => {
     await waitFor(() => expect(result.current.status).toBe('success'))
 
     act(() => result.current.handleDelete('1', 'INV-001'))
-    expect(result.current.data?.documents).toHaveLength(0)
+    await waitFor(() => expect(result.current.data?.documents).toHaveLength(0))
     expect(result.current.data?.pagination.total).toBe(0)
     expect(mockToast.success).toHaveBeenCalledWith('INV-001 deleted', expect.any(Object))
   })

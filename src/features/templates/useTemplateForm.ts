@@ -187,7 +187,11 @@ export function useTemplateForm({
   const handleSubmit = useCallback(async () => {
     if (!validate()) return
     if (mutation.isPending) return
-    await mutation.mutateAsync(form)
+    try {
+      await mutation.mutateAsync(form)
+    } catch {
+      // onError already toasted; swallow so callers don't see an unhandled rejection
+    }
   }, [form, mutation, validate])
 
   // --- Reset ---

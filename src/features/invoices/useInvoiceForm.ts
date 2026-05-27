@@ -208,10 +208,14 @@ export function useInvoiceForm(
   const submitWithStatus = useCallback(async (targetStatus: 'SAVED' | 'DRAFT') => {
     if (targetStatus === 'SAVED' && !validate()) return
     if (isSubmitting) return
-    if (targetStatus === 'SAVED') {
-      await gstAwareSubmit(targetStatus)
-    } else {
-      await submitMutation.mutateAsync(targetStatus)
+    try {
+      if (targetStatus === 'SAVED') {
+        await gstAwareSubmit(targetStatus)
+      } else {
+        await submitMutation.mutateAsync(targetStatus)
+      }
+    } catch {
+      // onError already toasted; swallow so callers don't see an unhandled rejection
     }
   }, [validate, isSubmitting, gstAwareSubmit, submitMutation])
 

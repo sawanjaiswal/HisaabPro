@@ -21,11 +21,13 @@ vi.mock('../shared-ledger.utils', () => ({
   copyToClipboard: vi.fn().mockResolvedValue(true),
 }))
 
-beforeEach(() => { vi.clearAllMocks() })
-
 const MOCK_SHARES = [{ id: 's1', shareToken: 'tok1', partyId: 'p1' }]
 
-const wrapper = createTestWrapper()
+let wrapper: ReturnType<typeof createTestWrapper>
+beforeEach(() => {
+  vi.clearAllMocks()
+  wrapper = createTestWrapper()
+})
 
 describe('useShareLedger', () => {
   it('starts with empty shares and loading false after fetch', async () => {
@@ -78,7 +80,7 @@ describe('useShareLedger', () => {
     await waitFor(() => expect(result.current.shares).toHaveLength(1))
 
     await act(() => result.current.revokeShare('s1'))
-    expect(result.current.shares).toHaveLength(0)
+    await waitFor(() => expect(result.current.shares).toHaveLength(0))
     expect(mockToast.success).toHaveBeenCalledWith('Share link revoked')
   })
 
@@ -90,6 +92,6 @@ describe('useShareLedger', () => {
     mockListShares.mockResolvedValue([])
 
     await act(() => result.current.refresh())
-    expect(result.current.shares).toEqual([])
+    await waitFor(() => expect(result.current.shares).toEqual([]))
   })
 })

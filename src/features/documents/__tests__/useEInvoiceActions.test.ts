@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { renderHook, act } from '@testing-library/react'
+import { renderHook, act, waitFor } from '@testing-library/react'
 
 const mockGenerateEInvoice = vi.fn()
 const mockCancelEInvoice = vi.fn()
@@ -47,10 +47,10 @@ describe('useEInvoiceActions', () => {
     let resolve: (v: unknown) => void
     mockGenerateEInvoice.mockReturnValue(new Promise((r) => { resolve = r }))
     const { result } = renderHook(() => useEInvoiceActions('doc-1', onUpdate), { wrapper })
-    act(() => { result.current.generateInvoice() })
-    expect(result.current.generatingInvoice).toBe(true)
+    act(() => { void result.current.generateInvoice() })
+    await waitFor(() => expect(result.current.generatingInvoice).toBe(true))
     // second call is a no-op while first is in flight
-    await act(async () => { result.current.generateInvoice() })
+    await act(async () => { void result.current.generateInvoice() })
     expect(mockGenerateEInvoice).toHaveBeenCalledTimes(1)
     await act(async () => { resolve!(MOCK_RESULT) })
   })

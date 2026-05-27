@@ -77,7 +77,7 @@ describe('useParties', () => {
     await waitFor(() => expect(result.current.status).toBe('success'))
 
     act(() => result.current.handleDelete('1', 'Party A'))
-    expect(result.current.data?.parties).toHaveLength(0)
+    await waitFor(() => expect(result.current.data?.parties).toHaveLength(0))
     expect(result.current.data?.pagination.total).toBe(0)
     expect(mockToast.success).toHaveBeenCalledWith('Party A deleted', expect.any(Object))
   })

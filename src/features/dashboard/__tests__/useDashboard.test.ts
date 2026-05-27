@@ -10,7 +10,11 @@ vi.mock('../dashboard.service', () => ({
   getHomeDashboard: (...args: unknown[]) => mockGetHomeDashboard(...args),
 }))
 
-beforeEach(() => { vi.clearAllMocks() })
+let wrapper: ReturnType<typeof createTestWrapper>
+beforeEach(() => {
+  vi.clearAllMocks()
+  wrapper = createTestWrapper()
+})
 
 const MOCK_DATA = {
   outstanding: { receivable: { total: 120000, partyCount: 12 }, payable: { total: 0, partyCount: 0 } },
@@ -19,8 +23,6 @@ const MOCK_DATA = {
   alerts: { lowStockCount: 0, overdueInvoiceCount: 0, overdueAmount: 0 },
   topDebtors: [],
 }
-
-const wrapper = createTestWrapper()
 
 describe('useHomeDashboard', () => {
   it('starts in loading state', () => {
