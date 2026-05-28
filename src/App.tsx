@@ -31,7 +31,7 @@ import {
   ExpensesPending, ExpensesBudgets, ExpensesRecurring,
   ProfitLoss, BalanceSheet, CashFlow, AgingReport, ProfitabilityReport,
   DiscountReport, TallyExport, FYClosure,
-  More, BillScan, BulkImport, PublicLedger, ItemsLibrary, DataImport, ImportUpload, ImportJobStub,
+  More, BillScan, BulkImport, PublicLedger, ItemsLibrary, ImportUpload, ImportJobStub,
   SmartGreetings, Units, JoinBusiness, CreateBusiness, BusinessType,
   AdminCoupons, AdminCouponDetail,
   Purchases, CreatePurchase, StockAlerts,
@@ -202,7 +202,7 @@ export function App() {
         <Route path={ROUTES.BULK_IMPORT_PARTIES} element={<PageRoute><ProtectedRoute><PlanGate feature="bulkImport" featureLabel="Bulk Import"><BulkImport /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.MORE} element={<PageRoute><ProtectedRoute><More /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.ITEMS_LIBRARY} element={<PageRoute><ProtectedRoute><ItemsLibrary /></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.DATA_IMPORT} element={<PageRoute><ProtectedRoute><PlanGate feature="bulkImport" featureLabel="Data Import"><DataImport /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.DATA_IMPORT} element={<Navigate to={ROUTES.IMPORTS} replace />} />
         <Route path={ROUTES.IMPORTS} element={<PageRoute><ProtectedRoute><ImportUpload /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.IMPORT_JOB_DETAIL} element={<PageRoute><ProtectedRoute><ImportJobStub /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SMART_GREETINGS} element={<PageRoute><ProtectedRoute><SmartGreetings /></ProtectedRoute></PageRoute>} />

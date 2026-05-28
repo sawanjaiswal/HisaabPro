@@ -44,7 +44,7 @@ export const MORE_MENU_ITEMS: MoreMenuItem[] = [
   { id: 'bill-scan', navKey: 'bill-scan', label: 'Scan Bill', description: 'OCR scan to invoice', icon: 'Camera', route: ROUTES.BILL_SCAN, color: 'var(--color-primary-50)', group: 'efficiency' },
   { id: 'recurring', navKey: 'recurring', label: 'Recurring', description: 'Auto-repeat invoices', icon: 'Repeat', route: ROUTES.RECURRING, color: 'var(--color-primary-50)', group: 'efficiency' },
   { id: 'templates', navKey: 'templates', label: 'Templates', description: 'Invoice designs', icon: 'FileText', route: ROUTES.TEMPLATES, color: 'var(--color-primary-50)', group: 'efficiency' },
-  { id: 'data-import', navKey: 'data-import', label: 'Import Data', description: 'From Vyapar, Tally', icon: 'Upload', route: ROUTES.DATA_IMPORT, color: 'var(--color-secondary-50)', group: 'efficiency' },
+  { id: 'data-import', navKey: 'data-import', label: 'Import Data', description: 'From Vyapar, Tally', icon: 'Upload', route: ROUTES.IMPORTS, color: 'var(--color-secondary-50)', group: 'efficiency' },
   { id: 'items-library', navKey: 'items-library', label: 'Items Library', description: '67+ ready items', icon: 'BookOpen', route: ROUTES.ITEMS_LIBRARY, color: 'var(--color-primary-50)', group: 'efficiency' },
 
   // Money & Payments

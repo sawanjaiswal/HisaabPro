@@ -2,10 +2,10 @@
 
 > **Single source of truth** for product and technical specification. Combines every prior PRD, architecture, scope, security audit, and runbook into one document. Source docs preserved under `docs/archive/` for blame/history.
 >
-> **Last updated:** 2026-05-27
+> **Last updated:** 2026-05-28
 > **Owner:** Sawan Jaiswal
-> **Status:** 139/150 features shipped (Phase 1–6 complete on `master`; Phase 7 2/10). Pre-beta hardening landed 2026-05-27: money-SSOT (paise Int) merged via PR #2, refresh-token family rotation per RFC 6819, security batch A (CSV injection guard + Sentry/logger PII scrub), W4b FE test-contract sweep (1306/1306 passing).
-> **Frontend UI:** complete for all 139 shipped features (the remaining 11 are either cred-blocked backend stubs or unbuilt Phase 7 / vertical-depth epics — no UI yet).
+> **Status:** 140/150 features shipped (Phase 1–6 complete on `master`; Phase 7 **3/10** — #141 OCR, #145 Vertical Modes, #149 Competitor imports `9a3c98e`). Pre-beta hardening landed 2026-05-27: money-SSOT (paise Int) merged via PR #2, refresh-token family rotation per RFC 6819, security batch A (CSV injection guard + Sentry/logger PII scrub), W4b FE test-contract sweep (1306/1306 passing). `hisaabpro` branch is **0 commits ahead** of `master` — Render redeploy pending.
+> **Frontend UI:** complete for all 140 shipped features (the remaining 10 are either cred-blocked backend stubs or unbuilt Phase 7 / vertical-depth epics — no UI yet).
 
 ---
 
@@ -212,7 +212,7 @@ Merge `caa390d` (2026-05-26), 12 commits + 2 hardening (`ba56470`/`0bd1881`).
 
 **Phase 6 verifier (`VERIFIER_REPORT_PHASE6.md`):** 7 mechanical proofs exit 0 — FE tsc, BE tsc, enforce.js, enforce-offline (1532 files), enforce-audit-coverage `--block`, regression greps for `req.user.id` and plain `to_tsquery`. **Security Pass-2 PASS** — `requireFeature('STAFF_HR')` kill-switch wired into 3 aggregator routers between `requireActiveBusiness` and handler.
 
-### Phase 7 — AI & Differentiators (10 features, 2/10)
+### Phase 7 — AI & Differentiators (10 features, 3/10)
 
 | # | Feature | Status | Notes |
 |---|---|---|---|
@@ -325,7 +325,7 @@ Ported from DudhHisaab subscription model (commit `3530e79`):
 - #59 Biometric — Capacitor plugin install.
 - Phase 6 — `FEATURE_STAFF_HR` (default off), `FEATURE_TRANSACTION_PIN` (default on), cohort_pct flags, `PIN_GATE_DOMAIN`.
 
-**Ship (built ≠ deployed):** `hisaabpro` is 38 commits ahead of `master`. Production deploy at `89610b0`. Merge to ship Phase 5 (A/B/C/D) + subscription port + responsive sweep + **Phase 6** to prod. Phase 6 ramps per `ROLLOUT_PHASE6.md` (see §20).
+**Ship (built ≠ deployed):** `hisaabpro` is **0 commits ahead** of `master` (merged 2026-05-26 `caa390d` + subsequent pre-beta hardening on master). Render production deploy still trails — push to redeploy to ship Phase 5 + subscription port + responsive sweep + **Phase 6** + money-SSOT. Phase 6 ramps per `ROLLOUT_PHASE6.md` (see §20).
 
 ---
 
@@ -1091,6 +1091,7 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | 149 | Competitor importers | Products import (7.1B) | Done | `214f769` · 2026-05-26 | merged to master via `9a3c98e` |
 | 149 | Competitor importers | Invoices import (7.1C) | Done | `4104ecd` · 2026-05-26 | merged to master via `9a3c98e` |
 | 149 | Competitor importers | Payments import (7.1D) | Done | `c3a5b4b`/`1a10701`/`a5425a7`/`37651d7` · 2026-05-26 | PR-D2b parsers + PR-D3 Σ-guard commit ladder + PR-D4 routes/audit + PR-D5 frontend — merged via `9a3c98e` |
+| 149 | Competitor importers | Legacy retirement (#149c) | Done | 2026-05-28 | Deleted `features/data-import`; `ROUTES.DATA_IMPORT` → `<Navigate>` `/imports`; More nav card repointed; new engine is sole import surface |
 | 150 | Real-time multi-user | WebSocket / CRDT | Not Started | — | Needs architecture spike (see §8) |
 
 ### Verticals depth (post-MVP candidates — see §5)

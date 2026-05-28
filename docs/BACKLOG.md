@@ -1,11 +1,11 @@
-# Backlog — resume 2026-05-26
+# Backlog — resume 2026-05-28
 
-> Snapshot at 2026-05-26 09:22 IST. **139/150 shipped — Phase 6 COMPLETE.**
-> Phase 1 (60/70 code-complete, 10 cred-blocked) · Phase 2 (20/20) · Phase 3 (21/22, #89 deferred) · Phase 4 (16/16) · **Phase 5 (14/14)** · **Phase 6 (6/6) ✅ SHIPPED** (merge `caa390d`, 9 PRs + 2 hardening commits, BE/FE/security/QA all green) · Phase 7 (2/10 — #141 OCR + #145 verticals).
+> Snapshot at 2026-05-28. **140/150 shipped — Phase 6 COMPLETE + Phase 7 3/10.**
+> Phase 1 (60/70 code-complete, 10 cred-blocked) · Phase 2 (20/20) · Phase 3 (21/22, #89 deferred → folds into #147) · Phase 4 (16/16) · **Phase 5 (14/14)** · **Phase 6 (6/6) ✅ SHIPPED** (merge `caa390d`, 9 PRs + 2 hardening commits, BE/FE/security/QA all green) · Phase 7 (**3/10** — #141 OCR + #145 Verticals + #149 Competitor imports `9a3c98e`).
 >
-> **Branch state:** `hisaabpro` is **38 commits ahead of `master`**. Master HEAD `af44d50` (pre-Phase-5). Production deploy still at `89610b0`. Nothing since the responsive sweep + Phase 5 Epic A/B/C/D + subscription port + Phase 6 has been merged to master/prod.
+> **Branch state:** `hisaabpro` is **0 commits ahead of `master`** (merged 2026-05-26 `caa390d`). Subsequent pre-beta hardening landed directly on master: money-SSOT PR #2 (`7c97b33`), refresh-token family rotation, security batch A (CSV + Sentry/logger PII scrub), W4b FE test-contract sweep (1306/1306). **Render production deploy still trails master — push to redeploy is the only remaining ship step.**
 >
-> **Next up:** ship-to-prod (merge `hisaabpro` → `master`, set Render env vars, run Phase 6 migration + ramp playbook) **OR** Phase 7 AI features (#142–#150). See "Resume order" below.
+> **Next up:** Render redeploy + set env vars (subscription, Aisensy, MSG91) **OR** Phase 7 AI features (#142, #143, #144, #146, #147, #148, #150). See "Resume order" below.
 
 ## Resume order
 
@@ -105,31 +105,21 @@ Branch: `hisaabpro` (worktree `HisaabPro-phase7-import`). Epic ceremony PASS_v2 
 - **7.1A Parties** — BE + FE + QA gate (Tally XML + Vyapar/Generic CSV + Busy XLSX → Party). M1-M5 audit MUST_FIX landed.
 - **7.1B Products** — BE + FE + QA gate (price precision regex + HSN charset + paise BigInt cap). M6-M9 audit MUST_FIX landed.
 - **7.1C Invoices** — BE + FE + QA gate (Document/DocumentLineItem nested, per-entity client-version floor 7.1.2, P2002 dual-shape catch). M10-M11 audit MUST_FIX landed.
-- **7.1D Payments — PR-D0 + PR-D1 + PR-D2a** (commits `06279ee`, `c802e2c`, `730a794`, `1dbe3a5`):
+- **7.1D Payments — COMPLETE** (commits `06279ee` D0, `c802e2c`+`730a794` D1, `1dbe3a5` D2a, `c3a5b4b` D2b, `1a10701` D3, `a5425a7` D4, `37651d7` D5):
   - Prisma migration `20260519161000_phase7_1d_a_payment_import_addendum` — additive `Payment.importJobId` + `importedBy` SetNull FKs + 2 indexes
-  - Zod schema extended (`entity: 'payments'`, optional `strictMode`)
+  - Zod schema extended (`entity: 'payments'`, optional `strictMode`); per-entity client floor `payments: '7.1.3'` wired through 4 services
   - `payment-mode-map.{constants,ts}` — M12 fix (frozen Map, prototype-clean lookup; EN + Devanagari aliases)
   - `payment-utils.ts` — M13 fix (Tally 8-digit DATE calendar round-trip) + tail-100 `truncateReference` SSOT
-  - `commit-payments/{types,commit-payments.service.ts}` stubs; commit-dispatcher extended
-  - Per-entity client floor `payments: '7.1.3'` wired through 4 services
-  - **27/27 unit tests green** (M12 prototype-pollution suite 14, M13 calendar + tail-100 truncation suite 13)
-
-**Pending (queued):**
-
-| Slice | Scope | Key files | Acceptance |
-|---|---|---|---|
-| **PR-D2b** Payments parsers | Tally Receipt voucher branch (PARTYLEDGERNAME, BILLALLOCATIONS, CHEQUENO; wire `tallyPreformatDate`); Vyapar payments CSV (header-alias dict); Busy ReceiptRegister XLSX (`cellDates:true, dateNF:'yyyy-mm-dd'`); Generic CSV mapping-driven | `services/import/parsers/{tally,vyapar,busy,generic}-payments.parser.ts`, `payment-column-dict.constants.ts`, `parsers/index.ts`, `payment-normalizer.ts`, `payment-invoice-resolver.ts`, `payment-dedup.ts`, `dedup/index.ts`, fixtures + tests | tsc clean · 4 parsers × happy/malicious · M13 integration through full parse |
-| **PR-D3** Payments commit ladder | Σ-over-allocation guard (SELECT FOR UPDATE Document + JOIN Payment for soft-delete filter); per-row `allocate-one.ts` (Σ-guard BEFORE INSERT Payment → INSERT PaymentAllocation, dual-shape P2002, row-local markRowError); orchestrator (chunk tx, sequential `for...of`, batched audit emit); **S9** assertEqualLengths type-homogeneity (1 LOC + test); `COMMIT_BLOCKED_INVOICE_NOT_FOUND` surface | `services/import/commit-payments/{over-allocation-guard,allocate-one,commit-payments.service,audit-emit,enum-guard}.ts`, `commit.service.ts` | tsc clean · S9 landed (auto-promotes audit to CLEAR) · integration 50×Rs250 Σ-overflow → 40 COMMITTED + 10 OVER_ALLOCATION |
-| **PR-D4** Routes + integration | `routes/imports/create.route.ts` Zod payments + 7.1.3 floor; `get.route.ts` polymorphic; `routes/payments/list.route.ts` `?importJobId=` filter; `scripts/enforce-audit-coverage.mjs` adds `payments.imported_batch`; `scripts/enforce.js` bans `Promise.all` across `services/import/commit-payments/**` | routes + enforce scripts | enforce-offline clean · enforce-audit-coverage --block exit 0 · 13 integration tests (incl. ALLOCATION_INTERNAL_CONFLICT, dual-shape P2002, tail-100 collision-permissive, cross-tenant existence-leak, advisory-lock race, mid-tx crash idempotency, DPDP cascade) |
-| **PR-D5** Frontend | `EntityPicker` extends to 4 tiles; `PaymentRowCard` (party/invoice/issue chips); `CommitBlockedBanner` deep-link `/import?entity=invoice&resumeImportJobId=<id>`; `ResumeFromInvoicesBanner` reverse-direction; translations EN/HI extensions; `useImportCommit` extension; `offlineQueue:false` on upload+commit | `features/import/**` (6-layer split, ≤250L each) | 4 UI states · 320px responsive · offline rules pass · screenshots |
+  - **PR-D2b** — 4 payment parsers (`{tally,vyapar,busy,generic}-payments.parser.ts`) + `payment-column-dict.constants.ts` + normalizer + dedup
+  - **PR-D3** — commit ladder (`over-allocation-guard`, `allocate-one`, `commit-payments.service`, `audit-emit`, `enum-guard`) + Σ-overflow guard + S9 audit homogeneity
+  - **PR-D4** — payments routes + `enforce-audit-coverage` `payments.imported_batch` + `enforce.js` Promise.all ban + 13 integration tests
+  - **PR-D5** — payments import wizard FE (EntityPicker 4 tiles, PaymentRowCard, CommitBlockedBanner deep-link, ResumeFromInvoicesBanner, EN/HI keys, offlineQueue:false)
 
 **Post-7.1D cleanup:**
-- **#149c** Retire legacy `src/features/data-import` after 7.1D ships — redirect `ROUTES.DATA_IMPORT → /imports`, remove legacy lazy import. Keep `bulk-import`.
+- **#149c COMPLETE (2026-05-28)** — legacy `src/features/data-import` deleted; `ROUTES.DATA_IMPORT` now `<Navigate replace>` → `/imports`; lazy import + App.tsx barrel entry removed; More nav card repointed to `ROUTES.IMPORTS`. `bulk-import` kept. (Also fixed a latent tsc error: checkout FSM test imported its type from `../` instead of `../../`.)
 
-**Open audit findings auto-promote on PR-D3 land:**
-- M12 (CLEAR — code + tests landed in PR-D2a)
-- M13 (CLEAR — code + tests landed in PR-D2a)
-- S9 (1 LOC in `audit-emit.ts` per-element type-homogeneity assertion) — promotes CLEAR on PR-D3
+**Audit findings — all CLEAR:**
+- M12 (CLEAR — PR-D2a) · M13 (CLEAR — PR-D2a) · S9 (CLEAR — PR-D3)
 - F12 (settings-UI dictionary edit) — FUTURE_EPIC, not blocking
 
 **Process constraints (preserve across slice boundaries):**

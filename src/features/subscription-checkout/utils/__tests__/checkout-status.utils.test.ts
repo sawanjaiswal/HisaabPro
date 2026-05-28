@@ -6,7 +6,7 @@
 
 import { describe, it, expect } from 'vitest'
 import { nextPhase, initialPhase, isTerminal } from '../checkout-status.utils'
-import type { CheckoutPhase } from '../subscription-checkout.types'
+import type { CheckoutPhase } from '../../subscription-checkout.types'
 
 const polling: CheckoutPhase = { kind: 'polling', subscriptionId: 'sub_1', startedAt: 0 }
 
