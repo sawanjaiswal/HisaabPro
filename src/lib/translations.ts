@@ -111,8 +111,11 @@ import { hiExt47 } from './translations.hi.ext47'
 import { enExt48 } from './translations.en.ext48'
 import { hiExt48 } from './translations.hi.ext48'
 
-const en = { ...enBase, ...enExt1, ...enExt2, ...enExt3, ...enExt4, ...enExt5, ...enExt6, ...enExt7, ...enExt8, ...enExt9, ...enExt10, ...enExt11, ...enExt12, ...enExt13, ...enExt14, ...enExt15, ...enExt16, ...enExt17, ...enExt18, ...enExt19, ...enExt20, ...enExt21, ...enExt22, ...enExt23, ...enExt24, ...enExt25, ...enExt26, ...enExt27, ...enExt28, ...enExt29, ...enExt30, ...enExt31, ...enExt32, ...enExt33, ...enExt34, ...enExt35, ...enExt36, ...enExt37, ...enExt38, ...enExt39, ...enExt40, ...enExt41, ...enExt42, ...enExt43, ...enExt44, ...enExt45, ...enExt46, ...enExt47, ...enExt48 } as const
-const hi = { ...hiBase, ...hiExt1, ...hiExt2, ...hiExt3, ...hiExt4, ...hiExt5, ...hiExt6, ...hiExt7, ...hiExt8, ...hiExt9, ...hiExt10, ...hiExt11, ...hiExt12, ...hiExt13, ...hiExt14, ...hiExt15, ...hiExt16, ...hiExt17, ...hiExt18, ...hiExt19, ...hiExt20, ...hiExt21, ...hiExt22, ...hiExt23, ...hiExt24, ...hiExt25, ...hiExt26, ...hiExt27, ...hiExt28, ...hiExt29, ...hiExt30, ...hiExt31, ...hiExt32, ...hiExt33, ...hiExt34, ...hiExt35, ...hiExt36, ...hiExt37, ...hiExt38, ...hiExt39, ...hiExt40, ...hiExt41, ...hiExt42, ...hiExt43, ...hiExt44, ...hiExt45, ...hiExt46, ...hiExt47, ...hiExt48 } as const
+import { enExt49 } from './translations.en.ext49'
+import { hiExt49 } from './translations.hi.ext49'
+
+const en = { ...enBase, ...enExt1, ...enExt2, ...enExt3, ...enExt4, ...enExt5, ...enExt6, ...enExt7, ...enExt8, ...enExt9, ...enExt10, ...enExt11, ...enExt12, ...enExt13, ...enExt14, ...enExt15, ...enExt16, ...enExt17, ...enExt18, ...enExt19, ...enExt20, ...enExt21, ...enExt22, ...enExt23, ...enExt24, ...enExt25, ...enExt26, ...enExt27, ...enExt28, ...enExt29, ...enExt30, ...enExt31, ...enExt32, ...enExt33, ...enExt34, ...enExt35, ...enExt36, ...enExt37, ...enExt38, ...enExt39, ...enExt40, ...enExt41, ...enExt42, ...enExt43, ...enExt44, ...enExt45, ...enExt46, ...enExt47, ...enExt48, ...enExt49 } as const
+const hi = { ...hiBase, ...hiExt1, ...hiExt2, ...hiExt3, ...hiExt4, ...hiExt5, ...hiExt6, ...hiExt7, ...hiExt8, ...hiExt9, ...hiExt10, ...hiExt11, ...hiExt12, ...hiExt13, ...hiExt14, ...hiExt15, ...hiExt16, ...hiExt17, ...hiExt18, ...hiExt19, ...hiExt20, ...hiExt21, ...hiExt22, ...hiExt23, ...hiExt24, ...hiExt25, ...hiExt26, ...hiExt27, ...hiExt28, ...hiExt29, ...hiExt30, ...hiExt31, ...hiExt32, ...hiExt33, ...hiExt34, ...hiExt35, ...hiExt36, ...hiExt37, ...hiExt38, ...hiExt39, ...hiExt40, ...hiExt41, ...hiExt42, ...hiExt43, ...hiExt44, ...hiExt45, ...hiExt46, ...hiExt47, ...hiExt48, ...hiExt49 } as const
 
 const translations = { en, hi } as const
 

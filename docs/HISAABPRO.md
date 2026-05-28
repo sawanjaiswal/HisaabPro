@@ -217,7 +217,7 @@ Merge `caa390d` (2026-05-26), 12 commits + 2 hardening (`ba56470`/`0bd1881`).
 | # | Feature | Status | Notes |
 |---|---|---|---|
 | 141 | AI auto-categorize receipts | [x] | Anthropic haiku OCR · 5 MB cap · graceful unavailable (`e11caf9`) |
-| 142 | Voice entry | [ ] | Browser SpeechRecognition + on-device fallback |
+| 142 | Voice entry | [x] | Web Speech API (en-IN) + typed fallback; pure Hindi/English amount parser → preview → save |
 | 143 | WhatsApp bot billing | [ ] | Aisensy inbound webhook → invoice draft — **highest leverage / lock-in** |
 | 144 | Smart GST filing assistant | [x] | Deterministic pre-filing readiness validator (7 rules, blocker/warning tiers). `/api/gst/filing-readiness` (PRO); `/gst/filing-readiness` FE with deep-links to offending invoices, 18 tests |
 | 145 | Industry Vertical Modes | [x] | 13 verticals via `verticals.config.ts` — nav filter + terminology + defaults + Jobs + Custom Orders |
@@ -314,7 +314,7 @@ Ported from DudhHisaab subscription model (commit `3530e79`):
 ## 8. Remaining work
 
 **Build (no creds needed):**
-- Phase 7 (remaining 4): #142 Voice · #143 WA bot · #147 Auto-recon · #150 Multi-user CRDT. Done: #144 Smart GST · #146 Predictive · #148 Smart inv · #149 Competitor imports.
+- Phase 7 (remaining 3): #143 WA bot · #147 Auto-recon · #150 Multi-user CRDT. Done: #142 Voice · #144 Smart GST · #146 Predictive · #148 Smart inv · #149 Competitor imports.
 - Phase 3 deferred: #89 Bank Reconciliation (fold into #147).
 - Vertical depth: V1–V7 (see §5).
 
@@ -824,9 +824,9 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 > a Capacitor plugin install.
 
 **Summary — 150 features, ~180 sub-feature rows tracked + 7 vertical-depth epics:**
-- **Done:** 136 features (all layers present + shipped on `master`; #144 smart GST filing assistant 2026-05-28).
+- **Done:** 137 features (all layers present + shipped on `master`; #142 voice entry 2026-05-28).
 - **In-Progress (cred-blocked):** 8 features (code shipped, awaiting env vars / plugin install: #2, #4, #30, #32, #42, #47, #59, #123/#124 providers).
-- **Not Started:** 5 features (#142, #143, #147, #150 + 7 vertical-depth epics).
+- **Not Started:** 4 features (#143, #147, #150 + 7 vertical-depth epics).
 - **Deferred:** 1 feature (#89 Bank Reconciliation — folded into #147).
 - **Audit timestamp:** 2026-05-26 19:12 IST · branch `master` · HEAD `9a3c98e` (#149 merged 2026-05-26 via PR-D2b/D3/D4/D5)
 - **Post-audit hardening on master @ `6ba7c0f` (2026-05-27):** money-SSOT (PR #2 `7c97b33`) · refresh-token family rotation (`cf9bcb6`) · security batch A (`5481f6b`) · W4b FE test sweep (`c43babc` + `6ba7c0f`). No feature-row state changes.
@@ -1078,7 +1078,7 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 |---|---|---|---|---|---|
 | 141 | AI auto-categorize receipts | Anthropic Haiku OCR | Done | `e11caf9` · 2026-04 | `services/expense/expense-ocr.service.ts` + `expense-ocr.client.ts` + bill-scan feature |
 | 141 | AI auto-categorize receipts | 5 MB cap + graceful unavailable | Done | `e11caf9` · 2026-04 | `routes/expense-ocr.route.ts` + size guard |
-| 142 | Voice entry | SpeechRecognition + fallback | Not Started | — | — |
+| 142 | Voice entry | Web Speech API + typed fallback; pure parser → preview → save | Done 2026-05-28 | src/features/voice/* | 22 parser tests |
 | 143 | WhatsApp bot billing | Aisensy inbound webhook → draft | Not Started | — | — |
 | 144 | Smart GST filing assistant | Pre-filing readiness validator | Done | 2026-05-28 | `services/gst-validation/*` (7 pure rules over period docs, reuses gst-returns period.utils, 18 tests) · `/api/gst/filing-readiness` PRO+reports.view · `features/gst-validation/*` → `/gst/filing-readiness`, blocker/warning tiers + invoice deep-links |
 | 145 | Industry Vertical Modes | 13 verticals SSOT + nav filter + terminology | Done | `b69067b` · 2026-04 | `src/config/verticals.config.ts` + onboarding step |

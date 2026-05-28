@@ -51,6 +51,7 @@ export const MORE_MENU_ITEMS: MoreMenuItem[] = [
   { id: 'payments', navKey: 'payments', label: 'Payments', description: 'Record & track', icon: 'Banknote', route: ROUTES.PAYMENTS, color: 'var(--color-success-50)', group: 'money' },
   { id: 'outstanding', navKey: 'outstanding', label: 'Outstanding', description: 'Who owes what', icon: 'Clock', route: ROUTES.OUTSTANDING, color: 'var(--color-warning-50)', group: 'money' },
   { id: 'expenses', navKey: 'expenses', label: 'Expenses', description: 'Track spending', icon: 'Receipt', route: ROUTES.EXPENSES, color: 'var(--color-error-50)', group: 'money' },
+  { id: 'voice-entry', navKey: 'voice-entry', label: 'Voice Entry', description: 'Speak to log money', icon: 'Mic', route: ROUTES.VOICE_ENTRY, color: 'var(--color-primary-50)', group: 'efficiency' },
   { id: 'other-income', navKey: 'other-income', label: 'Income', description: 'Non-sales income', icon: 'PiggyBank', route: ROUTES.OTHER_INCOME, color: 'var(--color-success-50)', group: 'money' },
   { id: 'loans', navKey: 'loans', label: 'Loans', description: 'Given & taken', icon: 'HandCoins', route: ROUTES.LOANS, color: 'var(--color-secondary-50)', group: 'money' },
   { id: 'cheques', navKey: 'cheques', label: 'Cheques', description: 'Track cheques', icon: 'FileCheck', route: ROUTES.CHEQUES, color: 'var(--color-warning-50)', group: 'money' },

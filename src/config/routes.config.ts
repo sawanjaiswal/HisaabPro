@@ -74,6 +74,7 @@ export const ROUTES = {
   BANK_ACCOUNTS: '/bank-accounts',
   EXPENSES: '/expenses',
   OTHER_INCOME: '/other-income',
+  VOICE_ENTRY: '/voice-entry',
   CHEQUES: '/cheques',
   LOANS: '/loans',
   LOAN_DETAIL: '/loans/:id',

@@ -32,6 +32,7 @@ import {
   LineChart,
   PackageCheck,
   ShieldCheck,
+  Mic,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -69,4 +70,5 @@ export const ICON_REGISTRY: Record<string, LucideIcon> = {
   LineChart,
   PackageCheck,
   ShieldCheck,
+  Mic,
 }

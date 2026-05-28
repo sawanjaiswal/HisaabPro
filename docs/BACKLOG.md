@@ -85,8 +85,8 @@ Audit + design docs: `docs/SCOPE_PHASE6_STAFF_HR.md`, `docs/SCOPE_AUDIT_PHASE6_S
 
 ---
 
-### 6. Phase 7 — AI & Differentiators (6 remaining; #141 OCR + #145 verticals + #146 predictive + #149 importers done)
-- #142 Voice entry (browser SpeechRecognition + on-device fallback)
+### 6. Phase 7 — AI & Differentiators (3 remaining; #141 OCR + #142 voice + #144 GST + #145 verticals + #146 predictive + #148 smart-inv + #149 importers done)
+- ~~#142 Voice entry (browser SpeechRecognition + on-device fallback)~~ — **DONE 2026-05-28**: speak-or-type a money entry → pure transcript parser (Hindi+English Indian phrasing: "do hazaar paanch sau", "1.5 lakh", "rent mila 5000 upi") → editable preview → saves directly via expense/other-income services. Web Speech API (`en-IN`) with typed-textarea fallback when unsupported/denied. `/voice-entry` FE (PRO + expenses gate), 22 parser tests. Live mic needs a real device to verify.
 - #143 WhatsApp bot billing (Aisensy inbound webhook → invoice draft) — **high leverage / lock-in** — blocked: webhook high-risk gate + missing Aisensy creds
 - ~~#144 Smart GST filing assistant (rules engine on Phase 2 data)~~ — **DONE 2026-05-28**: deterministic pre-filing readiness validator over a period's sale/note docs. 7 rules (B2B GSTIN, GSTIN format, place-of-supply, HSN/SAC, interstate split, composition-charging-GST, zero-tax). `/api/gst/filing-readiness` (PRO + reports.view); `/gst/filing-readiness` FE with blocker/warning tiers + deep-links to offending invoices. 18 tests.
 - ~~#146 Predictive analytics (sales/stock forecast)~~ — **DONE 2026-05-28**: deterministic OLS revenue trend + sales-velocity stock-out forecast. `/api/analytics/*` gated on `advancedReports`; `/insights` FE (no charting lib — tiny SVG sparkline).

@@ -27,7 +27,7 @@ import {
   CurrencySettings, RecurringList, RecurringDetail, RecurringForm,
   GstReconciliationList, GstReconciliationDetail,
   ChartOfAccounts, JournalEntries, TrialBalance,
-  BankAccounts, Expenses, OtherIncome, Cheques, Loans, LoanDetail,
+  BankAccounts, Expenses, OtherIncome, VoiceEntry, Cheques, Loans, LoanDetail,
   ExpensesPending, ExpensesBudgets, ExpensesRecurring,
   ProfitLoss, BalanceSheet, CashFlow, AgingReport, ProfitabilityReport,
   DiscountReport, PredictiveAnalytics, ReorderSuggestions, GstFilingReadiness, TallyExport, FYClosure,
@@ -187,6 +187,7 @@ export function App() {
         <Route path="/expenses/budgets" element={<PageRoute><ProtectedRoute><PlanGate feature="expenses" featureLabel="Expenses"><ExpensesBudgets /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path="/expenses/recurring" element={<PageRoute><ProtectedRoute><PlanGate feature="expenses" featureLabel="Expenses"><ExpensesRecurring /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.OTHER_INCOME} element={<PageRoute><ProtectedRoute><PlanGate feature="expenses" featureLabel="Other Income"><OtherIncome /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.VOICE_ENTRY} element={<PageRoute><ProtectedRoute><PlanGate feature="expenses" featureLabel="Voice Entry"><VoiceEntry /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.CHEQUES} element={<PageRoute><ProtectedRoute><PlanGate feature="cheques" featureLabel="Cheques"><Cheques /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.LOANS} element={<PageRoute><ProtectedRoute><Loans /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.LOAN_DETAIL} element={<PageRoute><ProtectedRoute><LoanDetail /></ProtectedRoute></PageRoute>} />
