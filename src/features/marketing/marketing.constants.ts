@@ -58,6 +58,7 @@ export const TRIGGER_LABEL: Record<ReminderRuleTrigger, string> = {
   PAYMENT_OVERDUE:  'Payment Overdue',
   FOLLOWUP:         'Follow-Up',
   INACTIVE:         'Inactive Customer',
+  ORDER_DELIVERY:   'Order Delivery',
 }
 
 export const TRIGGER_BADGE: Record<ReminderRuleTrigger, string> = {
@@ -66,6 +67,7 @@ export const TRIGGER_BADGE: Record<ReminderRuleTrigger, string> = {
   PAYMENT_OVERDUE:  'badge badge--error',
   FOLLOWUP:         'badge badge--neutral',
   INACTIVE:         'badge badge--neutral',
+  ORDER_DELIVERY:   'badge badge--info',
 }
 
 // ─── Pagination ───────────────────────────────────────────────────────────────

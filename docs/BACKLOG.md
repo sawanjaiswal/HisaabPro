@@ -148,14 +148,14 @@ Verticals are wired (nav filtering, terminology, defaults, Jobs flow, Custom Ord
 | **V2 — Appointments calendar** | salon, clinic | ~2 wks (HIGH) | New `Appointment` model + slot picker + availability view. Onboarding blocker. |
 | ~~**V3 — Recipe cost dashboard**~~ ✅ SHIPPED 2026-05-28 | restaurant, bakery, manufacturing | — | Derives cost-per-unit + margin from active BOMs (`weightedAvgCostPaise`, fallback `purchasePrice`). Read-only, auth-gated like BOM, no schema. `GET /api/recipe-cost`, `/recipe-cost` page, More→Production card (navKey `bom`). 13 math unit tests. |
 | **V4 — Staff assignment + commission split** | services, bakery, tailor, manufacturing | ~2 wks | Assign staff to Jobs/Orders/POS sales. Builds on Phase 6 #128 commission ledger. |
-| **V5 — Customer delivery reminders** | bakery, tailor | ~3 days | Trigger marketing-comms reminder N hours before delivery. Requires Epic A live. |
+| ~~**V5 — Customer delivery reminders**~~ ✅ SHIPPED 2026-05-29 | bakery, tailor | — | Added `ORDER_DELIVERY` to `ReminderRuleTrigger` (enum migration `ADD VALUE`); `orderDeliveryCandidates()` fires `offsetDays` **days** before `CustomOrder.deliveryAt` (RECEIVED/IN_PRODUCTION/READY, isDeleted:false, deduped by party), reusing the entire Epic A reminder-cron/dispatch pipeline. FE: 6th trigger option in picker + list label + i18n (en/hi). 3 candidate tests. Day-granular — hour-precision "N hours before" deferred → FUTURE_EPIC (needs `offsetHours` + idempotency-key redesign). Live send still cred-blocked (AISENSY/MSG91 unset). Plan deviation: `ReminderRuleListPage.tsx` exhaustive map also needed widening (not in files_planned; non-high-risk FE, gate-permitted). |
 | **V6 — Table management + KOT** | restaurant | LARGE | Out of MSME billing scope. Defer to v2 product. |
 | **V7 — Prescription field** | pharmacy, clinic | trivial | Likely solvable today via generic custom fields. Validate before scoping. |
 
 Recommended sequence (post merge-to-prod):
 1. ~~V3 (3 days, no schema, big restaurant/bakery win)~~ ✅ SHIPPED 2026-05-28
 2. ~~V1 (1 wk, unblocks hourly billing — biggest current user complaint)~~ ✅ SHIPPED 2026-05-29
-3. V5 (3 days, depends on Epic A)
+3. ~~V5 (3 days, depends on Epic A)~~ ✅ SHIPPED 2026-05-29
 4. V2 (2 wks, salon/clinic onboarding)
 5. V4 (2 wks, naturally extends Phase 6 commission ledger)
 

@@ -9,22 +9,24 @@ interface Props {
   disabled?: boolean
 }
 
-const TRIGGERS: ReminderRuleTrigger[] = ['BIRTHDAY', 'PAYMENT_DUE', 'PAYMENT_OVERDUE', 'FOLLOWUP', 'INACTIVE']
+const TRIGGERS: ReminderRuleTrigger[] = ['BIRTHDAY', 'PAYMENT_DUE', 'PAYMENT_OVERDUE', 'FOLLOWUP', 'INACTIVE', 'ORDER_DELIVERY']
 
-const LABEL_KEY: Record<ReminderRuleTrigger, 'marketingTriggerBirthdayLabel' | 'marketingTriggerPaymentDueLabel' | 'marketingTriggerPaymentOverdueLabel' | 'marketingTriggerFollowupLabel' | 'marketingTriggerInactiveLabel'> = {
+const LABEL_KEY: Record<ReminderRuleTrigger, 'marketingTriggerBirthdayLabel' | 'marketingTriggerPaymentDueLabel' | 'marketingTriggerPaymentOverdueLabel' | 'marketingTriggerFollowupLabel' | 'marketingTriggerInactiveLabel' | 'marketingTriggerOrderDeliveryLabel'> = {
   BIRTHDAY:         'marketingTriggerBirthdayLabel',
   PAYMENT_DUE:      'marketingTriggerPaymentDueLabel',
   PAYMENT_OVERDUE:  'marketingTriggerPaymentOverdueLabel',
   FOLLOWUP:         'marketingTriggerFollowupLabel',
   INACTIVE:         'marketingTriggerInactiveLabel',
+  ORDER_DELIVERY:   'marketingTriggerOrderDeliveryLabel',
 }
 
-const DESC_KEY: Record<ReminderRuleTrigger, 'marketingTriggerBirthdayDesc' | 'marketingTriggerPaymentDueDesc' | 'marketingTriggerPaymentOverdueDesc' | 'marketingTriggerFollowupDesc' | 'marketingTriggerInactiveDesc'> = {
+const DESC_KEY: Record<ReminderRuleTrigger, 'marketingTriggerBirthdayDesc' | 'marketingTriggerPaymentDueDesc' | 'marketingTriggerPaymentOverdueDesc' | 'marketingTriggerFollowupDesc' | 'marketingTriggerInactiveDesc' | 'marketingTriggerOrderDeliveryDesc'> = {
   BIRTHDAY:         'marketingTriggerBirthdayDesc',
   PAYMENT_DUE:      'marketingTriggerPaymentDueDesc',
   PAYMENT_OVERDUE:  'marketingTriggerPaymentOverdueDesc',
   FOLLOWUP:         'marketingTriggerFollowupDesc',
   INACTIVE:         'marketingTriggerInactiveDesc',
+  ORDER_DELIVERY:   'marketingTriggerOrderDeliveryDesc',
 }
 
 export function ReminderTriggerPicker({ value, onChange, disabled = false }: Props) {

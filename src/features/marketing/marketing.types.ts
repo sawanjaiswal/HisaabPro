@@ -18,6 +18,7 @@ export type ReminderRuleTrigger =
   | 'PAYMENT_OVERDUE'
   | 'FOLLOWUP'
   | 'INACTIVE'
+  | 'ORDER_DELIVERY'
 
 export type RecipientDispatchStatus = 'QUEUED' | 'SENT' | 'FAILED' | 'SKIPPED'
 

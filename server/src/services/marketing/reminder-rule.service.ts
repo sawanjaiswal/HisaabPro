@@ -16,7 +16,7 @@ const HHMM_RE = /^([01]\d|2[0-3]):[0-5]\d$/
 
 export const createReminderRuleSchema = z.object({
   name: z.string().min(1).max(100),
-  trigger: z.enum(['BIRTHDAY', 'PAYMENT_DUE', 'PAYMENT_OVERDUE', 'FOLLOWUP', 'INACTIVE']),
+  trigger: z.enum(['BIRTHDAY', 'PAYMENT_DUE', 'PAYMENT_OVERDUE', 'FOLLOWUP', 'INACTIVE', 'ORDER_DELIVERY']),
   offsetDays: z.number().int().min(0).max(90),
   channel: z.enum(['WHATSAPP', 'SMS']),
   templateId: z.string().min(1),

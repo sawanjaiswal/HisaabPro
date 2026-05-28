@@ -9,12 +9,13 @@ import { ChannelBadge } from '../components/ChannelBadge'
 import { MARKETING_ROUTES, TRIGGER_BADGE } from '../marketing.constants'
 import type { ReminderRule, ReminderRuleTrigger } from '../marketing.types'
 
-const TRIGGER_LABEL_KEYS: Record<ReminderRuleTrigger, 'marketingTriggerBirthdayLabel' | 'marketingTriggerPaymentDueLabel' | 'marketingTriggerPaymentOverdueLabel' | 'marketingTriggerFollowupLabel' | 'marketingTriggerInactiveLabel'> = {
+const TRIGGER_LABEL_KEYS: Record<ReminderRuleTrigger, 'marketingTriggerBirthdayLabel' | 'marketingTriggerPaymentDueLabel' | 'marketingTriggerPaymentOverdueLabel' | 'marketingTriggerFollowupLabel' | 'marketingTriggerInactiveLabel' | 'marketingTriggerOrderDeliveryLabel'> = {
   BIRTHDAY:         'marketingTriggerBirthdayLabel',
   PAYMENT_DUE:      'marketingTriggerPaymentDueLabel',
   PAYMENT_OVERDUE:  'marketingTriggerPaymentOverdueLabel',
   FOLLOWUP:         'marketingTriggerFollowupLabel',
   INACTIVE:         'marketingTriggerInactiveLabel',
+  ORDER_DELIVERY:   'marketingTriggerOrderDeliveryLabel',
 }
 
 export default function ReminderRuleListPage() {

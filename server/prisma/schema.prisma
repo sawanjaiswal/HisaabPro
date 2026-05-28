@@ -3722,6 +3722,7 @@ enum ReminderRuleTrigger {
   PAYMENT_OVERDUE
   FOLLOWUP
   INACTIVE
+  ORDER_DELIVERY
 }
 
 enum ReminderInstanceStatus {

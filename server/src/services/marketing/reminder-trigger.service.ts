@@ -35,6 +35,8 @@ export async function candidatesFor(rule: ReminderRule, now: Date): Promise<Cand
       return followupCandidates(rule.businessId, rule.offsetDays, now)
     case 'INACTIVE':
       return inactiveCandidates(rule.businessId, rule.offsetDays, now)
+    case 'ORDER_DELIVERY':
+      return orderDeliveryCandidates(rule.businessId, rule.offsetDays, now)
     default:
       return []
   }
@@ -204,4 +206,39 @@ async function inactiveCandidates(
   })
 
   return parties.map((p) => ({ partyId: p.id, fireDate: normaliseToUtcMidnight(stableFireDate) }))
+}
+
+// ---------------------------------------------------------------------------
+// ORDER_DELIVERY — fires offsetDays before a CustomOrder's deliveryAt date.
+// Day-granular (mirrors PAYMENT_DUE); hour-precision is a future epic.
+// ---------------------------------------------------------------------------
+
+async function orderDeliveryCandidates(
+  businessId: string,
+  offsetDays: number,
+  now: Date,
+): Promise<Candidate[]> {
+  const targetDate = new Date(now.getTime() + offsetDays * 86_400_000)
+  const startOfDay = new Date(targetDate)
+  startOfDay.setUTCHours(0, 0, 0, 0)
+  const endOfDay = new Date(startOfDay.getTime() + 86_400_000)
+
+  const orders = await prisma.customOrder.findMany({
+    where: {
+      businessId,
+      isDeleted: false,
+      status: { in: ['RECEIVED', 'IN_PRODUCTION', 'READY'] },
+      deliveryAt: { gte: startOfDay, lt: endOfDay },
+    },
+    select: { partyId: true },
+  })
+
+  const seen = new Set<string>()
+  const results: Candidate[] = []
+  for (const o of orders) {
+    if (seen.has(o.partyId)) continue
+    seen.add(o.partyId)
+    results.push({ partyId: o.partyId, fireDate: normaliseToUtcMidnight(targetDate) })
+  }
+  return results
 }
