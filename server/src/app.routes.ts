@@ -15,6 +15,7 @@ import documentSettingsRoutes from './routes/document-settings.js'
 import paymentRoutes from './routes/payments.js'
 import dashboardRoutes from './routes/dashboard.js'
 import reportRoutes from './routes/reports.js'
+import analyticsRoutes from './routes/analytics.js'
 import { businessSettingsRouter, userSettingsRouter, permissionsRouter } from './routes/settings.js'
 import referralRoutes from './routes/referral.js'
 import taxCategoryRoutes from './routes/tax-categories.js'
@@ -102,6 +103,7 @@ const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/payments/reminders', remindersRoute],
   ['/api/payments', paymentRoutes],
   ['/api/dashboard', dashboardRoutes],
+  ['/api/analytics', analyticsRoutes],
   ['/api/reports', reportRoutes],
   ['/api/businesses', businessSettingsRouter],
   ['/api/businesses', subscriptionRouter],
