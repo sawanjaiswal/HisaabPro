@@ -126,6 +126,27 @@ subscriptionRouter.post(
   }),
 )
 
+// GET /subscription/checkout/status — narrow poll target during checkout.
+// Returns ONLY the FSM state (written by the webhook→FSM writer) + tier — no
+// JWT re-signing, no aggregates, no PII. businessId from req.user only (no
+// IDOR). FE polls this; it is UX-only and never grants entitlement.
+subscriptionRouter.get(
+  '/subscription/checkout/status',
+  asyncHandler(async (req, res) => {
+    const businessId = req.user!.businessId
+
+    const subscription = await prisma.subscription.findUnique({
+      where: { businessId },
+      select: { subscriptionState: true, planTier: true },
+    })
+
+    sendSuccess(res, {
+      subscriptionState: (subscription?.subscriptionState ?? 'NONE') as SubscriptionState,
+      planTier: (subscription?.planTier ?? 'FREE') as PlanTier,
+    })
+  }),
+)
+
 // PATCH /subscription/plan — upgrade or downgrade
 subscriptionRouter.patch(
   '/subscription/plan',

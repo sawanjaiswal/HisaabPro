@@ -2,6 +2,18 @@
 <html lang="en-IN" dir="ltr">
   <head>
     <meta charset="UTF-8" />
+    <!--
+      CSP — constrains the injection-relevant directives (script-src, frame-src)
+      to self + Razorpay's checkout/api origins, the only third party we embed.
+      connect-src stays broad (https:/ws:) so the API base URL and Vite HMR work
+      across environments without a static rebuild; tighten it at the server
+      header layer where it can be env-aware. capacitor:/gap: keep the Android
+      WebView shell working (PLATFORM_SHELL).
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' data: blob: gap: capacitor: https://localhost; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https: wss: ws: capacitor: https://api.razorpay.com https://lumberjack.razorpay.com; frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://*.razorpay.com; child-src 'self' https://*.razorpay.com"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#0f3638" />
     <meta name="description" content="Smart billing software for Indian businesses. Create GST invoices, manage inventory, track payments — all from your phone. Vyapar & MyBillBook alternative." />

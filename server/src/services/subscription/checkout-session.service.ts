@@ -7,6 +7,8 @@
 
 import logger from '../../lib/logger.js'
 import { prisma } from '../../lib/prisma.js'
+import { getRazorpayPlanId } from '../../lib/env.js'
+import { computeStatus } from '../coupon/helpers.js'
 import type { SubscriptionPlanTier } from './subscription.types.js'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -24,23 +26,39 @@ export interface CheckoutSessionResult {
   checkoutUrl: string
   planTier: SubscriptionPlanTier
   amountPaise: number
+  razorpayKeyId: string
 }
 
-// ─── Plan ID resolver ─────────────────────────────────────────────────────────
+// ─── Coupon → trusted offer_id resolver (MF-1) ──────────────────────────────────
 
-function getRazorpayPlanId(tier: SubscriptionPlanTier, cycle: 'MONTHLY' | 'YEARLY'): string | null {
-  const suffix = cycle === 'YEARLY' ? '_YEARLY' : ''
-  const envMap: Record<SubscriptionPlanTier, string | undefined> = {
-    FREE: undefined,
-    PRO: process.env.RAZORPAY_PLAN_PRO,
-    BUSINESS: process.env.RAZORPAY_PLAN_BUSINESS,
-    PRO_MAX: process.env.RAZORPAY_PLAN_PRO_MAX,
-  }
-  const planId = envMap[tier]
-  if (!planId) return null
-  // If yearly env var exists, use it; otherwise same plan
-  const yearlyId = process.env[`RAZORPAY_PLAN_${tier}${suffix}`]
-  return (cycle === 'YEARLY' && yearlyId) ? yearlyId : planId
+/**
+ * Resolve a user-supplied coupon CODE to a server-controlled Razorpay
+ * `offer_id`. NEVER forward the raw user input as `offer_id` — a malicious FE
+ * could submit any harvested offer_id and self-apply an unintended discount
+ * (money-out). Unknown / inactive / plan-mismatched / unlinked codes resolve to
+ * `undefined` (the coupon is simply dropped — no offer applied).
+ */
+async function resolveRazorpayOfferId(
+  couponCode: string | undefined,
+  tier: SubscriptionPlanTier,
+): Promise<string | undefined> {
+  if (!couponCode) return undefined
+  const coupon = await prisma.coupon.findUnique({
+    where: { code: couponCode },
+    select: {
+      isActive: true,
+      validFrom: true,
+      validUntil: true,
+      maxUses: true,
+      usageCount: true,
+      planFilter: true,
+      razorpayOfferId: true,
+    },
+  })
+  if (!coupon) return undefined
+  if (computeStatus(coupon) !== 'ACTIVE') return undefined
+  if (coupon.planFilter.length > 0 && !coupon.planFilter.includes(tier)) return undefined
+  return coupon.razorpayOfferId ?? undefined
 }
 
 // ─── Razorpay client ──────────────────────────────────────────────────────────
@@ -82,13 +100,16 @@ export async function createCheckoutSession(
     throw Object.assign(new Error('Cannot checkout FREE tier'), { code: 'BAD_REQUEST', httpStatus: 400 })
   }
 
-  const planId = getRazorpayPlanId(input.tier, input.billingCycle)
-  if (!planId) {
+  const resolution = getRazorpayPlanId(input.tier, input.billingCycle)
+  if (!resolution.ok) {
     throw Object.assign(
-      new Error(`Razorpay plan ID not configured for ${input.tier} ${input.billingCycle}`),
+      new Error(
+        `Razorpay ${resolution.missing === 'YEARLY' ? 'yearly' : 'monthly'} plan ID not configured for ${input.tier} ${input.billingCycle}`,
+      ),
       { code: 'SERVICE_UNAVAILABLE', httpStatus: 503 },
     )
   }
+  const planId = resolution.planId
 
   const keyId = process.env.RAZORPAY_KEY_ID
   const keySecret = process.env.RAZORPAY_KEY_SECRET
@@ -108,6 +129,8 @@ export async function createCheckoutSession(
     })
   }
 
+  const offerId = await resolveRazorpayOfferId(input.couponCode, input.tier)
+
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const Razorpay = (await import('razorpay')).default
@@ -123,7 +146,7 @@ export async function createCheckoutSession(
           userId: input.userId,
           tier: input.tier,
         },
-        ...(input.couponCode ? { offer_id: input.couponCode } : {}),
+        ...(offerId ? { offer_id: offerId } : {}),
       }),
     ) as { id: string; short_url?: string }
 
@@ -158,6 +181,7 @@ export async function createCheckoutSession(
       checkoutUrl,
       planTier: input.tier,
       amountPaise: planPrices[priceKey] ?? 0,
+      razorpayKeyId: keyId,
     }
   } catch (err) {
     logger.error('checkout_session.razorpay_error', {

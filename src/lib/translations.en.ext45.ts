@@ -1,0 +1,25 @@
+/** Translations — ext45: cross-platform subscription checkout. */
+
+export const enExt45 = {
+  checkoutHeading: 'Complete your upgrade',
+  checkoutNoPlanTitle: 'No plan selected',
+  checkoutNoPlanBody: 'Pick a plan from the upgrade screen to continue.',
+  checkoutSessionFailedTitle: "Couldn't start checkout",
+  checkoutSessionFailedBody: 'The payment service is busy. Please try again in a minute.',
+  checkoutLoadFailed: "Couldn't load the payment screen.",
+  checkoutVerifying: 'Confirming your payment…',
+  checkoutVerifyingHint: 'This takes a few seconds. Please keep this screen open.',
+  checkoutSuccessTitle: "You're upgraded!",
+  checkoutSuccessBody: 'Your new plan is active. Enjoy the extra features.',
+  checkoutGoToSubscription: 'View subscription',
+  checkoutStrandedTitle: 'Payment received',
+  checkoutStrandedBody: "We're still activating your plan. It usually finishes within a minute.",
+  checkoutCheckAgain: 'Check again',
+  checkoutCancelledTitle: 'Payment cancelled',
+  checkoutCancelledBody: 'No charge was made. You can try again whenever you like.',
+  checkoutFailedTitle: 'Payment failed',
+  checkoutFailedBody: "The payment didn't go through. No charge was made.",
+  checkoutScanToPay: 'Scan with any UPI app to pay',
+  checkoutOpenLinkInstead: 'Or open the payment link',
+  checkoutWaitingForPayment: 'Waiting for payment…',
+} as const

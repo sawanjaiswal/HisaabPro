@@ -1,0 +1,25 @@
+/** Translations (Hindi) — ext45: cross-platform subscription checkout. */
+
+export const hiExt45 = {
+  checkoutHeading: 'अपना अपग्रेड पूरा करें',
+  checkoutNoPlanTitle: 'कोई प्लान नहीं चुना',
+  checkoutNoPlanBody: 'जारी रखने के लिए अपग्रेड स्क्रीन से एक प्लान चुनें।',
+  checkoutSessionFailedTitle: 'चेकआउट शुरू नहीं हो सका',
+  checkoutSessionFailedBody: 'पेमेंट सेवा व्यस्त है। कृपया एक मिनट में फिर कोशिश करें।',
+  checkoutLoadFailed: 'पेमेंट स्क्रीन लोड नहीं हो सकी।',
+  checkoutVerifying: 'आपका पेमेंट पुष्टि हो रहा है…',
+  checkoutVerifyingHint: 'इसमें कुछ सेकंड लगते हैं। कृपया यह स्क्रीन खुली रखें।',
+  checkoutSuccessTitle: 'आप अपग्रेड हो गए!',
+  checkoutSuccessBody: 'आपका नया प्लान सक्रिय है। अतिरिक्त सुविधाओं का आनंद लें।',
+  checkoutGoToSubscription: 'सब्सक्रिप्शन देखें',
+  checkoutStrandedTitle: 'पेमेंट मिल गया',
+  checkoutStrandedBody: 'हम अब भी आपका प्लान सक्रिय कर रहे हैं। यह आमतौर पर एक मिनट में पूरा हो जाता है।',
+  checkoutCheckAgain: 'फिर जांचें',
+  checkoutCancelledTitle: 'पेमेंट रद्द किया गया',
+  checkoutCancelledBody: 'कोई शुल्क नहीं लिया गया। आप जब चाहें फिर कोशिश कर सकते हैं।',
+  checkoutFailedTitle: 'पेमेंट विफल',
+  checkoutFailedBody: 'पेमेंट पूरा नहीं हुआ। कोई शुल्क नहीं लिया गया।',
+  checkoutScanToPay: 'भुगतान के लिए किसी भी UPI ऐप से स्कैन करें',
+  checkoutOpenLinkInstead: 'या पेमेंट लिंक खोलें',
+  checkoutWaitingForPayment: 'पेमेंट का इंतज़ार है…',
+} as const
