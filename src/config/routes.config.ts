@@ -83,6 +83,7 @@ export const ROUTES = {
   REPORT_PROFITABILITY: '/reports/profitability',
   REPORT_DISCOUNTS: '/reports/discounts',
   INSIGHTS: '/insights',
+  REORDER_SUGGESTIONS: '/inventory/reorder-suggestions',
   FY_CLOSURE: '/accounting/fy-closure',
   TALLY_EXPORT: '/accounting/tally-export',
   BILL_SCAN: '/bill-scan',

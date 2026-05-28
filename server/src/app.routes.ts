@@ -43,6 +43,7 @@ import fyClosureRoutes from './routes/fy-closure.js'
 import couponRoutes from './routes/coupons.js'
 import biometricRoutes from './routes/biometric.js'
 import stockAlertRoutes from './routes/stock-alerts.js'
+import reorderRoutes from './routes/reorder.routes.js'
 import stockVerificationRoutes from './routes/stock-verification.js'
 import batchRoutes from './routes/batches.js'
 import godownRoutes from './routes/godowns.js'
@@ -129,6 +130,7 @@ const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/currency', currencyRoutes],
   ['/api/coupons', couponRoutes],
   ['/api/stock-alerts', stockAlertRoutes],
+  ['/api/inventory/reorder-suggestions', reorderRoutes],
   ['/api/stock-verification', stockVerificationRoutes],
   ['/api/batches', batchRoutes],
   ['/api/products', batchRoutes],

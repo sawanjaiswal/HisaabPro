@@ -91,11 +91,11 @@ Audit + design docs: `docs/SCOPE_PHASE6_STAFF_HR.md`, `docs/SCOPE_AUDIT_PHASE6_S
 - #144 Smart GST filing assistant (rules engine on Phase 2 data)
 - ~~#146 Predictive analytics (sales/stock forecast)~~ — **DONE 2026-05-28**: deterministic OLS revenue trend + sales-velocity stock-out forecast. `/api/analytics/*` gated on `advancedReports`; `/insights` FE (no charting lib — tiny SVG sparkline).
 - #147 Auto-reconciliation (bank statement → payment match)
-- #148 Smart inventory (reorder suggestions based on velocity) — overlaps #146 stock-velocity math; can reuse `forecast.math.ts`
+- ~~#148 Smart inventory (reorder suggestions based on velocity)~~ — **DONE 2026-05-28**: velocity-based reorder *suggestions* layer over static #114 reorderQty. Reuses #146 `forecast.math.ts`. `/api/inventory/reorder-suggestions` (auth-only, reads, products gate FE); `/inventory/reorder-suggestions` FE with urgency tiers (out/critical/low/ok), lead-time + coverage params. 15 tests.
 - ~~#149 Competitor data importers (Tally/Vyapar/MyBillBook)~~ — DONE (legacy retired #149c 2026-05-28)
 - #150 Real-time multi-user collaboration (presence + conflict resolution) — **needs architecture spike, CRDT vs LWW decision**
 
-Highest leverage next: #148 (reuses #146 velocity) → #144 → #147. #143 blocked on creds + webhook gate. Highest risk: #150.
+Highest leverage next: #144 Smart GST → #147 Auto-recon. #143 blocked on creds + webhook gate. Highest risk: #150.
 
 #### 6a. #149 Phase 7 Import Engine — slice tracker (2026-05-19)
 

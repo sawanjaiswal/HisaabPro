@@ -31,7 +31,7 @@ export type NavKey =
   | 'greetings' | 'bulk-import' | 'marketing' | 'settings'
   | 'dashboard' | 'invoices' | 'parties'
   | 'jobs' | 'orders' | 'batches' | 'godowns' | 'serial-numbers' | 'stock-verification' | 'stock-count' | 'stock-value-report' | 'bom' | 'production-runs'
-  | 'pos' | 'cash-register' | 'purchases' | 'collections' | 'inventory-alerts' | 'notifications' | 'serial-lookup'
+  | 'pos' | 'cash-register' | 'purchases' | 'collections' | 'inventory-alerts' | 'reorder-suggestions' | 'notifications' | 'serial-lookup'
 
 export interface VerticalProfile {
   type: BusinessType

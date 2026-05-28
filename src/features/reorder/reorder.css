@@ -1,0 +1,160 @@
+/* Smart inventory (#148) — all values via design tokens. */
+
+/* ── Filter tabs ──────────────────────────────────────────────────── */
+
+.reorder-tabs {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.reorder-tab {
+  flex: 1;
+  min-height: 44px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.reorder-tab--active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-bg-subtle);
+  color: var(--color-primary);
+}
+
+/* ── Summary card ─────────────────────────────────────────────────── */
+
+.reorder-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.reorder-summary__metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.reorder-summary__value {
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.reorder-summary__label {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+}
+
+.reorder-summary__divider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--color-border);
+}
+
+/* ── Suggestion list ──────────────────────────────────────────────── */
+
+.reorder-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.reorder-row {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+}
+
+.reorder-row__link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  text-decoration: none;
+  color: inherit;
+}
+
+.reorder-row__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.reorder-row__name {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reorder-row__meta {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+}
+
+.reorder-row__suggest {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: 1px dashed var(--color-border);
+}
+
+.reorder-row__suggest-qty {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.reorder-row__suggest-label {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+}
+
+.reorder-row__suggest-value {
+  font-size: var(--fs-base);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+/* ── Urgency pill ─────────────────────────────────────────────────── */
+
+.reorder-pill {
+  flex-shrink: 0;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+
+.reorder-pill--out {
+  color: var(--color-error-text);
+  background: var(--color-error-bg);
+}
+
+.reorder-pill--critical {
+  color: var(--color-error-text);
+  background: var(--color-error-bg-subtle);
+}
+
+.reorder-pill--low {
+  color: var(--color-warning-text);
+  background: var(--color-warning-bg-subtle);
+}
+
+.reorder-pill--ok {
+  color: var(--color-success);
+  background: var(--color-success-bg-subtle);
+}

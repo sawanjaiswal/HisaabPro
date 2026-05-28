@@ -69,6 +69,7 @@ export const MORE_MENU_ITEMS: MoreMenuItem[] = [
   { id: 'stock-value-report', navKey: 'stock-value-report', label: 'Stock Value', description: 'Total stock value at cost', icon: 'TrendingUp', route: ROUTES.STOCK_VALUE_REPORT, color: 'var(--color-success-50)', group: 'accounting' },
   { id: 'godowns', navKey: 'godowns', label: 'Godowns', description: 'Warehouses & transfers', icon: 'Warehouse', route: ROUTES.GODOWNS, color: 'var(--color-primary-50)', group: 'accounting' },
   { id: 'inventory-alerts', navKey: 'inventory-alerts', label: 'Stock Alerts', description: 'Low-stock warnings', icon: 'AlertTriangle', route: ROUTES.INVENTORY_ALERTS, color: 'var(--color-warning-50)', group: 'accounting' },
+  { id: 'reorder-suggestions', navKey: 'reorder-suggestions', label: 'Reorder Suggestions', description: 'Velocity-based restock list', icon: 'PackageCheck', route: ROUTES.REORDER_SUGGESTIONS, color: 'var(--color-success-50)', group: 'accounting' },
   { id: 'serial-lookup', navKey: 'serial-lookup', label: 'Serial Lookup', description: 'Find by serial number', icon: 'Search', route: ROUTES.SERIAL_LOOKUP, color: 'var(--color-secondary-50)', group: 'accounting' },
 
   // Marketing & CRM
