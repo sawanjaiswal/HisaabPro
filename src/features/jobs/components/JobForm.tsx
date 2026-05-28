@@ -1,10 +1,11 @@
 /** JobForm — shared by JobNewPage and JobEditPage */
 
 import { useState, useCallback } from 'react'
-import { Plus, Trash2 } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { PartySearchInput } from '@/features/invoices/components/PartySearchInput'
 import { formatPaise, totalsFromItems } from '../jobs.utils'
+import { JobItemRow, type JobFormItem } from './JobItemRow'
 import type { CreateJobInput, CreateJobItemInput } from '../api/jobs.api.types'
 import type { JobDetail } from '../jobs.types'
 
@@ -15,13 +16,10 @@ interface JobFormProps {
   submitLabel?: string
 }
 
-interface FormItem extends CreateJobItemInput {
-  _key: string
-}
-
-function makeItem(): FormItem {
+function makeItem(): JobFormItem {
   return {
     _key: crypto.randomUUID(),
+    kind: 'ITEM',
     description: '',
     quantity: '1.000',
     ratePaise: 0,
@@ -30,12 +28,16 @@ function makeItem(): FormItem {
   }
 }
 
-function fromDetail(detail: JobDetail): { partyId: string; title: string; description: string; scheduledAt: string; items: FormItem[] } {
+const hoursToInput = (h: number | null): string => (h === null || h === undefined ? '' : String(h))
+
+function fromDetail(detail: JobDetail): { partyId: string; title: string; description: string; scheduledAt: string; estimatedHours: string; actualHours: string; items: JobFormItem[] } {
   return {
     partyId: detail.partyId,
     title: detail.title,
     description: detail.description ?? '',
     scheduledAt: detail.scheduledAt ? detail.scheduledAt.slice(0, 16) : '',
+    estimatedHours: hoursToInput(detail.estimatedHours),
+    actualHours: hoursToInput(detail.actualHours),
     items: detail.items.map((it) => ({ _key: it.id, ...it, discountPaise: it.discountPaise ?? 0 })),
   }
 }
@@ -43,13 +45,15 @@ function fromDetail(detail: JobDetail): { partyId: string; title: string; descri
 export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: JobFormProps) {
   const { t } = useLanguage()
   const resolvedSubmitLabel = submitLabel ?? t.saveJob
-  const init = initialData ? fromDetail(initialData) : { partyId: '', title: '', description: '', scheduledAt: '', items: [makeItem()] }
+  const init = initialData ? fromDetail(initialData) : { partyId: '', title: '', description: '', scheduledAt: '', estimatedHours: '', actualHours: '', items: [makeItem()] }
 
   const [partyId, setPartyId]         = useState(init.partyId)
   const [title, setTitle]             = useState(init.title)
   const [description, setDescription] = useState(init.description)
   const [scheduledAt, setScheduledAt] = useState(init.scheduledAt)
-  const [items, setItems]             = useState<FormItem[]>(init.items)
+  const [estimatedHours, setEstimatedHours] = useState(init.estimatedHours)
+  const [actualHours, setActualHours] = useState(init.actualHours)
+  const [items, setItems]             = useState<JobFormItem[]>(init.items)
   const [errors, setErrors]           = useState<Record<string, string>>({})
 
   const handlePartyChange = useCallback((id: string) => {
@@ -78,6 +82,15 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: Jo
     return Object.keys(errs).length === 0
   }
 
+  const parseHours = (s: string): number | null => {
+    const v = parseFloat(s)
+    return s.trim() === '' || isNaN(v) ? null : v
+  }
+
+  const estNum = parseHours(estimatedHours)
+  const actNum = parseHours(actualHours)
+  const variance = estNum !== null && actNum !== null ? actNum - estNum : null
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!validate()) return
@@ -86,6 +99,8 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: Jo
       title: title.trim(),
       description: description.trim() || null,
       scheduledAt: scheduledAt || null,
+      estimatedHours: estNum,
+      actualHours: actNum,
       items: items.map(({ _key: _, ...rest }) => ({ ...rest })),
     })
   }
@@ -141,6 +156,39 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: Jo
         />
       </div>
 
+      {/* Estimated vs actual hours (tracking-only — never summed into money) */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-2)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+          <label className="label" htmlFor="job-est-hours">{t.jobEstimatedHoursLabel}</label>
+          <input
+            id="job-est-hours"
+            type="number"
+            className="input"
+            value={estimatedHours}
+            min="0"
+            step="0.5"
+            onChange={(e) => setEstimatedHours(e.target.value)}
+          />
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+          <label className="label" htmlFor="job-act-hours">{t.jobActualHoursLabel}</label>
+          <input
+            id="job-act-hours"
+            type="number"
+            className="input"
+            value={actualHours}
+            min="0"
+            step="0.5"
+            onChange={(e) => setActualHours(e.target.value)}
+          />
+        </div>
+      </div>
+      {variance !== null && variance !== 0 && (
+        <span style={{ alignSelf: 'flex-start', fontSize: 'var(--fs-xs)', fontWeight: 600, padding: '2px 8px', borderRadius: 'var(--radius-full, 999px)', background: variance > 0 ? 'var(--color-error-50, #fef2f2)' : 'var(--color-success-50, #f0fdf4)', color: variance > 0 ? 'var(--color-error-600)' : 'var(--color-success-600, #16a34a)' }}>
+          {t.jobHoursVariance}: {Math.abs(variance)}h {variance > 0 ? t.jobHoursOver : t.jobHoursUnder}
+        </span>
+      )}
+
       {/* Line items */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -149,63 +197,14 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: Jo
         </div>
 
         {items.map((item, idx) => (
-          <div key={item._key} style={{ border: '1px solid var(--color-border)', borderRadius: 8, padding: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)', fontWeight: 500 }}>{t.jobItemLabel} {idx + 1}</span>
-              {items.length > 1 && (
-                <button type="button" onClick={() => removeItem(item._key)} aria-label="Remove item" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-error-600)', minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Trash2 size={16} aria-hidden="true" />
-                </button>
-              )}
-            </div>
-            <input
-              type="text"
-              className="input"
-              value={item.description}
-              onChange={(e) => updateItem(item._key, 'description', e.target.value)}
-              placeholder={t.jobItemDescPlaceholder}
-              maxLength={500}
-              aria-label={`${t.jobItemLabel} ${idx + 1} description`}
-            />
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-2)' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <label style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>{t.jobItemQtyLabel}</label>
-                <input
-                  type="number"
-                  className="input"
-                  value={item.quantity}
-                  min="0"
-                  step="0.001"
-                  onChange={(e) => updateItem(item._key, 'quantity', e.target.value)}
-                  aria-label={`${t.jobItemLabel} ${idx + 1} quantity`}
-                />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <label style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>{t.jobItemRateLabel}</label>
-                <input
-                  type="number"
-                  className="input"
-                  value={item.ratePaise / 100}
-                  min="0"
-                  step="0.01"
-                  onChange={(e) => updateItem(item._key, 'ratePaise', Math.round(parseFloat(e.target.value || '0') * 100))}
-                  aria-label={`${t.jobItemLabel} ${idx + 1} rate`}
-                />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <label style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>{t.jobItemDiscountLabel}</label>
-                <input
-                  type="number"
-                  className="input"
-                  value={(item.discountPaise ?? 0) / 100}
-                  min="0"
-                  step="0.01"
-                  onChange={(e) => updateItem(item._key, 'discountPaise', Math.round(parseFloat(e.target.value || '0') * 100))}
-                  aria-label={`${t.jobItemLabel} ${idx + 1} discount`}
-                />
-              </div>
-            </div>
-          </div>
+          <JobItemRow
+            key={item._key}
+            item={item}
+            index={idx}
+            canRemove={items.length > 1}
+            onUpdate={updateItem}
+            onRemove={removeItem}
+          />
         ))}
 
         <button type="button" className="btn btn-ghost btn-sm" onClick={addItem} style={{ alignSelf: 'flex-start', minHeight: 44 }}>

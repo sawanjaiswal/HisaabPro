@@ -8,10 +8,13 @@ export type JobStatus =
   | 'INVOICED'
   | 'CANCELLED'
 
+export type JobItemKind = 'ITEM' | 'HOURLY'
+
 export interface JobItem {
   id: string
   sortOrder: number
   productId: string | null
+  kind: JobItemKind
   description: string
   quantity: string // Decimal serialised as string
   ratePaise: number
@@ -34,6 +37,8 @@ export interface JobListRow {
 
 export interface JobDetail extends JobListRow {
   description: string | null
+  estimatedHours: number | null
+  actualHours: number | null
   subtotalPaise: number
   discountPaise: number
   completedAt: string | null

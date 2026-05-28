@@ -4,7 +4,7 @@
 >
 > **Last updated:** 2026-05-28
 > **Owner:** Sawan Jaiswal
-> **Status:** Phase 1–6 complete on `master`; Phase 7 **9/10** — #141 OCR, #142 Voice, #144 Smart GST, #145 Vertical Modes, #146 Predictive, #147 Auto-reconciliation, #148 Smart inventory, #149 Competitor imports, #150 Multi-user collaboration. Remaining: #143 (creds-blocked). Pre-beta hardening landed 2026-05-27: money-SSOT (paise Int) merged via PR #2, refresh-token family rotation per RFC 6819, security batch A (CSV injection guard + Sentry/logger PII scrub), W4b FE test-contract sweep (1306/1306 passing). Vertical-depth **V3 Recipe Cost dashboard shipped 2026-05-28** (BOM-derived cost/margin, no schema). `hisaabpro` branch is **0 commits ahead** of `master` — Render redeploy pending.
+> **Status:** Phase 1–6 complete on `master`; Phase 7 **9/10** — #141 OCR, #142 Voice, #144 Smart GST, #145 Vertical Modes, #146 Predictive, #147 Auto-reconciliation, #148 Smart inventory, #149 Competitor imports, #150 Multi-user collaboration. Remaining: #143 (creds-blocked). Pre-beta hardening landed 2026-05-27: money-SSOT (paise Int) merged via PR #2, refresh-token family rotation per RFC 6819, security batch A (CSV injection guard + Sentry/logger PII scrub), W4b FE test-contract sweep (1306/1306 passing). Vertical-depth **V3 Recipe Cost dashboard shipped 2026-05-28** (BOM-derived cost/margin, no schema) and **V1 Hourly billing on Jobs shipped 2026-05-29** (`JobItemKind` discriminator + tracking-only Job hours, additive migration, money math unchanged). `hisaabpro` branch is **0 commits ahead** of `master` — Render redeploy pending.
 > **Frontend UI:** complete for all 141 shipped features (the remaining 9 are either cred-blocked backend stubs or unbuilt vertical-depth epics — no UI yet).
 
 ---
@@ -237,7 +237,7 @@ Merge `caa390d` (2026-05-26), 12 commits + 2 hardening (`ba56470`/`0bd1881`).
 
 | Vertical group | Feature |
 |---|---|
-| Services / Freelancer / Salon / Clinic | Jobs flow (QUOTED→SCHEDULED→IN_PROGRESS→COMPLETED→INVOICED) + 4 pages + dashboard widget + convert-to-invoice |
+| Services / Freelancer / Salon / Clinic | Jobs flow (QUOTED→SCHEDULED→IN_PROGRESS→COMPLETED→INVOICED) + 4 pages + dashboard widget + convert-to-invoice. **Hourly billing (V1, shipped 2026-05-29)** — `JobItemKind` enum (`ITEM`\|`HOURLY`) + `Job.estimatedHours`/`actualHours` (Decimal, tracking-only); HOURLY relabels qty→Hours, rate→Rate/hr and reuses the exact `round(qty×rate)−discount` line math (hours never summed into money); per-line toggle + variance chip + "Xh @ ₹Y/hr" detail label. Additive migration. |
 | Bakery / Tailor | Custom Orders (RECEIVED→IN_PRODUCTION→READY→DELIVERED→INVOICED) + delivery date/slot + custom fields + Today/Tomorrow widgets |
 | Pharmacy | Batch + expiry tracking ON by default, FEFO claim, daily expiry cron |
 | Restaurant | Nav-hide serial/verify, terminology="Bill", POS access |
@@ -250,7 +250,7 @@ Merge `caa390d` (2026-05-26), 12 commits + 2 hardening (`ba56470`/`0bd1881`).
 
 | Epic | Verticals | Effort | Severity |
 |---|---|---|---|
-| V1 — Hourly billing on Jobs (`hoursEstimated/Actual/ratePerHour`) | Services/Freelancer/Salon/Clinic | ~1 wk | HIGH |
+| ~~V1 — Hourly billing on Jobs~~ ✅ SHIPPED 2026-05-29 | Services/Freelancer/Salon/Clinic | — | done |
 | V2 — Appointment calendar + slot picker | Salon/Clinic | ~2 wks | HIGH (onboarding blocker) |
 | ~~V3 — Recipe cost dashboard (BOM-derived)~~ ✅ SHIPPED 2026-05-28 | Restaurant/Bakery/Manufacturing | — | done |
 | V4 — Staff assignment + commission split on Jobs/Orders | Services/Bakery/Tailor/Manufacturing | ~2 wks | MEDIUM (extends Phase 6 #128) |
@@ -258,7 +258,7 @@ Merge `caa390d` (2026-05-26), 12 commits + 2 hardening (`ba56470`/`0bd1881`).
 | V6 — Table mgmt + KOT | Restaurant | LARGE | LOW (out of scope) |
 | V7 — Prescription field | Pharmacy/Clinic | trivial | LOW (custom-fields today) |
 
-Recommended sequence post merge-to-prod: ~~V3~~ ✅ → V1 → V5 → V2 → V4.
+Recommended sequence post merge-to-prod: ~~V3~~ ✅ → ~~V1~~ ✅ → V5 → V2 → V4.
 
 ---
 
@@ -827,7 +827,7 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 **Summary — 150 features, ~180 sub-feature rows tracked + 7 vertical-depth epics:**
 - **Done:** 139 features (all layers present + shipped on `master`; #142 voice + #147 auto-reconciliation + #150 multi-user collab 2026-05-28).
 - **In-Progress (cred-blocked):** 8 features (code shipped, awaiting env vars / plugin install: #2, #4, #30, #32, #42, #47, #59, #123/#124 providers).
-- **Not Started:** 1 feature (#143) + 7 vertical-depth epics.
+- **Not Started:** 1 feature (#143) + 5 vertical-depth epics (V3 shipped 2026-05-28, V1 shipped 2026-05-29).
 - **Deferred:** #89 Bank Reconciliation — shipped inside #147 (2026-05-28).
 - **Audit timestamp:** 2026-05-26 19:12 IST · branch `master` · HEAD `9a3c98e` (#149 merged 2026-05-26 via PR-D2b/D3/D4/D5)
 - **Post-audit hardening on master @ `6ba7c0f` (2026-05-27):** money-SSOT (PR #2 `7c97b33`) · refresh-token family rotation (`cf9bcb6`) · security batch A (`5481f6b`) · W4b FE test sweep (`c43babc` + `6ba7c0f`). No feature-row state changes.

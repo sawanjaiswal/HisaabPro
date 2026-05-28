@@ -47,6 +47,7 @@ export async function updateJob(
       const itemsWithTotals = data.items.map((item, i) => ({
         sortOrder: i,
         productId: item.productId ?? null,
+        kind: item.kind ?? 'ITEM',
         description: item.description,
         quantity: item.quantity!,
         ratePaise: item.ratePaise!,
@@ -55,7 +56,8 @@ export async function updateJob(
       }))
 
       subtotalPaise = itemsWithTotals.reduce((sum, it) => sum + it.totalPaise, 0)
-      totalPaise = subtotalPaise
+      // Clamp grand total to match FE jobs.utils.ts:39 (per-line stays unclamped).
+      totalPaise = Math.max(0, subtotalPaise)
 
       await tx.jobItem.deleteMany({ where: { jobId } })
       await tx.jobItem.createMany({
@@ -72,6 +74,8 @@ export async function updateJob(
         ...(data.scheduledAt !== undefined && {
           scheduledAt: data.scheduledAt ? new Date(data.scheduledAt) : null,
         }),
+        ...(data.estimatedHours !== undefined && { estimatedHours: data.estimatedHours }),
+        ...(data.actualHours !== undefined && { actualHours: data.actualHours }),
         ...(subtotalPaise !== undefined && { subtotalPaise }),
         ...(totalPaise !== undefined && { totalPaise }),
         updatedBy: userId,

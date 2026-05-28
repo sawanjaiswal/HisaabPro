@@ -2981,6 +2981,13 @@ enum JobStatus {
   CANCELLED
 }
 
+// V1 hourly billing — distinguishes a generic line from an hours-billed line.
+// HOURLY reuses quantity (= hours) and ratePaise (= rate/hour); math is identical.
+enum JobItemKind {
+  ITEM
+  HOURLY
+}
+
 model Job {
   id         String @id @default(cuid())
   businessId String
@@ -3001,6 +3008,11 @@ model Job {
   completedAt  DateTime?
   cancelledAt  DateTime?
   cancelReason String?   @db.VarChar(500)
+
+  // V1 hourly billing — estimate vs actual tracking. Informational only; never
+  // summed into money totals (those stay line-driven). Fractional hours allowed.
+  estimatedHours Decimal? @db.Decimal(10, 2)
+  actualHours    Decimal? @db.Decimal(10, 2)
 
   // Totals (PAISE — integer, matches Document)
   subtotalPaise Int @default(0)
@@ -3044,6 +3056,9 @@ model JobItem {
 
   // Optional product link — services often have no SKU.
   productId String?
+
+  // V1 hourly billing — ITEM (generic) or HOURLY (quantity = hours, ratePaise = rate/hour).
+  kind JobItemKind @default(ITEM)
 
   description String @db.VarChar(500)
 

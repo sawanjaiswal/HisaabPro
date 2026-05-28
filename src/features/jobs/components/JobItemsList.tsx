@@ -1,6 +1,6 @@
 /** JobItemsList — read-only items table on the detail page */
 
-import { formatPaise } from '../jobs.utils'
+import { formatPaise, hourlyLineLabel } from '../jobs.utils'
 import type { JobItem } from '../jobs.types'
 
 interface JobItemsListProps {
@@ -33,7 +33,14 @@ export function JobItemsList({ items }: JobItemsListProps) {
         <tbody>
           {items.map((item) => (
             <tr key={item.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-              <td style={{ padding: 'var(--space-2)', color: 'var(--color-text)' }}>{item.description}</td>
+              <td style={{ padding: 'var(--space-2)', color: 'var(--color-text)' }}>
+                {item.description}
+                {hourlyLineLabel(item) && (
+                  <span style={{ display: 'block', fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>
+                    {hourlyLineLabel(item)}
+                  </span>
+                )}
+              </td>
               <td style={{ padding: 'var(--space-2)', textAlign: 'right', color: 'var(--color-text-secondary)' }}>{item.quantity}</td>
               <td style={{ padding: 'var(--space-2)', textAlign: 'right', color: 'var(--color-text-secondary)' }}>₹{formatPaise(item.ratePaise)}</td>
               <td style={{ padding: 'var(--space-2)', textAlign: 'right', fontWeight: 600, color: 'var(--color-text)' }}>₹{formatPaise(item.totalPaise)}</td>

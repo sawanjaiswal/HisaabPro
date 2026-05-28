@@ -54,3 +54,15 @@ export function itemTotal(item: Pick<JobItem, 'ratePaise' | 'quantity' | 'discou
   const qty = parseFloat(item.quantity) || 0
   return Math.max(0, Math.round(qty * item.ratePaise) - item.discountPaise)
 }
+
+/**
+ * Sub-label for an HOURLY line, e.g. "2.5h @ ₹500/hr". Returns null for ITEM
+ * lines (no money math here — quantity is hours, ratePaise is rate-per-hour).
+ */
+export function hourlyLineLabel(
+  item: Pick<JobItem, 'kind' | 'quantity' | 'ratePaise'>
+): string | null {
+  if (item.kind !== 'HOURLY') return null
+  const hours = parseFloat(item.quantity) || 0
+  return `${hours}h @ ₹${formatPaise(item.ratePaise)}/hr`
+}

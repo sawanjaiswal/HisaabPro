@@ -41,6 +41,7 @@ export async function createJob(
   const itemsWithTotals = data.items.map((item, i) => ({
     sortOrder: i,
     productId: item.productId ?? null,
+    kind: item.kind,
     description: item.description,
     quantity: item.quantity,
     ratePaise: item.ratePaise,
@@ -49,7 +50,9 @@ export async function createJob(
   }))
 
   const subtotalPaise = itemsWithTotals.reduce((sum, it) => sum + it.totalPaise, 0)
-  const totalPaise = subtotalPaise
+  // Clamp grand total to match FE jobs.utils.ts:39 (per-line stays unclamped so a
+  // heavy discount on one line can offset another, identical to FE aggregation).
+  const totalPaise = Math.max(0, subtotalPaise)
 
   const result = await prisma.$transaction(async (tx) => {
     // Assign job number immediately (QUOTED → numbered on create)
@@ -62,6 +65,8 @@ export async function createJob(
         title: data.title,
         description: data.description ?? null,
         scheduledAt: data.scheduledAt ? new Date(data.scheduledAt) : null,
+        estimatedHours: data.estimatedHours ?? null,
+        actualHours: data.actualHours ?? null,
         subtotalPaise,
         discountPaise: 0,
         totalPaise,

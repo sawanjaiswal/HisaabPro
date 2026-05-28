@@ -1,9 +1,10 @@
 /** Jobs API — request/response types (mirrors server schemas) */
 
-import type { JobStatus } from '../jobs.types'
+import type { JobStatus, JobItemKind } from '../jobs.types'
 
 export interface CreateJobItemInput {
   productId?: string | null
+  kind?: JobItemKind
   description: string
   quantity: string    // decimal as string e.g. "1.000"
   ratePaise: number
@@ -15,6 +16,8 @@ export interface CreateJobInput {
   title: string
   description?: string | null
   scheduledAt?: string | null
+  estimatedHours?: number | null
+  actualHours?: number | null
   items: CreateJobItemInput[]
   clientId?: string
 }

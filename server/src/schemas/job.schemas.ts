@@ -8,8 +8,12 @@ export const JOB_STATUSES = [
   'QUOTED', 'SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'INVOICED', 'CANCELLED',
 ] as const
 
+export const JOB_ITEM_KINDS = ['ITEM', 'HOURLY'] as const
+
 const jobItemSchema = z.object({
   productId: z.string().cuid().nullable().optional(),
+  // V1 hourly billing — HOURLY relabels quantity (= hours) and ratePaise (= rate/hour).
+  kind: z.enum(JOB_ITEM_KINDS).optional().default('ITEM'),
   description: z.string().min(1).max(500),
   // Decimal qty: accept string or number, coerce to string for Prisma Decimal
   quantity: z.union([z.string(), z.number()]).transform(v => String(v)).pipe(
@@ -22,11 +26,16 @@ const jobItemSchema = z.object({
   discountPaise: z.number().int().nonnegative().optional().default(0),
 }).strict()
 
+// V1 hourly billing — estimate vs actual, tracking-only (never summed into money).
+const jobHoursSchema = z.number().min(0).max(100000).nullable().optional()
+
 export const createJobSchema = z.object({
   partyId: z.string().cuid(),
   title: z.string().min(1).max(200),
   description: z.string().max(5000).nullable().optional(),
   scheduledAt: z.string().datetime().nullable().optional(),
+  estimatedHours: jobHoursSchema,
+  actualHours: jobHoursSchema,
   items: z.array(jobItemSchema).min(1).max(200),
   clientId: z.string().min(1).max(64).optional(),
 }).strict()

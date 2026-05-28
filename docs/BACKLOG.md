@@ -144,7 +144,7 @@ Verticals are wired (nav filtering, terminology, defaults, Jobs flow, Custom Ord
 
 | Epic | Verticals | Effort | Notes |
 |---|---|---|---|
-| **V1 — Services time tracking on Jobs** | services, freelancer, salon, clinic | ~1 wk | Add `hoursEstimated`, `hoursActual`, `ratePerHour` on Job; hour-based invoice line. Plumber/freelancer cannot bill hourly today. |
+| ~~**V1 — Services time tracking on Jobs**~~ ✅ SHIPPED 2026-05-29 | services, freelancer, salon, clinic | — | `JobItemKind` enum (`ITEM`\|`HOURLY`, default ITEM) discriminator + `Job.estimatedHours`/`actualHours` (Decimal, nullable, tracking-only). HOURLY reuses the exact existing line math (`round(qty×rate)−discount`) — quantity=hours, rate=rate/hr; hours never summed into money. Additive migration. FE: per-line Item/Hourly toggle (relabels qty→Hours, rate→Rate/hr), estimate-vs-actual variance chip, detail-page "Xh @ ₹Y/hr" sub-label. 6 BE route proofs. **Convert-to-invoice deviation:** the hourly `(Xh @ ₹Y/hr)` description annotation was dropped — the document line schema has no per-line description field and editing it was outside approved scope; the money base (`round(hours×rate)`) carries through unchanged. |
 | **V2 — Appointments calendar** | salon, clinic | ~2 wks (HIGH) | New `Appointment` model + slot picker + availability view. Onboarding blocker. |
 | ~~**V3 — Recipe cost dashboard**~~ ✅ SHIPPED 2026-05-28 | restaurant, bakery, manufacturing | — | Derives cost-per-unit + margin from active BOMs (`weightedAvgCostPaise`, fallback `purchasePrice`). Read-only, auth-gated like BOM, no schema. `GET /api/recipe-cost`, `/recipe-cost` page, More→Production card (navKey `bom`). 13 math unit tests. |
 | **V4 — Staff assignment + commission split** | services, bakery, tailor, manufacturing | ~2 wks | Assign staff to Jobs/Orders/POS sales. Builds on Phase 6 #128 commission ledger. |
@@ -154,7 +154,7 @@ Verticals are wired (nav filtering, terminology, defaults, Jobs flow, Custom Ord
 
 Recommended sequence (post merge-to-prod):
 1. ~~V3 (3 days, no schema, big restaurant/bakery win)~~ ✅ SHIPPED 2026-05-28
-2. V1 (1 wk, unblocks hourly billing — biggest current user complaint)
+2. ~~V1 (1 wk, unblocks hourly billing — biggest current user complaint)~~ ✅ SHIPPED 2026-05-29
 3. V5 (3 days, depends on Epic A)
 4. V2 (2 wks, salon/clinic onboarding)
 5. V4 (2 wks, naturally extends Phase 6 commission ledger)
