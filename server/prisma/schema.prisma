@@ -32,12 +32,12 @@ model User {
 
   // Referral wallet — Feature #3 (money-SSOT: paise Int / BigInt, see EPIC_money-ssot)
   referredBy                   String?
-  referralBalancePaise         Int    @default(0)
-  referralBalanceInReviewPaise Int    @default(0)
-  referralTotalEarnedPaise     BigInt @default(0)
-  referralFraudFlags      Int       @default(0)
-  walletFrozen            Boolean   @default(false)
-  lastReferralAt          DateTime?
+  referralBalancePaise         Int       @default(0)
+  referralBalanceInReviewPaise Int       @default(0)
+  referralTotalEarnedPaise     BigInt    @default(0)
+  referralFraudFlags           Int       @default(0)
+  walletFrozen                 Boolean   @default(false)
+  lastReferralAt               DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -120,6 +120,10 @@ model User {
   importedParties   Party[]     @relation("ImportedParties")
   importedDocuments Document[]  @relation("ImportedDocuments")
   importedPayments  Payment[]   @relation("PaymentImporter")
+
+  // Phase 7 — Bank reconciliation (#147)
+  statementImports      BankStatementImport[] @relation("StatementImporter")
+  reconciliationMatches ReconciliationMatch[] @relation("ReconciliationMatcher")
 
   @@index([phone])
   @@index([referredBy])
@@ -306,6 +310,11 @@ model Business {
 
   // Phase 7 — Import
   importJobs ImportJob[]
+
+  // Phase 7 — Bank reconciliation (#147)
+  statementImports      BankStatementImport[]
+  statementLines        BankStatementLine[]
+  reconciliationMatches ReconciliationMatch[]
 
   @@index([name])
 }
@@ -1323,6 +1332,9 @@ model Payment {
   payrolls         Payroll[]         @relation("PayrollPayment")
   employeeAdvances EmployeeAdvance[] @relation("AdvancePayment")
 
+  // Phase 7 — Bank reconciliation (#147)
+  reconciliationMatches ReconciliationMatch[] @relation("PaymentReconciliation")
+
   @@index([businessId, date])
   @@index([businessId, partyId])
   @@index([businessId, partyId, date]) // ledger window query
@@ -2297,6 +2309,9 @@ model BankAccount {
   business      Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
   ledgerAccount LedgerAccount?
   cheques       Cheque[]
+
+  // Phase 7 — Bank reconciliation (#147)
+  statementImports BankStatementImport[]
 
   @@unique([businessId, accountNumber])
   @@index([businessId, isActive])
@@ -4255,4 +4270,67 @@ model ImportJobRow {
   @@unique([jobId, sourceIndex])
   @@index([jobId, status])
   @@index([jobId, createdEntityId])
+}
+
+// ── Phase 7 — Bank reconciliation (#147, absorbs #89) ──────────────────────
+// Additive create-table-only. Reconciliation only annotates existing Payments
+// via ReconciliationMatch; it never mutates Payment/ledger rows.
+
+model BankStatementImport {
+  id            String    @id @default(cuid())
+  businessId    String
+  bankAccountId String
+  fileName      String    @db.VarChar(255)
+  rowCount      Int
+  periodStart   DateTime?
+  periodEnd     DateTime?
+  importedBy    String
+  createdAt     DateTime  @default(now())
+
+  business    Business            @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  bankAccount BankAccount         @relation(fields: [bankAccountId], references: [id], onDelete: Restrict)
+  importer    User                @relation("StatementImporter", fields: [importedBy], references: [id], onDelete: Restrict)
+  lines       BankStatementLine[]
+
+  @@index([businessId, createdAt])
+  @@index([businessId, bankAccountId])
+}
+
+model BankStatementLine {
+  id              String   @id @default(cuid())
+  importId        String
+  businessId      String
+  bankAccountId   String
+  txnDate         DateTime
+  amount          Int // paise, always positive
+  direction       String // CREDIT | DEBIT
+  description     String?  @db.VarChar(500)
+  referenceNumber String?  @db.VarChar(100)
+  status          String   @default("UNMATCHED") // UNMATCHED | SUGGESTED | MATCHED | IGNORED
+  createdAt       DateTime @default(now())
+
+  import   BankStatementImport  @relation(fields: [importId], references: [id], onDelete: Cascade)
+  business Business             @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  match    ReconciliationMatch?
+
+  @@index([businessId, bankAccountId, status])
+  @@index([importId])
+}
+
+model ReconciliationMatch {
+  id         String   @id @default(cuid())
+  businessId String
+  lineId     String   @unique // 1:1 — a line reconciles to at most one payment
+  paymentId  String
+  method     String // AUTO | MANUAL
+  confidence Int // 0..100 integer (money-adjacent SSOT — no float)
+  matchedBy  String
+  createdAt  DateTime @default(now())
+
+  line     BankStatementLine @relation(fields: [lineId], references: [id], onDelete: Cascade)
+  payment  Payment           @relation("PaymentReconciliation", fields: [paymentId], references: [id], onDelete: Restrict)
+  business Business          @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  matcher  User              @relation("ReconciliationMatcher", fields: [matchedBy], references: [id], onDelete: Restrict)
+
+  @@index([businessId, paymentId])
 }

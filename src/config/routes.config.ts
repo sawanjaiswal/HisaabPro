@@ -72,6 +72,7 @@ export const ROUTES = {
   JOURNAL_ENTRIES: '/accounting/journal-entries',
   TRIAL_BALANCE: '/reports/trial-balance',
   BANK_ACCOUNTS: '/bank-accounts',
+  BANK_RECONCILIATION: '/bank-reconciliation',
   EXPENSES: '/expenses',
   OTHER_INCOME: '/other-income',
   VOICE_ENTRY: '/voice-entry',

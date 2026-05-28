@@ -1,0 +1,176 @@
+/* #147 Bank reconciliation — design-token-only styling. */
+
+.recon-subtitle {
+  font-size: var(--fs-sm);
+  color: var(--color-text-secondary);
+}
+
+.recon-upload {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.recon-upload__label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: calc(var(--space-1) * 1.5);
+}
+
+.recon-upload__select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-size: var(--fs-base);
+}
+
+.recon-upload__csv-hint,
+.recon-upload__hint {
+  font-size: var(--fs-xs);
+  color: var(--color-text-secondary);
+}
+
+.recon-upload__error {
+  font-size: var(--fs-sm);
+  color: var(--color-error-600);
+}
+
+.recon-upload__file-input {
+  display: none;
+}
+
+.recon-upload__choose,
+.recon-upload__submit {
+  width: 100%;
+}
+
+.recon-upload__ready {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--color-text-primary);
+}
+
+.recon-tabs {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-bottom: var(--space-1);
+}
+
+.recon-tabs__tab {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.recon-tabs__tab[data-active='true'] {
+  background: var(--color-primary-600);
+  border-color: var(--color-primary-600);
+  color: var(--color-on-primary);
+}
+
+.recon-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.recon-skeleton {
+  height: 64px;
+  border-radius: var(--radius-xl);
+}
+
+.recon-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+}
+
+.recon-row__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border-radius: var(--radius-full);
+}
+
+.recon-row__icon[data-dir='CREDIT'] {
+  background: var(--color-success-50);
+  color: var(--color-success-600);
+}
+
+.recon-row__icon[data-dir='DEBIT'] {
+  background: var(--color-error-50);
+  color: var(--color-error-600);
+}
+
+.recon-row__body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.recon-row__top {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.recon-row__desc {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recon-row__amount {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  flex: 0 0 auto;
+}
+
+.recon-row__amount[data-dir='CREDIT'] {
+  color: var(--color-success-600);
+}
+
+.recon-row__amount[data-dir='DEBIT'] {
+  color: var(--color-error-600);
+}
+
+.recon-row__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+  font-size: var(--fs-xs);
+  color: var(--color-text-secondary);
+}
+
+.recon-row__actions {
+  display: flex;
+  gap: var(--space-2);
+  flex: 0 0 auto;
+}

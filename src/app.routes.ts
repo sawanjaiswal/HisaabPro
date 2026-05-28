@@ -88,6 +88,7 @@ export const PredictiveAnalytics = lazy(() => import('@/features/analytics/Predi
 export const ReorderSuggestions = lazy(() => import('@/features/reorder/ReorderSuggestionsPage'))
 export const GstFilingReadiness = lazy(() => import('@/features/gst-validation/GstFilingReadinessPage'))
 export const VoiceEntry = lazy(() => import('@/features/voice/VoiceEntryPage'))
+export const BankReconciliation = lazy(() => import('@/features/bank-reconciliation/BankReconciliationPage'))
 export const TallyExport = lazy(() => import('@/features/reports/TallyExportPage'))
 export const FYClosure = lazy(() => import('@/features/accounting/FYClosurePage'))
 export const More = lazy(() => import('@/features/more/MorePage'))

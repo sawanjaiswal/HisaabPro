@@ -26,7 +26,7 @@ export type BusinessType =
 /** Stable keys for nav items in MORE_MENU + BottomNav. */
 export type NavKey =
   | 'bill-scan' | 'recurring' | 'templates' | 'data-import' | 'items-library'
-  | 'payments' | 'outstanding' | 'expenses' | 'other-income' | 'voice-entry' | 'loans' | 'cheques' | 'bank'
+  | 'payments' | 'outstanding' | 'expenses' | 'other-income' | 'voice-entry' | 'loans' | 'cheques' | 'bank' | 'bank-reconciliation'
   | 'reports' | 'insights' | 'accounting' | 'gst' | 'gst-filing-check' | 'products'
   | 'greetings' | 'bulk-import' | 'marketing' | 'settings'
   | 'dashboard' | 'invoices' | 'parties'

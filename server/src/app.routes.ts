@@ -32,6 +32,7 @@ import ewaybillRoutes from './routes/ewaybill.js'
 import recurringRoutes from './routes/recurring/recurring.route.js'
 import currencyRoutes from './routes/currency.js'
 import reconciliationRoutes from './routes/reconciliation.js'
+import bankReconciliationRoutes from './routes/bank-reconciliation.routes.js'
 import accountingRoutes from './routes/accounting.js'
 import bankRoutes from './routes/bank.js'
 import expenseRoutes from './routes/expenses.js'
@@ -125,6 +126,7 @@ const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/gst/backfill', gstBackfillRoutes],
   ['/api/gst/filing-readiness', gstValidationRoutes],
   ['/api/gst/reconciliation', reconciliationRoutes],
+  ['/api/bank-reconciliation', bankReconciliationRoutes],
   ['/api/reports', tdsTcsRoutes],
   ['/api/einvoice', einvoiceRoutes],
   ['/api/ewaybill', ewaybillRoutes],
