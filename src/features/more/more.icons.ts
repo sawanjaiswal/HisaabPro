@@ -29,6 +29,7 @@ import {
   Warehouse,
   Search,
   Bell,
+  LineChart,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -63,4 +64,5 @@ export const ICON_REGISTRY: Record<string, LucideIcon> = {
   Warehouse,
   Search,
   Bell,
+  LineChart,
 }

@@ -85,17 +85,17 @@ Audit + design docs: `docs/SCOPE_PHASE6_STAFF_HR.md`, `docs/SCOPE_AUDIT_PHASE6_S
 
 ---
 
-### 6. Phase 7 — AI & Differentiators (8 remaining; #141 OCR + #145 verticals done)
+### 6. Phase 7 — AI & Differentiators (6 remaining; #141 OCR + #145 verticals + #146 predictive + #149 importers done)
 - #142 Voice entry (browser SpeechRecognition + on-device fallback)
-- #143 WhatsApp bot billing (Aisensy inbound webhook → invoice draft) — **high leverage / lock-in**
+- #143 WhatsApp bot billing (Aisensy inbound webhook → invoice draft) — **high leverage / lock-in** — blocked: webhook high-risk gate + missing Aisensy creds
 - #144 Smart GST filing assistant (rules engine on Phase 2 data)
-- #146 Predictive analytics (sales/stock forecast) — **margin story**
+- ~~#146 Predictive analytics (sales/stock forecast)~~ — **DONE 2026-05-28**: deterministic OLS revenue trend + sales-velocity stock-out forecast. `/api/analytics/*` gated on `advancedReports`; `/insights` FE (no charting lib — tiny SVG sparkline).
 - #147 Auto-reconciliation (bank statement → payment match)
-- #148 Smart inventory (reorder suggestions based on velocity)
-- #149 Competitor data importers (Tally/Vyapar/MyBillBook) — **acquisition unlock**
+- #148 Smart inventory (reorder suggestions based on velocity) — overlaps #146 stock-velocity math; can reuse `forecast.math.ts`
+- ~~#149 Competitor data importers (Tally/Vyapar/MyBillBook)~~ — DONE (legacy retired #149c 2026-05-28)
 - #150 Real-time multi-user collaboration (presence + conflict resolution) — **needs architecture spike, CRDT vs LWW decision**
 
-Highest leverage next: #143 → #149 → #146. Highest risk: #150.
+Highest leverage next: #148 (reuses #146 velocity) → #144 → #147. #143 blocked on creds + webhook gate. Highest risk: #150.
 
 #### 6a. #149 Phase 7 Import Engine — slice tracker (2026-05-19)
 

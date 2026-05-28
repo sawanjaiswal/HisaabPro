@@ -30,7 +30,7 @@ import {
   BankAccounts, Expenses, OtherIncome, Cheques, Loans, LoanDetail,
   ExpensesPending, ExpensesBudgets, ExpensesRecurring,
   ProfitLoss, BalanceSheet, CashFlow, AgingReport, ProfitabilityReport,
-  DiscountReport, TallyExport, FYClosure,
+  DiscountReport, PredictiveAnalytics, TallyExport, FYClosure,
   More, BillScan, BulkImport, PublicLedger, ItemsLibrary, ImportUpload, ImportJobStub,
   SmartGreetings, Units, JoinBusiness, CreateBusiness, BusinessType,
   AdminCoupons, AdminCouponDetail,
@@ -196,6 +196,7 @@ export function App() {
         <Route path={ROUTES.REPORT_AGING} element={<PageRoute><ProtectedRoute><PlanGate feature="advancedReports" featureLabel="Aging Report"><AgingReport /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.REPORT_PROFITABILITY} element={<PageRoute><ProtectedRoute><PlanGate feature="advancedReports" featureLabel="Profitability Report"><ProfitabilityReport /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.REPORT_DISCOUNTS} element={<PageRoute><ProtectedRoute><PlanGate feature="advancedReports" featureLabel="Discount Report"><DiscountReport /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.INSIGHTS} element={<PageRoute><ProtectedRoute><PlanGate feature="advancedReports" featureLabel="Insights"><PredictiveAnalytics /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.TALLY_EXPORT} element={<PageRoute><ProtectedRoute><PlanGate feature="tallyExport" featureLabel="Tally Export"><TallyExport /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.FY_CLOSURE} element={<PageRoute><ProtectedRoute><FYClosure /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.BILL_SCAN} element={<PageRoute><ProtectedRoute><BillScan /></ProtectedRoute></PageRoute>} />

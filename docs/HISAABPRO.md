@@ -221,7 +221,7 @@ Merge `caa390d` (2026-05-26), 12 commits + 2 hardening (`ba56470`/`0bd1881`).
 | 143 | WhatsApp bot billing | [ ] | Aisensy inbound webhook → invoice draft — **highest leverage / lock-in** |
 | 144 | Smart GST filing assistant | [ ] | Rules engine on Phase 2 data |
 | 145 | Industry Vertical Modes | [x] | 13 verticals via `verticals.config.ts` — nav filter + terminology + defaults + Jobs + Custom Orders |
-| 146 | Predictive analytics | [ ] | Sales/cash flow forecast — **margin story** |
+| 146 | Predictive analytics | [x] | Deterministic OLS revenue trend + sales-velocity stock-out forecast. `/api/analytics/*` (advancedReports gate); `/insights` FE, no charting lib (SVG sparkline) |
 | 147 | Auto-reconciliation | [ ] | Fuzzy match payments↔invoices (absorbs #89) |
 | 148 | Smart inventory | [ ] | Velocity-based reorder |
 | 149 | Competitor importers (Vyapar/MyBillBook/Tally) | [x] | **acquisition unlock** — shipped 2026-05-26 `9a3c98e` (PR-D2b/D3/D4/D5) |
@@ -314,7 +314,7 @@ Ported from DudhHisaab subscription model (commit `3530e79`):
 ## 8. Remaining work
 
 **Build (no creds needed):**
-- Phase 7 (8): #142 Voice · #143 WA bot · #144 Smart GST · #146 Predictive · #147 Auto-recon · #148 Smart inv · #149 Competitor imports · #150 Multi-user CRDT.
+- Phase 7 (remaining 6): #142 Voice · #143 WA bot · #144 Smart GST · #147 Auto-recon · #148 Smart inv · #150 Multi-user CRDT. Done: #146 Predictive · #149 Competitor imports.
 - Phase 3 deferred: #89 Bank Reconciliation (fold into #147).
 - Vertical depth: V1–V7 (see §5).
 
@@ -824,9 +824,9 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 > a Capacitor plugin install.
 
 **Summary — 150 features, ~180 sub-feature rows tracked + 7 vertical-depth epics:**
-- **Done:** 133 features (all layers present + shipped on `master` @ `9a3c98e`).
+- **Done:** 134 features (all layers present + shipped on `master`; #146 predictive analytics @ `4aab510` + FE).
 - **In-Progress (cred-blocked):** 8 features (code shipped, awaiting env vars / plugin install: #2, #4, #30, #32, #42, #47, #59, #123/#124 providers).
-- **Not Started:** 8 features (#142, #143, #144, #146, #147, #148, #150 + 7 vertical-depth epics).
+- **Not Started:** 7 features (#142, #143, #144, #147, #148, #150 + 7 vertical-depth epics).
 - **Deferred:** 1 feature (#89 Bank Reconciliation — folded into #147).
 - **Audit timestamp:** 2026-05-26 19:12 IST · branch `master` · HEAD `9a3c98e` (#149 merged 2026-05-26 via PR-D2b/D3/D4/D5)
 - **Post-audit hardening on master @ `6ba7c0f` (2026-05-27):** money-SSOT (PR #2 `7c97b33`) · refresh-token family rotation (`cf9bcb6`) · security batch A (`5481f6b`) · W4b FE test sweep (`c43babc` + `6ba7c0f`). No feature-row state changes.
@@ -1084,7 +1084,7 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | 145 | Industry Vertical Modes | 13 verticals SSOT + nav filter + terminology | Done | `b69067b` · 2026-04 | `src/config/verticals.config.ts` + onboarding step |
 | 145 | Industry Vertical Modes | Jobs flow (services/freelancer/salon/clinic) | Done | `1d39ab0` · 2026-04 | `services/job/*` + Job + JobItem + jobs feature |
 | 145 | Industry Vertical Modes | Custom Orders (bakery/tailor) | Done | `cb9b1dc` · 2026-04 | `services/custom-order/*` + CustomOrder + custom-orders feature |
-| 146 | Predictive analytics | Sales/cash flow forecast | Not Started | — | — |
+| 146 | Predictive analytics | Revenue trend + stock-out forecast | Done | `4aab510` (BE) · 2026-05-28 | `services/analytics/forecast.*` (OLS + velocity, 23 tests) · `/api/analytics/*` advancedReports gate · `features/analytics/*` → `/insights`, SVG sparkline (no chart lib) |
 | 147 | Auto-reconciliation | Fuzzy match payments↔invoices (absorbs #89) | Not Started | — | — |
 | 148 | Smart inventory | Velocity-based reorder | Not Started | — | — |
 | 149 | Competitor importers (Vyapar/MyBillBook/Tally) | Parties import (7.1A) | Done | `d44ae49` · 2026-05-26 | ImportJob + 4 parsers — merged to master via `9a3c98e` |

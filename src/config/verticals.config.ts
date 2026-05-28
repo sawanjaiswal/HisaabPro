@@ -27,7 +27,7 @@ export type BusinessType =
 export type NavKey =
   | 'bill-scan' | 'recurring' | 'templates' | 'data-import' | 'items-library'
   | 'payments' | 'outstanding' | 'expenses' | 'other-income' | 'loans' | 'cheques' | 'bank'
-  | 'reports' | 'accounting' | 'gst' | 'products'
+  | 'reports' | 'insights' | 'accounting' | 'gst' | 'products'
   | 'greetings' | 'bulk-import' | 'marketing' | 'settings'
   | 'dashboard' | 'invoices' | 'parties'
   | 'jobs' | 'orders' | 'batches' | 'godowns' | 'serial-numbers' | 'stock-verification' | 'stock-count' | 'stock-value-report' | 'bom' | 'production-runs'

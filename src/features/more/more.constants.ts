@@ -61,6 +61,7 @@ export const MORE_MENU_ITEMS: MoreMenuItem[] = [
 
   // Accounting & Tax
   { id: 'reports', navKey: 'reports', label: 'Reports', description: 'Sales, stock, P&L', icon: 'BarChart3', route: ROUTES.REPORTS, color: 'var(--color-primary-50)', group: 'accounting' },
+  { id: 'insights', navKey: 'insights', label: 'Insights', description: 'Revenue & stock forecasts', icon: 'LineChart', route: ROUTES.INSIGHTS, color: 'var(--color-secondary-50)', group: 'accounting' },
   { id: 'accounting', navKey: 'accounting', label: 'Accounts', description: 'Chart of accounts', icon: 'BookOpen', route: ROUTES.CHART_OF_ACCOUNTS, color: 'var(--color-primary-50)', group: 'accounting' },
   { id: 'gst', navKey: 'gst', label: 'GST', description: 'Reconciliation', icon: 'IndianRupee', route: ROUTES.GST_RECONCILIATION, color: 'var(--color-primary-50)', group: 'accounting' },
   { id: 'products', navKey: 'products', label: 'Items', description: 'Inventory & stock', icon: 'Package', route: ROUTES.PRODUCTS, color: 'var(--color-primary-50)', group: 'accounting' },
