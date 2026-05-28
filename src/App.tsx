@@ -30,7 +30,7 @@ import {
   BankAccounts, Expenses, OtherIncome, Cheques, Loans, LoanDetail,
   ExpensesPending, ExpensesBudgets, ExpensesRecurring,
   ProfitLoss, BalanceSheet, CashFlow, AgingReport, ProfitabilityReport,
-  DiscountReport, PredictiveAnalytics, ReorderSuggestions, TallyExport, FYClosure,
+  DiscountReport, PredictiveAnalytics, ReorderSuggestions, GstFilingReadiness, TallyExport, FYClosure,
   More, BillScan, BulkImport, PublicLedger, ItemsLibrary, ImportUpload, ImportJobStub,
   SmartGreetings, Units, JoinBusiness, CreateBusiness, BusinessType,
   AdminCoupons, AdminCouponDetail,
@@ -249,6 +249,7 @@ export function App() {
         <Route path={ROUTES.PURCHASE_EDIT} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Purchases"><EditInvoice /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.INVENTORY_ALERTS} element={<PageRoute><ProtectedRoute><PlanGate feature="products" featureLabel="Stock Alerts"><StockAlerts /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.REORDER_SUGGESTIONS} element={<PageRoute><ProtectedRoute><PlanGate feature="products" featureLabel="Reorder Suggestions"><ReorderSuggestions /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.GST_FILING_READINESS} element={<PageRoute><ProtectedRoute><PlanGate feature="taxReports" featureLabel="GST Filing Check"><GstFilingReadiness /></PlanGate></ProtectedRoute></PageRoute>} />
         {/* Inventory Phase 2 — INV-07: stock count flow + value report */}
         <Route path={ROUTES.INVENTORY_VERIFY} element={<PageRoute><ProtectedRoute><PlanGate feature="stockAdjustments" featureLabel="Stock Count"><StockVerificationStart /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.INVENTORY_VERIFY_RUN} element={<PageRoute><ProtectedRoute><PlanGate feature="stockAdjustments" featureLabel="Stock Count"><StockVerificationRun /></PlanGate></ProtectedRoute></PageRoute>} />

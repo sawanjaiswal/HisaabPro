@@ -31,6 +31,7 @@ import {
   Bell,
   LineChart,
   PackageCheck,
+  ShieldCheck,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -67,4 +68,5 @@ export const ICON_REGISTRY: Record<string, LucideIcon> = {
   Bell,
   LineChart,
   PackageCheck,
+  ShieldCheck,
 }

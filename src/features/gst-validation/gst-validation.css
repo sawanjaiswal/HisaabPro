@@ -1,0 +1,198 @@
+/* Smart GST filing assistant (#144) — all values via design tokens. */
+
+/* ── Controls (period + return-type tabs) ─────────────────────────── */
+
+.gstv-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.gstv-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.gstv-field__label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.gstv-period-input {
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--fs-base);
+}
+
+.gstv-tabs {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.gstv-tab {
+  flex: 1;
+  min-height: 44px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.gstv-tab--active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-bg-subtle);
+  color: var(--color-primary);
+}
+
+/* ── Summary verdict card ─────────────────────────────────────────── */
+
+.gstv-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.gstv-summary__verdict {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 700;
+}
+
+.gstv-summary--ready .gstv-summary__verdict {
+  color: var(--color-success);
+}
+
+.gstv-summary--blocked .gstv-summary__verdict {
+  color: var(--color-error-text);
+}
+
+.gstv-summary__title {
+  font-size: var(--fs-lg);
+}
+
+.gstv-summary__stats {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.gstv-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.gstv-stat__value {
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.gstv-stat__label {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+}
+
+/* ── Check list ───────────────────────────────────────────────────── */
+
+.gstv-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.gstv-check {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-left-width: 3px;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+}
+
+.gstv-check--blocker {
+  border-left-color: var(--color-error-text);
+}
+
+.gstv-check--warning {
+  border-left-color: var(--color-warning-text);
+}
+
+.gstv-check__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.gstv-check__title {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.gstv-check__desc {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.gstv-check__count {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.gstv-check__docs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.gstv-check__doc-link {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-alt);
+  color: var(--color-primary);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ── Severity pill ────────────────────────────────────────────────── */
+
+.gstv-sev {
+  flex-shrink: 0;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+
+.gstv-sev--blocker {
+  color: var(--color-error-text);
+  background: var(--color-error-bg);
+}
+
+.gstv-sev--warning {
+  color: var(--color-warning-text);
+  background: var(--color-warning-bg-subtle);
+}

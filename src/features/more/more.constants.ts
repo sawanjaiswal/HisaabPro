@@ -64,6 +64,7 @@ export const MORE_MENU_ITEMS: MoreMenuItem[] = [
   { id: 'insights', navKey: 'insights', label: 'Insights', description: 'Revenue & stock forecasts', icon: 'LineChart', route: ROUTES.INSIGHTS, color: 'var(--color-secondary-50)', group: 'accounting' },
   { id: 'accounting', navKey: 'accounting', label: 'Accounts', description: 'Chart of accounts', icon: 'BookOpen', route: ROUTES.CHART_OF_ACCOUNTS, color: 'var(--color-primary-50)', group: 'accounting' },
   { id: 'gst', navKey: 'gst', label: 'GST', description: 'Reconciliation', icon: 'IndianRupee', route: ROUTES.GST_RECONCILIATION, color: 'var(--color-primary-50)', group: 'accounting' },
+  { id: 'gst-filing-check', navKey: 'gst-filing-check', label: 'GST Filing Check', description: 'Validate before you file', icon: 'ShieldCheck', route: ROUTES.GST_FILING_READINESS, color: 'var(--color-success-50)', group: 'accounting' },
   { id: 'products', navKey: 'products', label: 'Items', description: 'Inventory & stock', icon: 'Package', route: ROUTES.PRODUCTS, color: 'var(--color-primary-50)', group: 'accounting' },
   { id: 'stock-count', navKey: 'stock-count', label: 'Stock Count', description: 'Count & verify physical stock', icon: 'Boxes', route: ROUTES.INVENTORY_VERIFY, color: 'var(--color-secondary-50)', group: 'accounting' },
   { id: 'stock-value-report', navKey: 'stock-value-report', label: 'Stock Value', description: 'Total stock value at cost', icon: 'TrendingUp', route: ROUTES.STOCK_VALUE_REPORT, color: 'var(--color-success-50)', group: 'accounting' },

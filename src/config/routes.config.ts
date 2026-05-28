@@ -67,6 +67,7 @@ export const ROUTES = {
   RECURRING_EDIT: '/recurring/:id/edit',
   GST_RECONCILIATION: '/gst/reconciliation',
   GST_RECONCILIATION_DETAIL: '/gst/reconciliation/:id',
+  GST_FILING_READINESS: '/gst/filing-readiness',
   CHART_OF_ACCOUNTS: '/accounting/chart-of-accounts',
   JOURNAL_ENTRIES: '/accounting/journal-entries',
   TRIAL_BALANCE: '/reports/trial-balance',

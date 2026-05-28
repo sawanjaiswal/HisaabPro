@@ -25,6 +25,7 @@ import taxReportRoutes from './routes/tax-reports.js'
 import gstReturnRoutes from './routes/gst-returns.js'
 import gstSettingsRoutes from './routes/gst-settings.route.js'
 import gstBackfillRoutes from './routes/gst-backfill.route.js'
+import gstValidationRoutes from './routes/gst-validation.routes.js'
 import tdsTcsRoutes from './routes/tds-tcs.js'
 import einvoiceRoutes from './routes/einvoice.js'
 import ewaybillRoutes from './routes/ewaybill.js'
@@ -122,6 +123,7 @@ const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/gst/settings', gstSettingsRoutes],
   ['/api/gst/returns', gstReturnRoutes],
   ['/api/gst/backfill', gstBackfillRoutes],
+  ['/api/gst/filing-readiness', gstValidationRoutes],
   ['/api/gst/reconciliation', reconciliationRoutes],
   ['/api/reports', tdsTcsRoutes],
   ['/api/einvoice', einvoiceRoutes],
