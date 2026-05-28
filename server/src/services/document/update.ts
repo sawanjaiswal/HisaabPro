@@ -13,12 +13,14 @@ import { type MoqViolation } from './moq.guard.js'
 import { persistDocumentCustomFieldValues } from './custom-fields.js'
 import { recomputeLineItemsAndTotals } from './update-recompute.js'
 import { accrueForSaleInvoice, emitDocumentCommissionAnalytics, type DocumentCommissionOutcome } from './document-commission.js'
+import { bumpVersionOrConflict } from '../../lib/optimistic-lock.js'
 
 export async function updateDocument(
   businessId: string,
   documentId: string,
   userId: string,
-  data: UpdateDocumentInput
+  data: UpdateDocumentInput,
+  expectedVersion?: number
 ) {
   let moqWarnings: MoqViolation[] = []
   let commissionOutcome: DocumentCommissionOutcome | null = null // Epic D PR5 §3.8
@@ -43,6 +45,9 @@ export async function updateDocument(
   const wasSaved = existing.status === 'SAVED' || existing.status === 'SHARED'
   const willBeSaved = data.status === 'SAVED' || (wasSaved && !data.status)
   const result = await prisma.$transaction(async (tx) => {
+    // #150 optimistic lock — take the version-guarded row lock before any
+    // stock reversal / recompute, so a concurrent writer 409s deterministically.
+    await bumpVersionOrConflict(tx, 'document', documentId, businessId, expectedVersion)
     if (wasSaved && (STOCK_DECREASE_TYPES.has(existing.type) || STOCK_INCREASE_TYPES.has(existing.type))) {
       await reverseForInvoice(tx, { businessId, invoiceId: documentId, userId })
     }

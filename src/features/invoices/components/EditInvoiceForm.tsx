@@ -17,18 +17,23 @@ import { InvoiceChargesSection } from './InvoiceChargesSection'
 import { GstInvoiceHeader } from './GstInvoiceHeader'
 import { StockShortageBanner } from './StockShortageBanner'
 import { FORM_SECTIONS } from '../invoice.constants'
+import { usePresence } from '@/features/collaboration/usePresence'
+import { PresenceAvatars } from '@/features/collaboration/PresenceAvatars'
+import { ConflictDialog } from '@/features/collaboration/ConflictDialog'
 import type { DocumentFormData } from '../invoice.types'
 
 interface EditInvoiceFormProps {
   invoiceId: string
   initialData: DocumentFormData
   initialProductNames: Record<string, string>
+  version?: number
 }
 
 export function EditInvoiceForm({
   invoiceId,
   initialData,
   initialProductNames,
+  version,
 }: EditInvoiceFormProps) {
   const { t } = useLanguage()
   const {
@@ -52,7 +57,9 @@ export function EditInvoiceForm({
     stockShortageItems,
     clearStockShortage,
     priceListId,
-  } = useInvoiceForm(initialData.type, 'NONE', { editId: invoiceId, initialData })
+    conflictReconcile,
+  } = useInvoiceForm(initialData.type, 'NONE', { editId: invoiceId, initialData, version })
+  const { peers } = usePresence('document', invoiceId, 'editing')
 
   const { gstEnabled, compositionScheme } = useGstGate()
   const [productNames, setProductNames] = useState<Record<string, string>>(initialProductNames)
@@ -84,7 +91,7 @@ export function EditInvoiceForm({
 
   return (
     <AppShell>
-      <Header title={t.editInvoice} backTo={`/invoices/${invoiceId}`} />
+      <Header title={t.editInvoice} backTo={`/invoices/${invoiceId}`} actions={<PresenceAvatars peers={peers} />} />
 
       <PageContainer className="invoice-details-section py-0">
         {stockShortageItems.length > 0 && (
@@ -185,6 +192,14 @@ export function EditInvoiceForm({
         onSave={handleSubmit}
         onSaveDraft={handleSaveDraft}
         showProfit={false}
+      />
+
+      <ConflictDialog
+        conflict={conflictReconcile.conflict}
+        overwriting={conflictReconcile.overwriting}
+        onReload={conflictReconcile.reload}
+        onOverwrite={conflictReconcile.overwrite}
+        onDismiss={conflictReconcile.dismiss}
       />
     </AppShell>
   )

@@ -28,6 +28,8 @@ interface ApiOptions extends RequestInit {
   entityLabel?: string
   /** Opt-in IDB read cache for safe-to-persist GETs. Cleared on logout. Default: false. */
   cacheReads?: boolean
+  /** #150 optimistic lock — last-read entity version; sent as X-Entity-Version (stale → 409 CONFLICT). */
+  entityVersion?: number
 }
 
 interface ApiResponse<T> {
@@ -36,11 +38,7 @@ interface ApiResponse<T> {
   error?: { code: string; message: string }
 }
 
-/**
- * Fetch wrapper: timeout + cookie auth + abort + 401 refresh + 403 PIN gate +
- * offline mutation queue + opt-in IDB read cache. Auth runs over httpOnly
- * cookies (credentials: 'include' on every call).
- */
+/** Fetch wrapper: timeout + httpOnly-cookie auth + abort + 401 refresh + 403 PIN gate + offline queue + opt-in IDB read cache. */
 export async function api<T>(
   path: string,
   options: ApiOptions = {}
@@ -53,6 +51,7 @@ export async function api<T>(
     entityType,
     entityLabel,
     cacheReads,
+    entityVersion,
     ...fetchOptions
   } = options
 
@@ -107,6 +106,7 @@ export async function api<T>(
         ...(isFD ? {} : { 'Content-Type': 'application/json' }),
         ...(csrf ? { 'X-CSRF-Token': csrf } : {}),
         ...replayHeaders,
+        ...(entityVersion !== undefined ? { 'X-Entity-Version': String(entityVersion) } : {}), // #150 optimistic lock
         ...fetchOptions.headers,
       },
     })

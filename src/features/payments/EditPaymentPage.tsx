@@ -20,6 +20,9 @@ import { calculateSettlement, calculateUnallocatedAmount } from './payment.utils
 import { PaymentDetailsSection } from './components/PaymentDetailsSection'
 import { PaymentInvoicesSection } from './components/PaymentInvoicesSection'
 import { PaymentDiscountSection } from './components/PaymentDiscountSection'
+import { usePresence } from '@/features/collaboration/usePresence'
+import { PresenceAvatars } from '@/features/collaboration/PresenceAvatars'
+import { ConflictDialog } from '@/features/collaboration/ConflictDialog'
 import type { PaymentDetail, PaymentFormSection } from './payment.types'
 import './payment-form-layout.css'
 import './payment-form-details.css'
@@ -100,15 +103,16 @@ function EditPaymentForm({
   const {
     form, errors, isSubmitting, activeSection, setActiveSection,
     updateField, updateMode, toggleAllocation, updateAllocationAmount,
-    autoAllocate, toggleDiscount, updateDiscount, handleSubmit,
+    autoAllocate, toggleDiscount, updateDiscount, handleSubmit, conflictReconcile,
   } = usePaymentForm({ payment })
+  const { peers } = usePresence('payment', paymentId, 'editing')
 
   const settlement = calculateSettlement(form.amount, form.discount)
   const unallocated = calculateUnallocatedAmount(form.amount, form.allocations.filter((a) => a.selected))
 
   return (
     <AppShell>
-      <Header title={t.editPayment} backTo={`/payments/${paymentId}`} />
+      <Header title={t.editPayment} backTo={`/payments/${paymentId}`} actions={<PresenceAvatars peers={peers} />} />
 
       <PageContainer variant="form" className="space-y-6">
         <nav className="pill-tabs stagger-enter" role="tablist" aria-label={t.paymentFormSections}>
@@ -185,6 +189,14 @@ function EditPaymentForm({
           {isSubmitting ? t.processing : t.updatePaymentBtn}
         </button>
       </div>
+
+      <ConflictDialog
+        conflict={conflictReconcile.conflict}
+        overwriting={conflictReconcile.overwriting}
+        onReload={conflictReconcile.reload}
+        onOverwrite={conflictReconcile.overwrite}
+        onDismiss={conflictReconcile.dismiss}
+      />
     </AppShell>
   )
 }

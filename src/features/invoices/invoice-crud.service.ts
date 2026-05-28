@@ -106,13 +106,15 @@ export async function createDocument(
 /** Update an existing document (blocked once CONVERTED or DELETED). */
 export async function updateDocument(
   id: string,
-  data: Partial<DocumentFormData>
+  data: Partial<DocumentFormData>,
+  expectedVersion?: number
 ): Promise<DocumentDetail> {
   return api<DocumentDetail>(`/documents/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
     entityType: data.type ? docTypeToEntity(data.type) : 'document',
     entityLabel: data.type ? `${docTypeToEntity(data.type)} update` : 'Document update',
+    entityVersion: expectedVersion, // #150 optimistic lock
   })
 }
 

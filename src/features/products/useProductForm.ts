@@ -14,6 +14,7 @@ import { ROUTES } from '@/config/routes.config'
 import { createProduct, updateProduct } from './product.service'
 import { uploadProductImages } from './product-images.service'
 import { validateBarcode } from './barcode.utils'
+import { useConflictReconcile, isConflictError } from '@/features/collaboration/useConflictReconcile'
 
 import type { ProductFormData, ProductStatus, StockValidationMode } from './product.types'
 
@@ -41,6 +42,8 @@ export interface UseProductFormOptions {
   editId?: string
   /** Pre-fill form with existing product data (edit mode) */
   initialData?: ProductFormData
+  /** #150 — the product's optimistic-lock version at load time (edit mode). */
+  version?: number
 }
 
 export interface UseProductFormReturn {
@@ -54,15 +57,18 @@ export interface UseProductFormReturn {
   validate: () => boolean
   handleSubmit: () => Promise<void>
   reset: () => void
+  /** #150 — conflict reconcile state + actions; page renders <ConflictDialog>. */
+  conflictReconcile: ReturnType<typeof useConflictReconcile>
 }
 
 export function useProductForm(options: UseProductFormOptions = {}): UseProductFormReturn {
-  const { editId, initialData } = options
+  const { editId, initialData, version } = options
   const isEditMode = Boolean(editId)
 
   const navigate = useNavigate()
   const toast = useToast()
   const queryClient = useQueryClient()
+  const conflictReconcile = useConflictReconcile()
 
   const [form, setForm] = useState<ProductFormData>(initialData ?? INITIAL_FORM)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -128,11 +134,11 @@ export function useProductForm(options: UseProductFormOptions = {}): UseProductF
 
   // Submit mutation
   const submitMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (versionOverride?: number) => {
       if (isEditMode && editId) {
         // openingStock and autoGenerateSku cannot be changed after creation
         const { openingStock: _os, autoGenerateSku: _ag, pendingImages, ...editPayload } = form
-        await updateProduct(editId, editPayload)
+        await updateProduct(editId, editPayload, undefined, versionOverride ?? version)
         // Upload any new images immediately in edit mode
         if (pendingImages && pendingImages.length > 0) {
           await uploadProductImages(editId, pendingImages)
@@ -159,7 +165,9 @@ export function useProductForm(options: UseProductFormOptions = {}): UseProductF
         navigate(ROUTES.PRODUCTS)
       }
     },
-    onError: () => {
+    onError: (err) => {
+      // #150 — a CONFLICT opens the reconcile dialog (handled below), not a toast.
+      if (isConflictError(err)) return
       toast.error(isEditMode ? 'Failed to update product.' : 'Failed to save product. Please try again.')
     },
   })
@@ -170,11 +178,14 @@ export function useProductForm(options: UseProductFormOptions = {}): UseProductF
     if (!validate()) return
     if (isSubmitting) return
     try {
-      await submitMutation.mutateAsync()
+      // #150 — a stale save 409s; withConflictGuard opens the reconcile dialog.
+      await conflictReconcile.withConflictGuard(async (versionOverride) => {
+        await submitMutation.mutateAsync(versionOverride)
+      })
     } catch {
       // onError already toasted; swallow so callers don't see an unhandled rejection
     }
-  }, [validate, isSubmitting, submitMutation])
+  }, [validate, isSubmitting, submitMutation, conflictReconcile])
 
   const reset = useCallback(() => {
     setForm(initialData ?? INITIAL_FORM)
@@ -193,6 +204,7 @@ export function useProductForm(options: UseProductFormOptions = {}): UseProductF
     validate,
     handleSubmit,
     reset,
+    conflictReconcile,
   }
 }
 

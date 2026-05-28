@@ -128,7 +128,8 @@ export async function createProduct(
 export async function updateProduct(
   id: string,
   data: Partial<Omit<ProductFormData, 'openingStock' | 'autoGenerateSku'>>,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  expectedVersion?: number
 ): Promise<ProductDetail> {
   const { product } = await api<{ product: ProductDetail }>(`/products/${id}`, {
     method: 'PUT',
@@ -136,6 +137,7 @@ export async function updateProduct(
     signal,
     entityType: 'product',
     entityLabel: data.name ?? 'Product update',
+    entityVersion: expectedVersion, // #150 optimistic lock
   })
   return product
 }

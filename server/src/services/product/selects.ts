@@ -22,6 +22,7 @@ export const productListSelect = {
 export const productDetailSelect = {
   id: true,
   businessId: true,
+  version: true, // #150 optimistic-lock token surfaced to clients
   name: true,
   sku: true,
   barcode: true,

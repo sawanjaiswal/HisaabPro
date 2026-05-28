@@ -54,6 +54,7 @@ import razorpayRoutes from './routes/razorpay.js'
 import adminRoutes from './routes/admin/index.js'
 import recycleBinRoutes from './routes/recycle-bin.js'
 import eventRoutes from './routes/events.js'
+import presenceRoutes from './routes/presence.routes.js'
 import collectionsAgingRoutes from './routes/collections/aging.route.js'
 import collectionsPtpRoutes from './routes/collections/ptp.route.js'
 import collectionsStatementRoutes from './routes/collections/statement.route.js'
@@ -153,6 +154,7 @@ const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/admin', adminRoutes],
   ['/api/recycle-bin', recycleBinRoutes],
   ['/api/events', eventRoutes],
+  ['/api/presence', presenceRoutes],
   ['/api/sessions', sessionRoutes],
   ['/api/export', exportRoutes],
   ['/api/collections/aging', collectionsAgingRoutes],

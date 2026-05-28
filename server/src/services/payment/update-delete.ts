@@ -8,13 +8,15 @@ import { PAYMENT_DETAIL_SELECT } from './selects.js'
 import type { UpdatePaymentInput } from '../../schemas/payment.schemas.js'
 import { paymentTypeDirection } from '../../lib/payment-types.js'
 import type { PaymentType } from '../../../../shared/enums.js'
+import { bumpVersionOrConflict } from '../../lib/optimistic-lock.js'
 
 
 export async function updatePayment(
   businessId: string,
   paymentId: string,
   userId: string,
-  data: UpdatePaymentInput
+  data: UpdatePaymentInput,
+  expectedVersion?: number
 ) {
   const existing = await prisma.payment.findFirst({
     where: { id: paymentId, businessId, isDeleted: false },
@@ -23,6 +25,9 @@ export async function updatePayment(
   if (!existing) throw notFoundError('Payment')
 
   return prisma.$transaction(async (tx) => {
+    // #150 optimistic lock — atomic version bump inside the same txn as the write.
+    await bumpVersionOrConflict(tx, 'payment', paymentId, businessId, expectedVersion)
+
     // If amount changed, update party outstanding via paymentTypeDirection
     // (M6 v2.1). PAYROLL_* yields 0 → never touches customer outstanding.
     if (data.amount && data.amount !== existing.amount) {

@@ -52,6 +52,7 @@ export interface PartyPricingItem {
 
 /** Full party detail */
 export interface PartyDetail extends PartySummary {
+  version?: number // #150 optimistic-lock token
   email?: string
   companyName?: string
   gstin?: string

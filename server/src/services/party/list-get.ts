@@ -147,6 +147,7 @@ export async function getParty(businessId: string, partyId: string) {
     select: {
       id: true,
       businessId: true,
+      version: true, // #150 optimistic-lock token surfaced to clients
       name: true,
       phone: true,
       email: true,

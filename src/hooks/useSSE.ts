@@ -74,6 +74,13 @@ export function useSSE() {
         // Skip connection/heartbeat events
         if (data.type === 'CONNECTED') return
 
+        // #150 presence — a peer joined/left/changed mode on an entity. Refresh
+        // the per-entity peer list; never invalidate the data caches for these.
+        if (data.type === 'PRESENCE_UPDATE' || data.type === 'PRESENCE_LEAVE') {
+          queryClient.invalidateQueries({ queryKey: ['presence'] })
+          return
+        }
+
         // Extract entity type from event type (e.g., "DOCUMENT_CREATED" → "DOCUMENT")
         const entityType = data.entityType ?? data.type.split('_')[0]
         const queryPrefixes = ENTITY_KEY_MAP[entityType]

@@ -8,12 +8,14 @@
 import { prisma } from '../../lib/prisma.js'
 import type { UpdatePartyInput, PartyPatchInput } from '../../schemas/party.schemas.js'
 import { requireParty, requireGroup } from './helpers.js'
+import { bumpVersionOrConflict } from '../../lib/optimistic-lock.js'
 
 export async function updateParty(
   businessId: string,
   partyId: string,
   userId: string,
-  data: UpdatePartyInput
+  data: UpdatePartyInput,
+  expectedVersion?: number
 ) {
   await requireParty(businessId, partyId)
 
@@ -22,6 +24,9 @@ export async function updateParty(
   }
 
   return prisma.$transaction(async (tx) => {
+    // #150 optimistic lock — atomic version bump inside the same txn as the write.
+    await bumpVersionOrConflict(tx, 'party', partyId, businessId, expectedVersion)
+
     // Update core party
     const updated = await tx.party.update({
       where: { id: partyId },
@@ -42,6 +47,7 @@ export async function updateParty(
       },
       select: {
         id: true,
+        version: true, // #150 optimistic-lock token surfaced to clients
         name: true,
         phone: true,
         email: true,

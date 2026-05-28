@@ -134,13 +134,15 @@ export async function createPayment(
  */
 export async function updatePayment(
   id: string,
-  data: Partial<PaymentFormData>
+  data: Partial<PaymentFormData>,
+  expectedVersion?: number
 ): Promise<PaymentDetail> {
   return api<PaymentDetail>(`/payments/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
     entityType: 'payment',
     entityLabel: paymentLabel(data),
+    entityVersion: expectedVersion, // #150 optimistic lock
   })
 }
 

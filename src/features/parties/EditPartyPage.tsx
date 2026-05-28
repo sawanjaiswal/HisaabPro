@@ -19,6 +19,9 @@ import { paiseToRupeesNum } from './party.utils'
 import { PartyFormBasic } from './components/PartyFormBasic'
 import { PartyFormBusiness } from './components/PartyFormBusiness'
 import { PartyFormCredit } from './components/PartyFormCredit'
+import { usePresence } from '@/features/collaboration/usePresence'
+import { PresenceAvatars } from '@/features/collaboration/PresenceAvatars'
+import { ConflictDialog } from '@/features/collaboration/ConflictDialog'
 import type { PartyFormData, PartyDetail } from './party.types'
 import './create-party.css'
 
@@ -60,6 +63,7 @@ export default function EditPartyPage() {
 
   const [loadStatus, setLoadStatus] = useState<'loading' | 'error' | 'ready'>('loading')
   const [initialData, setInitialData] = useState<PartyFormData | undefined>()
+  const [version, setVersion] = useState<number | undefined>()
 
   useEffect(() => {
     const controller = new AbortController()
@@ -68,6 +72,7 @@ export default function EditPartyPage() {
     getParty(partyId, controller.signal)
       .then((detail) => {
         setInitialData(detailToFormData(detail))
+        setVersion(detail.version)
         setLoadStatus('ready')
       })
       .catch((err) => {
@@ -107,11 +112,11 @@ export default function EditPartyPage() {
     )
   }
 
-  return <EditPartyForm partyId={partyId} initialData={initialData} />
+  return <EditPartyForm partyId={partyId} initialData={initialData} version={version} />
 }
 
 /** Inner component — only renders when data is loaded */
-function EditPartyForm({ partyId, initialData }: { partyId: string; initialData: PartyFormData }) {
+function EditPartyForm({ partyId, initialData, version }: { partyId: string; initialData: PartyFormData; version?: number }) {
   const { t } = useLanguage()
   const {
     form,
@@ -122,11 +127,15 @@ function EditPartyForm({ partyId, initialData }: { partyId: string; initialData:
     updateField,
     handleSubmit,
     gstinVerify,
-  } = usePartyForm({ editId: partyId, initialData })
+    conflictReconcile,
+  } = usePartyForm({ editId: partyId, initialData, version })
+
+  // #150 — advertise this user as editing the party; show co-editors.
+  const { peers } = usePresence('party', partyId, 'editing')
 
   return (
     <AppShell>
-      <Header title={t.editParty} backTo={`/parties/${partyId}`} />
+      <Header title={t.editParty} backTo={`/parties/${partyId}`} actions={<PresenceAvatars peers={peers} />} />
 
       <PageContainer className="create-party-page stagger-enter space-y-6">
         <nav className="pill-tabs" role="tablist" aria-label={t.formSections}>
@@ -177,6 +186,14 @@ function EditPartyForm({ partyId, initialData }: { partyId: string; initialData:
           {t.updatePartyText}
         </Button>
       </div>
+
+      <ConflictDialog
+        conflict={conflictReconcile.conflict}
+        overwriting={conflictReconcile.overwriting}
+        onReload={conflictReconcile.reload}
+        onOverwrite={conflictReconcile.overwrite}
+        onDismiss={conflictReconcile.dismiss}
+      />
     </AppShell>
   )
 }

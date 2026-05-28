@@ -4,8 +4,8 @@
 >
 > **Last updated:** 2026-05-28
 > **Owner:** Sawan Jaiswal
-> **Status:** Phase 1–6 complete on `master`; Phase 7 **8/10** — #141 OCR, #142 Voice, #144 Smart GST, #145 Vertical Modes, #146 Predictive, #147 Auto-reconciliation, #148 Smart inventory, #149 Competitor imports. Remaining: #143 (creds-blocked), #150 (CRDT spike). Pre-beta hardening landed 2026-05-27: money-SSOT (paise Int) merged via PR #2, refresh-token family rotation per RFC 6819, security batch A (CSV injection guard + Sentry/logger PII scrub), W4b FE test-contract sweep (1306/1306 passing). `hisaabpro` branch is **0 commits ahead** of `master` — Render redeploy pending.
-> **Frontend UI:** complete for all 140 shipped features (the remaining 10 are either cred-blocked backend stubs or unbuilt Phase 7 / vertical-depth epics — no UI yet).
+> **Status:** Phase 1–6 complete on `master`; Phase 7 **9/10** — #141 OCR, #142 Voice, #144 Smart GST, #145 Vertical Modes, #146 Predictive, #147 Auto-reconciliation, #148 Smart inventory, #149 Competitor imports, #150 Multi-user collaboration. Remaining: #143 (creds-blocked). Pre-beta hardening landed 2026-05-27: money-SSOT (paise Int) merged via PR #2, refresh-token family rotation per RFC 6819, security batch A (CSV injection guard + Sentry/logger PII scrub), W4b FE test-contract sweep (1306/1306 passing). `hisaabpro` branch is **0 commits ahead** of `master` — Render redeploy pending.
+> **Frontend UI:** complete for all 141 shipped features (the remaining 9 are either cred-blocked backend stubs or unbuilt vertical-depth epics — no UI yet).
 
 ---
 
@@ -212,7 +212,7 @@ Merge `caa390d` (2026-05-26), 12 commits + 2 hardening (`ba56470`/`0bd1881`).
 
 **Phase 6 verifier (`VERIFIER_REPORT_PHASE6.md`):** 7 mechanical proofs exit 0 — FE tsc, BE tsc, enforce.js, enforce-offline (1532 files), enforce-audit-coverage `--block`, regression greps for `req.user.id` and plain `to_tsquery`. **Security Pass-2 PASS** — `requireFeature('STAFF_HR')` kill-switch wired into 3 aggregator routers between `requireActiveBusiness` and handler.
 
-### Phase 7 — AI & Differentiators (10 features, 8/10)
+### Phase 7 — AI & Differentiators (10 features, 9/10)
 
 | # | Feature | Status | Notes |
 |---|---|---|---|
@@ -225,7 +225,7 @@ Merge `caa390d` (2026-05-26), 12 commits + 2 hardening (`ba56470`/`0bd1881`).
 | 147 | Auto-reconciliation | [x] | Bank CSV → client parser → staged lines → deterministic match engine (amount/date/ref/party/direction → SUGGESTED/WEAK/UNMATCHED) → confirm/manual/ignore/un-reconcile. Annotation-only join table (`lineId @unique`), never mutates ledger; bounded pool + TOCTOU/P2002 guards. `/api/bank-reconciliation/*` (PRO); `/bank-reconciliation` FE, 23 tests. Absorbs #89 |
 | 148 | Smart inventory | [x] | Velocity-based reorder suggestions over #146 forecast math. `/api/inventory/reorder-suggestions` (auth); `/inventory/reorder-suggestions` FE, urgency tiers + lead-time/coverage params, 15 tests |
 | 149 | Competitor importers (Vyapar/MyBillBook/Tally) | [x] | **acquisition unlock** — shipped 2026-05-26 `9a3c98e` (PR-D2b/D3/D4/D5) |
-| 150 | Real-time multi-user | [ ] | WebSocket + CRDT (or LWW) — **needs architecture spike** |
+| 150 | Real-time multi-user | [x] | Spike → **LWW + optimistic lock (not CRDT)** — money must not auto-merge. `version Int` on Document/Payment/Party/Product; lock lives in the write (`bumpVersionOrConflict`: atomic conditional `updateMany WHERE version=expected` in-tx → count!==1 → 409 `CONFLICT {serverVersion,updatedBy}`, tenant-scoped). Client sends `X-Entity-Version` (absent → back-compat unguarded write). Presence in-memory + oracle-free (45s TTL, no DB hit). FE `useConflictReconcile`/`<ConflictDialog>` + `usePresence`/`<PresenceAvatars>` in all 4 edit flows |
 
 ---
 
@@ -314,7 +314,7 @@ Ported from DudhHisaab subscription model (commit `3530e79`):
 ## 8. Remaining work
 
 **Build (no creds needed):**
-- Phase 7 (remaining 2): #143 WA bot (creds-blocked) · #150 Multi-user CRDT (spike). Done: #142 Voice · #144 Smart GST · #146 Predictive · #147 Auto-recon · #148 Smart inv · #149 Competitor imports.
+- Phase 7 (remaining 1): #143 WA bot (creds-blocked). Done: #142 Voice · #144 Smart GST · #146 Predictive · #147 Auto-recon · #148 Smart inv · #149 Competitor imports · #150 Multi-user collab (LWW + optimistic lock).
 - Phase 3 deferred #89 Bank Reconciliation — shipped inside #147.
 - Vertical depth: V1–V7 (see §5).
 
@@ -824,9 +824,9 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 > a Capacitor plugin install.
 
 **Summary — 150 features, ~180 sub-feature rows tracked + 7 vertical-depth epics:**
-- **Done:** 138 features (all layers present + shipped on `master`; #142 voice + #147 auto-reconciliation 2026-05-28).
+- **Done:** 139 features (all layers present + shipped on `master`; #142 voice + #147 auto-reconciliation + #150 multi-user collab 2026-05-28).
 - **In-Progress (cred-blocked):** 8 features (code shipped, awaiting env vars / plugin install: #2, #4, #30, #32, #42, #47, #59, #123/#124 providers).
-- **Not Started:** 3 features (#143, #150 + 7 vertical-depth epics).
+- **Not Started:** 1 feature (#143) + 7 vertical-depth epics.
 - **Deferred:** #89 Bank Reconciliation — shipped inside #147 (2026-05-28).
 - **Audit timestamp:** 2026-05-26 19:12 IST · branch `master` · HEAD `9a3c98e` (#149 merged 2026-05-26 via PR-D2b/D3/D4/D5)
 - **Post-audit hardening on master @ `6ba7c0f` (2026-05-27):** money-SSOT (PR #2 `7c97b33`) · refresh-token family rotation (`cf9bcb6`) · security batch A (`5481f6b`) · W4b FE test sweep (`c43babc` + `6ba7c0f`). No feature-row state changes.
@@ -1092,7 +1092,7 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | 149 | Competitor importers | Invoices import (7.1C) | Done | `4104ecd` · 2026-05-26 | merged to master via `9a3c98e` |
 | 149 | Competitor importers | Payments import (7.1D) | Done | `c3a5b4b`/`1a10701`/`a5425a7`/`37651d7` · 2026-05-26 | PR-D2b parsers + PR-D3 Σ-guard commit ladder + PR-D4 routes/audit + PR-D5 frontend — merged via `9a3c98e` |
 | 149 | Competitor importers | Legacy retirement (#149c) | Done | 2026-05-28 | Deleted `features/data-import`; `ROUTES.DATA_IMPORT` → `<Navigate>` `/imports`; More nav card repointed; new engine is sole import surface |
-| 150 | Real-time multi-user | WebSocket / CRDT | Not Started | — | Needs architecture spike (see §8) |
+| 150 | Real-time multi-user | LWW + optimistic lock + presence | Done | 2026-05-28 | Spike chose LWW (not CRDT — money must not auto-merge). `version Int` + in-write `bumpVersionOrConflict` (409 `CONFLICT`), `X-Entity-Version` header, oracle-free in-memory presence (45s TTL). FE reconcile dialog + presence avatars in all 4 edit flows |
 
 ### Verticals depth (post-MVP candidates — see §5)
 

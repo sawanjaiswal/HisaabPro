@@ -19,6 +19,7 @@ export const PAYMENT_LIST_SELECT = {
 export const PAYMENT_DETAIL_SELECT = {
   id: true,
   offlineId: true,
+  version: true, // #150 optimistic-lock token surfaced to clients
   type: true,
   amount: true,
   date: true,

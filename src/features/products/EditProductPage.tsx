@@ -45,12 +45,13 @@ export default function EditProductPage() {
   const productId = id ?? ''
   const [loadStatus, setLoadStatus] = useState<'loading' | 'error' | 'ready'>('loading')
   const [initialData, setInitialData] = useState<ProductFormData | undefined>()
+  const [version, setVersion] = useState<number | undefined>()
 
   useEffect(() => {
     const controller = new AbortController()
     setLoadStatus('loading')
     getProduct(productId, controller.signal)
-      .then((detail) => { setInitialData(detailToFormData(detail)); setLoadStatus('ready') })
+      .then((detail) => { setInitialData(detailToFormData(detail)); setVersion(detail.version); setLoadStatus('ready') })
       .catch((err) => { if (err instanceof Error && err.name === 'AbortError') return; setLoadStatus('error') })
     return () => controller.abort()
   }, [productId])
@@ -80,5 +81,5 @@ export default function EditProductPage() {
     )
   }
 
-  return <EditProductForm productId={productId} initialData={initialData} />
+  return <EditProductForm productId={productId} initialData={initialData} version={version} />
 }

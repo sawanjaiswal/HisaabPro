@@ -99,7 +99,8 @@ export async function createParty(
 export async function updateParty(
   id: string,
   data: Partial<PartyFormData>,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  expectedVersion?: number
 ): Promise<PartyDetail> {
   const { party } = await api<{ party: PartyDetail }>(`/parties/${id}`, {
     method: 'PUT',
@@ -107,6 +108,7 @@ export async function updateParty(
     signal,
     entityType: 'party',
     entityLabel: data.name ?? 'Party update',
+    entityVersion: expectedVersion, // #150 optimistic lock
   })
   return party
 }

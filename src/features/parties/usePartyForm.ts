@@ -12,6 +12,7 @@ import {
 import { extractPanFromGstin, rupeesToPaise } from './party.utils'
 import { useGstinVerify } from './useGstinVerify'
 import type { UseGstinVerifyReturn } from './useGstinVerify'
+import { useConflictReconcile } from '@/features/collaboration/useConflictReconcile'
 import type { PartyFormData, PartyType, CreditLimitMode, BalanceType } from './party.types'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -32,6 +33,8 @@ export interface UsePartyFormOptions {
   editId?: string
   /** Pre-fill form with existing party data (edit mode) */
   initialData?: PartyFormData
+  /** #150 — the party's optimistic-lock version at load time (edit mode). */
+  version?: number
 }
 
 export interface UsePartyFormReturn {
@@ -46,14 +49,17 @@ export interface UsePartyFormReturn {
   handleSubmit: () => Promise<void>
   reset: () => void
   gstinVerify: UseGstinVerifyReturn
+  /** #150 — conflict reconcile state + actions; page renders <ConflictDialog>. */
+  conflictReconcile: ReturnType<typeof useConflictReconcile>
 }
 
 export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormReturn {
-  const { editId, initialData } = options
+  const { editId, initialData, version } = options
   const isEditMode = Boolean(editId)
 
   const navigate = useNavigate()
   const toast = useToast()
+  const conflictReconcile = useConflictReconcile()
 
   const [form, setForm] = useState<PartyFormData>(initialData ?? INITIAL_FORM)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -167,9 +173,13 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
 
     try {
       if (isEditMode && editId) {
-        await updateParty(editId, payload)
-        toast.success(`${form.name} updated`)
-        navigate(`/parties/${editId}`)
+        // #150 — a stale save 409s; withConflictGuard opens the reconcile dialog
+        // instead of an error toast. versionOverride is supplied on overwrite.
+        await conflictReconcile.withConflictGuard(async (versionOverride) => {
+          await updateParty(editId, payload, undefined, versionOverride ?? version)
+          toast.success(`${form.name} updated`)
+          navigate(`/parties/${editId}`)
+        })
       } else {
         await createParty(payload)
         toast.success(`${form.name} added successfully`)
@@ -180,7 +190,7 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
     } finally {
       setIsSubmitting(false)
     }
-  }, [form, isSubmitting, validate, toast, navigate, isEditMode, editId])
+  }, [form, isSubmitting, validate, toast, navigate, isEditMode, editId, version, conflictReconcile])
 
   const reset = useCallback(() => {
     setForm(initialData ?? INITIAL_FORM)
@@ -200,6 +210,7 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
     handleSubmit,
     reset,
     gstinVerify,
+    conflictReconcile,
   }
 }
 

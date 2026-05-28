@@ -160,6 +160,7 @@ export interface DocumentSummary {
 // ─── Document Detail (single document) ──────────────────────────────────────
 
 export interface DocumentDetail extends DocumentSummary {
+  version?: number // #150 optimistic-lock token
   paymentTerms: PaymentTerms | null
   party: DocumentPartyDetail
   shippingAddressId: string | null

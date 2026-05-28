@@ -11,6 +11,7 @@ import { idempotencyCheck } from '../../middleware/idempotency.js'
 import { requirePermission, requireBogoIfFreeItem } from '../../middleware/permission.js'
 import { requireQuota } from '../../middleware/subscription-gate.js'
 import { sendSuccess } from '../../lib/response.js'
+import { parseEntityVersion } from '../../lib/optimistic-lock.js'
 import {
   createDocumentSchema,
   updateDocumentSchema,
@@ -79,7 +80,8 @@ router.put(
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const doc = await documentService.updateDocument(
-      businessId, String(req.params.id), req.user!.userId, req.body
+      businessId, String(req.params.id), req.user!.userId, req.body,
+      parseEntityVersion(req.headers['x-entity-version'])
     )
     sendSuccess(res, doc)
   })

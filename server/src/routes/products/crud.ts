@@ -7,6 +7,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../../middleware/asyncHandler.js'
 import { validate } from '../../middleware/validate.js'
 import { sendSuccess } from '../../lib/response.js'
+import { parseEntityVersion } from '../../lib/optimistic-lock.js'
 import {
   createProductSchema,
   updateProductSchema,
@@ -63,7 +64,8 @@ router.put(
     const product = await productService.updateProduct(
       req.user!.businessId,
       String(req.params.id),
-      req.body
+      req.body,
+      parseEntityVersion(req.headers['x-entity-version'])
     )
     sendSuccess(res, { product })
   })

@@ -10,6 +10,7 @@ import logger from '../../lib/logger.js'
 import type { CreateProductInput, UpdateProductInput } from '../../schemas/product.schemas.js'
 import { requireProduct, generateSku } from './helpers.js'
 import { productDetailSelect, stockMovementSelect } from './selects.js'
+import { bumpVersionOrConflict } from '../../lib/optimistic-lock.js'
 
 export async function createProduct(
   businessId: string,
@@ -137,7 +138,8 @@ export async function getProduct(businessId: string, productId: string) {
 export async function updateProduct(
   businessId: string,
   productId: string,
-  data: UpdateProductInput
+  data: UpdateProductInput,
+  expectedVersion?: number
 ) {
   await requireProduct(businessId, productId)
 
@@ -163,6 +165,9 @@ export async function updateProduct(
   }
 
   return prisma.$transaction(async (tx) => {
+    // #150 optimistic lock — atomic version bump inside the same txn as the write.
+    await bumpVersionOrConflict(tx, 'product', productId, businessId, expectedVersion)
+
     const updated = await tx.product.update({
       where: { id: productId },
       data: {

@@ -59,6 +59,7 @@ export default function EditInvoicePage() {
   const [loadStatus, setLoadStatus] = useState<'loading' | 'error' | 'ready'>('loading')
   const [initialData, setInitialData] = useState<DocumentFormData | undefined>()
   const [productNameMap, setProductNameMap] = useState<Record<string, string>>({})
+  const [version, setVersion] = useState<number | undefined>()
 
   useEffect(() => {
     const controller = new AbortController()
@@ -70,6 +71,7 @@ export default function EditInvoicePage() {
     ])
       .then(([detail, customFieldValues]) => {
         setInitialData({ ...detailToFormData(detail), customFieldValues })
+        setVersion(detail.version)
         const nameMap: Record<string, string> = {}
         for (const li of detail.lineItems) {
           nameMap[li.product.id] = li.product.name
@@ -119,6 +121,7 @@ export default function EditInvoicePage() {
       invoiceId={invoiceId}
       initialData={initialData}
       initialProductNames={productNameMap}
+      version={version}
     />
   )
 }

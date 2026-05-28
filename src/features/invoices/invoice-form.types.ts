@@ -6,6 +6,7 @@
 
 import type { StockValidationItem } from './invoice.service'
 import type { InvoiceTotals } from './invoice-calc.utils'
+import type { useConflictReconcile } from '@/features/collaboration/useConflictReconcile'
 import type {
   DocumentType,
   DocumentFormData,
@@ -26,6 +27,8 @@ export interface UseInvoiceFormOptions {
   editId?: string
   /** Pre-fill form with existing invoice data (edit mode) */
   initialData?: DocumentFormData
+  /** #150 — the document's optimistic-lock version at load time (edit mode). */
+  version?: number
 }
 
 // ─── Stock shortage (409 INSUFFICIENT_STOCK from save) ───────────────────────
@@ -83,6 +86,8 @@ export interface UseInvoiceFormReturn {
   applyInclusivePricing: (taxRateBP: number) => void
   // Epic B PR2 — price-list override (null = party default)
   priceListId: string | null
+  // #150 — conflict reconcile state + actions; page renders <ConflictDialog>.
+  conflictReconcile: ReturnType<typeof useConflictReconcile>
 }
 
 // Re-export types needed by sub-components

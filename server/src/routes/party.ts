@@ -11,6 +11,7 @@ import { requireActiveBusiness } from '../middleware/require-active-business.js'
 import { userMutationLimiter, createRateLimiter } from '../middleware/rate-limit.js'
 import { requireFeature } from '../middleware/subscription-gate.js'
 import { sendSuccess } from '../lib/response.js'
+import { parseEntityVersion } from '../lib/optimistic-lock.js'
 import {
   createPartySchema,
   updatePartySchema,
@@ -93,7 +94,8 @@ router.put(
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const userId = req.user!.userId
-    const party = await partyService.updateParty(businessId, String(req.params.id), userId, req.body)
+    const expectedVersion = parseEntityVersion(req.headers['x-entity-version'])
+    const party = await partyService.updateParty(businessId, String(req.params.id), userId, req.body, expectedVersion)
     sendSuccess(res, { party })
   })
 )

@@ -19,6 +19,7 @@ import { createPayment, updatePayment } from './payment.service'
 import { validatePaymentForm } from './payment.utils'
 import { buildInitialForm, buildFormFromPayment, buildApiPayload } from './paymentForm.helpers'
 import { usePaymentFormActions } from './usePaymentFormActions'
+import { useConflictReconcile, isConflictError } from '@/features/collaboration/useConflictReconcile'
 import type {
   PaymentType,
   PaymentMode,
@@ -54,6 +55,8 @@ export interface UsePaymentFormReturn {
   updateDiscount: <K extends keyof PaymentFormDiscount>(key: K, value: PaymentFormDiscount[K]) => void
   validate: () => boolean
   handleSubmit: () => Promise<void>
+  /** #150 — conflict reconcile state + actions; page renders <ConflictDialog>. */
+  conflictReconcile: ReturnType<typeof useConflictReconcile>
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
@@ -65,6 +68,7 @@ export function usePaymentForm({
   const navigate = useNavigate()
   const toast = useToast()
   const queryClient = useQueryClient()
+  const conflictReconcile = useConflictReconcile()
 
   const isEditMode = payment !== null
 
@@ -100,10 +104,10 @@ export function usePaymentForm({
   // ─── Submit mutation ──────────────────────────────────────────────────────
 
   const submitMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (versionOverride?: number) => {
       const apiPayload = buildApiPayload(form, selectedAllocations)
       if (isEditMode && payment !== null) {
-        await updatePayment(payment.id, apiPayload as unknown as PaymentFormData)
+        await updatePayment(payment.id, apiPayload as unknown as PaymentFormData, versionOverride ?? payment.version)
         return { mode: 'edit' as const, paymentId: payment.id }
       }
       await createPayment(apiPayload as unknown as PaymentFormData)
@@ -122,7 +126,9 @@ export function usePaymentForm({
         navigate(ROUTES.PAYMENTS)
       }
     },
-    onError: () => {
+    onError: (err) => {
+      // #150 — a CONFLICT opens the reconcile dialog (handled below), not a toast.
+      if (isConflictError(err)) return
       toast.error('Failed to save payment. Please try again.')
     },
   })
@@ -133,11 +139,14 @@ export function usePaymentForm({
     if (!validate()) return
     if (isSubmitting) return
     try {
-      await submitMutation.mutateAsync()
+      // #150 — a stale save 409s; withConflictGuard opens the reconcile dialog.
+      await conflictReconcile.withConflictGuard(async (versionOverride) => {
+        await submitMutation.mutateAsync(versionOverride)
+      })
     } catch {
       // onError already toasted; swallow so callers don't see an unhandled rejection
     }
-  }, [validate, isSubmitting, submitMutation])
+  }, [validate, isSubmitting, submitMutation, conflictReconcile])
 
   return {
     form,
@@ -148,6 +157,7 @@ export function usePaymentForm({
     ...actions,
     validate,
     handleSubmit,
+    conflictReconcile,
   }
 }
 

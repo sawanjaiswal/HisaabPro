@@ -3,25 +3,25 @@
  * Types in invoice-form.types.ts. GST Phase 2 in useGstInvoice.ts.
  */
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { queryKeys } from '@/lib/query-keys'
 import { ROUTES } from '@/config/routes.config'
 import { ApiError } from '@/lib/api'
+import { useConflictReconcile, isConflictError } from '@/features/collaboration/useConflictReconcile'
 import { createDocument, updateDocument } from './invoice.service'
 import { calculateInvoiceTotals } from './invoice-totals.utils'
 import type { InvoiceTotals, LineItemCalc, ChargeCalc } from './invoice-calc.utils'
 import type {
   DocumentType,
   DocumentFormData,
-  LineItemFormData,
-  AdditionalChargeFormData,
   RoundOffSetting,
 } from './invoice.types'
 import type { UseInvoiceFormOptions, UseInvoiceFormReturn, FormSection, StockShortageItem } from './invoice-form.types'
 import { buildInitialForm, validateInvoiceForm, normalizeFormPayload } from './invoice-form.utils'
+import { useInvoiceItemOps } from './useInvoiceItemOps'
 import { useStockValidation } from './useStockValidation'
 import { useGstInvoice } from './useGstInvoice'
 import { useInvoiceFormBatchErrors } from './useInvoiceFormBatchErrors'
@@ -31,12 +31,15 @@ export function useInvoiceForm(
   roundOffSetting: RoundOffSetting = 'NONE',
   options: UseInvoiceFormOptions = {},
 ): UseInvoiceFormReturn {
-  const { editId, initialData } = options
+  const { editId, initialData, version } = options
   const isEditMode = Boolean(editId)
 
   const navigate = useNavigate()
   const toast = useToast()
   const queryClient = useQueryClient()
+  const conflictReconcile = useConflictReconcile()
+  // #150 — carries the overwrite version through the gst-aware submit chain (can't take an extra arg).
+  const versionOverrideRef = useRef<number | undefined>(undefined)
 
   const [form, setForm] = useState<DocumentFormData>(() => initialData ?? buildInitialForm(type))
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -59,45 +62,10 @@ export function useInvoiceForm(
     })
   }, [])
 
-  // ─── Line item operations ──────────────────────────────────────────────────
+  // ─── Line item & charge operations ─────────────────────────────────────────
 
-  const addLineItem = useCallback((item: LineItemFormData) => {
-    setForm((prev) => ({ ...prev, lineItems: [...prev.lineItems, item] }))
-    setErrors((prev) => {
-      if (!prev.lineItems) return prev
-      const next = { ...prev }
-      delete next.lineItems
-      return next
-    })
-  }, [])
-
-  const updateLineItem = useCallback((index: number, patch: Partial<LineItemFormData>) => {
-    setForm((prev) => {
-      const updated = prev.lineItems.map((item, i) => i === index ? { ...item, ...patch } : item)
-      return { ...prev, lineItems: updated }
-    })
-  }, [])
-
-  const removeLineItem = useCallback((index: number) => {
-    setForm((prev) => ({ ...prev, lineItems: prev.lineItems.filter((_, i) => i !== index) }))
-  }, [])
-
-  // ─── Additional charge operations ─────────────────────────────────────────
-
-  const addCharge = useCallback((charge: AdditionalChargeFormData) => {
-    setForm((prev) => ({ ...prev, additionalCharges: [...prev.additionalCharges, charge] }))
-  }, [])
-
-  const updateCharge = useCallback((index: number, patch: Partial<AdditionalChargeFormData>) => {
-    setForm((prev) => {
-      const updated = prev.additionalCharges.map((ch, i) => i === index ? { ...ch, ...patch } : ch)
-      return { ...prev, additionalCharges: updated }
-    })
-  }, [])
-
-  const removeCharge = useCallback((index: number) => {
-    setForm((prev) => ({ ...prev, additionalCharges: prev.additionalCharges.filter((_, i) => i !== index) }))
-  }, [])
+  const { addLineItem, updateLineItem, removeLineItem, addCharge, updateCharge, removeCharge } =
+    useInvoiceItemOps(setForm, setErrors)
 
   // ─── Real-time totals ─────────────────────────────────────────────────────
 
@@ -139,7 +107,7 @@ export function useInvoiceForm(
     mutationFn: async (targetStatus: 'SAVED' | 'DRAFT') => {
       const payload = normalizeFormPayload(form, targetStatus)
       if (isEditMode && editId) {
-        await updateDocument(editId, payload)
+        await updateDocument(editId, payload, versionOverrideRef.current ?? version)
         return { mode: 'edit' as const, targetStatus, editId }
       }
       await createDocument(payload)
@@ -180,6 +148,8 @@ export function useInvoiceForm(
         setActiveSection('items')
         return
       }
+      // #150 — a CONFLICT opens the reconcile dialog (handled below), not a toast.
+      if (isConflictError(err)) return
       toast.error(isEditMode ? 'Failed to update invoice.' : 'Failed to save invoice. Please try again.')
     },
   })
@@ -205,22 +175,26 @@ export function useInvoiceForm(
     setLineItems: (updater) => setForm((prev) => ({ ...prev, lineItems: updater(prev.lineItems) })),
   })
 
-  const submitWithStatus = useCallback(async (targetStatus: 'SAVED' | 'DRAFT') => {
+  const submitWithStatus = useCallback(async (targetStatus: 'SAVED' | 'DRAFT', versionOverride?: number) => {
     if (targetStatus === 'SAVED' && !validate()) return
     if (isSubmitting) return
+    versionOverrideRef.current = versionOverride
     try {
       if (targetStatus === 'SAVED') {
         await gstAwareSubmit(targetStatus)
       } else {
         await submitMutation.mutateAsync(targetStatus)
       }
-    } catch {
-      // onError already toasted; swallow so callers don't see an unhandled rejection
+    } catch (err) {
+      if (isConflictError(err)) throw err // #150 — let withConflictGuard open the dialog; others already toasted
+    } finally {
+      versionOverrideRef.current = undefined
     }
   }, [validate, isSubmitting, gstAwareSubmit, submitMutation])
 
-  const handleSubmit = useCallback(async () => { await submitWithStatus('SAVED') }, [submitWithStatus])
-  const handleSaveDraft = useCallback(async () => { await submitWithStatus('DRAFT') }, [submitWithStatus])
+  const { withConflictGuard } = conflictReconcile
+  const handleSubmit = useCallback(() => withConflictGuard((v) => submitWithStatus('SAVED', v)), [submitWithStatus, withConflictGuard])
+  const handleSaveDraft = useCallback(() => withConflictGuard((v) => submitWithStatus('DRAFT', v)), [submitWithStatus, withConflictGuard])
 
   const reset = useCallback(() => {
     setForm(initialData ?? buildInitialForm(type))
@@ -241,6 +215,7 @@ export function useInvoiceForm(
     batchErrorCode, batchErrorLineIndex, clearBatchError,
     gstEnabled, showUntaggedDialog, confirmUntaggedSubmit, dismissUntaggedDialog, applyInclusivePricing,
     priceListId: form.priceListId ?? null, // Epic B PR2 override
+    conflictReconcile,
   }
 }
 

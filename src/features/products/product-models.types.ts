@@ -109,6 +109,7 @@ export interface CreateCustomFieldDefData {
 // ─── Product (full detail) ───────────────────────────────────────────────────
 
 export interface ProductDetail extends ProductSummary {
+  version?: number // #150 optimistic-lock token
   description: string | null
   hsnCode: string | null    // HSN for goods  (Phase 2 GST)
   sacCode: string | null    // SAC for services (Phase 2 GST)

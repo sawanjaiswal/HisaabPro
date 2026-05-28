@@ -437,6 +437,7 @@ model Party {
   deletedAt          DateTime?
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
+  version            Int       @default(0) // #150 optimistic-lock token
 
   // Phase 4 — POS walk-in sentinel
   isWalkIn Boolean @default(false)
@@ -814,6 +815,7 @@ model Product {
   deletedAt            DateTime?
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
+  version              Int       @default(0) // #150 optimistic-lock token
 
   business          Business                  @relation(fields: [businessId], references: [id], onDelete: Cascade)
   category          Category?                 @relation(fields: [categoryId], references: [id], onDelete: SetNull)
@@ -1044,6 +1046,7 @@ model Document {
   updatedBy String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  version   Int      @default(0) // #150 optimistic-lock token
 
   // Offline sync
   clientId String? @unique
@@ -1300,6 +1303,7 @@ model Payment {
   updatedBy       String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+  version         Int       @default(0) // #150 optimistic-lock token
 
   // Phase 6 — payroll reversal pointer (A04.1 closure v2.3).
   // When a finalized PayrollRun is reversed, the service writes an inverse-

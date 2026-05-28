@@ -10,6 +10,7 @@ import { requireActiveBusiness } from '../middleware/require-active-business.js'
 import { userMutationLimiter } from '../middleware/rate-limit.js'
 import { requireFeature } from '../middleware/subscription-gate.js'
 import { sendSuccess } from '../lib/response.js'
+import { parseEntityVersion } from '../lib/optimistic-lock.js'
 import { idempotencyCheck } from '../middleware/idempotency.js'
 import { replayProtection } from '../middleware/replay-protection.js'
 import {
@@ -82,7 +83,8 @@ router.put(
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const payment = await paymentService.updatePayment(
-      businessId, String(req.params.id), req.user!.userId, req.body
+      businessId, String(req.params.id), req.user!.userId, req.body,
+      parseEntityVersion(req.headers['x-entity-version'])
     )
     sendSuccess(res, payment)
   })

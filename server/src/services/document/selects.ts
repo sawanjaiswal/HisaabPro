@@ -35,6 +35,7 @@ export const DOCUMENT_LIST_SELECT = {
 
 export const DOCUMENT_DETAIL_SELECT = {
   id: true,
+  version: true, // #150 optimistic-lock token surfaced to clients
   type: true,
   status: true,
   documentNumber: true,

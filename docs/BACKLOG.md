@@ -1,11 +1,11 @@
 # Backlog — resume 2026-05-28
 
-> Snapshot at 2026-05-28. **140/150 shipped — Phase 6 COMPLETE + Phase 7 3/10.**
-> Phase 1 (60/70 code-complete, 10 cred-blocked) · Phase 2 (20/20) · Phase 3 (21/22, #89 deferred → folds into #147) · Phase 4 (16/16) · **Phase 5 (14/14)** · **Phase 6 (6/6) ✅ SHIPPED** (merge `caa390d`, 9 PRs + 2 hardening commits, BE/FE/security/QA all green) · Phase 7 (**8/10** — #141 OCR + #142 voice + #144 GST + #145 Verticals + #146 predictive + #147 auto-recon + #148 smart-inv + #149 Competitor imports). Remaining: #143 (creds-blocked), #150 (CRDT spike).
+> Snapshot at 2026-05-28. **141/150 shipped — Phase 6 COMPLETE + Phase 7 9/10.**
+> Phase 1 (60/70 code-complete, 10 cred-blocked) · Phase 2 (20/20) · Phase 3 (21/22, #89 deferred → folds into #147) · Phase 4 (16/16) · **Phase 5 (14/14)** · **Phase 6 (6/6) ✅ SHIPPED** (merge `caa390d`, 9 PRs + 2 hardening commits, BE/FE/security/QA all green) · Phase 7 (**9/10** — #141 OCR + #142 voice + #144 GST + #145 Verticals + #146 predictive + #147 auto-recon + #148 smart-inv + #149 Competitor imports + #150 multi-user collab). Remaining: #143 (creds-blocked).
 >
 > **Branch state:** `hisaabpro` is **0 commits ahead of `master`** (merged 2026-05-26 `caa390d`). Subsequent pre-beta hardening landed directly on master: money-SSOT PR #2 (`7c97b33`), refresh-token family rotation, security batch A (CSV + Sentry/logger PII scrub), W4b FE test-contract sweep (1306/1306). **Render production deploy still trails master — push to redeploy is the only remaining ship step.**
 >
-> **Next up:** Render redeploy + set env vars (subscription, Aisensy, MSG91) **OR** Phase 7 remaining (#143 creds-blocked, #150 CRDT spike). See "Resume order" below.
+> **Next up:** Render redeploy + set env vars (subscription, Aisensy, MSG91). Phase 7 only #143 left (creds-blocked). See "Resume order" below.
 
 ## Resume order
 
@@ -85,7 +85,7 @@ Audit + design docs: `docs/SCOPE_PHASE6_STAFF_HR.md`, `docs/SCOPE_AUDIT_PHASE6_S
 
 ---
 
-### 6. Phase 7 — AI & Differentiators (2 remaining: #143 creds-blocked, #150 CRDT spike; #141 OCR + #142 voice + #144 GST + #145 verticals + #146 predictive + #147 auto-recon + #148 smart-inv + #149 importers done)
+### 6. Phase 7 — AI & Differentiators (1 remaining: #143 creds-blocked; #141 OCR + #142 voice + #144 GST + #145 verticals + #146 predictive + #147 auto-recon + #148 smart-inv + #149 importers + #150 multi-user done)
 - ~~#142 Voice entry (browser SpeechRecognition + on-device fallback)~~ — **DONE 2026-05-28**: speak-or-type a money entry → pure transcript parser (Hindi+English Indian phrasing: "do hazaar paanch sau", "1.5 lakh", "rent mila 5000 upi") → editable preview → saves directly via expense/other-income services. Web Speech API (`en-IN`) with typed-textarea fallback when unsupported/denied. `/voice-entry` FE (PRO + expenses gate), 22 parser tests. Live mic needs a real device to verify.
 - #143 WhatsApp bot billing (Aisensy inbound webhook → invoice draft) — **high leverage / lock-in** — blocked: webhook high-risk gate + missing Aisensy creds
 - ~~#144 Smart GST filing assistant (rules engine on Phase 2 data)~~ — **DONE 2026-05-28**: deterministic pre-filing readiness validator over a period's sale/note docs. 7 rules (B2B GSTIN, GSTIN format, place-of-supply, HSN/SAC, interstate split, composition-charging-GST, zero-tax). `/api/gst/filing-readiness` (PRO + reports.view); `/gst/filing-readiness` FE with blocker/warning tiers + deep-links to offending invoices. 18 tests.
@@ -93,9 +93,9 @@ Audit + design docs: `docs/SCOPE_PHASE6_STAFF_HR.md`, `docs/SCOPE_AUDIT_PHASE6_S
 - ~~#147 Auto-reconciliation (bank statement → payment match)~~ — **DONE 2026-05-28** (absorbs #89 bank rec): upload a bank CSV → client-side parser → staged `BankStatementLine` rows → deterministic match engine (amount exact +60/≤1% +30; date 0d+25→≤14d+0; ref/party token +15; direction CREDIT↔PAYMENT_IN, DEBIT↔PAYMENT_OUT; ≥70 SUGGESTED / 50-69 WEAK / <50 UNMATCHED) → confirm/manual-match/ignore/un-reconcile. Annotation-only join table (`ReconciliationMatch`, `lineId @unique` idempotency) — never mutates Payment/ledger. Bounded pool (±14d, 5000 ceiling, poolTruncated flag), TOCTOU `updateMany count===1` + P2002→409 guards. `/api/bank-reconciliation/*` (PRO + reports.view); `/bank-reconciliation` FE (More→Accounting card). 23 unit tests on the pure core.
 - ~~#148 Smart inventory (reorder suggestions based on velocity)~~ — **DONE 2026-05-28**: velocity-based reorder *suggestions* layer over static #114 reorderQty. Reuses #146 `forecast.math.ts`. `/api/inventory/reorder-suggestions` (auth-only, reads, products gate FE); `/inventory/reorder-suggestions` FE with urgency tiers (out/critical/low/ok), lead-time + coverage params. 15 tests.
 - ~~#149 Competitor data importers (Tally/Vyapar/MyBillBook)~~ — DONE (legacy retired #149c 2026-05-28)
-- #150 Real-time multi-user collaboration (presence + conflict resolution) — **needs architecture spike, CRDT vs LWW decision**
+- ~~#150 Real-time multi-user collaboration (presence + conflict resolution)~~ — **DONE 2026-05-28**: spike decided **LWW + optimistic locking (NOT CRDT)** — money records must not silently auto-merge. Monotonic `version Int @default(0)` on Document/Payment/Party/Product; the lock lives IN the write (`bumpVersionOrConflict` runs an atomic conditional `updateMany WHERE version=expected` inside the field-write transaction — count!==1 → 409 `CONFLICT` with `{serverVersion, updatedBy}`, tenant-scoped to avoid cross-tenant id leakage). Client sends last-read version via `X-Entity-Version` (absent/malformed → unguarded back-compat write). Presence is in-memory + oracle-free (`Map<businessId,Map<userId,entry>>`, 45s TTL, GET peers does no DB hit). FE: `useConflictReconcile` → `<ConflictDialog>` (reload / overwrite) wired into all 4 edit flows (party/product/payment/invoice), `usePresence` + `<PresenceAvatars>` in each edit Header. FE+BE tsc clean, enforce green, presence routes 401/403 guarded.
 
-Next: #150 multi-user collab (needs CRDT-vs-LWW architecture spike). #143 blocked on creds + webhook gate.
+Next: #143 WhatsApp bot — blocked on creds + webhook high-risk gate.
 
 #### 6a. #149 Phase 7 Import Engine — slice tracker (2026-05-19)
 

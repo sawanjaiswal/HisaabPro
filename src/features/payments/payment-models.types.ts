@@ -63,6 +63,7 @@ export interface PaymentSummary {
 /** Full payment shape returned by GET /payments/:id */
 export interface PaymentDetail {
   id: string
+  version?: number // #150 optimistic-lock token
   /** Client-generated UUID for offline creation */
   offlineId: string
   type: PaymentType

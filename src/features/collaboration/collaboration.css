@@ -1,0 +1,50 @@
+/* #150 collaboration — presence avatars + conflict dialog. Tokens only. */
+
+.presence-avatars {
+  align-items: center;
+}
+
+/* Editing peers get an amber ring so the user sees the warning before saving. */
+.presence-avatars [data-editing='true'] {
+  box-shadow: 0 0 0 2px var(--color-warning, #f59e0b);
+}
+
+.conflict-dialog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4, 1rem);
+  text-align: center;
+  padding: var(--space-2, 0.5rem) 0;
+}
+
+.conflict-dialog__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full, 9999px);
+  color: var(--color-warning, #f59e0b);
+  background: var(--color-warning-subtle, rgba(245, 158, 11, 0.12));
+}
+
+.conflict-dialog__body {
+  font-size: var(--fs-base, 1rem);
+  color: var(--color-text-secondary, #475569);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.conflict-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3, 0.75rem);
+  width: 100%;
+  justify-content: center;
+}
+
+.conflict-dialog__actions .btn {
+  min-height: 44px;
+  flex: 1 1 auto;
+}
