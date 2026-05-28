@@ -185,6 +185,7 @@ export const NotificationPreferences = lazy(() => import('@/features/notificatio
 export const BomList = lazy(() => import('@/features/bom/pages/BomListPage'))
 export const BomForm = lazy(() => import('@/features/bom/pages/BomFormPage'))
 export const BomDetail = lazy(() => import('@/features/bom/pages/BomDetailPage'))
+export const RecipeCost = lazy(() => import('@/features/recipe-cost/RecipeCostPage'))
 export const ProductionRunList = lazy(() => import('@/features/production-runs/pages/ProductionRunListPage'))
 export const ProductionRunForm = lazy(() => import('@/features/production-runs/pages/ProductionRunFormPage'))
 export const ProductionRunDetail = lazy(() => import('@/features/production-runs/pages/ProductionRunDetailPage'))

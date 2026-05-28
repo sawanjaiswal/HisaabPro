@@ -4,7 +4,7 @@
 >
 > **Last updated:** 2026-05-28
 > **Owner:** Sawan Jaiswal
-> **Status:** Phase 1–6 complete on `master`; Phase 7 **9/10** — #141 OCR, #142 Voice, #144 Smart GST, #145 Vertical Modes, #146 Predictive, #147 Auto-reconciliation, #148 Smart inventory, #149 Competitor imports, #150 Multi-user collaboration. Remaining: #143 (creds-blocked). Pre-beta hardening landed 2026-05-27: money-SSOT (paise Int) merged via PR #2, refresh-token family rotation per RFC 6819, security batch A (CSV injection guard + Sentry/logger PII scrub), W4b FE test-contract sweep (1306/1306 passing). `hisaabpro` branch is **0 commits ahead** of `master` — Render redeploy pending.
+> **Status:** Phase 1–6 complete on `master`; Phase 7 **9/10** — #141 OCR, #142 Voice, #144 Smart GST, #145 Vertical Modes, #146 Predictive, #147 Auto-reconciliation, #148 Smart inventory, #149 Competitor imports, #150 Multi-user collaboration. Remaining: #143 (creds-blocked). Pre-beta hardening landed 2026-05-27: money-SSOT (paise Int) merged via PR #2, refresh-token family rotation per RFC 6819, security batch A (CSV injection guard + Sentry/logger PII scrub), W4b FE test-contract sweep (1306/1306 passing). Vertical-depth **V3 Recipe Cost dashboard shipped 2026-05-28** (BOM-derived cost/margin, no schema). `hisaabpro` branch is **0 commits ahead** of `master` — Render redeploy pending.
 > **Frontend UI:** complete for all 141 shipped features (the remaining 9 are either cred-blocked backend stubs or unbuilt vertical-depth epics — no UI yet).
 
 ---
@@ -242,6 +242,7 @@ Merge `caa390d` (2026-05-26), 12 commits + 2 hardening (`ba56470`/`0bd1881`).
 | Pharmacy | Batch + expiry tracking ON by default, FEFO claim, daily expiry cron |
 | Restaurant | Nav-hide serial/verify, terminology="Bill", POS access |
 | Manufacturing | Stock + batch + serial defaults ON, BOM, ProductionRun with WAC |
+| Restaurant / Bakery / Manufacturing | **Recipe Cost dashboard (V3, shipped 2026-05-28)** — `GET /api/recipe-cost` derives cost-per-unit + margin from active BOMs (component `weightedAvgCostPaise`, fallback `purchasePrice`); flags loss-making + incomplete-costing recipes; `/recipe-cost` page, More→Production card. Read-only, auth-gated like BOM, no schema. |
 | Wholesale | Batch default ON |
 | Retail | Standard nav, stock default ON |
 
@@ -251,13 +252,13 @@ Merge `caa390d` (2026-05-26), 12 commits + 2 hardening (`ba56470`/`0bd1881`).
 |---|---|---|---|
 | V1 — Hourly billing on Jobs (`hoursEstimated/Actual/ratePerHour`) | Services/Freelancer/Salon/Clinic | ~1 wk | HIGH |
 | V2 — Appointment calendar + slot picker | Salon/Clinic | ~2 wks | HIGH (onboarding blocker) |
-| V3 — Recipe cost dashboard (BOM-derived) | Restaurant/Bakery/Manufacturing | ~3 days | MEDIUM (quick win, UI-only) |
+| ~~V3 — Recipe cost dashboard (BOM-derived)~~ ✅ SHIPPED 2026-05-28 | Restaurant/Bakery/Manufacturing | — | done |
 | V4 — Staff assignment + commission split on Jobs/Orders | Services/Bakery/Tailor/Manufacturing | ~2 wks | MEDIUM (extends Phase 6 #128) |
 | V5 — Customer delivery reminders (N hours before slot) | Bakery/Tailor | ~3 days | MEDIUM (depends on Epic A live) |
 | V6 — Table mgmt + KOT | Restaurant | LARGE | LOW (out of scope) |
 | V7 — Prescription field | Pharmacy/Clinic | trivial | LOW (custom-fields today) |
 
-Recommended sequence post merge-to-prod: V3 → V1 → V5 → V2 → V4.
+Recommended sequence post merge-to-prod: ~~V3~~ ✅ → V1 → V5 → V2 → V4.
 
 ---
 

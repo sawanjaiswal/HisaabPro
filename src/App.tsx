@@ -45,7 +45,7 @@ import {
   CustomOrders, CustomOrderNew, CustomOrderDetail, CustomOrderEdit,
   BackfillWizard, Gstr1Page, Gstr3bPage, AgingDashboardPage, AgingBucketListPage,
   CashRegister, Notifications, NotificationPreferences,
-  BomList, BomForm, BomDetail,
+  BomList, BomForm, BomDetail, RecipeCost,
   ProductionRunList, ProductionRunForm, ProductionRunDetail,
   MarketingHub, MarketingTemplateList, MarketingTemplateForm, MarketingCampaignList, MarketingCampaignWizard, MarketingCampaignDetail, MarketingReminderList, MarketingReminderForm, MarketingOptOuts,
   PriceLists, PriceListDetail, NotFound,
@@ -264,6 +264,7 @@ export function App() {
         <Route path={ROUTES.BOM_NEW} element={<PageRoute><ProtectedRoute><BomForm /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.BOM_EDIT} element={<PageRoute><ProtectedRoute><BomForm /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.BOM_DETAIL} element={<PageRoute><ProtectedRoute><BomDetail /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.RECIPE_COST} element={<PageRoute><ProtectedRoute><RecipeCost /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PRODUCTION_RUNS} element={<PageRoute><ProtectedRoute><ProductionRunList /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PRODUCTION_RUN_NEW} element={<PageRoute><ProtectedRoute><ProductionRunForm /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PRODUCTION_RUN_DETAIL} element={<PageRoute><ProtectedRoute><ProductionRunDetail /></ProtectedRoute></PageRoute>} />

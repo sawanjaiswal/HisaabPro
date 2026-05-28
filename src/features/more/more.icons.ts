@@ -33,6 +33,7 @@ import {
   PackageCheck,
   ShieldCheck,
   Mic,
+  ChefHat,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -71,4 +72,5 @@ export const ICON_REGISTRY: Record<string, LucideIcon> = {
   PackageCheck,
   ShieldCheck,
   Mic,
+  ChefHat,
 }

@@ -219,6 +219,7 @@ export const ROUTES = {
   BOM_NEW:          '/bom/new',
   BOM_DETAIL:       '/bom/:id',
   BOM_EDIT:         '/bom/:id/edit',
+  RECIPE_COST:      '/recipe-cost',
   PRODUCTION_RUNS:  '/production-runs',
   PRODUCTION_RUN_NEW:    '/production-runs/new',
   PRODUCTION_RUN_DETAIL: '/production-runs/:id',

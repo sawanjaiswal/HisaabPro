@@ -1,0 +1,129 @@
+/* Recipe Cost Dashboard (V3) — all values via design tokens. */
+
+.recipe-cost-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.recipe-cost-summary__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.recipe-cost-summary__chip--loss {
+  background: var(--color-error-50);
+  color: var(--color-error);
+}
+
+.recipe-cost-summary__chip--warn {
+  background: var(--color-warning-50);
+  color: var(--color-warning);
+}
+
+.recipe-cost-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.recipe-cost-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.recipe-cost-card__title {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.recipe-cost-card__subtitle {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+
+.recipe-cost-card__metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+
+.recipe-cost-metric__label {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+}
+
+.recipe-cost-metric__value {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.recipe-cost-metric__value--loss {
+  color: var(--color-error);
+}
+
+.recipe-cost-metric__value--thin {
+  color: var(--color-warning);
+}
+
+.recipe-cost-metric__value--good {
+  color: var(--color-success);
+}
+
+.recipe-cost-card__warning {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--color-warning);
+}
+
+.recipe-cost-card__breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-3);
+}
+
+.recipe-cost-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--fs-sm);
+}
+
+.recipe-cost-row__name {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text);
+}
+
+.recipe-cost-row__tag {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary-50);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-full);
+}
+
+.recipe-cost-row__qty {
+  color: var(--color-text-muted);
+}
+
+.recipe-cost-row__cost {
+  color: var(--color-text);
+  font-weight: 600;
+}

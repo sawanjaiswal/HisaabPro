@@ -71,6 +71,7 @@ import customOrderRoutes from './routes/custom-orders.js'
 import notificationsRoutes from './routes/notifications.js'
 import posRoutes from './routes/pos.js'
 import bomRoutes from './routes/bom.js'
+import recipeCostRoutes from './routes/recipe-cost.js'
 import productionRunRoutes from './routes/production-runs.js'
 import marketingRoutes from './routes/marketing.js'
 import priceListRoutes from './routes/price-lists.routes.js'
@@ -163,6 +164,7 @@ const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/notifications', notificationsRoutes],
   ['/api/pos', posRoutes],
   ['/api/bom', bomRoutes],
+  ['/api/recipe-cost', recipeCostRoutes],
   ['/api/production-runs', productionRunRoutes],
   ['/api/marketing', marketingRoutes],
   ['/api/price-lists', priceListRoutes],

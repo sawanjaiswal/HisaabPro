@@ -146,14 +146,14 @@ Verticals are wired (nav filtering, terminology, defaults, Jobs flow, Custom Ord
 |---|---|---|---|
 | **V1 — Services time tracking on Jobs** | services, freelancer, salon, clinic | ~1 wk | Add `hoursEstimated`, `hoursActual`, `ratePerHour` on Job; hour-based invoice line. Plumber/freelancer cannot bill hourly today. |
 | **V2 — Appointments calendar** | salon, clinic | ~2 wks (HIGH) | New `Appointment` model + slot picker + availability view. Onboarding blocker. |
-| **V3 — Recipe cost dashboard** | restaurant, bakery, manufacturing | ~3 days | Derive cost-per-unit from existing BOM data. UI-only. Quick win. |
+| ~~**V3 — Recipe cost dashboard**~~ ✅ SHIPPED 2026-05-28 | restaurant, bakery, manufacturing | — | Derives cost-per-unit + margin from active BOMs (`weightedAvgCostPaise`, fallback `purchasePrice`). Read-only, auth-gated like BOM, no schema. `GET /api/recipe-cost`, `/recipe-cost` page, More→Production card (navKey `bom`). 13 math unit tests. |
 | **V4 — Staff assignment + commission split** | services, bakery, tailor, manufacturing | ~2 wks | Assign staff to Jobs/Orders/POS sales. Builds on Phase 6 #128 commission ledger. |
 | **V5 — Customer delivery reminders** | bakery, tailor | ~3 days | Trigger marketing-comms reminder N hours before delivery. Requires Epic A live. |
 | **V6 — Table management + KOT** | restaurant | LARGE | Out of MSME billing scope. Defer to v2 product. |
 | **V7 — Prescription field** | pharmacy, clinic | trivial | Likely solvable today via generic custom fields. Validate before scoping. |
 
 Recommended sequence (post merge-to-prod):
-1. V3 (3 days, no schema, big restaurant/bakery win)
+1. ~~V3 (3 days, no schema, big restaurant/bakery win)~~ ✅ SHIPPED 2026-05-28
 2. V1 (1 wk, unblocks hourly billing — biggest current user complaint)
 3. V5 (3 days, depends on Epic A)
 4. V2 (2 wks, salon/clinic onboarding)

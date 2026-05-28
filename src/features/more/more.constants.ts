@@ -38,6 +38,7 @@ export const MORE_MENU_ITEMS: MoreMenuItem[] = [
   // Production — BOM / Manufacturing (Phase 4)
   { id: 'bom', navKey: 'bom', label: 'Recipes', description: 'Bills of Materials', icon: 'BookOpen', route: ROUTES.BOM, color: 'var(--color-primary-50)', group: 'production' },
   { id: 'production-runs', navKey: 'production-runs', label: 'Production Runs', description: 'Track manufacturing', icon: 'Activity', route: ROUTES.PRODUCTION_RUNS, color: 'var(--color-secondary-50)', group: 'production' },
+  { id: 'recipe-cost', navKey: 'bom', label: 'Recipe Costs', description: 'Cost & margin per recipe', icon: 'ChefHat', route: ROUTES.RECIPE_COST, color: 'var(--color-success-50)', group: 'production' },
 
   // Efficiency — save time, do more
   { id: 'pos', navKey: 'pos', label: 'POS', description: 'Quick counter sales', icon: 'ShoppingCart', route: ROUTES.POS, color: 'var(--color-primary-50)', group: 'efficiency' },
