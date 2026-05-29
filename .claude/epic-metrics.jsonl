@@ -17,3 +17,7 @@
 {"phase":"start","feature":"ssot-stored-vs-derived","sess":"bare-131903","ts":"2026-05-29T07:49:03Z"}
 {"phase":"critics-done","feature":"ssot-stored-vs-derived","verdict":"PASS","revisions":3,"ts":"2026-05-29T08:05:48Z"}
 {"phase":"build-start","feature":"ssot-stored-vs-derived","ts":"2026-05-29T08:45:05Z"}
+{"phase":"start","feature":"hsn-seed-trgm-index","sess":"bare-161310","ts":"2026-05-29T10:43:10Z"}
+{"phase":"critics-done","feature":"hsn-seed-trgm-index","ts":"2026-05-29T10:47:06Z","verdict":"PASS"}
+{"phase":"build-start","feature":"hsn-seed-trgm-index","ts":"2026-05-29T10:51:27Z"}
+{"phase":"epic-end","feature":"hsn-seed-trgm-index","ts":"2026-05-29T11:01:56Z"}

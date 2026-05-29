@@ -1961,7 +1961,8 @@ model HsnCode {
   uqc            String  @default("NOS") @db.VarChar(10) // Unit Quantity Code per CGST — GST Phase 2
 
   @@index([chapter])
-  @@index([description])
+  // description search uses a pg_trgm GIN index (raw SQL migration
+  // hsn_description_trgm) — a B-tree can't accelerate ILIKE '%q%'.
 }
 
 /// E-Invoice record — IRN + QR from NIC IRP portal

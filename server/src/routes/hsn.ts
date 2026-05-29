@@ -35,7 +35,9 @@ router.get(
       return
     }
 
-    // Fill remaining quota with description search (excluding already found codes)
+    // Fill remaining quota with description search (excluding already found
+    // codes). `contains` + insensitive → ILIKE '%q%', accelerated by the
+    // pg_trgm GIN index hsn_description_trgm (migration 20260529163000).
     const foundCodes = byCode.map((h: { code: string }) => h.code)
     const remaining = limit - byCode.length
 

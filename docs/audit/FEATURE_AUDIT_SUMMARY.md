@@ -52,7 +52,7 @@
 | 8  | Theme variants + ThemePicker | `ThemeContext` is only `light|dark`; no variants, no picker |
 | 58 | Transaction PIN | stored as `User.pinHash`, no `PinCredential` model (works) |
 | 62 | Calculator FAB | exists as `CalculatorOverlay` launched from SideNav, not a FAB |
-| 76 | HSN auto-fill | no 12K seed (zero create/upsert), no trgm GIN index; plain `startsWith`/`contains` |
+| 76 | HSN auto-fill | FIXED 2026-05-29 — curated subset seeded (`prisma/data/hsn-curated.ts` 126 codes, `prisma/seed.hsn.ts` idempotent upsert, `npm run db:seed:hsn`); B-tree `@@index([description])` replaced by pg_trgm GIN `hsn_description_trgm` (migration `20260529163000_hsn_description_trgm`, raw SQL create-then-drop). EXPLAIN confirms `ILIKE '%q%'` rides the GIN. Search route unchanged (`code startsWith` then `description contains`). FUTURE: full ~12K master load (needs authoritative dataset) |
 | 90 | Receipt vouchers | FIXED 2026-05-29 — client-side React-PDF voucher (`features/payments/voucher/`), download+print on PaymentDetailPage. No endpoint by design (PDF is 100% client-side here) |
 | 91 | Payment vouchers | FIXED 2026-05-29 — same component, PAYMENT template for *_OUT types |
 | 100| Tally export | real, but at `reports/tally-export.ts` not cited `routes/export.ts` |

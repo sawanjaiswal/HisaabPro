@@ -160,7 +160,7 @@ Wait — 47 is [B]; rest of 1F are [x].
 | 73 | Reverse Charge | `isReverseCharge` flag |
 | 74 | Composite Scheme | Flat rates · "Bill of Supply" |
 | 75 | Additional Cess | cessRate/cessAmount on line items |
-| 76 | HSN Auto-fill | 12K pre-seeded · `/api/hsn/search` |
+| 76 | HSN Auto-fill | curated subset seeded (126 codes) · `/api/hsn/search` · trgm GIN on description (full 12K master = FUTURE) |
 | 77 | TDS/TCS | Rate+Amount on Document · FE: TdsTcsReportPage |
 | 78 | GSTIN verification | `/api/gstin/verify` |
 | 79 | Credit/Debit Notes | Stock + outstanding + bi-directional linking |
@@ -821,8 +821,8 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 > inline `audit 2026-05-29:` note: #5 (Drive backup MISSING, email-export is
 > CSV), #8 (no theme variants), #32 (fixed 2026-05-29 — client-render+upload),
 > #61 (fixed 2026-05-29 — global listener) & #78 (fixed 2026-05-29 — real GSP
-> lookup, cred-blocked), #76 (HSN no
-> seed/GIN), #90/#91 (no voucher endpoint), #92 (RETURNED≠BOUNCED), #100/#127/
+> lookup, cred-blocked), #76 (fixed 2026-05-29 — curated
+> 126-code seed + trgm GIN), #90/#91 (no voucher endpoint), #92 (RETURNED≠BOUNCED), #100/#127/
 > #130/#133/#140 (path/label fixes), #104/#114 (field/branch fixes). Two real
 > bugs were flagged with `*`: **S1** (#84–#87, #104 — GL reports read a journal
 > that transactions didn't auto-post to) and **N4** (#99 — FY-closure threw on a
@@ -994,7 +994,7 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | 73 | Reverse Charge | `isReverseCharge` flag | Done | `8924109` · 2026-04 | Document.isReverseCharge + 3B handling |
 | 74 | Composite Scheme | Flat rate "Bill of Supply" | Done | `8924109` · 2026-04 | `composition.service.ts` + composition.constants.ts |
 | 75 | Additional Cess | Per line item | Done | `8924109` · 2026-04 | DocumentLineItem.cessRate/cessAmount |
-| 76 | HSN Auto-fill | search | Partial | `8924109` · 2026-04 | HsnCode + `/api/hsn/search` (audit 2026-05-29: NO 12K seed — zero create/upsert anywhere; NO trgm GIN index — search is plain `startsWith`/`contains`) |
+| 76 | HSN Auto-fill | search | Done (subset) | `8924109` · 2026-04 / fixed 2026-05-29 | HsnCode + `/api/hsn/search`. 2026-05-29: curated 126-code seed (`prisma/seed.hsn.ts`, idempotent upsert, `npm run db:seed:hsn`); B-tree `@@index([description])` → pg_trgm GIN `hsn_description_trgm` (migration `20260529163000`); EXPLAIN confirms GIN on `ILIKE '%q%'`. FUTURE: full ~12K master load |
 | 77 | TDS/TCS | Per-doc rate+amount | Done | `8924109` · 2026-04 | `services/tds-tcs.service.ts` + TdsTcsReportPage |
 | 78 | GSTIN verification | Mod-36 checksum (local) + GSP registry | In-Progress (cred-blocked) | `8924109` · 2026-04 → fixed 2026-05-29 | `gstin.utils.ts` checksum real; `gstin-verify.service.ts` now does a real GSP lookup (env `GSTIN_VERIFY_API_URL/KEY`). `verified` true only on active-registration confirmation; unconfigured → `verified:false, providerConfigured:false` (no fabricated pass). 5 unit tests. Needs GSP creds to deliver |
 | 79 | Credit/Debit Notes | Bi-directional linking | Done | `8924109` · 2026-04 | Document(type=CN/DN) + stock + outstanding adj |
