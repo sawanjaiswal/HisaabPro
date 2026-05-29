@@ -5,6 +5,7 @@
  */
 
 import { useNavigate } from 'react-router-dom'
+import { Button } from '@/components/ui/Button'
 import { Plus, ShoppingCart } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -64,9 +65,9 @@ export default function PurchasesPage() {
             title={t.purchasesEmpty}
             description={t.purchasesEmptyDesc}
             action={
-              <button className="btn btn-primary btn-md" onClick={goToCreate} aria-label={t.createPurchaseAriaLabel}>
+              <Button variant="primary" size="md" onClick={goToCreate} aria-label={t.createPurchaseAriaLabel}>
                 {t.createPurchase}
-              </button>
+              </Button>
             }
           />
         )}

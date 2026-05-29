@@ -1,6 +1,7 @@
 /** CustomOrdersEmptyState — empty UI state with CTA */
 
 import { ShoppingBag } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/feedback/EmptyState'
 
 interface CustomOrdersEmptyStateProps {
@@ -14,14 +15,14 @@ export function CustomOrdersEmptyState({ onCreateNew }: CustomOrdersEmptyStatePr
       title="No orders yet"
       description="Create your first custom order to start tracking bakery or tailor orders"
       action={
-        <button
+        <Button
           type="button"
-          className="btn btn-primary btn-md"
+          variant="primary" size="md"
           onClick={onCreateNew}
           aria-label="Create first order"
         >
           Create Order
-        </button>
+        </Button>
       }
     />
   )

@@ -6,6 +6,7 @@
  */
 
 import { useState, useCallback } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Drawer } from '@/components/ui/Drawer'
 
@@ -87,15 +88,15 @@ export function StatementPeriodPicker({ open, onClose, onConfirm, loading }: Pro
       title={t.stmtSelectPeriod}
       size="sm"
       footer={
-        <button
-          className="btn btn-primary btn-md"
+        <Button
+          variant="primary" size="md"
           style={{ width: '100%' }}
           onClick={handleConfirm}
           disabled={loading || !canConfirm}
           aria-label={t.stmtGenerateStatement}
         >
           {loading ? t.stmtGenerating : t.stmtGenerateStatement}
-        </button>
+        </Button>
       }
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>

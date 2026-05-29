@@ -3,6 +3,7 @@
 import { CheckCircle, AlertTriangle } from 'lucide-react'
 import type { BulkImportResult } from '../bulk-import.types'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface ImportProgressProps {
   progress: number
@@ -71,12 +72,12 @@ export function ImportProgress({ progress, total, result, onDone, onGoToParties 
           )}
 
           <div className="import-result-actions">
-            <button type="button" className="btn btn-primary btn-lg" onClick={onGoToParties}>
+            <Button type="button" variant="primary" size="lg" onClick={onGoToParties}>
               View Parties
-            </button>
-            <button type="button" className="btn btn-ghost btn-md" onClick={onDone}>
+            </Button>
+            <Button type="button" variant="ghost" size="md" onClick={onDone}>
               Import More
-            </button>
+            </Button>
           </div>
         </div>
       )}

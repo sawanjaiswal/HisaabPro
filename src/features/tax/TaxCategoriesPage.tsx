@@ -19,6 +19,7 @@ import { useTaxCategories } from './useTaxCategories'
 import { TaxCategoryCard } from './components/TaxCategoryCard'
 import { TaxCategoriesSkeleton } from './components/TaxCategoriesSkeleton'
 import './tax-categories.css'
+import { Button } from '@/components/ui/Button'
 
 export default function TaxCategoriesPage() {
   const navigate = useNavigate()
@@ -46,7 +47,7 @@ export default function TaxCategoriesPage() {
               description={t.noTaxCategoriesDesc}
               action={
                 <div className="tax-cat-empty-actions">
-                  <button className="btn btn-primary btn-md" onClick={() => seedDefaults(businessId)} aria-label={t.seedDefaultGstRates}>{t.seedDefaults}</button>
+                  <Button variant="primary" size="md" onClick={() => seedDefaults(businessId)} aria-label={t.seedDefaultGstRates}>{t.seedDefaults}</Button>
                   <button className="btn btn-outline btn-md" onClick={() => navigate(ROUTES.SETTINGS_TAX_RATE_NEW)} aria-label={t.createCustomTaxRate}>{t.create}</button>
                 </div>
               }

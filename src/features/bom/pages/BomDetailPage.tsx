@@ -1,6 +1,7 @@
 /** BomDetailPage — /bom/:id — read-only detail with Edit / Run / Delete */
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Edit2, Play, Trash2, BookOpen, RefreshCw } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
@@ -67,9 +68,9 @@ export default function BomDetailPage() {
         <div className="bom-empty" role="alert">
           <BookOpen size={40} className="bom-empty__icon bom-empty__icon--error" aria-hidden="true" />
           <p className="bom-empty__title">Could not load recipe</p>
-          <button type="button" className="btn btn-primary" onClick={refresh}>
+          <Button type="button" variant="primary" onClick={refresh}>
             <RefreshCw size={16} aria-hidden="true" /> Retry
-          </button>
+          </Button>
         </div>
       )}
 
@@ -104,22 +105,22 @@ export default function BomDetailPage() {
 
           {/* Actions */}
           <div className="bom-detail-actions">
-            <button
+            <Button
               type="button"
-              className="btn btn-primary"
+              variant="primary"
               onClick={() => navigate(`/production-runs/new?bomId=${id}`)}
               aria-label="Start production run"
             >
               <Play size={16} aria-hidden="true" /> Start Run
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
-              className="btn btn-ghost"
+              variant="ghost"
               onClick={() => navigate(`/bom/${id}/edit`)}
               aria-label="Edit recipe"
             >
               <Edit2 size={16} aria-hidden="true" /> Edit
-            </button>
+            </Button>
             <button
               type="button"
               className="btn btn-ghost btn-danger-ghost"

@@ -1,6 +1,7 @@
 /** ProductionRunListPage — /production-runs — 4 UI states */
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Activity, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useProductionRunList } from '../hooks/useProductionRuns'
@@ -45,14 +46,14 @@ export default function ProductionRunListPage() {
             <p className="bom-page__subtitle">{pagination.total} run{pagination.total !== 1 ? 's' : ''}</p>
           )}
         </div>
-        <button
+        <Button
           type="button"
-          className="btn btn-primary btn-sm"
+          variant="primary" size="sm"
           onClick={() => navigate('/production-runs/new')}
           aria-label="Start a new production run"
         >
           <Plus size={16} aria-hidden="true" /> Start Run
-        </button>
+        </Button>
       </div>
 
       {/* Status filter */}
@@ -78,9 +79,9 @@ export default function ProductionRunListPage() {
         <div className="bom-empty" role="alert">
           <Activity size={40} className="bom-empty__icon bom-empty__icon--error" aria-hidden="true" />
           <p className="bom-empty__title">Could not load production runs</p>
-          <button type="button" className="btn btn-primary" onClick={refresh}>
+          <Button type="button" variant="primary" onClick={refresh}>
             <RefreshCw size={16} aria-hidden="true" /> Retry
-          </button>
+          </Button>
         </div>
       )}
 
@@ -90,9 +91,9 @@ export default function ProductionRunListPage() {
           <Activity size={40} className="bom-empty__icon" aria-hidden="true" />
           <p className="bom-empty__title">No production runs yet</p>
           <p className="bom-empty__body">Start a production run from a BOM to track your manufacturing.</p>
-          <button type="button" className="btn btn-primary" onClick={() => navigate('/production-runs/new')}>
+          <Button type="button" variant="primary" onClick={() => navigate('/production-runs/new')}>
             <Plus size={16} aria-hidden="true" /> Start Run
-          </button>
+          </Button>
         </div>
       )}
 
@@ -131,15 +132,15 @@ export default function ProductionRunListPage() {
       {/* Pagination */}
       {status === 'success' && (pagination.page > 1 || pagination.hasMore) && (
         <div className="bom-pagination" role="navigation" aria-label="Pagination">
-          <button type="button" className="btn btn-ghost btn-sm" disabled={pagination.page <= 1}
+          <Button type="button" variant="ghost" size="sm" disabled={pagination.page <= 1}
             onClick={() => setPage(pagination.page - 1)} aria-label="Previous page">
             <ChevronLeft size={16} aria-hidden="true" />
-          </button>
+          </Button>
           <span className="bom-pagination__label">Page {pagination.page}</span>
-          <button type="button" className="btn btn-ghost btn-sm" disabled={!pagination.hasMore}
+          <Button type="button" variant="ghost" size="sm" disabled={!pagination.hasMore}
             onClick={() => setPage(pagination.page + 1)} aria-label="Next page">
             <ChevronRight size={16} aria-hidden="true" />
-          </button>
+          </Button>
         </div>
       )}
     </div>

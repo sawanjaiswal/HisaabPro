@@ -17,6 +17,7 @@ import { BatchForm } from './components/BatchForm'
 import type { Batch } from './batch.types'
 import './batches.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 function DetailSkeleton() {
   return (
@@ -87,21 +88,21 @@ export default function BatchDetailPage() {
         actions={
           batch ? (
             <>
-              <button
-                className="btn btn-ghost btn-sm"
+              <Button
+                variant="ghost" size="sm"
                 onClick={() => setIsEditing(true)}
                 aria-label={t.editBatchAria}
               >
                 <Pencil size={18} aria-hidden="true" />
-              </button>
+              </Button>
               {batch.currentStock === 0 && (
-                <button
-                  className="btn btn-ghost btn-sm"
+                <Button
+                  variant="ghost" size="sm"
                   onClick={() => setShowDeleteConfirm(true)}
                   aria-label={t.deleteBatch}
                 >
                   <Trash2 size={18} aria-hidden="true" />
-                </button>
+                </Button>
               )}
             </>
           ) : undefined

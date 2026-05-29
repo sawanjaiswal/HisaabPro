@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useEInvoice, useGenerateIrn, useCancelIrn } from './useEInvoice'
 import { EInvoiceCancelDialog } from './EInvoiceCancelDialog'
 import type { CancelReason } from './e-invoice.types'
@@ -67,15 +68,15 @@ export const EInvoiceCard: React.FC<Props> = ({ documentId }) => {
             {(generate.error as Error).message}
           </p>
         )}
-        <button
+        <Button
           type="button"
-          className="btn btn-primary btn-md"
+          variant="primary" size="md"
           onClick={() => generate.mutate()}
           disabled={generate.isPending}
           aria-busy={generate.isPending}
         >
           {generate.isPending ? 'Generating...' : 'Generate IRN'}
-        </button>
+        </Button>
       </div>
     )
   }
@@ -95,16 +96,16 @@ export const EInvoiceCard: React.FC<Props> = ({ documentId }) => {
           Cancelled on {data.cancelledAt ? formatTs(data.cancelledAt) : '—'}
           {data.cancelReason ? ` · Reason: ${data.cancelReason}` : ''}
         </p>
-        <button
+        <Button
           type="button"
-          className="btn btn-primary btn-md"
+          variant="primary" size="md"
           style={{ marginTop: '1rem' }}
           onClick={() => generate.mutate()}
           disabled={generate.isPending}
           aria-busy={generate.isPending}
         >
           {generate.isPending ? 'Generating...' : 'Generate New IRN'}
-        </button>
+        </Button>
       </div>
     )
   }
@@ -148,15 +149,15 @@ export const EInvoiceCard: React.FC<Props> = ({ documentId }) => {
         )}
 
         {cancellable ? (
-          <button
+          <Button
             type="button"
-            className="btn btn-secondary btn-md"
+            variant="secondary" size="md"
             style={{ marginTop: '1rem', width: '100%' }}
             onClick={() => setCancelOpen(true)}
             aria-label="Cancel this e-invoice"
           >
             Cancel IRN
-          </button>
+          </Button>
         ) : (
           <p style={{ marginTop: '1rem', fontSize: '0.75rem', color: '#888', textAlign: 'center' }}>
             24-hour cancel window has expired

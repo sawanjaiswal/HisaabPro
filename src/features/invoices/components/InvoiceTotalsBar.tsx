@@ -3,6 +3,7 @@
 import React from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatInvoiceAmount } from '../invoice-format.utils'
+import { Button } from '@/components/ui/Button'
 
 interface InvoiceTotalsBarProps {
   subtotal: number
@@ -84,24 +85,24 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
       )}
 
       <div className="invoice-summary-actions">
-        <button
+        <Button
           type="button"
-          className="btn btn-secondary btn-md"
+          variant="secondary" size="md"
           onClick={onSaveDraft}
           disabled={isSubmitting}
           aria-label={t.saveDraftAriaLabel}
         >
           {t.saveDraft}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
-          className="btn btn-primary btn-md"
+          variant="primary" size="md"
           onClick={onSave}
           disabled={isSubmitting}
           aria-label={isSubmitting ? t.savingInvoice : t.saveInvoice}
         >
           {isSubmitting ? t.saving : t.save}
-        </button>
+        </Button>
       </div>
     </div>
   )

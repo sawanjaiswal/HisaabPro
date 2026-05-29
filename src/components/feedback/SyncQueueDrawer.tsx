@@ -9,6 +9,7 @@ import { Trash2, RotateCcw, CloudOff, Check, AlertTriangle, Loader2 } from 'luci
 import { Drawer } from '@/components/ui/Drawer'
 import type { SyncQueueItem, SyncItemStatus } from '@/lib/offline.types'
 import './sync-queue.css'
+import { Button } from '@/components/ui/Button'
 
 interface SyncQueueDrawerProps {
   open: boolean
@@ -52,15 +53,15 @@ export function SyncQueueDrawer({
   const deadCount = items.filter((i) => i.status === 'dead').length
 
   const footer = deadCount > 0 ? (
-    <button
+    <Button
       type="button"
-      className="btn btn-ghost btn-sm sync-drawer-clear py-0"
+      variant="ghost" size="sm" className="sync-drawer-clear py-0"
       onClick={onDiscardAllDead}
       aria-label={`Discard all ${deadCount} failed items`}
     >
       <Trash2 size={14} aria-hidden="true" />
       Discard All Failed ({deadCount})
-    </button>
+    </Button>
   ) : undefined
 
   return (
@@ -101,22 +102,22 @@ export function SyncQueueDrawer({
                 const id = item.id as number // guaranteed non-null by condition above
                 return (
                   <div className="sync-drawer-item-actions py-0">
-                    <button
+                    <Button
                       type="button"
-                      className="btn btn-ghost btn-sm"
+                      variant="ghost" size="sm"
                       onClick={() => onRetry(id)}
                       aria-label={`Retry ${item.entityLabel}`}
                     >
                       <RotateCcw size={14} aria-hidden="true" />
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
-                      className="btn btn-ghost btn-sm"
+                      variant="ghost" size="sm"
                       onClick={() => onDiscard(id)}
                       aria-label={`Discard ${item.entityLabel}`}
                     >
                       <Trash2 size={14} aria-hidden="true" />
-                    </button>
+                    </Button>
                   </div>
                 )
               })()}

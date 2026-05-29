@@ -6,6 +6,7 @@
  */
 
 import { AlertTriangle, ShieldAlert } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -182,15 +183,15 @@ export default function InventorySettingsPage() {
             </div>
 
             {/* Save button */}
-            <button
+            <Button
               type="submit"
-              className="btn btn-primary"
+              variant="primary"
               disabled={isSaving}
               aria-busy={isSaving}
               style={{ minHeight: 48, fontWeight: 600, fontSize: 'var(--fs-base)' }}
             >
               {isSaving ? '…' : t.saveInventorySettings}
-            </button>
+            </Button>
           </form>
         )}
       </PageContainer>

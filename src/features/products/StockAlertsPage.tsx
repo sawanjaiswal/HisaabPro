@@ -6,6 +6,7 @@
  */
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
 import { AlertTriangle, Package } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -176,8 +177,8 @@ export default function StockAlertsPage() {
                   style={{ padding: 'var(--space-4)' }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-3)' }}>
-                    <button
-                      className="btn-ghost"
+                    <Button
+                      variant="ghost"
                       style={{ flex: 1, textAlign: 'left', padding: 0, background: 'none', border: 'none', cursor: 'pointer' }}
                       onClick={() => handleProductClick(alert.product.id)}
                       aria-label={`${alert.product.name} — ${t.alertTypeLowStock}`}
@@ -223,17 +224,17 @@ export default function StockAlertsPage() {
                           {t.alertReorderQty}: {alert.product.reorderQty} {alert.product.unit.symbol}
                         </div>
                       )}
-                    </button>
+                    </Button>
 
-                    <button
-                      className="btn btn-ghost btn-sm"
+                    <Button
+                      variant="ghost" size="sm"
                       onClick={() => handleDismiss(alert.id)}
                       disabled={dismissingId === alert.id}
                       aria-label={`${t.dismissAlert} — ${alert.product.name}`}
                       style={{ minWidth: 44, minHeight: 44, flexShrink: 0 }}
                     >
                       {dismissingId === alert.id ? t.dismissingAlert : t.dismissAlert}
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ))}

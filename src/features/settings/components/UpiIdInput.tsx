@@ -7,6 +7,7 @@
  */
 
 import { useState, useCallback } from 'react'
+import { Button } from '@/components/ui/Button'
 import { Smartphone } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -103,15 +104,15 @@ export function UpiIdInput({ initialValue, onSaved }: UpiIdInputProps) {
         </p>
       )}
       {isDirty && !error && (
-        <button
+        <Button
           type="button"
-          className="btn btn-primary btn-sm"
+          variant="primary" size="sm"
           onClick={handleSave}
           disabled={isSaving}
           aria-busy={isSaving}
         >
           {isSaving ? (t.saving ?? 'Saving...') : (t.save ?? 'Save')}
-        </button>
+        </Button>
       )}
     </div>
   )

@@ -4,6 +4,7 @@
  */
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { Pencil, Trash2, Lock } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatPaise, formatDate } from '@/lib/format'
@@ -62,13 +63,13 @@ export function CommitmentsSection({ partyId, partyName }: Props) {
         >
           {t.ptpSectionTitle}
         </h3>
-        <button
-          className="btn btn-ghost btn-sm"
+        <Button
+          variant="ghost" size="sm"
           onClick={openCreate}
           aria-label={t.ptpRecordPromise}
         >
           + {t.ptpRecordPromise}
-        </button>
+        </Button>
       </div>
 
       {/* Loading */}
@@ -94,9 +95,9 @@ export function CommitmentsSection({ partyId, partyName }: Props) {
           title={t.ptpEmpty}
           description={t.ptpEmptyDesc}
           action={
-            <button className="btn btn-primary btn-sm" onClick={openCreate}>
+            <Button variant="primary" size="sm" onClick={openCreate}>
               {t.ptpRecordPromise}
-            </button>
+            </Button>
           }
         />
       )}
@@ -152,22 +153,22 @@ export function CommitmentsSection({ partyId, partyName }: Props) {
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)', flexShrink: 0 }}>
                 {ptp.status === 'OPEN' ? (
                   <>
-                    <button
-                      className="btn btn-ghost btn-sm"
+                    <Button
+                      variant="ghost" size="sm"
                       onClick={() => openEdit(ptp)}
                       aria-label={t.ptpEditAria}
                       style={{ minWidth: 44, minHeight: 44 }}
                     >
                       <Pencil size={15} aria-hidden="true" />
-                    </button>
-                    <button
-                      className="btn btn-ghost btn-sm"
+                    </Button>
+                    <Button
+                      variant="ghost" size="sm"
                       onClick={() => setDeleteTarget(ptp)}
                       aria-label={t.ptpDeleteAria}
                       style={{ minWidth: 44, minHeight: 44, color: 'var(--color-error)' }}
                     >
                       <Trash2 size={15} aria-hidden="true" />
-                    </button>
+                    </Button>
                   </>
                 ) : (
                   <span

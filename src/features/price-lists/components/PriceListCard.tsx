@@ -1,6 +1,7 @@
 /** PriceListCard — single row card in the list page */
 
 import { Tag, Users, Star, Pencil, Trash2 } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PriceList } from '../price-list.types'
 
@@ -45,15 +46,15 @@ export function PriceListCard({ priceList, onClick, onEdit, onDelete }: PriceLis
       </div>
 
       <div className="pl-card__actions">
-        <button
+        <Button
           type="button"
-          className="btn btn-ghost btn-sm"
+          variant="ghost" size="sm"
           onClick={onEdit}
           aria-label={`Edit ${priceList.name}`}
         >
           <Pencil size={14} aria-hidden="true" />
           {t.edit}
-        </button>
+        </Button>
         <button
           type="button"
           className="btn btn-ghost btn-sm btn-danger"

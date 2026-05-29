@@ -3,6 +3,7 @@
 import { useLanguage } from '@/hooks/useLanguage'
 import { GODOWN_NAME_MAX, ADDRESS_MAX } from '../godown.constants'
 import type { CreateGodownData } from '../godown.types'
+import { Button } from '@/components/ui/Button'
 
 interface GodownFormProps {
   form: CreateGodownData
@@ -71,14 +72,14 @@ export function GodownForm({ form, errors, isSubmitting, onUpdate, onSubmit, sub
         <span className="godown-form__toggle-label">{t.setAsDefaultGodown}</span>
       </label>
 
-      <button
+      <Button
         type="submit"
-        className="btn btn-primary btn-lg godown-form__submit"
+        variant="primary" size="lg" className="godown-form__submit"
         disabled={isSubmitting}
         aria-busy={isSubmitting}
       >
         {isSubmitting ? t.saving : submitLabel}
-      </button>
+      </Button>
     </form>
   )
 }

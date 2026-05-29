@@ -1,6 +1,7 @@
 /** BulkAssignDrawer — select parties and bulk-assign to a price list */
 
 import { useState, useMemo, useEffect } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useQuery } from '@tanstack/react-query'
 import { Search, Users, AlertTriangle } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
@@ -74,15 +75,15 @@ export function BulkAssignDrawer({ open, onClose, priceListId, listName }: BulkA
       )}
       <div className="bad__count-strip">
         <span>{selectedCount} {t.plBulkAssignSelected}</span>
-        <button
+        <Button
           type="button"
-          className="btn btn-primary btn-md bad__cta"
+          variant="primary" size="md" className="bad__cta"
           disabled={selectedCount === 0 || mutation.isPending}
           onClick={handleAssign}
           aria-busy={mutation.isPending}
         >
           {mutation.isPending ? t.saving : `${t.plBulkAssignCta} ${listName}`}
-        </button>
+        </Button>
       </div>
     </div>
   )

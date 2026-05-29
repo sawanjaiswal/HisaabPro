@@ -1,6 +1,7 @@
 /** JobConvertButton — converts a COMPLETED job to a SALE_INVOICE */
 
 import { FileText } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 import { useConvertJobToInvoice } from '../hooks/useConvertJobToInvoice'
 
 interface JobConvertButtonProps {
@@ -18,9 +19,9 @@ export function JobConvertButton({ jobId, jobTitle, isOnline }: JobConvertButton
   }
 
   return (
-    <button
+    <Button
       type="button"
-      className="btn btn-primary btn-md"
+      variant="primary" size="md"
       onClick={handleClick}
       disabled={isPending || !isOnline}
       title={!isOnline ? 'Connect to internet to create invoice' : undefined}
@@ -29,6 +30,6 @@ export function JobConvertButton({ jobId, jobTitle, isOnline }: JobConvertButton
     >
       <FileText size={16} aria-hidden="true" />
       {isPending ? 'Creating invoice...' : 'Create Invoice'}
-    </button>
+    </Button>
   )
 }

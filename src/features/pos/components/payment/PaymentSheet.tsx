@@ -1,6 +1,7 @@
 /** POS — Bottom sheet with mode buttons + split tender */
 
 import { useState, useCallback } from 'react'
+import { Button } from '@/components/ui/Button'
 import { X, Plus, Sparkles } from 'lucide-react'
 import { PaymentModeButton } from './PaymentModeButton'
 import { SplitTenderRow } from './SplitTenderRow'
@@ -132,15 +133,15 @@ export function PaymentSheet({
               }}
             >
               <LoyaltyBalanceChip partyId={store.partyId} />
-              <button
+              <Button
                 type="button"
                 onClick={() => setShowLoyalty(true)}
-                className="btn btn-secondary btn-sm"
+                variant="secondary" size="sm"
                 style={{ minHeight: 36, display: 'inline-flex', alignItems: 'center', gap: 6 }}
               >
                 <Sparkles size={14} aria-hidden="true" />
                 {t.loyaltyRedeemUsePoints}
-              </button>
+              </Button>
             </div>
           )}
 

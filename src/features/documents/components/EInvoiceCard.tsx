@@ -5,6 +5,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { formatDate } from '@/lib/format'
 import type { EInvoiceStatus } from '../ecompliance.types'
 import { ComplianceCancelForm } from './ComplianceCancelForm'
+import { Button } from '@/components/ui/Button'
 
 interface EInvoiceCardProps {
   status: EInvoiceStatus | null
@@ -108,16 +109,16 @@ export const EInvoiceCard: React.FC<EInvoiceCardProps> = ({
       {!showCancel && (
         <div className="compliance-actions">
           {isPending && (
-            <button type="button" className="btn btn-primary btn-md"
+            <Button type="button" variant="primary" size="md"
               onClick={handleGenerate} disabled={generating} aria-busy={generating}>
               {generating ? t.generatingIrn : t.generateIrn}
-            </button>
+            </Button>
           )}
           {canCancel && (
-            <button type="button" className="btn btn-secondary btn-md"
+            <Button type="button" variant="secondary" size="md"
               onClick={() => setShowCancel(true)} aria-label={t.cancelEInvoiceAria}>
               {t.cancelIrn}
-            </button>
+            </Button>
           )}
         </div>
       )}

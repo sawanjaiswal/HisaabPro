@@ -5,6 +5,7 @@
  */
 
 import React from 'react'
+import { Button } from '@/components/ui/Button'
 import { AlertTriangle, X } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { StockShortageItem } from '../invoice-form.types'
@@ -49,14 +50,14 @@ export const StockShortageBanner: React.FC<StockShortageBannerProps> = ({ items,
             {t.errStockShortageTitle}
           </span>
         </div>
-        <button
-          className="btn-ghost"
+        <Button
+          variant="ghost"
           onClick={onDismiss}
           aria-label="Dismiss stock shortage warning"
           style={{ minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
         >
           <X size={16} aria-hidden="true" />
-        </button>
+        </Button>
       </div>
       <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-error-500)', marginTop: 'var(--space-1)', marginBottom: 'var(--space-2)' }}>
         {headline}

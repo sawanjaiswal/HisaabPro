@@ -3,6 +3,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { BULK_CREATE_MAX } from '../serial-number.constants'
 import { parseSerialNumbers } from '../serial-number.utils'
 import { useBulkSerialForm } from '../useBulkSerialForm'
+import { Button } from '@/components/ui/Button'
 
 interface BulkSerialFormProps {
   productId: string
@@ -60,13 +61,13 @@ export function BulkSerialForm({ productId, onSuccess }: BulkSerialFormProps) {
         </div>
       )}
 
-      <button
+      <Button
         type="submit"
-        className="btn btn-primary btn-md serial-form__submit"
+        variant="primary" size="md" className="serial-form__submit"
         disabled={isSubmitting || count === 0}
       >
         {isSubmitting ? t.addingSerial : `${t.addCountSerials} ${count} ${t.serialAriaPrefix} ${count === 1 ? t.serialNumberSingle : t.serialNumberPlural}`}
-      </button>
+      </Button>
     </form>
   )
 }

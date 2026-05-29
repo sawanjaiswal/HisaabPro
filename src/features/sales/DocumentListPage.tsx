@@ -5,6 +5,7 @@
  */
 
 import React from 'react'
+import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -66,14 +67,14 @@ export const DocumentListPage: React.FC<DocumentListPageProps> = ({
         title={pageTitle}
         backTo={backTo}
         actions={
-          <button
-            className="btn btn-ghost btn-sm"
+          <Button
+            variant="ghost" size="sm"
             onClick={() => navigate(createRoute)}
             aria-label={SALES_CREATE_LABELS[type]}
           >
             <Plus size={18} aria-hidden="true" />
             <span className="hidden sm:inline">{SALES_CREATE_LABELS[type]}</span>
-          </button>
+          </Button>
         }
       />
 

@@ -4,6 +4,7 @@
  */
 
 import { useParams, useNavigate } from 'react-router-dom'
+import { Button } from '@/components/ui/Button'
 import { RefreshCw, Pencil } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -78,14 +79,14 @@ export default function RecurringDetailPage() {
         title={schedule.name ?? schedule.partyName ?? (t.recurringInvoices ?? 'Recurring')}
         backTo={ROUTES.RECURRING}
         actions={
-          <button
+          <Button
             type="button"
-            className="btn btn-ghost btn-sm"
+            variant="ghost" size="sm"
             onClick={() => navigate(`/recurring/${id}/edit`)}
             aria-label={t.recurringEdit ?? 'Edit'}
           >
             <Pencil size={18} aria-hidden="true" />
-          </button>
+          </Button>
         }
       />
 

@@ -3,6 +3,7 @@
 import { Plus } from 'lucide-react'
 import type { LibraryItem } from '../items-library.types'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface LibraryItemListProps {
   items: LibraryItem[]
@@ -59,9 +60,9 @@ export function LibraryItemList({ items, total, hasMore, onSelect, onLoadMore }:
         ))}
       </div>
       {hasMore && (
-        <button type="button" className="btn btn-ghost btn-md library-load-more" onClick={onLoadMore}>
+        <Button type="button" variant="ghost" size="md" className="library-load-more" onClick={onLoadMore}>
           Load More
-        </button>
+        </Button>
       )}
     </>
   )

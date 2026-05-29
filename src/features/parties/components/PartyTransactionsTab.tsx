@@ -16,6 +16,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { getPartyTransactions } from '../party.service'
 import { formatAmount, paisaToRupees } from '../party.utils'
 import type { PartyTransaction, PartyTransactionListResponse } from '../party.types'
+import { Button } from '@/components/ui/Button'
 
 interface PartyTransactionsTabProps {
   partyId: string
@@ -111,13 +112,13 @@ export function PartyTransactionsTab({ partyId }: PartyTransactionsTabProps) {
         title={t.noTransactionsYet}
         description={t.noTransactionsDesc}
         action={
-          <button
-            className="btn btn-primary btn-md"
+          <Button
+            variant="primary" size="md"
             onClick={() => navigate('/invoices/new')}
             aria-label={t.createInvoiceForParty}
           >
             {t.createInvoice}
-          </button>
+          </Button>
         }
       />
     )
@@ -189,8 +190,8 @@ export function PartyTransactionsTab({ partyId }: PartyTransactionsTabProps) {
 
       {/* Load more */}
       {hasMore && (
-        <button
-          className="btn btn-ghost btn-md party-txn-load-more"
+        <Button
+          variant="ghost" size="md" className="party-txn-load-more"
           onClick={handleLoadMore}
           disabled={isLoadingMore}
           aria-label={t.loadMoreTransactions}
@@ -201,7 +202,7 @@ export function PartyTransactionsTab({ partyId }: PartyTransactionsTabProps) {
               <ChevronDown size={16} aria-hidden="true" />
             </>
           )}
-        </button>
+        </Button>
       )}
     </div>
   )

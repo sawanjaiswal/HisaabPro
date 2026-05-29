@@ -6,6 +6,7 @@
  */
 
 import type { Dispatch } from 'react'
+import { Button } from '@/components/ui/Button'
 import { ChevronLeft, AlertTriangle } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useToast } from '@/hooks/useToast'
@@ -80,14 +81,14 @@ export function BackfillStep3Confirmation({
       )}
 
       <div className="bfw-actions bfw-actions--row">
-        <button
-          className="btn btn-secondary btn-md"
+        <Button
+          variant="secondary" size="md"
           onClick={() => dispatch({ type: 'BACK' })}
           disabled={isPending}
         >
           <ChevronLeft size={18} aria-hidden="true" />
           {t.back}
-        </button>
+        </Button>
         <button
           className="btn btn-danger btn-md bfw-btn-proceed"
           onClick={handleProceed}

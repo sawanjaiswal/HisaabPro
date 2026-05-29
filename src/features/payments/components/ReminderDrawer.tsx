@@ -10,6 +10,7 @@ import { Drawer } from '@/components/ui/Drawer'
 import { useLanguage } from '@/hooks/useLanguage'
 import { APP_NAME } from '@/config/app.config'
 import '../reminder-drawer.css'
+import { Button } from '@/components/ui/Button'
 
 interface ReminderDrawerProps {
   open: boolean
@@ -77,15 +78,15 @@ export function ReminderDrawer({ open, onClose, partyName, partyPhone, outstandi
             {t.sendViaWhatsApp}
           </a>
 
-          <button
+          <Button
             type="button"
-            className="btn btn-ghost btn-md reminder-drawer-copy py-0"
+            variant="ghost" size="md" className="reminder-drawer-copy py-0"
             onClick={handleCopy}
             aria-label={copied ? t.messageCopied : t.copyToClipboard}
           >
             {copied ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
             {copied ? t.copied : t.copyMessage}
-          </button>
+          </Button>
         </div>
       </div>
     </Drawer>

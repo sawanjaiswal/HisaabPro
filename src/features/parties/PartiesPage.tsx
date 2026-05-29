@@ -22,6 +22,7 @@ import { ROUTES } from '@/config/routes.config'
 import type { PartyType } from './party.types'
 import type { BulkAction } from '@/components/ui/BulkActionBar'
 import './parties.css'
+import { Button } from '@/components/ui/Button'
 
 const PARTY_NEW_ROUTE = ROUTES.PARTY_NEW
 
@@ -91,8 +92,8 @@ export default function PartiesPage() {
         title={bulk.isActive ? `${bulk.selectedCount} ${t.selected}` : t.parties}
         actions={
           !bulk.isActive ? (
-            <button
-              className="btn btn-ghost btn-sm"
+            <Button
+              variant="ghost" size="sm"
               onClick={() => {
                 const flag = import.meta.env.VITE_FEATURE_DATA_IMPORT
                 const enabled = flag === 'true' || flag === true || flag === '1'
@@ -102,7 +103,7 @@ export default function PartiesPage() {
             >
               <Upload size={18} aria-hidden="true" />
               <span>{t.import}</span>
-            </button>
+            </Button>
           ) : undefined
         }
       />
@@ -145,9 +146,9 @@ export default function PartiesPage() {
             title={t.noParties}
             description={t.addFirstParty}
             action={
-              <button className="btn btn-primary btn-md" onClick={goToCreate} aria-label={t.addFirstPartyLabel}>
+              <Button variant="primary" size="md" onClick={goToCreate} aria-label={t.addFirstPartyLabel}>
                 {t.addParty}
-              </button>
+              </Button>
             }
           />
         )}

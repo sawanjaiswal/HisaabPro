@@ -7,6 +7,7 @@
  */
 
 import { useState, useCallback } from 'react'
+import { Button } from '@/components/ui/Button'
 import { pdf } from '@react-pdf/renderer'
 import { Download, Share2, MessageCircle, RefreshCw, Calendar } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -150,8 +151,8 @@ export function StatementPDFPreview({ open, onClose, partyId, partyName, partyPh
               <Share2 size={16} aria-hidden="true" />
               {isSharing ? t.stmtSharing : t.stmtShare}
             </button>
-            <button
-              className="btn btn-primary btn-sm"
+            <Button
+              variant="primary" size="sm"
               onClick={handleDownload}
               disabled={status !== 'success' || isDownloading}
               aria-label={t.stmtDownload}
@@ -159,21 +160,21 @@ export function StatementPDFPreview({ open, onClose, partyId, partyName, partyPh
             >
               <Download size={16} aria-hidden="true" />
               {isDownloading ? t.stmtDownloading : t.stmtDownload}
-            </button>
+            </Button>
           </div>
         }
       >
         {/* Period chip */}
         {periodLabel && (
-          <button
-            className="btn btn-ghost btn-sm"
+          <Button
+            variant="ghost" size="sm"
             onClick={() => setPickerOpen(true)}
             style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 'var(--space-4)' }}
             aria-label={t.stmtChangePeriod}
           >
             <Calendar size={14} aria-hidden="true" />
             {periodLabel}
-          </button>
+          </Button>
         )}
 
         {/* Loading */}

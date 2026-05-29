@@ -1,6 +1,7 @@
 /** Cash Register — Void confirm dialog with optional reason field */
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { Loader2 } from 'lucide-react'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
@@ -63,17 +64,17 @@ export function VoidConfirmDialog({ entryId, businessId, onClose }: Props) {
         />
 
         <div className="cr-dialog__actions">
-          <button
+          <Button
             type="button"
-            className="btn btn-ghost btn-md"
+            variant="ghost" size="md"
             onClick={onClose}
             disabled={voidMutation.isPending}
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            className="btn btn-destructive btn-md"
+            variant="destructive" size="md"
             onClick={() => void handleConfirm()}
             disabled={voidMutation.isPending}
             aria-busy={voidMutation.isPending}
@@ -82,7 +83,7 @@ export function VoidConfirmDialog({ entryId, businessId, onClose }: Props) {
               ? <><Loader2 size={16} className="spinner" aria-hidden="true" /> Voiding…</>
               : 'Void Entry'
             }
-          </button>
+          </Button>
         </div>
       </div>
     </dialog>

@@ -7,6 +7,7 @@
  */
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { Download } from 'lucide-react'
 import { useToast } from '@/hooks/useToast'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -68,15 +69,15 @@ export function AuditExportButton({
   }
 
   return (
-    <button
+    <Button
       type="button"
-      className="btn btn-secondary btn-md"
+      variant="secondary" size="md"
       onClick={handleClick}
       disabled={busy}
       aria-busy={busy}
     >
       <Download size={16} aria-hidden="true" style={{ marginRight: 'var(--space-2)' }} />
       {t.auditExportCsv}
-    </button>
+    </Button>
   )
 }

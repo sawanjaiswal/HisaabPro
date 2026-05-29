@@ -5,6 +5,7 @@
  */
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
 import { Plus, FileText, Camera } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -121,10 +122,10 @@ export default function InvoicesPage() {
         title={bulk.isActive ? `${bulk.selectedCount} ${t.nSelected}` : typeLabel}
         actions={
           !bulk.isActive ? (
-            <button className="btn btn-ghost btn-sm" onClick={() => navigate(ROUTES.BILL_SCAN)} aria-label={t.scanBillAriaLabel}>
+            <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.BILL_SCAN)} aria-label={t.scanBillAriaLabel}>
               <Camera size={18} aria-hidden="true" />
               <span>{t.scan}</span>
-            </button>
+            </Button>
           ) : undefined
         }
       />
@@ -175,9 +176,9 @@ export default function InvoicesPage() {
             title={t.noInvoicesYet}
             description={t.createFirstInvoiceBilling}
             action={
-              <button className="btn btn-primary btn-md" onClick={goToCreate} aria-label={t.createFirstInvoiceAriaLabel}>
+              <Button variant="primary" size="md" onClick={goToCreate} aria-label={t.createFirstInvoiceAriaLabel}>
                 {t.createInvoice}
-              </button>
+              </Button>
             }
           />
         )}

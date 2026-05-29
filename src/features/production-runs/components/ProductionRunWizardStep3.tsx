@@ -1,6 +1,7 @@
 /** ProductionRunWizardStep3 — Review Components (stock preview) */
 
 import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/Button'
 import { AlertTriangle, XCircle, CheckCircle } from 'lucide-react'
 import { getBom } from '../../bom/bom.service'
 import { buildAvailabilities, hasInsufficientStock, hasLowStock } from '../production-run.utils'
@@ -104,17 +105,17 @@ export function ProductionRunWizardStep3({ wizard, onNext, onBack }: Step3Props)
       )}
 
       <div className="pr-wizard-step__actions">
-        <button type="button" className="btn btn-ghost" onClick={onBack}>Back</button>
-        <button
+        <Button type="button" variant="ghost" onClick={onBack}>Back</Button>
+        <Button
           type="button"
-          className="btn btn-primary"
+          variant="primary"
           disabled={blocked || loading}
           onClick={onNext}
           aria-label="Confirm production run"
           aria-disabled={blocked}
         >
           Confirm
-        </button>
+        </Button>
       </div>
     </div>
   )

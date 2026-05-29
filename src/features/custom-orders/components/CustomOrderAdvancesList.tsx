@@ -1,6 +1,7 @@
 /** CustomOrderAdvancesList — advance ledger inside the order detail */
 
 import { Trash2 } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 import { formatPaise } from '../custom-orders.utils'
 import { useDeleteAdvance } from '../hooks/useDeleteAdvance'
 import type { CustomOrderAdvance, CustomOrderStatus } from '../custom-orders.types'
@@ -76,16 +77,16 @@ export function CustomOrderAdvancesList({
                 )}
               </div>
               {!isFinal(orderStatus) && !adv.paymentId && (
-                <button
+                <Button
                   type="button"
-                  className="btn btn-ghost btn-sm"
+                  variant="ghost" size="sm"
                   onClick={() => doDelete({ orderId, advanceId: adv.id, title: orderTitle })}
                   disabled={isPending}
                   aria-label={`Remove advance of ₹${formatPaise(adv.amountPaise)}`}
                   style={{ minHeight: 44, minWidth: 44, color: 'var(--color-error-600)' }}
                 >
                   <Trash2 size={15} aria-hidden="true" />
-                </button>
+                </Button>
               )}
             </div>
           ))}

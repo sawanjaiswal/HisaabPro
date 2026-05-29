@@ -17,6 +17,7 @@ import { TransferHistory } from './components/TransferHistory'
 import { GODOWN_TABS } from './godown.constants'
 import type { GodownTab } from './godown.constants'
 import './godowns.css'
+import { Button } from '@/components/ui/Button'
 
 export default function GodownsPage() {
   const navigate = useNavigate()
@@ -32,9 +33,9 @@ export default function GodownsPage() {
       <Header
         title={t.godownsList}
         actions={
-          <button className="btn btn-ghost btn-sm" onClick={() => navigate(ROUTES.GODOWN_TRANSFER)} aria-label={t.transferStock}>
+          <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.GODOWN_TRANSFER)} aria-label={t.transferStock}>
             {t.transfer}
-          </button>
+          </Button>
         }
       />
 
@@ -78,9 +79,9 @@ export default function GodownsPage() {
                   title={t.noGodownsYet}
                   description={t.addFirstGodownDesc}
                   action={
-                    <button className="btn btn-primary btn-md" onClick={goToCreate} aria-label={t.addFirstGodown}>
+                    <Button variant="primary" size="md" onClick={goToCreate} aria-label={t.addFirstGodown}>
                       {t.addGodown}
-                    </button>
+                    </Button>
                   }
                 />
               )}

@@ -1,6 +1,7 @@
 /** Party Detail — Ledger tab: date range + voucher type filter + table + PDF export */
 
 import { useCallback, useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { FileDown } from 'lucide-react'
 import { pdf } from '@react-pdf/renderer'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -172,16 +173,16 @@ export function PartyLedgerTab({ partyId, partyName, businessName }: PartyLedger
 
               {/* Export PDF */}
               <div className="ledger-export-bar">
-                <button
+                <Button
                   type="button"
-                  className="btn btn-ghost btn-sm"
+                  variant="ghost" size="sm"
                   onClick={handleExportPDF}
                   disabled={isExporting}
                   aria-label={t.downloadLedgerPDF}
                 >
                   <FileDown size={16} aria-hidden="true" />
                   <span>{isExporting ? t.exporting : t.downloadPdf}</span>
-                </button>
+                </Button>
               </div>
 
               <LedgerTable

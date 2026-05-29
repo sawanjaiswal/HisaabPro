@@ -6,6 +6,7 @@
  */
 
 import { useState, useCallback } from 'react'
+import { Button } from '@/components/ui/Button'
 import { Copy, Share2, Loader2, AlertCircle, Link } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
 import { useToast } from '@/hooks/useToast'
@@ -108,9 +109,9 @@ export function PaymentLinkSheet({
             <p style={{ color: 'var(--color-error-500)', textAlign: 'center', fontSize: 'var(--fs-sm)' }}>
               {mutation.error?.message || 'Could not create payment link'}
             </p>
-            <button className="btn btn-secondary btn-sm" onClick={handleCreate}>
+            <Button variant="secondary" size="sm" onClick={handleCreate}>
               Retry
-            </button>
+            </Button>
           </div>
         )}
 
@@ -155,14 +156,14 @@ export function PaymentLinkSheet({
             {/* Actions */}
             {currentLink.status !== 'PAID' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-                <button className="btn btn-primary btn-md" onClick={handleCopy} style={{ width: '100%' }}>
+                <Button variant="primary" size="md" onClick={handleCopy} style={{ width: '100%' }}>
                   <Copy size={16} aria-hidden="true" />
                   Copy Link
-                </button>
-                <button className="btn btn-secondary btn-md" onClick={handleWhatsApp} style={{ width: '100%' }}>
+                </Button>
+                <Button variant="secondary" size="md" onClick={handleWhatsApp} style={{ width: '100%' }}>
                   <Share2 size={16} aria-hidden="true" />
                   Share on WhatsApp
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -174,9 +175,9 @@ export function PaymentLinkSheet({
             <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', textAlign: 'center' }}>
               Generate a Razorpay payment link for {formatPaise(balanceDue)}.
             </p>
-            <button className="btn btn-primary btn-md" onClick={handleCreate} style={{ width: '100%' }}>
+            <Button variant="primary" size="md" onClick={handleCreate} style={{ width: '100%' }}>
               Generate Payment Link
-            </button>
+            </Button>
           </div>
         )}
       </div>

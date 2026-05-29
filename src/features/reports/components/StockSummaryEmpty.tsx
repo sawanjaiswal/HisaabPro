@@ -1,6 +1,7 @@
 /** StockSummaryEmpty — empty states (no products at all, or filters returned nothing) */
 
 import { Package, X } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 
 interface StockSummaryEmptyProps {
@@ -26,15 +27,15 @@ export function StockSummaryEmpty({
         <p className="report-empty-desc">
           {t.tryAdjustingSearchFilter}
         </p>
-        <button
-          className="btn btn-secondary btn-md"
+        <Button
+          variant="secondary" size="md"
           type="button"
           onClick={onClearFilters}
           aria-label={t.clearAllFilters}
         >
           <X size={16} aria-hidden="true" />
           Clear Filters
-        </button>
+        </Button>
       </div>
     )
   }
@@ -48,14 +49,14 @@ export function StockSummaryEmpty({
       <p className="report-empty-desc">
         {t.noProductsAddedYet}
       </p>
-      <button
-        className="btn btn-primary btn-md"
+      <Button
+        variant="primary" size="md"
         type="button"
         onClick={onNavigateNew}
         aria-label={t.addAProduct}
       >
         Add Product
-      </button>
+      </Button>
     </div>
   )
 }

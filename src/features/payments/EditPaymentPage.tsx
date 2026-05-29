@@ -27,6 +27,7 @@ import type { PaymentDetail, PaymentFormSection } from './payment.types'
 import './payment-form-layout.css'
 import './payment-form-details.css'
 import './payment-form-actions.css'
+import { Button } from '@/components/ui/Button'
 
 const SECTIONS: { id: PaymentFormSection; label: string }[] = [
   { id: 'details', label: PAYMENT_FORM_SECTION_LABELS.details },
@@ -179,15 +180,15 @@ function EditPaymentForm({
       </PageContainer>
 
       <div className="payment-save-bar">
-        <button
+        <Button
           type="button"
-          className="btn btn-primary btn-lg payment-save-btn"
+          variant="primary" size="lg" className="payment-save-btn"
           onClick={handleSubmit}
           disabled={isSubmitting}
           aria-label={isSubmitting ? t.updatingPayment : t.updatePaymentLabel}
         >
           {isSubmitting ? t.processing : t.updatePaymentBtn}
-        </button>
+        </Button>
       </div>
 
       <ConflictDialog

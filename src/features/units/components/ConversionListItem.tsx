@@ -2,6 +2,7 @@
 
 import { Trash2 } from 'lucide-react'
 import type { UnitConversion } from '../unit.types'
+import { Button } from '@/components/ui/Button'
 
 interface ConversionListItemProps {
   conversion: UnitConversion
@@ -20,14 +21,14 @@ export function ConversionListItem({ conversion, onDelete }: ConversionListItemP
         </span>
       </div>
       <div className="unit-list-item__actions">
-        <button
+        <Button
           type="button"
-          className="btn btn-ghost btn-sm"
+          variant="ghost" size="sm"
           onClick={() => onDelete(conversion.id)}
           aria-label={`Delete conversion ${conversion.fromUnit.symbol} to ${conversion.toUnit.symbol}`}
         >
           <Trash2 size={16} aria-hidden="true" />
-        </button>
+        </Button>
       </div>
     </div>
   )

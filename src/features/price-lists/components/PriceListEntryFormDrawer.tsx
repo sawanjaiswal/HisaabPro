@@ -1,6 +1,7 @@
 /** PriceListEntryFormDrawer — add / edit a price list entry */
 
 import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/Button'
 import { Drawer } from '@/components/ui/Drawer'
 import { useLanguage } from '@/hooks/useLanguage'
 import { PRICE_LIST_MODES, MODE_LABELS, MODE_DESCRIPTIONS, bpsToPercent } from '../price-list.constants'
@@ -91,9 +92,9 @@ export function PriceListEntryFormDrawer({
   const footer = (
     <div style={{ display: 'flex', gap: 'var(--space-2)', padding: 'var(--space-4)' }}>
       <button type="button" className="btn btn-outline flex-1" onClick={onClose}>{t.cancel}</button>
-      <button type="submit" form="pl-entry-form" className="btn btn-primary flex-1" disabled={isLoading} aria-busy={isLoading}>
+      <Button type="submit" form="pl-entry-form" variant="primary" className="flex-1" disabled={isLoading} aria-busy={isLoading}>
         {isLoading ? t.saving : t.save}
-      </button>
+      </Button>
     </div>
   )
 

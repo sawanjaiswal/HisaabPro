@@ -1,6 +1,7 @@
 /** Party Statement Page — per-party transaction ledger with running balance (lazy loaded) */
 
 import { useCallback } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useParams, useNavigate } from 'react-router-dom'
 import { FileText } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -103,14 +104,14 @@ export default function PartyStatementPage() {
                 <p className="report-empty-desc">
                   {`${t.noTransactionsWith} ${party.name} ${t.yet}`}
                 </p>
-                <button
-                  className="btn btn-primary btn-md"
+                <Button
+                  variant="primary" size="md"
                   type="button"
                   onClick={() => navigate(ROUTES.INVOICE_CREATE)}
                   aria-label={t.createAnInvoice}
                 >
                   Create Invoice
-                </button>
+                </Button>
               </div>
             ) : (
               <div

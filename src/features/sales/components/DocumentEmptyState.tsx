@@ -1,6 +1,7 @@
 /** Sales list empty state — variant per document type with i18n copy. */
 
 import React from 'react'
+import { Button } from '@/components/ui/Button'
 import { FileText, Plus } from 'lucide-react'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -46,14 +47,14 @@ export const DocumentEmptyState: React.FC<DocumentEmptyStateProps> = ({
       title={title}
       description={description}
       action={
-        <button
-          className="btn btn-primary btn-md"
+        <Button
+          variant="primary" size="md"
           onClick={onCreateClick}
           aria-label={ctaLabel}
         >
           <Plus size={18} aria-hidden="true" />
           {ctaLabel}
-        </button>
+        </Button>
       }
     />
   )

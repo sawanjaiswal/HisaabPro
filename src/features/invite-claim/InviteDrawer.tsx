@@ -1,6 +1,7 @@
 /** InviteDrawer — auth-side drawer shown after issuing an invite link (Epic C PR5) */
 
 import { useState, useCallback } from 'react'
+import { Button } from '@/components/ui/Button'
 import { Copy, MessageSquare, AlertCircle } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -94,14 +95,14 @@ export function InviteDrawer({ partyId, partyName, partyPhone, onClose }: Invite
             <p className="inv-drawer__one-time">{t.inviteToPortalOneTime}</p>
 
             <div className="inv-drawer__actions">
-              <button
+              <Button
                 type="button"
-                className="btn btn-primary btn-md inv-drawer__action-btn"
+                variant="primary" size="md" className="inv-drawer__action-btn"
                 onClick={() => void handleCopy()}
               >
                 <Copy size={16} aria-hidden="true" />
                 {copied ? t.copied : t.inviteToPortalCopyCta}
-              </button>
+              </Button>
 
               {waLink && (
                 <a

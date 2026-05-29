@@ -6,6 +6,7 @@
  */
 
 import { useState, type Dispatch } from 'react'
+import { Button } from '@/components/ui/Button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useAuth } from '@/context/AuthContext'
@@ -110,23 +111,23 @@ export function BackfillStep2Options({ options, dispatch }: Props) {
       </div>
 
       <div className="bfw-actions bfw-actions--row">
-        <button
-          className="btn btn-secondary btn-md"
+        <Button
+          variant="secondary" size="md"
           onClick={() => dispatch({ type: 'BACK' })}
           aria-label={t.back}
         >
           <ChevronLeft size={18} aria-hidden="true" />
           {t.back}
-        </button>
-        <button
-          className="btn btn-primary btn-md"
+        </Button>
+        <Button
+          variant="primary" size="md"
           onClick={handleNext}
           disabled={!canProceed}
           aria-label={t.backfillNextStep}
         >
           {t.next}
           <ChevronRight size={18} aria-hidden="true" />
-        </button>
+        </Button>
       </div>
     </div>
   )

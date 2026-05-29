@@ -13,6 +13,7 @@ import { SerialCard } from './components/SerialCard'
 import { STATUS_FILTER_OPTIONS } from './serial-number.constants'
 import type { SerialStatus } from './serial-number.types'
 import './serial-numbers.css'
+import { Button } from '@/components/ui/Button'
 
 export default function SerialsPage() {
   const { t } = useLanguage()
@@ -26,9 +27,9 @@ export default function SerialsPage() {
         title={t.serialNumbers}
         actions={
           <div className="serial-header-actions">
-            <button className="btn btn-ghost btn-sm" onClick={() => navigate(ROUTES.SERIAL_BULK.replace(':productId', productId))} aria-label={t.bulkAddSerialNumbersAria}>
+            <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.SERIAL_BULK.replace(':productId', productId))} aria-label={t.bulkAddSerialNumbersAria}>
               <Upload size={18} aria-hidden="true" />
-            </button>
+            </Button>
           </div>
         }
       />
@@ -74,9 +75,9 @@ export default function SerialsPage() {
             title={t.noSerialNumbersYet}
             description={t.addSerialsToTrack}
             action={
-              <button className="btn btn-primary btn-md" onClick={() => navigate(ROUTES.SERIAL_NEW.replace(':productId', productId))} aria-label={t.addFirstSerialNumberAria}>
+              <Button variant="primary" size="md" onClick={() => navigate(ROUTES.SERIAL_NEW.replace(':productId', productId))} aria-label={t.addFirstSerialNumberAria}>
                 {t.addSerialNumber}
-              </button>
+              </Button>
             }
           />
         )}

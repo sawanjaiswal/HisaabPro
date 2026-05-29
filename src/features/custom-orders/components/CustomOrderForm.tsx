@@ -1,6 +1,7 @@
 /** CustomOrderForm — shared by CustomOrderNewPage and CustomOrderEditPage */
 
 import { useState, useCallback } from 'react'
+import { Button } from '@/components/ui/Button'
 import { Plus } from 'lucide-react'
 import { PartySearchInput } from '@/features/invoices/components/PartySearchInput'
 import { formatPaise, totalsFromItems } from '../custom-orders.utils'
@@ -126,9 +127,9 @@ export function CustomOrderForm({ initialData, onSubmit, isSubmitting, submitLab
         {items.map((item, idx) => (
           <CustomOrderItemEditor key={item._key} item={item} index={idx} showRemove={items.length > 1} onUpdate={updateItem} onRemove={removeItem} />
         ))}
-        <button type="button" className="btn btn-ghost btn-sm" onClick={addItem} style={{ alignSelf: 'flex-start', minHeight: 44 }}>
+        <Button type="button" variant="ghost" size="sm" onClick={addItem} style={{ alignSelf: 'flex-start', minHeight: 44 }}>
           <Plus size={16} aria-hidden="true" /> Add Item
-        </button>
+        </Button>
       </div>
 
       {/* Order-level discount */}
@@ -152,9 +153,9 @@ export function CustomOrderForm({ initialData, onSubmit, isSubmitting, submitLab
         </div>
       </div>
 
-      <button type="submit" className="btn btn-primary btn-lg" disabled={isSubmitting} style={{ minHeight: 48, width: '100%' }}>
+      <Button type="submit" variant="primary" size="lg" disabled={isSubmitting} style={{ minHeight: 48, width: '100%' }}>
         {isSubmitting ? 'Saving...' : submitLabel}
-      </button>
+      </Button>
     </form>
   )
 }

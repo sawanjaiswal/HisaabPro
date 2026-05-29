@@ -3,6 +3,7 @@
 import { useLanguage } from '@/hooks/useLanguage'
 import { TRANSFER_NOTES_MAX } from '../godown.constants'
 import type { TransferStockData, Godown } from '../godown.types'
+import { Button } from '@/components/ui/Button'
 
 interface TransferFormProps {
   form: TransferStockData
@@ -136,14 +137,14 @@ export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, on
         />
       </div>
 
-      <button
+      <Button
         type="submit"
-        className="btn btn-primary btn-lg godown-form__submit"
+        variant="primary" size="lg" className="godown-form__submit"
         disabled={isSubmitting}
         aria-busy={isSubmitting}
       >
         {isSubmitting ? t.transferring : t.transferStock}
-      </button>
+      </Button>
     </form>
   )
 }

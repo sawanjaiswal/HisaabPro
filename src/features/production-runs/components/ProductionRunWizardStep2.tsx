@@ -1,6 +1,7 @@
 /** ProductionRunWizardStep2 — Quantity & Date */
 
 import { todayISODate } from '../production-run.utils'
+import { Button } from '@/components/ui/Button'
 import type { WizardFormState } from '../production-run.types'
 
 interface Step2Props {
@@ -73,16 +74,16 @@ export function ProductionRunWizardStep2({ wizard, onUpdate, onNext, onBack }: S
       </div>
 
       <div className="pr-wizard-step__actions">
-        <button type="button" className="btn btn-ghost" onClick={onBack}>Back</button>
-        <button
+        <Button type="button" variant="ghost" onClick={onBack}>Back</Button>
+        <Button
           type="button"
-          className="btn btn-primary"
+          variant="primary"
           disabled={!canProceed}
           onClick={onNext}
           aria-label="Review components"
         >
           Review Components
-        </button>
+        </Button>
       </div>
     </div>
   )

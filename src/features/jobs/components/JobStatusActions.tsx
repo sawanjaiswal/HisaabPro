@@ -1,6 +1,7 @@
 /** JobStatusActions — buttons mapping current → allowed transitions */
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import { getNextStatuses } from '../jobs.utils'
 import { useTransitionJob } from '../hooks/useTransitionJob'
@@ -90,14 +91,14 @@ export function JobStatusActions({ jobId, jobTitle, currentStatus }: JobStatusAc
             >
               {t.jobConfirmCancel}
             </button>
-            <button
+            <Button
               type="button"
-              className="btn btn-ghost btn-sm"
+              variant="ghost" size="sm"
               onClick={() => { setShowCancelPrompt(false); setCancelReason('') }}
               style={{ minHeight: 44 }}
             >
               {t.jobCancelBack}
-            </button>
+            </Button>
           </div>
         </div>
       )}

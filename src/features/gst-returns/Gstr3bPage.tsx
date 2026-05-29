@@ -8,6 +8,7 @@
  */
 
 import { useState, useCallback } from 'react'
+import { Button } from '@/components/ui/Button'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -190,13 +191,13 @@ export default function Gstr3bPage() {
           {/* Export buttons */}
           {!isLoading && !isError && (
             <div className="gstr1-export-row">
-              <button
-                className="btn btn-primary"
+              <Button
+                variant="primary"
                 disabled={exportMut.isPending}
                 onClick={() => { void handleExport('JSON') }}
               >
                 {exportMut.isPending ? t.gstr3bExporting : t.gstr3bDownloadJson}
-              </button>
+              </Button>
               <button
                 className="btn btn-outline"
                 disabled={exportMut.isPending}

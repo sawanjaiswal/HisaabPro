@@ -1,6 +1,7 @@
 /** ProductionRunWizardStep1 — Choose Recipe */
 
 import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/Button'
 import { listBoms } from '../../bom/bom.service'
 import { formatVersionBadge } from '../../bom/bom.utils'
 import type { BomSummaryDTO } from '../../bom/bom.types'
@@ -92,15 +93,15 @@ export function ProductionRunWizardStep1({ wizard, onUpdate, onNext }: Step1Prop
       )}
 
       <div className="pr-wizard-step__actions">
-        <button
+        <Button
           type="button"
-          className="btn btn-primary"
+          variant="primary"
           disabled={!canProceed}
           onClick={onNext}
           aria-label="Continue to quantity and date"
         >
           Next
-        </button>
+        </Button>
       </div>
     </div>
   )

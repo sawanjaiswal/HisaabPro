@@ -6,6 +6,7 @@ import { EXPIRY_OPTIONS } from '../shared-ledger.constants'
 import { formatExpiry, isShareExpired, buildShareUrl } from '../shared-ledger.utils'
 import type { LedgerShare, CreateLedgerShareData } from '../shared-ledger.types'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface ShareLedgerSheetProps {
   partyName: string
@@ -51,15 +52,15 @@ export function ShareLedgerSheet({
           </select>
         </div>
 
-        <button
+        <Button
           type="button"
-          className="btn btn-primary btn-md share-ledger-create-btn"
+          variant="primary" size="md" className="share-ledger-create-btn"
           onClick={handleCreate}
           disabled={isCreating}
         >
           <Link size={18} aria-hidden="true" />
           {isCreating ? t.loading : t.generateShareLink}
-        </button>
+        </Button>
       </div>
 
       {/* Existing shares */}
@@ -104,9 +105,9 @@ export function ShareLedgerSheet({
         </div>
       )}
 
-      <button type="button" className="btn btn-ghost btn-md share-ledger-close" onClick={onClose}>
+      <Button type="button" variant="ghost" size="md" className="share-ledger-close" onClick={onClose}>
         Close
-      </button>
+      </Button>
     </div>
   )
 }

@@ -1,6 +1,7 @@
 /** ProductionRunFormPage — /production-runs/new — 3-step wizard */
 
 import { useSearchParams, useNavigate } from 'react-router-dom'
+import { Button } from '@/components/ui/Button'
 import { ArrowLeft, Loader2 } from 'lucide-react'
 import { ProductionRunWizardStep1 } from '../components/ProductionRunWizardStep1'
 import { ProductionRunWizardStep2 } from '../components/ProductionRunWizardStep2'
@@ -106,10 +107,10 @@ export default function ProductionRunFormPage() {
           </div>
 
           <div className="pr-wizard-step__actions">
-            <button type="button" className="btn btn-ghost" onClick={goBack} disabled={submitting}>Back</button>
-            <button
+            <Button type="button" variant="ghost" onClick={goBack} disabled={submitting}>Back</Button>
+            <Button
               type="button"
-              className="btn btn-primary"
+              variant="primary"
               onClick={() => void submit()}
               disabled={submitting}
               aria-busy={submitting}
@@ -119,7 +120,7 @@ export default function ProductionRunFormPage() {
                 ? <><Loader2 size={16} className="btn-spinner" aria-hidden="true" /> Starting run...</>
                 : 'Start Production Run'
               }
-            </button>
+            </Button>
           </div>
         </div>
       )}

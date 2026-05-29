@@ -7,6 +7,7 @@
  */
 
 import { useState, useCallback } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -172,13 +173,13 @@ export default function Gstr1Page() {
           {/* Export buttons */}
           {!isLoading && !isError && (
             <div className="gstr1-export-row">
-              <button
-                className="btn btn-primary"
+              <Button
+                variant="primary"
                 disabled={exportMut.isPending}
                 onClick={() => { void handleExport('JSON') }}
               >
                 {exportMut.isPending ? t.gstr1Exporting : t.gstr1DownloadJson}
-              </button>
+              </Button>
               <button
                 className="btn btn-outline"
                 disabled={exportMut.isPending}

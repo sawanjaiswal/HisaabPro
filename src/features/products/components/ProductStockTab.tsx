@@ -6,6 +6,7 @@ import { EmptyState } from '@/components/feedback/EmptyState'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { StockMovement } from '../product.types'
 import { formatMovementType } from '../product.utils'
+import { Button } from '@/components/ui/Button'
 
 interface ProductStockTabProps {
   movements: StockMovement[]
@@ -27,9 +28,9 @@ export const ProductStockTab: React.FC<ProductStockTabProps> = ({ movements, uni
         title={t.noStockMovements}
         description={t.noStockMovementsDesc}
         action={
-          <button className="btn btn-primary btn-md" onClick={onAdjust} aria-label={t.adjustStock}>
+          <Button variant="primary" size="md" onClick={onAdjust} aria-label={t.adjustStock}>
             {t.adjustStock}
-          </button>
+          </Button>
         }
       />
     )

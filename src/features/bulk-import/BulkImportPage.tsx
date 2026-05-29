@@ -11,6 +11,7 @@ import { ImportPreview } from './components/ImportPreview'
 import { ImportProgress } from './components/ImportProgress'
 import './bulk-import.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 export default function BulkImportPage() {
   const { t } = useLanguage()
@@ -30,9 +31,9 @@ export default function BulkImportPage() {
         backTo={status === 'idle' || status === 'done' ? ROUTES.PARTIES : undefined}
         actions={
           status === 'preview' ? (
-            <button className="btn btn-ghost btn-sm" onClick={reset} aria-label={t.startOver}>
+            <Button variant="ghost" size="sm" onClick={reset} aria-label={t.startOver}>
               Reset
-            </button>
+            </Button>
           ) : undefined
         }
       />
@@ -69,9 +70,9 @@ export default function BulkImportPage() {
         {status === 'error' && (
           <div className="bulk-import-error">
             <p>{error ?? t.somethingWentWrong}</p>
-            <button type="button" className="btn btn-primary btn-md" onClick={reset}>
+            <Button type="button" variant="primary" size="md" onClick={reset}>
               Try Again
-            </button>
+            </Button>
           </div>
         )}
       </PageContainer>

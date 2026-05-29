@@ -7,6 +7,7 @@ import type { Unit } from '../unit.types'
 import { UnitCategoryBadge } from './UnitCategoryBadge'
 import { getUnitCategory } from '../unit.utils'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface UnitListItemProps {
   unit: Unit
@@ -43,23 +44,23 @@ export function UnitListItem({ unit, onEdit, onDelete }: UnitListItemProps) {
 
         {isCustom && (
           <div className="unit-list-item__actions">
-            <button
+            <Button
               type="button"
-              className="btn btn-ghost btn-sm"
+              variant="ghost" size="sm"
               onClick={() => onEdit(unit)}
               aria-label={`Edit ${unit.name}`}
             >
               <Pencil size={16} aria-hidden="true" />
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
-              className="btn btn-ghost btn-sm"
+              variant="ghost" size="sm"
               onClick={() => setDeleteOpen(true)}
               aria-label={`Delete ${unit.name}`}
               disabled={unit.productCount > 0}
             >
               <Trash2 size={16} aria-hidden="true" />
-            </button>
+            </Button>
           </div>
         )}
       </div>

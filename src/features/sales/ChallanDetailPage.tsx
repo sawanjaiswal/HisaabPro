@@ -1,6 +1,7 @@
 /** Delivery Challan Detail — document detail + PipelineTimeline + ConvertDocumentDrawer. */
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useParams, useNavigate } from 'react-router-dom'
 import { FileText } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -55,13 +56,13 @@ export default function ChallanDetailPage() {
         backTo="/sales/challans"
         actions={
           canConvert ? (
-            <button
-              className="btn btn-ghost btn-sm"
+            <Button
+              variant="ghost" size="sm"
               onClick={() => setConvertOpen(true)}
               aria-label={t.convertDocument ?? 'Convert'}
             >
               {t.convertCta ?? 'Convert'}
-            </button>
+            </Button>
           ) : undefined
         }
       />
@@ -94,9 +95,9 @@ export default function ChallanDetailPage() {
             title={t.invoiceNotFound ?? 'Challan not found'}
             description={t.invoiceNotFoundDesc ?? 'This delivery challan may have been deleted.'}
             action={
-              <button className="btn btn-primary btn-md" onClick={() => navigate('/sales/challans')}>
+              <Button variant="primary" size="md" onClick={() => navigate('/sales/challans')}>
                 {t.backToList ?? 'Back to challans'}
-              </button>
+              </Button>
             }
           />
         )}

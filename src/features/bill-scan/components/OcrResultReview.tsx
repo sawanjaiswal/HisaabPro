@@ -4,6 +4,7 @@ import { Trash2, AlertTriangle, CheckCircle, HelpCircle } from 'lucide-react'
 import type { BillScanResult, ExtractedItem } from '../bill-scan.types'
 import { CONFIDENCE_HIGH, CONFIDENCE_MEDIUM } from '../bill-scan.constants'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface OcrResultReviewProps {
   result: BillScanResult
@@ -68,9 +69,9 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
         <div className="ocr-review-empty">
           <AlertTriangle size={32} aria-hidden="true" />
           <p>{t.noItemsExtracted}</p>
-          <button type="button" className="btn btn-secondary btn-md" onClick={onRetry}>
+          <Button type="button" variant="secondary" size="md" onClick={onRetry}>
             {t.tryAgain}
-          </button>
+          </Button>
         </div>
       ) : (
         <>
@@ -160,18 +161,18 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
           </div>
 
           <div className="ocr-review-actions">
-            <button
+            <Button
               type="button"
-              className="btn btn-primary btn-lg"
+              variant="primary" size="lg"
               onClick={onConfirm}
               disabled={extractedItems.length === 0}
               aria-label={t.addXItemsToInvoice}
             >
               {t.addXItemsToInvoice} ({extractedItems.length})
-            </button>
-            <button type="button" className="btn btn-ghost btn-md" onClick={onRetry}>
+            </Button>
+            <Button type="button" variant="ghost" size="md" onClick={onRetry}>
               {t.scanAnother}
-            </button>
+            </Button>
           </div>
         </>
       )}

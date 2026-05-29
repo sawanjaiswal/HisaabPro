@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { VehicleType } from '../ecompliance.types'
+import { Button } from '@/components/ui/Button'
 
 interface EWayBillPartBFormProps {
   initialVehicleNumber?: string
@@ -69,23 +70,23 @@ export const EWayBillPartBForm: React.FC<EWayBillPartBFormProps> = ({
         </div>
       </div>
       <div className="compliance-cancel-actions">
-        <button
+        <Button
           type="button"
-          className="btn btn-ghost btn-md"
+          variant="ghost" size="md"
           onClick={onDismiss}
           disabled={updatingPartB}
         >
           {t.dismiss}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
-          className="btn btn-primary btn-md"
+          variant="primary" size="md"
           onClick={handleSubmit}
           disabled={updatingPartB || !vehicleNumber.trim()}
           aria-busy={updatingPartB}
         >
           {updatingPartB ? t.updatingVehicle : t.update}
-        </button>
+        </Button>
       </div>
     </div>
   )

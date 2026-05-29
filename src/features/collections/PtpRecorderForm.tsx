@@ -4,6 +4,7 @@
  */
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { Drawer } from '@/components/ui/Drawer'
 import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate } from '@/lib/format'
@@ -77,15 +78,15 @@ export function PtpRecorderForm({ open, onClose, partyId, partyName, existingPtp
   }
 
   const footer = (
-    <button
+    <Button
       type="submit"
       form="ptp-form"
-      className="btn btn-primary btn-md"
+      variant="primary" size="md"
       disabled={isPending}
       aria-busy={isPending}
     >
       {isPending ? t.ptpSaving : isEdit ? t.ptpSaveChanges : t.ptpRecordPromise}
-    </button>
+    </Button>
   )
 
   return (

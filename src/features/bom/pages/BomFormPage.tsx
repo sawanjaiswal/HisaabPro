@@ -1,6 +1,7 @@
 /** BomFormPage — /bom/new + /bom/:id/edit */
 
 import { useEffect, useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Plus, ArrowLeft, BookOpen, RefreshCw, Loader2 } from 'lucide-react'
 import { BomFormHeader } from '../components/BomFormHeader'
@@ -65,34 +66,34 @@ function BomCreateForm() {
           </div>
 
           {form.components.length < BOM_MAX_COMPONENTS && (
-            <button
+            <Button
               type="button"
-              className="btn btn-ghost btn-sm bom-add-row"
+              variant="ghost" size="sm" className="bom-add-row"
               onClick={addRow}
               aria-label="Add component row"
             >
               <Plus size={14} aria-hidden="true" /> Add component
-            </button>
+            </Button>
           )}
         </section>
 
         <div className="bom-form-actions">
-          <button
+          <Button
             type="button"
-            className="btn btn-ghost"
+            variant="ghost"
             onClick={() => navigate('/bom')}
             disabled={saving}
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
-            className="btn btn-primary"
+            variant="primary"
             disabled={saving}
             aria-busy={saving}
           >
             {saving ? <><Loader2 size={16} className="btn-spinner" aria-hidden="true" /> Saving...</> : 'Save Recipe'}
-          </button>
+          </Button>
         </div>
       </form>
     </div>
@@ -121,9 +122,9 @@ function BomEditForm({ id }: { id: string }) {
       <div className="bom-empty" role="alert">
         <BookOpen size={40} className="bom-empty__icon bom-empty__icon--error" aria-hidden="true" />
         <p className="bom-empty__title">Could not load recipe</p>
-        <button type="button" className="btn btn-primary" onClick={refresh}>
+        <Button type="button" variant="primary" onClick={refresh}>
           <RefreshCw size={16} aria-hidden="true" /> Retry
-        </button>
+        </Button>
       </div>
     </div>
   )
@@ -163,17 +164,17 @@ function BomEditForm({ id }: { id: string }) {
           </div>
 
           {form.components.length < BOM_MAX_COMPONENTS && (
-            <button type="button" className="btn btn-ghost btn-sm bom-add-row" onClick={addRow} aria-label="Add component">
+            <Button type="button" variant="ghost" size="sm" className="bom-add-row" onClick={addRow} aria-label="Add component">
               <Plus size={14} aria-hidden="true" /> Add component
-            </button>
+            </Button>
           )}
         </section>
 
         <div className="bom-form-actions">
-          <button type="button" className="btn btn-ghost" onClick={() => navigate(`/bom/${id}`)} disabled={saving}>Cancel</button>
-          <button type="submit" className="btn btn-primary" disabled={saving} aria-busy={saving}>
+          <Button type="button" variant="ghost" onClick={() => navigate(`/bom/${id}`)} disabled={saving}>Cancel</Button>
+          <Button type="submit" variant="primary" disabled={saving} aria-busy={saving}>
             {saving ? <><Loader2 size={16} className="btn-spinner" aria-hidden="true" /> Saving...</> : 'Save Recipe'}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

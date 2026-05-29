@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
 import { UserPlus, Users, Check } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -65,14 +66,14 @@ export default function StaffPage() {
                 title={t.noStaffMembers}
                 description={t.inviteFirstTeamMember}
                 action={
-                  <button
+                  <Button
                     type="button"
-                    className="btn btn-primary btn-md"
+                    variant="primary" size="md"
                     onClick={() => navigate(ROUTES.SETTINGS_STAFF_INVITE)}
                     aria-label={t.inviteStaffBtn}
                   >
                     {t.inviteStaffBtn}
-                  </button>
+                  </Button>
                 }
               />
             ) : (

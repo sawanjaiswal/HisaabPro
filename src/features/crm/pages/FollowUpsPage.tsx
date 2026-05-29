@@ -16,6 +16,7 @@
  */
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
 import { ClipboardCheck, ListChecks } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -96,14 +97,14 @@ export default function FollowUpsPage() {
             title={t.crmFollowUpQueueEmpty}
             description={t.crmFollowUpsSubtitle}
             action={
-              <button
+              <Button
                 type="button"
-                className="btn btn-primary btn-md"
+                variant="primary" size="md"
                 onClick={() => navigate(ROUTES.PARTIES)}
                 aria-label={t.parties}
               >
                 {t.parties}
-              </button>
+              </Button>
             }
           />
         )}

@@ -1,6 +1,7 @@
 /** JobsListPage — /jobs: list with status filter pills + 4 UI states */
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -99,15 +100,15 @@ export default function JobsListPage() {
         )}
 
         {hasNextPage && (
-          <button
+          <Button
             type="button"
-            className="btn btn-ghost btn-sm"
+            variant="ghost" size="sm"
             onClick={() => void fetchNextPage()}
             disabled={isFetchingNextPage}
             style={{ width: '100%', marginTop: 'var(--space-3)', minHeight: 44 }}
           >
             {isFetchingNextPage ? 'Loading...' : 'Load more'}
-          </button>
+          </Button>
         )}
       </PageContainer>
 

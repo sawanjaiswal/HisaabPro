@@ -18,6 +18,7 @@ import { GODOWN_PAGE_SIZE } from './godown.constants'
 import { GodownStockList } from './components/GodownStockList'
 import type { Godown, GodownStockResponse } from './godown.types'
 import './godowns.css'
+import { Button } from '@/components/ui/Button'
 
 export default function GodownDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -61,21 +62,21 @@ export default function GodownDetailPage() {
         actions={
           godown ? (
             <div className="godown-detail-actions">
-              <button
-                className="btn btn-ghost btn-sm"
+              <Button
+                variant="ghost" size="sm"
                 onClick={() => navigate(ROUTES.GODOWN_EDIT.replace(':id', id ?? ''))}
                 aria-label={`Edit ${godown.name}`}
               >
                 <Pencil size={16} aria-hidden="true" />
-              </button>
-              <button
-                className="btn btn-ghost btn-sm godown-btn-danger"
+              </Button>
+              <Button
+                variant="ghost" size="sm" className="godown-btn-danger"
                 onClick={() => setShowDeleteConfirm(true)}
                 disabled={isDeleting}
                 aria-label={`Delete ${godown.name}`}
               >
                 <Trash2 size={16} aria-hidden="true" />
-              </button>
+              </Button>
             </div>
           ) : undefined
         }

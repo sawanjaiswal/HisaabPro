@@ -13,6 +13,7 @@ import { useBatches } from './useBatches'
 import { BatchCard } from './components/BatchCard'
 import './batches.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 function BatchListSkeleton() {
   return (
@@ -54,13 +55,13 @@ export default function BatchesPage() {
         backTo={backPath}
         actions={
           status === 'success' && batches && batches.batches.length > 0 ? (
-            <button
-              className="btn btn-ghost btn-sm"
+            <Button
+              variant="ghost" size="sm"
               onClick={goToCreate}
               aria-label={t.addNewBatch}
             >
               <Plus size={20} aria-hidden="true" />
-            </button>
+            </Button>
           ) : undefined
         }
       />
@@ -82,13 +83,13 @@ export default function BatchesPage() {
             title={t.noBatchesYet}
             description={t.addFirstBatchEmptyDesc}
             action={
-              <button
-                className="btn btn-primary btn-md"
+              <Button
+                variant="primary" size="md"
                 onClick={goToCreate}
                 aria-label={t.addFirstBatchBtnAria}
               >
                 {t.addFirstBatchBtn}
-              </button>
+              </Button>
             }
           />
         )}

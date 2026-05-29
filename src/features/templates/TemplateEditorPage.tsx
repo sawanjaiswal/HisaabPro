@@ -5,6 +5,7 @@
  */
 
 import { useCallback } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -55,14 +56,14 @@ export default function TemplateEditorPage() {
         title={form.name || t.newTemplate}
         backTo={ROUTES.TEMPLATES}
         actions={
-          <button
-            className="btn btn-primary btn-sm"
+          <Button
+            variant="primary" size="sm"
             onClick={handleSubmit}
             disabled={isSubmitting}
             aria-label={isSubmitting ? t.savingTemplate : t.saveTemplate}
           >
             {isSubmitting ? t.saving : t.save}
-          </button>
+          </Button>
         }
       />
 

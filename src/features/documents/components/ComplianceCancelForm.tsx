@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface ComplianceCancelFormProps {
   title: string
@@ -60,23 +61,23 @@ export const ComplianceCancelForm: React.FC<ComplianceCancelFormProps> = ({
         )}
       </div>
       <div className="compliance-cancel-actions">
-        <button
+        <Button
           type="button"
-          className="btn btn-ghost btn-md"
+          variant="ghost" size="md"
           onClick={onDismiss}
           disabled={cancelling}
         >
           {t.dismiss}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
-          className="btn btn-destructive btn-md"
+          variant="destructive" size="md"
           onClick={handleConfirm}
           disabled={cancelling}
           aria-busy={cancelling}
         >
           {cancelling ? t.cancellingAction : t.confirmCancel}
-        </button>
+        </Button>
       </div>
     </div>
   )

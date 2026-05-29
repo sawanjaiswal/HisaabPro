@@ -1,6 +1,7 @@
 /** JobsEmptyState — empty UI state with CTA */
 
 import { Briefcase } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/feedback/EmptyState'
 
 interface JobsEmptyStateProps {
@@ -14,14 +15,14 @@ export function JobsEmptyState({ onCreateNew }: JobsEmptyStateProps) {
       title="No jobs yet"
       description="Create your first job to start tracking work orders and convert them to invoices"
       action={
-        <button
+        <Button
           type="button"
-          className="btn btn-primary btn-md"
+          variant="primary" size="md"
           onClick={onCreateNew}
           aria-label="Create first job"
         >
           Create Job
-        </button>
+        </Button>
       }
     />
   )

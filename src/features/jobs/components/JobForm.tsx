@@ -1,6 +1,7 @@
 /** JobForm — shared by JobNewPage and JobEditPage */
 
 import { useState, useCallback } from 'react'
+import { Button } from '@/components/ui/Button'
 import { Plus } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { PartySearchInput } from '@/features/invoices/components/PartySearchInput'
@@ -207,9 +208,9 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: Jo
           />
         ))}
 
-        <button type="button" className="btn btn-ghost btn-sm" onClick={addItem} style={{ alignSelf: 'flex-start', minHeight: 44 }}>
+        <Button type="button" variant="ghost" size="sm" onClick={addItem} style={{ alignSelf: 'flex-start', minHeight: 44 }}>
           <Plus size={16} aria-hidden="true" /> {t.jobAddItem}
-        </button>
+        </Button>
       </div>
 
       {/* Totals summary */}
@@ -230,14 +231,14 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: Jo
         </div>
       </div>
 
-      <button
+      <Button
         type="submit"
-        className="btn btn-primary btn-lg"
+        variant="primary" size="lg"
         disabled={isSubmitting}
         style={{ minHeight: 48, width: '100%' }}
       >
         {isSubmitting ? t.savingJob : resolvedSubmitLabel}
-      </button>
+      </Button>
     </form>
   )
 }

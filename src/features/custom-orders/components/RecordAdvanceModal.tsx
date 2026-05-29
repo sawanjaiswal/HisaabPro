@@ -1,6 +1,7 @@
 /** RecordAdvanceModal — form to record an advance payment against an order */
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { X } from 'lucide-react'
 import { useRecordAdvance } from '../hooks/useRecordAdvance'
 import { ADVANCE_METHODS } from '../custom-orders.constants'
@@ -79,9 +80,9 @@ export function RecordAdvanceModal({ orderId, orderTitle, onClose }: RecordAdvan
           <h2 style={{ margin: 0, fontSize: 'var(--fs-md)', fontWeight: 700, color: 'var(--color-text)' }}>
             Record Advance
           </h2>
-          <button type="button" className="btn btn-ghost btn-sm" onClick={onClose} aria-label="Close" style={{ minHeight: 44, minWidth: 44 }}>
+          <Button type="button" variant="ghost" size="sm" onClick={onClose} aria-label="Close" style={{ minHeight: 44, minWidth: 44 }}>
             <X size={18} aria-hidden="true" />
-          </button>
+          </Button>
         </div>
 
         <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
@@ -136,14 +137,14 @@ export function RecordAdvanceModal({ orderId, orderTitle, onClose }: RecordAdvan
             />
           </div>
 
-          <button
+          <Button
             type="submit"
-            className="btn btn-primary btn-lg"
+            variant="primary" size="lg"
             disabled={isPending}
             style={{ minHeight: 48, width: '100%' }}
           >
             {isPending ? 'Recording...' : 'Record Advance'}
-          </button>
+          </Button>
         </form>
       </div>
     </div>

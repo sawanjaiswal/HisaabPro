@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { TransportMode, VehicleType, EWayBillGenerateInput } from '../ecompliance.types'
+import { Button } from '@/components/ui/Button'
 
 interface FormState {
   transportMode: TransportMode
@@ -139,12 +140,12 @@ export const EWayBillGenerateForm: React.FC<EWayBillGenerateFormProps> = ({
           onChange={e => set('transporterName', e.target.value)} />
       </div>
       <div className="compliance-actions">
-        <button type="button" className="btn btn-ghost btn-md" onClick={onDismiss} disabled={generating}>
+        <Button type="button" variant="ghost" size="md" onClick={onDismiss} disabled={generating}>
           {t.dismiss}
-        </button>
-        <button type="submit" className="btn btn-primary btn-md" disabled={generating} aria-busy={generating}>
+        </Button>
+        <Button type="submit" variant="primary" size="md" disabled={generating} aria-busy={generating}>
           {generating ? t.generatingEwb : t.generateEwb}
-        </button>
+        </Button>
       </div>
     </form>
   )

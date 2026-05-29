@@ -1,6 +1,7 @@
 /** CustomOrderDetailPage — /orders/:id — header, status pill, actions, items, advances, convert CTA */
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Pencil, Calendar, User, IndianRupee, Plus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -70,15 +71,15 @@ export default function CustomOrderDetailPage() {
         title={formatOrderNumber(order.orderNumber, order.id)}
         actions={
           !isFinal(order.status) ? (
-            <button
+            <Button
               type="button"
-              className="btn btn-ghost btn-sm"
+              variant="ghost" size="sm"
               onClick={() => navigate(ORDER_ROUTES.EDIT(id))}
               aria-label="Edit order"
               style={{ minHeight: 44 }}
             >
               <Pencil size={16} aria-hidden="true" />
-            </button>
+            </Button>
           ) : undefined
         }
       />
@@ -145,14 +146,14 @@ export default function CustomOrderDetailPage() {
           {/* Already invoiced */}
           {order.invoiceId && (
             <Section title="Invoice">
-              <button
+              <Button
                 type="button"
-                className="btn btn-ghost btn-sm"
+                variant="ghost" size="sm"
                 onClick={() => navigate(`/invoices/${order.invoiceId}`)}
                 style={{ alignSelf: 'flex-start', minHeight: 44 }}
               >
                 View Invoice
-              </button>
+              </Button>
             </Section>
           )}
 
@@ -187,15 +188,15 @@ export default function CustomOrderDetailPage() {
               totalPaise={order.totalPaise}
             />
             {!isFinal(order.status) && (
-              <button
+              <Button
                 type="button"
-                className="btn btn-ghost btn-sm"
+                variant="ghost" size="sm"
                 onClick={() => setShowAdvanceModal(true)}
                 style={{ alignSelf: 'flex-start', minHeight: 44, display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}
               >
                 <Plus size={15} aria-hidden="true" />
                 Record Advance
-              </button>
+              </Button>
             )}
           </Section>
 

@@ -7,6 +7,7 @@ import type { UnitInput } from '../../products/unit.service'
 import { validateUnitName, validateUnitSymbol } from '../unit.utils'
 import { UNIT_NAME_MAX, UNIT_SYMBOL_MAX } from '../unit.constants'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface AddUnitSheetProps {
   open: boolean
@@ -68,16 +69,16 @@ export function AddUnitSheet({ open, onClose, onSave, onUpdate, editUnit }: AddU
       title={isEdit ? t.editUnit : t.addCustomUnit}
       size="sm"
       footer={
-        <button
+        <Button
           type="button"
-          className="btn btn-primary btn-md"
+          variant="primary" size="md"
           style={{ width: '100%' }}
           onClick={handleSubmit}
           disabled={isSaving}
           aria-label={isEdit ? t.saveChanges : t.createUnit}
         >
           {isSaving ? t.loading : isEdit ? t.saveChanges : t.createUnit}
-        </button>
+        </Button>
       }
     >
       <div className="unit-sheet-form">

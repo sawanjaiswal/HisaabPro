@@ -18,6 +18,7 @@
  */
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useQueryClient } from '@tanstack/react-query'
 import { CheckCircle2 } from 'lucide-react'
 import { useToast } from '@/hooks/useToast'
@@ -93,16 +94,16 @@ export function PartyCrmTab({ party, onPatched }: PartyCrmTabProps) {
         </span>
       </div>
       <div className="party-crm-tab__actions">
-        <button
+        <Button
           type="button"
-          className="btn btn-primary btn-md"
+          variant="primary" size="md"
           onClick={onSave}
           disabled={!isDirty || isSaving || error !== null}
           aria-label={t.save}
         >
           <CheckCircle2 size={18} aria-hidden="true" />
           <span>{isSaving ? t.saving : t.save}</span>
-        </button>
+        </Button>
       </div>
     </div>
   )

@@ -31,6 +31,7 @@ import { PartyQuickActions } from './components/PartyQuickActions'
 import { InviteDrawer } from '@/features/invite-claim/InviteDrawer'
 import '@/features/shared-ledger/shared-ledger.css'
 import './party-detail-header.css'
+import { Button } from '@/components/ui/Button'
 
 export default function PartyDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -68,20 +69,20 @@ export default function PartyDetailPage() {
 
   const headerActions = (
     <>
-      <button
-        className="btn btn-ghost btn-sm"
+      <Button
+        variant="ghost" size="sm"
         onClick={handleEdit}
         aria-label={t.editParty}
       >
         <Pencil size={18} aria-hidden="true" />
-      </button>
-      <button
-        className="btn btn-ghost btn-sm"
+      </Button>
+      <Button
+        variant="ghost" size="sm"
         onClick={() => setDeleteOpen(true)}
         aria-label={t.deleteParty}
       >
         <Trash2 size={18} aria-hidden="true" />
-      </button>
+      </Button>
     </>
   )
 
@@ -123,13 +124,13 @@ export default function PartyDetailPage() {
               title={t.partyNotFound}
               description={t.partyMayBeDeleted}
               action={
-                <button
-                  className="btn btn-primary btn-md"
+                <Button
+                  variant="primary" size="md"
                   onClick={() => navigate('/parties')}
                   aria-label={t.backToPartiesLabel}
                 >
                   {t.backToParties}
-                </button>
+                </Button>
               }
             />
           )}

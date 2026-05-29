@@ -16,6 +16,7 @@ import { EWayBillCard } from './EWayBillCard'
 import type { EComplianceDocumentType } from '../ecompliance.types'
 import { EWAYBILL_THRESHOLD_PAISE } from '../ecompliance.types'
 import '../ecompliance.css'
+import { Button } from '@/components/ui/Button'
 
 interface EComplianceSectionProps {
   documentId: string
@@ -70,14 +71,14 @@ export const EComplianceSection: React.FC<EComplianceSectionProps> = ({
           <p className="compliance-inline-error" role="alert">
             {fetchError ?? t.failedLoadCompliance}
           </p>
-          <button
+          <Button
             type="button"
-            className="btn btn-secondary btn-md"
+            variant="secondary" size="md"
             onClick={refresh}
             aria-label={t.retryLoadCompliance}
           >
             {t.retry}
-          </button>
+          </Button>
         </div>
       </div>
     )

@@ -1,6 +1,7 @@
 /** PriceListFormDrawer — create / rename a price list + isDefault toggle */
 
 import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/Button'
 import { Drawer } from '@/components/ui/Drawer'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PriceList, PriceListFormData } from '../price-list.types'
@@ -52,15 +53,15 @@ export function PriceListFormDrawer({
       <button type="button" className="btn btn-outline flex-1" onClick={onClose}>
         {t.cancel}
       </button>
-      <button
+      <Button
         type="submit"
         form="pl-form"
-        className="btn btn-primary flex-1"
+        variant="primary" className="flex-1"
         disabled={isLoading}
         aria-busy={isLoading}
       >
         {isLoading ? t.saving : t.save}
-      </button>
+      </Button>
     </div>
   )
 

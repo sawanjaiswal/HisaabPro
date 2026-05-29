@@ -1,6 +1,7 @@
 /** PriceListsPage — /settings/price-lists — list with 4 UI states */
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Tag, RefreshCw } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -63,9 +64,9 @@ export default function PriceListsPage() {
         title={t.plPageTitle}
         backTo={ROUTES.SETTINGS}
         actions={
-          <button type="button" className="btn btn-ghost btn-sm" onClick={openCreate} aria-label={t.plCreate}>
+          <Button type="button" variant="ghost" size="sm" onClick={openCreate} aria-label={t.plCreate}>
             <Plus size={18} aria-hidden="true" />
-          </button>
+          </Button>
         }
       />
 
@@ -80,10 +81,10 @@ export default function PriceListsPage() {
               <Tag size={40} className="pl-empty__icon pl-empty__icon--error" aria-hidden="true" />
               <p className="pl-empty__title">{t.plLoadError}</p>
               <p className="pl-empty__body">{t.checkConnectionRetry}</p>
-              <button type="button" className="btn btn-primary" onClick={refresh}>
+              <Button type="button" variant="primary" onClick={refresh}>
                 <RefreshCw size={16} aria-hidden="true" />
                 {t.retry}
-              </button>
+              </Button>
             </div>
           )}
 

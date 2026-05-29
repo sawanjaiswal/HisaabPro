@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import { Users, FileSpreadsheet } from 'lucide-react'
 import { HAS_CONTACT_PICKER, CSV_ACCEPT } from '../bulk-import.constants'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface ContactPickerProps {
   onPickContacts: () => void
@@ -33,15 +34,15 @@ export function ContactPicker({ onPickContacts, onImportCsv }: ContactPickerProp
 
       <div className="bulk-import-buttons">
         {HAS_CONTACT_PICKER && (
-          <button
+          <Button
             type="button"
-            className="btn btn-primary btn-lg bulk-import-btn"
+            variant="primary" size="lg" className="bulk-import-btn"
             onClick={onPickContacts}
             aria-label={t.phoneContacts}
           >
             <Users size={20} aria-hidden="true" />
             <span>{t.phoneContacts}</span>
-          </button>
+          </Button>
         )}
 
         <button

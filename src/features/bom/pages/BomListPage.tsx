@@ -1,6 +1,7 @@
 /** BomListPage — /bom — list all BOMs with 4 UI states */
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
 import { Plus, BookOpen, RefreshCw, ChevronLeft, ChevronRight, Play } from 'lucide-react'
 import { useBomList } from '../hooks/useBom'
@@ -39,15 +40,15 @@ export default function BomListPage() {
             <p className="bom-page__subtitle">{pagination.total} recipe{pagination.total !== 1 ? 's' : ''}</p>
           )}
         </div>
-        <button
+        <Button
           type="button"
-          className="btn btn-primary btn-sm"
+          variant="primary" size="sm"
           onClick={() => navigate('/bom/new')}
           aria-label="Create new recipe"
         >
           <Plus size={16} aria-hidden="true" />
           New Recipe
-        </button>
+        </Button>
       </div>
 
       {/* Loading */}
@@ -59,9 +60,9 @@ export default function BomListPage() {
           <BookOpen size={40} className="bom-empty__icon bom-empty__icon--error" aria-hidden="true" />
           <p className="bom-empty__title">Could not load recipes</p>
           <p className="bom-empty__body">Check your connection and try again.</p>
-          <button type="button" className="btn btn-primary" onClick={refresh}>
+          <Button type="button" variant="primary" onClick={refresh}>
             <RefreshCw size={16} aria-hidden="true" /> Retry
-          </button>
+          </Button>
         </div>
       )}
 
@@ -71,9 +72,9 @@ export default function BomListPage() {
           <BookOpen size={40} className="bom-empty__icon" aria-hidden="true" />
           <p className="bom-empty__title">No recipes yet</p>
           <p className="bom-empty__body">Create a Bill of Materials to start tracking production.</p>
-          <button type="button" className="btn btn-primary" onClick={() => navigate('/bom/new')}>
+          <Button type="button" variant="primary" onClick={() => navigate('/bom/new')}>
             <Plus size={16} aria-hidden="true" /> New Recipe
-          </button>
+          </Button>
         </div>
       )}
 
@@ -124,25 +125,25 @@ export default function BomListPage() {
       {/* Pagination */}
       {status === 'success' && (pagination.page > 1 || pagination.hasMore) && (
         <div className="bom-pagination" role="navigation" aria-label="Pagination">
-          <button
+          <Button
             type="button"
-            className="btn btn-ghost btn-sm"
+            variant="ghost" size="sm"
             disabled={pagination.page <= 1}
             onClick={() => setPage(pagination.page - 1)}
             aria-label="Previous page"
           >
             <ChevronLeft size={16} aria-hidden="true" />
-          </button>
+          </Button>
           <span className="bom-pagination__label">Page {pagination.page}</span>
-          <button
+          <Button
             type="button"
-            className="btn btn-ghost btn-sm"
+            variant="ghost" size="sm"
             disabled={!pagination.hasMore}
             onClick={() => setPage(pagination.page + 1)}
             aria-label="Next page"
           >
             <ChevronRight size={16} aria-hidden="true" />
-          </button>
+          </Button>
         </div>
       )}
     </div>

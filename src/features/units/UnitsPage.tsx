@@ -24,6 +24,7 @@ import { groupUnitsByCategory } from './unit.utils'
 import type { Unit } from './unit.types'
 import './units.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 export default function UnitsPage() {
   const { t } = useLanguage()
@@ -78,14 +79,14 @@ export default function UnitsPage() {
         title={t.unit}
         backTo="/settings"
         actions={
-          <button
-            className="btn btn-primary btn-sm"
+          <Button
+            variant="primary" size="sm"
             onClick={handleAdd}
             aria-label={t.addCustomUnitAria}
           >
             <Plus size={18} aria-hidden="true" />
             <span>{t.addUnitLabel}</span>
-          </button>
+          </Button>
         }
       />
 
@@ -155,9 +156,9 @@ export default function UnitsPage() {
                     }
                     action={
                       !searchInput ? (
-                        <button className="btn btn-primary btn-md" onClick={handleAdd}>
+                        <Button variant="primary" size="md" onClick={handleAdd}>
                           {t.addCustomUnitBtn}
-                        </button>
+                        </Button>
                       ) : undefined
                     }
                   />

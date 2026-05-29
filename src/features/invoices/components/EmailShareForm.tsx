@@ -40,16 +40,16 @@ export function EmailShareForm({ documentNumber, partyName, defaultEmail, isSend
 
   return (
     <form className="email-share-form space-y-4" onSubmit={submit} aria-label={t.emailInvoice}>
-      <button
+      <Button
         type="button"
-        className="btn btn-ghost btn-sm"
+        variant="ghost" size="sm"
         onClick={onBack}
         disabled={isSending}
         aria-label={t.back}
       >
         <ArrowLeft size={16} aria-hidden="true" />
         <span>{t.back}</span>
-      </button>
+      </Button>
 
       <Input
         label={t.recipientEmail}

@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useRef } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useUpdatePartB } from './useEWayBill'
 import type { PartBEntry } from './e-way-bill.types'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
@@ -111,12 +112,12 @@ export const EWayBillUpdatePartBDialog: React.FC<Props> = ({ open, documentId, p
           )}
 
           <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
-            <button type="button" className="btn btn-secondary btn-md" onClick={handleDismiss} disabled={update.isPending} style={{ flex: 1 }}>
+            <Button type="button" variant="secondary" size="md" onClick={handleDismiss} disabled={update.isPending} style={{ flex: 1 }}>
               Cancel
-            </button>
-            <button type="submit" className="btn btn-primary btn-md" disabled={update.isPending} style={{ flex: 1 }}>
+            </Button>
+            <Button type="submit" variant="primary" size="md" disabled={update.isPending} style={{ flex: 1 }}>
               {update.isPending ? 'Updating...' : 'Update'}
-            </button>
+            </Button>
           </div>
         </form>
 

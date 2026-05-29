@@ -28,6 +28,7 @@ import type { BulkAction } from '@/components/ui/BulkActionBar'
 import './payment-hero.css'
 import './payment-filter.css'
 import './payment-list.css'
+import { Button } from '@/components/ui/Button'
 
 export default function PaymentsPage() {
   const navigate = useNavigate()
@@ -146,13 +147,13 @@ export default function PaymentsPage() {
             title={t.noPaymentsRecordedYet}
             description={t.recordFirstPaymentDesc}
             action={
-              <button
-                className="btn btn-primary btn-md"
+              <Button
+                variant="primary" size="md"
                 onClick={() => navigate(`${ROUTES.PAYMENT_NEW}?type=PAYMENT_IN`)}
                 aria-label={t.recordFirstPayment}
               >
                 {t.recordPaymentIn}
-              </button>
+              </Button>
             }
           />
         )}

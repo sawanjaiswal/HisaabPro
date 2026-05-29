@@ -1,6 +1,7 @@
 /** ProductionRunDetailPage — /production-runs/:id */
 
 import { useParams, useNavigate } from 'react-router-dom'
+import { Button } from '@/components/ui/Button'
 import { ArrowLeft, Activity, RefreshCw } from 'lucide-react'
 import { useProductionRunDetail } from '../hooks/useProductionRuns'
 import { ProductionRunCancelButton } from '../components/ProductionRunCancelButton'
@@ -42,9 +43,9 @@ export default function ProductionRunDetailPage() {
         <div className="bom-empty" role="alert">
           <Activity size={40} className="bom-empty__icon bom-empty__icon--error" aria-hidden="true" />
           <p className="bom-empty__title">Could not load run</p>
-          <button type="button" className="btn btn-primary" onClick={refresh}>
+          <Button type="button" variant="primary" onClick={refresh}>
             <RefreshCw size={16} aria-hidden="true" /> Retry
-          </button>
+          </Button>
         </div>
       )}
 

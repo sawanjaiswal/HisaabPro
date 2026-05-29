@@ -1,6 +1,7 @@
 /** PriceListDetailPage — /settings/price-lists/:id */
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useParams } from 'react-router-dom'
 import { Plus, Tag, Users, RefreshCw, Share2 } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -82,14 +83,14 @@ export default function PriceListDetailPage() {
         title={title}
         backTo={ROUTES.PRICE_LISTS as string}
         actions={
-          <button
+          <Button
             type="button"
-            className="btn btn-ghost btn-sm"
+            variant="ghost" size="sm"
             onClick={() => setEditListOpen(true)}
             aria-label={t.edit}
           >
             {t.edit}
-          </button>
+          </Button>
         }
       />
 
@@ -104,9 +105,9 @@ export default function PriceListDetailPage() {
             <div className="pl-empty" role="alert">
               <Tag size={40} className="pl-empty__icon pl-empty__icon--error" aria-hidden="true" />
               <p className="pl-empty__title">{t.plLoadError}</p>
-              <button type="button" className="btn btn-primary" onClick={refresh}>
+              <Button type="button" variant="primary" onClick={refresh}>
                 <RefreshCw size={16} aria-hidden="true" /> {t.retry}
-              </button>
+              </Button>
             </div>
           )}
 
@@ -143,9 +144,9 @@ export default function PriceListDetailPage() {
               <div>
                 <div className="pl-detail__section-header">
                   <span className="pl-detail__section-title">{t.plEntriesTitle}</span>
-                  <button type="button" className="btn btn-primary btn-sm" onClick={openEntryCreate}>
+                  <Button type="button" variant="primary" size="sm" onClick={openEntryCreate}>
                     <Plus size={14} aria-hidden="true" /> {t.plAddEntry}
-                  </button>
+                  </Button>
                 </div>
 
                 {priceList.entries.length === 0 ? (

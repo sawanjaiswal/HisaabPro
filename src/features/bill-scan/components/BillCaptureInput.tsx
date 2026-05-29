@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import { Camera, ImageIcon } from 'lucide-react'
 import { ACCEPTED_IMAGE_EXTENSIONS, ACCEPTED_IMAGE_TYPES } from '../bill-scan.constants'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface BillCaptureInputProps {
   onCapture: (file: File) => void
@@ -34,25 +35,25 @@ export function BillCaptureInput({ onCapture }: BillCaptureInputProps) {
       </p>
 
       <div className="bill-capture-buttons">
-        <button
+        <Button
           type="button"
-          className="btn btn-primary btn-lg bill-capture-btn"
+          variant="primary" size="lg" className="bill-capture-btn"
           onClick={() => cameraRef.current?.click()}
           aria-label={t.takePhoto}
         >
           <Camera size={20} aria-hidden="true" />
           <span>{t.takePhoto}</span>
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
-          className="btn btn-secondary btn-lg bill-capture-btn"
+          variant="secondary" size="lg" className="bill-capture-btn"
           onClick={() => galleryRef.current?.click()}
           aria-label={t.fromGallery}
         >
           <ImageIcon size={20} aria-hidden="true" />
           <span>{t.fromGallery}</span>
-        </button>
+        </Button>
       </div>
 
       <p className="bill-capture-hint">

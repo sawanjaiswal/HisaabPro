@@ -1,6 +1,7 @@
 /** JobDetailPage — /jobs/:id — header, status pill, actions, items, convert CTA */
 
 import { useParams, useNavigate } from 'react-router-dom'
+import { Button } from '@/components/ui/Button'
 import { Pencil, Calendar, User, IndianRupee } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -64,15 +65,15 @@ export default function JobDetailPage() {
         title={formatJobNumber(job.jobNumber, job.id)}
         actions={
           job.status !== 'INVOICED' && job.status !== 'CANCELLED' ? (
-            <button
+            <Button
               type="button"
-              className="btn btn-ghost btn-sm"
+              variant="ghost" size="sm"
               onClick={() => navigate(JOB_ROUTES.EDIT(id))}
               aria-label="Edit job"
               style={{ minHeight: 44 }}
             >
               <Pencil size={16} aria-hidden="true" />
-            </button>
+            </Button>
           ) : undefined
         }
       />
@@ -132,14 +133,14 @@ export default function JobDetailPage() {
         {/* Already invoiced */}
         {job.invoiceId && (
           <Section title={t.jobInvoiceSection}>
-            <button
+            <Button
               type="button"
-              className="btn btn-ghost btn-sm"
+              variant="ghost" size="sm"
               onClick={() => navigate(`/invoices/${job.invoiceId}`)}
               style={{ alignSelf: 'flex-start', minHeight: 44 }}
             >
               {t.viewInvoice}
-            </button>
+            </Button>
           </Section>
         )}
 

@@ -3,6 +3,7 @@
 import { Send } from 'lucide-react'
 import type { GreetingTemplate } from '../smart-greetings.types'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface TemplateEditorProps {
   template: GreetingTemplate
@@ -40,17 +41,17 @@ export function TemplateEditor({ template, message, onMessageChange, onSendToAll
 
       {/* Actions */}
       <div className="greeting-editor-actions">
-        <button
+        <Button
           type="button"
-          className="btn btn-primary btn-lg greeting-editor-send"
+          variant="primary" size="lg" className="greeting-editor-send"
           onClick={onSendToAll}
         >
           <Send size={18} aria-hidden="true" />
           Choose Recipients
-        </button>
-        <button type="button" className="btn btn-ghost btn-md" onClick={onBack}>
+        </Button>
+        <Button type="button" variant="ghost" size="md" onClick={onBack}>
           Back to Templates
-        </button>
+        </Button>
       </div>
     </div>
   )

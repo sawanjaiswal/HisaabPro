@@ -4,6 +4,7 @@ import { useBatchForm } from '../useBatchForm'
 import { BATCH_NUMBER_MAX, BATCH_NOTES_MAX } from '../batch.constants'
 import type { Batch } from '../batch.types'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface BatchFormProps {
   productId: string
@@ -143,15 +144,15 @@ export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProp
         )}
       </div>
 
-      <button
+      <Button
         type="submit"
-        className="btn btn-primary btn-lg batch-form-submit"
+        variant="primary" size="lg" className="batch-form-submit"
         disabled={isSubmitting}
       >
         {isSubmitting
           ? t.savingBatch
           : existingBatch ? t.updateBatch : t.createBatch}
-      </button>
+      </Button>
     </form>
   )
 }

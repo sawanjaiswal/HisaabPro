@@ -5,6 +5,7 @@ import { PARTY_TYPE_LABELS } from '@/features/parties/party.constants'
 import type { ImportedContact } from '../bulk-import.types'
 import type { PartyType } from '@/lib/types/party.types'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface ImportPreviewProps {
   contacts: ImportedContact[]
@@ -57,13 +58,13 @@ export function ImportPreview({
             {invalidCount} invalid
           </span>
         )}
-        <button
+        <Button
           type="button"
-          className="btn btn-ghost btn-sm"
+          variant="ghost" size="sm"
           onClick={() => onSelectAll(selectedCount < totalValid)}
         >
           {selectedCount === totalValid ? t.deselectAll : t.selectAll}
-        </button>
+        </Button>
       </div>
 
       {/* Contact list */}
@@ -100,17 +101,17 @@ export function ImportPreview({
 
       {/* Actions */}
       <div className="import-preview-actions">
-        <button
+        <Button
           type="button"
-          className="btn btn-primary btn-lg"
+          variant="primary" size="lg"
           onClick={onConfirm}
           disabled={selectedCount === 0}
         >
           Import {selectedCount} {selectedCount === 1 ? 'Party' : 'Parties'}
-        </button>
-        <button type="button" className="btn btn-ghost btn-md" onClick={onBack}>
+        </Button>
+        <Button type="button" variant="ghost" size="md" onClick={onBack}>
           Back
-        </button>
+        </Button>
       </div>
     </div>
   )

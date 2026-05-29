@@ -6,6 +6,7 @@
  */
 
 import type { Dispatch } from 'react'
+import { Button } from '@/components/ui/Button'
 import { AlertTriangle, ChevronRight } from 'lucide-react'
 import { formatPaise } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -49,9 +50,9 @@ export function BackfillStep1Preview({ loading, error, preview, onRetry, dispatc
       <div className="bfw-error">
         <AlertTriangle size={24} aria-hidden="true" />
         <p className="bfw-error-msg">{error}</p>
-        <button className="btn btn-secondary btn-md" onClick={onRetry}>
+        <Button variant="secondary" size="md" onClick={onRetry}>
           {t.retry}
-        </button>
+        </Button>
       </div>
     )
   }
@@ -83,14 +84,14 @@ export function BackfillStep1Preview({ loading, error, preview, onRetry, dispatc
       )}
 
       <div className="bfw-actions">
-        <button
-          className="btn btn-primary btn-lg bfw-btn-full"
+        <Button
+          variant="primary" size="lg" className="bfw-btn-full"
           onClick={handleNext}
           aria-label={t.backfillNextStep}
         >
           {t.next}
           <ChevronRight size={18} aria-hidden="true" />
-        </button>
+        </Button>
       </div>
     </div>
   )

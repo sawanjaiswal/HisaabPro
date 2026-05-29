@@ -1,6 +1,7 @@
 /** Invoice Detail — Page (lazy loaded). Tabs: Overview / Items / Share. 4 UI states. */
 
 import { useRef, useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useNavigate, useParams } from 'react-router-dom'
 import { FileText } from 'lucide-react'
 import { ROUTES } from '@/config/routes.config'
@@ -122,13 +123,13 @@ export default function InvoiceDetailPage() {
             title={t.invoiceNotFound}
             description={t.invoiceNotFoundDesc}
             action={
-              <button
-                className="btn btn-primary btn-md"
+              <Button
+                variant="primary" size="md"
                 onClick={() => navigate(ROUTES.INVOICES)}
                 aria-label={t.goBackToInvoices}
               >
                 {t.backToInvoices}
-              </button>
+              </Button>
             }
           />
         )}

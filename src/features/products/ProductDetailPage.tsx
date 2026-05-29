@@ -24,6 +24,7 @@ import { ProductInfoTab } from './components/ProductInfoTab'
 import { ProductPricePreviewPanel } from './components/ProductPricePreviewPanel'
 import './product-detail.css'
 import './barcode.css'
+import { Button } from '@/components/ui/Button'
 
 type DetailTab = 'overview' | 'stock' | 'info'
 
@@ -62,12 +63,12 @@ export default function ProductDetailPage() {
 
   const headerActions = (
     <>
-      <button className="btn btn-ghost btn-sm" onClick={() => navigate(`/products/${productId}/edit`)} aria-label={t.editProduct}>
+      <Button variant="ghost" size="sm" onClick={() => navigate(`/products/${productId}/edit`)} aria-label={t.editProduct}>
         <Pencil size={18} aria-hidden="true" />
-      </button>
-      <button className="btn btn-ghost btn-sm" onClick={() => setDeleteOpen(true)} aria-label={t.deleteProduct}>
+      </Button>
+      <Button variant="ghost" size="sm" onClick={() => setDeleteOpen(true)} aria-label={t.deleteProduct}>
         <Trash2 size={18} aria-hidden="true" />
-      </button>
+      </Button>
     </>
   )
 

@@ -7,6 +7,7 @@ import type { EWayBillStatus, VehicleType, EWayBillGenerateInput } from '../ecom
 import { EWayBillGenerateForm } from './EWayBillGenerateForm'
 import { EWayBillPartBForm } from './EWayBillPartBForm'
 import { ComplianceCancelForm } from './ComplianceCancelForm'
+import { Button } from '@/components/ui/Button'
 
 interface EWayBillCardProps {
   status: EWayBillStatus | null
@@ -128,22 +129,22 @@ export const EWayBillCard: React.FC<EWayBillCardProps> = ({
       {activeForm === 'none' && (
         <div className="compliance-actions">
           {isPending && (
-            <button type="button" className="btn btn-primary btn-md"
+            <Button type="button" variant="primary" size="md"
               onClick={() => setActiveForm('generate')} aria-label={t.generateEwbAria}>
               {t.generateEwb}
-            </button>
+            </Button>
           )}
           {isGenerated && (
-            <button type="button" className="btn btn-secondary btn-md"
+            <Button type="button" variant="secondary" size="md"
               onClick={() => setActiveForm('partb')} aria-label={t.updateVehicleAria}>
               {t.updateVehicle}
-            </button>
+            </Button>
           )}
           {canCancel && (
-            <button type="button" className="btn btn-ghost btn-md"
+            <Button type="button" variant="ghost" size="md"
               onClick={() => setActiveForm('cancel')} aria-label={t.cancelEwbAria}>
               {t.cancelEwb}
-            </button>
+            </Button>
           )}
         </div>
       )}

@@ -7,6 +7,7 @@
  */
 
 import { useNavigate } from 'react-router-dom'
+import { Button } from '@/components/ui/Button'
 import { Plus, Shield } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -80,13 +81,13 @@ export default function RolesPage() {
               title={t.noCustomRoles}
               description={t.noCustomRolesDesc}
               action={
-                <button
-                  className="btn btn-primary btn-md"
+                <Button
+                  variant="primary" size="md"
                   onClick={() => navigate(ROUTES.SETTINGS_ROLE_NEW)}
                   aria-label={t.createFirstCustomRole}
                 >
                   {t.createRole}
-                </button>
+                </Button>
               }
             />
           )}

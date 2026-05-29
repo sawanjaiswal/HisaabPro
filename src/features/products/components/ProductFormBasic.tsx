@@ -8,6 +8,7 @@ import type { ProductFormData, Category, Unit } from '../product.types'
 import { getCategories, getUnits, createUnit } from '../product.service'
 import type { UnitInput } from '../unit.service'
 import { AddUnitSheet } from '@/features/units/components/AddUnitSheet'
+import { Button } from '@/components/ui/Button'
 
 interface ProductFormBasicProps {
   form: ProductFormData
@@ -143,14 +144,14 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
               <option key={unit.id} value={unit.id}>{unit.name} ({unit.symbol})</option>
             ))}
           </select>
-          <button
+          <Button
             type="button"
-            className="btn btn-ghost btn-sm input-with-action__btn"
+            variant="ghost" size="sm" className="input-with-action__btn"
             onClick={() => setAddUnitOpen(true)}
             aria-label={t.addCustomUnit}
           >
             <Plus size={16} aria-hidden="true" />
-          </button>
+          </Button>
         </div>
         {errors.unitId && <p className="input-error" role="alert">{errors.unitId}</p>}
       </div>

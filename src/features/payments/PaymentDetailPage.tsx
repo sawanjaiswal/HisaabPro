@@ -25,6 +25,7 @@ import { PaymentHistoryTab } from './components/PaymentHistoryTab'
 import { VoucherShareBar } from './voucher/VoucherShareBar'
 import type { PaymentDetailTab } from './payment.types'
 import './payment-hero.css'
+import { Button } from '@/components/ui/Button'
 
 const TABS: { id: PaymentDetailTab; label: string }[] = [
   { id: 'overview', label: PAYMENT_DETAIL_TAB_LABELS.overview },
@@ -48,16 +49,16 @@ export default function PaymentDetailPage() {
 
   const headerActions = payment ? (
     <>
-      <button
-        className="btn btn-ghost btn-sm"
+      <Button
+        variant="ghost" size="sm"
         onClick={() => navigate(ROUTES.PAYMENT_EDIT.replace(':id', paymentId))}
         aria-label={t.editPayment}
       >
         <Pencil size={18} aria-hidden="true" />
-      </button>
-      <button className="btn btn-ghost btn-sm" onClick={() => setDeleteOpen(true)} aria-label={t.deletePayment}>
+      </Button>
+      <Button variant="ghost" size="sm" onClick={() => setDeleteOpen(true)} aria-label={t.deletePayment}>
         <Trash2 size={18} aria-hidden="true" />
-      </button>
+      </Button>
     </>
   ) : null
 
@@ -86,13 +87,13 @@ export default function PaymentDetailPage() {
             title={t.paymentNotFound}
             description={t.paymentNotFoundDesc}
             action={
-              <button
-                className="btn btn-primary btn-md"
+              <Button
+                variant="primary" size="md"
                 onClick={() => navigate(ROUTES.PAYMENTS)}
                 aria-label={t.goBackToPayments}
               >
                 {t.backToPayments}
-              </button>
+              </Button>
             }
           />
         )}

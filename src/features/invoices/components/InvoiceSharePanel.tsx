@@ -10,6 +10,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { formatInvoiceDate } from '../invoice-format.utils'
 import { SHARE_CHANNEL_LABELS } from '../invoice.constants'
 import type { DocumentShareLog } from '../invoice.types'
+import { Button } from '@/components/ui/Button'
 
 interface InvoiceSharePanelProps {
   shareLogs: DocumentShareLog[]
@@ -26,13 +27,13 @@ export function InvoiceSharePanel({ shareLogs, onShare }: InvoiceSharePanelProps
           title={t.notSharedYet}
           description={t.notSharedYetDesc}
           action={
-            <button
-              className="btn btn-primary btn-md"
+            <Button
+              variant="primary" size="md"
               aria-label={t.shareInvoiceNow}
               onClick={onShare}
             >
               {t.shareInvoice}
-            </button>
+            </Button>
           }
         />
       </div>
@@ -71,13 +72,13 @@ export function InvoiceSharePanel({ shareLogs, onShare }: InvoiceSharePanelProps
         ))}
       </ul>
       <div style={{ marginTop: 'var(--space-4)', display: 'flex', justifyContent: 'center' }}>
-        <button
-          className="btn btn-primary btn-md"
+        <Button
+          variant="primary" size="md"
           aria-label={t.shareAgain}
           onClick={onShare}
         >
           {t.shareAgain}
-        </button>
+        </Button>
       </div>
     </div>
   )

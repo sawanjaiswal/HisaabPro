@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useRef } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useGenerateEWayBill } from './useEWayBill'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
 
@@ -222,12 +223,12 @@ export const EWayBillModal: React.FC<Props> = ({ documentId, open, onDismiss, on
           )}
 
           <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem' }}>
-            <button type="button" className="btn btn-secondary btn-md" onClick={handleDismiss} disabled={generate.isPending} style={{ flex: 1 }}>
+            <Button type="button" variant="secondary" size="md" onClick={handleDismiss} disabled={generate.isPending} style={{ flex: 1 }}>
               Skip
-            </button>
-            <button type="submit" className="btn btn-primary btn-md" disabled={generate.isPending} aria-busy={generate.isPending} style={{ flex: 1 }}>
+            </Button>
+            <Button type="submit" variant="primary" size="md" disabled={generate.isPending} aria-busy={generate.isPending} style={{ flex: 1 }}>
               {generate.isPending ? 'Generating...' : 'Generate'}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

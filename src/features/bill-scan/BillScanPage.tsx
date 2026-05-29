@@ -12,6 +12,7 @@ import { ScanProgress } from './components/ScanProgress'
 import { OcrResultReview } from './components/OcrResultReview'
 import './bill-scan.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 export default function BillScanPage() {
   const { t } = useLanguage()
@@ -34,9 +35,9 @@ export default function BillScanPage() {
         backTo={status === 'idle' ? ROUTES.INVOICES : undefined}
         actions={
           status !== 'idle' && status !== 'processing' ? (
-            <button className="btn btn-ghost btn-sm" onClick={reset} aria-label={t.startOver}>
+            <Button variant="ghost" size="sm" onClick={reset} aria-label={t.startOver}>
               Reset
-            </button>
+            </Button>
           ) : undefined
         }
       />
@@ -70,9 +71,9 @@ export default function BillScanPage() {
             </div>
             <h3 className="bill-scan-error-title">{t.couldNotReadBill}</h3>
             <p className="bill-scan-error-message">{error ?? t.tryClearerPhoto}</p>
-            <button type="button" className="btn btn-primary btn-md" onClick={reset}>
+            <Button type="button" variant="primary" size="md" onClick={reset}>
               Try Again
-            </button>
+            </Button>
           </div>
         )}
       </PageContainer>

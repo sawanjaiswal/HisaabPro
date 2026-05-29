@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useEWayBill, useGenerateEWayBill, useCancelEWayBill } from './useEWayBill'
 import { EWayBillUpdatePartBDialog } from './EWayBillUpdatePartBDialog'
 import { TRANSPORT_MODE_LABELS } from './e-way-bill.types'
@@ -77,14 +78,14 @@ export const EWayBillCard: React.FC<Props> = ({ documentId, grandTotal = 0, onGe
                 {(generate.error as Error).message}
               </p>
             )}
-            <button
+            <Button
               type="button"
-              className="btn btn-primary btn-md"
+              variant="primary" size="md"
               onClick={onGenerateClick}
               disabled={generate.isPending}
             >
               Generate E-Way Bill
-            </button>
+            </Button>
           </>
         )}
       </div>
@@ -142,14 +143,14 @@ export const EWayBillCard: React.FC<Props> = ({ documentId, grandTotal = 0, onGe
         </dl>
 
         <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', flexWrap: 'wrap' }}>
-          <button
+          <Button
             type="button"
-            className="btn btn-secondary btn-md"
+            variant="secondary" size="md"
             onClick={() => setPartBOpen(true)}
             style={{ flex: 1 }}
           >
             Update Part B
-          </button>
+          </Button>
           {cancellable && (
             <button
               type="button"

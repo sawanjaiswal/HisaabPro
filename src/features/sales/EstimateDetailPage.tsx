@@ -1,6 +1,7 @@
 /** Estimate Detail — shows document detail + PipelineTimeline + ConvertDocumentDrawer. */
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { useParams, useNavigate } from 'react-router-dom'
 import { FileText } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -55,13 +56,13 @@ export default function EstimateDetailPage() {
         backTo="/sales/estimates"
         actions={
           canConvert ? (
-            <button
-              className="btn btn-ghost btn-sm"
+            <Button
+              variant="ghost" size="sm"
               onClick={() => setConvertOpen(true)}
               aria-label={t.convertDocument ?? 'Convert'}
             >
               {t.convertCta ?? 'Convert'}
-            </button>
+            </Button>
           ) : undefined
         }
       />
@@ -94,9 +95,9 @@ export default function EstimateDetailPage() {
             title={t.invoiceNotFound ?? 'Estimate not found'}
             description={t.invoiceNotFoundDesc ?? 'This estimate may have been deleted.'}
             action={
-              <button className="btn btn-primary btn-md" onClick={() => navigate('/sales/estimates')}>
+              <Button variant="primary" size="md" onClick={() => navigate('/sales/estimates')}>
                 {t.backToList ?? 'Back to estimates'}
-              </button>
+              </Button>
             }
           />
         )}

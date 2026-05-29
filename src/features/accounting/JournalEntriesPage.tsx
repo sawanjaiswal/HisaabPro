@@ -1,6 +1,7 @@
 /** Journal Entries — Paginated list with type and status filters */
 
 import { FileText } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -115,15 +116,17 @@ export default function JournalEntriesPage() {
 
         {/* Load more */}
         {hasMore && (
-          <button
+          <Button
             type="button"
-            className="btn btn-secondary btn-md je-load-more"
+            variant="secondary"
+            size="md"
+            className="je-load-more"
             onClick={loadMore}
             disabled={status === 'loading'}
             aria-label={t.loadMoreJournalEntries}
           >
             {status === 'loading' ? t.loading : t.loadMoreJournalEntries}
-          </button>
+          </Button>
         )}
       </PageContainer>
     </AppShell>

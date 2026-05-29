@@ -1,6 +1,7 @@
 /** InviteSignupFlow — new-user signup branch of the public invite page (Epic C PR5) */
 
 import { useState, useCallback, FormEvent } from 'react'
+import { Button } from '@/components/ui/Button'
 
 interface InviteSignupFlowStrings {
   inviteSignupTitle:         string
@@ -97,13 +98,13 @@ export function InviteSignupFlow({ s, defaultName, onClaim }: InviteSignupFlowPr
           {fieldErr['confirm'] && <p className="inv-flow__field-err" role="alert">{fieldErr['confirm']}</p>}
         </div>
 
-        <button
+        <Button
           type="submit"
-          className="btn btn-primary btn-lg inv-flow__cta"
+          variant="primary" size="lg" className="inv-flow__cta"
           disabled={busy}
         >
           {busy ? s.loading : s.inviteSignupCta}
-        </button>
+        </Button>
       </form>
     </div>
   )

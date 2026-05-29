@@ -1,6 +1,7 @@
 import { useLanguage } from '@/hooks/useLanguage'
 import { SERIAL_NUMBER_MAX, NOTES_MAX } from '../serial-number.constants'
 import { useSerialForm } from '../useSerialForm'
+import { Button } from '@/components/ui/Button'
 
 interface SerialFormProps {
   productId: string
@@ -47,13 +48,13 @@ export function SerialForm({ productId, onSuccess }: SerialFormProps) {
         {errors.notes && <p className="serial-form__error">{errors.notes}</p>}
       </div>
 
-      <button
+      <Button
         type="submit"
-        className="btn btn-primary btn-md serial-form__submit"
+        variant="primary" size="md" className="serial-form__submit"
         disabled={isSubmitting}
       >
         {isSubmitting ? t.addingSerial : t.addSerialNumber}
-      </button>
+      </Button>
     </form>
   )
 }

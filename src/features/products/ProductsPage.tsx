@@ -24,6 +24,7 @@ import './barcode.css'
 import { ROUTES } from '@/config/routes.config'
 import type { BulkAction } from '@/components/ui/BulkActionBar'
 import './products.css'
+import { Button } from '@/components/ui/Button'
 
 export default function ProductsPage() {
   const navigate = useNavigate()
@@ -119,12 +120,12 @@ export default function ProductsPage() {
         actions={
           !bulk.isActive ? (
             <>
-              <button className="btn btn-ghost btn-sm" onClick={() => navigate(ROUTES.ITEMS_LIBRARY)} aria-label={t.itemsLibrary}>
+              <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.ITEMS_LIBRARY)} aria-label={t.itemsLibrary}>
                 <BookOpen size={18} aria-hidden="true" />
-              </button>
-              <button className="btn btn-ghost btn-sm" onClick={() => setScannerOpen(true)} aria-label={t.scanBarcode}>
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => setScannerOpen(true)} aria-label={t.scanBarcode}>
                 <ScanBarcode size={20} aria-hidden="true" />
-              </button>
+              </Button>
             </>
           ) : undefined
         }
@@ -165,9 +166,9 @@ export default function ProductsPage() {
             title={t.noProductsYet}
             description={t.addFirstProductDesc}
             action={
-              <button className="btn btn-primary btn-md" onClick={goToCreate} aria-label={t.addFirstProduct}>
+              <Button variant="primary" size="md" onClick={goToCreate} aria-label={t.addFirstProduct}>
                 {t.addProduct}
-              </button>
+              </Button>
             }
           />
         )}

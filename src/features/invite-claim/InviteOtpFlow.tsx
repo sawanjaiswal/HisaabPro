@@ -1,6 +1,7 @@
 /** InviteOtpFlow — existing-user OTP branch of the public invite page (Epic C PR5) */
 
 import { useState, useRef, useCallback, KeyboardEvent, ClipboardEvent } from 'react'
+import { Button } from '@/components/ui/Button'
 
 interface InviteOtpFlowStrings {
   inviteOtpTitle:     string
@@ -107,9 +108,9 @@ export function InviteOtpFlow({ s, maskedPhone, onSendOtp, onVerifyOtp, onClaim 
       <h2 className="inv-flow__title">{s.inviteOtpTitle}</h2>
       <p className="inv-flow__sub">{s.inviteOtpSent.replace('{phone}', maskedPhone)}</p>
       {err && <p className="inv-flow__err" role="alert">{err}</p>}
-      <button type="button" className="btn btn-primary btn-lg inv-flow__cta" onClick={() => void handleSend()} disabled={busy}>
+      <Button type="button" variant="primary" size="lg" className="inv-flow__cta" onClick={() => void handleSend()} disabled={busy}>
         {busy ? s.loading : s.inviteOtpSendCta}
-      </button>
+      </Button>
     </div>
   )
 
@@ -136,13 +137,13 @@ export function InviteOtpFlow({ s, maskedPhone, onSendOtp, onVerifyOtp, onClaim 
         ))}
       </fieldset>
       {err && <p className="inv-flow__err" role="alert">{err}</p>}
-      <button type="button" className="btn btn-primary btn-lg inv-flow__cta"
+      <Button type="button" variant="primary" size="lg" className="inv-flow__cta"
         onClick={() => void handleVerify()} disabled={busy || digits.join('').length < OTP_LEN}>
         {busy ? s.loading : s.inviteOtpVerifyCta}
-      </button>
-      <button type="button" className="btn btn-ghost btn-sm inv-flow__resend" onClick={() => void handleSend()} disabled={busy}>
+      </Button>
+      <Button type="button" variant="ghost" size="sm" className="inv-flow__resend" onClick={() => void handleSend()} disabled={busy}>
         {s.inviteOtpResend}
-      </button>
+      </Button>
     </div>
   )
 
@@ -150,9 +151,9 @@ export function InviteOtpFlow({ s, maskedPhone, onSendOtp, onVerifyOtp, onClaim 
     <div className="inv-flow">
       <p className="inv-flow__sub">{s.inviteOtpSent.replace('{phone}', maskedPhone)}</p>
       {err && <p className="inv-flow__err" role="alert">{err}</p>}
-      <button type="button" className="btn btn-primary btn-lg inv-flow__cta" onClick={() => void handleClaim()} disabled={busy}>
+      <Button type="button" variant="primary" size="lg" className="inv-flow__cta" onClick={() => void handleClaim()} disabled={busy}>
         {busy ? s.loading : s.inviteClaimCta}
-      </button>
+      </Button>
     </div>
   )
 }

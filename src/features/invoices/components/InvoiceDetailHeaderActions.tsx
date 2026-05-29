@@ -1,6 +1,7 @@
 /** Invoice Detail — Header action buttons */
 
 import { useNavigate } from 'react-router-dom'
+import { Button } from '@/components/ui/Button'
 import { Pencil, Trash2, Share2, ImageDown, Link, RefreshCw, ArrowRightLeft } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { DocumentDetail } from '../invoice.types'
@@ -37,42 +38,42 @@ export function InvoiceDetailHeaderActions({
 
   return (
     <>
-      <button className="btn btn-ghost btn-sm" onClick={() => navigate(`/invoices/${documentId}/edit`)} aria-label={t.editInvoice}>
+      <Button variant="ghost" size="sm" onClick={() => navigate(`/invoices/${documentId}/edit`)} aria-label={t.editInvoice}>
         <Pencil size={18} aria-hidden="true" />
-      </button>
-      <button className="btn btn-ghost btn-sm" aria-label={t.shareInvoice} onClick={onShare} disabled={disabled}>
+      </Button>
+      <Button variant="ghost" size="sm" aria-label={t.shareInvoice} onClick={onShare} disabled={disabled}>
         <Share2 size={18} aria-hidden="true" />
-      </button>
+      </Button>
       {isActive && document!.balanceDue > 0 && (
-        <button className="btn btn-ghost btn-sm" aria-label="Get Payment Link" onClick={onPaymentLink}>
+        <Button variant="ghost" size="sm" aria-label="Get Payment Link" onClick={onPaymentLink}>
           <Link size={18} aria-hidden="true" />
-        </button>
+        </Button>
       )}
-      <button
-        className="btn btn-ghost btn-sm"
+      <Button
+        variant="ghost" size="sm"
         aria-label={isExporting ? t.exportingImage : t.exportAsImage}
         onClick={onExportImage}
         disabled={isExporting || disabled}
       >
         {isExporting ? <span className="export-spinner" aria-hidden="true" /> : <ImageDown size={18} aria-hidden="true" />}
-      </button>
+      </Button>
       {isActive && (
-        <button
-          className="btn btn-ghost btn-sm"
+        <Button
+          variant="ghost" size="sm"
           aria-label={t.recurringFromInvoiceCta ?? 'Set as Recurring'}
           onClick={() => navigate(`/recurring/new?fromInvoiceId=${documentId}`)}
         >
           <RefreshCw size={18} aria-hidden="true" />
-        </button>
+        </Button>
       )}
       {canConvert && (
-        <button className="btn btn-ghost btn-sm" aria-label={t.convertDocument} onClick={onConvert}>
+        <Button variant="ghost" size="sm" aria-label={t.convertDocument} onClick={onConvert}>
           <ArrowRightLeft size={18} aria-hidden="true" />
-        </button>
+        </Button>
       )}
-      <button className="btn btn-ghost btn-sm" aria-label={t.deleteInvoice} onClick={onDelete} disabled={disabled}>
+      <Button variant="ghost" size="sm" aria-label={t.deleteInvoice} onClick={onDelete} disabled={disabled}>
         <Trash2 size={18} aria-hidden="true" />
-      </button>
+      </Button>
     </>
   )
 }

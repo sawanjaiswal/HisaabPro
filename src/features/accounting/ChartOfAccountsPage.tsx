@@ -1,6 +1,7 @@
 /** Chart of Accounts — Accounts grouped by type with balances */
 
 import { BookOpen } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -21,15 +22,16 @@ export default function ChartOfAccountsPage() {
     useChartOfAccounts()
 
   const seedAction = (
-    <button
+    <Button
       type="button"
-      className="btn btn-secondary btn-sm"
+      variant="secondary"
+      size="sm"
       onClick={handleSeed}
       disabled={isSeedingLoading}
       aria-label={t.seedDefaultAccounts}
     >
       {isSeedingLoading ? t.creatingAccounts : t.seedDefaultAccountsBtn}
-    </button>
+    </Button>
   )
 
   if (status === 'loading') {
@@ -67,14 +69,15 @@ export default function ChartOfAccountsPage() {
             title={t.noAccountsYet}
             description={t.seedDefaultAccounts}
             action={
-              <button
+              <Button
                 type="button"
-                className="btn btn-primary btn-md"
+                variant="primary"
+                size="md"
                 onClick={handleSeed}
                 disabled={isSeedingLoading}
               >
                 {isSeedingLoading ? t.creatingAccounts : t.seedDefaultAccountsBtn}
-              </button>
+              </Button>
             }
           />
         </PageContainer>

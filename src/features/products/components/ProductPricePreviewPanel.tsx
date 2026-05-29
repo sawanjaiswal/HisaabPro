@@ -7,6 +7,7 @@
  */
 
 import { useNavigate } from 'react-router-dom'
+import { Button } from '@/components/ui/Button'
 import { Tag } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Skeleton } from '@/components/feedback/Skeleton'
@@ -159,13 +160,13 @@ export function ProductPricePreviewPanel({
       {status === 'success' && preview.length === 0 && (
         <div className="ppp-empty">
           <p className="ppp-empty-text">{t.noPriceListsConfigured}</p>
-          <button
+          <Button
             type="button"
-            className="btn btn-ghost btn-sm ppp-empty-link"
+            variant="ghost" size="sm" className="ppp-empty-link"
             onClick={() => navigate(ROUTES.PRICE_LISTS)}
           >
             {t.configurePriceLists}
-          </button>
+          </Button>
         </div>
       )}
 

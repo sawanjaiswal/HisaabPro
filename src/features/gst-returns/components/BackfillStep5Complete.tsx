@@ -6,6 +6,7 @@
  */
 
 import { CheckCircle2, AlertTriangle } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
@@ -79,20 +80,20 @@ export function BackfillStep5Complete({ status }: Props) {
       )}
 
       <div className="bfw-actions bfw-actions--col">
-        <button
-          className="btn btn-secondary btn-lg bfw-btn-full"
+        <Button
+          variant="secondary" size="lg" className="bfw-btn-full"
           onClick={handleViewLog}
           aria-label={t.backfillViewLog}
         >
           {t.backfillViewLog}
-        </button>
-        <button
-          className="btn btn-primary btn-lg bfw-btn-full"
+        </Button>
+        <Button
+          variant="primary" size="lg" className="bfw-btn-full"
           onClick={handleDone}
           aria-label={t.backfillDone}
         >
           {t.backfillDone}
-        </button>
+        </Button>
       </div>
     </div>
   )

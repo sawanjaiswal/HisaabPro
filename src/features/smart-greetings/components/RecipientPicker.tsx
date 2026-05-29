@@ -5,6 +5,7 @@ import { Send, Search } from 'lucide-react'
 import { getParties } from '@/features/parties/party-crud.service'
 import type { PartyRecipient } from '../useSmartGreetings'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface RecipientPickerProps {
   onSend: (party: PartyRecipient) => void
@@ -66,16 +67,16 @@ export function RecipientPicker({ onSend, onBack }: RecipientPickerProps) {
                   {party.phone ?? t.noPhone}
                 </span>
               </div>
-              <button
+              <Button
                 type="button"
-                className="btn btn-primary btn-sm"
+                variant="primary" size="sm"
                 onClick={() => onSend(party)}
                 disabled={!party.phone}
                 aria-label={`Send to ${party.name}`}
               >
                 <Send size={14} aria-hidden="true" />
                 Send
-              </button>
+              </Button>
             </div>
           ))}
           {filtered.length === 0 && (
@@ -84,9 +85,9 @@ export function RecipientPicker({ onSend, onBack }: RecipientPickerProps) {
         </div>
       )}
 
-      <button type="button" className="btn btn-ghost btn-md greeting-recipients-back" onClick={onBack}>
+      <Button type="button" variant="ghost" size="md" className="greeting-recipients-back" onClick={onBack}>
         Back
-      </button>
+      </Button>
     </div>
   )
 }

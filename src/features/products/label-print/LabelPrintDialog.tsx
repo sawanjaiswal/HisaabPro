@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
+import { Button } from '@/components/ui/Button'
 import { X, Download, Printer, RefreshCw } from 'lucide-react'
 import { PDFDownloadLink } from '@react-pdf/renderer'
 import { useToast } from '@/hooks/useToast'
@@ -108,7 +109,7 @@ export function LabelPrintDialog({ productIds, onClose }: LabelPrintDialogProps)
         {dialogState === 'empty' && (
           <div className="label-dialog-body label-dialog-empty">
             <p>No products selected.</p>
-            <button type="button" className="btn btn-ghost" onClick={onClose}>Close</button>
+            <Button type="button" variant="ghost" onClick={onClose}>Close</Button>
           </div>
         )}
 
@@ -160,15 +161,15 @@ export function LabelPrintDialog({ productIds, onClose }: LabelPrintDialogProps)
                   </button>
                 )}
               </PDFDownloadLink>
-              <button
+              <Button
                 type="button"
-                className="btn btn-primary label-footer-btn"
+                variant="primary" className="label-footer-btn"
                 onClick={handlePrint}
                 aria-label="Print"
               >
                 <Printer size={16} aria-hidden="true" />
                 Print
-              </button>
+              </Button>
             </div>
           </>
         )}
