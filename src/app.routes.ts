@@ -57,6 +57,7 @@ export const ActiveSessions = lazy(() => import('@/features/settings/ActiveSessi
 export const PinSetup = lazy(() => import('@/features/settings/PinSetupPage'))
 export const Shortcuts = lazy(() => import('@/features/settings/ShortcutsPage'))
 export const ThemeAppearance = lazy(() => import('@/features/settings/ThemeAppearancePage'))
+export const BackupSettings = lazy(() => import('@/features/backup/BackupPage'))
 export const GstSettings = lazy(() => import('@/features/gst/GstSettingsPage'))
 export const TaxCategories = lazy(() => import('@/features/tax/TaxCategoriesPage'))
 export const CreateTaxCategory = lazy(() => import('@/features/tax/CreateTaxCategoryPage'))

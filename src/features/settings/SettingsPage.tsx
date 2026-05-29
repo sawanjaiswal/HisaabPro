@@ -31,6 +31,8 @@ import {
   Sparkles,
   Trophy,
   Store,
+  Palette,
+  Cloud,
   LogOut,
 } from 'lucide-react'
 import type { LucideProps } from 'lucide-react'
@@ -77,6 +79,8 @@ const ICON_MAP: Record<string, IconComponent> = {
   Sparkles,
   Trophy,
   Store,
+  Palette,
+  Cloud,
 }
 
 function getNextDateFormat(current: DateFormat): DateFormat {

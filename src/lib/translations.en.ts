@@ -533,6 +533,27 @@ export const en = {
   themeVariantMinimalDesc: 'Muted slate & sage — calm and understated',
   themeHint:             'Changes apply instantly across the whole app.',
 
+  // ─── Backup — Google Drive (Audit #5) ─────────────────────────────────────
+  backupPageTitle:       'Backup & Restore',
+  backupTitle:           'Google Drive Backup',
+  backupConsent:         'Connect your Google account to save an encrypted copy of your business data to Drive. We only access files this app creates — never the rest of your Drive.',
+  backupConnect:         'Connect Google Drive',
+  backupConnected:       'Google Drive connected',
+  backupConnectFailed:   'Could not connect Google Drive. Please try again.',
+  backupConnectedBadge:  'Connected',
+  backupNow:             'Back up now',
+  backupUploaded:        'Backup uploaded to Google Drive',
+  backupUploadFailed:    'Backup failed. Please try again.',
+  backupDisconnect:      'Disconnect',
+  backupDisconnectTitle: 'Disconnect Google Drive?',
+  backupDisconnectConfirm: 'This revokes access and removes the stored connection. Your existing Drive files are not deleted.',
+  backupDisconnected:    'Google Drive disconnected',
+  backupDisconnectFailed: 'Could not disconnect. Please try again.',
+  backupStatusError:     'Could not load backup status.',
+  backupUnavailable:     'Google Drive backup is not available on this server yet.',
+  backupLastRun:         'Last backup',
+  backupNeverRun:        'No backup yet',
+
   // ─── Feedback — Empty / Error / Network ───────────────────────────────────
   emptyParties:   'Add your first customer or supplier to get started.',
   emptyProducts:  'Add your first product to start managing inventory.',

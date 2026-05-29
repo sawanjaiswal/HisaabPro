@@ -9,13 +9,13 @@
 
 | Phase | Rows | VERIFIED | PARTIAL | MISSING | DRIFT |
 |-------|------|----------|---------|---------|-------|
-| 1A–1H (1–62)        | 66 | 60 | 2 | 1 | 3 |
+| 1A–1H (1–62)        | 66 | 61 | 2 | 0 | 3 |
 | 2 GST (63–82)       | 20 | 18 | 1 | 0 | 1 |
 | 3 Accounting (83–104)| 22 | 17 | 1 | 0 | 4 |
 | 4 Inventory/POS (105–120)| 16 | 15 | 1 | 0 | 0 |
 | 5 Sales/Mktg (121–134)| 18 | 17 | 0 | 0 | 1 |
 | 6+7 (135–150)       | 23 | 23 | 0 | 0 | 0 |
-| **Total**           | **165** | **150** | **5** | **1** | **9** |
+| **Total**           | **165** | **151** | **5** | **0** | **9** |
 
 ~91% of rows verify exactly as the doc claims. The deltas below are the actionable list.
 
@@ -75,7 +75,27 @@
 
 | # | Feature | Reality |
 |---|---------|---------|
-| 5  | Google Drive backup | `backup.service.ts` has no Drive/googleapis/oauth/upload; local backup only |
+| — | (none) | All MISSING rows resolved |
+
+### Resolved
+- **#5 Google Drive backup — FIXED 2026-05-29** (gold-standard /start-epic,
+  architecture-auditor PASS + security PASS rev 2). Per-user OAuth 2.0
+  (Authorization Code + PKCE S256), least-privilege `drive.file` scope,
+  env-gated opt-in (`isDriveConfigured()` → 503 when creds absent, mirrors
+  Resend/GSTIN). Refresh token encrypted at rest with AES-256-GCM
+  (12-byte random IV per encrypt, authTag verified on decrypt, fail-closed if
+  key missing/≠32 bytes). OAuth state is user-bound + single-use and asserted
+  on callback (`state.userId === req.user.userId`) to block account-attach;
+  redirect_uri pinned from env. Disconnect always deletes the row even if
+  Google revoke fails (idempotent). New `DriveBackupConnection` model
+  (migration `20260529173555_drive_backup_connection`); pure `buildBackupData`
+  extracted from `backup.service.ts` and reused by the upload path. 5 endpoints
+  under `/api/backup/drive/*` (connect/callback/status/backup-now/disconnect),
+  backup-now rate-limited 10/h. FE at `/settings/backup`
+  (`features/backup/`, 4 UI states + consent copy, en+hi). Proof: tsc clean,
+  curl 401/503/200, crypto roundtrip+tamper+fail-closed, token-never-in-logs
+  grep, enforce + offline-enforce green. Cred-blocked on real Google OAuth
+  client for end-to-end delivery.
 
 ## #143 — correctly Not Started
 WhatsApp inbound billing-bot genuinely absent (the two aisensy files are 501 delivery/marketing stubs). Matrix claim accurate.

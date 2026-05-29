@@ -21,3 +21,7 @@
 {"phase":"critics-done","feature":"hsn-seed-trgm-index","ts":"2026-05-29T10:47:06Z","verdict":"PASS"}
 {"phase":"build-start","feature":"hsn-seed-trgm-index","ts":"2026-05-29T10:51:27Z"}
 {"phase":"epic-end","feature":"hsn-seed-trgm-index","ts":"2026-05-29T11:01:56Z"}
+{"phase":"start","feature":"drive-backup","sess":"bare-172309","ts":"2026-05-29T11:53:09Z"}
+{"phase":"critics-done","feature":"drive-backup","verdict":"all-PASS","ts":"2026-05-29T12:00:08Z"}
+{"phase":"build-start","feature":"drive-backup","ts":"2026-05-29T12:01:00Z"}
+{"phase":"epic-end","feature":"drive-backup","ts":"2026-05-29T15:00:58Z"}

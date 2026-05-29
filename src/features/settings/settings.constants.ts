@@ -173,6 +173,7 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
         route: ROUTES.SETTINGS_SESSIONS,
         type: 'navigation',
       },
+      { id: 'backup', label: 'Backup & Restore', description: 'Back up your data to Google Drive', icon: 'Cloud', route: ROUTES.SETTINGS_BACKUP, type: 'navigation' },
     ],
   },
   {

@@ -533,6 +533,27 @@ export const hi = {
   themeVariantMinimalDesc: 'हल्का स्लेट और सेज — शांत और सादगीपूर्ण',
   themeHint:             'बदलाव पूरे ऐप में तुरंत लागू होते हैं।',
 
+  // ─── Backup — Google Drive (Audit #5) ─────────────────────────────────────
+  backupPageTitle:       'बैकअप और रिस्टोर',
+  backupTitle:           'Google Drive बैकअप',
+  backupConsent:         'अपने व्यवसाय डेटा की एन्क्रिप्टेड कॉपी Drive में सहेजने के लिए अपना Google खाता जोड़ें। हम केवल इस ऐप द्वारा बनाई गई फ़ाइलें ही एक्सेस करते हैं — आपका बाकी Drive कभी नहीं।',
+  backupConnect:         'Google Drive जोड़ें',
+  backupConnected:       'Google Drive जुड़ गया',
+  backupConnectFailed:   'Google Drive नहीं जुड़ सका। कृपया फिर से प्रयास करें।',
+  backupConnectedBadge:  'जुड़ा हुआ',
+  backupNow:             'अभी बैकअप लें',
+  backupUploaded:        'बैकअप Google Drive पर अपलोड हो गया',
+  backupUploadFailed:    'बैकअप विफल रहा। कृपया फिर से प्रयास करें।',
+  backupDisconnect:      'हटाएं',
+  backupDisconnectTitle: 'Google Drive हटाएं?',
+  backupDisconnectConfirm: 'इससे एक्सेस रद्द हो जाएगा और सहेजा गया कनेक्शन हट जाएगा। आपकी मौजूदा Drive फ़ाइलें नहीं हटाई जातीं।',
+  backupDisconnected:    'Google Drive हटा दिया गया',
+  backupDisconnectFailed: 'हटाया नहीं जा सका। कृपया फिर से प्रयास करें।',
+  backupStatusError:     'बैकअप स्थिति लोड नहीं हो सकी।',
+  backupUnavailable:     'इस सर्वर पर Google Drive बैकअप अभी उपलब्ध नहीं है।',
+  backupLastRun:         'अंतिम बैकअप',
+  backupNeverRun:        'अभी तक कोई बैकअप नहीं',
+
   // ─── Feedback — Empty / Error / Network ───────────────────────────────────
   emptyParties:   'शुरू करने के लिए पहला ग्राहक या सप्लायर जोड़ें।',
   emptyProducts:  'इन्वेंटरी प्रबंधन शुरू करने के लिए पहला उत्पाद जोड़ें।',

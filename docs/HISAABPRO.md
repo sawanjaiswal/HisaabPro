@@ -818,8 +818,9 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 
 > **Line-by-line code re-audit 2026-05-29** (`docs/audit/FEATURE_AUDIT_SUMMARY.md`):
 > 150/165 rows verified exactly. Corrected this pass — drift rows now carry an
-> inline `audit 2026-05-29:` note: #5 (Drive backup MISSING, email-export is
-> CSV), #8 (fixed 2026-05-29 — theme variants shipped), #32 (fixed 2026-05-29 — client-render+upload),
+> inline `audit 2026-05-29:` note: #5 (Drive backup fixed 2026-05-29 — OAuth+PKCE,
+> AES-256-GCM token-at-rest, env-gated; email-export still CSV),
+> #8 (fixed 2026-05-29 — theme variants shipped), #32 (fixed 2026-05-29 — client-render+upload),
 > #61 (fixed 2026-05-29 — global listener) & #78 (fixed 2026-05-29 — real GSP
 > lookup, cred-blocked), #76 (fixed 2026-05-29 — curated
 > 126-code seed + trgm GIN), #90/#91 (no voucher endpoint), #92 (RETURNED≠BOUNCED), #100/#127/
@@ -874,7 +875,7 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | 4 | Notifications | SMS (MSG91) provider | In-Progress (cred-blocked) | `bea1093` · 2026-04 | `notifications-msg91.routes.ts` — needs `MSG91_WEBHOOK_TOKEN` |
 | 4 | Notifications | Quiet hours + preferences | Done | `bea1093` · 2026-04 | NotificationPreference model + settings UI |
 | 5 | Backup | Local (manual) backup + list + download | Done | `bfbe6b2` · 2026-03 | `routes/backup.ts` + `services/backup.service.ts` |
-| 5 | Backup | Google Drive backup | Not Started | — | audit 2026-05-29: no Drive/googleapis/oauth client in `backup.service.ts`; local backup only |
+| 5 | Backup | Google Drive backup | Done | 2026-05-29 | OAuth+PKCE S256, `drive.file` scope, env-gated 503; refresh token AES-256-GCM at rest; user-bound single-use state; `services/backup/` + `/api/backup/drive/*` (5 routes) + FE `features/backup/`. Cred-blocked on real Google client for E2E |
 | 5 | Backup | Email export | Partial | `bfbe6b2` · 2026-03 | audit 2026-05-29: `export.service.generateFullExport` is a CSV-of-all-data download — emails nothing |
 | 5 | Backup | Cooldown enforcement | Done | `bfbe6b2` · 2026-03 | service-level rate guard |
 | 6 | Offline-first PWA | Service worker + Workbox cache | Done | `bfbe6b2` · 2026-03 | `serviceWorkerRegistration.ts` + `vite.config.ts` SW rules |

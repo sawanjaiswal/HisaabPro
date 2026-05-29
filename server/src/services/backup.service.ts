@@ -19,7 +19,7 @@ const SCHEMA_VERSION = '1.0.0'
 const MAX_MANUAL_BACKUPS_PER_DAY = 3
 const COOLDOWN_MS = 5 * 60 * 1000 // 5 minutes
 
-interface BackupData {
+export interface BackupData {
   schemaVersion: string
   createdAt: string
   userId: string
@@ -65,6 +65,39 @@ function getLastBackupTime(userId: string): Date | null {
   return backups.length > 0 ? backups[0].createdAt : null
 }
 
+/**
+ * Pure snapshot builder — gathers the user's backup payload with no cooldown,
+ * rate-limit, or in-memory-store side effects. Reused by the Drive backup path
+ * (services/backup/drive-backup.service.ts).
+ */
+export async function buildBackupData(userId: string): Promise<BackupData> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, phone: true, name: true, email: true, createdAt: true },
+  })
+  if (!user) throw notFoundError('User not found')
+
+  const businessUsers = await prisma.businessUser.findMany({
+    where: { userId },
+    include: { business: { select: { id: true, name: true, businessType: true } } },
+    take: 50, // bounded: a user typically belongs to < 50 businesses
+  })
+
+  return {
+    schemaVersion: SCHEMA_VERSION,
+    createdAt: new Date().toISOString(),
+    userId,
+    data: {
+      user: user as unknown as Record<string, unknown>,
+      businesses: businessUsers.map((bu) => ({
+        role: bu.role,
+        joinedAt: bu.joinedAt,
+        business: bu.business as unknown as Record<string, unknown>,
+      })),
+    },
+  }
+}
+
 export async function createManualBackup(userId: string) {
   // Rate limiting
   const todayCount = getTodayManualCount(userId)
@@ -78,32 +111,7 @@ export async function createManualBackup(userId: string) {
     throw validationError(`Please wait ${remainingSec}s before creating another backup`)
   }
 
-  // Gather data
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { id: true, phone: true, name: true, email: true, createdAt: true },
-  })
-  if (!user) throw notFoundError('User not found')
-
-  const businessUsers = await prisma.businessUser.findMany({
-    where: { userId },
-    include: { business: { select: { id: true, name: true, businessType: true } } },
-    take: 50, // bounded: a user typically belongs to < 50 businesses
-  })
-
-  const backupData: BackupData = {
-    schemaVersion: SCHEMA_VERSION,
-    createdAt: new Date().toISOString(),
-    userId,
-    data: {
-      user: user as unknown as Record<string, unknown>,
-      businesses: businessUsers.map((bu) => ({
-        role: bu.role,
-        joinedAt: bu.joinedAt,
-        business: bu.business as unknown as Record<string, unknown>,
-      })),
-    },
-  }
+  const backupData = await buildBackupData(userId)
 
   const json = JSON.stringify(backupData)
   const id = generateId()

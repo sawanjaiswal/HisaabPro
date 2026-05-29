@@ -49,6 +49,7 @@ export const ROUTES = {
   SETTINGS_AUDIT_LOG: '/settings/audit-log',
   SETTINGS_SHORTCUTS: '/settings/shortcuts',
   SETTINGS_THEME: '/settings/theme',
+  SETTINGS_BACKUP: '/settings/backup',
   SETTINGS_PIN_SETUP: '/settings/pin-setup',
   SETTINGS_SUBSCRIPTION: '/settings/subscription',
   SETTINGS_SUBSCRIPTION_CHECKOUT: '/settings/subscription/checkout',
