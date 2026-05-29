@@ -7,7 +7,7 @@
  * status='POSTED' — frees the (businessId, sourceType, sourceId) slot so a
  * re-post does not collide.
  */
-import { balanceDelta } from '../helpers.js'
+import { postLedgerDeltas } from './ledger-deltas.js'
 import type { Tx } from './posting.types.js'
 
 export async function reverseSourceEntry(
@@ -26,12 +26,16 @@ export async function reverseSourceEntry(
   })
   if (!entry) return null
 
-  for (const line of entry.lines) {
-    const delta = balanceDelta(line.account.type, line.debit, line.credit)
-    if (delta !== 0) {
-      await tx.ledgerAccount.update({ where: { id: line.account.id }, data: { balance: { increment: -delta } } })
-    }
-  }
+  await postLedgerDeltas(
+    tx,
+    entry.lines.map((line) => ({
+      accountId: line.account.id,
+      accountType: line.account.type,
+      debit: line.debit,
+      credit: line.credit,
+    })),
+    { reverse: true },
+  )
 
   await tx.journalEntry.update({
     where: { id: entry.id },

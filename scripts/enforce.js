@@ -690,6 +690,50 @@ if (writerViolationCount === 0) {
   console.log(`  ❌ ${writerViolationCount} Writer SSOT violation(s)`)
 }
 
+// ─── Check 13b: Ledger balance writer SSOT ───────────────────────────────────
+//
+// LedgerAccount.balance is a verified denormalised cache of SUM(POSTED
+// JournalLine via balanceDelta). Only the single writer (posting/ledger-deltas)
+// may mutate it; every other path (posting, journal-entries, fy-closure,
+// reconcile) routes through postLedgerDeltas/repairLedgerBalance. A second
+// uncoordinated `balance` writer silently diverges the cache from the journal
+// truth with no detector — exactly the SSOT hole this epic closed. chart-of-
+// accounts is genesis-only (create/createMany balance:0), which this pattern
+// (update/updateMany/upsert) does not match, so it needs no exception.
+
+console.log('🔍 Check 13b: Ledger balance writer SSOT (no ledgerAccount balance writes outside posting/ledger-deltas)')
+
+const BALANCE_WRITER_ALLOWLIST = ['services/accounting/posting/ledger-deltas']
+const LEDGER_MUTATION_RE = /\.ledgerAccount\.(update|updateMany|upsert)\s*\(/
+const BALANCE_FIELD_RE = /\bbalance\s*:/
+
+let balanceWriterViolationCount = 0
+
+for (const file of serverFiles) {
+  if (BALANCE_WRITER_ALLOWLIST.some((p) => file.includes(p))) continue
+  if (file.includes('__tests__') || file.includes('.test.')) continue
+
+  const lines = readFileSync(file, 'utf8').split('\n')
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].trim().startsWith('//')) continue
+    if (!LEDGER_MUTATION_RE.test(lines[i])) continue
+    // A ledgerAccount mutation — flag only if its `data` touches `balance`.
+    const window = lines.slice(i, i + 8).join('\n')
+    if (BALANCE_FIELD_RE.test(window)) {
+      errors.push(
+        `LEDGER_BALANCE_WRITER_VIOLATION: ${rel(file)}:${i + 1} — direct LedgerAccount.balance mutation outside the single writer. Use postLedgerDeltas()/repairLedgerBalance() from services/accounting/posting/ledger-deltas.ts.`,
+      )
+      balanceWriterViolationCount++
+    }
+  }
+}
+
+if (balanceWriterViolationCount === 0) {
+  console.log('  ✅ Ledger balance writer SSOT intact')
+} else {
+  console.log(`  ❌ ${balanceWriterViolationCount} ledger balance writer violation(s)`)
+}
+
 // ─── Check 14: JWT never in logs ─────────────────────────────────────────────
 //
 // SECURITY P1-G: Entitlement JWT must never appear in logger calls.

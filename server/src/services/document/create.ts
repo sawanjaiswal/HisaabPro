@@ -18,6 +18,7 @@ import {
 import { validateLineItemProducts } from './create-batch-validation.js'
 import { recordFreeItemAudit } from './create-audit.js'
 import { buildLineItemData } from './line-item-builder.js'
+import { buildDocumentCreateData } from './create-document-data.js'
 import { persistDocumentCustomFieldValues } from './custom-fields.js'
 import { notificationManager } from '../notifications/notification-manager.js'
 import { formatPaise } from '../notifications/notification-template.service.js'
@@ -108,54 +109,10 @@ export async function createDocument(
     }
 
     const doc = await tx.document.create({
-      data: {
-        businessId,
-        type: data.type,
-        status: data.status,
-        documentNumber: numberData?.documentNumber || null,
-        sequenceNumber: numberData?.sequenceNumber || null,
-        financialYear: numberData?.financialYear || null,
-        partyId: data.partyId,
-        shippingAddressId: data.shippingAddressId || null,
-        documentDate: new Date(data.documentDate),
-        dueDate: data.dueDate ? new Date(data.dueDate) : null,
-        paymentTerms: data.paymentTerms || null,
-        subtotal: totals.subtotal,
-        totalDiscount: totals.totalDiscount,
-        totalAdditionalCharges: totals.totalAdditionalCharges,
-        roundOff: totals.roundOff,
-        grandTotal: totals.grandTotal,
-        totalCost: totals.totalCost,
-        totalProfit: totals.totalProfit,
-        profitPercent: totals.profitPercent,
-        balanceDue: totals.grandTotal,
-        notes: data.notes || null,
-        termsAndConditions: data.termsAndConditions || null,
-        includeSignature: data.includeSignature,
-        vehicleNumber: data.transportDetails?.vehicleNumber || null,
-        driverName: data.transportDetails?.driverName || null,
-        transportNotes: data.transportDetails?.transportNotes || null,
-        createdBy: userId,
-        clientId: data.clientId || null,
-        placeOfSupply: data.placeOfSupply || null,
-        isReverseCharge,
-        isComposite,
-        taxPricingMode,
-        supplyType,
-        totalTaxableValue: totals.totalTaxableValue,
-        totalCgst: totals.totalCgst,
-        totalSgst: totals.totalSgst,
-        totalIgst: totals.totalIgst,
-        totalCess: totals.totalCess,
-        originalDocumentId: data.originalDocumentId || null,
-        creditDebitReason: data.creditDebitReason || null,
-        tdsRate: data.tdsRate ?? 0,
-        tdsAmount: data.tdsAmount ?? 0,
-        tcsRate: data.tcsRate ?? 0,
-        tcsAmount: data.tcsAmount ?? 0,
-        // Epic B PR2 — price-list override (already cross-tenant-verified above)
-        priceListId: data.priceListId ?? null,
-      },
+      data: buildDocumentCreateData({
+        businessId, userId, data, numberData, totals,
+        supplyType, isReverseCharge, isComposite, taxPricingMode,
+      }),
     })
 
     const lineItemData = buildLineItemData(doc.id, data.lineItems, productMap, totals)

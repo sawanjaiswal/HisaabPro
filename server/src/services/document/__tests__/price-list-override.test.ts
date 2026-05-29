@@ -49,6 +49,8 @@ vi.mock('../../../lib/prisma.js', () => ({
       documentLineItem: { createMany: vi.fn(), deleteMany: vi.fn() },
       documentAdditionalCharge: { createMany: vi.fn(), deleteMany: vi.fn() },
       documentCustomFieldValue: { deleteMany: vi.fn(), createMany: vi.fn() },
+      // Unposted doc — GL reversal finds no POSTED entry and no-ops.
+      journalEntry: { findFirst: vi.fn().mockResolvedValue(null) },
       taxCategory: { findMany: mockTaxCategoryFindMany },
       business: { findUnique: mockBusinessFindUnique },
       documentSettings: { findUnique: mockDocumentSettingsFindUnique },

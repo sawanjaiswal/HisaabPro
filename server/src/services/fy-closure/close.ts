@@ -5,6 +5,7 @@
 import { prisma } from '../../lib/prisma.js'
 import { validationError } from '../../lib/errors.js'
 import { fyDateRange, buildClosureEntryNumber } from './helpers.js'
+import { postLedgerDeltas, type BalanceLine } from '../accounting/posting/ledger-deltas.js'
 
 type AccountAggregate = {
   name: string
@@ -118,50 +119,60 @@ export async function closeFY(
 
   return prisma.$transaction(async (tx) => {
     const entryLines: EntryLineInput[] = []
+    // Parallel balance-mutation lines (with account type) for the single writer.
+    const balanceLines: BalanceLine[] = []
     let sortOrder = 0
 
+    // Emit a closing line for EVERY income/expense account with a non-zero net,
+    // regardless of sign. An INCOME account with a net debit (sales-returns /
+    // contra-income) or an EXPENSE account with a net credit (refund) MUST get a
+    // line too — otherwise its balance is never driven to 0 and the account is
+    // stranded non-flat after close. balanceDelta over each line zeroes the
+    // account derivably, which is why the old blanket set-0 is now removed.
     for (const [accountId, v] of accountMap.entries()) {
+      let debit = 0
+      let credit = 0
       if (v.type === 'INCOME') {
         const netIncome = v.totalCredit - v.totalDebit
-        if (netIncome > 0) {
-          entryLines.push({
-            accountId,
-            debit: netIncome,
-            credit: 0,
-            narration: `Closing entry — ${v.name}`,
-            sortOrder: sortOrder++,
-          })
-        }
+        if (netIncome === 0) continue
+        if (netIncome > 0) debit = netIncome
+        else credit = -netIncome
       } else if (v.type === 'EXPENSE') {
         const netExpense = v.totalDebit - v.totalCredit
-        if (netExpense > 0) {
-          entryLines.push({
-            accountId,
-            debit: 0,
-            credit: netExpense,
-            narration: `Closing entry — ${v.name}`,
-            sortOrder: sortOrder++,
-          })
-        }
+        if (netExpense === 0) continue
+        if (netExpense > 0) credit = netExpense
+        else debit = -netExpense
+      } else {
+        continue
       }
+      entryLines.push({
+        accountId,
+        debit,
+        credit,
+        narration: `Closing entry — ${v.name}`,
+        sortOrder: sortOrder++,
+      })
+      balanceLines.push({ accountId, accountType: v.type, debit, credit })
     }
 
     // Transfer net profit/loss to Retained Earnings
-    if (netProfit > 0) {
+    if (netProfit !== 0) {
+      const reDebit = netProfit < 0 ? Math.abs(netProfit) : 0
+      const reCredit = netProfit > 0 ? netProfit : 0
       entryLines.push({
         accountId: retainedEarningsAccount.id,
-        debit: 0,
-        credit: netProfit,
-        narration: 'Net profit transferred to Retained Earnings',
+        debit: reDebit,
+        credit: reCredit,
+        narration: netProfit > 0
+          ? 'Net profit transferred to Retained Earnings'
+          : 'Net loss transferred to Retained Earnings',
         sortOrder: sortOrder++,
       })
-    } else if (netProfit < 0) {
-      entryLines.push({
+      balanceLines.push({
         accountId: retainedEarningsAccount.id,
-        debit: Math.abs(netProfit),
-        credit: 0,
-        narration: 'Net loss transferred to Retained Earnings',
-        sortOrder: sortOrder++,
+        accountType: 'EQUITY',
+        debit: reDebit,
+        credit: reCredit,
       })
     }
 
@@ -187,20 +198,11 @@ export async function closeFY(
       select: { id: true },
     })
 
-    // Reset income/expense account balances to zero
-    const accountIdsToReset = Array.from(accountMap.keys())
-    if (accountIdsToReset.length > 0) {
-      await tx.ledgerAccount.updateMany({
-        where: { id: { in: accountIdsToReset } },
-        data: { balance: 0 },
-      })
-    }
-
-    // Update Retained Earnings balance
-    await tx.ledgerAccount.update({
-      where: { id: retainedEarningsAccount.id },
-      data: { balance: { increment: netProfit } },
-    })
+    // Apply the closing entry's own lines through the single balance writer.
+    // Each income/expense line drives its account to 0; the RE line moves
+    // Retained Earnings by netProfit. No separate set-0 / RE-increment — the
+    // balances stay a pure function of the POSTED journal lines (SSOT).
+    await postLedgerDeltas(tx, balanceLines)
 
     // Upsert FinancialYearClosure record
     const closureRecord = await tx.financialYearClosure.upsert({
@@ -230,7 +232,7 @@ export async function closeFY(
       netProfit,
       totalIncome: totalIncomeNet,
       totalExpenses: totalExpenseNet,
-      accountsReset: accountIdsToReset.length,
+      accountsReset: accountMap.size,
     }
   })
 }

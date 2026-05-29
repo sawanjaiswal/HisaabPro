@@ -7,7 +7,8 @@ import { Router } from 'express'
 import { asyncHandler } from '../middleware/asyncHandler.js'
 import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
-import { requirePermission } from '../middleware/permission.js'
+import { requirePermission, requireOwner } from '../middleware/permission.js'
+import { requireRecentPin } from '../middleware/require-recent-pin.js'
 import { requireFeature } from '../middleware/subscription-gate.js'
 import { sendSuccess } from '../lib/response.js'
 import {
@@ -22,6 +23,7 @@ import {
   dayBookQuerySchema,
 } from '../schemas/accounting.schemas.js'
 import * as accountingService from '../services/accounting.service.js'
+import { reconcileLedgerBalances } from '../services/accounting/reconcile-balances.js'
 import { idempotencyCheck } from '../middleware/idempotency.js'
 
 const router = Router()
@@ -199,6 +201,27 @@ router.get(
     const businessId = req.user!.businessId
     const query = dayBookQuerySchema.parse(req.query)
     const result = await accountingService.getDayBook(businessId, query.date)
+    sendSuccess(res, result)
+  }),
+)
+
+// ─── Maintenance ─────────────────────────────────────────────────────────────
+
+/**
+ * POST /api/accounting/reconcile-balances — detect (and optionally repair)
+ * drift between each ledger account's cached `balance` and the journal-line
+ * truth. Owner-only + recent-PIN: `repair:true` mutates financial balances.
+ * Scoped to the active business; never crosses tenants.
+ */
+router.post(
+  '/reconcile-balances',
+  requireOwner(),
+  requireRecentPin('mutation'),
+  idempotencyCheck(),
+  asyncHandler(async (req, res) => {
+    const businessId = req.user!.businessId
+    const repair = req.body?.repair === true
+    const result = await reconcileLedgerBalances(businessId, { repair })
     sendSuccess(res, result)
   }),
 )

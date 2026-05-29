@@ -4,6 +4,7 @@
  */
 import { prisma } from '../../lib/prisma.js'
 import { validationError, notFoundError } from '../../lib/errors.js'
+import { postLedgerDeltas } from '../accounting/posting/ledger-deltas.js'
 
 export async function reopenFY(businessId: string, financialYear: string) {
   const closure = await prisma.financialYearClosure.findUnique({
@@ -35,29 +36,21 @@ export async function reopenFY(businessId: string, financialYear: string) {
       })
 
       if (closingEntry && closingEntry.status === 'POSTED') {
-        // Reverse balance changes: undo the balance resets and RE adjustments
-        for (const line of closingEntry.lines) {
-          if (line.account.type === 'INCOME') {
-            // Was debited to close — restore by crediting back (increase balance)
-            await tx.ledgerAccount.update({
-              where: { id: line.accountId },
-              data: { balance: { increment: line.debit } },
-            })
-          } else if (line.account.type === 'EXPENSE') {
-            // Was credited to close — restore by debiting back (increase balance)
-            await tx.ledgerAccount.update({
-              where: { id: line.accountId },
-              data: { balance: { increment: line.credit } },
-            })
-          } else if (line.account.type === 'EQUITY') {
-            // Retained earnings: reverse the credit/debit
-            const delta = line.credit - line.debit
-            await tx.ledgerAccount.update({
-              where: { id: line.accountId },
-              data: { balance: { decrement: delta } },
-            })
-          }
-        }
+        // Reverse the closing entry through the single balance writer: applying
+        // −balanceDelta to each closing line exactly undoes what close.ts applied
+        // (restores income/expense balances and reverses the RE adjustment),
+        // regardless of each account's sign. Kills the old per-type ad-hoc
+        // branches — one convention, no contra-account blind spot.
+        await postLedgerDeltas(
+          tx,
+          closingEntry.lines.map((line) => ({
+            accountId: line.accountId,
+            accountType: line.account.type,
+            debit: line.debit,
+            credit: line.credit,
+          })),
+          { reverse: true },
+        )
 
         // Void the entry
         await tx.journalEntry.update({

@@ -56,6 +56,8 @@ beforeEach(() => {
   })
   mockPrisma.document.update.mockResolvedValue({ id: DOCUMENT_ID })
   mockPrisma.document.findFirstOrThrow.mockResolvedValue({ id: DOCUMENT_ID })
+  // DRAFT doc has no POSTED journal entry — GL reversal is a no-op.
+  mockPrisma.journalEntry.findFirst.mockResolvedValue(null)
 })
 
 describe('updateDocument — audit', () => {

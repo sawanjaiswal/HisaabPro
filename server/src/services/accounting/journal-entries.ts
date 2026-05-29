@@ -2,7 +2,8 @@
 
 import { prisma } from '../../lib/prisma.js'
 import { notFoundError, validationError } from '../../lib/errors.js'
-import { getFySuffix, balanceDelta } from './helpers.js'
+import { getFySuffix } from './helpers.js'
+import { postLedgerDeltas } from './posting/ledger-deltas.js'
 import type {
   CreateJournalEntryInput,
   ListJournalEntriesQuery,
@@ -98,15 +99,15 @@ export async function postJournalEntry(businessId: string, entryId: string) {
   if (entry.status === 'VOID') throw validationError('Cannot post a voided entry')
 
   return prisma.$transaction(async (tx) => {
-    for (const line of entry.lines) {
-      const delta = balanceDelta(line.account.type, line.debit, line.credit)
-      if (delta !== 0) {
-        await tx.ledgerAccount.update({
-          where: { id: line.accountId },
-          data: { balance: { increment: delta } },
-        })
-      }
-    }
+    await postLedgerDeltas(
+      tx,
+      entry.lines.map((line) => ({
+        accountId: line.accountId,
+        accountType: line.account.type,
+        debit: line.debit,
+        credit: line.credit,
+      })),
+    )
 
     return tx.journalEntry.update({
       where: { id: entryId },
@@ -156,15 +157,16 @@ export async function voidJournalEntry(
 
   // Posted entry — reverse all balance updates inside a transaction
   return prisma.$transaction(async (tx) => {
-    for (const line of entry.lines) {
-      const delta = balanceDelta(line.account.type, line.debit, line.credit)
-      if (delta !== 0) {
-        await tx.ledgerAccount.update({
-          where: { id: line.accountId },
-          data: { balance: { increment: -delta } },
-        })
-      }
-    }
+    await postLedgerDeltas(
+      tx,
+      entry.lines.map((line) => ({
+        accountId: line.accountId,
+        accountType: line.account.type,
+        debit: line.debit,
+        credit: line.credit,
+      })),
+      { reverse: true },
+    )
 
     return tx.journalEntry.update({
       where: { id: entryId },

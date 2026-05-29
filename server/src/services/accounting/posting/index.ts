@@ -11,7 +11,7 @@
  * status='POSTED' (migration 20260529062430_gl_source_idempotency_unique).
  */
 import { validationError } from '../../../lib/errors.js'
-import { balanceDelta } from '../helpers.js'
+import { postLedgerDeltas } from './ledger-deltas.js'
 import { resolveAccounts } from './account-resolver.js'
 import { allocateEntryNumber } from './entry-number.js'
 import type { PostingContext, PostingMap, Tx } from './posting.types.js'
@@ -65,13 +65,13 @@ export async function persistPosting(
     select: { id: true },
   })
 
-  for (const l of lines) {
-    const acct = accounts.get(l.code)!
-    const delta = balanceDelta(acct.type, l.debit, l.credit)
-    if (delta !== 0) {
-      await tx.ledgerAccount.update({ where: { id: acct.id }, data: { balance: { increment: delta } } })
-    }
-  }
+  await postLedgerDeltas(
+    tx,
+    lines.map((l) => {
+      const acct = accounts.get(l.code)!
+      return { accountId: acct.id, accountType: acct.type, debit: l.debit, credit: l.credit }
+    }),
+  )
 
   return { journalEntryId: entry.id }
 }
