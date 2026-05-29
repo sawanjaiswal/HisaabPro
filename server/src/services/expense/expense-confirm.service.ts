@@ -8,6 +8,7 @@ import { prisma } from '../../lib/prisma.js'
 import { notFoundError, conflictError, AppError, ErrorCode } from '../../lib/errors.js'
 import { computeNextRunDate } from './recurring.dates.js'
 import type { ExpenseFrequency } from './recurring.dates.js'
+import { postExpense } from '../accounting/posting/index.js'
 
 // ── Public API ─────────────────────────────────────────────────────────────
 
@@ -33,7 +34,11 @@ export async function confirmExpense(
   return prisma.$transaction(async (tx) => {
     const expense = await tx.expense.findFirst({
       where: { id: expenseId, businessId, isDeleted: false },
-      select: { id: true, status: true, categoryId: true, amount: true },
+      select: {
+        id: true, status: true, categoryId: true, amount: true,
+        gstAmount: true, paymentMode: true, date: true,
+        category: { select: { name: true } },
+      },
     })
 
     if (!expense) throw notFoundError('Expense')
@@ -58,6 +63,20 @@ export async function confirmExpense(
     await tx.expense.update({
       where: { id: expense.id },
       data: { status: 'CONFIRMED', confirmedAt: now },
+    })
+
+    // S1 — GL auto-posting: Dr Expense + ITC, Cr Cash/Bank. Hard-atomic.
+    await postExpense(tx, {
+      businessId,
+      userId,
+      expense: {
+        id: expense.id,
+        amount: expense.amount,
+        gstAmount: expense.gstAmount,
+        paymentMode: expense.paymentMode,
+        categoryName: expense.category.name,
+        date: expense.date,
+      },
     })
 
     // Audit log (fire-and-forget inside tx — on tx rollback the audit row also rolls back)

@@ -822,9 +822,13 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 > CSV), #8 (no theme variants), #32 & #61 & #78 (partial/stub), #76 (HSN no
 > seed/GIN), #90/#91 (no voucher endpoint), #92 (RETURNED≠BOUNCED), #100/#127/
 > #130/#133/#140 (path/label fixes), #104/#114 (field/branch fixes). Two real
-> bugs flagged with `*`: **S1** (#84–#87, #104 — GL reports read a journal that
-> transactions don't auto-post to) and **N4** (#99 — FY-closure throws on a
-> seeded business). Both scheduled for fix.
+> bugs were flagged with `*`: **S1** (#84–#87, #104 — GL reports read a journal
+> that transactions didn't auto-post to) and **N4** (#99 — FY-closure threw on a
+> seeded business). **Both fixed 2026-05-29**: S1 wires invoice/payment/expense
+> mutations to synchronous hard-atomic GL posting (`services/accounting/posting/*`,
+> idempotency index `JournalEntry_source_posted_key`, COGS leg, VOID-in-place
+> reversal, `scripts/backfill-gl.ts` for history); N4 resolves Retained Earnings
+> by seeded code 3100.
 >
 > Authoritative per-feature × per-sub-feature status, audited against the live
 > codebase on `master` (HEAD `6ba7c0f`, originally audited at `6134b9b`; commits since are pre-beta hardening only — money-SSOT merge, refresh-token rotation, security batch A, W4b test sweep — no feature-row changes). For each row: route+service+model+page
@@ -1001,10 +1005,10 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | # | Feature | Sub-feature | Status | Commit · Date | Evidence |
 |---|---|---|---|---|---|
 | 83 | Double-entry ledger | 15 system accounts | Done | `2b1d872` · 2026-05 | `services/accounting/*` + LedgerAccount + JournalEntry/Line |
-| 84 | P&L | Statement endpoint + UI | Done* | `2b1d872` · 2026-05 | `financial-reports.service.ts` + ProfitLossPage — *audit 2026-05-29: reads the GL journal, which transactions don't auto-post to (see S1) |
-| 85 | Balance Sheet | Statement endpoint + UI | Done* | `2b1d872` · 2026-05 | `financial-reports.service.ts` + BalanceSheetPage — *GL-backed; see S1 |
-| 86 | Cash Flow | Statement endpoint + UI | Done* | `2b1d872` · 2026-05 | `financial-reports.service.ts` + CashFlowPage — *GL-backed; see S1 |
-| 87 | Accounting Day Book | Per-day journal view | Done* | `2b1d872` · 2026-05 | accounting/index.ts + DayBookPage — *GL-backed; see S1 |
+| 84 | P&L | Statement endpoint + UI | Done | `2b1d872` · 2026-05 | `financial-reports.service.ts` + ProfitLossPage — GL now auto-fed by S1 (2026-05-29) |
+| 85 | Balance Sheet | Statement endpoint + UI | Done | `2b1d872` · 2026-05 | `financial-reports.service.ts` + BalanceSheetPage — GL-backed, fed by S1 |
+| 86 | Cash Flow | Statement endpoint + UI | Done | `2b1d872` · 2026-05 | `financial-reports.service.ts` + CashFlowPage — GL-backed, fed by S1 |
+| 87 | Accounting Day Book | Per-day journal view | Done | `2b1d872` · 2026-05 | accounting/index.ts + DayBookPage — GL-backed, fed by S1 |
 | 88 | Journal Entries | DRAFT→POST→VOID | Done | `2b1d872` · 2026-05 | `accounting/journal-entries.ts` + JournalEntriesPage |
 | 89 | Bank Reconciliation | Match payments↔bank | Done | 2026-05-28 | Shipped inside #147 Auto-reconciliation (Phase 7) |
 | 90 | Receipt vouchers | Voucher print | Not Started | — | audit 2026-05-29: no voucher endpoint/PDF in `routes/payments.ts` (13 endpoints checked) |
@@ -1016,12 +1020,12 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | 96 | Expense tracking | 10 categories | Done | `e11caf9` · 2026-04 | `services/expense/*` + Expense + ExpenseCategory + expenses feature |
 | 97 | Other income | OtherIncome model | Done | `2b1d872` · 2026-05 | `services/other-income.service.ts` + other-income feature |
 | 98 | Loans | LOAN_GIVEN/TAKEN + EMI | Done | `be574fd` · 2026-04 | `services/loan/*` + LoanAccount + LoanTransaction + loans feature |
-| 99 | FY closure | Carry-forward to RE | Done* | `2b1d872` · 2026-05 | `services/fy-closure/*` + FinancialYearClosure + FYClosurePage — N4 fixed 2026-05-29 (RE now resolved by seeded code 3100); *still depends on GL being fed (S1) |
+| 99 | FY closure | Carry-forward to RE | Done | `2b1d872` · 2026-05 | `services/fy-closure/*` + FinancialYearClosure + FYClosurePage — N4 fixed 2026-05-29 (RE resolved by seeded code 3100); GL now fed by S1 |
 | 100 | Tally Export | XML format | Done | `2b1d872` · 2026-05 | `services/reports/tally-export.ts` (audit 2026-05-29: lives in reports/, not the cited routes/export.ts) |
 | 101 | Aging reports | 4 buckets | Done | `2b1d872` · 2026-05 | `collections/aging.route.ts` (shared with #41) |
 | 102 | Profitability | Bill/party/product | Done | `2b1d872` · 2026-05 | `financial-reports.service.ts` profitability endpoints |
 | 103 | Discount reports | Per-doc + per-party | Done | `2b1d872` · 2026-05 | `report.service.ts` discount endpoint |
-| 104 | COGS tracking | WAC-based | Partial | `2b1d872` · 2026-05 | WAC real in inventory/bom services; audit 2026-05-29: `accounting/helpers.ts` has NO COGS branch and no COGS journal posting (see S1) |
+| 104 | COGS tracking | WAC-based | Done | `2b1d872` · 2026-05 | WAC real in inventory/bom services; S1 (2026-05-29) posts the COGS leg (Dr 5050 / Cr 1300 = Document.totalCost) on every SALE_INVOICE |
 
 ### Phase 4 — Advanced Inventory & POS
 

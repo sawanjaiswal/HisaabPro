@@ -10,6 +10,7 @@ import { notificationManager } from '../notifications/notification-manager.js'
 import { formatPaise } from '../notifications/notification-template.service.js'
 import logger from '../../lib/logger.js'
 import { paymentTypeDirection } from '../../lib/payment-types.js'
+import { postPayment } from '../accounting/posting/index.js'
 
 export async function createPayment(
   businessId: string,
@@ -119,6 +120,21 @@ export async function createPayment(
       data: {
         outstandingBalance: { increment: outstandingDelta },
         lastTransactionAt: new Date(),
+      },
+    })
+
+    // S1 — GL auto-posting: Dr Cash/Bank Cr AR (in) / Dr AP Cr Cash/Bank (out).
+    await postPayment(tx, {
+      businessId,
+      userId,
+      payment: {
+        id: payment.id,
+        type: data.type,
+        mode: data.mode,
+        amount: data.amount,
+        partyId: data.partyId,
+        referenceNumber: data.referenceNumber ?? null,
+        date: new Date(data.date),
       },
     })
 

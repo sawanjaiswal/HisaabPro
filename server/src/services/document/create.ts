@@ -22,6 +22,7 @@ import { persistDocumentCustomFieldValues } from './custom-fields.js'
 import { notificationManager } from '../notifications/notification-manager.js'
 import { formatPaise } from '../notifications/notification-template.service.js'
 import { accrueForSaleInvoice, emitDocumentCommissionAnalytics, type DocumentCommissionOutcome } from './document-commission.js'
+import { postDocument } from '../accounting/posting/index.js'
 
 export async function createDocument(
   businessId: string,
@@ -228,6 +229,10 @@ export async function createDocument(
         businessId, staffUserId: userId, documentId: doc.id,
         documentDate: new Date(data.documentDate), documentType: data.type,
       })
+
+      // S1 — GL auto-posting: balanced double-entry for invoices / CN / DN.
+      // Hard-atomic inside this tx; idempotent via partial unique index.
+      await postDocument(tx, { businessId, userId, doc })
     }
 
     // P3.12 — defense-in-depth: scope by businessId on re-fetch

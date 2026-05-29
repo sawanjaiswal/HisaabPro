@@ -9,6 +9,7 @@ import {
   STOCK_DECREASE_TYPES, STOCK_INCREASE_TYPES, AFFECTS_OUTSTANDING,
   updateOutstanding, getOutstandingReverseDelta,
 } from './helpers.js'
+import { reverseSourceEntry } from '../accounting/posting/index.js'
 
 export async function deleteDocument(businessId: string, documentId: string, userId: string) {
   const doc = await prisma.document.findFirst({
@@ -42,6 +43,8 @@ export async function deleteDocument(businessId: string, documentId: string, use
         const reverseDelta = getOutstandingReverseDelta(doc.type, doc.grandTotal)
         await updateOutstanding(tx, doc.partyId, reverseDelta)
       }
+      // S1 — GL: VOID the source's posted journal entry (reverses balances).
+      await reverseSourceEntry(tx, businessId, 'DOCUMENT', documentId, 'Document deleted')
     }
 
     const updated = await tx.document.update({

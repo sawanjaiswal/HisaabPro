@@ -14,6 +14,8 @@ import { persistDocumentCustomFieldValues } from './custom-fields.js'
 import { recomputeLineItemsAndTotals } from './update-recompute.js'
 import { accrueForSaleInvoice, emitDocumentCommissionAnalytics, type DocumentCommissionOutcome } from './document-commission.js'
 import { bumpVersionOrConflict } from '../../lib/optimistic-lock.js'
+import { postDocument, reverseSourceEntry } from '../accounting/posting/index.js'
+import { POSTING_DOC_SELECT } from '../accounting/posting/post-document.js'
 
 export async function updateDocument(
   businessId: string,
@@ -162,6 +164,17 @@ export async function updateDocument(
           documentType: existing.type,
         })
       }
+    }
+
+    // S1 — GL: edit-of-posted = VOID the original JE in place, then re-post
+    // fresh values. The partial index is scoped to status=POSTED, so the
+    // re-post does not collide with the now-VOID original.
+    await reverseSourceEntry(tx, businessId, 'DOCUMENT', documentId, 'Document edited')
+    if (willBeSaved) {
+      const fresh = await tx.document.findFirstOrThrow({
+        where: { id: documentId, businessId }, select: POSTING_DOC_SELECT,
+      })
+      await postDocument(tx, { businessId, userId, doc: fresh })
     }
 
     // Audit row inside the tx so it commits/rolls back with the mutation.

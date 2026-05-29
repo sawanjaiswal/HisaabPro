@@ -9,6 +9,7 @@ import type { UpdatePaymentInput } from '../../schemas/payment.schemas.js'
 import { paymentTypeDirection } from '../../lib/payment-types.js'
 import type { PaymentType } from '../../../../shared/enums.js'
 import { bumpVersionOrConflict } from '../../lib/optimistic-lock.js'
+import { postPayment, reverseSourceEntry } from '../accounting/posting/index.js'
 
 
 export async function updatePayment(
@@ -53,6 +54,14 @@ export async function updatePayment(
       where: { id: paymentId },
       data: updateData,
     })
+
+    // S1 — GL: reverse the original JE and re-post fresh on any amount/mode change.
+    await reverseSourceEntry(tx, businessId, 'PAYMENT', paymentId, 'Payment edited')
+    const fresh = await tx.payment.findUniqueOrThrow({
+      where: { id: paymentId },
+      select: { id: true, type: true, mode: true, amount: true, partyId: true, referenceNumber: true, date: true },
+    })
+    await postPayment(tx, { businessId, userId, payment: fresh })
 
     await tx.auditLog.create({
       data: {
@@ -105,6 +114,9 @@ export async function deletePayment(businessId: string, paymentId: string, userI
       where: { id: payment.partyId },
       data: { outstandingBalance: { increment: reverseDelta } },
     })
+
+    // S1 — GL: VOID the payment's posted journal entry (reverses balances).
+    await reverseSourceEntry(tx, businessId, 'PAYMENT', paymentId, 'Payment deleted')
 
     const updated = await tx.payment.update({
       where: { id: paymentId },
@@ -173,6 +185,13 @@ export async function restorePayment(businessId: string, paymentId: string, user
         updatedBy: userId,
       },
     })
+
+    // S1 — GL: re-post a fresh JE (the delete-time JE stays VOID).
+    const fresh = await tx.payment.findUniqueOrThrow({
+      where: { id: paymentId },
+      select: { id: true, type: true, mode: true, amount: true, partyId: true, referenceNumber: true, date: true },
+    })
+    await postPayment(tx, { businessId, userId, payment: fresh })
 
     return tx.payment.findUniqueOrThrow({
       where: { id: paymentId },

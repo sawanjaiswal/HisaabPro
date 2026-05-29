@@ -21,18 +21,22 @@ export async function seedDefaultAccounts(businessId: string) {
     { code: '1000', name: 'Cash in Hand',       type: 'ASSET',     subType: 'CASH',             isSystem: true },
     { code: '1100', name: 'Bank Accounts',       type: 'ASSET',     subType: 'BANK',             isSystem: true },
     { code: '1200', name: 'Accounts Receivable', type: 'ASSET',     subType: 'RECEIVABLE',       isSystem: true },
+    { code: '1250', name: 'TDS Receivable',      type: 'ASSET',     subType: 'TAX',              isSystem: true },
     { code: '1300', name: 'Inventory',           type: 'ASSET',     subType: 'INVENTORY',        isSystem: true },
     { code: '2000', name: 'Accounts Payable',    type: 'LIABILITY', subType: 'PAYABLE',          isSystem: true },
     { code: '2100', name: 'Tax Payable',         type: 'LIABILITY', subType: 'TAX',              isSystem: true },
     { code: '2200', name: 'TDS Payable',         type: 'LIABILITY', subType: 'TAX',              isSystem: true },
+    { code: '2300', name: 'TCS Payable',         type: 'LIABILITY', subType: 'TAX',              isSystem: true },
     { code: '3000', name: 'Capital Account',     type: 'EQUITY',    subType: 'CAPITAL',          isSystem: true },
     { code: '3100', name: 'Retained Earnings',   type: 'EQUITY',    subType: null,               isSystem: true },
     { code: '4000', name: 'Sales Revenue',       type: 'INCOME',    subType: 'REVENUE',          isSystem: true },
     { code: '4100', name: 'Other Income',        type: 'INCOME',    subType: null,               isSystem: true },
     { code: '5000', name: 'Purchases',           type: 'EXPENSE',   subType: 'PURCHASE',         isSystem: true },
+    { code: '5050', name: 'Cost of Goods Sold',  type: 'EXPENSE',   subType: 'DIRECT_EXPENSE',   isSystem: true },
     { code: '5100', name: 'Direct Expenses',     type: 'EXPENSE',   subType: 'DIRECT_EXPENSE',   isSystem: true },
     { code: '5200', name: 'Indirect Expenses',   type: 'EXPENSE',   subType: 'INDIRECT_EXPENSE', isSystem: true },
     { code: '5300', name: 'Tax Expense',         type: 'EXPENSE',   subType: 'TAX',              isSystem: true },
+    { code: '5400', name: 'Round Off',           type: 'EXPENSE',   subType: 'INDIRECT_EXPENSE', isSystem: true },
   ]
 
   await prisma.ledgerAccount.createMany({
