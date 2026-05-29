@@ -58,7 +58,7 @@
 | 32 | Email invoice PDF | `pdf.service.generateInvoicePdf` is a stub: logs + returns `null` (TODO) |
 | 61 | Keyboard shortcuts | no `useKeyboardShortcuts` hook / global listener; ShortcutsPage is display-only |
 | 78 | GSTIN external verify | local Mod-36 checksum real; external API is a hardcoded mock (`verified:true`) |
-| 92 | Cheque register | terminal guard uses `RETURNED` not doc's `BOUNCED` (cheque.service.ts:60) |
+| 92 | Cheque register | FIXED 2026-05-29 — guard now keys on `status !== 'PENDING'` (covers BOUNCED + all terminal states) |
 | 114| Reorder points | logic real but schema field is `reorderQty` (schema:809); doc names nonexistent `reorderPoint` |
 
 ## Tier C — MISSING

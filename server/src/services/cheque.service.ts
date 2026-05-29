@@ -56,8 +56,11 @@ export async function updateChequeStatus(
   })
   if (!existing) throw notFoundError('Cheque')
 
-  // A cheque that is already cleared/cancelled/returned cannot be updated
-  if (['CLEARED', 'CANCELLED', 'RETURNED'].includes(existing.status)) {
+  // Only a PENDING cheque awaits an outcome; every other status (CLEARED,
+  // BOUNCED, CANCELLED, RETURNED) is terminal. Guarding on the single live
+  // state — rather than enumerating terminal ones — keeps BOUNCED covered and
+  // is immune to the same omission for any future status (#92).
+  if (existing.status !== 'PENDING') {
     throw validationError(`Cheque is already ${existing.status.toLowerCase()} and cannot be updated`)
   }
 

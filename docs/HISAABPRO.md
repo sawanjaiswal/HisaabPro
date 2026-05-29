@@ -1013,7 +1013,7 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | 89 | Bank Reconciliation | Match payments↔bank | Done | 2026-05-28 | Shipped inside #147 Auto-reconciliation (Phase 7) |
 | 90 | Receipt vouchers | Voucher print | Not Started | — | audit 2026-05-29: no voucher endpoint/PDF in `routes/payments.ts` (13 endpoints checked) |
 | 91 | Payment vouchers | Voucher print | Not Started | — | audit 2026-05-29: no voucher endpoint |
-| 92 | Cheque register | PENDING/CLEARED/RETURNED/CANCELLED | Done | `2b1d872` · 2026-05 | `services/cheque.service.ts` + Cheque + cheques feature (audit 2026-05-29: terminal state is `RETURNED`, not `BOUNCED`) |
+| 92 | Cheque register | PENDING + terminal CLEARED/BOUNCED/CANCELLED/RETURNED | Done | `2b1d872` · 2026-05 | `services/cheque.service.ts` + Cheque + cheques feature — #92 fixed 2026-05-29: terminal-state guard now keys on PENDING (only live state), so a BOUNCED cheque can no longer be flipped back to CLEARED |
 | 93 | Multiple bank accounts | Per-business banks | Done | `2b1d872` · 2026-05 | BankAccount + bank-accounts feature |
 | 94 | Cash-in-hand | Cash account + entries | Done | `2b1d872` · 2026-05 | CashEntry + CashEntryEvent + cash-register feature |
 | 95 | Cash book / Bank book | Per-account ledger | Done | `2b1d872` · 2026-05 | financial-reports + bank-accounts UI |
