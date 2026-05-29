@@ -3,11 +3,16 @@
  * Figma design: teal card (collect) + lime card (pay).
  * Amount left-aligned, label below with arrow, chevron on right.
  * All amounts in PAISE — formatted via formatCompactAmount.
+ *
+ * Motion: amounts count up via <AnimatedNumber>; cards have a spring press
+ * (motion.button whileTap). Both respect prefers-reduced-motion.
  */
 
 import React from 'react'
+import { motion } from 'motion/react'
 import { ChevronRight, ArrowDown, ArrowUp } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { AnimatedNumber, SPRING } from '@/components/motion'
 import { formatCompactAmount } from '../dashboard.utils'
 
 interface OutstandingHeroProps {
@@ -28,45 +33,64 @@ export const OutstandingHero: React.FC<OutstandingHeroProps> = ({
   onPayClick,
 }) => {
   const { t } = useLanguage()
+  const partyWord = (n: number) => (n === 1 ? t.party : t.parties)
   return (
     <div className="dashboard-hero" role="list" aria-label={t.outstandingSummary}>
       {/* To Collect — teal */}
-      <button
+      <motion.button
         className="dashboard-hero-card dashboard-hero-card--collect"
         role="listitem"
         onClick={onCollectClick}
-        aria-label={`${t.toCollect}: ${formatCompactAmount(receivableTotal)}, ${receivablePartyCount} ${receivablePartyCount === 1 ? t.party : t.parties}`}
+        whileTap={{ scale: 0.97 }}
+        transition={SPRING.snappy}
+        aria-label={`${t.toCollect}: ${formatCompactAmount(receivableTotal)}, ${receivablePartyCount} ${partyWord(receivablePartyCount)}`}
       >
         <div className="dashboard-hero-card-content">
-          <span className="dashboard-hero-amount">{formatCompactAmount(receivableTotal)}</span>
+          <AnimatedNumber
+            className="dashboard-hero-amount"
+            value={receivableTotal}
+            format={formatCompactAmount}
+          />
           <span className="dashboard-hero-label">
             {t.toCollect}
             <ArrowDown size={14} aria-hidden="true" />
+          </span>
+          <span className="dashboard-hero-subcount tabular-nums">
+            {receivablePartyCount} {partyWord(receivablePartyCount)}
           </span>
         </div>
         <div className="dashboard-hero-chevron" aria-hidden="true">
           <div className="dashboard-hero-chevron-icon"><ChevronRight size={12} /></div>
         </div>
-      </button>
+      </motion.button>
 
       {/* To Pay — lime */}
-      <button
+      <motion.button
         className="dashboard-hero-card dashboard-hero-card--pay"
         role="listitem"
         onClick={onPayClick}
-        aria-label={`${t.toPay}: ${formatCompactAmount(payableTotal)}, ${payablePartyCount} ${payablePartyCount === 1 ? t.party : t.parties}`}
+        whileTap={{ scale: 0.97 }}
+        transition={SPRING.snappy}
+        aria-label={`${t.toPay}: ${formatCompactAmount(payableTotal)}, ${payablePartyCount} ${partyWord(payablePartyCount)}`}
       >
         <div className="dashboard-hero-card-content">
-          <span className="dashboard-hero-amount">{formatCompactAmount(payableTotal)}</span>
+          <AnimatedNumber
+            className="dashboard-hero-amount"
+            value={payableTotal}
+            format={formatCompactAmount}
+          />
           <span className="dashboard-hero-label">
             {t.toPay}
             <ArrowUp size={14} aria-hidden="true" />
+          </span>
+          <span className="dashboard-hero-subcount tabular-nums">
+            {payablePartyCount} {partyWord(payablePartyCount)}
           </span>
         </div>
         <div className="dashboard-hero-chevron dashboard-hero-chevron--dark" aria-hidden="true">
           <div className="dashboard-hero-chevron-icon"><ChevronRight size={12} /></div>
         </div>
-      </button>
+      </motion.button>
     </div>
   )
 }

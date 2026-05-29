@@ -240,6 +240,22 @@ try {
   )
 }
 
+// ─── Check 6a2: Component-primitive adoption (ratcheted) ─────────────────────
+// Design audit (docs/audit/DESIGN_AUDIT_SUMMARY.md, P0): raw <button>/<input>/
+// <select>/<textarea> and window.confirm/alert in feature code accrued because
+// nothing banned them. This ratchet grandfathers existing debt and blocks NEW
+// raw primitives — use @/components/ui/{Button,Input,Select,Textarea} instead.
+console.log('🔍 Check 6a2: Component-primitive adoption (no regression vs baseline)')
+try {
+  execSync('node scripts/enforce-primitives.mjs', { cwd: ROOT, stdio: 'inherit' })
+  console.log('  ✅ Component-primitive baseline holds')
+} catch {
+  errors.push(
+    'PRIMITIVE_REGRESSION: scripts/enforce-primitives.mjs flagged new raw HTML primitives. ' +
+    'See output above and docs/audit/DESIGN_AUDIT_SUMMARY.md (P0).',
+  )
+}
+
 // ─── Check 6b: Audit coverage SSOT (BLOCKING — PR7 flipped from report-only)
 // Every service listed in server/src/lib/audit/audit-coverage.ts must contain a
 // `tx.auditLog.create(` or `prisma.auditLog.create(` call (PR7 backfill landed).

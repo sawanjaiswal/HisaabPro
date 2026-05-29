@@ -211,6 +211,14 @@
   gap: var(--space-1);
 }
 
+.dashboard-hero-subcount {
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  opacity: 0.7;
+  letter-spacing: 0.01em;
+  margin-top: 2px;
+}
+
 .dashboard-hero-arrow {
   display: inline-block;
 }
