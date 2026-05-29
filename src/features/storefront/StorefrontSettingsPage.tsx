@@ -6,10 +6,12 @@
  */
 
 import { useState, useCallback } from 'react'
-import { Copy, AlertCircle, Store, Info } from 'lucide-react'
+import { Copy, Store, Info } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
+import { EmptyState } from '@/components/feedback/EmptyState'
+import { ErrorState } from '@/components/feedback/ErrorState'
 import { ROUTES } from '@/config/routes.config'
 import { useToast } from '@/hooks/useToast'
 import { useStorefrontSettings } from './hooks/useStorefrontSettings'
@@ -43,27 +45,26 @@ function SettingsSkeleton() {
 
 function SettingsError({ onRetry }: { onRetry: () => void }) {
   return (
-    <div className="sf-error" role="alert">
-      <AlertCircle size={32} className="sf-error__icon" aria-hidden="true" />
-      <p className="sf-error__title">Couldn't load storefront settings</p>
-      <p className="sf-error__msg">Please check your connection and try again.</p>
-      <button type="button" className="sf-error__retry" onClick={onRetry}>Try Again</button>
-    </div>
+    <ErrorState
+      title="Couldn't load storefront settings"
+      message="Please check your connection and try again."
+      onRetry={onRetry}
+    />
   )
 }
 
 function SettingsEmpty({ onStart }: { onStart: () => void }) {
   return (
-    <div className="sf-empty" role="status">
-      <div className="sf-empty__icon" aria-hidden="true"><Store size={28} /></div>
-      <p className="sf-empty__title">Set up your online store</p>
-      <p className="sf-empty__desc">
-        Pick a unique URL slug to get started — share your store with customers.
-      </p>
-      <button type="button" className="sf-save-btn" style={{ maxWidth: 240 }} onClick={onStart}>
-        Get Started
-      </button>
-    </div>
+    <EmptyState
+      icon={<Store size={22} aria-hidden="true" />}
+      title="Set up your online store"
+      description="Pick a unique URL slug to get started — share your store with customers."
+      action={
+        <button type="button" className="sf-save-btn" style={{ maxWidth: 240 }} onClick={onStart}>
+          Get Started
+        </button>
+      }
+    />
   )
 }
 

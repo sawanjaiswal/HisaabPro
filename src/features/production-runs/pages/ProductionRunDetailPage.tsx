@@ -1,8 +1,8 @@
 /** ProductionRunDetailPage — /production-runs/:id */
 
 import { useParams, useNavigate } from 'react-router-dom'
-import { Button } from '@/components/ui/Button'
-import { ArrowLeft, Activity, RefreshCw } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
+import { ErrorState } from '@/components/feedback/ErrorState'
 import { useProductionRunDetail } from '../hooks/useProductionRuns'
 import { ProductionRunCancelButton } from '../components/ProductionRunCancelButton'
 import { PR_STATUS_BADGE_CLASS, PR_STATUS_LABELS } from '../production-run.constants'
@@ -40,13 +40,7 @@ export default function ProductionRunDetailPage() {
 
       {/* Error */}
       {status === 'error' && (
-        <div className="bom-empty" role="alert">
-          <Activity size={40} className="bom-empty__icon bom-empty__icon--error" aria-hidden="true" />
-          <p className="bom-empty__title">Could not load run</p>
-          <Button type="button" variant="primary" onClick={refresh}>
-            <RefreshCw size={16} aria-hidden="true" /> Retry
-          </Button>
-        </div>
+        <ErrorState title="Could not load run" onRetry={refresh} />
       )}
 
       {/* Success */}

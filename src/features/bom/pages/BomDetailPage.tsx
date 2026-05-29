@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Edit2, Play, Trash2, BookOpen, RefreshCw } from 'lucide-react'
+import { ArrowLeft, Edit2, Play, Trash2 } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { ErrorState } from '@/components/feedback/ErrorState'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { useBomDetail, bomKeys } from '../hooks/useBom'
@@ -65,13 +66,7 @@ export default function BomDetailPage() {
 
       {/* Error */}
       {status === 'error' && (
-        <div className="bom-empty" role="alert">
-          <BookOpen size={40} className="bom-empty__icon bom-empty__icon--error" aria-hidden="true" />
-          <p className="bom-empty__title">Could not load recipe</p>
-          <Button type="button" variant="primary" onClick={refresh}>
-            <RefreshCw size={16} aria-hidden="true" /> Retry
-          </Button>
-        </div>
+        <ErrorState title="Could not load recipe" onRetry={refresh} />
       )}
 
       {/* Success */}

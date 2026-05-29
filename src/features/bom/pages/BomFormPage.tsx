@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Plus, ArrowLeft, BookOpen, RefreshCw, Loader2 } from 'lucide-react'
+import { Plus, ArrowLeft, Loader2 } from 'lucide-react'
+import { ErrorState } from '@/components/feedback/ErrorState'
 import { BomFormHeader } from '../components/BomFormHeader'
 import { BomComponentRow } from '../components/BomComponentRow'
 import { useBomDetail } from '../hooks/useBom'
@@ -119,13 +120,7 @@ function BomEditForm({ id }: { id: string }) {
 
   if (status === 'error') return (
     <div className="bom-page">
-      <div className="bom-empty" role="alert">
-        <BookOpen size={40} className="bom-empty__icon bom-empty__icon--error" aria-hidden="true" />
-        <p className="bom-empty__title">Could not load recipe</p>
-        <Button type="button" variant="primary" onClick={refresh}>
-          <RefreshCw size={16} aria-hidden="true" /> Retry
-        </Button>
-      </div>
+      <ErrorState title="Could not load recipe" onRetry={refresh} />
     </div>
   )
 

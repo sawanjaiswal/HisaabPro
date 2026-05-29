@@ -9,6 +9,7 @@ import { ArrowLeft, Tag } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
@@ -166,7 +167,10 @@ export default function CouponDetailPage() {
             Redemptions ({redemptions.length})
           </h3>
           {redemptions.length === 0 ? (
-            <p className="coupon-detail-empty">{t.noRedemptionsYet}</p>
+            <EmptyState
+              icon={<Tag size={22} aria-hidden="true" />}
+              title={t.noRedemptionsYet}
+            />
           ) : (
             <div className="coupon-redemption-list">
               {redemptions.map((r) => (

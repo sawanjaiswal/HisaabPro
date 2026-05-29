@@ -4,6 +4,8 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
+import { Bell } from 'lucide-react'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useNotificationPreferences, useUpdatePreferences } from '../useNotifications'
@@ -203,11 +205,10 @@ export default function NotificationPreferencesPage() {
             />
           ))}
           {rows.length === 0 && (
-            <div className="notif-empty">
-              <p className="notif-empty__body">
-                {t.notifPrefsEmpty ?? 'No preferences found.'}
-              </p>
-            </div>
+            <EmptyState
+              icon={<Bell size={22} aria-hidden="true" />}
+              title={t.notifPrefsEmpty ?? 'No preferences found.'}
+            />
           )}
         </div>
 

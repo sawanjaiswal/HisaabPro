@@ -6,6 +6,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { Button } from '@/components/ui/Button'
 import { ROUTES } from '@/config/routes.config'
 import { api } from '@/lib/api'
@@ -147,7 +148,10 @@ export default function ActiveSessionsPage() {
             )}
 
             {sessions.length === 0 && (
-              <p className="session-empty">No active sessions found</p>
+              <EmptyState
+                icon={<Monitor size={22} aria-hidden="true" />}
+                title="No active sessions found"
+              />
             )}
           </div>
         )}

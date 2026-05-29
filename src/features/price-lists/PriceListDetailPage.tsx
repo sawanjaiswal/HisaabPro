@@ -3,8 +3,10 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useParams } from 'react-router-dom'
-import { Plus, Tag, Users, RefreshCw, Share2 } from 'lucide-react'
+import { Plus, Tag, Users, Share2 } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
+import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ROUTES } from '@/config/routes.config'
@@ -102,13 +104,7 @@ export default function PriceListDetailPage() {
 
           {/* Error */}
           {status === 'error' && (
-            <div className="pl-empty" role="alert">
-              <Tag size={40} className="pl-empty__icon pl-empty__icon--error" aria-hidden="true" />
-              <p className="pl-empty__title">{t.plLoadError}</p>
-              <Button type="button" variant="primary" onClick={refresh}>
-                <RefreshCw size={16} aria-hidden="true" /> {t.retry}
-              </Button>
-            </div>
+            <ErrorState title={t.plLoadError} onRetry={refresh} />
           )}
 
           {/* Success */}
@@ -150,11 +146,11 @@ export default function PriceListDetailPage() {
                 </div>
 
                 {priceList.entries.length === 0 ? (
-                  <div className="pl-empty">
-                    <Tag size={32} className="pl-empty__icon" aria-hidden="true" />
-                    <p className="pl-empty__title">{t.plNoEntries}</p>
-                    <p className="pl-empty__body">{t.plNoEntriesDesc}</p>
-                  </div>
+                  <EmptyState
+                    icon={<Tag size={22} aria-hidden="true" />}
+                    title={t.plNoEntries}
+                    description={t.plNoEntriesDesc}
+                  />
                 ) : (
                   <div className="pl-entries" role="table" aria-label={t.plEntriesTitle}>
                     {priceList.entries.map((entry) => (

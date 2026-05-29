@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Tag, RefreshCw } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
+import { ErrorState } from '@/components/feedback/ErrorState'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ROUTES } from '@/config/routes.config'
@@ -77,15 +78,11 @@ export default function PriceListsPage() {
 
           {/* Error */}
           {status === 'error' && (
-            <div className="pl-empty" role="alert">
-              <Tag size={40} className="pl-empty__icon pl-empty__icon--error" aria-hidden="true" />
-              <p className="pl-empty__title">{t.plLoadError}</p>
-              <p className="pl-empty__body">{t.checkConnectionRetry}</p>
-              <Button type="button" variant="primary" onClick={refresh}>
-                <RefreshCw size={16} aria-hidden="true" />
-                {t.retry}
-              </Button>
-            </div>
+            <ErrorState
+              title={t.plLoadError}
+              message={t.checkConnectionRetry}
+              onRetry={refresh}
+            />
           )}
 
           {/* Empty */}
