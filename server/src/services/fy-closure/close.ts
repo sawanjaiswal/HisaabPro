@@ -96,13 +96,15 @@ export async function closeFY(
 
   const netProfit = totalIncomeNet - totalExpenseNet
 
-  // Find or identify the Retained Earnings ledger account
+  // Resolve the Retained Earnings ledger account by its stable seeded code
+  // (3100). seedDefaultAccounts assigns it subType null — filtering on
+  // subType:'CAPITAL' here matched nothing and broke closure on every seeded
+  // business (see .claude/fix-trace-fy-closure-re.md).
   const retainedEarningsAccount = await prisma.ledgerAccount.findFirst({
     where: {
       businessId,
       type: 'EQUITY',
-      subType: 'CAPITAL',
-      name: { contains: 'Retained Earnings' },
+      code: '3100',
     },
     select: { id: true, name: true, balance: true },
   })
