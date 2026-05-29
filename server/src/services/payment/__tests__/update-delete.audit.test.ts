@@ -32,6 +32,8 @@ beforeEach(() => {
   })
   mockPrisma.payment.update.mockResolvedValue({ id: PAYMENT_ID, deletedAt: new Date() })
   mockPrisma.payment.findUniqueOrThrow.mockResolvedValue({ id: PAYMENT_ID })
+  // No POSTED journal entry for this payment — GL reversal is a no-op.
+  mockPrisma.journalEntry.findFirst.mockResolvedValue(null)
 })
 
 describe('updatePayment — audit', () => {

@@ -166,6 +166,7 @@ router.put(
     const expense = await expenseService.updateExpense(
       businessId,
       String(req.params.id),
+      req.user!.userId,
       req.body,
     )
     sendSuccess(res, expense)

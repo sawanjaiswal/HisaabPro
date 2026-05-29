@@ -2,78 +2,21 @@
 import { prisma } from '../lib/prisma.js'
 import { notFoundError } from '../lib/errors.js'
 import type {
-  CreateExpenseCategoryInput,
   CreateExpenseInput,
   UpdateExpenseInput,
   ListExpensesQuery,
 } from '../schemas/expense.schemas.js'
 import { notificationManager } from './notifications/notification-manager.js'
 import { formatPaise } from './notifications/notification-template.service.js'
+import { postExpenseToGL, reverseExpenseGL } from './expense/expense-gl.js'
 
-const DEFAULT_CATEGORIES = [
-  { name: 'Rent', icon: '🏠', color: '#EF4444', sortOrder: 1 },
-  { name: 'Salary & Wages', icon: '👥', color: '#3B82F6', sortOrder: 2 },
-  { name: 'Utilities', icon: '💡', color: '#F59E0B', sortOrder: 3 },
-  { name: 'Travel', icon: '🚗', color: '#8B5CF6', sortOrder: 4 },
-  { name: 'Office Supplies', icon: '📎', color: '#6B7280', sortOrder: 5 },
-  { name: 'Repairs & Maintenance', icon: '🔧', color: '#F97316', sortOrder: 6 },
-  { name: 'Insurance', icon: '🛡️', color: '#0EA5E9', sortOrder: 7 },
-  { name: 'Marketing', icon: '📣', color: '#EC4899', sortOrder: 8 },
-  { name: 'Professional Fees', icon: '💼', color: '#14B8A6', sortOrder: 9 },
-  { name: 'Miscellaneous', icon: '📦', color: '#9CA3AF', sortOrder: 10 },
-]
+export {
+  seedDefaultCategories,
+  createExpenseCategory,
+  listExpenseCategories,
+} from './expense/expense-category.service.js'
 
-export async function seedDefaultCategories(businessId: string) {
-  await prisma.expenseCategory.createMany({
-    data: DEFAULT_CATEGORIES.map((c) => ({
-      businessId,
-      name: c.name,
-      icon: c.icon,
-      color: c.color,
-      sortOrder: c.sortOrder,
-      isSystem: true,
-    })),
-    skipDuplicates: true,
-  })
-
-  return prisma.expenseCategory.findMany({
-    where: { businessId },
-    orderBy: { sortOrder: 'asc' },
-    take: 50,
-  })
-}
-
-export async function createExpenseCategory(
-  businessId: string,
-  data: CreateExpenseCategoryInput,
-) {
-  return prisma.expenseCategory.create({
-    data: {
-      businessId,
-      name: data.name,
-      icon: data.icon ?? null,
-      color: data.color ?? '#6B7280',
-      sortOrder: data.sortOrder ?? 0,
-    },
-  })
-}
-
-export async function listExpenseCategories(businessId: string) {
-  return prisma.expenseCategory.findMany({
-    where: { businessId, isActive: true },
-    orderBy: [{ isSystem: 'desc' }, { sortOrder: 'asc' }, { name: 'asc' }],
-    take: 200,
-    select: {
-      id: true,
-      name: true,
-      icon: true,
-      color: true,
-      isSystem: true,
-      sortOrder: true,
-      _count: { select: { expenses: { where: { isDeleted: false } } } },
-    },
-  })
-}
+const CATEGORY_SELECT = { select: { id: true, name: true, icon: true, color: true } }
 
 export async function createExpense(
   businessId: string,
@@ -86,24 +29,29 @@ export async function createExpense(
   })
   if (!category) throw notFoundError('Expense category')
 
-  const expense = await prisma.expense.create({
-    data: {
-      businessId,
-      categoryId: data.categoryId,
-      amount: data.amount,
-      date: data.date,
-      paymentMode: data.paymentMode,
-      bankAccountId: data.bankAccountId ?? null,
-      partyId: data.partyId ?? null,
-      referenceNumber: data.referenceNumber ?? null,
-      notes: data.notes ?? null,
-      gstApplicable: data.gstApplicable ?? false,
-      gstRate: data.gstRate ?? 0,
-      gstAmount: data.gstAmount ?? 0,
-      status: 'CONFIRMED',
-      createdBy: userId,
-    },
-    include: { category: { select: { id: true, name: true, icon: true, color: true } } },
+  // Created CONFIRMED → post to the GL in the same tx (hard-atomic).
+  const expense = await prisma.$transaction(async (tx) => {
+    const created = await tx.expense.create({
+      data: {
+        businessId,
+        categoryId: data.categoryId,
+        amount: data.amount,
+        date: data.date,
+        paymentMode: data.paymentMode,
+        bankAccountId: data.bankAccountId ?? null,
+        partyId: data.partyId ?? null,
+        referenceNumber: data.referenceNumber ?? null,
+        notes: data.notes ?? null,
+        gstApplicable: data.gstApplicable ?? false,
+        gstRate: data.gstRate ?? 0,
+        gstAmount: data.gstAmount ?? 0,
+        status: 'CONFIRMED',
+        createdBy: userId,
+      },
+      include: { category: CATEGORY_SELECT },
+    })
+    await postExpenseToGL(tx, businessId, userId, created)
+    return created
   })
 
   void notificationManager.notify('EXPENSE_RECORDED', { businessId, userId, eventKey: 'EXPENSE_RECORDED', locale: 'en', vars: { amountRs: formatPaise(Number(data.amount)), categoryName: expense.category.name }, entityType: 'expense', entityId: expense.id })
@@ -113,6 +61,7 @@ export async function createExpense(
 export async function updateExpense(
   businessId: string,
   expenseId: string,
+  userId: string,
   data: UpdateExpenseInput,
 ) {
   const existing = await prisma.expense.findFirst({
@@ -129,22 +78,31 @@ export async function updateExpense(
     if (!category) throw notFoundError('Expense category')
   }
 
-  return prisma.expense.update({
-    where: { id: expenseId },
-    data: {
-      ...(data.categoryId !== undefined && { categoryId: data.categoryId }),
-      ...(data.amount !== undefined && { amount: data.amount }),
-      ...(data.date !== undefined && { date: data.date }),
-      ...(data.paymentMode !== undefined && { paymentMode: data.paymentMode }),
-      ...(data.bankAccountId !== undefined && { bankAccountId: data.bankAccountId }),
-      ...(data.partyId !== undefined && { partyId: data.partyId }),
-      ...(data.referenceNumber !== undefined && { referenceNumber: data.referenceNumber }),
-      ...(data.notes !== undefined && { notes: data.notes }),
-      ...(data.gstApplicable !== undefined && { gstApplicable: data.gstApplicable }),
-      ...(data.gstRate !== undefined && { gstRate: data.gstRate }),
-      ...(data.gstAmount !== undefined && { gstAmount: data.gstAmount }),
-    },
-    include: { category: { select: { id: true, name: true, icon: true, color: true } } },
+  // S1 — GL: reverse the original JE (no-op if unposted) and re-post fresh
+  // values when the expense is CONFIRMED. Hard-atomic with the mutation.
+  return prisma.$transaction(async (tx) => {
+    const updated = await tx.expense.update({
+      where: { id: expenseId },
+      data: {
+        ...(data.categoryId !== undefined && { categoryId: data.categoryId }),
+        ...(data.amount !== undefined && { amount: data.amount }),
+        ...(data.date !== undefined && { date: data.date }),
+        ...(data.paymentMode !== undefined && { paymentMode: data.paymentMode }),
+        ...(data.bankAccountId !== undefined && { bankAccountId: data.bankAccountId }),
+        ...(data.partyId !== undefined && { partyId: data.partyId }),
+        ...(data.referenceNumber !== undefined && { referenceNumber: data.referenceNumber }),
+        ...(data.notes !== undefined && { notes: data.notes }),
+        ...(data.gstApplicable !== undefined && { gstApplicable: data.gstApplicable }),
+        ...(data.gstRate !== undefined && { gstRate: data.gstRate }),
+        ...(data.gstAmount !== undefined && { gstAmount: data.gstAmount }),
+      },
+      include: { category: CATEGORY_SELECT },
+    })
+    await reverseExpenseGL(tx, businessId, expenseId, 'Expense edited')
+    if (updated.status === 'CONFIRMED') {
+      await postExpenseToGL(tx, businessId, userId, updated)
+    }
+    return updated
   })
 }
 
@@ -194,12 +152,16 @@ export async function deleteExpense(businessId: string, expenseId: string) {
   })
   if (!existing) throw notFoundError('Expense')
 
-  await prisma.expense.update({
-    where: { id: expenseId },
-    data: { isDeleted: true, deletedAt: new Date() },
+  // S1 — GL: VOID the posted journal entry (no-op if unposted) before the
+  // soft-delete, so ledger balances don't strand on a removed expense.
+  return prisma.$transaction(async (tx) => {
+    await reverseExpenseGL(tx, businessId, expenseId, 'Expense deleted')
+    await tx.expense.update({
+      where: { id: expenseId },
+      data: { isDeleted: true, deletedAt: new Date() },
+    })
+    return { deleted: true }
   })
-
-  return { deleted: true }
 }
 
 export async function getExpenseSummary(businessId: string, from?: Date, to?: Date) {
