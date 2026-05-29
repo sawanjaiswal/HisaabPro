@@ -8,6 +8,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { ROUTES } from '@/config/routes.config'
 import { queryKeys } from '@/lib/query-keys'
 import { useExpenses } from './useExpenses'
@@ -172,14 +173,16 @@ export default function ExpensesPage() {
         </div>
 
         {items.length === 0 && (
-          <div className="expense-empty">
-            <div className="expense-empty__icon" aria-hidden="true"><Receipt size={32} /></div>
-            <p className="expense-empty__title">{t.noExpensesRecorded}</p>
-            <p className="expense-empty__desc">{t.startTrackingExpenses}</p>
-            <button type="button" className="expense-add-btn" onClick={() => setDrawerOpen(true)}>
-              <Plus size={14} aria-hidden="true" /> {t.recordFirstExpense}
-            </button>
-          </div>
+          <EmptyState
+            icon={<Receipt size={22} aria-hidden="true" />}
+            title={t.noExpensesRecorded}
+            description={t.startTrackingExpenses}
+            action={
+              <button type="button" className="expense-add-btn" onClick={() => setDrawerOpen(true)}>
+                <Plus size={14} aria-hidden="true" /> {t.recordFirstExpense}
+              </button>
+            }
+          />
         )}
 
         {items.length > 0 && (

@@ -8,6 +8,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { useToast } from '@/hooks/useToast'
 import { ROUTES } from '@/config/routes.config'
 import { usePartyStatement } from './hooks/usePartyStatement'
@@ -96,23 +97,21 @@ export default function PartyStatementPage() {
 
             {/* Transaction list */}
             {statement.transactions.length === 0 ? (
-              <div className="report-empty" role="status">
-                <div className="report-empty-icon" aria-hidden="true">
-                  <FileText size={28} />
-                </div>
-                <p className="report-empty-title">{t.noTransactionsYet}</p>
-                <p className="report-empty-desc">
-                  {`${t.noTransactionsWith} ${party.name} ${t.yet}`}
-                </p>
-                <Button
-                  variant="primary" size="md"
-                  type="button"
-                  onClick={() => navigate(ROUTES.INVOICE_CREATE)}
-                  aria-label={t.createAnInvoice}
-                >
-                  Create Invoice
-                </Button>
-              </div>
+              <EmptyState
+                icon={<FileText size={22} aria-hidden="true" />}
+                title={t.noTransactionsYet}
+                description={`${t.noTransactionsWith} ${party.name} ${t.yet}`}
+                action={
+                  <Button
+                    variant="primary" size="md"
+                    type="button"
+                    onClick={() => navigate(ROUTES.INVOICE_CREATE)}
+                    aria-label={t.createAnInvoice}
+                  >
+                    Create Invoice
+                  </Button>
+                }
+              />
             ) : (
               <div
                 className="report-card-list stagger-list"

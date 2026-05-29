@@ -3,5 +3,7 @@
   "rawInput": 147,
   "rawSelect": 35,
   "rawTextarea": 15,
-  "nativeConfirm": 1
+  "nativeConfirm": 0,
+  "missingEmptyState": 65,
+  "missingErrorState": 17
 }

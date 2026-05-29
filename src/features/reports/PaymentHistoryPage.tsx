@@ -2,10 +2,10 @@
 
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Banknote } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
+import { ErrorState } from '@/components/feedback/ErrorState'
 import { ROUTES } from '@/config/routes.config'
 import { usePaymentHistoryReport } from './hooks/usePaymentHistoryReport'
 import { exportReport } from './report.service'
@@ -94,23 +94,11 @@ export default function PaymentHistoryPage() {
       <AppShell>
         <Header title={t.paymentHistory} backTo={ROUTES.REPORTS} />
         <PageContainer variant="list" className="space-y-6">
-          <div className="report-empty">
-            <div className="report-empty-icon" aria-hidden="true">
-              <Banknote size={28} />
-            </div>
-            <p className="report-empty-title">{t.couldNotLoadPaymentHistory}</p>
-            <p className="report-empty-desc">
-              {t.checkConnectionRetry}
-            </p>
-            <button
-              className="report-load-more-btn"
-              onClick={refresh}
-              type="button"
-              aria-label={t.retryLoadingPaymentHistory}
-            >
-              Retry
-            </button>
-          </div>
+          <ErrorState
+            title={t.couldNotLoadPaymentHistory}
+            message={t.checkConnectionRetry}
+            onRetry={refresh}
+          />
         </PageContainer>
       </AppShell>
     )

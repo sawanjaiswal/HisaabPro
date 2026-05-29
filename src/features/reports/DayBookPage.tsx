@@ -5,6 +5,7 @@ import { Calendar } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
+import { ErrorState } from '@/components/feedback/ErrorState'
 import { ROUTES } from '@/config/routes.config'
 import { useDayBook } from './hooks/useDayBook'
 import { exportReport } from './report.service'
@@ -87,23 +88,11 @@ export default function DayBookPage() {
       <AppShell>
         <Header title={t.dayBook} backTo={ROUTES.REPORTS} />
         <PageContainer variant="list" className="space-y-6">
-          <div className="report-empty">
-            <div className="report-empty-icon" aria-hidden="true">
-              <Calendar size={28} />
-            </div>
-            <p className="report-empty-title">{t.couldNotLoadDayBook}</p>
-            <p className="report-empty-desc">
-              {t.checkConnectionRetry}
-            </p>
-            <button
-              className="report-load-more-btn"
-              onClick={refresh}
-              type="button"
-              aria-label={t.retryLoadingDayBook}
-            >
-              {t.retry}
-            </button>
-          </div>
+          <ErrorState
+            title={t.couldNotLoadDayBook}
+            message={t.checkConnectionRetry}
+            onRetry={refresh}
+          />
         </PageContainer>
       </AppShell>
     )

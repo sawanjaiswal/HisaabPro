@@ -10,6 +10,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { Drawer } from '@/components/ui/Drawer'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
@@ -132,12 +133,16 @@ export default function OtherIncomePage() {
         </div>
 
         {items.length === 0 && (
-          <div className="income-empty">
-            <div className="income-empty__icon" aria-hidden="true"><TrendingUp size={32} /></div>
-            <p className="income-empty__title">{t.noOtherIncomeRecorded}</p>
-            <p className="income-empty__desc">{t.trackInterestRent}</p>
-            <button type="button" className="income-add-btn" onClick={() => setDrawerOpen(true)}><Plus size={14} aria-hidden="true" /> {t.addFirstEntry}</button>
-          </div>
+          <EmptyState
+            icon={<TrendingUp size={22} aria-hidden="true" />}
+            title={t.noOtherIncomeRecorded}
+            description={t.trackInterestRent}
+            action={
+              <button type="button" className="income-add-btn" onClick={() => setDrawerOpen(true)}>
+                <Plus size={14} aria-hidden="true" /> {t.addFirstEntry}
+              </button>
+            }
+          />
         )}
 
         {items.length > 0 && <div className="income-list stagger-list">{items.map((i) => <IncomeCard key={i.id} item={i} />)}</div>}

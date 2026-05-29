@@ -10,6 +10,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
@@ -116,11 +117,11 @@ export default function CashFlowPage() {
         </div>
 
         {!data && (
-          <div className="finance-empty">
-            <div className="finance-empty__icon" aria-hidden="true"><TrendingUp size={32} /></div>
-            <p className="finance-empty__title">{t.noDataForThisPeriod}</p>
-            <p className="finance-empty__desc">{t.tryDifferentDateRange}</p>
-          </div>
+          <EmptyState
+            icon={<TrendingUp size={22} aria-hidden="true" />}
+            title={t.noDataForThisPeriod}
+            description={t.tryDifferentDateRange}
+          />
         )}
 
         {data && (

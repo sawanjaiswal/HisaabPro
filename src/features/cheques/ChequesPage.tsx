@@ -12,6 +12,7 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { Button } from '@/components/ui/Button'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
@@ -92,12 +93,16 @@ export default function ChequesPage() {
         </div>
 
         {items.length === 0 && (
-          <div className="cheque-empty">
-            <div className="cheque-empty__icon" aria-hidden="true"><CheckSquare size={32} /></div>
-            <p className="cheque-empty__title">{t.noChequesRecorded}</p>
-            <p className="cheque-empty__desc">{t.chequesEmptyDesc}</p>
-            <Button variant="primary" size="sm" className="cheque-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.addFirstCheque}><Plus size={14} aria-hidden="true" /> {t.addFirstCheque}</Button>
-          </div>
+          <EmptyState
+            icon={<CheckSquare size={22} aria-hidden="true" />}
+            title={t.noChequesRecorded}
+            description={t.chequesEmptyDesc}
+            action={
+              <Button variant="primary" size="sm" onClick={() => setDrawerOpen(true)} aria-label={t.addFirstCheque}>
+                <Plus size={14} aria-hidden="true" /> {t.addFirstCheque}
+              </Button>
+            }
+          />
         )}
 
         {items.length > 0 && (

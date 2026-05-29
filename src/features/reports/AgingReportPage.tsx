@@ -10,6 +10,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
@@ -80,11 +81,11 @@ export default function AgingReportPage() {
         </button>
 
         {(!data || data.rows.length === 0) && (
-          <div className="finance-empty">
-            <div className="finance-empty__icon" aria-hidden="true"><Clock size={32} /></div>
-            <p className="finance-empty__title">{agingType === 'RECEIVABLE' ? t.noOutstandingReceivables : t.noOutstandingPayables}</p>
-            <p className="finance-empty__desc">{t.allBalancesSettled}</p>
-          </div>
+          <EmptyState
+            icon={<Clock size={22} aria-hidden="true" />}
+            title={agingType === 'RECEIVABLE' ? t.noOutstandingReceivables : t.noOutstandingPayables}
+            description={t.allBalancesSettled}
+          />
         )}
 
         {data && data.rows.length > 0 && (

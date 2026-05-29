@@ -11,6 +11,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { Drawer } from '@/components/ui/Drawer'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
@@ -132,14 +133,16 @@ export default function BankAccountsPage() {
         </div>
 
         {items.length === 0 && (
-          <div className="bank-empty">
-            <div className="bank-empty__icon" aria-hidden="true"><Building2 size={32} /></div>
-            <p className="bank-empty__title">{t.noBankAccounts}</p>
-            <p className="bank-empty__desc">{t.addBankAccountsDesc}</p>
-            <button type="button" className="bank-add-btn" onClick={() => setDrawerOpen(true)}>
-              <Plus size={14} aria-hidden="true" /> {t.addFirstAccount}
-            </button>
-          </div>
+          <EmptyState
+            icon={<Building2 size={22} aria-hidden="true" />}
+            title={t.noBankAccounts}
+            description={t.addBankAccountsDesc}
+            action={
+              <button type="button" className="bank-add-btn" onClick={() => setDrawerOpen(true)}>
+                <Plus size={14} aria-hidden="true" /> {t.addFirstAccount}
+              </button>
+            }
+          />
         )}
 
         {items.length > 0 && (

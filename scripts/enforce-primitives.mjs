@@ -16,6 +16,8 @@
  *   3. rawSelect   — <select> in feature code    → use <Select> (P1)
  *   4. rawTextarea — <textarea> in feature code  → use <Textarea>/<Input>
  *   5. nativeConfirm — window.confirm / alert()   → use <ConfirmDialog> / useToast()
+ *   6. missingEmptyState — list-rendering page lacking <EmptyState>
+ *   7. missingErrorState — data-fetching page lacking <ErrorState>
  *
  * Baseline lives at .claude/primitives-baseline.json. Pre-commit fails when
  * current_count > baseline. Pass --ratchet to lower the baseline after a
@@ -72,7 +74,28 @@ function walk(dir, acc = []) {
 }
 
 const files = walk(FRONTEND_SRC)
-const violations = { rawButton: [], rawInput: [], rawSelect: [], rawTextarea: [], nativeConfirm: [] }
+const violations = {
+  rawButton: [], rawInput: [], rawSelect: [], rawTextarea: [], nativeConfirm: [],
+  missingEmptyState: [], missingErrorState: [],
+}
+
+// File-level checks only fire on feature pages (the in-app UI). Marketing /
+// PDF / template surfaces are exempt — they don't share the 4-state pattern.
+// Only page files — `Page.tsx` endings. Sub-components and rows render inside
+// these pages and inherit their 4-state coverage.
+const FEATURE_PAGE_RE = /\/features\/[^/]+\/(?:[^/]+\/)?[A-Z][A-Za-z0-9]*Page\.tsx$/
+const STATE_EXEMPT_RE = [
+  /\/features\/landing\//,
+  /invoice-templates/,
+  /\/pdf\//,
+  /template/i,
+  /__tests__|\.test\.|\.spec\./,
+  /\.stories\./,
+]
+// Renders a list-of-JSX: `.map(... => <Tag` or `.map(... => (` (with JSX inside).
+const RENDERS_LIST_RE = /\.map\s*\(\s*\(?[^)]*\)?\s*=>\s*(?:<|\()/
+// Has a fetch/query/loading lifecycle that could legitimately error.
+const HAS_QUERY_RE = /useQuery|useInfiniteQuery|isError|onError|catch\s*\(/
 
 for (const full of files) {
   const rel = relative(ROOT, full)
@@ -84,6 +107,15 @@ for (const full of files) {
       const local = new RegExp(re.source, 'g')
       if (local.test(line)) violations[key].push(`${rel}:${i + 1}`)
     })
+  }
+  // File-level 4-state coverage (feature pages only).
+  if (FEATURE_PAGE_RE.test(rel) && !STATE_EXEMPT_RE.some((r) => r.test(rel))) {
+    if (RENDERS_LIST_RE.test(src) && !/EmptyState\b/.test(src)) {
+      violations.missingEmptyState.push(rel)
+    }
+    if (HAS_QUERY_RE.test(src) && !/ErrorState\b/.test(src)) {
+      violations.missingErrorState.push(rel)
+    }
   }
 }
 
@@ -132,6 +164,8 @@ console.error(
   '  <select>   → <Select>              (P1)\n' +
   '  <textarea> → <Textarea>/<Input>\n' +
   '  window.confirm/alert → <ConfirmDialog> / useToast()\n' +
+  '  list .map(...) → render <EmptyState> when array is empty\n' +
+  '  useQuery / fetch → render <ErrorState onRetry={...} /> on failure\n' +
   '\nIf you genuinely fixed primitives (count dropped), run:\n' +
   '  node scripts/enforce-primitives.mjs --ratchet\n'
 )
