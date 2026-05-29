@@ -11,6 +11,7 @@ import { requirePermission } from '../middleware/permission.js'
 import { sendSuccess } from '../lib/response.js'
 import { verifyGstinSchema } from '../schemas/tax.schemas.js'
 import { validateGstin, extractStateCode } from '../services/gstin.utils.js'
+import { verifyGstinExternal } from '../services/gstin-verify.service.js'
 
 const router = Router()
 
@@ -33,14 +34,16 @@ router.post(
   })
 )
 
-// ─── Government API verification (stub) ──────────────────────────────────────
+// ─── Government API verification (GSP) ───────────────────────────────────────
 
 /**
  * POST /api/gstin/verify
- * Local validation + stub for government IRP API verification.
- * TODO: Integrate with GST Suvidha Provider (GSP) API for real-time verification.
- *       Requires GSP credentials (client_id, client_secret, otp-based auth).
- *       Reference: https://developer.gst.gov.in/apiportal/taxpayer/search
+ * Local format/checksum validation + external GSP registry lookup.
+ * `verified` is true only when a configured provider confirms an active
+ * registration. When GSTIN_VERIFY_API_* is unset the GSTIN can still be
+ * format-valid (valid:true) but is not registry-confirmed (verified:false,
+ * providerConfigured:false) — we never fabricate a pass.
+ * Reference: https://developer.gst.gov.in/apiportal/taxpayer/search
  */
 router.post(
   '/verify',
@@ -53,6 +56,7 @@ router.post(
       sendSuccess(res, {
         valid: false,
         verified: false,
+        providerConfigured: false,
         stateCode: null,
         error: localResult.error,
       })
@@ -60,16 +64,19 @@ router.post(
     }
 
     const stateCode = extractStateCode(req.body.gstin)
+    const external = await verifyGstinExternal(req.body.gstin)
 
-    // TODO: Replace mock with real GSP API call when credentials available.
-    // Real response would include: legalName, tradeName, registrationDate, type, status
     sendSuccess(res, {
       valid: true,
-      verified: true,         // mock — will be actual portal response once GSP is integrated
+      verified: external.verified,
+      providerConfigured: external.providerConfigured,
       stateCode,
-      legalName: 'Verified Business',
-      status: 'Active',
-      type: 'Regular',
+      legalName: external.legalName,
+      tradeName: external.tradeName,
+      status: external.status,
+      type: external.type,
+      registrationDate: external.registrationDate,
+      error: external.error,
     })
   })
 )

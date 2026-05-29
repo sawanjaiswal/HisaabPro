@@ -820,7 +820,8 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 > 150/165 rows verified exactly. Corrected this pass — drift rows now carry an
 > inline `audit 2026-05-29:` note: #5 (Drive backup MISSING, email-export is
 > CSV), #8 (no theme variants), #32 (fixed 2026-05-29 — client-render+upload),
-> #61 (fixed 2026-05-29 — global listener) & #78 (partial/stub), #76 (HSN no
+> #61 (fixed 2026-05-29 — global listener) & #78 (fixed 2026-05-29 — real GSP
+> lookup, cred-blocked), #76 (HSN no
 > seed/GIN), #90/#91 (no voucher endpoint), #92 (RETURNED≠BOUNCED), #100/#127/
 > #130/#133/#140 (path/label fixes), #104/#114 (field/branch fixes). Two real
 > bugs were flagged with `*`: **S1** (#84–#87, #104 — GL reports read a journal
@@ -841,7 +842,7 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 
 **Summary — 150 features, ~180 sub-feature rows tracked + 7 vertical-depth epics:**
 - **Done:** 139 features (all layers present + shipped on `master`; #142 voice + #147 auto-reconciliation + #150 multi-user collab 2026-05-28).
-- **In-Progress (cred-blocked):** 8 features (code shipped, awaiting env vars / plugin install: #2, #4, #30, #32, #42, #47, #59, #123/#124 providers).
+- **In-Progress (cred-blocked):** 9 features (code shipped, awaiting env vars / plugin install: #2, #4, #30, #32, #42, #47, #59, #78, #123/#124 providers).
 - **Not Started:** 1 feature (#143) + 5 vertical-depth epics (V3 shipped 2026-05-28, V1 shipped 2026-05-29).
 - **Deferred:** #89 Bank Reconciliation — shipped inside #147 (2026-05-28).
 - **Audit timestamp:** 2026-05-26 19:12 IST · branch `master` · HEAD `9a3c98e` (#149 merged 2026-05-26 via PR-D2b/D3/D4/D5)
@@ -995,7 +996,7 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | 75 | Additional Cess | Per line item | Done | `8924109` · 2026-04 | DocumentLineItem.cessRate/cessAmount |
 | 76 | HSN Auto-fill | search | Partial | `8924109` · 2026-04 | HsnCode + `/api/hsn/search` (audit 2026-05-29: NO 12K seed — zero create/upsert anywhere; NO trgm GIN index — search is plain `startsWith`/`contains`) |
 | 77 | TDS/TCS | Per-doc rate+amount | Done | `8924109` · 2026-04 | `services/tds-tcs.service.ts` + TdsTcsReportPage |
-| 78 | GSTIN verification | Mod-36 checksum (local) | Partial | `8924109` · 2026-04 | `gstin.utils.ts` checksum is real; audit 2026-05-29: external GSP API (`POST /api/gstin/verify`) is a hardcoded mock (`verified:true`, TODO) |
+| 78 | GSTIN verification | Mod-36 checksum (local) + GSP registry | In-Progress (cred-blocked) | `8924109` · 2026-04 → fixed 2026-05-29 | `gstin.utils.ts` checksum real; `gstin-verify.service.ts` now does a real GSP lookup (env `GSTIN_VERIFY_API_URL/KEY`). `verified` true only on active-registration confirmation; unconfigured → `verified:false, providerConfigured:false` (no fabricated pass). 5 unit tests. Needs GSP creds to deliver |
 | 79 | Credit/Debit Notes | Bi-directional linking | Done | `8924109` · 2026-04 | Document(type=CN/DN) + stock + outstanding adj |
 | 80 | Multi-currency | 11 currencies, rate×10000 | Done | `8924109` · 2026-04 | ExchangeRate + `currency.service.ts` |
 | 81 | Recurring Invoices | 4 frequencies + scheduler | Done | `8924109` · 2026-04 | RecurringInvoice + RecurringInvoiceRun + recurring feature |

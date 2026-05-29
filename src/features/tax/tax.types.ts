@@ -35,10 +35,16 @@ export interface HsnCode {
 /** GSTIN verification result */
 export interface GstinVerifyResult {
   valid: boolean
+  /** True only when an external GSP registry confirmed an active registration. */
+  verified?: boolean
+  /** False when no GSP provider is configured — distinguishes "no check" from "not found". */
+  providerConfigured?: boolean
   stateCode: string | null
   legalName?: string
+  tradeName?: string
   status?: string
   type?: string
+  registrationDate?: string
   error?: string
 }
 

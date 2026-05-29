@@ -57,7 +57,7 @@
 |---|---------|-----|
 | 32 | Email invoice PDF | FIXED 2026-05-29 — null-stub `pdf.service` deleted; invoice PDF now rendered client-side (React-PDF) and uploaded as base64 to `:id/share/email`, which attaches it via Resend (needs Resend creds to deliver) |
 | 61 | Keyboard shortcuts | FIXED 2026-05-29 — `useKeyboardShortcuts` global keydown listener added (mounted via PersistentNav, auth-gated); wires alt+1..5 navigation, ctrl+n new invoice, ctrl+. calculator toggle. Bare-key/form-native shortcuts (Tab/Enter/Esc/save/print) stay form-local by design; ctrl+k search awaits a command palette |
-| 78 | GSTIN external verify | local Mod-36 checksum real; external API is a hardcoded mock (`verified:true`) |
+| 78 | GSTIN external verify | FIXED 2026-05-29 — hardcoded `verified:true` mock removed; `gstin-verify.service` now calls a real GSP registry (env `GSTIN_VERIFY_API_URL/KEY`, same opt-in pattern as Resend/Aisensy). `verified` reflects an actual active-registration confirmation; when unconfigured returns `verified:false, providerConfigured:false` (never fabricates a pass). Cred-blocked on GSP key |
 | 92 | Cheque register | FIXED 2026-05-29 — guard now keys on `status !== 'PENDING'` (covers BOUNCED + all terminal states) |
 | 114| Reorder points | logic real but schema field is `reorderQty` (schema:809); doc names nonexistent `reorderPoint` |
 
