@@ -93,13 +93,12 @@ Non-standard code is minimal: 2 raw `fetch()` + 1 `window.confirm` + 1 >250L fil
 
 ## Audit findings (test-contract drift, surfaced 2026-05-29 during S1)
 
-- **Route-test arg-drift (PUT handlers) — 4 pre-existing failures.** The
-  documents / parties / payments / products service update functions gained a
-  `userId` parameter (audit-actor propagation), but their route-level
-  `toHaveBeenCalledWith` assertions were not updated. These 4 PUT tests fail on
-  committed HEAD *independently of the S1 work* (confirmed via `git stash` + running
-  the files in isolation = identical 4 failures; the S1 commit adds zero new
-  failures). Expenses + payments PUT assertions were fixed in this session's S1
-  scope; **parties + products remain out of S1 scope and are NOT yet fixed** —
-  flagged here for a follow-up `test:` pass. Root cause is assertion drift, not a
-  product bug (the handlers correctly pass `userId`).
+- **Route-test arg-drift (PUT handlers) — FIXED 2026-05-29.** The
+  documents / parties / payments / products update handlers each pass a trailing
+  optimistic-lock version arg (`parseEntityVersion(...)`, `undefined` when no
+  version header) — and documents/parties/payments also pass the audit-actor
+  `userId` — but their route-level `toHaveBeenCalledWith` assertions hadn't been
+  updated for the extra arg(s). All 4 PUT tests now assert the full signature
+  (trailing `undefined` for the version). Root cause was assertion drift, not a
+  product bug — the handlers were correct. 48/48 green across the 4 route test
+  files.

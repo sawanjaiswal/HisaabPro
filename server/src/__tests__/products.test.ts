@@ -201,7 +201,8 @@ describe('PUT /api/products/:id', () => {
     expect(productService.updateProduct).toHaveBeenCalledWith(
       TEST_USER.businessId,
       'prod-1',
-      expect.objectContaining({ name: 'Rice 10kg' })
+      expect.objectContaining({ name: 'Rice 10kg' }),
+      undefined
     )
   })
 })

@@ -218,7 +218,8 @@ describe('PUT /api/payments/:id', () => {
       'biz-test-1',
       'pay-1',
       'user-test-1',
-      { amount: 60000 }
+      { amount: 60000 },
+      undefined
     )
   })
 })

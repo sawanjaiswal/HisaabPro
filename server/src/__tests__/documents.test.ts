@@ -255,7 +255,8 @@ describe('Document Routes — /api/documents', () => {
       TEST_USER.businessId,
       'doc-1',
       TEST_USER.userId,
-      expect.objectContaining({ status: 'SAVED', notes: 'Updated notes' })
+      expect.objectContaining({ status: 'SAVED', notes: 'Updated notes' }),
+      undefined
     )
   })
 
