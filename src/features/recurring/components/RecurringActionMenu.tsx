@@ -5,6 +5,7 @@ import { Pause, Play, Zap, Trash2, Edit2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/hooks/useToast'
 import { useLanguage } from '@/hooks/useLanguage'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { PauseConfirmSheet } from './PauseConfirmSheet'
 import { GenerateNowConfirmSheet } from './GenerateNowConfirmSheet'
 import type { RecurringInvoice } from '../recurring.types'
@@ -37,6 +38,7 @@ export function RecurringActionMenu({
   const toast = useToast()
   const [pauseOpen, setPauseOpen] = useState(false)
   const [generateOpen, setGenerateOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
 
   const label = schedule.name ?? schedule.partyName ?? schedule.id
   const isOffline = !navigator.onLine
@@ -49,9 +51,9 @@ export function RecurringActionMenu({
     setGenerateOpen(true)
   }
 
-  const handleDeleteClick = async () => {
-    if (!window.confirm(t.recurringDeleteConfirm ?? 'Delete this schedule?')) return
+  const handleDeleteConfirm = async () => {
     await onDelete(label)
+    setDeleteOpen(false)
     navigate('/recurring')
   }
 
@@ -113,7 +115,7 @@ export function RecurringActionMenu({
       <button
         type="button"
         className="recurring-action-menu__btn recurring-action-menu__btn--danger"
-        onClick={() => void handleDeleteClick()}
+        onClick={() => setDeleteOpen(true)}
         disabled={isDeleting}
         aria-busy={isDeleting}
         aria-label={t.recurringDelete ?? 'Delete schedule'}
@@ -131,6 +133,17 @@ export function RecurringActionMenu({
           await onPause(label)
           setPauseOpen(false)
         }}
+      />
+
+      <ConfirmDialog
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={() => void handleDeleteConfirm()}
+        title={t.recurringDelete ?? 'Delete schedule'}
+        description={t.recurringDeleteConfirm ?? 'Delete this schedule? This cannot be undone.'}
+        confirmLabel={t.recurringDelete ?? 'Delete'}
+        isDanger
+        isLoading={isDeleting}
       />
 
       <GenerateNowConfirmSheet

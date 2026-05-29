@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { LP_SECTIONS, LP_APP } from '@/config/landing-links.config';
 import { APP_NAME } from '@/config/app.config';
+import { Z } from '@/config/zIndexes';
 
 export function StickyMobileCTA() {
   const [visible, setVisible] = useState(false);
@@ -49,8 +50,9 @@ export function StickyMobileCTA() {
     <AnimatePresence>
       {visible && (
         <motion.div
-          className="fixed bottom-0 left-0 right-0 z-[40] md:hidden backdrop-blur-xl border-t"
+          className="fixed bottom-0 left-0 right-0 md:hidden backdrop-blur-xl border-t"
           style={{
+            zIndex: Z.floatingAction,
             backgroundColor: 'var(--lp-bg-nav)',
             borderColor: 'var(--lp-border-subtle)',
           }}
