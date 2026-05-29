@@ -22,6 +22,7 @@ import { PaymentDetailHero } from './components/PaymentDetailHero'
 import { PaymentOverviewTab } from './components/PaymentOverviewTab'
 import { PaymentAllocationsTab } from './components/PaymentAllocationsTab'
 import { PaymentHistoryTab } from './components/PaymentHistoryTab'
+import { VoucherShareBar } from './voucher/VoucherShareBar'
 import type { PaymentDetailTab } from './payment.types'
 import './payment-hero.css'
 
@@ -109,6 +110,11 @@ export default function PaymentDetailPage() {
               date={payment.date}
               mode={payment.mode}
             />
+
+            {/* Voucher download / print (#90 receipt, #91 payment) */}
+            <div className="mt-4">
+              <VoucherShareBar payment={payment} />
+            </div>
 
             {/* Pill tabs */}
             <div className="pill-tabs" role="tablist" aria-label={t.paymentDetailSections}>

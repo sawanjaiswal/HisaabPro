@@ -206,4 +206,22 @@ export const hiExt9 = {
   days45Label:             '45 दिन',
   days60Label:             '60 दिन',
   days90Label:             '90 दिन',
+
+  // ─── Payment Vouchers (#90 receipt, #91 payment) ──────────────────────────
+  receiptVoucher:          'रसीद वाउचर',
+  paymentVoucher:          'भुगतान वाउचर',
+  downloadVoucher:         'वाउचर डाउनलोड करें',
+  printVoucher:            'वाउचर प्रिंट करें',
+  voucherActionFailed:     'वाउचर नहीं बन सका। कृपया फिर से प्रयास करें।',
+  voucherReceivedFrom:     'से प्राप्त',
+  voucherPaidTo:           'को भुगतान',
+  voucherAmount:           'राशि',
+  voucherInWords:          'शब्दों में',
+  voucherPaymentMode:      'भुगतान का तरीका',
+  voucherReference:        'संदर्भ',
+  voucherDate:             'तारीख',
+  voucherAppliedTo:        'लागू',
+  voucherUnallocated:      'अनाबंटित',
+  voucherNotes:            'टिप्पणियाँ',
+  voucherGeneratedBy:      'द्वारा निर्मित',
 } as const

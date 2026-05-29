@@ -1011,8 +1011,8 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | 87 | Accounting Day Book | Per-day journal view | Done | `2b1d872` · 2026-05 | accounting/index.ts + DayBookPage — GL-backed, fed by S1 |
 | 88 | Journal Entries | DRAFT→POST→VOID | Done | `2b1d872` · 2026-05 | `accounting/journal-entries.ts` + JournalEntriesPage |
 | 89 | Bank Reconciliation | Match payments↔bank | Done | 2026-05-28 | Shipped inside #147 Auto-reconciliation (Phase 7) |
-| 90 | Receipt vouchers | Voucher print | Not Started | — | audit 2026-05-29: no voucher endpoint/PDF in `routes/payments.ts` (13 endpoints checked) |
-| 91 | Payment vouchers | Voucher print | Not Started | — | audit 2026-05-29: no voucher endpoint |
+| 90 | Receipt vouchers | Voucher download/print | Done | 2026-05-29 | Client-side React-PDF (`features/payments/voucher/`): RECEIPT template for PAYMENT_IN/PAYROLL_IN. Download via PDFDownloadLink + Print via pdf().toBlob(), wired into PaymentDetailPage. Amount-in-words (Indian system), allocations table. No server endpoint — all PDF is client-side (audit's "no endpoint" framing assumed server rendering; project renders 100% client-side) |
+| 91 | Payment vouchers | Voucher download/print | Done | 2026-05-29 | Same component as #90, PAYMENT template for PAYMENT_OUT/PAYROLL_OUT (kind derived by `voucherKindFor`) |
 | 92 | Cheque register | PENDING + terminal CLEARED/BOUNCED/CANCELLED/RETURNED | Done | `2b1d872` · 2026-05 | `services/cheque.service.ts` + Cheque + cheques feature — #92 fixed 2026-05-29: terminal-state guard now keys on PENDING (only live state), so a BOUNCED cheque can no longer be flipped back to CLEARED |
 | 93 | Multiple bank accounts | Per-business banks | Done | `2b1d872` · 2026-05 | BankAccount + bank-accounts feature |
 | 94 | Cash-in-hand | Cash account + entries | Done | `2b1d872` · 2026-05 | CashEntry + CashEntryEvent + cash-register feature |

@@ -43,8 +43,8 @@
 | 58 | Transaction PIN | stored as `User.pinHash`, no `PinCredential` model (works) |
 | 62 | Calculator FAB | exists as `CalculatorOverlay` launched from SideNav, not a FAB |
 | 76 | HSN auto-fill | no 12K seed (zero create/upsert), no trgm GIN index; plain `startsWith`/`contains` |
-| 90 | Receipt vouchers | no voucher endpoint/PDF in `routes/payments.ts` |
-| 91 | Payment vouchers | same — no voucher endpoint |
+| 90 | Receipt vouchers | FIXED 2026-05-29 — client-side React-PDF voucher (`features/payments/voucher/`), download+print on PaymentDetailPage. No endpoint by design (PDF is 100% client-side here) |
+| 91 | Payment vouchers | FIXED 2026-05-29 — same component, PAYMENT template for *_OUT types |
 | 100| Tally export | real, but at `reports/tally-export.ts` not cited `routes/export.ts` |
 | 104| COGS/WAC journal | WAC real in inventory/bom; no COGS journal-posting branch in accounting |
 | 130| Web invoice links | opaque 32-byte token + `sha256` tokenHash, not "HMAC-signed" (secure either way) |
