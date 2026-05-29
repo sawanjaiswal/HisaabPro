@@ -37,6 +37,20 @@ vi.mock('../lib/prisma.js', () => {
       if (!modelCache.has(prop)) modelCache.set(prop, makeModel())
       return modelCache.get(prop)
     },
+    // Expose lazily-synthesized model mocks as enumerable own keys so
+    // Object.values(prisma) in resetMocks() reaches them. Without these traps
+    // the model-method mock queues (mockResolvedValueOnce) are never reset
+    // between test files, and stale queued values bleed across the suite.
+    ownKeys(target) {
+      return [...new Set([...Reflect.ownKeys(target), ...modelCache.keys()])]
+    },
+    getOwnPropertyDescriptor(target, prop: string) {
+      if (prop in target) return Reflect.getOwnPropertyDescriptor(target, prop)
+      if (modelCache.has(prop)) {
+        return { enumerable: true, configurable: true, value: modelCache.get(prop) }
+      }
+      return undefined
+    },
   })
   return { prisma: proxy }
 })

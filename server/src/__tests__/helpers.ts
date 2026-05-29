@@ -134,13 +134,21 @@ export function mockStaffPermission(permissions?: string[]) {
   )
 }
 
-/** Reset all prisma mocks */
+/** Reset all prisma mocks.
+ *
+ * mockReset() clears the implementation AND the mockResolvedValueOnce queue
+ * (clearAllMocks does not — that only wipes call history), which is what stops
+ * a stale once-queue entry bleeding from one test file into the next. After the
+ * reset we re-apply the default `{}` resolution that the setup Proxy's makeModel
+ * installs, so un-configured model methods keep returning `{}` (not undefined)
+ * exactly as before this reset ran. */
 export function resetMocks() {
   for (const model of Object.values(mockPrisma)) {
     if (typeof model === 'object' && model !== null) {
       for (const fn of Object.values(model)) {
         if (typeof fn === 'function' && 'mockReset' in fn) {
           fn.mockReset()
+          fn.mockResolvedValue({})
         }
       }
     }
