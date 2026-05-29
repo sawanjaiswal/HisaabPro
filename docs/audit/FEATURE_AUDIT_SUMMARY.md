@@ -49,7 +49,7 @@
 | # | Feature | Reality |
 |---|---------|---------|
 | 5  | Email export | `export.service.generateFullExport` is a CSV download, emails nothing |
-| 8  | Theme variants + ThemePicker | `ThemeContext` is only `light|dark`; no variants, no picker |
+| 8  | Theme variants + ThemePicker | FIXED 2026-05-29 — `ThemeContext` now carries a `variant` dimension (`classic|modern|minimal`) applied as a `data-variant` attribute; `src/styles/tokens-variants.css` re-tints ONLY the brand ramps (primary + secondary/accent + lime aliases + teal gradients + FAB glow) for both light and dark, leaving semantic + neutral tokens shared so contrast never regresses. ThemePicker lives at `/settings/theme` (`features/settings/theme/`). Persisted in localStorage `theme-variant`, cross-tab synced |
 | 58 | Transaction PIN | stored as `User.pinHash`, no `PinCredential` model (works) |
 | 62 | Calculator FAB | exists as `CalculatorOverlay` launched from SideNav, not a FAB |
 | 76 | HSN auto-fill | FIXED 2026-05-29 — curated subset seeded (`prisma/data/hsn-curated.ts` 126 codes, `prisma/seed.hsn.ts` idempotent upsert, `npm run db:seed:hsn`); B-tree `@@index([description])` replaced by pg_trgm GIN `hsn_description_trgm` (migration `20260529163000_hsn_description_trgm`, raw SQL create-then-drop). EXPLAIN confirms `ILIKE '%q%'` rides the GIN. Search route unchanged (`code startsWith` then `description contains`). FUTURE: full ~12K master load (needs authoritative dataset) |

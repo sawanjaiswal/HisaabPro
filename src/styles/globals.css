@@ -7,6 +7,7 @@
 @import './tokens-colors.css';
 @import './tokens-core.css';
 @import './tokens-dark.css';
+@import './tokens-variants.css';
 @import './responsive-tokens.css';
 @import './base.css';
 @import './animations.css';

@@ -519,6 +519,20 @@ export const en = {
   businessName:       'Business Name',
   businessProfile:    'Business Profile',
 
+  // ─── Theme variants ───────────────────────────────────────────────────────
+  themePageTitle:        'Theme',
+  themeAppearance:       'Appearance',
+  themeColourTheme:      'Colour theme',
+  themeLight:            'Light',
+  themeDark:             'Dark',
+  themeVariantClassic:   'Classic',
+  themeVariantModern:    'Modern',
+  themeVariantMinimal:   'Minimal',
+  themeVariantClassicDesc: 'Deep teal & lime — the signature HisaabPro look',
+  themeVariantModernDesc:  'Cool azure & mint — crisp and contemporary',
+  themeVariantMinimalDesc: 'Muted slate & sage — calm and understated',
+  themeHint:             'Changes apply instantly across the whole app.',
+
   // ─── Feedback — Empty / Error / Network ───────────────────────────────────
   emptyParties:   'Add your first customer or supplier to get started.',
   emptyProducts:  'Add your first product to start managing inventory.',

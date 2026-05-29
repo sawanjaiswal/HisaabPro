@@ -222,6 +222,7 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
         icon: 'Calendar',
         type: 'select',
       },
+      { id: 'theme-variant', label: 'Theme', description: 'Pick a colour theme — Classic, Modern or Minimal', icon: 'Palette', route: ROUTES.SETTINGS_THEME, type: 'navigation' },
       {
         id: 'shortcuts',
         label: 'Keyboard Shortcuts',

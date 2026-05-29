@@ -1,0 +1,176 @@
+/* === THEME VARIANTS — brand-hue re-tint (#8) ===
+ *
+ * A second, orthogonal dimension to light/dark. `data-variant` re-tints ONLY
+ * the brand ramps (primary + secondary/accent), the lime-accent aliases, the
+ * teal gradients, and the lime FAB glow. Semantic success/error/warning/info
+ * and the neutral gray ramp are intentionally NOT touched — contrast and
+ * accessibility stay identical across every variant.
+ *
+ * - Classic  = the base tokens in tokens-colors.css / tokens-dark.css. No
+ *              selector here, so Classic is a zero-cost no-op (the default).
+ * - Modern   = cooler azure-blue primary + mint-aqua accent (the "blue/teal
+ *              trust color" in the project design direction).
+ * - Minimal  = desaturated slate-teal primary + muted sage accent; the accent
+ *              recedes so the UI leans on neutrals.
+ *
+ * Imported AFTER tokens-dark.css in globals.css. Light overrides use
+ * [data-variant="x"] (same specificity as :root, wins on source order); dark
+ * overrides use [data-theme="dark"][data-variant="x"] (higher specificity than
+ * the [data-theme="dark"] base, wins on both specificity and order).
+ *
+ * `--color-primary`, `--color-primary-bg-*` etc. are aliases of these ramps,
+ * so they follow automatically — only the raw ramps + a few rgba-literal
+ * tokens are restated below.
+ */
+
+/* ─────────────────────────── MODERN — light ─────────────────────────── */
+[data-variant="modern"] {
+  --color-primary-50:  #EAF2FB;
+  --color-primary-100: #D6E6F6;
+  --color-primary-200: #A9C8EC;
+  --color-primary-300: #6FA3DC;
+  --color-primary-400: #3D85CC;
+  --color-primary-500: #1E6FB8; /* PRIMARY BRAND */
+  --color-primary-600: #195C99;
+  --color-primary-700: #144A7C;
+  --color-primary-800: #103A61;
+  --color-primary-900: #0B2A47;
+
+  --color-secondary-50:  #E8FBF6;
+  --color-secondary-100: #D2F7EE;
+  --color-secondary-200: #9CEFDD;
+  --color-secondary-300: #38E0C4; /* ACCENT */
+  --color-secondary-400: #20C9AD;
+  --color-secondary-500: #14B098;
+  --color-secondary-600: #0E8B78;
+  --color-secondary-700: #0B6B5C;
+  --color-secondary-800: #085245;
+  --color-secondary-900: #063C33;
+
+  --color-primary-bg-subtle: rgba(30, 111, 184, 0.12);
+  --color-primary-bg-subtle-strong: rgba(30, 111, 184, 0.15);
+
+  --color-lime-accent: #38E0C4;
+  --color-lime-highlight: #5CEBD3;
+
+  --gradient-teal-start: #1E6FB8;
+  --gradient-teal-end:   #144A7C;
+  --gradient-calc-start: #1E6FB8;
+  --gradient-calc-end:   #103A61;
+
+  --shadow-fab-lime: 0 4px 14px rgba(56, 224, 196, 0.4);
+}
+
+/* ─────────────────────────── MODERN — dark ──────────────────────────── */
+[data-theme="dark"][data-variant="modern"] {
+  --color-primary-50:  #0A2238;
+  --color-primary-100: #0D2E4A;
+  --color-primary-200: #134268;
+  --color-primary-300: #1A6299;
+  --color-primary-400: #2C82C4;
+  --color-primary-500: #4FA3E8;
+  --color-primary-600: #6FB6EE;
+  --color-primary-700: #92CAF3;
+  --color-primary-800: #B6DDF8;
+  --color-primary-900: #DBEFFC;
+
+  --color-secondary-50:  #06302A;
+  --color-secondary-100: #084339;
+  --color-secondary-200: #0C6557;
+  --color-secondary-300: #14B098;
+  --color-secondary-400: #20C9AD;
+  --color-secondary-500: #3FE0C6;
+  --color-secondary-600: #62E8D2;
+  --color-secondary-700: #88EFDD;
+  --color-secondary-800: #B0F5EA;
+  --color-secondary-900: #D8FAF4;
+
+  --color-primary-bg-subtle: rgba(79, 163, 232, 0.12);
+  --color-primary-bg-subtle-strong: rgba(79, 163, 232, 0.18);
+
+  --color-lime-accent: #3FE0C6;
+
+  --gradient-teal-start: #0D2E4A;
+  --gradient-teal-end:   #0A2238;
+  --gradient-calc-start: #0A2238;
+  --gradient-calc-end:   #0D2E4A;
+
+  --shadow-fab-lime: 0 4px 14px rgba(63, 224, 198, 0.3);
+  --shadow-focus-primary: 0 0 0 3px rgba(79, 163, 232, 0.15);
+}
+
+/* ─────────────────────────── MINIMAL — light ────────────────────────── */
+[data-variant="minimal"] {
+  --color-primary-50:  #EEF1F2;
+  --color-primary-100: #E2E7E8;
+  --color-primary-200: #C3CDD0;
+  --color-primary-300: #93A5AA;
+  --color-primary-400: #5E777E;
+  --color-primary-500: #3A5A63; /* PRIMARY BRAND */
+  --color-primary-600: #2E484F;
+  --color-primary-700: #25393F;
+  --color-primary-800: #1D2D31;
+  --color-primary-900: #152124;
+
+  --color-secondary-50:  #F6F7EE;
+  --color-secondary-100: #EEF0DE;
+  --color-secondary-200: #DCE0BC;
+  --color-secondary-300: #B8C275; /* ACCENT */
+  --color-secondary-400: #A3AD5E;
+  --color-secondary-500: #8A934C;
+  --color-secondary-600: #6C733B;
+  --color-secondary-700: #51562D;
+  --color-secondary-800: #3C4022;
+  --color-secondary-900: #2B2E18;
+
+  --color-primary-bg-subtle: rgba(58, 90, 99, 0.12);
+  --color-primary-bg-subtle-strong: rgba(58, 90, 99, 0.15);
+
+  --color-lime-accent: #B8C275;
+  --color-lime-highlight: #C9D18C;
+
+  --gradient-teal-start: #3A5A63;
+  --gradient-teal-end:   #25393F;
+  --gradient-calc-start: #3A5A63;
+  --gradient-calc-end:   #1D2D31;
+
+  --shadow-fab-lime: 0 4px 14px rgba(184, 194, 117, 0.3);
+}
+
+/* ─────────────────────────── MINIMAL — dark ─────────────────────────── */
+[data-theme="dark"][data-variant="minimal"] {
+  --color-primary-50:  #161E21;
+  --color-primary-100: #1E282C;
+  --color-primary-200: #2C3A3F;
+  --color-primary-300: #45585F;
+  --color-primary-400: #57727A;
+  --color-primary-500: #6E8C95;
+  --color-primary-600: #8AA4AC;
+  --color-primary-700: #A6BBC1;
+  --color-primary-800: #C3D2D6;
+  --color-primary-900: #E0E9EB;
+
+  --color-secondary-50:  #23260F;
+  --color-secondary-100: #303416;
+  --color-secondary-200: #474D22;
+  --color-secondary-300: #6C733B;
+  --color-secondary-400: #8A934C;
+  --color-secondary-500: #A3AD5E;
+  --color-secondary-600: #B8C275;
+  --color-secondary-700: #CBD394;
+  --color-secondary-800: #DEE3B7;
+  --color-secondary-900: #EFF2DA;
+
+  --color-primary-bg-subtle: rgba(110, 140, 149, 0.12);
+  --color-primary-bg-subtle-strong: rgba(110, 140, 149, 0.18);
+
+  --color-lime-accent: #B8C275;
+
+  --gradient-teal-start: #1E282C;
+  --gradient-teal-end:   #161E21;
+  --gradient-calc-start: #161E21;
+  --gradient-calc-end:   #1E282C;
+
+  --shadow-fab-lime: 0 4px 14px rgba(184, 194, 117, 0.25);
+  --shadow-focus-primary: 0 0 0 3px rgba(110, 140, 149, 0.15);
+}

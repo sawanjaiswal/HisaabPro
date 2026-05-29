@@ -114,7 +114,7 @@ Status legend: `[x]` shipped · `[B]` blocked on creds · `[ ]` not started · `
 | 5 | Backup (local + Google Drive + email export) | [x] | Manual backup + list + download + cooldown |
 | 6 | Offline-first PWA (IndexedDB, sync queue, SW) | [x] | SW registered, Dexie, banner, sync queue |
 | 7 | Admin Panel framework | [x] | 15 endpoints, separate admin JWT, SUPER_ADMIN guard |
-| 8 | Dark Mode / Theming | [x] | CSS vars, classic/modern/minimal |
+| 8 | Dark Mode / Theming | [x] | CSS vars + `data-variant` Classic/Modern/Minimal palettes, ThemePicker at `/settings/theme` |
 | 9 | Multi-language (EN/HI) | [x] | 980+ keys |
 | 10 | Onboarding wizard | [x] | Business creation on first login |
 
@@ -819,7 +819,7 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 > **Line-by-line code re-audit 2026-05-29** (`docs/audit/FEATURE_AUDIT_SUMMARY.md`):
 > 150/165 rows verified exactly. Corrected this pass — drift rows now carry an
 > inline `audit 2026-05-29:` note: #5 (Drive backup MISSING, email-export is
-> CSV), #8 (no theme variants), #32 (fixed 2026-05-29 — client-render+upload),
+> CSV), #8 (fixed 2026-05-29 — theme variants shipped), #32 (fixed 2026-05-29 — client-render+upload),
 > #61 (fixed 2026-05-29 — global listener) & #78 (fixed 2026-05-29 — real GSP
 > lookup, cred-blocked), #76 (fixed 2026-05-29 — curated
 > 126-code seed + trgm GIN), #90/#91 (no voucher endpoint), #92 (RETURNED≠BOUNCED), #100/#127/
@@ -885,7 +885,7 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | 7 | Admin Panel | SUPER_ADMIN guard | Done | `bfbe6b2` · 2026-03 | `lib/admin-auth.ts` (HIGH-RISK PATH) |
 | 7 | Admin Panel | Coupons + broadcasts + impersonation | Done | `bfbe6b2` · 2026-03 | `admin-coupons.ts` + `notifications-broadcast.ts` |
 | 8 | Dark Mode / Theming | CSS-var palette swap | Done | `2769806` · 2026-04 | `src/styles/tokens-dark.css` + theme toggle |
-| 8 | Dark Mode / Theming | Classic/Modern/Minimal variants | Not Started | — | audit 2026-05-29: `ThemeContext` is only `light|dark`; no variants, no ThemePicker component |
+| 8 | Dark Mode / Theming | Classic/Modern/Minimal variants | Done | 2026-05-29 | `ThemeContext` adds a `variant` dimension → `data-variant` attr; `src/styles/tokens-variants.css` re-tints brand ramps only (semantic/neutral shared) for both light+dark; ThemePicker page at `/settings/theme` (`features/settings/theme/`). localStorage `theme-variant`, cross-tab synced |
 | 9 | Multi-language (EN/HI) | 980+ keys + `useLanguage()` | Done | `bfbe6b2` · 2026-03 | `lib/translations.en.ts` + `translations.hi.ts` (parity enforced) |
 | 10 | Onboarding wizard | Business creation on first login | Done | `b69067b` · 2026-04 | `features/onboarding/` + verticals step + business defaults |
 

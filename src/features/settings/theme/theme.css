@@ -1,0 +1,134 @@
+/* Theme appearance page — variant picker + light/dark segmented control */
+
+.theme-variant-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.theme-variant-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-4);
+  text-align: left;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--duration-fast) var(--ease-default),
+    box-shadow var(--duration-fast) var(--ease-default);
+  cursor: pointer;
+}
+
+.theme-variant-card:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-primary);
+}
+
+.theme-variant-card--selected {
+  border-color: var(--color-primary-500);
+  box-shadow: var(--shadow-focus-primary);
+}
+
+.theme-variant-swatch {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.theme-variant-chip {
+  width: 20px;
+  height: 28px;
+  border: 1px solid var(--color-border);
+}
+
+.theme-variant-chip:not(:first-child) {
+  margin-left: -8px;
+}
+
+.theme-variant-chip:first-child {
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+
+.theme-variant-chip:last-child {
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.theme-variant-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.theme-variant-label {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.theme-variant-desc {
+  font-size: var(--fs-xs);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.theme-variant-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: var(--color-primary-500);
+}
+
+/* ─── Appearance (light/dark) segmented control ─── */
+
+.theme-appearance-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  padding: var(--space-1);
+  background: var(--color-gray-100);
+  border-radius: var(--radius-lg);
+}
+
+.theme-appearance-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-default),
+    color var(--duration-fast) var(--ease-default);
+}
+
+.theme-appearance-option:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-primary);
+}
+
+.theme-appearance-option--active {
+  color: var(--color-primary-700);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-section-title {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-3);
+}

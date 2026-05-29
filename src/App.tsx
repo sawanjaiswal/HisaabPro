@@ -22,7 +22,7 @@ import {
   ReportsHub, SaleReport, PurchaseReport, PartyStatement, StockSummary,
   DayBook, PaymentHistory, TaxSummary, GstReturns, TdsTcsReport,
   Settings, SubscriptionManage, SubscriptionCheckout, Roles, RoleBuilder, Staff, StaffInvite, StaffPermissions,
-  TransactionControls, AuditLog, ActiveSessions, PinSetup, Shortcuts,
+  TransactionControls, AuditLog, ActiveSessions, PinSetup, Shortcuts, ThemeAppearance,
   GstSettings, TaxCategories, CreateTaxCategory, EditTaxCategory,
   CurrencySettings, RecurringList, RecurringDetail, RecurringForm,
   GstReconciliationList, GstReconciliationDetail,
@@ -152,6 +152,7 @@ export function App() {
         <Route path={ROUTES.SETTINGS_AUDIT_LOG} element={<PageRoute><ProtectedRoute><AuditLog /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_SESSIONS} element={<PageRoute><ProtectedRoute><ActiveSessions /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_SHORTCUTS} element={<PageRoute><ProtectedRoute><Shortcuts /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SETTINGS_THEME} element={<PageRoute><ProtectedRoute><ThemeAppearance /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_PIN_SETUP} element={<PageRoute><ProtectedRoute><PinSetup /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_SUBSCRIPTION} element={<PageRoute><ProtectedRoute><SubscriptionManage /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SETTINGS_SUBSCRIPTION_CHECKOUT} element={<PageRoute><ProtectedRoute><SubscriptionCheckout /></ProtectedRoute></PageRoute>} />

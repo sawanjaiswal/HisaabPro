@@ -19,6 +19,7 @@ import {
   Ruler,
   Receipt,
   Percent,
+  Palette,
 } from 'lucide-react'
 import type { LucideProps } from 'lucide-react'
 import type { SettingsSection as SettingsSectionType, SettingsItem, AppSettings } from '../settings.types'
@@ -46,6 +47,7 @@ const ICON_MAP: Record<string, IconComponent> = {
   Ruler,
   Receipt,
   Percent,
+  Palette,
 }
 
 interface SettingsSectionProps {

@@ -519,6 +519,20 @@ export const hi = {
   businessName:       'व्यापार का नाम',
   businessProfile:    'व्यापार प्रोफाइल',
 
+  // ─── Theme variants ───────────────────────────────────────────────────────
+  themePageTitle:        'थीम',
+  themeAppearance:       'रूप',
+  themeColourTheme:      'रंग थीम',
+  themeLight:            'लाइट',
+  themeDark:             'डार्क',
+  themeVariantClassic:   'क्लासिक',
+  themeVariantModern:    'मॉडर्न',
+  themeVariantMinimal:   'मिनिमल',
+  themeVariantClassicDesc: 'गहरा टील और लाइम — हिसाबप्रो का सिग्नेचर रूप',
+  themeVariantModernDesc:  'ठंडा एज़्योर और मिंट — ताज़ा और आधुनिक',
+  themeVariantMinimalDesc: 'हल्का स्लेट और सेज — शांत और सादगीपूर्ण',
+  themeHint:             'बदलाव पूरे ऐप में तुरंत लागू होते हैं।',
+
   // ─── Feedback — Empty / Error / Network ───────────────────────────────────
   emptyParties:   'शुरू करने के लिए पहला ग्राहक या सप्लायर जोड़ें।',
   emptyProducts:  'इन्वेंटरी प्रबंधन शुरू करने के लिए पहला उत्पाद जोड़ें।',
