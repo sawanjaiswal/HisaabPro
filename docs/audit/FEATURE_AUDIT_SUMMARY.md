@@ -19,6 +19,24 @@
 
 ~91% of rows verify exactly as the doc claims. The deltas below are the actionable list.
 
+### Post-audit resolution (2026-05-29 — queue drained)
+
+The Roll-up columns are the *as-audited* snapshot. Every delta below has since
+been dispositioned; **zero items remain that need new code which isn't
+credential-blocked.**
+
+| Disposition | Count | Rows |
+|-------------|-------|------|
+| Code-fixed & verifiable (tsc/curl/tests green) | 7 | #8 theme variants · #61 shortcuts · #76 HSN trgm · #90 receipt voucher · #91 payment voucher · #92 cheque register · #104 COGS leg |
+| Code-fixed, **credential-blocked** for live verify | 3 | #5 Drive backup (Google OAuth client) · #32 email-invoice-PDF (Resend) · #78 GSTIN verify (GSP key) |
+| Path/cosmetic drift — feature real, doc path corrected inline | 6 | #58 PIN · #62 calculator · #100 Tally · #127 CRM · #130 web-link · #133 BOGO |
+| Doc claim corrected, no code needed | 2 | #5 email-export (CSV, not email — emailing is Resend-blocked) · #114 reorder (`reorderQty`, not `reorderPoint`) |
+
+Remaining **Not Started** rows are backlog/out-of-scope, not audit deltas:
+#143 WhatsApp inbound bot (no inbound provider) and V1–V7 vertical-depth
+features (§5 post-MVP). `docs/HISAABPRO.md` §24 carries the 12 matching inline
+`audit 2026-05-29:` corrections — the two docs are reconciled.
+
 ## Tier S — real bugs / integration gaps (NOT just doc drift)
 
 - **S1 — GL journal is not fed by transactions.** FIXED 2026-05-29. Documents,
