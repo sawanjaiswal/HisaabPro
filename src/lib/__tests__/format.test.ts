@@ -1,31 +1,31 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { formatCurrency, formatNumber, formatDate, formatPhone, formatRelativeTime, toLocalISODate } from '../format'
+import { formatPaise, formatNumber, formatDate, formatPhone, formatRelativeTime, toLocalISODate } from '../format'
 
-describe('formatCurrency', () => {
+describe('formatPaise', () => {
   it('formats paise to INR with 2 decimals', () => {
-    expect(formatCurrency(1550000)).toBe('₹15,500.00')
+    expect(formatPaise(1550000)).toBe('₹15,500.00')
   })
 
   it('formats zero', () => {
-    expect(formatCurrency(0)).toBe('₹0.00')
+    expect(formatPaise(0)).toBe('₹0.00')
   })
 
   it('formats small amounts', () => {
-    expect(formatCurrency(50)).toBe('₹0.50')
+    expect(formatPaise(50)).toBe('₹0.50')
   })
 
   it('formats lakhs with Indian comma grouping', () => {
     // 10,00,000 paise = ₹10,000.00
-    expect(formatCurrency(1000000)).toBe('₹10,000.00')
+    expect(formatPaise(1000000)).toBe('₹10,000.00')
   })
 
   it('formats crores', () => {
     // 10,00,00,000 paise = ₹1,00,00,000.00
-    expect(formatCurrency(1000000000)).toBe('₹1,00,00,000.00')
+    expect(formatPaise(1000000000)).toBe('₹1,00,00,000.00')
   })
 
   it('formats negative amounts', () => {
-    expect(formatCurrency(-50000)).toBe('-₹500.00')
+    expect(formatPaise(-50000)).toBe('-₹500.00')
   })
 })
 

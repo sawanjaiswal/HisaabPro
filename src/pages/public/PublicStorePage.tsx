@@ -10,7 +10,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useParams, useOutletContext } from 'react-router-dom'
 import { Package, SearchX, AlertCircle, MessageCircle } from 'lucide-react'
 import { api } from '@/lib/api'
-import { formatCurrency } from '@/lib/format'
+import { formatPaise } from '@/lib/format'
 import type { PublicStorefrontDto, PublicStoreStatus } from '@/features/storefront/storefront.types'
 import type { PublicLang } from '@/features/public/hooks/usePublicLang'
 import './public-store.css'
@@ -201,7 +201,7 @@ export function PublicStorePage() {
                 }
                 <div className="pub-store__product-body">
                   <p className="pub-store__product-name">{product.name}</p>
-                  <p className="pub-store__product-price">{formatCurrency(product.sellingPrice)}</p>
+                  <p className="pub-store__product-price">{formatPaise(product.sellingPrice)}</p>
                   {store.whatsapp && (
                     <a
                       href={buildWhatsAppUrl(store.whatsapp, store.business.name, product.name)}

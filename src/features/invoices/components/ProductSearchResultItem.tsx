@@ -4,7 +4,7 @@ import React from 'react'
 import { Plus } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { ProductSummary } from '@/lib/types/product.types'
-import { formatCurrency } from '@/lib/format'
+import { formatPaise } from '@/lib/format'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -33,7 +33,7 @@ export const ProductSearchResultItem: React.FC<ProductSearchResultItemProps> = (
       className={`product-search-result${isAdded ? ' product-search-result--added' : ''}`}
       role="option"
       aria-selected={isAdded}
-      aria-label={`${product.name}, ${formatCurrency(product.salePrice)}, ${t.stockLabel}: ${stockLabel}${isAdded ? `, ${t.alreadyAddedSuffix}` : ''}`}
+      aria-label={`${product.name}, ${formatPaise(product.salePrice)}, ${t.stockLabel}: ${stockLabel}${isAdded ? `, ${t.alreadyAddedSuffix}` : ''}`}
     >
       <div className="product-search-result-info">
         <div className="product-search-result-name">{product.name}</div>
@@ -48,7 +48,7 @@ export const ProductSearchResultItem: React.FC<ProductSearchResultItemProps> = (
       </div>
       <div className="product-search-result-right">
         <span className="product-search-result-price">
-          {formatCurrency(product.salePrice)}
+          {formatPaise(product.salePrice)}
         </span>
         <button
           type="button"

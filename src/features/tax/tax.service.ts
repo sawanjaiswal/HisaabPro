@@ -1,7 +1,7 @@
 /** GST & Tax — API service layer
  *
  * All monetary values are in PAISE (integer) — the server and client both
- * use paise. Display conversion is done at the component level via formatCurrency.
+ * use paise. Display conversion is done at the component level via formatPaise.
  *
  * API base: the `api()` helper already prepends API_URL, so paths start at /
  * (not /api). The `api()` wrapper throws on failure and returns data directly.

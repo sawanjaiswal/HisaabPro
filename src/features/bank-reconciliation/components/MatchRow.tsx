@@ -2,7 +2,7 @@
 import { ArrowDownLeft, ArrowUpRight, Check, X, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
-import { formatCurrency } from '@/lib/format'
+import { formatPaise } from '@/lib/format'
 import { confidenceColor } from '../bank-reconciliation.constants'
 import type { ReconLine } from '../bank-reconciliation.types'
 
@@ -31,7 +31,7 @@ export function MatchRow({ line, onConfirm, onIgnore, onUnreconcile }: Props) {
         <div className="recon-row__top">
           <span className="recon-row__desc">{line.description || (isCredit ? t.bankReconCredit : t.bankReconDebit)}</span>
           <span className="recon-row__amount tabular-nums" data-dir={line.direction}>
-            {formatCurrency(line.amount)}
+            {formatPaise(line.amount)}
           </span>
         </div>
         <div className="recon-row__meta">

@@ -5,7 +5,7 @@ import { Search, X } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useDebounce } from '@/hooks/useDebounce'
 import { getProducts } from '@/lib/services/product.service'
-import { formatCurrency } from '@/lib/format'
+import { formatPaise } from '@/lib/format'
 import type { ProductSummary } from '@/lib/types/product.types'
 
 export interface SelectedProduct { id: string; name: string; salePrice: number }
@@ -75,7 +75,7 @@ export const PriceListProductPicker: React.FC<Props> = ({
         <div className="pl-product-picker__selected">
           <span className="pl-product-picker__name">{selected.name}</span>
           <span className="pl-product-picker__price">
-            {t.plEntryProductBadge}: {formatCurrency(selected.salePrice)}
+            {t.plEntryProductBadge}: {formatPaise(selected.salePrice)}
           </span>
           {!readOnly && (
             <button type="button" className="pl-product-picker__clear" onClick={handleClear} aria-label={t.plEntryClearProduct}>
@@ -123,13 +123,13 @@ export const PriceListProductPicker: React.FC<Props> = ({
           {!isLoading && results.map(p => (
             <li key={p.id} className="product-search-result" role="option" aria-selected={false}
               onClick={() => handleSelect(p)} style={{ cursor: 'pointer' }}
-              aria-label={`${p.name}, ${formatCurrency(p.salePrice)}`}
+              aria-label={`${p.name}, ${formatPaise(p.salePrice)}`}
             >
               <div className="product-search-result-info">
                 <div className="product-search-result-name">{p.name}</div>
                 {p.sku && <div className="product-search-result-meta"><span className="product-search-result-sku">{p.sku}</span></div>}
               </div>
-              <span className="product-search-result-price">{formatCurrency(p.salePrice)}</span>
+              <span className="product-search-result-price">{formatPaise(p.salePrice)}</span>
             </li>
           ))}
         </ul>

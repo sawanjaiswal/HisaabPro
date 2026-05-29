@@ -14,7 +14,7 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { ROUTES } from '@/config/routes.config'
 import { useReconciliationList } from './useReconciliationList'
 import { ReconciliationUploadForm } from './components/ReconciliationUploadForm'
-import { formatCurrency } from '@/lib/format'
+import { formatPaise } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import { RECON_STATUS_LABELS, RECON_TYPE_LABELS } from './reconciliation.constants'
 import './reconciliation.css'
@@ -111,7 +111,7 @@ export default function ReconciliationListPage() {
                 </div>
                 {item.status === 'COMPLETED' && (
                   <div className="recon-list-card__diff">
-                    {t.difference}: {formatCurrency(Math.abs(item.differenceValue))}
+                    {t.difference}: {formatPaise(Math.abs(item.differenceValue))}
                     {' · '}
                     {item.totalInvoices} {t.invoices.toLowerCase()}
                   </div>

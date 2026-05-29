@@ -6,17 +6,8 @@ import { ArrowLeft, Plus, RefreshCw, Pencil, Trash2 } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useReminderRuleList, useDeleteReminderRule, useToggleReminderRule } from '../hooks/useReminderRules'
 import { ChannelBadge } from '../components/ChannelBadge'
-import { MARKETING_ROUTES, TRIGGER_BADGE } from '../marketing.constants'
-import type { ReminderRule, ReminderRuleTrigger } from '../marketing.types'
-
-const TRIGGER_LABEL_KEYS: Record<ReminderRuleTrigger, 'marketingTriggerBirthdayLabel' | 'marketingTriggerPaymentDueLabel' | 'marketingTriggerPaymentOverdueLabel' | 'marketingTriggerFollowupLabel' | 'marketingTriggerInactiveLabel' | 'marketingTriggerOrderDeliveryLabel'> = {
-  BIRTHDAY:         'marketingTriggerBirthdayLabel',
-  PAYMENT_DUE:      'marketingTriggerPaymentDueLabel',
-  PAYMENT_OVERDUE:  'marketingTriggerPaymentOverdueLabel',
-  FOLLOWUP:         'marketingTriggerFollowupLabel',
-  INACTIVE:         'marketingTriggerInactiveLabel',
-  ORDER_DELIVERY:   'marketingTriggerOrderDeliveryLabel',
-}
+import { MARKETING_ROUTES, TRIGGER_BADGE, TRIGGER_LABEL_KEYS } from '../marketing.constants'
+import type { ReminderRule } from '../marketing.types'
 
 export default function ReminderRuleListPage() {
   const navigate = useNavigate()

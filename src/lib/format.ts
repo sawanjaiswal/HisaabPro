@@ -10,16 +10,6 @@ export function formatPaise(paise: number): string {
   }).format(paise / 100)
 }
 
-/** @deprecated Use formatPaise instead */
-export function formatCurrency(paise: number): string {
-  return new Intl.NumberFormat(CURRENCY.locale, {
-    style: 'currency',
-    currency: CURRENCY.code,
-    minimumFractionDigits: CURRENCY.decimals,
-    maximumFractionDigits: CURRENCY.decimals,
-  }).format(paise / 100)
-}
-
 /** Format number in Indian system: 1,00,000 */
 export function formatNumber(value: number): string {
   return new Intl.NumberFormat(CURRENCY.locale).format(value)

@@ -1,6 +1,7 @@
 /** ReminderTriggerPicker — trigger type selector */
 
 import { useLanguage } from '@/hooks/useLanguage'
+import { TRIGGER_LABEL_KEYS } from '../marketing.constants'
 import type { ReminderRuleTrigger } from '../marketing.types'
 
 interface Props {
@@ -10,15 +11,6 @@ interface Props {
 }
 
 const TRIGGERS: ReminderRuleTrigger[] = ['BIRTHDAY', 'PAYMENT_DUE', 'PAYMENT_OVERDUE', 'FOLLOWUP', 'INACTIVE', 'ORDER_DELIVERY']
-
-const LABEL_KEY: Record<ReminderRuleTrigger, 'marketingTriggerBirthdayLabel' | 'marketingTriggerPaymentDueLabel' | 'marketingTriggerPaymentOverdueLabel' | 'marketingTriggerFollowupLabel' | 'marketingTriggerInactiveLabel' | 'marketingTriggerOrderDeliveryLabel'> = {
-  BIRTHDAY:         'marketingTriggerBirthdayLabel',
-  PAYMENT_DUE:      'marketingTriggerPaymentDueLabel',
-  PAYMENT_OVERDUE:  'marketingTriggerPaymentOverdueLabel',
-  FOLLOWUP:         'marketingTriggerFollowupLabel',
-  INACTIVE:         'marketingTriggerInactiveLabel',
-  ORDER_DELIVERY:   'marketingTriggerOrderDeliveryLabel',
-}
 
 const DESC_KEY: Record<ReminderRuleTrigger, 'marketingTriggerBirthdayDesc' | 'marketingTriggerPaymentDueDesc' | 'marketingTriggerPaymentOverdueDesc' | 'marketingTriggerFollowupDesc' | 'marketingTriggerInactiveDesc' | 'marketingTriggerOrderDeliveryDesc'> = {
   BIRTHDAY:         'marketingTriggerBirthdayDesc',
@@ -58,7 +50,7 @@ export function ReminderTriggerPicker({ value, onChange, disabled = false }: Pro
             }}
           >
             <span style={{ fontWeight: 600, fontSize: '14px', color: active ? 'var(--color-primary-700)' : 'var(--color-gray-800)' }}>
-              {t[LABEL_KEY[trigger]]}
+              {t[TRIGGER_LABEL_KEYS[trigger]]}
             </span>
             <span style={{ fontSize: '12px', color: active ? 'var(--color-primary-600)' : 'var(--color-gray-400)' }}>
               {t[DESC_KEY[trigger]]}

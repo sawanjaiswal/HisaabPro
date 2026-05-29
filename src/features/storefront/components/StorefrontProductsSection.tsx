@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { ChevronUp, ChevronDown, Eye, EyeOff, Trash2 } from 'lucide-react'
-import { formatCurrency } from '@/lib/format'
+import { formatPaise } from '@/lib/format'
 import { StorefrontProductPicker } from './StorefrontProductPicker'
 import { useStorefrontProducts } from '../hooks/useStorefrontProducts'
 
@@ -70,7 +70,7 @@ export function StorefrontProductsSection() {
               }
               <div className="sf-product-row__info">
                 <p className="sf-product-row__name">{p.name}</p>
-                <p className="sf-product-row__price">{formatCurrency(p.sellingPrice)}</p>
+                <p className="sf-product-row__price">{formatPaise(p.sellingPrice)}</p>
               </div>
               <div className="sf-product-row__actions">
                 <button

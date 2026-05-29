@@ -5,7 +5,7 @@ import { Check } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { useLanguage } from '@/hooks/useLanguage'
-import { formatCurrency } from '@/lib/format'
+import { formatPaise } from '@/lib/format'
 import type { PlanTier } from './plan-limits'
 import { PLAN_PRICE_PAISE } from './subscription.constants'
 
@@ -71,7 +71,7 @@ export function PlanCard({
             className="text-[var(--fs-2xl)] font-bold tabular-nums"
             style={{ color: 'var(--text-primary)' }}
           >
-            {pricePaise === 0 ? '₹0' : formatCurrency(pricePaise)}
+            {pricePaise === 0 ? '₹0' : formatPaise(pricePaise)}
           </span>
           <span
             className="text-[var(--fs-sm)] ml-1"

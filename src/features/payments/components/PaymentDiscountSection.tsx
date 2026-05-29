@@ -4,7 +4,7 @@
  * calculated amount display, reason field, and settlement summary.
  */
 
-import { formatCurrency } from '@/lib/format'
+import { formatPaise } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import { PAYMENT_DISCOUNT_TYPE_LABELS } from '../payment.constants'
 import type { PaymentFormDiscount, PaymentDiscountType } from '../payment.types'
@@ -92,7 +92,7 @@ export function PaymentDiscountSection({
           {/* Calculated discount */}
           {discount.calculatedAmount > 0 && (
             <p className="payment-discount-calc">
-              {t.discountColon} {formatCurrency(discount.calculatedAmount)}
+              {t.discountColon} {formatPaise(discount.calculatedAmount)}
             </p>
           )}
 
@@ -121,17 +121,17 @@ export function PaymentDiscountSection({
         <div className="payment-settlement-summary">
           <div className="payment-settlement-row">
             <span>{t.paymentWord}</span>
-            <span>{formatCurrency(settlement.payment)}</span>
+            <span>{formatPaise(settlement.payment)}</span>
           </div>
           {settlement.discount > 0 && (
             <div className="payment-settlement-row">
               <span>{t.discount}</span>
-              <span>{formatCurrency(settlement.discount)}</span>
+              <span>{formatPaise(settlement.discount)}</span>
             </div>
           )}
           <div className="payment-settlement-row payment-settlement-total">
             <span>{t.totalSettled}</span>
-            <span>{formatCurrency(settlement.totalSettled)}</span>
+            <span>{formatPaise(settlement.totalSettled)}</span>
           </div>
         </div>
       )}

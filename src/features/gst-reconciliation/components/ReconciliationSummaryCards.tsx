@@ -6,7 +6,7 @@
  */
 
 import React from 'react'
-import { formatCurrency } from '@/lib/format'
+import { formatPaise } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { ReconciliationSummary } from '../reconciliation.types'
 
@@ -43,16 +43,16 @@ export const ReconciliationSummaryCards: React.FC<Props> = ({ summary }) => {
       <div className="recon-value-row">
         <div className="recon-value-item">
           <span className="recon-value-item__label">{t.books}</span>
-          <span className="recon-value-item__amount">{formatCurrency(summary.totalBookValue)}</span>
+          <span className="recon-value-item__amount">{formatPaise(summary.totalBookValue)}</span>
         </div>
         <div className="recon-value-item">
           <span className="recon-value-item__label">{t.gstrLabel}</span>
-          <span className="recon-value-item__amount">{formatCurrency(summary.totalGstrValue)}</span>
+          <span className="recon-value-item__amount">{formatPaise(summary.totalGstrValue)}</span>
         </div>
         <div className="recon-value-item">
           <span className="recon-value-item__label">{t.difference}</span>
           <span className={`recon-value-item__amount${summary.differenceValue !== 0 ? ' recon-value-item__amount--diff' : ''}`}>
-            {formatCurrency(Math.abs(summary.differenceValue))}
+            {formatPaise(Math.abs(summary.differenceValue))}
           </span>
         </div>
       </div>

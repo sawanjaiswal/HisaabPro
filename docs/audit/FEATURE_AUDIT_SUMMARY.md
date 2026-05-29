@@ -72,10 +72,10 @@ WhatsApp inbound billing-bot genuinely absent (the two aisensy files are 501 del
 
 ## SSOT violations surfaced (input to the "each data SSOT" task)
 
-- **formatCurrency duplicated** — two implementations (phase 1). Money formatting must be one helper.
-- **Account balance stored AND derived** — `LedgerAccount.balance` persisted while also derivable from journal lines (phase 3 S2). Two writers can diverge.
+- ~~**formatCurrency duplicated**~~ — FIXED 2026-05-29. Deprecated `formatCurrency` deleted; all 20 call sites migrated to canonical `formatPaise` (`CURRENCY` config == hardcoded en-IN/INR/2, so output is byte-identical). `formatCurrencyFromString` (BigInt-safe import variant) already wraps `formatPaise` — not a duplicate.
+- **Account balance stored AND derived** — `LedgerAccount.balance` persisted while also derivable from journal lines (phase 3 S2). Two writers can diverge. (Schema/high-risk — needs design-plan before touching.)
 - **Aging logic duplicated** — #41 (party aging) vs #101 (AR aging) reimplement the same buckets (phase 3 S3).
-- **Trigger label/badge maps triplicated** — `TRIGGER_LABEL`/`TRIGGER_LABEL_KEYS`/`TRIGGER_BADGE` exhaustive Records in marketing.constants + ReminderTriggerPicker + ReminderRuleListPage (found during V5; adding a trigger requires editing 3 maps).
+- ~~**Trigger label/badge maps triplicated**~~ — FIXED 2026-05-29. Dead hardcoded-English `TRIGGER_LABEL` deleted; trigger→i18n-key map hoisted to a single `TRIGGER_LABEL_KEYS` (+ `TriggerLabelKey` type) in marketing.constants; ReminderRuleListPage and ReminderTriggerPicker now import it. `TRIGGER_BADGE` was already single-source. Adding a trigger now edits one map.
 - **currentStock** — stored on Product AND derivable from StockMovement sum (phase 4). Currently atomic/acceptable but is a stored-vs-derived pair to watch.
 - **UPI link builder** — intentional FE+BE dual-impl (documented, low risk).
 

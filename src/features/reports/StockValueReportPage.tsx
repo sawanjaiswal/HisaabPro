@@ -9,7 +9,7 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ROUTES } from '@/config/routes.config'
-import { formatCurrency } from '@/lib/format'
+import { formatPaise } from '@/lib/format'
 import { useToast } from '@/hooks/useToast'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useStockValueReport } from './hooks/useStockValueReport'
@@ -56,8 +56,8 @@ function StockValueRow({ item }: { item: StockValueItem }) {
       </div>
       <div className="svr-row__numbers">
         <span className="svr-row__stock">{item.currentStock} {unit}</span>
-        <span className="svr-row__avg">{formatCurrency(avgCost)}</span>
-        <span className="svr-row__value">{formatCurrency(lineValue)}</span>
+        <span className="svr-row__avg">{formatPaise(avgCost)}</span>
+        <span className="svr-row__value">{formatPaise(lineValue)}</span>
       </div>
     </div>
   )
@@ -108,7 +108,7 @@ export default function StockValueReportPage() {
           <div className="svr-summary__item">
             <span className="svr-summary__label">{t.totalStockValueLabel}</span>
             <span className="svr-summary__value svr-summary__value--primary">
-              {formatCurrency(totalValue)}
+              {formatPaise(totalValue)}
             </span>
           </div>
           <div className="svr-summary__divider" aria-hidden="true" />

@@ -4,7 +4,7 @@
  * auto-allocate (FIFO) button, and unallocated summary.
  */
 
-import { formatCurrency } from '@/lib/format'
+import { formatPaise } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PaymentFormAllocation } from '../payment.types'
 
@@ -66,7 +66,7 @@ export function PaymentInvoicesSection({
               />
               <div className="payment-invoice-info">
                 <span className="payment-invoice-number">{alloc.invoiceNumber}</span>
-                <span className="payment-invoice-due">{t.dueColon} {formatCurrency(alloc.invoiceDue)}</span>
+                <span className="payment-invoice-due">{t.dueColon} {formatPaise(alloc.invoiceDue)}</span>
               </div>
             </label>
             {alloc.selected && (
@@ -91,7 +91,7 @@ export function PaymentInvoicesSection({
 
       <div className="payment-unallocated">
         {unallocatedAmount > 0
-          ? `${formatCurrency(unallocatedAmount)} ${t.advancePaymentNote}`
+          ? `${formatPaise(unallocatedAmount)} ${t.advancePaymentNote}`
           : t.fullyAllocatedLabel}
       </div>
     </div>

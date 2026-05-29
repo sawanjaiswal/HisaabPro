@@ -10,7 +10,7 @@ import { Copy, Share2, Loader2, AlertCircle, Link } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
 import { useToast } from '@/hooks/useToast'
 import { useCreatePaymentLink, usePaymentLinks } from '../usePaymentLink'
-import { formatCurrency } from '@/lib/format'
+import { formatPaise } from '@/lib/format'
 
 interface PaymentLinkSheetProps {
   open: boolean
@@ -71,7 +71,7 @@ export function PaymentLinkSheet({
 
   const handleWhatsApp = () => {
     if (!currentLink?.shortUrl) return
-    const amount = formatCurrency(currentLink.amountPaise)
+    const amount = formatPaise(currentLink.amountPaise)
     const body = encodeURIComponent(
       `Hi ${partyName}, please pay ${amount} for invoice ${invoiceNumber} using this link: ${currentLink.shortUrl} — ${businessName}`,
     )
@@ -123,7 +123,7 @@ export function PaymentLinkSheet({
                 Amount due
               </p>
               <p style={{ fontSize: 'var(--fs-2xl)', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-                {formatCurrency(currentLink.amountPaise)}
+                {formatPaise(currentLink.amountPaise)}
               </p>
             </div>
 
@@ -172,7 +172,7 @@ export function PaymentLinkSheet({
         {!currentLink && !isLoading && !hasError && !submitted && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', paddingTop: 'var(--space-2)' }}>
             <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', textAlign: 'center' }}>
-              Generate a Razorpay payment link for {formatCurrency(balanceDue)}.
+              Generate a Razorpay payment link for {formatPaise(balanceDue)}.
             </p>
             <button className="btn btn-primary btn-md" onClick={handleCreate} style={{ width: '100%' }}>
               Generate Payment Link

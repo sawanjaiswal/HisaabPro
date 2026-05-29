@@ -2,11 +2,11 @@
  *
  * Single reconciliation entry: book values vs GSTR values side-by-side,
  * differences highlighted, match status badge.
- * Amounts are in paise — formatted via formatCurrency().
+ * Amounts are in paise — formatted via formatPaise().
  */
 
 import React from 'react'
-import { formatCurrency, formatDate } from '@/lib/format'
+import { formatPaise, formatDate } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import { MATCH_STATUS_LABELS, MATCH_STATUS_COLORS } from '../reconciliation.constants'
 import type { ReconciliationEntry } from '../reconciliation.types'
@@ -45,11 +45,11 @@ export const ReconciliationEntryCard: React.FC<Props> = ({ entry }) => {
           <span className="recon-entry-card__col-head">{t.books}</span>
           <div className="recon-entry-card__row">
             <span className="recon-entry-card__row-label">{t.taxable}</span>
-            <span className="recon-entry-card__row-value">{formatCurrency(entry.bookTaxableValue)}</span>
+            <span className="recon-entry-card__row-value">{formatPaise(entry.bookTaxableValue)}</span>
           </div>
           <div className="recon-entry-card__row">
             <span className="recon-entry-card__row-label">{t.tax}</span>
-            <span className="recon-entry-card__row-value">{formatCurrency(entry.bookTaxAmount)}</span>
+            <span className="recon-entry-card__row-value">{formatPaise(entry.bookTaxAmount)}</span>
           </div>
         </div>
 
@@ -60,13 +60,13 @@ export const ReconciliationEntryCard: React.FC<Props> = ({ entry }) => {
           <div className="recon-entry-card__row">
             <span className="recon-entry-card__row-label">{t.taxable}</span>
             <span className="recon-entry-card__row-value">
-              {entry.gstrTaxableValue != null ? formatCurrency(entry.gstrTaxableValue) : '—'}
+              {entry.gstrTaxableValue != null ? formatPaise(entry.gstrTaxableValue) : '—'}
             </span>
           </div>
           <div className="recon-entry-card__row">
             <span className="recon-entry-card__row-label">{t.tax}</span>
             <span className="recon-entry-card__row-value">
-              {entry.gstrTaxAmount != null ? formatCurrency(entry.gstrTaxAmount) : '—'}
+              {entry.gstrTaxAmount != null ? formatPaise(entry.gstrTaxAmount) : '—'}
             </span>
           </div>
         </div>
@@ -77,12 +77,12 @@ export const ReconciliationEntryCard: React.FC<Props> = ({ entry }) => {
         <div className="recon-entry-card__diff-row">
           {entry.taxableValueDiff !== 0 && (
             <span className="recon-entry-card__diff">
-              {t.taxableDiff}: {formatCurrency(Math.abs(entry.taxableValueDiff))}
+              {t.taxableDiff}: {formatPaise(Math.abs(entry.taxableValueDiff))}
             </span>
           )}
           {entry.taxAmountDiff !== 0 && (
             <span className="recon-entry-card__diff">
-              {t.taxDiff}: {formatCurrency(Math.abs(entry.taxAmountDiff))}
+              {t.taxDiff}: {formatPaise(Math.abs(entry.taxAmountDiff))}
             </span>
           )}
         </div>

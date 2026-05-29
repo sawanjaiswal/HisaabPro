@@ -11,7 +11,7 @@
 import { useEffect, useRef } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
 import { useLanguage } from '@/hooks/useLanguage'
-import { formatCurrency } from '@/lib/format'
+import { formatPaise } from '@/lib/format'
 import { Spinner } from '@/components/feedback/Spinner'
 import type { CheckoutSurfaceProps } from '../subscription-checkout.types'
 
@@ -37,7 +37,7 @@ export function DesktopQrCheckout({ session, onEvent, phase }: CheckoutSurfacePr
         <QRCodeSVG value={session.checkoutUrl} size={208} level="M" />
       </div>
       <p className="checkout-qr__amount tabular-nums text-[var(--fs-lg)] font-semibold">
-        {formatCurrency(session.amountPaise)}
+        {formatPaise(session.amountPaise)}
       </p>
       <a
         href={session.checkoutUrl}

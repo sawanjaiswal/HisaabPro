@@ -5,7 +5,7 @@ import { Search, Check } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { Drawer } from '@/components/ui/Drawer'
-import { formatCurrency } from '@/lib/format'
+import { formatPaise } from '@/lib/format'
 import type { ProductListResponse } from '@/features/products/product-api.types'
 
 interface Props {
@@ -120,7 +120,7 @@ export function StorefrontProductPicker({
                     <div className="sf-picker__item-info">
                       <span className="sf-picker__item-name">{product.name}</span>
                       <span className="sf-picker__item-price">
-                        {formatCurrency(product.salePrice)}
+                        {formatPaise(product.salePrice)}
                       </span>
                     </div>
                     {isSelected && <Check size={18} className="sf-picker__check" aria-hidden="true" />}

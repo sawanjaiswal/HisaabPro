@@ -52,13 +52,23 @@ export const CHANNEL_COLOR: Record<MarketingChannel, string> = {
 
 // ─── Reminder trigger ─────────────────────────────────────────────────────────
 
-export const TRIGGER_LABEL: Record<ReminderRuleTrigger, string> = {
-  BIRTHDAY:         'Birthday Wish',
-  PAYMENT_DUE:      'Payment Due',
-  PAYMENT_OVERDUE:  'Payment Overdue',
-  FOLLOWUP:         'Follow-Up',
-  INACTIVE:         'Inactive Customer',
-  ORDER_DELIVERY:   'Order Delivery',
+/** SSOT for the trigger → i18n label-key map. Consumed by ReminderRuleListPage
+ *  and ReminderTriggerPicker — adding a trigger means editing only this map. */
+export type TriggerLabelKey =
+  | 'marketingTriggerBirthdayLabel'
+  | 'marketingTriggerPaymentDueLabel'
+  | 'marketingTriggerPaymentOverdueLabel'
+  | 'marketingTriggerFollowupLabel'
+  | 'marketingTriggerInactiveLabel'
+  | 'marketingTriggerOrderDeliveryLabel'
+
+export const TRIGGER_LABEL_KEYS: Record<ReminderRuleTrigger, TriggerLabelKey> = {
+  BIRTHDAY:         'marketingTriggerBirthdayLabel',
+  PAYMENT_DUE:      'marketingTriggerPaymentDueLabel',
+  PAYMENT_OVERDUE:  'marketingTriggerPaymentOverdueLabel',
+  FOLLOWUP:         'marketingTriggerFollowupLabel',
+  INACTIVE:         'marketingTriggerInactiveLabel',
+  ORDER_DELIVERY:   'marketingTriggerOrderDeliveryLabel',
 }
 
 export const TRIGGER_BADGE: Record<ReminderRuleTrigger, string> = {
