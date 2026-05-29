@@ -12,6 +12,7 @@ import { BottomNav } from '@/components/layout/BottomNav'
 import { SideNavRail } from '@/components/layout/SideNavRail'
 import { DashboardSkeleton } from '@/features/dashboard/components/DashboardSkeleton'
 import { useAuth } from '@/context/AuthContext'
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { CalculatorOverlay, FeedbackWidget, Login, Landing, AdminCoupons } from '@/app.routes'
 
 export function PageRoute({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
@@ -63,6 +64,7 @@ const NAV_HIDDEN_PATTERNS = /\/(new|edit)(\/|$)|\/pos\b/
 export function PersistentNav() {
   const { pathname } = useLocation()
   const { isAuthenticated } = useAuth()
+  useKeyboardShortcuts(isAuthenticated)
   if (!isAuthenticated || NAV_HIDDEN_PATTERNS.test(pathname)) return null
   return (
     <>

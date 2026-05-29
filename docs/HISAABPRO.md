@@ -820,7 +820,7 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 > 150/165 rows verified exactly. Corrected this pass — drift rows now carry an
 > inline `audit 2026-05-29:` note: #5 (Drive backup MISSING, email-export is
 > CSV), #8 (no theme variants), #32 (fixed 2026-05-29 — client-render+upload),
-> #61 & #78 (partial/stub), #76 (HSN no
+> #61 (fixed 2026-05-29 — global listener) & #78 (partial/stub), #76 (HSN no
 > seed/GIN), #90/#91 (no voucher endpoint), #92 (RETURNED≠BOUNCED), #100/#127/
 > #130/#133/#140 (path/label fixes), #104/#114 (field/branch fixes). Two real
 > bugs were flagged with `*`: **S1** (#84–#87, #104 — GL reports read a journal
@@ -973,7 +973,7 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | 58 | PIN/passcode | App-level lock | Done | `5f802b9` · 2026-05 | `User.pinHash` + `routes/auth-pin.routes.ts` + PinPad.tsx (audit 2026-05-29: no PinCredential model — PIN is a hash column on User) |
 | 59 | Biometric | Capacitor plugin | In-Progress (cred-blocked) | `bfbe6b2` · 2026-03 | `routes/biometric.ts` + Settings UI — needs Capacitor plugin install |
 | 60 | Date format | Per-business | Done | `0360b96` · 2026-03 | UserAppSettings.dateFormat |
-| 61 | Keyboard shortcuts | Global hotkeys | Partial | `0360b96` · 2026-03 | audit 2026-05-29: ShortcutsPage is a display-only reference; no `useKeyboardShortcuts` hook / global keydown listener exists |
+| 61 | Keyboard shortcuts | Global hotkeys | Done | `0360b96` · 2026-03 → fixed 2026-05-29 | `useKeyboardShortcuts` global keydown listener (src/hooks), mounted in PersistentNav (auth-gated); wires alt+1..5 nav, ctrl+n new invoice, ctrl+. calculator. Modifier-only matching keeps it input-safe. 7 unit tests. ctrl+k search awaits a command palette |
 | 62 | Calculator | Launcher | Done | `0360b96` · 2026-03 | `features/settings/CalculatorOverlay.tsx` launched from SideNav (audit 2026-05-29: it's an overlay, not a floating FAB) |
 
 ### Phase 2 — GST & Compliance
