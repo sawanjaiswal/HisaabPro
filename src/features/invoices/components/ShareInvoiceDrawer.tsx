@@ -7,13 +7,15 @@
  */
 
 import { useState, useMemo } from 'react'
-import { MessageCircle, Download, Link, Printer, FileText } from 'lucide-react'
+import { MessageCircle, Download, Link, Printer, FileText, Mail } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useTemplates } from '@/features/templates/useTemplates'
 import { ShareActionRow } from './ShareActionRow'
 import { useShareInvoice } from './useShareInvoice'
 import { ShareLinksSection } from './ShareLinksSection'
+import { EmailShareForm } from './EmailShareForm'
+import type { DocumentDetail } from '../invoice-document.types'
 import '../invoice-detail-share-drawer.css'
 
 export interface ShareInvoiceDrawerProps {
@@ -26,6 +28,8 @@ export interface ShareInvoiceDrawerProps {
   partyPhone?: string
   /** Grand total in PAISE */
   grandTotal: number
+  /** Full document — enables the Email-PDF action (#32). Omit to hide it. */
+  document?: DocumentDetail
 }
 
 export function ShareInvoiceDrawer({
@@ -36,8 +40,10 @@ export function ShareInvoiceDrawer({
   partyName,
   partyPhone,
   grandTotal,
+  document: doc,
 }: ShareInvoiceDrawerProps) {
   const { t } = useLanguage()
+  const [view, setView] = useState<'actions' | 'email'>('actions')
   const { templates } = useTemplates()
   const defaultTemplateId = useMemo(
     () =>
@@ -50,20 +56,33 @@ export function ShareInvoiceDrawer({
   const [templateId, setTemplateId] = useState<string>('')
   const activeTemplateId = templateId || defaultTemplateId
 
-  const { loading, handleWhatsApp, handlePdfDownload, handleCopyLink, handlePrint } = useShareInvoice({
+  const { loading, handleWhatsApp, handlePdfDownload, handleCopyLink, handlePrint, handleEmail } = useShareInvoice({
     documentId,
     documentNumber,
     partyName,
     partyPhone,
     grandTotal,
     activeTemplateId,
+    document: doc,
     onClose,
   })
 
   const isDisabled = loading !== null
 
+  const close = () => { setView('actions'); onClose() }
+
   return (
-    <Drawer open={open} onClose={onClose} title={t.shareInvoice} size="sm">
+    <Drawer open={open} onClose={close} title={t.shareInvoice} size="sm">
+      {view === 'email' && doc ? (
+        <EmailShareForm
+          documentNumber={documentNumber}
+          partyName={partyName}
+          isSending={loading === 'email'}
+          onSend={(email, subject, body) => { void handleEmail(email, subject, body) }}
+          onBack={() => setView('actions')}
+        />
+      ) : (
+      <>
       {templates.length > 1 && (
         <div className="share-template-picker">
           <label htmlFor="share-template-select" className="share-template-picker-label">
@@ -108,6 +127,18 @@ export function ShareInvoiceDrawer({
           ariaLabel={t.downloadInvoicePdf}
           iconModifier="pdf"
         />
+        {doc && (
+          <ShareActionRow
+            icon={<Mail size={22} aria-hidden="true" />}
+            label={t.emailInvoice}
+            subLabel={t.sendPdfByEmail}
+            onClick={() => setView('email')}
+            isLoading={loading === 'email'}
+            disabled={isDisabled}
+            ariaLabel={t.emailInvoice}
+            iconModifier="link"
+          />
+        )}
         <ShareActionRow
           icon={<Link size={22} aria-hidden="true" />}
           label={t.copySharLink}
@@ -132,6 +163,8 @@ export function ShareInvoiceDrawer({
       </ul>
 
       <ShareLinksSection documentId={documentId} documentNumber={documentNumber} />
+      </>
+      )}
     </Drawer>
   )
 }

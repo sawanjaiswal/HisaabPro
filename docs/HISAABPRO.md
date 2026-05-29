@@ -819,7 +819,8 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 > **Line-by-line code re-audit 2026-05-29** (`docs/audit/FEATURE_AUDIT_SUMMARY.md`):
 > 150/165 rows verified exactly. Corrected this pass — drift rows now carry an
 > inline `audit 2026-05-29:` note: #5 (Drive backup MISSING, email-export is
-> CSV), #8 (no theme variants), #32 & #61 & #78 (partial/stub), #76 (HSN no
+> CSV), #8 (no theme variants), #32 (fixed 2026-05-29 — client-render+upload),
+> #61 & #78 (partial/stub), #76 (HSN no
 > seed/GIN), #90/#91 (no voucher endpoint), #92 (RETURNED≠BOUNCED), #100/#127/
 > #130/#133/#140 (path/label fixes), #104/#114 (field/branch fixes). Two real
 > bugs were flagged with `*`: **S1** (#84–#87, #104 — GL reports read a journal
@@ -917,7 +918,7 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | 29 | Digital signature | Per-business signature image | Done | `1b8e18f` · 2026-03 | DigitalSignature model + react-pdf integration |
 | 30 | Auto WA/Email share | Triggered on doc create | In-Progress (cred-blocked) | `bea1093` · 2026-04 | DocumentShareLog + `share.ts` route — needs Aisensy/Resend creds |
 | 31 | Image export | JPG/PNG | Done | `1b8e18f` · 2026-03 | client-side canvas export in template viewer |
-| 32 | Email PDF | Send invoice PDF over email | Partial | `bea1093` · 2026-04 | audit 2026-05-29: `pdf.service.generateInvoicePdf` is a stub (logs + returns `null`, TODO); share route present — needs PDF renderer + Resend creds |
+| 32 | Email PDF | Send invoice PDF over email | In-Progress (cred-blocked) | `bea1093` · 2026-04 → fixed 2026-05-29 | null-stub `pdf.service` deleted; PDF rendered client-side (React-PDF) → base64 → uploaded to `:id/share/email`, attached via Resend. EmailShareForm + ShareInvoiceDrawer email view. Needs Resend creds to deliver |
 | 33 | Recycle bin | Soft-delete + restore | Done | `1b8e18f` · 2026-03 | `routes/recycle-bin.ts` + `services/recycle-bin.service.ts` |
 | 34 | Profit-during-sale | Margin chip on line items | Done | `1b8e18f` · 2026-03 | `document-calc.ts` margin field + UI chip |
 

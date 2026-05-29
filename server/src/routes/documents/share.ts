@@ -15,7 +15,6 @@ import { prisma } from '../../lib/prisma.js'
 import logger from '../../lib/logger.js'
 import { sendWhatsApp, sendEmail } from '../../services/notification.service.js'
 import { renderInvoiceShareEmail } from '../../lib/email-templates.js'
-import { generateInvoicePdf } from '../../services/pdf.service.js'
 import { notificationManager } from '../../services/notifications/notification-manager.js'
 import { formatPaise } from '../../services/notifications/notification-template.service.js'
 import { touchLastContacted } from '../../services/party/last-contacted.service.js'
@@ -171,9 +170,11 @@ router.post(
           amount: `Rs ${amountRupees}`,
         })
 
-      const pdfBuffer = await generateInvoicePdf(documentId, businessId)
-      const attachments = pdfBuffer
-        ? [{ filename: `${docData.documentNumber}.pdf`, content: pdfBuffer }]
+      // PDF is rendered client-side (React-PDF) and uploaded as base64 — the
+      // server has no PDF renderer (#32). Falls back to a link-only email when
+      // the client could not attach one.
+      const attachments = req.body.pdfBase64
+        ? [{ filename: `${docData.documentNumber}.pdf`, content: Buffer.from(req.body.pdfBase64, 'base64') }]
         : undefined
 
       const emailResult = await sendEmail({

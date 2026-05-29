@@ -55,7 +55,7 @@
 
 | # | Feature | Gap |
 |---|---------|-----|
-| 32 | Email invoice PDF | `pdf.service.generateInvoicePdf` is a stub: logs + returns `null` (TODO) |
+| 32 | Email invoice PDF | FIXED 2026-05-29 — null-stub `pdf.service` deleted; invoice PDF now rendered client-side (React-PDF) and uploaded as base64 to `:id/share/email`, which attaches it via Resend (needs Resend creds to deliver) |
 | 61 | Keyboard shortcuts | no `useKeyboardShortcuts` hook / global listener; ShortcutsPage is display-only |
 | 78 | GSTIN external verify | local Mod-36 checksum real; external API is a hardcoded mock (`verified:true`) |
 | 92 | Cheque register | FIXED 2026-05-29 — guard now keys on `status !== 'PENDING'` (covers BOUNCED + all terminal states) |

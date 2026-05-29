@@ -5,10 +5,14 @@
 import { useState, useCallback } from 'react'
 import { useToast } from '@/hooks/useToast'
 import { useLanguage } from '@/hooks/useLanguage'
-import { shareViaWhatsApp, exportDocument, getShareableLink } from '../invoice.service'
+import { useAuth } from '@/context/AuthContext'
+import { APP_NAME } from '@/config/app.config'
+import { shareViaWhatsApp, shareViaEmail, exportDocument, getShareableLink } from '../invoice.service'
+import { renderInvoicePdfBase64 } from '../pdf/renderInvoicePdf'
 import { formatInvoiceAmount } from '../invoice-format.utils'
+import type { DocumentDetail } from '../invoice-document.types'
 
-export type ShareLoadingKey = 'whatsapp' | 'pdf' | 'link' | null
+export type ShareLoadingKey = 'whatsapp' | 'pdf' | 'link' | 'email' | null
 
 /** Normalise an Indian phone number to a bare 10-digit string. */
 function normaliseIndianPhone(raw: string): string | null {
@@ -26,14 +30,37 @@ interface Args {
   partyPhone?: string
   grandTotal: number
   activeTemplateId: string
+  /** Full document — required only for the email-PDF flow (#32). */
+  document?: DocumentDetail
   onClose: () => void
 }
 
 export function useShareInvoice(args: Args) {
-  const { documentId, documentNumber, partyName, partyPhone, grandTotal, activeTemplateId, onClose } = args
+  const { documentId, documentNumber, partyName, partyPhone, grandTotal, activeTemplateId, document: doc, onClose } = args
   const toast = useToast()
   const { t } = useLanguage()
+  const { activeBusiness } = useAuth()
   const [loading, setLoading] = useState<ShareLoadingKey>(null)
+
+  const handleEmail = useCallback(async (recipientEmail: string, subject: string, body: string) => {
+    if (loading !== null) return
+    if (!doc) { toast.error(t.couldNotEmailInvoice); return }
+    setLoading('email')
+    try {
+      const pdfBase64 = await renderInvoicePdfBase64({
+        doc,
+        businessName: activeBusiness?.name ?? APP_NAME,
+        customDetailsSectionLabel: t.customDetailsLabel,
+      })
+      await shareViaEmail(documentId, { recipientEmail, subject, body, format: 'PDF', pdfBase64 })
+      toast.success(t.invoiceEmailed)
+      onClose()
+    } catch {
+      toast.error(t.couldNotEmailInvoice)
+    } finally {
+      setLoading(null)
+    }
+  }, [loading, doc, activeBusiness, documentId, toast, onClose, t])
 
   const handleWhatsApp = useCallback(async () => {
     if (loading !== null) return
@@ -126,5 +153,5 @@ export function useShareInvoice(args: Args) {
     }
   }, [loading, documentId, activeTemplateId, toast, onClose, t])
 
-  return { loading, handleWhatsApp, handlePdfDownload, handleCopyLink, handlePrint }
+  return { loading, handleWhatsApp, handlePdfDownload, handleCopyLink, handlePrint, handleEmail }
 }

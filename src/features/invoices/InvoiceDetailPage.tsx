@@ -200,6 +200,7 @@ export default function InvoiceDetailPage() {
           partyName={document.party.name}
           partyPhone={document.party.phone ?? undefined}
           grandTotal={document.grandTotal}
+          document={document}
         />
       )}
 

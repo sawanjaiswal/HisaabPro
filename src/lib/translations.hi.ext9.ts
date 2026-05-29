@@ -224,4 +224,17 @@ export const hiExt9 = {
   voucherUnallocated:      'अनाबंटित',
   voucherNotes:            'टिप्पणियाँ',
   voucherGeneratedBy:      'द्वारा निर्मित',
+
+  // ─── Email invoice PDF (#32) ──────────────────────────────────────────────
+  emailInvoice:            'इनवॉइस ईमेल करें',
+  sendPdfByEmail:          'पीडीएफ ईमेल से भेजें',
+  recipientEmail:          'प्राप्तकर्ता ईमेल',
+  subject:                 'विषय',
+  messageOptional:         'संदेश (वैकल्पिक)',
+  emailBodyPlaceholder:    'अपने ग्राहक के लिए एक छोटा नोट जोड़ें…',
+  sendInvoiceEmail:        'इनवॉइस भेजें',
+  enterValidEmail:         'एक मान्य ईमेल पता दर्ज करें',
+  invoiceEmailed:          'इनवॉइस ईमेल किया गया',
+  couldNotEmailInvoice:    'इनवॉइस ईमेल नहीं हो सका। कृपया फिर से प्रयास करें।',
+  customDetailsLabel:      'अन्य विवरण',
 } as const

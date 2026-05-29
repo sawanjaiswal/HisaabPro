@@ -27,6 +27,9 @@ export interface ShareEmailRequest {
   subject: string
   body: string
   format: 'PDF'
+  /** Client-rendered invoice PDF (base64, no data: prefix). The server has no
+   *  PDF renderer, so the client renders React-PDF and uploads it here (#32). */
+  pdfBase64?: string
 }
 
 // ─── Sharing ─────────────────────────────────────────────────────────────────

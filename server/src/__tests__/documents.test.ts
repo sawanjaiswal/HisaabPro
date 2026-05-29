@@ -63,9 +63,6 @@ vi.mock('../services/notification.service.js', () => ({
 vi.mock('../lib/email-templates.js', () => ({
   renderInvoiceShareEmail: vi.fn().mockReturnValue('<html></html>'),
 }))
-vi.mock('../services/pdf.service.js', () => ({
-  generateInvoicePdf: vi.fn().mockResolvedValue(null),
-}))
 
 import * as documentService from '../services/document.service.js'
 import { validateStockForInvoice } from '../services/stock.service.js'

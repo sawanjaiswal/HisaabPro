@@ -181,6 +181,8 @@ export const shareEmailSchema = z.object({
   subject: z.string().max(200),
   body: z.string().max(5000).optional(),
   format: z.enum(['PDF']).default('PDF'),
+  // Client-rendered invoice PDF (base64) — server has no renderer (#32); capped under the 2 MB json limit.
+  pdfBase64: z.string().max(1_500_000).optional(),
 })
 
 // === Number Series ===
