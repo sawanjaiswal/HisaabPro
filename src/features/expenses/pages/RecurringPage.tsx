@@ -7,6 +7,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { ROUTES } from '@/config/routes.config'
 import { queryKeys } from '@/lib/query-keys'
 import { listTemplates } from '../services/recurring.service'
@@ -79,18 +80,16 @@ export default function RecurringPage() {
         {!query.isPending && !query.isError && (
           <>
             {(query.data ?? []).length === 0 ? (
-              <div className="expense-empty">
-                <div className="expense-empty__icon" aria-hidden="true"><Repeat size={32} /></div>
-                <p className="expense-empty__title">
-                  {t.expensesRecurringEmpty ?? 'No recurring expenses'}
-                </p>
-                <p className="expense-empty__desc">
-                  Set up rent, salaries, subscriptions — confirm or skip each month.
-                </p>
-                <button type="button" className="expense-add-btn" onClick={openAdd}>
-                  <Plus size={14} aria-hidden="true" /> {t.expensesRecurringAddAction ?? 'Add Recurring Expense'}
-                </button>
-              </div>
+              <EmptyState
+                icon={<Repeat size={22} aria-hidden="true" />}
+                title={t.expensesRecurringEmpty ?? 'No recurring expenses'}
+                description="Set up rent, salaries, subscriptions — confirm or skip each month."
+                action={
+                  <button type="button" className="expense-add-btn" onClick={openAdd}>
+                    <Plus size={14} aria-hidden="true" /> {t.expensesRecurringAddAction ?? 'Add Recurring Expense'}
+                  </button>
+                }
+              />
             ) : (
               <div className="space-y-2">
                 {(query.data ?? []).map((tmpl) => (

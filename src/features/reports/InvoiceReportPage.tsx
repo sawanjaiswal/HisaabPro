@@ -12,6 +12,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { ROUTES } from '@/config/routes.config'
 import { getDateRange } from './report.utils'
 import { formatAmount } from './report.utils'
@@ -162,15 +163,11 @@ export default function InvoiceReportPage() {
         )}
 
         {status === 'success' && !hasData && (
-          <div className="report-empty">
-            <div className="report-empty-icon" aria-hidden="true">
-              <FileText size={28} />
-            </div>
-            <p className="report-empty-title">{t.noInvoicesFound}</p>
-            <p className="report-empty-desc">
-              {t.tryAdjustingFilters}
-            </p>
-          </div>
+          <EmptyState
+            icon={<FileText size={22} aria-hidden="true" />}
+            title={t.noInvoicesFound}
+            description={t.tryAdjustingFilters}
+          />
         )}
 
         {status === 'success' && hasData && !isGrouped && (

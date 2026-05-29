@@ -11,6 +11,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { ROUTES } from '@/config/routes.config'
 import { useReconciliationList } from './useReconciliationList'
 import { ReconciliationUploadForm } from './components/ReconciliationUploadForm'
@@ -71,18 +72,20 @@ export default function ReconciliationListPage() {
         )}
 
         {!showForm && items.length === 0 && (
-          <div className="recon-empty">
-            <div className="recon-empty__icon" aria-hidden="true"><GitMerge size={32} /></div>
-            <p className="recon-empty__title">{t.noReconciliationsYet}</p>
-            <p className="recon-empty__desc">{t.noReconciliationsDesc}</p>
-            <button
-              type="button"
-              className="recon-empty__cta"
-              onClick={() => setShowForm(true)}
-            >
-              {t.startFirstReconciliation}
-            </button>
-          </div>
+          <EmptyState
+            icon={<GitMerge size={22} aria-hidden="true" />}
+            title={t.noReconciliationsYet}
+            description={t.noReconciliationsDesc}
+            action={
+              <button
+                type="button"
+                className="recon-empty__cta"
+                onClick={() => setShowForm(true)}
+              >
+                {t.startFirstReconciliation}
+              </button>
+            }
+          />
         )}
 
         {items.length > 0 && (

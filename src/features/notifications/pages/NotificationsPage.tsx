@@ -5,6 +5,8 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
+import { Bell } from 'lucide-react'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useNotificationInbox, useMarkAllRead } from '../useNotifications'
@@ -92,15 +94,11 @@ export default function NotificationsPage() {
       <AppShell>
         <Header title={t.notifPageTitle ?? 'Notifications'} backTo={ROUTES.DASHBOARD} />
         <PageContainer>
-          <div className="notif-empty">
-            <span className="notif-empty__icon" aria-hidden="true">🔔</span>
-            <h2 className="notif-empty__title">
-              {t.notifEmptyTitle ?? "You're all caught up!"}
-            </h2>
-            <p className="notif-empty__body">
-              {t.notifEmptyBody ?? 'No notifications yet. We\'ll let you know when something happens.'}
-            </p>
-          </div>
+          <EmptyState
+            icon={<Bell size={22} aria-hidden="true" />}
+            title={t.notifEmptyTitle ?? "You're all caught up!"}
+            description={t.notifEmptyBody ?? 'No notifications yet. We\'ll let you know when something happens.'}
+          />
         </PageContainer>
       </AppShell>
     )

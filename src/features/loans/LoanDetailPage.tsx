@@ -12,6 +12,8 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
+import { Wallet } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
@@ -147,10 +149,11 @@ export default function LoanDetailPage() {
         <p className="loan-detail__section-title py-0">{t.transactionHistoryLoan}</p>
 
         {transactions.length === 0 && (
-          <div className="loan-empty">
-            <p className="loan-empty__title">{t.noTxnYetLoan}</p>
-            <p className="loan-empty__desc">{t.recordPaymentsInterest}</p>
-          </div>
+          <EmptyState
+            icon={<Wallet size={22} aria-hidden="true" />}
+            title={t.noTxnYetLoan}
+            description={t.recordPaymentsInterest}
+          />
         )}
 
         {transactions.length > 0 && (

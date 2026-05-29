@@ -6,6 +6,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
@@ -146,11 +147,11 @@ export default function FYClosurePage() {
         </div>
 
         {closures.length === 0 && (
-          <div className="acct-empty">
-            <div className="acct-empty__icon" aria-hidden="true"><Lock size={32} /></div>
-            <p className="acct-empty__title">{t.noFyClosuresYet}</p>
-            <p className="acct-empty__desc">{t.closeFyAbove}</p>
-          </div>
+          <EmptyState
+            icon={<Lock size={22} aria-hidden="true" />}
+            title={t.noFyClosuresYet}
+            description={t.closeFyAbove}
+          />
         )}
 
         {closures.length > 0 && (

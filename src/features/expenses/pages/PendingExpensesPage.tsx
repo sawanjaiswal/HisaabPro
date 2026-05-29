@@ -6,6 +6,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { ROUTES } from '@/config/routes.config'
 import { queryKeys } from '@/lib/query-keys'
 import { listPendingExpenses } from '../expense.service'
@@ -63,17 +64,11 @@ export default function PendingExpensesPage() {
       <Header title={title} backTo={ROUTES.EXPENSES} />
       <PageContainer variant="list" className="space-y-6">
         {items.length === 0 ? (
-          <div className="expense-empty">
-            <div className="expense-empty__icon" aria-hidden="true">
-              <Clock size={32} />
-            </div>
-            <p className="expense-empty__title">
-              {t.expensesPendingEmpty ?? 'No pending expenses'}
-            </p>
-            <p className="expense-empty__desc">
-              Recurring expenses that need confirmation will appear here.
-            </p>
-          </div>
+          <EmptyState
+            icon={<Clock size={22} aria-hidden="true" />}
+            title={t.expensesPendingEmpty ?? 'No pending expenses'}
+            description="Recurring expenses that need confirmation will appear here."
+          />
         ) : (
           <>
             <p className="pending-page__count">{items.length} expense{items.length !== 1 ? 's' : ''} awaiting confirmation</p>

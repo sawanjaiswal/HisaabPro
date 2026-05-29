@@ -7,6 +7,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { ROUTES } from '@/config/routes.config'
 import { queryKeys } from '@/lib/query-keys'
 import { listBudgets } from '../services/budget.service'
@@ -103,14 +104,16 @@ export default function BudgetsPage() {
         {!query.isPending && !query.isError && (
           <>
             {(query.data ?? []).length === 0 ? (
-              <div className="expense-empty">
-                <div className="expense-empty__icon" aria-hidden="true"><PiggyBank size={32} /></div>
-                <p className="expense-empty__title">No budgets set</p>
-                <p className="expense-empty__desc">Set spending limits per category to track your expenses.</p>
-                <button type="button" className="expense-add-btn" onClick={openAdd}>
-                  <Plus size={14} aria-hidden="true" /> {t.expensesBudgetSetAction ?? 'Set Budget'}
-                </button>
-              </div>
+              <EmptyState
+                icon={<PiggyBank size={22} aria-hidden="true" />}
+                title="No budgets set"
+                description="Set spending limits per category to track your expenses."
+                action={
+                  <button type="button" className="expense-add-btn" onClick={openAdd}>
+                    <Plus size={14} aria-hidden="true" /> {t.expensesBudgetSetAction ?? 'Set Budget'}
+                  </button>
+                }
+              />
             ) : (
               <div role="list" aria-label="Budget rows" className="space-y-3">
                 {(query.data ?? []).map((item) => (

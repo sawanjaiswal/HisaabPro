@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Activity, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Plus, Activity, ChevronLeft, ChevronRight } from 'lucide-react'
+import { EmptyState } from '@/components/feedback/EmptyState'
+import { ErrorState } from '@/components/feedback/ErrorState'
 import { useProductionRunList } from '../hooks/useProductionRuns'
 import { PR_STATUS_BADGE_CLASS, PR_STATUS_LABELS } from '../production-run.constants'
 import { formatRunDate, formatCostPaise } from '../production-run.utils'
@@ -76,25 +78,24 @@ export default function ProductionRunListPage() {
 
       {/* Error */}
       {status === 'error' && (
-        <div className="bom-empty" role="alert">
-          <Activity size={40} className="bom-empty__icon bom-empty__icon--error" aria-hidden="true" />
-          <p className="bom-empty__title">Could not load production runs</p>
-          <Button type="button" variant="primary" onClick={refresh}>
-            <RefreshCw size={16} aria-hidden="true" /> Retry
-          </Button>
-        </div>
+        <ErrorState
+          title="Could not load production runs"
+          onRetry={refresh}
+        />
       )}
 
       {/* Empty */}
       {status === 'success' && items.length === 0 && (
-        <div className="bom-empty">
-          <Activity size={40} className="bom-empty__icon" aria-hidden="true" />
-          <p className="bom-empty__title">No production runs yet</p>
-          <p className="bom-empty__body">Start a production run from a BOM to track your manufacturing.</p>
-          <Button type="button" variant="primary" onClick={() => navigate('/production-runs/new')}>
-            <Plus size={16} aria-hidden="true" /> Start Run
-          </Button>
-        </div>
+        <EmptyState
+          icon={<Activity size={22} aria-hidden="true" />}
+          title="No production runs yet"
+          description="Start a production run from a BOM to track your manufacturing."
+          action={
+            <Button type="button" variant="primary" onClick={() => navigate('/production-runs/new')}>
+              <Plus size={16} aria-hidden="true" /> Start Run
+            </Button>
+          }
+        />
       )}
 
       {/* List */}

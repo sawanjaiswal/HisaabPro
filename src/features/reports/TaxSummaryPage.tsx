@@ -5,6 +5,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { ROUTES } from '@/config/routes.config'
 import { useTaxSummary } from './hooks/useTaxSummary'
 import { TaxSummaryCards } from './components/TaxSummaryCards'
@@ -81,15 +82,11 @@ export default function TaxSummaryPage() {
 
         {/* Empty state */}
         {!summary && (
-          <div className="report-empty">
-            <div className="report-empty-icon" aria-hidden="true">
-              <Receipt size={28} />
-            </div>
-            <p className="report-empty-title">{t.noTaxDataFound}</p>
-            <p className="report-empty-desc">
-              {t.noTaxableTransactions}
-            </p>
-          </div>
+          <EmptyState
+            icon={<Receipt size={22} aria-hidden="true" />}
+            title={t.noTaxDataFound}
+            description={t.noTaxableTransactions}
+          />
         )}
 
         {/* Success */}

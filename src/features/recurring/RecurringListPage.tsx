@@ -11,6 +11,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { useRecurringList } from './hooks/useRecurringList'
@@ -126,23 +127,21 @@ export default function RecurringListPage() {
 
         {/* Empty state */}
         {items.length === 0 && (
-          <div className="recurring-empty">
-            <div className="recurring-empty__icon" aria-hidden="true">
-              <RefreshCw size={32} />
-            </div>
-            <p className="recurring-empty__title">{t.noRecurringSchedules}</p>
-            <p className="recurring-empty__desc">
-              {t.recurringEmptyDesc}
-            </p>
-            <button
-              type="button"
-              className="recurring-btn recurring-btn--primary"
-              onClick={() => setDrawerOpen(true)}
-            >
-              <Plus size={14} aria-hidden="true" />
-              {t.createFirstSchedule}
-            </button>
-          </div>
+          <EmptyState
+            icon={<RefreshCw size={22} aria-hidden="true" />}
+            title={t.noRecurringSchedules}
+            description={t.recurringEmptyDesc}
+            action={
+              <button
+                type="button"
+                className="recurring-btn recurring-btn--primary"
+                onClick={() => setDrawerOpen(true)}
+              >
+                <Plus size={14} aria-hidden="true" />
+                {t.createFirstSchedule}
+              </button>
+            }
+          />
         )}
 
         {/* List */}

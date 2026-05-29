@@ -11,6 +11,7 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { Button } from '@/components/ui/Button'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useReconciliationDetail } from './useReconciliationDetail'
@@ -104,15 +105,13 @@ export default function ReconciliationDetailPage() {
 
         {/* Empty state */}
         {entriesStatus === 'success' && entries.length === 0 && (
-          <div className="recon-empty">
-            <div className="recon-empty__icon" aria-hidden="true"><FileText size={28} /></div>
-            <p className="recon-empty__title">{t.noEntriesFound}</p>
-            <p className="recon-empty__desc">
-              {matchFilter === 'ALL'
-                ? t.noEntriesForRecon
-                : `No ${matchFilter.toLowerCase().replace(/_/g, ' ')} ${t.entries}.`}
-            </p>
-          </div>
+          <EmptyState
+            icon={<FileText size={22} aria-hidden="true" />}
+            title={t.noEntriesFound}
+            description={matchFilter === 'ALL'
+              ? t.noEntriesForRecon
+              : `No ${matchFilter.toLowerCase().replace(/_/g, ' ')} ${t.entries}.`}
+          />
         )}
 
         {/* Entry list */}

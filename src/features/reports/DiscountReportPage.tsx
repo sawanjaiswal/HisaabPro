@@ -6,6 +6,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
@@ -83,11 +84,11 @@ export default function DiscountReportPage() {
         </div>
 
         {rows.length === 0 && (
-          <div className="finance-empty">
-            <div className="finance-empty__icon" aria-hidden="true"><Percent size={32} /></div>
-            <p className="finance-empty__title">{t.noDiscountsInPeriod}</p>
-            <p className="finance-empty__desc">{t.tryDifferentDateRange}</p>
-          </div>
+          <EmptyState
+            icon={<Percent size={22} aria-hidden="true" />}
+            title={t.noDiscountsInPeriod}
+            description={t.tryDifferentDateRange}
+          />
         )}
 
         {rows.length > 0 && (

@@ -10,6 +10,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { ROUTES } from '@/config/routes.config'
 import { useTdsTcs } from './hooks/useTdsTcs'
 import { TdsTcsSummaryCards } from './components/TdsTcsSummaryCards'
@@ -111,15 +112,11 @@ export default function TdsTcsReportPage() {
 
         {/* Empty state */}
         {entries.length === 0 && (
-          <div className="tds-tcs-empty">
-            <div className="tds-tcs-empty__icon" aria-hidden="true">
-              <FileText size={28} />
-            </div>
-            <p className="tds-tcs-empty__title">{t.noTdsTcsEntries}</p>
-            <p className="tds-tcs-empty__desc">
-              {t.noTdsTcsTransactions}
-            </p>
-          </div>
+          <EmptyState
+            icon={<FileText size={22} aria-hidden="true" />}
+            title={t.noTdsTcsEntries}
+            description={t.noTdsTcsTransactions}
+          />
         )}
 
         {/* Entry list */}

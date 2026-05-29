@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
-import { Plus, BookOpen, RefreshCw, ChevronLeft, ChevronRight, Play } from 'lucide-react'
+import { Plus, BookOpen, ChevronLeft, ChevronRight, Play } from 'lucide-react'
+import { EmptyState } from '@/components/feedback/EmptyState'
+import { ErrorState } from '@/components/feedback/ErrorState'
 import { useBomList } from '../hooks/useBom'
 import { formatVersionBadge } from '../bom.utils'
 import type { BomListFilters } from '../bom.types'
@@ -56,26 +58,25 @@ export default function BomListPage() {
 
       {/* Error */}
       {status === 'error' && (
-        <div className="bom-empty" role="alert">
-          <BookOpen size={40} className="bom-empty__icon bom-empty__icon--error" aria-hidden="true" />
-          <p className="bom-empty__title">Could not load recipes</p>
-          <p className="bom-empty__body">Check your connection and try again.</p>
-          <Button type="button" variant="primary" onClick={refresh}>
-            <RefreshCw size={16} aria-hidden="true" /> Retry
-          </Button>
-        </div>
+        <ErrorState
+          title="Could not load recipes"
+          message="Check your connection and try again."
+          onRetry={refresh}
+        />
       )}
 
       {/* Empty */}
       {status === 'success' && items.length === 0 && (
-        <div className="bom-empty">
-          <BookOpen size={40} className="bom-empty__icon" aria-hidden="true" />
-          <p className="bom-empty__title">No recipes yet</p>
-          <p className="bom-empty__body">Create a Bill of Materials to start tracking production.</p>
-          <Button type="button" variant="primary" onClick={() => navigate('/bom/new')}>
-            <Plus size={16} aria-hidden="true" /> New Recipe
-          </Button>
-        </div>
+        <EmptyState
+          icon={<BookOpen size={22} aria-hidden="true" />}
+          title="No recipes yet"
+          description="Create a Bill of Materials to start tracking production."
+          action={
+            <Button type="button" variant="primary" onClick={() => navigate('/bom/new')}>
+              <Plus size={16} aria-hidden="true" /> New Recipe
+            </Button>
+          }
+        />
       )}
 
       {/* List */}

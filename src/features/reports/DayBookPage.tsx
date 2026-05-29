@@ -6,6 +6,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { ROUTES } from '@/config/routes.config'
 import { useDayBook } from './hooks/useDayBook'
 import { exportReport } from './report.service'
@@ -133,19 +134,11 @@ export default function DayBookPage() {
 
         {/* Empty state */}
         {!hasTransactions && status === 'success' && (
-          <div className="report-empty">
-            <div className="report-empty-icon" aria-hidden="true">
-              <Calendar size={28} />
-            </div>
-            <p className="report-empty-title">
-              {dayLabel ? `${t.noTransactionsOn} ${dayLabel}` : `${t.noTransactionsForThisDay}`}.
-            </p>
-            <p className="report-empty-desc">
-              {filters.type
-                ? t.tryClearingTypeFilter
-                : t.noActivityRecorded}
-            </p>
-          </div>
+          <EmptyState
+            icon={<Calendar size={22} aria-hidden="true" />}
+            title={dayLabel ? `${t.noTransactionsOn} ${dayLabel}` : `${t.noTransactionsForThisDay}`}
+            description={filters.type ? t.tryClearingTypeFilter : t.noActivityRecorded}
+          />
         )}
 
         {/* Transaction list */}

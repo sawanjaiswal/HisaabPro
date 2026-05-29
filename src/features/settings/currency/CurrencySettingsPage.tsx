@@ -10,6 +10,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { Drawer } from '@/components/ui/Drawer'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -83,22 +84,20 @@ export default function CurrencySettingsPage() {
 
       <PageContainer>
         {rates.length === 0 ? (
-          <div className="currency-empty">
-            <div className="currency-empty__icon" aria-hidden="true">
-              <DollarSign size={32} />
-            </div>
-            <p className="currency-empty__title">{t.noExchangeRates}</p>
-            <p className="currency-empty__desc">
-              {t.exchangeRatesEmptyDesc}
-            </p>
-            <button
-              type="button"
-              className="currency-empty__cta"
-              onClick={() => setDrawerOpen(true)}
-            >
-              {t.setFirstRate}
-            </button>
-          </div>
+          <EmptyState
+            icon={<DollarSign size={22} aria-hidden="true" />}
+            title={t.noExchangeRates}
+            description={t.exchangeRatesEmptyDesc}
+            action={
+              <button
+                type="button"
+                className="currency-empty__cta"
+                onClick={() => setDrawerOpen(true)}
+              >
+                {t.setFirstRate}
+              </button>
+            }
+          />
         ) : (
           <>
             <p className="currency-section-label py-0">
