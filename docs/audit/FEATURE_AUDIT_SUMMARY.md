@@ -21,18 +21,28 @@
 
 ## Tier S — real bugs / integration gaps (NOT just doc drift)
 
-- **S1 — GL journal is not fed by transactions.** Only manual JEs, FY-closure,
-  and party-ledger touch `JournalEntry`. No invoice/payment/sales/expense service
-  auto-posts. So #93 P&L, #94 Balance Sheet, #95 Cash Flow, #96 Trial Balance,
-  #97 Day Book report on a book that normal app usage never populates. #102
-  Profitability is unaffected (reads `Document` rows). Either auto-posting is
-  missing, or the matrix overclaims GL integration. Decide which.
-- **N4 — FY-closure always throws on a seeded business.** `fy-closure/close.ts:100`
-  finds Retained Earnings by `type:'EQUITY' AND subType:'CAPITAL' AND name~'Retained
-  Earnings'`, but `chart-of-accounts.ts:29` seeds it with `subType: null`. Query
-  never matches → `validationError('Retained Earnings account not found')`. #99
-  FY-closure cannot succeed out of the box. Fix: seed subType `RETAINED_EARNINGS`
-  (or relax the lookup to not require subType).
+- **S1 — GL journal is not fed by transactions.** FIXED 2026-05-29. Documents,
+  payments, AND expenses now auto-post to the GL through the single-writer
+  posting layer (`accounting/posting/`). `postDocument`/`postPayment`/`postExpense`
+  build one balanced POSTED `JournalEntry` + lines and route every balance write
+  through `postLedgerDeltas` (the SSOT writer guarded by enforce.js Check 13b).
+  Idempotency is enforced by a partial unique index on
+  `(businessId, sourceType, sourceId) WHERE status='POSTED'`
+  (migration `20260529062430_gl_source_idempotency_unique`). Edits/deletes call
+  `reverseSourceEntry` (VOIDs the POSTED JE in place + reverses balances; no-op
+  when nothing is posted) and re-post fresh values. Closed gap this session was
+  expense lifecycle — manual `createExpense`/`updateExpense`/`deleteExpense` only
+  the recurring-confirm path posted before; now all three wire through
+  `expense/expense-gl.ts`. So #93 P&L, #94 Balance Sheet, #95 Cash Flow,
+  #96 Trial Balance, #97 Day Book now populate from normal app usage. The SALE
+  posting map also emits the #104 COGS leg (`5050` = `totalCost`), so gross
+  margin is journal-backed too.
+- **N4 — FY-closure always throws on a seeded business.** ALREADY FIXED (verified
+  2026-05-29). `fy-closure/close.ts:104` now resolves Retained Earnings by the
+  stable seeded code `3100` (`type:'EQUITY' AND code:'3100'`); the old
+  `subType:'CAPITAL'` filter (which never matched the seed's `subType: null`) is
+  gone. `chart-of-accounts.ts:31` seeds `3100 Retained Earnings`. #99 FY-closure
+  succeeds out of the box. See `.claude/fix-trace-fy-closure-re.md`.
 
 ## Tier A — DRIFT (feature real, doc claim wrong)
 
@@ -46,7 +56,7 @@
 | 90 | Receipt vouchers | FIXED 2026-05-29 — client-side React-PDF voucher (`features/payments/voucher/`), download+print on PaymentDetailPage. No endpoint by design (PDF is 100% client-side here) |
 | 91 | Payment vouchers | FIXED 2026-05-29 — same component, PAYMENT template for *_OUT types |
 | 100| Tally export | real, but at `reports/tally-export.ts` not cited `routes/export.ts` |
-| 104| COGS/WAC journal | WAC real in inventory/bom; no COGS journal-posting branch in accounting |
+| 104| COGS/WAC journal | FIXED 2026-05-29 — SALE posting map now emits a COGS leg (`posting.maps.ts:76` pushes `5050` Cost of goods sold = `d.totalCost`); WAC stays in inventory/bom and feeds `totalCost` into the document posting |
 | 130| Web invoice links | opaque 32-byte token + `sha256` tokenHash, not "HMAC-signed" (secure either way) |
 | 127| CRM | at `routes/parties/crm.routes.ts`, not `routes/collections/` (path-only) |
 | 133| BOGO | in `document/` services + `middleware/permission.ts`, not `pricing-resolver.ts` (path-only) |
@@ -80,3 +90,16 @@ WhatsApp inbound billing-bot genuinely absent (the two aisensy files are 501 del
 - **UPI link builder** — intentional FE+BE dual-impl (documented, low risk).
 
 Non-standard code is minimal: 2 raw `fetch()` + 1 `window.confirm` + 1 >250L file (phase 1); 1 justified `(tx as any)` in optimistic-lock (phase 6/7). No `@ts-ignore` anywhere in scope.
+
+## Audit findings (test-contract drift, surfaced 2026-05-29 during S1)
+
+- **Route-test arg-drift (PUT handlers) — 4 pre-existing failures.** The
+  documents / parties / payments / products service update functions gained a
+  `userId` parameter (audit-actor propagation), but their route-level
+  `toHaveBeenCalledWith` assertions were not updated. These 4 PUT tests fail on
+  committed HEAD *independently of the S1 work* (confirmed via `git stash` + running
+  the files in isolation = identical 4 failures; the S1 commit adds zero new
+  failures). Expenses + payments PUT assertions were fixed in this session's S1
+  scope; **parties + products remain out of S1 scope and are NOT yet fixed** —
+  flagged here for a follow-up `test:` pass. Root cause is assertion drift, not a
+  product bug (the handlers correctly pass `userId`).
