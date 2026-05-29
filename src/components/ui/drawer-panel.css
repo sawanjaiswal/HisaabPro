@@ -63,7 +63,7 @@
   animation: drawer-backdrop-in var(--duration-normal) var(--ease-default) both;
 }
 
-.drawer-backdrop[data-state="closing"] {
+.drawer-backdrop[data-state="closed"] {
   animation: drawer-backdrop-out var(--duration-normal) var(--ease-default) both;
 }
 
@@ -95,7 +95,7 @@
   animation: drawer-slide-up var(--duration-slow) var(--ease-default) both;
 }
 
-.drawer-panel[data-state="closing"] {
+.drawer-panel[data-state="closed"] {
   animation: drawer-slide-down-out var(--duration-normal) var(--ease-default) both;
 }
 
@@ -121,7 +121,7 @@
     animation: drawer-modal-enter var(--duration-normal) var(--ease-spring) both;
   }
 
-  .drawer-panel[data-state="closing"] {
+  .drawer-panel[data-state="closed"] {
     animation: drawer-modal-exit 150ms var(--ease-default) both;
   }
 }
@@ -180,9 +180,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .drawer-backdrop[data-state="open"],
-  .drawer-backdrop[data-state="closing"],
+  .drawer-backdrop[data-state="closed"],
   .drawer-panel[data-state="open"],
-  .drawer-panel[data-state="closing"] {
+  .drawer-panel[data-state="closed"] {
     animation: none !important;
     transition: none !important;
   }

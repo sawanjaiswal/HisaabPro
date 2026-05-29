@@ -1,0 +1,279 @@
+/* ============================================================
+   Overlay surfaces — shared skin for Radix-based primitives
+   (DropdownMenu, Select, Popover, Tooltip, Tabs, Switch).
+
+   Radix ships unstyled; these classes re-skin it with the
+   existing design tokens so nothing renders as "default
+   shadcn". Dark mode is automatic via the CSS-var theme swap.
+   ============================================================ */
+
+/* ── Floating surface (menus / popover / select) ───────────── */
+
+.rx-surface {
+  min-width: 180px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card-hover);
+  padding: var(--space-1);
+  z-index: 50; /* Z.dropdown */
+  transform-origin: var(--radix-popover-content-transform-origin, var(--radix-dropdown-menu-content-transform-origin, center));
+}
+
+.rx-surface--popover {
+  padding: var(--space-3);
+  min-width: 220px;
+}
+
+/* Enter / exit — premium ease, reduced-motion safe (see bottom) */
+.rx-surface[data-state='open'] {
+  animation: rxSurfaceIn var(--duration-fast) var(--ease-premium);
+}
+.rx-surface[data-state='closed'] {
+  animation: rxSurfaceOut var(--duration-fast) var(--ease-default);
+}
+
+@keyframes rxSurfaceIn {
+  from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes rxSurfaceOut {
+  from { opacity: 1; transform: scale(1) translateY(0); }
+  to   { opacity: 0; transform: scale(0.96) translateY(-4px); }
+}
+
+/* ── Menu / select items ───────────────────────────────────── */
+
+.rx-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-md);
+  color: var(--color-text);
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--duration-fast) var(--ease-default);
+}
+.rx-item[data-highlighted],
+.rx-item:hover {
+  background: var(--color-surface-hover);
+}
+.rx-item[data-state='checked'] {
+  font-weight: 600;
+}
+.rx-item[data-disabled] {
+  color: var(--color-gray-400);
+  pointer-events: none;
+}
+.rx-item--danger {
+  color: var(--color-error);
+}
+.rx-item--danger[data-highlighted],
+.rx-item--danger:hover {
+  background: var(--overlay-error-10);
+}
+
+.rx-item-indicator {
+  margin-left: auto;
+  display: inline-flex;
+  color: var(--color-primary);
+}
+
+.rx-separator {
+  height: 1px;
+  margin: var(--space-1) 0;
+  background: var(--color-border);
+}
+
+.rx-label {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-gray-500);
+}
+
+/* ── Select trigger ────────────────────────────────────────── */
+
+.rx-select-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: 44px;
+  width: 100%;
+  padding: 0 var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-md);
+  color: var(--color-text);
+  cursor: pointer;
+  font-family: var(--font-primary);
+}
+.rx-select-trigger[data-placeholder] {
+  color: var(--color-gray-400);
+}
+.rx-select-trigger:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+.rx-select-icon {
+  color: var(--color-gray-500);
+  flex-shrink: 0;
+}
+
+/* ── Tooltip ───────────────────────────────────────────────── */
+
+.rx-tooltip {
+  max-width: 260px;
+  padding: var(--space-1-5) var(--space-2-5);
+  background: var(--color-gray-900);
+  color: var(--color-gray-0);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+  box-shadow: var(--shadow-card);
+  z-index: 80; /* Z.tooltip */
+  animation: rxSurfaceIn var(--duration-fast) var(--ease-premium);
+}
+.rx-tooltip-arrow {
+  fill: var(--color-gray-900);
+}
+
+/* ── Tabs ──────────────────────────────────────────────────── */
+
+.rx-tabs-list {
+  display: inline-flex;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-full);
+}
+.rx-tab {
+  appearance: none;
+  border: none;
+  background: transparent;
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-full);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--color-gray-600);
+  cursor: pointer;
+  font-family: var(--font-primary);
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--duration-fast) var(--ease-default),
+    background var(--duration-fast) var(--ease-default);
+}
+.rx-tab[data-state='active'] {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-badge-subtle);
+}
+.rx-tab:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ── Switch ────────────────────────────────────────────────── */
+
+.rx-switch {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  width: 44px;
+  height: 26px;
+  flex-shrink: 0;
+  padding: 2px;
+  background: var(--color-gray-300);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-default);
+}
+.rx-switch[data-state='checked'] {
+  background: var(--color-primary);
+}
+.rx-switch:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+.rx-switch-thumb {
+  display: block;
+  width: 22px;
+  height: 22px;
+  background: var(--color-gray-0);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-avatar-subtle);
+  transition: transform var(--duration-fast) var(--ease-spring);
+  transform: translateX(0);
+  will-change: transform;
+}
+.rx-switch-thumb[data-state='checked'] {
+  transform: translateX(18px);
+}
+
+/* ── Dialog / AlertDialog (Radix) ──────────────────────────── */
+/* Radix renders divs in a portal, not a native <dialog>, so the scrim
+   and centering live here (the legacy .modal::backdrop is inert on divs).
+   The inner .modal-header / .modal-body / .confirm-dialog-* classes are
+   layout-only and apply unchanged. */
+
+.rx-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--backdrop-color);
+  z-index: 70; /* Z.modal */
+  animation: rxFadeIn var(--duration-fast) var(--ease-default);
+}
+.rx-dialog-overlay[data-state='closed'] {
+  animation: rxFadeOut var(--duration-fast) var(--ease-default);
+}
+
+.rx-dialog-content {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 71;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: rxDialogIn var(--duration-normal) var(--ease-premium);
+}
+.rx-dialog-content[data-state='closed'] {
+  animation: rxDialogOut var(--duration-fast) var(--ease-default);
+}
+.rx-dialog-content:focus-visible {
+  outline: none;
+}
+
+@keyframes rxFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes rxFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes rxDialogIn {
+  from { opacity: 0; transform: translate(-50%, -46%) scale(0.96); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes rxDialogOut {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; transform: translate(-50%, -48%) scale(0.97); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rx-surface[data-state],
+  .rx-tooltip,
+  .rx-dialog-overlay[data-state],
+  .rx-dialog-content[data-state] { animation: none; }
+  .rx-switch-thumb { transition: none; }
+}

@@ -1,14 +1,24 @@
-import { useEffect, useRef, useCallback, useState } from 'react'
-import type { ReactNode } from 'react'
+/** Drawer — unified bottom-sheet (mobile) / centered modal (desktop).
+ *
+ * Rebuilt on Radix Dialog: focus-trap, scroll-lock, Escape and portalling
+ * are now handled by Radix (replacing the 225-LOC hand-rolled trap with its
+ * setTimeout focus race). Open/close animation is the existing CSS keyframes
+ * (drawer-panel.css) — Radix's Presence waits for the exit animation before
+ * unmounting, so there is no JS close timer.
+ *
+ * Public API (DrawerProps) is unchanged — all ~40 call sites work as-is.
+ * Mobile gains real drag-to-dismiss on the handle; desktop is unaffected
+ * (the handle is display:none ≥768px, so the drag listeners never fire there).
+ */
+import { useRef } from 'react'
+import type { PointerEvent, ReactNode } from 'react'
+import { Dialog as RX } from 'radix-ui'
 import { X } from 'lucide-react'
 import './drawer-panel.css'
 import './drawer-content.css'
 
-/** Duration must match CSS closing animation durations:
- *  mobile  → drawer-slide-down-out: 200ms
- *  desktop → drawer-modal-exit:     150ms
- *  Use the longer value so both finish before unmount. */
-const CLOSE_ANIMATION_DURATION_MS = 200
+/** Drag distance (px) past which release dismisses the sheet. */
+const DISMISS_THRESHOLD = 100
 
 export interface DrawerProps {
   open: boolean
@@ -35,190 +45,94 @@ export function Drawer({
   persistent = false,
   footer,
 }: DrawerProps) {
-  // `isVisible` trails `open` — stays true until the exit animation finishes.
-  const [isVisible, setIsVisible] = useState(false)
-  const [animState, setAnimState] = useState<'open' | 'closing'>('open')
-
   const panelRef = useRef<HTMLDivElement>(null)
-  const triggerRef = useRef<HTMLElement | null>(null)
-  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const savedOverflowRef = useRef<string>('')
+  const dragStartY = useRef<number | null>(null)
 
-  // ── Open / close lifecycle ──────────────────────────────────────────────
+  const onHandleDown = (e: PointerEvent) => {
+    if (!panelRef.current) return
+    dragStartY.current = e.clientY
+    e.currentTarget.setPointerCapture(e.pointerId)
+    // Release the open keyframe (fill-mode: both holds transform) so the
+    // inline drag transform below can actually move the panel.
+    panelRef.current.style.animation = 'none'
+  }
 
-  useEffect(() => {
-    if (open) {
-      // Cancel any in-progress close
-      if (closeTimerRef.current !== null) {
-        clearTimeout(closeTimerRef.current)
-        closeTimerRef.current = null
-      }
-      // Save trigger so we can restore focus on close
-      triggerRef.current = document.activeElement as HTMLElement
-      // Lock body scroll
-      savedOverflowRef.current = document.body.style.overflow
-      document.body.style.overflow = 'hidden'
-      setIsVisible(true)
-      setAnimState('open')
+  const onHandleMove = (e: PointerEvent) => {
+    if (dragStartY.current === null || !panelRef.current) return
+    const dy = Math.max(0, e.clientY - dragStartY.current)
+    panelRef.current.style.transition = 'none'
+    panelRef.current.style.transform = `translateY(${dy}px)`
+  }
+
+  const onHandleUp = (e: PointerEvent) => {
+    if (dragStartY.current === null || !panelRef.current) return
+    const dy = Math.max(0, e.clientY - dragStartY.current)
+    dragStartY.current = null
+    const panel = panelRef.current
+    if (dy > DISMISS_THRESHOLD && !persistent) {
+      // Continue the gesture: slide fully off-screen, then unmount.
+      panel.style.transition = 'transform var(--duration-normal) var(--ease-default)'
+      panel.style.transform = 'translateY(100%)'
+      window.setTimeout(onClose, 220)
     } else {
-      if (!isVisible) return
-      setAnimState('closing')
-      closeTimerRef.current = setTimeout(() => {
-        setIsVisible(false)
-        // Restore body scroll
-        document.body.style.overflow = savedOverflowRef.current
-        // Restore focus to the element that opened the drawer
-        triggerRef.current?.focus()
-        triggerRef.current = null
-        closeTimerRef.current = null
-      }, CLOSE_ANIMATION_DURATION_MS)
+      // Snap back to the resting position (animation stays suppressed —
+      // the element is unmounted on next close, so inline styles don't leak).
+      panel.style.transition = 'transform var(--duration-fast) var(--ease-spring)'
+      panel.style.transform = 'translateY(0)'
+      window.setTimeout(() => {
+        panel.style.transition = ''
+        panel.style.transform = ''
+      }, 180)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open])
-
-  // Clean up timer and scroll lock on unmount
-  useEffect(() => {
-    return () => {
-      if (closeTimerRef.current !== null) clearTimeout(closeTimerRef.current)
-      document.body.style.overflow = savedOverflowRef.current
-    }
-  }, [])
-
-  // ── Focus trap ─────────────────────────────────────────────────────────
-
-  /** Returns all currently focusable elements inside the panel. */
-  const getFocusable = useCallback((): HTMLElement[] => {
-    if (!panelRef.current) return []
-    return Array.from(
-      panelRef.current.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled]), textarea:not([disabled]), ' +
-        'input:not([disabled]), select:not([disabled]), ' +
-        '[tabindex]:not([tabindex="-1"])'
-      )
-    ).filter(el => !el.closest('[aria-hidden="true"]'))
-  }, [])
-
-  /** Focus the first focusable element inside the panel on open. */
-  useEffect(() => {
-    if (!isVisible || animState !== 'open') return
-    // Small delay so the panel is painted before we try to focus
-    const id = setTimeout(() => {
-      const focusable = getFocusable()
-      if (focusable.length > 0) {
-        focusable[0].focus()
-      } else {
-        panelRef.current?.focus()
-      }
-    }, 50)
-    return () => clearTimeout(id)
-  }, [isVisible, animState, getFocusable])
-
-  // ── Keyboard handler ───────────────────────────────────────────────────
-
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        if (!persistent) onClose()
-        return
-      }
-
-      if (e.key !== 'Tab') return
-
-      const focusable = getFocusable()
-      if (focusable.length === 0) {
-        e.preventDefault()
-        return
-      }
-
-      const first = focusable[0]
-      const last = focusable[focusable.length - 1]
-
-      if (e.shiftKey) {
-        if (document.activeElement === first) {
-          e.preventDefault()
-          last.focus()
-        }
-      } else {
-        if (document.activeElement === last) {
-          e.preventDefault()
-          first.focus()
-        }
-      }
-    },
-    [getFocusable, onClose, persistent]
-  )
-
-  useEffect(() => {
-    if (!isVisible) return
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isVisible, handleKeyDown])
-
-  // ── Backdrop click ─────────────────────────────────────────────────────
-
-  const handleBackdropClick = useCallback(() => {
-    if (!persistent) onClose()
-  }, [persistent, onClose])
-
-  // ── Nothing to render ──────────────────────────────────────────────────
-
-  if (!isVisible) return null
+  }
 
   const hasHeader = Boolean(title) || showClose
 
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        className="drawer-backdrop py-0"
-        data-state={animState}
-        aria-hidden="true"
-        onClick={handleBackdropClick}
-      />
+    <RX.Root open={open} onOpenChange={(o) => { if (!o) onClose() }}>
+      <RX.Portal>
+        <RX.Overlay className="drawer-backdrop" />
+        <RX.Content
+          ref={panelRef}
+          className="drawer-panel"
+          data-size={size}
+          aria-label={!title ? 'Dialog' : undefined}
+          onEscapeKeyDown={(e) => { if (persistent) e.preventDefault() }}
+          onPointerDownOutside={(e) => { if (persistent) e.preventDefault() }}
+          onInteractOutside={(e) => { if (persistent) e.preventDefault() }}
+        >
+          <div
+            className="drawer-drag-handle"
+            onPointerDown={onHandleDown}
+            onPointerMove={onHandleMove}
+            onPointerUp={onHandleUp}
+            aria-hidden="true"
+          />
 
-      {/* Panel */}
-      <div
-        ref={panelRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={title ? 'drawer-title' : undefined}
-        aria-label={!title ? 'Dialog' : undefined}
-        className="drawer-panel py-0"
-        data-state={animState}
-        data-size={size}
-        tabIndex={-1}
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Drag handle — visible on mobile only via CSS */}
-        <div className="drawer-drag-handle py-0" aria-hidden="true" />
+          {hasHeader && (
+            <div className="drawer-header py-0">
+              {title ? (
+                <RX.Title className="drawer-title py-0">{title}</RX.Title>
+              ) : (
+                <RX.Title className="sr-only">Dialog</RX.Title>
+              )}
+              {showClose && (
+                <RX.Close asChild>
+                  <button type="button" className="drawer-close py-0" aria-label="Close">
+                    <X size={18} strokeWidth={2.5} aria-hidden="true" />
+                  </button>
+                </RX.Close>
+              )}
+            </div>
+          )}
 
-        {/* Header */}
-        {hasHeader && (
-          <div className="drawer-header py-0">
-            {title && (
-              <h2 id="drawer-title" className="drawer-title py-0">
-                {title}
-              </h2>
-            )}
-            {showClose && (
-              <button
-                type="button"
-                className="drawer-close py-0"
-                onClick={onClose}
-                aria-label="Close"
-              >
-                <X size={18} strokeWidth={2.5} aria-hidden="true" />
-              </button>
-            )}
-          </div>
-        )}
+          {!hasHeader && <RX.Title className="sr-only">Dialog</RX.Title>}
 
-        {/* Scrollable body */}
-        <div className="drawer-body py-0">{children}</div>
+          <div className="drawer-body py-0">{children}</div>
 
-        {/* Footer */}
-        {footer && <div className="drawer-footer py-0">{footer}</div>}
-      </div>
-    </>
+          {footer && <div className="drawer-footer py-0">{footer}</div>}
+        </RX.Content>
+      </RX.Portal>
+    </RX.Root>
   )
 }

@@ -1,6 +1,14 @@
-import { useEffect, useRef, useCallback } from 'react'
+/** Modal — Radix Dialog re-skinned with the existing modal CSS.
+ *
+ * Public API is unchanged ({ open, onClose, title, children }) so every
+ * existing call site works without edits — Radix now supplies the focus
+ * trap, scroll-lock, Escape handling and portalling that the hand-rolled
+ * native <dialog> version lacked.
+ */
 import type { ReactNode } from 'react'
+import { Dialog as RX } from 'radix-ui'
 import { X } from 'lucide-react'
+import './overlay.css'
 
 interface ModalProps {
   open: boolean
@@ -10,43 +18,22 @@ interface ModalProps {
 }
 
 export function Modal({ open, onClose, title, children }: ModalProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null)
-  const previousFocus = useRef<HTMLElement | null>(null)
-
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    },
-    [onClose]
-  )
-
-  useEffect(() => {
-    const dialog = dialogRef.current
-    if (!dialog) return
-
-    if (open) {
-      previousFocus.current = document.activeElement as HTMLElement
-      dialog.showModal()
-      document.addEventListener('keydown', handleKeyDown)
-    } else {
-      dialog.close()
-      previousFocus.current?.focus()
-    }
-
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [open, handleKeyDown])
-
-  if (!open) return null
-
   return (
-    <dialog ref={dialogRef} className="modal" aria-labelledby="modal-title">
-      <div className="modal-header">
-        <h2 id="modal-title" className="modal-title">{title}</h2>
-        <button onClick={onClose} className="modal-close" aria-label="Close">
-          <X size={20} />
-        </button>
-      </div>
-      <div className="modal-body">{children}</div>
-    </dialog>
+    <RX.Root open={open} onOpenChange={(o) => { if (!o) onClose() }}>
+      <RX.Portal>
+        <RX.Overlay className="rx-dialog-overlay" />
+        <RX.Content className="rx-dialog-content modal">
+          <div className="modal-header">
+            <RX.Title className="modal-title">{title}</RX.Title>
+            <RX.Close asChild>
+              <button className="modal-close" aria-label="Close">
+                <X size={20} />
+              </button>
+            </RX.Close>
+          </div>
+          <div className="modal-body">{children}</div>
+        </RX.Content>
+      </RX.Portal>
+    </RX.Root>
   )
 }
