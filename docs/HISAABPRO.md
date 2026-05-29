@@ -814,8 +814,18 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 
 ---
 
-## 24. Feature Status Matrix (audited 2026-05-26, header refreshed 2026-05-27)
+## 24. Feature Status Matrix (audited 2026-05-26, header refreshed 2026-05-27, line-by-line re-audit 2026-05-29)
 
+> **Line-by-line code re-audit 2026-05-29** (`docs/audit/FEATURE_AUDIT_SUMMARY.md`):
+> 150/165 rows verified exactly. Corrected this pass — drift rows now carry an
+> inline `audit 2026-05-29:` note: #5 (Drive backup MISSING, email-export is
+> CSV), #8 (no theme variants), #32 & #61 & #78 (partial/stub), #76 (HSN no
+> seed/GIN), #90/#91 (no voucher endpoint), #92 (RETURNED≠BOUNCED), #100/#127/
+> #130/#133/#140 (path/label fixes), #104/#114 (field/branch fixes). Two real
+> bugs flagged with `*`: **S1** (#84–#87, #104 — GL reports read a journal that
+> transactions don't auto-post to) and **N4** (#99 — FY-closure throws on a
+> seeded business). Both scheduled for fix.
+>
 > Authoritative per-feature × per-sub-feature status, audited against the live
 > codebase on `master` (HEAD `6ba7c0f`, originally audited at `6134b9b`; commits since are pre-beta hardening only — money-SSOT merge, refresh-token rotation, security batch A, W4b test sweep — no feature-row changes). For each row: route+service+model+page
 > are grep-verified; commit attribution uses the most recent meaningful
@@ -858,8 +868,8 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | 4 | Notifications | SMS (MSG91) provider | In-Progress (cred-blocked) | `bea1093` · 2026-04 | `notifications-msg91.routes.ts` — needs `MSG91_WEBHOOK_TOKEN` |
 | 4 | Notifications | Quiet hours + preferences | Done | `bea1093` · 2026-04 | NotificationPreference model + settings UI |
 | 5 | Backup | Local (manual) backup + list + download | Done | `bfbe6b2` · 2026-03 | `routes/backup.ts` + `services/backup.service.ts` |
-| 5 | Backup | Google Drive backup | Done | `bfbe6b2` · 2026-03 | `services/backup.service.ts` (Drive client) |
-| 5 | Backup | Email export | Done | `bfbe6b2` · 2026-03 | export.ts route + export.service.ts |
+| 5 | Backup | Google Drive backup | Not Started | — | audit 2026-05-29: no Drive/googleapis/oauth client in `backup.service.ts`; local backup only |
+| 5 | Backup | Email export | Partial | `bfbe6b2` · 2026-03 | audit 2026-05-29: `export.service.generateFullExport` is a CSV-of-all-data download — emails nothing |
 | 5 | Backup | Cooldown enforcement | Done | `bfbe6b2` · 2026-03 | service-level rate guard |
 | 6 | Offline-first PWA | Service worker + Workbox cache | Done | `bfbe6b2` · 2026-03 | `serviceWorkerRegistration.ts` + `vite.config.ts` SW rules |
 | 6 | Offline-first PWA | Dexie mutation queue | Done | `bfbe6b2` · 2026-03 | `lib/offline.ts` + `lib/api-cache.ts` |
@@ -869,7 +879,7 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | 7 | Admin Panel | SUPER_ADMIN guard | Done | `bfbe6b2` · 2026-03 | `lib/admin-auth.ts` (HIGH-RISK PATH) |
 | 7 | Admin Panel | Coupons + broadcasts + impersonation | Done | `bfbe6b2` · 2026-03 | `admin-coupons.ts` + `notifications-broadcast.ts` |
 | 8 | Dark Mode / Theming | CSS-var palette swap | Done | `2769806` · 2026-04 | `src/styles/tokens-dark.css` + theme toggle |
-| 8 | Dark Mode / Theming | Classic/Modern/Minimal variants | Done | `2769806` · 2026-04 | `tokens.css` variants + ThemePicker |
+| 8 | Dark Mode / Theming | Classic/Modern/Minimal variants | Not Started | — | audit 2026-05-29: `ThemeContext` is only `light|dark`; no variants, no ThemePicker component |
 | 9 | Multi-language (EN/HI) | 980+ keys + `useLanguage()` | Done | `bfbe6b2` · 2026-03 | `lib/translations.en.ts` + `translations.hi.ts` (parity enforced) |
 | 10 | Onboarding wizard | Business creation on first login | Done | `b69067b` · 2026-04 | `features/onboarding/` + verticals step + business defaults |
 
@@ -903,7 +913,7 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | 29 | Digital signature | Per-business signature image | Done | `1b8e18f` · 2026-03 | DigitalSignature model + react-pdf integration |
 | 30 | Auto WA/Email share | Triggered on doc create | In-Progress (cred-blocked) | `bea1093` · 2026-04 | DocumentShareLog + `share.ts` route — needs Aisensy/Resend creds |
 | 31 | Image export | JPG/PNG | Done | `1b8e18f` · 2026-03 | client-side canvas export in template viewer |
-| 32 | Email PDF | Send invoice PDF over email | In-Progress (cred-blocked) | `bea1093` · 2026-04 | `services/pdf.service.ts` + share route — needs Resend creds |
+| 32 | Email PDF | Send invoice PDF over email | Partial | `bea1093` · 2026-04 | audit 2026-05-29: `pdf.service.generateInvoicePdf` is a stub (logs + returns `null`, TODO); share route present — needs PDF renderer + Resend creds |
 | 33 | Recycle bin | Soft-delete + restore | Done | `1b8e18f` · 2026-03 | `routes/recycle-bin.ts` + `services/recycle-bin.service.ts` |
 | 34 | Profit-during-sale | Margin chip on line items | Done | `1b8e18f` · 2026-03 | `document-calc.ts` margin field + UI chip |
 
@@ -955,11 +965,11 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 |---|---|---|---|---|---|
 | 56 | Custom roles | Permission matrix (JSON) | Done | `0360b96` · 2026-03 | Role model + JWT claims projection |
 | 57 | Txn lock + approvals | Cutoff date + ApprovalRequest | Done | `0360b96` · 2026-03 | TransactionLockConfig + ApprovalRequest + UI |
-| 58 | PIN/passcode | App-level lock | Done | `5f802b9` · 2026-05 | PinCredential + `routes/auth-pin.routes.ts` + PinPad.tsx |
+| 58 | PIN/passcode | App-level lock | Done | `5f802b9` · 2026-05 | `User.pinHash` + `routes/auth-pin.routes.ts` + PinPad.tsx (audit 2026-05-29: no PinCredential model — PIN is a hash column on User) |
 | 59 | Biometric | Capacitor plugin | In-Progress (cred-blocked) | `bfbe6b2` · 2026-03 | `routes/biometric.ts` + Settings UI — needs Capacitor plugin install |
 | 60 | Date format | Per-business | Done | `0360b96` · 2026-03 | UserAppSettings.dateFormat |
-| 61 | Keyboard shortcuts | Global hotkeys | Done | `0360b96` · 2026-03 | `hooks/useKeyboardShortcuts.ts` |
-| 62 | Calculator FAB | Floating button | Done | `0360b96` · 2026-03 | `components/ui/CalculatorFab.tsx` |
+| 61 | Keyboard shortcuts | Global hotkeys | Partial | `0360b96` · 2026-03 | audit 2026-05-29: ShortcutsPage is a display-only reference; no `useKeyboardShortcuts` hook / global keydown listener exists |
+| 62 | Calculator | Launcher | Done | `0360b96` · 2026-03 | `features/settings/CalculatorOverlay.tsx` launched from SideNav (audit 2026-05-29: it's an overlay, not a floating FAB) |
 
 ### Phase 2 — GST & Compliance
 
@@ -978,9 +988,9 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | 73 | Reverse Charge | `isReverseCharge` flag | Done | `8924109` · 2026-04 | Document.isReverseCharge + 3B handling |
 | 74 | Composite Scheme | Flat rate "Bill of Supply" | Done | `8924109` · 2026-04 | `composition.service.ts` + composition.constants.ts |
 | 75 | Additional Cess | Per line item | Done | `8924109` · 2026-04 | DocumentLineItem.cessRate/cessAmount |
-| 76 | HSN Auto-fill | 12K pre-seeded | Done | `8924109` · 2026-04 | HsnCode + `/api/hsn/search` + trgm index |
+| 76 | HSN Auto-fill | search | Partial | `8924109` · 2026-04 | HsnCode + `/api/hsn/search` (audit 2026-05-29: NO 12K seed — zero create/upsert anywhere; NO trgm GIN index — search is plain `startsWith`/`contains`) |
 | 77 | TDS/TCS | Per-doc rate+amount | Done | `8924109` · 2026-04 | `services/tds-tcs.service.ts` + TdsTcsReportPage |
-| 78 | GSTIN verification | External API check | Done | `8924109` · 2026-04 | `routes/gstin.ts` + `gstin.utils.ts` |
+| 78 | GSTIN verification | Mod-36 checksum (local) | Partial | `8924109` · 2026-04 | `gstin.utils.ts` checksum is real; audit 2026-05-29: external GSP API (`POST /api/gstin/verify`) is a hardcoded mock (`verified:true`, TODO) |
 | 79 | Credit/Debit Notes | Bi-directional linking | Done | `8924109` · 2026-04 | Document(type=CN/DN) + stock + outstanding adj |
 | 80 | Multi-currency | 11 currencies, rate×10000 | Done | `8924109` · 2026-04 | ExchangeRate + `currency.service.ts` |
 | 81 | Recurring Invoices | 4 frequencies + scheduler | Done | `8924109` · 2026-04 | RecurringInvoice + RecurringInvoiceRun + recurring feature |
@@ -991,27 +1001,27 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | # | Feature | Sub-feature | Status | Commit · Date | Evidence |
 |---|---|---|---|---|---|
 | 83 | Double-entry ledger | 15 system accounts | Done | `2b1d872` · 2026-05 | `services/accounting/*` + LedgerAccount + JournalEntry/Line |
-| 84 | P&L | Statement endpoint + UI | Done | `2b1d872` · 2026-05 | `financial-reports.service.ts` + ProfitLossPage |
-| 85 | Balance Sheet | Statement endpoint + UI | Done | `2b1d872` · 2026-05 | `financial-reports.service.ts` + BalanceSheetPage |
-| 86 | Cash Flow | Statement endpoint + UI | Done | `2b1d872` · 2026-05 | `financial-reports.service.ts` + CashFlowPage |
-| 87 | Accounting Day Book | Per-day journal view | Done | `2b1d872` · 2026-05 | accounting/index.ts + DayBookPage |
+| 84 | P&L | Statement endpoint + UI | Done* | `2b1d872` · 2026-05 | `financial-reports.service.ts` + ProfitLossPage — *audit 2026-05-29: reads the GL journal, which transactions don't auto-post to (see S1) |
+| 85 | Balance Sheet | Statement endpoint + UI | Done* | `2b1d872` · 2026-05 | `financial-reports.service.ts` + BalanceSheetPage — *GL-backed; see S1 |
+| 86 | Cash Flow | Statement endpoint + UI | Done* | `2b1d872` · 2026-05 | `financial-reports.service.ts` + CashFlowPage — *GL-backed; see S1 |
+| 87 | Accounting Day Book | Per-day journal view | Done* | `2b1d872` · 2026-05 | accounting/index.ts + DayBookPage — *GL-backed; see S1 |
 | 88 | Journal Entries | DRAFT→POST→VOID | Done | `2b1d872` · 2026-05 | `accounting/journal-entries.ts` + JournalEntriesPage |
 | 89 | Bank Reconciliation | Match payments↔bank | Done | 2026-05-28 | Shipped inside #147 Auto-reconciliation (Phase 7) |
-| 90 | Receipt vouchers | Voucher print | Done | `2b1d872` · 2026-05 | `routes/payments.ts` voucher endpoint |
-| 91 | Payment vouchers | Voucher print | Done | `2b1d872` · 2026-05 | same |
-| 92 | Cheque register | PENDING/CLEARED/BOUNCED/CANCELLED | Done | `2b1d872` · 2026-05 | `services/cheque.service.ts` + Cheque + cheques feature |
+| 90 | Receipt vouchers | Voucher print | Not Started | — | audit 2026-05-29: no voucher endpoint/PDF in `routes/payments.ts` (13 endpoints checked) |
+| 91 | Payment vouchers | Voucher print | Not Started | — | audit 2026-05-29: no voucher endpoint |
+| 92 | Cheque register | PENDING/CLEARED/RETURNED/CANCELLED | Done | `2b1d872` · 2026-05 | `services/cheque.service.ts` + Cheque + cheques feature (audit 2026-05-29: terminal state is `RETURNED`, not `BOUNCED`) |
 | 93 | Multiple bank accounts | Per-business banks | Done | `2b1d872` · 2026-05 | BankAccount + bank-accounts feature |
 | 94 | Cash-in-hand | Cash account + entries | Done | `2b1d872` · 2026-05 | CashEntry + CashEntryEvent + cash-register feature |
 | 95 | Cash book / Bank book | Per-account ledger | Done | `2b1d872` · 2026-05 | financial-reports + bank-accounts UI |
 | 96 | Expense tracking | 10 categories | Done | `e11caf9` · 2026-04 | `services/expense/*` + Expense + ExpenseCategory + expenses feature |
 | 97 | Other income | OtherIncome model | Done | `2b1d872` · 2026-05 | `services/other-income.service.ts` + other-income feature |
 | 98 | Loans | LOAN_GIVEN/TAKEN + EMI | Done | `be574fd` · 2026-04 | `services/loan/*` + LoanAccount + LoanTransaction + loans feature |
-| 99 | FY closure | Carry-forward to RE | Done | `2b1d872` · 2026-05 | `services/fy-closure/*` + FinancialYearClosure + FYClosurePage |
-| 100 | Tally Export | XML format | Done | `2b1d872` · 2026-05 | `routes/export.ts` + export.service tally branch |
+| 99 | FY closure | Carry-forward to RE | Done* | `2b1d872` · 2026-05 | `services/fy-closure/*` + FinancialYearClosure + FYClosurePage — N4 fixed 2026-05-29 (RE now resolved by seeded code 3100); *still depends on GL being fed (S1) |
+| 100 | Tally Export | XML format | Done | `2b1d872` · 2026-05 | `services/reports/tally-export.ts` (audit 2026-05-29: lives in reports/, not the cited routes/export.ts) |
 | 101 | Aging reports | 4 buckets | Done | `2b1d872` · 2026-05 | `collections/aging.route.ts` (shared with #41) |
 | 102 | Profitability | Bill/party/product | Done | `2b1d872` · 2026-05 | `financial-reports.service.ts` profitability endpoints |
 | 103 | Discount reports | Per-doc + per-party | Done | `2b1d872` · 2026-05 | `report.service.ts` discount endpoint |
-| 104 | COGS tracking | WAC-based | Done | `2b1d872` · 2026-05 | `services/accounting/helpers.ts` cogs branch |
+| 104 | COGS tracking | WAC-based | Partial | `2b1d872` · 2026-05 | WAC real in inventory/bom services; audit 2026-05-29: `accounting/helpers.ts` has NO COGS branch and no COGS journal posting (see S1) |
 
 ### Phase 4 — Advanced Inventory & POS
 
@@ -1026,7 +1036,7 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | 111 | Label printing | THERMAL_40x30 / A4_3x8 / A5_2x5 | Done | `0bb1db3` · 2026-04 | label print templates in templates feature |
 | 112 | Bulk import/export | CSV | Done | `0bb1db3` · 2026-04 | `product-bulk.service.ts` + bulk-import feature |
 | 113 | Expiry cron + alerts | Daily | Done | `0bb1db3` · 2026-04 | InventorySetting expiry policy + cron in `services/stock` |
-| 114 | Reorder points | Auto reorder flag | Done | `0bb1db3` · 2026-04 | Product.reorderPoint + stock alert |
+| 114 | Reorder points | Auto reorder flag | Done | `0bb1db3` · 2026-04 | `Product.reorderQty` + `stock-alert.service.ts` (audit 2026-05-29: field is `reorderQty`, doc previously named nonexistent `reorderPoint`) |
 | 115 | BOM + ProductionRun | Atomic + WAC + reverse | Done | `0bb1db3` · 2026-04 | `services/bom/*` + Bom/BomComponent/ProductionRun + bom feature |
 | 116 | Item images | Multi-image | Done | `0bb1db3` · 2026-04 | `routes/products/images.ts` |
 | 117 | MOQ enforcement | Min order qty | Done | `0bb1db3` · 2026-04 | Product.moq + service validation |
@@ -1048,13 +1058,13 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | 125 | Loyalty | FIFO accrual + advisory-locked redeem | Done | `1bb2fcc` · 2026-05 | `services/loyalty/*` + LoyaltyProgram + LoyaltyLedger + loyalty feature |
 | 125 | Loyalty | POS step 10.5/10.6 + expiry cron | Done | `d8eb926` · 2026-05 | pos integration + loyalty cron |
 | 126 | Service Reminders | Rules + 30-min cron + opt-out | Done | `9d281de` · 2026-05 | ReminderRule + ReminderInstance + ReminderConfig + reminder cron |
-| 127 | CRM Basics | Tags + follow-ups + lastContactedAt | Done | `ea27525` · 2026-05 | `routes/collections/crm.routes.ts` + crm feature |
+| 127 | CRM Basics | Tags + follow-ups + lastContactedAt | Done | `ea27525` · 2026-05 | `routes/parties/crm.routes.ts` + crm feature (audit 2026-05-29: path corrected from collections/) |
 | 128 | Commission | Rules CRUD + ruleSnapshot + ledger | Done | `340d5bc` · 2026-05 | `services/commission/*` + CommissionRule + CommissionLedger + commission feature |
 | 129 | UPI QR | + Deep-link on invoice | Done | `a148ba3` · 2026-05 | `services/upi-link.service.ts` + invoice template QR |
-| 130 | Web invoice links | HMAC-signed | Done | `77c645a` · 2026-05 | `routes/public/invoice.routes.ts` + SharedLink + `shared-link.service.ts` |
+| 130 | Web invoice links | Opaque token (sha256 tokenHash) | Done | `77c645a` · 2026-05 | `routes/public/invoice.routes.ts` + SharedLink + `shared-link.service.ts` (audit 2026-05-29: 32-byte crypto-random token + sha256 hash, not HMAC; expiry/revoke + businessId IDOR guard present) |
 | 131 | Party invite | OTP + one-shot signup binding | Done | `15fb596` · 2026-05 | `routes/public/invite/` + `party-invite.service.ts` + invite-claim feature |
 | 132 | Multiple price lists | Per-invoice override + cross-tenant guard | Done | `3626a0c` · 2026-05 | `services/price-list*.service.ts` + PriceList + PriceListEntry + price-lists feature |
-| 133 | BOGO | Custom-role permission `invoicing.bogo` | Done | `3626a0c` · 2026-05 | `pricing-resolver.ts` BOGO branch + Role permission |
+| 133 | BOGO | Custom-role permission `invoicing.bogo` | Done | `3626a0c` · 2026-05 | `document/` services + `middleware/permission.ts` (audit 2026-05-29: BOGO logic is in document services, not pricing-resolver.ts) |
 | 134 | Invoice custom fields | react-pdf section | Done | `3626a0c` · 2026-05 | DocumentCustomFieldValue + template renderer |
 
 ### Phase 6 — Staff & HR + Multi-Firm + Audit + PIN
@@ -1070,7 +1080,7 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | 138 | Multi-firm | Suspend/reactivate UX | Done | `8f0a06e` · 2026-05 | `c718490` BE + TenantChip + SuspendBanner + ReactivationModal |
 | 139 | Advanced Audit Trail | Search (websearch_to_tsquery) + diff + redaction + CSV | Done | `c0f54a2` · 2026-05 | `services/audit/*` + AuditLog + AuditLogRedaction + audit feature |
 | 139 | Advanced Audit Trail | 13 mutations backfilled + `--block` enforcer | Done | `025d037` · 2026-05 | `scripts/enforce-audit-coverage.mjs --block` |
-| 140 | Transaction PIN | `requireRecentPin` middleware | Done | `5f802b9` · 2026-05 | `middleware/requireRecentPin.ts` + PinCredential + `services/security-pin/*` |
+| 140 | Transaction PIN | `requireRecentPin` middleware | Done | `5f802b9` · 2026-05 | `middleware/require-recent-pin.ts` + `User.pinHash` + `services/security-pin/*` (audit 2026-05-29: no PinCredential model; kebab-case filename) |
 | 140 | Transaction PIN | PinGateProvider + PinPad + 403 interceptor | Done | `3fc3802` · 2026-05 | `features/pin-gate/*` + api.ts PIN_REQUIRED handler |
 
 ### Phase 7 — AI & Differentiators
