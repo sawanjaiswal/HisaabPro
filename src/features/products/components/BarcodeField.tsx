@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Select, SelectItem } from '@/components/ui/Select'
 import type { BarcodeFormat } from '@/lib/types/product.types'
 import type { ProductFormData } from '../product.types'
 import { BARCODE_FORMAT_OPTIONS, BARCODE_FORMAT_DEFAULT, BARCODE_MAX_LENGTH } from '../product.constants'
@@ -31,19 +32,17 @@ export function BarcodeField({ form, errors, onUpdate }: BarcodeFieldProps) {
     <div className="barcode-field">
       <div className="input-group">
         <label htmlFor="product-barcode-format" className="input-label">{t.barcodeFormatLabel}</label>
-        <select
-          id="product-barcode-format"
-          className="input"
+        <Select
           value={currentFormat}
-          onChange={(e) => onUpdate('barcodeFormat', e.target.value as BarcodeFormat)}
-          aria-label={t.selectBarcodeFormat}
+          onValueChange={(v) => onUpdate('barcodeFormat', v as BarcodeFormat)}
+          ariaLabel={t.selectBarcodeFormat}
         >
           {BARCODE_FORMAT_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
+            <SelectItem key={opt.value} value={opt.value}>
               {opt.label} — {opt.description}
-            </option>
+            </SelectItem>
           ))}
-        </select>
+        </Select>
       </div>
 
       <div className="input-group">

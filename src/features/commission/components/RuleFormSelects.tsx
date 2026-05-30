@@ -2,7 +2,7 @@
  * Commission #128 — Rule form static select fields (scope / mode / appliesTo).
  *
  * Extracted from CommissionRuleForm to keep the parent under the 250 LOC cap.
- * Renders 3 native <select> elements driven by the constants tables. Pure
+ * Renders 3 Radix Select fields driven by the constants tables. Pure
  * presentational — caller owns state and onChange handlers.
  */
 

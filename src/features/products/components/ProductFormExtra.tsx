@@ -1,6 +1,9 @@
 /** Create Product — Tax category, HSN/SAC, barcode, images, description, status section */
 
 import { Input } from '@/components/ui/Input'
+import { Select, SelectItem } from '@/components/ui/Select'
+
+const NONE = '__none__' as const
 import { useLanguage } from '@/hooks/useLanguage'
 import type { ProductFormData, ProductStatus } from '../product.types'
 import { PRODUCT_STATUS_LABELS, HSN_CODE_MAX, SAC_CODE_MAX, PRODUCT_DESCRIPTION_MAX } from '../product.constants'
@@ -29,12 +32,16 @@ export function ProductFormExtra({ form, errors, onUpdate, taxCategories = [] }:
       {taxCategories.length > 0 && (
         <div className="input-group">
           <label htmlFor="product-tax-cat" className="input-label">{t.taxCategoryLabel}</label>
-          <select id="product-tax-cat" className="input" value={form.taxCategoryId ?? ''} onChange={(e) => onUpdate('taxCategoryId', e.target.value || null)} aria-label={t.selectTaxCategory}>
-            <option value="">{t.noneExempt}</option>
+          <Select
+            value={form.taxCategoryId ?? NONE}
+            onValueChange={(v) => onUpdate('taxCategoryId', v === NONE ? null : v)}
+            ariaLabel={t.selectTaxCategory}
+          >
+            <SelectItem value={NONE}>{t.noneExempt}</SelectItem>
             {taxCategories.map((tc) => (
-              <option key={tc.id} value={tc.id}>{tc.name}</option>
+              <SelectItem key={tc.id} value={tc.id}>{tc.name}</SelectItem>
             ))}
-          </select>
+          </Select>
         </div>
       )}
 

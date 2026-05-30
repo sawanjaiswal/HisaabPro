@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { X } from 'lucide-react'
 import { useRecordAdvance } from '../hooks/useRecordAdvance'
 import { ADVANCE_METHODS } from '../custom-orders.constants'
@@ -105,11 +106,11 @@ export function RecordAdvanceModal({ orderId, orderTitle, onClose }: RecordAdvan
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
             <label className="label" htmlFor="adv-method">Payment Method</label>
-            <select id="adv-method" className="input" value={method} onChange={(e) => setMethod(e.target.value)}>
+            <Select value={method} onValueChange={setMethod} ariaLabel="Payment Method">
               {ADVANCE_METHODS.map((m) => (
-                <option key={m} value={m}>{METHOD_LABELS[m]}</option>
+                <SelectItem key={m} value={m}>{METHOD_LABELS[m]}</SelectItem>
               ))}
-            </select>
+            </Select>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>

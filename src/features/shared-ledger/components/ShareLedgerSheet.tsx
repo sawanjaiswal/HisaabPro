@@ -7,6 +7,9 @@ import { formatExpiry, isShareExpired, buildShareUrl } from '../shared-ledger.ut
 import type { LedgerShare, CreateLedgerShareData } from '../shared-ledger.types'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
+import { Select, SelectItem } from '@/components/ui/Select'
+
+const NEVER = '__never__' as const
 
 interface ShareLedgerSheetProps {
   partyName: string
@@ -41,15 +44,15 @@ export function ShareLedgerSheet({
       <div className="share-ledger-create">
         <div className="share-ledger-expiry">
           <label className="share-ledger-label">{t.linkExpiresIn}:</label>
-          <select
-            className="share-ledger-select"
-            value={expiryDays ?? 'never'}
-            onChange={(e) => setExpiryDays(e.target.value === 'never' ? null : Number(e.target.value))}
+          <Select
+            value={expiryDays == null ? NEVER : String(expiryDays)}
+            onValueChange={(v) => setExpiryDays(v === NEVER ? null : Number(v))}
+            ariaLabel={t.linkExpiresIn}
           >
             {EXPIRY_OPTIONS.map((opt) => (
-              <option key={opt.label} value={opt.value ?? 'never'}>{opt.label}</option>
+              <SelectItem key={opt.label} value={opt.value == null ? NEVER : String(opt.value)}>{opt.label}</SelectItem>
             ))}
-          </select>
+          </Select>
         </div>
 
         <Button

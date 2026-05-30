@@ -12,6 +12,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { Drawer } from '@/components/ui/Drawer'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
@@ -176,9 +177,13 @@ export default function OtherIncomePage() {
           </div>
           <div className="income-drawer__field py-0">
             <label className="income-drawer__label py-0" htmlFor="incMode">{t.paymentModeLabel}</label>
-            <select id="incMode" className="income-drawer__select py-0" value={form.paymentMode} onChange={(e) => setForm((f) => ({ ...f, paymentMode: e.target.value as OtherIncomePaymentMode }))}>
-              {(Object.entries(PAYMENT_MODE_LABELS) as [OtherIncomePaymentMode, string][]).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-            </select>
+            <Select
+              value={form.paymentMode}
+              onValueChange={(v) => setForm((f) => ({ ...f, paymentMode: v as OtherIncomePaymentMode }))}
+              ariaLabel={t.paymentModeLabel}
+            >
+              {(Object.entries(PAYMENT_MODE_LABELS) as [OtherIncomePaymentMode, string][]).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
+            </Select>
           </div>
           <div className="income-drawer__field py-0">
             <label className="income-drawer__label py-0" htmlFor="incNotes">{t.notesOptional}</label>

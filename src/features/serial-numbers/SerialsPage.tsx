@@ -14,6 +14,7 @@ import { STATUS_FILTER_OPTIONS } from './serial-number.constants'
 import type { SerialStatus } from './serial-number.types'
 import './serial-numbers.css'
 import { Button } from '@/components/ui/Button'
+import { Select, SelectItem } from '@/components/ui/Select'
 
 export default function SerialsPage() {
   const { t } = useLanguage()
@@ -47,16 +48,15 @@ export default function SerialsPage() {
               aria-label={t.searchSerialNumbersAria}
             />
           </div>
-          <select
-            className="serial-filter-select"
+          <Select
             value={filters.status}
-            onChange={(e) => setStatusFilter(e.target.value as SerialStatus | 'all')}
-            aria-label={t.filterByStatus}
+            onValueChange={(v) => setStatusFilter(v as SerialStatus | 'all')}
+            ariaLabel={t.filterByStatus}
           >
             {STATUS_FILTER_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
+              <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
             ))}
-          </select>
+          </Select>
         </div>
 
         {status === 'loading' && (

@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { VehicleType } from '../ecompliance.types'
 import { Button } from '@/components/ui/Button'
+import { Select, SelectItem } from '@/components/ui/Select'
 
 interface EWayBillPartBFormProps {
   initialVehicleNumber?: string
@@ -57,16 +58,15 @@ export const EWayBillPartBForm: React.FC<EWayBillPartBFormProps> = ({
         </div>
         <div className="input-group">
           <label className="input-label" htmlFor="partb-vtype">{t.vehicleType}</label>
-          <select
-            id="partb-vtype"
-            className="ewb-form-select"
+          <Select
             value={vehicleType}
-            onChange={e => setVehicleType(e.target.value as VehicleType)}
+            onValueChange={(v) => setVehicleType(v as VehicleType)}
+            ariaLabel={t.vehicleType}
           >
             {VEHICLE_TYPES.map(v => (
-              <option key={v.value} value={v.value}>{v.label}</option>
+              <SelectItem key={v.value} value={v.value}>{v.label}</SelectItem>
             ))}
-          </select>
+          </Select>
         </div>
       </div>
       <div className="compliance-cancel-actions">

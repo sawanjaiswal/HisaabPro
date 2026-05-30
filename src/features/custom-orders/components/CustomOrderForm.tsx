@@ -2,6 +2,9 @@
 
 import { useState, useCallback } from 'react'
 import { Button } from '@/components/ui/Button'
+import { Select, SelectItem } from '@/components/ui/Select'
+
+const ANY = '__any__' as const
 import { Plus } from 'lucide-react'
 import { PartySearchInput } from '@/features/invoices/components/PartySearchInput'
 import { formatPaise, totalsFromItems } from '../custom-orders.utils'
@@ -104,12 +107,16 @@ export function CustomOrderForm({ initialData, onSubmit, isSubmitting, submitLab
         </div>
         <div style={{ flex: 1, minWidth: 120, display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
           <label className="label" htmlFor="order-slot">Slot</label>
-          <select id="order-slot" className="input" value={deliverySlot} onChange={(e) => setDeliverySlot(e.target.value)}>
-            <option value="">Any</option>
-            <option value="morning">Morning</option>
-            <option value="afternoon">Afternoon</option>
-            <option value="evening">Evening</option>
-          </select>
+          <Select
+            value={deliverySlot || ANY}
+            onValueChange={(v) => setDeliverySlot(v === ANY ? '' : v)}
+            ariaLabel="Slot"
+          >
+            <SelectItem value={ANY}>Any</SelectItem>
+            <SelectItem value="morning">Morning</SelectItem>
+            <SelectItem value="afternoon">Afternoon</SelectItem>
+            <SelectItem value="evening">Evening</SelectItem>
+          </Select>
         </div>
       </div>
 
