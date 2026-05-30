@@ -10,6 +10,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { useRecurring } from '../hooks/useRecurring'
@@ -128,10 +129,10 @@ export default function RecurringDetailPage() {
           )}
 
           {!runsLoading && !runsError && runs.length === 0 && (
-            <div className="recurring-runs-section__empty">
-              <RefreshCw size={28} aria-hidden="true" className="recurring-runs-section__empty-icon" />
-              <p>{t.recurringNoRuns ?? 'No runs yet. First invoice will generate on the scheduled date.'}</p>
-            </div>
+            <EmptyState
+              icon={<RefreshCw size={22} aria-hidden="true" />}
+              title={t.recurringNoRuns ?? 'No runs yet. First invoice will generate on the scheduled date.'}
+            />
           )}
 
           {runs.length > 0 && (

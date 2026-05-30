@@ -13,6 +13,8 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { useLanguage } from '@/hooks/useLanguage'
+import { EmptyState } from '@/components/feedback/EmptyState'
+import { FileText } from 'lucide-react'
 import { useToast } from '@/hooks/useToast'
 import { ROUTES } from '@/config/routes.config'
 import { useGstr1Summary, useGstr1Export } from './useGstr1'
@@ -154,15 +156,18 @@ export default function Gstr1Page() {
 
           {/* Empty / backfill prompt */}
           {!isLoading && !isError && summary && summary.b2b === 0 && (
-            <div className="gstr1-backfill-banner" role="status">
-              <span>{t.gstr1NoB2bFound}</span>
-              <button
-                className="gstr1-backfill-link"
-                onClick={() => navigate(ROUTES.GST_BACKFILL)}
-              >
-                {t.gstr1RunBackfill}
-              </button>
-            </div>
+            <EmptyState
+              icon={<FileText size={22} aria-hidden="true" />}
+              title={t.gstr1NoB2bFound}
+              action={
+                <button
+                  className="gstr1-backfill-link"
+                  onClick={() => navigate(ROUTES.GST_BACKFILL)}
+                >
+                  {t.gstr1RunBackfill}
+                </button>
+              }
+            />
           )}
 
           {/* Summary table */}

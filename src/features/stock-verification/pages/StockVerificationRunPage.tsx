@@ -7,6 +7,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { ROUTES } from '@/config/routes.config'
@@ -136,7 +137,10 @@ export default function StockVerificationRunPage() {
 
         {/* Count rows */}
         {filteredItems.length === 0 && (
-          <p className="sv-run__empty">{t.noProductsFound}</p>
+          <EmptyState
+            icon={<Search size={22} aria-hidden="true" />}
+            title={t.noProductsFound}
+          />
         )}
 
         <div className="sv-run__list stagger-list">

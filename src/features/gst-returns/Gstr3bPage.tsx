@@ -13,6 +13,8 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { useLanguage } from '@/hooks/useLanguage'
+import { EmptyState } from '@/components/feedback/EmptyState'
+import { FileText } from 'lucide-react'
 import { useToast } from '@/hooks/useToast'
 import { useGstr3bSummary, useGstr3bExport } from './useGstr3b'
 import type { Gstr3bSection } from './gst-returns.types'
@@ -178,9 +180,10 @@ export default function Gstr3bPage() {
 
           {/* Empty state */}
           {!isLoading && !isError && !hasData && (
-            <div className="gstr1-backfill-banner" role="status">
-              <span>{t.gstr3bNoData}</span>
-            </div>
+            <EmptyState
+              icon={<FileText size={22} aria-hidden="true" />}
+              title={t.gstr3bNoData}
+            />
           )}
 
           {/* 11-row summary table */}
