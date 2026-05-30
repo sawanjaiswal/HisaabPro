@@ -94,8 +94,18 @@ const STATE_EXEMPT_RE = [
   // Form / setup / wizard pages render .map() over options or editable form
   // rows, not data lists — they have no "empty" state to begin with.
   /\/(?:Create|Edit|Record|Forgot)[A-Z][A-Za-z0-9]*Page\.tsx$/,
-  /[A-Z][A-Za-z0-9]*(?:Form|Wizard|Settings|Controls|Onboarding|Edit)Page\.tsx$/,
-  /\/(?:VerifyOtp|BusinessType)Page\.tsx$/,
+  /[A-Z][A-Za-z0-9]*(?:Form|Wizard|Settings|Controls|Edit)Page\.tsx$/,
+  /\/(?:VerifyOtp|BusinessType|Onboarding)Page\.tsx$/,
+  // Detail pages render a singleton entity — "not found" is a 404 fetch
+  // error (handled by <ErrorState>), not an empty data list.
+  /\/[A-Z][A-Za-z0-9]*DetailPage\.tsx$/,
+  // Hub / Program / Leaderboard dashboard pages render summary widgets
+  // and nav tiles, not paginated lists.
+  /\/[A-Z][A-Za-z0-9]*(?:HubPage|ProgramPage|LeaderboardPage)\.tsx$/,
+  // Cart-style pages swap to a "pick something" UI when empty (e.g. PosPage
+  // renders <QuickProductGrid> when the cart is empty — a deliberate UX
+  // choice, not a missing empty state).
+  /\/PosPage\.tsx$/,
 ]
 // Renders a list-of-JSX: `.map(... => <Tag` or `.map(... => (` (with JSX inside).
 const RENDERS_LIST_RE = /\.map\s*\(\s*\(?[^)]*\)?\s*=>\s*(?:<|\()/
