@@ -55,7 +55,7 @@ export default function BomDetailPage() {
     <div className="bom-page">
       {/* Back */}
       <div className="bom-page__header">
-        <Button variant="none" type="button" className="btn btn-ghost btn-icon" onClick={() => navigate('/bom')} aria-label="Back to recipes">
+        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate('/bom')} aria-label="Back to recipes">
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
         <h1 className="bom-page__title">Recipe Detail</h1>

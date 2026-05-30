@@ -68,7 +68,7 @@ export default function CampaignDetailPage() {
     <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-        <Button variant="none" type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.CAMPAIGNS)} aria-label={t.marketingBackToCampaigns}>
+        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate(MARKETING_ROUTES.CAMPAIGNS)} aria-label={t.marketingBackToCampaigns}>
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
         <div style={{ flex: 1, minWidth: 0 }}>

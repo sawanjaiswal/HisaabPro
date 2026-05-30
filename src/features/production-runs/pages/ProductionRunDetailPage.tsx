@@ -30,7 +30,7 @@ export default function ProductionRunDetailPage() {
     <div className="bom-page">
       {/* Back */}
       <div className="bom-page__header">
-        <Button variant="none" type="button" className="btn btn-ghost btn-icon" onClick={() => navigate('/production-runs')} aria-label="Back to production runs">
+        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate('/production-runs')} aria-label="Back to production runs">
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
         <h1 className="bom-page__title">Production Run</h1>

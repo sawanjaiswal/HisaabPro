@@ -27,9 +27,9 @@ export default function ProductionRunFormPage() {
     <div className="bom-page">
       {/* Header */}
       <div className="bom-page__header">
-        <Button variant="none"
+        <Button variant="ghost"
           type="button"
-          className="btn btn-ghost btn-icon"
+          className="btn-icon"
           onClick={handleBack}
           aria-label={step === 0 ? 'Back to production runs' : 'Previous step'}
         >

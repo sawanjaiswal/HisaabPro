@@ -102,7 +102,7 @@ export default function CampaignWizardPage() {
     <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 480, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-        <Button variant="none" type="button" className="btn btn-ghost btn-icon" onClick={handleBack} aria-label={t.marketingBackAria}>
+        <Button variant="ghost" type="button" className="btn-icon" onClick={handleBack} aria-label={t.marketingBackAria}>
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
         <div style={{ flex: 1 }}>

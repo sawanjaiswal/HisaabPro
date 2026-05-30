@@ -108,7 +108,7 @@ export default function MarketingHubPage() {
     <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-        <Button variant="none" type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(-1)} aria-label={t.marketingBack}>
+        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate(-1)} aria-label={t.marketingBack}>
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
         <div>

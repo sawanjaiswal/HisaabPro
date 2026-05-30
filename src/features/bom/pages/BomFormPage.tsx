@@ -33,7 +33,7 @@ function BomCreateForm() {
   return (
     <div className="bom-page">
       <div className="bom-page__header">
-        <Button variant="none" type="button" className="btn btn-ghost btn-icon" onClick={() => navigate('/bom')} aria-label="Back">
+        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate('/bom')} aria-label="Back">
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
         <h1 className="bom-page__title">New Recipe</h1>
@@ -127,7 +127,7 @@ function BomEditForm({ id }: { id: string }) {
   return (
     <div className="bom-page">
       <div className="bom-page__header">
-        <Button variant="none" type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(`/bom/${id}`)} aria-label="Back">
+        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate(`/bom/${id}`)} aria-label="Back">
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
         <h1 className="bom-page__title">Edit Recipe</h1>
