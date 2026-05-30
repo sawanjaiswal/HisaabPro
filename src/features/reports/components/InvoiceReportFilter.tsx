@@ -7,6 +7,7 @@ import {
   SORT_BY_LABELS,
 } from '../report.constants'
 import { ReportFilterPills } from './ReportFilterPills'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { useLanguage } from '@/hooks/useLanguage'
 import type {
   DateRangePreset,
@@ -53,7 +54,7 @@ interface InvoiceReportFilterProps {
   onDatePresetChange: (value: string) => void
   onStatusChange: (value: string) => void
   onGroupByChange: (value: string) => void
-  onSortByChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
+  onSortByChange: (value: string) => void
 }
 
 export function InvoiceReportFilter({
@@ -96,18 +97,17 @@ export function InvoiceReportFilter({
       />
 
       <div className="report-filter-pills">
-        <select
-          className="report-filter-pill"
+        <Select
           value={activeSortBy}
-          onChange={onSortByChange}
-          aria-label={t.sortOrder}
+          onValueChange={onSortByChange}
+          ariaLabel={t.sortOrder}
         >
           {SORT_BY_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
+            <SelectItem key={opt.value} value={opt.value}>
               {opt.label}
-            </option>
+            </SelectItem>
           ))}
-        </select>
+        </Select>
       </div>
     </div>
   )

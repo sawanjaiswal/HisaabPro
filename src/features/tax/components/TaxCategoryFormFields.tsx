@@ -6,6 +6,7 @@
 
 import { formatRate } from '../tax.constants'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Select, SelectItem } from '@/components/ui/Select'
 import type { TaxCategoryFormData } from '../tax.types'
 
 interface Props {
@@ -37,10 +38,14 @@ export function TaxCategoryFormFields({ form, errors, onUpdate }: Props) {
         </div>
         <div className="form-group">
           <label className="form-label" htmlFor="tc-cess-type">{t.cessType}</label>
-          <select id="tc-cess-type" className="form-input" value={form.cessType} onChange={(e) => onUpdate('cessType', e.target.value as 'PERCENTAGE' | 'FIXED_PER_UNIT')}>
-            <option value="PERCENTAGE">{t.percentage}</option>
-            <option value="FIXED_PER_UNIT">{t.fixedPerUnit}</option>
-          </select>
+          <Select
+            value={form.cessType}
+            onValueChange={(v) => onUpdate('cessType', v as 'PERCENTAGE' | 'FIXED_PER_UNIT')}
+            ariaLabel={t.cessType}
+          >
+            <SelectItem value="PERCENTAGE">{t.percentage}</SelectItem>
+            <SelectItem value="FIXED_PER_UNIT">{t.fixedPerUnit}</SelectItem>
+          </Select>
         </div>
       </div>
 

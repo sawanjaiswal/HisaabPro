@@ -2,7 +2,10 @@
 
 import { X } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { PAYMENT_MODES } from '../../utils/pos.constants'
+
+const ALL = '__all__' as const
 import type { PosHistoryFilters, PosSaleStatus, PaymentMode } from '../../types/pos.types'
 import type { TranslationKey } from '@/lib/translations'
 
@@ -56,30 +59,28 @@ export function PosHistoryFiltersBar({
 
       {/* Status + mode */}
       <div className="pos-filter-row">
-        <select
-          className="pos-filter-select"
-          value={filters.status ?? ''}
-          onChange={(e) => onStatus(e.target.value as PosSaleStatus | '')}
-          aria-label={t.posStatusFilter ?? 'Status'}
+        <Select
+          value={filters.status ?? ALL}
+          onValueChange={(v) => onStatus(v === ALL ? '' : (v as PosSaleStatus))}
+          ariaLabel={t.posStatusFilter ?? 'Status'}
         >
-          <option value="">{t.allStatuses ?? 'All statuses'}</option>
-          <option value="ACTIVE">{t.posStatusActive ?? 'Active'}</option>
-          <option value="VOIDED">{t.posVoided ?? 'Voided'}</option>
-        </select>
+          <SelectItem value={ALL}>{t.allStatuses ?? 'All statuses'}</SelectItem>
+          <SelectItem value="ACTIVE">{t.posStatusActive ?? 'Active'}</SelectItem>
+          <SelectItem value="VOIDED">{t.posVoided ?? 'Voided'}</SelectItem>
+        </Select>
 
-        <select
-          className="pos-filter-select"
-          value={filters.paymentMode ?? ''}
-          onChange={(e) => onPaymentMode(e.target.value as PaymentMode | '')}
-          aria-label={t.posPaymentModeFilter ?? 'Payment mode'}
+        <Select
+          value={filters.paymentMode ?? ALL}
+          onValueChange={(v) => onPaymentMode(v === ALL ? '' : (v as PaymentMode))}
+          ariaLabel={t.posPaymentModeFilter ?? 'Payment mode'}
         >
-          <option value="">{t.allModes ?? 'All modes'}</option>
+          <SelectItem value={ALL}>{t.allModes ?? 'All modes'}</SelectItem>
           {PAYMENT_MODES.map((m) => (
-            <option key={m.value} value={m.value}>
+            <SelectItem key={m.value} value={m.value}>
               {t[m.labelKey as TranslationKey] as string ?? m.value}
-            </option>
+            </SelectItem>
           ))}
-        </select>
+        </Select>
 
         {hasFilters && (
           <button

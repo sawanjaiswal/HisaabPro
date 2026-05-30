@@ -94,8 +94,8 @@ export default function InvoiceReportPage() {
   )
 
   const handleSortByChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setFilter('sortBy', e.target.value as ReportSortBy)
+    (value: string) => {
+      setFilter('sortBy', value as ReportSortBy)
     },
     [setFilter],
   )

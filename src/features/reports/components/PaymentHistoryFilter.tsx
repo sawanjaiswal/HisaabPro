@@ -1,6 +1,7 @@
 /** Payment History — Filter bar with date range, type, mode, group, sort pills */
 
 import { ReportFilterPills } from './ReportFilterPills'
+import { Select, SelectItem } from '@/components/ui/Select'
 import {
   DATE_RANGE_PRESETS,
   DATE_RANGE_LABELS,
@@ -111,18 +112,17 @@ export function PaymentHistoryFilter({
       />
 
       {/* Sort select */}
-      <select
-        className="report-filter-pill"
+      <Select
         value={filters.sortBy}
-        onChange={(e) => setFilter('sortBy', e.target.value as ReportSortBy)}
-        aria-label={t.sortPayments}
+        onValueChange={(v) => setFilter('sortBy', v as ReportSortBy)}
+        ariaLabel={t.sortPayments}
       >
         {Object.entries(SORT_BY_LABELS).map(([value, label]) => (
-          <option key={value} value={value}>
+          <SelectItem key={value} value={value}>
             {label}
-          </option>
+          </SelectItem>
         ))}
-      </select>
+      </Select>
     </div>
   )
 }
