@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
@@ -109,11 +110,14 @@ export function AddExpenseDrawer({ open, onClose, onCreated, categories }: AddEx
 
           <div className="expense-drawer__field py-0">
             <label className="expense-drawer__label py-0" htmlFor="expCategory">{t.categoryLabelForm}</label>
-            <select id="expCategory" className="expense-drawer__select py-0" value={form.categoryId}
-              onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}>
-              <option value="">-- {t.selectCategory} --</option>
-              {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
+            <Select
+              value={form.categoryId || undefined}
+              onValueChange={(v) => setForm((f) => ({ ...f, categoryId: v }))}
+              ariaLabel={t.categoryLabelForm}
+              placeholder={`-- ${t.selectCategory} --`}
+            >
+              {categories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+            </Select>
           </div>
           <div className="expense-drawer__row py-0">
             <div className="expense-drawer__field py-0">
@@ -129,12 +133,15 @@ export function AddExpenseDrawer({ open, onClose, onCreated, categories }: AddEx
           </div>
           <div className="expense-drawer__field py-0">
             <label className="expense-drawer__label py-0" htmlFor="expMode">{t.paymentModeLabel}</label>
-            <select id="expMode" className="expense-drawer__select py-0" value={form.paymentMode}
-              onChange={(e) => setForm((f) => ({ ...f, paymentMode: e.target.value as ExpensePaymentMode }))}>
+            <Select
+              value={form.paymentMode}
+              onValueChange={(v) => setForm((f) => ({ ...f, paymentMode: v as ExpensePaymentMode }))}
+              ariaLabel={t.paymentModeLabel}
+            >
               {(Object.entries(PAYMENT_MODE_LABELS) as [ExpensePaymentMode, string][]).map(([k, v]) => (
-                <option key={k} value={k}>{v}</option>
+                <SelectItem key={k} value={k}>{v}</SelectItem>
               ))}
-            </select>
+            </Select>
           </div>
           <div className="expense-drawer__field py-0">
             <label className="expense-drawer__label py-0" htmlFor="expNotes">{t.notesOptional}</label>

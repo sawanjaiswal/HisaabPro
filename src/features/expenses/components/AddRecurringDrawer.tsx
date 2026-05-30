@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { createTemplate, updateTemplate } from '../services/recurring.service'
@@ -98,11 +99,14 @@ export function AddRecurringDrawer({
 
         <div className="expense-drawer__field">
           <label className="expense-drawer__label" htmlFor="recCategory">Category</label>
-          <select id="recCategory" className="expense-drawer__select" value={form.categoryId} required
-            onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}>
-            <option value="">-- Select category --</option>
-            {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </select>
+          <Select
+            value={form.categoryId || undefined}
+            onValueChange={(v) => setForm((f) => ({ ...f, categoryId: v }))}
+            ariaLabel="Category"
+            placeholder="-- Select category --"
+          >
+            {categories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+          </Select>
         </div>
 
         <div className="expense-drawer__row">
@@ -114,10 +118,13 @@ export function AddRecurringDrawer({
           </div>
           <div className="expense-drawer__field">
             <label className="expense-drawer__label" htmlFor="recFreq">Frequency</label>
-            <select id="recFreq" className="expense-drawer__select" value={form.frequency}
-              onChange={(e) => setForm((f) => ({ ...f, frequency: e.target.value as RecurringFrequency }))}>
-              {FREQ_OPTIONS.map((f) => <option key={f} value={f}>{FREQ_LABELS[f]}</option>)}
-            </select>
+            <Select
+              value={form.frequency}
+              onValueChange={(v) => setForm((f) => ({ ...f, frequency: v as RecurringFrequency }))}
+              ariaLabel="Frequency"
+            >
+              {FREQ_OPTIONS.map((f) => <SelectItem key={f} value={f}>{FREQ_LABELS[f]}</SelectItem>)}
+            </Select>
           </div>
         </div>
 
@@ -133,10 +140,13 @@ export function AddRecurringDrawer({
         {form.frequency === 'WEEKLY' && (
           <div className="expense-drawer__field">
             <label className="expense-drawer__label" htmlFor="recDow">Day of week</label>
-            <select id="recDow" className="expense-drawer__select" value={form.dayOfWeek}
-              onChange={(e) => setForm((f) => ({ ...f, dayOfWeek: Number(e.target.value) }))}>
-              {DAYS_OF_WEEK.map((d, i) => <option key={i} value={i}>{d}</option>)}
-            </select>
+            <Select
+              value={String(form.dayOfWeek)}
+              onValueChange={(v) => setForm((f) => ({ ...f, dayOfWeek: Number(v) }))}
+              ariaLabel="Day of week"
+            >
+              {DAYS_OF_WEEK.map((d, i) => <SelectItem key={i} value={String(i)}>{d}</SelectItem>)}
+            </Select>
           </div>
         )}
 
@@ -149,12 +159,15 @@ export function AddRecurringDrawer({
           </div>
           <div className="expense-drawer__field">
             <label className="expense-drawer__label" htmlFor="recMode">Payment mode</label>
-            <select id="recMode" className="expense-drawer__select" value={form.paymentMode}
-              onChange={(e) => setForm((f) => ({ ...f, paymentMode: e.target.value as ExpensePaymentMode }))}>
+            <Select
+              value={form.paymentMode}
+              onValueChange={(v) => setForm((f) => ({ ...f, paymentMode: v as ExpensePaymentMode }))}
+              ariaLabel="Payment mode"
+            >
               {(Object.entries(PAYMENT_MODE_LABELS) as [ExpensePaymentMode, string][]).map(([k, v]) => (
-                <option key={k} value={k}>{v}</option>
+                <SelectItem key={k} value={k}>{v}</SelectItem>
               ))}
-            </select>
+            </Select>
           </div>
         </div>
 

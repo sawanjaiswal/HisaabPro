@@ -4,6 +4,7 @@ import React, { useState, useCallback, useRef } from 'react'
 import { Plus, Minus } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { useToast } from '@/hooks/useToast'
 import { useLanguage } from '@/hooks/useLanguage'
 import { adjustStock } from '../product.service'
@@ -147,17 +148,15 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
 
         <div className="input-group">
           <label htmlFor="adjust-reason" className="input-label">{t.reasonLabel}</label>
-          <select
-            id="adjust-reason"
-            className="input"
+          <Select
             value={reason}
-            onChange={(e) => setReason(e.target.value as StockAdjustReason)}
-            aria-label={t.selectReasonLabel}
+            onValueChange={(v) => setReason(v as StockAdjustReason)}
+            ariaLabel={t.selectReasonLabel}
           >
             {REASONS.map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
+              <SelectItem key={value} value={value}>{label}</SelectItem>
             ))}
-          </select>
+          </Select>
         </div>
 
         {reason === 'OTHER' && (

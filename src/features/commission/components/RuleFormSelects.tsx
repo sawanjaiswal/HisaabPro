@@ -7,6 +7,7 @@
  */
 
 import { useLanguage } from '@/hooks/useLanguage'
+import { Select, SelectItem } from '@/components/ui/Select'
 import {
   APPLIES_TO_VALUES,
   MODE_VALUES,
@@ -35,18 +36,17 @@ export function ScopeSelect({
   return (
     <label className="commission-rule-form__field">
       <span className="commission-rule-form__label">{t.commissionRuleScopeLabel}</span>
-      <select
-        className="commission-rule-form__select"
+      <Select
         value={scope}
-        onChange={(e) => onScopeChange(e.target.value as CommissionRuleScope)}
-        aria-label={t.commissionRuleScopeLabel}
+        onValueChange={(v) => onScopeChange(v as CommissionRuleScope)}
+        ariaLabel={t.commissionRuleScopeLabel}
       >
         {SCOPE_VALUES.map((s) => (
-          <option key={s} value={s}>
+          <SelectItem key={s} value={s}>
             {t[`commissionScope_${s}` as keyof typeof t] as string}
-          </option>
+          </SelectItem>
         ))}
-      </select>
+      </Select>
     </label>
   )
 }
@@ -65,34 +65,32 @@ export function ModeAndAppliesToSelects({
     <>
       <label className="commission-rule-form__field">
         <span className="commission-rule-form__label">{t.commissionRuleModeLabel}</span>
-        <select
-          className="commission-rule-form__select"
+        <Select
           value={mode}
-          onChange={(e) => onModeChange(e.target.value as CommissionRuleMode)}
-          aria-label={t.commissionRuleModeLabel}
+          onValueChange={(v) => onModeChange(v as CommissionRuleMode)}
+          ariaLabel={t.commissionRuleModeLabel}
         >
           {MODE_VALUES.map((m) => (
-            <option key={m} value={m}>
+            <SelectItem key={m} value={m}>
               {t[`commissionMode_${m}` as keyof typeof t] as string}
-            </option>
+            </SelectItem>
           ))}
-        </select>
+        </Select>
       </label>
 
       <label className="commission-rule-form__field">
         <span className="commission-rule-form__label">{t.commissionRuleAppliesToLabel}</span>
-        <select
-          className="commission-rule-form__select"
+        <Select
           value={appliesTo}
-          onChange={(e) => onAppliesToChange(e.target.value as CommissionAppliesTo)}
-          aria-label={t.commissionRuleAppliesToLabel}
+          onValueChange={(v) => onAppliesToChange(v as CommissionAppliesTo)}
+          ariaLabel={t.commissionRuleAppliesToLabel}
         >
           {APPLIES_TO_VALUES.map((a) => (
-            <option key={a} value={a}>
+            <SelectItem key={a} value={a}>
               {t[`commissionAppliesTo_${a}` as keyof typeof t] as string}
-            </option>
+            </SelectItem>
           ))}
-        </select>
+        </Select>
       </label>
     </>
   )

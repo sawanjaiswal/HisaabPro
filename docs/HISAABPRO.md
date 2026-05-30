@@ -1116,9 +1116,9 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 
 | # | Epic | Verticals | Status | Commit · Date | Evidence |
 |---|---|---|---|---|---|
-| V1 | Hourly billing on Jobs | Services/Freelancer/Salon/Clinic | Not Started | — | Listed in §5 backlog |
-| V2 | Appointment calendar + slot picker | Salon/Clinic | Not Started | — | Listed in §5 backlog |
-| V3 | Recipe cost dashboard (BOM-derived) | Restaurant/Bakery/Manufacturing | Not Started | — | Listed in §5 backlog |
+| V1 | Hourly billing on Jobs | Services/Freelancer/Salon/Clinic | Done | 2026-05-29 | audit 2026-05-29: §24 row was stale vs §5. `JobItemKind` enum (`ITEM`\|`HOURLY`, schema:2990) + `Job.estimatedHours`/`actualHours` Decimal(10,2) (schema:3018-19) + per-line toggle; HOURLY reuses `round(qty×rate)−discount` (hours never summed into money). Additive migration |
+| V2 | Appointment calendar + slot picker | Salon/Clinic | Not Started | — | Listed in §5 backlog (HIGH — onboarding blocker) |
+| V3 | Recipe cost dashboard (BOM-derived) | Restaurant/Bakery/Manufacturing | Done | 2026-05-28 | audit 2026-05-29: §24 row was stale vs §5. `GET /api/recipe-cost` (`routes/recipe-cost.ts` + `services/recipe-cost/`) derives cost/unit + margin from active BOMs; `src/features/recipe-cost/` → `/recipe-cost` page, More→Production card. Read-only, no schema |
 | V4 | Staff assignment + commission split | Services/Bakery/Tailor/Mfg | Not Started | — | Extends #128 |
 | V5 | Customer delivery reminders | Bakery/Tailor | ✅ Shipped 2026-05-29 | — | ORDER_DELIVERY trigger + day-granular candidate fn. arch-audit PASS (1 rev: isDeleted guard). Hour-precision → FUTURE_EPIC |
 | V6 | Table mgmt + KOT | Restaurant | Not Started | — | Out of scope |
