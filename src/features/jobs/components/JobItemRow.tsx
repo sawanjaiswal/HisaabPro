@@ -4,6 +4,7 @@ import { Trash2 } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { CreateJobItemInput } from '../api/jobs.api.types'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 export interface JobFormItem extends CreateJobItemInput {
   _key: string
@@ -29,9 +30,9 @@ export function JobItemRow({ item, index, canRemove, onUpdate, onRemove }: JobIt
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)', fontWeight: 500 }}>{t.jobItemLabel} {n}</span>
         {canRemove && (
-          <button type="button" onClick={() => onRemove(item._key)} aria-label="Remove item" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-error-600)', minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Button variant="none" type="button" onClick={() => onRemove(item._key)} aria-label="Remove item" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-error-600)', minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Trash2 size={16} aria-hidden="true" />
-          </button>
+          </Button>
         )}
       </div>
 
@@ -40,7 +41,7 @@ export function JobItemRow({ item, index, canRemove, onUpdate, onRemove }: JobIt
         {(['ITEM', 'HOURLY'] as const).map((k) => {
           const active = (item.kind ?? 'ITEM') === k
           return (
-            <button
+            <Button variant="none"
               key={k}
               type="button"
               aria-pressed={active}
@@ -53,7 +54,7 @@ export function JobItemRow({ item, index, canRemove, onUpdate, onRemove }: JobIt
               }}
             >
               {k === 'ITEM' ? t.jobItemTypeItem : t.jobItemTypeHourly}
-            </button>
+            </Button>
           )
         })}
       </div>

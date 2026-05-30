@@ -10,6 +10,7 @@ import { EXPIRY_BADGE_CLASSES, EXPIRY_STATUS_LABELS } from '../batch.constants'
 import { DeleteBatchDialog } from './DeleteBatchDialog'
 import type { Batch } from '../batch.types'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface BatchCardProps {
   batch: Batch
@@ -80,7 +81,7 @@ export function BatchCard({ batch, onDelete, isDeleting }: BatchCardProps) {
       </div>
 
       {batch.currentStock === 0 && (
-        <button
+        <Button variant="none"
           type="button"
           className="batch-card-delete"
           onClick={handleDeleteClick}
@@ -88,7 +89,7 @@ export function BatchCard({ batch, onDelete, isDeleting }: BatchCardProps) {
           aria-label={`${t.deleteBatch} ${batch.batchNumber}`}
         >
           <Trash2 size={16} aria-hidden="true" />
-        </button>
+        </Button>
       )}
 
       {showDelete && (

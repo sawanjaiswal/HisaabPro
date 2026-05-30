@@ -202,13 +202,13 @@ export default function Gstr3bPage() {
               >
                 {exportMut.isPending ? t.gstr3bExporting : t.gstr3bDownloadJson}
               </Button>
-              <button
+              <Button variant="none"
                 className="btn btn-outline"
                 disabled={exportMut.isPending}
                 onClick={() => { void handleExport('CSV') }}
               >
                 {t.gstr3bDownloadCsv}
-              </button>
+              </Button>
             </div>
           )}
 

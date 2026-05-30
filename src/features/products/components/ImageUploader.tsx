@@ -12,6 +12,7 @@ import {
   MAX_BYTES,
 } from '../image-upload.utils'
 import './image-uploader.css'
+import { Button } from '@/components/ui/Button'
 
 interface ImageUploaderProps {
   /** Current ordered list of image data URLs */
@@ -119,7 +120,7 @@ export function ImageUploader({ value, onChange, max = 5 }: ImageUploaderProps) 
                 </span>
               )}
               <div className="image-uploader__thumb-actions" aria-label={t.imageActions}>
-                <button
+                <Button variant="none"
                   type="button"
                   className="image-uploader__icon-btn"
                   onClick={() => handleMoveUp(idx)}
@@ -127,8 +128,8 @@ export function ImageUploader({ value, onChange, max = 5 }: ImageUploaderProps) 
                   aria-label={t.moveImageUp}
                 >
                   <ChevronUp size={14} aria-hidden="true" />
-                </button>
-                <button
+                </Button>
+                <Button variant="none"
                   type="button"
                   className="image-uploader__icon-btn"
                   onClick={() => handleMoveDown(idx)}
@@ -136,15 +137,15 @@ export function ImageUploader({ value, onChange, max = 5 }: ImageUploaderProps) 
                   aria-label={t.moveImageDown}
                 >
                   <ChevronDown size={14} aria-hidden="true" />
-                </button>
-                <button
+                </Button>
+                <Button variant="none"
                   type="button"
                   className="image-uploader__icon-btn image-uploader__icon-btn--danger"
                   onClick={() => handleDelete(idx)}
                   aria-label={`${t.deleteImage} ${idx + 1}`}
                 >
                   <Trash2 size={14} aria-hidden="true" />
-                </button>
+                </Button>
               </div>
             </div>
           ))}
@@ -153,7 +154,7 @@ export function ImageUploader({ value, onChange, max = 5 }: ImageUploaderProps) 
 
       {canAdd && (
         <div className="image-uploader__actions">
-          <button
+          <Button variant="none"
             type="button"
             className="image-uploader__add-btn"
             onClick={handleGallery}
@@ -162,8 +163,8 @@ export function ImageUploader({ value, onChange, max = 5 }: ImageUploaderProps) 
           >
             <ImageIcon size={18} aria-hidden="true" />
             <span>{t.gallery}</span>
-          </button>
-          <button
+          </Button>
+          <Button variant="none"
             type="button"
             className="image-uploader__add-btn"
             onClick={handleCamera}
@@ -172,7 +173,7 @@ export function ImageUploader({ value, onChange, max = 5 }: ImageUploaderProps) 
           >
             <Camera size={18} aria-hidden="true" />
             <span>{t.camera}</span>
-          </button>
+          </Button>
         </div>
       )}
 

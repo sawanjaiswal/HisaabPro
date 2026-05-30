@@ -17,6 +17,7 @@ import { useReorderSuggestions } from './hooks/useReorderSuggestions'
 import { ReorderSummary } from './components/ReorderSummary'
 import { ReorderRow } from './components/ReorderRow'
 import './reorder.css'
+import { Button } from '@/components/ui/Button'
 
 export default function ReorderSuggestionsPage() {
   const { t } = useLanguage()
@@ -31,22 +32,22 @@ export default function ReorderSuggestionsPage() {
       <Header title={t.reorderSuggestions} backTo={ROUTES.MORE} />
       <PageContainer variant="list" className="space-y-6">
         <div className="reorder-tabs" role="group" aria-label={t.reorderFilter}>
-          <button
+          <Button variant="none"
             type="button"
             className={`reorder-tab${onlyNeeded ? ' reorder-tab--active' : ''}`}
             onClick={() => setOnlyNeeded(true)}
             aria-pressed={onlyNeeded}
           >
             {t.reorderNeeded}
-          </button>
-          <button
+          </Button>
+          <Button variant="none"
             type="button"
             className={`reorder-tab${!onlyNeeded ? ' reorder-tab--active' : ''}`}
             onClick={() => setOnlyNeeded(false)}
             aria-pressed={!onlyNeeded}
           >
             {t.reorderAll}
-          </button>
+          </Button>
         </div>
 
         {isLoading && (

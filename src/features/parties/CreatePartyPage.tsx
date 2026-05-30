@@ -47,7 +47,7 @@ export default function CreatePartyPage() {
       <PageContainer className="create-party-page stagger-enter space-y-6">
         <nav className="pill-tabs" role="tablist" aria-label={t.formSections}>
           {SECTIONS.map(section => (
-            <button
+            <Button variant="none"
               key={section.id}
               type="button"
               role="tab"
@@ -57,7 +57,7 @@ export default function CreatePartyPage() {
               aria-controls={`section-panel-${section.id}`}
             >
               {section.label}
-            </button>
+            </Button>
           ))}
         </nav>
 

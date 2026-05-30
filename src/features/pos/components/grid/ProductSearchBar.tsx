@@ -5,6 +5,7 @@ import { Search, X } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { SEARCH_DEBOUNCE_MS } from '../../utils/pos.constants'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface ProductSearchBarProps {
   value:     string
@@ -49,14 +50,14 @@ export function ProductSearchBar({ value, onChange }: ProductSearchBarProps) {
         spellCheck={false}
       />
       {value && (
-        <button
+        <Button variant="none"
           type="button"
           className="pos-search__clear"
           onClick={handleClear}
           aria-label={t.clearSearch ?? 'Clear search'}
         >
           <X size={14} aria-hidden="true" />
-        </button>
+        </Button>
       )}
     </div>
   )

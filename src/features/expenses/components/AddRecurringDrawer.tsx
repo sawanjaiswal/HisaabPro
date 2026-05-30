@@ -14,6 +14,7 @@ import type {
 import { toLocalISODate } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 const FREQ_OPTIONS: RecurringFrequency[] = ['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY']
 const FREQ_LABELS: Record<RecurringFrequency, string> = {
@@ -179,9 +180,9 @@ export function AddRecurringDrawer({
             placeholder="e.g. Office rent" />
         </div>
 
-        <button type="submit" className="expense-drawer__submit-btn" disabled={saving} aria-busy={saving}>
+        <Button variant="none" type="submit" className="expense-drawer__submit-btn" disabled={saving} aria-busy={saving}>
           {saving ? 'Saving…' : title}
-        </button>
+        </Button>
       </form>
     </Drawer>
   )

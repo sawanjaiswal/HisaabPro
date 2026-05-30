@@ -13,6 +13,7 @@ import { CampaignWizardStep4Schedule } from '../components/CampaignWizardStep4Sc
 import { CampaignWizardStep5Preview } from '../components/CampaignWizardStep5Preview'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import type { WizardStep } from '../marketing.types'
+import { Button } from '@/components/ui/Button'
 
 function StepIndicator({ current, total, ariaLabel }: { current: WizardStep; total: number; ariaLabel: string }) {
   return (
@@ -101,9 +102,9 @@ export default function CampaignWizardPage() {
     <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 480, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-        <button type="button" className="btn btn-ghost btn-icon" onClick={handleBack} aria-label={t.marketingBackAria}>
+        <Button variant="none" type="button" className="btn btn-ghost btn-icon" onClick={handleBack} aria-label={t.marketingBackAria}>
           <ArrowLeft size={20} aria-hidden="true" />
-        </button>
+        </Button>
         <div style={{ flex: 1 }}>
           <h1 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>{t.marketingNewCampaignTitle}</h1>
           <div style={{ fontSize: '12px', color: 'var(--color-gray-500)' }}>{stepLabel}</div>
@@ -155,7 +156,7 @@ export default function CampaignWizardPage() {
 
       {/* Next button (steps 1-4) */}
       {state.step < 5 && (
-        <button
+        <Button variant="none"
           type="button"
           onClick={handleNext}
           disabled={!canAdvance(state.step)}
@@ -179,7 +180,7 @@ export default function CampaignWizardPage() {
           aria-disabled={!canAdvance(state.step)}
         >
           {t.marketingNext} <ChevronRight size={18} aria-hidden="true" />
-        </button>
+        </Button>
       )}
     </div>
   )

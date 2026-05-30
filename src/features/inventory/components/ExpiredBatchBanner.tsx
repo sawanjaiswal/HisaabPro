@@ -7,6 +7,7 @@
 
 import { AlertTriangle, X } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 type BatchErrorCode = 'EXPIRED_BATCH' | 'ALL_BATCHES_EXPIRED' | 'INSUFFICIENT_BATCH_STOCK'
 
@@ -48,27 +49,27 @@ export function ExpiredBatchBanner({ code, onDismiss, onReopenPicker }: ExpiredB
             {title}
           </span>
         </div>
-        <button
+        <Button variant="none"
           type="button"
           onClick={onDismiss}
           aria-label="Dismiss expired batch warning"
           style={{ minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
         >
           <X size={16} aria-hidden="true" />
-        </button>
+        </Button>
       </div>
       <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-error-500)', marginTop: 'var(--space-1)', marginBottom: 'var(--space-2)' }}>
         {hint}
       </p>
       {code !== 'ALL_BATCHES_EXPIRED' && (
-        <button
+        <Button variant="none"
           type="button"
           className="btn btn-sm"
           onClick={onReopenPicker}
           style={{ fontSize: 'var(--fs-sm)', minHeight: 36 }}
         >
           {t.pickAnotherBatch}
-        </button>
+        </Button>
       )}
     </div>
   )

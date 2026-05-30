@@ -151,7 +151,7 @@ export function AuditRedactionsManager({ open, onClose }: AuditRedactionsManager
                       {r.fieldPath}
                     </p>
                   </div>
-                  <button
+                  <Button variant="none"
                     type="button"
                     className="staff-action-button"
                     onClick={() => setConfirmTarget(r)}
@@ -159,7 +159,7 @@ export function AuditRedactionsManager({ open, onClose }: AuditRedactionsManager
                     style={{ minWidth: 44, minHeight: 44 }}
                   >
                     <Trash2 size={18} aria-hidden="true" />
-                  </button>
+                  </Button>
                 </li>
               ))}
             </ul>

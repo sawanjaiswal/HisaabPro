@@ -14,6 +14,7 @@ import { PublicInvoiceView } from '@/features/public/components/PublicInvoiceVie
 import type { PublicInvoiceDto } from '@/features/invoices/share-links.service'
 import type { PublicLang } from '@/features/public/hooks/usePublicLang'
 import './public-invoice.css'
+import { Button } from '@/components/ui/Button'
 
 // ─── Strings (no LanguageContext — public surface) ───────────────────────────
 
@@ -146,13 +147,13 @@ export function PublicInvoicePage() {
         </div>
         <p className="pub-invoice-status__title">{s.loadFailed}</p>
         <p className="pub-invoice-status__message">{s.loadFailedMsg}</p>
-        <button
+        <Button variant="none"
           type="button"
           className="pub-invoice-status__retry"
           onClick={() => { void doFetch() }}
         >
           {s.retry}
-        </button>
+        </Button>
       </div>
     )
   }

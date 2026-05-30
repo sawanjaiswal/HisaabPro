@@ -151,7 +151,7 @@ export default function InvoiceDetailPage() {
 
             <div className="pill-tabs invoice-detail-tabs" role="tablist" aria-label={t.invoiceDetailSections}>
               {DETAIL_TABS.map((tab) => (
-                <button
+                <Button variant="none"
                   key={tab.id}
                   role="tab"
                   className={`pill-tab${activeTab === tab.id ? ' active' : ''}`}
@@ -160,7 +160,7 @@ export default function InvoiceDetailPage() {
                   aria-controls={`panel-${tab.id}`}
                 >
                   {tab.label}
-                </button>
+                </Button>
               ))}
             </div>
 

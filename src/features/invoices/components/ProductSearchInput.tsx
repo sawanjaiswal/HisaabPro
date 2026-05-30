@@ -9,6 +9,7 @@ import type { ProductSummary } from '@/lib/types/product.types'
 import { paiseToRupees } from '../invoice-format.utils'
 import { ProductSearchDropdown } from './ProductSearchDropdown'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -162,14 +163,14 @@ export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
           aria-autocomplete="list"
         />
         {query.length > 0 && (
-          <button
+          <Button variant="none"
             type="button"
             className="product-search-clear"
             onClick={handleClearQuery}
             aria-label={t.clearProductSearch}
           >
             <X size={14} aria-hidden="true" />
-          </button>
+          </Button>
         )}
       </div>
 

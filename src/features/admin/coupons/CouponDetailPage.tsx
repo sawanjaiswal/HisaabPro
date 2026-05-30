@@ -19,6 +19,7 @@ import { formatDiscount, formatUsage, formatCouponDate, formatCouponDateTime, pa
 import type { CouponDetail } from './coupon.types'
 import './coupon.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 type Status = 'loading' | 'error' | 'success'
 
@@ -89,13 +90,13 @@ export default function CouponDetailPage() {
       <Header
         title={coupon.code}
         actions={
-          <button
+          <Button variant="none"
             className="coupon-back-btn"
             onClick={() => navigate(-1)}
             aria-label="Go back"
           >
             <ArrowLeft size={20} aria-hidden="true" />
-          </button>
+          </Button>
         }
       />
 

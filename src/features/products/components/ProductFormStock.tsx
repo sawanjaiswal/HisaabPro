@@ -4,6 +4,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import type { ProductFormData, StockValidationMode } from '../product.types'
 import { STOCK_VALIDATION_LABELS } from '../product.constants'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface ProductFormStockProps {
   form: ProductFormData
@@ -83,7 +84,7 @@ export function ProductFormStock({ form, errors, onUpdate }: ProductFormStockPro
         <span className="input-label" id="stock-validation-label">{t.stockValidationMode}</span>
         <div className="pill-tabs" role="group" aria-labelledby="stock-validation-label">
           {VALIDATION_MODE_OPTIONS.map((option) => (
-            <button
+            <Button variant="none"
               key={option.value}
               type="button"
               className={`pill-tab${form.stockValidation === option.value ? ' active' : ''}`}
@@ -92,7 +93,7 @@ export function ProductFormStock({ form, errors, onUpdate }: ProductFormStockPro
               aria-label={`${t.stockValidationPrefix}: ${option.label}`}
             >
               {option.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>

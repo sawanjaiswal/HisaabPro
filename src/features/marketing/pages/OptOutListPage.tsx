@@ -11,6 +11,7 @@ import { ApiError } from '@/lib/api'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { Button } from '@/components/ui/Button'
 
 interface OptOutParty {
   id: string
@@ -65,9 +66,9 @@ export default function OptOutListPage() {
     <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-        <button type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.HUB)} aria-label={t.marketingBackToMarketingAria}>
+        <Button variant="none" type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.HUB)} aria-label={t.marketingBackToMarketingAria}>
           <ArrowLeft size={20} aria-hidden="true" />
-        </button>
+        </Button>
         <div style={{ flex: 1 }}>
           <h1 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>{t.marketingOptOutsTitle}</h1>
           <p style={{ fontSize: '13px', color: 'var(--color-gray-500)', margin: 0 }}>{t.marketingOptOutsSubtitle}</p>
@@ -104,14 +105,14 @@ export default function OptOutListPage() {
                 <div style={{ fontWeight: 600, fontSize: '14px', color: 'var(--color-gray-800)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{party.name}</div>
                 <div style={{ fontSize: '12px', color: 'var(--color-gray-400)' }}>{party.phone ?? t.marketingNoPhoneOnRow}</div>
               </div>
-              <button
+              <Button variant="none"
                 type="button"
                 onClick={() => setConfirmOptIn(party)}
                 style={{ padding: '7px 12px', borderRadius: '8px', border: '1px solid var(--color-gray-300)', background: 'white', fontSize: '12px', fontWeight: 600, color: 'var(--color-primary-600)', cursor: 'pointer', flexShrink: 0 }}
                 aria-label={t.marketingAllowMessagesAria.replace('{{name}}', party.name)}
               >
                 {t.marketingAllowMessages}
-              </button>
+              </Button>
             </div>
           ))}
         </div>
@@ -128,17 +129,17 @@ export default function OptOutListPage() {
               {t.marketingConfirmOptInDesc}
             </p>
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button type="button" onClick={() => setConfirmOptIn(null)} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '1px solid var(--color-gray-300)', background: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
+              <Button variant="none" type="button" onClick={() => setConfirmOptIn(null)} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '1px solid var(--color-gray-300)', background: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
                 {t.marketingCancel}
-              </button>
-              <button
+              </Button>
+              <Button variant="none"
                 type="button"
                 onClick={() => { optInMutation.mutate(confirmOptIn); setConfirmOptIn(null) }}
                 disabled={optInMutation.isPending}
                 style={{ flex: 1, padding: '12px', borderRadius: '10px', border: 'none', background: 'var(--color-primary-600)', color: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
               >
                 {t.marketingAllowMessagesBtn}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

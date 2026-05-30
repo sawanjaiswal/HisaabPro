@@ -4,6 +4,7 @@ import React from 'react'
 import { Search, X, ChevronDown } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -53,14 +54,14 @@ export const PartySearchField: React.FC<PartySearchFieldProps> = ({
         aria-autocomplete="list"
       />
       {query.length > 0 && (
-        <button
+        <Button variant="none"
           type="button"
           className="party-search-clear"
           onClick={onClear}
           aria-label={t.clearSearch}
         >
           <X size={14} aria-hidden="true" />
-        </button>
+        </Button>
       )}
       {query.length === 0 && (
         <ChevronDown

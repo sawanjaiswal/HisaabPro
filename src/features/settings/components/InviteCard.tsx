@@ -4,6 +4,7 @@ import { Clock, RotateCcw } from 'lucide-react'
 import type { StaffInvite } from '../settings.types'
 import { formatTimeAgo } from '../settings.utils'
 import '../staff-invite.css'
+import { Button } from '@/components/ui/Button'
 
 interface InviteCardProps {
   invite: StaffInvite
@@ -29,13 +30,13 @@ export const InviteCard: React.FC<InviteCardProps> = ({ invite, onResend }) => {
       </span>
 
       <span className="staff-invite-actions">
-        <button
+        <Button variant="none"
           className="staff-action-button"
           onClick={() => onResend(invite.id)}
           aria-label={`${t.resendInviteLabel} ${invite.name}`}
         >
           <RotateCcw size={18} aria-hidden="true" />
-        </button>
+        </Button>
       </span>
     </div>
   )

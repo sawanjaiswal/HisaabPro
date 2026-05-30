@@ -8,6 +8,7 @@ import { deleteTemplate } from '../services/recurring.service'
 import { formatPaise } from '@/lib/format'
 import type { RecurringTemplate } from '../expense.types'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface RecurringTemplateCardProps {
   template: RecurringTemplate
@@ -65,16 +66,16 @@ export function RecurringTemplateCard({ template, onEdit, onDeleted }: Recurring
       <div className="recurring-card__right">
         <p className="recurring-card__amount">{formatPaise(template.amountPaise)}</p>
         <div className="recurring-card__actions">
-          <button
+          <Button variant="none"
             type="button"
             className="recurring-card__btn recurring-card__btn--edit"
             onClick={() => onEdit(template)}
             aria-label={`Edit ${label}`}
           >
             <Edit2 size={14} />
-          </button>
+          </Button>
           {confirmDel ? (
-            <button
+            <Button variant="none"
               type="button"
               className="recurring-card__btn recurring-card__btn--danger"
               onClick={handleDelete}
@@ -83,25 +84,25 @@ export function RecurringTemplateCard({ template, onEdit, onDeleted }: Recurring
               aria-label="Confirm delete"
             >
               {deleting ? '…' : <Trash2 size={14} />}
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button variant="none"
               type="button"
               className="recurring-card__btn recurring-card__btn--del"
               onClick={() => setConfirmDel(true)}
               aria-label={`Delete ${label}`}
             >
               <Trash2 size={14} />
-            </button>
+            </Button>
           )}
         </div>
       </div>
       {confirmDel && !deleting && (
         <div className="recurring-card__confirm-bar" role="status">
           <span>Delete this recurring expense?</span>
-          <button type="button" className="btn-ghost-sm" onClick={() => setConfirmDel(false)}>
+          <Button variant="none" type="button" className="btn-ghost-sm" onClick={() => setConfirmDel(false)}>
             {t.cancel ?? 'Cancel'}
-          </button>
+          </Button>
         </div>
       )}
     </article>

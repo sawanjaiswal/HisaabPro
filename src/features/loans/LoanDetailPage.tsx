@@ -26,6 +26,7 @@ import './loans.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate } from '../../lib/format'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 // TXN_TYPE_LABELS resolved via t at render time — see getTxnTypeLabel()
 function getTxnTypeLabel(type: LoanTransactionType, t: { disbursement: string; repayment: string; interest: string; penalty: string }): string {
@@ -142,9 +143,9 @@ export default function LoanDetailPage() {
             {loan.emiAmount && <div><p className="loan-detail__label">{t.emiColon}</p><p className="loan-detail__value">{formatPaise(loan.emiAmount)}/mo</p></div>}
           </div>
           {loan.status === 'ACTIVE' && (
-            <button type="button" className="loan-add-btn loan-detail__action-btn" onClick={() => setDrawerOpen(true)} aria-label={t.recordTransaction}>
+            <Button variant="none" type="button" className="loan-add-btn loan-detail__action-btn" onClick={() => setDrawerOpen(true)} aria-label={t.recordTransaction}>
               <Plus size={14} aria-hidden="true" /> {t.recordTransaction}
-            </button>
+            </Button>
           )}
         </div>
 
@@ -204,9 +205,9 @@ export default function LoanDetailPage() {
             <label className="loan-drawer__label py-0" htmlFor="txnNotes">{t.notesOptional}</label>
             <Input id="txnNotes" className="loan-drawer__input py-0" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder={t.txnNotesPlaceholder} />
           </div>
-          <button type="submit" className="loan-drawer__submit-btn py-0" disabled={submitting} aria-busy={submitting}>
+          <Button variant="none" type="submit" className="loan-drawer__submit-btn py-0" disabled={submitting} aria-busy={submitting}>
             {submitting ? t.loading : t.recordTransaction}
-          </button>
+          </Button>
         </form>
       </Drawer>
     </AppShell>

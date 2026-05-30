@@ -6,6 +6,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { lineTotal } from '../pos.utils'
 
 import type { PosCartItem } from '../pos.types'
+import { Button } from '@/components/ui/Button'
 
 interface CartItemProps {
   item: PosCartItem
@@ -29,7 +30,7 @@ export function CartItem({ item, onUpdateQty, onRemove }: CartItemProps) {
       </div>
       <div className="pos-cart-item-actions">
         <div className="pos-qty-stepper" role="group" aria-label={`${t.qty} — ${item.name}`}>
-          <button
+          <Button variant="none"
             type="button"
             className="pos-qty-btn"
             onClick={() => onUpdateQty(item.productId, item.quantity - 1)}
@@ -37,9 +38,9 @@ export function CartItem({ item, onUpdateQty, onRemove }: CartItemProps) {
             aria-label={t.posDecreaseQty}
           >
             <Minus size={14} aria-hidden="true" />
-          </button>
+          </Button>
           <span className="pos-qty-value" aria-live="polite">{item.quantity}</span>
-          <button
+          <Button variant="none"
             type="button"
             className="pos-qty-btn"
             onClick={() => onUpdateQty(item.productId, item.quantity + 1)}
@@ -47,17 +48,17 @@ export function CartItem({ item, onUpdateQty, onRemove }: CartItemProps) {
             aria-label={t.posIncreaseQty}
           >
             <Plus size={14} aria-hidden="true" />
-          </button>
+          </Button>
         </div>
         <span className="pos-cart-item-total">{formatPaise(total)}</span>
-        <button
+        <Button variant="none"
           type="button"
           className="pos-cart-item-remove"
           onClick={() => onRemove(item.productId)}
           aria-label={`${t.remove} ${item.name}`}
         >
           <Trash2 size={16} aria-hidden="true" />
-        </button>
+        </Button>
       </div>
     </div>
   )

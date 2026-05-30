@@ -15,6 +15,7 @@ import {
   KEYPAD_KEYS,
 } from '../pin-gate.constants'
 import './pin-pad.css'
+import { Button } from '@/components/ui/Button'
 
 export interface PinPadProps {
   /** Current value — drives the dot indicators. */
@@ -71,7 +72,7 @@ export function PinPad({ value, length, onKeyPress, error, disabled }: PinPadPro
           }
           if (key === KEYPAD_BACKSPACE) {
             return (
-              <button
+              <Button variant="none"
                 key={key}
                 type="button"
                 className="pin-pad-key pin-pad-key--util py-0"
@@ -80,11 +81,11 @@ export function PinPad({ value, length, onKeyPress, error, disabled }: PinPadPro
                 aria-label={t.pinPadBackspaceAria}
               >
                 <Delete size={20} aria-hidden="true" />
-              </button>
+              </Button>
             )
           }
           return (
-            <button
+            <Button variant="none"
               key={key}
               type="button"
               className="pin-pad-key py-0"
@@ -93,7 +94,7 @@ export function PinPad({ value, length, onKeyPress, error, disabled }: PinPadPro
               aria-label={`${t.pinPadKeyAria} ${key}`}
             >
               <span aria-hidden="true">{key}</span>
-            </button>
+            </Button>
           )
         })}
       </div>

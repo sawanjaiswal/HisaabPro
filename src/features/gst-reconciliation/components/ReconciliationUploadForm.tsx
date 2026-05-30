@@ -14,6 +14,7 @@ import { ApiError } from '@/lib/api'
 import type { GstrInputItem } from '../reconciliation.types'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface Props {
   onSuccess: (id: string) => void
@@ -131,7 +132,7 @@ export const ReconciliationUploadForm: React.FC<Props> = ({ onSuccess }) => {
         <label className="recon-upload-form__label" htmlFor="recon-file">
           {t.uploadGstrJsonFile}
         </label>
-        <button
+        <Button variant="none"
           type="button"
           className="recon-upload-form__file-btn"
           onClick={() => fileRef.current?.click()}
@@ -139,7 +140,7 @@ export const ReconciliationUploadForm: React.FC<Props> = ({ onSuccess }) => {
         >
           <Upload size={16} aria-hidden="true" />
           {t.chooseFile}
-        </button>
+        </Button>
         <Input
           ref={fileRef}
           id="recon-file"
@@ -172,14 +173,14 @@ export const ReconciliationUploadForm: React.FC<Props> = ({ onSuccess }) => {
         )}
       </div>
 
-      <button
+      <Button variant="none"
         type="submit"
         className="recon-upload-form__submit"
         disabled={isLoading || !jsonText.trim() || !period}
         aria-busy={isLoading}
       >
         {isLoading ? t.starting : t.startReconciliation}
-      </button>
+      </Button>
     </form>
   )
 }

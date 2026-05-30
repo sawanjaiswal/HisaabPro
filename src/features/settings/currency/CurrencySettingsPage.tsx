@@ -19,6 +19,7 @@ import { CurrencyRateCard } from './components/CurrencyRateCard'
 import { SetRateForm } from './components/SetRateForm'
 import { CurrencyRatesSkeleton } from './components/CurrencyRatesSkeleton'
 import './currency-settings.css'
+import { Button } from '@/components/ui/Button'
 
 export default function CurrencySettingsPage() {
   const { t } = useLanguage()
@@ -71,14 +72,14 @@ export default function CurrencySettingsPage() {
         title={t.exchangeRates}
         backTo={ROUTES.SETTINGS}
         actions={
-          <button
+          <Button variant="none"
             type="button"
             className="currency-header-btn"
             onClick={() => setDrawerOpen(true)}
             aria-label={t.setExchangeRateAria}
           >
             {t.setRateLabel}
-          </button>
+          </Button>
         }
       />
 
@@ -89,13 +90,13 @@ export default function CurrencySettingsPage() {
             title={t.noExchangeRates}
             description={t.exchangeRatesEmptyDesc}
             action={
-              <button
+              <Button variant="none"
                 type="button"
                 className="currency-empty__cta"
                 onClick={() => setDrawerOpen(true)}
               >
                 {t.setFirstRate}
-              </button>
+              </Button>
             }
           />
         ) : (
@@ -112,7 +113,7 @@ export default function CurrencySettingsPage() {
 
             {(hasMore || page > 1) && (
               <div className="currency-pagination">
-                <button
+                <Button variant="none"
                   type="button"
                   className="currency-pagination__btn"
                   disabled={page === 1}
@@ -120,9 +121,9 @@ export default function CurrencySettingsPage() {
                   aria-label={t.previousPage}
                 >
                   {t.previous}
-                </button>
+                </Button>
                 <span className="currency-pagination__info">{t.pageLabel} {page}</span>
-                <button
+                <Button variant="none"
                   type="button"
                   className="currency-pagination__btn"
                   disabled={!hasMore}
@@ -130,7 +131,7 @@ export default function CurrencySettingsPage() {
                   aria-label={t.nextPage}
                 >
                   {t.next}
-                </button>
+                </Button>
               </div>
             )}
           </>

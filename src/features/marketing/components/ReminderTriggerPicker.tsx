@@ -3,6 +3,7 @@
 import { useLanguage } from '@/hooks/useLanguage'
 import { TRIGGER_LABEL_KEYS } from '../marketing.constants'
 import type { ReminderRuleTrigger } from '../marketing.types'
+import { Button } from '@/components/ui/Button'
 
 interface Props {
   value: ReminderRuleTrigger
@@ -28,7 +29,7 @@ export function ReminderTriggerPicker({ value, onChange, disabled = false }: Pro
       {TRIGGERS.map((trigger) => {
         const active = value === trigger
         return (
-          <button
+          <Button variant="none"
             key={trigger}
             type="button"
             role="radio"
@@ -55,7 +56,7 @@ export function ReminderTriggerPicker({ value, onChange, disabled = false }: Pro
             <span style={{ fontSize: '12px', color: active ? 'var(--color-primary-600)' : 'var(--color-gray-400)' }}>
               {t[DESC_KEY[trigger]]}
             </span>
-          </button>
+          </Button>
         )
       })}
     </div>

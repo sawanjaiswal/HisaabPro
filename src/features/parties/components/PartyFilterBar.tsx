@@ -4,6 +4,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import type { PartyType } from '../party.types'
 import { PARTY_TYPE_OPTIONS } from '../party.constants'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface PartyFilterBarProps {
   search: string
@@ -34,7 +35,7 @@ export const PartyFilterBar: React.FC<PartyFilterBarProps> = ({
       </div>
       <div className="pill-tabs" role="group" aria-label={t.filterByPartyType}>
         {PARTY_TYPE_OPTIONS.map((option) => (
-          <button
+          <Button variant="none"
             key={option.value}
             className={`pill-tab${activeType === option.value ? ' active' : ''}`}
             onClick={() => onTypeChange(option.value)}
@@ -42,7 +43,7 @@ export const PartyFilterBar: React.FC<PartyFilterBarProps> = ({
             aria-label={`${t.showLabel} ${option.label}`}
           >
             {option.label}
-          </button>
+          </Button>
         ))}
       </div>
     </div>

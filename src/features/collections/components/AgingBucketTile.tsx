@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { formatPaise } from '@/lib/format'
 import type { AgingBucket, BucketSummary } from '../collections.types'
 import '../styles/aging.css'
+import { Button } from '@/components/ui/Button'
 
 interface Props {
   bucket: AgingBucket
@@ -44,7 +45,7 @@ export function AgingBucketTile({ bucket, summary, drillDownPath, partyLabel, pa
   const partyText = partyCount === 1 ? partyLabel : partiesLabel
 
   return (
-    <button
+    <Button variant="none"
       type="button"
       className={`aging-tile ${cls}`}
       onClick={handleClick}
@@ -58,6 +59,6 @@ export function AgingBucketTile({ bucket, summary, drillDownPath, partyLabel, pa
         </span>
         <ChevronRight size={14} className="aging-tile__chevron" aria-hidden="true" />
       </div>
-    </button>
+    </Button>
   )
 }

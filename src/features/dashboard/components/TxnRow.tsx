@@ -5,6 +5,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { formatSignedAmount, isInflowType, formatDate } from '../dashboard.utils'
 import { PartyAvatar } from '../../../components/ui/PartyAvatar'
 import type { RecentActivityItem } from '../dashboard.types'
+import { Button } from '@/components/ui/Button'
 
 interface TxnRowProps {
   item: RecentActivityItem
@@ -44,14 +45,14 @@ export function TxnRow({ item, onItemClick, onAddPayment }: TxnRowProps) {
       </div>
       <div className="dashboard-txn-trailing">
         {showAdd && (
-          <button
+          <Button variant="none"
             className="dashboard-txn-add-btn"
             onClick={(e) => { e.stopPropagation(); onAddPayment(item) }}
             aria-label={`Record payment for ${item.partyName}`}
           >
             <IndianRupee size={14} aria-hidden="true" />
             <span className="dashboard-txn-add-label">{t.add}</span>
-          </button>
+          </Button>
         )}
         <div className="dashboard-txn-right">
           <span className={`dashboard-txn-amount ${isInflowType(item.type) ? 'dashboard-txn-amount--in' : 'dashboard-txn-amount--out'}`}>

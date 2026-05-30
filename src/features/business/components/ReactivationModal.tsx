@@ -100,7 +100,7 @@ export function ReactivationModal({
         <h2 id="reactivation-modal-title" className="reactivation-modal__title">
           {t.reactivateModalTitle}
         </h2>
-        <button
+        <Button variant="none"
           ref={closeBtnRef}
           type="button"
           className="reactivation-modal__close"
@@ -109,7 +109,7 @@ export function ReactivationModal({
           disabled={submitting}
         >
           <X size={20} aria-hidden="true" />
-        </button>
+        </Button>
       </div>
 
       <div className="reactivation-modal__body">

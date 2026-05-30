@@ -5,6 +5,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { useNotificationSettings, useUpdateSettings } from '../useNotifications'
 import '../notifications.css'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 /** Validate HH:MM format */
 function isValidTime(val: string): boolean {
@@ -106,7 +107,7 @@ export function NotificationQuietHoursCard() {
         </div>
       </div>
 
-      <button
+      <Button variant="none"
         type="button"
         className="notif-quiet-hours__save-btn"
         onClick={handleSave}
@@ -115,7 +116,7 @@ export function NotificationQuietHoursCard() {
         {updateSettings.isPending
           ? (t.notifSaving ?? 'Saving…')
           : (t.notifQuietHoursSave ?? 'Save Quiet Hours')}
-      </button>
+      </Button>
     </div>
   )
 }

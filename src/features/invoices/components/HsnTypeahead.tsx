@@ -16,6 +16,7 @@ import { formatRate } from '@/features/tax/tax.constants'
 import type { HsnCode } from '@/features/tax/tax.types'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 const MIN_QUERY_LEN = 4
 const LIMIT = 10
@@ -123,7 +124,7 @@ export function HsnTypeahead({ lineIndex, value, onSelect }: HsnTypeaheadProps) 
             </div>
           )}
           {!isFetching && results.map((item) => (
-            <button
+            <Button variant="none"
               key={item.code}
               type="button"
               role="option"
@@ -134,7 +135,7 @@ export function HsnTypeahead({ lineIndex, value, onSelect }: HsnTypeaheadProps) 
               <span className="hsn-code">{item.code}</span>
               <span className="hsn-desc">{item.description}</span>
               <span className="hsn-rate">{formatRate(item.defaultRate)}</span>
-            </button>
+            </Button>
           ))}
           {!isFetching && !isError && results.length === 0 && (
             <div className="hsn-popover-state">No results</div>

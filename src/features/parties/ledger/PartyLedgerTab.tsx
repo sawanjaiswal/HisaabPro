@@ -132,7 +132,7 @@ export function PartyLedgerTab({ partyId, partyName, businessName }: PartyLedger
           {ALL_TYPES.map(({ label, value }) => {
             const active = selectedTypes.includes(value)
             return (
-              <button
+              <Button variant="none"
                 key={value}
                 type="button"
                 className={`ledger-type-chip${active ? ' active' : ''}`}
@@ -141,7 +141,7 @@ export function PartyLedgerTab({ partyId, partyName, businessName }: PartyLedger
                 aria-label={`${active ? t.remove : t.add} ${label} ${t.filter}`}
               >
                 {label}
-              </button>
+              </Button>
             )
           })}
         </div>
@@ -194,7 +194,7 @@ export function PartyLedgerTab({ partyId, partyName, businessName }: PartyLedger
 
               {/* Load more */}
               {hasNextPage && (
-                <button
+                <Button variant="none"
                   type="button"
                   className="ledger-load-more"
                   onClick={() => fetchNextPage()}
@@ -202,7 +202,7 @@ export function PartyLedgerTab({ partyId, partyName, businessName }: PartyLedger
                   aria-label={t.loadMoreRows}
                 >
                   {isFetchingNextPage ? t.loading : `${t.loadMore} (${totalCount - rows.length} ${t.remaining})`}
-                </button>
+                </Button>
               )}
             </>
           )}

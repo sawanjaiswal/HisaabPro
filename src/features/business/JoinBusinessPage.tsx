@@ -6,6 +6,7 @@ import { useJoinBusiness } from './useJoinBusiness'
 import './join-business.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 export default function JoinBusinessPage() {
   const { t } = useLanguage()
@@ -33,13 +34,13 @@ export default function JoinBusinessPage() {
             <p className="join-business-success-subtitle">
               {t.roleColon2} {success.roleName}
             </p>
-            <button
+            <Button variant="none"
               type="button"
               className="join-business-btn"
               onClick={handleGoToDashboard}
             >
               {t.goToDashboard}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -74,14 +75,14 @@ export default function JoinBusinessPage() {
 
         {error && <p className="join-business-error">{error}</p>}
 
-        <button
+        <Button variant="none"
           type="button"
           className="join-business-btn"
           disabled={code.length !== 6 || loading}
           onClick={handleSubmit}
         >
           {loading ? t.joiningText : t.joinBusinessBtn}
-        </button>
+        </Button>
       </div>
     </div>
   )

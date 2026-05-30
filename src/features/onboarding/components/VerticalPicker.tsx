@@ -11,6 +11,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import {
   VERTICAL_PROFILES, VERTICAL_PICKER_ORDER, type BusinessType,
 } from '@/config/verticals.config'
+import { Button } from '@/components/ui/Button'
 
 const ICONS: Record<string, LucideIcon> = {
   Briefcase, Store, Warehouse, Factory, Wrench, UtensilsCrossed,
@@ -32,7 +33,7 @@ export function VerticalPicker({ value, onChange, disabled }: Props) {
         const Icon = ICONS[profile.iconName] ?? Package
         const active = value === type
         return (
-          <button
+          <Button variant="none"
             key={type}
             type="button"
             role="radio"
@@ -46,7 +47,7 @@ export function VerticalPicker({ value, onChange, disabled }: Props) {
             </span>
             <span className="vertical-picker__name">{t[profile.labelKey]}</span>
             <span className="vertical-picker__desc">{t[profile.descriptionKey]}</span>
-          </button>
+          </Button>
         )
       })}
     </div>

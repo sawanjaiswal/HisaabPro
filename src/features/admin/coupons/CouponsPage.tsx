@@ -23,6 +23,7 @@ import type { CouponStatus } from './coupon.types'
 import './coupon.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 const STATUS_OPTIONS: Array<{ value: CouponStatus | ''; label: string }> = [
   { value: '', label: 'All' },
@@ -70,13 +71,13 @@ export default function CouponsPage() {
       <Header
         title={t.coupons ?? "Coupons"}
         actions={
-          <button
+          <Button variant="none"
             className="coupon-add-btn"
             onClick={() => setShowForm(true)}
             aria-label="Create coupon"
           >
             <Plus size={20} aria-hidden="true" />
-          </button>
+          </Button>
         }
       />
 
@@ -136,12 +137,12 @@ export default function CouponsPage() {
             title={t.noCouponsYet}
             description={t.createFirstCoupon}
             action={
-              <button
+              <Button variant="none"
                 className="coupon-empty-cta"
                 onClick={() => setShowForm(true)}
               >
                 Create Coupon
-              </button>
+              </Button>
             }
           />
         )}
@@ -161,9 +162,9 @@ export default function CouponsPage() {
               ))}
             </div>
             {nextCursor && (
-              <button className="coupon-load-more" onClick={loadMore}>
+              <Button variant="none" className="coupon-load-more" onClick={loadMore}>
                 Load More
-              </button>
+              </Button>
             )}
           </>
         )}

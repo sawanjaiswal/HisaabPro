@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { AlertTriangle, X } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Textarea } from '@/components/ui/Textarea'
+import { Button } from '@/components/ui/Button'
 
 interface VoidModalProps {
   receiptNumber: string
@@ -41,14 +42,14 @@ export function VoidModal({
         <div className="pos-modal__header">
           <AlertTriangle size={18} className="pos-modal__danger-icon" aria-hidden="true" />
           <h2 className="pos-modal__title">{t.posVoidTitle ?? 'Void sale'}</h2>
-          <button
+          <Button variant="none"
             type="button"
             className="pos-modal__close"
             onClick={onCancel}
             aria-label={t.cancel ?? 'Cancel'}
           >
             <X size={18} aria-hidden="true" />
-          </button>
+          </Button>
         </div>
 
         <form onSubmit={handleSubmit} className="pos-modal__body">
@@ -74,22 +75,22 @@ export function VoidModal({
           />
 
           <div className="pos-modal__actions">
-            <button
+            <Button variant="none"
               type="button"
               className="pos-modal__cancel-btn"
               onClick={onCancel}
               disabled={isVoiding}
             >
               {t.cancel ?? 'Cancel'}
-            </button>
-            <button
+            </Button>
+            <Button variant="none"
               type="submit"
               className="pos-modal__danger-btn"
               disabled={!canSubmit}
               aria-busy={isVoiding}
             >
               {isVoiding ? (t.posVoiding ?? 'Voiding…') : (t.posVoidConfirm ?? 'Void sale')}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

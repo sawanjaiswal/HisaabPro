@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/Card'
 import { useLanguage } from '@/hooks/useLanguage'
 import { FORMAT_OPTIONS } from '../constants/import.constants'
 import type { ImportFormat } from '../types/import.types'
+import { Button } from '@/components/ui/Button'
 
 interface FormatPickerProps {
   value: ImportFormat | null
@@ -37,7 +38,7 @@ export function FormatPicker({ value, onChange, disabled = false }: FormatPicker
         const Icon = ICON_BY_FORMAT[opt.value]
         const selected = value === opt.value
         return (
-          <button
+          <Button variant="none"
             key={opt.value}
             type="button"
             role="radio"
@@ -74,7 +75,7 @@ export function FormatPicker({ value, onChange, disabled = false }: FormatPicker
                 {tx[opt.descKey] ?? ''}
               </span>
             </Card>
-          </button>
+          </Button>
         )
       })}
     </div>

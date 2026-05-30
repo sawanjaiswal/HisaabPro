@@ -5,6 +5,7 @@ import { ChevronUp, ChevronDown, Eye, EyeOff, Trash2 } from 'lucide-react'
 import { formatPaise } from '@/lib/format'
 import { StorefrontProductPicker } from './StorefrontProductPicker'
 import { useStorefrontProducts } from '../hooks/useStorefrontProducts'
+import { Button } from '@/components/ui/Button'
 
 export function StorefrontProductsSection() {
   const {
@@ -73,7 +74,7 @@ export function StorefrontProductsSection() {
                 <p className="sf-product-row__price">{formatPaise(p.sellingPrice)}</p>
               </div>
               <div className="sf-product-row__actions">
-                <button
+                <Button variant="none"
                   type="button"
                   className="sf-icon-btn"
                   onClick={() => { void handleMoveUp(idx) }}
@@ -81,8 +82,8 @@ export function StorefrontProductsSection() {
                   aria-label={`Move ${p.name} up`}
                 >
                   <ChevronUp size={18} aria-hidden="true" />
-                </button>
-                <button
+                </Button>
+                <Button variant="none"
                   type="button"
                   className="sf-icon-btn"
                   onClick={() => { void handleMoveDown(idx) }}
@@ -90,8 +91,8 @@ export function StorefrontProductsSection() {
                   aria-label={`Move ${p.name} down`}
                 >
                   <ChevronDown size={18} aria-hidden="true" />
-                </button>
-                <button
+                </Button>
+                <Button variant="none"
                   type="button"
                   className="sf-icon-btn"
                   onClick={() => { void patchProduct({ productId: p.productId, name: p.name, payload: { visible: !p.visible } }) }}
@@ -100,8 +101,8 @@ export function StorefrontProductsSection() {
                   aria-pressed={p.visible}
                 >
                   {p.visible ? <Eye size={18} aria-hidden="true" /> : <EyeOff size={18} aria-hidden="true" />}
-                </button>
-                <button
+                </Button>
+                <Button variant="none"
                   type="button"
                   className="sf-icon-btn sf-icon-btn--danger"
                   onClick={() => { void removeProduct({ productId: p.productId, name: p.name }) }}
@@ -109,21 +110,21 @@ export function StorefrontProductsSection() {
                   aria-label={`Remove ${p.name} from store`}
                 >
                   <Trash2 size={18} aria-hidden="true" />
-                </button>
+                </Button>
               </div>
             </li>
           ))}
         </ul>
       )}
 
-      <button
+      <Button variant="none"
         type="button"
         className="sf-add-products-btn"
         onClick={() => setPickerOpen(true)}
         aria-label="Add products to store"
       >
         + Add Products
-      </button>
+      </Button>
 
       <StorefrontProductPicker
         open={pickerOpen}

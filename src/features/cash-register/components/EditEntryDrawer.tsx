@@ -12,6 +12,7 @@ import { NoteField } from './NoteField'
 import { expressionReducer, EXPRESSION_INITIAL } from '../cashRegister.reducer'
 import { safeEvaluate } from '../cashRegister.evaluator'
 import type { CashEntryDTO } from '../cashRegister.types'
+import { Button } from '@/components/ui/Button'
 
 interface Props {
   entry: CashEntryDTO
@@ -66,7 +67,7 @@ export function EditEntryDrawer({ entry, businessId, onClose }: Props) {
       title="Edit Entry"
       size="md"
       footer={
-        <button
+        <Button variant="none"
           type="button"
           className="cr-edit-drawer__save btn btn-primary btn-lg"
           onClick={() => void handleSave()}
@@ -77,7 +78,7 @@ export function EditEntryDrawer({ entry, businessId, onClose }: Props) {
             ? <><Loader2 size={16} className="spinner" aria-hidden="true" /> Saving…</>
             : 'Save Changes'
           }
-        </button>
+        </Button>
       }
     >
       <CalculatorDisplay

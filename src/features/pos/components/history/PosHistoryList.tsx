@@ -5,6 +5,7 @@ import { RefreshCw, Receipt } from 'lucide-react'
 import { PosSaleRow } from './PosSaleRow'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PosSaleDTO } from '../../types/pos.types'
+import { Button } from '@/components/ui/Button'
 
 interface PosHistoryListProps {
   sales:          PosSaleDTO[]
@@ -68,10 +69,10 @@ export function PosHistoryList({
     return (
       <div className="pos-grid-state pos-grid-state--center">
         <p className="pos-grid-state__title">{t.posHistoryError ?? 'Could not load sales'}</p>
-        <button type="button" className="pos-grid-state__btn" onClick={onRetry}>
+        <Button variant="none" type="button" className="pos-grid-state__btn" onClick={onRetry}>
           <RefreshCw size={13} aria-hidden="true" />
           {t.tryAgain ?? 'Try again'}
-        </button>
+        </Button>
       </div>
     )
   }

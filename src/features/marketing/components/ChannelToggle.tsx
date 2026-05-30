@@ -3,6 +3,7 @@
 import { useLanguage } from '@/hooks/useLanguage'
 import type { MarketingChannel } from '../marketing.types'
 import { CHANNEL_LABEL, CHANNEL_COLOR } from '../marketing.constants'
+import { Button } from '@/components/ui/Button'
 
 interface Props {
   value: MarketingChannel
@@ -20,7 +21,7 @@ export function ChannelToggle({ value, onChange, disabled = false }: Props) {
         const active = value === ch
         const color = CHANNEL_COLOR[ch]
         return (
-          <button
+          <Button variant="none"
             key={ch}
             type="button"
             role="radio"
@@ -57,7 +58,7 @@ export function ChannelToggle({ value, onChange, disabled = false }: Props) {
               </svg>
             )}
             {CHANNEL_LABEL[ch]}
-          </button>
+          </Button>
         )
       })}
     </div>

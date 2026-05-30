@@ -90,14 +90,14 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
                     onChange={(e) => onUpdateItem(item.id, { name: e.target.value })}
                     aria-label={t.productName}
                   />
-                  <button
+                  <Button variant="none"
                     type="button"
                     className="ocr-review-item-delete"
                     onClick={() => onRemoveItem(item.id)}
                     aria-label={`${t.removeItemAria} ${item.name}`}
                   >
                     <Trash2 size={16} aria-hidden="true" />
-                  </button>
+                  </Button>
                 </div>
 
                 <div className="ocr-review-item-fields">

@@ -11,6 +11,7 @@ import { ROUTES } from '@/config/routes.config'
 import { useRecurringForm } from '../hooks/useRecurringForm'
 import { RecurringFormFields } from '../components/RecurringFormFields'
 import '../recurring.css'
+import { Button } from '@/components/ui/Button'
 
 export default function RecurringFormPage() {
   const { id } = useParams<{ id: string }>()
@@ -112,15 +113,15 @@ export default function RecurringFormPage() {
           />
 
           <div className="rf-actions">
-            <button
+            <Button variant="none"
               type="button"
               className="recurring-btn recurring-btn--secondary"
               onClick={() => navigate(isEdit ? `/recurring/${id}` : ROUTES.RECURRING)}
               disabled={isSaving}
             >
               {t.recurringFormCancel ?? 'Cancel'}
-            </button>
-            <button
+            </Button>
+            <Button variant="none"
               type="submit"
               className="recurring-btn recurring-btn--primary"
               disabled={isSaving}
@@ -129,7 +130,7 @@ export default function RecurringFormPage() {
               {isSaving
                 ? (t.recurringFormSaving ?? 'Saving...')
                 : (t.recurringFormSave ?? 'Save Schedule')}
-            </button>
+            </Button>
           </div>
         </form>
       </PageContainer>

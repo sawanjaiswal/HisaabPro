@@ -20,6 +20,7 @@ import { CheckRow } from './components/CheckRow'
 import { GST_READINESS_RETURN_TYPES } from './gst-validation.constants'
 import './gst-validation.css'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 function currentPeriod(): string {
   const now = new Date()
@@ -61,7 +62,7 @@ export default function GstFilingReadinessPage() {
 
           <div className="gstv-tabs" role="group" aria-label={t.gstReadinessReturnType}>
             {GST_READINESS_RETURN_TYPES.map((rt) => (
-              <button
+              <Button variant="none"
                 key={rt}
                 type="button"
                 className={`gstv-tab${returnType === rt ? ' gstv-tab--active' : ''}`}
@@ -69,7 +70,7 @@ export default function GstFilingReadinessPage() {
                 aria-pressed={returnType === rt}
               >
                 {rt === 'GSTR1' ? t.gstReadinessGstr1 : t.gstReadinessGstr3b}
-              </button>
+              </Button>
             ))}
           </div>
         </div>

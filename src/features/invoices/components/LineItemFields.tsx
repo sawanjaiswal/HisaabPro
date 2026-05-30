@@ -8,6 +8,7 @@ import { DISCOUNT_TYPE_LABELS } from '../invoice.constants'
 import { PriceSourceHint } from '@/features/price-lists/PriceSourceHint'
 import type { PriceResolverResult } from '@/features/price-lists/pricing-resolver'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 const DISCOUNT_TYPES: DiscountType[] = ['AMOUNT', 'PERCENTAGE']
 
@@ -115,7 +116,7 @@ export const LineItemFields: React.FC<LineItemFieldsProps> = ({
         <div className="discount-toggle">
           <div className="discount-toggle" role="group" aria-label={`${t.discountTypeFor} ${productName}`}>
             {DISCOUNT_TYPES.map((type) => (
-              <button
+              <Button variant="none"
                 key={type}
                 type="button"
                 className={`discount-toggle-btn${discountType === type ? ' active' : ''}`}
@@ -125,7 +126,7 @@ export const LineItemFields: React.FC<LineItemFieldsProps> = ({
                 aria-label={type === 'AMOUNT' ? t.setDiscountAsAmount : t.setDiscountAsPercentage}
               >
                 {DISCOUNT_TYPE_LABELS[type]}
-              </button>
+              </Button>
             ))}
           </div>
           <Input

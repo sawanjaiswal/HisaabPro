@@ -7,6 +7,7 @@ import { todayIso, parseRateInput } from '../currency.utils'
 import type { SupportedCurrency, SetExchangeRatePayload } from '../currency.types'
 import { BASE_CURRENCY } from '../currency.constants'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface SetRateFormProps {
   currencies: SupportedCurrency[]
@@ -107,22 +108,22 @@ export function SetRateForm({ currencies, onSubmit, onCancel }: SetRateFormProps
       )}
 
       <div className="set-rate-form__actions">
-        <button
+        <Button variant="none"
           type="button"
           className="set-rate-form__btn set-rate-form__btn--secondary"
           onClick={onCancel}
           disabled={submitting}
         >
           {t.cancel}
-        </button>
-        <button
+        </Button>
+        <Button variant="none"
           type="submit"
           className="set-rate-form__btn set-rate-form__btn--primary"
           disabled={submitting}
           aria-busy={submitting}
         >
           {submitting ? t.saving : t.saveRateBtn}
-        </button>
+        </Button>
       </div>
     </form>
   )

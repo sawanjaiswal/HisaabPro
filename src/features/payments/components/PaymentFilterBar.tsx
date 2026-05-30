@@ -6,6 +6,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import type { PaymentType, PaymentMode } from '../payment.types'
 import { PAYMENT_TYPE_LABELS, PAYMENT_MODE_LABELS } from '../payment.constants'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface PaymentFilterBarProps {
   search: string
@@ -55,22 +56,22 @@ export const PaymentFilterBar: React.FC<PaymentFilterBarProps> = ({
         role="group"
         aria-label={t.filterByType}
       >
-        <button
+        <Button variant="none"
           className={`pill-tab${activeType === 'ALL' ? ' active-tint' : ''}`}
           onClick={() => onTypeChange('ALL')}
           aria-pressed={activeType === 'ALL'}
         >
           {t.all}
-        </button>
+        </Button>
         {PAYMENT_TYPES.map((type) => (
-          <button
+          <Button variant="none"
             key={type}
             className={`pill-tab${activeType === type ? ' active-tint' : ''}`}
             onClick={() => onTypeChange(type)}
             aria-pressed={activeType === type}
           >
             {PAYMENT_TYPE_LABELS[type]}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -79,22 +80,22 @@ export const PaymentFilterBar: React.FC<PaymentFilterBarProps> = ({
         role="group"
         aria-label={t.filterByMode}
       >
-        <button
+        <Button variant="none"
           className={`pill-tab${activeMode === 'ALL' ? ' active-tint' : ''}`}
           onClick={() => onModeChange('ALL')}
           aria-pressed={activeMode === 'ALL'}
         >
           {t.allModes}
-        </button>
+        </Button>
         {PAYMENT_MODES.map((mode) => (
-          <button
+          <Button variant="none"
             key={mode}
             className={`pill-tab${activeMode === mode ? ' active-tint' : ''}`}
             onClick={() => onModeChange(mode)}
             aria-pressed={activeMode === mode}
           >
             {PAYMENT_MODE_LABELS[mode]}
-          </button>
+          </Button>
         ))}
       </div>
     </div>

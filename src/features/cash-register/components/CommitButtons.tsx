@@ -2,6 +2,7 @@
 
 import { Loader2 } from 'lucide-react'
 import type { ExpressionError } from '../cashRegister.types'
+import { Button } from '@/components/ui/Button'
 
 interface Props {
   onCommit: (direction: 'IN' | 'OUT') => void
@@ -17,7 +18,7 @@ export function CommitButtons({ onCommit, isSubmitting, isDisabled, evalError, l
 
   return (
     <div className="cr-commit" role="group" aria-label="Commit cash entry">
-      <button
+      <Button variant="none"
         type="button"
         className="cr-commit__btn cr-commit__btn--in"
         onClick={() => onCommit('IN')}
@@ -29,9 +30,9 @@ export function CommitButtons({ onCommit, isSubmitting, isDisabled, evalError, l
           <Loader2 size={18} className="cr-commit__spinner" aria-hidden="true" />
         ) : null}
         <span>Cash In</span>
-      </button>
+      </Button>
 
-      <button
+      <Button variant="none"
         type="button"
         className="cr-commit__btn cr-commit__btn--out"
         onClick={() => onCommit('OUT')}
@@ -43,7 +44,7 @@ export function CommitButtons({ onCommit, isSubmitting, isDisabled, evalError, l
           <Loader2 size={18} className="cr-commit__spinner" aria-hidden="true" />
         ) : null}
         <span>Cash Out</span>
-      </button>
+      </Button>
     </div>
   )
 }

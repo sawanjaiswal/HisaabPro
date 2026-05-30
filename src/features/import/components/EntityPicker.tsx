@@ -13,6 +13,7 @@ import { Users, Package, FileText, Receipt } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { ImportEntity } from '../types/import.types'
+import { Button } from '@/components/ui/Button'
 
 interface EntityPickerProps {
   value: ImportEntity | null
@@ -48,7 +49,7 @@ export function EntityPicker({ value, onChange, disabled = false }: EntityPicker
         const selected = value === opt.value
         const Icon = opt.Icon
         return (
-          <button
+          <Button variant="none"
             key={opt.value}
             type="button"
             role="radio"
@@ -87,7 +88,7 @@ export function EntityPicker({ value, onChange, disabled = false }: EntityPicker
                 </span>
               </span>
             </Card>
-          </button>
+          </Button>
         )
       })}
     </div>

@@ -7,6 +7,7 @@ import { useTheme } from '@/context/ThemeContext'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ThemeVariantPicker } from './theme/ThemeVariantPicker'
 import './theme/theme.css'
+import { Button } from '@/components/ui/Button'
 
 export default function ThemeAppearancePage() {
   const { t } = useLanguage()
@@ -19,7 +20,7 @@ export default function ThemeAppearancePage() {
         <section>
           <p className="theme-section-title">{t.themeAppearance}</p>
           <div className="theme-appearance-toggle" role="radiogroup" aria-label={t.themeAppearance}>
-            <button
+            <Button variant="none"
               type="button"
               role="radio"
               aria-checked={theme === 'light'}
@@ -28,8 +29,8 @@ export default function ThemeAppearancePage() {
             >
               <Sun size={16} strokeWidth={2} />
               {t.themeLight}
-            </button>
-            <button
+            </Button>
+            <Button variant="none"
               type="button"
               role="radio"
               aria-checked={theme === 'dark'}
@@ -38,7 +39,7 @@ export default function ThemeAppearancePage() {
             >
               <Moon size={16} strokeWidth={2} />
               {t.themeDark}
-            </button>
+            </Button>
           </div>
         </section>
 

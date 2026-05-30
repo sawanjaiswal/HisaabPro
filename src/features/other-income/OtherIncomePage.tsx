@@ -24,6 +24,7 @@ import './other-income.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate } from '../../lib/format'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 const PAGE_LIMIT = 20
 
@@ -121,17 +122,17 @@ export default function OtherIncomePage() {
       <Header title={t.otherIncome ?? "Other Income"} backTo={ROUTES.DASHBOARD} />
       <PageContainer variant="list" className="space-y-6">
         <div className="income-filter-bar stagger-filters" role="group" aria-label={t.filterByCategoryGroup}>
-          <button type="button" className={`income-filter-pill${categoryFilter === null ? ' income-filter-pill--active' : ''}`} onClick={() => setCategoryFilter(null)} aria-pressed={categoryFilter === null}>{t.all}</button>
+          <Button variant="none" type="button" className={`income-filter-pill${categoryFilter === null ? ' income-filter-pill--active' : ''}`} onClick={() => setCategoryFilter(null)} aria-pressed={categoryFilter === null}>{t.all}</Button>
           {knownCategories.map((c) => (
-            <button key={c} type="button" className={`income-filter-pill${categoryFilter === c ? ' income-filter-pill--active' : ''}`} onClick={() => setCategoryFilter(c)} aria-pressed={categoryFilter === c}>{c}</button>
+            <Button variant="none" key={c} type="button" className={`income-filter-pill${categoryFilter === c ? ' income-filter-pill--active' : ''}`} onClick={() => setCategoryFilter(c)} aria-pressed={categoryFilter === c}>{c}</Button>
           ))}
         </div>
 
         <div className="income-action-bar">
           <span className="income-count">{total} {total === 1 ? t.incomeSingular : t.incomeEntriesPlural}</span>
-          <button type="button" className="income-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.addIncomeEntryAria}>
+          <Button variant="none" type="button" className="income-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.addIncomeEntryAria}>
             <Plus size={14} aria-hidden="true" /> {t.addIncomeBtn}
-          </button>
+          </Button>
         </div>
 
         {items.length === 0 && (
@@ -140,9 +141,9 @@ export default function OtherIncomePage() {
             title={t.noOtherIncomeRecorded}
             description={t.trackInterestRent}
             action={
-              <button type="button" className="income-add-btn" onClick={() => setDrawerOpen(true)}>
+              <Button variant="none" type="button" className="income-add-btn" onClick={() => setDrawerOpen(true)}>
                 <Plus size={14} aria-hidden="true" /> {t.addFirstEntry}
-              </button>
+              </Button>
             }
           />
         )}
@@ -151,9 +152,9 @@ export default function OtherIncomePage() {
 
         {totalPages > 1 && (
           <div className="income-pagination">
-            <button type="button" className="income-pagination__btn" onClick={() => setPage(page - 1)} disabled={page <= 1} aria-label={t.previousPage}>{t.back}</button>
+            <Button variant="none" type="button" className="income-pagination__btn" onClick={() => setPage(page - 1)} disabled={page <= 1} aria-label={t.previousPage}>{t.back}</Button>
             <span className="income-pagination__info">{t.pageXOfY} {page} {t.ofLabel} {totalPages}</span>
-            <button type="button" className="income-pagination__btn" onClick={() => setPage(page + 1)} disabled={page >= totalPages} aria-label={t.nextPage}>{t.next}</button>
+            <Button variant="none" type="button" className="income-pagination__btn" onClick={() => setPage(page + 1)} disabled={page >= totalPages} aria-label={t.nextPage}>{t.next}</Button>
           </div>
         )}
       </PageContainer>
@@ -190,9 +191,9 @@ export default function OtherIncomePage() {
             <label className="income-drawer__label py-0" htmlFor="incNotes">{t.notesOptional}</label>
             <Input id="incNotes" className="income-drawer__input py-0" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder={t.incomeNotesPlaceholder} />
           </div>
-          <button type="submit" className="income-drawer__submit-btn py-0" disabled={submitting} aria-busy={submitting}>
+          <Button variant="none" type="submit" className="income-drawer__submit-btn py-0" disabled={submitting} aria-busy={submitting}>
             {submitting ? t.loading : t.recordIncome}
-          </button>
+          </Button>
         </form>
       </Drawer>
     </AppShell>

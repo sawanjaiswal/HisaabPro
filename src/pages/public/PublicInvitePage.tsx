@@ -19,6 +19,7 @@ import { InviteSignupFlow } from '@/features/invite-claim/InviteSignupFlow'
 import type { InvitePreview, InvitePageStatus } from '@/features/invite-claim/invite-claim.types'
 import type { PublicLang }  from '@/features/public/hooks/usePublicLang'
 import './public-invite.css'
+import { Button } from '@/components/ui/Button'
 
 // ─── Strings ─────────────────────────────────────────────────────────────────
 
@@ -174,7 +175,7 @@ export function PublicInvitePage() {
       <div className="pub-invite-status__icon pub-invite-status__icon--error"><AlertCircle size={28} /></div>
       <p className="pub-invite-status__title">{status === 'not-found' ? s.inviteNotFound : s.inviteLoadFailed}</p>
       {status === 'error' && (
-        <button type="button" className="pub-invite-status__retry" onClick={() => void doFetch()}>{s.retry}</button>
+        <Button variant="none" type="button" className="pub-invite-status__retry" onClick={() => void doFetch()}>{s.retry}</Button>
       )}
     </div>
   )

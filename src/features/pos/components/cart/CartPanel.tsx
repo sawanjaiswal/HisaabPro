@@ -6,6 +6,7 @@ import { CartTotals } from './CartTotals'
 import { CartEmpty } from './CartEmpty'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PosCartItem, PosCartTotals } from '../../types/pos.types'
+import { Button } from '@/components/ui/Button'
 
 interface CartPanelProps {
   items:         PosCartItem[]
@@ -42,14 +43,14 @@ export function CartPanel({
             )}
           </h2>
         </div>
-        <button
+        <Button variant="none"
           type="button"
           className="pos-cart-panel__close"
           onClick={onClose}
           aria-label={t.close ?? 'Close cart'}
         >
           <X size={18} aria-hidden="true" />
-        </button>
+        </Button>
       </div>
 
       {/* Body */}
@@ -74,14 +75,14 @@ export function CartPanel({
       {!isEmpty && (
         <div className="pos-cart-panel__footer">
           <CartTotals totals={totals} />
-          <button
+          <Button variant="none"
             type="button"
             className="pos-cart-panel__checkout-btn"
             onClick={onCheckout}
             aria-label={`${t.posCheckout ?? 'Checkout'} — ${t.posGrandTotal ?? ''}`}
           >
             {t.posCheckout ?? 'Checkout'}
-          </button>
+          </Button>
         </div>
       )}
     </div>

@@ -7,6 +7,7 @@ import {
 import { LIBRARY_CATEGORIES } from '../items-library.constants'
 import type { LucideIcon } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 const ICON_MAP: Record<string, LucideIcon> = {
   ShoppingCart, Milk, Wrench, Smartphone, Shirt,
@@ -22,7 +23,7 @@ export function LibraryCategoryGrid({ activeCategory, onSelect }: LibraryCategor
   const { t } = useLanguage()
   return (
     <div className="library-category-grid" role="listbox" aria-label={t.productCategories}>
-      <button
+      <Button variant="none"
         type="button"
         className={`library-category-chip${activeCategory === null ? ' active' : ''}`}
         onClick={() => onSelect(null)}
@@ -30,11 +31,11 @@ export function LibraryCategoryGrid({ activeCategory, onSelect }: LibraryCategor
         aria-selected={activeCategory === null}
       >
         All
-      </button>
+      </Button>
       {LIBRARY_CATEGORIES.map((cat) => {
         const Icon = ICON_MAP[cat.icon]
         return (
-          <button
+          <Button variant="none"
             key={cat.id}
             type="button"
             className={`library-category-chip${activeCategory === cat.id ? ' active' : ''}`}
@@ -44,7 +45,7 @@ export function LibraryCategoryGrid({ activeCategory, onSelect }: LibraryCategor
           >
             {Icon && <Icon size={14} aria-hidden="true" />}
             <span>{cat.name}</span>
-          </button>
+          </Button>
         )
       })}
     </div>

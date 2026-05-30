@@ -14,6 +14,7 @@ import { formatPaise } from '@/lib/format'
 import type { PublicStorefrontDto, PublicStoreStatus } from '@/features/storefront/storefront.types'
 import type { PublicLang } from '@/features/public/hooks/usePublicLang'
 import './public-store.css'
+import { Button } from '@/components/ui/Button'
 
 // ─── Strings ──────────────────────────────────────────────────────────────────
 
@@ -94,9 +95,9 @@ function StoreStatusScreen({
       <p className="pub-store-status__title">{title}</p>
       <p className="pub-store-status__msg">{msg}</p>
       {onRetry && retryLabel && (
-        <button type="button" className="pub-store-status__retry" onClick={onRetry}>
+        <Button variant="none" type="button" className="pub-store-status__retry" onClick={onRetry}>
           {retryLabel}
-        </button>
+        </Button>
       )}
     </div>
   )

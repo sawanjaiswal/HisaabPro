@@ -9,6 +9,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { PauseConfirmSheet } from './PauseConfirmSheet'
 import { GenerateNowConfirmSheet } from './GenerateNowConfirmSheet'
 import type { RecurringInvoice } from '../recurring.types'
+import { Button } from '@/components/ui/Button'
 
 interface RecurringActionMenuProps {
   schedule: RecurringInvoice
@@ -59,7 +60,7 @@ export function RecurringActionMenu({
 
   return (
     <div className="recurring-action-menu">
-      <button
+      <Button variant="none"
         type="button"
         className="recurring-action-menu__btn recurring-action-menu__btn--secondary"
         onClick={() => navigate(`/recurring/${schedule.id}/edit`)}
@@ -67,10 +68,10 @@ export function RecurringActionMenu({
       >
         <Edit2 size={16} aria-hidden="true" />
         {t.recurringEdit ?? 'Edit'}
-      </button>
+      </Button>
 
       {schedule.status === 'ACTIVE' && (
-        <button
+        <Button variant="none"
           type="button"
           className="recurring-action-menu__btn recurring-action-menu__btn--warning"
           onClick={() => setPauseOpen(true)}
@@ -80,11 +81,11 @@ export function RecurringActionMenu({
         >
           <Pause size={16} aria-hidden="true" />
           {t.recurringPause ?? 'Pause'}
-        </button>
+        </Button>
       )}
 
       {schedule.status === 'PAUSED' && (
-        <button
+        <Button variant="none"
           type="button"
           className="recurring-action-menu__btn recurring-action-menu__btn--success"
           onClick={() => void onResume(label)}
@@ -94,11 +95,11 @@ export function RecurringActionMenu({
         >
           <Play size={16} aria-hidden="true" />
           {isResuming ? '...' : (t.recurringResume ?? 'Resume')}
-        </button>
+        </Button>
       )}
 
       {schedule.status !== 'COMPLETED' && (
-        <button
+        <Button variant="none"
           type="button"
           className="recurring-action-menu__btn recurring-action-menu__btn--primary"
           onClick={handleGenerateClick}
@@ -109,10 +110,10 @@ export function RecurringActionMenu({
         >
           <Zap size={16} aria-hidden="true" />
           {t.recurringGenerateNow ?? 'Generate Now'}
-        </button>
+        </Button>
       )}
 
-      <button
+      <Button variant="none"
         type="button"
         className="recurring-action-menu__btn recurring-action-menu__btn--danger"
         onClick={() => setDeleteOpen(true)}
@@ -122,7 +123,7 @@ export function RecurringActionMenu({
       >
         <Trash2 size={16} aria-hidden="true" />
         {t.recurringDelete ?? 'Delete'}
-      </button>
+      </Button>
 
       <PauseConfirmSheet
         open={pauseOpen}

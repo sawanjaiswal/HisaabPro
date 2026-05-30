@@ -6,6 +6,7 @@ import { BUSINESS_TYPE_OPTIONS, BUSINESS_NAME_MAX } from './business.constants'
 import { useCreateBusiness } from './useCreateBusiness'
 import './create-business.css'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 export default function CreateBusinessPage() {
   const { businesses } = useAuth()
@@ -77,7 +78,7 @@ export default function CreateBusinessPage() {
                   <p className="create-biz-clone-toggle-label">Clone settings from existing business</p>
                   <p className="create-biz-clone-toggle-hint">Copies roles, products, categories and settings</p>
                 </div>
-                <button
+                <Button variant="none"
                   type="button"
                   role="switch"
                   aria-checked={cloneEnabled}
@@ -85,7 +86,7 @@ export default function CreateBusinessPage() {
                   onClick={() => setCloneEnabled(!cloneEnabled)}
                 >
                   <span className="create-biz-toggle-thumb" />
-                </button>
+                </Button>
               </div>
 
               {cloneEnabled && (
@@ -108,14 +109,14 @@ export default function CreateBusinessPage() {
             </div>
           )}
 
-          <button
+          <Button variant="none"
             type="button"
             className="create-biz-submit"
             disabled={isSubmitting}
             onClick={handleSubmit}
           >
             {isSubmitting ? 'Creating...' : 'Create Business'}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

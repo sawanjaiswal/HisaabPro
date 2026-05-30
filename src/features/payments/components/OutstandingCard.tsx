@@ -4,6 +4,7 @@ import React from 'react'
 import { Bell, IndianRupee } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { OutstandingParty } from '../payment.types'
+import { Button } from '@/components/ui/Button'
 
 interface OutstandingCardProps {
   party: OutstandingParty
@@ -76,7 +77,7 @@ export const OutstandingCard: React.FC<OutstandingCardProps> = ({
       </div>
 
       <div className="outstanding-card-actions">
-        <button
+        <Button variant="none"
           className="outstanding-action-remind"
           onClick={() => onRemind(party.partyId)}
           disabled={!hasPhone}
@@ -87,15 +88,15 @@ export const OutstandingCard: React.FC<OutstandingCardProps> = ({
         >
           <Bell size={14} aria-hidden="true" />
           {t.remindBtn}
-        </button>
-        <button
+        </Button>
+        <Button variant="none"
           className="outstanding-action-pay"
           onClick={() => onRecordPayment(party.partyId)}
           aria-label={`${t.recordPaymentFrom} ${party.partyName}`}
         >
           <IndianRupee size={14} aria-hidden="true" />
           {t.pay}
-        </button>
+        </Button>
       </div>
     </div>
   )

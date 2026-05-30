@@ -18,6 +18,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { useUpiPayLink } from '../hooks/useUpiPayLink'
 import './upi-pay-card.css'
+import { Button } from '@/components/ui/Button'
 
 // Lazy-loaded to keep auth-surface bundle lean
 const QRCode = lazy(() =>
@@ -68,14 +69,14 @@ export function UpiPayCard({ vpa, payeeName, amountPaise, txnRef, txnNote }: Upi
           <p className="upi-pay-card__title">{t.upiPayCardTitle}</p>
         </div>
         <p className="upi-pay-card__no-vpa-text">{t.upiPayCardNoUpi}</p>
-        <button
+        <Button variant="none"
           type="button"
           className="upi-pay-card__no-vpa-link"
           onClick={() => navigate(ROUTES.SETTINGS)}
           aria-label={t.upiPayCardAddUpi}
         >
           {t.upiPayCardAddUpi}
-        </button>
+        </Button>
       </div>
     )
   }

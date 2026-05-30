@@ -9,6 +9,7 @@ import { usePosHistory } from '../hooks/usePosHistory'
 import '../pos-billing.css'
 import { PosHistoryList } from '../components/history/PosHistoryList'
 import { PosHistoryFiltersBar } from '../components/history/PosHistoryFilters'
+import { Button } from '@/components/ui/Button'
 
 export default function PosHistoryPage() {
   const navigate = useNavigate()
@@ -19,14 +20,14 @@ export default function PosHistoryPage() {
     <AppShell>
       <div className="pos-page">
         <header className="pos-header">
-          <button
+          <Button variant="none"
             type="button"
             className="pos-back-btn"
             onClick={() => navigate(ROUTES.POS)}
             aria-label={t.back ?? 'Back'}
           >
             <ArrowLeft size={20} aria-hidden="true" />
-          </button>
+          </Button>
           <h1 className="pos-header__title">{t.posSalesHistory ?? 'Sales History'}</h1>
         </header>
 

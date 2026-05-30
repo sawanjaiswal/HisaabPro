@@ -21,6 +21,7 @@ import {
   RECURRING_PAGE_LIMIT,
 } from '../recurring.constants'
 import '../recurring.css'
+import { Button } from '@/components/ui/Button'
 
 export default function RecurringListPage() {
   const { t } = useLanguage()
@@ -79,7 +80,7 @@ export default function RecurringListPage() {
         {/* Filter pills */}
         <div className="recurring-filter-pills stagger-filters" role="group" aria-label={t.filterByStatusGroup ?? 'Filter by status'}>
           {RECURRING_STATUS_FILTER_OPTIONS.map((opt) => (
-            <button
+            <Button variant="none"
               key={opt.value}
               type="button"
               className={`recurring-filter-pill${
@@ -90,7 +91,7 @@ export default function RecurringListPage() {
               aria-label={opt.label}
             >
               {opt.label}
-            </button>
+            </Button>
           ))}
         </div>
 
@@ -100,7 +101,7 @@ export default function RecurringListPage() {
             {total} {total === 1 ? (t.scheduleCount ?? 'schedule') : (t.schedulesCount ?? 'schedules')}
           </span>
           <div className="recurring-action-bar__buttons">
-            <button
+            <Button variant="none"
               type="button"
               className="recurring-btn recurring-btn--secondary"
               onClick={() => void handleGenerate()}
@@ -110,8 +111,8 @@ export default function RecurringListPage() {
             >
               <RefreshCw size={14} aria-hidden="true" />
               {generating ? (t.generatingDue ?? 'Generating...') : (t.generateDue ?? 'Generate Due')}
-            </button>
-            <button
+            </Button>
+            <Button variant="none"
               type="button"
               className="recurring-btn recurring-btn--primary"
               onClick={() => navigate(ROUTES.RECURRING_NEW)}
@@ -119,7 +120,7 @@ export default function RecurringListPage() {
             >
               <Plus size={14} aria-hidden="true" />
               {t.newSchedule ?? 'New Schedule'}
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -130,14 +131,14 @@ export default function RecurringListPage() {
             title={t.noRecurringSchedules ?? 'No recurring schedules'}
             description={t.recurringEmptyDesc ?? 'Automate your invoicing with recurring schedules'}
             action={
-              <button
+              <Button variant="none"
                 type="button"
                 className="recurring-btn recurring-btn--primary"
                 onClick={() => navigate(ROUTES.RECURRING_NEW)}
               >
                 <Plus size={14} aria-hidden="true" />
                 {t.createFirstSchedule ?? 'Create your first schedule'}
-              </button>
+              </Button>
             }
           />
         )}
@@ -161,7 +162,7 @@ export default function RecurringListPage() {
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="recurring-pagination">
-            <button
+            <Button variant="none"
               type="button"
               className="recurring-btn recurring-btn--secondary"
               onClick={() => setPage(page - 1)}
@@ -169,11 +170,11 @@ export default function RecurringListPage() {
               aria-label={t.previousPage ?? 'Previous page'}
             >
               {t.previous ?? 'Previous'}
-            </button>
+            </Button>
             <span className="recurring-pagination__info">
               {t.pageLabel ?? 'Page'} {page} {t.ofLabel ?? 'of'} {totalPages}
             </span>
-            <button
+            <Button variant="none"
               type="button"
               className="recurring-btn recurring-btn--secondary"
               onClick={() => setPage(page + 1)}
@@ -181,7 +182,7 @@ export default function RecurringListPage() {
               aria-label={t.nextPage ?? 'Next page'}
             >
               {t.next ?? 'Next'}
-            </button>
+            </Button>
           </div>
         )}
       </PageContainer>

@@ -4,6 +4,7 @@ import { Pencil, Trash2 } from 'lucide-react'
 import { formatPaise } from '@/lib/format'
 import { MODE_LABELS, bpsToPercent, qtyBandLabel } from '../price-list.constants'
 import type { PriceListEntry } from '../price-list.types'
+import { Button } from '@/components/ui/Button'
 
 interface PriceListEntryRowProps {
   entry: PriceListEntry
@@ -35,22 +36,22 @@ export function PriceListEntryRow({ entry, onEdit, onDelete }: PriceListEntryRow
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
         <span className="pl-entry-row__value">{entryValueLabel(entry)}</span>
         <div className="pl-entry-row__actions">
-          <button
+          <Button variant="none"
             type="button"
             className="btn btn-ghost btn-xs"
             onClick={onEdit}
             aria-label={`Edit entry for ${entry.productName}`}
           >
             <Pencil size={13} aria-hidden="true" />
-          </button>
-          <button
+          </Button>
+          <Button variant="none"
             type="button"
             className="btn btn-ghost btn-xs btn-danger"
             onClick={onDelete}
             aria-label={`Delete entry for ${entry.productName}`}
           >
             <Trash2 size={13} aria-hidden="true" />
-          </button>
+          </Button>
         </div>
       </div>
     </div>

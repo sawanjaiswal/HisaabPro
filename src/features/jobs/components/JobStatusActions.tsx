@@ -55,7 +55,7 @@ export function JobStatusActions({ jobId, jobTitle, currentStatus }: JobStatusAc
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
         {nextStatuses.map((status) => (
-          <button
+          <Button variant="none"
             key={status}
             type="button"
             className={status === 'CANCELLED' ? 'btn btn-danger btn-sm' : 'btn btn-primary btn-sm'}
@@ -64,7 +64,7 @@ export function JobStatusActions({ jobId, jobTitle, currentStatus }: JobStatusAc
             style={{ minHeight: 44 }}
           >
             {STATUS_BUTTON_LABELS[status]}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -83,7 +83,7 @@ export function JobStatusActions({ jobId, jobTitle, currentStatus }: JobStatusAc
             aria-label={t.jobCancelReasonLabel}
           />
           <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-            <button
+            <Button variant="none"
               type="button"
               className="btn btn-danger btn-sm"
               onClick={handleCancelConfirm}
@@ -91,7 +91,7 @@ export function JobStatusActions({ jobId, jobTitle, currentStatus }: JobStatusAc
               style={{ minHeight: 44 }}
             >
               {t.jobConfirmCancel}
-            </button>
+            </Button>
             <Button
               type="button"
               variant="ghost" size="sm"

@@ -4,6 +4,7 @@ import React from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PaymentTerms } from '../invoice.types'
 import { PAYMENT_TERMS_LABELS } from '../invoice.constants'
+import { Button } from '@/components/ui/Button'
 
 interface PaymentTermsSelectorProps {
   value: PaymentTerms
@@ -43,7 +44,7 @@ export const PaymentTermsSelector: React.FC<PaymentTermsSelectorProps> = ({
       aria-label={t.selectPaymentTerms}
     >
       {PAYMENT_TERMS_OPTIONS.map((terms) => (
-        <button
+        <Button variant="none"
           key={terms}
           type="button"
           className={`pill-tab${value === terms ? ' active' : ''}`}
@@ -52,7 +53,7 @@ export const PaymentTermsSelector: React.FC<PaymentTermsSelectorProps> = ({
           aria-label={`${t.selectPaymentTerms}: ${PAYMENT_TERMS_LABELS[terms]}`}
         >
           {PAYMENT_TERMS_SHORT_LABELS[terms]}
-        </button>
+        </Button>
       ))}
     </div>
   )

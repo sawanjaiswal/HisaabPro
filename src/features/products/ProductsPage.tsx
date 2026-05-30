@@ -205,9 +205,9 @@ export default function ProductsPage() {
       </PageContainer>
 
       {!bulk.isActive && (
-        <button className="fab" onClick={goToCreate} aria-label={t.addNewProduct}>
+        <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.addNewProduct}>
           <Plus size={24} aria-hidden="true" />
-        </button>
+        </Button>
       )}
 
       <BulkActionBar

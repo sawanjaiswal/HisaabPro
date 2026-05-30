@@ -195,13 +195,13 @@ export default function PaymentsPage() {
       </PageContainer>
 
       {!bulk.isActive && (
-        <button
+        <Button variant="none"
           className="fab"
           onClick={() => navigate(`${ROUTES.PAYMENT_NEW}?type=PAYMENT_IN`)}
           aria-label={t.recordNewPayment}
         >
           <Plus size={24} aria-hidden="true" />
-        </button>
+        </Button>
       )}
 
       <BulkActionBar

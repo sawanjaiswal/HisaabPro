@@ -13,6 +13,7 @@ import { useNotificationInbox, useMarkAllRead } from '../useNotifications'
 import { useNotificationStream } from '../useNotificationStream'
 import { NotificationRow, NotificationRowSkeleton } from '../components/NotificationRow'
 import '../notifications.css'
+import { Button } from '@/components/ui/Button'
 
 const SKELETON_COUNT = 8
 
@@ -116,14 +117,14 @@ export default function NotificationsPage() {
               : (t.notifAllRead ?? 'All caught up')}
           </span>
           {unreadCount > 0 && (
-            <button
+            <Button variant="none"
               type="button"
               className="notif-inbox__mark-all-btn"
               onClick={() => markAllRead.mutate()}
               disabled={markAllRead.isPending}
             >
               {t.notifMarkAllRead ?? 'Mark all read'}
-            </button>
+            </Button>
           )}
         </div>
 
@@ -142,13 +143,13 @@ export default function NotificationsPage() {
 
         {hasNextPage && !isFetchingNextPage && (
           <div className="notif-inbox__load-more">
-            <button
+            <Button variant="none"
               type="button"
               className="notif-inbox__load-more-btn"
               onClick={() => fetchNextPage()}
             >
               {t.notifLoadMore ?? 'Load more'}
-            </button>
+            </Button>
           </div>
         )}
       </PageContainer>

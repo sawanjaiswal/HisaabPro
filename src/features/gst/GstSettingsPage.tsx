@@ -18,6 +18,7 @@ import { useGstSettings } from './useGstSettings'
 import { useGstSettingsForm } from './useGstSettingsForm'
 import { GstFormFields } from './GstFormFields'
 import './gst-settings-v2.css'
+import { Button } from '@/components/ui/Button'
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
@@ -84,7 +85,7 @@ export default function GstSettingsPage() {
                     <div className="gsv2-row-desc">{t.gstEnabledDesc}</div>
                   </div>
                   <div className="gsv2-row-right">
-                    <button
+                    <Button variant="none"
                       className="gsv2-toggle"
                       role="switch"
                       aria-checked={form.gstEnabled}
@@ -93,7 +94,7 @@ export default function GstSettingsPage() {
                       disabled={isSaving}
                     >
                       <span className="gsv2-toggle-thumb" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -112,7 +113,7 @@ export default function GstSettingsPage() {
 
               {/* Backfill wizard link — only when GST is enabled */}
               {form.gstEnabled && (
-                <button
+                <Button variant="none"
                   type="button"
                   className="gsv2-card gsv2-nav-link"
                   onClick={() => navigate(ROUTES.GST_BACKFILL)}
@@ -125,12 +126,12 @@ export default function GstSettingsPage() {
                     <span className="gsv2-card-title">{t.backfillNavLabel}</span>
                     <span className="gsv2-row-desc">{t.backfillNavDesc}</span>
                   </span>
-                </button>
+                </Button>
               )}
 
               {/* GSTR-3B link — only when GST is enabled */}
               {form.gstEnabled && (
-                <button
+                <Button variant="none"
                   type="button"
                   className="gsv2-card gsv2-nav-link"
                   onClick={() => navigate(ROUTES.GST_GSTR3B)}
@@ -143,12 +144,12 @@ export default function GstSettingsPage() {
                     <span className="gsv2-card-title">{t.gstr3bNavLabel}</span>
                     <span className="gsv2-row-desc">{t.gstr3bNavDesc}</span>
                   </span>
-                </button>
+                </Button>
               )}
 
               {/* Save button — appears only when dirty */}
               {dirty && (
-                <button
+                <Button variant="none"
                   className="gsv2-save-btn"
                   onClick={handleSubmit}
                   disabled={isSaving || gstinValidation.valid === false}
@@ -159,7 +160,7 @@ export default function GstSettingsPage() {
                   ) : (
                     <><Save size={16} aria-hidden="true" /> {t.saveGstSettings}</>
                   )}
-                </button>
+                </Button>
               )}
             </>
           )}

@@ -2,6 +2,7 @@
 import { useLanguage } from '@/hooks/useLanguage'
 import { TABS } from '../bank-reconciliation.constants'
 import type { ReconTab } from '../bank-reconciliation.types'
+import { Button } from '@/components/ui/Button'
 
 interface Props {
   active: ReconTab
@@ -13,7 +14,7 @@ export function ReconcileSummary({ active, onChange }: Props) {
   return (
     <div className="recon-tabs" role="tablist">
       {TABS.map((tab) => (
-        <button
+        <Button variant="none"
           key={tab.key}
           role="tab"
           aria-selected={active === tab.key}
@@ -22,7 +23,7 @@ export function ReconcileSummary({ active, onChange }: Props) {
           onClick={() => onChange(tab.key)}
         >
           {t[tab.labelKey as keyof typeof t]}
-        </button>
+        </Button>
       ))}
     </div>
   )

@@ -165,14 +165,14 @@ export function PinPadSheet({ pending, onSuccess, onCancel }: PinPadSheetProps) 
           disabled={submitting || error?.kind === 'locked' || error?.kind === 'offline'}
         />
 
-        <button
+        <Button variant="none"
           type="button"
           className="pin-pad-sheet-forgot py-0"
           onClick={onCancel}
           disabled={submitting}
         >
           {t.pinPadForgotPin}
-        </button>
+        </Button>
       </div>
     </Drawer>
   )

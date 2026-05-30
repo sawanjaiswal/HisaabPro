@@ -7,6 +7,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import { listCampaigns, listTemplates, listReminderRules } from '../marketing.service'
+import { Button } from '@/components/ui/Button'
 
 function StatCard({ label, value, loading }: { label: string; value: number | string; loading?: boolean }) {
   return (
@@ -39,7 +40,7 @@ interface NavTileProps {
 function NavTile({ icon, title, description, route, color, cta }: NavTileProps) {
   const navigate = useNavigate()
   return (
-    <button
+    <Button variant="none"
       type="button"
       onClick={() => navigate(route)}
       style={{
@@ -65,7 +66,7 @@ function NavTile({ icon, title, description, route, color, cta }: NavTileProps) 
         <div style={{ fontSize: '12px', color: 'var(--color-gray-500)', marginTop: '2px' }}>{description}</div>
       </div>
       <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-primary-600)', marginTop: 'auto' }}>{cta} →</span>
-    </button>
+    </Button>
   )
 }
 
@@ -107,9 +108,9 @@ export default function MarketingHubPage() {
     <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-        <button type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(-1)} aria-label={t.marketingBack}>
+        <Button variant="none" type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(-1)} aria-label={t.marketingBack}>
           <ArrowLeft size={20} aria-hidden="true" />
-        </button>
+        </Button>
         <div>
           <h1 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>{t.marketing}</h1>
           <p style={{ fontSize: '13px', color: 'var(--color-gray-500)', margin: 0 }}>{t.marketingSubtitle}</p>
@@ -131,7 +132,7 @@ export default function MarketingHubPage() {
 
       {/* Quick actions */}
       <div style={{ marginBottom: '24px' }}>
-        <button
+        <Button variant="none"
           type="button"
           onClick={() => navigate(MARKETING_ROUTES.CAMPAIGN_NEW)}
           style={{
@@ -149,7 +150,7 @@ export default function MarketingHubPage() {
           }}
         >
           {t.marketingNewCampaign}
-        </button>
+        </Button>
       </div>
 
       {/* Nav tiles */}

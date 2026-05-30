@@ -21,6 +21,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { PartyAvatar } from '@/components/ui/PartyAvatar'
 import { formatDate, formatRelativeTime } from '@/lib/format'
 import type { FollowUpRow as FollowUpRowData } from '../crm.types'
+import { Button } from '@/components/ui/Button'
 
 interface FollowUpRowProps {
   row: FollowUpRowData
@@ -48,7 +49,7 @@ export function FollowUpRow({ row }: FollowUpRowProps) {
     : t.crmNeverContacted
 
   return (
-    <button
+    <Button variant="none"
       type="button"
       className="follow-up-row"
       onClick={() => navigate(`/parties/${row.id}`)}
@@ -78,6 +79,6 @@ export function FollowUpRow({ row }: FollowUpRowProps) {
           </div>
         )}
       </div>
-    </button>
+    </Button>
   )
 }

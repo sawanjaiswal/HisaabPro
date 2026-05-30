@@ -185,14 +185,14 @@ export function LoyaltyRedeemSheet({
                     if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault()
                   }}
                 />
-                <button
+                <Button variant="none"
                   type="button"
                   className="loyalty-redeem__max-btn"
                   onClick={handleMax}
                   disabled={maxAllowed <= 0}
                 >
                   {t.loyaltyRedeemMax}
-                </button>
+                </Button>
               </div>
               {program.redemptionUnit > 1 && (
                 <p className="loyalty-redeem__hint">

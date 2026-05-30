@@ -124,13 +124,13 @@ export const DocumentListPage: React.FC<DocumentListPageProps> = ({
         )}
       </PageContainer>
 
-      <button
+      <Button variant="none"
         className="fab"
         onClick={() => navigate(createRoute)}
         aria-label={SALES_CREATE_LABELS[type]}
       >
         <Plus size={24} aria-hidden="true" />
-      </button>
+      </Button>
     </AppShell>
   )
 }

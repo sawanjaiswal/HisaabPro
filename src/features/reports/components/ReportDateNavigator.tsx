@@ -8,6 +8,7 @@
 import React from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface ReportDateNavigatorProps {
   /** ISO date string, e.g. "2026-03-15" */
@@ -33,17 +34,17 @@ export const ReportDateNavigator: React.FC<ReportDateNavigatorProps> = ({
   const { t } = useLanguage()
     return (
     <div className="report-date-nav">
-      <button
+      <Button variant="none"
         className="report-date-nav-btn"
         onClick={onPrev}
         aria-label={t.goToPreviousDay}
         type="button"
       >
         <ChevronLeft size={20} aria-hidden="true" />
-      </button>
+      </Button>
 
       <div className="report-date-nav-label">
-        <button
+        <Button variant="none"
           className="report-date-nav-primary"
           onClick={onDateClick}
           aria-label={`${t.currentDate}: ${dayLabel}. ${t.tapToPickDate}`}
@@ -51,11 +52,11 @@ export const ReportDateNavigator: React.FC<ReportDateNavigatorProps> = ({
           style={onDateClick ? { cursor: 'pointer', background: 'none', border: 'none', padding: 0, font: 'inherit', width: '100%' } : { background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'default', width: '100%' }}
         >
           {dayLabel}
-        </button>
+        </Button>
         <span className="report-date-nav-secondary">{date}</span>
       </div>
 
-      <button
+      <Button variant="none"
         className="report-date-nav-btn"
         onClick={onNext}
         disabled={!canGoNext}
@@ -64,7 +65,7 @@ export const ReportDateNavigator: React.FC<ReportDateNavigatorProps> = ({
         type="button"
       >
         <ChevronRight size={20} aria-hidden="true" />
-      </button>
+      </Button>
     </div>
   )
 }

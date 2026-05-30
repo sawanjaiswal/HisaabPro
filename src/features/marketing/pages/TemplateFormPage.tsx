@@ -11,6 +11,7 @@ import { MARKETING_ROUTES } from '../marketing.constants'
 import type { MarketingChannel, CreateTemplatePayload } from '../marketing.types'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 const SMS_CHAR_WARN = 140
 const SMS_CHAR_MAX = 160
@@ -84,9 +85,9 @@ export default function TemplateFormPage() {
     <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-        <button type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.TEMPLATES)} aria-label={t.marketingBackToTemplates}>
+        <Button variant="none" type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.TEMPLATES)} aria-label={t.marketingBackToTemplates}>
           <ArrowLeft size={20} aria-hidden="true" />
-        </button>
+        </Button>
         <h1 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>
           {isEdit ? t.marketingEditTemplate : t.marketingNewTemplate}
         </h1>
@@ -169,7 +170,7 @@ export default function TemplateFormPage() {
           </div>
         )}
 
-        <button
+        <Button variant="none"
           type="submit"
           disabled={isPending || !name.trim() || !bodyEn.trim()}
           style={{
@@ -185,7 +186,7 @@ export default function TemplateFormPage() {
           }}
         >
           {isPending ? t.marketingSaving : t.marketingSaveTemplate}
-        </button>
+        </Button>
       </form>
     </div>
   )

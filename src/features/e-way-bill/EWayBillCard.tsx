@@ -152,7 +152,7 @@ export const EWayBillCard: React.FC<Props> = ({ documentId, grandTotal = 0, onGe
             Update Part B
           </Button>
           {cancellable && (
-            <button
+            <Button variant="none"
               type="button"
               className="btn btn-danger btn-md"
               onClick={() => {
@@ -163,7 +163,7 @@ export const EWayBillCard: React.FC<Props> = ({ documentId, grandTotal = 0, onGe
               style={{ flex: 1 }}
             >
               {cancel.isPending ? 'Cancelling...' : 'Cancel'}
-            </button>
+            </Button>
           )}
         </div>
       </div>

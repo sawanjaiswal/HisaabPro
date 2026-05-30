@@ -46,7 +46,7 @@ export function ContactPicker({ onPickContacts, onImportCsv }: ContactPickerProp
           </Button>
         )}
 
-        <button
+        <Button variant="none"
           type="button"
           className={`btn ${HAS_CONTACT_PICKER ? 'btn-secondary' : 'btn-primary'} btn-lg bulk-import-btn`}
           onClick={() => fileRef.current?.click()}
@@ -54,7 +54,7 @@ export function ContactPicker({ onPickContacts, onImportCsv }: ContactPickerProp
         >
           <FileSpreadsheet size={20} aria-hidden="true" />
           <span>{t.csvFile}</span>
-        </button>
+        </Button>
       </div>
 
       <p className="bulk-import-hint">

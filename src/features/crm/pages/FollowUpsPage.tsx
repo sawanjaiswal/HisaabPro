@@ -61,7 +61,7 @@ export default function FollowUpsPage() {
         >
           <span className="follow-ups-page__range-label">{t.crmFollowUpsRangeLabel}</span>
           {RANGE_PRESETS.map((preset) => (
-            <button
+            <Button variant="none"
               key={preset.value}
               type="button"
               role="tab"
@@ -72,7 +72,7 @@ export default function FollowUpsPage() {
               onClick={() => setWithinDays(preset.value)}
             >
               {t[preset.key]}
-            </button>
+            </Button>
           ))}
         </div>
 

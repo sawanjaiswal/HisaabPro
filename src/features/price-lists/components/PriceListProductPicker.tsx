@@ -8,6 +8,7 @@ import { getProducts } from '@/lib/services/product.service'
 import { formatPaise } from '@/lib/format'
 import type { ProductSummary } from '@/lib/types/product.types'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 export interface SelectedProduct { id: string; name: string; salePrice: number }
 
@@ -79,9 +80,9 @@ export const PriceListProductPicker: React.FC<Props> = ({
             {t.plEntryProductBadge}: {formatPaise(selected.salePrice)}
           </span>
           {!readOnly && (
-            <button type="button" className="pl-product-picker__clear" onClick={handleClear} aria-label={t.plEntryClearProduct}>
+            <Button variant="none" type="button" className="pl-product-picker__clear" onClick={handleClear} aria-label={t.plEntryClearProduct}>
               <X size={14} aria-hidden="true" />
-            </button>
+            </Button>
           )}
         </div>
         {error && <span className="input__error" role="alert">{error}</span>}
@@ -105,9 +106,9 @@ export const PriceListProductPicker: React.FC<Props> = ({
           aria-expanded={isOpen} aria-haspopup="listbox" aria-autocomplete="list" aria-invalid={!!error}
         />
         {query && (
-          <button type="button" className="product-search-clear" onClick={() => { setQuery(''); setResults([]) }} aria-label={t.clearProductSearch}>
+          <Button variant="none" type="button" className="product-search-clear" onClick={() => { setQuery(''); setResults([]) }} aria-label={t.clearProductSearch}>
             <X size={14} aria-hidden="true" />
-          </button>
+          </Button>
         )}
       </div>
       {error && <span className="input__error" role="alert">{error}</span>}

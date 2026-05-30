@@ -38,9 +38,9 @@ export function EditProductForm({ productId, initialData, version }: EditProduct
       <PageContainer className="create-product-page space-y-6">
         <nav className="pill-tabs" role="tablist" aria-label={t.formSections}>
           {PRODUCT_FORM_SECTIONS.map((s) => (
-            <button key={s.id} type="button" role="tab" className={`pill-tab${activeSection === s.id ? ' active' : ''}`} onClick={() => setActiveSection(s.id)} aria-selected={activeSection === s.id} aria-controls={`section-panel-${s.id}`}>
+            <Button variant="none" key={s.id} type="button" role="tab" className={`pill-tab${activeSection === s.id ? ' active' : ''}`} onClick={() => setActiveSection(s.id)} aria-selected={activeSection === s.id} aria-controls={`section-panel-${s.id}`}>
               {s.label}
-            </button>
+            </Button>
           ))}
         </nav>
         <div id={`section-panel-${activeSection}`} role="tabpanel" aria-label={PRODUCT_FORM_SECTIONS.find((s) => s.id === activeSection)?.label}>

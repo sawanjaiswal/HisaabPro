@@ -113,9 +113,9 @@ export default function PriceListsPage() {
       </PageContainer>
 
       {/* FAB */}
-      <button type="button" className="fab" onClick={openCreate} aria-label={t.plCreate}>
+      <Button variant="none" type="button" className="fab" onClick={openCreate} aria-label={t.plCreate}>
         <Plus size={24} aria-hidden="true" />
-      </button>
+      </Button>
 
       {/* Drawers / dialogs */}
       <PriceListFormDrawer

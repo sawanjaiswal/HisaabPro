@@ -3,6 +3,7 @@
 import { Pencil, Trash2 } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { DocumentCustomFieldDef } from '../document-custom-fields.service'
+import { Button } from '@/components/ui/Button'
 
 interface Props {
   field: DocumentCustomFieldDef
@@ -43,22 +44,22 @@ export function DocumentCustomFieldRow({ field, onEdit, onDelete }: Props) {
         </span>
       </span>
       <span className="settings-item-action flex items-center gap-2">
-        <button
+        <Button variant="none"
           type="button"
           onClick={() => onEdit(field)}
           aria-label={t.editCustomField}
           className="p-2 rounded-[var(--radius-sm)] hover:bg-[var(--color-gray-100)] transition-colors"
         >
           <Pencil className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
-        </button>
-        <button
+        </Button>
+        <Button variant="none"
           type="button"
           onClick={() => onDelete(field)}
           aria-label={t.deleteCustomField}
           className="p-2 rounded-[var(--radius-sm)] hover:bg-[var(--color-error-50)] transition-colors"
         >
           <Trash2 className="w-4 h-4" style={{ color: 'var(--color-error-500)' }} />
-        </button>
+        </Button>
       </span>
     </div>
   )

@@ -3,6 +3,7 @@
 import type { Role } from '../settings.types'
 import { useLanguage } from '@/hooks/useLanguage'
 import { SYSTEM_ROLE_NAMES } from '../role.constants'
+import { Button } from '@/components/ui/Button'
 
 const TEMPLATE_NAMES = [...SYSTEM_ROLE_NAMES] as const
 
@@ -33,7 +34,7 @@ export function RoleTemplatePills({
         {TEMPLATE_NAMES.map((name) => {
           const templateRole = systemRoles.find((r) => r.name === name)
           return (
-            <button
+            <Button variant="none"
               key={name}
               type="button"
               className="role-template-pill"
@@ -46,17 +47,17 @@ export function RoleTemplatePills({
               aria-label={`${t.useTemplatePrefix} ${name} ${t.useTemplateSuffix}`}
             >
               {name}
-            </button>
+            </Button>
           )
         })}
-        <button
+        <Button variant="none"
           type="button"
           className="role-template-pill"
           onClick={onClearPermissions}
           aria-label={t.startFromBlankDesc}
         >
           {t.blankLabel}
-        </button>
+        </Button>
       </div>
     </div>
   )

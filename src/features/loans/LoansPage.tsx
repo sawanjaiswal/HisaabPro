@@ -26,6 +26,7 @@ import './loans.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate } from '../../lib/format'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 // Status labels resolved via t at render time — see getLoanStatusLabel()
 function getLoanStatusLabel(status: LoanStatus, t: { activeLoan: string; closedLoan2: string; overdueLoan: string }): string {
@@ -137,9 +138,9 @@ export default function LoansPage() {
       <PageContainer variant="list" className="space-y-6">
         <div className="loan-action-bar">
           <span className="loan-count">{total} {total === 1 ? t.loanSingular : t.loansPlural}</span>
-          <button type="button" className="loan-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.addFirstLoan}>
+          <Button variant="none" type="button" className="loan-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.addFirstLoan}>
             <Plus size={14} aria-hidden="true" /> {t.addLoanBtn}
-          </button>
+          </Button>
         </div>
 
         {items.length === 0 && (
@@ -148,9 +149,9 @@ export default function LoansPage() {
             title={t.noLoansAdded}
             description={t.trackLoansDesc}
             action={
-              <button type="button" className="loan-add-btn" onClick={() => setDrawerOpen(true)}>
+              <Button variant="none" type="button" className="loan-add-btn" onClick={() => setDrawerOpen(true)}>
                 <Plus size={14} aria-hidden="true" /> {t.addFirstLoan}
-              </button>
+              </Button>
             }
           />
         )}
@@ -200,9 +201,9 @@ export default function LoansPage() {
             <label className="loan-drawer__label py-0" htmlFor="loanNotes">{t.notesOptional}</label>
             <Input id="loanNotes" className="loan-drawer__input py-0" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder={t.loanNotesPlaceholder} />
           </div>
-          <button type="submit" className="loan-drawer__submit-btn py-0" disabled={submitting} aria-busy={submitting}>
+          <Button variant="none" type="submit" className="loan-drawer__submit-btn py-0" disabled={submitting} aria-busy={submitting}>
             {submitting ? t.loading : t.addFirstLoan}
-          </button>
+          </Button>
         </form>
       </Drawer>
     </AppShell>

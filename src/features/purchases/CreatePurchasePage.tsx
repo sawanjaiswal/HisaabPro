@@ -22,6 +22,7 @@ import '@/features/invoices/invoice-party-search.css'
 import '@/features/invoices/invoice-line-items.css'
 import '@/features/invoices/invoice-product-search.css'
 import '@/features/invoices/invoice-summary.css'
+import { Button } from '@/components/ui/Button'
 
 export default function CreatePurchasePage() {
   const { t } = useLanguage()
@@ -97,7 +98,7 @@ export default function CreatePurchasePage() {
       <PageContainer className="invoice-details-section stagger-enter py-0 space-y-6">
         <nav className="pill-tabs" role="tablist" aria-label={t.purchaseFormSections}>
           {FORM_SECTIONS.map((section) => (
-            <button
+            <Button variant="none"
               key={section.id}
               type="button"
               role="tab"
@@ -107,7 +108,7 @@ export default function CreatePurchasePage() {
               aria-controls={`section-panel-${section.id}`}
             >
               {section.label}
-            </button>
+            </Button>
           ))}
         </nav>
 

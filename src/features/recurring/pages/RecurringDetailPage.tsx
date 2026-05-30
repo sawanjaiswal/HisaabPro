@@ -146,14 +146,14 @@ export default function RecurringDetailPage() {
           )}
 
           {nextCursor && (
-            <button
+            <Button variant="none"
               type="button"
               className="recurring-btn recurring-btn--secondary"
               style={{ marginTop: 'var(--space-3)', width: '100%' }}
               onClick={loadMore}
             >
               {t.jobLoadMore ?? 'Load more'}
-            </button>
+            </Button>
           )}
         </section>
       </PageContainer>

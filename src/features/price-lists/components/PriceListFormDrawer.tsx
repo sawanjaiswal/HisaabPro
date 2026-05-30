@@ -51,9 +51,9 @@ export function PriceListFormDrawer({
 
   const footer = (
     <div style={{ display: 'flex', gap: 'var(--space-2)', padding: 'var(--space-4)' }}>
-      <button type="button" className="btn btn-outline flex-1" onClick={onClose}>
+      <Button variant="none" type="button" className="btn btn-outline flex-1" onClick={onClose}>
         {t.cancel}
-      </button>
+      </Button>
       <Button
         type="submit"
         form="pl-form"

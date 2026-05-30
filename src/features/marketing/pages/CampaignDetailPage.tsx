@@ -10,6 +10,7 @@ import { ChannelBadge } from '../components/ChannelBadge'
 import { RecipientTable } from '../components/RecipientTable'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import { formatDate, formatPaiseAsRupees, formatScheduledAt } from '../marketing.utils'
+import { Button } from '@/components/ui/Button'
 
 function Stat({ label, value, color }: { label: string; value: string | number; color?: string }) {
   return (
@@ -54,9 +55,9 @@ export default function CampaignDetailPage() {
     return (
       <div className="page-container" style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--color-error-600)', fontSize: '14px' }}>
         <div>{t.marketingCampaignLoadFailed}</div>
-        <button type="button" onClick={refresh} style={{ marginTop: '12px', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--color-error-300)', background: 'white', color: 'var(--color-error-600)', cursor: 'pointer', fontSize: '14px', minHeight: '44px' }}>
+        <Button variant="none" type="button" onClick={refresh} style={{ marginTop: '12px', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--color-error-300)', background: 'white', color: 'var(--color-error-600)', cursor: 'pointer', fontSize: '14px', minHeight: '44px' }}>
           <RefreshCw size={14} aria-hidden="true" /> {t.marketingRetry}
-        </button>
+        </Button>
       </div>
     )
   }
@@ -67,9 +68,9 @@ export default function CampaignDetailPage() {
     <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-        <button type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.CAMPAIGNS)} aria-label={t.marketingBackToCampaigns}>
+        <Button variant="none" type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.CAMPAIGNS)} aria-label={t.marketingBackToCampaigns}>
           <ArrowLeft size={20} aria-hidden="true" />
-        </button>
+        </Button>
         <div style={{ flex: 1, minWidth: 0 }}>
           <h1 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{campaign.name}</h1>
           <div style={{ display: 'flex', gap: '8px', marginTop: '4px', flexWrap: 'wrap' }}>
@@ -104,13 +105,13 @@ export default function CampaignDetailPage() {
 
       {/* Cancel */}
       {canCancel && (
-        <button
+        <Button variant="none"
           type="button"
           onClick={() => setConfirmCancel(true)}
           style={{ display: 'block', width: '100%', padding: '13px', minHeight: '44px', borderRadius: '10px', border: '1px solid var(--color-error-300)', background: 'white', color: 'var(--color-error-600)', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
         >
           {t.marketingCancelCampaign}
-        </button>
+        </Button>
       )}
 
       {/* Confirm cancel dialog */}
@@ -120,17 +121,17 @@ export default function CampaignDetailPage() {
             <h3 id="cancel-dialog-title" style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-gray-900)', marginBottom: '10px' }}>{t.marketingCancelCampaignTitle}</h3>
             <p style={{ fontSize: '14px', color: 'var(--color-gray-600)', marginBottom: '20px' }}>{t.marketingCancelCampaignDesc}</p>
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button type="button" onClick={() => setConfirmCancel(false)} style={{ flex: 1, padding: '12px', minHeight: '44px', borderRadius: '10px', border: '1px solid var(--color-gray-300)', background: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
+              <Button variant="none" type="button" onClick={() => setConfirmCancel(false)} style={{ flex: 1, padding: '12px', minHeight: '44px', borderRadius: '10px', border: '1px solid var(--color-gray-300)', background: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
                 {t.marketingKeepRunning}
-              </button>
-              <button
+              </Button>
+              <Button variant="none"
                 type="button"
                 onClick={() => { setConfirmCancel(false); cancelMutation.mutate({ id: campaign.id, name: campaign.name }) }}
                 disabled={cancelMutation.isPending}
                 style={{ flex: 1, padding: '12px', minHeight: '44px', borderRadius: '10px', border: 'none', background: 'var(--color-error-600)', color: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
               >
                 {cancelMutation.isPending ? t.marketingCancellingShort : t.marketingYesCancel}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

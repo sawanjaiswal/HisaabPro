@@ -6,6 +6,7 @@ import { TemplatePicker } from './TemplatePicker'
 import { RECURRING_FREQUENCIES, FREQUENCY_LABELS } from '../recurring.constants'
 import type { RecurringFormState, FormErrors } from '../hooks/useRecurringForm'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
@@ -62,7 +63,7 @@ export function RecurringFormFields({
         </label>
         <div className="rf-segment" role="group" aria-label={t.recurringFieldFrequency ?? 'Frequency'}>
           {RECURRING_FREQUENCIES.map((f) => (
-            <button
+            <Button variant="none"
               key={f}
               type="button"
               className={`rf-segment__btn${form.frequency === f ? ' rf-segment__btn--active' : ''}`}
@@ -71,7 +72,7 @@ export function RecurringFormFields({
               aria-pressed={form.frequency === f}
             >
               {FREQUENCY_LABELS[f]}
-            </button>
+            </Button>
           ))}
         </div>
       </div>

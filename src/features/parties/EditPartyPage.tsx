@@ -144,7 +144,7 @@ function EditPartyForm({ partyId, initialData, version }: { partyId: string; ini
             { id: 'business' as SectionId, label: t.business2 },
             { id: 'credit' as SectionId, label: t.credit },
           ].map(section => (
-            <button
+            <Button variant="none"
               key={section.id}
               type="button"
               role="tab"
@@ -154,7 +154,7 @@ function EditPartyForm({ partyId, initialData, version }: { partyId: string; ini
               aria-controls={`section-panel-${section.id}`}
             >
               {section.label}
-            </button>
+            </Button>
           ))}
         </nav>
 

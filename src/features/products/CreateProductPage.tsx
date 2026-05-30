@@ -30,9 +30,9 @@ export default function CreateProductPage() {
       <PageContainer className="create-product-page stagger-enter space-y-6">
         <nav className="pill-tabs" role="tablist" aria-label={t.formSections}>
           {PRODUCT_FORM_SECTIONS.map((section) => (
-            <button key={section.id} type="button" role="tab" className={`pill-tab${activeSection === section.id ? ' active' : ''}`} onClick={() => setActiveSection(section.id)} aria-selected={activeSection === section.id} aria-controls={`section-panel-${section.id}`}>
+            <Button variant="none" key={section.id} type="button" role="tab" className={`pill-tab${activeSection === section.id ? ' active' : ''}`} onClick={() => setActiveSection(section.id)} aria-selected={activeSection === section.id} aria-controls={`section-panel-${section.id}`}>
               {section.label}
-            </button>
+            </Button>
           ))}
         </nav>
         <div id={`section-panel-${activeSection}`} role="tabpanel" aria-label={PRODUCT_FORM_SECTIONS.find((s) => s.id === activeSection)?.label}>
@@ -43,7 +43,7 @@ export default function CreateProductPage() {
       </PageContainer>
       <div className="create-product-actions">
         <Button variant="primary" size="lg" loading={isSubmitting} onClick={handleSubmit} aria-label={t.saveProduct}>{t.saveProductBtn}</Button>
-        <button type="button" className="create-product-save-another" onClick={handleSaveAndAddAnother} disabled={isSubmitting} aria-label={t.saveAndAddAnotherProduct}>{t.saveAndAddAnother}</button>
+        <Button variant="none" type="button" className="create-product-save-another" onClick={handleSaveAndAddAnother} disabled={isSubmitting} aria-label={t.saveAndAddAnotherProduct}>{t.saveAndAddAnother}</Button>
       </div>
     </AppShell>
   )

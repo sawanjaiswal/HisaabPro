@@ -22,6 +22,7 @@ import { AgingLoadingSkeleton } from '../components/AgingLoadingSkeleton'
 import { formatPaise } from '@/lib/format'
 import type { AgingBucket } from '../collections.types'
 import '../styles/aging.css'
+import { Button } from '@/components/ui/Button'
 
 const BUCKET_ORDER: AgingBucket[] = ['current', 'bucket_31', 'bucket_61', 'bucket_91']
 
@@ -71,14 +72,14 @@ export default function AgingDashboard() {
         <Header
           title={t.agingDashboard ?? 'Aging Dashboard'}
           actions={
-            <button
+            <Button variant="none"
               type="button"
               onClick={handleRefresh}
               aria-label={t.agingRefreshing ?? 'Refresh'}
               style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 8, color: 'var(--color-gray-600)' }}
             >
               <RefreshCw size={18} />
-            </button>
+            </Button>
           }
         />
         <PageContainer>
@@ -98,14 +99,14 @@ export default function AgingDashboard() {
       <Header
         title={t.agingDashboard ?? 'Aging Dashboard'}
         actions={
-          <button
+          <Button variant="none"
             type="button"
             onClick={handleRefresh}
             aria-label={t.agingRefreshing ?? 'Refresh'}
             style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 8, color: 'var(--color-gray-600)' }}
           >
             <RefreshCw size={18} />
-          </button>
+          </Button>
         }
       />
       <PageContainer>

@@ -8,6 +8,7 @@ import React from 'react'
 import { ChevronRight, ArrowDownLeft, ArrowUpRight } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { paisaToRupees } from '../party.utils'
+import { Button } from '@/components/ui/Button'
 
 interface PartySummaryBarProps {
   summary: {
@@ -34,7 +35,7 @@ export const PartySummaryBar: React.FC<PartySummaryBarProps> = ({
 
       <div className="summary-hero-cards">
         {/* To Collect — teal gradient */}
-        <button
+        <Button variant="none"
           className="summary-hero-card summary-hero-card--teal"
           role="listitem"
           onClick={onCollectClick}
@@ -51,10 +52,10 @@ export const PartySummaryBar: React.FC<PartySummaryBarProps> = ({
             </span>
           </div>
           <ChevronRight size={20} aria-hidden="true" className="summary-hero-chevron" />
-        </button>
+        </Button>
 
         {/* To Pay — lime */}
-        <button
+        <Button variant="none"
           className="summary-hero-card summary-hero-card--lime"
           role="listitem"
           onClick={onPayClick}
@@ -71,7 +72,7 @@ export const PartySummaryBar: React.FC<PartySummaryBarProps> = ({
             </span>
           </div>
           <ChevronRight size={20} aria-hidden="true" className="summary-hero-chevron summary-hero-chevron--dark" />
-        </button>
+        </Button>
       </div>
     </div>
   )

@@ -116,9 +116,9 @@ export default function BatchesPage() {
       </PageContainer>
 
       {status === 'success' && batches && batches.batches.length > 0 && (
-        <button className="fab" onClick={goToCreate} aria-label={t.addNewBatch}>
+        <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.addNewBatch}>
           <Plus size={24} aria-hidden="true" />
-        </button>
+        </Button>
       )}
     </AppShell>
   )

@@ -15,6 +15,7 @@ import { PAYMENT_MODE_LABELS } from '../payment-labels.constants'
 import { buildVoucherData, voucherKindFor } from './voucher.utils'
 import { PaymentVoucherDocument, type VoucherDocLabels } from './PaymentVoucherDocument'
 import type { PaymentDetail } from '../payment-models.types'
+import { Button } from '@/components/ui/Button'
 
 const slug = (v: string) => v.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase()
 
@@ -79,7 +80,7 @@ export function VoucherShareBar({ payment }: { payment: PaymentDetail }) {
         )}
       </PDFDownloadLink>
 
-      <button
+      <Button variant="none"
         type="button"
         className="btn btn-outline btn-sm flex-1"
         onClick={() => void handlePrint()}
@@ -91,7 +92,7 @@ export function VoucherShareBar({ payment }: { payment: PaymentDetail }) {
           ? <Loader2 size={16} className="animate-spin" aria-hidden="true" />
           : <Printer size={16} aria-hidden="true" />}
         <span>{t.printVoucher}</span>
-      </button>
+      </Button>
     </div>
   )
 }

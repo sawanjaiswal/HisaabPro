@@ -3,6 +3,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { PinPad } from './components/PinPad'
 import { usePinSetup } from './usePinSetup'
 import './pin-setup.css'
+import { Button } from '@/components/ui/Button'
 
 
 
@@ -36,7 +37,7 @@ export default function PinSetupPage() {
       aria-label={pageTitle}
     >
       {/* Back button — top-left */}
-      <button
+      <Button variant="none"
         type="button"
         onClick={handleBack}
         style={{
@@ -57,7 +58,7 @@ export default function PinSetupPage() {
         aria-label={t.goBack}
       >
         &#8592;
-      </button>
+      </Button>
 
       {step === 'enter' ? (
         <PinPad
@@ -102,7 +103,7 @@ export default function PinSetupPage() {
 
       {/* Manual Continue button (between min and max-1 digits) */}
       {showContinue && (
-        <button
+        <Button variant="none"
           type="button"
           onClick={handleContinue}
           disabled={isSubmitting}
@@ -122,18 +123,18 @@ export default function PinSetupPage() {
           aria-label={t.continueToConfirmPin}
         >
           {t.continueBtn}
-        </button>
+        </Button>
       )}
 
       {/* Skip link — onboarding only */}
       {isOnboarding && step === 'enter' && (
-        <button
+        <Button variant="none"
           type="button"
           className="pin-forgot-link"
           onClick={handleSkip}
         >
           {t.skipSetUpLater}
-        </button>
+        </Button>
       )}
     </div>
   )

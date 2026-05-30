@@ -111,9 +111,9 @@ export function PaymentSheet({
       >
         <div className="pos-sheet__header">
           <h2 className="pos-sheet__title">{t.posPaymentTitle ?? 'Payment'}</h2>
-          <button type="button" className="pos-sheet__close" onClick={onClose} aria-label={t.close ?? 'Close'}>
+          <Button variant="none" type="button" className="pos-sheet__close" onClick={onClose} aria-label={t.close ?? 'Close'}>
             <X size={18} aria-hidden="true" />
-          </button>
+          </Button>
         </div>
 
         <div className="pos-sheet__body">
@@ -181,14 +181,14 @@ export function PaymentSheet({
 
           {/* Add split */}
           {payments.length < PAYMENT_MODES.length && (
-            <button
+            <Button variant="none"
               type="button"
               className="pos-split-add-btn"
               onClick={handleAddSplit}
             >
               <Plus size={13} aria-hidden="true" />
               {t.posSplitPayment ?? 'Split payment'}
-            </button>
+            </Button>
           )}
 
           {/* Change */}
@@ -200,7 +200,7 @@ export function PaymentSheet({
         </div>
 
         <div className="pos-sheet__footer">
-          <button
+          <Button variant="none"
             type="button"
             className="pos-sheet__confirm-btn"
             disabled={!isValid || isProcessing}
@@ -210,7 +210,7 @@ export function PaymentSheet({
             {isProcessing
               ? (t.posProcessing ?? 'Processing…')
               : (t.posConfirmSale ?? 'Confirm sale')}
-          </button>
+          </Button>
         </div>
       </div>
 

@@ -74,7 +74,7 @@ export default function ReconciliationDetailPage() {
         {/* Filter pills */}
         <div className="recon-filter-pills stagger-filters" role="tablist" aria-label={t.filterByMatchStatus}>
           {MATCH_STATUS_FILTER_OPTIONS.map(({ value, label }) => (
-            <button
+            <Button variant="none"
               key={value}
               type="button"
               role="tab"
@@ -83,7 +83,7 @@ export default function ReconciliationDetailPage() {
               onClick={() => setMatchFilter(value as MatchStatus | 'ALL')}
             >
               {label}
-            </button>
+            </Button>
           ))}
         </div>
 

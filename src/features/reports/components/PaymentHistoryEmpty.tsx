@@ -4,6 +4,7 @@ import { Banknote } from 'lucide-react'
 import type { PaymentHistoryFilters } from '../report.types'
 import { useLanguage } from '@/hooks/useLanguage'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { Button } from '@/components/ui/Button'
 
 interface PaymentHistoryEmptyProps {
   hasFiltersApplied: boolean
@@ -28,7 +29,7 @@ export function PaymentHistoryEmpty({
         title="No payments match your filters."
         description={t.tryBroaderDateRange}
         action={
-          <button
+          <Button variant="none"
             className="report-load-more-btn"
             onClick={() => {
               setFilter('type', undefined)
@@ -38,7 +39,7 @@ export function PaymentHistoryEmpty({
             aria-label={t.clearFilters}
           >
             Clear Filters
-          </button>
+          </Button>
         }
       />
     )
@@ -50,14 +51,14 @@ export function PaymentHistoryEmpty({
       title={t.noPaymentsRecordedYet}
       description={t.recordFirstPayment}
       action={
-        <button
+        <Button variant="none"
           className="report-load-more-btn"
           onClick={onNavigateNew}
           type="button"
           aria-label={t.recordNewPayment}
         >
           Record Payment
-        </button>
+        </Button>
       }
     />
   )

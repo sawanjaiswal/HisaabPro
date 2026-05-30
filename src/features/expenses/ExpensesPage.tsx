@@ -24,6 +24,7 @@ import type { ExpenseCategory } from './expense.types'
 import './expenses.css'
 import './expenses-upgrade.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 const NOW_MONTH = new Date().toISOString().slice(0, 7)
 
@@ -116,13 +117,13 @@ export default function ExpensesPage() {
               <Clock size={14} aria-hidden="true" />
               <span className="pending-row__title">{t.expensesPending ?? 'Pending'}</span>
               <span className="pending-row__count">{pendingItems.length}</span>
-              <button
+              <Button variant="none"
                 type="button"
                 className="pending-row__see-all"
                 onClick={() => navigate('/expenses/pending')}
               >
                 See all
-              </button>
+              </Button>
             </div>
             <div className="pending-row__list">
               {pendingItems.slice(0, 3).map((item) => (
@@ -134,26 +135,26 @@ export default function ExpensesPage() {
 
         {/* Quick nav tiles */}
         <div className="expenses-nav-tiles">
-          <button type="button" className="expenses-nav-tile" onClick={() => navigate('/expenses/budgets')}>
+          <Button variant="none" type="button" className="expenses-nav-tile" onClick={() => navigate('/expenses/budgets')}>
             {t.expensesBudgetsTitle ?? 'Budgets'}
-          </button>
-          <button type="button" className="expenses-nav-tile" onClick={() => navigate('/expenses/recurring')}>
+          </Button>
+          <Button variant="none" type="button" className="expenses-nav-tile" onClick={() => navigate('/expenses/recurring')}>
             {t.expensesRecurringTitle ?? 'Recurring'}
-          </button>
+          </Button>
         </div>
 
         {/* Category filter pills */}
         <div className="expense-filter-bar stagger-filters" role="group" aria-label={t.filterByCategoryGroup}>
-          <button
+          <Button variant="none"
             type="button"
             className={`expense-filter-pill${categoryFilter === null ? ' expense-filter-pill--active' : ''}`}
             onClick={() => setCategoryFilter(null)}
             aria-pressed={categoryFilter === null}
           >
             {t.all}
-          </button>
+          </Button>
           {categories.map((c) => (
-            <button
+            <Button variant="none"
               key={c.id}
               type="button"
               className={`expense-filter-pill${categoryFilter === c.id ? ' expense-filter-pill--active' : ''}`}
@@ -161,15 +162,15 @@ export default function ExpensesPage() {
               aria-pressed={categoryFilter === c.id}
             >
               {c.name}
-            </button>
+            </Button>
           ))}
         </div>
 
         <div className="expense-action-bar">
           <span className="expense-count">{total} {total === 1 ? t.expenseSingular : t.expensesPlural}</span>
-          <button type="button" className="expense-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.recordExpense}>
+          <Button variant="none" type="button" className="expense-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.recordExpense}>
             <Plus size={14} aria-hidden="true" /> {t.addExpenseBtn}
-          </button>
+          </Button>
         </div>
 
         {items.length === 0 && (
@@ -178,9 +179,9 @@ export default function ExpensesPage() {
             title={t.noExpensesRecorded}
             description={t.startTrackingExpenses}
             action={
-              <button type="button" className="expense-add-btn" onClick={() => setDrawerOpen(true)}>
+              <Button variant="none" type="button" className="expense-add-btn" onClick={() => setDrawerOpen(true)}>
                 <Plus size={14} aria-hidden="true" /> {t.recordFirstExpense}
-              </button>
+              </Button>
             }
           />
         )}
@@ -193,9 +194,9 @@ export default function ExpensesPage() {
 
         {totalPages > 1 && (
           <div className="expense-pagination">
-            <button type="button" className="expense-pagination__btn" onClick={() => setPage(page - 1)} disabled={page <= 1} aria-label={t.previousPage}>{t.back}</button>
+            <Button variant="none" type="button" className="expense-pagination__btn" onClick={() => setPage(page - 1)} disabled={page <= 1} aria-label={t.previousPage}>{t.back}</Button>
             <span className="expense-pagination__info">{t.pageXOfY} {page} {t.ofLabel} {totalPages}</span>
-            <button type="button" className="expense-pagination__btn" onClick={() => setPage(page + 1)} disabled={page >= totalPages} aria-label={t.nextPage}>{t.next}</button>
+            <Button variant="none" type="button" className="expense-pagination__btn" onClick={() => setPage(page + 1)} disabled={page >= totalPages} aria-label={t.nextPage}>{t.next}</Button>
           </div>
         )}
       </PageContainer>

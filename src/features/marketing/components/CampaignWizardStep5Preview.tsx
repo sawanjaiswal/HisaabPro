@@ -8,6 +8,7 @@ import { useMarketingTemplateDetail } from '../hooks/useMarketingTemplates'
 import { useSegmentPreview } from '../hooks/useSegmentPreview'
 import { formatScheduledAt, formatCostEstimate } from '../marketing.utils'
 import type { CampaignWizardState } from '../marketing.types'
+import { Button } from '@/components/ui/Button'
 
 interface Props {
   state: CampaignWizardState
@@ -84,7 +85,7 @@ export function CampaignWizardStep5Preview({ state, onLaunch, launching }: Props
       )}
 
       {/* Launch CTA */}
-      <button
+      <Button variant="none"
         type="button"
         onClick={onLaunch}
         disabled={!canLaunch}
@@ -105,7 +106,7 @@ export function CampaignWizardStep5Preview({ state, onLaunch, launching }: Props
         aria-disabled={!canLaunch}
       >
         {launching ? t.marketingLaunching : t.marketingLaunchCampaign}
-      </button>
+      </Button>
     </div>
   )
 }

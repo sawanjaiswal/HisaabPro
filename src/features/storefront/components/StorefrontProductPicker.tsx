@@ -8,6 +8,7 @@ import { Drawer } from '@/components/ui/Drawer'
 import { formatPaise } from '@/lib/format'
 import type { ProductListResponse } from '@/features/products/product-api.types'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface Props {
   open: boolean
@@ -64,14 +65,14 @@ export function StorefrontProductPicker({
       onClose={() => { setSelected(new Set()); setSearch(''); onClose() }}
       title="Add Products to Store"
       footer={
-        <button
+        <Button variant="none"
           type="button"
           className="sf-save-btn"
           onClick={() => { void handleConfirm() }}
           disabled={selected.size === 0 || adding}
         >
           {adding ? 'Adding...' : `Add ${selected.size > 0 ? `${selected.size} ` : ''}Product${selected.size !== 1 ? 's' : ''}`}
-        </button>
+        </Button>
       }
     >
       <div className="sf-picker">
@@ -107,7 +108,7 @@ export function StorefrontProductPicker({
               const isSelected = selected.has(product.id)
               return (
                 <li key={product.id}>
-                  <button
+                  <Button variant="none"
                     type="button"
                     role="option"
                     aria-selected={isSelected}
@@ -125,7 +126,7 @@ export function StorefrontProductPicker({
                       </span>
                     </div>
                     {isSelected && <Check size={18} className="sf-picker__check" aria-hidden="true" />}
-                  </button>
+                  </Button>
                 </li>
               )
             })}

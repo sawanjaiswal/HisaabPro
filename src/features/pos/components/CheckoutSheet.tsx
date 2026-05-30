@@ -46,7 +46,7 @@ export function CheckoutSheet({ open, onClose, items, isProcessing, onConfirm }:
               const isActive = mode === value
               const label = t[labelKey as keyof typeof t] as string
               return (
-                <button
+                <Button variant="none"
                   key={value}
                   type="button"
                   className={`pos-payment-btn ${isActive ? 'pos-payment-btn--active' : ''}`}
@@ -55,7 +55,7 @@ export function CheckoutSheet({ open, onClose, items, isProcessing, onConfirm }:
                 >
                   <Icon size={22} aria-hidden="true" />
                   <span>{label}</span>
-                </button>
+                </Button>
               )
             })}
           </div>

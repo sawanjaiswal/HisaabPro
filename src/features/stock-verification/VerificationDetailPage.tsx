@@ -16,6 +16,7 @@ import { CountItemRow } from './components/CountItemRow'
 import { DiscrepancyRow } from './components/DiscrepancyRow'
 import './stock-verification.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 export default function VerificationDetailPage() {
   const { t } = useLanguage()
@@ -82,7 +83,7 @@ export default function VerificationDetailPage() {
               ))}
             </div>
             {allCounted && (
-              <button
+              <Button variant="none"
                 type="button"
                 className="sv-detail__action-btn sv-detail__action-btn--primary"
                 onClick={() => completeVerification()}
@@ -90,7 +91,7 @@ export default function VerificationDetailPage() {
               >
                 <CheckCircle2 size={18} aria-hidden="true" />
                 {t.completeVerification}
-              </button>
+              </Button>
             )}
           </section>
         )}
@@ -110,7 +111,7 @@ export default function VerificationDetailPage() {
         )}
 
         {isCompleted && hasDiscrepancies && (
-          <button
+          <Button variant="none"
             type="button"
             className="sv-detail__action-btn sv-detail__action-btn--warning"
             onClick={() => setShowAdjustConfirm(true)}
@@ -118,7 +119,7 @@ export default function VerificationDetailPage() {
           >
             <RefreshCw size={18} aria-hidden="true" />
             {t.adjustStock}
-          </button>
+          </Button>
         )}
 
         <ConfirmDialog

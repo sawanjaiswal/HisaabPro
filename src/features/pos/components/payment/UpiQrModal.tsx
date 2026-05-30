@@ -3,6 +3,7 @@
 import { X, Smartphone } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { paiseToInr } from '../../utils/pos.format'
+import { Button } from '@/components/ui/Button'
 
 interface UpiQrModalProps {
   amountPaise: number
@@ -32,14 +33,14 @@ export function UpiQrModal({ amountPaise, upiId, onClose }: UpiQrModalProps) {
             <Smartphone size={16} aria-hidden="true" />
             {t.posUpiQrTitle ?? 'Pay via UPI'}
           </h2>
-          <button
+          <Button variant="none"
             type="button"
             className="pos-modal__close"
             onClick={onClose}
             aria-label={t.close ?? 'Close'}
           >
             <X size={18} aria-hidden="true" />
-          </button>
+          </Button>
         </div>
 
         <div className="pos-qr-modal__body">
@@ -70,13 +71,13 @@ export function UpiQrModal({ amountPaise, upiId, onClose }: UpiQrModalProps) {
           )}
         </div>
 
-        <button
+        <Button variant="none"
           type="button"
           className="pos-modal__primary-btn"
           onClick={onClose}
         >
           {t.posPaymentReceived ?? 'Payment received'}
-        </button>
+        </Button>
       </div>
     </div>
   )

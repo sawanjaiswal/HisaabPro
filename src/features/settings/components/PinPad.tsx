@@ -2,6 +2,7 @@ import React from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Fingerprint, Delete } from 'lucide-react'
 import '../pin-setup.css'
+import { Button } from '@/components/ui/Button'
 
 interface PinPadProps {
   length: number
@@ -72,7 +73,7 @@ export const PinPad: React.FC<PinPadProps> = ({
       <div className="pin-keypad" role="group" aria-label={t.pinKeypadLabel}>
         {DIGIT_ROWS.map((row) =>
           row.map((digit) => (
-            <button
+            <Button variant="none"
               key={digit}
               className="pin-key"
               onClick={() => onKeyPress(digit)}
@@ -83,40 +84,40 @@ export const PinPad: React.FC<PinPadProps> = ({
               {KEY_SUBTEXT[digit] && (
                 <span className="pin-key-sub" aria-hidden="true">{KEY_SUBTEXT[digit]}</span>
               )}
-            </button>
+            </Button>
           ))
         )}
 
         {/* Bottom row: biometric | 0 | backspace */}
         {onBiometric ? (
-          <button
+          <Button variant="none"
             className="pin-key pin-key-special"
             onClick={onBiometric}
             aria-label={t.useBiometricLabel}
           >
             <Fingerprint size={24} aria-hidden="true" />
-          </button>
+          </Button>
         ) : (
           <span className="pin-key pin-key--empty" aria-hidden="true" />
         )}
 
-        <button
+        <Button variant="none"
           className="pin-key"
           onClick={() => onKeyPress('0')}
           aria-label="0"
           disabled={value.length >= length}
         >
           0
-        </button>
+        </Button>
 
-        <button
+        <Button variant="none"
           className="pin-key pin-key-special"
           onClick={onBackspace}
           aria-label={t.deleteLastDigit}
           disabled={value.length === 0}
         >
           <Delete size={22} aria-hidden="true" />
-        </button>
+        </Button>
       </div>
     </div>
   )

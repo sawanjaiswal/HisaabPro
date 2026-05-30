@@ -55,7 +55,7 @@ export function PriceListCard({ priceList, onClick, onEdit, onDelete }: PriceLis
           <Pencil size={14} aria-hidden="true" />
           {t.edit}
         </Button>
-        <button
+        <Button variant="none"
           type="button"
           className="btn btn-ghost btn-sm btn-danger"
           onClick={onDelete}
@@ -63,7 +63,7 @@ export function PriceListCard({ priceList, onClick, onEdit, onDelete }: PriceLis
         >
           <Trash2 size={14} aria-hidden="true" />
           {t.delete}
-        </button>
+        </Button>
       </div>
     </div>
   )

@@ -6,6 +6,7 @@ import { useToast } from '@/hooks/useToast'
 import { ROUTES } from '@/config/routes.config'
 import { getBusinessInitials, getBusinessColor } from '../business.utils'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface BusinessSwitcherProps {
   onClose: () => void
@@ -92,7 +93,7 @@ export function BusinessSwitcher({ onClose }: BusinessSwitcherProps) {
             const isActive = biz.id === user?.businessId
             return (
               <li key={biz.id}>
-                <button
+                <Button variant="none"
                   ref={index === 0 ? firstFocusRef : undefined}
                   type="button"
                   className={`business-switcher-item${isActive ? ' business-switcher-item--active' : ''}`}
@@ -118,19 +119,19 @@ export function BusinessSwitcher({ onClose }: BusinessSwitcherProps) {
                     </span>
                   </span>
                   {isActive && <Check size={18} className="business-switcher-check" aria-hidden="true" />}
-                </button>
+                </Button>
               </li>
             )
           })}
         </ul>
-        <button
+        <Button variant="none"
           type="button"
           className="business-switcher-add"
           onClick={handleAddBusiness}
         >
           <Plus size={20} aria-hidden="true" />
           {t.addBusiness}
-        </button>
+        </Button>
       </div>
     </>
   )

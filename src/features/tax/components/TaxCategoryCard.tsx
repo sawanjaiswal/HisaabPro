@@ -8,6 +8,7 @@ import { Receipt, ChevronRight } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatRate } from '../tax.constants'
 import type { TaxCategory } from '../tax.types'
+import { Button } from '@/components/ui/Button'
 
 interface TaxCategoryCardProps {
   category: TaxCategory
@@ -19,7 +20,7 @@ export function TaxCategoryCard({ category, onClick }: TaxCategoryCardProps) {
   const hsnLabel = category.hsnCode ?? category.sacCode ?? null
 
   return (
-    <button
+    <Button variant="none"
       className="tax-cat-card"
       onClick={() => onClick(category.id)}
       aria-label={`${category.name}, ${t.rate} ${formatRate(category.rate)}`}
@@ -40,6 +41,6 @@ export function TaxCategoryCard({ category, onClick }: TaxCategoryCardProps) {
         </span>
       </span>
       <ChevronRight className="tax-cat-card-chevron" size={16} aria-hidden="true" />
-    </button>
+    </Button>
   )
 }

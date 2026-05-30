@@ -6,6 +6,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import type { DocumentType, DocumentStatus } from '../invoice.types'
 import { DOCUMENT_TYPE_LABELS, DOCUMENT_STATUS_LABELS } from '../invoice.constants'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface InvoiceFilterBarProps {
   search: string
@@ -62,22 +63,22 @@ export const InvoiceFilterBar: React.FC<InvoiceFilterBarProps> = ({
         role="group"
         aria-label={t.filterByDocType}
       >
-        <button
+        <Button variant="none"
           className={`pill-tab${activeType === 'ALL' ? ' active-tint' : ''}`}
           onClick={() => onTypeChange('ALL')}
           aria-pressed={activeType === 'ALL'}
         >
           {t.all}
-        </button>
+        </Button>
         {DOCUMENT_TYPES.map((type) => (
-          <button
+          <Button variant="none"
             key={type}
             className={`pill-tab${activeType === type ? ' active-tint' : ''}`}
             onClick={() => onTypeChange(type)}
             aria-pressed={activeType === type}
           >
             {DOCUMENT_TYPE_LABELS[type]}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -87,14 +88,14 @@ export const InvoiceFilterBar: React.FC<InvoiceFilterBarProps> = ({
         aria-label={t.filterByStatus}
       >
         {STATUS_VALUES.map(({ value, labelKey }) => (
-          <button
+          <Button variant="none"
             key={value}
             className={`pill-tab${activeStatus === value ? ' active' : ''}`}
             onClick={() => onStatusChange(value)}
             aria-pressed={activeStatus === value}
           >
             {labelKey === 'all' ? t.all : DOCUMENT_STATUS_LABELS[value as DocumentStatus]}
-          </button>
+          </Button>
         ))}
       </div>
     </div>

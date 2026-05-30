@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext'
 import { getBusinessInitials, getBusinessColor } from './business.utils'
 import { BusinessSwitcher } from './components/BusinessSwitcher'
 import './business.css'
+import { Button } from '@/components/ui/Button'
 
 // Vertical distance required to commit a swipe. Horizontal movement above the
 // max threshold cancels the gesture (treated as a scroll).
@@ -105,7 +106,7 @@ export function BusinessAvatar() {
       <div
         className={`business-avatar-container${swipeHint ? ` business-avatar-container--swipe-${swipeHint}` : ''}`}
       >
-        <button
+        <Button variant="none"
           type="button"
           className={`business-avatar${isSwitching ? ' business-avatar--switching' : ''}`}
           style={{ background: color, touchAction: 'pan-x' }}
@@ -123,7 +124,7 @@ export function BusinessAvatar() {
           aria-busy={isSwitching || undefined}
         >
           {initials}
-        </button>
+        </Button>
         {hasMultiple && (
           <div className="business-dots" aria-hidden="true">
             {businesses.slice(0, 3).map(b => (

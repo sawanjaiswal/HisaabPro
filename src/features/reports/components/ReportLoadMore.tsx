@@ -6,6 +6,7 @@
 
 import React from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface ReportLoadMoreProps {
   hasMore: boolean
@@ -23,7 +24,7 @@ export const ReportLoadMore: React.FC<ReportLoadMoreProps> = ({
 
   return (
     <div className="report-load-more">
-      <button
+      <Button variant="none"
         className="report-load-more-btn"
         onClick={onLoadMore}
         disabled={isLoading}
@@ -31,7 +32,7 @@ export const ReportLoadMore: React.FC<ReportLoadMoreProps> = ({
         type="button"
       >
         {isLoading ? t.loading : t.loadMore}
-      </button>
+      </Button>
     </div>
   )
 }

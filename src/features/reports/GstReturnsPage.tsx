@@ -17,6 +17,7 @@ import './report-shared-ui.css'
 import './report-tax.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 const RETURN_TABS: { type: GstReturnType; label: string }[] = [
   { type: 'GSTR1',  label: 'GSTR-1' },
@@ -95,7 +96,7 @@ export default function GstReturnsPage() {
         {/* Return type tab pills */}
         <div className="gst-return-tabs stagger-filters" role="tablist" aria-label={t.gstReturnType}>
           {RETURN_TABS.map(({ type, label }) => (
-            <button
+            <Button variant="none"
               key={type}
               type="button"
               role="tab"
@@ -104,7 +105,7 @@ export default function GstReturnsPage() {
               onClick={() => setReturnType(type)}
             >
               {label}
-            </button>
+            </Button>
           ))}
         </div>
 
@@ -121,7 +122,7 @@ export default function GstReturnsPage() {
           />
           {/* Export — GSTR-1 only */}
           {returnType === 'GSTR1' && data && (
-            <button
+            <Button variant="none"
               type="button"
               className="report-export-btn"
               onClick={handleExport}
@@ -130,7 +131,7 @@ export default function GstReturnsPage() {
             >
               <Download size={14} aria-hidden="true" />
               {isExporting ? t.exporting : t.exportJson}
-            </button>
+            </Button>
           )}
         </div>
 

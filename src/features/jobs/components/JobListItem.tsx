@@ -4,6 +4,7 @@ import { Calendar, User } from 'lucide-react'
 import { JobStatusPill } from './JobStatusPill'
 import { formatPaise, formatJobNumber } from '../jobs.utils'
 import type { JobListRow } from '../jobs.types'
+import { Button } from '@/components/ui/Button'
 
 interface JobListItemProps {
   job: JobListRow
@@ -16,7 +17,7 @@ export function JobListItem({ job, onClick }: JobListItemProps) {
     : null
 
   return (
-    <button
+    <Button variant="none"
       type="button"
       className="job-list-item"
       onClick={() => onClick(job.id)}
@@ -64,6 +65,6 @@ export function JobListItem({ job, onClick }: JobListItemProps) {
           </span>
         </div>
       </div>
-    </button>
+    </Button>
   )
 }

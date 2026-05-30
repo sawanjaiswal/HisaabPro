@@ -19,6 +19,7 @@ import { formatPaise } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import { RECON_STATUS_LABELS, RECON_TYPE_LABELS } from './reconciliation.constants'
 import './reconciliation.css'
+import { Button } from '@/components/ui/Button'
 
 export default function ReconciliationListPage() {
   const navigate = useNavigate()
@@ -77,13 +78,13 @@ export default function ReconciliationListPage() {
             title={t.noReconciliationsYet}
             description={t.noReconciliationsDesc}
             action={
-              <button
+              <Button variant="none"
                 type="button"
                 className="recon-empty__cta"
                 onClick={() => setShowForm(true)}
               >
                 {t.startFirstReconciliation}
-              </button>
+              </Button>
             }
           />
         )}
@@ -125,19 +126,19 @@ export default function ReconciliationListPage() {
         )}
 
         {hasMore && (
-          <button type="button" className="recon-load-more" onClick={loadMore}>
+          <Button variant="none" type="button" className="recon-load-more" onClick={loadMore}>
             {t.loadMore}
-          </button>
+          </Button>
         )}
 
-        <button
+        <Button variant="none"
           type="button"
           className="recon-fab"
           aria-label={t.startNewReconciliation}
           onClick={() => setShowForm((v) => !v)}
         >
           <Plus size={22} aria-hidden="true" />
-        </button>
+        </Button>
       </PageContainer>
     </AppShell>
   )

@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/Input'
 import { Select, SelectItem } from '@/components/ui/Select'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { Role } from '../settings.types'
+import { Button } from '@/components/ui/Button'
 
 interface FormErrors {
   name?: string
@@ -94,14 +95,14 @@ export function StaffInviteForm({
         </p>
       )}
 
-      <button
+      <Button variant="none"
         type="submit"
         className="role-save-button"
         disabled={submitting}
         aria-busy={submitting}
       >
         {submitting ? t.sendingInvite : t.sendInviteBtn}
-      </button>
+      </Button>
     </form>
   )
 }

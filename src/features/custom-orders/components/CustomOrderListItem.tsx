@@ -4,6 +4,7 @@ import { Calendar, User, IndianRupee } from 'lucide-react'
 import { CustomOrderStatusPill } from './CustomOrderStatusPill'
 import { formatPaise, formatOrderNumber } from '../custom-orders.utils'
 import type { CustomOrderListRow } from '../custom-orders.types'
+import { Button } from '@/components/ui/Button'
 
 interface CustomOrderListItemProps {
   order: CustomOrderListRow
@@ -16,7 +17,7 @@ export function CustomOrderListItem({ order, onClick }: CustomOrderListItemProps
     : null
 
   return (
-    <button
+    <Button variant="none"
       type="button"
       className="order-list-item"
       onClick={() => onClick(order.id)}
@@ -79,6 +80,6 @@ export function CustomOrderListItem({ order, onClick }: CustomOrderListItemProps
           </div>
         </div>
       </div>
-    </button>
+    </Button>
   )
 }

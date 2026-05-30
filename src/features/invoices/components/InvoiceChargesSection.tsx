@@ -8,6 +8,7 @@ import { Plus } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { AdditionalChargeFormData } from '../invoice.types'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface InvoiceChargesSectionProps {
   charges: AdditionalChargeFormData[]
@@ -43,18 +44,18 @@ export function InvoiceChargesSection({
             onChange={(e) => onUpdateCharge(index, { value: parseFloat(e.target.value) || 0 })}
             aria-label={`Charge ${index + 1} value`}
           />
-          <button
+          <Button variant="none"
             type="button"
             className="charge-remove"
             onClick={() => onRemoveCharge(index)}
             aria-label={`Remove charge ${charge.name || index + 1}`}
           >
             &times;
-          </button>
+          </Button>
         </div>
       ))}
 
-      <button
+      <Button variant="none"
         type="button"
         className="add-item-btn"
         onClick={() => onAddCharge({ name: '', type: 'FIXED', value: 0 })}
@@ -62,7 +63,7 @@ export function InvoiceChargesSection({
       >
         <Plus size={18} aria-hidden="true" />
         {t.addChargeLabel}
-      </button>
+      </Button>
     </div>
   )
 }

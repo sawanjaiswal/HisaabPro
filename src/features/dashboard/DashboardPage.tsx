@@ -124,13 +124,13 @@ export default function DashboardPage() {
                     </span>
                   </>
                 ) : (
-                  <button
+                  <Button variant="none"
                     className="dashboard-sales-cta"
                     onClick={() => navigate(`${ROUTES.INVOICE_CREATE}?type=SALE`)}
                     aria-label={t.createFirstInvoice}
                   >
                     {t.createFirstInvoice} &rarr;
-                  </button>
+                  </Button>
                 )}
               </div>
 

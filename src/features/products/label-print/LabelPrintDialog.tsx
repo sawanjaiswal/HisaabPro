@@ -77,9 +77,9 @@ export function LabelPrintDialog({ productIds, onClose }: LabelPrintDialogProps)
         {/* Header */}
         <div className="label-dialog-header">
           <h2 className="label-dialog-title">Print Labels</h2>
-          <button type="button" className="label-dialog-close" onClick={onClose} aria-label="Close">
+          <Button variant="none" type="button" className="label-dialog-close" onClick={onClose} aria-label="Close">
             <X size={20} aria-hidden="true" />
-          </button>
+          </Button>
         </div>
 
         {/* ── LOADING ─────────────────────────────────────────────────── */}
@@ -98,10 +98,10 @@ export function LabelPrintDialog({ productIds, onClose }: LabelPrintDialogProps)
         {dialogState === 'error' && (
           <div className="label-dialog-body label-dialog-error" role="alert">
             <p>Could not load label data.</p>
-            <button type="button" className="btn btn-outline" onClick={loadLabels}>
+            <Button variant="none" type="button" className="btn btn-outline" onClick={loadLabels}>
               <RefreshCw size={16} aria-hidden="true" />
               Retry
-            </button>
+            </Button>
           </div>
         )}
 
@@ -149,7 +149,7 @@ export function LabelPrintDialog({ productIds, onClose }: LabelPrintDialogProps)
                 fileName={fileName}
               >
                 {({ loading }) => (
-                  <button
+                  <Button variant="none"
                     type="button"
                     className="btn btn-outline label-footer-btn"
                     disabled={loading}
@@ -158,7 +158,7 @@ export function LabelPrintDialog({ productIds, onClose }: LabelPrintDialogProps)
                   >
                     <Download size={16} aria-hidden="true" />
                     {loading ? 'Preparing…' : 'Download PDF'}
-                  </button>
+                  </Button>
                 )}
               </PDFDownloadLink>
               <Button

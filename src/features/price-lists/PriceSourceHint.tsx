@@ -14,6 +14,7 @@ import { Link } from 'react-router-dom'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PriceResolverResult } from './pricing-resolver'
 import './price-source-hint.css'
+import { Button } from '@/components/ui/Button'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -51,14 +52,14 @@ export const PriceSourceHint: React.FC<PriceSourceHintProps> = ({
     return (
       <div className="price-hint price-hint--manual" aria-label={t.priceSourceLabel}>
         <span className="price-hint__badge">{t.priceHintCustom}</span>
-        <button
+        <Button variant="none"
           type="button"
           className="price-hint__reset"
           onClick={handleReset}
           aria-label={t.priceHintResetToAuto}
         >
           {t.priceHintResetToAuto}
-        </button>
+        </Button>
       </div>
     )
   }

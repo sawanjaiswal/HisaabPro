@@ -50,7 +50,7 @@ export default function RecordPaymentPage() {
       <PageContainer variant="form" className="space-y-6">
         <nav className="pill-tabs stagger-enter" role="tablist" aria-label={t.paymentFormSections}>
           {SECTIONS.map((section) => (
-            <button
+            <Button variant="none"
               key={section.id}
               type="button"
               role="tab"
@@ -60,7 +60,7 @@ export default function RecordPaymentPage() {
               aria-controls={`section-panel-${section.id}`}
             >
               {section.label}
-            </button>
+            </Button>
           ))}
         </nav>
 

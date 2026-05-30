@@ -9,6 +9,7 @@
  */
 
 import type { PreviewFilterKey } from '../utils/preview-filters'
+import { Button } from '@/components/ui/Button'
 
 interface PreviewFiltersProps {
   active: PreviewFilterKey
@@ -57,7 +58,7 @@ export function PreviewFilters({
       {chips.map((chip) => {
         const isActive = chip.key === active
         return (
-          <button
+          <Button variant="none"
             key={chip.key}
             type="button"
             role="tab"
@@ -84,7 +85,7 @@ export function PreviewFilters({
             >
               {chip.count}
             </span>
-          </button>
+          </Button>
         )
       })}
     </div>

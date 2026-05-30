@@ -15,6 +15,7 @@ import { searchRecentActivity } from '../dashboard.service'
 import { TxnRow } from './TxnRow'
 import type { RecentActivityItem } from '../dashboard.types'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 const DEBOUNCE_MS = 300
 const SKELETON_COUNT = 4
@@ -129,14 +130,14 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
     <div className="dashboard-transactions">
       <div className="dashboard-section-header py-0">
         <span className="dashboard-section-title py-0">{t.recentTransactions}</span>
-        <button
+        <Button variant="none"
           className="dashboard-section-link py-0"
           onClick={onViewAll}
           aria-label={t.viewAll}
         >
           {t.seeAll}
           <ChevronRight size={16} aria-hidden="true" />
-        </button>
+        </Button>
       </div>
 
       {/* Search bar */}
@@ -151,13 +152,13 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
           aria-label={t.searchTxn}
         />
         {query && (
-          <button
+          <Button variant="none"
             className="dashboard-txn-search-clear"
             onClick={handleClear}
             aria-label={t.clearSearch}
           >
             <X size={14} />
-          </button>
+          </Button>
         )}
       </div>
 

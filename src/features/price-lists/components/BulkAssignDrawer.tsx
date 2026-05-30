@@ -103,13 +103,13 @@ export function BulkAssignDrawer({ open, onClose, priceListId, listName }: BulkA
 
         {!isLoading && !isError && filtered.length > 0 && (
           <div className="bad__helpers">
-            <button type="button" className="bad__helper-btn" onClick={handleSelectAll}>
+            <Button variant="none" type="button" className="bad__helper-btn" onClick={handleSelectAll}>
               {t.plBulkAssignSelectAll} ({filtered.length})
-            </button>
+            </Button>
             {selectedCount > 0 && (
-              <button type="button" className="bad__helper-btn bad__helper-btn--muted" onClick={() => setSelected(new Set())}>
+              <Button variant="none" type="button" className="bad__helper-btn bad__helper-btn--muted" onClick={() => setSelected(new Set())}>
                 {t.plBulkAssignClear}
-              </button>
+              </Button>
             )}
           </div>
         )}
@@ -124,7 +124,7 @@ export function BulkAssignDrawer({ open, onClose, priceListId, listName }: BulkA
           <div className="bad__state" role="alert">
             <Users size={32} aria-hidden="true" />
             <p>{errorMsg}</p>
-            <button type="button" className="btn btn-outline btn-sm" onClick={() => query.refetch()}>{t.retry}</button>
+            <Button variant="none" type="button" className="btn btn-outline btn-sm" onClick={() => query.refetch()}>{t.retry}</Button>
           </div>
         )}
 

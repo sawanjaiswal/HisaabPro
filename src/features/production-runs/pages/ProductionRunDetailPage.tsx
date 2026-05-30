@@ -8,6 +8,7 @@ import { ProductionRunCancelButton } from '../components/ProductionRunCancelButt
 import { PR_STATUS_BADGE_CLASS, PR_STATUS_LABELS } from '../production-run.constants'
 import { formatRunDate, formatCostPaise } from '../production-run.utils'
 import '../production-run.css'
+import { Button } from '@/components/ui/Button'
 
 function PRDetailSkeleton() {
   return (
@@ -29,9 +30,9 @@ export default function ProductionRunDetailPage() {
     <div className="bom-page">
       {/* Back */}
       <div className="bom-page__header">
-        <button type="button" className="btn btn-ghost btn-icon" onClick={() => navigate('/production-runs')} aria-label="Back to production runs">
+        <Button variant="none" type="button" className="btn btn-ghost btn-icon" onClick={() => navigate('/production-runs')} aria-label="Back to production runs">
           <ArrowLeft size={20} aria-hidden="true" />
-        </button>
+        </Button>
         <h1 className="bom-page__title">Production Run</h1>
       </div>
 

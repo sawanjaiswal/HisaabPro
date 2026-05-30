@@ -10,6 +10,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { useBatchPicker } from '../hooks/useBatchPicker'
 import type { BatchPickerItem } from '../types/batch.types'
+import { Button } from '@/components/ui/Button'
 
 interface BatchPickerProps {
   productId: string
@@ -68,7 +69,7 @@ function BatchRow({
   const { t } = useLanguage()
 
   return (
-    <button
+    <Button variant="none"
       type="button"
       disabled={isBlocked}
       onClick={() => onSelect(batch.id)}
@@ -119,7 +120,7 @@ function BatchRow({
       {selected && (
         <CheckCircle2 size={18} aria-hidden="true" style={{ color: 'var(--color-primary)', flexShrink: 0 }} />
       )}
-    </button>
+    </Button>
   )
 }
 
@@ -172,14 +173,14 @@ export function BatchPicker({
           <h2 style={{ fontSize: 'var(--fs-base)', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
             {t.pickBatch}
           </h2>
-          <button
+          <Button variant="none"
             type="button"
             onClick={onClose}
             aria-label={t.batchPickerClose}
             style={{ minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}
           >
             <X size={20} aria-hidden="true" />
-          </button>
+          </Button>
         </div>
 
         {/* Loading */}
@@ -196,7 +197,7 @@ export function BatchPicker({
           <div role="alert" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', color: 'var(--color-error-500)', fontSize: 'var(--fs-sm)' }}>
             <AlertTriangle size={16} aria-hidden="true" />
             <span>{error}</span>
-            <button type="button" onClick={refetch} className="btn btn-sm" style={{ marginLeft: 'auto' }}>{t.batchPickerRetry}</button>
+            <Button variant="none" type="button" onClick={refetch} className="btn btn-sm" style={{ marginLeft: 'auto' }}>{t.batchPickerRetry}</Button>
           </div>
         )}
 

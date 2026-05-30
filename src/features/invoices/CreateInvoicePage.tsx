@@ -152,7 +152,7 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
 
         <nav className="pill-tabs" role="tablist" aria-label={t.invoiceFormSections}>
           {FORM_SECTIONS.map((section) => (
-            <button
+            <Button variant="none"
               key={section.id}
               type="button"
               role="tab"
@@ -162,7 +162,7 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
               aria-controls={`section-panel-${section.id}`}
             >
               {section.label}
-            </button>
+            </Button>
           ))}
         </nav>
 

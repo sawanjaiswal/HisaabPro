@@ -42,7 +42,7 @@ export default function GodownsPage() {
       <PageContainer variant="list" className="space-y-6">
         <nav className="pill-tabs" role="tablist" aria-label={t.godownSections}>
           {GODOWN_TABS.map((tab) => (
-            <button
+            <Button variant="none"
               key={tab.id}
               type="button"
               role="tab"
@@ -52,7 +52,7 @@ export default function GodownsPage() {
               aria-controls={`godown-panel-${tab.id}`}
             >
               {tab.label}
-            </button>
+            </Button>
           ))}
         </nav>
 
@@ -108,9 +108,9 @@ export default function GodownsPage() {
       </PageContainer>
 
       {activeTab === 'godowns' && (
-        <button className="fab" onClick={goToCreate} aria-label={t.addNewGodown}>
+        <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.addNewGodown}>
           <Plus size={24} aria-hidden="true" />
-        </button>
+        </Button>
       )}
     </AppShell>
   )

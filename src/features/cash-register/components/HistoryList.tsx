@@ -5,6 +5,7 @@ import { Inbox } from 'lucide-react'
 import { HistoryEntryRow } from './HistoryEntryRow'
 import { formatPaise } from '../cashRegister.utils'
 import type { DayBucket } from '../cashRegister.types'
+import { Button } from '@/components/ui/Button'
 
 interface Props {
   buckets: DayBucket[]
@@ -81,9 +82,9 @@ export function HistoryList({
       <div className="cr-history-list cr-history-list--error">
         <div className="cr-history-list__error-card">
           <p>Could not load history.</p>
-          <button type="button" className="cr-history-list__retry" onClick={onRetry}>
+          <Button variant="none" type="button" className="cr-history-list__retry" onClick={onRetry}>
             Tap to retry
-          </button>
+          </Button>
         </div>
       </div>
     )

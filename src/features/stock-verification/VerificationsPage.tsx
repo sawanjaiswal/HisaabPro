@@ -13,6 +13,7 @@ import { VerificationCard } from './components/VerificationCard'
 import type { VerificationStatus } from './stock-verification.types'
 import './stock-verification.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 const FILTER_TABS: Array<{ value: VerificationStatus | null; label: string }> = [
   { value: null, label: 'All' },
@@ -36,17 +37,17 @@ export default function VerificationsPage() {
       <Header
         title={t.stockVerification}
         actions={
-          <button type="button" className="sv-page__create-btn" onClick={handleCreate} disabled={isCreating} aria-label={t.newStockCount}>
+          <Button variant="none" type="button" className="sv-page__create-btn" onClick={handleCreate} disabled={isCreating} aria-label={t.newStockCount}>
             <Plus size={18} aria-hidden="true" />
             {t.newCount}
-          </button>
+          </Button>
         }
       />
 
       <PageContainer variant="list">
         <nav className="sv-tabs stagger-filters" aria-label={t.status}>
           {FILTER_TABS.map((tab) => (
-            <button
+            <Button variant="none"
               key={tab.label}
               type="button"
               className={`sv-tabs__tab ${statusFilter === tab.value ? 'sv-tabs__tab--active' : ''}`}
@@ -54,7 +55,7 @@ export default function VerificationsPage() {
               aria-pressed={statusFilter === tab.value}
             >
               {tab.label}
-            </button>
+            </Button>
           ))}
         </nav>
 
@@ -74,9 +75,9 @@ export default function VerificationsPage() {
             title={t.noVerificationsYet}
             description={t.startStockCountDesc}
             action={
-              <button type="button" className="sv-page__create-btn" onClick={handleCreate} disabled={isCreating}>
+              <Button variant="none" type="button" className="sv-page__create-btn" onClick={handleCreate} disabled={isCreating}>
                 <Plus size={16} aria-hidden="true" /> {t.startFirstCount}
-              </button>
+              </Button>
             }
           />
         )}

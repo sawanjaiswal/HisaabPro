@@ -13,6 +13,7 @@ import { CartPanel } from '../components/cart/CartPanel'
 import { PaymentSheet } from '../components/payment/PaymentSheet'
 import { CustomerSelector } from '../components/customer/CustomerSelector'
 import { ReceiptPreview } from '../components/receipt/ReceiptPreview'
+import { Button } from '@/components/ui/Button'
 
 const MOCK_BUSINESS = {
   name:    'My Business',
@@ -36,26 +37,26 @@ export default function PosMainPage() {
       <AppShell>
         <div className="pos-page">
           <header className="pos-header">
-            <button
+            <Button variant="none"
               type="button"
               className="pos-back-btn"
               onClick={page.newSale}
               aria-label={t.posNewSale ?? 'New sale'}
             >
               <ArrowLeft size={20} aria-hidden="true" />
-            </button>
+            </Button>
             <h1 className="pos-header__title">{t.posReceiptTitle ?? 'Receipt'}</h1>
           </header>
           <div className="pos-receipt-page">
             <ReceiptPreview sale={page.lastSale} businessInfo={MOCK_BUSINESS} />
             <div className="pos-receipt-page__actions">
-              <button
+              <Button variant="none"
                 type="button"
                 className="pos-primary-btn"
                 onClick={page.newSale}
               >
                 {t.posNewSale ?? 'New sale'}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -68,14 +69,14 @@ export default function PosMainPage() {
       <div className="pos-page">
         {/* Header */}
         <header className="pos-header">
-          <button
+          <Button variant="none"
             type="button"
             className="pos-back-btn"
             onClick={() => navigate(ROUTES.DASHBOARD)}
             aria-label={t.back ?? 'Back'}
           >
             <ArrowLeft size={20} aria-hidden="true" />
-          </button>
+          </Button>
           <h1 className="pos-header__title">{t.posBillingMode ?? 'POS Billing'}</h1>
         </header>
 
@@ -102,7 +103,7 @@ export default function PosMainPage() {
 
         {/* Cart FAB */}
         {page.cartCount > 0 && (
-          <button
+          <Button variant="none"
             type="button"
             className="pos-cart-fab"
             onClick={() => setCartOpen(true)}
@@ -112,7 +113,7 @@ export default function PosMainPage() {
             <span className="pos-cart-fab__count" aria-hidden="true">
               {page.cartCount}
             </span>
-          </button>
+          </Button>
         )}
 
         {/* Cart panel overlay */}

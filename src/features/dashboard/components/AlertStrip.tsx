@@ -9,6 +9,7 @@ import React from 'react'
 import { AlertTriangle, Clock, ChevronRight } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { SUBSCRIPTION_PRICE_LABEL } from '../dashboard.constants'
+import { Button } from '@/components/ui/Button'
 
 interface AlertStripProps {
   lowStockCount: number
@@ -31,7 +32,7 @@ export const AlertStrip: React.FC<AlertStripProps> = ({
   return (
     <div className="dashboard-alerts" role="complementary" aria-label={t.promotionsAlerts}>
       {/* Upgrade banner — always visible */}
-      <button
+      <Button variant="none"
         className="dashboard-alert-banner"
         onClick={onUpgradeClick}
         aria-label={t.upgradePlan}
@@ -46,13 +47,13 @@ export const AlertStrip: React.FC<AlertStripProps> = ({
         <div className="dashboard-alert-chevron">
           <ChevronRight size={20} aria-hidden="true" />
         </div>
-      </button>
+      </Button>
 
       {/* Alert items if any */}
       {hasAlerts && (
         <>
           {overdueInvoiceCount > 0 && (
-            <button
+            <Button variant="none"
               className="dashboard-alert-item dashboard-alert-item--danger"
               onClick={onOverdueClick}
               aria-label={`${overdueInvoiceCount} ${overdueInvoiceCount === 1 ? t.invoice : t.invoices} ${t.overdue}`}
@@ -62,10 +63,10 @@ export const AlertStrip: React.FC<AlertStripProps> = ({
                 {overdueInvoiceCount} {overdueInvoiceCount === 1 ? t.invoice : t.invoices} {t.overdue}
               </span>
               <ChevronRight size={14} aria-hidden="true" />
-            </button>
+            </Button>
           )}
           {lowStockCount > 0 && (
-            <button
+            <Button variant="none"
               className="dashboard-alert-item dashboard-alert-item--warning"
               onClick={onLowStockClick}
               aria-label={`${lowStockCount} ${lowStockCount === 1 ? t.item : t.items} ${t.lowOnStock}`}
@@ -75,7 +76,7 @@ export const AlertStrip: React.FC<AlertStripProps> = ({
                 {lowStockCount} {lowStockCount === 1 ? t.item : t.items} {t.lowOnStock}
               </span>
               <ChevronRight size={14} aria-hidden="true" />
-            </button>
+            </Button>
           )}
         </>
       )}

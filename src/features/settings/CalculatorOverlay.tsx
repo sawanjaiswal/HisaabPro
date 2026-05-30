@@ -7,6 +7,7 @@ import { CalculatorSheet } from './components/CalculatorSheet'
 import './calculator.css'
 
 import { CALCULATOR_TOGGLE_EVENT } from '@/config/events.config'
+import { Button } from '@/components/ui/Button'
 
 const VALID_OPERATORS = new Set(['+', '-', '*', '/'])
 
@@ -66,7 +67,7 @@ export function CalculatorOverlay({
   return (
     <>
       {/* Floating action button — always visible */}
-      <button
+      <Button variant="none"
         type="button"
         className={`calculator-fab ${fabPositionClass}`}
         onClick={toggle}
@@ -75,7 +76,7 @@ export function CalculatorOverlay({
         aria-haspopup="dialog"
       >
         <Calculator size={20} aria-hidden="true" />
-      </button>
+      </Button>
 
       {/* Full-height calculator — only when open */}
       {isOpen && (

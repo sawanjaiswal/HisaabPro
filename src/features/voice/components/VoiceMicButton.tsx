@@ -25,7 +25,7 @@ export function VoiceMicButton({
   return (
     <div className="voice-capture">
       {isSupported ? (
-        <button
+        <Button variant="none"
           type="button"
           className={`voice-mic${listening ? ' voice-mic--active' : ''}`}
           aria-label={listening ? t.voiceStop : t.voiceStart}
@@ -33,7 +33,7 @@ export function VoiceMicButton({
           onClick={listening ? onStop : onStart}
         >
           {listening ? <Square size={28} aria-hidden="true" /> : <Mic size={28} aria-hidden="true" />}
-        </button>
+        </Button>
       ) : (
         <div className="voice-mic voice-mic--disabled" aria-hidden="true"><MicOff size={28} /></div>
       )}

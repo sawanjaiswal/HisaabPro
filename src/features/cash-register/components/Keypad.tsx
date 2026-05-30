@@ -2,6 +2,7 @@
 
 import { KEYPAD_ROWS } from '../cashRegister.constants'
 import type { ExpressionAction } from '../cashRegister.types'
+import { Button } from '@/components/ui/Button'
 
 interface Props {
   onKey: (action: ExpressionAction) => void
@@ -52,7 +53,7 @@ export function Keypad({ onKey, disabled }: Props) {
       {KEYPAD_ROWS.map((row, ri) => (
         <div key={ri} className="cr-keypad__row">
           {row.map((key) => (
-            <button
+            <Button variant="none"
               key={key}
               type="button"
               className={keyClass(key)}
@@ -61,13 +62,13 @@ export function Keypad({ onKey, disabled }: Props) {
               aria-label={keyAriaLabel(key)}
             >
               {key}
-            </button>
+            </Button>
           ))}
         </div>
       ))}
       {/* Backspace row (extra row below main grid) */}
       <div className="cr-keypad__row cr-keypad__row--extra">
-        <button
+        <Button variant="none"
           type="button"
           className="cr-keypad__key cr-keypad__key--back cr-keypad__key--wide"
           onClick={() => onKey({ type: 'BACKSPACE' })}
@@ -75,7 +76,7 @@ export function Keypad({ onKey, disabled }: Props) {
           aria-label="Backspace"
         >
           ⌫
-        </button>
+        </Button>
       </div>
     </div>
   )

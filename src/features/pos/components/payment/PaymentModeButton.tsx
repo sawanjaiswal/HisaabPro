@@ -6,6 +6,7 @@ import {
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PaymentMode } from '../../types/pos.types'
 import type { TranslationKey } from '@/lib/translations'
+import { Button } from '@/components/ui/Button'
 
 const ICONS: Record<string, React.ElementType> = {
   Banknote, Smartphone, CreditCard, Building2, FileText, Clock,
@@ -31,7 +32,7 @@ export function PaymentModeButton({
   const label = t[labelKey as TranslationKey] as string ?? mode
 
   return (
-    <button
+    <Button variant="none"
       type="button"
       role="radio"
       aria-checked={isSelected}
@@ -41,6 +42,6 @@ export function PaymentModeButton({
     >
       <Icon size={18} aria-hidden="true" />
       <span className="pos-mode-btn__label">{label}</span>
-    </button>
+    </Button>
   )
 }

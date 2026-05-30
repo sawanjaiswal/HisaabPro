@@ -8,6 +8,7 @@ import { ocrReceipt } from '../expense.service'
 import type { OcrResult } from '../expense.types'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 const MAX_BYTES = 5 * 1024 * 1024 // 5 MB (decoded)
 
@@ -114,7 +115,7 @@ export function OcrReceiptUpload({ onPrefill, disabled }: OcrReceiptUploadProps)
           <span>{t.expensesOcrLoading ?? 'Reading receipt…'}</span>
         </div>
       ) : (
-        <button
+        <Button variant="none"
           type="button"
           className="ocr-upload__btn"
           onClick={handleClick}
@@ -123,7 +124,7 @@ export function OcrReceiptUpload({ onPrefill, disabled }: OcrReceiptUploadProps)
         >
           <Camera size={16} aria-hidden="true" />
           <span>{t.expensesOcrScanAction ?? 'Scan receipt'}</span>
-        </button>
+        </Button>
       )}
 
       {confidence !== null && confidence > 0 && (
@@ -131,14 +132,14 @@ export function OcrReceiptUpload({ onPrefill, disabled }: OcrReceiptUploadProps)
           <span className="ocr-badge ocr-badge--amber">
             OCR filled — {Math.round(confidence * 100)}% confidence
           </span>
-          <button
+          <Button variant="none"
             type="button"
             className="ocr-badge__clear"
             onClick={() => setConfidence(null)}
             aria-label="Dismiss OCR confidence notice"
           >
             <X size={12} />
-          </button>
+          </Button>
         </div>
       )}
     </div>

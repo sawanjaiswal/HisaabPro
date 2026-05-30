@@ -148,14 +148,14 @@ export default function InvoicesPage() {
               onStatusChange={handleStatusChange}
             />
             <div className="invoice-filter-pills" role="group" aria-label="Additional filters">
-              <button
+              <Button variant="none"
                 type="button"
                 className={`invoice-filter-pill${autoGenOnly ? ' invoice-filter-pill--active' : ''}`}
                 onClick={() => setAutoGenOnly((v) => !v)}
                 aria-pressed={autoGenOnly}
               >
                 {t.recurringFilterAutoGen ?? 'Auto-Generated'}
-              </button>
+              </Button>
             </div>
           </>
         )}
@@ -221,9 +221,9 @@ export default function InvoicesPage() {
       </PageContainer>
 
       {!bulk.isActive && (
-        <button className="fab" onClick={goToCreate} aria-label={t.createNewInvoiceAriaLabel}>
+        <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.createNewInvoiceAriaLabel}>
           <Plus size={24} aria-hidden="true" />
-        </button>
+        </Button>
       )}
 
       <BulkActionBar

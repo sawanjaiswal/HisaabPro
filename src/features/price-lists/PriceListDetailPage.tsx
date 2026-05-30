@@ -126,7 +126,7 @@ export default function PriceListDetailPage() {
               </div>
 
               {/* Bulk assign CTA */}
-              <button
+              <Button variant="none"
                 type="button"
                 className="btn btn-outline btn-md"
                 onClick={() => setBulkAssignOpen(true)}
@@ -134,7 +134,7 @@ export default function PriceListDetailPage() {
               >
                 <Share2 size={16} aria-hidden="true" />
                 {t.plBulkAssign}
-              </button>
+              </Button>
 
               {/* Entries */}
               <div>
@@ -167,13 +167,13 @@ export default function PriceListDetailPage() {
 
               {/* Danger zone */}
               <div style={{ paddingTop: 'var(--space-4)', borderTop: '1px solid var(--color-border)' }}>
-                <button
+                <Button variant="none"
                   type="button"
                   className="btn btn-outline btn-md btn-danger"
                   onClick={() => setDeleteListOpen(true)}
                 >
                   {t.plDeleteList}
-                </button>
+                </Button>
               </div>
             </>
           )}

@@ -16,6 +16,7 @@ import { QuickProductGrid } from './components/QuickProductGrid'
 import './pos.css'
 
 import type { PaymentMode } from './pos.types'
+import { Button } from '@/components/ui/Button'
 
 export default function PosPage() {
   const { t } = useLanguage()
@@ -43,9 +44,9 @@ export default function PosPage() {
   return (
     <div className="pos-page space-y-6">
       <header className="pos-header">
-        <button type="button" className="pos-back-btn" onClick={() => navigate(ROUTES.DASHBOARD)} aria-label={t.back}>
+        <Button variant="none" type="button" className="pos-back-btn" onClick={() => navigate(ROUTES.DASHBOARD)} aria-label={t.back}>
           <ArrowLeft size={20} aria-hidden="true" />
-        </button>
+        </Button>
         <h1 className="pos-header-title">{t.posQuickSale}</h1>
       </header>
 

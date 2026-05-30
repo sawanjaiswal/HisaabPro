@@ -50,14 +50,14 @@ export function LibraryItemList({ items, total, hasMore, onSelect, onLoadMore }:
                 {item.unit && <span>{item.unit}</span>}
               </span>
             </div>
-            <button
+            <Button variant="none"
               type="button"
               className="library-item-add"
               onClick={() => onSelect(item)}
               aria-label={`Add ${item.name} to your products`}
             >
               <Plus size={18} aria-hidden="true" />
-            </button>
+            </Button>
           </div>
         ))}
       </div>

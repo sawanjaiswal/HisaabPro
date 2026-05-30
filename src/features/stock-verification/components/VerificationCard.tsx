@@ -4,6 +4,7 @@ import { STATUS_LABELS } from '../stock-verification.constants'
 import { getVerificationProgress, getStatusBadgeStyle } from '../stock-verification.utils'
 import { ProgressBar } from './ProgressBar'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface VerificationCardProps {
   verification: StockVerification
@@ -21,7 +22,7 @@ export function VerificationCard({ verification, onClick }: VerificationCardProp
   })
 
   return (
-    <button type="button" className="sv-card" onClick={onClick} aria-label={`${t.verificationFrom} ${dateStr}`}>
+    <Button variant="none" type="button" className="sv-card" onClick={onClick} aria-label={`${t.verificationFrom} ${dateStr}`}>
       <div className="sv-card__header">
         <div className="sv-card__icon">
           <ClipboardCheck size={18} aria-hidden="true" />
@@ -39,6 +40,6 @@ export function VerificationCard({ verification, onClick }: VerificationCardProp
         <span className="sv-card__dot" aria-hidden="true" />
         <span>{verification.discrepancies} {t.discrepancies}</span>
       </div>
-    </button>
+    </Button>
   )
 }

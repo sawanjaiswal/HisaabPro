@@ -11,6 +11,7 @@ import { upsertBudget, updateBudget } from '../services/budget.service'
 import type { ExpenseCategory, BudgetUsageItem } from '../expense.types'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface AddBudgetDrawerProps {
   open: boolean
@@ -116,14 +117,14 @@ export function AddBudgetDrawer({
           />
         </div>
 
-        <button
+        <Button variant="none"
           type="submit"
           className="expense-drawer__submit-btn"
           disabled={saving}
           aria-busy={saving}
         >
           {saving ? 'Saving…' : (t.expensesBudgetSetAction ?? 'Set Budget')}
-        </button>
+        </Button>
       </form>
     </Drawer>
   )

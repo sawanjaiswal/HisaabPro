@@ -32,6 +32,7 @@ import { getBusinessInitials, getBusinessColor } from '../business.utils'
 import { deriveSuspendState } from '../suspend.service'
 import type { SuspendState } from '../suspend.service'
 import './tenant-chip.css'
+import { Button } from '@/components/ui/Button'
 
 interface TenantChipProps {
   business: BusinessSummary | null
@@ -119,7 +120,7 @@ export function TenantChip({
 
   if (onClick) {
     return (
-      <button
+      <Button variant="none"
         type="button"
         className={className}
         onClick={onClick}
@@ -128,7 +129,7 @@ export function TenantChip({
         data-state={state}
       >
         {content}
-      </button>
+      </Button>
     )
   }
 

@@ -36,7 +36,7 @@ function PolicyOption({
   onSelect: (v: ExpiredBatchPolicy) => void
 }) {
   return (
-    <button
+    <Button variant="none"
       type="button"
       role="radio"
       aria-checked={selected}
@@ -67,7 +67,7 @@ function PolicyOption({
           {description}
         </span>
       </span>
-    </button>
+    </Button>
   )
 }
 

@@ -27,14 +27,14 @@ export default function ProductionRunFormPage() {
     <div className="bom-page">
       {/* Header */}
       <div className="bom-page__header">
-        <button
+        <Button variant="none"
           type="button"
           className="btn btn-ghost btn-icon"
           onClick={handleBack}
           aria-label={step === 0 ? 'Back to production runs' : 'Previous step'}
         >
           <ArrowLeft size={20} aria-hidden="true" />
-        </button>
+        </Button>
         <div style={{ flex: 1 }}>
           <h1 className="bom-page__title">{WIZARD_STEPS[step]}</h1>
           <div className="pr-wizard-progress" role="progressbar" aria-valuenow={step + 1} aria-valuemin={1} aria-valuemax={WIZARD_STEPS.length}>

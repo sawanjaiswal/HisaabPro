@@ -11,6 +11,7 @@ import { RECEIPT_WIDTHS } from '../../utils/pos.constants'
 import type { PosSaleDTO, ReceiptWidth } from '../../types/pos.types'
 import type { ReactElement } from 'react'
 import type { DocumentProps } from '@react-pdf/renderer'
+import { Button } from '@/components/ui/Button'
 
 interface BusinessInfo {
   name:        string
@@ -57,7 +58,7 @@ export function ReceiptPreview({
         aria-label={t.posReceiptSize ?? 'Receipt size'}
       >
         {RECEIPT_WIDTHS.map((rw) => (
-          <button
+          <Button variant="none"
             key={rw.value}
             type="button"
             role="radio"
@@ -66,7 +67,7 @@ export function ReceiptPreview({
             onClick={() => setWidth(rw.value)}
           >
             {rw.label}
-          </button>
+          </Button>
         ))}
       </div>
 

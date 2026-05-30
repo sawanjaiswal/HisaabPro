@@ -21,6 +21,7 @@ import type { SlugError } from './storefront.types'
 import './storefront-settings.css'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 const STORE_BASE_URL = 'hisaabpro.in/p/store/'
 
@@ -62,9 +63,9 @@ function SettingsEmpty({ onStart }: { onStart: () => void }) {
       title="Set up your online store"
       description="Pick a unique URL slug to get started — share your store with customers."
       action={
-        <button type="button" className="sf-save-btn" style={{ maxWidth: 240 }} onClick={onStart}>
+        <Button variant="none" type="button" className="sf-save-btn" style={{ maxWidth: 240 }} onClick={onStart}>
           Get Started
-        </button>
+        </Button>
       }
     />
   )
@@ -165,9 +166,9 @@ export default function StorefrontSettingsPage() {
                   }
                 </span>
                 {slug && !slugError && !saveErr && (
-                  <button type="button" className="sf-copy-btn" onClick={copyUrl} aria-label="Copy store URL">
+                  <Button variant="none" type="button" className="sf-copy-btn" onClick={copyUrl} aria-label="Copy store URL">
                     <Copy size={12} aria-hidden="true" /> Copy
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>
@@ -222,14 +223,14 @@ export default function StorefrontSettingsPage() {
               </p>
             </div>
 
-            <button
+            <Button variant="none"
               type="button" className="sf-save-btn"
               onClick={() => { void handleSave() }}
               disabled={saving || !!slugError || slug.length < 3}
               aria-busy={saving}
             >
               {saving ? 'Saving...' : 'Save Settings'}
-            </button>
+            </Button>
           </section>
 
           <StorefrontProductsSection />

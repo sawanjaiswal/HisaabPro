@@ -3,6 +3,7 @@ import { ChevronRight, Shield } from 'lucide-react'
 import { PERMISSION_MODULES } from './permission.constants'
 import { PermissionMatrix } from './components/PermissionMatrix'
 import type { Role, StaffMember } from './settings.types'
+import { Button } from '@/components/ui/Button'
 
 const noop = () => undefined
 
@@ -32,7 +33,7 @@ interface RoleRowProps {
 export function RoleRow({ role, isOpen, onToggle }: RoleRowProps) {
   return (
     <div className="sp-item">
-      <button
+      <Button variant="none"
         type="button"
         className="sp-item-header"
         onClick={onToggle}
@@ -55,7 +56,7 @@ export function RoleRow({ role, isOpen, onToggle }: RoleRowProps) {
           className={`sp-item-chevron${isOpen ? ' sp-item-chevron--open' : ''}`}
           aria-hidden="true"
         />
-      </button>
+      </Button>
       {isOpen && (
         <div className="sp-item-body" id={`sp-role-${role.id}`}>
           <PermissionMatrix
@@ -80,7 +81,7 @@ interface PersonRowProps {
 export function PersonRow({ staff, rolePermissions, isOpen, onToggle }: PersonRowProps) {
   return (
     <div className="sp-item">
-      <button
+      <Button variant="none"
         type="button"
         className="sp-item-header"
         onClick={onToggle}
@@ -99,7 +100,7 @@ export function PersonRow({ staff, rolePermissions, isOpen, onToggle }: PersonRo
           className={`sp-item-chevron${isOpen ? ' sp-item-chevron--open' : ''}`}
           aria-hidden="true"
         />
-      </button>
+      </Button>
       {isOpen && (
         <div className="sp-item-body" id={`sp-person-${staff.id}`}>
           <PermissionMatrix

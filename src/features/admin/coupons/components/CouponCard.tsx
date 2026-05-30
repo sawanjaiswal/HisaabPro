@@ -10,6 +10,7 @@ import { STATUS_LABELS, STATUS_COLORS } from '../coupon.constants'
 import { formatDiscount, formatUsage, formatCouponDate } from '../coupon.utils'
 import '../coupon.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface CouponCardProps {
   coupon: Coupon
@@ -68,16 +69,16 @@ export function CouponCard({ coupon, onView, onDeactivate }: CouponCardProps) {
       </div>
 
       <div className="coupon-card-actions">
-        <button
+        <Button variant="none"
           className="coupon-card-btn"
           onClick={() => onView(coupon.id)}
           aria-label={`View ${coupon.code} details`}
         >
           <Eye size={16} aria-hidden="true" />
           View
-        </button>
+        </Button>
         {coupon.status !== 'DEACTIVATED' && (
-          <button
+          <Button variant="none"
             className="coupon-card-btn coupon-card-btn--danger"
             onClick={handleDeactivateClick}
             onBlur={() => setConfirming(false)}
@@ -86,7 +87,7 @@ export function CouponCard({ coupon, onView, onDeactivate }: CouponCardProps) {
           >
             <Trash2 size={16} aria-hidden="true" />
             {deactivating ? t.deactivating : confirming ? t.confirmAction : t.deactivate}
-          </button>
+          </Button>
         )}
       </div>
     </div>

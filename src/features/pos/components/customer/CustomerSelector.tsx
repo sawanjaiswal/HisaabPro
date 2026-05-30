@@ -8,6 +8,7 @@ import { api } from '@/lib/api'
 import { SEARCH_DEBOUNCE_MS } from '../../utils/pos.constants'
 import { LoyaltyBalanceChip } from '@/features/loyalty/components/LoyaltyBalanceChip'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface PartySuggestion {
   id:   string
@@ -80,22 +81,22 @@ export function CustomerSelector({
   return (
     <div className="pos-customer">
       <div className="pos-customer__toggle">
-        <button
+        <Button variant="none"
           type="button"
           className={`pos-customer__tab${!isWalkIn ? ' pos-customer__tab--active' : ''}`}
           onClick={() => !isWalkIn || toggleMode()}
         >
           <Search size={13} aria-hidden="true" />
           {t.posCustomerSearch ?? 'Search customer'}
-        </button>
-        <button
+        </Button>
+        <Button variant="none"
           type="button"
           className={`pos-customer__tab${isWalkIn ? ' pos-customer__tab--active' : ''}`}
           onClick={() => isWalkIn || toggleMode()}
         >
           <UserCheck size={13} aria-hidden="true" />
           {t.posWalkIn ?? 'Walk-in'}
-        </button>
+        </Button>
       </div>
 
       {!isWalkIn && (
@@ -104,9 +105,9 @@ export function CustomerSelector({
             <div className="pos-customer__selected">
               <span className="pos-customer__selected-name">{query || (t.posCustomerSelected ?? 'Customer selected')}</span>
               <LoyaltyBalanceChip partyId={partyId} size="sm" />
-              <button type="button" onClick={onClearParty} aria-label={t.posRemoveCustomer ?? 'Remove customer'}>
+              <Button variant="none" type="button" onClick={onClearParty} aria-label={t.posRemoveCustomer ?? 'Remove customer'}>
                 <X size={14} aria-hidden="true" />
-              </button>
+              </Button>
             </div>
           ) : (
             <>

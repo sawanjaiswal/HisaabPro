@@ -7,6 +7,7 @@ import {
   CHEQUE_TYPE_LABELS,
 } from '../cheque.constants'
 import type { Cheque, ChequeStatus } from '../cheque.types'
+import { Button } from '@/components/ui/Button'
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -48,22 +49,22 @@ export function ChequeCard({ cheque, onStatusUpdate }: ChequeCardProps) {
       </div>
       {cheque.status === 'PENDING' && (
         <div className="cheque-card__actions">
-          <button
+          <Button variant="none"
             type="button"
             className="cheque-card__action-btn"
             onClick={() => onStatusUpdate(cheque.id, 'CLEARED')}
             aria-label={t.markChequeCleared}
           >
             {t.markCleared}
-          </button>
-          <button
+          </Button>
+          <Button variant="none"
             type="button"
             className="cheque-card__action-btn cheque-card__action-btn--danger"
             onClick={() => onStatusUpdate(cheque.id, 'BOUNCED')}
             aria-label={t.markChequeBounced}
           >
             {t.markBounced}
-          </button>
+          </Button>
         </div>
       )}
     </div>

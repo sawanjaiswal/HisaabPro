@@ -2,6 +2,7 @@ import { SEO } from '../../components/layout/SEO'
 import { useVerifyOtp } from './useVerifyOtp'
 import './LoginPage.css'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 export default function VerifyOtpPage() {
   const {
@@ -63,25 +64,25 @@ export default function VerifyOtpPage() {
                 Resend in {resendCooldown}s
               </p>
             ) : (
-              <button
+              <Button variant="none"
                 className="auth-otp__back"
                 onClick={handleResend}
                 disabled={resending}
                 type="button"
               >
                 {resending ? 'Sending…' : 'Resend OTP'}
-              </button>
+              </Button>
             )}
           </div>
 
-          <button
+          <Button variant="none"
             className="login-page__submit"
             disabled={!isComplete || loading}
             onClick={handleVerify}
             type="button"
           >
             {loading ? 'Verifying…' : 'Verify & Create Account'}
-          </button>
+          </Button>
         </div>
       </div>
 

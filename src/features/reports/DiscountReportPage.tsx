@@ -17,6 +17,7 @@ import './report-finance.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate } from '../../lib/format'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 function getMonthRange(): { from: string; to: string } {
   const now = new Date()
@@ -81,7 +82,7 @@ export default function DiscountReportPage() {
           <Input type="date" className="finance-date-bar__input" value={dateRange.from} onChange={(e) => setDateRange((r) => ({ ...r, from: e.target.value }))} aria-label={t.fromDate} />
           <span className="finance-date-bar__label">{t.to}</span>
           <Input type="date" className="finance-date-bar__input" value={dateRange.to} onChange={(e) => setDateRange((r) => ({ ...r, to: e.target.value }))} aria-label={t.toDate} />
-          <button type="button" className="finance-date-bar__refresh-btn" onClick={refresh} aria-label={t.refreshReport}><RefreshCw size={14} aria-hidden="true" /></button>
+          <Button variant="none" type="button" className="finance-date-bar__refresh-btn" onClick={refresh} aria-label={t.refreshReport}><RefreshCw size={14} aria-hidden="true" /></Button>
         </div>
 
         {rows.length === 0 && (

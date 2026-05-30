@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { formatPaise } from '../accounting.utils'
 import { ACCOUNT_TYPE_COLORS, ACCOUNT_TYPE_BG } from '../accounting.constants'
 import type { LedgerAccount, AccountType } from '../accounting.types'
+import { Button } from '@/components/ui/Button'
 
 interface AccountGroupSectionProps {
   type: AccountType
@@ -28,7 +29,7 @@ export function AccountGroupSection({
 
   return (
     <section className="acc-group" aria-label={label}>
-      <button
+      <Button variant="none"
         type="button"
         className="acc-group-header"
         onClick={() => setOpen((o) => !o)}
@@ -48,7 +49,7 @@ export function AccountGroupSection({
             : <ChevronRight size={16} aria-hidden="true" />
           }
         </div>
-      </button>
+      </Button>
 
       {open && (
         <ul className="acc-list" role="list">

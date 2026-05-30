@@ -1,5 +1,6 @@
 import { MessageCircle, CheckCircle } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 /** WhatsApp brand green — uses CSS variable --color-whatsapp from globals.css */
 const WHATSAPP_GREEN = 'var(--color-whatsapp)'
@@ -44,7 +45,7 @@ export function InviteSuccessCard({ code, staffName, onShareWhatsApp, onBackToSt
         {code}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-        <button
+        <Button variant="none"
           type="button"
           className="role-save-button"
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-2)', background: WHATSAPP_GREEN, borderColor: WHATSAPP_GREEN }}
@@ -52,15 +53,15 @@ export function InviteSuccessCard({ code, staffName, onShareWhatsApp, onBackToSt
         >
           <MessageCircle size={18} aria-hidden="true" />
           {t.shareWhatsApp}
-        </button>
-        <button
+        </Button>
+        <Button variant="none"
           type="button"
           className="role-save-button"
           style={{ background: 'var(--color-gray-100)', color: 'var(--color-gray-700)' }}
           onClick={onBackToStaff}
         >
           {t.backToStaff}
-        </button>
+        </Button>
       </div>
     </div>
   )

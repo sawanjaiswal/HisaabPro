@@ -16,6 +16,7 @@
 
 import { useLanguage } from '@/hooks/useLanguage'
 import { useTagSummary } from '../hooks/useTagSummary'
+import { Button } from '@/components/ui/Button'
 
 interface TagFilterBarProps {
   /** Currently active tag (empty string = "All"). */
@@ -43,14 +44,14 @@ export function TagFilterBar({ activeTag, onTagChange }: TagFilterBarProps) {
   if (isError) {
     return (
       <div className="tag-filter-bar tag-filter-bar--error" role="alert">
-        <button
+        <Button variant="none"
           type="button"
           className="tag-chip tag-chip--retry"
           onClick={refetch}
           aria-label={t.crmFollowUpsRetry}
         >
           {t.crmFollowUpsRetry}
-        </button>
+        </Button>
       </div>
     )
   }
@@ -60,7 +61,7 @@ export function TagFilterBar({ activeTag, onTagChange }: TagFilterBarProps) {
 
   return (
     <div className="tag-filter-bar" role="tablist" aria-label={t.crmTagFilter}>
-      <button
+      <Button variant="none"
         type="button"
         role="tab"
         aria-selected={activeTag === ''}
@@ -68,9 +69,9 @@ export function TagFilterBar({ activeTag, onTagChange }: TagFilterBarProps) {
         onClick={() => onTagChange('')}
       >
         {t.crmTagAllParties}
-      </button>
+      </Button>
       {data.tags.map((tg) => (
-        <button
+        <Button variant="none"
           key={tg.tag}
           type="button"
           role="tab"
@@ -82,7 +83,7 @@ export function TagFilterBar({ activeTag, onTagChange }: TagFilterBarProps) {
           <span className="tag-chip__count" aria-hidden="true">
             {tg.partyCount}
           </span>
-        </button>
+        </Button>
       ))}
     </div>
   )

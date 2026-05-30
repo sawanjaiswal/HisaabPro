@@ -15,6 +15,7 @@ import { LineItemFields } from './LineItemFields'
 import { useLineItemResolver } from './useLineItemResolver'
 import type { PriceListDetail } from '@/features/price-lists/price-list.types'
 import type { PriceMode } from './useLinePriceMeta'
+import { Button } from '@/components/ui/Button'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -134,7 +135,7 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
         </span>
         <div style={{ display: 'flex', gap: 'var(--space-1)' }}>
           {canMarkFree && (
-            <button
+            <Button variant="none"
               type="button"
               className={`btn btn-ghost btn-sm${isFree ? ' active' : ''}`}
               onClick={toggleFree}
@@ -143,16 +144,16 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
               title={isFree ? t.unmarkFreeItem : t.markFreeItem}
             >
               <Gift size={16} aria-hidden="true" />
-            </button>
+            </Button>
           )}
-          <button
+          <Button variant="none"
             type="button"
             className="line-item-remove"
             onClick={() => onRemove(index)}
             aria-label={`${item.productName} ${t.removeFromLineItems}`}
           >
             <Trash2 size={16} aria-hidden="true" />
-          </button>
+          </Button>
         </div>
       </div>
 

@@ -92,7 +92,7 @@ export function PriceListEntryFormDrawer({
 
   const footer = (
     <div style={{ display: 'flex', gap: 'var(--space-2)', padding: 'var(--space-4)' }}>
-      <button type="button" className="btn btn-outline flex-1" onClick={onClose}>{t.cancel}</button>
+      <Button variant="none" type="button" className="btn btn-outline flex-1" onClick={onClose}>{t.cancel}</Button>
       <Button type="submit" form="pl-entry-form" variant="primary" className="flex-1" disabled={isLoading} aria-busy={isLoading}>
         {isLoading ? t.saving : t.save}
       </Button>
@@ -123,7 +123,7 @@ export function PriceListEntryFormDrawer({
           <span className="pl-form__label">{t.plMode}</span>
           <div className="pl-form__mode-grid">
             {PRICE_LIST_MODES.map((m) => (
-              <button
+              <Button variant="none"
                 key={m}
                 type="button"
                 className="pl-form__mode-btn"
@@ -132,7 +132,7 @@ export function PriceListEntryFormDrawer({
               >
                 <span className="pl-form__mode-btn__label">{MODE_LABELS[m]}</span>
                 <span className="pl-form__mode-btn__desc">{MODE_DESCRIPTIONS[m]}</span>
-              </button>
+              </Button>
             ))}
           </div>
         </div>

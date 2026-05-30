@@ -22,6 +22,7 @@ import { ReminderActionBar } from '../components/ReminderActionBar'
 import type { AgingBucketParam, PartyInBucket } from '../collections.types'
 import '../styles/aging.css'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 const VALID_BUCKETS: AgingBucketParam[] = ['current', '31', '61', '91']
 const BUCKET_LABELS: Record<AgingBucketParam, string> = {
@@ -116,10 +117,10 @@ export default function AgingBucketList() {
   const bucketLabel = BUCKET_LABELS[bucketParam]
   const title = `${bucketLabel} — ${t.agingDrillDown ?? 'Parties'}`
   const backAction = (
-    <button type="button" onClick={() => navigate(-1)} aria-label="Go back"
+    <Button variant="none" type="button" onClick={() => navigate(-1)} aria-label="Go back"
       style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 8, color: 'var(--color-gray-600)', marginLeft: -4 }}>
       <ArrowLeft size={20} />
-    </button>
+    </Button>
   )
 
   if (status === 'pending') return (

@@ -15,6 +15,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import '../stock-verification.css'
 import './stock-verification-start.css'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 export default function StockVerificationStartPage() {
   const { t } = useLanguage()
@@ -90,7 +91,7 @@ export default function StockVerificationStartPage() {
               </span>
             </div>
 
-            <button
+            <Button variant="none"
               type="button"
               className="sv-start__submit"
               onClick={() => void handleStart()}
@@ -98,7 +99,7 @@ export default function StockVerificationStartPage() {
               aria-busy={isSubmitting}
             >
               {isSubmitting ? t.startingCount : t.startCountBtn}
-            </button>
+            </Button>
           </div>
         </div>
       </PageContainer>

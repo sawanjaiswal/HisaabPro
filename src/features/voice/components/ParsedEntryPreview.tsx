@@ -32,7 +32,7 @@ export function ParsedEntryPreview({ draft, onChange, onConfirm, onCancel, savin
 
       <div className="voice-preview__intent" role="group" aria-label={t.voiceIntentLabel}>
         {(['expense', 'income'] as VoiceIntent[]).map((it) => (
-          <button
+          <Button variant="none"
             key={it}
             type="button"
             className={`voice-intent-pill${draft.intent === it ? ' voice-intent-pill--active' : ''}`}
@@ -40,7 +40,7 @@ export function ParsedEntryPreview({ draft, onChange, onConfirm, onCancel, savin
             onClick={() => onChange({ intent: it })}
           >
             {it === 'expense' ? t.voiceIntentExpense : t.voiceIntentIncome}
-          </button>
+          </Button>
         ))}
       </div>
 

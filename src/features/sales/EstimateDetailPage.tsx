@@ -114,7 +114,7 @@ export default function EstimateDetailPage() {
 
             <nav className="pill-tabs" role="tablist">
               {DETAIL_TABS.map((tab) => (
-                <button
+                <Button variant="none"
                   key={tab.id}
                   type="button"
                   role="tab"
@@ -123,7 +123,7 @@ export default function EstimateDetailPage() {
                   aria-selected={activeTab === tab.id}
                 >
                   {tab.label}
-                </button>
+                </Button>
               ))}
             </nav>
 

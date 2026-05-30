@@ -3,6 +3,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { SerialStatusBadge } from './SerialStatusBadge'
 import { formatSerialDate } from '../serial-number.utils'
 import type { SerialNumber } from '../serial-number.types'
+import { Button } from '@/components/ui/Button'
 
 interface SerialCardProps {
   serial: SerialNumber
@@ -13,7 +14,7 @@ export function SerialCard({ serial, onClick }: SerialCardProps) {
   const { t } = useLanguage()
 
   return (
-    <button
+    <Button variant="none"
       type="button"
       className="serial-card"
       onClick={() => onClick?.(serial.id)}
@@ -37,6 +38,6 @@ export function SerialCard({ serial, onClick }: SerialCardProps) {
           </span>
         )}
       </div>
-    </button>
+    </Button>
   )
 }

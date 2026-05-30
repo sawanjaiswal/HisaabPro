@@ -6,6 +6,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import type { BarcodeFormat } from '@/lib/types/product.types'
 import { generateBarcodeSvg, generateBarcodeDataUrl } from '../barcode.utils'
 import { BARCODE_FORMAT_LABELS } from '../product.constants'
+import { Button } from '@/components/ui/Button'
 
 interface BarcodeDisplayProps {
   value: string
@@ -58,7 +59,7 @@ export function BarcodeDisplay({ value, format, productName, compact }: BarcodeD
       {!compact && (
         <div className="barcode-display-footer">
           <span className="barcode-format-label">{BARCODE_FORMAT_LABELS[format]}</span>
-          <button
+          <Button variant="none"
             type="button"
             className="barcode-download-btn"
             onClick={handleDownload}
@@ -66,7 +67,7 @@ export function BarcodeDisplay({ value, format, productName, compact }: BarcodeD
           >
             <Download size={16} aria-hidden="true" />
             <span>{t.download}</span>
-          </button>
+          </Button>
         </div>
       )}
     </div>

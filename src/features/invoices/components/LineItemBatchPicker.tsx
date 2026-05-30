@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { Package } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { BatchPicker } from '@/features/inventory/components/BatchPicker'
+import { Button } from '@/components/ui/Button'
 
 interface LineItemBatchPickerProps {
   productId: string
@@ -24,7 +25,7 @@ export const LineItemBatchPicker: React.FC<LineItemBatchPickerProps> = ({
   return (
     <>
       <div style={{ marginBottom: 'var(--space-2)' }}>
-        <button
+        <Button variant="none"
           type="button"
           onClick={() => setOpen(true)}
           style={{
@@ -44,7 +45,7 @@ export const LineItemBatchPicker: React.FC<LineItemBatchPickerProps> = ({
         >
           <Package size={12} aria-hidden="true" />
           {batchId ? `${t.pickBatch} ✓` : t.pickBatch}
-        </button>
+        </Button>
       </div>
 
       {open && (

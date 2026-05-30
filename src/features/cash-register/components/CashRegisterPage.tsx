@@ -25,6 +25,7 @@ import { LargeAmountWarningDialog } from './LargeAmountWarningDialog'
 import { ROUTES } from '@/config/routes.config'
 import type { CashRegisterTab } from '../cashRegister.types'
 import '../cash-register.css'
+import { Button } from '@/components/ui/Button'
 
 export default function CashRegisterPage() {
   const { user } = useAuth()
@@ -72,7 +73,7 @@ export default function CashRegisterPage() {
 
       {/* Tab toggle */}
       <div className="cr-tabs" role="tablist" aria-label="Cash register tabs">
-        <button
+        <Button variant="none"
           type="button"
           role="tab"
           className={`cr-tabs__tab${tab === 'calculator' ? ' cr-tabs__tab--active' : ''}`}
@@ -80,8 +81,8 @@ export default function CashRegisterPage() {
           onClick={() => setTab('calculator')}
         >
           Calculator
-        </button>
-        <button
+        </Button>
+        <Button variant="none"
           type="button"
           role="tab"
           className={`cr-tabs__tab${tab === 'history' ? ' cr-tabs__tab--active' : ''}`}
@@ -89,7 +90,7 @@ export default function CashRegisterPage() {
           onClick={() => setTab('history')}
         >
           History
-        </button>
+        </Button>
       </div>
 
       {/* Tab panels */}

@@ -126,13 +126,13 @@ export default function OnboardingPage() {
           >
             {t.onboardingGetStarted}
           </Button>
-          <button
+          <Button variant="none"
             type="button"
             className="onboarding-back-btn"
             onClick={() => setStep('welcome')}
           >
             {t.onboardingBack}
-          </button>
+          </Button>
         </div>
       </div>
     )
@@ -207,13 +207,13 @@ export default function OnboardingPage() {
             {loading ? t.onboardingSubmitting : t.onboardingSubmit}
           </Button>
 
-          <button
+          <Button variant="none"
             type="button"
             className="onboarding-back-btn"
             onClick={() => setStep('pickType')}
           >
             {t.onboardingBack}
-          </button>
+          </Button>
         </form>
       </div>
     </div>

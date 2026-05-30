@@ -10,6 +10,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { ACCEPTED_INPUT_ACCEPT } from '../constants/import.constants'
 import { formatBytes } from '../utils/file-validation'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface FileDropzoneProps {
   file: File | null
@@ -89,7 +90,7 @@ export function FileDropzone({ file, onFile, disabled = false, errorMessage }: F
             <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>
               {formatBytes(file.size)}
             </span>
-            <button
+            <Button variant="none"
               type="button"
               onClick={(e) => {
                 e.stopPropagation()
@@ -102,7 +103,7 @@ export function FileDropzone({ file, onFile, disabled = false, errorMessage }: F
             >
               <X className="w-4 h-4" aria-hidden="true" />
               {tx.importRemoveFile ?? 'Remove'}
-            </button>
+            </Button>
           </>
         ) : (
           <>

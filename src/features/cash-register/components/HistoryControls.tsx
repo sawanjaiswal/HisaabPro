@@ -2,6 +2,7 @@
 
 import type { CashHistoryFilter, CashHistorySort, CashEntryDirection } from '../cashRegister.types'
 import { Select, SelectItem } from '@/components/ui/Select'
+import { Button } from '@/components/ui/Button'
 
 interface Props {
   filter: CashHistoryFilter
@@ -26,7 +27,7 @@ export function HistoryControls({ filter, sort, onFilterChange, onSortChange }: 
         {DIRECTION_OPTIONS.map((opt) => {
           const isActive = filter.direction === opt.value
           return (
-            <button
+            <Button variant="none"
               key={opt.label}
               type="button"
               className={`cr-controls__pill${isActive ? ' cr-controls__pill--active' : ''}`}
@@ -34,19 +35,19 @@ export function HistoryControls({ filter, sort, onFilterChange, onSortChange }: 
               aria-pressed={isActive}
             >
               {opt.label}
-            </button>
+            </Button>
           )
         })}
 
         {/* Voided toggle */}
-        <button
+        <Button variant="none"
           type="button"
           className={`cr-controls__pill${filter.includeVoided ? ' cr-controls__pill--active' : ''}`}
           onClick={() => onFilterChange({ ...filter, includeVoided: !filter.includeVoided })}
           aria-pressed={filter.includeVoided}
         >
           {filter.includeVoided ? 'Hide Voided' : 'Show Voided'}
-        </button>
+        </Button>
       </div>
 
       {/* Sort dropdown */}

@@ -6,6 +6,7 @@
  */
 
 import type { TaxPricingMode } from '@/features/tax/tax.types'
+import { Button } from '@/components/ui/Button'
 
 interface TaxPricingChipProps {
   value: TaxPricingMode
@@ -21,7 +22,7 @@ export function TaxPricingChip({ value, onChange }: TaxPricingChipProps) {
   return (
     <div className="tax-pricing-chip" role="group" aria-label="Tax pricing mode">
       {OPTIONS.map((opt) => (
-        <button
+        <Button variant="none"
           key={opt.value}
           type="button"
           className={`tax-chip-btn${value === opt.value ? ' tax-chip-btn-active' : ''}`}
@@ -30,7 +31,7 @@ export function TaxPricingChip({ value, onChange }: TaxPricingChipProps) {
           title={opt.desc}
         >
           {opt.label}
-        </button>
+        </Button>
       ))}
     </div>
   )

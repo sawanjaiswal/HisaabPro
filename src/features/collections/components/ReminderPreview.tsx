@@ -8,6 +8,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import type { PartyInBucket } from '../collections.types'
 import { renderTemplate, type TemplateKey } from '../reminder-templates'
 import { formatPaise } from '@/lib/format'
+import { Button } from '@/components/ui/Button'
 
 interface ReminderPreviewProps {
   party: PartyInBucket
@@ -43,7 +44,7 @@ export function ReminderPreview({
 
   return (
     <div className="reminder-preview">
-      <button
+      <Button variant="none"
         type="button"
         className="reminder-preview__toggle"
         onClick={() => setExpanded((v) => !v)}
@@ -56,7 +57,7 @@ export function ReminderPreview({
           )}
         </span>
         {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-      </button>
+      </Button>
 
       {expanded && (
         <div className="reminder-preview__body" role="region" aria-label="Message preview">

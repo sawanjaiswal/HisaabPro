@@ -84,7 +84,7 @@ export function ShareLedgerSheet({
                   </div>
                 </div>
                 <div className="share-ledger-item-actions">
-                  <button
+                  <Button variant="none"
                     type="button"
                     className="share-ledger-icon-btn"
                     onClick={() => onCopy(share)}
@@ -92,15 +92,15 @@ export function ShareLedgerSheet({
                     disabled={expired}
                   >
                     <Copy size={16} />
-                  </button>
-                  <button
+                  </Button>
+                  <Button variant="none"
                     type="button"
                     className="share-ledger-icon-btn share-ledger-icon-btn-danger"
                     onClick={() => onRevoke(share.id)}
                     aria-label={t.revokeLink}
                   >
                     <Trash2 size={16} />
-                  </button>
+                  </Button>
                 </div>
               </div>
             )

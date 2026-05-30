@@ -48,7 +48,7 @@ export default function TaxCategoriesPage() {
               action={
                 <div className="tax-cat-empty-actions">
                   <Button variant="primary" size="md" onClick={() => seedDefaults(businessId)} aria-label={t.seedDefaultGstRates}>{t.seedDefaults}</Button>
-                  <button className="btn btn-outline btn-md" onClick={() => navigate(ROUTES.SETTINGS_TAX_RATE_NEW)} aria-label={t.createCustomTaxRate}>{t.create}</button>
+                  <Button variant="none" className="btn btn-outline btn-md" onClick={() => navigate(ROUTES.SETTINGS_TAX_RATE_NEW)} aria-label={t.createCustomTaxRate}>{t.create}</Button>
                 </div>
               }
             />
@@ -66,9 +66,9 @@ export default function TaxCategoriesPage() {
         </div>
       </PageContainer>
 
-      <button type="button" className="fab" onClick={() => navigate(ROUTES.SETTINGS_TAX_RATE_NEW)} aria-label={t.createNewTaxRate}>
+      <Button variant="none" type="button" className="fab" onClick={() => navigate(ROUTES.SETTINGS_TAX_RATE_NEW)} aria-label={t.createNewTaxRate}>
         <Plus size={24} aria-hidden="true" />
-      </button>
+      </Button>
     </AppShell>
   )
 }

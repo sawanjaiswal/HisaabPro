@@ -9,6 +9,7 @@ import { shareReceipt } from '../../api/pos.service'
 import type { PosSaleDTO } from '../../types/pos.types'
 import type { ReactElement } from 'react'
 import type { DocumentProps } from '@react-pdf/renderer'
+import { Button } from '@/components/ui/Button'
 
 interface ReceiptShareBarProps {
   sale:         PosSaleDTO
@@ -40,7 +41,7 @@ export function ReceiptShareBar({ sale, pdfDocument, fileName }: ReceiptShareBar
   return (
     <div className="pos-share-bar" role="group" aria-label={t.posShareReceipt ?? 'Share receipt'}>
       {/* WhatsApp */}
-      <button
+      <Button variant="none"
         type="button"
         className="pos-share-btn pos-share-btn--whatsapp"
         onClick={() => void handleShare('WHATSAPP')}
@@ -54,10 +55,10 @@ export function ReceiptShareBar({ sale, pdfDocument, fileName }: ReceiptShareBar
           <MessageCircle size={16} aria-hidden="true" />
         )}
         <span>{t.posShareWhatsApp ?? 'WhatsApp'}</span>
-      </button>
+      </Button>
 
       {/* Email */}
-      <button
+      <Button variant="none"
         type="button"
         className="pos-share-btn pos-share-btn--email"
         onClick={() => void handleShare('EMAIL')}
@@ -71,7 +72,7 @@ export function ReceiptShareBar({ sale, pdfDocument, fileName }: ReceiptShareBar
           <Mail size={16} aria-hidden="true" />
         )}
         <span>{t.posShareEmail ?? 'Email'}</span>
-      </button>
+      </Button>
 
       {/* Download PDF */}
       <PDFDownloadLink
@@ -96,7 +97,7 @@ export function ReceiptShareBar({ sale, pdfDocument, fileName }: ReceiptShareBar
       </PDFDownloadLink>
 
       {/* Print */}
-      <button
+      <Button variant="none"
         type="button"
         className="pos-share-btn pos-share-btn--print"
         onClick={() => window.print()}
@@ -104,7 +105,7 @@ export function ReceiptShareBar({ sale, pdfDocument, fileName }: ReceiptShareBar
       >
         <Printer size={16} aria-hidden="true" />
         <span>{t.posPrint ?? 'Print'}</span>
-      </button>
+      </Button>
     </div>
   )
 }

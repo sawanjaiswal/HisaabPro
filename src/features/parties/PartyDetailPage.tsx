@@ -183,7 +183,7 @@ export default function PartyDetailPage() {
 
               <div className="pill-tabs party-detail-tabs" role="tablist" aria-label={t.partyDetailSections}>
                 {TABS.map((tab) => (
-                  <button
+                  <Button variant="none"
                     key={tab.id}
                     role="tab"
                     className={`pill-tab${activeTab === tab.id ? ' active' : ''}`}
@@ -192,7 +192,7 @@ export default function PartyDetailPage() {
                     aria-controls={`panel-${tab.id}`}
                   >
                     {tab.label}
-                  </button>
+                  </Button>
                 ))}
               </div>
 

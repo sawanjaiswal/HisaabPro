@@ -14,6 +14,7 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { useDocumentShareLinks } from '../hooks/useDocumentShareLinks'
 import type { ShareLinkTtl } from '../share-links.service'
 import '../invoice-share-links.css'
+import { Button } from '@/components/ui/Button'
 
 interface ShareLinksSectionProps {
   documentId: string
@@ -91,7 +92,7 @@ export function ShareLinksSection({ documentId, documentNumber }: ShareLinksSect
       <p className="share-links__expiry-label">{t.shareLinkExpiryLabel}</p>
       <div className="share-links__pills" role="group" aria-label={t.shareLinkExpiryLabel}>
         {TTL_OPTIONS.map((opt) => (
-          <button
+          <Button variant="none"
             key={String(opt.value)}
             type="button"
             className={`share-links__pill${selectedTtl === opt.value ? ' share-links__pill--active' : ''}`}
@@ -100,12 +101,12 @@ export function ShareLinksSection({ documentId, documentNumber }: ShareLinksSect
             disabled={isBusy}
           >
             {t[opt.labelKey] as string}
-          </button>
+          </Button>
         ))}
       </div>
 
       {/* ── Generate button ── */}
-      <button
+      <Button variant="none"
         type="button"
         className="share-links__generate-btn"
         onClick={() => { void handleGenerate() }}
@@ -113,21 +114,21 @@ export function ShareLinksSection({ documentId, documentNumber }: ShareLinksSect
         aria-busy={issue.isPending}
       >
         {issue.isPending ? t.shareLinkGenerating : t.shareLinkGenerate}
-      </button>
+      </Button>
 
       {/* ── One-time URL reveal ── */}
       {oneTimeUrl && (
         <div className="share-links__one-time" role="alert">
           <p className="share-links__one-time-hint">{t.shareLinkCopiedOnce}</p>
           <p className="share-links__one-time-url">{oneTimeUrl}</p>
-          <button
+          <Button variant="none"
             type="button"
             className="share-links__copy-btn"
             onClick={() => { void handleCopy() }}
           >
             <Copy size={12} aria-hidden="true" />
             {t.shareLinkCopy}
-          </button>
+          </Button>
         </div>
       )}
 
@@ -168,7 +169,7 @@ export function ShareLinksSection({ documentId, documentNumber }: ShareLinksSect
                     </span>
                     <span className="share-links__item-count">{countLabel}</span>
                   </div>
-                  <button
+                  <Button variant="none"
                     type="button"
                     className="share-links__revoke-btn"
                     onClick={() => setRevokeTargetId(link.id)}
@@ -176,7 +177,7 @@ export function ShareLinksSection({ documentId, documentNumber }: ShareLinksSect
                     aria-label={`${t.shareLinkRevoke} — created ${formatDate(link.createdAt)}`}
                   >
                     {t.shareLinkRevoke}
-                  </button>
+                  </Button>
                 </li>
               )
             })}

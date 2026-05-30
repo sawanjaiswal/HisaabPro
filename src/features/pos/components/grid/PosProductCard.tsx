@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react'
 import { paiseToInr } from '../../utils/pos.format'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PosProductDTO } from '../../types/pos.types'
+import { Button } from '@/components/ui/Button'
 
 interface PosProductCardProps {
   product:   PosProductDTO
@@ -72,7 +73,7 @@ export function PosProductCard({ product, onSelect, inCart }: PosProductCardProp
       </div>
 
       {!outOfStock && (
-        <button
+        <Button variant="none"
           type="button"
           className="pos-product-card__add"
           tabIndex={-1}
@@ -80,7 +81,7 @@ export function PosProductCard({ product, onSelect, inCart }: PosProductCardProp
           onClick={(e) => { e.stopPropagation(); onSelect(product) }}
         >
           <Plus size={14} strokeWidth={2.5} />
-        </button>
+        </Button>
       )}
 
       {inCart && <span className="pos-product-card__badge" aria-label="In cart" />}

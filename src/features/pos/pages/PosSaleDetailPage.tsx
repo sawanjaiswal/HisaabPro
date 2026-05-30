@@ -12,6 +12,7 @@ import '../pos-billing.css'
 import { VoidModal } from '../components/void/VoidModal'
 import { ReceiptPreview } from '../components/receipt/ReceiptPreview'
 import { paiseToInr, formatDisplayDate, formatDisplayTime } from '../utils/pos.format'
+import { Button } from '@/components/ui/Button'
 
 const MOCK_BUSINESS = {
   name:    'My Business',
@@ -32,9 +33,9 @@ export default function PosSaleDetailPage() {
       <AppShell>
         <div className="pos-page">
           <header className="pos-header">
-            <button type="button" className="pos-back-btn" onClick={() => navigate(-1)} aria-label={t.back ?? 'Back'}>
+            <Button variant="none" type="button" className="pos-back-btn" onClick={() => navigate(-1)} aria-label={t.back ?? 'Back'}>
               <ArrowLeft size={20} aria-hidden="true" />
-            </button>
+            </Button>
             <h1 className="pos-header__title">{t.posSaleDetail ?? 'Sale Detail'}</h1>
           </header>
           <div className="pos-detail-skeleton" aria-busy="true">
@@ -53,9 +54,9 @@ export default function PosSaleDetailPage() {
       <AppShell>
         <div className="pos-page">
           <header className="pos-header">
-            <button type="button" className="pos-back-btn" onClick={() => navigate(-1)} aria-label={t.back ?? 'Back'}>
+            <Button variant="none" type="button" className="pos-back-btn" onClick={() => navigate(-1)} aria-label={t.back ?? 'Back'}>
               <ArrowLeft size={20} aria-hidden="true" />
-            </button>
+            </Button>
           </header>
           <ErrorState
             title={t.posSaleNotFound ?? 'Sale not found'}
@@ -73,14 +74,14 @@ export default function PosSaleDetailPage() {
     <AppShell>
       <div className="pos-page">
         <header className="pos-header">
-          <button
+          <Button variant="none"
             type="button"
             className="pos-back-btn"
             onClick={() => navigate(ROUTES.POS_HISTORY)}
             aria-label={t.back ?? 'Back'}
           >
             <ArrowLeft size={20} aria-hidden="true" />
-          </button>
+          </Button>
           <h1 className="pos-header__title">{sale.receiptNumber}</h1>
           {sale.status === 'VOIDED' && (
             <span className="pos-detail__voided-badge">{t.posVoided ?? 'Voided'}</span>
@@ -139,13 +140,13 @@ export default function PosSaleDetailPage() {
           )}
 
           {/* Receipt preview toggle */}
-          <button
+          <Button variant="none"
             type="button"
             className="pos-detail__receipt-btn"
             onClick={() => setShowReceipt((p) => !p)}
           >
             {showReceipt ? (t.posHideReceipt ?? 'Hide receipt') : (t.posViewReceipt ?? 'View receipt')}
-          </button>
+          </Button>
 
           {showReceipt && (
             <ReceiptPreview sale={sale} businessInfo={MOCK_BUSINESS} />
@@ -154,7 +155,7 @@ export default function PosSaleDetailPage() {
           {/* Actions */}
           <div className="pos-detail__actions">
             {detail.canVoid && (
-              <button
+              <Button variant="none"
                 type="button"
                 className="pos-detail__void-btn"
                 onClick={() => setShowVoid(true)}
@@ -162,11 +163,11 @@ export default function PosSaleDetailPage() {
                 aria-busy={detail.isVoiding}
               >
                 {detail.isVoiding ? (t.posVoiding ?? 'Voiding…') : (t.posVoidSale ?? 'Void sale')}
-              </button>
+              </Button>
             )}
 
             {detail.canRestore && (
-              <button
+              <Button variant="none"
                 type="button"
                 className="pos-detail__restore-btn"
                 onClick={detail.doRestore}
@@ -174,7 +175,7 @@ export default function PosSaleDetailPage() {
                 aria-busy={detail.isRestoring}
               >
                 {detail.isRestoring ? (t.posRestoring ?? 'Restoring…') : (t.posRestoreSale ?? 'Restore sale')}
-              </button>
+              </Button>
             )}
           </div>
         </div>

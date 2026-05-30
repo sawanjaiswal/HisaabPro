@@ -24,6 +24,7 @@ import type { BankAccount, BankAccountType, CreateBankAccountInput } from './ban
 import './bank-accounts.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 // Labels are resolved via t.savings, t.current, t.overdraft, t.bankAccountTypeCash at render time
 function getAccountTypeLabel(type: BankAccountType, t: { savings: string; current: string; overdraft: string; bankAccountTypeCash: string }): string {
@@ -129,9 +130,9 @@ export default function BankAccountsPage() {
       <PageContainer variant="list" className="space-y-6">
         <div className="bank-action-bar">
           <span className="bank-count">{total} {total === 1 ? t.accountSingular : t.accountsPlural}</span>
-          <button type="button" className="bank-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.addFirstAccount}>
+          <Button variant="none" type="button" className="bank-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.addFirstAccount}>
             <Plus size={14} aria-hidden="true" /> {t.addAccountBtn}
-          </button>
+          </Button>
         </div>
 
         {items.length === 0 && (
@@ -140,9 +141,9 @@ export default function BankAccountsPage() {
             title={t.noBankAccounts}
             description={t.addBankAccountsDesc}
             action={
-              <button type="button" className="bank-add-btn" onClick={() => setDrawerOpen(true)}>
+              <Button variant="none" type="button" className="bank-add-btn" onClick={() => setDrawerOpen(true)}>
                 <Plus size={14} aria-hidden="true" /> {t.addFirstAccount}
-              </button>
+              </Button>
             }
           />
         )}
@@ -197,9 +198,9 @@ export default function BankAccountsPage() {
             <Input type="checkbox" checked={form.isDefault ?? false} onChange={(e) => setForm((f) => ({ ...f, isDefault: e.target.checked }))} />
             <span className="bank-drawer__toggle-label py-0">{t.setAsDefault}</span>
           </label>
-          <button type="submit" className="bank-drawer__submit-btn py-0" disabled={submitting} aria-busy={submitting}>
+          <Button variant="none" type="submit" className="bank-drawer__submit-btn py-0" disabled={submitting} aria-busy={submitting}>
             {submitting ? t.adding : t.addFirstAccount}
-          </button>
+          </Button>
         </form>
       </Drawer>
     </AppShell>

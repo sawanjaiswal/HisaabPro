@@ -22,6 +22,7 @@ import {
   ATTENDANCE_STATUS_COLORS,
   ATTENDANCE_STATUS_I18N_KEYS,
 } from '../hr.constants'
+import { Button } from '@/components/ui/Button'
 
 type Translations = ReturnType<typeof useLanguage>['t']
 
@@ -85,7 +86,7 @@ export function AttendanceStatusPill({
     ?? `${employeeName} ${dateLabel} ${labelText}`
 
   return (
-    <button
+    <Button variant="none"
       type="button"
       onClick={onCycle}
       aria-label={ariaLabel}
@@ -110,6 +111,6 @@ export function AttendanceStatusPill({
     >
       <Icon size={16} aria-hidden="true" />
       {!compact && <span>{labelText}</span>}
-    </button>
+    </Button>
   )
 }

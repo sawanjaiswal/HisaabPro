@@ -2,6 +2,7 @@
 
 import { Minus, Plus } from 'lucide-react'
 import type { LabelItem, LabelTemplate, SheetFormat } from './label-print.types'
+import { Button } from '@/components/ui/Button'
 
 const SHEET_OPTIONS: { value: SheetFormat; label: string }[] = [
   { value: 'THERMAL_40x30', label: 'Thermal 40×30mm' },
@@ -46,7 +47,7 @@ export function LabelPrintOptions({
         <p className="label-option-label">Sheet format</p>
         <div className="label-chip-row" role="radiogroup" aria-label="Sheet format">
           {SHEET_OPTIONS.map((opt) => (
-            <button
+            <Button variant="none"
               key={opt.value}
               type="button"
               role="radio"
@@ -55,7 +56,7 @@ export function LabelPrintOptions({
               onClick={() => onSheetChange(opt.value)}
             >
               {opt.label}
-            </button>
+            </Button>
           ))}
         </div>
       </section>
@@ -65,7 +66,7 @@ export function LabelPrintOptions({
         <p className="label-option-label">Label style</p>
         <div className="label-chip-row" role="radiogroup" aria-label="Label style">
           {TEMPLATE_OPTIONS.map((opt) => (
-            <button
+            <Button variant="none"
               key={opt.value}
               type="button"
               role="radio"
@@ -74,7 +75,7 @@ export function LabelPrintOptions({
               onClick={() => onTemplateChange(opt.value)}
             >
               {opt.label}
-            </button>
+            </Button>
           ))}
         </div>
       </section>
@@ -87,7 +88,7 @@ export function LabelPrintOptions({
             <li key={item.id} className="label-qty-row">
               <span className="label-qty-name">{item.name}</span>
               <div className="label-qty-stepper">
-                <button
+                <Button variant="none"
                   type="button"
                   className="label-qty-btn"
                   onClick={() => onQtyChange(item.id, -1)}
@@ -95,11 +96,11 @@ export function LabelPrintOptions({
                   aria-label={`Decrease quantity for ${item.name}`}
                 >
                   <Minus size={14} aria-hidden="true" />
-                </button>
+                </Button>
                 <span className="label-qty-value" aria-live="polite">
                   {qtyMap[item.id] ?? 1}
                 </span>
-                <button
+                <Button variant="none"
                   type="button"
                   className="label-qty-btn"
                   onClick={() => onQtyChange(item.id, 1)}
@@ -107,7 +108,7 @@ export function LabelPrintOptions({
                   aria-label={`Increase quantity for ${item.name}`}
                 >
                   <Plus size={14} aria-hidden="true" />
-                </button>
+                </Button>
               </div>
             </li>
           ))}

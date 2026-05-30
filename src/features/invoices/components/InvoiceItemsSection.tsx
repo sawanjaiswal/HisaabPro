@@ -22,6 +22,7 @@ import { PriceListOverrideSelector } from '@/features/pricing/components/PriceLi
 import type { LineItemFormData } from '../invoice.types'
 import type { StockValidationItem } from '../invoice.service'
 import type { PriceMode } from './useLinePriceMeta'
+import { Button } from '@/components/ui/Button'
 
 interface InvoiceItemsSectionProps {
   partyId: string
@@ -187,7 +188,7 @@ export function InvoiceItemsSection({
         </div>
       )}
 
-      <button
+      <Button variant="none"
         type="button"
         className="add-item-btn"
         onClick={onToggleProductSearch}
@@ -196,7 +197,7 @@ export function InvoiceItemsSection({
       >
         <Plus size={18} aria-hidden="true" />
         {showProductSearch ? t.hideSearch : t.addItem}
-      </button>
+      </Button>
     </div>
   )
 }

@@ -11,6 +11,7 @@ import { DOCUMENT_TYPE_CODES } from '../../invoices/invoice.constants'
 import { getNodeRoute } from '../sales.utils'
 import type { PipelineStep } from '../sales.types'
 import './PipelineTimeline.css'
+import { Button } from '@/components/ui/Button'
 
 // ─── Skeleton (loading) ───────────────────────────────────────────────────────
 
@@ -79,7 +80,7 @@ export const PipelineTimeline: React.FC<PipelineTimelineProps> = ({
                     </span>
                   </div>
                 ) : (
-                  <button
+                  <Button variant="none"
                     type="button"
                     className="pipeline__node"
                     onClick={() => navigate(getNodeRoute(step.node))}
@@ -92,7 +93,7 @@ export const PipelineTimeline: React.FC<PipelineTimelineProps> = ({
                     <span className="pipeline__label">
                       {step.node.number}
                     </span>
-                  </button>
+                  </Button>
                 )}
               </div>
 

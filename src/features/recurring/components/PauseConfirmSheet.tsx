@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
+import { Button } from '@/components/ui/Button'
 
 interface PauseConfirmSheetProps {
   open: boolean
@@ -49,15 +50,15 @@ export function PauseConfirmSheet({
           {t.recurringPauseDesc ?? 'Runs during the pause period will be skipped.'}
         </p>
         <div className="recurring-sheet__actions">
-          <button
+          <Button variant="none"
             type="button"
             className="recurring-btn recurring-btn--secondary"
             onClick={onCancel}
             disabled={isPausing}
           >
             {t.cancelBtn ?? 'Cancel'}
-          </button>
-          <button
+          </Button>
+          <Button variant="none"
             type="button"
             className="recurring-btn recurring-btn--warning"
             onClick={onConfirm}
@@ -67,7 +68,7 @@ export function PauseConfirmSheet({
             {isPausing
               ? (t.recurringPausing ?? 'Pausing...')
               : (t.recurringPause ?? 'Pause')}
-          </button>
+          </Button>
         </div>
       </div>
     </>

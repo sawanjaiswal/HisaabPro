@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { formatDate } from '@/lib/format'
 import { RUN_STATUS_LABELS } from '../recurring.constants'
 import type { RecurringRun, RecurringRunStatus } from '../recurring.types'
+import { Button } from '@/components/ui/Button'
 
 interface RunHistoryRowProps {
   run: RecurringRun
@@ -52,7 +53,7 @@ export function RunHistoryRow({ run }: RunHistoryRowProps) {
         </div>
       </div>
       {run.generatedDocumentId && (
-        <button
+        <Button variant="none"
           type="button"
           className="recurring-run__link"
           onClick={() => navigate(`/invoices/${run.generatedDocumentId}`)}
@@ -60,7 +61,7 @@ export function RunHistoryRow({ run }: RunHistoryRowProps) {
         >
           <ExternalLink size={14} aria-hidden="true" />
           View
-        </button>
+        </Button>
       )}
     </div>
   )

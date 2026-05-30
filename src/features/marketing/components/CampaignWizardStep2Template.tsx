@@ -4,6 +4,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { useMarketingTemplateList } from '../hooks/useMarketingTemplates'
 import { ChannelBadge } from './ChannelBadge'
 import type { MarketingChannel } from '../marketing.types'
+import { Button } from '@/components/ui/Button'
 
 interface Props {
   channel: MarketingChannel
@@ -49,7 +50,7 @@ export function CampaignWizardStep2Template({ channel, value, onChange }: Props)
       {active.map((tmpl) => {
         const selected = value === tmpl.id
         return (
-          <button
+          <Button variant="none"
             key={tmpl.id}
             type="button"
             role="radio"
@@ -81,7 +82,7 @@ export function CampaignWizardStep2Template({ channel, value, onChange }: Props)
                 {t.marketingVariablesLabel}: {tmpl.variables.map((v) => `{{${v}}}`).join(', ')}
               </div>
             )}
-          </button>
+          </Button>
         )
       })}
     </div>

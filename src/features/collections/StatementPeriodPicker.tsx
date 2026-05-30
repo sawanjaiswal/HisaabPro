@@ -102,7 +102,7 @@ export function StatementPeriodPicker({ open, onClose, onConfirm, loading }: Pro
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
         {presets.map((p) => (
-          <button
+          <Button variant="none"
             key={p.id}
             className={`btn btn-md ${preset === p.id ? 'btn-primary' : 'btn-outline'}`}
             style={{ width: '100%', textAlign: 'left', justifyContent: 'flex-start' }}
@@ -110,7 +110,7 @@ export function StatementPeriodPicker({ open, onClose, onConfirm, loading }: Pro
             aria-pressed={preset === p.id}
           >
             {p.label}
-          </button>
+          </Button>
         ))}
 
         {preset === 'custom' && (

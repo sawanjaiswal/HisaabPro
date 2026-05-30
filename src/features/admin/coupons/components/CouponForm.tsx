@@ -10,6 +10,7 @@ import '../coupon.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Select, SelectItem } from '@/components/ui/Select'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface CouponFormProps {
   onSubmit: (data: CreateCouponInput) => Promise<unknown>
@@ -213,16 +214,16 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
       </div>
 
       <div className="coupon-form-actions">
-        <button type="button" className="coupon-form-btn-cancel" onClick={onCancel}>
+        <Button variant="none" type="button" className="coupon-form-btn-cancel" onClick={onCancel}>
           {t.cancelBtn}
-        </button>
-        <button
+        </Button>
+        <Button variant="none"
           type="submit"
           className="coupon-form-btn-submit"
           disabled={submitting}
         >
           {submitting ? t.creating : t.createCoupon}
-        </button>
+        </Button>
       </div>
     </form>
   )

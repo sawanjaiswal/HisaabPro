@@ -10,6 +10,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { QUICK_GRID_LIMIT } from '../pos.constants'
 
 import type { QuickProduct } from '../pos.types'
+import { Button } from '@/components/ui/Button'
 
 interface QuickProductGridProps {
   onSelect: (product: QuickProduct) => void
@@ -70,7 +71,7 @@ export function QuickProductGrid({ onSelect }: QuickProductGridProps) {
       <h3 className="pos-quick-title">{t.posQuickAdd}</h3>
       <div className="pos-quick-grid" role="list" aria-label={t.posFrequentProducts}>
         {products.map((p) => (
-          <button
+          <Button variant="none"
             key={p.id}
             type="button"
             className="pos-quick-item"
@@ -80,7 +81,7 @@ export function QuickProductGrid({ onSelect }: QuickProductGridProps) {
           >
             <span className="pos-quick-item-name">{p.name}</span>
             <span className="pos-quick-item-price">{formatPaise(p.salePrice)}</span>
-          </button>
+          </Button>
         ))}
       </div>
     </div>

@@ -78,9 +78,9 @@ export function InviteDrawer({ partyId, partyName, partyPhone, onClose }: Invite
           <div className="inv-drawer__error" role="alert">
             <AlertCircle size={20} aria-hidden="true" />
             <p>{t.inviteLoadFailed}</p>
-            <button type="button" className="btn btn-outline btn-sm" onClick={() => void doIssue()}>
+            <Button variant="none" type="button" className="btn btn-outline btn-sm" onClick={() => void doIssue()}>
               {t.retry}
-            </button>
+            </Button>
           </div>
         )}
 

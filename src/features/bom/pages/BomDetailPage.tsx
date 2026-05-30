@@ -55,9 +55,9 @@ export default function BomDetailPage() {
     <div className="bom-page">
       {/* Back */}
       <div className="bom-page__header">
-        <button type="button" className="btn btn-ghost btn-icon" onClick={() => navigate('/bom')} aria-label="Back to recipes">
+        <Button variant="none" type="button" className="btn btn-ghost btn-icon" onClick={() => navigate('/bom')} aria-label="Back to recipes">
           <ArrowLeft size={20} aria-hidden="true" />
-        </button>
+        </Button>
         <h1 className="bom-page__title">Recipe Detail</h1>
       </div>
 
@@ -116,14 +116,14 @@ export default function BomDetailPage() {
             >
               <Edit2 size={16} aria-hidden="true" /> Edit
             </Button>
-            <button
+            <Button variant="none"
               type="button"
               className="btn btn-ghost btn-danger-ghost"
               onClick={() => setConfirmDelete(true)}
               aria-label="Delete recipe"
             >
               <Trash2 size={16} aria-hidden="true" /> Delete
-            </button>
+            </Button>
           </div>
         </>
       )}

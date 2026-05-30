@@ -8,6 +8,7 @@ import { formatPaise } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PaymentFormAllocation } from '../payment.types'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface PaymentInvoicesSectionProps {
   allocations: PaymentFormAllocation[]
@@ -45,14 +46,14 @@ export function PaymentInvoicesSection({
         <span className="payment-invoices-count">
           {selectedCount} {t.ofWord} {allocations.length} {t.invoicesSelected}
         </span>
-        <button
+        <Button variant="none"
           type="button"
           className="btn btn-outline btn-sm"
           onClick={onAutoAllocate}
           aria-label={t.autoAllocateOldest}
         >
           {t.autoFifo}
-        </button>
+        </Button>
       </div>
 
       <div className="payment-invoices-list">

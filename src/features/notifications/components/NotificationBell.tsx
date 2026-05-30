@@ -6,6 +6,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { useUnreadCount } from '../useNotifications'
 import '../notifications.css'
+import { Button } from '@/components/ui/Button'
 
 function badgeLabel(count: number): string | null {
   if (count <= 0) return null
@@ -22,7 +23,7 @@ export function NotificationBell() {
   const label = badgeLabel(unread)
 
   return (
-    <button
+    <Button variant="none"
       type="button"
       className="notif-bell"
       onClick={() => navigate(ROUTES.NOTIFICATIONS)}
@@ -39,6 +40,6 @@ export function NotificationBell() {
           {label}
         </span>
       )}
-    </button>
+    </Button>
   )
 }

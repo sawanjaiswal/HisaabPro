@@ -8,6 +8,7 @@ import { useState } from 'react'
 import { Building2, CheckCircle, XCircle } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { GstSettings } from '../useGstSettings'
+import { Button } from '@/components/ui/Button'
 
 interface GstInfoCardProps {
   gstin: string | null
@@ -52,7 +53,7 @@ export function GstInfoCard({ gstin, stateCode, stateName, compositionScheme, on
 
       <div className="gst-info-row">
         <span className="gst-info-label">{t.compositionScheme}</span>
-        <button
+        <Button variant="none"
           className={`gst-toggle ${compositionScheme ? 'gst-toggle-on' : ''}`}
           onClick={handleToggleComposition}
           disabled={saving}
@@ -61,7 +62,7 @@ export function GstInfoCard({ gstin, stateCode, stateName, compositionScheme, on
           aria-checked={compositionScheme}
         >
           <span className="gst-toggle-thumb" />
-        </button>
+        </Button>
       </div>
     </div>
   )

@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import { Slot } from 'radix-ui'
 import { cva, type VariantProps } from 'class-variance-authority'
@@ -15,6 +16,7 @@ export const buttonVariants = cva('btn', {
       accent: 'btn-accent',
       destructive: 'btn-destructive',
       ghost: 'btn-ghost',
+      none: '',
     },
     size: {
       sm: 'btn-sm',
@@ -36,20 +38,27 @@ interface ButtonProps
   children: ReactNode
 }
 
-export function Button({
-  variant,
-  size,
-  loading = false,
-  asChild = false,
-  disabled,
-  children,
-  className,
-  ...props
-}: ButtonProps) {
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  {
+    variant,
+    size,
+    loading = false,
+    asChild = false,
+    disabled,
+    children,
+    className,
+    ...props
+  },
+  ref,
+) {
   const Comp = asChild ? Slot.Root : 'button'
+  const classes = variant === 'none'
+    ? className
+    : cn(buttonVariants({ variant, size }), className)
   return (
     <Comp
-      className={cn(buttonVariants({ variant, size }), className)}
+      ref={ref}
+      className={classes}
       disabled={asChild ? undefined : disabled || loading}
       aria-label={typeof children === 'string' ? children : undefined}
       aria-busy={loading || undefined}
@@ -58,4 +67,4 @@ export function Button({
       {!asChild && loading ? <Spinner size="sm" /> : children}
     </Comp>
   )
-}
+})

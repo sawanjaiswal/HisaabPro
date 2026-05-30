@@ -11,6 +11,7 @@ import { getReferencePlaceholder } from '../payment.utils'
 import type { PaymentMode } from '../payment.types'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 const PAYMENT_MODES: PaymentMode[] = [
   'CASH', 'UPI', 'BANK_TRANSFER', 'CHEQUE', 'NEFT_RTGS_IMPS', 'CREDIT_CARD', 'OTHER',
@@ -102,7 +103,7 @@ export function PaymentDetailsSection({
         <label className="label">{t.paymentModeRequired}</label>
         <div className="payment-mode-grid" role="radiogroup" aria-label={t.paymentModeAriaLabel}>
           {PAYMENT_MODES.map((m) => (
-            <button
+            <Button variant="none"
               key={m}
               type="button"
               className={`payment-mode-item${mode === m ? ' active' : ''}`}
@@ -112,7 +113,7 @@ export function PaymentDetailsSection({
               aria-label={PAYMENT_MODE_LABELS[m]}
             >
               {PAYMENT_MODE_LABELS[m]}
-            </button>
+            </Button>
           ))}
         </div>
         {errors.mode && <span className="field-error" role="alert">{errors.mode}</span>}

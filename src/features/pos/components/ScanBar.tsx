@@ -8,6 +8,7 @@ import { useBarcodeLookup } from '../useBarcodeLookup'
 
 import type { QuickProduct } from '../pos.types'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface ScanBarProps {
   onProductFound: (product: QuickProduct) => void
@@ -44,14 +45,14 @@ export function ScanBar({ onProductFound }: ScanBarProps) {
             disabled={searching}
           />
           {query && !searching && (
-            <button type="button" className="pos-scan-clear" onClick={() => { setQuery(''); inputRef.current?.focus() }} aria-label={t.posClearSearch}>
+            <Button variant="none" type="button" className="pos-scan-clear" onClick={() => { setQuery(''); inputRef.current?.focus() }} aria-label={t.posClearSearch}>
               <X size={16} aria-hidden="true" />
-            </button>
+            </Button>
           )}
         </div>
-        <button type="button" className="pos-scan-camera-btn" onClick={() => setShowCamera(true)} aria-label={t.posOpenCamera} disabled={searching}>
+        <Button variant="none" type="button" className="pos-scan-camera-btn" onClick={() => setShowCamera(true)} aria-label={t.posOpenCamera} disabled={searching}>
           <Camera size={20} aria-hidden="true" />
-        </button>
+        </Button>
       </div>
       {showCamera && (
         <BarcodeScanner onScan={(v) => { setShowCamera(false); lookup(v) }} onClose={() => setShowCamera(false)} />

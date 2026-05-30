@@ -10,6 +10,7 @@ import type { CancelReason } from './e-invoice.types'
 import { CANCEL_REASON_LABELS } from './e-invoice.types'
 import { Select, SelectItem } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
+import { Button } from '@/components/ui/Button'
 
 interface Props {
   open: boolean
@@ -185,7 +186,7 @@ export const EInvoiceCancelDialog: React.FC<Props> = ({ open, loading, onConfirm
         )}
 
         <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
-          <button
+          <Button variant="none"
             type="button"
             onClick={onDismiss}
             disabled={loading}
@@ -200,8 +201,8 @@ export const EInvoiceCancelDialog: React.FC<Props> = ({ open, loading, onConfirm
             }}
           >
             Dismiss
-          </button>
-          <button
+          </Button>
+          <Button variant="none"
             ref={confirmRef}
             type="button"
             onClick={handleConfirm}
@@ -220,7 +221,7 @@ export const EInvoiceCancelDialog: React.FC<Props> = ({ open, loading, onConfirm
             }}
           >
             {loading ? 'Cancelling...' : 'Confirm Cancel'}
-          </button>
+          </Button>
         </div>
       </div>
     </dialog>

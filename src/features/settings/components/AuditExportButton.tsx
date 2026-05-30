@@ -54,7 +54,7 @@ export function AuditExportButton({
 
   if (variant === 'icon') {
     return (
-      <button
+      <Button variant="none"
         type="button"
         className="staff-action-button"
         onClick={handleClick}
@@ -64,7 +64,7 @@ export function AuditExportButton({
         style={{ minWidth: 44, minHeight: 44 }}
       >
         <Download size={20} aria-hidden="true" />
-      </button>
+      </Button>
     )
   }
 

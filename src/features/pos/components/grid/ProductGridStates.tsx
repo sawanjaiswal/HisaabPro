@@ -2,6 +2,7 @@
 
 import { ShoppingBag, AlertTriangle, RefreshCw } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 // ─── Skeleton ────────────────────────────────────────────────────────────────
 
@@ -31,10 +32,10 @@ export function ProductGridError({ onRetry }: ErrorProps) {
     <div className="pos-grid-state pos-grid-state--center">
       <AlertTriangle size={40} className="pos-grid-state__icon pos-grid-state__icon--error" aria-hidden="true" />
       <p className="pos-grid-state__title">{t.posProductsError ?? 'Could not load products'}</p>
-      <button type="button" className="pos-grid-state__btn" onClick={onRetry}>
+      <Button variant="none" type="button" className="pos-grid-state__btn" onClick={onRetry}>
         <RefreshCw size={14} aria-hidden="true" />
         {t.tryAgain ?? 'Try again'}
-      </button>
+      </Button>
     </div>
   )
 }

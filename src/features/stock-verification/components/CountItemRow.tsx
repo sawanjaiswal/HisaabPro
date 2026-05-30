@@ -6,6 +6,7 @@ import { formatDiscrepancy, getDiscrepancyColor } from '../stock-verification.ut
 import { useLanguage } from '@/hooks/useLanguage'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface CountItemRowProps {
   item: VerificationItem
@@ -61,7 +62,7 @@ export function CountItemRow({ item, onSave, disabled }: CountItemRowProps) {
         </div>
       </div>
       <div className="sv-count-row__actions">
-        <button
+        <Button variant="none"
           type="button"
           className="sv-count-row__notes-toggle"
           onClick={() => setShowNotes(!showNotes)}
@@ -70,8 +71,8 @@ export function CountItemRow({ item, onSave, disabled }: CountItemRowProps) {
         >
           {showNotes ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           {t.notesToggleBtn}
-        </button>
-        <button
+        </Button>
+        <Button variant="none"
           type="button"
           className="sv-count-row__save"
           onClick={handleSave}
@@ -80,7 +81,7 @@ export function CountItemRow({ item, onSave, disabled }: CountItemRowProps) {
         >
           <Save size={14} aria-hidden="true" />
           {t.saveBtnLabel}
-        </button>
+        </Button>
       </div>
       {showNotes && (
         <Textarea

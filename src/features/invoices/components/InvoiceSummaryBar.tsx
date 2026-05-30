@@ -9,6 +9,7 @@ import { ChevronRight, ArrowDownLeft, Clock } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatInvoiceAmount } from '../invoice-format.utils'
 import type { DocumentListResponse } from '../invoice.types'
+import { Button } from '@/components/ui/Button'
 
 interface InvoiceSummaryBarProps {
   summary: DocumentListResponse['summary']
@@ -32,7 +33,7 @@ export const InvoiceSummaryBar: React.FC<InvoiceSummaryBarProps> = ({
 
       <div className="summary-hero-cards">
         {/* Received — teal gradient */}
-        <button
+        <Button variant="none"
           className="summary-hero-card summary-hero-card--teal"
           role="listitem"
           onClick={onReceivedClick}
@@ -46,10 +47,10 @@ export const InvoiceSummaryBar: React.FC<InvoiceSummaryBarProps> = ({
             </span>
           </div>
           <ChevronRight size={20} aria-hidden="true" className="summary-hero-chevron" />
-        </button>
+        </Button>
 
         {/* Due — coral gradient, or lime when all paid */}
-        <button
+        <Button variant="none"
           className={`summary-hero-card ${totalDue === 0 ? 'summary-hero-card--lime' : 'summary-hero-card--coral'}`}
           role="listitem"
           onClick={onDueClick}
@@ -63,7 +64,7 @@ export const InvoiceSummaryBar: React.FC<InvoiceSummaryBarProps> = ({
             </span>
           </div>
           <ChevronRight size={20} aria-hidden="true" className="summary-hero-chevron summary-hero-chevron--dark" />
-        </button>
+        </Button>
       </div>
     </div>
   )

@@ -8,6 +8,7 @@ import { confirmExpense, skipExpense } from '../expense.service'
 import { formatPaise } from '@/lib/format'
 import type { PendingExpenseItem } from '../expense.types'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface PendingExpenseCardProps {
   item: PendingExpenseItem
@@ -66,7 +67,7 @@ export function PendingExpenseCard({ item, onDone }: PendingExpenseCardProps) {
       <div className="pending-card__right">
         <p className="pending-card__amount">{formatPaise(item.amount)}</p>
         <div className="pending-card__actions">
-          <button
+          <Button variant="none"
             type="button"
             className="pending-card__btn pending-card__btn--confirm"
             onClick={handleConfirm}
@@ -75,8 +76,8 @@ export function PendingExpenseCard({ item, onDone }: PendingExpenseCardProps) {
             aria-label={t.expensesPendingConfirmAction ?? 'Confirm'}
           >
             {confirming ? '…' : <Check size={14} />}
-          </button>
-          <button
+          </Button>
+          <Button variant="none"
             type="button"
             className="pending-card__btn pending-card__btn--skip"
             onClick={handleSkip}
@@ -85,7 +86,7 @@ export function PendingExpenseCard({ item, onDone }: PendingExpenseCardProps) {
             aria-label={t.expensesPendingSkipAction ?? 'Skip'}
           >
             {skipping ? '…' : <X size={14} />}
-          </button>
+          </Button>
         </div>
       </div>
     </article>

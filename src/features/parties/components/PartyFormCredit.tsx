@@ -4,6 +4,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import type { PartyFormData, BalanceType, CreditLimitMode } from '../party.types'
 import { toLocalISODate } from '../../../lib/format'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface PartyFormCreditProps {
   form: PartyFormData
@@ -73,7 +74,7 @@ export function PartyFormCredit({ form, errors, onUpdate }: PartyFormCreditProps
         <span className="input-label" id="balance-type-label">{t.balanceDirection}</span>
         <div className="pill-tabs" role="group" aria-labelledby="balance-type-label">
           {BALANCE_TYPE_OPTIONS.map(option => (
-            <button
+            <Button variant="none"
               key={option.value}
               type="button"
               className={`pill-tab${balanceType === option.value ? ' active' : ''}`}
@@ -82,7 +83,7 @@ export function PartyFormCredit({ form, errors, onUpdate }: PartyFormCreditProps
               aria-label={option.label}
             >
               {option.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -117,7 +118,7 @@ export function PartyFormCredit({ form, errors, onUpdate }: PartyFormCreditProps
         <span className="input-label" id="credit-mode-label">{t.whenLimitExceeded}</span>
         <div className="pill-tabs" role="group" aria-labelledby="credit-mode-label">
           {CREDIT_MODE_OPTIONS.map(option => (
-            <button
+            <Button variant="none"
               key={option.value}
               type="button"
               className={`pill-tab${form.creditLimitMode === option.value ? ' active' : ''}`}
@@ -126,7 +127,7 @@ export function PartyFormCredit({ form, errors, onUpdate }: PartyFormCreditProps
               aria-label={`${t.creditLimitModeColon} ${option.label}`}
             >
               {option.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>

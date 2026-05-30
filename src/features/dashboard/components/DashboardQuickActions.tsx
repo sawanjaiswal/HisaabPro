@@ -9,6 +9,7 @@ import { BarChart3, CreditCard, MoreHorizontal, Package, Send, FileText } from '
 import type { LucideIcon } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { QuickActionConfig } from '../dashboard.constants'
+import { Button } from '@/components/ui/Button'
 
 interface DashboardQuickActionsProps {
   actions: QuickActionConfig[]
@@ -47,7 +48,7 @@ export const DashboardQuickActions: React.FC<DashboardQuickActionsProps> = ({
         const label = t[action.labelKey]
 
         return (
-          <button
+          <Button variant="none"
             key={action.id}
             className="dashboard-action-item"
             role="listitem"
@@ -62,7 +63,7 @@ export const DashboardQuickActions: React.FC<DashboardQuickActionsProps> = ({
               ) : null}
             </div>
             <span className="dashboard-action-label">{label}</span>
-          </button>
+          </Button>
         )
       })}
     </div>

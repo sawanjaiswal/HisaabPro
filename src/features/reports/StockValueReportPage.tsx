@@ -15,6 +15,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { useStockValueReport } from './hooks/useStockValueReport'
 import type { StockValueItem } from './hooks/useStockValueReport'
 import './stock-value-report.css'
+import { Button } from '@/components/ui/Button'
 
 // ─── CSV export ────────────────────────────────────────────────────────────────
 
@@ -89,7 +90,7 @@ export default function StockValueReportPage() {
         backTo={ROUTES.REPORTS}
         actions={
           status === 'success' && items.length > 0 ? (
-            <button
+            <Button variant="none"
               type="button"
               className="svr-export-btn"
               onClick={handleExport}
@@ -97,7 +98,7 @@ export default function StockValueReportPage() {
             >
               <Download size={16} aria-hidden="true" />
               {t.exportCsvLabel}
-            </button>
+            </Button>
           ) : undefined
         }
       />
@@ -158,7 +159,7 @@ export default function StockValueReportPage() {
             </div>
 
             {hasMore && (
-              <button
+              <Button variant="none"
                 type="button"
                 className="svr-load-more"
                 onClick={loadMore}
@@ -166,7 +167,7 @@ export default function StockValueReportPage() {
                 aria-busy={isFetchingMore}
               >
                 {isFetchingMore ? '...' : t.loadMoreProducts}
-              </button>
+              </Button>
             )}
           </>
         )}

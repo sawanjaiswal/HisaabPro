@@ -55,7 +55,7 @@ export default function AuditLogPage() {
 
   const headerActions = (
     <>
-      <button
+      <Button variant="none"
         type="button"
         className="staff-action-button"
         onClick={() => setRedactionsOpen(true)}
@@ -63,9 +63,9 @@ export default function AuditLogPage() {
         style={{ minWidth: 44, minHeight: 44 }}
       >
         <Shield size={20} aria-hidden="true" />
-      </button>
+      </Button>
       <AuditExportButton filters={filters} variant="icon" />
-      <button
+      <Button variant="none"
         type="button"
         className="staff-action-button"
         onClick={() => setFilterOpen(true)}
@@ -96,7 +96,7 @@ export default function AuditLogPage() {
             {activeCount}
           </span>
         )}
-      </button>
+      </Button>
     </>
   )
 

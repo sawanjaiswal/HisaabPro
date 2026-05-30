@@ -5,6 +5,7 @@ import { Search, AlertTriangle } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { PREDEFINED_CATEGORIES } from '../product.constants'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface ProductFilterBarProps {
   search: string
@@ -41,7 +42,7 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
       </div>
 
       <div className="pill-tabs" role="group" aria-label={t.filterProductsByCategory}>
-        <button
+        <Button variant="none"
           key="ALL"
           className={`pill-tab${activeCategoryId === 'ALL' ? ' active' : ''}`}
           onClick={() => onCategoryChange('ALL')}
@@ -49,9 +50,9 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
           aria-label={t.showAllProducts}
         >
           {t.all}
-        </button>
+        </Button>
         {onLowStockToggle && (
-          <button
+          <Button variant="none"
             key="LOW_STOCK"
             className={`pill-tab${lowStockOnly ? ' active' : ''}`}
             onClick={() => onLowStockToggle(!lowStockOnly)}
@@ -65,10 +66,10 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
                 <span className="pill-tab-badge" aria-hidden="true">{lowStockCount}</span>
               )}
             </span>
-          </button>
+          </Button>
         )}
         {PREDEFINED_CATEGORIES.map((cat) => (
-          <button
+          <Button variant="none"
             key={cat.id}
             className={`pill-tab${activeCategoryId === cat.id ? ' active' : ''}`}
             onClick={() => onCategoryChange(cat.id)}
@@ -76,7 +77,7 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
             aria-label={`${t.showCatProducts} ${cat.name} ${t.productsLabel}`}
           >
             {cat.name}
-          </button>
+          </Button>
         ))}
       </div>
     </div>

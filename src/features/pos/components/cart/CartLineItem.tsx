@@ -4,6 +4,7 @@ import { Minus, Plus, Trash2 } from 'lucide-react'
 import { paiseToInr } from '../../utils/pos.format'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PosCartItem } from '../../types/pos.types'
+import { Button } from '@/components/ui/Button'
 
 interface CartLineItemProps {
   item:           PosCartItem
@@ -33,7 +34,7 @@ export function CartLineItem({ item, onUpdateQty, onRemove }: CartLineItemProps)
         <div className="pos-cart-item__right">
           <p className="pos-cart-item__total">{paiseToInr(total)}</p>
           <div className="pos-cart-item__stepper" role="group" aria-label={`Quantity for ${item.name}`}>
-            <button
+            <Button variant="none"
               type="button"
               className="pos-stepper-btn"
               onClick={() =>
@@ -48,13 +49,13 @@ export function CartLineItem({ item, onUpdateQty, onRemove }: CartLineItemProps)
               ) : (
                 <Minus size={13} aria-hidden="true" />
               )}
-            </button>
+            </Button>
 
             <span className="pos-stepper-qty" aria-live="polite">
               {item.quantity}
             </span>
 
-            <button
+            <Button variant="none"
               type="button"
               className="pos-stepper-btn"
               onClick={() => onUpdateQty(item.productId, item.quantity + 1)}
@@ -62,7 +63,7 @@ export function CartLineItem({ item, onUpdateQty, onRemove }: CartLineItemProps)
               aria-label={t.posIncreaseQty ?? 'Increase quantity'}
             >
               <Plus size={13} aria-hidden="true" />
-            </button>
+            </Button>
           </div>
         </div>
       </div>

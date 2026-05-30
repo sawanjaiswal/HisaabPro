@@ -16,6 +16,7 @@ import { Drawer } from '@/components/ui/Drawer'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PriceList } from '@/features/price-lists/price-list.types'
 import './PriceListOverrideSelector.css'
+import { Button } from '@/components/ui/Button'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -95,7 +96,7 @@ export function PriceListOverrideSelector({
   return (
     <>
       {/* Chip */}
-      <button
+      <Button variant="none"
         type="button"
         className={`price-override-chip${isOverridden ? ' price-override-chip--applied' : ''}`}
         onClick={openPicker}
@@ -107,18 +108,18 @@ export function PriceListOverrideSelector({
         <span className="price-override-chip__label">{chipLabel}</span>
         {isOverridden ? (
           // Reset icon — clears override
-          <button
+          <Button variant="none"
             type="button"
             className="price-override-chip__reset"
             onClick={handleReset}
             aria-label={t.resetTier}
           >
             <X size={13} aria-hidden="true" />
-          </button>
+          </Button>
         ) : (
           <ChevronDown size={13} aria-hidden="true" />
         )}
-      </button>
+      </Button>
 
       {/* Picker drawer */}
       <Drawer
@@ -164,7 +165,7 @@ function PickerList({
 
         return (
           <li key={list.id} role="option" aria-selected={isSelected}>
-            <button
+            <Button variant="none"
               type="button"
               className={`price-override-picker__item${isSelected ? ' price-override-picker__item--selected' : ''}`}
               onClick={() => onSelect(list.id)}
@@ -178,7 +179,7 @@ function PickerList({
               {isSelected && (
                 <Check size={16} aria-hidden="true" className="text-primary-500" />
               )}
-            </button>
+            </Button>
           </li>
         )
       })}

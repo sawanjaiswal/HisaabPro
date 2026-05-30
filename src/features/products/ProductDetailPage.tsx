@@ -121,7 +121,7 @@ export default function ProductDetailPage() {
 
             <div className="pill-tabs product-detail-tabs" role="tablist" aria-label={t.productDetailSections}>
               {TABS.map((tab) => (
-                <button
+                <Button variant="none"
                   key={tab.id}
                   role="tab"
                   className={`pill-tab${activeTab === tab.id ? ' active' : ''}`}
@@ -130,7 +130,7 @@ export default function ProductDetailPage() {
                   aria-controls={`panel-${tab.id}`}
                 >
                   {tab.label}
-                </button>
+                </Button>
               ))}
             </div>
 

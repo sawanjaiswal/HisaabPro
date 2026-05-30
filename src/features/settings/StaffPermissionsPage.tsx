@@ -15,6 +15,7 @@ import { getStaff } from './staff.service'
 import type { Role, StaffMember } from './settings.types'
 import { RoleRow, PersonRow, ListSkeleton } from './StaffPermissionsPage.parts'
 import './staff-permissions.css'
+import { Button } from '@/components/ui/Button'
 
 type Tab = 'role' | 'person'
 type Status = 'loading' | 'error' | 'success'
@@ -72,7 +73,7 @@ export default function StaffPermissionsPage() {
       <PageContainer>
         <div className="sp-page stagger-enter space-y-6">
           <div className="sp-toggle" role="tablist" aria-label="View permissions by">
-            <button
+            <Button variant="none"
               type="button"
               role="tab"
               aria-selected={tab === 'role'}
@@ -80,8 +81,8 @@ export default function StaffPermissionsPage() {
               onClick={() => { setTab('role'); setExpandedId(null) }}
             >
               By Role
-            </button>
-            <button
+            </Button>
+            <Button variant="none"
               type="button"
               role="tab"
               aria-selected={tab === 'person'}
@@ -89,7 +90,7 @@ export default function StaffPermissionsPage() {
               onClick={() => { setTab('person'); setExpandedId(null) }}
             >
               By Person
-            </button>
+            </Button>
           </div>
 
           {status === 'loading' && <ListSkeleton />}

@@ -8,6 +8,7 @@ import { getDocuments } from '@/features/invoices/invoice.service'
 import { formatPaise } from '@/lib/format'
 import type { DocumentSummary } from '@/features/invoices/invoice-document.types'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface TemplatePickerProps {
   value: string
@@ -47,7 +48,7 @@ export function TemplatePicker({ value, onChange, error }: TemplatePickerProps) 
       </label>
 
       {/* Selected display / trigger */}
-      <button
+      <Button variant="none"
         type="button"
         className={`rf-template-btn${error ? ' rf-template-btn--error' : ''}`}
         onClick={() => setOpen(true)}
@@ -67,7 +68,7 @@ export function TemplatePicker({ value, onChange, error }: TemplatePickerProps) 
         {selectedDoc && (
           <CheckCircle2 size={16} className="rf-template-btn__check" aria-hidden="true" />
         )}
-      </button>
+      </Button>
 
       {error && (
         <p className="rf-error" role="alert">
@@ -88,14 +89,14 @@ export function TemplatePicker({ value, onChange, error }: TemplatePickerProps) 
               <h2 className="rf-template-sheet__title">
                 {t.recurringTemplatePickerTitle ?? 'Select Template Invoice'}
               </h2>
-              <button
+              <Button variant="none"
                 type="button"
                 className="rf-template-sheet__close"
                 onClick={() => setOpen(false)}
                 aria-label="Close"
               >
                 ✕
-              </button>
+              </Button>
             </div>
 
             <div className="rf-template-search">
@@ -126,7 +127,7 @@ export function TemplatePicker({ value, onChange, error }: TemplatePickerProps) 
               )}
 
               {docs.map((doc) => (
-                <button
+                <Button variant="none"
                   key={doc.id}
                   type="button"
                   role="listitem"
@@ -136,7 +137,7 @@ export function TemplatePicker({ value, onChange, error }: TemplatePickerProps) 
                   <span className="rf-template-row__number">{doc.documentNumber}</span>
                   <span className="rf-template-row__party">{doc.party.name}</span>
                   <span className="rf-template-row__amount">{formatPaise(doc.grandTotal)}</span>
-                </button>
+                </Button>
               ))}
             </div>
           </div>

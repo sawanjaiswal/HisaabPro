@@ -131,7 +131,7 @@ export function StatementPDFPreview({ open, onClose, partyId, partyName, partyPh
         size="lg"
         footer={
           <div style={{ display: 'flex', gap: 'var(--space-2)', width: '100%' }}>
-            <button
+            <Button variant="none"
               className="btn btn-outline btn-sm"
               onClick={handleWhatsApp}
               disabled={status !== 'success'}
@@ -140,8 +140,8 @@ export function StatementPDFPreview({ open, onClose, partyId, partyName, partyPh
             >
               <MessageCircle size={16} aria-hidden="true" />
               {t.stmtShareWhatsApp}
-            </button>
-            <button
+            </Button>
+            <Button variant="none"
               className="btn btn-outline btn-sm"
               onClick={handleShare}
               disabled={status !== 'success' || isSharing}
@@ -150,7 +150,7 @@ export function StatementPDFPreview({ open, onClose, partyId, partyName, partyPh
             >
               <Share2 size={16} aria-hidden="true" />
               {isSharing ? t.stmtSharing : t.stmtShare}
-            </button>
+            </Button>
             <Button
               variant="primary" size="sm"
               onClick={handleDownload}
@@ -189,9 +189,9 @@ export function StatementPDFPreview({ open, onClose, partyId, partyName, partyPh
         {status === 'success' && data && data.transactions.length === 0 && (
           <div style={{ textAlign: 'center', padding: 'var(--space-8)' }}>
             <p>{t.stmtNoTransactions}</p>
-            <button className="btn btn-outline btn-sm" onClick={() => setPickerOpen(true)}>
+            <Button variant="none" className="btn btn-outline btn-sm" onClick={() => setPickerOpen(true)}>
               {t.stmtChangePeriod}
-            </button>
+            </Button>
           </div>
         )}
 
@@ -199,9 +199,9 @@ export function StatementPDFPreview({ open, onClose, partyId, partyName, partyPh
         {status === 'error' && (
           <div style={{ textAlign: 'center', padding: 'var(--space-8)' }}>
             <p style={{ color: 'var(--color-error)' }}>{t.stmtLoadError}</p>
-            <button className="btn btn-outline btn-sm" onClick={() => refetch()}>
+            <Button variant="none" className="btn btn-outline btn-sm" onClick={() => refetch()}>
               {t.retry}
-            </button>
+            </Button>
           </div>
         )}
 

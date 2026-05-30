@@ -7,6 +7,7 @@ import { toLocalISODate } from '@/lib/format'
 import { FREQUENCY_LABELS } from '../recurring.constants'
 import type { RecurringFrequency, CreateRecurringInput } from '../recurring.types'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface RecurringCreateDrawerProps {
   open: boolean
@@ -107,7 +108,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
       title={t.newRecurringSchedule}
       persistent={submitting}
       footer={
-        <button
+        <Button variant="none"
           type="submit"
           form="recurring-create-form"
           className="recurring-drawer__submit-btn py-0"
@@ -115,7 +116,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
           aria-busy={submitting}
         >
           {submitting ? t.creatingSchedule : t.createScheduleBtn}
-        </button>
+        </Button>
       }
     >
       <form

@@ -13,6 +13,7 @@ import { CHANNEL_LABEL } from '../marketing.constants'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import type { MarketingChannel, ReminderRuleTrigger } from '../marketing.types'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 export default function ReminderRuleFormPage() {
   const { id } = useParams<{ id: string }>()
@@ -77,9 +78,9 @@ export default function ReminderRuleFormPage() {
     <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-        <button type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.REMINDERS)} aria-label={t.marketingBackToRemindersAria}>
+        <Button variant="none" type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.REMINDERS)} aria-label={t.marketingBackToRemindersAria}>
           <ArrowLeft size={20} aria-hidden="true" />
-        </button>
+        </Button>
         <h1 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>
           {isEdit ? t.marketingEditReminderRule : t.marketingNewReminderRule}
         </h1>
@@ -153,7 +154,7 @@ export default function ReminderRuleFormPage() {
           )}
         </div>
 
-        <button
+        <Button variant="none"
           type="submit"
           disabled={isPending || !canSubmit}
           style={{
@@ -169,7 +170,7 @@ export default function ReminderRuleFormPage() {
           }}
         >
           {isPending ? t.marketingSavingRule : t.marketingSaveRule}
-        </button>
+        </Button>
       </form>
     </div>
   )

@@ -16,6 +16,7 @@ import {
   STATUS_BADGE_VARIANTS,
 } from '../recurring.constants'
 import type { RecurringInvoice } from '../recurring.types'
+import { Button } from '@/components/ui/Button'
 
 interface RecurringCardProps {
   item: RecurringInvoice
@@ -73,7 +74,7 @@ export const RecurringCard: React.FC<RecurringCardProps> = ({
 
       <div className="recurring-card__actions">
         {item.status === 'ACTIVE' && (
-          <button
+          <Button variant="none"
             type="button"
             className="recurring-card__action-btn recurring-card__action-btn--pause"
             onClick={() => onPause(item.id)}
@@ -81,10 +82,10 @@ export const RecurringCard: React.FC<RecurringCardProps> = ({
           >
             <Pause size={14} aria-hidden="true" />
             {t.pause}
-          </button>
+          </Button>
         )}
         {item.status === 'PAUSED' && (
-          <button
+          <Button variant="none"
             type="button"
             className="recurring-card__action-btn recurring-card__action-btn--resume"
             onClick={() => onResume(item.id)}
@@ -92,9 +93,9 @@ export const RecurringCard: React.FC<RecurringCardProps> = ({
           >
             <Play size={14} aria-hidden="true" />
             {t.resume}
-          </button>
+          </Button>
         )}
-        <button
+        <Button variant="none"
           type="button"
           className="recurring-card__action-btn recurring-card__action-btn--delete"
           onClick={() => onDelete(item.id)}
@@ -102,7 +103,7 @@ export const RecurringCard: React.FC<RecurringCardProps> = ({
         >
           <Trash2 size={14} aria-hidden="true" />
           {t.delete}
-        </button>
+        </Button>
       </div>
     </div>
   )

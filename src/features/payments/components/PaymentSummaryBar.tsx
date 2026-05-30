@@ -8,6 +8,7 @@ import React from 'react'
 import { ChevronRight, ArrowDownLeft, ArrowUpRight } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PaymentListResponse } from '../payment.types'
+import { Button } from '@/components/ui/Button'
 
 interface PaymentSummaryBarProps {
   summary: PaymentListResponse['summary']
@@ -39,7 +40,7 @@ export const PaymentSummaryBar: React.FC<PaymentSummaryBarProps> = ({
 
       <div className="summary-hero-cards">
         {/* Money In — teal gradient */}
-        <button
+        <Button variant="none"
           className="summary-hero-card summary-hero-card--teal"
           role="listitem"
           onClick={onReceivedClick}
@@ -53,10 +54,10 @@ export const PaymentSummaryBar: React.FC<PaymentSummaryBarProps> = ({
             </span>
           </div>
           <ChevronRight size={20} aria-hidden="true" className="summary-hero-chevron" />
-        </button>
+        </Button>
 
         {/* Money Out — lime */}
-        <button
+        <Button variant="none"
           className="summary-hero-card summary-hero-card--lime"
           role="listitem"
           onClick={onPaidClick}
@@ -70,7 +71,7 @@ export const PaymentSummaryBar: React.FC<PaymentSummaryBarProps> = ({
             </span>
           </div>
           <ChevronRight size={20} aria-hidden="true" className="summary-hero-chevron summary-hero-chevron--dark" />
-        </button>
+        </Button>
       </div>
     </div>
   )

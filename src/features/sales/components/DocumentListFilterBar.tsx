@@ -7,6 +7,7 @@ import type { DocumentStatus } from '../../invoices/invoice.types'
 import '../sales-filter-bar.css'
 import '../../invoices/invoice-filter-bar.css'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 type StatusFilter = DocumentStatus | 'ALL'
 
@@ -45,20 +46,20 @@ export const DocumentListFilterBar: React.FC<DocumentListFilterBarProps> = ({
           aria-label={t.searchInvoicesAriaLabel ?? 'Search documents'}
         />
         {search && (
-          <button
+          <Button variant="none"
             type="button"
             className="sales-filter-search__clear"
             onClick={() => onSearchChange('')}
             aria-label="Clear search"
           >
             <X size={14} aria-hidden="true" />
-          </button>
+          </Button>
         )}
       </div>
 
       <div className="sales-filter-chips" role="group" aria-label="Filter by status">
         {STATUS_CHIPS.map((chip) => (
-          <button
+          <Button variant="none"
             key={chip.id}
             type="button"
             role="radio"
@@ -67,7 +68,7 @@ export const DocumentListFilterBar: React.FC<DocumentListFilterBarProps> = ({
             onClick={() => onStatusChange(chip.id)}
           >
             {chip.label}
-          </button>
+          </Button>
         ))}
       </div>
     </div>

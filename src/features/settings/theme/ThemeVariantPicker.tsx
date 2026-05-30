@@ -3,6 +3,7 @@ import { useTheme } from '@/context/ThemeContext'
 import { useLanguage } from '@/hooks/useLanguage'
 import { THEME_VARIANT_OPTIONS } from './theme-variant.constants'
 import './theme.css'
+import { Button } from '@/components/ui/Button'
 
 export function ThemeVariantPicker() {
   const { variant, setVariant } = useTheme()
@@ -13,7 +14,7 @@ export function ThemeVariantPicker() {
       {THEME_VARIANT_OPTIONS.map((opt) => {
         const selected = variant === opt.id
         return (
-          <button
+          <Button variant="none"
             key={opt.id}
             type="button"
             role="radio"
@@ -37,7 +38,7 @@ export function ThemeVariantPicker() {
             <span className="theme-variant-check" aria-hidden="true">
               {selected && <Check size={18} strokeWidth={2.4} />}
             </span>
-          </button>
+          </Button>
         )
       })}
     </div>

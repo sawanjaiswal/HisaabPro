@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { MessageCircle } from 'lucide-react'
 import { ReminderComposerSheet } from '../ReminderComposerSheet'
 import type { PartyInBucket } from '../collections.types'
+import { Button } from '@/components/ui/Button'
 
 interface ReminderActionBarProps {
   selectedParties: PartyInBucket[]
@@ -31,14 +32,14 @@ export function ReminderActionBar({
           {count} {count === 1 ? 'party' : 'parties'} selected
         </span>
         <div className="reminder-action-bar__buttons">
-          <button
+          <Button variant="none"
             type="button"
             className="reminder-action-bar__clear"
             onClick={onClearSelection}
           >
             Clear
-          </button>
-          <button
+          </Button>
+          <Button variant="none"
             type="button"
             className="reminder-action-bar__send"
             onClick={() => setSheetOpen(true)}
@@ -46,7 +47,7 @@ export function ReminderActionBar({
           >
             <MessageCircle size={16} aria-hidden="true" />
             Send Reminder ({count})
-          </button>
+          </Button>
         </div>
       </div>
 

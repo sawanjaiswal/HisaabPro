@@ -13,6 +13,7 @@ import type { CompositionRate, TaxPricingMode } from './gst.types'
 import type { GstFormState, GstinValidation } from './useGstSettingsForm'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface GstFormFieldsProps {
   form: GstFormState
@@ -105,7 +106,7 @@ export function GstFormFields({
             <span className="gsv2-label">{t.taxPricingModeLabel}</span>
             <div className="gsv2-chip-group" role="group" aria-label={t.taxPricingModeLabel}>
               {PRICING_MODES.map(mode => (
-                <button
+                <Button variant="none"
                   key={mode}
                   className={[
                     'gsv2-chip-btn',
@@ -116,7 +117,7 @@ export function GstFormFields({
                   disabled={isSaving || !form.gstEnabled}
                 >
                   {mode === 'EXCLUSIVE' ? t.taxModeExclusive : t.taxModeInclusive}
-                </button>
+                </Button>
               ))}
             </div>
             <span className="gsv2-hint">
@@ -131,7 +132,7 @@ export function GstFormFields({
               <div className="gsv2-row-desc">{t.compositionSchemeDesc}</div>
             </div>
             <div className="gsv2-row-right">
-              <button
+              <Button variant="none"
                 className="gsv2-toggle"
                 role="switch"
                 aria-checked={form.compositionScheme}
@@ -142,7 +143,7 @@ export function GstFormFields({
                 disabled={isSaving || !form.gstEnabled}
               >
                 <span className="gsv2-toggle-thumb" />
-              </button>
+              </Button>
             </div>
           </div>
 

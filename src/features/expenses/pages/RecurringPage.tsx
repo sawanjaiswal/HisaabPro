@@ -18,6 +18,7 @@ import type { ExpenseCategory, RecurringTemplate } from '../expense.types'
 import { useLanguage } from '@/hooks/useLanguage'
 import '../expenses.css'
 import '../expenses-upgrade.css'
+import { Button } from '@/components/ui/Button'
 
 export default function RecurringPage() {
   const { t } = useLanguage()
@@ -85,9 +86,9 @@ export default function RecurringPage() {
                 title={t.expensesRecurringEmpty ?? 'No recurring expenses'}
                 description="Set up rent, salaries, subscriptions — confirm or skip each month."
                 action={
-                  <button type="button" className="expense-add-btn" onClick={openAdd}>
+                  <Button variant="none" type="button" className="expense-add-btn" onClick={openAdd}>
                     <Plus size={14} aria-hidden="true" /> {t.expensesRecurringAddAction ?? 'Add Recurring Expense'}
-                  </button>
+                  </Button>
                 }
               />
             ) : (
@@ -106,9 +107,9 @@ export default function RecurringPage() {
         )}
 
         {(query.data ?? []).length > 0 && (
-          <button type="button" className="expense-add-btn" onClick={openAdd} style={{ marginTop: '0.5rem' }}>
+          <Button variant="none" type="button" className="expense-add-btn" onClick={openAdd} style={{ marginTop: '0.5rem' }}>
             <Plus size={14} aria-hidden="true" /> {t.expensesRecurringAddAction ?? 'Add Recurring'}
-          </button>
+          </Button>
         )}
       </PageContainer>
 

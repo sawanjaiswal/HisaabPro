@@ -9,6 +9,7 @@ import { useReminderRuleList, useDeleteReminderRule, useToggleReminderRule } fro
 import { ChannelBadge } from '../components/ChannelBadge'
 import { MARKETING_ROUTES, TRIGGER_BADGE, TRIGGER_LABEL_KEYS } from '../marketing.constants'
 import type { ReminderRule } from '../marketing.types'
+import { Button } from '@/components/ui/Button'
 
 export default function ReminderRuleListPage() {
   const navigate = useNavigate()
@@ -22,18 +23,18 @@ export default function ReminderRuleListPage() {
     <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-        <button type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.HUB)} aria-label={t.marketingBackToMarketingAria}>
+        <Button variant="none" type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.HUB)} aria-label={t.marketingBackToMarketingAria}>
           <ArrowLeft size={20} aria-hidden="true" />
-        </button>
+        </Button>
         <h1 style={{ flex: 1, fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>{t.marketingReminderRulesTitle}</h1>
-        <button
+        <Button variant="none"
           type="button"
           onClick={() => navigate(MARKETING_ROUTES.REMINDER_NEW)}
           style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
           aria-label={t.marketingReminderNewAria}
         >
           <Plus size={16} aria-hidden="true" /> {t.marketingNew}
-        </button>
+        </Button>
       </div>
 
       {status === 'loading' && (
@@ -45,9 +46,9 @@ export default function ReminderRuleListPage() {
       {status === 'error' && (
         <div style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--color-error-600)', fontSize: '14px' }}>
           {t.marketingReminderLoadFailed}
-          <button type="button" onClick={refresh} style={{ marginLeft: 8, background: 'none', border: 'none', color: 'var(--color-primary-600)', cursor: 'pointer', fontSize: '14px' }}>
+          <Button variant="none" type="button" onClick={refresh} style={{ marginLeft: 8, background: 'none', border: 'none', color: 'var(--color-primary-600)', cursor: 'pointer', fontSize: '14px' }}>
             <RefreshCw size={14} style={{ display: 'inline', verticalAlign: 'middle' }} aria-hidden="true" /> {t.marketingRetry}
-          </button>
+          </Button>
         </div>
       )}
 
@@ -57,9 +58,9 @@ export default function ReminderRuleListPage() {
           title={t.marketingNoRemindersYet}
           description={t.marketingNoRemindersDesc}
           action={
-            <button type="button" onClick={() => navigate(MARKETING_ROUTES.REMINDER_NEW)} style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
+            <Button variant="none" type="button" onClick={() => navigate(MARKETING_ROUTES.REMINDER_NEW)} style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
               {t.marketingCreateRule}
-            </button>
+            </Button>
           }
         />
       )}
@@ -85,7 +86,7 @@ export default function ReminderRuleListPage() {
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
                   {/* Toggle */}
-                  <button
+                  <Button variant="none"
                     type="button"
                     onClick={() => toggleMutation.mutate({ id: rule.id, name: rule.name })}
                     disabled={toggleMutation.isPending}
@@ -113,25 +114,25 @@ export default function ReminderRuleListPage() {
                       transition: 'left 0.15s',
                       boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
                     }} />
-                  </button>
+                  </Button>
                   {/* Actions */}
                   <div style={{ display: 'flex', gap: '4px' }}>
-                    <button
+                    <Button variant="none"
                       type="button"
                       onClick={() => navigate(MARKETING_ROUTES.REMINDER_EDIT.replace(':id', rule.id))}
                       style={{ padding: '7px', borderRadius: '8px', border: '1px solid var(--color-gray-200)', background: 'white', cursor: 'pointer', display: 'flex' }}
                       aria-label={t.marketingEditRuleAria.replace('{{name}}', rule.name)}
                     >
                       <Pencil size={14} color="var(--color-gray-500)" aria-hidden="true" />
-                    </button>
-                    <button
+                    </Button>
+                    <Button variant="none"
                       type="button"
                       onClick={() => setConfirmDelete(rule)}
                       style={{ padding: '7px', borderRadius: '8px', border: '1px solid var(--color-error-200)', background: 'white', cursor: 'pointer', display: 'flex' }}
                       aria-label={t.marketingDeleteRuleAria.replace('{{name}}', rule.name)}
                     >
                       <Trash2 size={14} color="var(--color-error-500)" aria-hidden="true" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -148,15 +149,15 @@ export default function ReminderRuleListPage() {
             <h3 id="del-rule-title" style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-gray-900)', marginBottom: '10px' }}>{t.marketingDeleteRuleTitle}</h3>
             <p style={{ fontSize: '14px', color: 'var(--color-gray-600)', marginBottom: '20px' }}>{t.marketingDeleteRuleDesc}</p>
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button type="button" onClick={() => setConfirmDelete(null)} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '1px solid var(--color-gray-300)', background: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>{t.marketingCancel}</button>
-              <button
+              <Button variant="none" type="button" onClick={() => setConfirmDelete(null)} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '1px solid var(--color-gray-300)', background: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>{t.marketingCancel}</Button>
+              <Button variant="none"
                 type="button"
                 onClick={() => { deleteMutation.mutate({ id: confirmDelete.id, name: confirmDelete.name }); setConfirmDelete(null) }}
                 disabled={deleteMutation.isPending}
                 style={{ flex: 1, padding: '12px', borderRadius: '10px', border: 'none', background: 'var(--color-error-600)', color: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
               >
                 {t.marketingDelete}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

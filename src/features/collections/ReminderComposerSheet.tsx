@@ -19,6 +19,7 @@ import { ReminderPreview } from './components/ReminderPreview'
 import { ReminderResultScreen } from './ReminderResultScreen'
 import type { PartyInBucket } from './collections.types'
 import { Textarea } from '@/components/ui/Textarea'
+import { Button } from '@/components/ui/Button'
 
 type Stage = 'compose' | 'sending' | 'result'
 
@@ -112,7 +113,7 @@ export function ReminderComposerSheet({ open, onClose, selectedParties, business
             <p className="reminder-composer__label">Template</p>
             <div className="reminder-composer__chips" role="group" aria-label="Select template">
               {TEMPLATE_KEYS.map((key) => (
-                <button
+                <Button variant="none"
                   key={key}
                   type="button"
                   className={`reminder-composer__chip${templateKey === key ? ' reminder-composer__chip--active' : ''}`}
@@ -120,7 +121,7 @@ export function ReminderComposerSheet({ open, onClose, selectedParties, business
                   aria-pressed={templateKey === key}
                 >
                   {REMINDER_TEMPLATES[key].label}
-                </button>
+                </Button>
               ))}
             </div>
           </section>
@@ -159,14 +160,14 @@ export function ReminderComposerSheet({ open, onClose, selectedParties, business
           )}
 
           <div className="reminder-composer__footer">
-            <button
+            <Button variant="none"
               type="button"
               className="reminder-composer__send-btn"
               disabled={validParties.length === 0}
               onClick={handleSend}
             >
               Send to {validParties.length} {validParties.length === 1 ? 'party' : 'parties'}
-            </button>
+            </Button>
           </div>
         </div>
       )}

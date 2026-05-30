@@ -35,7 +35,7 @@ export function ImportPreview({
         <span className="import-preview-type-label">{t.importAs}:</span>
         <div className="pill-tabs" role="tablist">
           {PARTY_TYPES.map((t) => (
-            <button
+            <Button variant="none"
               key={t}
               type="button"
               role="tab"
@@ -44,7 +44,7 @@ export function ImportPreview({
               aria-selected={partyType === t}
             >
               {PARTY_TYPE_LABELS[t]}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -78,14 +78,14 @@ export function ImportPreview({
             {contact.error ? (
               <X size={18} className="import-preview-icon-error" aria-hidden="true" />
             ) : (
-              <button
+              <Button variant="none"
                 type="button"
                 className={`import-preview-check${contact.isSelected ? ' checked' : ''}`}
                 onClick={() => onToggle(contact.id)}
                 aria-label={`${contact.isSelected ? 'Deselect' : 'Select'} ${contact.name}`}
               >
                 {contact.isSelected && <Check size={14} aria-hidden="true" />}
-              </button>
+              </Button>
             )}
 
             <div className="import-preview-info">

@@ -104,7 +104,7 @@ export default function BomListPage() {
                 <span className="bom-card__name">{bom.name}</span>
                 <div className="bom-card__actions">
                   <span className="bom-card__count">{bom.componentCount} component{bom.componentCount !== 1 ? 's' : ''}</span>
-                  <button
+                  <Button variant="none"
                     type="button"
                     className="btn btn-ghost btn-icon btn-sm"
                     onClick={(e) => {
@@ -115,7 +115,7 @@ export default function BomListPage() {
                     style={{ minWidth: 44, minHeight: 44 }}
                   >
                     <Play size={14} aria-hidden="true" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>

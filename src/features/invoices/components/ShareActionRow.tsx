@@ -5,6 +5,7 @@
  */
 
 import type { ReactNode } from 'react'
+import { Button } from '@/components/ui/Button'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -46,7 +47,7 @@ export function ShareActionRow({
 
   return (
     <li>
-      <button
+      <Button variant="none"
         type="button"
         className={rowClass}
         onClick={onClick}
@@ -68,7 +69,7 @@ export function ShareActionRow({
             <span className="share-action-sub">{subLabel}</span>
           )}
         </span>
-      </button>
+      </Button>
     </li>
   )
 }

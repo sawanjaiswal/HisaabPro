@@ -61,7 +61,7 @@ export default function ProductionRunListPage() {
       {/* Status filter */}
       <div className="pr-filter-bar" role="group" aria-label="Filter by status">
         {STATUS_OPTIONS.map((opt) => (
-          <button
+          <Button variant="none"
             key={opt.value}
             type="button"
             className={`pr-filter-chip${(filters.status ?? '') === opt.value ? ' is-active' : ''}`}
@@ -69,7 +69,7 @@ export default function ProductionRunListPage() {
             aria-pressed={(filters.status ?? '') === opt.value}
           >
             {opt.label}
-          </button>
+          </Button>
         ))}
       </div>
 

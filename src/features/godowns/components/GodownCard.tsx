@@ -4,6 +4,7 @@ import { Warehouse, MapPin } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { truncateAddress } from '../godown.utils'
 import type { Godown } from '../godown.types'
+import { Button } from '@/components/ui/Button'
 
 interface GodownCardProps {
   godown: Godown
@@ -13,7 +14,7 @@ interface GodownCardProps {
 export function GodownCard({ godown, onClick }: GodownCardProps) {
   const { t } = useLanguage()
   return (
-    <button
+    <Button variant="none"
       type="button"
       className="godown-card"
       onClick={() => onClick(godown.id)}
@@ -37,6 +38,6 @@ export function GodownCard({ godown, onClick }: GodownCardProps) {
           </div>
         )}
       </div>
-    </button>
+    </Button>
   )
 }

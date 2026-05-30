@@ -163,12 +163,12 @@ export default function Gstr1Page() {
               icon={<FileText size={22} aria-hidden="true" />}
               title={t.gstr1NoB2bFound}
               action={
-                <button
+                <Button variant="none"
                   className="gstr1-backfill-link"
                   onClick={() => navigate(ROUTES.GST_BACKFILL)}
                 >
                   {t.gstr1RunBackfill}
-                </button>
+                </Button>
               }
             />
           )}
@@ -188,13 +188,13 @@ export default function Gstr1Page() {
               >
                 {exportMut.isPending ? t.gstr1Exporting : t.gstr1DownloadJson}
               </Button>
-              <button
+              <Button variant="none"
                 className="btn btn-outline"
                 disabled={exportMut.isPending}
                 onClick={() => { void handleExport('CSV') }}
               >
                 {t.gstr1DownloadCsv}
-              </button>
+              </Button>
             </div>
           )}
 

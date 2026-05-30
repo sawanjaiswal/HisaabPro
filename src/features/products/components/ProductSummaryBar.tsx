@@ -9,6 +9,7 @@ import { ChevronRight, TrendingUp, AlertTriangle } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatProductPrice } from '../product.utils'
 import type { ProductListResponse } from '../product.types'
+import { Button } from '@/components/ui/Button'
 
 interface ProductSummaryBarProps {
   summary: ProductListResponse['summary']
@@ -30,7 +31,7 @@ export const ProductSummaryBar: React.FC<ProductSummaryBarProps> = ({
 
       <div className="summary-hero-cards">
         {/* Stock Value — teal gradient */}
-        <button
+        <Button variant="none"
           className="summary-hero-card summary-hero-card--teal"
           role="listitem"
           onClick={onStockClick}
@@ -44,10 +45,10 @@ export const ProductSummaryBar: React.FC<ProductSummaryBarProps> = ({
             </span>
           </div>
           <ChevronRight size={20} aria-hidden="true" className="summary-hero-chevron" />
-        </button>
+        </Button>
 
         {/* Low Stock Alert — amber/warning or lime/safe */}
-        <button
+        <Button variant="none"
           className={`summary-hero-card ${lowStockCount > 0 ? 'summary-hero-card--amber' : 'summary-hero-card--safe'}`}
           role="listitem"
           onClick={onLowStockClick}
@@ -61,7 +62,7 @@ export const ProductSummaryBar: React.FC<ProductSummaryBarProps> = ({
             </span>
           </div>
           <ChevronRight size={20} aria-hidden="true" className="summary-hero-chevron summary-hero-chevron--dark" />
-        </button>
+        </Button>
       </div>
     </div>
   )

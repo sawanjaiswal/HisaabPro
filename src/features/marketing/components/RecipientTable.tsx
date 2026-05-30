@@ -6,6 +6,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { listCampaignRecipients } from '../marketing.service'
 import { DeliveryStatusBadge } from './DeliveryStatusBadge'
 import { formatPaiseAsRupees } from '../marketing.utils'
+import { Button } from '@/components/ui/Button'
 
 interface Props {
   campaignId: string
@@ -41,9 +42,9 @@ export function RecipientTable({ campaignId }: Props) {
     return (
       <div style={{ padding: '16px', color: 'var(--color-error-600)', fontSize: '14px' }}>
         {t.marketingRecipientsLoadFailed}
-        <button type="button" onClick={() => query.refetch()} style={{ marginLeft: 8, color: 'var(--color-primary-600)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px' }}>
+        <Button variant="none" type="button" onClick={() => query.refetch()} style={{ marginLeft: 8, color: 'var(--color-primary-600)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px' }}>
           {t.marketingRetry}
-        </button>
+        </Button>
       </div>
     )
   }
@@ -85,7 +86,7 @@ export function RecipientTable({ campaignId }: Props) {
         </table>
       </div>
       {query.data?.nextCursor && (
-        <button
+        <Button variant="none"
           type="button"
           onClick={handleLoadMore}
           disabled={query.isFetching}
@@ -103,7 +104,7 @@ export function RecipientTable({ campaignId }: Props) {
           }}
         >
           {query.isFetching ? t.marketingLoadingMore : t.marketingLoadMore}
-        </button>
+        </Button>
       )}
     </div>
   )

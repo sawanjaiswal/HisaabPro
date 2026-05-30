@@ -5,6 +5,7 @@ import { Plus } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { ProductSummary } from '@/lib/types/product.types'
 import { formatPaise } from '@/lib/format'
+import { Button } from '@/components/ui/Button'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -50,7 +51,7 @@ export const ProductSearchResultItem: React.FC<ProductSearchResultItemProps> = (
         <span className="product-search-result-price">
           {formatPaise(product.salePrice)}
         </span>
-        <button
+        <Button variant="none"
           type="button"
           className={`product-search-add-btn${isAdded ? ' product-search-add-btn--added' : ''}`}
           onClick={() => !isAdded && onAdd(product)}
@@ -65,7 +66,7 @@ export const ProductSearchResultItem: React.FC<ProductSearchResultItemProps> = (
               {t.add}
             </>
           )}
-        </button>
+        </Button>
       </div>
     </li>
   )

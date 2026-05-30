@@ -16,6 +16,7 @@ import type { FYClosure } from '@/features/reports/finance.types'
 import './accounting.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 function fyLabel(fy: string): string {
   const s = 2000 + parseInt(fy.slice(0, 2), 10)
@@ -133,7 +134,7 @@ export default function FYClosurePage() {
               onChange={(e) => setClosingFY(e.target.value.replace(/\D/g, '').slice(0, 4))}
               aria-label={t.fyAria}
             />
-            <button
+            <Button variant="none"
               type="button"
               className="fy-close-card__btn"
               onClick={handleClose}
@@ -142,7 +143,7 @@ export default function FYClosurePage() {
             >
               <Lock size={14} aria-hidden="true" />
               {actionPending ? t.loading : t.closeFyBtn}
-            </button>
+            </Button>
           </div>
           {alreadyClosed && <p className="fy-close-card__note">{t.fyAlreadyClosedMsg.replace('{fy}', fyLabel(currentFY))}</p>}
         </div>
@@ -168,7 +169,7 @@ export default function FYClosurePage() {
                   <span className="fy-card__detail">{t.closedDateLabel} {new Date(c.closedAt).toLocaleDateString('en-IN')}</span>
                 </div>
                 {c.status === 'CLOSED' && (
-                  <button
+                  <Button variant="none"
                     type="button"
                     className="fy-card__reopen-btn"
                     onClick={() => handleReopen(c.financialYear)}
@@ -176,7 +177,7 @@ export default function FYClosurePage() {
                     aria-label={t.reopenFyAria.replace('{fy}', fyLabel(c.financialYear))}
                   >
                     <Unlock size={14} aria-hidden="true" /> {t.reopenFy}
-                  </button>
+                  </Button>
                 )}
               </div>
             ))}

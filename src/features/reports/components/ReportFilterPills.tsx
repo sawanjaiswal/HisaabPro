@@ -6,6 +6,7 @@
 
 import React from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 interface FilterOption {
   value: string
@@ -36,7 +37,7 @@ export const ReportFilterPills: React.FC<ReportFilterPillsProps> = ({
       {options.map((option) => {
         const isActive = option.value === activeValue
         return (
-          <button
+          <Button variant="none"
             key={option.value}
             className={`report-filter-pill${isActive ? ' report-filter-pill--active' : ''}`}
             onClick={() => onChange(option.value)}
@@ -45,7 +46,7 @@ export const ReportFilterPills: React.FC<ReportFilterPillsProps> = ({
             type="button"
           >
             {option.label}
-          </button>
+          </Button>
         )
       })}
     </div>

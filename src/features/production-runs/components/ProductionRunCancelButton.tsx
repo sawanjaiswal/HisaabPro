@@ -8,6 +8,7 @@ import { ApiError } from '@/lib/api'
 import { useQueryClient } from '@tanstack/react-query'
 import { cancelProductionRun } from '../production-run.service'
 import { prKeys } from '../hooks/useProductionRuns'
+import { Button } from '@/components/ui/Button'
 
 interface ProductionRunCancelButtonProps {
   runId: string
@@ -51,7 +52,7 @@ export function ProductionRunCancelButton({
 
   return (
     <>
-      <button
+      <Button variant="none"
         type="button"
         className="btn btn-danger pr-cancel-btn"
         onClick={() => setConfirm(true)}
@@ -63,7 +64,7 @@ export function ProductionRunCancelButton({
           ? <><Loader2 size={16} className="btn-spinner" aria-hidden="true" /> Cancelling...</>
           : <><XCircle size={16} aria-hidden="true" /> Cancel Run</>
         }
-      </button>
+      </Button>
 
       <ConfirmDialog
         open={confirm}

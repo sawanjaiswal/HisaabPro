@@ -19,6 +19,7 @@ import { getAgingReport } from './finance.service'
 import type { AgingReportData, AgingType } from './finance.types'
 import './report-finance.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 export default function AgingReportPage() {
   const { t } = useLanguage()
@@ -72,13 +73,13 @@ export default function AgingReportPage() {
       <Header title={t.agingReport} backTo={ROUTES.REPORTS} />
       <PageContainer variant="list" className="space-y-6">
         <div className="aging-tabs stagger-filters" role="group" aria-label={t.reportType}>
-          <button type="button" className={`aging-tab${agingType === 'RECEIVABLE' ? ' aging-tab--active' : ''}`} onClick={() => setAgingType('RECEIVABLE')} aria-pressed={agingType === 'RECEIVABLE'}>{t.receivable}</button>
-          <button type="button" className={`aging-tab${agingType === 'PAYABLE' ? ' aging-tab--active' : ''}`} onClick={() => setAgingType('PAYABLE')} aria-pressed={agingType === 'PAYABLE'}>{t.payable}</button>
+          <Button variant="none" type="button" className={`aging-tab${agingType === 'RECEIVABLE' ? ' aging-tab--active' : ''}`} onClick={() => setAgingType('RECEIVABLE')} aria-pressed={agingType === 'RECEIVABLE'}>{t.receivable}</Button>
+          <Button variant="none" type="button" className={`aging-tab${agingType === 'PAYABLE' ? ' aging-tab--active' : ''}`} onClick={() => setAgingType('PAYABLE')} aria-pressed={agingType === 'PAYABLE'}>{t.payable}</Button>
         </div>
 
-        <button type="button" className="finance-date-bar__refresh-btn aging-refresh-btn" onClick={refresh} aria-label={t.refreshAgingReport}>
+        <Button variant="none" type="button" className="finance-date-bar__refresh-btn aging-refresh-btn" onClick={refresh} aria-label={t.refreshAgingReport}>
           <RefreshCw size={14} aria-hidden="true" /> {t.refresh}
-        </button>
+        </Button>
 
         {(!data || data.rows.length === 0) && (
           <EmptyState

@@ -8,6 +8,7 @@ import { useLanguage } from '@/context/LanguageContext'
 import { ROUTES } from '@/config/routes.config'
 import './LoginPage.css'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 const isDevMode = AUTH_MODE === 'dev-login'
 
@@ -124,25 +125,25 @@ export default function LoginPage() {
             </div>
           )}
 
-          <button
+          <Button variant="none"
             type="submit"
             className="login-page__submit"
             disabled={!isValid || loading}
           >
             {isRetrying ? t.connectingToServer : loading ? t.signingIn : t.signIn}
-          </button>
+          </Button>
 
           <LoginTips visible={isRetrying} />
 
           {showBiometric && (
-            <button
+            <Button variant="none"
               type="button"
               className="login-page__submit login-page__submit--biometric"
               disabled={biometricLoading}
               onClick={handleBiometric}
             >
               {biometricLoading ? t.authenticating : t.useBiometric}
-            </button>
+            </Button>
           )}
 
           <p className="login-page__hint">

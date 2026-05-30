@@ -26,7 +26,7 @@ export default function StaffPage() {
   const [roleTarget, setRoleTarget] = useState<{ staffId: string; staffName: string; currentRoleId: string } | null>(null)
 
   const inviteAction = (
-    <button
+    <Button variant="none"
       type="button"
       className="staff-action-button"
       onClick={() => navigate(ROUTES.SETTINGS_STAFF_INVITE)}
@@ -34,7 +34,7 @@ export default function StaffPage() {
       style={{ minWidth: 44, minHeight: 44 }}
     >
       <UserPlus size={20} aria-hidden="true" />
-    </button>
+    </Button>
   )
 
   return (
@@ -121,7 +121,7 @@ export default function StaffPage() {
         >
           <div className="staff-role-picker" role="listbox" aria-label={t.selectARole}>
             {roles.map((role) => (
-              <button
+              <Button variant="none"
                 key={role.id}
                 type="button"
                 className={`staff-role-option${role.id === roleTarget?.currentRoleId ? ' staff-role-option--active' : ''}`}
@@ -142,7 +142,7 @@ export default function StaffPage() {
                 {role.id === roleTarget?.currentRoleId && (
                   <Check size={18} className="staff-role-option-check" aria-hidden="true" />
                 )}
-              </button>
+              </Button>
             ))}
           </div>
         </Drawer>

@@ -7,6 +7,7 @@ import { PAYMENT_MODES } from '../../utils/pos.constants'
 import type { PaymentSplit } from '../../types/pos.types'
 import type { TranslationKey } from '@/lib/translations'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface SplitTenderRowProps {
   split:        PaymentSplit
@@ -47,14 +48,14 @@ export function SplitTenderRow({
         placeholder="0.00"
       />
       {canRemove && (
-        <button
+        <Button variant="none"
           type="button"
           className="pos-split-row__remove"
           onClick={() => onRemove(index)}
           aria-label={`Remove ${label} payment`}
         >
           <Trash2 size={14} aria-hidden="true" />
-        </button>
+        </Button>
       )}
     </div>
   )

@@ -11,6 +11,7 @@ import { ChannelBadge } from '../components/ChannelBadge'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import { formatDate, formatPaiseAsRupees } from '../marketing.utils'
 import type { CampaignStatus } from '../marketing.types'
+import { Button } from '@/components/ui/Button'
 
 type FilterValue = CampaignStatus | ''
 
@@ -44,24 +45,24 @@ export default function CampaignListPage() {
     <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-        <button type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.HUB)} aria-label={t.marketingBackToMarketingAria}>
+        <Button variant="none" type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.HUB)} aria-label={t.marketingBackToMarketingAria}>
           <ArrowLeft size={20} aria-hidden="true" />
-        </button>
+        </Button>
         <h1 style={{ flex: 1, fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>{t.marketingCampaignsTitle}</h1>
-        <button
+        <Button variant="none"
           type="button"
           onClick={() => navigate(MARKETING_ROUTES.CAMPAIGN_NEW)}
           style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer', minHeight: '44px' }}
           aria-label={t.marketingNewAria}
         >
           <Plus size={16} aria-hidden="true" /> {t.marketingNew}
-        </button>
+        </Button>
       </div>
 
       {/* Status filter chips */}
       <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', marginBottom: '20px' }}>
         {FILTERS.map(({ value: f, key }) => (
-          <button
+          <Button variant="none"
             key={f || 'all'}
             type="button"
             onClick={() => setStatusFilter(f)}
@@ -80,7 +81,7 @@ export default function CampaignListPage() {
             aria-pressed={statusFilter === f}
           >
             {t[key]}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -91,9 +92,9 @@ export default function CampaignListPage() {
       {status === 'error' && (
         <div style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--color-error-600)', fontSize: '14px' }}>
           <div>{t.marketingCampaignsLoadFailed}</div>
-          <button type="button" onClick={refresh} style={{ marginTop: '12px', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--color-error-300)', background: 'white', color: 'var(--color-error-600)', cursor: 'pointer', fontSize: '14px', minHeight: '44px' }}>
+          <Button variant="none" type="button" onClick={refresh} style={{ marginTop: '12px', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--color-error-300)', background: 'white', color: 'var(--color-error-600)', cursor: 'pointer', fontSize: '14px', minHeight: '44px' }}>
             <RefreshCw size={14} aria-hidden="true" /> {t.marketingRetry}
-          </button>
+          </Button>
         </div>
       )}
 
@@ -104,9 +105,9 @@ export default function CampaignListPage() {
           title={t.marketingNoCampaignsYet}
           description={t.marketingNoCampaignsDesc}
           action={
-            <button type="button" onClick={() => navigate(MARKETING_ROUTES.CAMPAIGN_NEW)} style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer', minHeight: '44px' }}>
+            <Button variant="none" type="button" onClick={() => navigate(MARKETING_ROUTES.CAMPAIGN_NEW)} style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer', minHeight: '44px' }}>
               {t.marketingCreateFirstCampaign}
-            </button>
+            </Button>
           }
         />
       )}
@@ -115,7 +116,7 @@ export default function CampaignListPage() {
       {status === 'success' && campaigns.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           {campaigns.map((c) => (
-            <button
+            <Button variant="none"
               key={c.id}
               type="button"
               onClick={() => navigate(MARKETING_ROUTES.CAMPAIGN_DETAIL.replace(':id', c.id))}
@@ -132,7 +133,7 @@ export default function CampaignListPage() {
                 {c.totalCostPaise > 0 && <span>{t.marketingCost}: {formatPaiseAsRupees(c.totalCostPaise)}</span>}
                 <span style={{ marginLeft: 'auto' }}>{formatDate(c.createdAt)}</span>
               </div>
-            </button>
+            </Button>
           ))}
         </div>
       )}

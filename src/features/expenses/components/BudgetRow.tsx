@@ -2,6 +2,7 @@
 
 import type { BudgetUsageItem } from '../expense.types'
 import { formatPaise } from '@/lib/format'
+import { Button } from '@/components/ui/Button'
 
 interface BudgetRowProps {
   item: BudgetUsageItem
@@ -22,14 +23,14 @@ export function BudgetRow({ item, onEdit }: BudgetRowProps) {
       <div className="budget-row__header">
         <span className="budget-row__name">{name}</span>
         {onEdit && (
-          <button
+          <Button variant="none"
             type="button"
             className="budget-row__edit-btn"
             onClick={onEdit}
             aria-label={`Edit ${name} budget`}
           >
             Edit
-          </button>
+          </Button>
         )}
       </div>
 

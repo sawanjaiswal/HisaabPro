@@ -13,6 +13,7 @@ import type { CouponValidationResult, CouponApplyResult } from '../coupon.types'
 import './coupon-input.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface CouponInputProps {
   planId?: string
@@ -99,7 +100,7 @@ export function CouponInput({ planId, planAmountPaise, razorpaySubscriptionId, o
   // Collapsed state — "Have a coupon code?" link
   if (state === 'collapsed') {
     return (
-      <button
+      <Button variant="none"
         className="coupon-input-toggle"
         onClick={() => setState('expanded')}
         type="button"
@@ -107,7 +108,7 @@ export function CouponInput({ planId, planAmountPaise, razorpaySubscriptionId, o
         <Tag size={16} aria-hidden="true" />
         Have a coupon code?
         <ChevronDown size={16} aria-hidden="true" />
-      </button>
+      </Button>
     )
   }
 
@@ -119,7 +120,7 @@ export function CouponInput({ planId, planAmountPaise, razorpaySubscriptionId, o
         <span className="coupon-input-applied-text">
           {appliedResult.message}
         </span>
-        <button
+        <Button variant="none"
           className="coupon-input-remove"
           onClick={handleRemove}
           disabled={removing}
@@ -128,7 +129,7 @@ export function CouponInput({ planId, planAmountPaise, razorpaySubscriptionId, o
         >
           {removing ? <Loader2 size={14} className="spinner" /> : <X size={14} />}
           Remove
-        </button>
+        </Button>
       </div>
     )
   }
@@ -153,7 +154,7 @@ export function CouponInput({ planId, planAmountPaise, razorpaySubscriptionId, o
           aria-invalid={state === 'error'}
           aria-describedby={state === 'error' ? 'coupon-error' : undefined}
         />
-        <button
+        <Button variant="none"
           className="coupon-input-apply"
           onClick={handleApply}
           disabled={!code.trim() || state === 'validating'}
@@ -164,7 +165,7 @@ export function CouponInput({ planId, planAmountPaise, razorpaySubscriptionId, o
           ) : (
             'Apply'
           )}
-        </button>
+        </Button>
       </div>
       {state === 'error' && errorMsg && (
         <p id="coupon-error" className="coupon-input-error" role="alert">

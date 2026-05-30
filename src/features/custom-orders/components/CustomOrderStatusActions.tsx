@@ -54,7 +54,7 @@ export function CustomOrderStatusActions({ orderId, orderTitle, currentStatus }:
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
         {nextStatuses.map((status) => (
-          <button
+          <Button variant="none"
             key={status}
             type="button"
             className={status === 'CANCELLED' ? 'btn btn-danger btn-sm' : 'btn btn-primary btn-sm'}
@@ -63,7 +63,7 @@ export function CustomOrderStatusActions({ orderId, orderTitle, currentStatus }:
             style={{ minHeight: 44 }}
           >
             {STATUS_BUTTON_LABELS[status]}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -82,7 +82,7 @@ export function CustomOrderStatusActions({ orderId, orderTitle, currentStatus }:
             aria-label="Cancellation reason"
           />
           <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-            <button
+            <Button variant="none"
               type="button"
               className="btn btn-danger btn-sm"
               onClick={handleCancelConfirm}
@@ -90,7 +90,7 @@ export function CustomOrderStatusActions({ orderId, orderTitle, currentStatus }:
               style={{ minHeight: 44 }}
             >
               Confirm Cancel
-            </button>
+            </Button>
             <Button
               type="button"
               variant="ghost" size="sm"

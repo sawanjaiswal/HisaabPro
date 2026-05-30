@@ -63,7 +63,7 @@ export default function JournalEntriesPage() {
         <div className="je-filters stagger-filters">
           <div className="pill-tabs">
             {TYPE_OPTIONS.map((opt) => (
-              <button
+              <Button variant="none"
                 key={opt.value}
                 type="button"
                 className={`pill-tab${filters.type === (opt.value || undefined) ? ' active' : ''}`}
@@ -71,12 +71,12 @@ export default function JournalEntriesPage() {
                 aria-label={`Filter by ${opt.label}`}
               >
                 {opt.label}
-              </button>
+              </Button>
             ))}
           </div>
           <div className="pill-tabs" style={{ marginTop: 'var(--space-2)' }}>
             {STATUS_OPTIONS.map((opt) => (
-              <button
+              <Button variant="none"
                 key={opt.value}
                 type="button"
                 className={`pill-tab${filters.status === (opt.value || undefined) ? ' active' : ''}`}
@@ -84,7 +84,7 @@ export default function JournalEntriesPage() {
                 aria-label={`Filter by status ${opt.label}`}
               >
                 {opt.label}
-              </button>
+              </Button>
             ))}
           </div>
         </div>

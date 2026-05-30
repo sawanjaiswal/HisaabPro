@@ -14,6 +14,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate, formatPaise } from '@/lib/format'
 import { OcrReceiptUpload } from './OcrReceiptUpload'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface AddExpenseDrawerProps {
   open: boolean
@@ -150,9 +151,9 @@ export function AddExpenseDrawer({ open, onClose, onCreated, categories }: AddEx
               onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
               placeholder={t.expenseNotesPlaceholder} />
           </div>
-          <button type="submit" className="expense-drawer__submit-btn py-0" disabled={submitting} aria-busy={submitting}>
+          <Button variant="none" type="submit" className="expense-drawer__submit-btn py-0" disabled={submitting} aria-busy={submitting}>
             {submitting ? t.loading : t.recordExpense}
-          </button>
+          </Button>
         </form>
       </Drawer>
 

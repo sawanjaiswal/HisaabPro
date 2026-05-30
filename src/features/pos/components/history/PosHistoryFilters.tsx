@@ -9,6 +9,7 @@ const ALL = '__all__' as const
 import type { PosHistoryFilters, PosSaleStatus, PaymentMode } from '../../types/pos.types'
 import type { TranslationKey } from '@/lib/translations'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface PosHistoryFiltersProps {
   filters:        PosHistoryFilters
@@ -84,7 +85,7 @@ export function PosHistoryFiltersBar({
         </Select>
 
         {hasFilters && (
-          <button
+          <Button variant="none"
             type="button"
             className="pos-filter-reset"
             onClick={onReset}
@@ -92,7 +93,7 @@ export function PosHistoryFiltersBar({
           >
             <X size={13} aria-hidden="true" />
             {t.clearFilters ?? 'Clear'}
-          </button>
+          </Button>
         )}
       </div>
     </div>

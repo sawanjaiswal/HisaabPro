@@ -154,7 +154,7 @@ export function PartyTransactionsTab({ partyId }: PartyTransactionsTabProps) {
       {/* Transaction list */}
       <div className="party-txn-list" role="list" aria-label={t.transactionLedger}>
         {transactions.map((txn) => (
-          <button
+          <Button variant="none"
             key={`${txn.type}-${txn.id}`}
             className="party-txn-row"
             onClick={() => handleTxnClick(txn)}
@@ -184,7 +184,7 @@ export function PartyTransactionsTab({ partyId }: PartyTransactionsTabProps) {
                 {t.balAbbrev} {paisaToRupees(txn.runningBalance)}
               </span>
             </div>
-          </button>
+          </Button>
         ))}
       </div>
 

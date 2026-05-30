@@ -7,6 +7,7 @@ import type { OutstandingType, OutstandingSortBy } from '../payment.types'
 import { OUTSTANDING_TYPE_LABELS, OUTSTANDING_SORT_LABELS } from '../payment.constants'
 import { Select, SelectItem } from '@/components/ui/Select'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface OutstandingFilterBarProps {
   search: string
@@ -52,7 +53,7 @@ export const OutstandingFilterBar: React.FC<OutstandingFilterBarProps> = ({
         aria-label={t.filterOutstandingType}
       >
         {OUTSTANDING_TYPES.map((type) => (
-          <button
+          <Button variant="none"
             key={type}
             className={`outstanding-filter-pill${activeType === type ? ' outstanding-filter-pill--active' : ''}`}
             onClick={() => onTypeChange(type)}
@@ -60,17 +61,17 @@ export const OutstandingFilterBar: React.FC<OutstandingFilterBarProps> = ({
             aria-label={`${t.showLabel} ${OUTSTANDING_TYPE_LABELS[type]}`}
           >
             {OUTSTANDING_TYPE_LABELS[type]}
-          </button>
+          </Button>
         ))}
 
-        <button
+        <Button variant="none"
           className={`outstanding-filter-pill${overdueOnly ? ' outstanding-filter-pill--active' : ''}`}
           onClick={() => onOverdueToggle(!overdueOnly)}
           aria-pressed={overdueOnly}
           aria-label={overdueOnly ? t.showingOverdueClick : t.showOverdueOnly}
         >
           {t.overdueOnly}
-        </button>
+        </Button>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>

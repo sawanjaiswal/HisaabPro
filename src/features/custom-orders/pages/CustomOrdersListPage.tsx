@@ -62,7 +62,7 @@ export default function CustomOrdersListPage() {
           }}
         >
           {([ALL, ...CUSTOM_ORDER_STATUSES] as Filter[]).map((f) => (
-            <button
+            <Button variant="none"
               key={f}
               type="button"
               onClick={() => setActiveFilter(f)}
@@ -82,7 +82,7 @@ export default function CustomOrdersListPage() {
               }}
             >
               {PILL_LABELS[f]}
-            </button>
+            </Button>
           ))}
         </div>
 
@@ -127,14 +127,14 @@ export default function CustomOrdersListPage() {
         )}
       </PageContainer>
 
-      <button
+      <Button variant="none"
         type="button"
         className="fab"
         onClick={goToNew}
         aria-label="Create new order"
       >
         <Plus size={24} aria-hidden="true" />
-      </button>
+      </Button>
     </AppShell>
   )
 }

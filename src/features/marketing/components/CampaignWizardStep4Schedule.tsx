@@ -3,6 +3,7 @@
 import { useLanguage } from '@/hooks/useLanguage'
 import { QuietHoursNotice } from './QuietHoursNotice'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface Props {
   sendNow: boolean
@@ -26,7 +27,7 @@ export function CampaignWizardStep4Schedule({ sendNow, scheduledAt, onSendNowCha
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <button
+        <Button variant="none"
           type="button"
           role="radio"
           aria-checked={sendNow}
@@ -37,9 +38,9 @@ export function CampaignWizardStep4Schedule({ sendNow, scheduledAt, onSendNowCha
           <div style={{ fontSize: '13px', color: sendNow ? 'var(--color-primary-600)' : 'var(--color-gray-400)', marginTop: '2px' }}>
             {t.marketingSendNowDesc}
           </div>
-        </button>
+        </Button>
 
-        <button
+        <Button variant="none"
           type="button"
           role="radio"
           aria-checked={!sendNow}
@@ -50,7 +51,7 @@ export function CampaignWizardStep4Schedule({ sendNow, scheduledAt, onSendNowCha
           <div style={{ fontSize: '13px', color: !sendNow ? 'var(--color-primary-600)' : 'var(--color-gray-400)', marginTop: '2px' }}>
             {t.marketingScheduleLaterDesc}
           </div>
-        </button>
+        </Button>
       </div>
 
       {!sendNow && (

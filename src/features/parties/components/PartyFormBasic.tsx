@@ -5,6 +5,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import type { PartyFormData, PartyType } from '../party.types'
 import { PartyFormPriceList } from './PartyFormPriceList'
 import '@/styles/components.crm.css'
+import { Button } from '@/components/ui/Button'
 
 interface PartyFormBasicProps {
   form: PartyFormData
@@ -58,7 +59,7 @@ export function PartyFormBasic({ form, errors, onUpdate, isEditMode = false }: P
         <span className="input-label" id="party-type-label">{t.partyType}</span>
         <div className="pill-tabs" role="group" aria-labelledby="party-type-label">
           {PARTY_TYPE_OPTIONS.map(option => (
-            <button
+            <Button variant="none"
               key={option.value}
               type="button"
               className={`pill-tab${form.type === option.value ? ' active' : ''}`}
@@ -67,7 +68,7 @@ export function PartyFormBasic({ form, errors, onUpdate, isEditMode = false }: P
               aria-label={`${t.setPartyTypeTo} ${option.label}`}
             >
               {option.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>

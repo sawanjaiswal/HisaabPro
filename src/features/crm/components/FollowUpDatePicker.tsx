@@ -16,6 +16,7 @@ import { useMemo } from 'react'
 import { CalendarClock, X } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface FollowUpDatePickerProps {
   /** Current follow-up ISO datetime, or null when unset. */
@@ -79,7 +80,7 @@ export function FollowUpDatePicker({
           placeholder={t.crmFollowUpPickerPlaceholder}
         />
         {value && (
-          <button
+          <Button variant="none"
             type="button"
             className="follow-up-picker__clear"
             onClick={() => onChange(null)}
@@ -87,7 +88,7 @@ export function FollowUpDatePicker({
             disabled={disabled}
           >
             <X size={18} aria-hidden="true" />
-          </button>
+          </Button>
         )}
       </div>
       {error && (

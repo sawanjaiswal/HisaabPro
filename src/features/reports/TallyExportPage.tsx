@@ -11,6 +11,7 @@ import { exportTally } from './finance.service'
 import './report-finance.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 function getFYRange(): { from: string; to: string } {
   const now = new Date()
@@ -70,7 +71,7 @@ export default function TallyExportPage() {
               <span className="finance-date-bar__label">{t.to}</span>
               <Input type="date" className="finance-date-bar__input" value={dateRange.to} onChange={(e) => setDateRange((r) => ({ ...r, to: e.target.value }))} aria-label={t.toDate} />
             </div>
-            <button
+            <Button variant="none"
               type="button"
               className="finance-date-bar__refresh-btn tally-export__download-btn"
               onClick={handleExport}
@@ -80,7 +81,7 @@ export default function TallyExportPage() {
               {exporting ? t.exporting : (
                 <><Download size={16} aria-hidden="true" /> {t.downloadXml}</>
               )}
-            </button>
+            </Button>
           </div>
         </div>
 

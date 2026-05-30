@@ -14,6 +14,7 @@ import {
 } from './forgot-password.utils'
 import './LoginPage.css'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate()
@@ -157,9 +158,9 @@ export default function ForgotPasswordPage() {
                 />
               </div>
               {error && <p className="login-page__error">{error}</p>}
-              <button type="submit" className="login-page__submit" disabled={!phoneRegex.test(phone) || loading}>
+              <Button variant="none" type="submit" className="login-page__submit" disabled={!phoneRegex.test(phone) || loading}>
                 {loading ? 'Sending OTP…' : 'Send OTP'}
-              </button>
+              </Button>
               <p className="login-page__hint">
                 <Link to={ROUTES.LOGIN} style={{ color: 'var(--color-primary-500)' }}>Back to Sign In</Link>
               </p>
@@ -207,17 +208,17 @@ export default function ForgotPasswordPage() {
                 {secondsLeft > 0 && <p className="auth-otp__cooldown">OTP expires in {formatTime(secondsLeft)}</p>}
                 {resendCooldown > 0
                   ? <p className="auth-otp__cooldown">Resend in {resendCooldown}s</p>
-                  : <button className="auth-otp__back" onClick={handleResend} disabled={resending} type="button">{resending ? 'Sending…' : 'Resend OTP'}</button>
+                  : <Button variant="none" className="auth-otp__back" onClick={handleResend} disabled={resending} type="button">{resending ? 'Sending…' : 'Resend OTP'}</Button>
                 }
               </div>
-              <button
+              <Button variant="none"
                 className="login-page__submit"
                 disabled={otp.join('').length < 6 || !newPassword || !confirmPassword || loading}
                 onClick={handleReset}
                 type="button"
               >
                 {loading ? 'Resetting…' : 'Reset Password'}
-              </button>
+              </Button>
             </div>
           </>
         )}
@@ -228,9 +229,9 @@ export default function ForgotPasswordPage() {
               <h1 className="login-page__title" style={{ fontSize: 'var(--fs-2xl)' }}>Password Reset!</h1>
               <p className="login-page__subtitle">Your password has been updated. All devices have been signed out.</p>
             </div>
-            <button className="login-page__submit" onClick={() => navigate(ROUTES.LOGIN, { replace: true })} type="button">
+            <Button variant="none" className="login-page__submit" onClick={() => navigate(ROUTES.LOGIN, { replace: true })} type="button">
               Sign In
-            </button>
+            </Button>
           </>
         )}
       </div>

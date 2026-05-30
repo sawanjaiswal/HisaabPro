@@ -71,13 +71,13 @@ export const ProductStockTab: React.FC<ProductStockTabProps> = ({ movements, uni
         })}
       </div>
 
-      <button
+      <Button variant="none"
         className="btn btn-outline btn-md product-adjust-btn"
         onClick={onAdjust}
         aria-label={t.adjustStock}
       >
         {t.adjustStock}
-      </button>
+      </Button>
     </div>
   )
 }

@@ -7,6 +7,7 @@ import { getParties } from '@/lib/services/party.service'
 import type { PartySummary } from '@/lib/types/party.types'
 import { PartySearchField } from './PartySearchField'
 import { PartySearchDropdown } from './PartySearchDropdown'
+import { Button } from '@/components/ui/Button'
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -166,14 +167,14 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
           <div className="party-selector-info">
             <div className="party-selector-name">{selectedName}</div>
           </div>
-          <button
+          <Button variant="none"
             type="button"
             className="party-selector-change"
             onClick={handleClear}
             aria-label={t.changeSelectedParty}
           >
             {t.changeLabel}
-          </button>
+          </Button>
         </div>
       ) : (
         <PartySearchField

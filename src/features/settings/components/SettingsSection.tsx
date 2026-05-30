@@ -26,6 +26,7 @@ import type { SettingsSection as SettingsSectionType, SettingsItem, AppSettings 
 import '../settings.css'
 import '../settings-toggle.css'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 type IconComponent = React.FC<LucideProps>
 
@@ -95,7 +96,7 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({ section, onIte
           )
 
           // Toggle rows render as a <label> wrapping the input — avoids nesting
-          // a focusable control inside a <button> (WCAG 4.1.2).
+          // a focusable control inside a <Button variant="none"> (WCAG 4.1.2).
           if (item.type === 'toggle') {
             return (
               <label key={item.id} className="settings-item settings-item--toggle">
@@ -117,7 +118,7 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({ section, onIte
           }
 
           return (
-            <button
+            <Button variant="none"
               key={item.id}
               className="settings-item"
               onClick={() => onItemClick(item)}
@@ -133,7 +134,7 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({ section, onIte
                   <ChevronRight className="settings-item-chevron" aria-hidden="true" />
                 )}
               </span>
-            </button>
+            </Button>
           )
         })}
       </div>

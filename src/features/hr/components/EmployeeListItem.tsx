@@ -16,6 +16,7 @@
 import { ChevronRight, User } from 'lucide-react'
 import { formatPaise, formatPhone } from '@/lib/format'
 import type { Employee } from '../hr.types'
+import { Button } from '@/components/ui/Button'
 
 interface EmployeeListItemProps {
   employee: Employee
@@ -29,7 +30,7 @@ export function EmployeeListItem({ employee, onClick }: EmployeeListItemProps) {
   const subtitle = subtitleParts.join(' · ')
 
   return (
-    <button
+    <Button variant="none"
       type="button"
       onClick={onClick}
       className="w-full text-left flex items-center gap-3 rounded-[var(--radius-md)] bg-[var(--color-surface)] border border-[var(--color-border)] px-4 py-3 min-h-[64px] transition-colors hover:bg-[var(--color-surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-500)]"
@@ -72,6 +73,6 @@ export function EmployeeListItem({ employee, onClick }: EmployeeListItemProps) {
           className="text-[var(--color-text-tertiary)]"
         />
       </span>
-    </button>
+    </Button>
   )
 }

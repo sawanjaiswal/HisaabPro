@@ -7,6 +7,7 @@ import { formatTimeAgo } from '../settings.utils'
 import { PartyAvatar } from '../../../components/ui/PartyAvatar'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import '../staff-list.css'
+import { Button } from '@/components/ui/Button'
 
 interface StaffCardProps {
   staff: StaffMember
@@ -64,29 +65,29 @@ export const StaffCard: React.FC<StaffCardProps> = ({ staff, onSuspend, onRemove
         <span className="staff-status-label">{STAFF_STATUS_LABELS[staff.status]}</span>
       </span>
 
-      <button
+      <Button variant="none"
         className="staff-action-button"
         onClick={() => onChangeRole(staff.id)}
         aria-label={`Change role for ${staff.name}`}
       >
         <UserCog size={18} aria-hidden="true" />
-      </button>
+      </Button>
 
-      <button
+      <Button variant="none"
         className="staff-action-button"
         onClick={handleSuspend}
         aria-label={isSuspended ? `Unsuspend ${staff.name}` : `Suspend ${staff.name}`}
       >
         <Ban size={18} aria-hidden="true" />
-      </button>
+      </Button>
 
-      <button
+      <Button variant="none"
         className="staff-action-button"
         onClick={handleRemove}
         aria-label={`Remove ${staff.name} from business`}
       >
         <Trash2 size={18} aria-hidden="true" />
-      </button>
+      </Button>
 
       <ConfirmDialog
         open={confirmOpen}

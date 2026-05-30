@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { MoreVertical } from 'lucide-react'
 import { formatPaise } from '../cashRegister.utils'
 import type { CashEntryDTO } from '../cashRegister.types'
+import { Button } from '@/components/ui/Button'
 
 interface Props {
   entry: CashEntryDTO
@@ -61,7 +62,7 @@ export function HistoryEntryRow({ entry, onEdit, onVoid, onRestore, onDelete, is
 
       {/* Kebab menu */}
       <div className="cr-entry-row__menu-wrap">
-        <button
+        <Button variant="none"
           type="button"
           className="cr-entry-row__kebab"
           onClick={toggleMenu}
@@ -70,36 +71,36 @@ export function HistoryEntryRow({ entry, onEdit, onVoid, onRestore, onDelete, is
           aria-haspopup="menu"
         >
           <MoreVertical size={18} />
-        </button>
+        </Button>
 
         {menuOpen && (
           <>
             <div className="cr-entry-row__backdrop" onClick={closeMenu} aria-hidden="true" />
             <div className="cr-entry-row__menu" role="menu">
               {!isVoided && (
-                <button type="button" role="menuitem" className="cr-entry-row__menu-item"
+                <Button variant="none" type="button" role="menuitem" className="cr-entry-row__menu-item"
                   onClick={() => { onEdit(entry.id); closeMenu() }}>
                   Edit
-                </button>
+                </Button>
               )}
               {!isVoided && (
-                <button type="button" role="menuitem" className="cr-entry-row__menu-item"
+                <Button variant="none" type="button" role="menuitem" className="cr-entry-row__menu-item"
                   onClick={() => { onVoid(entry.id); closeMenu() }}>
                   Void
-                </button>
+                </Button>
               )}
               {isVoided && (
-                <button type="button" role="menuitem" className="cr-entry-row__menu-item"
+                <Button variant="none" type="button" role="menuitem" className="cr-entry-row__menu-item"
                   onClick={() => { onRestore(entry.id); closeMenu() }}>
                   Restore
-                </button>
+                </Button>
               )}
               {isVoided && isOwner && (
-                <button type="button" role="menuitem"
+                <Button variant="none" type="button" role="menuitem"
                   className="cr-entry-row__menu-item cr-entry-row__menu-item--danger"
                   onClick={() => { onDelete(entry.id); closeMenu() }}>
                   Delete
-                </button>
+                </Button>
               )}
             </div>
           </>

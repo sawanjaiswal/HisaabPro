@@ -2,6 +2,7 @@ import React from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { X, Settings, Volume2, VolumeX, Smartphone } from 'lucide-react'
 import type { CalculatorSettings } from '../settings.types'
+import { Button } from '@/components/ui/Button'
 
 interface CalculatorHeaderProps {
   settings: CalculatorSettings
@@ -27,26 +28,26 @@ export const CalculatorHeader: React.FC<CalculatorHeaderProps> = ({
     <div className="calculator-header">
       <span className="calculator-header-title">{t.calculator}</span>
       <div className="calculator-header-actions">
-        <button
+        <Button variant="none"
           className="calculator-close-btn"
           onClick={onToggleSettings}
           aria-label={t.calculatorSettingsLabel}
         >
           <Settings size={16} aria-hidden="true" />
-        </button>
-        <button
+        </Button>
+        <Button variant="none"
           className="calculator-close-btn"
           onClick={onClose}
           aria-label={t.closeCalculatorLabel}
         >
           <X size={18} aria-hidden="true" />
-        </button>
+        </Button>
       </div>
     </div>
 
     {showSettings && (
       <div className="calculator-settings-panel py-0">
-        <button
+        <Button variant="none"
           className="calculator-settings-row"
           onClick={onToggleSound}
           aria-label={`${t.keyboardSoundOnOff} ${settings.keyboardSound ? t.onLabel : t.offLabel}`}
@@ -56,8 +57,8 @@ export const CalculatorHeader: React.FC<CalculatorHeaderProps> = ({
           <span className={`calculator-settings-toggle${settings.keyboardSound ? ' calculator-settings-toggle--on' : ''}`} aria-hidden="true">
             <span className="calculator-settings-toggle-knob" />
           </span>
-        </button>
-        <button
+        </Button>
+        <Button variant="none"
           className="calculator-settings-row"
           onClick={onToggleVibration}
           aria-label={`${t.vibrationOnOff} ${settings.keyboardVibration ? t.onLabel : t.offLabel}`}
@@ -67,7 +68,7 @@ export const CalculatorHeader: React.FC<CalculatorHeaderProps> = ({
           <span className={`calculator-settings-toggle${settings.keyboardVibration ? ' calculator-settings-toggle--on' : ''}`} aria-hidden="true">
             <span className="calculator-settings-toggle-knob" />
           </span>
-        </button>
+        </Button>
       </div>
     )}
   </>

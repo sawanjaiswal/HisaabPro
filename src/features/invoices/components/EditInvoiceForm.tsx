@@ -21,6 +21,7 @@ import { usePresence } from '@/features/collaboration/usePresence'
 import { PresenceAvatars } from '@/features/collaboration/PresenceAvatars'
 import { ConflictDialog } from '@/features/collaboration/ConflictDialog'
 import type { DocumentFormData } from '../invoice.types'
+import { Button } from '@/components/ui/Button'
 
 interface EditInvoiceFormProps {
   invoiceId: string
@@ -108,7 +109,7 @@ export function EditInvoiceForm({
 
         <nav className="pill-tabs" role="tablist" aria-label={t.invoiceFormSections}>
           {FORM_SECTIONS.map((section) => (
-            <button
+            <Button variant="none"
               key={section.id}
               type="button"
               role="tab"
@@ -118,7 +119,7 @@ export function EditInvoiceForm({
               aria-controls={`section-panel-${section.id}`}
             >
               {section.label}
-            </button>
+            </Button>
           ))}
         </nav>
 

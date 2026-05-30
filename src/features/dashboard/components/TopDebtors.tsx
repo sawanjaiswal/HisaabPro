@@ -11,6 +11,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { getFirstName, formatCompactAmount } from '../dashboard.utils'
 import { PartyAvatar } from '../../../components/ui/PartyAvatar'
 import type { TopDebtor } from '../dashboard.types'
+import { Button } from '@/components/ui/Button'
 
 interface TopDebtorsProps {
   debtors: TopDebtor[]
@@ -37,31 +38,31 @@ export const TopDebtors: React.FC<TopDebtorsProps> = ({
             {debtors.length} {debtors.length === 1 ? t.party : t.parties} &middot; {formatCompactAmount(totalOutstanding)}
           </span>
         </div>
-        <button
+        <Button variant="none"
           className="dashboard-section-link py-0"
           onClick={onViewAll}
           aria-label={t.viewAllOutstanding}
         >
           {t.seeAll}
           <ChevronRight size={16} aria-hidden="true" />
-        </button>
+        </Button>
       </div>
 
       <div className="dashboard-starred-scroll" role="list" aria-label={t.topContacts}>
         {/* Add button */}
         <div className="dashboard-starred-item" role="listitem">
-          <button
+          <Button variant="none"
             className="dashboard-starred-add"
             onClick={onViewAll}
             aria-label={t.addStarred}
           >
             <Plus size={20} aria-hidden="true" />
-          </button>
+          </Button>
           <span className="dashboard-starred-name">{t.add}</span>
         </div>
 
         {debtors.map((debtor) => (
-          <button
+          <Button variant="none"
             key={debtor.partyId}
             className="dashboard-starred-item"
             role="listitem"
@@ -71,7 +72,7 @@ export const TopDebtors: React.FC<TopDebtorsProps> = ({
             <PartyAvatar name={debtor.name} size="lg" className="dashboard-starred-avatar" />
             <span className="dashboard-starred-name">{getFirstName(debtor.name)}</span>
             <span className="dashboard-starred-amount">{formatCompactAmount(debtor.outstanding)}</span>
-          </button>
+          </Button>
         ))}
       </div>
     </div>

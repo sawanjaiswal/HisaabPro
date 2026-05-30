@@ -5,6 +5,7 @@ import { useRegister } from './useRegister'
 import { ROUTES } from '@/config/routes.config'
 import './LoginPage.css'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 const phoneRegex = /^[6-9]\d{9}$/
 
@@ -85,13 +86,13 @@ export default function RegisterPage() {
 
           {error && <p className="login-page__error">{error}</p>}
 
-          <button
+          <Button variant="none"
             type="submit"
             className="login-page__submit"
             disabled={!isValid || loading}
           >
             {loading ? 'Sending OTP…' : 'Continue'}
-          </button>
+          </Button>
 
           <p className="login-page__hint">
             Already have an account?{' '}

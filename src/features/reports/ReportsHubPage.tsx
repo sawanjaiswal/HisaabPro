@@ -23,6 +23,7 @@ import { ROUTES } from '@/config/routes.config'
 import { REPORT_CATEGORIES } from './report.categories'
 import './report-hub.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 // ─── Icon registry ────────────────────────────────────────────────────────────
 
@@ -73,7 +74,7 @@ export default function ReportsHubPage() {
               const Icon = ICON_MAP[category.icon] ?? TrendingUp
 
               return (
-                <button
+                <Button variant="none"
                   key={category.id}
                   className="report-category-card"
                   onClick={() => navigate(category.route)}
@@ -93,7 +94,7 @@ export default function ReportsHubPage() {
                   <div className="report-category-footer" aria-hidden="true">
                     <ChevronRight size={16} />
                   </div>
-                </button>
+                </Button>
               )
             })}
           </div>

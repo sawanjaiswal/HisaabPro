@@ -107,7 +107,7 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
         <div className="input-group">
           <span className="input-label" id="adjust-type-label">{t.typeLabel}</span>
           <div className="pill-tabs" role="group" aria-labelledby="adjust-type-label">
-            <button
+            <Button variant="none"
               type="button"
               className={`pill-tab${type === 'ADJUSTMENT_IN' ? ' active' : ''}`}
               onClick={() => setType('ADJUSTMENT_IN')}
@@ -115,8 +115,8 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
               aria-label={t.addStockLabel}
             >
               <Plus size={14} aria-hidden="true" className="pill-tab-icon" /> {t.stockIn}
-            </button>
-            <button
+            </Button>
+            <Button variant="none"
               type="button"
               className={`pill-tab${type === 'ADJUSTMENT_OUT' ? ' active' : ''}`}
               onClick={() => setType('ADJUSTMENT_OUT')}
@@ -124,7 +124,7 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
               aria-label={t.removeStockLabel}
             >
               <Minus size={14} aria-hidden="true" className="pill-tab-icon" /> {t.stockOut}
-            </button>
+            </Button>
           </div>
         </div>
 

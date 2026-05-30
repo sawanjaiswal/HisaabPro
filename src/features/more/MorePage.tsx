@@ -12,6 +12,7 @@ import { ROUTES } from '@/config/routes.config'
 import { useAuth } from '@/context/AuthContext'
 import './more.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 
 export default function MorePage() {
   const { t } = useLanguage()
@@ -37,7 +38,7 @@ export default function MorePage() {
                   {groupItems.map((item) => {
                     const Icon = ICON_REGISTRY[item.icon]
                     return (
-                      <button
+                      <Button variant="none"
                         key={item.id}
                         className="more-grid-item"
                         onClick={() => navigate(item.route)}
@@ -49,7 +50,7 @@ export default function MorePage() {
                         </div>
                         <span className="more-grid-label">{item.label}</span>
                         <span className="more-grid-desc">{item.description}</span>
-                      </button>
+                      </Button>
                     )
                   })}
                 </div>
@@ -58,10 +59,10 @@ export default function MorePage() {
           })}
         </nav>
 
-        <button type="button" className="more-logout-btn" onClick={() => setConfirmLogout(true)}>
+        <Button variant="none" type="button" className="more-logout-btn" onClick={() => setConfirmLogout(true)}>
           <LogOut size={18} aria-hidden="true" />
           {t.logout}
-        </button>
+        </Button>
 
         <ConfirmDialog
           open={confirmLogout}

@@ -110,7 +110,7 @@ export function DocumentCustomFieldDrawer({ open, onClose, editing, onCreate, on
               const selected = fieldType === ty
               const isEditingLock = !!editing && fieldType !== ty
               return (
-                <button
+                <Button variant="none"
                   key={ty}
                   type="button"
                   disabled={isEditingLock}
@@ -124,7 +124,7 @@ export function DocumentCustomFieldDrawer({ open, onClose, editing, onCreate, on
                   }}
                 >
                   {fieldTypeLabel(ty)}
-                </button>
+                </Button>
               )
             })}
           </div>
@@ -159,7 +159,7 @@ export function DocumentCustomFieldDrawer({ open, onClose, editing, onCreate, on
             {DOC_TYPES.map((d) => {
               const selected = documentTypes.includes(d)
               return (
-                <button
+                <Button variant="none"
                   key={d}
                   type="button"
                   onClick={() => toggleDocType(d)}
@@ -171,7 +171,7 @@ export function DocumentCustomFieldDrawer({ open, onClose, editing, onCreate, on
                   }}
                 >
                   {docTypeLabel(d)}
-                </button>
+                </Button>
               )
             })}
           </div>

@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatDate } from '@/lib/format'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
+import { Button } from '@/components/ui/Button'
 
 interface GenerateNowConfirmSheetProps {
   open: boolean
@@ -58,15 +59,15 @@ export function GenerateNowConfirmSheet({
           )}
         </p>
         <div className="recurring-sheet__actions">
-          <button
+          <Button variant="none"
             type="button"
             className="recurring-btn recurring-btn--secondary"
             onClick={onCancel}
             disabled={isGenerating}
           >
             {t.cancelBtn ?? 'Cancel'}
-          </button>
-          <button
+          </Button>
+          <Button variant="none"
             type="button"
             className="recurring-btn recurring-btn--primary"
             onClick={onConfirm}
@@ -76,7 +77,7 @@ export function GenerateNowConfirmSheet({
             {isGenerating
               ? (t.recurringGenerating ?? 'Generating...')
               : (t.recurringGenerateNow ?? 'Generate')}
-          </button>
+          </Button>
         </div>
       </div>
     </>

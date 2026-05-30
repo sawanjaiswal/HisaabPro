@@ -9,6 +9,7 @@ import { formatPaise } from '@/lib/format'
 import type { TrendPoint } from '../expense.types'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
+import { Button } from '@/components/ui/Button'
 
 const CHART_H = 80
 const BAR_GAP = 6
@@ -107,9 +108,9 @@ export function CashflowTrendCard() {
         <div className="trend-card__error-body">
           <BarChart2 size={24} aria-hidden="true" />
           <p>Could not load</p>
-          <button type="button" className="trend-card__retry" onClick={() => query.refetch()}>
+          <Button variant="none" type="button" className="trend-card__retry" onClick={() => query.refetch()}>
             <RefreshCw size={12} aria-hidden="true" /> Retry
-          </button>
+          </Button>
         </div>
       </div>
     )

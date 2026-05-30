@@ -16,6 +16,7 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { isFeatureAllowed, minTierFor, type FeatureFlag } from './plan-limits'
 import { UpgradeDrawer } from './UpgradeDrawer'
+import { Button } from '@/components/ui/Button'
 
 interface PlanGateProps {
   feature: FeatureFlag
@@ -69,14 +70,14 @@ export function PlanGate({ feature, featureLabel, children, fallback }: PlanGate
       <PageContainer>
         <UpgradePrompt requiredPlan={requiredPlan} feature={featureLabel} />
         <div className="mt-4 flex justify-center">
-          <button
+          <Button variant="none"
             type="button"
             onClick={() => setUpgradeOpen(true)}
             className="text-[var(--fs-sm)] underline"
             style={{ color: 'var(--color-primary-500)' }}
           >
             See all plans
-          </button>
+          </Button>
         </div>
         <UpgradeDrawer
           open={upgradeOpen}

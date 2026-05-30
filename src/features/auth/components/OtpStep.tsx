@@ -78,7 +78,7 @@ export function OtpStep({
 
   return (
     <div className="auth-otp">
-      <button
+      <Button variant="none"
         type="button"
         onClick={onBack}
         className="auth-otp__back"
@@ -86,7 +86,7 @@ export function OtpStep({
       >
         <ArrowLeft size={20} />
         <span>{t.changeNumberLabel}</span>
-      </button>
+      </Button>
 
       <p className="auth-otp__info">
         {t.enterCodeSentToLabel} <strong>{maskedPhone}</strong>

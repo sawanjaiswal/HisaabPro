@@ -45,14 +45,14 @@ export default function DocumentCustomFieldsPage() {
         title={t.documentCustomFieldsTitle}
         backTo={ROUTES.SETTINGS}
         actions={
-          <button
+          <Button variant="none"
             type="button"
             onClick={openCreate}
             aria-label={t.addCustomField}
             className="p-2 rounded-[var(--radius-sm)] hover:bg-[var(--color-gray-100)] transition-colors"
           >
             <Plus className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
-          </button>
+          </Button>
         }
       />
       <PageContainer className="stagger-enter space-y-6">

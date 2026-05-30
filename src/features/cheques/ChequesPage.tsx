@@ -73,7 +73,7 @@ export default function ChequesPage() {
       <PageContainer variant="list" className="space-y-6">
         <div className="cheque-filter-pills stagger-filters" role="group" aria-label={t.filterByStatusGroup}>
           {CHEQUE_FILTER_OPTIONS.map((opt) => (
-            <button
+            <Button variant="none"
               key={opt.value}
               type="button"
               className={`cheque-filter-pill${statusFilter === opt.value ? ' cheque-filter-pill--active' : ''}`}
@@ -81,7 +81,7 @@ export default function ChequesPage() {
               aria-pressed={statusFilter === opt.value}
             >
               {opt.label}
-            </button>
+            </Button>
           ))}
         </div>
 

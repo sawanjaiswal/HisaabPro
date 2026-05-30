@@ -10,6 +10,7 @@ import { ChannelBadge } from '../components/ChannelBadge'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import { formatDate } from '../marketing.utils'
 import type { MarketingChannel, MarketingTemplate } from '../marketing.types'
+import { Button } from '@/components/ui/Button'
 
 export default function TemplateListPage() {
   const navigate = useNavigate()
@@ -29,24 +30,24 @@ export default function TemplateListPage() {
     <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-        <button type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.HUB)} aria-label={t.marketingBackToMarketing}>
+        <Button variant="none" type="button" className="btn btn-ghost btn-icon" onClick={() => navigate(MARKETING_ROUTES.HUB)} aria-label={t.marketingBackToMarketing}>
           <ArrowLeft size={20} aria-hidden="true" />
-        </button>
+        </Button>
         <h1 style={{ flex: 1, fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>{t.marketingTemplates}</h1>
-        <button
+        <Button variant="none"
           type="button"
           onClick={() => navigate(MARKETING_ROUTES.TEMPLATE_NEW)}
           style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
           aria-label={t.marketingNewTemplate}
         >
           <Plus size={16} aria-hidden="true" /> {t.marketingNewTemplate}
-        </button>
+        </Button>
       </div>
 
       {/* Channel filter */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
         {CHANNEL_FILTERS.map((f) => (
-          <button
+          <Button variant="none"
             key={String(f.value)}
             type="button"
             onClick={() => setChannel(f.value)}
@@ -63,7 +64,7 @@ export default function TemplateListPage() {
             aria-pressed={channel === f.value}
           >
             {f.label}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -76,9 +77,9 @@ export default function TemplateListPage() {
       {status === 'error' && (
         <div style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--color-error-600)', fontSize: '14px' }}>
           {t.marketingLoadFailed}
-          <button type="button" onClick={refresh} style={{ marginLeft: 8, background: 'none', border: 'none', color: 'var(--color-primary-600)', cursor: 'pointer', fontSize: '14px' }}>
+          <Button variant="none" type="button" onClick={refresh} style={{ marginLeft: 8, background: 'none', border: 'none', color: 'var(--color-primary-600)', cursor: 'pointer', fontSize: '14px' }}>
             <RefreshCw size={14} style={{ display: 'inline', verticalAlign: 'middle' }} aria-hidden="true" /> {t.marketingRetry}
-          </button>
+          </Button>
         </div>
       )}
 
@@ -87,9 +88,9 @@ export default function TemplateListPage() {
           icon={<FileText size={22} aria-hidden="true" />}
           title={t.marketingNoTemplatesYet}
           action={
-            <button type="button" onClick={() => navigate(MARKETING_ROUTES.TEMPLATE_NEW)} style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
+            <Button variant="none" type="button" onClick={() => navigate(MARKETING_ROUTES.TEMPLATE_NEW)} style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
               {t.marketingNewTemplate}
-            </button>
+            </Button>
           }
         />
       )}
@@ -114,22 +115,22 @@ export default function TemplateListPage() {
                   <div style={{ fontSize: '11px', color: 'var(--color-gray-400)', marginTop: '4px' }}>{formatDate(tpl.createdAt)}</div>
                 </div>
                 <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
-                  <button
+                  <Button variant="none"
                     type="button"
                     onClick={() => navigate(MARKETING_ROUTES.TEMPLATE_EDIT.replace(':id', tpl.id))}
                     style={{ padding: '8px', borderRadius: '8px', border: '1px solid var(--color-gray-200)', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                     aria-label={`${t.marketingEditAria} ${tpl.name}`}
                   >
                     <Pencil size={15} color="var(--color-gray-500)" aria-hidden="true" />
-                  </button>
-                  <button
+                  </Button>
+                  <Button variant="none"
                     type="button"
                     onClick={() => setConfirmDelete(tpl)}
                     style={{ padding: '8px', borderRadius: '8px', border: '1px solid var(--color-error-200)', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                     aria-label={`${t.marketingDeleteAria} ${tpl.name}`}
                   >
                     <Trash2 size={15} color="var(--color-error-500)" aria-hidden="true" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -144,17 +145,17 @@ export default function TemplateListPage() {
             <h3 id="del-tmpl-title" style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-gray-900)', marginBottom: '10px' }}>{t.marketingDeleteTemplateTitle}</h3>
             <p style={{ fontSize: '14px', color: 'var(--color-gray-600)', marginBottom: '20px' }}>{t.marketingDeleteTemplateDesc}</p>
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button type="button" onClick={() => setConfirmDelete(null)} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '1px solid var(--color-gray-300)', background: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
+              <Button variant="none" type="button" onClick={() => setConfirmDelete(null)} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '1px solid var(--color-gray-300)', background: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
                 {t.marketingCancel}
-              </button>
-              <button
+              </Button>
+              <Button variant="none"
                 type="button"
                 onClick={() => { deleteMutation.mutate({ id: confirmDelete.id, name: confirmDelete.name }); setConfirmDelete(null) }}
                 disabled={deleteMutation.isPending}
                 style={{ flex: 1, padding: '12px', borderRadius: '10px', border: 'none', background: 'var(--color-error-600)', color: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
               >
                 {t.marketingDelete}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

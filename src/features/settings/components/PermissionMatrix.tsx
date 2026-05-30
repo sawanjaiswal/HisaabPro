@@ -5,6 +5,7 @@ import type { PermissionModule } from '../settings.types'
 import { formatPermissionKey, getPermissionCount } from '../settings.utils'
 import '../role-builder.css'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface PermissionMatrixProps {
   modules: PermissionModule[]
@@ -28,7 +29,7 @@ const ModuleRow: React.FC<ModuleRowProps> = ({ module, selectedPermissions, onTo
 
   return (
     <div className="role-module">
-      <button
+      <Button variant="none"
         className="role-module-header"
         onClick={() => setIsOpen((prev) => !prev)}
         aria-expanded={isOpen}
@@ -55,7 +56,7 @@ const ModuleRow: React.FC<ModuleRowProps> = ({ module, selectedPermissions, onTo
           size={16}
           aria-hidden="true"
         />
-      </button>
+      </Button>
       {isOpen && (
         <div
           className="role-module-content"
@@ -65,7 +66,7 @@ const ModuleRow: React.FC<ModuleRowProps> = ({ module, selectedPermissions, onTo
             const permKey = formatPermissionKey(module.key, action.key)
             const isChecked = selectedPermissions.includes(permKey)
             return (
-              <button
+              <Button variant="none"
                 key={permKey}
                 className="role-permission-row"
                 onClick={() => onToggle(permKey)}
@@ -86,7 +87,7 @@ const ModuleRow: React.FC<ModuleRowProps> = ({ module, selectedPermissions, onTo
                   />
                   <span className="settings-toggle-track" />
                 </label>
-              </button>
+              </Button>
             )
           })}
         </div>

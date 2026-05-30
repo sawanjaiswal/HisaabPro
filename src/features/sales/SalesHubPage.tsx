@@ -13,6 +13,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { DocumentListSkeleton } from './components/DocumentListSkeleton'
 import { SALES_HUB_TABS, type SalesHubTab } from './sales.constants'
 import './SalesHubPage.css'
+import { Button } from '@/components/ui/Button'
 
 const InvoicesContent  = lazy(() => import('../invoices/InvoicesPage'))
 const EstimatesContent = lazy(() => import('./EstimatesPage'))
@@ -49,7 +50,7 @@ export default function SalesHubPage() {
         style={{ top: 'var(--header-height)' }}
       >
         {SALES_HUB_TABS.map((tab) => (
-          <button
+          <Button variant="none"
             key={tab.id}
             type="button"
             role="tab"
@@ -58,7 +59,7 @@ export default function SalesHubPage() {
             onClick={() => handleTabClick(tab.id, tab.route)}
           >
             {tab.label}
-          </button>
+          </Button>
         ))}
       </nav>
 

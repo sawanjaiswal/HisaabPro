@@ -13,6 +13,7 @@ import { ImageUploader } from './ImageUploader'
 import '../barcode.css'
 import './image-uploader.css'
 import { Textarea } from '@/components/ui/Textarea'
+import { Button } from '@/components/ui/Button'
 
 interface ProductFormExtraProps {
   form: ProductFormData
@@ -70,9 +71,9 @@ export function ProductFormExtra({ form, errors, onUpdate, taxCategories = [] }:
         <span className="input-label" id="product-status-label">{t.statusLabel}</span>
         <div className="pill-tabs" role="group" aria-labelledby="product-status-label">
           {STATUS_OPTIONS.map((option) => (
-            <button key={option.value} type="button" className={`pill-tab${form.status === option.value ? ' active' : ''}`} onClick={() => onUpdate('status', option.value)} aria-pressed={form.status === option.value} aria-label={`${t.setProductStatusTo} ${option.label}`}>
+            <Button variant="none" key={option.value} type="button" className={`pill-tab${form.status === option.value ? ' active' : ''}`} onClick={() => onUpdate('status', option.value)} aria-pressed={form.status === option.value} aria-label={`${t.setProductStatusTo} ${option.label}`}>
               {option.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>

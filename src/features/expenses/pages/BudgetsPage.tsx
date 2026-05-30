@@ -18,6 +18,7 @@ import type { ExpenseCategory, BudgetUsageItem } from '../expense.types'
 import { useLanguage } from '@/hooks/useLanguage'
 import '../expenses.css'
 import '../expenses-upgrade.css'
+import { Button } from '@/components/ui/Button'
 
 function prevMonth(ym: string): string {
   const [y, m] = ym.split('-').map(Number)
@@ -78,13 +79,13 @@ export default function BudgetsPage() {
 
         {/* Month navigator */}
         <div className="budgets-month-nav" role="navigation" aria-label="Month navigation">
-          <button type="button" className="budgets-month-nav__btn" onClick={() => setMonth(prevMonth(month))} aria-label="Previous month">
+          <Button variant="none" type="button" className="budgets-month-nav__btn" onClick={() => setMonth(prevMonth(month))} aria-label="Previous month">
             <ChevronLeft size={18} />
-          </button>
+          </Button>
           <span className="budgets-month-nav__label">{monthLabel(month)}</span>
-          <button type="button" className="budgets-month-nav__btn" onClick={() => setMonth(nextMonth(month))} aria-label="Next month">
+          <Button variant="none" type="button" className="budgets-month-nav__btn" onClick={() => setMonth(nextMonth(month))} aria-label="Next month">
             <ChevronRight size={18} />
-          </button>
+          </Button>
         </div>
 
         {query.isPending && (
@@ -109,9 +110,9 @@ export default function BudgetsPage() {
                 title="No budgets set"
                 description="Set spending limits per category to track your expenses."
                 action={
-                  <button type="button" className="expense-add-btn" onClick={openAdd}>
+                  <Button variant="none" type="button" className="expense-add-btn" onClick={openAdd}>
                     <Plus size={14} aria-hidden="true" /> {t.expensesBudgetSetAction ?? 'Set Budget'}
-                  </button>
+                  </Button>
                 }
               />
             ) : (
@@ -125,9 +126,9 @@ export default function BudgetsPage() {
         )}
 
         {(query.data ?? []).length > 0 && (
-          <button type="button" className="expense-add-btn" onClick={openAdd} style={{ marginTop: '1rem' }}>
+          <Button variant="none" type="button" className="expense-add-btn" onClick={openAdd} style={{ marginTop: '1rem' }}>
             <Plus size={14} aria-hidden="true" /> {t.expensesBudgetSetAction ?? 'Add Budget'}
-          </button>
+          </Button>
         )}
       </PageContainer>
 

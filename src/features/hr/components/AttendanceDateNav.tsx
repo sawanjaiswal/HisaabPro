@@ -76,7 +76,7 @@ export function AttendanceDateNav({
         borderBottom: '1px solid var(--color-gray-100)',
       }}
     >
-      <button
+      <Button variant="none"
         type="button"
         onClick={onPrev}
         aria-label="Previous"
@@ -91,7 +91,7 @@ export function AttendanceDateNav({
         }}
       >
         <ChevronLeft size={18} aria-hidden="true" />
-      </button>
+      </Button>
 
       <div
         style={{
@@ -109,7 +109,7 @@ export function AttendanceDateNav({
         {label}
       </div>
 
-      <button
+      <Button variant="none"
         type="button"
         onClick={onNext}
         aria-label="Next"
@@ -124,7 +124,7 @@ export function AttendanceDateNav({
         }}
       >
         <ChevronRight size={18} aria-hidden="true" />
-      </button>
+      </Button>
 
       <Button size="sm" variant="ghost" onClick={onToday}>
         {t.attendanceTodayCta as string}
@@ -132,7 +132,7 @@ export function AttendanceDateNav({
 
       {/* View toggle — desktop only via CSS class (md:flex) */}
       <div className="hidden md:inline-flex" role="tablist" aria-label="View">
-        <button
+        <Button variant="none"
           type="button"
           role="tab"
           aria-selected={view === 'week'}
@@ -140,8 +140,8 @@ export function AttendanceDateNav({
           style={viewBtn(view === 'week')}
         >
           {t.attendanceWeekView as string}
-        </button>
-        <button
+        </Button>
+        <Button variant="none"
           type="button"
           role="tab"
           aria-selected={view === 'month'}
@@ -149,7 +149,7 @@ export function AttendanceDateNav({
           style={viewBtn(view === 'month')}
         >
           {t.attendanceMonthView as string}
-        </button>
+        </Button>
       </div>
     </div>
   )

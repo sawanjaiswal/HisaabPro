@@ -114,7 +114,7 @@ export default function UnitsPage() {
             {/* Tabs */}
             <nav className="pill-tabs stagger-filters" role="tablist" aria-label="Units sections">
               {UNITS_PAGE_TABS.map((tab) => (
-                <button
+                <Button variant="none"
                   key={tab.id}
                   type="button"
                   role="tab"
@@ -123,7 +123,7 @@ export default function UnitsPage() {
                   aria-selected={activeTab === tab.id}
                 >
                   {tab.label}
-                </button>
+                </Button>
               ))}
             </nav>
 

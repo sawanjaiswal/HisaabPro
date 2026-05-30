@@ -72,7 +72,7 @@ export function ConvertDocumentDrawer({ open, onClose, documentId, sourceType, o
             {targets.map((tt) => {
               const selected = target === tt
               return (
-                <button
+                <Button variant="none"
                   key={tt}
                   type="button"
                   onClick={() => setTarget(tt)}
@@ -85,7 +85,7 @@ export function ConvertDocumentDrawer({ open, onClose, documentId, sourceType, o
                 >
                   <span className="text-[var(--fs-df)] font-medium">{DOCUMENT_TYPE_LABELS[tt]}</span>
                   <ArrowRight className="w-4 h-4" style={{ color: selected ? 'var(--color-primary-700)' : 'var(--text-muted)' }} />
-                </button>
+                </Button>
               )
             })}
           </div>

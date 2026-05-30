@@ -76,7 +76,7 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
       <div className="input-group">
         <span className="input-label" id="sku-mode-label">{t.sku}</span>
         <div className="pill-tabs pill-tabs--with-input" role="group" aria-labelledby="sku-mode-label">
-          <button
+          <Button variant="none"
             type="button"
             className={`pill-tab${form.autoGenerateSku ? ' active' : ''}`}
             onClick={() => onUpdate('autoGenerateSku', true)}
@@ -84,8 +84,8 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
             aria-label={t.autoGenerateSku}
           >
             {t.autoGenerate}
-          </button>
-          <button
+          </Button>
+          <Button variant="none"
             type="button"
             className={`pill-tab${!form.autoGenerateSku ? ' active' : ''}`}
             onClick={() => onUpdate('autoGenerateSku', false)}
@@ -93,7 +93,7 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
             aria-label={t.enterSkuManually}
           >
             {t.manualEntry}
-          </button>
+          </Button>
         </div>
         {!form.autoGenerateSku && (
           <Input

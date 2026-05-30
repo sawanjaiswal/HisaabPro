@@ -21,6 +21,7 @@ import './report-finance.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate } from '../../lib/format'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 function SectionCard({ section }: { section: BalanceSheetSection }) {
   return (
@@ -97,9 +98,9 @@ export default function BalanceSheetPage() {
         <div className="finance-date-bar fade-up">
           <span className="finance-date-bar__label">{t.asOf}</span>
           <Input type="date" className="finance-date-bar__input" value={asOf} onChange={(e) => setAsOf(e.target.value)} aria-label={t.asOfDate} />
-          <button type="button" className="finance-date-bar__refresh-btn" onClick={refresh} aria-label={t.refreshBalanceSheet}>
+          <Button variant="none" type="button" className="finance-date-bar__refresh-btn" onClick={refresh} aria-label={t.refreshBalanceSheet}>
             <RefreshCw size={14} aria-hidden="true" />
-          </button>
+          </Button>
         </div>
 
         {!data && (

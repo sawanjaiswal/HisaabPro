@@ -7,6 +7,7 @@
 import { ChevronRight } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { LucideIcon } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 
 interface QuickLink {
   icon: LucideIcon
@@ -25,7 +26,7 @@ export function GstQuickLinks({ links, onNavigate }: GstQuickLinksProps) {
   return (
     <div className="gst-quick-links" role="list" aria-label={t.gstQuickLinks}>
       {links.map((link) => (
-        <button
+        <Button variant="none"
           key={link.route}
           className="gst-quick-link"
           onClick={() => onNavigate(link.route)}
@@ -40,7 +41,7 @@ export function GstQuickLinks({ links, onNavigate }: GstQuickLinksProps) {
             <span className="gst-quick-link-desc">{link.description}</span>
           </span>
           <ChevronRight size={16} className="gst-quick-link-chevron" aria-hidden="true" />
-        </button>
+        </Button>
       ))}
     </div>
   )

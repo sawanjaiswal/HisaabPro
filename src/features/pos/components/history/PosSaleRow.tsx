@@ -6,6 +6,7 @@ import { paiseToInr } from '../../utils/pos.format'
 import { formatDisplayDate, formatDisplayTime } from '../../utils/pos.format'
 import type { PosSaleDTO } from '../../types/pos.types'
 import type { TranslationKey } from '@/lib/translations'
+import { Button } from '@/components/ui/Button'
 
 interface PosSaleRowProps {
   sale:    PosSaleDTO
@@ -34,7 +35,7 @@ export function PosSaleRow({ sale, onClick }: PosSaleRowProps) {
 
   return (
     <li className="pos-sale-row">
-      <button
+      <Button variant="none"
         type="button"
         className="pos-sale-row__btn"
         onClick={() => onClick(sale.id)}
@@ -57,7 +58,7 @@ export function PosSaleRow({ sale, onClick }: PosSaleRowProps) {
           )}
           <ChevronRight size={14} className="pos-sale-row__chevron" aria-hidden="true" />
         </div>
-      </button>
+      </Button>
     </li>
   )
 }

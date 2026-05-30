@@ -162,7 +162,7 @@ export function PayrollWizardStepDates({
           {subsetLabel}
         </p>
         <div className="flex flex-wrap gap-2">
-          <button
+          <Button variant="none"
             type="button"
             onClick={selectAll}
             disabled={busy}
@@ -175,11 +175,11 @@ export function PayrollWizardStepDates({
             ].join(' ')}
           >
             {t.payrollAllEmployeesLabel as string}
-          </button>
+          </Button>
           {activeEmployees.map((emp) => {
             const selected = selectedIds.has(emp.id)
             return (
-              <button
+              <Button variant="none"
                 key={emp.id}
                 type="button"
                 onClick={() => toggleEmployee(emp.id)}
@@ -193,7 +193,7 @@ export function PayrollWizardStepDates({
                 ].join(' ')}
               >
                 {emp.name}
-              </button>
+              </Button>
             )
           })}
         </div>
@@ -208,7 +208,7 @@ export function PayrollWizardStepDates({
           {PAYROLL_MODE_CHOICES.map((m) => {
             const selected = mode === m
             return (
-              <button
+              <Button variant="none"
                 key={m}
                 type="button"
                 role="radio"
@@ -223,7 +223,7 @@ export function PayrollWizardStepDates({
                 ].join(' ')}
               >
                 {t[PAYROLL_MODE_I18N_KEYS[m] as keyof typeof t] as string}
-              </button>
+              </Button>
             )
           })}
         </div>

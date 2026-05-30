@@ -89,14 +89,14 @@ export function BackfillStep3Confirmation({
           <ChevronLeft size={18} aria-hidden="true" />
           {t.back}
         </Button>
-        <button
+        <Button variant="none"
           className="btn btn-danger btn-md bfw-btn-proceed"
           onClick={handleProceed}
           disabled={isPending || isOffline}
           aria-label={t.backfillProceed}
         >
           {isPending ? (t.backfillStarting ?? 'Starting...') : (t.backfillProceed)}
-        </button>
+        </Button>
       </div>
     </div>
   )

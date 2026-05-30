@@ -3,6 +3,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { Shield, ChevronRight } from 'lucide-react'
 import type { Role } from '../settings.types'
 import '../roles.css'
+import { Button } from '@/components/ui/Button'
 
 interface RoleCardProps {
   role: Role
@@ -14,7 +15,7 @@ export const RoleCard: React.FC<RoleCardProps> = ({ role, onClick }) => {
   const priorityLabel = role.priority === 1 ? t.highestPriority : role.priority === 2 ? t.highPriority : role.priority === 3 ? t.mediumPriority : t.standardPriority
 
   return (
-    <button
+    <Button variant="none"
       className="role-card"
       onClick={() => onClick(role.id)}
       aria-label={`${role.name}, ${role.staffCount} ${t.staffCountLabel}`}
@@ -40,6 +41,6 @@ export const RoleCard: React.FC<RoleCardProps> = ({ role, onClick }) => {
         </span>
       </span>
       <ChevronRight className="role-card-chevron" size={16} aria-hidden="true" />
-    </button>
+    </Button>
   )
 }

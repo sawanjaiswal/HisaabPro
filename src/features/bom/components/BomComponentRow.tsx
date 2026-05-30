@@ -11,6 +11,7 @@ import { useDebounce } from '@/hooks/useDebounce'
 import type { BomComponentFormRow } from '../bom.types'
 import type { Unit } from '@/features/products/product.types'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 interface BomComponentRowProps {
   row: BomComponentFormRow
@@ -128,7 +129,7 @@ export function BomComponentRow({
       </div>
 
       {/* Remove */}
-      <button
+      <Button variant="none"
         type="button"
         className="bom-row__remove btn btn-ghost btn-icon"
         onClick={() => onRemove(index)}
@@ -136,7 +137,7 @@ export function BomComponentRow({
         style={{ minWidth: 44, minHeight: 44 }}
       >
         <Trash2 size={16} aria-hidden="true" />
-      </button>
+      </Button>
     </div>
   )
 }

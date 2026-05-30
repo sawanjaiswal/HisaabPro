@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { CalculatorState } from '../settings.types'
 import { GST_RATES } from '../calculator.constants'
+import { Button } from '@/components/ui/Button'
 
 interface CalculatorGstPanelProps {
   state: Pick<CalculatorState, 'mode' | 'gstRate' | 'gstMode' | 'lastGstBreakdown'>
@@ -43,7 +44,7 @@ export const CalculatorGstPanel: React.FC<CalculatorGstPanelProps> = ({
             <div className="calc-gst-rate-indicator" style={indicatorStyle} aria-hidden="true" />
           )}
           {GST_RATES.map((rate) => (
-            <button
+            <Button variant="none"
               key={rate}
               className={`calc-gst-rate-btn${isGstMode && state.gstRate === rate ? ' calc-gst-rate-btn--active' : ''}`}
               onClick={() => onSetGstRate(rate)}
@@ -52,16 +53,16 @@ export const CalculatorGstPanel: React.FC<CalculatorGstPanelProps> = ({
             >
               <span className="calc-gst-rate-value">{rate}</span>
               <span className="calc-gst-rate-suffix">%</span>
-            </button>
+            </Button>
           ))}
         </div>
-        <button
+        <Button variant="none"
           className={`calc-gst-mode-toggle${isGstMode ? ' calc-gst-mode-toggle--active' : ''}`}
           onClick={onToggleGstMode}
           aria-label={`${t.gstModeLabel}: ${state.gstMode}`}
         >
           {state.gstMode === 'exclusive' ? t.gstExcl : t.gstIncl}
-        </button>
+        </Button>
       </div>
 
       {breakdown && (

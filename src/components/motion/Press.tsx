@@ -2,7 +2,7 @@
  *
  * Gives every tappable surface the same physical "give" without each call site
  * reinventing whileTap. Renders a plain wrapper (no interactive element of its
- * own), so it is safe to wrap an existing <button>/<a> without nesting roles.
+ * own), so it is safe to wrap an existing button/anchor without nesting roles.
  * Respects prefers-reduced-motion.
  */
 

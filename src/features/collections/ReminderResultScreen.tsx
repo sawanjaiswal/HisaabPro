@@ -4,6 +4,7 @@
 
 import { CheckCircle, AlertTriangle } from 'lucide-react'
 import type { BulkReminderResult } from './useReminderComposer'
+import { Button } from '@/components/ui/Button'
 
 interface ReminderResultScreenProps {
   result: BulkReminderResult
@@ -48,13 +49,13 @@ export function ReminderResultScreen({ result, onDone }: ReminderResultScreenPro
       )}
 
       <div className="reminder-result__actions">
-        <button
+        <Button variant="none"
           type="button"
           className="reminder-result__btn reminder-result__btn--primary"
           onClick={onDone}
         >
           Done
-        </button>
+        </Button>
       </div>
     </div>
   )

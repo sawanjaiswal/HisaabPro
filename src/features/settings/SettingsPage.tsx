@@ -53,6 +53,7 @@ import { SETTINGS_SECTIONS, DATE_FORMATS } from './settings.constants'
 import type { SettingsItem, AppSettings, DateFormat, CalculatorPosition } from './settings.types'
 import './settings.css'
 import './settings-toggle.css'
+import { Button } from '@/components/ui/Button'
 
 type IconComponent = React.FC<LucideProps>
 
@@ -192,14 +193,14 @@ export default function SettingsPage() {
               )
             })}
 
-            <button
+            <Button variant="none"
               type="button"
               onClick={onLogout}
               className="settings-logout-btn"
             >
               <LogOut size={18} aria-hidden="true" />
               <span>{t.logout}</span>
-            </button>
+            </Button>
           </div>
         )}
       </PageContainer>
