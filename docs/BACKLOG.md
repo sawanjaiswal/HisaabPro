@@ -2,7 +2,9 @@
 
 > **2026-05-30 update:** P4 Consistency Sweep COMPLETE. Waves 17–20 ratcheted all 6 enforce-primitives surfaces to zero (`rawSelect` 58→0, `rawTextarea` 30→0, `rawInput` 294→0, `rawButton` 594→0; `nativeConfirm`/`missing*State` already zero). New primitives: `<Textarea>` (naked + wrapped). New modes: `<Input>` naked, `<Button variant="none"` + forwardRef. Pre-commit blocks regressions. Wave 20 is a mechanical wrap — semantic variant upgrade is a follow-up workstream.
 
-> **Next autonomous-doable (no creds, no multi-week ceremony):** V7 prescription field validation (verify generic custom-fields system suffices for pharmacy/clinic before scoping a dedicated field) OR P4 semantic upgrade pass (convert `<Button variant="none">` to real variants page-by-page).
+> **2026-05-30 update (V7):** ✅ SHIPPED. Validated generic custom-fields suffices; added `MULTILINE` fieldType (additive — no migration). DOCUMENT-scoped only. Party-scoped FE custom-field render UI is a separate gap.
+
+> **Next autonomous-doable (no creds, no multi-week ceremony):** P4 semantic upgrade pass (convert `<Button variant="none">` to real variants page-by-page) OR party-scoped custom-field FE render (close V7's residual gap).
 
 
 
@@ -156,7 +158,7 @@ Verticals are wired (nav filtering, terminology, defaults, Jobs flow, Custom Ord
 | **V4 — Staff assignment + commission split** | services, bakery, tailor, manufacturing | ~2 wks | Assign staff to Jobs/Orders/POS sales. Builds on Phase 6 #128 commission ledger. |
 | ~~**V5 — Customer delivery reminders**~~ ✅ SHIPPED 2026-05-29 | bakery, tailor | — | Added `ORDER_DELIVERY` to `ReminderRuleTrigger` (enum migration `ADD VALUE`); `orderDeliveryCandidates()` fires `offsetDays` **days** before `CustomOrder.deliveryAt` (RECEIVED/IN_PRODUCTION/READY, isDeleted:false, deduped by party), reusing the entire Epic A reminder-cron/dispatch pipeline. FE: 6th trigger option in picker + list label + i18n (en/hi). 3 candidate tests. Day-granular — hour-precision "N hours before" deferred → FUTURE_EPIC (needs `offsetHours` + idempotency-key redesign). Live send still cred-blocked (AISENSY/MSG91 unset). Plan deviation: `ReminderRuleListPage.tsx` exhaustive map also needed widening (not in files_planned; non-high-risk FE, gate-permitted). |
 | **V6 — Table management + KOT** | restaurant | LARGE | Out of MSME billing scope. Defer to v2 product. |
-| **V7 — Prescription field** | pharmacy, clinic | trivial | Likely solvable today via generic custom fields. Validate before scoping. |
+| ~~**V7 — Prescription field**~~ ✅ SHIPPED 2026-05-30 | pharmacy, clinic | — | Validated: generic custom-fields system suffices. Added `MULTILINE` fieldType (additive — fieldType is `String`, no Prisma migration). DOCUMENT-scoped (Textarea render, max 2000 chars, PDF resolver). Party-scoped FE custom-field render UI still missing — flagged as separate gap in HISAABPRO §8. |
 
 Recommended sequence (post merge-to-prod):
 1. ~~V3 (3 days, no schema, big restaurant/bakery win)~~ ✅ SHIPPED 2026-05-28
