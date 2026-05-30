@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Send, FileText, Bell, ShieldOff } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useLanguage } from '@/hooks/useLanguage'
+import { ErrorState } from '@/components/feedback/ErrorState'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import { listCampaigns, listTemplates, listReminderRules } from '../marketing.service'
 
@@ -91,6 +92,12 @@ export default function MarketingHubPage() {
   })
 
   const loading = campaignQuery.isPending || templateQuery.isPending || reminderQuery.isPending
+  const hasError = campaignQuery.isError && templateQuery.isError && reminderQuery.isError
+  const retryAll = () => {
+    void campaignQuery.refetch()
+    void templateQuery.refetch()
+    void reminderQuery.refetch()
+  }
   const campaigns = campaignQuery.data?.data ?? []
   const templates = templateQuery.data?.data ?? []
   const rules = reminderQuery.data?.data ?? []
@@ -109,12 +116,18 @@ export default function MarketingHubPage() {
         </div>
       </div>
 
-      {/* Stats */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '24px' }}>
-        <StatCard label={t.marketingCampaigns} value={campaigns.length} loading={loading} />
-        <StatCard label={t.marketingTemplates} value={templates.length} loading={loading} />
-        <StatCard label={t.marketingActiveReminders} value={activeReminders} loading={loading} />
-      </div>
+      {/* Stats / error */}
+      {hasError ? (
+        <div style={{ marginBottom: '24px' }}>
+          <ErrorState title={t.marketingOptOutsLoadFailed} onRetry={retryAll} />
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '24px' }}>
+          <StatCard label={t.marketingCampaigns} value={campaigns.length} loading={loading} />
+          <StatCard label={t.marketingTemplates} value={templates.length} loading={loading} />
+          <StatCard label={t.marketingActiveReminders} value={activeReminders} loading={loading} />
+        </div>
+      )}
 
       {/* Quick actions */}
       <div style={{ marginBottom: '24px' }}>

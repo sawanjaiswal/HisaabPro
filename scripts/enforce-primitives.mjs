@@ -103,8 +103,13 @@ const RENDERS_LIST_RE = /\.map\s*\(\s*\(?[^)]*\)?\s*=>\s*(?:<|\()/
 // StockSummaryEmpty, CartEmpty, LedgerEmpty, etc. — themselves verified to
 // render <EmptyState> by waves 4-5).
 const DELEGATES_EMPTY_RE = /<[A-Z][A-Za-z0-9]*Empty\b/
-// Has a fetch/query/loading lifecycle that could legitimately error.
-const HAS_QUERY_RE = /useQuery|useInfiniteQuery|isError|onError|catch\s*\(/
+// Page delegates its error state to a subcomponent via an `isError` prop
+// (PosHistoryPage → <PosSaleList isError={...} />, etc.).
+const DELEGATES_ERROR_RE = /\bisError=\{/
+// Has a fetch/query lifecycle that could legitimately error. `catch (...)`
+// in mutation handlers is intentionally excluded — those funnel through
+// toast.error, not a render-time error state.
+const HAS_QUERY_RE = /\buseQuery\s*\(|\buseInfiniteQuery\s*\(/
 
 for (const full of files) {
   const rel = relative(ROOT, full)
@@ -126,7 +131,11 @@ for (const full of files) {
     ) {
       violations.missingEmptyState.push(rel)
     }
-    if (HAS_QUERY_RE.test(src) && !/ErrorState\b/.test(src)) {
+    if (
+      HAS_QUERY_RE.test(src) &&
+      !/ErrorState\b/.test(src) &&
+      !DELEGATES_ERROR_RE.test(src)
+    ) {
       violations.missingErrorState.push(rel)
     }
   }
