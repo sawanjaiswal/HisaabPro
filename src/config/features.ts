@@ -56,6 +56,18 @@ export const FEATURES = {
     enabled: envBool(import.meta.env.VITE_FEATURE_TRANSACTION_PIN, true),
     cohortPercent: envInt(import.meta.env.VITE_FEATURE_TRANSACTION_PIN_COHORT_PCT, 100),
   },
+
+  /**
+   * V2 Appointments — gates BottomNav "Calendar" entry and /appointments
+   * routes. Server enforces the real per-business cohort via
+   * FEATURES.V2_APPOINTMENTS on the BE — the FE flag hides entry points so
+   * out-of-cohort users don't see broken-when-clicked links. Default OFF
+   * until FE-2 ships the full surface.
+   */
+  V2_APPOINTMENTS: {
+    enabled: envBool(import.meta.env.VITE_FEATURE_V2_APPOINTMENTS, false),
+    cohortPercent: envInt(import.meta.env.VITE_FEATURE_V2_APPOINTMENTS_COHORT_PCT, 0),
+  },
 } as const
 
 export type FeatureKey = keyof typeof FEATURES

@@ -1,11 +1,12 @@
 import { createPortal } from 'react-dom'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Home, ShoppingCart, Users, Plus, Menu } from 'lucide-react'
+import { Home, ShoppingCart, Users, Plus, Menu, CalendarClock } from 'lucide-react'
 import type { ComponentType, SVGProps } from 'react'
 import { ROUTES } from '@/config/routes.config'
 import { OPEN_SIDE_NAV_EVENT } from '@/config/events.config'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useKeyboardVisible } from '@/hooks/useKeyboardVisible'
+import { FEATURES } from '@/config/features'
 import './BottomNav.css'
 
 type IconType = ComponentType<SVGProps<SVGSVGElement> & { size?: number }>
@@ -47,6 +48,9 @@ export function BottomNav() {
   ]
 
   const rightItems: readonly NavItem[] = [
+    ...(FEATURES.V2_APPOINTMENTS.enabled
+      ? [{ to: ROUTES.APPOINTMENTS, icon: CalendarClock, label: t.appointments ?? 'Calendar' }]
+      : []),
     { to: ROUTES.PARTIES, icon: Users, label: t.parties },
   ]
 

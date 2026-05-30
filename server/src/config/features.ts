@@ -75,6 +75,17 @@ export const FEATURES = {
     enabled: envBool('FEATURE_DATA_IMPORT', false),
     cohortPercent: envInt('FEATURE_DATA_IMPORT_COHORT_PCT', 0),
   },
+
+  /**
+   * V2 Appointments (Phase 1B). Gates /api/appointments/*, /api/p/booking/*,
+   * and the rotate-booking-secret endpoint. SALON+CLINIC verticals only —
+   * route layer enforces vertical scope on top of this flag.
+   * Default OFF; 4-stage cohort ramp via `FEATURE_V2_APPOINTMENTS_COHORT_PCT`.
+   */
+  V2_APPOINTMENTS: {
+    enabled: envBool('FEATURE_V2_APPOINTMENTS', false),
+    cohortPercent: envInt('FEATURE_V2_APPOINTMENTS_COHORT_PCT', 0),
+  },
 } as const
 
 export type FeatureKey = keyof typeof FEATURES

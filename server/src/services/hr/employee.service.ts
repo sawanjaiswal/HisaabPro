@@ -205,6 +205,19 @@ export async function deleteEmployee(
   id: string,
   actor: EmployeeActor,
 ): Promise<Employee> {
+  // V2 Appointments — block soft-delete when active appointments exist.
+  const { countActiveByEmployee } = await import('../appointment-repo.js')
+  const active = await countActiveByEmployee(prisma, actor.businessId, id)
+  if (active > 0) {
+    const { APPT_ERR } = await import('../../constants/appointment.constants.js')
+    throw new AppError(
+      ErrorCode.CONFLICT,
+      409,
+      'Employee has active appointments',
+      { code: APPT_ERR.HAS_ACTIVE_APPOINTMENTS, activeAppointmentCount: active }
+    )
+  }
+
   return prisma.$transaction(async (tx) => {
     const existing = await tx.employee.findFirst({
       where: { id, businessId: actor.businessId },

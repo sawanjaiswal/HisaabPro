@@ -8,6 +8,7 @@ import { API_URL, TIMEOUTS } from '@/config/app.config'
 import { SYNC_QUEUE_MAX_RETRIES, SYNC_RETRY_DELAYS } from './offline.constants'
 import type { SyncQueueItem, SyncItemStatus } from './offline.types'
 import { db, notify, purgeStaleDead } from './offline.queue'
+import { notifyReplayRejection } from './api-queue-replay'
 
 // ─── Last-sync timestamp ──────────────────────────────────────────────────────
 
@@ -153,6 +154,20 @@ export async function processQueue(): Promise<void> {
             status: 'dead' as SyncItemStatus,
             errorMessage: errMsg,
           })
+          // Bridge to the UI: feature-aware toast + replay-bus broadcast +
+          // Sentry. Best-effort — a broken bridge must not stall the queue.
+          try {
+            notifyReplayRejection({
+              entityType: current.entityType,
+              entityLabel: current.entityLabel,
+              method: current.method,
+              path: current.path,
+              status: response.status,
+              errorMessage: errMsg,
+            })
+          } catch {
+            /* ignore */
+          }
           notify()
           continue
         }

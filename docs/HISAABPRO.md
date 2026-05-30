@@ -251,14 +251,24 @@ Merge `caa390d` (2026-05-26), 12 commits + 2 hardening (`ba56470`/`0bd1881`).
 | Epic | Verticals | Effort | Severity |
 |---|---|---|---|
 | ~~V1 — Hourly billing on Jobs~~ ✅ SHIPPED 2026-05-29 | Services/Freelancer/Salon/Clinic | — | done |
-| V2 — Appointment calendar + slot picker | Salon/Clinic | ~2 wks | HIGH (onboarding blocker) |
+| V2 — Appointment calendar + slot picker | Salon/Clinic | ~2 wks | 🔵 IN FLIGHT 2026-05-31 — schema + BE (incl. convert + waitlist) + 1C reminder trigger + FE-1 + FE-2 landed (tsc 0, vitest 46/46 FE + 49/49 BE incl. cross-tenant + public-booking-signature + soft-delete-guard); verifier + QA next |
 | ~~V3 — Recipe cost dashboard (BOM-derived)~~ ✅ SHIPPED 2026-05-28 | Restaurant/Bakery/Manufacturing | — | done |
 | V4 — Staff assignment + commission split on Jobs/Orders | Services/Bakery/Tailor/Manufacturing | ~2 wks | MEDIUM (extends Phase 6 #128) |
 | ~~V5 — Customer delivery reminders (`offsetDays` before delivery)~~ ✅ SHIPPED 2026-05-29 | Bakery/Tailor | — | done (day-granular; hour-precision → FUTURE_EPIC) |
 | V6 — Table mgmt + KOT | Restaurant | LARGE | LOW (out of scope) |
 | ~~V7 — Prescription field~~ ✅ SHIPPED 2026-05-30 (MULTILINE custom-field DOCUMENT-scoped + party-scoped FE Create/Edit/Overview wired — gap fully closed) | Pharmacy/Clinic | — | done |
 
-Recommended sequence post merge-to-prod: ~~V3~~ ✅ → ~~V1~~ ✅ → ~~V5~~ ✅ → V2 → V4.
+Recommended sequence post merge-to-prod: ~~V3~~ ✅ → ~~V1~~ ✅ → ~~V5~~ ✅ → V2 🔵 → V4.
+
+**V2 epic state (2026-05-31, plan `design-plan-active--v2-appointments--bare14409.md`):**
+- ✅ Multi-agent ceremony PASS: scope-auditor, architecture-auditor, security
+- ✅ Phase 1A — schema + migration (Appointment / AppointmentStatusEvent / AppointmentRecurrenceTemplate / AppointmentWaitlist; btree_gist EXCLUDE; Job.appointmentId; Document.appointmentId; Business.publicBookingHmacSecret)
+- ✅ Phase 1B — backend (27 files / 2501 LOC, all ≤250L; HMAC-SHA256 public booking, resolveScoped* cross-tenant guard, soft-delete + *NameSnapshot, redactPiiFields log middleware; 40/40 tests)
+- ✅ Phase 1C — reminder trigger (`APPOINTMENT_UPCOMING`; Sentry `appointment_reminder_sent`; 5/5 tests)
+- ✅ Phase 2 FE-1 — types/constants/utils/hooks + DayListView + CreateAppointmentDrawer + AppointmentDetailPage + StatusActionBar + BottomNav + routes + flag (20 files, 19/19 tests)
+- ✅ Phase 2 FE-2 — CalendarDayView + CalendarWeekView + RecurrenceFields + ConvertToBillSheet + WaitlistSheet + Party/Employee pickers + vertical from BusinessContext + replay-bus + Sentry + DayPicker + audit-log polish (24 files, 46/46 tests cumulative)
+- ✅ BE convert + waitlist endpoints — `appointment-convert.ts` + `appointment-waitlist.ts` routes + schemas; 13/13 endpoint tests + 49/49 cumulative BE suite (incl. `cross-tenant-appointments`, `public-booking-signature`, `soft-delete-guard-appointments`)
+- ⏳ NEXT — verifier (curl 200/401/404/409/400 + screenshot evidence @ 320/375/768/1024, no Chrome live-drive) → QA cross-tenant + offline-replay → ramp behind `featureV2Appointments` 4-stage cohort
 
 ---
 
@@ -317,7 +327,7 @@ Ported from DudhHisaab subscription model (commit `3530e79`):
 **Build (no creds needed):**
 - Phase 7 (remaining 1): #143 WA bot (creds-blocked). Done: #142 Voice · #144 Smart GST · #146 Predictive · #147 Auto-recon · #148 Smart inv · #149 Competitor imports · #150 Multi-user collab (LWW + optimistic lock).
 - Phase 3 deferred #89 Bank Reconciliation — shipped inside #147.
-- Vertical depth: V2 (Appointments, ~2 wks, needs scope-writer+architect for new `Appointment` Prisma model), V4 (Staff assignment + commission split, ~2 wks, needs security agent), V6 (Tables+KOT, out of MSME scope — defer), V7 (Prescription field, trivial — validate that generic custom fields suffice before scoping a dedicated field). Done: V1 Hourly billing · V3 Recipe Cost dashboard · V5 Customer delivery reminders.
+- Vertical depth: V2 🔵 in flight (schema + BE incl. convert/waitlist + FE landed, 49/49 BE + 46/46 FE green; verifier + QA remaining), V4 (Staff assignment + commission split, ~2 wks, needs security agent), V6 (Tables+KOT, out of MSME scope — defer), V7 (Prescription field, trivial — validate that generic custom fields suffice before scoping a dedicated field). Done: V1 Hourly billing · V3 Recipe Cost dashboard · V5 Customer delivery reminders.
 - **P4 design-system semantic upgrade**: page-by-page conversion of the 594 mechanical `<Button variant="none">` wraps from wave 20 onto real variants (`primary` / `secondary` / `accent` / `destructive` / `ghost`) where the className contract maps cleanly. Per-page judgment call; not a regex sweep. Ratchet stays at zero — wave 20 froze the surface.
 
 **Autonomous-doable today (no creds, no multi-week ceremony):** V7 prescription validation OR P4 semantic upgrade.

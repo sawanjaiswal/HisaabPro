@@ -24,6 +24,7 @@ import { validate } from '../middleware/validate.js'
 import { sendSuccess, sendError } from '../lib/response.js'
 import { suspendBusinessSchema, reactivateBusinessSchema } from '../schemas/business.schemas.js'
 import { suspendBusiness, reactivateBusiness } from '../services/business/suspend.service.js'
+import { rotatePublicBookingSecret } from '../services/business-settings-rotation.service.js'
 
 const router = Router()
 
@@ -94,6 +95,28 @@ router.post(
       deviceInfo: req.headers['user-agent'],
     })
     sendSuccess(res, { business })
+  })
+)
+
+/**
+ * POST /api/businesses/:id/rotate-booking-secret
+ * Owner rotates the per-business public-booking HMAC secret. Bulk-revokes
+ * every outstanding SharedLink so prior URLs stop verifying. Auditable —
+ * the service writes a structured info log; we also bind the path param to
+ * `req.user.businessId` to prevent cross-tenant rotation.
+ */
+router.post(
+  '/:id/rotate-booking-secret',
+  auth,
+  requireOwner(),
+  requireRecentPin('mutation'),
+  asyncHandler(async (req, res) => {
+    if (req.params.id !== req.user!.businessId) {
+      sendError(res, 'Business mismatch', 'FORBIDDEN', 403)
+      return
+    }
+    const result = await rotatePublicBookingSecret(req.params.id!, req.user!.userId)
+    sendSuccess(res, result)
   })
 )
 

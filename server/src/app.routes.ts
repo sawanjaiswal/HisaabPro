@@ -86,6 +86,9 @@ import auditRoutes from './routes/audit.routes.js'
 import hrRoutes from './routes/hr.routes.js'
 import payrollRoutes from './routes/payroll.routes.js'
 import importsRoutes from './routes/imports/index.js'
+import appointmentRoutes from './routes/appointments.js'
+import appointmentConvertRoutes from './routes/appointment-convert.js'
+import appointmentWaitlistRoutes from './routes/appointment-waitlist.js'
 
 const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/imports', importsRoutes],
@@ -201,6 +204,18 @@ const ROUTE_MOUNTS: Array<[string, Router]> = [
   // Phase 6 PR6 — Payroll (architecture §6.1 + §8 + §18.7 rows 149-151).
   // Feature-gated inside the router via requireFeature('STAFF_HR') after auth.
   ['/api/payroll', payrollRoutes],
+
+  // V2 Appointments (Phase 1B). Feature-flag enforcement lives inside the
+  // router (FEATURES.V2_APPOINTMENTS + vertical check) so the mount table
+  // stays declarative.
+  // V2 Appointments — FE-2 backend gap closure. These mount BEFORE the base
+  // appointmentRoutes router because the base owns GET /:id and a request to
+  // GET /api/appointments/waitlist would otherwise be captured as id='waitlist'.
+  // Convert is the literal sub-path /:id/convert which also wins via being
+  // checked first.
+  ['/api/appointments', appointmentConvertRoutes],
+  ['/api/appointments', appointmentWaitlistRoutes],
+  ['/api/appointments', appointmentRoutes],
 ]
 
 export function mountFeatureRoutes(app: Express): void {

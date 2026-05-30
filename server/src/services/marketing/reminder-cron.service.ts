@@ -12,6 +12,7 @@ import { candidatesFor, normaliseToUtcMidnight } from './reminder-trigger.servic
 import { filterPartyIds } from './campaign-segment.service.js'
 import { dropOptedOut, applyQuietHours } from './marketing-compliance.service.js'
 import logger from '../../lib/logger.js'
+import { Sentry } from '../../lib/sentry.js'
 import type { SegmentFilter } from './campaign-segment.types.js'
 
 const DISPATCH_BATCH = 200
@@ -39,6 +40,7 @@ export async function runReminderTick(now = new Date()): Promise<TickReport> {
         select: {
           id: true,
           reminderConfig: true,
+          businessType: true,
         },
       },
     },
@@ -110,7 +112,9 @@ export async function runReminderTick(now = new Date()): Promise<TickReport> {
               ? 'REMINDER_PAYMENT_OVERDUE_AUTO'
               : rule.trigger === 'FOLLOWUP'
                 ? 'REMINDER_FOLLOWUP'
-                : 'REMINDER_INACTIVE'
+                : rule.trigger === 'APPOINTMENT_UPCOMING'
+                  ? 'REMINDER_APPOINTMENT_UPCOMING'
+                  : 'REMINDER_INACTIVE'
 
         try {
           await notificationManager.notify(eventKey as Parameters<typeof notificationManager.notify>[0], {
@@ -123,6 +127,21 @@ export async function runReminderTick(now = new Date()): Promise<TickReport> {
             entityId: inst.id,
           })
           report.dispatched++
+
+          // Architect doc §12.1 — Sentry analytics event for appointment reminders
+          if (rule.trigger === 'APPOINTMENT_UPCOMING') {
+            Sentry.captureMessage('appointment_reminder_sent', {
+              level: 'info',
+              extra: {
+                businessId: rule.businessId,
+                ruleId: rule.id,
+                partyId: inst.partyId,
+                channel: rule.channel,
+                leadHours: rule.offsetDays * 24,
+                vertical: rule.business.businessType,
+              },
+            })
+          }
         } catch (err) {
           await prisma.reminderInstance.update({
             where: { id: inst.id },

@@ -244,3 +244,6 @@ export const ChallanDetail = lazy(() => import('@/features/sales/ChallanDetailPa
 export const CreateEstimate = lazy(() => import('@/features/sales/create/CreateEstimatePage'))
 export const CreateSaleOrder = lazy(() => import('@/features/sales/create/CreateSaleOrderPage'))
 export const CreateChallan = lazy(() => import('@/features/sales/create/CreateChallanPage'))
+// V2 Appointments FE-1 (FEATURES.V2_APPOINTMENTS gates BottomNav entry).
+export const Appointments = lazy(() => import('@/features/appointments/pages/AppointmentsPage'))
+export const AppointmentDetail = lazy(() => import('@/features/appointments/pages/AppointmentDetailPage'))

@@ -21,6 +21,7 @@ import { resolvePublicToken, PublicLinkError } from '../middleware/resolve-publi
 import invoiceRoutes from './public/invoice.routes.js'
 import storeRoutes from './public/store.routes.js'
 import inviteRoutes from './public/invite.routes.js'
+import appointmentPublicRoutes from './appointment-public.js'
 
 const router = Router()
 
@@ -85,5 +86,8 @@ router.use('/store', storeRoutes)
 
 // PR5 — Party Invite Portal (#131)
 router.use('/invite', inviteRoutes)
+
+// V2 Appointments — anonymous booking (HMAC token in body)
+router.use('/booking', appointmentPublicRoutes)
 
 export default router

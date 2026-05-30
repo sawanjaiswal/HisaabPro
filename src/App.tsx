@@ -59,6 +59,8 @@ import {
   Attendance,
   // Phase 6 — Staff & HR (PR6 FE — Employees + Payroll + Payslip)
   Employees, EmployeeDetail, Payroll, PayrollWizard, PayrollRunDetail, Payslip,
+  // V2 Appointments (FE-1)
+  Appointments, AppointmentDetail,
 } from '@/app.routes'
 import {
   PageRoute, DashboardFallback, ProtectedRoute, GuestRoute,
@@ -101,6 +103,10 @@ export function App() {
         <Route path={ROUTES.PARTY_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="parties" featureLabel="Parties"><PartyDetail /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PARTY_EDIT} element={<PageRoute><ProtectedRoute><PlanGate feature="parties" featureLabel="Parties"><EditParty /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.CRM_FOLLOWUPS} element={<PageRoute><ProtectedRoute><PlanGate feature="parties" featureLabel="Parties"><FollowUps /></PlanGate></ProtectedRoute></PageRoute>} />
+
+        {/* V2 Appointments (FE-1) — server gates per-tenant via requireFeature('V2_APPOINTMENTS') */}
+        <Route path={ROUTES.APPOINTMENTS} element={<PageRoute><ProtectedRoute><Appointments /></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.APPOINTMENT_DETAIL} element={<PageRoute><ProtectedRoute><AppointmentDetail /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PRODUCTS} element={<PageRoute><ProtectedRoute><PlanGate feature="products" featureLabel="Products"><Products /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PRODUCT_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="products" featureLabel="Products"><CreateProduct /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PRODUCT_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="products" featureLabel="Products"><ProductDetail /></PlanGate></ProtectedRoute></PageRoute>} />

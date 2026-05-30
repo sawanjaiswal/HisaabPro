@@ -128,6 +128,10 @@ model User {
   // Audit #5 — Google Drive backup connection (per-user OAuth)
   driveBackupConnection DriveBackupConnection?
 
+  // V2 Appointments — Phase 1A
+  appointmentsCreated     Appointment[]            @relation("AppointmentCreator")
+  appointmentStatusEvents AppointmentStatusEvent[] @relation("AppointmentStatusActor")
+
   @@index([phone])
   @@index([referredBy])
   @@index([referralFraudFlags])
@@ -176,6 +180,13 @@ model Business {
 
   // Epic C PR2 — #129 UPI QR on invoice (migration: epic_c_business_upi_vpa)
   upiVpa String? @db.VarChar(320) // VPA format: name@bank
+
+  // V2 Appointments — public booking HMAC secret (per architect §2.6).
+  // 32-byte random bytes generated on first "Enable public booking" toggle; rotated via Settings.
+  // Stored here (not a separate BusinessSettings table) because HisaabPro keeps public-facing
+  // business config (storefrontSlug, upiVpa) on Business directly.
+  publicBookingHmacSecret    Bytes?
+  publicBookingSecretVersion Int    @default(1)
 
   businessUsers             BusinessUser[]
   parties                   Party[]
@@ -318,6 +329,11 @@ model Business {
   statementImports      BankStatementImport[]
   statementLines        BankStatementLine[]
   reconciliationMatches ReconciliationMatch[]
+
+  // V2 Appointments — Phase 1A
+  appointments                   Appointment[]
+  appointmentRecurrenceTemplates AppointmentRecurrenceTemplate[]
+  appointmentWaitlists           AppointmentWaitlist[]
 
   @@index([name])
 }
@@ -488,6 +504,10 @@ model Party {
 
   // Phase 5 Epic D — Loyalty #125 reverse
   loyaltyLedger LoyaltyLedger[]
+
+  // V2 Appointments — Phase 1A
+  appointments         Appointment[]
+  appointmentWaitlists AppointmentWaitlist[]
 
   // Phase 6 — Staff & HR: paired STAFF Party owns one Employee row (architecture §8.5).
   employee Employee? @relation("EmployeeParty")
@@ -1058,14 +1078,21 @@ model Document {
   importJobId String?
   importedBy  String?
 
+  // V2 Appointments — Phase 1A: link back to the originating Appointment when this
+  // SALE_INVOICE was created via convert-to-invoice. Nullable forever (legacy docs +
+  // docs created directly). Architect §2.6 — used by the convert flow for idempotency.
+  appointmentId String?
+
   // Relations
-  business       Business   @relation(fields: [businessId], references: [id], onDelete: Restrict)
-  party          Party      @relation(fields: [partyId], references: [id], onDelete: Restrict)
-  creator        User       @relation("DocumentCreator", fields: [createdBy], references: [id], onDelete: Restrict)
-  updater        User?      @relation("DocumentUpdater", fields: [updatedBy], references: [id])
-  deleter        User?      @relation("DocumentDeleter", fields: [deletedBy], references: [id])
-  importJob      ImportJob? @relation("ImportedDocuments", fields: [importJobId], references: [id], onDelete: SetNull)
-  importedByUser User?      @relation("ImportedDocuments", fields: [importedBy], references: [id], onDelete: SetNull)
+  business       Business     @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  party          Party        @relation(fields: [partyId], references: [id], onDelete: Restrict)
+  creator        User         @relation("DocumentCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  updater        User?        @relation("DocumentUpdater", fields: [updatedBy], references: [id])
+  deleter        User?        @relation("DocumentDeleter", fields: [deletedBy], references: [id])
+  importJob      ImportJob?   @relation("ImportedDocuments", fields: [importJobId], references: [id], onDelete: SetNull)
+  importedByUser User?        @relation("ImportedDocuments", fields: [importedBy], references: [id], onDelete: SetNull)
+  // V2 Appointments — convert-to-invoice link
+  appointment    Appointment? @relation("AppointmentInvoice", fields: [appointmentId], references: [id], onDelete: SetNull)
   // E-Compliance — Phase 2
   eInvoice       EInvoice?
   eWayBill       EWayBill?
@@ -1126,6 +1153,8 @@ model Document {
   @@index([priceListId])
   // Phase 7 — Import
   @@index([businessId, importJobId])
+  // V2 Appointments — convert-to-invoice reverse lookup
+  @@index([appointmentId])
 }
 
 model DocumentLineItem {
@@ -3040,10 +3069,15 @@ model Job {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  business Business  @relation(fields: [businessId], references: [id], onDelete: Restrict)
-  party    Party     @relation(fields: [partyId], references: [id], onDelete: Restrict)
-  invoice  Document? @relation("JobInvoice", fields: [invoiceId], references: [id], onDelete: SetNull)
-  items    JobItem[]
+  // V2 Appointments — Phase 1A: link back to the originating Appointment when this Job
+  // was created via convert-to-job. Nullable forever (legacy jobs + jobs created directly).
+  appointmentId String?
+
+  business    Business     @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  party       Party        @relation(fields: [partyId], references: [id], onDelete: Restrict)
+  invoice     Document?    @relation("JobInvoice", fields: [invoiceId], references: [id], onDelete: SetNull)
+  appointment Appointment? @relation("AppointmentJob", fields: [appointmentId], references: [id], onDelete: SetNull)
+  items       JobItem[]
 
   @@unique([businessId, jobNumber])
   @@index([businessId, status])
@@ -3051,6 +3085,7 @@ model Job {
   @@index([businessId, scheduledAt])
   @@index([businessId, isDeleted])
   @@index([clientId])
+  @@index([appointmentId])
 }
 
 model JobItem {
@@ -3727,6 +3762,7 @@ enum ReminderRuleTrigger {
   FOLLOWUP
   INACTIVE
   ORDER_DELIVERY
+  APPOINTMENT_UPCOMING
 }
 
 enum ReminderInstanceStatus {
@@ -4036,6 +4072,10 @@ model Employee {
   attendances Attendance[]
   payrolls    Payroll[]
   advances    EmployeeAdvance[]
+
+  // V2 Appointments — Phase 1A
+  appointments         Appointment[]
+  appointmentWaitlists AppointmentWaitlist[]
 
   @@unique([businessId, partyId])
   @@index([businessId, isDeleted])
@@ -4371,4 +4411,126 @@ model DriveBackupConnection {
   lastBackupAt    DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+}
+
+// === V2 Appointments — Phase 1A ===
+// Architecture: docs/ARCHITECTURE_V2_APPOINTMENTS.md §2
+// Adapted to HisaabPro: Invoice → Document; BusinessSettings.* lives on Business.
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  CHECKED_IN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum AppointmentRecurrenceFreq {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+model Appointment {
+  id                   String            @id @default(cuid())
+  businessId           String
+  /// Nullable — set to NULL when the Party is soft-deleted after a terminal-status appointment.
+  /// App-layer guard blocks soft-delete while ACTIVE appointments exist (§2.7).
+  partyId              String?
+  partyNameSnapshot    String
+  /// Nullable — same lifecycle as partyId; NULL means "any staff" OR employee deleted post-completion.
+  employeeId           String?
+  employeeNameSnapshot String
+  startAt              DateTime
+  endAt                DateTime
+  durationMinutes      Int
+  status               AppointmentStatus @default(SCHEDULED)
+  /// MVP plaintext — encryption deferred to FUTURE_EPIC. PII redaction handled at log layer.
+  notes                String?
+  serviceId            String?
+  /// Vertical discriminator snapshot — denorm from Business at create time so the
+  /// appointment renders consistently even if the business changes vertical later.
+  /// Values match Business.businessType convention (e.g. "salon", "clinic", "general").
+  vertical             String
+  /// Idempotency for POST /appointments (one row per createdById, anonymous public-booking included).
+  idempotencyKey       String?           @unique
+  createdById          String
+  /// Self-reference to the recurrence template's master row. NULL for one-off appointments.
+  parentRecurrenceId   String?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+
+  business         Business                       @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  party            Party?                         @relation(fields: [partyId], references: [id], onDelete: SetNull)
+  employee         Employee?                      @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+  createdBy        User                           @relation("AppointmentCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  parentRecurrence AppointmentRecurrenceTemplate? @relation(fields: [parentRecurrenceId], references: [id], onDelete: SetNull)
+
+  statusEvents     AppointmentStatusEvent[]
+  // Reverse — convert-to-job + convert-to-invoice
+  jobs             Job[]                    @relation("AppointmentJob")
+  invoices         Document[]               @relation("AppointmentInvoice")
+  waitlistPromoted AppointmentWaitlist?
+
+  // Hot path: business + range
+  @@index([businessId, startAt])
+  // Per-employee conflict check (correctness owned by EXCLUDE constraint in migration.sql)
+  @@index([businessId, employeeId, startAt])
+  // Party detail page reverse lookup
+  @@index([partyId, startAt])
+  // Status-bucket scans
+  @@index([businessId, status, startAt])
+  // Recurrence series queries
+  @@index([parentRecurrenceId])
+}
+
+model AppointmentStatusEvent {
+  id            String             @id @default(cuid())
+  appointmentId String
+  fromStatus    AppointmentStatus?
+  toStatus      AppointmentStatus
+  reason        String?
+  actorUserId   String
+  createdAt     DateTime           @default(now())
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  actor       User        @relation("AppointmentStatusActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([appointmentId, createdAt])
+}
+
+model AppointmentRecurrenceTemplate {
+  id          String                    @id @default(cuid())
+  businessId  String
+  frequency   AppointmentRecurrenceFreq
+  startAt     DateTime
+  endAt       DateTime
+  occurrences Int
+  createdAt   DateTime                  @default(now())
+
+  business     Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+
+  @@index([businessId])
+}
+
+model AppointmentWaitlist {
+  id                    String   @id @default(cuid())
+  businessId            String
+  partyId               String
+  employeeId            String?
+  preferredDate         DateTime
+  notes                 String?
+  promotedAppointmentId String?  @unique
+  createdAt             DateTime @default(now())
+
+  business            Business     @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  party               Party        @relation(fields: [partyId], references: [id], onDelete: Restrict)
+  employee            Employee?    @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+  promotedAppointment Appointment? @relation(fields: [promotedAppointmentId], references: [id], onDelete: SetNull)
+
+  @@index([businessId, preferredDate])
+  @@index([partyId])
 }

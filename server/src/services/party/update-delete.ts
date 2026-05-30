@@ -135,6 +135,22 @@ export async function deleteParty(
 ) {
   const existing = await requireParty(businessId, partyId)
 
+  // V2 Appointments — block soft-delete when active-status appointments exist.
+  // We check OUTSIDE the transaction first (fast path); the count is for
+  // appointments in SCHEDULED/CONFIRMED/CHECKED_IN/IN_PROGRESS.
+  const { countActiveByParty } = await import('../appointment-repo.js')
+  const active = await countActiveByParty(prisma, businessId, partyId)
+  if (active > 0) {
+    const { AppError, ErrorCode } = await import('../../lib/errors.js')
+    const { APPT_ERR } = await import('../../constants/appointment.constants.js')
+    throw new AppError(
+      ErrorCode.CONFLICT,
+      409,
+      'Party has active appointments',
+      { code: APPT_ERR.HAS_ACTIVE_APPOINTMENTS, activeAppointmentCount: active }
+    )
+  }
+
   return prisma.$transaction(async (tx) => {
     if (force) {
       // Hard delete — only allowed when no transactions exist

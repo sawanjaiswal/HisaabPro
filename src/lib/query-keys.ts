@@ -175,6 +175,13 @@ export const queryKeys = {
     balance: (partyId: string) => ['loyalty', 'balance', partyId] as const,
     ledger: (partyId: string) => ['loyalty', 'ledger', partyId] as const,
   },
+  // V2 Appointments — calendar list (by date range) + per-id detail.
+  // Reads are network-only; no `cacheReads`. Mutations invalidate `all`.
+  appointments: {
+    all: () => ['appointments'] as const,
+    list: (filters: Filters) => ['appointments', 'list', filters] as const,
+    detail: (id: string) => ['appointments', 'detail', id] as const,
+  },
   // Epic D / Commission #128 — rules, per-staff ledger, monthly leaderboard
   commission: {
     all: () => ['commission'] as const,

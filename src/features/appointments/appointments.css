@@ -1,0 +1,73 @@
+/* V2 Appointments — feature CSS.
+ *
+ * Most styling is done via Tailwind utility + CSS-var token classes inline.
+ * This file owns only what tokens can't express cleanly — the floating-action
+ * button position above the BottomNav.
+ */
+
+.appt-fab {
+  position: fixed;
+  right: 1rem;
+  /* Hover above BottomNav. --bottom-nav-height already includes safe-inset. */
+  bottom: calc(var(--bottom-nav-height) + 1rem);
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-on-primary, #fff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+  border: none;
+  cursor: pointer;
+  z-index: 30; /* Below modal/drawer (Z.modal), above page content */
+  transition: transform var(--duration-fast) var(--ease-default);
+}
+
+.appt-fab:active {
+  transform: scale(0.96);
+}
+
+.appt-fab:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Calendar hour-rail — narrow on mobile, wider on tablet. */
+.appt-hour-rail {
+  width: 48px;
+  background: var(--color-surface);
+}
+@media (min-width: 768px) {
+  .appt-hour-rail {
+    width: 72px;
+  }
+}
+
+/* Current-time line — pinned absolutely inside the day-block area. */
+.appt-now-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  pointer-events: none;
+  z-index: 5;
+}
+.appt-now-line .appt-now-dot {
+  position: absolute;
+  left: -4px;
+  top: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-error, #d32f2f);
+}
+.appt-now-line .appt-now-bar {
+  position: absolute;
+  left: 6px;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: var(--color-error, #d32f2f);
+}

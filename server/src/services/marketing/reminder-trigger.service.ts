@@ -37,6 +37,8 @@ export async function candidatesFor(rule: ReminderRule, now: Date): Promise<Cand
       return inactiveCandidates(rule.businessId, rule.offsetDays, now)
     case 'ORDER_DELIVERY':
       return orderDeliveryCandidates(rule.businessId, rule.offsetDays, now)
+    case 'APPOINTMENT_UPCOMING':
+      return appointmentUpcomingCandidates(rule.businessId, rule.offsetDays, now)
     default:
       return []
   }
@@ -239,6 +241,45 @@ async function orderDeliveryCandidates(
     if (seen.has(o.partyId)) continue
     seen.add(o.partyId)
     results.push({ partyId: o.partyId, fireDate: normaliseToUtcMidnight(targetDate) })
+  }
+  return results
+}
+
+// ---------------------------------------------------------------------------
+// APPOINTMENT_UPCOMING — fires offsetDays before an Appointment.startAt.
+// Day-granular (mirrors ORDER_DELIVERY); hour-precision deferred to a future epic.
+// Only SCHEDULED + CONFIRMED appointments are eligible; partyId-null rows are
+// excluded so the dispatcher always has a recipient. Dedup by partyId is handled
+// here; cross-tick dedup is handled by ReminderInstance unique (ruleId, partyId,
+// fireDate).
+// ---------------------------------------------------------------------------
+
+async function appointmentUpcomingCandidates(
+  businessId: string,
+  offsetDays: number,
+  now: Date,
+): Promise<Candidate[]> {
+  const targetDate = new Date(now.getTime() + offsetDays * 86_400_000)
+  const startOfDay = new Date(targetDate)
+  startOfDay.setUTCHours(0, 0, 0, 0)
+  const endOfDay = new Date(startOfDay.getTime() + 86_400_000)
+
+  const appointments = await prisma.appointment.findMany({
+    where: {
+      businessId,
+      status: { in: ['SCHEDULED', 'CONFIRMED'] },
+      startAt: { gte: startOfDay, lt: endOfDay },
+      partyId: { not: null },
+    },
+    select: { partyId: true },
+  })
+
+  const seen = new Set<string>()
+  const results: Candidate[] = []
+  for (const a of appointments) {
+    if (!a.partyId || seen.has(a.partyId)) continue
+    seen.add(a.partyId)
+    results.push({ partyId: a.partyId, fireDate: normaliseToUtcMidnight(targetDate) })
   }
   return results
 }
