@@ -65,6 +65,7 @@ export function resolveDisplayValue(
 
   switch (fieldType) {
     case 'TEXT':
+    case 'MULTILINE':
       return typeof valueJson === 'string' ? valueJson : String(valueJson)
 
     case 'NUMBER': {

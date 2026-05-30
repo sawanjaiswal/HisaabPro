@@ -50,6 +50,14 @@ function validateValue(
         throw validationError(`${def.name} is too long (max 500)`, { code: 'CUSTOM_FIELD_INVALID_VALUE' })
       }
       return raw
+    case 'MULTILINE':
+      if (typeof raw !== 'string') {
+        throw validationError(`${def.name} must be text`, { code: 'CUSTOM_FIELD_INVALID_VALUE' })
+      }
+      if (raw.length > 2000) {
+        throw validationError(`${def.name} is too long (max 2000)`, { code: 'CUSTOM_FIELD_INVALID_VALUE' })
+      }
+      return raw
     case 'NUMBER': {
       const n = typeof raw === 'number' ? raw : Number(raw)
       if (!Number.isFinite(n)) {

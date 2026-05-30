@@ -169,7 +169,7 @@ const DOCUMENT_TYPE_FOR_CUSTOM_FIELDS = ['INVOICE', 'ESTIMATE', 'SALE_ORDER', 'D
 
 export const createCustomFieldSchema = z.object({
   name: z.string().min(1, 'Field name is required').max(100),
-  fieldType: z.enum(['TEXT', 'NUMBER', 'DATE', 'DROPDOWN']),
+  fieldType: z.enum(['TEXT', 'MULTILINE', 'NUMBER', 'DATE', 'DROPDOWN']),
   options: z.array(z.string().max(100)).optional(),
   required: z.boolean().default(false),
   showOnInvoice: z.boolean().default(false),

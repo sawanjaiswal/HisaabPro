@@ -4,6 +4,7 @@ import { useEffect, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Select, SelectItem } from '@/components/ui/Select'
+import { Textarea } from '@/components/ui/Textarea'
 import { queryKeys } from '@/lib/query-keys'
 import {
   listCustomFieldDefsForDocType,
@@ -91,6 +92,15 @@ export function InvoiceCustomFieldsSection({ documentType, values, errors, onCha
                 value={typeof raw === 'string' ? raw : ''}
                 onChange={(e) => setValue(def.id, e.target.value)}
                 maxLength={500}
+              />
+            )}
+            {def.fieldType === 'MULTILINE' && (
+              <Textarea
+                className="input"
+                value={typeof raw === 'string' ? raw : ''}
+                onChange={(e) => setValue(def.id, e.target.value)}
+                maxLength={2000}
+                rows={4}
               />
             )}
             {def.fieldType === 'NUMBER' && (

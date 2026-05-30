@@ -16,7 +16,7 @@ import type {
 import { Textarea } from '@/components/ui/Textarea'
 
 const DOC_TYPES: ApplicableDocumentType[] = ['INVOICE', 'ESTIMATE', 'SALE_ORDER', 'DELIVERY_CHALLAN']
-const FIELD_TYPES: CustomFieldType[] = ['TEXT', 'NUMBER', 'DATE', 'DROPDOWN']
+const FIELD_TYPES: CustomFieldType[] = ['TEXT', 'MULTILINE', 'NUMBER', 'DATE', 'DROPDOWN']
 
 interface Props {
   open: boolean
@@ -54,8 +54,11 @@ export function DocumentCustomFieldDrawer({ open, onClose, editing, onCreate, on
   }
 
   const fieldTypeLabel = (ty: CustomFieldType) =>
-    ty === 'TEXT' ? t.fieldTypeText : ty === 'NUMBER' ? t.fieldTypeNumber
-    : ty === 'DATE' ? t.fieldTypeDate : t.fieldTypeDropdown
+    ty === 'TEXT' ? t.fieldTypeText
+    : ty === 'MULTILINE' ? t.fieldTypeMultiline
+    : ty === 'NUMBER' ? t.fieldTypeNumber
+    : ty === 'DATE' ? t.fieldTypeDate
+    : t.fieldTypeDropdown
 
   const docTypeLabel = (d: ApplicableDocumentType) =>
     d === 'INVOICE' ? t.applicableInvoice : d === 'ESTIMATE' ? t.applicableEstimate

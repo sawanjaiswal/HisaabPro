@@ -6,7 +6,7 @@ import type { PartyType, PartySummary } from '@/lib/types/party.types'
 export type CreditLimitMode = 'WARN' | 'BLOCK'
 export type AddressType = 'BILLING' | 'SHIPPING'
 export type BalanceType = 'RECEIVABLE' | 'PAYABLE'
-export type CustomFieldType = 'TEXT' | 'NUMBER' | 'DATE' | 'DROPDOWN'
+export type CustomFieldType = 'TEXT' | 'MULTILINE' | 'NUMBER' | 'DATE' | 'DROPDOWN'
 
 export interface PartyGroup {
   id: string

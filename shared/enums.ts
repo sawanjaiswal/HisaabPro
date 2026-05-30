@@ -184,7 +184,7 @@ export const PRODUCT_SORT_BY = [
 ] as const
 export type ProductSortBy = (typeof PRODUCT_SORT_BY)[number]
 
-export const CUSTOM_FIELD_TYPES = ['TEXT', 'NUMBER', 'DATE', 'DROPDOWN'] as const
+export const CUSTOM_FIELD_TYPES = ['TEXT', 'MULTILINE', 'NUMBER', 'DATE', 'DROPDOWN'] as const
 export type CustomFieldType = (typeof CUSTOM_FIELD_TYPES)[number]
 
 export const REFERENCE_TYPES = [

@@ -574,6 +574,7 @@ export const en = {
   fieldNameLabel:               'Field name',
   fieldTypeLabel:               'Field type',
   fieldTypeText:                'Text',
+  fieldTypeMultiline:           'Long text',
   fieldTypeNumber:              'Number',
   fieldTypeDate:                'Date',
   fieldTypeDropdown:            'Dropdown',

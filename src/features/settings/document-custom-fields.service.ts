@@ -5,7 +5,7 @@
 
 import { api } from '@/lib/api'
 
-export type CustomFieldType = 'TEXT' | 'NUMBER' | 'DATE' | 'DROPDOWN'
+export type CustomFieldType = 'TEXT' | 'MULTILINE' | 'NUMBER' | 'DATE' | 'DROPDOWN'
 
 export type ApplicableDocumentType =
   | 'INVOICE'

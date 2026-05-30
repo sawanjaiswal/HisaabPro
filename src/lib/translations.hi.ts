@@ -574,6 +574,7 @@ export const hi = {
   fieldNameLabel:               'फ़ील्ड नाम',
   fieldTypeLabel:               'फ़ील्ड प्रकार',
   fieldTypeText:                'टेक्स्ट',
+  fieldTypeMultiline:           'लंबा टेक्स्ट',
   fieldTypeNumber:              'संख्या',
   fieldTypeDate:                'तारीख',
   fieldTypeDropdown:            'ड्रॉपडाउन',

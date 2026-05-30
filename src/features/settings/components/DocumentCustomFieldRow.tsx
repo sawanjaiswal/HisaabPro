@@ -16,6 +16,7 @@ export function DocumentCustomFieldRow({ field, onEdit, onDelete }: Props) {
 
   const typeLabel =
     field.fieldType === 'TEXT' ? t.fieldTypeText
+      : field.fieldType === 'MULTILINE' ? t.fieldTypeMultiline
       : field.fieldType === 'NUMBER' ? t.fieldTypeNumber
       : field.fieldType === 'DATE' ? t.fieldTypeDate
       : t.fieldTypeDropdown
