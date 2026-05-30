@@ -15,6 +15,7 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { Wallet } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
@@ -178,11 +179,15 @@ export default function LoanDetailPage() {
           {formError && <p className="loan-drawer__error py-0" role="alert">{formError}</p>}
           <div className="loan-drawer__field py-0">
             <label className="loan-drawer__label py-0" htmlFor="txnType">{t.loanType}</label>
-            <select id="txnType" className="loan-drawer__select py-0" value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as LoanTransactionType }))}>
+            <Select
+              value={form.type}
+              onValueChange={(v) => setForm((f) => ({ ...f, type: v as LoanTransactionType }))}
+              ariaLabel={t.loanType}
+            >
               {(['DISBURSEMENT', 'REPAYMENT', 'INTEREST', 'PENALTY'] as LoanTransactionType[]).map((type) => (
-                <option key={type} value={type}>{getTxnTypeLabel(type, t)}</option>
+                <SelectItem key={type} value={type}>{getTxnTypeLabel(type, t)}</SelectItem>
               ))}
-            </select>
+            </Select>
           </div>
           <div className="loan-drawer__row py-0">
             <div className="loan-drawer__field py-0">

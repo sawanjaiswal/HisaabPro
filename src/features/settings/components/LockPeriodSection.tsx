@@ -1,5 +1,6 @@
 import { LOCK_PERIOD_OPTIONS } from '../settings.constants'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Select, SelectItem } from '@/components/ui/Select'
 import type { TransactionLockConfig } from '../settings.types'
 
 interface LockPeriodSectionProps {
@@ -20,21 +21,17 @@ export function LockPeriodSection({ lockAfterDays, onUpdate }: LockPeriodSection
               {t.lockPeriodDesc}
             </p>
           </div>
-          <select
-            value={lockAfterDays ?? ''}
-            onChange={(e) => {
-              const raw = e.target.value
-              onUpdate('lockAfterDays', raw === '' ? null : Number(raw))
-            }}
-            aria-label={t.lockPeriodAria}
-            className="py-0"
+          <Select
+            value={lockAfterDays == null ? '__never__' : String(lockAfterDays)}
+            onValueChange={(v) => onUpdate('lockAfterDays', v === '__never__' ? null : Number(v))}
+            ariaLabel={t.lockPeriodAria}
           >
             {LOCK_PERIOD_OPTIONS.map((opt) => (
-              <option key={opt.label} value={opt.value ?? ''}>
+              <SelectItem key={opt.label} value={opt.value == null ? '__never__' : String(opt.value)}>
                 {opt.label}
-              </option>
+              </SelectItem>
             ))}
-          </select>
+          </Select>
         </div>
       </div>
     </section>

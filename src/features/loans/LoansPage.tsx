@@ -14,6 +14,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { Drawer } from '@/components/ui/Drawer'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
@@ -165,10 +166,14 @@ export default function LoansPage() {
           {formError && <p className="loan-drawer__error py-0" role="alert">{formError}</p>}
           <div className="loan-drawer__field py-0">
             <label className="loan-drawer__label py-0" htmlFor="loanType">{t.loanType}</label>
-            <select id="loanType" className="loan-drawer__select py-0" value={form.loanType} onChange={(e) => setForm((f) => ({ ...f, loanType: e.target.value as LoanType }))}>
-              <option value="TAKEN">{t.loanTakenBorrowed}</option>
-              <option value="GIVEN">{t.loanGivenLent}</option>
-            </select>
+            <Select
+              value={form.loanType}
+              onValueChange={(v) => setForm((f) => ({ ...f, loanType: v as LoanType }))}
+              ariaLabel={t.loanType}
+            >
+              <SelectItem value="TAKEN">{t.loanTakenBorrowed}</SelectItem>
+              <SelectItem value="GIVEN">{t.loanGivenLent}</SelectItem>
+            </Select>
           </div>
           <div className="loan-drawer__row py-0">
             <div className="loan-drawer__field py-0">

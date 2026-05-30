@@ -5,6 +5,7 @@ import { Search, SlidersHorizontal } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { OutstandingType, OutstandingSortBy } from '../payment.types'
 import { OUTSTANDING_TYPE_LABELS, OUTSTANDING_SORT_LABELS } from '../payment.constants'
+import { Select, SelectItem } from '@/components/ui/Select'
 
 interface OutstandingFilterBarProps {
   search: string
@@ -73,29 +74,17 @@ export const OutstandingFilterBar: React.FC<OutstandingFilterBarProps> = ({
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
         <SlidersHorizontal size={16} aria-hidden="true" style={{ color: 'var(--color-gray-500)', flexShrink: 0 }} />
-        <select
+        <Select
           value={sortBy}
-          onChange={(e) => onSortChange(e.target.value as OutstandingSortBy)}
-          aria-label={t.sortOutstandingList}
-          style={{
-            height: '44px',
-            padding: '0 var(--space-3)',
-            border: '1px solid var(--color-gray-200)',
-            borderRadius: 'var(--radius-md)',
-            background: 'var(--color-gray-0)',
-            color: 'var(--color-gray-700)',
-            fontFamily: 'var(--font-primary)',
-            fontSize: 'var(--fs-xs)',
-            fontWeight: 500,
-            cursor: 'pointer',
-          }}
+          onValueChange={(v) => onSortChange(v as OutstandingSortBy)}
+          ariaLabel={t.sortOutstandingList}
         >
           {SORT_OPTIONS.map((option) => (
-            <option key={option} value={option}>
+            <SelectItem key={option} value={option}>
               {OUTSTANDING_SORT_LABELS[option]}
-            </option>
+            </SelectItem>
           ))}
-        </select>
+        </Select>
       </div>
     </div>
   )

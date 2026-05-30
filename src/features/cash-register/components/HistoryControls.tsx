@@ -1,6 +1,7 @@
 /** Cash Register — Direction filter pills + sort dropdown */
 
 import type { CashHistoryFilter, CashHistorySort, CashEntryDirection } from '../cashRegister.types'
+import { Select, SelectItem } from '@/components/ui/Select'
 
 interface Props {
   filter: CashHistoryFilter
@@ -50,19 +51,17 @@ export function HistoryControls({ filter, sort, onFilterChange, onSortChange }: 
 
       {/* Sort dropdown */}
       <div className="cr-controls__sort">
-        <label htmlFor="cr-sort" className="cr-controls__sort-label">Sort</label>
-        <select
-          id="cr-sort"
-          className="cr-controls__sort-select"
+        <label className="cr-controls__sort-label">Sort</label>
+        <Select
           value={sort.by}
-          onChange={(e) => onSortChange({ by: e.target.value as CashHistorySort['by'] })}
-          aria-label="Sort entries"
+          onValueChange={(v) => onSortChange({ by: v as CashHistorySort['by'] })}
+          ariaLabel="Sort entries"
         >
-          <option value="newest">Newest</option>
-          <option value="oldest">Oldest</option>
-          <option value="highest">Highest</option>
-          <option value="lowest">Lowest</option>
-        </select>
+          <SelectItem value="newest">Newest</SelectItem>
+          <SelectItem value="oldest">Oldest</SelectItem>
+          <SelectItem value="highest">Highest</SelectItem>
+          <SelectItem value="lowest">Lowest</SelectItem>
+        </Select>
       </div>
     </div>
   )
