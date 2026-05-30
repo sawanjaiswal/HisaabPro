@@ -9,6 +9,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { PAYMENT_MODE_LABELS, MODES_WITH_REFERENCE } from '../payment.constants'
 import { getReferencePlaceholder } from '../payment.utils'
 import type { PaymentMode } from '../payment.types'
+import { Textarea } from '@/components/ui/Textarea'
 
 const PAYMENT_MODES: PaymentMode[] = [
   'CASH', 'UPI', 'BANK_TRANSFER', 'CHEQUE', 'NEFT_RTGS_IMPS', 'CREDIT_CARD', 'OTHER',
@@ -137,7 +138,7 @@ export function PaymentDetailsSection({
       {/* Notes */}
       <div className="payment-field">
         <label className="label" htmlFor="payment-notes">{t.notesLabel}</label>
-        <textarea
+        <Textarea
           id="payment-notes"
           className="input"
           rows={3}

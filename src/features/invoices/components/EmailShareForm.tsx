@@ -9,6 +9,7 @@ import { Mail, ArrowLeft } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Textarea } from '@/components/ui/Textarea'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -75,7 +76,7 @@ export function EmailShareForm({ documentNumber, partyName, defaultEmail, isSend
 
       <div className="input-group">
         <label htmlFor="email-share-body" className="input-label">{t.messageOptional}</label>
-        <textarea
+        <Textarea
           id="email-share-body"
           className="input min-h-[88px] resize-y"
           value={body}

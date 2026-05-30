@@ -5,6 +5,7 @@ import { BATCH_NUMBER_MAX, BATCH_NOTES_MAX } from '../batch.constants'
 import type { Batch } from '../batch.types'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface BatchFormProps {
   productId: string
@@ -130,7 +131,7 @@ export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProp
 
       <div className="form-group">
         <label htmlFor="notes" className="form-label">{t.notesLabel}</label>
-        <textarea
+        <Textarea
           id="notes"
           className="form-input form-textarea"
           value={form.notes}

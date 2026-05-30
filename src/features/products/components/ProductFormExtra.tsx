@@ -12,6 +12,7 @@ import { BarcodeField } from './BarcodeField'
 import { ImageUploader } from './ImageUploader'
 import '../barcode.css'
 import './image-uploader.css'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface ProductFormExtraProps {
   form: ProductFormData
@@ -62,7 +63,7 @@ export function ProductFormExtra({ form, errors, onUpdate, taxCategories = [] }:
 
       <div className="input-group">
         <label htmlFor="product-description" className="input-label">{t.descriptionLabel}</label>
-        <textarea id="product-description" className="input input-textarea" value={form.description ?? ''} onChange={(e) => onUpdate('description', e.target.value || undefined)} placeholder={t.additionalProductDetails} rows={3} maxLength={PRODUCT_DESCRIPTION_MAX} aria-label={t.descriptionLabel} />
+        <Textarea id="product-description" className="input input-textarea" value={form.description ?? ''} onChange={(e) => onUpdate('description', e.target.value || undefined)} placeholder={t.additionalProductDetails} rows={3} maxLength={PRODUCT_DESCRIPTION_MAX} aria-label={t.descriptionLabel} />
       </div>
 
       <div className="input-group">

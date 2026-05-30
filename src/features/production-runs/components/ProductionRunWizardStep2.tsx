@@ -3,6 +3,7 @@
 import { todayISODate } from '../production-run.utils'
 import { Button } from '@/components/ui/Button'
 import type { WizardFormState } from '../production-run.types'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface Step2Props {
   wizard: WizardFormState
@@ -62,7 +63,7 @@ export function ProductionRunWizardStep2({ wizard, onUpdate, onNext, onBack }: S
         <label htmlFor="pr-notes" className="input-label">
           Notes <span className="text-optional">(optional)</span>
         </label>
-        <textarea
+        <Textarea
           id="pr-notes"
           className="input"
           value={wizard.notes}

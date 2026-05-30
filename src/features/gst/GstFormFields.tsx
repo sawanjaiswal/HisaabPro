@@ -11,6 +11,7 @@ import { Select, SelectItem } from '@/components/ui/Select'
 import { INDIAN_STATES } from '@/features/tax/tax.constants'
 import type { CompositionRate, TaxPricingMode } from './gst.types'
 import type { GstFormState, GstinValidation } from './useGstSettingsForm'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface GstFormFieldsProps {
   form: GstFormState
@@ -179,7 +180,7 @@ export function GstFormFields({
           <label className="gsv2-label" htmlFor="gsv2-declaration">
             {t.gstDeclarationLabel}
           </label>
-          <textarea
+          <Textarea
             id="gsv2-declaration"
             className="gsv2-textarea"
             value={form.gstDeclarationText}

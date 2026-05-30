@@ -10,6 +10,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { adjustStock } from '../product.service'
 import { STOCK_ADJUST_REASON_LABELS, CUSTOM_REASON_MAX, NOTES_MAX } from '../product.constants'
 import type { StockAdjustType, StockAdjustReason, StockAdjustFormData } from '../product.types'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface StockAdjustModalProps {
   isOpen: boolean
@@ -182,7 +183,7 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
           <label htmlFor="adjust-notes" className="input-label">
             {t.notesLabel} <span className="text-optional">({t.notesOptionalLabel})</span>
           </label>
-          <textarea
+          <Textarea
             id="adjust-notes"
             className="input input-textarea"
             value={notes}

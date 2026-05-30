@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/Input'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PartyFormData } from '../party.types'
 import type { UseGstinVerifyReturn } from '../useGstinVerify'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface PartyFormBusinessProps {
   form: PartyFormData
@@ -77,7 +78,7 @@ export function PartyFormBusiness({ form, errors, onUpdate, gstinVerify }: Party
 
       <div className="input-group">
         <label htmlFor="party-notes" className="input-label">{t.notesSection}</label>
-        <textarea
+        <Textarea
           id="party-notes"
           className="input input-textarea"
           value={form.notes ?? ''}

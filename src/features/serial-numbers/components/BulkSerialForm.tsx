@@ -4,6 +4,7 @@ import { BULK_CREATE_MAX } from '../serial-number.constants'
 import { parseSerialNumbers } from '../serial-number.utils'
 import { useBulkSerialForm } from '../useBulkSerialForm'
 import { Button } from '@/components/ui/Button'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface BulkSerialFormProps {
   productId: string
@@ -28,7 +29,7 @@ export function BulkSerialForm({ productId, onSuccess }: BulkSerialFormProps) {
         <label htmlFor="bulkSerials" className="serial-form__label">
           {t.serialNumbersOnePerLine}
         </label>
-        <textarea
+        <Textarea
           id="bulkSerials"
           className={`serial-form__input serial-form__textarea serial-form__textarea--tall${errors.text ? ' serial-form__input--error' : ''}`}
           value={form.text}

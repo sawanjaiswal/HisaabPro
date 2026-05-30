@@ -6,6 +6,7 @@
 import { useLanguage } from '@/hooks/useLanguage'
 import { PaymentTermsSelector } from './PaymentTermsSelector'
 import type { DocumentFormData, PaymentTerms } from '../invoice.types'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface InvoiceDetailsSectionProps {
   documentDate: string
@@ -68,7 +69,7 @@ export function InvoiceDetailsSection({
 
       <div className="line-item-field">
         <label className="label" htmlFor="invoice-notes">{t.notesLabel}</label>
-        <textarea
+        <Textarea
           id="invoice-notes"
           className="input input-textarea"
           rows={3}
@@ -81,7 +82,7 @@ export function InvoiceDetailsSection({
 
       <div className="line-item-field">
         <label className="label" htmlFor="invoice-terms">{t.termsConditionsLabel}</label>
-        <textarea
+        <Textarea
           id="invoice-terms"
           className="input input-textarea"
           rows={3}

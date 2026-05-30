@@ -1,6 +1,7 @@
 /** Cash Register — Optional note textarea */
 
 import { MAX_NOTE_LEN } from '../cashRegister.constants'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface Props {
   value: string
@@ -16,7 +17,7 @@ export function NoteField({ value, onChange, disabled }: Props) {
       <label htmlFor="cr-note-input" className="cr-note__label">
         Add note (optional)
       </label>
-      <textarea
+      <Textarea
         id="cr-note-input"
         className="cr-note__textarea"
         value={value}

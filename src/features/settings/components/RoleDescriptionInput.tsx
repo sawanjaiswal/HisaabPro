@@ -1,6 +1,7 @@
 /** Settings — Role description textarea (optional field) */
 
 import { useLanguage } from '@/hooks/useLanguage'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface RoleDescriptionInputProps {
   value: string
@@ -25,7 +26,7 @@ export function RoleDescriptionInput({ value, onChange }: RoleDescriptionInputPr
           {t.optionalSuffix}
         </span>
       </label>
-      <textarea
+      <Textarea
         id="role-description"
         className="input input-textarea"
         placeholder={t.roleDescPlaceholder}

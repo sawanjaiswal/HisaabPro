@@ -4,6 +4,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { GODOWN_NAME_MAX, ADDRESS_MAX } from '../godown.constants'
 import type { CreateGodownData } from '../godown.types'
 import { Button } from '@/components/ui/Button'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface GodownFormProps {
   form: CreateGodownData
@@ -47,7 +48,7 @@ export function GodownForm({ form, errors, isSubmitting, onUpdate, onSubmit, sub
 
       <div className="godown-form__field">
         <label htmlFor="godown-address" className="godown-form__label">{t.address}</label>
-        <textarea
+        <Textarea
           id="godown-address"
           className={`godown-form__textarea${errors.address ? ' godown-form__input--error' : ''}`}
           value={form.address ?? ''}

@@ -5,6 +5,7 @@ import { TRANSFER_NOTES_MAX } from '../godown.constants'
 import type { TransferStockData, Godown } from '../godown.types'
 import { Button } from '@/components/ui/Button'
 import { Select, SelectItem } from '@/components/ui/Select'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface TransferFormProps {
   form: TransferStockData
@@ -119,7 +120,7 @@ export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, on
 
       <div className="godown-form__field">
         <label htmlFor="transfer-notes" className="godown-form__label">{t.notes}</label>
-        <textarea
+        <Textarea
           id="transfer-notes"
           className="godown-form__textarea"
           value={form.notes ?? ''}

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { AlertTriangle, X } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface VoidModalProps {
   receiptNumber: string
@@ -59,7 +60,7 @@ export function VoidModal({
           <label className="pos-modal__label" htmlFor="void-reason">
             {t.posVoidReason ?? 'Reason'} *
           </label>
-          <textarea
+          <Textarea
             id="void-reason"
             className="pos-modal__textarea"
             rows={3}

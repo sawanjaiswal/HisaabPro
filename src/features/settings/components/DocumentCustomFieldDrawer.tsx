@@ -13,6 +13,7 @@ import type {
   DocumentCustomFieldDef,
   UpdateDocumentCustomFieldInput,
 } from '../document-custom-fields.service'
+import { Textarea } from '@/components/ui/Textarea'
 
 const DOC_TYPES: ApplicableDocumentType[] = ['INVOICE', 'ESTIMATE', 'SALE_ORDER', 'DELIVERY_CHALLAN']
 const FIELD_TYPES: CustomFieldType[] = ['TEXT', 'NUMBER', 'DATE', 'DROPDOWN']
@@ -134,7 +135,7 @@ export function DocumentCustomFieldDrawer({ open, onClose, editing, onCreate, on
             <label className="block text-[var(--fs-sm)] font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
               {t.dropdownOptionsLabel}
             </label>
-            <textarea
+            <Textarea
               value={optionsText}
               onChange={(e) => setOptionsText(e.target.value)}
               rows={4}

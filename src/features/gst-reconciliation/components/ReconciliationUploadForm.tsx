@@ -12,6 +12,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { startReconciliation } from '../reconciliation.service'
 import { ApiError } from '@/lib/api'
 import type { GstrInputItem } from '../reconciliation.types'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface Props {
   onSuccess: (id: string) => void
@@ -153,7 +154,7 @@ export const ReconciliationUploadForm: React.FC<Props> = ({ onSuccess }) => {
         <label className="recon-upload-form__label" htmlFor="recon-json">
           {t.orPasteJsonDirectly}
         </label>
-        <textarea
+        <Textarea
           id="recon-json"
           className="recon-upload-form__textarea"
           value={jsonText}

@@ -15,6 +15,7 @@ import { useToast } from '@/hooks/useToast'
 import { useLanguage } from '@/hooks/useLanguage'
 import { reactivateBusiness } from '../suspend.service'
 import './reactivation-modal.css'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface ReactivationModalProps {
   open: boolean
@@ -117,7 +118,7 @@ export function ReactivationModal({
         <label className="reactivation-modal__label" htmlFor="reactivation-reason">
           {t.reactivateModalReasonLabel}
         </label>
-        <textarea
+        <Textarea
           id="reactivation-reason"
           className="reactivation-modal__textarea"
           value={reason}

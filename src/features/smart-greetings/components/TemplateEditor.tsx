@@ -4,6 +4,7 @@ import { Send } from 'lucide-react'
 import type { GreetingTemplate } from '../smart-greetings.types'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface TemplateEditorProps {
   template: GreetingTemplate
@@ -26,7 +27,7 @@ export function TemplateEditor({ template, message, onMessageChange, onSendToAll
       {/* Message editor */}
       <div className="greeting-editor-field">
         <label className="greeting-editor-label">{t.message}</label>
-        <textarea
+        <Textarea
           className="greeting-editor-textarea"
           value={message}
           onChange={(e) => onMessageChange(e.target.value)}

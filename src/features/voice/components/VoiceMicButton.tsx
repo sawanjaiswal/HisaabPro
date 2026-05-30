@@ -4,6 +4,7 @@ import { Mic, MicOff, Square } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { SpeechStatus } from '../voice.types'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface Props {
   status: SpeechStatus
@@ -44,7 +45,7 @@ export function VoiceMicButton({
       {status === 'error' && <p className="voice-capture__error" role="alert">{t.voiceMicError}</p>}
 
       <label className="voice-preview__label" htmlFor="voiceTranscript">{t.voiceTranscriptLabel}</label>
-      <textarea
+      <Textarea
         id="voiceTranscript"
         className="voice-capture__textarea"
         rows={3}

@@ -10,6 +10,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate } from '@/lib/format'
 import { useCreatePtp, useUpdatePtp } from './usePtp'
 import type { Ptp } from './collections.types'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface Props {
   open: boolean
@@ -165,7 +166,7 @@ export function PtpRecorderForm({ open, onClose, partyId, partyName, existingPtp
           <label className="form-label" htmlFor="ptp-note">
             {t.ptpNoteLabel}
           </label>
-          <textarea
+          <Textarea
             id="ptp-note"
             className="form-input"
             rows={3}

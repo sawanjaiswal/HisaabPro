@@ -18,6 +18,7 @@ import { REMINDER_TEMPLATES, TEMPLATE_KEYS, type TemplateKey } from './reminder-
 import { ReminderPreview } from './components/ReminderPreview'
 import { ReminderResultScreen } from './ReminderResultScreen'
 import type { PartyInBucket } from './collections.types'
+import { Textarea } from '@/components/ui/Textarea'
 
 type Stage = 'compose' | 'sending' | 'result'
 
@@ -129,7 +130,7 @@ export function ReminderComposerSheet({ open, onClose, selectedParties, business
             <label className="reminder-composer__label" htmlFor="custom-msg">
               Additional note (optional)
             </label>
-            <textarea
+            <Textarea
               id="custom-msg"
               className="reminder-composer__textarea"
               rows={3}

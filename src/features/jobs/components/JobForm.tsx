@@ -9,6 +9,7 @@ import { formatPaise, totalsFromItems } from '../jobs.utils'
 import { JobItemRow, type JobFormItem } from './JobItemRow'
 import type { CreateJobInput, CreateJobItemInput } from '../api/jobs.api.types'
 import type { JobDetail } from '../jobs.types'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface JobFormProps {
   initialData?: JobDetail
@@ -133,7 +134,7 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: Jo
       {/* Description */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
         <label className="label" htmlFor="job-desc">{t.jobDescLabel}</label>
-        <textarea
+        <Textarea
           id="job-desc"
           className="input"
           value={description}

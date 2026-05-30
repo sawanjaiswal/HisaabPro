@@ -6,6 +6,7 @@ import { Loader2 } from 'lucide-react'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { useVoidCashEntry } from '../useCashRegisterMutations'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface Props {
   entryId: string
@@ -52,7 +53,7 @@ export function VoidConfirmDialog({ entryId, businessId, onClose }: Props) {
         <label htmlFor="void-reason" className="cr-dialog__field-label">
           Reason (optional)
         </label>
-        <textarea
+        <Textarea
           id="void-reason"
           className="cr-dialog__textarea"
           value={reason}

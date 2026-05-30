@@ -2,6 +2,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { SERIAL_NUMBER_MAX, NOTES_MAX } from '../serial-number.constants'
 import { useSerialForm } from '../useSerialForm'
 import { Button } from '@/components/ui/Button'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface SerialFormProps {
   productId: string
@@ -36,7 +37,7 @@ export function SerialForm({ productId, onSuccess }: SerialFormProps) {
 
       <div className="serial-form__field">
         <label htmlFor="notes" className="serial-form__label">{t.notesLabel}</label>
-        <textarea
+        <Textarea
           id="notes"
           className="serial-form__input serial-form__textarea"
           value={form.notes}

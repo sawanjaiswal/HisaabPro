@@ -9,6 +9,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react'
 import type { CancelReason } from './e-invoice.types'
 import { CANCEL_REASON_LABELS } from './e-invoice.types'
 import { Select, SelectItem } from '@/components/ui/Select'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface Props {
   open: boolean
@@ -153,7 +154,7 @@ export const EInvoiceCancelDialog: React.FC<Props> = ({ open, loading, onConfirm
         <label htmlFor={remarksId} style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.375rem' }}>
           Remarks <span style={{ fontWeight: 400, color: '#888' }}>(optional, max 100 chars)</span>
         </label>
-        <textarea
+        <Textarea
           id={remarksId}
           value={remarks}
           onChange={(e) => setRemarks(e.target.value)}

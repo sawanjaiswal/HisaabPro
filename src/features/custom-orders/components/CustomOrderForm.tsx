@@ -11,6 +11,7 @@ import { formatPaise, totalsFromItems } from '../custom-orders.utils'
 import { CustomOrderItemEditor } from './CustomOrderItemEditor'
 import type { CreateCustomOrderInput, CreateCustomOrderItemInput } from '../api/custom-orders.api.types'
 import type { CustomOrderDetail } from '../custom-orders.types'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface CustomOrderFormProps {
   initialData?: CustomOrderDetail
@@ -97,7 +98,7 @@ export function CustomOrderForm({ initialData, onSubmit, isSubmitting, submitLab
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
         <label className="label" htmlFor="order-notes">Notes (optional)</label>
-        <textarea id="order-notes" className="input" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Special instructions, customer preferences..." rows={2} maxLength={5000} style={{ resize: 'vertical', minHeight: 64 }} />
+        <Textarea id="order-notes" className="input" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Special instructions, customer preferences..." rows={2} maxLength={5000} style={{ resize: 'vertical', minHeight: 64 }} />
       </div>
 
       <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>

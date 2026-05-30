@@ -9,6 +9,7 @@ import { DltWarningCard } from '../components/DltWarningCard'
 import { ChannelToggle } from '../components/ChannelToggle'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import type { MarketingChannel, CreateTemplatePayload } from '../marketing.types'
+import { Textarea } from '@/components/ui/Textarea'
 
 const SMS_CHAR_WARN = 140
 const SMS_CHAR_MAX = 160
@@ -119,7 +120,7 @@ export default function TemplateFormPage() {
               </span>
             )}
           </label>
-          <textarea
+          <Textarea
             id="tmpl-body"
             value={bodyEn}
             onChange={(e) => setBodyEn(e.target.value)}

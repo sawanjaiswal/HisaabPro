@@ -19,6 +19,7 @@ import { StorefrontProductsSection } from './components/StorefrontProductsSectio
 import { validateSlugLocal } from './slug-rules'
 import type { SlugError } from './storefront.types'
 import './storefront-settings.css'
+import { Textarea } from '@/components/ui/Textarea'
 
 const STORE_BASE_URL = 'hisaabpro.in/p/store/'
 
@@ -198,7 +199,7 @@ export default function StorefrontSettingsPage() {
 
             <div>
               <label htmlFor="sf-tagline" className="sf-label">Tagline (optional)</label>
-              <textarea
+              <Textarea
                 id="sf-tagline" className="sf-input" rows={2} maxLength={120}
                 value={tagline} onChange={e => setTagline(e.target.value)}
                 placeholder="Quality products at the best prices"

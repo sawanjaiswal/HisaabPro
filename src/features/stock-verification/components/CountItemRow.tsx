@@ -4,6 +4,7 @@ import type { VerificationItem, RecordCountData } from '../stock-verification.ty
 import { NOTES_MAX } from '../stock-verification.constants'
 import { formatDiscrepancy, getDiscrepancyColor } from '../stock-verification.utils'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface CountItemRowProps {
   item: VerificationItem
@@ -81,7 +82,7 @@ export function CountItemRow({ item, onSave, disabled }: CountItemRowProps) {
         </button>
       </div>
       {showNotes && (
-        <textarea
+        <Textarea
           className="sv-count-row__notes"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}

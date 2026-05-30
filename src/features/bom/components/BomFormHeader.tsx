@@ -5,6 +5,7 @@ import { getProducts } from '@/lib/services/product.service'
 import { useDebounce } from '@/hooks/useDebounce'
 import type { BomFormData } from '../bom.types'
 import type { BomValidationErrors } from '../bom.utils'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface BomFormHeaderProps {
   form: BomFormData
@@ -129,7 +130,7 @@ export function BomFormHeader({ form, errors, editMode, onUpdate }: BomFormHeade
         <label htmlFor="bom-notes" className="input-label">
           Notes <span className="text-optional">(optional)</span>
         </label>
-        <textarea
+        <Textarea
           id="bom-notes"
           className="input"
           value={form.notes}
