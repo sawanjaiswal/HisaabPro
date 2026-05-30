@@ -2,7 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { Trash2 } from 'lucide-react'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { getProducts } from '@/lib/services/product.service'
+
+const NONE = '__none__' as const
 import { getUnits } from '@/features/products/unit.service'
 import { useDebounce } from '@/hooks/useDebounce'
 import type { BomComponentFormRow } from '../bom.types'
@@ -111,18 +114,16 @@ export function BomComponentRow({
       {/* Unit */}
       <div className="bom-row__unit input-group">
         <label className="input-label sr-only" htmlFor={`comp-unit-${index}`}>Unit</label>
-        <select
-          id={`comp-unit-${index}`}
-          className="input"
-          value={row.unitId}
-          onChange={(e) => onChange(index, { unitId: e.target.value })}
-          aria-label="Component unit"
+        <Select
+          value={row.unitId || NONE}
+          onValueChange={(v) => onChange(index, { unitId: v === NONE ? '' : v })}
+          ariaLabel="Component unit"
         >
-          <option value="">Unit (opt.)</option>
+          <SelectItem value={NONE}>Unit (opt.)</SelectItem>
           {units.map((u) => (
-            <option key={u.id} value={u.id}>{u.name}</option>
+            <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
           ))}
-        </select>
+        </Select>
       </div>
 
       {/* Remove */}

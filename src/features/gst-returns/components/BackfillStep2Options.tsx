@@ -7,6 +7,7 @@
 
 import { useState, type Dispatch } from 'react'
 import { Button } from '@/components/ui/Button'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useAuth } from '@/context/AuthContext'
@@ -59,20 +60,18 @@ export function BackfillStep2Options({ options, dispatch }: Props) {
         <label htmlFor="bfw-tax-cat" className="bfw-label">
           {t.backfillDefaultTaxCategory}
         </label>
-        <select
-          id="bfw-tax-cat"
-          className="bfw-select"
-          value={taxCategoryId}
-          onChange={e => setTaxCategoryId(e.target.value)}
-          required
+        <Select
+          value={taxCategoryId || undefined}
+          onValueChange={setTaxCategoryId}
+          ariaLabel={t.backfillDefaultTaxCategory}
+          placeholder={t.selectTax}
         >
-          <option value="">{t.selectTax}</option>
           {activeCategories.map(c => (
-            <option key={c.id} value={c.id}>
+            <SelectItem key={c.id} value={c.id}>
               {c.name}
-            </option>
+            </SelectItem>
           ))}
-        </select>
+        </Select>
       </div>
 
       <div className="bfw-field">

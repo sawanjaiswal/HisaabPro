@@ -13,6 +13,9 @@ import { useEffect, useState } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { Select, SelectItem } from '@/components/ui/Select'
+
+const ALL = '__all__' as const
 import { useLanguage } from '@/hooks/useLanguage'
 import { AUDIT_ACTION_LABELS, AUDIT_ENTITY_LABELS } from '../audit.constants'
 import type { AuditAction, AuditSearchFilters } from '../audit.types'
@@ -110,38 +113,34 @@ export function AuditFilterDrawer({
           <label htmlFor="audit-filter-action" className="input-label">
             {t.auditActionLabel}
           </label>
-          <select
-            id="audit-filter-action"
-            className="input"
-            value={draft.action ?? ''}
-            onChange={(e) => update('action', (e.target.value || undefined) as AuditAction | undefined)}
-            style={{ minHeight: 44 }}
+          <Select
+            value={draft.action ?? ALL}
+            onValueChange={(v) => update('action', (v === ALL ? undefined : v) as AuditAction | undefined)}
+            ariaLabel={t.auditActionLabel}
           >
             {ACTION_OPTIONS.map((opt) => (
-              <option key={opt.value || 'all'} value={opt.value}>
+              <SelectItem key={opt.value || 'all'} value={opt.value === '' ? ALL : opt.value}>
                 {opt.value === '' ? t.auditAllActions : opt.label}
-              </option>
+              </SelectItem>
             ))}
-          </select>
+          </Select>
         </div>
 
         <div className="input-group">
           <label htmlFor="audit-filter-entity" className="input-label">
             {t.auditEntityLabel}
           </label>
-          <select
-            id="audit-filter-entity"
-            className="input"
-            value={draft.entityType ?? ''}
-            onChange={(e) => update('entityType', e.target.value || undefined)}
-            style={{ minHeight: 44 }}
+          <Select
+            value={draft.entityType ?? ALL}
+            onValueChange={(v) => update('entityType', v === ALL ? undefined : v)}
+            ariaLabel={t.auditEntityLabel}
           >
             {ENTITY_OPTIONS.map((opt) => (
-              <option key={opt.value || 'all'} value={opt.value}>
+              <SelectItem key={opt.value || 'all'} value={opt.value === '' ? ALL : opt.value}>
                 {opt.value === '' ? t.auditAllEntities : opt.label}
-              </option>
+              </SelectItem>
             ))}
-          </select>
+          </Select>
         </div>
 
         <Input

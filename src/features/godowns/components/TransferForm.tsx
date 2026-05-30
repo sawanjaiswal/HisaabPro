@@ -4,6 +4,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { TRANSFER_NOTES_MAX } from '../godown.constants'
 import type { TransferStockData, Godown } from '../godown.types'
 import { Button } from '@/components/ui/Button'
+import { Select, SelectItem } from '@/components/ui/Select'
 
 interface TransferFormProps {
   form: TransferStockData
@@ -47,20 +48,16 @@ export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, on
         <label htmlFor="transfer-from" className="godown-form__label">
           {t.fromGodown} <span aria-hidden="true">*</span>
         </label>
-        <select
-          id="transfer-from"
-          className={`godown-form__select${errors.fromGodownId ? ' godown-form__input--error' : ''}`}
-          value={form.fromGodownId}
-          onChange={(e) => onUpdate('fromGodownId', e.target.value)}
-          aria-required="true"
-          aria-invalid={Boolean(errors.fromGodownId)}
-          aria-describedby={errors.fromGodownId ? 'transfer-from-error' : undefined}
+        <Select
+          value={form.fromGodownId || undefined}
+          onValueChange={(v) => onUpdate('fromGodownId', v)}
+          ariaLabel={t.fromGodown}
+          placeholder={t.selectSourceGodown}
         >
-          <option value="">{t.selectSourceGodown}</option>
           {godowns.map((g) => (
-            <option key={g.id} value={g.id}>{g.name}</option>
+            <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>
           ))}
-        </select>
+        </Select>
         {errors.fromGodownId && (
           <p id="transfer-from-error" className="godown-form__error" role="alert">{errors.fromGodownId}</p>
         )}
@@ -70,20 +67,16 @@ export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, on
         <label htmlFor="transfer-to" className="godown-form__label">
           {t.toGodown} <span aria-hidden="true">*</span>
         </label>
-        <select
-          id="transfer-to"
-          className={`godown-form__select${errors.toGodownId ? ' godown-form__input--error' : ''}`}
-          value={form.toGodownId}
-          onChange={(e) => onUpdate('toGodownId', e.target.value)}
-          aria-required="true"
-          aria-invalid={Boolean(errors.toGodownId)}
-          aria-describedby={errors.toGodownId ? 'transfer-to-error' : undefined}
+        <Select
+          value={form.toGodownId || undefined}
+          onValueChange={(v) => onUpdate('toGodownId', v)}
+          ariaLabel={t.toGodown}
+          placeholder={t.selectDestGodown}
         >
-          <option value="">{t.selectDestGodown}</option>
           {godowns.map((g) => (
-            <option key={g.id} value={g.id}>{g.name}</option>
+            <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>
           ))}
-        </select>
+        </Select>
         {errors.toGodownId && (
           <p id="transfer-to-error" className="godown-form__error" role="alert">{errors.toGodownId}</p>
         )}

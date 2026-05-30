@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
@@ -51,10 +52,14 @@ export function AddChequeDrawer({ open, onClose, onSuccess }: AddChequeDrawerPro
           </div>
           <div className="cheque-drawer__field py-0">
             <label className="cheque-drawer__label py-0" htmlFor="chqType">{t.type}</label>
-            <select id="chqType" className="cheque-drawer__select py-0" value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as ChequeType }))}>
-              <option value="RECEIVED">{t.received}</option>
-              <option value="ISSUED">{t.issued}</option>
-            </select>
+            <Select
+              value={form.type}
+              onValueChange={(v) => setForm((f) => ({ ...f, type: v as ChequeType }))}
+              ariaLabel={t.type}
+            >
+              <SelectItem value="RECEIVED">{t.received}</SelectItem>
+              <SelectItem value="ISSUED">{t.issued}</SelectItem>
+            </Select>
           </div>
         </div>
         <div className="cheque-drawer__field py-0">
