@@ -2,7 +2,7 @@
 
 > **Single source of truth** for product and technical specification. Combines every prior PRD, architecture, scope, security audit, and runbook into one document. Source docs preserved under `docs/archive/` for blame/history.
 >
-> **Last updated:** 2026-05-28
+> **Last updated:** 2026-05-30
 > **Owner:** Sawan Jaiswal
 > **Status:** Phase 1–6 complete on `master`; Phase 7 **9/10** — #141 OCR, #142 Voice, #144 Smart GST, #145 Vertical Modes, #146 Predictive, #147 Auto-reconciliation, #148 Smart inventory, #149 Competitor imports, #150 Multi-user collaboration. Remaining: #143 (creds-blocked). Pre-beta hardening landed 2026-05-27: money-SSOT (paise Int) merged via PR #2, refresh-token family rotation per RFC 6819, security batch A (CSV injection guard + Sentry/logger PII scrub), W4b FE test-contract sweep (1306/1306 passing). Vertical-depth **V3 Recipe Cost dashboard shipped 2026-05-28** (BOM-derived cost/margin, no schema) and **V1 Hourly billing on Jobs shipped 2026-05-29** (`JobItemKind` discriminator + tracking-only Job hours, additive migration, money math unchanged). `hisaabpro` branch is **0 commits ahead** of `master` — Render redeploy pending.
 > **Frontend UI:** complete for all 141 shipped features (the remaining 9 are either cred-blocked backend stubs or unbuilt vertical-depth epics — no UI yet).
@@ -576,7 +576,9 @@ Source: `.claude/skills/hp-design/SKILL.md` + `docs/DESIGN_LANGUAGE.md` + `docs/
 - Easing: `var(--ease-*)`.
 - Z-index: `Z.*` from `src/config/zIndexes.ts` (no `z-50` literals).
 
-**Primitives (no raw HTML for interactive):** `<Button>` (primary/secondary/outline/text/ghost/danger), `<Input>`, `<Card>`, `<ConfirmDialog>` (never `window.confirm`), `<Modal>` / `<Drawer>`, `<Badge>`, `<PartyAvatar>` / `<Avatar>`, `<Accordion>`, `useToast()` (never `alert`), `<BarcodeScanner>`, `<OfflineBanner>`.
+**Primitives (no raw HTML for interactive):** `<Button>` (primary/secondary/outline/text/ghost/danger), `<Input>`, `<Textarea>`, `<Select>` / `<SelectItem>` (Radix; sentinel values `__all__` / `__none__` / `__overall__` / `__any__` / `__never__` for empty-state slots), `<Card>`, `<ConfirmDialog>` (never `window.confirm`), `<Modal>` / `<Drawer>`, `<Badge>`, `<PartyAvatar>` / `<Avatar>`, `<Accordion>`, `useToast()` (never `alert`), `<BarcodeScanner>`, `<OfflineBanner>`.
+
+**P4 Consistency Sweep (in-progress, ratchet via `scripts/enforce-primitives.mjs`):** `rawSelect` 58 → **0** across waves 13–17 (47 selects migrated to `<Select>`/`<SelectItem>`, 26 files, last batch landed `4dad99b`). Remaining baseline: `rawButton=594`, `rawInput=294`, `rawTextarea=30`, `nativeConfirm=0`, `missingEmptyState=0`, `missingErrorState=0`. Pre-commit refuses regressions; new waves ratchet baseline downward.
 
 **Layout discipline:**
 - Page padding: `px-4` only.
@@ -634,6 +636,7 @@ Source: `~/.claude/rules/RULES.md` + project `scripts/`.
 - **Writer-SSOT-ban** subscription/loyalty/commission writers
 - **JWT-in-logs-ban** no JWT/refresh tokens in `console.*` / logger calls
 - **enforce-offline.mjs** raw fetch / entityType / cacheReads / localStorage / mutation handlers
+- **enforce-primitives.mjs** ratcheted ban on `<button>` / `<input>` / `<select>` / `<textarea>` + `window.confirm` / `alert` in feature `.tsx`. Baseline lives in `.claude/primitives-baseline.json`. Wave 17 (2026-05-30) ratcheted `rawSelect` to 0.
 - **enforce-audit-coverage.mjs --block** every Phase 6 mutation route must write an AuditLog row
 
 **Commit-msg hook** (`.husky/commit-msg`): rejects `fix(...)` commits unless body contains `Root cause:` line with `<file>:<line>` ref + reference to fix-trace file or new test file.
