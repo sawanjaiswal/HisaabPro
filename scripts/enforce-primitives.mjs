@@ -41,7 +41,9 @@ const RATCHET = process.argv.includes('--ratchet')
 // The ui-primitive directory itself MUST render raw HTML (it's the substrate).
 const EXEMPT_RE = [
   /\/features\/landing\//,
-  /\/components\/ui\//, // primitives themselves render raw <button>/<input> by definition
+  // Primitive surfaces themselves must render raw <button>/<input> by
+  // definition — ui/, feedback/, layout/ all ship reusable primitives.
+  /\/components\/(?:ui|feedback|layout|magicui)\//,
   /invoice-templates/,
   /\/pdf\//,
   /template/i,
@@ -52,11 +54,16 @@ const EXEMPT_RE = [
 // confirm()/alert() are banned even inside ui/ — there is no legit raw use.
 const CONFIRM_EXEMPT_RE = [/\/features\/landing\//, /__tests__|\.test\.|\.spec\./]
 
+// Negative-lookahead `(?![A-Za-z])` matches end-of-line opening tags too —
+// the original `[\s>]` form missed `<select\n` (line split() strips the
+// trailing newline, leaving no character for the bracket class to match).
+// Also excludes `<SelectItem` / `<TextareaAutosize` since the next char is
+// an uppercase letter (the lookahead refuses any letter).
 const PATTERNS = {
-  rawButton: { re: /<button[\s>]/g, exempt: EXEMPT_RE },
-  rawInput: { re: /<input[\s>]/g, exempt: EXEMPT_RE },
-  rawSelect: { re: /<select[\s>]/g, exempt: EXEMPT_RE },
-  rawTextarea: { re: /<textarea[\s>]/g, exempt: EXEMPT_RE },
+  rawButton: { re: /<button(?![A-Za-z])/g, exempt: EXEMPT_RE },
+  rawInput: { re: /<input(?![A-Za-z])/g, exempt: EXEMPT_RE },
+  rawSelect: { re: /<select(?![A-Za-z])/g, exempt: EXEMPT_RE },
+  rawTextarea: { re: /<textarea(?![A-Za-z])/g, exempt: EXEMPT_RE },
   nativeConfirm: { re: /window\.confirm\s*\(|(?<![.\w])alert\s*\(/g, exempt: CONFIRM_EXEMPT_RE },
 }
 
