@@ -1,4 +1,10 @@
-# Backlog — resume 2026-05-28
+# Backlog — resume 2026-05-30
+
+> **2026-05-30 update:** P4 Consistency Sweep COMPLETE. Waves 17–20 ratcheted all 6 enforce-primitives surfaces to zero (`rawSelect` 58→0, `rawTextarea` 30→0, `rawInput` 294→0, `rawButton` 594→0; `nativeConfirm`/`missing*State` already zero). New primitives: `<Textarea>` (naked + wrapped). New modes: `<Input>` naked, `<Button variant="none"` + forwardRef. Pre-commit blocks regressions. Wave 20 is a mechanical wrap — semantic variant upgrade is a follow-up workstream.
+
+> **Next autonomous-doable (no creds, no multi-week ceremony):** V7 prescription field validation (verify generic custom-fields system suffices for pharmacy/clinic before scoping a dedicated field) OR P4 semantic upgrade pass (convert `<Button variant="none">` to real variants page-by-page).
+
+
 
 > Snapshot at 2026-05-28. **141/150 shipped — Phase 6 COMPLETE + Phase 7 9/10.**
 > Phase 1 (60/70 code-complete, 10 cred-blocked) · Phase 2 (20/20) · Phase 3 (21/22, #89 deferred → folds into #147) · Phase 4 (16/16) · **Phase 5 (14/14)** · **Phase 6 (6/6) ✅ SHIPPED** (merge `caa390d`, 9 PRs + 2 hardening commits, BE/FE/security/QA all green) · Phase 7 (**9/10** — #141 OCR + #142 voice + #144 GST + #145 Verticals + #146 predictive + #147 auto-recon + #148 smart-inv + #149 Competitor imports + #150 multi-user collab). Remaining: #143 (creds-blocked).

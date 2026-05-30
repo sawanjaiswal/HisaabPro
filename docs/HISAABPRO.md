@@ -317,7 +317,10 @@ Ported from DudhHisaab subscription model (commit `3530e79`):
 **Build (no creds needed):**
 - Phase 7 (remaining 1): #143 WA bot (creds-blocked). Done: #142 Voice · #144 Smart GST · #146 Predictive · #147 Auto-recon · #148 Smart inv · #149 Competitor imports · #150 Multi-user collab (LWW + optimistic lock).
 - Phase 3 deferred #89 Bank Reconciliation — shipped inside #147.
-- Vertical depth: V1–V7 (see §5).
+- Vertical depth: V2 (Appointments, ~2 wks, needs scope-writer+architect for new `Appointment` Prisma model), V4 (Staff assignment + commission split, ~2 wks, needs security agent), V6 (Tables+KOT, out of MSME scope — defer), V7 (Prescription field, trivial — validate that generic custom fields suffice before scoping a dedicated field). Done: V1 Hourly billing · V3 Recipe Cost dashboard · V5 Customer delivery reminders.
+- **P4 design-system semantic upgrade**: page-by-page conversion of the 594 mechanical `<Button variant="none">` wraps from wave 20 onto real variants (`primary` / `secondary` / `accent` / `destructive` / `ghost`) where the className contract maps cleanly. Per-page judgment call; not a regex sweep. Ratchet stays at zero — wave 20 froze the surface.
+
+**Autonomous-doable today (no creds, no multi-week ceremony):** V7 prescription validation OR P4 semantic upgrade.
 
 **Activate (code shipped, env vars needed on Render):**
 - #2 Subscription — `ENTITLEMENT_JWT_PRIVATE_KEY`, `ENTITLEMENT_JWT_PUBLIC_KEY`, `RAZORPAY_WEBHOOK_SECRET`.
