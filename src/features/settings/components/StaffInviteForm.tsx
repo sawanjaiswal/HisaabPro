@@ -1,5 +1,6 @@
 import React from 'react'
 import { Input } from '@/components/ui/Input'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { Role } from '../settings.types'
 
@@ -68,21 +69,18 @@ export function StaffInviteForm({
 
       <div className={`input-group${errors.roleId ? ' input-group-error' : ''}`}>
         <label htmlFor="invite-role" className="input-label">{t.roles}</label>
-        <select
-          id="invite-role"
-          className="input"
-          value={roleId}
-          onChange={(e) => onRoleChange(e.target.value)}
-          aria-invalid={!!errors.roleId}
-          aria-describedby={errors.roleId ? 'invite-role-error' : undefined}
+        <Select
+          value={roleId || undefined}
+          onValueChange={onRoleChange}
+          ariaLabel={t.roles}
+          placeholder={t.selectARoleOption}
         >
-          <option value="">{t.selectARoleOption}</option>
           {roles.map((role) => (
-            <option key={role.id} value={role.id}>
+            <SelectItem key={role.id} value={role.id}>
               {role.name}
-            </option>
+            </SelectItem>
           ))}
-        </select>
+        </Select>
         {errors.roleId && (
           <p id="invite-role-error" className="input-error" role="alert">
             {errors.roleId}

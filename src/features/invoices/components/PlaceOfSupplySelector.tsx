@@ -8,6 +8,7 @@
 
 import { useEffect } from 'react'
 import { INDIAN_STATE_OPTIONS } from '@/features/gst/constants/states'
+import { Select, SelectItem } from '@/components/ui/Select'
 
 interface PlaceOfSupplySelectorProps {
   value: string
@@ -35,22 +36,18 @@ export function PlaceOfSupplySelector({
         Place of Supply
         <span className="label-required" aria-hidden="true"> *</span>
       </label>
-      <select
-        id="place-of-supply"
-        className={`input${error ? ' input-error' : ''}`}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        aria-required="true"
-        aria-invalid={Boolean(error)}
-        aria-describedby={error ? 'pos-error' : undefined}
+      <Select
+        value={value || undefined}
+        onValueChange={onChange}
+        ariaLabel="Place of Supply"
+        placeholder="-- Select state --"
       >
-        <option value="">-- Select state --</option>
         {INDIAN_STATE_OPTIONS.map(({ code, name }) => (
-          <option key={code} value={code}>
+          <SelectItem key={code} value={code}>
             {code === 'OOS' ? name : `${code} — ${name}`}
-          </option>
+          </SelectItem>
         ))}
-      </select>
+      </Select>
       {error && (
         <span id="pos-error" className="field-error" role="alert">
           {error}

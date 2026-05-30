@@ -12,6 +12,9 @@ import { AlertCircle } from 'lucide-react'
 import { queryKeys } from '@/lib/query-keys'
 import type { TaxCategory } from '@/lib/types/tax.types'
 import { formatRate } from '@/features/tax/tax.constants'
+import { Select, SelectItem } from '@/components/ui/Select'
+
+const NONE = '__none__' as const
 
 interface TaxPickerColumnProps {
   lineIndex: number
@@ -57,23 +60,18 @@ export function TaxPickerColumn({
       <label className="line-item-field-label" htmlFor={selectId}>
         Tax
       </label>
-      <select
-        id={selectId}
-        className={`input tax-picker-select${showWarning ? ' input-error' : ''}`}
-        value={taxCategoryId ?? ''}
-        onChange={(e) => onChange(e.target.value || null)}
-        onBlur={() => setTouched(true)}
-        aria-label={`Tax category for line item ${lineIndex + 1}`}
-        aria-invalid={showWarning}
-        aria-describedby={showWarning ? `tax-warn-${lineIndex}` : undefined}
+      <Select
+        value={taxCategoryId ?? NONE}
+        onValueChange={(v) => { setTouched(true); onChange(v === NONE ? null : v) }}
+        ariaLabel={`Tax category for line item ${lineIndex + 1}`}
       >
-        <option value="">-- Select tax --</option>
+        <SelectItem value={NONE}>-- Select tax --</SelectItem>
         {activeCategories.map((cat) => (
-          <option key={cat.id} value={cat.id}>
+          <SelectItem key={cat.id} value={cat.id}>
             {cat.name} ({formatRate(cat.rate)})
-          </option>
+          </SelectItem>
         ))}
-      </select>
+      </Select>
 
       {showWarning && (
         <span

@@ -1,6 +1,7 @@
 /** ParsedEntryPreview — editable confirmation card for a parsed voice entry. */
 
 import { Button } from '@/components/ui/Button'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { ParsedVoiceEntry, VoiceIntent, VoicePaymentMode } from '../voice.types'
 
@@ -68,12 +69,13 @@ export function ParsedEntryPreview({ draft, onChange, onConfirm, onCancel, savin
 
       <div className="voice-preview__field">
         <label className="voice-preview__label" htmlFor="voiceMode">{t.paymentModeLabel}</label>
-        <select
-          id="voiceMode" className="voice-preview__select" value={draft.paymentMode}
-          onChange={(e) => onChange({ paymentMode: e.target.value as VoicePaymentMode })}
+        <Select
+          value={draft.paymentMode}
+          onValueChange={(v) => onChange({ paymentMode: v as VoicePaymentMode })}
+          ariaLabel={t.paymentModeLabel}
         >
-          {PAYMENT_MODES.map((m) => <option key={m} value={m}>{PAYMENT_LABELS[m]}</option>)}
-        </select>
+          {PAYMENT_MODES.map((m) => <SelectItem key={m} value={m}>{PAYMENT_LABELS[m]}</SelectItem>)}
+        </Select>
       </div>
 
       <div className="voice-preview__field">

@@ -8,6 +8,7 @@ import { useReminderRuleDetail, useCreateReminderRule, useUpdateReminderRule } f
 import { useMarketingTemplateList } from '../hooks/useMarketingTemplates'
 import { ReminderTriggerPicker } from '../components/ReminderTriggerPicker'
 import { ChannelToggle } from '../components/ChannelToggle'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { CHANNEL_LABEL } from '../marketing.constants'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import type { MarketingChannel, ReminderRuleTrigger } from '../marketing.types'
@@ -138,19 +139,16 @@ export default function ReminderRuleFormPage() {
               {t.marketingNoActiveChannelTpl.replace('{{channel}}', CHANNEL_LABEL[channel])}
             </div>
           ) : (
-            <select
-              id="rule-template"
-              value={templateId}
-              onChange={(e) => setTemplateId(e.target.value)}
-              required
-              style={{ ...inputStyle, appearance: 'auto' }}
-              aria-required="true"
+            <Select
+              value={templateId || undefined}
+              onValueChange={setTemplateId}
+              ariaLabel={t.marketingTemplateLabel}
+              placeholder={t.marketingSelectTemplatePh}
             >
-              <option value="">{t.marketingSelectTemplatePh}</option>
               {activeTemplates.map((tpl) => (
-                <option key={tpl.id} value={tpl.id}>{tpl.name}</option>
+                <SelectItem key={tpl.id} value={tpl.id}>{tpl.name}</SelectItem>
               ))}
-            </select>
+            </Select>
           )}
         </div>
 

@@ -1,6 +1,7 @@
 /** RecurringFormFields — all controlled form fields for create/edit schedule */
 
 import { useLanguage } from '@/hooks/useLanguage'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { TemplatePicker } from './TemplatePicker'
 import { RECURRING_FREQUENCIES, FREQUENCY_LABELS } from '../recurring.constants'
 import type { RecurringFormState, FormErrors } from '../hooks/useRecurringForm'
@@ -80,17 +81,16 @@ export function RecurringFormFields({
           <label htmlFor="rf-dow" className="rf-label">
             {t.recurringFieldAnchorDayWeekly ?? 'Day of Week'}
           </label>
-          <select
-            id="rf-dow"
-            className="rf-select"
-            value={form.dayOfWeek}
-            onChange={(e) => setField('dayOfWeek', e.target.value)}
+          <Select
+            value={String(form.dayOfWeek)}
+            onValueChange={(v) => setField('dayOfWeek', v)}
             disabled={disabled}
+            ariaLabel={t.recurringFieldAnchorDayWeekly ?? 'Day of Week'}
           >
             {DAY_NAMES.map((name, idx) => (
-              <option key={idx} value={idx}>{name}</option>
+              <SelectItem key={idx} value={String(idx)}>{name}</SelectItem>
             ))}
-          </select>
+          </Select>
         </div>
       )}
 

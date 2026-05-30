@@ -6,6 +6,7 @@
 
 import React, { useState, useRef } from 'react'
 import { Button } from '@/components/ui/Button'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { useUpdatePartB } from './useEWayBill'
 import type { PartBEntry } from './e-way-bill.types'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
@@ -92,16 +93,14 @@ export const EWayBillUpdatePartBDialog: React.FC<Props> = ({ open, documentId, p
               <label htmlFor="ewb-partb-vehicle-type" style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem' }}>
                 Vehicle Type
               </label>
-              <select
-                id="ewb-partb-vehicle-type"
+              <Select
                 value={vehicleType}
-                onChange={(e) => setVehicleType(e.target.value as 'REGULAR' | 'ODC')}
-                className="input"
-                style={{ width: '100%' }}
+                onValueChange={(v) => setVehicleType(v as 'REGULAR' | 'ODC')}
+                ariaLabel="Vehicle Type"
               >
-                <option value="REGULAR">Regular</option>
-                <option value="ODC">ODC (Over-Dimensional Cargo)</option>
-              </select>
+                <SelectItem value="REGULAR">Regular</SelectItem>
+                <SelectItem value="ODC">ODC (Over-Dimensional Cargo)</SelectItem>
+              </Select>
             </div>
           </div>
 

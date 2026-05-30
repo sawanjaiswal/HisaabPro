@@ -8,6 +8,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import type { CancelReason } from './e-invoice.types'
 import { CANCEL_REASON_LABELS } from './e-invoice.types'
+import { Select, SelectItem } from '@/components/ui/Select'
 
 interface Props {
   open: boolean
@@ -136,25 +137,18 @@ export const EInvoiceCancelDialog: React.FC<Props> = ({ open, loading, onConfirm
         <label htmlFor={reasonId} style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.375rem' }}>
           Reason
         </label>
-        <select
-          id={reasonId}
-          value={reason}
-          onChange={(e) => setReason(Number(e.target.value) as CancelReason)}
-          disabled={loading}
-          style={{
-            width: '100%',
-            padding: '0.5rem 0.75rem',
-            borderRadius: '8px',
-            border: '1px solid var(--color-border, #d1d5db)',
-            fontSize: '0.9rem',
-            marginBottom: '1rem',
-            backgroundColor: 'var(--color-surface, #fff)',
-          }}
-        >
-          {REASONS.map((r) => (
-            <option key={r} value={r}>{CANCEL_REASON_LABELS[r]}</option>
-          ))}
-        </select>
+        <div style={{ marginBottom: '1rem' }}>
+          <Select
+            value={String(reason)}
+            onValueChange={(v) => setReason(Number(v) as CancelReason)}
+            disabled={loading}
+            ariaLabel="Reason"
+          >
+            {REASONS.map((r) => (
+              <SelectItem key={r} value={String(r)}>{CANCEL_REASON_LABELS[r]}</SelectItem>
+            ))}
+          </Select>
+        </div>
 
         <label htmlFor={remarksId} style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.375rem' }}>
           Remarks <span style={{ fontWeight: 400, color: '#888' }}>(optional, max 100 chars)</span>

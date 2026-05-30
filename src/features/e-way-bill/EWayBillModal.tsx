@@ -6,6 +6,7 @@
 
 import React, { useState, useRef } from 'react'
 import { Button } from '@/components/ui/Button'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { useGenerateEWayBill } from './useEWayBill'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
 
@@ -96,18 +97,16 @@ export const EWayBillModal: React.FC<Props> = ({ documentId, open, onDismiss, on
               <label htmlFor="ewb-transport-mode" style={fieldStyle}>
                 Transport Mode {requiredSpan}
               </label>
-              <select
-                id="ewb-transport-mode"
+              <Select
                 value={form.transportMode}
-                onChange={(e) => set('transportMode', e.target.value as typeof form.transportMode)}
-                className="input"
-                style={{ width: '100%' }}
+                onValueChange={(v) => set('transportMode', v as typeof form.transportMode)}
+                ariaLabel="Transport Mode"
               >
-                <option value="ROAD">Road</option>
-                <option value="RAIL">Rail</option>
-                <option value="AIR">Air</option>
-                <option value="SHIP">Ship</option>
-              </select>
+                <SelectItem value="ROAD">Road</SelectItem>
+                <SelectItem value="RAIL">Rail</SelectItem>
+                <SelectItem value="AIR">Air</SelectItem>
+                <SelectItem value="SHIP">Ship</SelectItem>
+              </Select>
             </div>
 
             <div>
@@ -149,16 +148,14 @@ export const EWayBillModal: React.FC<Props> = ({ documentId, open, onDismiss, on
               </div>
               <div>
                 <label htmlFor="ewb-vehicle-type" style={fieldStyle}>Vehicle Type</label>
-                <select
-                  id="ewb-vehicle-type"
+                <Select
                   value={form.vehicleType}
-                  onChange={(e) => set('vehicleType', e.target.value as typeof form.vehicleType)}
-                  className="input"
-                  style={{ width: '100%' }}
+                  onValueChange={(v) => set('vehicleType', v as typeof form.vehicleType)}
+                  ariaLabel="Vehicle Type"
                 >
-                  <option value="REGULAR">Regular</option>
-                  <option value="ODC">ODC</option>
-                </select>
+                  <SelectItem value="REGULAR">Regular</SelectItem>
+                  <SelectItem value="ODC">ODC</SelectItem>
+                </Select>
               </div>
             </div>
 

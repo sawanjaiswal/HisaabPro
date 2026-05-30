@@ -3,6 +3,7 @@ import { useRef, useState } from 'react'
 import { Upload, FileText } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useBankAccounts } from '@/features/bank-accounts/useBankAccounts'
 import { parseStatementCsv } from '../bank-reconciliation.utils'
@@ -61,19 +62,18 @@ export function StatementUpload({ onImport, isImporting }: Props) {
       <label className="recon-upload__label" htmlFor="recon-account">
         {t.bankReconSelectAccount}
       </label>
-      <select
-        id="recon-account"
-        className="recon-upload__select"
-        value={accountId}
-        onChange={(e) => setAccountId(e.target.value)}
+      <Select
+        value={accountId || undefined}
+        onValueChange={setAccountId}
+        ariaLabel={t.bankReconSelectAccount}
+        placeholder="—"
       >
-        <option value="">—</option>
         {accounts.map((a) => (
-          <option key={a.id} value={a.id}>
+          <SelectItem key={a.id} value={a.id}>
             {a.bankName} ••{a.accountNumber.slice(-4)}
-          </option>
+          </SelectItem>
         ))}
-      </select>
+      </Select>
 
       <p className="recon-upload__csv-hint">{t.bankReconCsvHint}</p>
 

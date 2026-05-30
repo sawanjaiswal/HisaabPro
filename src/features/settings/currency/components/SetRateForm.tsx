@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { todayIso, parseRateInput } from '../currency.utils'
 import type { SupportedCurrency, SetExchangeRatePayload } from '../currency.types'
 import { BASE_CURRENCY } from '../currency.constants'
@@ -52,19 +53,17 @@ export function SetRateForm({ currencies, onSubmit, onCancel }: SetRateFormProps
         <label className="set-rate-form__label" htmlFor="sr-currency">
           {t.currencyFormLabel}
         </label>
-        <select
-          id="sr-currency"
-          className="set-rate-form__select"
+        <Select
           value={fromCurrency}
-          onChange={(e) => setFromCurrency(e.target.value)}
-          required
+          onValueChange={setFromCurrency}
+          ariaLabel={t.currencyFormLabel}
         >
           {foreignCurrencies.map((c) => (
-            <option key={c.code} value={c.code}>
+            <SelectItem key={c.code} value={c.code}>
               {c.code} — {c.name}
-            </option>
+            </SelectItem>
           ))}
-        </select>
+        </Select>
       </div>
 
       <div className="set-rate-form__field">

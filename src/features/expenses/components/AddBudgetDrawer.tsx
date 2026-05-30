@@ -2,6 +2,9 @@
 
 import { useState, useCallback } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
+import { Select, SelectItem } from '@/components/ui/Select'
+
+const OVERALL = '__overall__' as const
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { upsertBudget, updateBudget } from '../services/budget.service'
@@ -73,15 +76,14 @@ export function AddBudgetDrawer({
             <label className="expense-drawer__label" htmlFor="budgetCategory">
               Category (leave blank for overall)
             </label>
-            <select
-              id="budgetCategory"
-              className="expense-drawer__select"
-              value={form.categoryId}
-              onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}
+            <Select
+              value={form.categoryId || OVERALL}
+              onValueChange={(v) => setForm((f) => ({ ...f, categoryId: v === OVERALL ? '' : v }))}
+              ariaLabel="Category"
             >
-              <option value="">-- Overall (all categories) --</option>
-              {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
+              <SelectItem value={OVERALL}>-- Overall (all categories) --</SelectItem>
+              {categories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+            </Select>
           </div>
         )}
 

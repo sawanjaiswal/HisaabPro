@@ -7,6 +7,7 @@
 
 import { CheckCircle, AlertTriangle } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { INDIAN_STATES } from '@/features/tax/tax.constants'
 import type { CompositionRate, TaxPricingMode } from './gst.types'
 import type { GstFormState, GstinValidation } from './useGstSettingsForm'
@@ -149,22 +150,21 @@ export function GstFormFields({
               <label className="gsv2-label" htmlFor="gsv2-comp-rate">
                 {t.compositionRateLabel}
               </label>
-              <select
-                id="gsv2-comp-rate"
-                className="gsv2-select"
-                value={form.compositionRate ?? ''}
-                onChange={e => {
-                  const v = parseInt(e.target.value, 10)
+              <Select
+                value={form.compositionRate != null ? String(form.compositionRate) : undefined}
+                onValueChange={(s) => {
+                  const v = parseInt(s, 10)
                   onPatch('compositionRate', (compositionRates.includes(v as CompositionRate)
                     ? v : null) as CompositionRate | null)
                 }}
                 disabled={isSaving || !form.gstEnabled}
+                ariaLabel={t.compositionRateLabel}
+                placeholder={t.selectCompositionRate}
               >
-                <option value="">{t.selectCompositionRate}</option>
                 {compositionRates.map(r => (
-                  <option key={r} value={r}>{rateLabel(r)}</option>
+                  <SelectItem key={r} value={String(r)}>{rateLabel(r)}</SelectItem>
                 ))}
-              </select>
+              </Select>
             </div>
           )}
         </div>

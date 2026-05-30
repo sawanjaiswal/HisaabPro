@@ -9,6 +9,7 @@
 import { useState, useMemo } from 'react'
 import { MessageCircle, Download, Link, Printer, FileText, Mail } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useTemplates } from '@/features/templates/useTemplates'
 import { ShareActionRow } from './ShareActionRow'
@@ -89,21 +90,19 @@ export function ShareInvoiceDrawer({
             <FileText size={16} aria-hidden="true" />
             {t.template}
           </label>
-          <select
-            id="share-template-select"
-            className="share-template-picker-select"
+          <Select
             value={activeTemplateId}
-            onChange={(e) => setTemplateId(e.target.value)}
+            onValueChange={setTemplateId}
             disabled={isDisabled}
-            aria-label={t.chooseTemplate}
+            ariaLabel={t.chooseTemplate}
           >
             {templates.map((tpl) => (
-              <option key={tpl.id} value={tpl.id}>
+              <SelectItem key={tpl.id} value={tpl.id}>
                 {tpl.name}
                 {tpl.defaultForTypes.includes('SALE_INVOICE') ? ` · ${t.defaultLabel}` : ''}
-              </option>
+              </SelectItem>
             ))}
-          </select>
+          </Select>
         </div>
       )}
       <ul className="share-action-list" role="list" aria-label={t.shareOptionsAriaLabel}>

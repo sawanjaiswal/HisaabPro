@@ -11,6 +11,7 @@ import { Trash2, Plus } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
@@ -63,17 +64,15 @@ export function AuditRedactionsManager({ open, onClose }: AuditRedactionsManager
             <label htmlFor="redaction-entity" className="input-label">
               {t.auditRedactionsEntityType}
             </label>
-            <select
-              id="redaction-entity"
-              className="input"
+            <Select
               value={entityType}
-              onChange={(e) => setEntityType(e.target.value)}
-              style={{ minHeight: 44 }}
+              onValueChange={setEntityType}
+              ariaLabel={t.auditRedactionsEntityType}
             >
               {ENTITY_OPTIONS.map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
+                <SelectItem key={value} value={value}>{label}</SelectItem>
               ))}
-            </select>
+            </Select>
           </div>
 
           <Input

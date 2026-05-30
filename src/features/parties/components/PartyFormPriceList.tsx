@@ -3,7 +3,10 @@
 import { useEffect } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { usePriceLists } from '@/features/price-lists/price-list-queries'
+import { Select, SelectItem } from '@/components/ui/Select'
 import type { PartyFormData } from '../party.types'
+
+const NONE = '__none__' as const
 
 interface PartyFormPriceListProps {
   /** Current priceListId from form state (undefined = not yet set, null = explicitly none) */
@@ -27,8 +30,8 @@ export function PartyFormPriceList({ value, isEditMode = false, onUpdate }: Part
     }
   }, [items, isEditMode, value, onUpdate])
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onUpdate('priceListId', e.target.value || null)
+  const handleChange = (v: string) => {
+    onUpdate('priceListId', v === NONE ? null : v)
   }
 
   return (
@@ -36,21 +39,19 @@ export function PartyFormPriceList({ value, isEditMode = false, onUpdate }: Part
       <label htmlFor="party-price-list" className="input-label">
         {t.priceListLabel}
       </label>
-      <select
-        id="party-price-list"
-        className="input"
-        value={value ?? ''}
-        onChange={handleChange}
-        aria-label={t.priceListLabel}
+      <Select
+        value={value ?? NONE}
+        onValueChange={handleChange}
+        ariaLabel={t.priceListLabel}
         disabled={status === 'loading'}
       >
-        <option value="">{t.priceListNone}</option>
+        <SelectItem value={NONE}>{t.priceListNone}</SelectItem>
         {items.map((list) => (
-          <option key={list.id} value={list.id}>
+          <SelectItem key={list.id} value={list.id}>
             {list.name}{list.isDefault ? ` (${t.priceListDefaultBadge})` : ''}
-          </option>
+          </SelectItem>
         ))}
-      </select>
+      </Select>
       <p className="gstin-hint">{t.priceListHint}</p>
     </div>
   )

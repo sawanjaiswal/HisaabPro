@@ -3,6 +3,7 @@
 import { useEffect, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { queryKeys } from '@/lib/query-keys'
 import {
   listCustomFieldDefsForDocType,
@@ -112,16 +113,16 @@ export function InvoiceCustomFieldsSection({ documentType, values, errors, onCha
               />
             )}
             {def.fieldType === 'DROPDOWN' && (
-              <select
-                className="input"
-                value={typeof raw === 'string' ? raw : ''}
-                onChange={(e) => setValue(def.id, e.target.value || undefined)}
+              <Select
+                value={(typeof raw === 'string' && raw) || undefined}
+                onValueChange={(v) => setValue(def.id, v || undefined)}
+                ariaLabel={def.name}
+                placeholder={t.selectOption}
               >
-                <option value="">{t.selectOption}</option>
                 {def.options.map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
+                  <SelectItem key={opt} value={opt}>{opt}</SelectItem>
                 ))}
-              </select>
+              </Select>
             )}
 
             {err && (

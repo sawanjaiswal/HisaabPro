@@ -1,6 +1,7 @@
 /** AudiencePicker — segment filter builder with live count preview */
 
 import { useLanguage } from '@/hooks/useLanguage'
+import { Select, SelectItem } from '@/components/ui/Select'
 import type { SegmentFilter } from '../marketing.types'
 import { useSegmentPreview } from '../hooks/useSegmentPreview'
 
@@ -28,16 +29,15 @@ export function AudiencePicker({ value, onChange }: Props) {
       {/* Party type */}
       <div>
         <label style={labelStyle} htmlFor="seg-party-type">{t.marketingPartyType}</label>
-        <select
-          id="seg-party-type"
+        <Select
           value={value.partyType ?? 'CUSTOMER'}
-          onChange={(e) => update('partyType', e.target.value as SegmentFilter['partyType'])}
-          style={selectStyle}
+          onValueChange={(v) => update('partyType', v as SegmentFilter['partyType'])}
+          ariaLabel={t.marketingPartyType}
         >
-          <option value="CUSTOMER">{t.marketingPartyCustomer}</option>
-          <option value="SUPPLIER">{t.marketingPartySupplier}</option>
-          <option value="BOTH">{t.marketingPartyBoth}</option>
-        </select>
+          <SelectItem value="CUSTOMER">{t.marketingPartyCustomer}</SelectItem>
+          <SelectItem value="SUPPLIER">{t.marketingPartySupplier}</SelectItem>
+          <SelectItem value="BOTH">{t.marketingPartyBoth}</SelectItem>
+        </Select>
       </div>
 
       {/* Tags */}
@@ -172,7 +172,3 @@ const inputStyle: React.CSSProperties = {
   boxSizing: 'border-box',
 }
 
-const selectStyle: React.CSSProperties = {
-  ...inputStyle,
-  appearance: 'auto',
-}

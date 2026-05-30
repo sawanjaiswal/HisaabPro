@@ -13,6 +13,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { Drawer } from '@/components/ui/Drawer'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
@@ -166,11 +167,15 @@ export default function BankAccountsPage() {
             </div>
             <div className="bank-drawer__field py-0">
               <label className="bank-drawer__label py-0" htmlFor="accountType">{t.typeLabel}</label>
-              <select id="accountType" className="bank-drawer__select py-0" value={form.accountType} onChange={(e) => setForm((f) => ({ ...f, accountType: e.target.value as BankAccountType }))}>
+              <Select
+                value={form.accountType}
+                onValueChange={(v) => setForm((f) => ({ ...f, accountType: v as BankAccountType }))}
+                ariaLabel={t.typeLabel}
+              >
                 {(['SAVINGS', 'CURRENT', 'OVERDRAFT', 'CASH'] as BankAccountType[]).map((type) => (
-                  <option key={type} value={type}>{getAccountTypeLabel(type, t)}</option>
+                  <SelectItem key={type} value={type}>{getAccountTypeLabel(type, t)}</SelectItem>
                 ))}
-              </select>
+              </Select>
             </div>
           </div>
           <div className="bank-drawer__field py-0">

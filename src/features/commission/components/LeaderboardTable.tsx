@@ -16,6 +16,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { Select, SelectItem } from '@/components/ui/Select'
 import {
   ResponsiveTable,
   type TableColumn,
@@ -109,18 +110,17 @@ export function LeaderboardTable({
         <label htmlFor="commission-sort" className="commission-leaderboard__sort-label">
           {t.commissionLeaderboardSortLabel}
         </label>
-        <select
-          id="commission-sort"
-          className="commission-leaderboard__sort-select"
+        <Select
           value={sort}
-          onChange={(e) => setSort(e.target.value as LeaderboardSortKey)}
+          onValueChange={(v) => setSort(v as LeaderboardSortKey)}
+          ariaLabel={t.commissionLeaderboardSortLabel}
         >
           {SORT_OPTIONS.map((opt) => (
-            <option key={opt} value={opt}>
+            <SelectItem key={opt} value={opt}>
               {t[SORT_LABEL_KEY[opt] as keyof typeof t] as string}
-            </option>
+            </SelectItem>
           ))}
-        </select>
+        </Select>
       </div>
 
       <ResponsiveTable<CommissionLeaderboardRowDTO>

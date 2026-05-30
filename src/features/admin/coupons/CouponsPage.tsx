@@ -11,6 +11,9 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { Skeleton } from '@/components/feedback/Skeleton'
+import { Select, SelectItem } from '@/components/ui/Select'
+
+const ALL_STATUS = '__all__' as const
 import { useCoupons } from './useCoupons'
 import { CouponCard } from './components/CouponCard'
 import { CouponForm } from './components/CouponForm'
@@ -90,20 +93,17 @@ export default function CouponsPage() {
               aria-label="Search coupon codes"
             />
           </div>
-          <select
-            className="coupon-filter"
-            value={statusFilter ?? ''}
-            onChange={(e) =>
-              setStatusFilter((e.target.value as CouponStatus) || undefined)
-            }
-            aria-label="Filter by status"
+          <Select
+            value={statusFilter ?? ALL_STATUS}
+            onValueChange={(v) => setStatusFilter(v === ALL_STATUS ? undefined : (v as CouponStatus))}
+            ariaLabel="Filter by status"
           >
             {STATUS_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
+              <SelectItem key={opt.value || ALL_STATUS} value={opt.value || ALL_STATUS}>
                 {opt.label}
-              </option>
+              </SelectItem>
             ))}
-          </select>
+          </Select>
         </div>
 
         {/* Loading */}
