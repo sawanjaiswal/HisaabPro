@@ -5,6 +5,7 @@ import type { BillScanResult, ExtractedItem } from '../bill-scan.types'
 import { CONFIDENCE_HIGH, CONFIDENCE_MEDIUM } from '../bill-scan.constants'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
+import { EmptyState } from '@/components/feedback/EmptyState'
 
 interface OcrResultReviewProps {
   result: BillScanResult
@@ -66,13 +67,15 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
       </div>
 
       {extractedItems.length === 0 ? (
-        <div className="ocr-review-empty">
-          <AlertTriangle size={32} aria-hidden="true" />
-          <p>{t.noItemsExtracted}</p>
-          <Button type="button" variant="secondary" size="md" onClick={onRetry}>
-            {t.tryAgain}
-          </Button>
-        </div>
+        <EmptyState
+          icon={<AlertTriangle size={22} aria-hidden="true" />}
+          title={t.noItemsExtracted}
+          action={
+            <Button type="button" variant="secondary" size="md" onClick={onRetry}>
+              {t.tryAgain}
+            </Button>
+          }
+        />
       ) : (
         <>
           <div className="ocr-review-items" role="list" aria-label={t.lineItems}>

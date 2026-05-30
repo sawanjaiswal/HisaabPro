@@ -2,6 +2,7 @@
 
 import { AlertTriangle, Package } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatNumber } from '@/lib/format'
 import type { StockForecastItem } from '../analytics.types'
@@ -56,10 +57,10 @@ export function StockForecastList({ items }: StockForecastListProps) {
       </ul>
 
       {items.length === 0 && (
-        <div className="analytics-inline-empty">
-          <Package size={28} aria-hidden="true" />
-          <p>{t.noStockForecastData}</p>
-        </div>
+        <EmptyState
+          icon={<Package size={22} aria-hidden="true" />}
+          title={t.noStockForecastData}
+        />
       )}
     </Card>
   )

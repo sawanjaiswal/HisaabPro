@@ -12,6 +12,7 @@ import { Tag } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { ROUTES } from '@/config/routes.config'
 import { formatProductPrice } from '../product.utils'
 import {
@@ -158,16 +159,19 @@ export function ProductPricePreviewPanel({
       )}
 
       {status === 'success' && preview.length === 0 && (
-        <div className="ppp-empty">
-          <p className="ppp-empty-text">{t.noPriceListsConfigured}</p>
-          <Button
-            type="button"
-            variant="ghost" size="sm" className="ppp-empty-link"
-            onClick={() => navigate(ROUTES.PRICE_LISTS)}
-          >
-            {t.configurePriceLists}
-          </Button>
-        </div>
+        <EmptyState
+          icon={<Tag size={22} aria-hidden="true" />}
+          title={t.noPriceListsConfigured}
+          action={
+            <Button
+              type="button"
+              variant="ghost" size="sm" className="ppp-empty-link"
+              onClick={() => navigate(ROUTES.PRICE_LISTS)}
+            >
+              {t.configurePriceLists}
+            </Button>
+          }
+        />
       )}
 
       {status === 'success' && preview.length > 0 && (

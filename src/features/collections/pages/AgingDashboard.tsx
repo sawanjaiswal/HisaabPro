@@ -11,6 +11,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { useAgingData } from '../useAgingData'
@@ -81,13 +82,11 @@ export default function AgingDashboard() {
           }
         />
         <PageContainer>
-          <div className="aging-empty">
-            <div className="aging-empty__icon-wrap">
-              <CheckCircle2 size={40} className="aging-empty__icon" aria-hidden="true" />
-            </div>
-            <h2 className="aging-empty__title">{t.allCaughtUp ?? 'All paid up!'}</h2>
-            <p className="aging-empty__desc">{t.allCaughtUpDesc ?? 'No overdue receivables right now. Great work!'}</p>
-          </div>
+          <EmptyState
+            icon={<CheckCircle2 size={22} aria-hidden="true" />}
+            title={t.allCaughtUp ?? 'All paid up!'}
+            description={t.allCaughtUpDesc ?? 'No overdue receivables right now. Great work!'}
+          />
         </PageContainer>
       </AppShell>
     )

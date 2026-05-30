@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Plus, RefreshCw, Pencil, Trash2 } from 'lucide-react'
+import { ArrowLeft, Plus, RefreshCw, Pencil, Trash2, Bell } from 'lucide-react'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useReminderRuleList, useDeleteReminderRule, useToggleReminderRule } from '../hooks/useReminderRules'
 import { ChannelBadge } from '../components/ChannelBadge'
@@ -51,13 +52,16 @@ export default function ReminderRuleListPage() {
       )}
 
       {status === 'success' && rules.length === 0 && (
-        <div style={{ padding: '48px 16px', textAlign: 'center', color: 'var(--color-gray-500)' }}>
-          <div style={{ fontWeight: 600, color: 'var(--color-gray-700)', marginBottom: '8px' }}>{t.marketingNoRemindersYet}</div>
-          <div style={{ fontSize: '13px', marginBottom: '20px' }}>{t.marketingNoRemindersDesc}</div>
-          <button type="button" onClick={() => navigate(MARKETING_ROUTES.REMINDER_NEW)} style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
-            {t.marketingCreateRule}
-          </button>
-        </div>
+        <EmptyState
+          icon={<Bell size={22} aria-hidden="true" />}
+          title={t.marketingNoRemindersYet}
+          description={t.marketingNoRemindersDesc}
+          action={
+            <button type="button" onClick={() => navigate(MARKETING_ROUTES.REMINDER_NEW)} style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
+              {t.marketingCreateRule}
+            </button>
+          }
+        />
       )}
 
       {status === 'success' && rules.length > 0 && (

@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Plus, RefreshCw, Pencil, Trash2 } from 'lucide-react'
+import { ArrowLeft, Plus, RefreshCw, Pencil, Trash2, FileText } from 'lucide-react'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useMarketingTemplateList, useDeleteTemplate } from '../hooks/useMarketingTemplates'
 import { ChannelBadge } from '../components/ChannelBadge'
@@ -82,12 +83,15 @@ export default function TemplateListPage() {
       )}
 
       {status === 'success' && templates.length === 0 && (
-        <div style={{ padding: '48px 16px', textAlign: 'center', color: 'var(--color-gray-500)' }}>
-          <div style={{ fontWeight: 600, color: 'var(--color-gray-700)', marginBottom: '8px' }}>{t.marketingNoTemplatesYet}</div>
-          <button type="button" onClick={() => navigate(MARKETING_ROUTES.TEMPLATE_NEW)} style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
-            {t.marketingNewTemplate}
-          </button>
-        </div>
+        <EmptyState
+          icon={<FileText size={22} aria-hidden="true" />}
+          title={t.marketingNoTemplatesYet}
+          action={
+            <button type="button" onClick={() => navigate(MARKETING_ROUTES.TEMPLATE_NEW)} style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
+              {t.marketingNewTemplate}
+            </button>
+          }
+        />
       )}
 
       {status === 'success' && templates.length > 0 && (

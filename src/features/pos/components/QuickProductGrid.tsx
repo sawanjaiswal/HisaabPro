@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Package } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
+import { EmptyState } from '@/components/feedback/EmptyState'
+import { ErrorState } from '@/components/feedback/ErrorState'
 import { api } from '@/lib/api'
 import { formatPaise } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -52,23 +53,15 @@ export function QuickProductGrid({ onSelect }: QuickProductGridProps) {
   }
 
   if (error) {
-    return (
-      <div className="pos-empty" role="alert">
-        <Package size={40} className="pos-empty-icon" aria-hidden="true" />
-        <p className="pos-empty-text">{error}</p>
-        <Button variant="secondary" size="sm" onClick={retry}>
-          {t.retry}
-        </Button>
-      </div>
-    )
+    return <ErrorState title={error} onRetry={retry} />
   }
 
   if (products.length === 0) {
     return (
-      <div className="pos-empty" role="status">
-        <Package size={40} className="pos-empty-icon" aria-hidden="true" />
-        <p className="pos-empty-text">{t.posScanOrSearchToAdd}</p>
-      </div>
+      <EmptyState
+        icon={<Package size={22} aria-hidden="true" />}
+        title={t.posScanOrSearchToAdd}
+      />
     )
   }
 

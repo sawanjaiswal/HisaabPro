@@ -9,6 +9,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { MARKETING_ROUTES } from '../marketing.constants'
+import { EmptyState } from '@/components/feedback/EmptyState'
 
 interface OptOutParty {
   id: string
@@ -88,11 +89,11 @@ export default function OptOutListPage() {
       )}
 
       {query.isSuccess && parties.length === 0 && (
-        <div style={{ padding: '48px 16px', textAlign: 'center', color: 'var(--color-gray-500)' }}>
-          <ShieldCheck size={48} color="var(--color-success-400)" style={{ margin: '0 auto 12px', display: 'block' }} aria-hidden="true" />
-          <div style={{ fontWeight: 600, color: 'var(--color-gray-700)' }}>{t.marketingNoOptOuts}</div>
-          <div style={{ fontSize: '13px', marginTop: '4px' }}>{t.marketingNoOptOutsDesc}</div>
-        </div>
+        <EmptyState
+          icon={<ShieldCheck size={22} aria-hidden="true" />}
+          title={t.marketingNoOptOuts}
+          description={t.marketingNoOptOutsDesc}
+        />
       )}
 
       {query.isSuccess && parties.length > 0 && (

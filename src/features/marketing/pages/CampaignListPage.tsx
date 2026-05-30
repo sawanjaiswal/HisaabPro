@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Plus, RefreshCw } from 'lucide-react'
+import { ArrowLeft, Plus, RefreshCw, Send } from 'lucide-react'
+import { EmptyState } from '@/components/feedback/EmptyState'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useCampaignList } from '../hooks/useCampaigns'
 import { CampaignStatusBadge } from '../components/CampaignStatusBadge'
@@ -98,18 +99,16 @@ export default function CampaignListPage() {
 
       {/* Empty */}
       {status === 'success' && campaigns.length === 0 && (
-        <div style={{ padding: '48px 16px', textAlign: 'center', color: 'var(--color-gray-500)' }}>
-          <div style={{ fontSize: '40px', marginBottom: '12px' }}>
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-300)" strokeWidth="1.5" style={{ margin: '0 auto', display: 'block' }} aria-hidden="true">
-              <path d="M22 2L11 13" /><path d="M22 2L15 22 11 13 2 9l20-7z" />
-            </svg>
-          </div>
-          <div style={{ fontWeight: 600, color: 'var(--color-gray-700)', marginBottom: '8px' }}>{t.marketingNoCampaignsYet}</div>
-          <div style={{ fontSize: '13px', marginBottom: '20px' }}>{t.marketingNoCampaignsDesc}</div>
-          <button type="button" onClick={() => navigate(MARKETING_ROUTES.CAMPAIGN_NEW)} style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer', minHeight: '44px' }}>
-            {t.marketingCreateFirstCampaign}
-          </button>
-        </div>
+        <EmptyState
+          icon={<Send size={22} aria-hidden="true" />}
+          title={t.marketingNoCampaignsYet}
+          description={t.marketingNoCampaignsDesc}
+          action={
+            <button type="button" onClick={() => navigate(MARKETING_ROUTES.CAMPAIGN_NEW)} style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer', minHeight: '44px' }}>
+              {t.marketingCreateFirstCampaign}
+            </button>
+          }
+        />
       )}
 
       {/* List */}

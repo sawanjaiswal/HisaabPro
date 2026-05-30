@@ -3,6 +3,7 @@
 import { Package, X } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
+import { EmptyState } from '@/components/feedback/EmptyState'
 
 interface StockSummaryEmptyProps {
   hasActiveFilters: boolean
@@ -16,47 +17,43 @@ export function StockSummaryEmpty({
   onClearFilters,
 }: StockSummaryEmptyProps) {
   const { t } = useLanguage()
-    if (hasActiveFilters) {
-  const { t } = useLanguage()
+
+  if (hasActiveFilters) {
     return (
-      <div className="report-empty" role="status">
-        <div className="report-empty-icon" aria-hidden="true">
-          <Package size={28} />
-        </div>
-        <p className="report-empty-title">{t.noProductsMatchFilters}</p>
-        <p className="report-empty-desc">
-          {t.tryAdjustingSearchFilter}
-        </p>
-        <Button
-          variant="secondary" size="md"
-          type="button"
-          onClick={onClearFilters}
-          aria-label={t.clearAllFilters}
-        >
-          <X size={16} aria-hidden="true" />
-          Clear Filters
-        </Button>
-      </div>
+      <EmptyState
+        icon={<Package size={22} aria-hidden="true" />}
+        title={t.noProductsMatchFilters}
+        description={t.tryAdjustingSearchFilter}
+        action={
+          <Button
+            variant="secondary" size="md"
+            type="button"
+            onClick={onClearFilters}
+            aria-label={t.clearAllFilters}
+          >
+            <X size={16} aria-hidden="true" />
+            Clear Filters
+          </Button>
+        }
+      />
     )
   }
 
   return (
-    <div className="report-empty" role="status">
-      <div className="report-empty-icon" aria-hidden="true">
-        <Package size={28} />
-      </div>
-      <p className="report-empty-title">{t.noProducts}</p>
-      <p className="report-empty-desc">
-        {t.noProductsAddedYet}
-      </p>
-      <Button
-        variant="primary" size="md"
-        type="button"
-        onClick={onNavigateNew}
-        aria-label={t.addAProduct}
-      >
-        Add Product
-      </Button>
-    </div>
+    <EmptyState
+      icon={<Package size={22} aria-hidden="true" />}
+      title={t.noProducts}
+      description={t.noProductsAddedYet}
+      action={
+        <Button
+          variant="primary" size="md"
+          type="button"
+          onClick={onNavigateNew}
+          aria-label={t.addAProduct}
+        >
+          Add Product
+        </Button>
+      }
+    />
   )
 }

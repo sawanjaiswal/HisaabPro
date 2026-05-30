@@ -3,6 +3,7 @@
 import { Banknote } from 'lucide-react'
 import type { PaymentHistoryFilters } from '../report.types'
 import { useLanguage } from '@/hooks/useLanguage'
+import { EmptyState } from '@/components/feedback/EmptyState'
 
 interface PaymentHistoryEmptyProps {
   hasFiltersApplied: boolean
@@ -19,51 +20,45 @@ export function PaymentHistoryEmpty({
   setFilter,
 }: PaymentHistoryEmptyProps) {
   const { t } = useLanguage()
-    if (hasFiltersApplied) {
-  const { t } = useLanguage()
+
+  if (hasFiltersApplied) {
     return (
-      <div className="report-empty">
-        <div className="report-empty-icon" aria-hidden="true">
-          <Banknote size={28} />
-        </div>
-        <p className="report-empty-title">
-          No payments match your filters.
-        </p>
-        <p className="report-empty-desc">
-          {t.tryBroaderDateRange}
-        </p>
-        <button
-          className="report-load-more-btn"
-          onClick={() => {
-            setFilter('type', undefined)
-            setFilter('mode', undefined)
-          }}
-          type="button"
-          aria-label={t.clearFilters}
-        >
-          Clear Filters
-        </button>
-      </div>
+      <EmptyState
+        icon={<Banknote size={22} aria-hidden="true" />}
+        title="No payments match your filters."
+        description={t.tryBroaderDateRange}
+        action={
+          <button
+            className="report-load-more-btn"
+            onClick={() => {
+              setFilter('type', undefined)
+              setFilter('mode', undefined)
+            }}
+            type="button"
+            aria-label={t.clearFilters}
+          >
+            Clear Filters
+          </button>
+        }
+      />
     )
   }
 
   return (
-    <div className="report-empty">
-      <div className="report-empty-icon" aria-hidden="true">
-        <Banknote size={28} />
-      </div>
-      <p className="report-empty-title">{t.noPaymentsRecordedYet}</p>
-      <p className="report-empty-desc">
-        {t.recordFirstPayment}
-      </p>
-      <button
-        className="report-load-more-btn"
-        onClick={onNavigateNew}
-        type="button"
-        aria-label={t.recordNewPayment}
-      >
-        Record Payment
-      </button>
-    </div>
+    <EmptyState
+      icon={<Banknote size={22} aria-hidden="true" />}
+      title={t.noPaymentsRecordedYet}
+      description={t.recordFirstPayment}
+      action={
+        <button
+          className="report-load-more-btn"
+          onClick={onNavigateNew}
+          type="button"
+          aria-label={t.recordNewPayment}
+        >
+          Record Payment
+        </button>
+      }
+    />
   )
 }

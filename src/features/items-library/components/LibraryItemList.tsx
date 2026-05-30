@@ -1,9 +1,10 @@
 /** Library Item List — Selectable items from the library */
 
-import { Plus } from 'lucide-react'
+import { Plus, Package } from 'lucide-react'
 import type { LibraryItem } from '../items-library.types'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
+import { EmptyState } from '@/components/feedback/EmptyState'
 
 interface LibraryItemListProps {
   items: LibraryItem[]
@@ -17,9 +18,10 @@ export function LibraryItemList({ items, total, hasMore, onSelect, onLoadMore }:
   const { t } = useLanguage()
   if (items.length === 0) {
     return (
-      <div className="library-empty">
-        <p>{t.noItemsFoundLibrary}</p>
-      </div>
+      <EmptyState
+        icon={<Package size={22} aria-hidden="true" />}
+        title={t.noItemsFoundLibrary}
+      />
     )
   }
 
