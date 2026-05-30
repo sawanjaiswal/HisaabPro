@@ -256,7 +256,7 @@ Merge `caa390d` (2026-05-26), 12 commits + 2 hardening (`ba56470`/`0bd1881`).
 | V4 — Staff assignment + commission split on Jobs/Orders | Services/Bakery/Tailor/Manufacturing | ~2 wks | MEDIUM (extends Phase 6 #128) |
 | ~~V5 — Customer delivery reminders (`offsetDays` before delivery)~~ ✅ SHIPPED 2026-05-29 | Bakery/Tailor | — | done (day-granular; hour-precision → FUTURE_EPIC) |
 | V6 — Table mgmt + KOT | Restaurant | LARGE | LOW (out of scope) |
-| ~~V7 — Prescription field~~ ✅ SHIPPED 2026-05-30 (MULTILINE custom-field, DOCUMENT-scoped; party-scoped FE render is a separate gap) | Pharmacy/Clinic | — | done |
+| ~~V7 — Prescription field~~ ✅ SHIPPED 2026-05-30 (MULTILINE custom-field DOCUMENT-scoped + party-scoped FE Create/Edit/Overview wired — gap fully closed) | Pharmacy/Clinic | — | done |
 
 Recommended sequence post merge-to-prod: ~~V3~~ ✅ → ~~V1~~ ✅ → ~~V5~~ ✅ → V2 → V4.
 
@@ -1128,6 +1128,6 @@ The following prior PRDs / architectures / audits are preserved under `docs/arch
 | V4 | Staff assignment + commission split | Services/Bakery/Tailor/Mfg | Not Started | — | Extends #128 |
 | V5 | Customer delivery reminders | Bakery/Tailor | ✅ Shipped 2026-05-29 | — | ORDER_DELIVERY trigger + day-granular candidate fn. arch-audit PASS (1 rev: isDeleted guard). Hour-precision → FUTURE_EPIC |
 | V6 | Table mgmt + KOT | Restaurant | Not Started | — | Out of scope |
-| V7 | Prescription field | Pharmacy/Clinic | ✅ Shipped 2026-05-30 | d2d9a0c | MULTILINE custom-field type (additive, no migration); DOCUMENT-scoped — party-scoped FE render still gap |
+| V7 | Prescription field | Pharmacy/Clinic | ✅ Shipped 2026-05-30 | d2d9a0c + 9301c5d | DOCUMENT MULTILINE custom-field + PARTY-scoped FE wiring (PartyFormCustomFields + Create/Edit 4th tab + Overview read-render). Server `customFieldValues` shape now matches FE PartyDetail. |
 
 
