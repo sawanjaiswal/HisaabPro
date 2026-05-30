@@ -595,6 +595,9 @@ export const hi = {
   fieldNameRequired:            'फ़ील्ड का नाम आवश्यक है',
   dropdownNeedsOptions:         'ड्रॉपडाउन फ़ील्ड को कम से कम एक विकल्प चाहिए',
   selectOption:                 'एक विकल्प चुनें',
+  customFields:                 'कस्टम फ़ील्ड',
+  noCustomFields:               'अभी कोई कस्टम फ़ील्ड नहीं',
+  noCustomFieldsDescription:    'सेटिंग्स → कस्टम फ़ील्ड से लॉयल्टी टियर, रूट कोड या रेफ़रल स्रोत जैसे पार्टी फ़ील्ड जोड़ें',
 
   // Document conversion (#122)
   convertDocument:              'दस्तावेज़ बदलें',

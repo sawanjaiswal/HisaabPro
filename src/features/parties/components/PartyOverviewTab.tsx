@@ -11,6 +11,7 @@ import {
   StickyNote,
   CheckCircle,
   Tag,
+  ListChecks,
 } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PartyDetail } from '../party.types'
@@ -42,6 +43,9 @@ export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => 
   const hasBusinessInfo = party.gstin || party.pan
   const creditLimitLabel = party.creditLimitMode === 'WARN' ? t.warn : t.blockLabel
   const priceListName = party.priceList?.name
+  const customFieldRows = (party.customFieldValues ?? [])
+    .filter(cv => cv.value != null && cv.value.trim() !== '')
+    .sort((a, b) => a.field.sortOrder - b.field.sortOrder)
 
   return (
     <div className="party-info-card">
@@ -109,6 +113,25 @@ export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => 
             label={t.partyPriceListChip}
             value={priceListName + (party.priceList?.isDefault ? ` (${t.priceListDefaultBadge})` : '')}
           />
+        </div>
+      )}
+
+      {customFieldRows.length > 0 && (
+        <div className="card" aria-label={t.customFields}>
+          <h3 className="section-title py-0 section-title--mb-3">
+            <span className="section-title-icon">
+              <ListChecks size={18} aria-hidden="true" />
+              {t.customFields}
+            </span>
+          </h3>
+          {customFieldRows.map(cv => (
+            <InfoRow
+              key={cv.id}
+              icon={<FileText size={18} />}
+              label={cv.field.name}
+              value={cv.value}
+            />
+          ))}
         </div>
       )}
 

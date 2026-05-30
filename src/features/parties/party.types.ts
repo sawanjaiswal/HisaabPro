@@ -64,7 +64,13 @@ export interface PartyDetail extends PartySummary {
   totalBusiness: number
   notes?: string
   addresses: PartyAddress[]
-  customFields: CustomFieldValue[]
+  /** Server returns `customFieldValues` with full def join (name + fieldType + sortOrder) */
+  customFieldValues: Array<{
+    id: string
+    fieldId: string
+    value: string
+    field: { name: string; fieldType: CustomFieldType; showOnInvoice: boolean; sortOrder: number }
+  }>
   openingBalance?: OpeningBalance
   pricing: PartyPricingItem[]
   createdAt: string
@@ -167,6 +173,8 @@ export interface PartyFormData {
   creditLimitMode: CreditLimitMode
   notes?: string
   addresses: Omit<PartyAddress, 'id'>[]
+  /** Custom field values keyed by definition id. Empty/null values are stripped before submit. */
+  customFields: { fieldId: string; value: string }[]
   openingBalance?: {
     amount: number
     type: BalanceType

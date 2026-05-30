@@ -10,8 +10,9 @@ export interface CustomFieldDefinition {
   entityType: 'PARTY'
   name: string
   fieldType: CustomFieldType
-  isRequired: boolean
-  options?: string[] // for DROPDOWN fields
+  required: boolean
+  options: string[] // empty array unless DROPDOWN
+  sortOrder: number
   createdAt: string
   updatedAt: string
 }
@@ -20,7 +21,7 @@ export interface CustomFieldInput {
   entityType: 'PARTY'
   name: string
   fieldType: CustomFieldType
-  isRequired?: boolean
+  required?: boolean
   options?: string[]
 }
 

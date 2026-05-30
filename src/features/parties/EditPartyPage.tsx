@@ -19,13 +19,14 @@ import { paiseToRupeesNum } from './party.utils'
 import { PartyFormBasic } from './components/PartyFormBasic'
 import { PartyFormBusiness } from './components/PartyFormBusiness'
 import { PartyFormCredit } from './components/PartyFormCredit'
+import { PartyFormCustomFields } from './components/PartyFormCustomFields'
 import { usePresence } from '@/features/collaboration/usePresence'
 import { PresenceAvatars } from '@/features/collaboration/PresenceAvatars'
 import { ConflictDialog } from '@/features/collaboration/ConflictDialog'
 import type { PartyFormData, PartyDetail } from './party.types'
 import './create-party.css'
 
-type SectionId = 'basic' | 'business' | 'credit'
+type SectionId = 'basic' | 'business' | 'credit' | 'custom'
 
 /** Convert server PartyDetail → form-compatible PartyFormData */
 function detailToFormData(detail: PartyDetail): PartyFormData {
@@ -46,6 +47,7 @@ function detailToFormData(detail: PartyDetail): PartyFormData {
     creditLimitMode: detail.creditLimitMode,
     notes: detail.notes,
     addresses: detail.addresses.map(({ id: _id, ...rest }) => rest),
+    customFields: (detail.customFieldValues ?? []).map(cv => ({ fieldId: cv.fieldId, value: cv.value })),
     openingBalance: detail.openingBalance
       ? {
           ...detail.openingBalance,
@@ -143,6 +145,7 @@ function EditPartyForm({ partyId, initialData, version }: { partyId: string; ini
             { id: 'basic' as SectionId, label: t.basicInfo },
             { id: 'business' as SectionId, label: t.business2 },
             { id: 'credit' as SectionId, label: t.credit },
+            { id: 'custom' as SectionId, label: t.customFields },
           ].map(section => (
             <Button variant="none"
               key={section.id}
@@ -161,7 +164,12 @@ function EditPartyForm({ partyId, initialData, version }: { partyId: string; ini
         <div
           id={`section-panel-${activeSection}`}
           role="tabpanel"
-          aria-label={activeSection === 'basic' ? t.basicInfo : activeSection === 'business' ? t.business2 : t.credit}
+          aria-label={
+            activeSection === 'basic' ? t.basicInfo
+              : activeSection === 'business' ? t.business2
+              : activeSection === 'credit' ? t.credit
+              : t.customFields
+          }
         >
           {activeSection === 'basic' && (
             <PartyFormBasic form={form} errors={errors} onUpdate={updateField} isEditMode />
@@ -171,6 +179,9 @@ function EditPartyForm({ partyId, initialData, version }: { partyId: string; ini
           )}
           {activeSection === 'credit' && (
             <PartyFormCredit form={form} errors={errors} onUpdate={updateField} />
+          )}
+          {activeSection === 'custom' && (
+            <PartyFormCustomFields form={form} onUpdate={updateField} />
           )}
         </div>
       </PageContainer>

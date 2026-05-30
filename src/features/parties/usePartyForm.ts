@@ -24,9 +24,10 @@ const INITIAL_FORM: PartyFormData = {
   creditLimit: 0,
   creditLimitMode: 'WARN',
   addresses: [],
+  customFields: [],
 }
 
-type FormSection = 'basic' | 'business' | 'credit'
+type FormSection = 'basic' | 'business' | 'credit' | 'custom'
 
 export interface UsePartyFormOptions {
   /** When set, form operates in edit mode — calls updateParty instead of createParty */
@@ -160,9 +161,11 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
 
     setIsSubmitting(true)
 
-    // Convert opening balance amount from rupees to paise before sending
+    // Convert opening balance amount from rupees to paise before sending.
+    // Strip empty/whitespace-only custom field values — server requires non-empty strings.
     const payload: PartyFormData = {
       ...form,
+      customFields: form.customFields.filter(cf => cf.value != null && cf.value.trim() !== ''),
       openingBalance: form.openingBalance
         ? {
             ...form.openingBalance,

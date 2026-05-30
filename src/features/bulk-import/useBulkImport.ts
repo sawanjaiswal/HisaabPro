@@ -170,6 +170,7 @@ async function createPartyFromBulk(data: BulkPartyData, signal: AbortSignal) {
       creditLimit: 0,
       creditLimitMode: 'WARN',
       addresses: [],
+      customFields: [],
     },
     signal,
   )

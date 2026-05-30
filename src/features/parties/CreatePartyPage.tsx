@@ -10,9 +10,10 @@ import { usePartyForm } from './usePartyForm'
 import { PartyFormBasic } from './components/PartyFormBasic'
 import { PartyFormBusiness } from './components/PartyFormBusiness'
 import { PartyFormCredit } from './components/PartyFormCredit'
+import { PartyFormCustomFields } from './components/PartyFormCustomFields'
 import './create-party.css'
 
-type SectionId = 'basic' | 'business' | 'credit'
+type SectionId = 'basic' | 'business' | 'credit' | 'custom'
 
 export default function CreatePartyPage() {
   const { t } = useLanguage()
@@ -21,6 +22,7 @@ export default function CreatePartyPage() {
     { id: 'basic', label: t.basicInfo },
     { id: 'business', label: t.business2 },
     { id: 'credit', label: t.credit },
+    { id: 'custom', label: t.customFields },
   ]
   const {
     form,
@@ -74,6 +76,9 @@ export default function CreatePartyPage() {
           )}
           {activeSection === 'credit' && (
             <PartyFormCredit form={form} errors={errors} onUpdate={updateField} />
+          )}
+          {activeSection === 'custom' && (
+            <PartyFormCustomFields form={form} onUpdate={updateField} />
           )}
         </div>
       </PageContainer>

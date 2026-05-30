@@ -595,6 +595,9 @@ export const en = {
   fieldNameRequired:            'Field name is required',
   dropdownNeedsOptions:         'Dropdown fields need at least one option',
   selectOption:                 'Select an option',
+  customFields:                 'Custom fields',
+  noCustomFields:               'No custom fields yet',
+  noCustomFieldsDescription:    'Add party-level fields like loyalty tier, route code, or referral source from Settings → Custom Fields',
 
   // Document conversion (#122)
   convertDocument:              'Convert document',
