@@ -23,6 +23,7 @@ import { VerticalPicker } from '@/features/onboarding/components/VerticalPicker'
 import {
   type BusinessType, getVerticalProfile, VERTICAL_PROFILES,
 } from '@/config/verticals.config'
+import { Input } from '@/components/ui/Input'
 
 interface DefaultsPreview {
   applied: boolean
@@ -135,7 +136,7 @@ export default function BusinessTypePage() {
                 marginTop: 'var(--space-3)', cursor: 'pointer',
                 fontSize: 'var(--fs-sm)', color: 'var(--color-gray-800)',
               }}>
-                <input
+                <Input
                   type="checkbox"
                   checked={applyDefaults}
                   onChange={(e) => setApplyDefaults(e.target.checked)}

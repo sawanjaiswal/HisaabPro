@@ -6,6 +6,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { getNextStatuses } from '../jobs.utils'
 import { useTransitionJob } from '../hooks/useTransitionJob'
 import type { JobStatus } from '../jobs.types'
+import { Input } from '@/components/ui/Input'
 
 interface JobStatusActionsProps {
   jobId: string
@@ -72,7 +73,7 @@ export function JobStatusActions({ jobId, jobTitle, currentStatus }: JobStatusAc
           <label style={{ fontSize: 'var(--fs-sm)', fontWeight: 500, color: 'var(--color-error-700)' }}>
             {t.jobCancelReasonLabel} *
           </label>
-          <input
+          <Input
             type="text"
             className="input"
             value={cancelReason}

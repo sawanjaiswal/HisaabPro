@@ -10,6 +10,7 @@ import { getUnits } from '@/features/products/unit.service'
 import { useDebounce } from '@/hooks/useDebounce'
 import type { BomComponentFormRow } from '../bom.types'
 import type { Unit } from '@/features/products/product.types'
+import { Input } from '@/components/ui/Input'
 
 interface BomComponentRowProps {
   row: BomComponentFormRow
@@ -59,7 +60,7 @@ export function BomComponentRow({
       {/* Product search */}
       <div className="bom-row__product input-group">
         <label className="input-label sr-only" htmlFor={`comp-product-${index}`}>Product</label>
-        <input
+        <Input
           id={`comp-product-${index}`}
           className={`input${errors?.productId ? ' input-error-border' : ''}`}
           value={query}
@@ -96,7 +97,7 @@ export function BomComponentRow({
       {/* Qty */}
       <div className="bom-row__qty input-group">
         <label className="input-label sr-only" htmlFor={`comp-qty-${index}`}>Qty</label>
-        <input
+        <Input
           id={`comp-qty-${index}`}
           className={`input${errors?.qty ? ' input-error-border' : ''}`}
           type="number"

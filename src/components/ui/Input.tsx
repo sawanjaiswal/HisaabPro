@@ -26,6 +26,18 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, icon, id, className, ...props }, ref) => {
     const inputId = id || label?.toLowerCase().replace(/\s+/g, '-')
 
+    // Naked mode: no label/error/icon — caller owns the layout.
+    if (!label && !error && !icon) {
+      return (
+        <input
+          ref={ref}
+          id={inputId}
+          className={cn('input', className)}
+          {...props}
+        />
+      )
+    }
+
     return (
       <div className={cn(inputGroupVariants({ error: !!error }), className)}>
         {label && (

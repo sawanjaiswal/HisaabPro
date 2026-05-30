@@ -6,6 +6,7 @@
  */
 
 import { Info } from 'lucide-react'
+import { Input } from '@/components/ui/Input'
 
 interface RcmToggleProps {
   checked: boolean
@@ -19,7 +20,7 @@ export function RcmToggle({ checked, supplyType, onChange }: RcmToggleProps) {
   return (
     <div className="rcm-toggle">
       <label className="rcm-label" htmlFor="rcm-checkbox">
-        <input
+        <Input
           id="rcm-checkbox"
           type="checkbox"
           className="rcm-checkbox"

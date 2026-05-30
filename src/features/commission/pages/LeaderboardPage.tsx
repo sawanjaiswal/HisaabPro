@@ -23,6 +23,7 @@ import { useLeaderboard } from '../hooks/useLeaderboard'
 import { LeaderboardTable } from '../components/LeaderboardTable'
 import { currentPeriodYearMonth, formatPeriodLabel } from '../commission.utils'
 import '@/styles/components.commission.css'
+import { Input } from '@/components/ui/Input'
 
 export default function LeaderboardPage() {
   const { t } = useLanguage()
@@ -43,7 +44,7 @@ export default function LeaderboardPage() {
             <Calendar size={14} aria-hidden="true" />
             {t.commissionLeaderboardPeriodLabel}
           </label>
-          <input
+          <Input
             id="commission-leaderboard-period"
             type="month"
             className="commission-leaderboard__period-input"

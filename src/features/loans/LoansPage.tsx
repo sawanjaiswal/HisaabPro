@@ -25,6 +25,7 @@ import type { Loan, LoanStatus, LoanType, CreateLoanInput } from './loan.types'
 import './loans.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate } from '../../lib/format'
+import { Input } from '@/components/ui/Input'
 
 // Status labels resolved via t at render time — see getLoanStatusLabel()
 function getLoanStatusLabel(status: LoanStatus, t: { activeLoan: string; closedLoan2: string; overdueLoan: string }): string {
@@ -178,26 +179,26 @@ export default function LoansPage() {
           <div className="loan-drawer__row py-0">
             <div className="loan-drawer__field py-0">
               <label className="loan-drawer__label py-0" htmlFor="loanPrincipal">{t.principalRs}</label>
-              <input id="loanPrincipal" type="number" min="1" step="0.01" required className="loan-drawer__input py-0" value={form.principalRupees} onChange={(e) => setForm((f) => ({ ...f, principalRupees: e.target.value }))} placeholder="0.00" />
+              <Input id="loanPrincipal" type="number" min="1" step="0.01" required className="loan-drawer__input py-0" value={form.principalRupees} onChange={(e) => setForm((f) => ({ ...f, principalRupees: e.target.value }))} placeholder="0.00" />
             </div>
             <div className="loan-drawer__field py-0">
               <label className="loan-drawer__label py-0" htmlFor="loanRate">{t.interestRatePercent}</label>
-              <input id="loanRate" type="number" min="0" step="0.01" className="loan-drawer__input py-0" value={form.interestRate} onChange={(e) => setForm((f) => ({ ...f, interestRate: e.target.value }))} placeholder="e.g. 12.5" />
+              <Input id="loanRate" type="number" min="0" step="0.01" className="loan-drawer__input py-0" value={form.interestRate} onChange={(e) => setForm((f) => ({ ...f, interestRate: e.target.value }))} placeholder="e.g. 12.5" />
             </div>
           </div>
           <div className="loan-drawer__row py-0">
             <div className="loan-drawer__field py-0">
               <label className="loan-drawer__label py-0" htmlFor="loanStart">{t.dateLabel}</label>
-              <input id="loanStart" type="date" required className="loan-drawer__input py-0" value={form.startDate} onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))} />
+              <Input id="loanStart" type="date" required className="loan-drawer__input py-0" value={form.startDate} onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))} />
             </div>
             <div className="loan-drawer__field py-0">
               <label className="loan-drawer__label py-0" htmlFor="loanEmi">{t.emiRsOptional}</label>
-              <input id="loanEmi" type="number" min="0" step="0.01" className="loan-drawer__input py-0" value={form.emiRupees} onChange={(e) => setForm((f) => ({ ...f, emiRupees: e.target.value }))} placeholder={t.emiMonthlyPlaceholder} />
+              <Input id="loanEmi" type="number" min="0" step="0.01" className="loan-drawer__input py-0" value={form.emiRupees} onChange={(e) => setForm((f) => ({ ...f, emiRupees: e.target.value }))} placeholder={t.emiMonthlyPlaceholder} />
             </div>
           </div>
           <div className="loan-drawer__field py-0">
             <label className="loan-drawer__label py-0" htmlFor="loanNotes">{t.notesOptional}</label>
-            <input id="loanNotes" className="loan-drawer__input py-0" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder={t.loanNotesPlaceholder} />
+            <Input id="loanNotes" className="loan-drawer__input py-0" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder={t.loanNotesPlaceholder} />
           </div>
           <button type="submit" className="loan-drawer__submit-btn py-0" disabled={submitting} aria-busy={submitting}>
             {submitting ? t.loading : t.addFirstLoan}

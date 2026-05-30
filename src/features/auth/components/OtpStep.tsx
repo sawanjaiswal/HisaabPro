@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react'
 import { Button } from '../../../components/ui/Button'
 import { OTP_LENGTH } from '../auth.constants'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Input } from '@/components/ui/Input'
 
 interface OtpStepProps {
   phone: string
@@ -93,7 +94,7 @@ export function OtpStep({
 
       <div className="auth-otp__inputs" onPaste={handlePaste}>
         {Array.from({ length: OTP_LENGTH }, (_, i) => (
-          <input
+          <Input
             key={i}
             ref={(el) => { inputRefs.current[i] = el }}
             type="text"

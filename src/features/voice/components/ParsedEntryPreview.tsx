@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button'
 import { Select, SelectItem } from '@/components/ui/Select'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { ParsedVoiceEntry, VoiceIntent, VoicePaymentMode } from '../voice.types'
+import { Input } from '@/components/ui/Input'
 
 const PAYMENT_MODES: VoicePaymentMode[] = ['CASH', 'UPI', 'BANK_TRANSFER', 'CHEQUE', 'CARD']
 const PAYMENT_LABELS: Record<VoicePaymentMode, string> = {
@@ -45,7 +46,7 @@ export function ParsedEntryPreview({ draft, onChange, onConfirm, onCancel, savin
 
       <div className="voice-preview__field">
         <label className="voice-preview__label" htmlFor="voiceAmount">{t.amountRsLabel}</label>
-        <input
+        <Input
           id="voiceAmount" type="number" min="0.01" step="0.01" inputMode="decimal"
           className="voice-preview__input" placeholder="0.00" value={amountRupees}
           onKeyDown={(e) => { if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault() }}
@@ -59,7 +60,7 @@ export function ParsedEntryPreview({ draft, onChange, onConfirm, onCancel, savin
       {draft.intent === 'income' && (
         <div className="voice-preview__field">
           <label className="voice-preview__label" htmlFor="voiceCategory">{t.categoryLabel}</label>
-          <input
+          <Input
             id="voiceCategory" className="voice-preview__input" value={draft.category ?? ''}
             placeholder="e.g. Interest, Rental"
             onChange={(e) => onChange({ category: e.target.value || null })}
@@ -80,7 +81,7 @@ export function ParsedEntryPreview({ draft, onChange, onConfirm, onCancel, savin
 
       <div className="voice-preview__field">
         <label className="voice-preview__label" htmlFor="voiceDate">{t.dateLabel}</label>
-        <input
+        <Input
           id="voiceDate" type="date" className="voice-preview__input" value={draft.dateISO}
           onChange={(e) => onChange({ dateISO: e.target.value })}
         />
@@ -88,7 +89,7 @@ export function ParsedEntryPreview({ draft, onChange, onConfirm, onCancel, savin
 
       <div className="voice-preview__field">
         <label className="voice-preview__label" htmlFor="voiceNotes">{t.notesOptional}</label>
-        <input
+        <Input
           id="voiceNotes" className="voice-preview__input" value={draft.notes}
           onChange={(e) => onChange({ notes: e.target.value })}
         />

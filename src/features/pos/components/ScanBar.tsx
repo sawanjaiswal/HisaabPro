@@ -7,6 +7,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { useBarcodeLookup } from '../useBarcodeLookup'
 
 import type { QuickProduct } from '../pos.types'
+import { Input } from '@/components/ui/Input'
 
 interface ScanBarProps {
   onProductFound: (product: QuickProduct) => void
@@ -30,7 +31,7 @@ export function ScanBar({ onProductFound }: ScanBarProps) {
           ) : (
             <Search size={18} className="pos-scan-icon" aria-hidden="true" />
           )}
-          <input
+          <Input
             ref={inputRef}
             className="pos-scan-input"
             type="text"

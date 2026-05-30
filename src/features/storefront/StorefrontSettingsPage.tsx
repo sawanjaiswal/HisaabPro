@@ -20,6 +20,7 @@ import { validateSlugLocal } from './slug-rules'
 import type { SlugError } from './storefront.types'
 import './storefront-settings.css'
 import { Textarea } from '@/components/ui/Textarea'
+import { Input } from '@/components/ui/Input'
 
 const STORE_BASE_URL = 'hisaabpro.in/p/store/'
 
@@ -145,7 +146,7 @@ export default function StorefrontSettingsPage() {
             <div>
               <label htmlFor="sf-slug" className="sf-label">Store URL slug *</label>
               <div className={`sf-slug-input-wrap${activeErr ? ' sf-slug-input-wrap--error' : ''}`}>
-                <input
+                <Input
                   id="sf-slug" type="text" value={slug}
                   onChange={e => handleSlugChange(e.target.value)}
                   placeholder="your-store-name" autoComplete="off"
@@ -185,7 +186,7 @@ export default function StorefrontSettingsPage() {
                 </p>
               </div>
               <label className="sf-toggle" aria-label="Toggle public store">
-                <input type="checkbox" checked={isPublic} onChange={e => setIsPublic(e.target.checked)} />
+                <Input type="checkbox" checked={isPublic} onChange={e => setIsPublic(e.target.checked)} />
                 <span className="sf-toggle__track" /><span className="sf-toggle__thumb" />
               </label>
             </div>
@@ -210,7 +211,7 @@ export default function StorefrontSettingsPage() {
 
             <div>
               <label htmlFor="sf-whatsapp" className="sf-label">WhatsApp number (optional)</label>
-              <input
+              <Input
                 id="sf-whatsapp" type="tel" className="sf-input" value={whatsapp}
                 onChange={e => setWhatsapp(e.target.value)}
                 placeholder="+919876543210" inputMode="tel"

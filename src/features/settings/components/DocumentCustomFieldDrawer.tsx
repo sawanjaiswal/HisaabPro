@@ -184,7 +184,7 @@ export function DocumentCustomFieldDrawer({ open, onClose, editing, onCreate, on
           </span>
           <span className="settings-item-action">
             <span className="settings-toggle">
-              <input
+              <Input
                 type="checkbox"
                 checked={required}
                 onChange={(e) => setRequired(e.target.checked)}

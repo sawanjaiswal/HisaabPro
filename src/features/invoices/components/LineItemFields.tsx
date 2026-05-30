@@ -7,6 +7,7 @@ import { paiseToRupees, rupeesToPaise } from '../invoice-format.utils'
 import { DISCOUNT_TYPE_LABELS } from '../invoice.constants'
 import { PriceSourceHint } from '@/features/price-lists/PriceSourceHint'
 import type { PriceResolverResult } from '@/features/price-lists/pricing-resolver'
+import { Input } from '@/components/ui/Input'
 
 const DISCOUNT_TYPES: DiscountType[] = ['AMOUNT', 'PERCENTAGE']
 
@@ -74,7 +75,7 @@ export const LineItemFields: React.FC<LineItemFieldsProps> = ({
     <div className="line-item-fields">
       <div className="line-item-field">
         <label className="line-item-field-label" htmlFor={`line-qty-${index}`}>{t.qty}</label>
-        <input
+        <Input
           id={`line-qty-${index}`}
           type="number"
           className="input"
@@ -88,7 +89,7 @@ export const LineItemFields: React.FC<LineItemFieldsProps> = ({
 
       <div className="line-item-field">
         <label className="line-item-field-label" htmlFor={`line-rate-${index}`}>{t.rateRs}</label>
-        <input
+        <Input
           id={`line-rate-${index}`}
           type="number"
           className="input"
@@ -127,7 +128,7 @@ export const LineItemFields: React.FC<LineItemFieldsProps> = ({
               </button>
             ))}
           </div>
-          <input
+          <Input
             id={`line-discount-${index}`}
             type="number"
             className="input"

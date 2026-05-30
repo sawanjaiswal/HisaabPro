@@ -201,7 +201,7 @@ export function CommissionRuleForm({ rule, onDone }: CommissionRuleFormProps) {
         <span className="commission-rule-form__toggle-label">
           {t.commissionRuleActiveLabel}
         </span>
-        <input
+        <Input
           type="checkbox"
           aria-label={t.commissionRuleActiveLabel}
           checked={form.isActive}

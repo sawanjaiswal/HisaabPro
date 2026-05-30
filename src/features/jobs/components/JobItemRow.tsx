@@ -3,6 +3,7 @@
 import { Trash2 } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { CreateJobItemInput } from '../api/jobs.api.types'
+import { Input } from '@/components/ui/Input'
 
 export interface JobFormItem extends CreateJobItemInput {
   _key: string
@@ -57,7 +58,7 @@ export function JobItemRow({ item, index, canRemove, onUpdate, onRemove }: JobIt
         })}
       </div>
 
-      <input
+      <Input
         type="text"
         className="input"
         value={item.description}
@@ -70,7 +71,7 @@ export function JobItemRow({ item, index, canRemove, onUpdate, onRemove }: JobIt
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-2)' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <label style={labelStyle}>{isHourly ? t.jobItemHoursLabel : t.jobItemQtyLabel}</label>
-          <input
+          <Input
             type="number"
             className="input"
             value={item.quantity}
@@ -82,7 +83,7 @@ export function JobItemRow({ item, index, canRemove, onUpdate, onRemove }: JobIt
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <label style={labelStyle}>{isHourly ? t.jobItemRatePerHrLabel : t.jobItemRateLabel}</label>
-          <input
+          <Input
             type="number"
             className="input"
             value={item.ratePaise / 100}
@@ -94,7 +95,7 @@ export function JobItemRow({ item, index, canRemove, onUpdate, onRemove }: JobIt
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <label style={labelStyle}>{t.jobItemDiscountLabel}</label>
-          <input
+          <Input
             type="number"
             className="input"
             value={(item.discountPaise ?? 0) / 100}

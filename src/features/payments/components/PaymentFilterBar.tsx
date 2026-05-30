@@ -5,6 +5,7 @@ import { Search } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PaymentType, PaymentMode } from '../payment.types'
 import { PAYMENT_TYPE_LABELS, PAYMENT_MODE_LABELS } from '../payment.constants'
+import { Input } from '@/components/ui/Input'
 
 interface PaymentFilterBarProps {
   search: string
@@ -40,7 +41,7 @@ export const PaymentFilterBar: React.FC<PaymentFilterBarProps> = ({
     <div className="payment-filter-bar">
       <div className="search-bar">
         <Search size={18} aria-hidden="true" />
-        <input
+        <Input
           type="search"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}

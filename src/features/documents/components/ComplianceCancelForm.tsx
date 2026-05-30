@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
 
 interface ComplianceCancelFormProps {
   title: string
@@ -44,7 +45,7 @@ export const ComplianceCancelForm: React.FC<ComplianceCancelFormProps> = ({
       {actionError && <p className="compliance-inline-error" role="alert">{actionError}</p>}
       <div className="input-group">
         <label className="input-label" htmlFor="cancel-reason-input">{t.cancellationReason}</label>
-        <input
+        <Input
           id="cancel-reason-input"
           className="input"
           type="text"

@@ -13,6 +13,7 @@ import {
   formatTime,
 } from './forgot-password.utils'
 import './LoginPage.css'
+import { Input } from '@/components/ui/Input'
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate()
@@ -144,7 +145,7 @@ export default function ForgotPasswordPage() {
             <form className="login-page__form" onSubmit={(e) => { e.preventDefault(); if (phoneRegex.test(phone) && !loading) handleSendOtp() }}>
               <div className="login-page__field">
                 <label className="login-page__label" htmlFor="phone">Registered Mobile Number</label>
-                <input
+                <Input
                   id="phone"
                   type="tel"
                   inputMode="numeric"
@@ -178,7 +179,7 @@ export default function ForgotPasswordPage() {
                 onPaste={handlePaste}
               >
                 {otp.map((digit, i) => (
-                  <input
+                  <Input
                     key={i}
                     ref={(el) => { inputRefs.current[i] = el }}
                     type="text"
@@ -195,11 +196,11 @@ export default function ForgotPasswordPage() {
               </div>
               <div className="login-page__field" style={{ marginTop: 'var(--space-2)' }}>
                 <label className="login-page__label" htmlFor="newPassword">New Password</label>
-                <input id="newPassword" type="password" className="login-page__input" placeholder="At least 6 characters" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} autoComplete="new-password" />
+                <Input id="newPassword" type="password" className="login-page__input" placeholder="At least 6 characters" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} autoComplete="new-password" />
               </div>
               <div className="login-page__field">
                 <label className="login-page__label" htmlFor="confirmPassword">Confirm Password</label>
-                <input id="confirmPassword" type="password" className="login-page__input" placeholder="Repeat password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="new-password" />
+                <Input id="confirmPassword" type="password" className="login-page__input" placeholder="Repeat password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="new-password" />
               </div>
               {error && <p className="auth-otp__error">{error}</p>}
               <div className="auth-otp__resend">

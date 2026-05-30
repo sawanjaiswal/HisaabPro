@@ -4,6 +4,7 @@ import React from 'react'
 import { Search, AlertTriangle } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { PREDEFINED_CATEGORIES } from '../product.constants'
+import { Input } from '@/components/ui/Input'
 
 interface ProductFilterBarProps {
   search: string
@@ -30,7 +31,7 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
     <div className="product-filter-bar">
       <div className="search-bar">
         <Search size={18} aria-hidden="true" />
-        <input
+        <Input
           type="search"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}

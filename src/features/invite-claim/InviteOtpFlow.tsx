@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, KeyboardEvent, ClipboardEvent } from 'react'
 import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
 
 interface InviteOtpFlowStrings {
   inviteOtpTitle:     string
@@ -121,7 +122,7 @@ export function InviteOtpFlow({ s, maskedPhone, onSendOtp, onVerifyOtp, onClaim 
       <fieldset className="inv-otp-group" aria-label={s.inviteOtpCodeLabel}>
         <legend className="sr-only">{s.inviteOtpCodeLabel}</legend>
         {digits.map((d, i) => (
-          <input
+          <Input
             key={i}
             ref={(el) => { inputRefs.current[i] = el }}
             type="text"

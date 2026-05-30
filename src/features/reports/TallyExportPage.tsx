@@ -10,6 +10,7 @@ import { ROUTES } from '@/config/routes.config'
 import { exportTally } from './finance.service'
 import './report-finance.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Input } from '@/components/ui/Input'
 
 function getFYRange(): { from: string; to: string } {
   const now = new Date()
@@ -65,9 +66,9 @@ export default function TallyExportPage() {
             </p>
             <div className="finance-date-bar">
               <span className="finance-date-bar__label">{t.from}</span>
-              <input type="date" className="finance-date-bar__input" value={dateRange.from} onChange={(e) => setDateRange((r) => ({ ...r, from: e.target.value }))} aria-label={t.fromDate} />
+              <Input type="date" className="finance-date-bar__input" value={dateRange.from} onChange={(e) => setDateRange((r) => ({ ...r, from: e.target.value }))} aria-label={t.fromDate} />
               <span className="finance-date-bar__label">{t.to}</span>
-              <input type="date" className="finance-date-bar__input" value={dateRange.to} onChange={(e) => setDateRange((r) => ({ ...r, to: e.target.value }))} aria-label={t.toDate} />
+              <Input type="date" className="finance-date-bar__input" value={dateRange.to} onChange={(e) => setDateRange((r) => ({ ...r, to: e.target.value }))} aria-label={t.toDate} />
             </div>
             <button
               type="button"

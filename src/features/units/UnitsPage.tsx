@@ -25,6 +25,7 @@ import type { Unit } from './unit.types'
 import './units.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
 
 export default function UnitsPage() {
   const { t } = useLanguage()
@@ -129,7 +130,7 @@ export default function UnitsPage() {
             {activeTab === 'units' && (
               <>
                 {/* Search */}
-                <input
+                <Input
                   type="search"
                   className="input unit-search"
                   placeholder={t.search}

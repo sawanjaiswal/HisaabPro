@@ -6,6 +6,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate } from '@/lib/format'
 import { FREQUENCY_LABELS } from '../recurring.constants'
 import type { RecurringFrequency, CreateRecurringInput } from '../recurring.types'
+import { Input } from '@/components/ui/Input'
 
 interface RecurringCreateDrawerProps {
   open: boolean
@@ -133,7 +134,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
           <label htmlFor="rcd-template" className="recurring-drawer__label py-0">
             {t.templateDocId}
           </label>
-          <input
+          <Input
             id="rcd-template"
             type="text"
             className="recurring-drawer__input py-0"
@@ -167,7 +168,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
             <label htmlFor="rcd-dom" className="recurring-drawer__label py-0">
               {t.dayOfMonthLabel}
             </label>
-            <input
+            <Input
               id="rcd-dom"
               type="number"
               className="recurring-drawer__input py-0"
@@ -203,7 +204,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
             <label htmlFor="rcd-start" className="recurring-drawer__label py-0">
               {t.startDateLabel}
             </label>
-            <input
+            <Input
               id="rcd-start"
               type="date"
               className="recurring-drawer__input py-0"
@@ -216,7 +217,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
             <label htmlFor="rcd-end" className="recurring-drawer__label py-0">
               {t.endDateOptional}
             </label>
-            <input
+            <Input
               id="rcd-end"
               type="date"
               className="recurring-drawer__input py-0"
@@ -228,7 +229,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
         </div>
 
         <label className="recurring-drawer__toggle py-0">
-          <input
+          <Input
             type="checkbox"
             checked={autoSend}
             onChange={(e) => setAutoSend(e.target.checked)}

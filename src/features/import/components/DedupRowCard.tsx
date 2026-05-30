@@ -21,6 +21,7 @@ import {
 import { DEDUP_DECISIONS } from '../constants/dedup.constants'
 import type { DedupDecision } from '../types/dedup.types'
 import type { DedupRowWithMeta } from '../hooks/useDedupState'
+import { Input } from '@/components/ui/Input'
 
 interface DedupRowCardProps {
   item: DedupRowWithMeta
@@ -98,7 +99,7 @@ export function DedupRowCard({ item, decision, onChange, t }: DedupRowCardProps)
             className="inline-flex items-center gap-2 min-h-[44px] cursor-pointer"
             style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-primary)' }}
           >
-            <input
+            <Input
               type="radio"
               name={`dedup-${row.id}`}
               value={d}

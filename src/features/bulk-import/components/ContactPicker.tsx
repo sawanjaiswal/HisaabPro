@@ -5,6 +5,7 @@ import { Users, FileSpreadsheet } from 'lucide-react'
 import { HAS_CONTACT_PICKER, CSV_ACCEPT } from '../bulk-import.constants'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
 
 interface ContactPickerProps {
   onPickContacts: () => void
@@ -62,7 +63,7 @@ export function ContactPicker({ onPickContacts, onImportCsv }: ContactPickerProp
           : 'Upload a CSV file with "name" and "phone" columns'}
       </p>
 
-      <input
+      <Input
         ref={fileRef}
         type="file"
         accept={CSV_ACCEPT}

@@ -16,6 +16,7 @@ import './report-shared.css'
 import './report-shared-ui.css'
 import './report-tax.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Input } from '@/components/ui/Input'
 
 export default function TaxSummaryPage() {
   const { t } = useLanguage()
@@ -62,7 +63,7 @@ export default function TaxSummaryPage() {
       <PageContainer variant="list" className="space-y-6">
         {/* Date range inputs */}
         <div className="tax-date-row fade-up">
-          <input
+          <Input
             type="date"
             className="tax-date-input"
             value={filters.from}
@@ -70,7 +71,7 @@ export default function TaxSummaryPage() {
             aria-label={t.fromDate}
             onChange={(e) => setFilters({ ...filters, from: e.target.value })}
           />
-          <input
+          <Input
             type="date"
             className="tax-date-input"
             value={filters.to}

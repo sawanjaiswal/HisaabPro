@@ -15,6 +15,7 @@ import { useDocumentSettings } from './useDocumentSettings'
 import { UpiIdInput } from './components/UpiIdInput'
 import './settings-toggle.css'
 import './settings.css'
+import { Input } from '@/components/ui/Input'
 
 interface BusinessVpaResponse {
   upiVpa: string | null
@@ -77,7 +78,7 @@ export default function DocumentSettingsPage() {
               </span>
               <span className="settings-item-action">
                 <span className="settings-toggle">
-                  <input
+                  <Input
                     type="checkbox"
                     checked={settings.enforceMoq ?? false}
                     onChange={(e) => updateField('enforceMoq', e.target.checked)}
@@ -96,7 +97,7 @@ export default function DocumentSettingsPage() {
               </span>
               <span className="settings-item-action">
                 <span className="settings-toggle">
-                  <input
+                  <Input
                     type="checkbox"
                     checked={settings.showLineItemImages ?? false}
                     onChange={(e) => updateField('showLineItemImages', e.target.checked)}

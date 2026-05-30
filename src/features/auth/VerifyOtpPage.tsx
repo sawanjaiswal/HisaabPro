@@ -1,6 +1,7 @@
 import { SEO } from '../../components/layout/SEO'
 import { useVerifyOtp } from './useVerifyOtp'
 import './LoginPage.css'
+import { Input } from '@/components/ui/Input'
 
 export default function VerifyOtpPage() {
   const {
@@ -31,7 +32,7 @@ export default function VerifyOtpPage() {
             onPaste={handlePaste}
           >
             {otp.map((digit, i) => (
-              <input
+              <Input
                 key={i}
                 ref={(el) => { inputRefs.current[i] = el }}
                 type="text"

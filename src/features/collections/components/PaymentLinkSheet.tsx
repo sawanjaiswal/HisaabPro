@@ -12,6 +12,7 @@ import { Drawer } from '@/components/ui/Drawer'
 import { useToast } from '@/hooks/useToast'
 import { useCreatePaymentLink, usePaymentLinks } from '../usePaymentLink'
 import { formatPaise } from '@/lib/format'
+import { Input } from '@/components/ui/Input'
 
 interface PaymentLinkSheetProps {
   open: boolean
@@ -137,7 +138,7 @@ export function PaymentLinkSheet({
             </div>
 
             {/* Full URL for copy */}
-            <input
+            <Input
               readOnly
               value={currentLink.shortUrl ?? ''}
               aria-label="Payment link URL"

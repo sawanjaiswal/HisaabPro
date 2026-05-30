@@ -3,6 +3,7 @@
 import { useLanguage } from '@/hooks/useLanguage'
 import { ChannelToggle } from './ChannelToggle'
 import type { MarketingChannel } from '../marketing.types'
+import { Input } from '@/components/ui/Input'
 
 interface Props {
   name: string
@@ -17,7 +18,7 @@ export function CampaignWizardStep1Channel({ name, channel, onNameChange, onChan
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <div>
         <label htmlFor="campaign-name" style={labelStyle}>{t.marketingCampaignName} *</label>
-        <input
+        <Input
           id="campaign-name"
           type="text"
           value={name}

@@ -13,6 +13,7 @@ import { LibraryItemList } from './components/LibraryItemList'
 import type { LibraryItem } from './items-library.types'
 import './items-library.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Input } from '@/components/ui/Input'
 
 export default function ItemsLibraryPage() {
   const { t } = useLanguage()
@@ -41,7 +42,7 @@ export default function ItemsLibraryPage() {
       <PageContainer variant="list" className="space-y-6">
         <div className="library-search fade-up">
           <Search size={18} className="library-search-icon" aria-hidden="true" />
-          <input
+          <Input
             type="text"
             className="library-search-input"
             placeholder={t.searchItemsLibrary}

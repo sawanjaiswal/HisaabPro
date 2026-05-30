@@ -7,6 +7,7 @@
 import { Plus } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { AdditionalChargeFormData } from '../invoice.types'
+import { Input } from '@/components/ui/Input'
 
 interface InvoiceChargesSectionProps {
   charges: AdditionalChargeFormData[]
@@ -26,7 +27,7 @@ export function InvoiceChargesSection({
     <div className="charges-section py-0">
       {charges.map((charge, index) => (
         <div key={`charge-${charge.name || index}`} className="charge-row">
-          <input
+          <Input
             type="text"
             className="input min-h-[44px] flex-1"
             placeholder={t.chargeNamePlaceholder}
@@ -34,7 +35,7 @@ export function InvoiceChargesSection({
             onChange={(e) => onUpdateCharge(index, { name: e.target.value })}
             aria-label={`Charge ${index + 1} name`}
           />
-          <input
+          <Input
             type="number"
             className="input min-h-[44px] w-[100px]"
             placeholder={t.amount}

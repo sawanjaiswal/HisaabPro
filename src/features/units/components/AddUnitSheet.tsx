@@ -8,6 +8,7 @@ import { validateUnitName, validateUnitSymbol } from '../unit.utils'
 import { UNIT_NAME_MAX, UNIT_SYMBOL_MAX } from '../unit.constants'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
 
 interface AddUnitSheetProps {
   open: boolean
@@ -84,7 +85,7 @@ export function AddUnitSheet({ open, onClose, onSave, onUpdate, editUnit }: AddU
       <div className="unit-sheet-form">
         <div className="line-item-field">
           <label className="label" htmlFor="unit-name">{t.unitNameLabel}</label>
-          <input
+          <Input
             id="unit-name"
             type="text"
             className={`input${errors.name ? ' input--error' : ''}`}
@@ -103,7 +104,7 @@ export function AddUnitSheet({ open, onClose, onSave, onUpdate, editUnit }: AddU
 
         <div className="line-item-field">
           <label className="label" htmlFor="unit-symbol">{t.symbolLabel}</label>
-          <input
+          <Input
             id="unit-symbol"
             type="text"
             className={`input${errors.symbol ? ' input--error' : ''}`}

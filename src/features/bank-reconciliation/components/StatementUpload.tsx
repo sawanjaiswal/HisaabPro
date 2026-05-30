@@ -8,6 +8,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { useBankAccounts } from '@/features/bank-accounts/useBankAccounts'
 import { parseStatementCsv } from '../bank-reconciliation.utils'
 import type { ParsedCsvRow } from '../bank-reconciliation.types'
+import { Input } from '@/components/ui/Input'
 
 interface Props {
   onImport: (bankAccountId: string, fileName: string, rows: ParsedCsvRow[]) => void
@@ -77,7 +78,7 @@ export function StatementUpload({ onImport, isImporting }: Props) {
 
       <p className="recon-upload__csv-hint">{t.bankReconCsvHint}</p>
 
-      <input
+      <Input
         ref={fileRef}
         type="file"
         accept=".csv,text/csv"

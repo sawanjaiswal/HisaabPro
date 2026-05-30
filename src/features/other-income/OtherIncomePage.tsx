@@ -23,6 +23,7 @@ import type { OtherIncome, OtherIncomePaymentMode, CreateOtherIncomeInput } from
 import './other-income.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate } from '../../lib/format'
+import { Input } from '@/components/ui/Input'
 
 const PAGE_LIMIT = 20
 
@@ -162,17 +163,17 @@ export default function OtherIncomePage() {
           {formError && <p className="income-drawer__error py-0" role="alert">{formError}</p>}
           <div className="income-drawer__field py-0">
             <label className="income-drawer__label py-0" htmlFor="incCategory">{t.categoryLabel}</label>
-            <input id="incCategory" className="income-drawer__input py-0" list="income-categories" value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} placeholder="e.g. Interest, Rental" />
+            <Input id="incCategory" className="income-drawer__input py-0" list="income-categories" value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} placeholder="e.g. Interest, Rental" />
             <datalist id="income-categories">{COMMON_CATEGORIES.map((c) => <option key={c} value={c} />)}</datalist>
           </div>
           <div className="income-drawer__row py-0">
             <div className="income-drawer__field py-0">
               <label className="income-drawer__label py-0" htmlFor="incAmount">{t.amountRsLabel}</label>
-              <input id="incAmount" type="number" min="0.01" step="0.01" required className="income-drawer__input py-0" value={form.amountRupees} onChange={(e) => setForm((f) => ({ ...f, amountRupees: e.target.value }))} placeholder="0.00" />
+              <Input id="incAmount" type="number" min="0.01" step="0.01" required className="income-drawer__input py-0" value={form.amountRupees} onChange={(e) => setForm((f) => ({ ...f, amountRupees: e.target.value }))} placeholder="0.00" />
             </div>
             <div className="income-drawer__field py-0">
               <label className="income-drawer__label py-0" htmlFor="incDate">{t.dateLabel}</label>
-              <input id="incDate" type="date" required className="income-drawer__input py-0" value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
+              <Input id="incDate" type="date" required className="income-drawer__input py-0" value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
             </div>
           </div>
           <div className="income-drawer__field py-0">
@@ -187,7 +188,7 @@ export default function OtherIncomePage() {
           </div>
           <div className="income-drawer__field py-0">
             <label className="income-drawer__label py-0" htmlFor="incNotes">{t.notesOptional}</label>
-            <input id="incNotes" className="income-drawer__input py-0" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder={t.incomeNotesPlaceholder} />
+            <Input id="incNotes" className="income-drawer__input py-0" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder={t.incomeNotesPlaceholder} />
           </div>
           <button type="submit" className="income-drawer__submit-btn py-0" disabled={submitting} aria-busy={submitting}>
             {submitting ? t.loading : t.recordIncome}

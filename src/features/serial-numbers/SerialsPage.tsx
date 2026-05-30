@@ -15,6 +15,7 @@ import type { SerialStatus } from './serial-number.types'
 import './serial-numbers.css'
 import { Button } from '@/components/ui/Button'
 import { Select, SelectItem } from '@/components/ui/Select'
+import { Input } from '@/components/ui/Input'
 
 export default function SerialsPage() {
   const { t } = useLanguage()
@@ -39,7 +40,7 @@ export default function SerialsPage() {
         <div className="serial-filter-bar">
           <div className="serial-search">
             <Search size={16} aria-hidden="true" className="serial-search__icon" />
-            <input
+            <Input
               type="search"
               className="serial-search__input"
               placeholder={t.searchSerialsPlaceholder}

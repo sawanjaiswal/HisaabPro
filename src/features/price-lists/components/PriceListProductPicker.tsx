@@ -7,6 +7,7 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { getProducts } from '@/lib/services/product.service'
 import { formatPaise } from '@/lib/format'
 import type { ProductSummary } from '@/lib/types/product.types'
+import { Input } from '@/components/ui/Input'
 
 export interface SelectedProduct { id: string; name: string; salePrice: number }
 
@@ -93,7 +94,7 @@ export const PriceListProductPicker: React.FC<Props> = ({
     <div className="pl-product-picker" ref={containerRef}>
       <div className="product-search-input-wrap">
         <Search className="product-search-icon" size={16} aria-hidden="true" />
-        <input
+        <Input
           ref={inputRef} type="text"
           className={`input product-search-field${error ? ' input--error' : ''}`}
           placeholder={t.plEntryProductSearch} value={query}

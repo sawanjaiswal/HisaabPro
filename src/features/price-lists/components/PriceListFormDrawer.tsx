@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { Drawer } from '@/components/ui/Drawer'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PriceList, PriceListFormData } from '../price-list.types'
+import { Input } from '@/components/ui/Input'
 
 interface PriceListFormDrawerProps {
   open: boolean
@@ -70,7 +71,7 @@ export function PriceListFormDrawer({
       <form id="pl-form" className="pl-form" onSubmit={handleSubmit} noValidate>
         <div className="pl-form__field">
           <label htmlFor="pl-name" className="pl-form__label">{t.plNameLabel}</label>
-          <input
+          <Input
             id="pl-name"
             type="text"
             className={`input${error ? ' input--error' : ''}`}
@@ -93,7 +94,7 @@ export function PriceListFormDrawer({
             <p className="pl-form__toggle-desc">{t.plSetDefaultDesc}</p>
           </div>
           <label className="pl-toggle" aria-label={t.plSetDefault}>
-            <input
+            <Input
               type="checkbox"
               checked={isDefault}
               onChange={(e) => setIsDefault(e.target.checked)}

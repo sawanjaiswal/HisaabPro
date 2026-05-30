@@ -23,6 +23,7 @@ import { createBankAccount } from './bank-account.service'
 import type { BankAccount, BankAccountType, CreateBankAccountInput } from './bank-account.types'
 import './bank-accounts.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Input } from '@/components/ui/Input'
 
 // Labels are resolved via t.savings, t.current, t.overdraft, t.bankAccountTypeCash at render time
 function getAccountTypeLabel(type: BankAccountType, t: { savings: string; current: string; overdraft: string; bankAccountTypeCash: string }): string {
@@ -158,12 +159,12 @@ export default function BankAccountsPage() {
           {formError && <p className="bank-drawer__error py-0" role="alert">{formError}</p>}
           <div className="bank-drawer__field py-0">
             <label className="bank-drawer__label py-0" htmlFor="bankName">{t.bankNameLabel2}</label>
-            <input id="bankName" className="bank-drawer__input py-0" required value={form.bankName} onChange={(e) => setForm((f) => ({ ...f, bankName: e.target.value }))} placeholder="e.g. SBI, HDFC" />
+            <Input id="bankName" className="bank-drawer__input py-0" required value={form.bankName} onChange={(e) => setForm((f) => ({ ...f, bankName: e.target.value }))} placeholder="e.g. SBI, HDFC" />
           </div>
           <div className="bank-drawer__row py-0">
             <div className="bank-drawer__field py-0">
               <label className="bank-drawer__label py-0" htmlFor="accountNumber">{t.accountNumberLabel}</label>
-              <input id="accountNumber" className="bank-drawer__input py-0" required value={form.accountNumber} onChange={(e) => setForm((f) => ({ ...f, accountNumber: e.target.value }))} placeholder="Account no." />
+              <Input id="accountNumber" className="bank-drawer__input py-0" required value={form.accountNumber} onChange={(e) => setForm((f) => ({ ...f, accountNumber: e.target.value }))} placeholder="Account no." />
             </div>
             <div className="bank-drawer__field py-0">
               <label className="bank-drawer__label py-0" htmlFor="accountType">{t.typeLabel}</label>
@@ -180,20 +181,20 @@ export default function BankAccountsPage() {
           </div>
           <div className="bank-drawer__field py-0">
             <label className="bank-drawer__label py-0" htmlFor="accountHolder">{t.accountHolderName}</label>
-            <input id="accountHolder" className="bank-drawer__input py-0" required value={form.accountHolderName} onChange={(e) => setForm((f) => ({ ...f, accountHolderName: e.target.value }))} />
+            <Input id="accountHolder" className="bank-drawer__input py-0" required value={form.accountHolderName} onChange={(e) => setForm((f) => ({ ...f, accountHolderName: e.target.value }))} />
           </div>
           <div className="bank-drawer__row py-0">
             <div className="bank-drawer__field py-0">
               <label className="bank-drawer__label py-0" htmlFor="ifscCode">{t.ifscCode}</label>
-              <input id="ifscCode" className="bank-drawer__input py-0" value={form.ifscCode ?? ''} onChange={(e) => setForm((f) => ({ ...f, ifscCode: e.target.value }))} placeholder="e.g. SBIN0001234" />
+              <Input id="ifscCode" className="bank-drawer__input py-0" value={form.ifscCode ?? ''} onChange={(e) => setForm((f) => ({ ...f, ifscCode: e.target.value }))} placeholder="e.g. SBIN0001234" />
             </div>
             <div className="bank-drawer__field py-0">
               <label className="bank-drawer__label py-0" htmlFor="openingBalance">{t.openingBalanceRs}</label>
-              <input id="openingBalance" type="number" min="0" step="0.01" className="bank-drawer__input py-0" value={form.openingBalance ?? 0} onChange={(e) => setForm((f) => ({ ...f, openingBalance: parseFloat(e.target.value) || 0 }))} />
+              <Input id="openingBalance" type="number" min="0" step="0.01" className="bank-drawer__input py-0" value={form.openingBalance ?? 0} onChange={(e) => setForm((f) => ({ ...f, openingBalance: parseFloat(e.target.value) || 0 }))} />
             </div>
           </div>
           <label className="bank-drawer__toggle py-0">
-            <input type="checkbox" checked={form.isDefault ?? false} onChange={(e) => setForm((f) => ({ ...f, isDefault: e.target.checked }))} />
+            <Input type="checkbox" checked={form.isDefault ?? false} onChange={(e) => setForm((f) => ({ ...f, isDefault: e.target.checked }))} />
             <span className="bank-drawer__toggle-label py-0">{t.setAsDefault}</span>
           </label>
           <button type="submit" className="bank-drawer__submit-btn py-0" disabled={submitting} aria-busy={submitting}>

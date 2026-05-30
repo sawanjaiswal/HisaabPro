@@ -14,6 +14,7 @@ import { CustomOrdersEmptyState } from '../components/CustomOrdersEmptyState'
 import { CustomOrdersErrorState } from '../components/CustomOrdersErrorState'
 import { CUSTOM_ORDER_STATUSES, ORDER_ROUTES } from '../custom-orders.constants'
 import type { CustomOrderStatus } from '../custom-orders.types'
+import { Input } from '@/components/ui/Input'
 
 const ALL = 'ALL' as const
 type Filter = CustomOrderStatus | typeof ALL
@@ -87,7 +88,7 @@ export default function CustomOrdersListPage() {
 
         {/* Balance-only toggle */}
         <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', cursor: 'pointer', minHeight: 36, paddingBottom: 'var(--space-2)' }}>
-          <input
+          <Input
             type="checkbox"
             checked={balanceOnly}
             onChange={(e) => setBalanceOnly(e.target.checked)}

@@ -6,6 +6,7 @@ import { getParties } from '@/features/parties/party-crud.service'
 import type { PartyRecipient } from '../useSmartGreetings'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
 
 interface RecipientPickerProps {
   onSend: (party: PartyRecipient) => void
@@ -45,7 +46,7 @@ export function RecipientPicker({ onSend, onBack }: RecipientPickerProps) {
     <div className="greeting-recipients">
       <div className="greeting-recipients-search">
         <Search size={18} className="greeting-recipients-search-icon" aria-hidden="true" />
-        <input
+        <Input
           type="text"
           className="greeting-recipients-search-input"
           placeholder={t.search}

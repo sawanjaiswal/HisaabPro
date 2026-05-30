@@ -10,6 +10,7 @@ import { JobItemRow, type JobFormItem } from './JobItemRow'
 import type { CreateJobInput, CreateJobItemInput } from '../api/jobs.api.types'
 import type { JobDetail } from '../jobs.types'
 import { Textarea } from '@/components/ui/Textarea'
+import { Input } from '@/components/ui/Input'
 
 interface JobFormProps {
   initialData?: JobDetail
@@ -117,7 +118,7 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: Jo
       {/* Title */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
         <label className="label" htmlFor="job-title">{t.jobTitleLabel} *</label>
-        <input
+        <Input
           id="job-title"
           type="text"
           className="input"
@@ -149,7 +150,7 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: Jo
       {/* Scheduled date */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
         <label className="label" htmlFor="job-scheduled">{t.jobScheduledLabel}</label>
-        <input
+        <Input
           id="job-scheduled"
           type="datetime-local"
           className="input"
@@ -162,7 +163,7 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: Jo
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-2)' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
           <label className="label" htmlFor="job-est-hours">{t.jobEstimatedHoursLabel}</label>
-          <input
+          <Input
             id="job-est-hours"
             type="number"
             className="input"
@@ -174,7 +175,7 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: Jo
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
           <label className="label" htmlFor="job-act-hours">{t.jobActualHoursLabel}</label>
-          <input
+          <Input
             id="job-act-hours"
             type="number"
             className="input"

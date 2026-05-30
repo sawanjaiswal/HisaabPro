@@ -5,6 +5,7 @@ import { ROUTES } from '@/config/routes.config'
 import { useJoinBusiness } from './useJoinBusiness'
 import './join-business.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Input } from '@/components/ui/Input'
 
 export default function JoinBusinessPage() {
   const { t } = useLanguage()
@@ -57,7 +58,7 @@ export default function JoinBusinessPage() {
           {t.inviteCodeSubtitle}
         </p>
 
-        <input
+        <Input
           ref={inputRef}
           type="text"
           className="join-business-input"

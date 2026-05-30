@@ -7,6 +7,7 @@
 import { formatPaise } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PaymentFormAllocation } from '../payment.types'
+import { Input } from '@/components/ui/Input'
 
 interface PaymentInvoicesSectionProps {
   allocations: PaymentFormAllocation[]
@@ -58,7 +59,7 @@ export function PaymentInvoicesSection({
         {allocations.map((alloc) => (
           <div key={alloc.invoiceId} className="payment-invoice-row">
             <label className="payment-invoice-check">
-              <input
+              <Input
                 type="checkbox"
                 checked={alloc.selected}
                 onChange={() => onToggle(alloc.invoiceId)}
@@ -70,7 +71,7 @@ export function PaymentInvoicesSection({
               </div>
             </label>
             {alloc.selected && (
-              <input
+              <Input
                 type="number"
                 inputMode="decimal"
                 className="input payment-alloc-amount"

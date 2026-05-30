@@ -6,6 +6,7 @@ import type { TransferStockData, Godown } from '../godown.types'
 import { Button } from '@/components/ui/Button'
 import { Select, SelectItem } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
+import { Input } from '@/components/ui/Input'
 
 interface TransferFormProps {
   form: TransferStockData
@@ -28,7 +29,7 @@ export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, on
         <label htmlFor="transfer-product" className="godown-form__label">
           {t.productId} <span aria-hidden="true">*</span>
         </label>
-        <input
+        <Input
           id="transfer-product"
           type="text"
           className={`godown-form__input${errors.productId ? ' godown-form__input--error' : ''}`}
@@ -87,7 +88,7 @@ export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, on
         <label htmlFor="transfer-qty" className="godown-form__label">
           {t.quantity} <span aria-hidden="true">*</span>
         </label>
-        <input
+        <Input
           id="transfer-qty"
           type="number"
           inputMode="numeric"
@@ -108,7 +109,7 @@ export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, on
 
       <div className="godown-form__field">
         <label htmlFor="transfer-batch" className="godown-form__label">{t.batchIdLabelSimple}</label>
-        <input
+        <Input
           id="transfer-batch"
           type="text"
           className="godown-form__input"

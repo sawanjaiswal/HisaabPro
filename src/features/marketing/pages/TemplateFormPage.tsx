@@ -10,6 +10,7 @@ import { ChannelToggle } from '../components/ChannelToggle'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import type { MarketingChannel, CreateTemplatePayload } from '../marketing.types'
 import { Textarea } from '@/components/ui/Textarea'
+import { Input } from '@/components/ui/Input'
 
 const SMS_CHAR_WARN = 140
 const SMS_CHAR_MAX = 160
@@ -107,7 +108,7 @@ export default function TemplateFormPage() {
         {/* Name */}
         <div>
           <label htmlFor="tmpl-name" style={labelStyle}>{t.marketingTemplateName} *</label>
-          <input id="tmpl-name" type="text" value={name} onChange={(e) => setName(e.target.value)} required maxLength={100} placeholder={t.marketingTemplateNamePh} style={inputStyle} aria-required="true" />
+          <Input id="tmpl-name" type="text" value={name} onChange={(e) => setName(e.target.value)} required maxLength={100} placeholder={t.marketingTemplateNamePh} style={inputStyle} aria-required="true" />
         </div>
 
         {/* Body */}
@@ -142,7 +143,7 @@ export default function TemplateFormPage() {
         {/* Variables */}
         <div>
           <label htmlFor="tmpl-vars" style={labelStyle}>{t.marketingVariableNames}</label>
-          <input id="tmpl-vars" type="text" value={variables} onChange={(e) => setVariables(e.target.value)} placeholder={t.marketingVariableNamesPh} style={inputStyle} />
+          <Input id="tmpl-vars" type="text" value={variables} onChange={(e) => setVariables(e.target.value)} placeholder={t.marketingVariableNamesPh} style={inputStyle} />
           <div style={{ fontSize: '12px', color: 'var(--color-gray-400)', marginTop: '4px' }}>{t.marketingVariableNamesHelper}</div>
         </div>
 
@@ -151,10 +152,10 @@ export default function TemplateFormPage() {
           <>
             <div>
               <label htmlFor="tmpl-dlt" style={labelStyle}>{t.marketingDltTemplateId}</label>
-              <input id="tmpl-dlt" type="text" value={dltTemplateId} onChange={(e) => setDltTemplateId(e.target.value)} placeholder={t.marketingDltTemplateIdPh} maxLength={60} style={inputStyle} />
+              <Input id="tmpl-dlt" type="text" value={dltTemplateId} onChange={(e) => setDltTemplateId(e.target.value)} placeholder={t.marketingDltTemplateIdPh} maxLength={60} style={inputStyle} />
             </div>
             <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '14px', color: 'var(--color-gray-700)' }}>
-              <input type="checkbox" checked={dltRegistered} onChange={(e) => setDltRegistered(e.target.checked)} style={{ width: '18px', height: '18px', accentColor: 'var(--color-primary-600)' }} />
+              <Input type="checkbox" checked={dltRegistered} onChange={(e) => setDltRegistered(e.target.checked)} style={{ width: '18px', height: '18px', accentColor: 'var(--color-primary-600)' }} />
               {t.marketingDltRegisteredCheck}
             </label>
           </>
@@ -163,7 +164,7 @@ export default function TemplateFormPage() {
         {channel === 'WHATSAPP' && (
           <div>
             <label htmlFor="tmpl-wa" style={labelStyle}>{t.marketingWaTemplateName}</label>
-            <input id="tmpl-wa" type="text" value={waTemplateName} onChange={(e) => setWaTemplateName(e.target.value)} placeholder={t.marketingWaTemplateNamePh} maxLength={80} style={inputStyle} />
+            <Input id="tmpl-wa" type="text" value={waTemplateName} onChange={(e) => setWaTemplateName(e.target.value)} placeholder={t.marketingWaTemplateNamePh} maxLength={80} style={inputStyle} />
             <div style={{ fontSize: '12px', color: 'var(--color-gray-400)', marginTop: '4px' }}>{t.marketingWaTemplateHelper}</div>
           </div>
         )}

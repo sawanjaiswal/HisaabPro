@@ -6,6 +6,7 @@ import { useDebounce } from '@/hooks/useDebounce'
 import type { BomFormData } from '../bom.types'
 import type { BomValidationErrors } from '../bom.utils'
 import { Textarea } from '@/components/ui/Textarea'
+import { Input } from '@/components/ui/Input'
 
 interface BomFormHeaderProps {
   form: BomFormData
@@ -44,7 +45,7 @@ export function BomFormHeader({ form, errors, editMode, onUpdate }: BomFormHeade
       {/* Recipe name */}
       <div className="input-group">
         <label htmlFor="bom-name" className="input-label">Recipe name</label>
-        <input
+        <Input
           id="bom-name"
           className={`input${errors.name ? ' input-error-border' : ''}`}
           value={form.name}
@@ -65,7 +66,7 @@ export function BomFormHeader({ form, errors, editMode, onUpdate }: BomFormHeade
           {editMode && <span className="text-optional"> (locked after first run)</span>}
         </label>
         <div className="bom-form-header__product-wrap">
-          <input
+          <Input
             id="bom-product"
             className={`input${errors.productId ? ' input-error-border' : ''}`}
             value={productQuery}
@@ -100,7 +101,7 @@ export function BomFormHeader({ form, errors, editMode, onUpdate }: BomFormHeade
       {/* isDefault */}
       <div className="input-group">
         <label className="bom-form-header__toggle">
-          <input
+          <Input
             type="checkbox"
             checked={form.isDefault}
             onChange={(e) => onUpdate('isDefault', e.target.checked)}
@@ -114,7 +115,7 @@ export function BomFormHeader({ form, errors, editMode, onUpdate }: BomFormHeade
       {editMode && (
         <div className="input-group">
           <label className="bom-form-header__toggle">
-            <input
+            <Input
               type="checkbox"
               checked={form.isActive}
               onChange={(e) => onUpdate('isActive', e.target.checked)}

@@ -5,6 +5,7 @@ import { Search } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { DocumentType, DocumentStatus } from '../invoice.types'
 import { DOCUMENT_TYPE_LABELS, DOCUMENT_STATUS_LABELS } from '../invoice.constants'
+import { Input } from '@/components/ui/Input'
 
 interface InvoiceFilterBarProps {
   search: string
@@ -47,7 +48,7 @@ export const InvoiceFilterBar: React.FC<InvoiceFilterBarProps> = ({
     <div className="invoice-filter-bar">
       <div className="search-bar">
         <Search size={18} aria-hidden="true" />
-        <input
+        <Input
           type="search"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}

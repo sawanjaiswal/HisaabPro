@@ -5,6 +5,7 @@ import { Select, SelectItem } from '@/components/ui/Select'
 import { TemplatePicker } from './TemplatePicker'
 import { RECURRING_FREQUENCIES, FREQUENCY_LABELS } from '../recurring.constants'
 import type { RecurringFormState, FormErrors } from '../hooks/useRecurringForm'
+import { Input } from '@/components/ui/Input'
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
@@ -40,7 +41,7 @@ export function RecurringFormFields({
         <label htmlFor="rf-name" className="rf-label">
           {t.recurringFieldName ?? 'Schedule Name'}
         </label>
-        <input
+        <Input
           id="rf-name"
           type="text"
           className="rf-input"
@@ -100,7 +101,7 @@ export function RecurringFormFields({
           <label htmlFor="rf-dom" className="rf-label">
             {t.recurringFieldAnchorDay ?? 'Day of Month'}
           </label>
-          <input
+          <Input
             id="rf-dom"
             type="number"
             className="rf-input rf-input--narrow"
@@ -121,7 +122,7 @@ export function RecurringFormFields({
             {t.recurringFieldStartDate ?? 'Start Date'}
             <span className="rf-required" aria-hidden="true"> *</span>
           </label>
-          <input
+          <Input
             id="rf-start"
             type="date"
             className={`rf-input${errors.startDate ? ' rf-input--error' : ''}`}
@@ -141,7 +142,7 @@ export function RecurringFormFields({
           <label htmlFor="rf-end" className="rf-label">
             {t.recurringFieldEndDate ?? 'End Date (optional)'}
           </label>
-          <input
+          <Input
             id="rf-end"
             type="date"
             className={`rf-input${errors.endDate ? ' rf-input--error' : ''}`}
@@ -161,7 +162,7 @@ export function RecurringFormFields({
       {/* Toggles */}
       <div className="rf-toggles">
         <label className="rf-toggle">
-          <input
+          <Input
             type="checkbox"
             className="rf-toggle__input"
             checked={form.autoSend}
@@ -173,7 +174,7 @@ export function RecurringFormFields({
         </label>
 
         <label className="rf-toggle">
-          <input
+          <Input
             type="checkbox"
             className="rf-toggle__input"
             checked={form.autoPaymentLink}
@@ -187,7 +188,7 @@ export function RecurringFormFields({
         </label>
 
         <label className="rf-toggle">
-          <input
+          <Input
             type="checkbox"
             className="rf-toggle__input"
             checked={form.autoReminder}

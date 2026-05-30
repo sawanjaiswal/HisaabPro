@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import { User, Phone } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Input } from '@/components/ui/Input'
 
 interface WalkInFormProps {
   name?:      string
@@ -33,7 +34,7 @@ export function WalkInForm({ name = '', phone = '', onChange }: WalkInFormProps)
       <div className="pos-walkin-form__fields">
         <div className="pos-field">
           <User size={14} className="pos-field__icon" aria-hidden="true" />
-          <input
+          <Input
             type="text"
             className="pos-field__input"
             placeholder={t.posWalkInName ?? 'Customer name'}
@@ -45,7 +46,7 @@ export function WalkInForm({ name = '', phone = '', onChange }: WalkInFormProps)
         </div>
         <div className="pos-field">
           <Phone size={14} className="pos-field__icon" aria-hidden="true" />
-          <input
+          <Input
             type="tel"
             inputMode="numeric"
             className="pos-field__input"

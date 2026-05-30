@@ -22,6 +22,7 @@ import { isCouponListEmpty } from './coupon.utils'
 import type { CouponStatus } from './coupon.types'
 import './coupon.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Input } from '@/components/ui/Input'
 
 const STATUS_OPTIONS: Array<{ value: CouponStatus | ''; label: string }> = [
   { value: '', label: 'All' },
@@ -84,7 +85,7 @@ export default function CouponsPage() {
         <div className="coupon-toolbar fade-up">
           <div className="coupon-search">
             <Search size={16} aria-hidden="true" className="coupon-search-icon" />
-            <input
+            <Input
               type="search"
               className="coupon-search-input"
               placeholder={t.search}

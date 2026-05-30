@@ -6,6 +6,7 @@ import { Select, SelectItem } from '@/components/ui/Select'
 import { todayIso, parseRateInput } from '../currency.utils'
 import type { SupportedCurrency, SetExchangeRatePayload } from '../currency.types'
 import { BASE_CURRENCY } from '../currency.constants'
+import { Input } from '@/components/ui/Input'
 
 interface SetRateFormProps {
   currencies: SupportedCurrency[]
@@ -70,7 +71,7 @@ export function SetRateForm({ currencies, onSubmit, onCancel }: SetRateFormProps
         <label className="set-rate-form__label" htmlFor="sr-rate">
           {`${t.rateInputPrefix} ${fromCurrency || '...'} ${t.rateInputSuffix}`}
         </label>
-        <input
+        <Input
           id="sr-rate"
           type="number"
           inputMode="decimal"
@@ -88,7 +89,7 @@ export function SetRateForm({ currencies, onSubmit, onCancel }: SetRateFormProps
         <label className="set-rate-form__label" htmlFor="sr-date">
           {t.effectiveDateLabel}
         </label>
-        <input
+        <Input
           id="sr-date"
           type="date"
           className="set-rate-form__input"

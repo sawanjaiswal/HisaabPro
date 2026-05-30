@@ -20,6 +20,7 @@ import { useToast } from '@/hooks/useToast'
 import { ROUTES } from '@/config/routes.config'
 import { useGstr1Summary, useGstr1Export } from './useGstr1'
 import type { Gstr1Summary } from './gst-returns.types'
+import { Input } from '@/components/ui/Input'
 
 function currentPeriod(): string {
   const now = new Date()
@@ -117,7 +118,7 @@ export default function Gstr1Page() {
             <label className="gstr1-period-label" htmlFor="gstr1-period">
               {t.gstr1PeriodLabel}
             </label>
-            <input
+            <Input
               id="gstr1-period"
               type="month"
               className="gstr1-period-input"

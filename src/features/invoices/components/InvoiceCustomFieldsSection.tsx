@@ -10,6 +10,7 @@ import {
 } from '../invoice-custom-fields.service'
 import type { ApplicableDocumentType, DocumentCustomFieldDef } from '@/features/settings/document-custom-fields.service'
 import type { DocumentType } from '../invoice-form.types'
+import { Input } from '@/components/ui/Input'
 
 /** Map full DocumentType → the subset that supports custom fields. */
 function toApplicableDocType(t: DocumentType): ApplicableDocumentType | null {
@@ -84,7 +85,7 @@ export function InvoiceCustomFieldsSection({ documentType, values, errors, onCha
             </label>
 
             {def.fieldType === 'TEXT' && (
-              <input
+              <Input
                 type="text"
                 className="input"
                 value={typeof raw === 'string' ? raw : ''}
@@ -93,7 +94,7 @@ export function InvoiceCustomFieldsSection({ documentType, values, errors, onCha
               />
             )}
             {def.fieldType === 'NUMBER' && (
-              <input
+              <Input
                 type="number"
                 inputMode="decimal"
                 className="input"
@@ -105,7 +106,7 @@ export function InvoiceCustomFieldsSection({ documentType, values, errors, onCha
               />
             )}
             {def.fieldType === 'DATE' && (
-              <input
+              <Input
                 type="date"
                 className="input"
                 value={typeof raw === 'string' ? raw : ''}

@@ -8,6 +8,7 @@ import type { ProductFormData } from '../product.types'
 import { BARCODE_FORMAT_OPTIONS, BARCODE_FORMAT_DEFAULT, BARCODE_MAX_LENGTH } from '../product.constants'
 import { validateBarcode, getBarcodeHint } from '../barcode.utils'
 import { BarcodeDisplay } from './BarcodeDisplay'
+import { Input } from '@/components/ui/Input'
 
 interface BarcodeFieldProps {
   form: ProductFormData
@@ -47,7 +48,7 @@ export function BarcodeField({ form, errors, onUpdate }: BarcodeFieldProps) {
 
       <div className="input-group">
         <label htmlFor="product-barcode" className="input-label">{t.barcodeValueLabel}</label>
-        <input
+        <Input
           id="product-barcode"
           className={`input${displayError ? ' input-error-border' : ''}`}
           value={form.barcode ?? ''}

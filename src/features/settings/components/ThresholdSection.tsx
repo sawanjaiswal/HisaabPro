@@ -1,5 +1,6 @@
 import type { TransactionLockConfig } from '../settings.types'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Input } from '@/components/ui/Input'
 
 interface ThresholdSectionProps {
   priceChangeThresholdPercent: TransactionLockConfig['priceChangeThresholdPercent']
@@ -27,7 +28,7 @@ export function ThresholdSection({
             </p>
           </div>
           <div className="txn-threshold-input">
-            <input
+            <Input
               type="number"
               className="txn-threshold-field"
               value={priceChangeThresholdPercent ?? ''}
@@ -52,7 +53,7 @@ export function ThresholdSection({
             </p>
           </div>
           <div className="txn-threshold-input">
-            <input
+            <Input
               type="number"
               className="txn-threshold-field"
               value={discountThresholdPercent ?? ''}

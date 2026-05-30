@@ -16,6 +16,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { useInventorySettings } from './useInventorySettings'
 import type { ExpiredBatchPolicy } from './useInventorySettings'
+import { Input } from '@/components/ui/Input'
 
 // ─── Policy Radio Option ──────────────────────────────────────────────────────
 
@@ -129,7 +130,7 @@ export default function InventorySettingsPage() {
               <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)', margin: 0 }}>
                 {t.expiryAlertDaysDesc}
               </p>
-              <input
+              <Input
                 id="expiry-alert-days"
                 type="number"
                 min={1}

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useNotificationSettings, useUpdateSettings } from '../useNotifications'
 import '../notifications.css'
+import { Input } from '@/components/ui/Input'
 
 /** Validate HH:MM format */
 function isValidTime(val: string): boolean {
@@ -64,7 +65,7 @@ export function NotificationQuietHoursCard() {
           {t.notifQuietHoursTitle ?? 'Quiet Hours'}
         </h3>
         <label className="notif-toggle" aria-label={t.notifQuietHoursToggle ?? 'Enable quiet hours'}>
-          <input
+          <Input
             type="checkbox"
             checked={enabled}
             onChange={(e) => setEnabled(e.target.checked)}
@@ -78,7 +79,7 @@ export function NotificationQuietHoursCard() {
           <label className="notif-quiet-hours__label" htmlFor="quiet-start">
             {t.notifQuietHoursStart ?? 'Start (HH:MM)'}
           </label>
-          <input
+          <Input
             id="quiet-start"
             type="time"
             className="notif-quiet-hours__input"
@@ -93,7 +94,7 @@ export function NotificationQuietHoursCard() {
           <label className="notif-quiet-hours__label" htmlFor="quiet-end">
             {t.notifQuietHoursEnd ?? 'End (HH:MM)'}
           </label>
-          <input
+          <Input
             id="quiet-end"
             type="time"
             className="notif-quiet-hours__input"

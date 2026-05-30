@@ -8,6 +8,7 @@ import { getProducts } from '@/lib/services/product.service'
 import type { ProductSummary } from '@/lib/types/product.types'
 import { paiseToRupees } from '../invoice-format.utils'
 import { ProductSearchDropdown } from './ProductSearchDropdown'
+import { Input } from '@/components/ui/Input'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -144,7 +145,7 @@ export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
           size={16}
           aria-hidden="true"
         />
-        <input
+        <Input
           id="product-search-input"
           ref={inputRef}
           type="text"

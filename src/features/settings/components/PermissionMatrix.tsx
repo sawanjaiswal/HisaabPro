@@ -4,6 +4,7 @@ import { ChevronRight } from 'lucide-react'
 import type { PermissionModule } from '../settings.types'
 import { formatPermissionKey, getPermissionCount } from '../settings.utils'
 import '../role-builder.css'
+import { Input } from '@/components/ui/Input'
 
 interface PermissionMatrixProps {
   modules: PermissionModule[]
@@ -41,7 +42,7 @@ const ModuleRow: React.FC<ModuleRowProps> = ({ module, selectedPermissions, onTo
           onClick={(e) => { e.stopPropagation(); onToggleModuleAll(module.key) }}
           aria-label={`${t.toggleAllPrefix} ${module.label} ${t.toggleAllSuffix}`}
         >
-          <input
+          <Input
             type="checkbox"
             checked={allGranted}
             onChange={() => onToggleModuleAll(module.key)}
@@ -77,7 +78,7 @@ const ModuleRow: React.FC<ModuleRowProps> = ({ module, selectedPermissions, onTo
                   )}
                 </span>
                 <label className="settings-toggle" onClick={(e) => e.stopPropagation()}>
-                  <input
+                  <Input
                     type="checkbox"
                     checked={isChecked}
                     onChange={() => onToggle(permKey)}

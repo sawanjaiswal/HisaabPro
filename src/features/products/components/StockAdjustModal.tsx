@@ -11,6 +11,7 @@ import { adjustStock } from '../product.service'
 import { STOCK_ADJUST_REASON_LABELS, CUSTOM_REASON_MAX, NOTES_MAX } from '../product.constants'
 import type { StockAdjustType, StockAdjustReason, StockAdjustFormData } from '../product.types'
 import { Textarea } from '@/components/ui/Textarea'
+import { Input } from '@/components/ui/Input'
 
 interface StockAdjustModalProps {
   isOpen: boolean
@@ -129,7 +130,7 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
 
         <div className="input-group">
           <label htmlFor="adjust-quantity" className="input-label">{t.qty} ({unitSymbol})</label>
-          <input
+          <Input
             id="adjust-quantity"
             className={`input${errors.quantity ? ' input-error-border' : ''}`}
             type="number"
@@ -163,7 +164,7 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
         {reason === 'OTHER' && (
           <div className="input-group">
             <label htmlFor="adjust-custom-reason" className="input-label">{t.specifyReasonLabel}</label>
-            <input
+            <Input
               id="adjust-custom-reason"
               className={`input${errors.customReason ? ' input-error-border' : ''}`}
               value={customReason}

@@ -8,6 +8,7 @@ import { formatPaise } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import { PAYMENT_DISCOUNT_TYPE_LABELS } from '../payment.constants'
 import type { PaymentFormDiscount, PaymentDiscountType } from '../payment.types'
+import { Input } from '@/components/ui/Input'
 
 interface Settlement {
   payment: number
@@ -38,7 +39,7 @@ export function PaymentDiscountSection({
   return (
     <div className="payment-form">
       <label className="payment-discount-toggle">
-        <input
+        <Input
           type="checkbox"
           checked={discount !== null}
           onChange={onToggle}
@@ -55,7 +56,7 @@ export function PaymentDiscountSection({
             <div className="payment-discount-type" role="radiogroup" aria-label={t.discountTypeAria}>
               {DISCOUNT_TYPES.map((type) => (
                 <label key={type} className="payment-radio-label">
-                  <input
+                  <Input
                     type="radio"
                     name="discountType"
                     value={type}
@@ -74,7 +75,7 @@ export function PaymentDiscountSection({
             <label className="label" htmlFor="discount-value">
               {discount.type === 'PERCENTAGE' ? t.percentageLabel : t.amountRupees}
             </label>
-            <input
+            <Input
               id="discount-value"
               type="number"
               inputMode="decimal"
@@ -99,7 +100,7 @@ export function PaymentDiscountSection({
           {/* Reason */}
           <div className="payment-field">
             <label className="label" htmlFor="discount-reason">{t.reasonOptional}</label>
-            <input
+            <Input
               id="discount-reason"
               type="text"
               className="input"

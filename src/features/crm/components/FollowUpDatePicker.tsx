@@ -1,7 +1,7 @@
 /**
  * CRM (#127) — FollowUpDatePicker.
  *
- * `<input type="datetime-local">` for picking the next follow-up at — the
+ * `<Input type="datetime-local">` for picking the next follow-up at — the
  * native picker works on Android WebView + iOS Safari and supports the
  * existing dark-token system via attribute selectors. Server enforces
  * future-only (INVALID_FOLLOWUP_PAST) and so do we — calling onChange
@@ -15,6 +15,7 @@
 import { useMemo } from 'react'
 import { CalendarClock, X } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Input } from '@/components/ui/Input'
 
 interface FollowUpDatePickerProps {
   /** Current follow-up ISO datetime, or null when unset. */
@@ -65,7 +66,7 @@ export function FollowUpDatePicker({
         <span>{t.crmFollowUpAt}</span>
       </label>
       <div className="follow-up-picker__input-row">
-        <input
+        <Input
           id="follow-up-at"
           type="datetime-local"
           className="follow-up-picker__input"

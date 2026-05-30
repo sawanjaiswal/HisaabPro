@@ -14,6 +14,7 @@ import { formatDate, formatAmount, formatCompactAmount, getDateGroup } from '../
 import { searchRecentActivity } from '../dashboard.service'
 import { TxnRow } from './TxnRow'
 import type { RecentActivityItem } from '../dashboard.types'
+import { Input } from '@/components/ui/Input'
 
 const DEBOUNCE_MS = 300
 const SKELETON_COUNT = 4
@@ -141,7 +142,7 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
       {/* Search bar */}
       <div className="dashboard-txn-search">
         <Search size={16} className="dashboard-txn-search-icon" aria-hidden="true" />
-        <input
+        <Input
           className="dashboard-txn-search-input"
           type="text"
           placeholder={t.searchByNameInvoice}

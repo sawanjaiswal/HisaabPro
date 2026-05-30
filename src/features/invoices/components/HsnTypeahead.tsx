@@ -15,6 +15,7 @@ import { queryKeys } from '@/lib/query-keys'
 import { formatRate } from '@/features/tax/tax.constants'
 import type { HsnCode } from '@/features/tax/tax.types'
 import { useDebounce } from '@/hooks/useDebounce'
+import { Input } from '@/components/ui/Input'
 
 const MIN_QUERY_LEN = 4
 const LIMIT = 10
@@ -79,7 +80,7 @@ export function HsnTypeahead({ lineIndex, value, onSelect }: HsnTypeaheadProps) 
       </label>
       <div className="hsn-input-wrap">
         <Search size={14} className="hsn-icon" aria-hidden="true" />
-        <input
+        <Input
           ref={inputRef}
           id={inputId}
           type="text"

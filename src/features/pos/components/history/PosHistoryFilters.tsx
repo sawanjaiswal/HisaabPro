@@ -8,6 +8,7 @@ import { PAYMENT_MODES } from '../../utils/pos.constants'
 const ALL = '__all__' as const
 import type { PosHistoryFilters, PosSaleStatus, PaymentMode } from '../../types/pos.types'
 import type { TranslationKey } from '@/lib/translations'
+import { Input } from '@/components/ui/Input'
 
 interface PosHistoryFiltersProps {
   filters:        PosHistoryFilters
@@ -36,7 +37,7 @@ export function PosHistoryFiltersBar({
         <label className="pos-filter-label" htmlFor="pos-from">
           {t.from ?? 'From'}
         </label>
-        <input
+        <Input
           id="pos-from"
           type="date"
           className="pos-filter-input"
@@ -47,7 +48,7 @@ export function PosHistoryFiltersBar({
         <label className="pos-filter-label" htmlFor="pos-to">
           {t.to ?? 'To'}
         </label>
-        <input
+        <Input
           id="pos-to"
           type="date"
           className="pos-filter-input"

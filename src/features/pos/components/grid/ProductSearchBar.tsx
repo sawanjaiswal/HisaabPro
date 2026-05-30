@@ -4,6 +4,7 @@ import { useRef, useCallback } from 'react'
 import { Search, X } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { SEARCH_DEBOUNCE_MS } from '../../utils/pos.constants'
+import { Input } from '@/components/ui/Input'
 
 interface ProductSearchBarProps {
   value:     string
@@ -34,7 +35,7 @@ export function ProductSearchBar({ value, onChange }: ProductSearchBarProps) {
   return (
     <div className="pos-search" role="search">
       <Search size={16} className="pos-search__icon" aria-hidden="true" />
-      <input
+      <Input
         type="search"
         className="pos-search__input"
         placeholder={t.posSearchProducts ?? 'Search products…'}

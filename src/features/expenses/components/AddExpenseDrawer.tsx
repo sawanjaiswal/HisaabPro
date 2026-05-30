@@ -13,6 +13,7 @@ import type { ExpenseCategory, ExpensePaymentMode, CreateExpenseInput, OcrResult
 import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate, formatPaise } from '@/lib/format'
 import { OcrReceiptUpload } from './OcrReceiptUpload'
+import { Input } from '@/components/ui/Input'
 
 interface AddExpenseDrawerProps {
   open: boolean
@@ -122,12 +123,12 @@ export function AddExpenseDrawer({ open, onClose, onCreated, categories }: AddEx
           <div className="expense-drawer__row py-0">
             <div className="expense-drawer__field py-0">
               <label className="expense-drawer__label py-0" htmlFor="expAmount">{t.amountRsLabel}</label>
-              <input id="expAmount" type="number" min="0.01" step="0.01" required className="expense-drawer__input py-0"
+              <Input id="expAmount" type="number" min="0.01" step="0.01" required className="expense-drawer__input py-0"
                 value={form.amountRupees} onChange={(e) => setForm((f) => ({ ...f, amountRupees: e.target.value }))} placeholder="0.00" />
             </div>
             <div className="expense-drawer__field py-0">
               <label className="expense-drawer__label py-0" htmlFor="expDate">{t.dateLabel}</label>
-              <input id="expDate" type="date" required className="expense-drawer__input py-0"
+              <Input id="expDate" type="date" required className="expense-drawer__input py-0"
                 value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
             </div>
           </div>
@@ -145,7 +146,7 @@ export function AddExpenseDrawer({ open, onClose, onCreated, categories }: AddEx
           </div>
           <div className="expense-drawer__field py-0">
             <label className="expense-drawer__label py-0" htmlFor="expNotes">{t.notesOptional}</label>
-            <input id="expNotes" className="expense-drawer__input py-0" value={form.notes}
+            <Input id="expNotes" className="expense-drawer__input py-0" value={form.notes}
               onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
               placeholder={t.expenseNotesPlaceholder} />
           </div>

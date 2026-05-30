@@ -3,6 +3,7 @@
 import { useLanguage } from '@/hooks/useLanguage'
 import type { ProductFormData, StockValidationMode } from '../product.types'
 import { STOCK_VALIDATION_LABELS } from '../product.constants'
+import { Input } from '@/components/ui/Input'
 
 interface ProductFormStockProps {
   form: ProductFormData
@@ -22,7 +23,7 @@ export function ProductFormStock({ form, errors, onUpdate }: ProductFormStockPro
     <div className="create-party-section py-0">
       <div className="input-group">
         <label htmlFor="product-opening-stock" className="input-label">{t.openingStockLabel}</label>
-        <input
+        <Input
           id="product-opening-stock"
           className={`input${errors.openingStock ? ' input-error-border' : ''}`}
           type="number"
@@ -42,7 +43,7 @@ export function ProductFormStock({ form, errors, onUpdate }: ProductFormStockPro
           {t.minimumStockLevel}
           <span className="text-optional"> ({t.lowStockAlertHint})</span>
         </label>
-        <input
+        <Input
           id="product-min-stock"
           className={`input${errors.minStockLevel ? ' input-error-border' : ''}`}
           type="number"
@@ -62,7 +63,7 @@ export function ProductFormStock({ form, errors, onUpdate }: ProductFormStockPro
           {t.moqLabel}
           <span className="text-optional"> ({t.moqHint})</span>
         </label>
-        <input
+        <Input
           id="product-moq"
           className={`input${errors.moq ? ' input-error-border' : ''}`}
           type="number"

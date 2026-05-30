@@ -5,6 +5,7 @@ import { NOTES_MAX } from '../stock-verification.constants'
 import { formatDiscrepancy, getDiscrepancyColor } from '../stock-verification.utils'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Textarea } from '@/components/ui/Textarea'
+import { Input } from '@/components/ui/Input'
 
 interface CountItemRowProps {
   item: VerificationItem
@@ -40,7 +41,7 @@ export function CountItemRow({ item, onSave, disabled }: CountItemRowProps) {
         </div>
         <div className="sv-count-row__input-group">
           <label htmlFor={`count-${item.id}`} className="sv-count-row__label">{t.actualLabel}</label>
-          <input
+          <Input
             id={`count-${item.id}`}
             type="number"
             inputMode="decimal"

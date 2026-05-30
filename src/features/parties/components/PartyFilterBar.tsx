@@ -3,6 +3,7 @@ import { Search } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PartyType } from '../party.types'
 import { PARTY_TYPE_OPTIONS } from '../party.constants'
+import { Input } from '@/components/ui/Input'
 
 interface PartyFilterBarProps {
   search: string
@@ -23,7 +24,7 @@ export const PartyFilterBar: React.FC<PartyFilterBarProps> = ({
     <div className="party-filter-bar">
       <div className="search-bar">
         <Search size={18} aria-hidden="true" />
-        <input
+        <Input
           type="search"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}

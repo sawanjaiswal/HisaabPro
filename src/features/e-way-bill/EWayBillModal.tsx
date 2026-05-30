@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button'
 import { Select, SelectItem } from '@/components/ui/Select'
 import { useGenerateEWayBill } from './useEWayBill'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
+import { Input } from '@/components/ui/Input'
 
 interface Props {
   documentId: string
@@ -111,7 +112,7 @@ export const EWayBillModal: React.FC<Props> = ({ documentId, open, onDismiss, on
 
             <div>
               <label htmlFor="ewb-transporter-name" style={fieldStyle}>Transporter Name</label>
-              <input
+              <Input
                 id="ewb-transporter-name"
                 value={form.transporterName}
                 onChange={(e) => set('transporterName', e.target.value)}
@@ -123,7 +124,7 @@ export const EWayBillModal: React.FC<Props> = ({ documentId, open, onDismiss, on
 
             <div>
               <label htmlFor="ewb-transporter-gstin" style={fieldStyle}>Transporter GSTIN</label>
-              <input
+              <Input
                 id="ewb-transporter-gstin"
                 value={form.transporterGstin}
                 onChange={(e) => set('transporterGstin', e.target.value)}
@@ -137,7 +138,7 @@ export const EWayBillModal: React.FC<Props> = ({ documentId, open, onDismiss, on
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
               <div>
                 <label htmlFor="ewb-vehicle-no" style={fieldStyle}>Vehicle No</label>
-                <input
+                <Input
                   id="ewb-vehicle-no"
                   value={form.vehicleNumber}
                   onChange={(e) => set('vehicleNumber', e.target.value)}
@@ -163,7 +164,7 @@ export const EWayBillModal: React.FC<Props> = ({ documentId, open, onDismiss, on
               <label htmlFor="ewb-distance" style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem' }}>
                 Distance (km) <span style={{ color: '#dc2626' }}>*</span>
               </label>
-              <input
+              <Input
                 id="ewb-distance"
                 type="number"
                 value={form.distance}
@@ -181,7 +182,7 @@ export const EWayBillModal: React.FC<Props> = ({ documentId, open, onDismiss, on
                 <label htmlFor="ewb-from-pincode" style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem' }}>
                   From Pincode <span style={{ color: '#dc2626' }}>*</span>
                 </label>
-                <input
+                <Input
                   id="ewb-from-pincode"
                   value={form.fromPincode}
                   onChange={(e) => set('fromPincode', e.target.value)}
@@ -197,7 +198,7 @@ export const EWayBillModal: React.FC<Props> = ({ documentId, open, onDismiss, on
                 <label htmlFor="ewb-to-pincode" style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem' }}>
                   To Pincode <span style={{ color: '#dc2626' }}>*</span>
                 </label>
-                <input
+                <Input
                   id="ewb-to-pincode"
                   value={form.toPincode}
                   onChange={(e) => set('toPincode', e.target.value)}

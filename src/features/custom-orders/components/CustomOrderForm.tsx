@@ -12,6 +12,7 @@ import { CustomOrderItemEditor } from './CustomOrderItemEditor'
 import type { CreateCustomOrderInput, CreateCustomOrderItemInput } from '../api/custom-orders.api.types'
 import type { CustomOrderDetail } from '../custom-orders.types'
 import { Textarea } from '@/components/ui/Textarea'
+import { Input } from '@/components/ui/Input'
 
 interface CustomOrderFormProps {
   initialData?: CustomOrderDetail
@@ -92,7 +93,7 @@ export function CustomOrderForm({ initialData, onSubmit, isSubmitting, submitLab
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
         <label className="label" htmlFor="order-title">Order Title *</label>
-        <input id="order-title" type="text" className="input" value={title} onChange={(e) => { setTitle(e.target.value); if (e.target.value) setErrors((p) => { const n = { ...p }; delete n.title; return n }) }} placeholder="e.g. 1 kg Vanilla Cake, Wedding Lehenga" maxLength={200} aria-required="true" aria-invalid={Boolean(errors.title)} />
+        <Input id="order-title" type="text" className="input" value={title} onChange={(e) => { setTitle(e.target.value); if (e.target.value) setErrors((p) => { const n = { ...p }; delete n.title; return n }) }} placeholder="e.g. 1 kg Vanilla Cake, Wedding Lehenga" maxLength={200} aria-required="true" aria-invalid={Boolean(errors.title)} />
         {errors.title && <span className="field-error" role="alert">{errors.title}</span>}
       </div>
 
@@ -104,7 +105,7 @@ export function CustomOrderForm({ initialData, onSubmit, isSubmitting, submitLab
       <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: 140, display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
           <label className="label" htmlFor="order-delivery">Delivery Date &amp; Time</label>
-          <input id="order-delivery" type="datetime-local" className="input" value={deliveryAt} onChange={(e) => setDeliveryAt(e.target.value)} />
+          <Input id="order-delivery" type="datetime-local" className="input" value={deliveryAt} onChange={(e) => setDeliveryAt(e.target.value)} />
         </div>
         <div style={{ flex: 1, minWidth: 120, display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
           <label className="label" htmlFor="order-slot">Slot</label>
@@ -123,7 +124,7 @@ export function CustomOrderForm({ initialData, onSubmit, isSubmitting, submitLab
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
         <label className="label" htmlFor="order-addr">Delivery Address (optional)</label>
-        <input id="order-addr" type="text" className="input" value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} maxLength={500} />
+        <Input id="order-addr" type="text" className="input" value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} maxLength={500} />
       </div>
 
       {/* Line items */}
@@ -143,7 +144,7 @@ export function CustomOrderForm({ initialData, onSubmit, isSubmitting, submitLab
       {/* Order-level discount */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
         <label className="label" htmlFor="order-discount">Order Discount (₹, optional)</label>
-        <input id="order-discount" type="number" className="input" value={discountRs} min="0" step="0.01" onChange={(e) => setDiscountRs(e.target.value)} style={{ maxWidth: 160 }} />
+        <Input id="order-discount" type="number" className="input" value={discountRs} min="0" step="0.01" onChange={(e) => setDiscountRs(e.target.value)} style={{ maxWidth: 160 }} />
       </div>
 
       {/* Totals summary */}

@@ -7,6 +7,7 @@ import { useLogin } from './useLogin'
 import { useLanguage } from '@/context/LanguageContext'
 import { ROUTES } from '@/config/routes.config'
 import './LoginPage.css'
+import { Input } from '@/components/ui/Input'
 
 const isDevMode = AUTH_MODE === 'dev-login'
 
@@ -83,7 +84,7 @@ export default function LoginPage() {
               {isDevMode ? t.username : t.phoneOrEmail}
             </label>
             <div className="login-page__input-wrapper">
-              <input
+              <Input
                 id="identifier"
                 type="text"
                 inputMode={isDevMode ? 'text' : 'tel'}
@@ -100,7 +101,7 @@ export default function LoginPage() {
           <div className="login-page__field">
             <label className="login-page__label" htmlFor="password">{t.password}</label>
             <div className="login-page__input-wrapper">
-              <input
+              <Input
                 id="password"
                 type="password"
                 className="login-page__input"

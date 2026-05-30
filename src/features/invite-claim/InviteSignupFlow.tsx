@@ -2,6 +2,7 @@
 
 import { useState, useCallback, FormEvent } from 'react'
 import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
 
 interface InviteSignupFlowStrings {
   inviteSignupTitle:         string
@@ -57,7 +58,7 @@ export function InviteSignupFlow({ s, defaultName, onClaim }: InviteSignupFlowPr
       <form className="inv-signup-form" onSubmit={(e) => void handleSubmit(e)} noValidate>
         <div className="inv-signup-field">
           <label htmlFor="inv-name" className="inv-signup-label">{s.inviteSignupNameLabel}</label>
-          <input
+          <Input
             id="inv-name"
             type="text"
             className={`input${fieldErr['name'] ? ' input--error' : ''}`}
@@ -71,7 +72,7 @@ export function InviteSignupFlow({ s, defaultName, onClaim }: InviteSignupFlowPr
 
         <div className="inv-signup-field">
           <label htmlFor="inv-pw" className="inv-signup-label">{s.inviteSignupPasswordLabel}</label>
-          <input
+          <Input
             id="inv-pw"
             type="password"
             className={`input${fieldErr['pw'] ? ' input--error' : ''}`}
@@ -86,7 +87,7 @@ export function InviteSignupFlow({ s, defaultName, onClaim }: InviteSignupFlowPr
 
         <div className="inv-signup-field">
           <label htmlFor="inv-confirm" className="inv-signup-label">{s.inviteSignupConfirmLabel}</label>
-          <input
+          <Input
             id="inv-confirm"
             type="password"
             className={`input${fieldErr['confirm'] ? ' input--error' : ''}`}

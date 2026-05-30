@@ -18,6 +18,7 @@ import { InvoiceCard } from '@/features/invoices/components/InvoiceCard'
 import { InvoiceListSkeleton } from '@/features/invoices/components/InvoiceListSkeleton'
 import { ROUTES } from '@/config/routes.config'
 import '@/features/invoices/invoice-list-items.css'
+import { Input } from '@/components/ui/Input'
 
 export default function PurchasesPage() {
   const navigate = useNavigate()
@@ -39,7 +40,7 @@ export default function PurchasesPage() {
 
       <PageContainer variant="list" className="space-y-6">
         <div className="search-bar">
-          <input
+          <Input
             type="search"
             value={filters.search ?? ''}
             onChange={(e) => setSearch(e.target.value)}

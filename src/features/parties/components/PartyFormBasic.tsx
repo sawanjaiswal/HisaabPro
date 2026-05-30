@@ -100,7 +100,7 @@ export function PartyFormBasic({ form, errors, onUpdate, isEditMode = false }: P
           via the narrow PATCH /api/parties/:id route. */}
       <div className="party-form-opt-out">
         <label htmlFor="party-opt-out" className="party-form-opt-out__label">
-          <input
+          <Input
             id="party-opt-out"
             type="checkbox"
             className="party-form-opt-out__input"

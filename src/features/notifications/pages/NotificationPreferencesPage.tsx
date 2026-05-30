@@ -12,6 +12,7 @@ import { useNotificationPreferences, useUpdatePreferences } from '../useNotifica
 import { NotificationQuietHoursCard } from '../components/NotificationQuietHoursCard'
 import type { NotificationPreferenceRow, NotificationChannel } from '../notifications.types'
 import '../notifications.css'
+import { Input } from '@/components/ui/Input'
 
 // ─── Toggle ───────────────────────────────────────────────────────────────────
 
@@ -25,7 +26,7 @@ interface ToggleProps {
 function Toggle({ checked, disabled = false, onChange, ariaLabel }: ToggleProps) {
   return (
     <label className="notif-toggle" aria-label={ariaLabel}>
-      <input
+      <Input
         type="checkbox"
         checked={checked}
         disabled={disabled}

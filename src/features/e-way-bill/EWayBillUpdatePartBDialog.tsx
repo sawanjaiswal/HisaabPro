@@ -10,6 +10,7 @@ import { Select, SelectItem } from '@/components/ui/Select'
 import { useUpdatePartB } from './useEWayBill'
 import type { PartBEntry } from './e-way-bill.types'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
+import { Input } from '@/components/ui/Input'
 
 interface Props {
   open: boolean
@@ -77,7 +78,7 @@ export const EWayBillUpdatePartBDialog: React.FC<Props> = ({ open, documentId, p
               <label htmlFor="ewb-vehicle-number" style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem' }}>
                 New Vehicle Number <span style={{ color: '#dc2626' }}>*</span>
               </label>
-              <input
+              <Input
                 id="ewb-vehicle-number"
                 value={vehicleNumber}
                 onChange={(e) => setVehicleNumber(e.target.value)}

@@ -7,6 +7,7 @@ import { api } from '@/lib/api'
 import { Drawer } from '@/components/ui/Drawer'
 import { formatPaise } from '@/lib/format'
 import type { ProductListResponse } from '@/features/products/product-api.types'
+import { Input } from '@/components/ui/Input'
 
 interface Props {
   open: boolean
@@ -76,7 +77,7 @@ export function StorefrontProductPicker({
       <div className="sf-picker">
         <div className="sf-picker__search-wrap">
           <Search size={16} className="sf-picker__search-icon" aria-hidden="true" />
-          <input
+          <Input
             type="search"
             className="sf-picker__search"
             placeholder="Search products..."

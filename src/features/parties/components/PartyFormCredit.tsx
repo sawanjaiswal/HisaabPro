@@ -3,6 +3,7 @@
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PartyFormData, BalanceType, CreditLimitMode } from '../party.types'
 import { toLocalISODate } from '../../../lib/format'
+import { Input } from '@/components/ui/Input'
 
 interface PartyFormCreditProps {
   form: PartyFormData
@@ -53,7 +54,7 @@ export function PartyFormCredit({ form, errors, onUpdate }: PartyFormCreditProps
         <span className="input-label" id="opening-balance-label">{t.openingBalance}</span>
         <div className="input-prefix-wrap">
           <span className="input-prefix" aria-hidden="true">{t.currencyPrefix}</span>
-          <input
+          <Input
             id="opening-balance-amount"
             className="input input-prefixed"
             type="number"
@@ -91,7 +92,7 @@ export function PartyFormCredit({ form, errors, onUpdate }: PartyFormCreditProps
         <span className="input-label" id="credit-limit-label">{t.creditLimit}</span>
         <div className="input-prefix-wrap">
           <span className="input-prefix" aria-hidden="true">{t.currencyPrefix}</span>
-          <input
+          <Input
             id="credit-limit-amount"
             className={`input input-prefixed${errors.creditLimit ? ' input-error-border' : ''}`}
             type="number"

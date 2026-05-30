@@ -13,6 +13,7 @@ import type {
 } from '../expense.types'
 import { toLocalISODate } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Input } from '@/components/ui/Input'
 
 const FREQ_OPTIONS: RecurringFrequency[] = ['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY']
 const FREQ_LABELS: Record<RecurringFrequency, string> = {
@@ -112,7 +113,7 @@ export function AddRecurringDrawer({
         <div className="expense-drawer__row">
           <div className="expense-drawer__field">
             <label className="expense-drawer__label" htmlFor="recAmount">Amount (Rs)</label>
-            <input id="recAmount" type="number" min="0.01" step="0.01" required
+            <Input id="recAmount" type="number" min="0.01" step="0.01" required
               className="expense-drawer__input" value={form.amountRupees}
               onChange={(e) => setForm((f) => ({ ...f, amountRupees: e.target.value }))} placeholder="0.00" />
           </div>
@@ -131,7 +132,7 @@ export function AddRecurringDrawer({
         {(form.frequency === 'MONTHLY' || form.frequency === 'YEARLY') && (
           <div className="expense-drawer__field">
             <label className="expense-drawer__label" htmlFor="recDom">Day of month (1–28)</label>
-            <input id="recDom" type="number" min="1" max="28" className="expense-drawer__input"
+            <Input id="recDom" type="number" min="1" max="28" className="expense-drawer__input"
               value={form.dayOfMonth}
               onChange={(e) => setForm((f) => ({ ...f, dayOfMonth: Number(e.target.value) }))} />
           </div>
@@ -153,7 +154,7 @@ export function AddRecurringDrawer({
         <div className="expense-drawer__row">
           <div className="expense-drawer__field">
             <label className="expense-drawer__label" htmlFor="recStart">First run date</label>
-            <input id="recStart" type="date" required className="expense-drawer__input"
+            <Input id="recStart" type="date" required className="expense-drawer__input"
               value={form.nextRunDate}
               onChange={(e) => setForm((f) => ({ ...f, nextRunDate: e.target.value }))} />
           </div>
@@ -173,7 +174,7 @@ export function AddRecurringDrawer({
 
         <div className="expense-drawer__field">
           <label className="expense-drawer__label" htmlFor="recNotes">Notes (optional)</label>
-          <input id="recNotes" className="expense-drawer__input" value={form.notes}
+          <Input id="recNotes" className="expense-drawer__input" value={form.notes}
             onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
             placeholder="e.g. Office rent" />
         </div>

@@ -2,6 +2,7 @@
 
 import { Trash2 } from 'lucide-react'
 import type { CreateCustomOrderItemInput } from '../api/custom-orders.api.types'
+import { Input } from '@/components/ui/Input'
 
 interface FormItem extends CreateCustomOrderItemInput {
   _key: string
@@ -31,7 +32,7 @@ export function CustomOrderItemEditor({ item, index, showRemove, onUpdate, onRem
           </button>
         )}
       </div>
-      <input
+      <Input
         type="text"
         className="input"
         value={item.description}
@@ -43,7 +44,7 @@ export function CustomOrderItemEditor({ item, index, showRemove, onUpdate, onRem
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-2)' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <label style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>Qty</label>
-          <input
+          <Input
             type="number"
             className="input"
             value={item.quantity}
@@ -55,7 +56,7 @@ export function CustomOrderItemEditor({ item, index, showRemove, onUpdate, onRem
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <label style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>Rate (₹)</label>
-          <input
+          <Input
             type="number"
             className="input"
             value={item.ratePaise / 100}
@@ -67,7 +68,7 @@ export function CustomOrderItemEditor({ item, index, showRemove, onUpdate, onRem
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <label style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>Discount (₹)</label>
-          <input
+          <Input
             type="number"
             className="input"
             value={(item.discountPaise ?? 0) / 100}

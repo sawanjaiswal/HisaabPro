@@ -13,6 +13,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { useAuth } from '@/context/AuthContext'
 import { useTaxCategories } from '@/hooks/useTaxCategories'
 import type { WizardAction, WizardOptions } from '../gst-returns.types'
+import { Input } from '@/components/ui/Input'
 
 interface Props {
   options: WizardOptions
@@ -76,7 +77,7 @@ export function BackfillStep2Options({ options, dispatch }: Props) {
 
       <div className="bfw-field">
         <label htmlFor="bfw-start" className="bfw-label">{t.backfillFromDate}</label>
-        <input
+        <Input
           id="bfw-start"
           type="date"
           className="bfw-input"
@@ -87,7 +88,7 @@ export function BackfillStep2Options({ options, dispatch }: Props) {
 
       <div className="bfw-field">
         <label htmlFor="bfw-end" className="bfw-label">{t.backfillToDate}</label>
-        <input
+        <Input
           id="bfw-end"
           type="date"
           className="bfw-input"
@@ -97,7 +98,7 @@ export function BackfillStep2Options({ options, dispatch }: Props) {
       </div>
 
       <div className="bfw-checkbox-row">
-        <input
+        <Input
           id="bfw-pos-party"
           type="checkbox"
           className="bfw-checkbox"

@@ -7,6 +7,7 @@ import { useOnlineStatus } from '@/hooks/useOnlineStatus'
 import { ocrReceipt } from '../expense.service'
 import type { OcrResult } from '../expense.types'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Input } from '@/components/ui/Input'
 
 const MAX_BYTES = 5 * 1024 * 1024 // 5 MB (decoded)
 
@@ -96,7 +97,7 @@ export function OcrReceiptUpload({ onPrefill, disabled }: OcrReceiptUploadProps)
 
   return (
     <div className="ocr-upload" aria-live="polite">
-      <input
+      <Input
         ref={fileRef}
         type="file"
         accept="image/*"

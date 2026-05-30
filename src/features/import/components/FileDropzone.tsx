@@ -9,6 +9,7 @@ import { UploadCloud, FileCheck2, X } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ACCEPTED_INPUT_ACCEPT } from '../constants/import.constants'
 import { formatBytes } from '../utils/file-validation'
+import { Input } from '@/components/ui/Input'
 
 interface FileDropzoneProps {
   file: File | null
@@ -121,7 +122,7 @@ export function FileDropzone({ file, onFile, disabled = false, errorMessage }: F
             </span>
           </>
         )}
-        <input
+        <Input
           ref={inputRef}
           type="file"
           accept={ACCEPTED_INPUT_ACCEPT}

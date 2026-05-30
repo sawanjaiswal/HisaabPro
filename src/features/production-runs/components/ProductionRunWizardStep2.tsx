@@ -4,6 +4,7 @@ import { todayISODate } from '../production-run.utils'
 import { Button } from '@/components/ui/Button'
 import type { WizardFormState } from '../production-run.types'
 import { Textarea } from '@/components/ui/Textarea'
+import { Input } from '@/components/ui/Input'
 
 interface Step2Props {
   wizard: WizardFormState
@@ -27,7 +28,7 @@ export function ProductionRunWizardStep2({ wizard, onUpdate, onNext, onBack }: S
 
       <div className="input-group">
         <label htmlFor="pr-qty" className="input-label">Quantity produced <span aria-hidden="true">*</span></label>
-        <input
+        <Input
           id="pr-qty"
           className={`input${!qtyValid && wizard.quantityProduced !== '' ? ' input-error-border' : ''}`}
           type="number"
@@ -47,7 +48,7 @@ export function ProductionRunWizardStep2({ wizard, onUpdate, onNext, onBack }: S
 
       <div className="input-group">
         <label htmlFor="pr-date" className="input-label">Production date <span aria-hidden="true">*</span></label>
-        <input
+        <Input
           id="pr-date"
           className="input"
           type="date"

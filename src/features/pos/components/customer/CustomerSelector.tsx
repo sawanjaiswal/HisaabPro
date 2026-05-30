@@ -7,6 +7,7 @@ import { WalkInForm } from './WalkInForm'
 import { api } from '@/lib/api'
 import { SEARCH_DEBOUNCE_MS } from '../../utils/pos.constants'
 import { LoyaltyBalanceChip } from '@/features/loyalty/components/LoyaltyBalanceChip'
+import { Input } from '@/components/ui/Input'
 
 interface PartySuggestion {
   id:   string
@@ -109,7 +110,7 @@ export function CustomerSelector({
             </div>
           ) : (
             <>
-              <input
+              <Input
                 type="search"
                 className="pos-field__input"
                 placeholder={t.posSearchParty ?? 'Search by name or phone…'}

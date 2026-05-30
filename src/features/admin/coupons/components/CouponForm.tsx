@@ -9,6 +9,7 @@ import { CODE_MIN_LENGTH, CODE_MAX_LENGTH, CODE_PATTERN, MAX_PERCENTAGE_BASIS_PO
 import '../coupon.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Select, SelectItem } from '@/components/ui/Select'
+import { Input } from '@/components/ui/Input'
 
 interface CouponFormProps {
   onSubmit: (data: CreateCouponInput) => Promise<unknown>
@@ -94,7 +95,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
 
       <div className="coupon-form-field">
         <label htmlFor="coupon-code">{t.couponCodeLabel}</label>
-        <input
+        <Input
           id="coupon-code"
           type="text"
           value={code}
@@ -109,7 +110,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
 
       <div className="coupon-form-field">
         <label htmlFor="coupon-desc">{t.descriptionInternal}</label>
-        <input
+        <Input
           id="coupon-desc"
           type="text"
           value={description}
@@ -136,7 +137,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
           <label htmlFor="coupon-value">
             {discountType === 'PERCENTAGE' ? t.valueBasisPoints : t.valuePaise}
           </label>
-          <input
+          <Input
             id="coupon-value"
             type="number"
             value={discountValue}
@@ -151,7 +152,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
       <div className="coupon-form-row">
         <div className="coupon-form-field">
           <label htmlFor="coupon-max-uses">{t.maxUsesTotal}</label>
-          <input
+          <Input
             id="coupon-max-uses"
             type="number"
             value={maxUses}
@@ -163,7 +164,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
 
         <div className="coupon-form-field">
           <label htmlFor="coupon-per-user">{t.maxPerUser}</label>
-          <input
+          <Input
             id="coupon-per-user"
             type="number"
             value={maxUsesPerUser}
@@ -177,7 +178,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
       <div className="coupon-form-row">
         <div className="coupon-form-field">
           <label htmlFor="coupon-from">{t.validFrom}</label>
-          <input
+          <Input
             id="coupon-from"
             type="datetime-local"
             value={validFrom}
@@ -188,7 +189,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
 
         <div className="coupon-form-field">
           <label htmlFor="coupon-until">{t.validUntilCoupon}</label>
-          <input
+          <Input
             id="coupon-until"
             type="datetime-local"
             value={validUntil}

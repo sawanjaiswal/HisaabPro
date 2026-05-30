@@ -6,6 +6,7 @@ import { CONFIDENCE_HIGH, CONFIDENCE_MEDIUM } from '../bill-scan.constants'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { Input } from '@/components/ui/Input'
 
 interface OcrResultReviewProps {
   result: BillScanResult
@@ -83,7 +84,7 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
               <div key={item.id} className="ocr-review-item" role="listitem">
                 <div className="ocr-review-item-header">
                   <ConfidenceBadge value={item.confidence} />
-                  <input
+                  <Input
                     className="ocr-review-item-name"
                     value={item.name}
                     onChange={(e) => onUpdateItem(item.id, { name: e.target.value })}
@@ -102,7 +103,7 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
                 <div className="ocr-review-item-fields">
                   <div className="ocr-review-field">
                     <label className="ocr-review-field-label">{t.ocrQtyLabel}</label>
-                    <input
+                    <Input
                       className="ocr-review-field-input"
                       type="number"
                       min="0"
@@ -117,7 +118,7 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
                   </div>
                   <div className="ocr-review-field">
                     <label className="ocr-review-field-label">{t.ocrRateLabel}</label>
-                    <input
+                    <Input
                       className="ocr-review-field-input"
                       type="number"
                       min="0"
@@ -130,7 +131,7 @@ export function OcrResultReview({ result, onUpdateItem, onRemoveItem, onConfirm,
                   </div>
                   <div className="ocr-review-field">
                     <label className="ocr-review-field-label">{t.ocrTotalLabel}</label>
-                    <input
+                    <Input
                       className="ocr-review-field-input"
                       type="number"
                       min="0"

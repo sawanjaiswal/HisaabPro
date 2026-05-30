@@ -16,6 +16,7 @@ import type { DiscountReportData } from './finance.types'
 import './report-finance.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate } from '../../lib/format'
+import { Input } from '@/components/ui/Input'
 
 function getMonthRange(): { from: string; to: string } {
   const now = new Date()
@@ -77,9 +78,9 @@ export default function DiscountReportPage() {
       <PageContainer variant="list" className="space-y-6">
         <div className="finance-date-bar">
           <span className="finance-date-bar__label">{t.from}</span>
-          <input type="date" className="finance-date-bar__input" value={dateRange.from} onChange={(e) => setDateRange((r) => ({ ...r, from: e.target.value }))} aria-label={t.fromDate} />
+          <Input type="date" className="finance-date-bar__input" value={dateRange.from} onChange={(e) => setDateRange((r) => ({ ...r, from: e.target.value }))} aria-label={t.fromDate} />
           <span className="finance-date-bar__label">{t.to}</span>
-          <input type="date" className="finance-date-bar__input" value={dateRange.to} onChange={(e) => setDateRange((r) => ({ ...r, to: e.target.value }))} aria-label={t.toDate} />
+          <Input type="date" className="finance-date-bar__input" value={dateRange.to} onChange={(e) => setDateRange((r) => ({ ...r, to: e.target.value }))} aria-label={t.toDate} />
           <button type="button" className="finance-date-bar__refresh-btn" onClick={refresh} aria-label={t.refreshReport}><RefreshCw size={14} aria-hidden="true" /></button>
         </div>
 

@@ -2,7 +2,7 @@
  *
  * Drawer-wrapped filter form for /settings/audit. Mirrors the BE query
  * surface: q, action, entityType, userId, dateFrom, dateTo. Date fields
- * use native `<input type="date">` (ISO yyyy-mm-dd, what the BE accepts).
+ * use native `<Input type="date">` (ISO yyyy-mm-dd, what the BE accepts).
  *
  * State is held locally until the user taps "Apply", then applied to the
  * parent hook in one shot — prevents partial filter changes from kicking

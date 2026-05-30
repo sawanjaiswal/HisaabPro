@@ -10,6 +10,7 @@ import { ApiError } from '@/lib/api'
 import { upsertBudget, updateBudget } from '../services/budget.service'
 import type { ExpenseCategory, BudgetUsageItem } from '../expense.types'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Input } from '@/components/ui/Input'
 
 interface AddBudgetDrawerProps {
   open: boolean
@@ -89,7 +90,7 @@ export function AddBudgetDrawer({
 
         <div className="expense-drawer__field">
           <label className="expense-drawer__label" htmlFor="budgetMonth">Month</label>
-          <input
+          <Input
             id="budgetMonth"
             type="month"
             required
@@ -102,7 +103,7 @@ export function AddBudgetDrawer({
 
         <div className="expense-drawer__field">
           <label className="expense-drawer__label" htmlFor="budgetAmount">Budget Amount (Rs)</label>
-          <input
+          <Input
             id="budgetAmount"
             type="number"
             min="1"

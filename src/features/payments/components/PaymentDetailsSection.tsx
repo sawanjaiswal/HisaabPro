@@ -10,6 +10,7 @@ import { PAYMENT_MODE_LABELS, MODES_WITH_REFERENCE } from '../payment.constants'
 import { getReferencePlaceholder } from '../payment.utils'
 import type { PaymentMode } from '../payment.types'
 import { Textarea } from '@/components/ui/Textarea'
+import { Input } from '@/components/ui/Input'
 
 const PAYMENT_MODES: PaymentMode[] = [
   'CASH', 'UPI', 'BANK_TRANSFER', 'CHEQUE', 'NEFT_RTGS_IMPS', 'CREDIT_CARD', 'OTHER',
@@ -63,7 +64,7 @@ export function PaymentDetailsSection({
         <label className="label" htmlFor="payment-amount">{t.amountRequired}</label>
         <div className="payment-amount-field">
           <span className="payment-amount-prefix" aria-hidden="true">₹</span>
-          <input
+          <Input
             id="payment-amount"
             type="number"
             inputMode="decimal"
@@ -84,7 +85,7 @@ export function PaymentDetailsSection({
       <div className="payment-row">
         <div className="payment-field payment-field-half">
           <label className="label" htmlFor="payment-date">{t.dateRequired}</label>
-          <input
+          <Input
             id="payment-date"
             type="date"
             className="input"
@@ -121,7 +122,7 @@ export function PaymentDetailsSection({
       {showReference && (
         <div className="payment-field">
           <label className="label" htmlFor="payment-ref">{t.referenceNumberLabel}</label>
-          <input
+          <Input
             id="payment-ref"
             type="text"
             className="input"

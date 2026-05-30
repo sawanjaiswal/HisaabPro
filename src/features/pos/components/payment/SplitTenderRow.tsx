@@ -6,6 +6,7 @@ import { paiseToInrNumeric } from '../../utils/pos.format'
 import { PAYMENT_MODES } from '../../utils/pos.constants'
 import type { PaymentSplit } from '../../types/pos.types'
 import type { TranslationKey } from '@/lib/translations'
+import { Input } from '@/components/ui/Input'
 
 interface SplitTenderRowProps {
   split:        PaymentSplit
@@ -34,7 +35,7 @@ export function SplitTenderRow({
   return (
     <div className="pos-split-row">
       <span className="pos-split-row__mode">{label}</span>
-      <input
+      <Input
         type="number"
         inputMode="decimal"
         className="pos-split-row__amount"

@@ -15,6 +15,7 @@ import { getFYClosures, closeFY, reopenFY } from '@/features/reports/finance.ser
 import type { FYClosure } from '@/features/reports/finance.types'
 import './accounting.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Input } from '@/components/ui/Input'
 
 function fyLabel(fy: string): string {
   const s = 2000 + parseInt(fy.slice(0, 2), 10)
@@ -123,7 +124,7 @@ export default function FYClosurePage() {
             <span>{t.closeFinancialYear}</span>
           </div>
           <div className="fy-close-card__body">
-            <input
+            <Input
               type="text"
               className="fy-close-card__input"
               placeholder={t.fyPlaceholder}

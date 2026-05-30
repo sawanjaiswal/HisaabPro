@@ -14,6 +14,7 @@ import { queryKeys } from '@/lib/query-keys'
 import { useLanguage } from '@/hooks/useLanguage'
 import '../stock-verification.css'
 import './stock-verification-start.css'
+import { Input } from '@/components/ui/Input'
 
 export default function StockVerificationStartPage() {
   const { t } = useLanguage()
@@ -70,7 +71,7 @@ export default function StockVerificationStartPage() {
                 {t.countNameLabel}
                 <span className="sv-start__required" aria-hidden="true"> *</span>
               </label>
-              <input
+              <Input
                 id="count-name"
                 type="text"
                 className="sv-start__input"

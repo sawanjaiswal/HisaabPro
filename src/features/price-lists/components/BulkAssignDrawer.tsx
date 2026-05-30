@@ -10,6 +10,7 @@ import { ApiError } from '@/lib/api'
 import { getParties } from '@/features/parties/party.service'
 import { useBulkAssignParties } from '../price-list-queries'
 import './bulk-assign-drawer.css'
+import { Input } from '@/components/ui/Input'
 
 interface BulkAssignDrawerProps {
   open: boolean
@@ -93,7 +94,7 @@ export function BulkAssignDrawer({ open, onClose, priceListId, listName }: BulkA
       <div className="bad">
         <div className="bad__search-wrap">
           <Search size={16} className="bad__search-icon" aria-hidden="true" />
-          <input
+          <Input
             className="bad__search" type="search"
             placeholder={t.plBulkAssignSearch} value={search}
             onChange={(e) => setSearch(e.target.value)} aria-label={t.plBulkAssignSearch}
@@ -143,7 +144,7 @@ export function BulkAssignDrawer({ open, onClose, priceListId, listName }: BulkA
               return (
                 <li key={party.id} className="bad__row">
                   <label className="bad__label">
-                    <input type="checkbox" className="bad__checkbox" checked={selected.has(party.id)}
+                    <Input type="checkbox" className="bad__checkbox" checked={selected.has(party.id)}
                       onChange={() => toggle(party.id)} aria-label={party.name} />
                     <span className="bad__party-name">{party.name}</span>
                     {hasOtherList && party.priceList && (

@@ -5,6 +5,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import type { VehicleType } from '../ecompliance.types'
 import { Button } from '@/components/ui/Button'
 import { Select, SelectItem } from '@/components/ui/Select'
+import { Input } from '@/components/ui/Input'
 
 interface EWayBillPartBFormProps {
   initialVehicleNumber?: string
@@ -46,7 +47,7 @@ export const EWayBillPartBForm: React.FC<EWayBillPartBFormProps> = ({
       <div className="ewb-form-row">
         <div className="input-group">
           <label className="input-label" htmlFor="partb-vehicle">{t.vehicleNumber}</label>
-          <input
+          <Input
             id="partb-vehicle"
             className="input"
             type="text"

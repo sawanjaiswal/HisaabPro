@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { getNextStatuses } from '../custom-orders.utils'
 import { useTransitionCustomOrder } from '../hooks/useTransitionCustomOrder'
 import type { CustomOrderStatus } from '../custom-orders.types'
+import { Input } from '@/components/ui/Input'
 
 interface CustomOrderStatusActionsProps {
   orderId: string
@@ -71,7 +72,7 @@ export function CustomOrderStatusActions({ orderId, orderTitle, currentStatus }:
           <label style={{ fontSize: 'var(--fs-sm)', fontWeight: 500, color: 'var(--color-error-700)' }}>
             Reason for cancellation *
           </label>
-          <input
+          <Input
             type="text"
             className="input"
             value={cancelReason}

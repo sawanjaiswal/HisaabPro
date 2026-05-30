@@ -7,6 +7,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { PaymentTermsSelector } from './PaymentTermsSelector'
 import type { DocumentFormData, PaymentTerms } from '../invoice.types'
 import { Textarea } from '@/components/ui/Textarea'
+import { Input } from '@/components/ui/Input'
 
 interface InvoiceDetailsSectionProps {
   documentDate: string
@@ -35,7 +36,7 @@ export function InvoiceDetailsSection({
     <div className="line-items-section py-0">
       <div className="line-item-field">
         <label className="label" htmlFor="invoice-date">{t.invoiceDateLabel}</label>
-        <input
+        <Input
           id="invoice-date"
           type="date"
           className="input"
@@ -55,7 +56,7 @@ export function InvoiceDetailsSection({
 
       <div className="line-item-field">
         <label className="label" htmlFor="invoice-vehicle">{t.vehicleNumberLabel}</label>
-        <input
+        <Input
           id="invoice-vehicle"
           type="text"
           className="input input-uppercase"
@@ -94,7 +95,7 @@ export function InvoiceDetailsSection({
       </div>
 
       <label className="checkbox-label">
-        <input
+        <Input
           type="checkbox"
           checked={includeSignature}
           onChange={(e) => onUpdateField('includeSignature', e.target.checked)}

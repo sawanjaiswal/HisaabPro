@@ -4,6 +4,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { Select, SelectItem } from '@/components/ui/Select'
 import type { SegmentFilter } from '../marketing.types'
 import { useSegmentPreview } from '../hooks/useSegmentPreview'
+import { Input } from '@/components/ui/Input'
 
 interface Props {
   value: SegmentFilter
@@ -43,7 +44,7 @@ export function AudiencePicker({ value, onChange }: Props) {
       {/* Tags */}
       <div>
         <label style={labelStyle} htmlFor="seg-tags">{t.marketingTagsLabel}</label>
-        <input
+        <Input
           id="seg-tags"
           type="text"
           placeholder={t.marketingTagsPh}
@@ -59,7 +60,7 @@ export function AudiencePicker({ value, onChange }: Props) {
       {/* City */}
       <div>
         <label style={labelStyle} htmlFor="seg-city">{t.marketingCityLabel}</label>
-        <input
+        <Input
           id="seg-city"
           type="text"
           placeholder={t.marketingCityPh}
@@ -73,7 +74,7 @@ export function AudiencePicker({ value, onChange }: Props) {
       {/* Inactive days */}
       <div>
         <label style={labelStyle} htmlFor="seg-inactive">{t.marketingInactiveDaysLabel}</label>
-        <input
+        <Input
           id="seg-inactive"
           type="number"
           min={0}
@@ -88,7 +89,7 @@ export function AudiencePicker({ value, onChange }: Props) {
       {/* Outstanding */}
       <div>
         <label style={labelStyle} htmlFor="seg-outstanding">{t.marketingOutstandingLabel}</label>
-        <input
+        <Input
           id="seg-outstanding"
           type="number"
           min={0}
@@ -104,7 +105,7 @@ export function AudiencePicker({ value, onChange }: Props) {
 
       {/* Birthday this week */}
       <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '14px', color: 'var(--color-gray-700)' }}>
-        <input
+        <Input
           type="checkbox"
           checked={value.birthdayThisWeek ?? false}
           onChange={(e) => update('birthdayThisWeek', e.target.checked || undefined)}

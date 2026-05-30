@@ -3,6 +3,7 @@
 import React from 'react'
 import { Search, X, ChevronDown } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Input } from '@/components/ui/Input'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -35,7 +36,7 @@ export const PartySearchField: React.FC<PartySearchFieldProps> = ({
         size={16}
         aria-hidden="true"
       />
-      <input
+      <Input
         id="party-search-input"
         ref={inputRef}
         type="text"

@@ -9,6 +9,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { useSerialLookup } from './useSerialLookup'
 import { SerialDetailCard } from './components/SerialDetailCard'
 import './serial-numbers.css'
+import { Input } from '@/components/ui/Input'
 
 export default function SerialLookupPage() {
   const { t } = useLanguage()
@@ -21,7 +22,7 @@ export default function SerialLookupPage() {
       <PageContainer className="stagger-enter space-y-6">
         <div className="serial-lookup-search">
           <Search size={18} aria-hidden="true" className="serial-search__icon" />
-          <input
+          <Input
             type="search"
             className="serial-search__input serial-search__input--large"
             placeholder={t.enterSerialNumber}

@@ -113,7 +113,7 @@ export function LoyaltyProgramForm({ program }: LoyaltyProgramFormProps) {
           <span className="loyalty-toggle-row__label">{t.loyaltyEnableLabel}</span>
           <span className="loyalty-toggle-row__desc">{t.loyaltyEnableHint}</span>
         </div>
-        <input
+        <Input
           type="checkbox"
           aria-label={t.loyaltyEnableLabel}
           checked={form.enabled}
@@ -198,7 +198,7 @@ export function LoyaltyProgramForm({ program }: LoyaltyProgramFormProps) {
             <span className="loyalty-toggle-row__label">{t.loyaltyExpiryToggleLabel}</span>
             <span className="loyalty-toggle-row__desc">{t.loyaltyExpiryNeverHint}</span>
           </div>
-          <input
+          <Input
             type="checkbox"
             aria-label={t.loyaltyExpiryToggleLabel}
             checked={form.expiryEnabled}

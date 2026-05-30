@@ -21,6 +21,7 @@ import { useAgingBucketParties } from '../useAgingBucketParties'
 import { ReminderActionBar } from '../components/ReminderActionBar'
 import type { AgingBucketParam, PartyInBucket } from '../collections.types'
 import '../styles/aging.css'
+import { Input } from '@/components/ui/Input'
 
 const VALID_BUCKETS: AgingBucketParam[] = ['current', '31', '61', '91']
 const BUCKET_LABELS: Record<AgingBucketParam, string> = {
@@ -55,7 +56,7 @@ function PartyCard({ party, selected, onToggle, overdueLabel, overduesLabel, las
       onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') onToggle(party.partyId) }}
     >
       <div className="bucket-party-card__select">
-        <input type="checkbox" readOnly checked={selected} tabIndex={-1} aria-hidden="true" />
+        <Input type="checkbox" readOnly checked={selected} tabIndex={-1} aria-hidden="true" />
       </div>
       <div className="bucket-party-card__body">
         <p className="bucket-party-card__name">{party.name}</p>
@@ -153,7 +154,7 @@ export default function AgingBucketList() {
         {allParties.length > 0 && (
           <div className="bucket-select-all">
             <label className="bucket-select-all__label">
-              <input type="checkbox" checked={allOnPageSelected}
+              <Input type="checkbox" checked={allOnPageSelected}
                 onChange={() => {
                   setSelectedIds(allOnPageSelected
                     ? new Set()

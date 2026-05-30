@@ -7,6 +7,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { getDocuments } from '@/features/invoices/invoice.service'
 import { formatPaise } from '@/lib/format'
 import type { DocumentSummary } from '@/features/invoices/invoice-document.types'
+import { Input } from '@/components/ui/Input'
 
 interface TemplatePickerProps {
   value: string
@@ -99,7 +100,7 @@ export function TemplatePicker({ value, onChange, error }: TemplatePickerProps) 
 
             <div className="rf-template-search">
               <Search size={16} aria-hidden="true" className="rf-template-search__icon" />
-              <input
+              <Input
                 type="search"
                 className="rf-template-search__input"
                 placeholder={t.recurringTemplatePickerSearch ?? 'Search invoices...'}

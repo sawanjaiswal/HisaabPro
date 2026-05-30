@@ -96,7 +96,7 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
           </button>
         </div>
         {!form.autoGenerateSku && (
-          <input
+          <Input
             id="product-sku"
             className={`input${errors.sku ? ' input-error-border' : ''}`}
             value={form.sku ?? ''}
@@ -153,7 +153,7 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
         <span className="input-label">{t.salePriceLabel}</span>
         <div className="input-prefix-wrap">
           <span className="input-prefix" aria-hidden="true">{t.currencyPrefix}</span>
-          <input
+          <Input
             id="product-sale-price"
             className={`input input-prefixed${errors.salePrice ? ' input-error-border' : ''}`}
             type="number"
@@ -173,7 +173,7 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
         <span className="input-label">{t.purchasePriceLabel} <span className="text-optional">({t.notesOptionalLabel})</span></span>
         <div className="input-prefix-wrap">
           <span className="input-prefix" aria-hidden="true">{t.currencyPrefix}</span>
-          <input
+          <Input
             id="product-purchase-price"
             className="input input-prefixed"
             type="number"

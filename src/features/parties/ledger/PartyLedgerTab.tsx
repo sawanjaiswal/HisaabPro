@@ -15,6 +15,7 @@ import { LedgerError } from './components/LedgerError'
 import { formatPaise } from '@/lib/format'
 import type { LedgerVoucherType } from './ledger.types'
 import './ledger.css'
+import { Input } from '@/components/ui/Input'
 
 interface PartyLedgerTabProps {
   partyId: string
@@ -98,7 +99,7 @@ export function PartyLedgerTab({ partyId, partyName, businessName }: PartyLedger
         <div className="ledger-date-row">
           <div className="ledger-date-group">
             <label htmlFor="ledger-from" className="ledger-date-label">{t.fromDate}</label>
-            <input
+            <Input
               id="ledger-from"
               type="date"
               className="ledger-date-input"
@@ -110,7 +111,7 @@ export function PartyLedgerTab({ partyId, partyName, businessName }: PartyLedger
           </div>
           <div className="ledger-date-group">
             <label htmlFor="ledger-to" className="ledger-date-label">{t.toDate}</label>
-            <input
+            <Input
               id="ledger-to"
               type="date"
               className="ledger-date-input"

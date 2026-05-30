@@ -13,6 +13,7 @@ import { startReconciliation } from '../reconciliation.service'
 import { ApiError } from '@/lib/api'
 import type { GstrInputItem } from '../reconciliation.types'
 import { Textarea } from '@/components/ui/Textarea'
+import { Input } from '@/components/ui/Input'
 
 interface Props {
   onSuccess: (id: string) => void
@@ -115,7 +116,7 @@ export const ReconciliationUploadForm: React.FC<Props> = ({ onSuccess }) => {
     <form className="recon-upload-form" onSubmit={handleSubmit} noValidate>
       <div className="recon-upload-form__field">
         <label className="recon-upload-form__label" htmlFor="recon-period">{t.reconPeriodLabel}</label>
-        <input
+        <Input
           id="recon-period"
           type="month"
           className="recon-upload-form__input"
@@ -139,7 +140,7 @@ export const ReconciliationUploadForm: React.FC<Props> = ({ onSuccess }) => {
           <Upload size={16} aria-hidden="true" />
           {t.chooseFile}
         </button>
-        <input
+        <Input
           ref={fileRef}
           id="recon-file"
           type="file"

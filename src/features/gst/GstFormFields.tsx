@@ -12,6 +12,7 @@ import { INDIAN_STATES } from '@/features/tax/tax.constants'
 import type { CompositionRate, TaxPricingMode } from './gst.types'
 import type { GstFormState, GstinValidation } from './useGstSettingsForm'
 import { Textarea } from '@/components/ui/Textarea'
+import { Input } from '@/components/ui/Input'
 
 interface GstFormFieldsProps {
   form: GstFormState
@@ -50,7 +51,7 @@ export function GstFormFields({
       {/* GSTIN input */}
       <div className="gsv2-field">
         <label className="gsv2-label" htmlFor="gsv2-gstin">{t.gstin}</label>
-        <input
+        <Input
           id="gsv2-gstin"
           className={[
             'gsv2-input',

@@ -5,6 +5,7 @@ import { Camera, ImageIcon } from 'lucide-react'
 import { ACCEPTED_IMAGE_EXTENSIONS, ACCEPTED_IMAGE_TYPES } from '../bill-scan.constants'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
 
 interface BillCaptureInputProps {
   onCapture: (file: File) => void
@@ -61,7 +62,7 @@ export function BillCaptureInput({ onCapture }: BillCaptureInputProps) {
       </p>
 
       {/* Hidden file inputs */}
-      <input
+      <Input
         ref={cameraRef}
         type="file"
         accept={ACCEPTED_IMAGE_TYPES}
@@ -71,7 +72,7 @@ export function BillCaptureInput({ onCapture }: BillCaptureInputProps) {
         aria-hidden="true"
         tabIndex={-1}
       />
-      <input
+      <Input
         ref={galleryRef}
         type="file"
         accept={`${ACCEPTED_IMAGE_TYPES},${ACCEPTED_IMAGE_EXTENSIONS}`}

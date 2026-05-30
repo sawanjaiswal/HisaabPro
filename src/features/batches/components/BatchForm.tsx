@@ -6,6 +6,7 @@ import type { Batch } from '../batch.types'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
 import { Textarea } from '@/components/ui/Textarea'
+import { Input } from '@/components/ui/Input'
 
 interface BatchFormProps {
   productId: string
@@ -32,7 +33,7 @@ export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProp
         <label htmlFor="batchNumber" className="form-label">
           {t.batchNumberStar}
         </label>
-        <input
+        <Input
           id="batchNumber"
           type="text"
           className={`form-input${errors.batchNumber ? ' form-input--error' : ''}`}
@@ -50,7 +51,7 @@ export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProp
       <div className="batch-form-row">
         <div className="form-group">
           <label htmlFor="manufacturingDate" className="form-label">{t.mfgDate}</label>
-          <input
+          <Input
             id="manufacturingDate"
             type="date"
             className="form-input"
@@ -61,7 +62,7 @@ export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProp
 
         <div className="form-group">
           <label htmlFor="expiryDate" className="form-label">{t.expiryDate}</label>
-          <input
+          <Input
             id="expiryDate"
             type="date"
             className="form-input"
@@ -74,7 +75,7 @@ export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProp
       <div className="batch-form-row">
         <div className="form-group">
           <label htmlFor="costPrice" className="form-label">{t.costPriceRs}</label>
-          <input
+          <Input
             id="costPrice"
             type="number"
             className={`form-input${errors.costPrice ? ' form-input--error' : ''}`}
@@ -92,7 +93,7 @@ export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProp
 
         <div className="form-group">
           <label htmlFor="salePrice" className="form-label">{t.salePriceRs}</label>
-          <input
+          <Input
             id="salePrice"
             type="number"
             className={`form-input${errors.salePrice ? ' form-input--error' : ''}`}
@@ -112,7 +113,7 @@ export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProp
       {!existingBatch && (
         <div className="form-group">
           <label htmlFor="currentStock" className="form-label">{t.openingStockLabel}</label>
-          <input
+          <Input
             id="currentStock"
             type="number"
             className={`form-input${errors.currentStock ? ' form-input--error' : ''}`}

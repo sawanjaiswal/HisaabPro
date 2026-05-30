@@ -12,6 +12,7 @@ import { validateCouponCode, applyCouponCode, removeCouponCode } from '../coupon
 import type { CouponValidationResult, CouponApplyResult } from '../coupon.types'
 import './coupon-input.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Input } from '@/components/ui/Input'
 
 interface CouponInputProps {
   planId?: string
@@ -136,7 +137,7 @@ export function CouponInput({ planId, planAmountPaise, razorpaySubscriptionId, o
   return (
     <div className="coupon-input-wrapper">
       <div className="coupon-input-row">
-        <input
+        <Input
           type="text"
           className="coupon-input-field"
           value={code}

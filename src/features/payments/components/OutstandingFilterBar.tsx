@@ -6,6 +6,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import type { OutstandingType, OutstandingSortBy } from '../payment.types'
 import { OUTSTANDING_TYPE_LABELS, OUTSTANDING_SORT_LABELS } from '../payment.constants'
 import { Select, SelectItem } from '@/components/ui/Select'
+import { Input } from '@/components/ui/Input'
 
 interface OutstandingFilterBarProps {
   search: string
@@ -36,7 +37,7 @@ export const OutstandingFilterBar: React.FC<OutstandingFilterBarProps> = ({
     <div className="outstanding-filter-bar">
       <div className="search-bar">
         <Search size={18} aria-hidden="true" />
-        <input
+        <Input
           type="search"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}

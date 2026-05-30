@@ -6,6 +6,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import type { DocumentStatus } from '../../invoices/invoice.types'
 import '../sales-filter-bar.css'
 import '../../invoices/invoice-filter-bar.css'
+import { Input } from '@/components/ui/Input'
 
 type StatusFilter = DocumentStatus | 'ALL'
 
@@ -35,7 +36,7 @@ export const DocumentListFilterBar: React.FC<DocumentListFilterBarProps> = ({
     <div className="sales-filter-bar">
       <div className="sales-filter-search">
         <Search size={16} aria-hidden="true" className="sales-filter-search__icon" />
-        <input
+        <Input
           type="search"
           className="sales-filter-search__input"
           placeholder={t.searchInvoicesPlaceholder ?? 'Search by party or number…'}

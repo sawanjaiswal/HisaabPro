@@ -7,6 +7,7 @@ import {
 } from '../report.constants'
 import type { StockStatus } from '../report.types'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Input } from '@/components/ui/Input'
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
 
@@ -71,7 +72,7 @@ export function StockSummaryFilterBar({
             pointerEvents: 'none',
           }}
         />
-        <input
+        <Input
           type="search"
           className="input"
           placeholder={t.searchProductsPlaceholder}

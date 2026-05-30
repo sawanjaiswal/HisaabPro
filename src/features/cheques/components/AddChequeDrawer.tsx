@@ -7,6 +7,7 @@ import { ApiError } from '@/lib/api'
 import { createCheque } from '../cheque.service'
 import type { ChequeType, CreateChequeInput } from '../cheque.types'
 import { toLocalISODate } from '../../../lib/format'
+import { Input } from '@/components/ui/Input'
 
 const TODAY = toLocalISODate(new Date())
 
@@ -48,7 +49,7 @@ export function AddChequeDrawer({ open, onClose, onSuccess }: AddChequeDrawerPro
         <div className="cheque-drawer__row py-0">
           <div className="cheque-drawer__field py-0">
             <label className="cheque-drawer__label py-0" htmlFor="chqNumber">{t.chequeNumberLabel}</label>
-            <input id="chqNumber" required className="cheque-drawer__input py-0" value={form.chequeNumber} onChange={(e) => setForm((f) => ({ ...f, chequeNumber: e.target.value }))} placeholder={t.chequeNumberPlaceholder} />
+            <Input id="chqNumber" required className="cheque-drawer__input py-0" value={form.chequeNumber} onChange={(e) => setForm((f) => ({ ...f, chequeNumber: e.target.value }))} placeholder={t.chequeNumberPlaceholder} />
           </div>
           <div className="cheque-drawer__field py-0">
             <label className="cheque-drawer__label py-0" htmlFor="chqType">{t.type}</label>
@@ -64,16 +65,16 @@ export function AddChequeDrawer({ open, onClose, onSuccess }: AddChequeDrawerPro
         </div>
         <div className="cheque-drawer__field py-0">
           <label className="cheque-drawer__label py-0" htmlFor="chqBank">{t.bankNameLabel}</label>
-          <input id="chqBank" required className="cheque-drawer__input py-0" value={form.bankName} onChange={(e) => setForm((f) => ({ ...f, bankName: e.target.value }))} placeholder={t.bankNamePlaceholder} />
+          <Input id="chqBank" required className="cheque-drawer__input py-0" value={form.bankName} onChange={(e) => setForm((f) => ({ ...f, bankName: e.target.value }))} placeholder={t.bankNamePlaceholder} />
         </div>
         <div className="cheque-drawer__row py-0">
           <div className="cheque-drawer__field py-0">
             <label className="cheque-drawer__label py-0" htmlFor="chqAmount">{t.amountRupees}</label>
-            <input id="chqAmount" type="number" min="0.01" step="0.01" required className="cheque-drawer__input py-0" value={form.amount || ''} onChange={(e) => setForm((f) => ({ ...f, amount: parseFloat(e.target.value) || 0 }))} placeholder={t.amountPlaceholder} />
+            <Input id="chqAmount" type="number" min="0.01" step="0.01" required className="cheque-drawer__input py-0" value={form.amount || ''} onChange={(e) => setForm((f) => ({ ...f, amount: parseFloat(e.target.value) || 0 }))} placeholder={t.amountPlaceholder} />
           </div>
           <div className="cheque-drawer__field py-0">
             <label className="cheque-drawer__label py-0" htmlFor="chqDate">{t.chequeDateLabel}</label>
-            <input id="chqDate" type="date" required className="cheque-drawer__input py-0" value={form.chequeDate} onChange={(e) => setForm((f) => ({ ...f, chequeDate: e.target.value }))} />
+            <Input id="chqDate" type="date" required className="cheque-drawer__input py-0" value={form.chequeDate} onChange={(e) => setForm((f) => ({ ...f, chequeDate: e.target.value }))} />
           </div>
         </div>
         <button type="submit" className="cheque-drawer__submit-btn py-0" disabled={submitting} aria-busy={submitting}>

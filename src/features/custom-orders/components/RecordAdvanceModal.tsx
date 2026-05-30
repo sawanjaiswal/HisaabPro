@@ -6,6 +6,7 @@ import { Select, SelectItem } from '@/components/ui/Select'
 import { X } from 'lucide-react'
 import { useRecordAdvance } from '../hooks/useRecordAdvance'
 import { ADVANCE_METHODS } from '../custom-orders.constants'
+import { Input } from '@/components/ui/Input'
 
 interface RecordAdvanceModalProps {
   orderId: string
@@ -89,7 +90,7 @@ export function RecordAdvanceModal({ orderId, orderTitle, onClose }: RecordAdvan
         <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
             <label className="label" htmlFor="adv-amount">Amount (₹) *</label>
-            <input
+            <Input
               id="adv-amount"
               type="number"
               className="input"
@@ -115,7 +116,7 @@ export function RecordAdvanceModal({ orderId, orderTitle, onClose }: RecordAdvan
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
             <label className="label" htmlFor="adv-ref">Reference (optional)</label>
-            <input
+            <Input
               id="adv-ref"
               type="text"
               className="input"
@@ -128,7 +129,7 @@ export function RecordAdvanceModal({ orderId, orderTitle, onClose }: RecordAdvan
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
             <label className="label" htmlFor="adv-notes">Notes (optional)</label>
-            <input
+            <Input
               id="adv-notes"
               type="text"
               className="input"

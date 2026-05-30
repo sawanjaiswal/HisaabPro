@@ -1,5 +1,6 @@
 import type { TransactionLockConfig } from '../settings.types'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Input } from '@/components/ui/Input'
 
 interface ApprovalTogglesSectionProps {
   requireApprovalForEdit: boolean
@@ -27,7 +28,7 @@ export function ApprovalTogglesSection({
             </p>
           </div>
           <label className="settings-toggle" aria-label={t.requireApprovalEditsAria}>
-            <input
+            <Input
               type="checkbox"
               checked={requireApprovalForEdit}
               onChange={(e) => onUpdate('requireApprovalForEdit', e.target.checked)}
@@ -44,7 +45,7 @@ export function ApprovalTogglesSection({
             </p>
           </div>
           <label className="settings-toggle" aria-label={t.requireApprovalDeletesAria}>
-            <input
+            <Input
               type="checkbox"
               checked={requireApprovalForDelete}
               onChange={(e) => onUpdate('requireApprovalForDelete', e.target.checked)}

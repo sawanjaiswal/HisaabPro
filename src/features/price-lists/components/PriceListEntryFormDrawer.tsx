@@ -7,6 +7,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { PRICE_LIST_MODES, MODE_LABELS, MODE_DESCRIPTIONS, bpsToPercent } from '../price-list.constants'
 import { PriceListProductPicker } from './PriceListProductPicker'
 import type { PriceListEntry, PriceListEntryFormData, PriceListMode } from '../price-list.types'
+import { Input } from '@/components/ui/Input'
 
 interface PriceListEntryFormDrawerProps {
   open: boolean
@@ -139,7 +140,7 @@ export function PriceListEntryFormDrawer({
         {/* Value */}
         <div className="pl-form__field">
           <label htmlFor="pl-entry-value" className="pl-form__label">{valueLabel}</label>
-          <input
+          <Input
             id="pl-entry-value"
             type="number"
             className={`input${errors.value ? ' input--error' : ''}`}
@@ -159,7 +160,7 @@ export function PriceListEntryFormDrawer({
           <div className="pl-form__row">
             <div className="pl-form__field">
               <label htmlFor="pl-entry-minqty" className="pl-form__hint">{t.plMinQty}</label>
-              <input
+              <Input
                 id="pl-entry-minqty"
                 type="number"
                 className={`input${errors.minQty ? ' input--error' : ''}`}
@@ -173,7 +174,7 @@ export function PriceListEntryFormDrawer({
             </div>
             <div className="pl-form__field">
               <label htmlFor="pl-entry-maxqty" className="pl-form__hint">{t.plMaxQty}</label>
-              <input
+              <Input
                 id="pl-entry-maxqty"
                 type="number"
                 className={`input${errors.maxQty ? ' input--error' : ''}`}

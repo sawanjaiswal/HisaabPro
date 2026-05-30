@@ -12,6 +12,7 @@ import { Select, SelectItem } from '@/components/ui/Select'
 import { CHANNEL_LABEL } from '../marketing.constants'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import type { MarketingChannel, ReminderRuleTrigger } from '../marketing.types'
+import { Input } from '@/components/ui/Input'
 
 export default function ReminderRuleFormPage() {
   const { id } = useParams<{ id: string }>()
@@ -88,7 +89,7 @@ export default function ReminderRuleFormPage() {
         {/* Name */}
         <div>
           <label htmlFor="rule-name" style={labelStyle}>{t.marketingRuleNameLabel}</label>
-          <input
+          <Input
             id="rule-name"
             type="text"
             value={name}
@@ -112,7 +113,7 @@ export default function ReminderRuleFormPage() {
           <label htmlFor="rule-offset" style={labelStyle}>
             {offsetLabel}
           </label>
-          <input
+          <Input
             id="rule-offset"
             type="number"
             min={0}

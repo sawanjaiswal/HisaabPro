@@ -1,6 +1,7 @@
 /** Settings — Role name text input with validation error display */
 
 import { useLanguage } from '@/hooks/useLanguage'
+import { Input } from '@/components/ui/Input'
 
 interface RoleNameInputProps {
   value: string
@@ -23,7 +24,7 @@ export function RoleNameInput({ value, error, onChange }: RoleNameInputProps) {
       <label htmlFor="role-name" style={LABEL_STYLE}>
         {t.roleNameLabel}
       </label>
-      <input
+      <Input
         id="role-name"
         type="text"
         className="input"

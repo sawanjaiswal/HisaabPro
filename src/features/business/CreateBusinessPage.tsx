@@ -5,6 +5,7 @@ import { ROUTES } from '@/config/routes.config'
 import { BUSINESS_TYPE_OPTIONS, BUSINESS_NAME_MAX } from './business.constants'
 import { useCreateBusiness } from './useCreateBusiness'
 import './create-business.css'
+import { Input } from '@/components/ui/Input'
 
 export default function CreateBusinessPage() {
   const { businesses } = useAuth()
@@ -36,7 +37,7 @@ export default function CreateBusinessPage() {
             <label htmlFor="biz-name" className="create-biz-label">
               Business Name <span aria-hidden="true">*</span>
             </label>
-            <input
+            <Input
               id="biz-name"
               type="text"
               className={`create-biz-input${errors.name ? ' create-biz-input--error' : ''}`}

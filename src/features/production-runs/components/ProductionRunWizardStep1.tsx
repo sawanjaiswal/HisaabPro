@@ -6,6 +6,7 @@ import { listBoms } from '../../bom/bom.service'
 import { formatVersionBadge } from '../../bom/bom.utils'
 import type { BomSummaryDTO } from '../../bom/bom.types'
 import type { WizardFormState } from '../production-run.types'
+import { Input } from '@/components/ui/Input'
 
 interface Step1Props {
   wizard: WizardFormState
@@ -69,7 +70,7 @@ export function ProductionRunWizardStep1({ wizard, onUpdate, onNext }: Step1Prop
               key={bom.id}
               className={`pr-wizard-bom-option${wizard.bomId === bom.id ? ' is-selected' : ''}`}
             >
-              <input
+              <Input
                 type="radio"
                 name="bom-select"
                 value={bom.id}

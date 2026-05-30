@@ -13,6 +13,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useToast } from '@/hooks/useToast'
 import { api } from '@/lib/api'
+import { Input } from '@/components/ui/Input'
 const VPA_RE = /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z][a-zA-Z]{1,64}$/
 
 interface UpiIdInputProps {
@@ -78,7 +79,7 @@ export function UpiIdInput({ initialValue, onSaved }: UpiIdInputProps) {
         <Smartphone size={14} aria-hidden="true" style={{ verticalAlign: 'middle', marginRight: 4 }} />
         {t.upiVpaSettingsLabel}
       </label>
-      <input
+      <Input
         id="upi-vpa-input"
         type="text"
         className={`form-input${error ? ' form-input--error' : ''}`}

@@ -3,6 +3,7 @@ import { SERIAL_NUMBER_MAX, NOTES_MAX } from '../serial-number.constants'
 import { useSerialForm } from '../useSerialForm'
 import { Button } from '@/components/ui/Button'
 import { Textarea } from '@/components/ui/Textarea'
+import { Input } from '@/components/ui/Input'
 
 interface SerialFormProps {
   productId: string
@@ -22,7 +23,7 @@ export function SerialForm({ productId, onSuccess }: SerialFormProps) {
     <form className="serial-form" onSubmit={onSubmit} noValidate>
       <div className="serial-form__field">
         <label htmlFor="serialNumber" className="serial-form__label">{t.serialNumberRequired}</label>
-        <input
+        <Input
           id="serialNumber"
           type="text"
           className={`serial-form__input${errors.serialNumber ? ' serial-form__input--error' : ''}`}

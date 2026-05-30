@@ -4,6 +4,7 @@ import { APP_NAME } from '../../config/app.config'
 import { useRegister } from './useRegister'
 import { ROUTES } from '@/config/routes.config'
 import './LoginPage.css'
+import { Input } from '@/components/ui/Input'
 
 const phoneRegex = /^[6-9]\d{9}$/
 
@@ -38,7 +39,7 @@ export default function RegisterPage() {
           <div className="login-page__field">
             <label className="login-page__label" htmlFor="name">Full Name</label>
             <div className="login-page__input-wrapper">
-              <input
+              <Input
                 id="name"
                 type="text"
                 className="login-page__input"
@@ -54,7 +55,7 @@ export default function RegisterPage() {
           <div className="login-page__field">
             <label className="login-page__label" htmlFor="phone">Mobile Number</label>
             <div className="login-page__input-wrapper">
-              <input
+              <Input
                 id="phone"
                 type="tel"
                 inputMode="numeric"
@@ -70,7 +71,7 @@ export default function RegisterPage() {
           <div className="login-page__field">
             <label className="login-page__label" htmlFor="password">Password</label>
             <div className="login-page__input-wrapper">
-              <input
+              <Input
                 id="password"
                 type="password"
                 className="login-page__input"

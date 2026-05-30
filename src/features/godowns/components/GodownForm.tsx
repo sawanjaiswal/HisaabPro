@@ -5,6 +5,7 @@ import { GODOWN_NAME_MAX, ADDRESS_MAX } from '../godown.constants'
 import type { CreateGodownData } from '../godown.types'
 import { Button } from '@/components/ui/Button'
 import { Textarea } from '@/components/ui/Textarea'
+import { Input } from '@/components/ui/Input'
 
 interface GodownFormProps {
   form: CreateGodownData
@@ -27,7 +28,7 @@ export function GodownForm({ form, errors, isSubmitting, onUpdate, onSubmit, sub
         <label htmlFor="godown-name" className="godown-form__label">
           {t.godownName} <span aria-hidden="true">*</span>
         </label>
-        <input
+        <Input
           id="godown-name"
           type="text"
           className={`godown-form__input${errors.name ? ' godown-form__input--error' : ''}`}
@@ -65,7 +66,7 @@ export function GodownForm({ form, errors, isSubmitting, onUpdate, onSubmit, sub
       </div>
 
       <label className="godown-form__toggle">
-        <input
+        <Input
           type="checkbox"
           checked={form.isDefault ?? false}
           onChange={(e) => onUpdate('isDefault', e.target.checked)}

@@ -25,6 +25,7 @@ import type { LucideProps } from 'lucide-react'
 import type { SettingsSection as SettingsSectionType, SettingsItem, AppSettings } from '../settings.types'
 import '../settings.css'
 import '../settings-toggle.css'
+import { Input } from '@/components/ui/Input'
 
 type IconComponent = React.FC<LucideProps>
 
@@ -102,7 +103,7 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({ section, onIte
                 {contentEl}
                 <span className="settings-item-action">
                   <span className="settings-toggle">
-                    <input
+                    <Input
                       type="checkbox"
                       checked={getToggleValue(item, settings)}
                       onChange={() => onItemClick(item)}

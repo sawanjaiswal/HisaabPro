@@ -5,6 +5,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import type { TransportMode, VehicleType, EWayBillGenerateInput } from '../ecompliance.types'
 import { Button } from '@/components/ui/Button'
 import { Select, SelectItem } from '@/components/ui/Select'
+import { Input } from '@/components/ui/Input'
 
 interface FormState {
   transportMode: TransportMode
@@ -109,13 +110,13 @@ export const EWayBillGenerateForm: React.FC<EWayBillGenerateFormProps> = ({
       <div className="ewb-form-row">
         <div className="input-group">
           <label className="input-label" htmlFor="ewb-vehicle">{t.vehicleNo}</label>
-          <input id="ewb-vehicle" className="input" type="text" placeholder="MH12AB1234"
+          <Input id="ewb-vehicle" className="input" type="text" placeholder="MH12AB1234"
             value={form.vehicleNumber} maxLength={12}
             onChange={e => set('vehicleNumber', e.target.value.toUpperCase())} />
         </div>
         <div className="input-group">
           <label className="input-label" htmlFor="ewb-dist">{t.distanceKm} *</label>
-          <input id="ewb-dist" className="input" type="number" inputMode="numeric" min="1"
+          <Input id="ewb-dist" className="input" type="number" inputMode="numeric" min="1"
             placeholder="150" value={form.distance}
             onChange={e => set('distance', e.target.value)}
             aria-describedby={errors.distance ? 'ewb-dist-err' : undefined} />
@@ -125,7 +126,7 @@ export const EWayBillGenerateForm: React.FC<EWayBillGenerateFormProps> = ({
       <div className="ewb-form-row">
         <div className="input-group">
           <label className="input-label" htmlFor="ewb-from">{t.fromPincode} *</label>
-          <input id="ewb-from" className="input" type="text" inputMode="numeric" placeholder="110001"
+          <Input id="ewb-from" className="input" type="text" inputMode="numeric" placeholder="110001"
             maxLength={6} value={form.fromPincode}
             onChange={e => set('fromPincode', e.target.value.replace(/\D/g, ''))}
             aria-describedby={errors.fromPincode ? 'ewb-from-err' : undefined} />
@@ -133,7 +134,7 @@ export const EWayBillGenerateForm: React.FC<EWayBillGenerateFormProps> = ({
         </div>
         <div className="input-group">
           <label className="input-label" htmlFor="ewb-to">{t.toPincode} *</label>
-          <input id="ewb-to" className="input" type="text" inputMode="numeric" placeholder="400001"
+          <Input id="ewb-to" className="input" type="text" inputMode="numeric" placeholder="400001"
             maxLength={6} value={form.toPincode}
             onChange={e => set('toPincode', e.target.value.replace(/\D/g, ''))}
             aria-describedby={errors.toPincode ? 'ewb-to-err' : undefined} />
@@ -142,7 +143,7 @@ export const EWayBillGenerateForm: React.FC<EWayBillGenerateFormProps> = ({
       </div>
       <div className="input-group">
         <label className="input-label" htmlFor="ewb-transporter">{t.transporterNameOpt}</label>
-        <input id="ewb-transporter" className="input" type="text" placeholder="e.g. Blue Dart"
+        <Input id="ewb-transporter" className="input" type="text" placeholder="e.g. Blue Dart"
           value={form.transporterName} maxLength={100}
           onChange={e => set('transporterName', e.target.value)} />
       </div>

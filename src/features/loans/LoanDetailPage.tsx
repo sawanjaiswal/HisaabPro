@@ -25,6 +25,7 @@ import type { LoanStatement, LoanTransactionType, CreateLoanTransactionInput } f
 import './loans.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate } from '../../lib/format'
+import { Input } from '@/components/ui/Input'
 
 // TXN_TYPE_LABELS resolved via t at render time — see getTxnTypeLabel()
 function getTxnTypeLabel(type: LoanTransactionType, t: { disbursement: string; repayment: string; interest: string; penalty: string }): string {
@@ -192,16 +193,16 @@ export default function LoanDetailPage() {
           <div className="loan-drawer__row py-0">
             <div className="loan-drawer__field py-0">
               <label className="loan-drawer__label py-0" htmlFor="txnAmount">{t.amountRsLabel}</label>
-              <input id="txnAmount" type="number" min="0.01" step="0.01" required className="loan-drawer__input py-0" value={form.amountRupees} onChange={(e) => setForm((f) => ({ ...f, amountRupees: e.target.value }))} placeholder="0.00" />
+              <Input id="txnAmount" type="number" min="0.01" step="0.01" required className="loan-drawer__input py-0" value={form.amountRupees} onChange={(e) => setForm((f) => ({ ...f, amountRupees: e.target.value }))} placeholder="0.00" />
             </div>
             <div className="loan-drawer__field py-0">
               <label className="loan-drawer__label py-0" htmlFor="txnDate">{t.dateLabel}</label>
-              <input id="txnDate" type="date" required className="loan-drawer__input py-0" value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
+              <Input id="txnDate" type="date" required className="loan-drawer__input py-0" value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
             </div>
           </div>
           <div className="loan-drawer__field py-0">
             <label className="loan-drawer__label py-0" htmlFor="txnNotes">{t.notesOptional}</label>
-            <input id="txnNotes" className="loan-drawer__input py-0" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder={t.txnNotesPlaceholder} />
+            <Input id="txnNotes" className="loan-drawer__input py-0" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder={t.txnNotesPlaceholder} />
           </div>
           <button type="submit" className="loan-drawer__submit-btn py-0" disabled={submitting} aria-busy={submitting}>
             {submitting ? t.loading : t.recordTransaction}

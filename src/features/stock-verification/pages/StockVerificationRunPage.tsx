@@ -17,6 +17,7 @@ import type { VerificationItem } from '../stock-verification.types'
 import { useLanguage } from '@/hooks/useLanguage'
 import '../stock-verification.css'
 import './stock-verification-run.css'
+import { Input } from '@/components/ui/Input'
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -124,7 +125,7 @@ export default function StockVerificationRunPage() {
         {/* Search bar */}
         <div className="sv-run__search-wrap">
           <Search size={18} className="sv-run__search-icon" aria-hidden="true" />
-          <input
+          <Input
             ref={searchRef}
             type="search"
             className="sv-run__search"
