@@ -251,7 +251,7 @@ Merge `caa390d` (2026-05-26), 12 commits + 2 hardening (`ba56470`/`0bd1881`).
 | Epic | Verticals | Effort | Severity |
 |---|---|---|---|
 | ~~V1 — Hourly billing on Jobs~~ ✅ SHIPPED 2026-05-29 | Services/Freelancer/Salon/Clinic | — | done |
-| V2 — Appointment calendar + slot picker | Salon/Clinic | ~2 wks | 🔵 IN FLIGHT 2026-05-31 — schema + BE (incl. convert + waitlist) + 1C reminder trigger + FE-1 + FE-2 landed (tsc 0, vitest 46/46 FE + 49/49 BE incl. cross-tenant + public-booking-signature + soft-delete-guard); verifier + QA next |
+| V2 — Appointment calendar + slot picker | Salon/Clinic | ~2 wks | 🔵 IN FLIGHT 2026-05-31 — full BE + FE + reminder trigger committed `b6b33e3` (101 files, +11,159 LOC; tsc 0, vitest 49/49 BE + 46/46 FE); verifier + QA next |
 | ~~V3 — Recipe cost dashboard (BOM-derived)~~ ✅ SHIPPED 2026-05-28 | Restaurant/Bakery/Manufacturing | — | done |
 | V4 — Staff assignment + commission split on Jobs/Orders | Services/Bakery/Tailor/Manufacturing | ~2 wks | MEDIUM (extends Phase 6 #128) |
 | ~~V5 — Customer delivery reminders (`offsetDays` before delivery)~~ ✅ SHIPPED 2026-05-29 | Bakery/Tailor | — | done (day-granular; hour-precision → FUTURE_EPIC) |
@@ -268,6 +268,7 @@ Recommended sequence post merge-to-prod: ~~V3~~ ✅ → ~~V1~~ ✅ → ~~V5~~ �
 - ✅ Phase 2 FE-1 — types/constants/utils/hooks + DayListView + CreateAppointmentDrawer + AppointmentDetailPage + StatusActionBar + BottomNav + routes + flag (20 files, 19/19 tests)
 - ✅ Phase 2 FE-2 — CalendarDayView + CalendarWeekView + RecurrenceFields + ConvertToBillSheet + WaitlistSheet + Party/Employee pickers + vertical from BusinessContext + replay-bus + Sentry + DayPicker + audit-log polish (24 files, 46/46 tests cumulative)
 - ✅ BE convert + waitlist endpoints — `appointment-convert.ts` + `appointment-waitlist.ts` routes + schemas; 13/13 endpoint tests + 49/49 cumulative BE suite (incl. `cross-tenant-appointments`, `public-booking-signature`, `soft-delete-guard-appointments`)
+- ✅ **COMMITTED `b6b33e3` 2026-05-31** — 101 files, +11,159 LOC, pre-commit clean (enforce.js + tsc + ratchets)
 - ⏳ NEXT — verifier (curl 200/401/404/409/400 + screenshot evidence @ 320/375/768/1024, no Chrome live-drive) → QA cross-tenant + offline-replay → ramp behind `featureV2Appointments` 4-stage cohort
 
 ---

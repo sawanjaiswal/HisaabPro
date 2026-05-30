@@ -1,10 +1,18 @@
-# Backlog — resume 2026-05-30
+# Backlog — resume 2026-06-01
 
+> **2026-05-31 update (V2 Appointments):** 🔵 IN FLIGHT — full BE + FE + reminder trigger + migration **committed `b6b33e3`** (101 files, +11,159 LOC; pre-commit clean: enforce.js + tsc + ratchets). Tests: 49/49 BE (incl. cross-tenant, public-booking-signature, soft-delete-guard) + 46/46 FE. Multi-agent ceremony PASS (scope-auditor, architecture-auditor, security).
+>
+> **TOMORROW (2026-06-01) — pick up here:**
+> 1. **Verifier pass** — curl evidence (200/401/404/409/400) for `/appointments`, `/appointments/:id/convert`, `/appointments/:id/waitlist`, `/p/book/:slug`. Screenshot evidence at 320 / 375 / 768 / 1024 (capture artifacts only — **no live Chrome driving**, another session is using the browser).
+> 2. **QA pass** — cross-tenant isolation, soft-delete guard re-verify, offline-replay (replay-bus + api-queue-replay), HMAC signature rejection.
+> 3. **Ramp plan** — write `docs/ROLLOUT_V2_APPOINTMENTS.md`: 4-stage cohort behind `featureV2Appointments` (internal → 10% → 50% → 100%). Mirrors Phase 6 rollout doc structure.
+> 4. **Doc sync** — once verifier + QA green, move V2 row in HISAABPRO.md §5 from 🔵 IN FLIGHT to ✅ SHIPPED, update sequence line.
+>
 > **2026-05-30 update:** P4 Consistency Sweep COMPLETE. Waves 17–20 ratcheted all 6 enforce-primitives surfaces to zero (`rawSelect` 58→0, `rawTextarea` 30→0, `rawInput` 294→0, `rawButton` 594→0; `nativeConfirm`/`missing*State` already zero). New primitives: `<Textarea>` (naked + wrapped). New modes: `<Input>` naked, `<Button variant="none"` + forwardRef. Pre-commit blocks regressions. Wave 20 is a mechanical wrap — semantic variant upgrade is a follow-up workstream.
 
 > **2026-05-30 update (V7):** ✅ FULLY SHIPPED. (1) MULTILINE custom-field fieldType (additive — no migration), DOCUMENT-scoped (d2d9a0c). (2) Party-scoped FE wiring: PartyFormCustomFields + 4th tab on Create/Edit + read-render on Overview (9301c5d). Server `customFieldValues` shape now matches FE PartyDetail.
 
-> **Next autonomous-doable (no creds, no multi-week ceremony):** P4 semantic upgrade pass (convert `<Button variant="none">` to real variants page-by-page).
+> **Next autonomous-doable (no creds, no multi-week ceremony):** V2 verifier + QA + rollout doc (above), then P4 semantic upgrade pass (convert `<Button variant="none">` to real variants page-by-page).
 
 
 
