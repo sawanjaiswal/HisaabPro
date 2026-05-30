@@ -91,9 +91,18 @@ const STATE_EXEMPT_RE = [
   /template/i,
   /__tests__|\.test\.|\.spec\./,
   /\.stories\./,
+  // Form / setup / wizard pages render .map() over options or editable form
+  // rows, not data lists — they have no "empty" state to begin with.
+  /\/(?:Create|Edit|Record|Forgot)[A-Z][A-Za-z0-9]*Page\.tsx$/,
+  /[A-Z][A-Za-z0-9]*(?:Form|Wizard|Settings|Controls|Onboarding|Edit)Page\.tsx$/,
+  /\/(?:VerifyOtp|BusinessType)Page\.tsx$/,
 ]
 // Renders a list-of-JSX: `.map(... => <Tag` or `.map(... => (` (with JSX inside).
 const RENDERS_LIST_RE = /\.map\s*\(\s*\(?[^)]*\)?\s*=>\s*(?:<|\()/
+// Page delegates its empty state to a *Empty subcomponent (PriceListEmpty,
+// StockSummaryEmpty, CartEmpty, LedgerEmpty, etc. — themselves verified to
+// render <EmptyState> by waves 4-5).
+const DELEGATES_EMPTY_RE = /<[A-Z][A-Za-z0-9]*Empty\b/
 // Has a fetch/query/loading lifecycle that could legitimately error.
 const HAS_QUERY_RE = /useQuery|useInfiniteQuery|isError|onError|catch\s*\(/
 
@@ -110,7 +119,11 @@ for (const full of files) {
   }
   // File-level 4-state coverage (feature pages only).
   if (FEATURE_PAGE_RE.test(rel) && !STATE_EXEMPT_RE.some((r) => r.test(rel))) {
-    if (RENDERS_LIST_RE.test(src) && !/EmptyState\b/.test(src)) {
+    if (
+      RENDERS_LIST_RE.test(src) &&
+      !/EmptyState\b/.test(src) &&
+      !DELEGATES_EMPTY_RE.test(src)
+    ) {
       violations.missingEmptyState.push(rel)
     }
     if (HAS_QUERY_RE.test(src) && !/ErrorState\b/.test(src)) {

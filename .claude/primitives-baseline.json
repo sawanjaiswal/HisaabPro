@@ -4,6 +4,6 @@
   "rawSelect": 35,
   "rawTextarea": 15,
   "nativeConfirm": 0,
-  "missingEmptyState": 36,
-  "missingErrorState": 15
+  "missingEmptyState": 11,
+  "missingErrorState": 10
 }
