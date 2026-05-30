@@ -1,5 +1,6 @@
 import { useAuth } from '@/context/AuthContext'
 import { Header } from '@/components/layout/Header'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { ROUTES } from '@/config/routes.config'
 import { BUSINESS_TYPE_OPTIONS, BUSINESS_NAME_MAX } from './business.constants'
 import { useCreateBusiness } from './useCreateBusiness'
@@ -56,16 +57,15 @@ export default function CreateBusinessPage() {
             <label htmlFor="biz-type" className="create-biz-label">
               Business Type
             </label>
-            <select
-              id="biz-type"
-              className="create-biz-select"
+            <Select
               value={businessType}
-              onChange={(e) => setBusinessType(e.target.value)}
+              onValueChange={setBusinessType}
+              ariaLabel="Business Type"
             >
               {BUSINESS_TYPE_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
               ))}
-            </select>
+            </Select>
           </div>
 
           {/* Clone section — only when user has 2+ businesses */}
@@ -92,17 +92,16 @@ export default function CreateBusinessPage() {
                   <label htmlFor="clone-from" className="create-biz-label">
                     Clone from
                   </label>
-                  <select
-                    id="clone-from"
-                    className="create-biz-select"
-                    value={cloneFromBusinessId}
-                    onChange={(e) => setCloneFromBusinessId(e.target.value)}
+                  <Select
+                    value={cloneFromBusinessId || undefined}
+                    onValueChange={setCloneFromBusinessId}
+                    ariaLabel="Clone from"
+                    placeholder="Select a business"
                   >
-                    <option value="">Select a business</option>
                     {businesses.map((biz) => (
-                      <option key={biz.id} value={biz.id}>{biz.name}</option>
+                      <SelectItem key={biz.id} value={biz.id}>{biz.name}</SelectItem>
                     ))}
-                  </select>
+                  </Select>
                 </div>
               )}
             </div>

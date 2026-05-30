@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Plus } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { ProductFormData, Category, Unit } from '../product.types'
 import { getCategories, getUnits, createUnit } from '../product.service'
@@ -109,41 +110,33 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
 
       <div className="input-group">
         <label htmlFor="product-category" className="input-label">{t.category}</label>
-        <select
-          id="product-category"
-          className="input"
-          value={form.categoryId ?? ''}
-          onChange={(e) => onUpdate('categoryId', e.target.value)}
-          aria-label={t.selectProductCategory}
+        <Select
+          value={form.categoryId || undefined}
+          onValueChange={(v) => onUpdate('categoryId', v)}
+          ariaLabel={t.selectProductCategory}
+          placeholder={categories.length === 0 ? t.loading : undefined}
           disabled={categories.length === 0}
         >
-          {categories.length === 0 && (
-            <option value="">{t.loading}</option>
-          )}
           {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>{cat.name}</option>
+            <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
           ))}
-        </select>
+        </Select>
       </div>
 
       <div className="input-group">
         <label htmlFor="product-unit" className="input-label">{t.unit}</label>
         <div className="input-with-action">
-          <select
-            id="product-unit"
-            className="input"
-            value={form.unitId}
-            onChange={(e) => onUpdate('unitId', e.target.value)}
-            aria-label={t.selectProductUnit}
+          <Select
+            value={form.unitId || undefined}
+            onValueChange={(v) => onUpdate('unitId', v)}
+            ariaLabel={t.selectProductUnit}
+            placeholder={units.length === 0 ? t.loading : undefined}
             disabled={units.length === 0}
           >
-            {units.length === 0 && (
-              <option value="">{t.loading}</option>
-            )}
             {units.map((unit) => (
-              <option key={unit.id} value={unit.id}>{unit.name} ({unit.symbol})</option>
+              <SelectItem key={unit.id} value={unit.id}>{unit.name} ({unit.symbol})</SelectItem>
             ))}
-          </select>
+          </Select>
           <Button
             type="button"
             variant="ghost" size="sm" className="input-with-action__btn"

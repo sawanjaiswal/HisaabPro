@@ -8,6 +8,7 @@ import type { CreateCouponInput, DiscountType, CouponAppliesTo } from '../coupon
 import { CODE_MIN_LENGTH, CODE_MAX_LENGTH, CODE_PATTERN, MAX_PERCENTAGE_BASIS_POINTS, PERCENTAGE_CAP_MSG, DISCOUNT_TYPE_LABELS, APPLIES_TO_LABELS } from '../coupon.constants'
 import '../coupon.css'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Select, SelectItem } from '@/components/ui/Select'
 
 interface CouponFormProps {
   onSubmit: (data: CreateCouponInput) => Promise<unknown>
@@ -120,15 +121,15 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
       <div className="coupon-form-row">
         <div className="coupon-form-field">
           <label htmlFor="coupon-type">{t.discountType}</label>
-          <select
-            id="coupon-type"
+          <Select
             value={discountType}
-            onChange={(e) => setDiscountType(e.target.value as DiscountType)}
+            onValueChange={(v) => setDiscountType(v as DiscountType)}
+            ariaLabel={t.discountType}
           >
             {Object.entries(DISCOUNT_TYPE_LABELS).map(([key, label]) => (
-              <option key={key} value={key}>{label}</option>
+              <SelectItem key={key} value={key}>{label}</SelectItem>
             ))}
-          </select>
+          </Select>
         </div>
 
         <div className="coupon-form-field">
@@ -199,15 +200,15 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
 
       <div className="coupon-form-field">
         <label htmlFor="coupon-applies">{t.appliesTo}</label>
-        <select
-          id="coupon-applies"
+        <Select
           value={appliesTo}
-          onChange={(e) => setAppliesTo(e.target.value as CouponAppliesTo)}
+          onValueChange={(v) => setAppliesTo(v as CouponAppliesTo)}
+          ariaLabel={t.appliesTo}
         >
           {Object.entries(APPLIES_TO_LABELS).map(([key, label]) => (
-            <option key={key} value={key}>{label}</option>
+            <SelectItem key={key} value={key}>{label}</SelectItem>
           ))}
-        </select>
+        </Select>
       </div>
 
       <div className="coupon-form-actions">

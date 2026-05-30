@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { TransportMode, VehicleType, EWayBillGenerateInput } from '../ecompliance.types'
 import { Button } from '@/components/ui/Button'
+import { Select, SelectItem } from '@/components/ui/Select'
 
 interface FormState {
   transportMode: TransportMode
@@ -86,17 +87,23 @@ export const EWayBillGenerateForm: React.FC<EWayBillGenerateFormProps> = ({
       <div className="ewb-form-row">
         <div className="input-group">
           <label className="input-label" htmlFor="ewb-mode">{t.transportMode}</label>
-          <select id="ewb-mode" className="ewb-form-select" value={form.transportMode}
-            onChange={e => set('transportMode', e.target.value as TransportMode)}>
-            {TRANSPORT_MODES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
-          </select>
+          <Select
+            value={form.transportMode}
+            onValueChange={(v) => set('transportMode', v as TransportMode)}
+            ariaLabel={t.transportMode}
+          >
+            {TRANSPORT_MODES.map(m => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}
+          </Select>
         </div>
         <div className="input-group">
           <label className="input-label" htmlFor="ewb-vtype">{t.vehicleType}</label>
-          <select id="ewb-vtype" className="ewb-form-select" value={form.vehicleType}
-            onChange={e => set('vehicleType', e.target.value as VehicleType)}>
-            {VEHICLE_TYPES.map(v => <option key={v.value} value={v.value}>{v.label}</option>)}
-          </select>
+          <Select
+            value={form.vehicleType}
+            onValueChange={(v) => set('vehicleType', v as VehicleType)}
+            ariaLabel={t.vehicleType}
+          >
+            {VEHICLE_TYPES.map(v => <SelectItem key={v.value} value={v.value}>{v.label}</SelectItem>)}
+          </Select>
         </div>
       </div>
       <div className="ewb-form-row">

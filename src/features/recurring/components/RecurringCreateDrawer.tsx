@@ -1,6 +1,7 @@
 /** Bottom drawer form to configure a new recurring schedule for a template doc. */
 import React, { useState, useCallback, useRef } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
+import { Select, SelectItem } from '@/components/ui/Select'
 import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate } from '@/lib/format'
 import { FREQUENCY_LABELS } from '../recurring.constants'
@@ -148,18 +149,17 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
           <label htmlFor="rcd-frequency" className="recurring-drawer__label py-0">
             {t.frequencyLabel}
           </label>
-          <select
-            id="rcd-frequency"
-            className="recurring-drawer__select py-0"
+          <Select
             value={frequency}
-            onChange={(e) => setFrequency(e.target.value as RecurringFrequency)}
+            onValueChange={(v) => setFrequency(v as RecurringFrequency)}
+            ariaLabel={t.frequencyLabel}
           >
             {FREQUENCIES.map((f) => (
-              <option key={f} value={f}>
+              <SelectItem key={f} value={f}>
                 {FREQUENCY_LABELS[f]}
-              </option>
+              </SelectItem>
             ))}
-          </select>
+          </Select>
         </div>
 
         {showDayOfMonth && (
@@ -184,18 +184,17 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
             <label htmlFor="rcd-dow" className="recurring-drawer__label py-0">
               {t.dayOfWeekLabel}
             </label>
-            <select
-              id="rcd-dow"
-              className="recurring-drawer__select py-0"
+            <Select
               value={dayOfWeek}
-              onChange={(e) => setDayOfWeek(e.target.value)}
+              onValueChange={setDayOfWeek}
+              ariaLabel={t.dayOfWeekLabel}
             >
               {dayNames.map((name, idx) => (
-                <option key={idx} value={idx}>
+                <SelectItem key={idx} value={String(idx)}>
                   {name}
-                </option>
+                </SelectItem>
               ))}
-            </select>
+            </Select>
           </div>
         )}
 
