@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { ErrorState } from '@/components/feedback/ErrorState'
 
 interface OptOutParty {
   id: string
@@ -80,12 +81,10 @@ export default function OptOutListPage() {
       )}
 
       {query.isError && (
-        <div style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--color-error-600)', fontSize: '14px' }}>
-          {t.marketingOptOutsLoadFailed}
-          <button type="button" onClick={() => query.refetch()} style={{ marginLeft: 8, background: 'none', border: 'none', color: 'var(--color-primary-600)', cursor: 'pointer', fontSize: '14px' }}>
-            {t.marketingRetry}
-          </button>
-        </div>
+        <ErrorState
+          title={t.marketingOptOutsLoadFailed}
+          onRetry={() => { void query.refetch() }}
+        />
       )}
 
       {query.isSuccess && parties.length === 0 && (

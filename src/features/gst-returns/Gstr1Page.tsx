@@ -14,6 +14,7 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { useLanguage } from '@/hooks/useLanguage'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { ErrorState } from '@/components/feedback/ErrorState'
 import { FileText } from 'lucide-react'
 import { useToast } from '@/hooks/useToast'
 import { ROUTES } from '@/config/routes.config'
@@ -81,7 +82,7 @@ export default function Gstr1Page() {
   const navigate = useNavigate()
   const [period, setPeriod] = useState(currentPeriod)
 
-  const { data, isLoading, isError, error } = useGstr1Summary(period)
+  const { data, isLoading, isError, error, refetch } = useGstr1Summary(period)
   const exportMut = useGstr1Export()
 
   const handleExport = useCallback(async (format: 'JSON' | 'CSV') => {
@@ -148,10 +149,11 @@ export default function Gstr1Page() {
 
           {/* Error */}
           {isError && !isLoading && (
-            <div className="gstr1-error" role="alert">
-              {t.gstr1ErrorMsg}
-              {error instanceof Error && <p className="gstr1-error-detail">{error.message}</p>}
-            </div>
+            <ErrorState
+              title={t.gstr1ErrorMsg}
+              message={error instanceof Error ? error.message : undefined}
+              onRetry={() => { void refetch() }}
+            />
           )}
 
           {/* Empty / backfill prompt */}

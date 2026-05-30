@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, RefreshCw, AlertTriangle } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
+import { ErrorState } from '@/components/feedback/ErrorState'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { usePosSaleDetail } from '../hooks/usePosSaleDetail'
@@ -56,14 +57,10 @@ export default function PosSaleDetailPage() {
               <ArrowLeft size={20} aria-hidden="true" />
             </button>
           </header>
-          <div className="pos-grid-state pos-grid-state--center">
-            <AlertTriangle size={40} className="pos-grid-state__icon--error" aria-hidden="true" />
-            <p className="pos-grid-state__title">{t.posSaleNotFound ?? 'Sale not found'}</p>
-            <button type="button" className="pos-grid-state__btn" onClick={detail.refetch}>
-              <RefreshCw size={13} aria-hidden="true" />
-              {t.tryAgain ?? 'Try again'}
-            </button>
-          </div>
+          <ErrorState
+            title={t.posSaleNotFound ?? 'Sale not found'}
+            onRetry={() => { void detail.refetch() }}
+          />
         </div>
       </AppShell>
     )

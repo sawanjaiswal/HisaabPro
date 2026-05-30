@@ -14,6 +14,7 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { useLanguage } from '@/hooks/useLanguage'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { ErrorState } from '@/components/feedback/ErrorState'
 import { FileText } from 'lucide-react'
 import { useToast } from '@/hooks/useToast'
 import { useGstr3bSummary, useGstr3bExport } from './useGstr3b'
@@ -98,7 +99,7 @@ export default function Gstr3bPage() {
   const toast = useToast()
   const [period, setPeriod] = useState(currentPeriod)
 
-  const { data, isLoading, isError, error } = useGstr3bSummary(period)
+  const { data, isLoading, isError, error, refetch } = useGstr3bSummary(period)
   const exportMut = useGstr3bExport()
 
   const handleExport = useCallback(async (format: 'JSON' | 'CSV') => {
@@ -170,12 +171,11 @@ export default function Gstr3bPage() {
 
           {/* Error */}
           {isError && !isLoading && (
-            <div className="gstr1-error" role="alert">
-              {t.gstr3bErrorMsg}
-              {error instanceof Error && (
-                <p className="gstr1-error-detail">{error.message}</p>
-              )}
-            </div>
+            <ErrorState
+              title={t.gstr3bErrorMsg}
+              message={error instanceof Error ? error.message : undefined}
+              onRetry={() => { void refetch() }}
+            />
           )}
 
           {/* Empty state */}
