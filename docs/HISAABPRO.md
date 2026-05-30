@@ -578,7 +578,7 @@ Source: `.claude/skills/hp-design/SKILL.md` + `docs/DESIGN_LANGUAGE.md` + `docs/
 
 **Primitives (no raw HTML for interactive):** `<Button>` (primary/secondary/outline/text/ghost/danger), `<Input>`, `<Textarea>`, `<Select>` / `<SelectItem>` (Radix; sentinel values `__all__` / `__none__` / `__overall__` / `__any__` / `__never__` for empty-state slots), `<Card>`, `<ConfirmDialog>` (never `window.confirm`), `<Modal>` / `<Drawer>`, `<Badge>`, `<PartyAvatar>` / `<Avatar>`, `<Accordion>`, `useToast()` (never `alert`), `<BarcodeScanner>`, `<OfflineBanner>`.
 
-**P4 Consistency Sweep (in-progress, ratchet via `scripts/enforce-primitives.mjs`):** `rawSelect` 58 → **0** across waves 13–17, `rawTextarea` 30 → **0** in wave 18, `rawInput` 294 → **0** in wave 19 (146 files; added naked mode to `<Input>` to preserve filter-bar / table-cell layouts, batch `d837ad6`). Remaining baseline: `rawButton=594`, `nativeConfirm=0`, `missingEmptyState=0`, `missingErrorState=0`. Pre-commit refuses regressions; new waves ratchet baseline downward.
+**P4 Consistency Sweep (COMPLETE, ratchet via `scripts/enforce-primitives.mjs`):** `rawSelect` 58 → **0** across waves 13–17, `rawTextarea` 30 → **0** in wave 18, `rawInput` 294 → **0** in wave 19, `rawButton` 594 → **0** in wave 20 (322 files; added `variant="none"` to Button + forwardRef so the mechanical wrap preserves caller's className contract, batch `a372261`). Baseline now ZERO across **all** 6 surfaces (`rawButton`, `rawInput`, `rawSelect`, `rawTextarea`, `nativeConfirm`, `missing*State`). Pre-commit refuses regressions. Future work: semantic upgrade pass to migrate `<Button variant="none">` call sites onto real variants (primary / secondary / accent / destructive / ghost) per page.
 
 **Layout discipline:**
 - Page padding: `px-4` only.
@@ -636,7 +636,7 @@ Source: `~/.claude/rules/RULES.md` + project `scripts/`.
 - **Writer-SSOT-ban** subscription/loyalty/commission writers
 - **JWT-in-logs-ban** no JWT/refresh tokens in `console.*` / logger calls
 - **enforce-offline.mjs** raw fetch / entityType / cacheReads / localStorage / mutation handlers
-- **enforce-primitives.mjs** ratcheted ban on `<button>` / `<input>` / `<select>` / `<textarea>` + `window.confirm` / `alert` in feature `.tsx`. Baseline lives in `.claude/primitives-baseline.json`. Wave 17 (2026-05-30) ratcheted `rawSelect` to 0; Wave 18 (2026-05-30) ratcheted `rawTextarea` to 0 and introduced `<Textarea>` primitive; Wave 19 (2026-05-30) ratcheted `rawInput` to 0 and added naked mode to `<Input>`.
+- **enforce-primitives.mjs** ratcheted ban on `<button>` / `<input>` / `<select>` / `<textarea>` + `window.confirm` / `alert` in feature `.tsx`. Baseline lives in `.claude/primitives-baseline.json`. Wave 17 (2026-05-30) ratcheted `rawSelect` to 0; Wave 18 (2026-05-30) ratcheted `rawTextarea` to 0 and introduced `<Textarea>` primitive; Wave 19 (2026-05-30) ratcheted `rawInput` to 0 and added naked mode to `<Input>`; Wave 20 (2026-05-30) ratcheted `rawButton` to 0 and added `variant="none"` + forwardRef to `<Button>` — full P4 baseline now zero.
 - **enforce-audit-coverage.mjs --block** every Phase 6 mutation route must write an AuditLog row
 
 **Commit-msg hook** (`.husky/commit-msg`): rejects `fix(...)` commits unless body contains `Root cause:` line with `<file>:<line>` ref + reference to fix-trace file or new test file.
