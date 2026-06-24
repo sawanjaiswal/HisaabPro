@@ -1,5 +1,8 @@
+import { Link } from 'react-router-dom'
+import { ArrowLeft } from 'lucide-react'
 import { SEO } from '../../components/layout/SEO'
 import { useVerifyOtp } from './useVerifyOtp'
+import { ROUTES } from '@/config/routes.config'
 import './LoginPage.css'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
@@ -19,6 +22,11 @@ export default function VerifyOtpPage() {
       <SEO title="Verify OTP" />
 
       <div className="login-page__card stagger-enter">
+        <Link to={ROUTES.REGISTER} className="auth-otp__back" aria-label="Back to registration">
+          <ArrowLeft size={20} />
+          <span>Change number</span>
+        </Link>
+
         <div className="login-page__header">
           <h1 className="login-page__title">Verify OTP</h1>
           <p className="login-page__subtitle">
