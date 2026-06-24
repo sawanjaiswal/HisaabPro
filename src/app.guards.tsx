@@ -34,9 +34,18 @@ export function DashboardFallback() {
 }
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuth()
+  const { isAuthenticated, isLoading, businesses } = useAuth()
+  const { pathname } = useLocation()
   if (isLoading) return <Spinner fullScreen />
   if (!isAuthenticated) return <Navigate to={ROUTES.LOGIN} replace />
+  // A freshly-registered user has no business yet — every business-scoped
+  // route would 403 (NO_BUSINESS). Send them to onboarding to create their
+  // first business. Exempt onboarding itself (redirect loop) and HOME, which
+  // HomeGate routes on its own (incl. the separate admin-host surface).
+  const exemptFromBusinessGate = pathname === ROUTES.ONBOARDING || pathname === ROUTES.HOME
+  if (businesses.length === 0 && !exemptFromBusinessGate) {
+    return <Navigate to={ROUTES.ONBOARDING} replace />
+  }
   return <>{children}</>
 }
 
