@@ -69,6 +69,7 @@ export async function getDiscountReport(
 
 export async function exportTally(from: string, to: string): Promise<string> {
   const params = new URLSearchParams({ from, to })
+  // ssot-allow: save/fetch data through the app API client — read-only export returning raw Tally XML text, not the JSON envelope api() parses
   const response = await fetch(`/api/reports/financial/tally-export?${params}`, { credentials: 'include' })
   if (!response.ok) throw new Error('Export failed')
   return response.text()

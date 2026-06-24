@@ -1,0 +1,5 @@
+#!/bin/sh
+# SSOT gate — blocks new drift against canonical modules (ssot.config.mjs).
+# Bypass for incidents only: SSOT_BYPASS=1 git commit ...
+[ "$SSOT_BYPASS" = "1" ] && { echo "[ssot] bypassed"; exit 0; }
+node scripts/ssot/check.mjs || exit 1

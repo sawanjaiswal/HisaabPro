@@ -25,7 +25,11 @@
     "lhci": "npx --yes @lhci/cli@0.14.x autorun",
     "qa": "npm run typecheck && node scripts/enforce-offline.mjs && npm run build",
     "qa:full": "npm run typecheck && node scripts/enforce.js && npm run build",
-    "qa:lhci": "npm run build && npm run lhci"
+    "qa:lhci": "npm run build && npm run lhci",
+    "ssot": "node scripts/ssot/check.mjs",
+    "ssot:index": "node scripts/ssot/index.mjs",
+    "ssot:doc": "node scripts/ssot/doc.mjs",
+    "ssot:baseline": "node scripts/ssot/check.mjs --baseline"
   },
   "dependencies": {
     "@capacitor-mlkit/barcode-scanning": "^8.1.0",

@@ -1,0 +1,67 @@
+# SSOT Registry
+
+> Generated from `ssot.config.mjs` by `scripts/ssot/doc.mjs`. Do not hand-edit.
+> Check here FIRST before writing any shared util/service/hook.
+
+Shared dirs scanned: `src/lib`, `src/hooks`, `server/src/lib`, `server/src/services`, `server/src/middleware`.
+Exhaustive symbol index (auto, never stale): `.claude/ssot-index.json`
+(`node scripts/ssot/index.mjs`).
+
+## Canonical modules
+
+| capability | canonical module | exports | enforcement |
+|---|---|---|---|
+| save/fetch data through the app API client | `src/lib/api.ts` | `api`, `ApiError` | ✅ guarded |
+| format paise/number money for display | `src/lib/format.ts` | `formatPaise`, `formatNumber`, `formatDate`, `toLocalISODate` | ✅ guarded |
+| show a transient toast notification | `src/hooks/useToast.ts` | `useToast` | ✅ guarded |
+| confirm a destructive action | `src/components/ui/ConfirmDialog.tsx` | `ConfirmDialog` | ✅ guarded |
+| build TanStack Query cache keys | `src/lib/query-keys.ts` | `queryKeys` | discovery-only |
+| merge Tailwind class names | `src/lib/utils.ts` | `cn` | discovery-only |
+
+## How it's enforced (no memory)
+
+1. **Discovery** — `.claude/ssot-index.json` is generated from code; `/inventory`
+   + the pre-Write surfacer read it so you never rebuild an existing module blind.
+2. **Commit gate** — `node scripts/ssot/check.mjs` validates every row maps to
+   live code and blocks any `forbidden` shape re-implemented outside its canon.
+3. **Ratchet** — pre-existing legacy is grandfathered in `ssot.baseline.json` (committed);
+   the violation count can only go DOWN. New drift fails the commit.
+4. **Escape hatch** — `// ssot-allow: <capability>` (with a reason) for a
+   deliberate, reviewed exception.
+
+## Guarded capabilities
+
+### save/fetch data through the app API client
+Canon: `src/lib/api.ts`
+
+Forbidden elsewhere (commit-blocked):
+- `/fetch\(\s*[`'"]/api/`
+- `/fetch\(\s*`\$\{[^`]*}/api/`
+
+THE data save/fetch choke point. 147 importers.
+
+### format paise/number money for display
+Canon: `src/lib/format.ts`
+
+Forbidden elsewhere (commit-blocked):
+- `/toLocaleString\(\s*['"]en-IN['"]/`
+
+Money/number/date display SSOT (frontend).
+
+### show a transient toast notification
+Canon: `src/hooks/useToast.ts`
+
+Forbidden elsewhere (commit-blocked):
+- `/window\.alert\(/`
+- `/(?<![.\w])alert\(\s*['"`]/`
+
+Toast SSOT. 201 importers — the most-reused module in the repo.
+
+### confirm a destructive action
+Canon: `src/components/ui/ConfirmDialog.tsx`
+
+Forbidden elsewhere (commit-blocked):
+- `/window\.confirm\(/`
+
+Confirm SSOT (PAGE_AUDIT_CHECKLIST §C).
+

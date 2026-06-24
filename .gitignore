@@ -61,3 +61,4 @@ server/.env
 
 # Lighthouse CI reports (uploaded as GitHub Actions artifact)
 .lighthouseci
+.claude/ssot-index.json
