@@ -97,7 +97,7 @@ export default defineConfig({
     host: true, // expose on LAN for mobile testing
     proxy: {
       '/api': {
-        target: 'http://localhost:4000',
+        target: 'http://localhost:5001',
         changeOrigin: true,
         configure(proxy) {
           proxy.on('error', (_err, _req, res) => {

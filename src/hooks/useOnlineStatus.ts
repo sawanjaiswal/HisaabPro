@@ -31,7 +31,7 @@ function offlineInterval(failureStreak: number): number {
 
 function getHealthUrl(): string {
   // Use the configured API_URL from env (VITE_API_URL) — works in dev and production.
-  // In dev: VITE_API_URL = http://localhost:4000/api → /api/health
+  // In dev: VITE_API_URL = http://localhost:5001/api → /api/health
   // In prod: VITE_API_URL = https://api.hisaabpro.in/api → /api/health
   const base = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) || '/api';
   return `${base}/health`;
