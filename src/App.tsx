@@ -1,5 +1,3 @@
-import { useEffect } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { PublicLayoutRoute, PublicHealthPage, PublicInvoicePage } from '@/pages/public'
 import { ROUTES } from '@/config/routes.config'
@@ -52,7 +50,7 @@ import {
   StorefrontSettings, PublicStorePage,
   PublicInvitePage,
   // Phase 5 Epic B — Sales Pipeline
-  SalesHub, SalesEstimatesPage, SalesSaleOrdersPage, SalesDeliveryChallansPage,
+  SalesHub,
   EstimateDetail, SaleOrderDetail, ChallanDetail,
   CreateEstimate, CreateSaleOrder, CreateChallan,
   // Phase 6 — Staff & HR (PR5 FE)
@@ -70,14 +68,6 @@ import {
 export function App() {
   useRoutePreload()
   useSSE()
-  const queryClient = useQueryClient()
-  useEffect(() => {
-    const handler = () => {
-      if (document.visibilityState === 'visible') queryClient.invalidateQueries()
-    }
-    document.addEventListener('visibilitychange', handler)
-    return () => document.removeEventListener('visibilitychange', handler)
-  }, [queryClient])
 
   return (
     <ErrorBoundary>
@@ -118,13 +108,13 @@ export function App() {
 
         {/* Phase 5 Epic B — Sales Pipeline (#122) */}
         <Route path={ROUTES.SALES} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Sales"><SalesHub /></PlanGate></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.ESTIMATES} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Estimates"><SalesEstimatesPage /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.ESTIMATES} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Estimates"><SalesHub /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.ESTIMATE_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Estimates"><CreateEstimate /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.ESTIMATE_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Estimates"><EstimateDetail /></PlanGate></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.SALE_ORDERS} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Sale Orders"><SalesSaleOrdersPage /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.SALE_ORDERS} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Sale Orders"><SalesHub /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SALE_ORDER_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Sale Orders"><CreateSaleOrder /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.SALE_ORDER_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Sale Orders"><SaleOrderDetail /></PlanGate></ProtectedRoute></PageRoute>} />
-        <Route path={ROUTES.DELIVERY_CHALLANS} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Delivery Challans"><SalesDeliveryChallansPage /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.DELIVERY_CHALLANS} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Delivery Challans"><SalesHub /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.DELIVERY_CHALLAN_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Delivery Challans"><CreateChallan /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.DELIVERY_CHALLAN_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Delivery Challans"><ChallanDetail /></PlanGate></ProtectedRoute></PageRoute>} />
 
