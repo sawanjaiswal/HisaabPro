@@ -16,6 +16,7 @@ import { sendError } from '../lib/response.js'
 import { PLAN_LIMITS, PLAN_HIERARCHY, TRIAL_DAYS } from '../config/plans.js'
 import type { PlanTier, PlanLimits } from '../config/plans.js'
 import logger from '../lib/logger.js'
+import { asyncHandler } from './asyncHandler.js'
 
 type BooleanFeatureFlag = {
   [K in keyof PlanLimits]: PlanLimits[K] extends boolean ? K : never
@@ -133,7 +134,7 @@ async function getAddonFeatureFlags(businessId: string): Promise<Record<string, 
 // ─── requirePlan ─────────────────────────────────────────────────────────────
 
 export function requirePlan(minPlan: PlanTier) {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user?.businessId) return next()
 
     const resolution = await resolveBusinessPlan(req.user.businessId)
@@ -162,13 +163,13 @@ export function requirePlan(minPlan: PlanTier) {
       'UPGRADE_REQUIRED',
       402,
     )
-  }
+  })
 }
 
 // ─── requireFeature ───────────────────────────────────────────────────────────
 
 export function requireFeature(flag: BooleanFeatureFlag) {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user?.businessId) return next()
 
     const resolution = await resolveBusinessPlan(req.user.businessId)
@@ -186,13 +187,13 @@ export function requireFeature(flag: BooleanFeatureFlag) {
     if (addonFlags[flag]) return next()
 
     sendError(res, 'This feature requires an upgraded plan.', 'UPGRADE_REQUIRED', 402)
-  }
+  })
 }
 
 // ─── requireQuota ─────────────────────────────────────────────────────────────
 
 export function requireQuota(resource: 'invoices' | 'users') {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user?.businessId) return next()
 
     const { plan } = await resolveBusinessPlan(req.user.businessId)
@@ -229,5 +230,5 @@ export function requireQuota(resource: 'invoices' | 'users') {
     }
 
     next()
-  }
+  })
 }
