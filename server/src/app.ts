@@ -32,6 +32,20 @@ import logger from './lib/logger.js'
 export function createApp() {
   const app = express()
   app.set('trust proxy', 1)
+  // JSON API — TanStack Query owns client-side caching/invalidation.
+  // Express's default weak ETag makes the browser send If-None-Match on
+  // repeat GETs, which we then answer with an empty 304 body. The frontend
+  // client (src/lib/api.ts) has no use for that and treats it as `data:
+  // undefined`, which TanStack Query rejects outright. Disable it at the
+  // source. See .claude/fix-trace-sales-hub-etag-304.md.
+  app.set('etag', false)
+  // Belt-and-suspenders for the same reason: even with etag disabled, a
+  // browser can heuristically cache a GET without an explicit directive.
+  // no-store forecloses that ambiguity outright.
+  app.use((_req, res, next) => {
+    res.setHeader('Cache-Control', 'no-store')
+    next()
+  })
 
   app.use(helmet({
     contentSecurityPolicy: {
