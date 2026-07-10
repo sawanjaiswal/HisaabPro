@@ -28,12 +28,16 @@ interface DocumentListPageProps {
   type: SalesDocumentType
   backTo?: string
   pageTitle: string
+  /** When rendered as tab content inside SalesHubPage, the parent already
+   * owns AppShell + Header — rendering our own would double the chrome. */
+  embedded?: boolean
 }
 
 export const DocumentListPage: React.FC<DocumentListPageProps> = ({
   type,
   backTo = '/sales',
   pageTitle,
+  embedded = false,
 }) => {
   const navigate = useNavigate()
   const { t } = useLanguage()
@@ -61,22 +65,24 @@ export const DocumentListPage: React.FC<DocumentListPageProps> = ({
 
   const documents = data?.documents ?? []
 
-  return (
-    <AppShell>
-      <Header
-        title={pageTitle}
-        backTo={backTo}
-        actions={
-          <Button
-            variant="ghost" size="sm"
-            onClick={() => navigate(createRoute)}
-            aria-label={SALES_CREATE_LABELS[type]}
-          >
-            <Plus size={18} aria-hidden="true" />
-            <span className="hidden sm:inline">{SALES_CREATE_LABELS[type]}</span>
-          </Button>
-        }
-      />
+  const content = (
+    <>
+      {!embedded && (
+        <Header
+          title={pageTitle}
+          backTo={backTo}
+          actions={
+            <Button
+              variant="ghost" size="sm"
+              onClick={() => navigate(createRoute)}
+              aria-label={SALES_CREATE_LABELS[type]}
+            >
+              <Plus size={18} aria-hidden="true" />
+              <span className="hidden sm:inline">{SALES_CREATE_LABELS[type]}</span>
+            </Button>
+          }
+        />
+      )}
 
       <PageContainer variant="list" className="space-y-4">
         <DocumentListFilterBar
@@ -90,7 +96,13 @@ export const DocumentListPage: React.FC<DocumentListPageProps> = ({
 
         {status === 'error' && (
           <ErrorState
-            title={t.couldNotLoadInvoices ?? 'Could not load documents'}
+            title={
+              type === 'ESTIMATE'
+                ? t.couldNotLoadEstimates ?? 'Could not load estimates'
+                : type === 'SALE_ORDER'
+                  ? t.couldNotLoadSaleOrders ?? 'Could not load sale orders'
+                  : t.couldNotLoadChallans ?? 'Could not load delivery challans'
+            }
             message={t.checkConnectionRetry ?? 'Check your connection and try again.'}
             onRetry={refresh}
           />
@@ -131,6 +143,8 @@ export const DocumentListPage: React.FC<DocumentListPageProps> = ({
       >
         <Plus size={24} aria-hidden="true" />
       </Button>
-    </AppShell>
+    </>
   )
+
+  return embedded ? content : <AppShell>{content}</AppShell>
 }

@@ -5,7 +5,7 @@
  * Top tab bar sticks below AppHeader per platform-shell C10.
  */
 
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useState, useEffect } from 'react'
 import { useNavigate, useMatch } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -34,6 +34,14 @@ export default function SalesHubPage() {
   const { t } = useLanguage()
   const navigate = useNavigate()
   const activeTab = useActiveTab()
+
+  // Keep every tab a user has visited mounted (hidden via CSS) instead of
+  // unmounting on switch — remounting reset scroll position, filters, and
+  // re-fetched data, which read as a "flash" every time the user tabbed back.
+  const [visitedTabs, setVisitedTabs] = useState<Set<SalesHubTab>>(() => new Set([activeTab]))
+  useEffect(() => {
+    setVisitedTabs((prev) => (prev.has(activeTab) ? prev : new Set(prev).add(activeTab)))
+  }, [activeTab])
 
   const handleTabClick = (_tab: SalesHubTab, route: string) => {
     navigate(route, { replace: true })
@@ -65,10 +73,26 @@ export default function SalesHubPage() {
 
       <div className="sales-hub-content" role="tabpanel">
         <Suspense fallback={<DocumentListSkeleton />}>
-          {activeTab === 'invoices'  && <InvoicesContent />}
-          {activeTab === 'estimates' && <EstimatesContent />}
-          {activeTab === 'orders'    && <SaleOrdersContent />}
-          {activeTab === 'challans'  && <ChallansContent />}
+          {visitedTabs.has('invoices') && (
+            <div style={{ display: activeTab === 'invoices' ? 'block' : 'none' }}>
+              <InvoicesContent embedded />
+            </div>
+          )}
+          {visitedTabs.has('estimates') && (
+            <div style={{ display: activeTab === 'estimates' ? 'block' : 'none' }}>
+              <EstimatesContent embedded />
+            </div>
+          )}
+          {visitedTabs.has('orders') && (
+            <div style={{ display: activeTab === 'orders' ? 'block' : 'none' }}>
+              <SaleOrdersContent embedded />
+            </div>
+          )}
+          {visitedTabs.has('challans') && (
+            <div style={{ display: activeTab === 'challans' ? 'block' : 'none' }}>
+              <ChallansContent embedded />
+            </div>
+          )}
         </Suspense>
       </div>
     </AppShell>

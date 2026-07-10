@@ -3,13 +3,18 @@
 import { DocumentListPage } from './DocumentListPage'
 import { useLanguage } from '@/hooks/useLanguage'
 
-export default function DeliveryChallansPage() {
+interface DeliveryChallansPageProps {
+  embedded?: boolean
+}
+
+export default function DeliveryChallansPage({ embedded = false }: DeliveryChallansPageProps) {
   const { t } = useLanguage()
   return (
     <DocumentListPage
       type="DELIVERY_CHALLAN"
       backTo="/sales"
       pageTitle={t.deliveryChallanPageTitle ?? 'Delivery Challans'}
+      embedded={embedded}
     />
   )
 }

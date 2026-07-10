@@ -25,7 +25,7 @@ export const SALES_ROUTES = {
 export type SalesHubTab = 'invoices' | 'estimates' | 'orders' | 'challans'
 
 export const SALES_HUB_TABS: { id: SalesHubTab; label: string; route: string }[] = [
-  { id: 'invoices',   label: 'Invoices',           route: '/invoices' },
+  { id: 'invoices',   label: 'Invoices',           route: SALES_ROUTES.HUB },
   { id: 'estimates',  label: 'Estimates',           route: SALES_ROUTES.ESTIMATES },
   { id: 'orders',     label: 'Sale Orders',         route: SALES_ROUTES.SALE_ORDERS },
   { id: 'challans',   label: 'Delivery Challans',   route: SALES_ROUTES.DELIVERY_CHALLANS },

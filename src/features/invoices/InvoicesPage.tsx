@@ -31,7 +31,13 @@ import './invoice-filter-bar.css'
 import './invoice-list-items.css'
 import './invoice-doc-badges.css'
 
-export default function InvoicesPage() {
+interface InvoicesPageProps {
+  /** When rendered as tab content inside SalesHubPage, the parent already
+   * owns AppShell + Header — rendering our own would double the chrome. */
+  embedded?: boolean
+}
+
+export default function InvoicesPage({ embedded = false }: InvoicesPageProps) {
   const navigate = useNavigate()
   const { t } = useLanguage()
   const toast = useToast()
@@ -116,19 +122,20 @@ export default function InvoicesPage() {
     : (data?.documents ?? [])
   const allDocIds = visibleDocuments.map((d) => d.id)
 
-  return (
-    <AppShell>
-      <Header
-        title={bulk.isActive ? `${bulk.selectedCount} ${t.nSelected}` : typeLabel}
-        actions={
-          !bulk.isActive ? (
-            <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.BILL_SCAN)} aria-label={t.scanBillAriaLabel}>
-              <Camera size={18} aria-hidden="true" />
-              <span>{t.scan}</span>
-            </Button>
-          ) : undefined
-        }
-      />
+  const content = (
+    <>
+      {!embedded && (
+        <Header
+          title={bulk.isActive ? `${bulk.selectedCount} ${t.nSelected}` : typeLabel}
+          actions={
+            !bulk.isActive ? (
+              <Button variant="none" type="button" className="header-icon-btn" onClick={() => navigate(ROUTES.BILL_SCAN)} aria-label={t.scanBillAriaLabel}>
+                <Camera size={20} aria-hidden="true" />
+              </Button>
+            ) : undefined
+          }
+        />
+      )}
 
       {status === 'success' && data && !bulk.isActive && (
         <div className="page-hero">
@@ -234,6 +241,8 @@ export default function InvoicesPage() {
         actions={bulkActions}
         isProcessing={isBulkDeleting}
       />
-    </AppShell>
+    </>
   )
+
+  return embedded ? content : <AppShell>{content}</AppShell>
 }

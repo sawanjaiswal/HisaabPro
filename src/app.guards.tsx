@@ -74,7 +74,9 @@ export function PersistentNav() {
   const { pathname } = useLocation()
   const { isAuthenticated } = useAuth()
   useKeyboardShortcuts(isAuthenticated)
-  if (!isAuthenticated || NAV_HIDDEN_PATTERNS.test(pathname)) return null
+  // Onboarding runs before the user has a business — Sales/Parties/etc. are
+  // meaningless and the floating FAB visually overlaps the step's own CTA.
+  if (!isAuthenticated || pathname === ROUTES.ONBOARDING || NAV_HIDDEN_PATTERNS.test(pathname)) return null
   return (
     <>
       <SideNavRail />

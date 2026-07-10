@@ -3,13 +3,18 @@
 import { DocumentListPage } from './DocumentListPage'
 import { useLanguage } from '@/hooks/useLanguage'
 
-export default function EstimatesPage() {
+interface EstimatesPageProps {
+  embedded?: boolean
+}
+
+export default function EstimatesPage({ embedded = false }: EstimatesPageProps) {
   const { t } = useLanguage()
   return (
     <DocumentListPage
       type="ESTIMATE"
       backTo="/sales"
       pageTitle={t.estimatesPageTitle ?? 'Estimates'}
+      embedded={embedded}
     />
   )
 }
