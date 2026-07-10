@@ -21,7 +21,9 @@ initSentry()
 initServiceWorker()
 recoverStuckItems()
 
-createRoot(document.getElementById('root')!).render(
+const rootEl = document.getElementById('root')!
+
+createRoot(rootEl).render(
   <StrictMode>
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
@@ -40,3 +42,6 @@ createRoot(document.getElementById('root')!).render(
     </HelmetProvider>
   </StrictMode>
 )
+
+// Hides the inline app-shell-skeleton (index.html) once React has mounted.
+requestAnimationFrame(() => rootEl.setAttribute('data-app-ready', ''))
