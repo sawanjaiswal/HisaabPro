@@ -57,6 +57,7 @@ export const devLoginSchema = z.object({
   username: z.string().min(1, 'Username is required'),
   password: z.string().min(1, 'Password is required'),
   captchaToken: z.string().optional(),
+  deviceInfo: z.string().optional(),
 }).strict()
 
 export const switchBusinessSchema = z.object({
