@@ -151,6 +151,7 @@
 
 .rx-tabs-list {
   display: inline-flex;
+  flex-wrap: nowrap;
   gap: var(--space-1);
   padding: var(--space-1);
   background: var(--color-surface-alt);
@@ -160,6 +161,7 @@
   appearance: none;
   border: none;
   background: transparent;
+  flex-shrink: 0;
   min-height: 40px;
   padding: 0 var(--space-4);
   border-radius: var(--radius-full);
@@ -167,6 +169,7 @@
   font-weight: 500;
   color: var(--color-gray-600);
   cursor: pointer;
+  white-space: nowrap;
   font-family: var(--font-primary);
   -webkit-tap-highlight-color: transparent;
   transition: color var(--duration-fast) var(--ease-default),
@@ -176,6 +179,12 @@
   background: var(--color-surface);
   color: var(--color-primary);
   box-shadow: var(--shadow-badge-subtle);
+}
+.rx-tabs-list--outlined .rx-tab {
+  border: 1px solid var(--color-gray-200);
+}
+.rx-tabs-list--outlined .rx-tab[data-state='active'] {
+  border-color: var(--color-primary-400);
 }
 .rx-tab:focus-visible {
   outline: 2px solid var(--color-primary);

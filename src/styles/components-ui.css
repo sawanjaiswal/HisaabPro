@@ -289,9 +289,9 @@
 .pill-tab {
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-full);
-  border: 1.5px solid var(--color-gray-200);
+  border: 1.5px solid var(--color-gray-100);
   background: var(--color-gray-0);
-  color: var(--color-gray-500);
+  color: var(--color-gray-600);
   font-size: var(--fs-sm);
   font-weight: 500;
   white-space: nowrap;
@@ -329,6 +329,7 @@
   border-color: var(--color-primary-400);
   color: var(--color-primary-500);
   font-weight: 600;
+  box-shadow: var(--shadow-subtle);
 }
 
 /* Dark theme pill tab overrides */
@@ -340,6 +341,7 @@
 
 [data-theme="dark"] .pill-tab.active-tint {
   background: var(--color-primary-bg-subtle-strong);
+  box-shadow: var(--shadow-subtle);
 }
 
 /* === UPGRADE PROMPT === */

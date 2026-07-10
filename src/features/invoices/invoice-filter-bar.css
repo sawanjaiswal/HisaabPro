@@ -14,22 +14,45 @@
 }
 
 /* Horizontal scrollable row of document-type filter pills */
-.invoice-type-pills {
+.invoice-type-pills,
+.pill-tabs-scroll {
   display: flex;
+  flex-wrap: nowrap;
   gap: var(--space-2);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   padding-bottom: var(--space-1);
   padding-right: var(--space-4);
+  background: transparent;
+  border-radius: 0;
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
 }
 
-.invoice-type-pills::-webkit-scrollbar {
+.invoice-type-pills::-webkit-scrollbar,
+.pill-tabs-scroll::-webkit-scrollbar {
   display: none;
 }
 
-/* Individual type pill — min 44px touch target */
-.invoice-type-pill {
+/* Responsive wrapping grid of pills — used inside the filter drawer where
+   every option should stay visible without a horizontal scroll gesture. */
+.pill-tabs-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+}
+
+/* Individual type pill — min 44px touch target.
+ * `.invoice-filter-pill` is the same pill used by the sales-hub status chips
+ * (DocumentListFilterBar) and the Invoices auto-gen filter — kept as an
+ * alias here so both className conventions render identically instead of
+ * one silently falling back to unstyled text. */
+.invoice-type-pill,
+.invoice-filter-pill {
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -53,23 +76,28 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.invoice-type-pill:hover {
+.invoice-type-pill:hover,
+.invoice-filter-pill:hover {
   border-color: var(--color-primary-300);
   color: var(--color-primary-500);
 }
 
-.invoice-type-pill:active {
+.invoice-type-pill:active,
+.invoice-filter-pill:active {
   transform: scale(0.95);
 }
 
-.invoice-type-pill:focus-visible {
+.invoice-type-pill:focus-visible,
+.invoice-filter-pill:focus-visible {
   outline: 2px solid var(--color-primary-500);
   outline-offset: 2px;
   border-radius: var(--radius-full);
 }
 
 .invoice-type-pill[aria-pressed='true'],
-.invoice-type-pill--active {
+.invoice-type-pill--active,
+.invoice-filter-pill[aria-checked='true'],
+.invoice-filter-pill--active {
   background: var(--color-primary-50);
   border-color: var(--color-primary-400);
   color: var(--color-primary-500);
@@ -78,15 +106,54 @@
 
 /* ─── Dark Theme ─────────────────────────────────────────────────────────── */
 
-[data-theme="dark"] .invoice-type-pill {
+[data-theme="dark"] .invoice-type-pill,
+[data-theme="dark"] .invoice-filter-pill {
   background: var(--color-gray-50);
   border-color: var(--color-gray-200);
   color: var(--color-gray-400);
 }
 
 [data-theme="dark"] .invoice-type-pill[aria-pressed='true'],
-[data-theme="dark"] .invoice-type-pill--active {
+[data-theme="dark"] .invoice-type-pill--active,
+[data-theme="dark"] .invoice-filter-pill[aria-checked='true'],
+[data-theme="dark"] .invoice-filter-pill--active {
   background: var(--color-primary-bg-subtle-strong);
+}
+
+/* ─── Filters drawer trigger (mobile only) ─────────────────── */
+
+.filter-drawer-trigger {
+  position: relative;
+  flex-shrink: 0;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+}
+
+.filter-drawer-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 var(--space-1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-xs);
+  line-height: 1;
+}
+
+.filter-drawer-section-label {
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: var(--space-2);
+  color: var(--text-muted);
 }
 
 /* ─── Tablet+ adjustments ───────────────────────────────────── */

@@ -119,9 +119,8 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
           : ROUTES.INVOICES
         }
         actions={
-          <Button variant="ghost" size="sm" onClick={() => nav(ROUTES.BILL_SCAN)} aria-label={t.scanBillAddItems}>
-            <Camera size={18} aria-hidden="true" />
-            <span>{t.scan}</span>
+          <Button variant="none" type="button" className="header-icon-btn" onClick={() => nav(ROUTES.BILL_SCAN)} aria-label={t.scanBillAddItems}>
+            <Camera size={20} aria-hidden="true" />
           </Button>
         }
       />
