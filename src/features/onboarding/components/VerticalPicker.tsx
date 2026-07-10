@@ -19,7 +19,7 @@ const ICONS: Record<string, LucideIcon> = {
 }
 
 interface Props {
-  value: BusinessType
+  value: BusinessType | undefined
   onChange: (type: BusinessType) => void
   disabled?: boolean
 }

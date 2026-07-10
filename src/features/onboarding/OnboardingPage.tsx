@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ArrowLeft } from 'lucide-react'
 import { SEO } from '../../components/layout/SEO'
 import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
@@ -43,6 +44,7 @@ const ICON_REPORT = (
 
 export default function OnboardingPage() {
   const [step, setStep] = useState<Step>('welcome')
+  const [hasPickedType, setHasPickedType] = useState(false)
   const {
     businessName, setBusinessName,
     businessType, setBusinessType,
@@ -106,33 +108,40 @@ export default function OnboardingPage() {
     return (
       <div className="onboarding-page space-y-6">
         <SEO title={t.pickBusinessType} />
-        <div className="onboarding-card stagger-enter">
-          <div className="onboarding-header">
-            <h1 className="onboarding-title">{t.pickBusinessType}</h1>
-            <p className="onboarding-subtitle">{t.pickBusinessTypeDesc}</p>
+        <div className="onboarding-card stagger-enter onboarding-card--scrollable">
+          <div className="onboarding-card__scroll">
+            <div className="onboarding-header">
+              <h1 className="onboarding-title">{t.pickBusinessType}</h1>
+              <p className="onboarding-subtitle">{t.pickBusinessTypeDesc}</p>
+            </div>
+
+            <VerticalPicker
+              value={hasPickedType ? (businessType as BusinessType) : undefined}
+              onChange={(type) => { setBusinessType(type); setHasPickedType(true) }}
+            />
           </div>
 
-          <VerticalPicker
-            value={businessType as BusinessType}
-            onChange={(type) => setBusinessType(type)}
-          />
-
-          <Button
-            type="button"
-            variant="primary"
-            size="lg"
-            className="onboarding-submit"
-            onClick={() => setStep('setup')}
-          >
-            {t.onboardingGetStarted}
-          </Button>
-          <Button variant="none"
-            type="button"
-            className="onboarding-back-btn"
-            onClick={() => setStep('welcome')}
-          >
-            {t.onboardingBack}
-          </Button>
+          {hasPickedType && (
+            <div className="onboarding-card__footer fade-up">
+              <Button
+                type="button"
+                variant="primary"
+                size="lg"
+                className="onboarding-submit"
+                onClick={() => setStep('setup')}
+              >
+                {t.onboardingGetStarted}
+              </Button>
+              <Button variant="none"
+                type="button"
+                className="onboarding-back-btn"
+                onClick={() => setStep('welcome')}
+              >
+                <ArrowLeft className="w-4 h-4" aria-hidden="true" />
+                {t.onboardingBack}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     )
