@@ -1,15 +1,14 @@
 /*
- * Bottom Navigation — fixed-height, sticky, FAB-in-notch.
+ * Bottom Navigation — standard flat bar, 5 in-flow tabs, sliding indicator.
  *
  * Architecture
- *   - Bar shape:  pure CSS. Rectangle with a circular notch cut out of the
- *                 top-center via `mask-image: radial-gradient(...)`.
- *   - Bar height: fixed via --bnav-h (mobile-first, doesn't grow with width).
- *   - Shadow:     `filter: drop-shadow()` so it follows the masked silhouette
- *                 (curves into the notch) instead of around the bounding box.
- *   - FAB:        independent fixed-position element with higher z-index.
- *                 Centered horizontally, vertically straddles the bar's top
- *                 edge so half sits inside the notch and half above the bar.
+ *   - Bar shape:  flat rectangle, top border + subtle shadow. No mask/notch.
+ *   - Indicator:  absolutely-positioned pill that slides behind the active
+ *                 tab's icon (`bnav__indicator`), driven by inline
+ *                 left/width percentages computed from the active route index.
+ *   - Create tab: in-flow cell like every other tab, distinguished only by
+ *                 a lime accent-circle behind its icon — no floating FAB,
+ *                 no physical cutout in the bar.
  *   - Safe area:  Capacitor injects --safe-area-inset-bottom (and others) on
  *                 viewport-fit=cover. The bar pads its bottom by that inset so
  *                 content sits ABOVE the OS gesture pill / 3-button nav.
@@ -19,8 +18,6 @@
 
 :root {
   --bnav-h: 64px;
-  --bnav-notch-r: 38px;
-  --bnav-fab-size: 56px;
 }
 
 .bnav {
@@ -32,25 +29,8 @@
   padding-bottom: var(--safe-area-inset-bottom, 0px);
 
   background: var(--color-gray-0);
-
-  -webkit-mask-image:
-    radial-gradient(
-      circle var(--bnav-notch-r) at 50% 0,
-      transparent calc(var(--bnav-notch-r) - 0.5px),
-      #000 calc(var(--bnav-notch-r) + 0.5px)
-    );
-  mask-image:
-    radial-gradient(
-      circle var(--bnav-notch-r) at 50% 0,
-      transparent calc(var(--bnav-notch-r) - 0.5px),
-      #000 calc(var(--bnav-notch-r) + 0.5px)
-    );
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-
-  filter: var(--shadow-bnav-bar);
+  border-top: 1px solid var(--color-gray-100);
+  box-shadow: var(--shadow-subtle);
 
   animation: bnavSlideUp 0.3s var(--ease-spring);
 }
@@ -61,6 +41,7 @@
 }
 
 .bnav__items {
+  position: relative;
   list-style: none;
   margin: 0;
   padding: 0 4px;
@@ -69,14 +50,22 @@
   align-items: stretch;
 }
 
+.bnav__indicator {
+  position: absolute;
+  top: 6px;
+  height: calc(var(--bnav-h) - 12px);
+  background: var(--color-primary-100);
+  border-radius: var(--radius-full);
+  transition: left 0.28s var(--ease-spring), width 0.28s var(--ease-spring);
+  z-index: 0;
+}
+
 .bnav__cell {
   flex: 1 1 0;
   min-width: 0;
   display: flex;
-}
-
-.bnav__notch-gap {
-  flex: 0 0 calc(var(--bnav-notch-r) * 2);
+  position: relative;
+  z-index: 1;
 }
 
 .bnav__tab {
@@ -89,7 +78,7 @@
   padding: 6px 4px;
   text-decoration: none;
   color: var(--color-gray-400);
-  font-size: 11px;
+  font-size: var(--fs-2xs);
   font-weight: 500;
   letter-spacing: -0.1px;
   line-height: 1;
@@ -115,7 +104,7 @@
 }
 
 .bnav__tab--active {
-  color: var(--color-primary-400);
+  color: var(--color-primary-500);
 }
 
 .bnav__tab--active .bnav__icon {
@@ -142,65 +131,27 @@
   max-width: 100%;
 }
 
-/* FAB — sibling element. Center sits exactly on the bar's top edge,
- * so half settles into the notch and half floats above the bar.
- *   bottom = bar_height - fab_size / 2 + safe_area
- * Position is absolute relative to .bnav-root (which is fixed).
- */
-.bnav__fab {
-  position: absolute;
-  left: 50%;
-  bottom: calc(var(--bnav-h) - var(--bnav-fab-size) / 2 + var(--safe-area-inset-bottom, 0px));
-  transform: translateX(-50%);
-  z-index: var(--z-bnav-fab);
-  pointer-events: auto;
-
-  width: var(--bnav-fab-size);
-  height: var(--bnav-fab-size);
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-
-  background: radial-gradient(circle at 30% 30%, var(--color-lime-highlight) 0%, var(--color-lime-accent) 70%);
-  color: var(--color-gray-900);
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  box-shadow: var(--shadow-bnav-fab);
-
-  transition: transform 0.18s var(--ease-spring),
-              box-shadow 0.18s ease;
-  animation: bnavFabPop 0.4s 0.05s var(--ease-spring) both;
+/* Create tab — in-flow like every other cell, distinguished by a lime
+ * accent circle behind the icon instead of a floating cutout FAB. */
+.bnav__icon--create {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-full);
+  background: var(--color-secondary-300);
+  color: var(--color-primary-700);
+  transition: transform 0.18s var(--ease-spring);
 }
 
-@keyframes bnavFabPop {
-  from { transform: translate(-50%, 60%) scale(0.6); opacity: 0; }
-  to   { transform: translate(-50%, 0)    scale(1);   opacity: 1; }
+.bnav__tab--create:hover .bnav__icon--create {
+  transform: scale(1.06);
 }
 
-.bnav__fab:hover {
-  transform: translateX(-50%) scale(1.05);
+.bnav__tab--create:active .bnav__icon--create {
+  transform: scale(0.92);
 }
 
-.bnav__fab:active {
-  transform: translateX(-50%) scale(0.94);
-}
-
-.bnav__fab:focus-visible {
-  outline: 3px solid var(--color-primary-400);
-  outline-offset: 4px;
-}
-
-.bnav__fab svg {
-  display: block;
-}
-
-/* Reserve page space so content never hides behind the bar OR the FAB.
- * Uses --bottom-nav-height which already includes bar + FAB overhang + glow + buffer.
- */
+/* Reserve page space so content never hides behind the bar.
+ * Uses --bottom-nav-height which already includes the bar height + safe inset. */
 body:has(.bnav-root) {
   padding-bottom: var(--bottom-nav-height);
 }
@@ -251,13 +202,13 @@ body:has(.bnav-root--hidden) {
 
 @media (prefers-reduced-motion: reduce) {
   .bnav,
-  .bnav__fab,
   .bnav-root {
     animation: none;
     transition: none;
   }
   .bnav__tab,
-  .bnav__fab {
+  .bnav__indicator,
+  .bnav__icon--create {
     transition: none;
   }
 }

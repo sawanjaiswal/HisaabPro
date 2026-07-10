@@ -132,8 +132,8 @@ export function SideNav() {
             </button>
           </div>
 
-          {/* Businesses */}
-          {businesses.length > 0 && (
+          {/* Only show switcher when there's an actual choice — else it duplicates TenantChip above. */}
+          {businesses.length > 1 && (
             <section className="side-nav-section">
               <h3 className="side-nav-section-title">Your Businesses</h3>
               <div className="side-nav-business-list">

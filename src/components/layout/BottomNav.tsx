@@ -1,5 +1,5 @@
 import { createPortal } from 'react-dom'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { Home, ShoppingCart, Users, Plus, Menu, CalendarClock } from 'lucide-react'
 import type { ComponentType, SVGProps } from 'react'
 import { ROUTES } from '@/config/routes.config'
@@ -15,14 +15,15 @@ interface NavItem {
   to: string
   icon: IconType
   label: string
+  end?: boolean
 }
 
-function NavTab({ to, icon: Icon, label }: NavItem) {
+function NavTab({ to, icon: Icon, label, end }: NavItem) {
   return (
     <li className="bnav__cell">
       <NavLink
         to={to}
-        end={to === ROUTES.DASHBOARD}
+        end={end ?? to === ROUTES.DASHBOARD}
         className={({ isActive }) =>
           `bnav__tab${isActive ? ' bnav__tab--active' : ''}`
         }
@@ -39,20 +40,27 @@ function NavTab({ to, icon: Icon, label }: NavItem) {
 
 export function BottomNav() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { t } = useLanguage()
   const keyboardOpen = useKeyboardVisible()
 
-  const leftItems: readonly NavItem[] = [
+  const items: readonly NavItem[] = [
     { to: ROUTES.DASHBOARD, icon: Home, label: t.home ?? 'Home' },
     { to: ROUTES.SALES, icon: ShoppingCart, label: t.salesHub ?? 'Sales' },
-  ]
-
-  const rightItems: readonly NavItem[] = [
     ...(FEATURES.V2_APPOINTMENTS.enabled
       ? [{ to: ROUTES.APPOINTMENTS, icon: CalendarClock, label: t.appointments ?? 'Calendar' }]
       : []),
     { to: ROUTES.PARTIES, icon: Users, label: t.parties },
   ]
+
+  // Total cells = nav items + the Create button + the Menu button — the
+  // indicator's width/position are percentages of this full cell count so it
+  // aligns with the flex grid regardless of the Appointments feature flag.
+  const totalCells = items.length + 2
+  const activeIndex = items.findIndex((item) => {
+    const end = item.end ?? item.to === ROUTES.DASHBOARD
+    return end ? location.pathname === item.to : location.pathname.startsWith(item.to)
+  })
 
   const openSideNav = () => window.dispatchEvent(new Event(OPEN_SIDE_NAV_EVENT))
 
@@ -60,13 +68,33 @@ export function BottomNav() {
     <div className={`bnav-root${keyboardOpen ? ' bnav-root--hidden' : ''}`} data-keyboard-open={keyboardOpen ? 'true' : 'false'}>
       <nav className="bnav" aria-label="Main navigation" aria-hidden={keyboardOpen}>
         <ul className="bnav__items">
-          {leftItems.map((item) => (
-            <NavTab key={item.to} {...item} />
+          {activeIndex >= 0 && (
+            <span
+              className="bnav__indicator"
+              aria-hidden="true"
+              style={{
+                width: `calc(100% / ${totalCells})`,
+                left: `calc(100% / ${totalCells} * ${activeIndex})`,
+              }}
+            />
+          )}
+          {items.map((item, i) => (
+            <NavTab key={item.to} {...item} end={i === 0} />
           ))}
-          <li className="bnav__notch-gap" aria-hidden="true" />
-          {rightItems.map((item) => (
-            <NavTab key={item.to} {...item} />
-          ))}
+          <li className="bnav__cell">
+            <button
+              type="button"
+              className="bnav__tab bnav__tab--create"
+              onClick={() => navigate(`${ROUTES.INVOICE_CREATE}?type=SALE`)}
+              aria-label={t.createInvoice ?? 'Create new invoice'}
+              title={t.createInvoice ?? 'Create new invoice'}
+            >
+              <span className="bnav__icon bnav__icon--create">
+                <Plus size={20} strokeWidth={2.5} aria-hidden="true" />
+              </span>
+              <span className="bnav__label">{t.create ?? 'Create'}</span>
+            </button>
+          </li>
           <li className="bnav__cell">
             <button
               type="button"
@@ -82,17 +110,6 @@ export function BottomNav() {
           </li>
         </ul>
       </nav>
-      <button
-        type="button"
-        className="bnav__fab"
-        onClick={() => navigate(`${ROUTES.INVOICE_CREATE}?type=SALE`)}
-        aria-label={t.createInvoice ?? 'Create new invoice'}
-        title={t.createInvoice ?? 'Create new invoice'}
-        aria-hidden={keyboardOpen}
-        tabIndex={keyboardOpen ? -1 : 0}
-      >
-        <Plus size={24} strokeWidth={2.75} aria-hidden="true" />
-      </button>
     </div>,
     document.body,
   )

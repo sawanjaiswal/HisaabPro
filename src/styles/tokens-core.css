@@ -210,16 +210,21 @@
   --motion-duration-normal: 350ms;
   --motion-easing-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
 
-  /* Z-Index */
+  /* Z-Index
+   * bnav/bnav-fab sit ABOVE ordinary page content (sticky/dropdown) so they
+   * float over lists and forms, but BELOW overlay/modal-backdrop/modal/toast
+   * so any drawer, dialog, or toast always wins the stack over the nav —
+   * a drawer that opens from a page must never render underneath the bar
+   * that triggered it. */
   --z-fab: 10;
   --z-sticky: 20;
   --z-dropdown: 30;
+  --z-bnav: 35;
+  --z-bnav-fab: 36;
   --z-overlay: 40;
   --z-modal-backdrop: 45;
   --z-modal: 50;
   --z-toast: 70;
-  --z-bnav: 100;
-  --z-bnav-fab: 101;
 
   /* Layout */
   --side-padding: var(--space-4);
