@@ -32,9 +32,5 @@ export async function getSalesDocuments(
   signal?: AbortSignal,
 ): Promise<DocumentListResponse> {
   const qs = buildQuery(filters)
-  const response = await api<{ success: boolean; data: DocumentListResponse }>(
-    `/documents${qs}`,
-    { signal },
-  )
-  return response.data
+  return api<DocumentListResponse>(`/documents${qs}`, { signal })
 }
