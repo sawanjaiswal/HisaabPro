@@ -21,9 +21,9 @@ const SaleOrdersContent = lazy(() => import('./SaleOrdersPage'))
 const ChallansContent  = lazy(() => import('./DeliveryChallansPage'))
 
 function useActiveTab(): SalesHubTab {
-  const onEstimates = useMatch('/sales/estimates*')
-  const onOrders    = useMatch('/sales/orders*')
-  const onChallans  = useMatch('/sales/challans*')
+  const onEstimates = useMatch('/sales/estimates/*')
+  const onOrders    = useMatch('/sales/orders/*')
+  const onChallans  = useMatch('/sales/challans/*')
   if (onEstimates) return 'estimates'
   if (onOrders)    return 'orders'
   if (onChallans)  return 'challans'
