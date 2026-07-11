@@ -27,13 +27,6 @@
   flex-shrink: 0;
 }
 
-/* Uploaded product photo (product detail header) — same box as the
-   avatar fallback, but object-fit'd since it's a real photo, not text */
-.product-detail-thumb {
-  object-fit: cover;
-  border: 1px solid var(--color-gray-100);
-}
-
 /* Party info block sits next to the avatar on wider screens */
 .party-detail-info {
   flex: 1;

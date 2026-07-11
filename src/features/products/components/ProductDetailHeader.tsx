@@ -22,21 +22,21 @@ export const ProductDetailHeader: React.FC<ProductDetailHeaderProps> = ({ produc
   const stockStatus = getStockStatus(product.currentStock, product.minStockLevel)
 
   return (
-    <div className="card-primary party-detail-header" role="region" aria-label={t.productOverview}>
+    <div className="card-primary product-detail-header" role="region" aria-label={t.productOverview}>
       {product.images?.[0] ? (
         <img
           src={product.images[0]}
           alt={product.name}
-          className="party-detail-avatar product-detail-thumb"
+          className="product-detail-avatar product-detail-thumb"
         />
       ) : (
-        <PartyAvatar name={product.name} size="lg" className="party-detail-avatar" />
+        <PartyAvatar name={product.name} size="lg" className="product-detail-avatar" />
       )}
 
-      <div className="party-detail-info">
-        <h2 className="party-detail-name">{product.name}</h2>
-        <div className="party-detail-meta">
-          <span className="identity-meta">{product.sku}</span>
+      <div className="product-detail-info">
+        <h2 className="product-detail-name">{product.name}</h2>
+        <span className="product-detail-sku">{product.sku}</span>
+        <div className="product-detail-meta">
           <span
             className={STOCK_BADGE_CLASSES[stockStatus]}
             aria-label={`${t.stockStatusPrefix}: ${STOCK_STATUS_LABELS[stockStatus]}`}
@@ -46,7 +46,7 @@ export const ProductDetailHeader: React.FC<ProductDetailHeaderProps> = ({ produc
         </div>
       </div>
 
-      <div className="party-detail-balance" aria-label={`${t.stockLabel}: ${formatStock(product.currentStock, product.unit.symbol)}`}>
+      <div className="product-detail-stock" aria-label={`${t.stockLabel}: ${formatStock(product.currentStock, product.unit.symbol)}`}>
         <span className={`money-hero money-hero--${stockStatus}`}>
           {formatStock(product.currentStock, product.unit.symbol)}
         </span>

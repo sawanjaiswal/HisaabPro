@@ -23,6 +23,13 @@
   flex-shrink: 0;
 }
 
+/* Uploaded product photo — same box as the avatar fallback, but
+   object-fit'd since it's a real photo, not text */
+.product-detail-thumb {
+  object-fit: cover;
+  border: 1px solid var(--color-gray-100);
+}
+
 .product-detail-info {
   flex: 1;
   min-width: 0;
@@ -67,6 +74,22 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+}
+
+.product-info-section-label {
+  display: block;
+  text-transform: uppercase;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+}
+
+.product-info-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  flex-shrink: 0;
 }
 
 .product-info-row {
