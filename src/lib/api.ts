@@ -38,6 +38,24 @@ interface ApiResponse<T> {
   error?: { code: string; message: string }
 }
 
+// Endpoints where a 401 means "these credentials/tokens are invalid," not
+// "the access token merely expired" — attempting a refresh here would either
+// recurse (refresh calling itself) or mask a genuine auth failure as a retry.
+// Every other path (including /auth/me, /auth/logout, /auth/switch-business)
+// goes through the normal refresh-and-retry interceptor.
+const NON_REFRESHABLE_AUTH_PATHS = [
+  '/auth/login',
+  '/auth/dev-login',
+  '/auth/refresh',
+  '/auth/register',
+  '/auth/verify-registration',
+  '/auth/verify-otp',
+]
+
+function isNonRefreshableAuthPath(path: string): boolean {
+  return NON_REFRESHABLE_AUTH_PATHS.some((p) => path.startsWith(p))
+}
+
 /** Fetch wrapper: timeout + httpOnly-cookie auth + abort + 401 refresh + 403 PIN gate + offline queue + opt-in IDB read cache. */
 export async function api<T>(
   path: string,
@@ -155,8 +173,13 @@ export async function api<T>(
     clearTimeout(timeoutId)
   }
 
-  // 401 interceptor — attempt token refresh, then retry the original request
-  if (response.status === 401 && !_skipRefresh && !path.includes('/auth/')) {
+  // 401 interceptor — attempt token refresh, then retry the original request.
+  // Only credential-verification endpoints are excluded (a 401 there means
+  // "bad credentials", not "access token expired") — every other endpoint,
+  // including /auth/me, /auth/logout, /auth/switch-business, goes through
+  // the refresh-and-retry path so an expired 15m access token doesn't force
+  // a hard logout while the refresh-token cookie is still valid.
+  if (response.status === 401 && !_skipRefresh && !isNonRefreshableAuthPath(path)) {
     const refreshed = await attemptTokenRefresh()
     if (refreshed) {
       return api<T>(path, { ...options, _skipRefresh: true })
