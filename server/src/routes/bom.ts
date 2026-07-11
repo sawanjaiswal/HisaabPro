@@ -38,7 +38,7 @@ router.get(
     }
     const { businessId } = req.user!
     const result = await listBoms(businessId, parsed.data)
-    res.status(200).json({ success: true, ...result })
+    sendSuccess(res, result)
   })
 )
 
@@ -100,7 +100,7 @@ router.put(
     try {
       const result = await updateBom(String(req.params.id), businessId, userId, parsed.data)
       const status = result.versioned ? 201 : 200
-      res.status(status).json({ success: true, data: result, versioned: result.versioned })
+      sendSuccess(res, result, status)
     } catch (err: unknown) {
       const e = err as { code: string; message: string; status: number }
       sendError(res, e.message, e.code, e.status)

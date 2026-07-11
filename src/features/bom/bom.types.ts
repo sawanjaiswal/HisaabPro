@@ -47,11 +47,6 @@ export interface BomListResponse {
   pagination: { page: number; limit: number; total: number; hasMore: boolean }
 }
 
-export interface BomDetailResponse {
-  data: BomDetailDTO
-  versioned?: boolean
-}
-
 // ─── Form types ───────────────────────────────────────────────────────────────
 
 export interface BomComponentFormRow {

@@ -45,12 +45,11 @@ export function usePriceLists(page = 1) {
     queryClient.invalidateQueries({ queryKey: priceListKeys.all() })
   }, [queryClient])
 
-  const items = query.data?.data ?? []
-  const pagination = query.data?.pagination ?? { page: 1, limit: 20, total: 0, hasMore: false }
+  const items = query.data ?? []
   const status: 'loading' | 'error' | 'success' =
     query.isPending ? 'loading' : query.isError ? 'error' : 'success'
 
-  return { items, pagination, status, refresh }
+  return { items, status, refresh }
 }
 
 // ─── usePriceListDetail ───────────────────────────────────────────────────────

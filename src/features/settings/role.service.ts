@@ -50,10 +50,10 @@ export async function getRole(
   roleId: string,
   signal?: AbortSignal
 ): Promise<RoleDetailResponse> {
-  return api<RoleDetailResponse>(
-    `/businesses/${businessId}/roles/${roleId}`,
-    { signal }
-  )
+  // Backend returns the role object directly; api() unwraps the success envelope.
+  // Re-wrap to the shape consumers expect (`.data.role`).
+  const role = await api<Role>(`/businesses/${businessId}/roles/${roleId}`, { signal })
+  return { success: true, data: { role } }
 }
 
 /**
@@ -66,7 +66,7 @@ export async function createRole(
   data: RoleFormData,
   signal?: AbortSignal
 ): Promise<RoleDetailResponse> {
-  return api<RoleDetailResponse>(
+  const role = await api<Role>(
     `/businesses/${businessId}/roles`,
     {
       method: 'POST',
@@ -76,6 +76,7 @@ export async function createRole(
       entityLabel: data.name ?? 'New role',
     }
   )
+  return { success: true, data: { role } }
 }
 
 /**
@@ -89,7 +90,7 @@ export async function updateRole(
   data: Partial<RoleFormData>,
   signal?: AbortSignal
 ): Promise<RoleDetailResponse> {
-  return api<RoleDetailResponse>(
+  const role = await api<Role>(
     `/businesses/${businessId}/roles/${roleId}`,
     {
       method: 'PUT',
@@ -99,6 +100,7 @@ export async function updateRole(
       entityLabel: data.name ?? 'Role update',
     }
   )
+  return { success: true, data: { role } }
 }
 
 /**
@@ -114,7 +116,7 @@ export async function deleteRole(
   reassignTo: string,
   signal?: AbortSignal
 ): Promise<RoleDeleteResponse> {
-  return api<RoleDeleteResponse>(
+  const result = await api<{ reassignedStaff: number }>(
     `/businesses/${businessId}/roles/${roleId}?reassignTo=${encodeURIComponent(reassignTo)}`,
     {
       method: 'DELETE',
@@ -123,6 +125,7 @@ export async function deleteRole(
       entityLabel: 'Delete role',
     }
   )
+  return { success: true, data: result }
 }
 
 // ─── Permissions ──────────────────────────────────────────────────────────────
@@ -135,5 +138,6 @@ export async function deleteRole(
 export async function getPermissionMatrix(
   signal?: AbortSignal
 ): Promise<PermissionMatrixResponse> {
-  return api<PermissionMatrixResponse>('/permissions/matrix', { signal })
+  const data = await api<PermissionMatrix>('/permissions/matrix', { signal })
+  return { success: true, data }
 }

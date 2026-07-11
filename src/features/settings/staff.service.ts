@@ -70,7 +70,9 @@ export async function inviteStaff(
   data: InviteStaffData,
   signal?: AbortSignal
 ): Promise<InviteResponse> {
-  return api<InviteResponse>(
+  // Backend returns { invite } directly; api() unwraps the success envelope.
+  // Re-wrap to the shape consumers expect (`.data.invite`).
+  const res = await api<{ invite: InviteResponse['data']['invite'] }>(
     `/businesses/${businessId}/staff/invite`,
     {
       method: 'POST',
@@ -80,6 +82,7 @@ export async function inviteStaff(
       entityLabel: data.phone ? `Invite ${data.phone}` : 'Invite staff',
     }
   )
+  return { success: true, data: { invite: res.invite } }
 }
 
 /**
@@ -93,7 +96,9 @@ export async function updateStaffRole(
   roleId: string,
   signal?: AbortSignal
 ): Promise<StaffRoleUpdateResponse> {
-  return api<StaffRoleUpdateResponse>(
+  // Backend returns the raw updated BusinessUser row (id, roleRef:{id,name}, ...);
+  // api() unwraps the success envelope. Re-wrap to the shape consumers expect.
+  const res = await api<{ id: string; roleRef: { id: string; name: string } }>(
     `/businesses/${businessId}/staff/${staffId}`,
     {
       method: 'PUT',
@@ -103,6 +108,10 @@ export async function updateStaffRole(
       entityLabel: 'Update staff role',
     }
   )
+  return {
+    success: true,
+    data: { staffId: res.id, roleId: res.roleRef.id, roleName: res.roleRef.name },
+  }
 }
 
 /**
@@ -115,7 +124,7 @@ export async function suspendStaff(
   staffId: string,
   signal?: AbortSignal
 ): Promise<StaffSuspendResponse> {
-  return api<StaffSuspendResponse>(
+  const res = await api<{ id: string }>(
     `/businesses/${businessId}/staff/${staffId}/suspend`,
     {
       method: 'POST',
@@ -124,6 +133,7 @@ export async function suspendStaff(
       entityLabel: 'Suspend staff',
     }
   )
+  return { success: true, data: { staffId: res.id, status: 'SUSPENDED' } }
 }
 
 /**
@@ -136,7 +146,7 @@ export async function removeStaff(
   staffId: string,
   signal?: AbortSignal
 ): Promise<StaffRemoveResponse> {
-  return api<StaffRemoveResponse>(
+  const res = await api<{ staffId: string; removedAt: string }>(
     `/businesses/${businessId}/staff/${staffId}`,
     {
       method: 'DELETE',
@@ -145,6 +155,7 @@ export async function removeStaff(
       entityLabel: 'Remove staff',
     }
   )
+  return { success: true, data: res }
 }
 
 /**
@@ -157,7 +168,7 @@ export async function resendInvite(
   inviteId: string,
   signal?: AbortSignal
 ): Promise<ResendInviteResponse> {
-  return api<ResendInviteResponse>(
+  const res = await api<{ invite: { id: string; expiresAt: string } }>(
     `/businesses/${businessId}/staff/invite/${inviteId}/resend`,
     {
       method: 'POST',
@@ -166,4 +177,5 @@ export async function resendInvite(
       entityLabel: 'Resend invite',
     }
   )
+  return { success: true, data: { inviteId: res.invite.id, expiresAt: res.invite.expiresAt } }
 }

@@ -38,7 +38,7 @@ router.get(
     }
     const { businessId } = req.user!
     const result = await listProductionRuns(businessId, parsed.data)
-    res.status(200).json({ success: true, ...result })
+    sendSuccess(res, result)
   })
 )
 
@@ -94,11 +94,7 @@ router.post(
         userId,
         idempotencyKey,
       })
-      res.status(201).json({
-        success: true,
-        data: detail,
-        warnings: detail.warnings,
-      })
+      sendSuccess(res, detail, 201)
     } catch (err: unknown) {
       const e = err as { code: string; message: string; status: number; details?: unknown }
       if (e.details) {

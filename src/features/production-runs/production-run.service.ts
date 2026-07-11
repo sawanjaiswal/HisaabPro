@@ -5,7 +5,6 @@ import { PR_PAGE_LIMIT } from './production-run.constants'
 import type {
   ProductionRunListResponse,
   ProductionRunDetailDTO,
-  ProductionRunDetailResponse,
   ProductionRunListFilters,
   WizardFormState,
 } from './production-run.types'
@@ -33,11 +32,10 @@ export async function getProductionRun(
   id: string,
   signal?: AbortSignal,
 ): Promise<ProductionRunDetailDTO> {
-  const res = await api<ProductionRunDetailResponse>(`/production-runs/${id}`, {
+  return api<ProductionRunDetailDTO>(`/production-runs/${id}`, {
     signal,
     cacheReads: true,
   })
-  return res.data
 }
 
 // ─── Execute ──────────────────────────────────────────────────────────────────
@@ -47,7 +45,7 @@ export async function executeProductionRun(
   signal?: AbortSignal,
 ): Promise<ProductionRunDetailDTO> {
   const label = `Run: ${wizard.bomName} × ${wizard.quantityProduced}`
-  const res = await api<ProductionRunDetailResponse>('/production-runs', {
+  return api<ProductionRunDetailDTO>('/production-runs', {
     method: 'POST',
     body: JSON.stringify({
       bomId: wizard.bomId,
@@ -62,7 +60,6 @@ export async function executeProductionRun(
     entityType: 'productionRun',
     entityLabel: label,
   })
-  return res.data
 }
 
 // ─── Cancel ───────────────────────────────────────────────────────────────────

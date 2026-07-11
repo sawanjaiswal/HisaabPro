@@ -3,7 +3,7 @@
 import { api } from '@/lib/api'
 import { BOM_PAGE_LIMIT } from './bom.constants'
 import { formRowsToComponents } from './bom.utils'
-import type { BomListResponse, BomDetailDTO, BomDetailResponse, BomListFilters, BomFormData } from './bom.types'
+import type { BomListResponse, BomDetailDTO, BomListFilters, BomFormData } from './bom.types'
 
 // ─── List ─────────────────────────────────────────────────────────────────────
 
@@ -23,14 +23,13 @@ export async function listBoms(
 // ─── Get ──────────────────────────────────────────────────────────────────────
 
 export async function getBom(id: string, signal?: AbortSignal): Promise<BomDetailDTO> {
-  const res = await api<BomDetailResponse>(`/bom/${id}`, { signal, cacheReads: true })
-  return res.data
+  return api<BomDetailDTO>(`/bom/${id}`, { signal, cacheReads: true })
 }
 
 // ─── Create ───────────────────────────────────────────────────────────────────
 
 export async function createBom(form: BomFormData, signal?: AbortSignal): Promise<BomDetailDTO> {
-  const res = await api<BomDetailResponse>('/bom', {
+  return api<BomDetailDTO>('/bom', {
     method: 'POST',
     body: JSON.stringify({
       productId: form.productId,
@@ -43,7 +42,6 @@ export async function createBom(form: BomFormData, signal?: AbortSignal): Promis
     entityType: 'bom',
     entityLabel: form.name.trim(),
   })
-  return res.data
 }
 
 // ─── Update ───────────────────────────────────────────────────────────────────
@@ -53,7 +51,7 @@ export async function updateBom(
   form: BomFormData,
   signal?: AbortSignal,
 ): Promise<{ data: BomDetailDTO; versioned: boolean }> {
-  const res = await api<BomDetailResponse & { versioned: boolean }>(`/bom/${id}`, {
+  const res = await api<BomDetailDTO & { versioned: boolean }>(`/bom/${id}`, {
     method: 'PUT',
     body: JSON.stringify({
       productId: form.productId,
@@ -67,7 +65,8 @@ export async function updateBom(
     entityType: 'bom',
     entityLabel: form.name.trim(),
   })
-  return { data: res.data, versioned: res.versioned ?? false }
+  const { versioned, ...detail } = res
+  return { data: detail, versioned: versioned ?? false }
 }
 
 // ─── Delete ───────────────────────────────────────────────────────────────────

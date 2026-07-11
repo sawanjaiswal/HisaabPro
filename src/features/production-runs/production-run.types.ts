@@ -38,11 +38,6 @@ export interface ProductionRunListResponse {
   pagination: { page: number; limit: number; total: number; hasMore: boolean }
 }
 
-export interface ProductionRunDetailResponse {
-  data: ProductionRunDetailDTO
-  warnings: string[]
-}
-
 // ─── Wizard step ─────────────────────────────────────────────────────────────
 
 export type WizardStep = 0 | 1 | 2 | 3

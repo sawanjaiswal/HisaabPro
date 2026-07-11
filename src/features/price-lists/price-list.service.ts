@@ -3,12 +3,11 @@
 import { api } from '@/lib/api'
 import { PRICE_LIST_PAGE_LIMIT } from './price-list.constants'
 import type {
-  PriceListsResponse,
-  PriceListResponse,
-  PriceListEntryResponse,
+  PriceList,
   PriceListFormData,
   PriceListEntryFormData,
   PriceListDetail,
+  PriceListEntry,
 } from './price-list.types'
 import { percentToBps } from './price-list.constants'
 
@@ -17,28 +16,29 @@ import { percentToBps } from './price-list.constants'
 export async function listPriceLists(
   page = 1,
   signal?: AbortSignal,
-): Promise<PriceListsResponse> {
+): Promise<PriceList[]> {
   const params = new URLSearchParams({ page: String(page), limit: String(PRICE_LIST_PAGE_LIMIT) })
-  return api<PriceListsResponse>(`/price-lists?${params}`, { signal, cacheReads: true })
+  const res = await api<{ lists: PriceList[] }>(`/price-lists?${params}`, { signal, cacheReads: true })
+  return res.lists
 }
 
 // ─── Get detail ───────────────────────────────────────────────────────────────
 
 export async function getPriceList(id: string, signal?: AbortSignal): Promise<PriceListDetail> {
-  const res = await api<PriceListResponse>(`/price-lists/${id}`, { signal, cacheReads: true })
-  return res.data
+  const res = await api<{ list: PriceListDetail }>(`/price-lists/${id}`, { signal, cacheReads: true })
+  return res.list
 }
 
 // ─── Create ───────────────────────────────────────────────────────────────────
 
 export async function createPriceList(form: PriceListFormData): Promise<PriceListDetail> {
-  const res = await api<PriceListResponse>('/price-lists', {
+  const res = await api<{ list: PriceListDetail }>('/price-lists', {
     method: 'POST',
     body: JSON.stringify({ name: form.name.trim(), isDefault: form.isDefault }),
     entityType: 'priceList',
     entityLabel: form.name.trim(),
   })
-  return res.data
+  return res.list
 }
 
 // ─── Update ───────────────────────────────────────────────────────────────────
@@ -47,13 +47,13 @@ export async function updatePriceList(
   id: string,
   form: PriceListFormData,
 ): Promise<PriceListDetail> {
-  const res = await api<PriceListResponse>(`/price-lists/${id}`, {
+  const res = await api<{ list: PriceListDetail }>(`/price-lists/${id}`, {
     method: 'PATCH',
     body: JSON.stringify({ name: form.name.trim(), isDefault: form.isDefault }),
     entityType: 'priceList',
     entityLabel: form.name.trim(),
   })
-  return res.data
+  return res.list
 }
 
 // ─── Delete ───────────────────────────────────────────────────────────────────
@@ -74,13 +74,13 @@ export async function createPriceListEntry(
   form: PriceListEntryFormData,
 ) {
   const body = buildEntryBody(form)
-  const res = await api<PriceListEntryResponse>(`/price-lists/${listId}/entries`, {
+  const res = await api<{ entry: PriceListEntry }>(`/price-lists/${listId}/entries`, {
     method: 'POST',
     body: JSON.stringify(body),
     entityType: 'priceListEntry',
     entityLabel: `${listName} entry for ${form.productName}`,
   })
-  return res.data
+  return res.entry
 }
 
 // ─── Entry update ─────────────────────────────────────────────────────────────
@@ -92,13 +92,13 @@ export async function updatePriceListEntry(
   form: PriceListEntryFormData,
 ) {
   const body = buildEntryBody(form)
-  const res = await api<PriceListEntryResponse>(`/price-lists/${listId}/entries/${entryId}`, {
+  const res = await api<{ entry: PriceListEntry }>(`/price-lists/${listId}/entries/${entryId}`, {
     method: 'PATCH',
     body: JSON.stringify(body),
     entityType: 'priceListEntry',
     entityLabel: `${listName} entry for ${form.productName}`,
   })
-  return res.data
+  return res.entry
 }
 
 // ─── Entry delete ─────────────────────────────────────────────────────────────

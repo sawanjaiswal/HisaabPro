@@ -12,9 +12,5 @@ export async function getDocumentLineage(
   documentId: string,
   signal?: AbortSignal,
 ): Promise<DocumentLineageResponse> {
-  const response = await api<{ success: boolean; data: DocumentLineageResponse }>(
-    `/documents/${documentId}/lineage`,
-    { signal, cacheReads: true },
-  )
-  return response.data
+  return api<DocumentLineageResponse>(`/documents/${documentId}/lineage`, { signal, cacheReads: true })
 }

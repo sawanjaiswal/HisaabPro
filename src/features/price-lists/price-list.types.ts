@@ -39,21 +39,6 @@ export interface PriceListDetail extends PriceList {
   entries: PriceListEntry[]
 }
 
-// ─── API response shapes ──────────────────────────────────────────────────────
-
-export interface PriceListsResponse {
-  data: PriceList[]
-  pagination: { page: number; limit: number; total: number; hasMore: boolean }
-}
-
-export interface PriceListResponse {
-  data: PriceListDetail
-}
-
-export interface PriceListEntryResponse {
-  data: PriceListEntry
-}
-
 // ─── Form shapes ──────────────────────────────────────────────────────────────
 
 export interface PriceListFormData {
