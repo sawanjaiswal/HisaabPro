@@ -6,7 +6,7 @@
 
 /* Container */
 .summary-hero {
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-2);
   animation: heroFadeUp 400ms var(--ease-premium) both;
 }
 

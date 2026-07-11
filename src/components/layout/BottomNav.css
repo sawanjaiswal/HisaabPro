@@ -142,6 +142,10 @@
   transition: transform 0.18s var(--ease-spring);
 }
 
+.bnav__icon--create svg {
+  display: block;
+}
+
 .bnav__tab--create:hover .bnav__icon--create {
   transform: scale(1.06);
 }

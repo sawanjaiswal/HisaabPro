@@ -11,6 +11,7 @@ import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { X, LogOut, Sun, Moon, Calculator, Bell, Check, Loader2, Plus } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion'
 import { useAuth } from '@/context/AuthContext'
 import { useTheme } from '@/context/ThemeContext'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -89,15 +90,44 @@ export function SideNav() {
             <span className="side-nav-greeting">{t.menu}</span>
             {user?.name && <span className="side-nav-user">{user.name}</span>}
           </div>
-          <button
-            type="button"
-            className="side-nav-close"
-            onClick={close}
-            aria-label={t.closeMenu}
-            ref={closeRef}
-          >
-            <X size={22} aria-hidden="true" />
-          </button>
+          <div className="side-nav-header-actions">
+            <button
+              type="button"
+              className="side-nav-icon-btn"
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? t.switchToLight : t.switchToDark}
+              title={theme === 'dark' ? t.switchToLight : t.switchToDark}
+            >
+              {theme === 'dark' ? <Sun size={20} aria-hidden="true" /> : <Moon size={20} aria-hidden="true" />}
+            </button>
+            <button
+              type="button"
+              className="side-nav-icon-btn"
+              onClick={handleCalculator}
+              aria-label={t.calculator}
+              title={t.calculator}
+            >
+              <Calculator size={20} aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              className="side-nav-icon-btn"
+              onClick={close}
+              aria-label={t.notifications}
+              title={t.notifications}
+            >
+              <Bell size={20} aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              className="side-nav-close"
+              onClick={close}
+              aria-label={t.closeMenu}
+              ref={closeRef}
+            >
+              <X size={22} aria-hidden="true" />
+            </button>
+          </div>
         </div>
 
         {/* Phase 6 #138 PR2 — active tenant chip (suspend state visible at-a-glance). */}
@@ -108,79 +138,66 @@ export function SideNav() {
         )}
 
         <div className="side-nav-body">
-          {/* Quick actions: theme, calculator, notifications */}
-          <div className="side-nav-quick-row" role="group" aria-label="Quick actions">
-            <button type="button" className="side-nav-quick" onClick={toggleTheme}>
-              <span className="side-nav-quick-icon">
-                {theme === 'dark' ? <Sun size={20} aria-hidden="true" /> : <Moon size={20} aria-hidden="true" />}
-              </span>
-              <span className="side-nav-quick-label">
-                {theme === 'dark' ? t.switchToLight : t.switchToDark}
-              </span>
-            </button>
-            <button type="button" className="side-nav-quick" onClick={handleCalculator}>
-              <span className="side-nav-quick-icon">
-                <Calculator size={20} aria-hidden="true" />
-              </span>
-              <span className="side-nav-quick-label">{t.calculator}</span>
-            </button>
-            <button type="button" className="side-nav-quick" onClick={close}>
-              <span className="side-nav-quick-icon">
-                <Bell size={20} aria-hidden="true" />
-              </span>
-              <span className="side-nav-quick-label">{t.notifications}</span>
-            </button>
-          </div>
-
           {/* Only show switcher when there's an actual choice — else it duplicates TenantChip above. */}
           {businesses.length > 1 && (
             <section className="side-nav-section">
               <h3 className="side-nav-section-title">Your Businesses</h3>
-              <div className="side-nav-business-list">
-                {businesses.map((biz) => {
-                  const isActive = biz.id === user?.businessId
-                  const isLoading = switchingBusinessId === biz.id
-                  return (
-                    <button
-                      key={biz.id}
-                      type="button"
-                      className={`side-nav-business${isActive ? ' is-active' : ''}`}
-                      onClick={() => handleSwitchBusiness(biz.id)}
-                      disabled={isSwitching}
-                      aria-pressed={isActive}
-                    >
-                      <span
-                        className="side-nav-business-avatar"
-                        style={{ background: getBusinessColor(biz.id) }}
-                        aria-hidden="true"
+              <Accordion type="single" collapsible className="side-nav-business-accordion">
+                <AccordionItem value="businesses" className="side-nav-business-accordion-item">
+                  <AccordionTrigger className="side-nav-business-accordion-trigger">
+                    <span className="side-nav-business-summary">
+                      {activeBusiness?.name ?? t.switchBusiness ?? 'Switch business'}
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="side-nav-business-accordion-content">
+                    <div className="side-nav-business-list">
+                      {businesses.map((biz) => {
+                        const isActive = biz.id === user?.businessId
+                        const isLoading = switchingBusinessId === biz.id
+                        return (
+                          <button
+                            key={biz.id}
+                            type="button"
+                            className={`side-nav-business${isActive ? ' is-active' : ''}`}
+                            onClick={() => handleSwitchBusiness(biz.id)}
+                            disabled={isSwitching}
+                            aria-pressed={isActive}
+                          >
+                            <span
+                              className="side-nav-business-avatar"
+                              style={{ background: getBusinessColor(biz.id) }}
+                              aria-hidden="true"
+                            >
+                              {getBusinessInitials(biz.name)}
+                            </span>
+                            <span className="side-nav-business-info">
+                              <span className="side-nav-business-name">{biz.name}</span>
+                              {biz.role && <span className="side-nav-business-role">{biz.role}</span>}
+                            </span>
+                            <span className="side-nav-business-status" aria-hidden="true">
+                              {isLoading ? <Loader2 size={18} className="side-nav-spin" />
+                                : isActive ? <Check size={18} />
+                                : null}
+                            </span>
+                          </button>
+                        )
+                      })}
+                      <button
+                        type="button"
+                        className="side-nav-business side-nav-business--add"
+                        onClick={handleAddBusiness}
                       >
-                        {getBusinessInitials(biz.name)}
-                      </span>
-                      <span className="side-nav-business-info">
-                        <span className="side-nav-business-name">{biz.name}</span>
-                        {biz.role && <span className="side-nav-business-role">{biz.role}</span>}
-                      </span>
-                      <span className="side-nav-business-status" aria-hidden="true">
-                        {isLoading ? <Loader2 size={18} className="side-nav-spin" />
-                          : isActive ? <Check size={18} />
-                          : null}
-                      </span>
-                    </button>
-                  )
-                })}
-                <button
-                  type="button"
-                  className="side-nav-business side-nav-business--add"
-                  onClick={handleAddBusiness}
-                >
-                  <span className="side-nav-business-avatar side-nav-business-avatar--ghost" aria-hidden="true">
-                    <Plus size={20} />
-                  </span>
-                  <span className="side-nav-business-info">
-                    <span className="side-nav-business-name">Add Business</span>
-                  </span>
-                </button>
-              </div>
+                        <span className="side-nav-business-avatar side-nav-business-avatar--ghost" aria-hidden="true">
+                          <Plus size={20} />
+                        </span>
+                        <span className="side-nav-business-info">
+                          <span className="side-nav-business-name">Add Business</span>
+                        </span>
+                      </button>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </section>
           )}
 
@@ -221,17 +238,22 @@ export function SideNav() {
               </section>
             )
           })}
-        </div>
 
-        <div className="side-nav-footer">
-          <button
-            type="button"
-            className="side-nav-logout"
-            onClick={() => setConfirmLogout(true)}
-          >
-            <LogOut size={18} aria-hidden="true" />
-            {t.logout}
-          </button>
+          <div className="side-nav-footer">
+            <div className="side-nav-grid">
+              <button
+                type="button"
+                className="side-nav-item side-nav-item--logout"
+                onClick={() => setConfirmLogout(true)}
+                aria-label={t.logout}
+              >
+                <div className="side-nav-item-icon side-nav-item-icon--logout">
+                  <LogOut size={20} aria-hidden="true" />
+                </div>
+                <span className="side-nav-item-label">{t.logout}</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

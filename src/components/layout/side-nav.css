@@ -72,6 +72,14 @@
   text-overflow: ellipsis;
 }
 
+.side-nav-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.side-nav-icon-btn,
 .side-nav-close {
   display: flex;
   align-items: center;
@@ -80,14 +88,31 @@
   height: 44px;
   border: none;
   border-radius: var(--radius-full);
-  background: var(--color-gray-100);
+  background: var(--overlay-white-85);
+  box-shadow: var(--shadow-icon-btn-light);
   color: var(--color-gray-700);
   cursor: pointer;
-  transition: background var(--duration-fast) var(--ease-default);
+  transition: background var(--duration-fast) var(--ease-default),
+              transform var(--duration-fast) var(--ease-default);
   flex-shrink: 0;
 }
 
-.side-nav-close:active { background: var(--color-gray-200); }
+.side-nav-icon-btn:active,
+.side-nav-close:active {
+  background: var(--color-gray-100);
+  transform: scale(0.92);
+}
+
+[data-theme="dark"] .side-nav-icon-btn,
+[data-theme="dark"] .side-nav-close {
+  background: var(--header-icon-btn-bg-dark);
+  color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .side-nav-icon-btn:active,
+[data-theme="dark"] .side-nav-close:active {
+  background: var(--color-gray-200);
+}
 
 /* Body */
 .side-nav-body {
@@ -166,7 +191,34 @@
   padding: 0 var(--space-4) var(--space-2);
 }
 
-/* Business switcher */
+/* Business switcher — accordion (collapsed = active business summary only) */
+.side-nav-business-accordion-item {
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.side-nav-business-accordion-trigger {
+  padding: var(--space-2) var(--space-3) !important;
+  border-radius: 0 !important;
+}
+
+.side-nav-business-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: 1;
+  min-width: 0;
+}
+
+.side-nav-business-accordion-content {
+  padding: 0 var(--space-2) var(--space-2) !important;
+}
+
+.side-nav-business-accordion-content .side-nav-business-list {
+  margin-top: var(--space-2);
+}
+
 .side-nav-business-list {
   display: flex;
   flex-direction: column;
@@ -304,33 +356,22 @@
   line-height: 1.2;
 }
 
-/* Footer */
+/* Footer — scrolls with the rest of side-nav-body, not pinned to the viewport.
+ * Logout renders as a .side-nav-item like every other menu icon, just with
+ * a red-tinted icon instead of a separate pill-button style. */
 .side-nav-footer {
-  flex-shrink: 0;
-  padding: var(--space-3) var(--space-4);
+  padding-top: var(--space-3);
   border-top: 1px solid var(--color-gray-100);
-  padding-bottom: calc(var(--space-4) + var(--bottom-nav-safe-inset));
 }
 
-.side-nav-logout {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  width: 100%;
-  padding: var(--space-3);
-  border: 1.5px solid var(--color-error-200);
-  border-radius: var(--radius-md);
-  background: transparent;
+.side-nav-item-icon--logout {
+  --icon-bg: var(--color-error-50);
   color: var(--color-error-600);
-  font-size: var(--fs-base);
-  font-weight: 500;
-  font-family: var(--font-primary);
-  cursor: pointer;
-  transition: background var(--duration-fast) var(--ease-default);
 }
 
-.side-nav-logout:active { background: var(--color-error-50); }
+.side-nav-item--logout .side-nav-item-label {
+  color: var(--color-error-600);
+}
 
 /* Dark theme */
 [data-theme="dark"] .side-nav-panel {
@@ -343,11 +384,6 @@
 }
 
 [data-theme="dark"] .side-nav-user { color: var(--color-gray-100); }
-
-[data-theme="dark"] .side-nav-close {
-  background: var(--color-gray-800);
-  color: var(--color-gray-400);
-}
 
 [data-theme="dark"] .side-nav-quick {
   background: var(--color-gray-800);
@@ -376,11 +412,11 @@
   color: var(--color-primary-400);
 }
 
-[data-theme="dark"] .side-nav-logout {
-  border-color: var(--color-error-800);
+[data-theme="dark"] .side-nav-item-icon--logout {
+  --icon-bg: color-mix(in srgb, var(--color-error-900) 40%, transparent);
   color: var(--color-error-400);
 }
 
-[data-theme="dark"] .side-nav-logout:active {
-  background: color-mix(in srgb, var(--color-error-900) 40%, transparent);
+[data-theme="dark"] .side-nav-item--logout .side-nav-item-label {
+  color: var(--color-error-400);
 }

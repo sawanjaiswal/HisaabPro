@@ -56,11 +56,18 @@ export function BottomNav() {
   // Total cells = nav items + the Create button + the Menu button — the
   // indicator's width/position are percentages of this full cell count so it
   // aligns with the flex grid regardless of the Appointments feature flag.
+  // Render order interleaves Create between the nav items so the lime "+"
+  // circle lands in the visual center of the bar (last nav item — Parties —
+  // moves after Create); the indicator's cell position is remapped to match.
   const totalCells = items.length + 2
-  const activeIndex = items.findIndex((item) => {
+  const lastItemIndex = items.length - 1
+  const beforeItems = items.slice(0, lastItemIndex)
+  const lastItem = items[lastItemIndex]
+  const itemsIndex = items.findIndex((item) => {
     const end = item.end ?? item.to === ROUTES.DASHBOARD
     return end ? location.pathname === item.to : location.pathname.startsWith(item.to)
   })
+  const activeIndex = itemsIndex < 0 ? -1 : itemsIndex < lastItemIndex ? itemsIndex : lastItemIndex + 1
 
   const openSideNav = () => window.dispatchEvent(new Event(OPEN_SIDE_NAV_EVENT))
 
@@ -78,7 +85,7 @@ export function BottomNav() {
               }}
             />
           )}
-          {items.map((item, i) => (
+          {beforeItems.map((item, i) => (
             <NavTab key={item.to} {...item} end={i === 0} />
           ))}
           <li className="bnav__cell">
@@ -95,6 +102,7 @@ export function BottomNav() {
               <span className="bnav__label">{t.create ?? 'Create'}</span>
             </button>
           </li>
+          {lastItem && <NavTab key={lastItem.to} {...lastItem} end={false} />}
           <li className="bnav__cell">
             <button
               type="button"
