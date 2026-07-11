@@ -71,8 +71,8 @@ export const ProductStockTab: React.FC<ProductStockTabProps> = ({ movements, uni
         })}
       </div>
 
-      <Button variant="none"
-        className="btn btn-outline btn-md product-adjust-btn"
+      <Button variant="outline"
+        className="product-adjust-btn"
         onClick={onAdjust}
         aria-label={t.adjustStock}
       >

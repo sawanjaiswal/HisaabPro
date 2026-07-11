@@ -13,6 +13,7 @@ export const buttonVariants = cva('btn', {
     variant: {
       primary: 'btn-primary',
       secondary: 'btn-secondary',
+      outline: 'btn-outline',
       accent: 'btn-accent',
       destructive: 'btn-destructive',
       ghost: 'btn-ghost',

@@ -44,6 +44,13 @@
 }
 .btn-secondary:hover:not(:disabled) { background: var(--color-primary-50); }
 
+.btn-outline {
+  background: transparent;
+  color: var(--color-primary-500);
+  border: 1.5px solid var(--color-primary-500);
+}
+.btn-outline:hover:not(:disabled) { background: var(--color-primary-50); }
+
 .btn-destructive {
   background: var(--color-error-500);
   color: var(--color-white-inverse);

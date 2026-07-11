@@ -98,7 +98,7 @@ export function LabelPrintDialog({ productIds, onClose }: LabelPrintDialogProps)
         {dialogState === 'error' && (
           <div className="label-dialog-body label-dialog-error" role="alert">
             <p>Could not load label data.</p>
-            <Button variant="none" type="button" className="btn btn-outline" onClick={loadLabels}>
+            <Button variant="outline" type="button" onClick={loadLabels}>
               <RefreshCw size={16} aria-hidden="true" />
               Retry
             </Button>
@@ -149,9 +149,9 @@ export function LabelPrintDialog({ productIds, onClose }: LabelPrintDialogProps)
                 fileName={fileName}
               >
                 {({ loading }) => (
-                  <Button variant="none"
+                  <Button variant="outline"
                     type="button"
-                    className="btn btn-outline label-footer-btn"
+                    className="label-footer-btn"
                     disabled={loading}
                     aria-label="Download PDF"
                     onClick={() => !loading && toast.success('Labels PDF downloaded.')}
