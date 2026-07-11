@@ -27,3 +27,26 @@ No test suite covers these hooks end-to-end; verified via live curl against the 
 - `GET /api/businesses/:id/staff` → `{"success":true,"data":{"staff":[...],"pending":[]}}` confirms the existing explicit re-wrap in `getStaff()` was already correct.
 - `tsc -b --noEmit` exits 0 across the whole workspace after all fixes.
 - `npm run ssot` exits 0, no new drift.
+
+## Follow-up sweep (same commit series, same root cause)
+
+A full-codebase audit for the same bug class (see 5-whys above) found two more
+confirmed instances outside the features already covered:
+
+- `src/features/price-lists/use-product-price-preview.ts:50-54` — typed the
+  `api()` result as `{success, data:{preview}}` and read `res.data.preview`;
+  server (`price-list-assign.routes.ts:58`) sends `sendSuccess(res, {preview})`,
+  so `api()` already returns `{preview}` directly. Fixed by typing the call as
+  `api<{preview: PricePreviewList[]}>(...)` and reading `res.preview`.
+- `src/features/pricing/usePriceListOverride.ts:61-72` — a private
+  `fetchAllPriceLists` duplicated `price-list.service.ts`'s `listPriceLists`
+  with the same stale `{data, pagination}` envelope type; server sends
+  `{lists}`. Fixed by deleting the duplicate fetcher entirely and importing
+  the already-fixed `listPriceLists` from `price-list.service.ts` (SSOT reuse
+  instead of a second, independently-broken copy of the same fetch).
+
+Audit swept every `*.service.ts`/`*.api.ts` under `src/features/**` and
+`src/lib/`, every non-service `api<T>()` call site, and every
+`server/src/routes/**/*.ts` for the sibling-spread envelope bug — no further
+instances of either bug class found. `tsc -b --noEmit` and `npm run ssot`
+both exit 0 after these two fixes.

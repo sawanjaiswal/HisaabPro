@@ -12,9 +12,8 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { api } from '@/lib/api'
 import type { PriceList, PriceListDetail } from '@/features/price-lists/price-list.types'
-import { getPriceList } from '@/features/price-lists/price-list.service'
+import { getPriceList, listPriceLists } from '@/features/price-lists/price-list.service'
 import { priceListKeys } from '@/features/price-lists/price-list-queries'
 
 // ─── Selector state ───────────────────────────────────────────────────────────
@@ -56,21 +55,6 @@ export interface UsePriceListOverrideReturn {
   overrideState: OverrideState
 }
 
-// ─── List fetcher (page=1, limit=50 — enough for a picker dropdown) ───────────
-
-interface PriceListListResponse {
-  data: PriceList[]
-  pagination: { page: number; limit: number; total: number; hasMore: boolean }
-}
-
-async function fetchAllPriceLists(signal?: AbortSignal): Promise<PriceList[]> {
-  const res = await api<PriceListListResponse>('/price-lists?page=1&limit=50', {
-    signal,
-    cacheReads: true,
-  })
-  return res.data
-}
-
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 export function usePriceListOverride({
@@ -83,7 +67,7 @@ export function usePriceListOverride({
   // Fetch flat list for the picker
   const listsQuery = useQuery({
     queryKey: ['price-lists', 'all-for-picker'] as const,
-    queryFn: ({ signal }) => fetchAllPriceLists(signal),
+    queryFn: ({ signal }) => listPriceLists(1, signal),
     staleTime: 10 * 60 * 1000,
   })
   const availableLists = listsQuery.data ?? []

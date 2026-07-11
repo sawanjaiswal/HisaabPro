@@ -31,11 +31,6 @@ export interface PricePreviewList {
   entries?: PricePreviewEntry[]
 }
 
-interface PricePreviewApiResponse {
-  success: boolean
-  data: { preview: PricePreviewList[] }
-}
-
 // ─── Query key ────────────────────────────────────────────────────────────────
 
 export const productPricePreviewKey = (productId: string) =>
@@ -47,11 +42,11 @@ async function fetchProductPricePreview(
   productId: string,
   signal?: AbortSignal,
 ): Promise<PricePreviewList[]> {
-  const res = await api<PricePreviewApiResponse>(
+  const res = await api<{ preview: PricePreviewList[] }>(
     `/products/${productId}/price-preview`,
     { signal, cacheReads: true },
   )
-  return res.data.preview
+  return res.preview
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
