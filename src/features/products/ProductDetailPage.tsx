@@ -18,10 +18,8 @@ import { deleteProduct } from './product.service'
 import { ProductDetailHeader } from './components/ProductDetailHeader'
 import { ProductStockTab } from './components/ProductStockTab'
 import { StockAdjustModal } from './components/StockAdjustModal'
-import { formatProductPrice } from './product.utils'
-import { PREDEFINED_CATEGORIES, PREDEFINED_UNITS, STOCK_VALIDATION_LABELS } from './product.constants'
 import { ProductInfoTab } from './components/ProductInfoTab'
-import { ProductPricePreviewPanel } from './components/ProductPricePreviewPanel'
+import { ProductOverviewTab } from './components/ProductOverviewTab'
 import './product-detail.css'
 import './barcode.css'
 import { Button } from '@/components/ui/Button'
@@ -135,48 +133,7 @@ export default function ProductDetailPage() {
             </div>
 
             <div id={`panel-${activeTab}`} role="tabpanel" aria-label={`${activeTab} ${t.tabContent}`}>
-              {activeTab === 'overview' && (
-                <>
-                <div className="card product-info-card">
-                  <div className="product-info-row">
-                    <span className="product-info-label">{t.categoryLabel}</span>
-                    <span className="product-info-value">
-                      {PREDEFINED_CATEGORIES.find((c) => c.id === product.category.id)?.name ?? product.category.name}
-                    </span>
-                  </div>
-                  <div className="product-info-row">
-                    <span className="product-info-label">{t.unitLabel}</span>
-                    <span className="product-info-value">
-                      {PREDEFINED_UNITS.find((u) => u.id === product.unit.id)?.name ?? product.unit.name} ({product.unit.symbol})
-                    </span>
-                  </div>
-                  <div className="product-info-row">
-                    <span className="product-info-label">{t.salePriceLabel}</span>
-                    <span className="product-info-value product-info-value--bold">{formatProductPrice(product.salePrice)}</span>
-                  </div>
-                  {product.purchasePrice !== null && (
-                    <div className="product-info-row">
-                      <span className="product-info-label">{t.purchasePriceLabel}</span>
-                      <span className="product-info-value">{formatProductPrice(product.purchasePrice)}</span>
-                    </div>
-                  )}
-                  <div className="product-info-row">
-                    <span className="product-info-label">{t.minStockLabel}</span>
-                    <span className="product-info-value">
-                      {product.minStockLevel > 0 ? `${product.minStockLevel} ${product.unit.symbol}` : t.notSet}
-                    </span>
-                  </div>
-                  <div className="product-info-row">
-                    <span className="product-info-label">{t.validationLabel}</span>
-                    <span className="product-info-value">{STOCK_VALIDATION_LABELS[product.stockValidation]}</span>
-                  </div>
-                </div>
-                <ProductPricePreviewPanel
-                  productId={product.id}
-                  salePrice={product.salePrice}
-                />
-                </>
-              )}
+              {activeTab === 'overview' && <ProductOverviewTab product={product} />}
 
               {activeTab === 'stock' && (
                 <ProductStockTab
