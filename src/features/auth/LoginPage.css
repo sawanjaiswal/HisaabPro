@@ -81,6 +81,21 @@
   color: var(--color-gray-400);
 }
 
+/* Browser autofill (username/password) paints its own yellow/white
+ * background + black text, ignoring the app's theme entirely. The
+ * inset box-shadow trick repaints the fill with our own token instead
+ * of the background-color (which -webkit-autofill overrides outright),
+ * and the long transition delays the browser's own repaint indefinitely. */
+.login-page__input:-webkit-autofill,
+.login-page__input:-webkit-autofill:hover,
+.login-page__input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-gray-800);
+  -webkit-box-shadow: 0 0 0 1000px var(--color-gray-0) inset;
+  box-shadow: 0 0 0 1000px var(--color-gray-0) inset;
+  caret-color: var(--color-gray-800);
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 .login-page__error {
   font-size: var(--fs-md);
   color: var(--color-error-500);
