@@ -23,7 +23,15 @@ export const ProductDetailHeader: React.FC<ProductDetailHeaderProps> = ({ produc
 
   return (
     <div className="card-primary party-detail-header" role="region" aria-label={t.productOverview}>
-      <PartyAvatar name={product.name} size="lg" className="party-detail-avatar" />
+      {product.images?.[0] ? (
+        <img
+          src={product.images[0]}
+          alt={product.name}
+          className="party-detail-avatar product-detail-thumb"
+        />
+      ) : (
+        <PartyAvatar name={product.name} size="lg" className="party-detail-avatar" />
+      )}
 
       <div className="party-detail-info">
         <h2 className="party-detail-name">{product.name}</h2>
