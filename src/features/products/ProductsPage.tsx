@@ -62,6 +62,15 @@ export default function ProductsPage() {
 
   const handleCategoryChange = (value: string | 'ALL') => {
     setFilter('categoryId', value === 'ALL' ? undefined : value)
+    // Category and Low Stock render as one pill-tab row (mutually exclusive
+    // in the UI) — clear the other filter so switching back to All/category
+    // doesn't leave a stale lowStockOnly:true silently filtering the list.
+    setFilter('lowStockOnly', false)
+  }
+
+  const handleLowStockToggle = (value: boolean) => {
+    setFilter('lowStockOnly', value)
+    if (value) setFilter('categoryId', undefined)
   }
   const goToCreate = () => navigate(ROUTES.PRODUCT_NEW)
 
@@ -145,7 +154,7 @@ export default function ProductsPage() {
             activeCategoryId={filters.categoryId ?? 'ALL'}
             onCategoryChange={handleCategoryChange}
             lowStockOnly={filters.lowStockOnly ?? false}
-            onLowStockToggle={(value) => setFilter('lowStockOnly', value)}
+            onLowStockToggle={handleLowStockToggle}
             lowStockCount={data?.summary?.lowStockCount}
           />
         )}
