@@ -9,6 +9,7 @@ import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
+import { useLanguage } from '@/hooks/useLanguage'
 import { queryKeys } from '@/lib/query-keys'
 import { ROUTES } from '@/config/routes.config'
 import { createProduct, updateProduct } from './product.service'
@@ -67,6 +68,7 @@ export function useProductForm(options: UseProductFormOptions = {}): UseProductF
 
   const navigate = useNavigate()
   const toast = useToast()
+  const { t } = useLanguage()
   const queryClient = useQueryClient()
   const conflictReconcile = useConflictReconcile()
 
@@ -168,7 +170,7 @@ export function useProductForm(options: UseProductFormOptions = {}): UseProductF
     onError: (err) => {
       // #150 — a CONFLICT opens the reconcile dialog (handled below), not a toast.
       if (isConflictError(err)) return
-      toast.error(isEditMode ? 'Failed to update product.' : 'Failed to save product. Please try again.')
+      toast.error(isEditMode ? t.productUpdateFailed : t.productSaveFailed)
     },
   })
 
