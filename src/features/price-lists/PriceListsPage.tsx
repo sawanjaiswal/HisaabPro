@@ -113,9 +113,11 @@ export default function PriceListsPage() {
       </PageContainer>
 
       {/* FAB */}
-      <Button variant="none" type="button" className="fab" onClick={openCreate} aria-label={t.plCreate}>
-        <Plus size={24} aria-hidden="true" />
-      </Button>
+      {status === 'success' && items.length > 0 && (
+        <Button variant="none" type="button" className="fab" onClick={openCreate} aria-label={t.plCreate}>
+          <Plus size={24} aria-hidden="true" />
+        </Button>
+      )}
 
       {/* Drawers / dialogs */}
       <PriceListFormDrawer

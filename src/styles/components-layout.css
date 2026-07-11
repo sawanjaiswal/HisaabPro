@@ -119,6 +119,16 @@
   text-overflow: ellipsis;
 }
 
+/* Sub-page headers carry back-arrow + up to 4 right-side icons (page action,
+ * bell, sync, menu) — on narrow phones that leaves too little room for even
+ * a short title like "New Invoice" at --fs-2xl, so it clips. Step down one
+ * size to buy back width instead of shrinking the icon row. */
+@media (max-width: 400px) {
+  .header-title {
+    font-size: var(--fs-xl);
+  }
+}
+
 /* Right group: action icons */
 .header-actions {
   display: flex;

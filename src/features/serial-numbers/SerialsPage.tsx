@@ -99,9 +99,11 @@ export default function SerialsPage() {
         )}
       </PageContainer>
 
-      <Button variant="none" className="fab" onClick={() => navigate(ROUTES.SERIAL_NEW.replace(':productId', productId))} aria-label={t.addSerialNumberFab}>
-        <Plus size={24} aria-hidden="true" />
-      </Button>
+      {status === 'success' && serials.length > 0 && (
+        <Button variant="none" className="fab" onClick={() => navigate(ROUTES.SERIAL_NEW.replace(':productId', productId))} aria-label={t.addSerialNumberFab}>
+          <Plus size={24} aria-hidden="true" />
+        </Button>
+      )}
     </AppShell>
   )
 }

@@ -12,6 +12,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Badge } from '@/components/ui/Badge'
+import { Button } from '@/components/ui/Button'
 import { CurrentTimeLine } from './CurrentTimeLine'
 import {
   DAY_VIEW_END_HOUR,
@@ -122,7 +123,8 @@ export function CalendarDayView({ date, rows, onSelect, onCreateAtHour }: Calend
             const statusKey = STATUS_LABEL_KEY[row.status] as TranslationKey
             const statusLabel = (t[statusKey] as string | undefined) ?? row.status
             return (
-              <button
+              <Button
+                variant="none"
                 key={row.id}
                 type="button"
                 data-appt-block
@@ -157,7 +159,7 @@ export function CalendarDayView({ date, rows, onSelect, onCreateAtHour }: Calend
                     {row.employeeNameSnapshot}
                   </div>
                 )}
-              </button>
+              </Button>
             )
           })}
 

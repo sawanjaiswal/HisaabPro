@@ -10,6 +10,11 @@
   overflow-x: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+  /* Fade the trailing edge so a clipped tab reads as "scroll for more"
+     instead of looking cut off — the bar has no other affordance since
+     the scrollbar itself is hidden above. */
+  mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
 }
 
 .sales-hub-tabs::-webkit-scrollbar { display: none; }

@@ -22,6 +22,7 @@ import { ROUTES } from '@/config/routes.config'
 import type { PartyType } from './party.types'
 import type { BulkAction } from '@/components/ui/BulkActionBar'
 import './parties.css'
+import '@/styles/components.crm.css'
 import { Button } from '@/components/ui/Button'
 
 const PARTY_NEW_ROUTE = ROUTES.PARTY_NEW
@@ -185,7 +186,7 @@ export default function PartiesPage() {
         )}
       </PageContainer>
 
-      {!bulk.isActive && (
+      {!bulk.isActive && status === 'success' && data && data.parties.length > 0 && (
         <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.addNewPartyLabel}>
           <Plus size={24} aria-hidden="true" />
         </Button>

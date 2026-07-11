@@ -127,14 +127,16 @@ export default function CustomOrdersListPage() {
         )}
       </PageContainer>
 
-      <Button variant="none"
-        type="button"
-        className="fab"
-        onClick={goToNew}
-        aria-label="Create new order"
-      >
-        <Plus size={24} aria-hidden="true" />
-      </Button>
+      {status === 'success' && allItems.length > 0 && (
+        <Button variant="none"
+          type="button"
+          className="fab"
+          onClick={goToNew}
+          aria-label="Create new order"
+        >
+          <Plus size={24} aria-hidden="true" />
+        </Button>
+      )}
     </AppShell>
   )
 }

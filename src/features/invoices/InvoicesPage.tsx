@@ -227,7 +227,7 @@ export default function InvoicesPage({ embedded = false }: InvoicesPageProps) {
         )}
       </PageContainer>
 
-      {!bulk.isActive && (
+      {!bulk.isActive && status === 'success' && data && data.documents.length > 0 && (
         <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.createNewInvoiceAriaLabel}>
           <Plus size={24} aria-hidden="true" />
         </Button>

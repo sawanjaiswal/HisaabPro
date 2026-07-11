@@ -20,23 +20,14 @@ import type {
   TagSummaryPage,
 } from '../crm.types'
 
-// ─── Unwrap helper ────────────────────────────────────────────────────────
-//
-// The HisaabPro backend wraps every payload in
-//   { success: true, data: <T> }
-// — see `server/src/lib/response.ts`. `api()` doesn't unwrap so each
-// service does it locally and types the result strictly.
-
-interface ApiEnvelope<T> {
-  success: true
-  data: T
-}
+// `api()` (src/lib/api.ts) already unwraps the backend's
+// `{ success: true, data: <T> }` envelope and returns `json.data` — callers
+// type `T` as the payload shape directly, not wrapped again.
 
 // ─── Tag summary ──────────────────────────────────────────────────────────
 
 export async function getTagSummary(signal?: AbortSignal): Promise<TagSummaryPage> {
-  const res = await api<ApiEnvelope<TagSummaryPage>>('/parties/tags', { signal })
-  return res.data
+  return api<TagSummaryPage>('/parties/tags', { signal })
 }
 
 // ─── Follow-up queue ──────────────────────────────────────────────────────
@@ -49,11 +40,7 @@ export async function getFollowUps(
   params.set('withinDays', String(query.withinDays))
   if (query.cursor) params.set('cursor', query.cursor)
   if (query.limit !== undefined) params.set('limit', String(query.limit))
-  const res = await api<ApiEnvelope<FollowUpPage>>(
-    `/parties/follow-ups?${params.toString()}`,
-    { signal },
-  )
-  return res.data
+  return api<FollowUpPage>(`/parties/follow-ups?${params.toString()}`, { signal })
 }
 
 // ─── Narrow PATCH /api/parties/:id (followUpAt + tags) ────────────────────
@@ -63,7 +50,7 @@ export async function patchPartyCrm(
   patch: PartyCrmPatchInput,
   partyName: string,
 ): Promise<PartyCrmPatched> {
-  const res = await api<ApiEnvelope<{ party: PartyCrmPatched }>>(
+  const res = await api<{ party: PartyCrmPatched }>(
     `/parties/${encodeURIComponent(partyId)}`,
     {
       method: 'PATCH',
@@ -75,5 +62,5 @@ export async function patchPartyCrm(
   )
   // OFFLINE_RULES rule 5 — `api()` returns `{}` when queued offline. Guard
   // the deref so callers can still optimistically update without crashing.
-  return res.data?.party ?? ({} as PartyCrmPatched)
+  return res.party ?? ({} as PartyCrmPatched)
 }

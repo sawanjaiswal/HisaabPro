@@ -104,13 +104,15 @@ export default function RolesPage() {
         </div>
       </PageContainer>
 
-      <Button variant="none"
-        className="fab"
-        onClick={() => navigate(ROUTES.SETTINGS_ROLE_NEW)}
-        aria-label={t.createNewRole}
-      >
-        <Plus size={24} aria-hidden="true" />
-      </Button>
+      {status === 'success' && roles.length > 0 && (
+        <Button variant="none"
+          className="fab"
+          onClick={() => navigate(ROUTES.SETTINGS_ROLE_NEW)}
+          aria-label={t.createNewRole}
+        >
+          <Plus size={24} aria-hidden="true" />
+        </Button>
+      )}
     </AppShell>
   )
 }

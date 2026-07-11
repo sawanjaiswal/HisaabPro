@@ -12,6 +12,8 @@
 import { useMemo, useState } from 'react'
 import { Search, User as UserIcon, Check } from 'lucide-react'
 import { Skeleton } from '@/components/feedback/Skeleton'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useEmployees } from '@/features/hr/useEmployees'
 import type { EmployeeLite } from '@/features/hr/hr.types'
@@ -50,7 +52,8 @@ export function EmployeePicker({ employeeId, onChange }: EmployeePickerProps) {
             <UserIcon size={16} aria-hidden="true" />
             <span className="truncate">{selected.name}</span>
           </div>
-          <button
+          <Button
+            variant="none"
             type="button"
             className="text-[var(--fs-sm)] min-h-[44px] px-2"
             style={{ color: 'var(--color-primary)' }}
@@ -58,24 +61,18 @@ export function EmployeePicker({ employeeId, onChange }: EmployeePickerProps) {
             aria-label={t.clear ?? 'Clear'}
           >
             {t.change ?? 'Change'}
-          </button>
+          </Button>
         </div>
       ) : (
         <>
-          <div
-            className="flex items-center gap-2 px-3 rounded-[var(--radius-md)] min-h-[44px]"
-            style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
-          >
-            <Search size={16} aria-hidden="true" />
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={t.searchEmployees ?? 'Search employees…'}
-              className="flex-1 bg-transparent outline-none text-[var(--fs-sm)] min-h-[44px]"
-              aria-label={t.searchEmployees ?? 'Search employees'}
-            />
-          </div>
+          <Input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t.searchEmployees ?? 'Search employees…'}
+            icon={<Search size={16} aria-hidden="true" />}
+            aria-label={t.searchEmployees ?? 'Search employees'}
+          />
 
           <div
             className="mt-2 rounded-[var(--radius-md)] overflow-hidden"
@@ -101,7 +98,8 @@ export function EmployeePicker({ employeeId, onChange }: EmployeePickerProps) {
               <ul role="listbox" aria-label={t.pickEmployee ?? 'Pick employee'}>
                 {filtered.map((e) => (
                   <li key={e.id}>
-                    <button
+                    <Button
+                      variant="none"
                       type="button"
                       role="option"
                       aria-selected={false}
@@ -114,7 +112,7 @@ export function EmployeePicker({ employeeId, onChange }: EmployeePickerProps) {
                         <span className="truncate">{e.name}</span>
                       </span>
                       <Check size={14} aria-hidden="true" style={{ opacity: 0 }} />
-                    </button>
+                    </Button>
                   </li>
                 ))}
               </ul>

@@ -12,6 +12,7 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { Button } from '@/components/ui/Button'
 import { ROUTES } from '@/config/routes.config'
 import { useTemplates } from './useTemplates'
 import { TemplateCard } from './components/TemplateCard'
@@ -123,13 +124,13 @@ export default function TemplateGalleryPage() {
         )}
       </PageContainer>
 
-      <button
+      <Button variant="none"
         className="fab"
         onClick={() => navigate('/settings/templates/new?base=A4_CLASSIC')}
         aria-label={t.createNewTemplate}
       >
         <Plus size={24} aria-hidden="true" />
-      </button>
+      </Button>
     </AppShell>
   )
 }

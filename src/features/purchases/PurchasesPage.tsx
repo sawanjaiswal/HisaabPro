@@ -91,9 +91,11 @@ export default function PurchasesPage() {
         )}
       </PageContainer>
 
-      <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.createPurchaseAriaLabel}>
-        <Plus size={24} aria-hidden="true" />
-      </Button>
+      {status === 'success' && data && data.documents.length > 0 && (
+        <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.createPurchaseAriaLabel}>
+          <Plus size={24} aria-hidden="true" />
+        </Button>
+      )}
     </AppShell>
   )
 }

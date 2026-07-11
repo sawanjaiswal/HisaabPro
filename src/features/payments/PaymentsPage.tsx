@@ -194,7 +194,7 @@ export default function PaymentsPage() {
         )}
       </PageContainer>
 
-      {!bulk.isActive && (
+      {!bulk.isActive && status === 'success' && data && data.payments.length > 0 && (
         <Button variant="none"
           className="fab"
           onClick={() => navigate(`${ROUTES.PAYMENT_NEW}?type=PAYMENT_IN`)}

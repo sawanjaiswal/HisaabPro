@@ -5,6 +5,7 @@
  *  never reaches the wire.
  */
 
+import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select, SelectItem } from '@/components/ui/Select'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -42,7 +43,8 @@ export function RecurrenceFields({ value, onChange, startISO }: RecurrenceFields
     >
       <div className="flex items-center justify-between">
         <span className="text-[var(--fs-sm)] font-medium">{t.recurrence ?? 'Recurrence'}</span>
-        <button
+        <Button
+          variant="none"
           type="button"
           role="switch"
           aria-checked={value.enabled}
@@ -55,7 +57,7 @@ export function RecurrenceFields({ value, onChange, startISO }: RecurrenceFields
           }}
         >
           {value.enabled ? (t.on ?? 'On') : (t.repeatNever ?? 'Never')}
-        </button>
+        </Button>
       </div>
 
       {value.enabled && (
@@ -91,27 +93,37 @@ export function RecurrenceFields({ value, onChange, startISO }: RecurrenceFields
 
           <fieldset>
             <legend className="text-[var(--fs-sm)] mb-1.5">{t.endsOn ?? 'Ends'}</legend>
-            <div className="flex gap-3 items-center mb-2">
-              <label className="flex items-center gap-2 text-[var(--fs-sm)] min-h-[44px]">
-                <input
-                  type="radio"
-                  name="recur-end-mode"
-                  value="count"
-                  checked={value.endMode === 'count'}
-                  onChange={() => onChange({ ...value, endMode: 'count' })}
-                />
+            <div className="flex gap-3 items-center mb-2" role="radiogroup" aria-label={t.endsOn ?? 'Ends'}>
+              <Button
+                variant="none"
+                type="button"
+                role="radio"
+                aria-checked={value.endMode === 'count'}
+                onClick={() => onChange({ ...value, endMode: 'count' })}
+                className="text-[var(--fs-sm)] min-h-[44px] px-3 rounded-[var(--radius-sm)]"
+                style={{
+                  background: value.endMode === 'count' ? 'var(--color-primary)' : 'transparent',
+                  color: value.endMode === 'count' ? 'var(--color-on-primary, #fff)' : 'var(--color-text)',
+                  border: '1px solid var(--color-border)',
+                }}
+              >
                 {t.occurrences ?? 'Occurrences'}
-              </label>
-              <label className="flex items-center gap-2 text-[var(--fs-sm)] min-h-[44px]">
-                <input
-                  type="radio"
-                  name="recur-end-mode"
-                  value="until"
-                  checked={value.endMode === 'until'}
-                  onChange={() => onChange({ ...value, endMode: 'until' })}
-                />
+              </Button>
+              <Button
+                variant="none"
+                type="button"
+                role="radio"
+                aria-checked={value.endMode === 'until'}
+                onClick={() => onChange({ ...value, endMode: 'until' })}
+                className="text-[var(--fs-sm)] min-h-[44px] px-3 rounded-[var(--radius-sm)]"
+                style={{
+                  background: value.endMode === 'until' ? 'var(--color-primary)' : 'transparent',
+                  color: value.endMode === 'until' ? 'var(--color-on-primary, #fff)' : 'var(--color-text)',
+                  border: '1px solid var(--color-border)',
+                }}
+              >
                 {t.until ?? 'Until'}
-              </label>
+              </Button>
             </div>
 
             {value.endMode === 'count' ? (

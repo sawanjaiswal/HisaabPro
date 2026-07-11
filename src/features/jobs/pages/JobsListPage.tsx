@@ -112,6 +112,7 @@ export default function JobsListPage() {
         )}
       </PageContainer>
 
+      {status === 'success' && allItems.length > 0 && (
       <Button variant="none"
         type="button"
         className="fab"
@@ -120,6 +121,7 @@ export default function JobsListPage() {
       >
         <Plus size={24} aria-hidden="true" />
       </Button>
+      )}
     </AppShell>
   )
 }

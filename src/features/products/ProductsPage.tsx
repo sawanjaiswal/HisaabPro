@@ -204,7 +204,7 @@ export default function ProductsPage() {
         )}
       </PageContainer>
 
-      {!bulk.isActive && (
+      {!bulk.isActive && status === 'success' && data && data.products.length > 0 && (
         <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.addNewProduct}>
           <Plus size={24} aria-hidden="true" />
         </Button>

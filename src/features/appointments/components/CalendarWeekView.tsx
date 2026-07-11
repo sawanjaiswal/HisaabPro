@@ -11,6 +11,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Badge } from '@/components/ui/Badge'
+import { Button } from '@/components/ui/Button'
 import { CurrentTimeLine } from './CurrentTimeLine'
 import {
   DAY_VIEW_END_HOUR,
@@ -90,7 +91,8 @@ export function CalendarWeekView({
           const isToday = sameLocalDay(d, now)
           return (
             <div key={idx} className="flex-1 flex flex-col" style={{ minWidth: '88px' }}>
-              <button
+              <Button
+                variant="none"
                 type="button"
                 onClick={() => onPickDay(d)}
                 className="appt-week-dayheader min-h-[40px] text-[var(--fs-xs)] font-medium tabular-nums"
@@ -102,7 +104,7 @@ export function CalendarWeekView({
                 aria-label={`${t.dayView ?? 'Day view'}: ${d.toDateString()}`}
               >
                 {d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric' })}
-              </button>
+              </Button>
               <div
                 className="relative flex-1"
                 style={{
@@ -118,7 +120,8 @@ export function CalendarWeekView({
                   const statusKey = STATUS_LABEL_KEY[row.status] as TranslationKey
                   const statusLabel = (t[statusKey] as string | undefined) ?? row.status
                   return (
-                    <button
+                    <Button
+                      variant="none"
                       key={row.id}
                       type="button"
                       data-appt-block
@@ -145,7 +148,7 @@ export function CalendarWeekView({
                         </span>
                         <Badge variant={STATUS_BADGE_VARIANT[row.status]}>{statusLabel}</Badge>
                       </div>
-                    </button>
+                    </Button>
                   )
                 })}
                 {isToday && <CurrentTimeLine topPx={nowPx} visible={nowVisible} />}

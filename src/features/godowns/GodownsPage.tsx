@@ -107,7 +107,7 @@ export default function GodownsPage() {
         </div>
       </PageContainer>
 
-      {activeTab === 'godowns' && (
+      {activeTab === 'godowns' && status === 'success' && data && data.godowns.length > 0 && (
         <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.addNewGodown}>
           <Plus size={24} aria-hidden="true" />
         </Button>
