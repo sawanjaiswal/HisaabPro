@@ -22,7 +22,12 @@ export default function CreateProductPage() {
   const { categories: taxCategories } = useTaxCategories(businessId)
   const { form, errors, isSubmitting, activeSection, setActiveSection, updateField, handleSubmit, reset } = useProductForm()
 
+  const sectionIds = PRODUCT_FORM_SECTIONS.map((s) => s.id)
+  const sectionIndex = sectionIds.indexOf(activeSection)
+  const isLastSection = sectionIndex === sectionIds.length - 1
+
   const handleSaveAndAddAnother = async () => { await handleSubmit(); reset(); setActiveSection('basic') }
+  const handleNext = () => setActiveSection(sectionIds[sectionIndex + 1])
 
   return (
     <AppShell>
@@ -42,8 +47,14 @@ export default function CreateProductPage() {
         </div>
       </PageContainer>
       <div className="create-product-actions">
-        <Button variant="primary" size="lg" loading={isSubmitting} onClick={handleSubmit} aria-label={t.saveProduct}>{t.saveProductBtn}</Button>
-        <Button variant="none" type="button" className="create-product-save-another" onClick={handleSaveAndAddAnother} disabled={isSubmitting} aria-label={t.saveAndAddAnotherProduct}>{t.saveAndAddAnother}</Button>
+        {isLastSection ? (
+          <>
+            <Button variant="primary" size="lg" loading={isSubmitting} onClick={handleSubmit} aria-label={t.saveProduct}>{t.saveProductBtn}</Button>
+            <Button variant="none" type="button" className="create-product-save-another" onClick={handleSaveAndAddAnother} disabled={isSubmitting} aria-label={t.saveAndAddAnotherProduct}>{t.saveAndAddAnother}</Button>
+          </>
+        ) : (
+          <Button variant="primary" size="lg" type="button" onClick={handleNext} aria-label={t.next}>{t.next}</Button>
+        )}
       </div>
     </AppShell>
   )
