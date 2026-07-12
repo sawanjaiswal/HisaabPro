@@ -88,12 +88,18 @@
 >    (`flex-shrink: 0; min-width: 112px`) — the same fixed-width-sibling pattern `ThresholdSection`
 >    already uses via `.txn-threshold-input`. 5-whys in `.claude/fix-trace-txn-controls-overlap.md`.
 >    Verified: tsc clean, re-screenshotted at 375px before/after — dropdown now sits in its own column.
-> 6. **E-Invoice / E-Way-Bill rebuild** — biggest item, 5 files (`EInvoiceCard.tsx`,
->    `EInvoiceCancelDialog.tsx`, `EWayBillCard.tsx`, `EWayBillModal.tsx`,
->    `EWayBillUpdatePartBDialog.tsx`) built entirely outside the design system (raw hex, hand-rolled sheet
->    instead of `<Drawer>`, ~14 hardcoded strings needing `t.*` keys in both `translations.en.ts` and
->    `translations.hi.ts`). Run a full `/hp-design` plan-and-approve pass before touching code — this is
->    a real feature-shaped rebuild, not a spot fix.
+> 6. ✅ **E-Invoice / E-Way-Bill "rebuild" — FIXED 2026-07-12, root cause was dead code, not a design
+>    debt.** The 5 flagged files (`src/features/e-invoice/*`, `src/features/e-way-bill/*`) were never
+>    reachable from any route — `grep -rl "EInvoiceCard\|EWayBillCard" src` showed the app's real
+>    compliance UI (`EComplianceSection.tsx`) imports from `src/features/documents/components/*` instead,
+>    which was introduced by a later i18n/design-token standardization commit
+>    (`7095be5 feat: full i18n compliance + design system standardization across all features`) that never
+>    deleted the superseded folders. Verified the live components already meet every checklist item
+>    (tokens, `<Button>`, `t.*` i18n — 12-30 occurrences per file, zero raw hex/`alert`/`window.confirm`).
+>    Deleted both orphaned folders (11 files) instead of rebuilding unreachable code. 5-whys in
+>    `.claude/fix-trace-einvoice-eway-dead-code.md`. Verified: FE tsc clean; `node scripts/enforce.js`
+>    error count unchanged (4 pre-existing, unrelated oversized-file errors, confirmed via `git stash`
+>    diff before/after this change).
 > 7. Every `fix:` commit above needs its own `.claude/fix-trace-<short>.md` (5-whys + failing test first)
 >    per the root-cause discipline in `~/.claude/CLAUDE.md` — don't batch them into one commit.
 > 8. Re-screenshot each fixed page (golden path) before marking done; this whole pass started from a
