@@ -54,12 +54,28 @@
 >    zero `motion`/`whileInView` usage, so it is NOT the same bug; needs its own repro (requires an
 >    authenticated session — the dev-server login redirect blocked a quick check this pass). Resume by
 >    logging in and reproducing `/settings/subscription/checkout`'s bottom region directly.
-> 4. **`/settings/units` low contrast** — `src/features/units/UnitsPage.tsx` — list row text likely pinned
->    to `var(--text-muted)` where `var(--text-primary)`/`var(--text-secondary)` belongs; check against the
->    4.5:1 contrast bar in `PAGE_AUDIT_CHECKLIST.md` §L.
-> 5. **`/settings/transaction-controls` overlap** — `src/features/settings/TransactionControlsPage.tsx` —
->    the Lock Period `<select>` (showing "Never") overlaps its own description text instead of sitting in
->    normal flow; likely a stray `position: absolute` or missing flex/grid wrapper.
+> 4. ✅ **`/settings/units` low contrast — FIXED 2026-07-12.** Root cause: `src/features/units/units.css`
+>    used raw `--color-gray-N` values instead of the semantic `--color-text-primary/secondary/muted` +
+>    `--color-border` tokens, then manually remapped grays for dark mode using a Tailwind-style mental
+>    model (low N = light) — but this codebase's `tokens-dark.css` inverts the gray scale in dark mode
+>    (gray-50 = darkest bg, gray-900 = lightest text) specifically so semantic tokens flip correctly with
+>    zero manual overrides. The manual override picked `--color-gray-100` for the unit name, which in dark
+>    mode resolves to `#1A2030` against a `#141922` background — near-zero contrast. Also found the
+>    leftover dark block used `@media (prefers-color-scheme: dark)` instead of this app's actual
+>    `[data-theme="dark"]` toggle (`src/context/ThemeContext.tsx`) — converted to match. 5-whys in
+>    `.claude/fix-trace-units-contrast.md`. Verified: tsc clean, `enforce.js` clean, re-screenshotted
+>    light + dark (via the real `data-theme` toggle, not OS media emulation) — text/dividers now legible
+>    in both themes.
+> 5. ✅ **`/settings/transaction-controls` overlap — FIXED 2026-07-12.** Root cause:
+>    `LockPeriodSection.tsx` placed `<Select>` as a bare flex child of `.txn-control-row`. Radix's
+>    `Select.Root` renders no DOM node, so `.rx-select-trigger` (`width: 100%`, `overlay.css:110`) was the
+>    actual flex item — a flex item with `flex-basis:auto` + a definite `width` transfers that width to its
+>    flex-basis (flexbox spec), so the trigger's basis became ~100% of the row, leaving the label/
+>    description sibling (`flex: 1`) almost no space and forcing its text to wrap into a narrow, visually
+>    overlapping column. Fixed by wrapping the Select in a `.txn-control-select` div
+>    (`flex-shrink: 0; min-width: 112px`) — the same fixed-width-sibling pattern `ThresholdSection`
+>    already uses via `.txn-threshold-input`. 5-whys in `.claude/fix-trace-txn-controls-overlap.md`.
+>    Verified: tsc clean, re-screenshotted at 375px before/after — dropdown now sits in its own column.
 > 6. **E-Invoice / E-Way-Bill rebuild** — biggest item, 5 files (`EInvoiceCard.tsx`,
 >    `EInvoiceCancelDialog.tsx`, `EWayBillCard.tsx`, `EWayBillModal.tsx`,
 >    `EWayBillUpdatePartBDialog.tsx`) built entirely outside the design system (raw hex, hand-rolled sheet
