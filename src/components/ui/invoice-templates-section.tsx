@@ -8,18 +8,14 @@ import {
 } from './invoice-templates-section.data'
 import type { TemplateData } from './invoice-templates-section.data'
 import { TemplatePreviewModal } from './invoice-templates-section-modal'
+import { revealProps, REVEAL_VIEWPORT } from './motion-reveal'
 
 /* ─── Main Section ─── */
 export function InvoiceTemplatesSection() {
   const reducedMotion = useReducedMotion()
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateData | null>(null)
 
-  const fade = (delay: number, y = 25) => ({
-    initial: reducedMotion ? false : ({ opacity: 0, y } as const),
-    whileInView: { opacity: 1, y: 0 } as const,
-    viewport: { once: true, amount: 0.15 as const },
-    transition: { duration: 0.6, delay, ease: EASE_OUT },
-  })
+  const fade = (delay: number, y = 25) => revealProps(reducedMotion, delay, y)
 
   return (
     <section className="py-16 md:py-28 px-6">
@@ -54,7 +50,7 @@ export function InvoiceTemplatesSection() {
               key={tpl.name}
               initial={reducedMotion ? false : { opacity: 0, y: 20, scale: 0.97 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, amount: 0.15 }}
+              viewport={REVEAL_VIEWPORT}
               transition={{ duration: 0.5, delay: 0.1 + i * 0.08, ease: EASE_OUT }}
               className="group rounded-xl border overflow-hidden cursor-pointer"
               style={{
@@ -227,7 +223,7 @@ export function InvoiceTemplatesSection() {
               key={h.title}
               initial={reducedMotion ? false : { opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
+              viewport={REVEAL_VIEWPORT}
               transition={{ duration: 0.5, delay: i * 0.1, ease: EASE_OUT }}
               className="flex flex-col gap-2"
             >

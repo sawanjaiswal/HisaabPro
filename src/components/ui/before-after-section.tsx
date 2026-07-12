@@ -10,17 +10,13 @@ import { useState } from 'react'
 import { motion, useReducedMotion, AnimatePresence } from 'motion/react'
 import { FileText, Wallet, Package, ArrowRight, AlertTriangle, CheckCircle } from 'lucide-react'
 import { APP_NAME } from '@/config/app.config'
+import { revealProps } from './motion-reveal'
 
 const EASE_OUT: [number, number, number, number] = [0.25, 1, 0.5, 1]
 
 /* ─── Reusable reveal helper (matches hero's fade pattern) ─── */
 function reveal(delay: number, y = 30) {
-  return {
-    initial: { opacity: 0, y } as const,
-    whileInView: { opacity: 1, y: 0 } as const,
-    viewport: { once: true, amount: 0.15 as const },
-    transition: { duration: 0.6, delay, ease: EASE_OUT },
-  }
+  return revealProps(false, delay, y)
 }
 
 /* ─── Tab data ─── */

@@ -1,8 +1,7 @@
 import { ArrowRightIcon, Check } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { LP_APP, LP_EXTERNAL } from "@/config/landing-links.config";
-
-const EASE_OUT: [number, number, number, number] = [0.25, 1, 0.5, 1];
+import { revealProps } from "./motion-reveal";
 
 const AVATAR_NAMES = ["Rajesh S", "Priya P", "Amit G", "Sunita V", "Vikram S"];
 const AVATAR_COLORS = ["3b82f6", "8b5cf6", "ec4899", "f97316", "14b8a6"];
@@ -18,12 +17,7 @@ const TRUST_POINTS = [
 
 export function CallToAction() {
   const reducedMotion = useReducedMotion();
-  const reveal = (delay: number, y = 25) => ({
-    initial: reducedMotion ? false : ({ opacity: 0, y } as const),
-    whileInView: { opacity: 1, y: 0 } as const,
-    viewport: { once: true, amount: 0.15 as const },
-    transition: { duration: 0.6, delay, ease: EASE_OUT },
-  });
+  const reveal = (delay: number, y = 25) => revealProps(reducedMotion, delay, y);
 
   return (
     <div className="relative mx-auto flex w-full max-w-3xl flex-col items-center gap-y-8 px-4 py-12">
