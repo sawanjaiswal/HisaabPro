@@ -21,17 +21,19 @@ export function LockPeriodSection({ lockAfterDays, onUpdate }: LockPeriodSection
               {t.lockPeriodDesc}
             </p>
           </div>
-          <Select
-            value={lockAfterDays == null ? '__never__' : String(lockAfterDays)}
-            onValueChange={(v) => onUpdate('lockAfterDays', v === '__never__' ? null : Number(v))}
-            ariaLabel={t.lockPeriodAria}
-          >
-            {LOCK_PERIOD_OPTIONS.map((opt) => (
-              <SelectItem key={opt.label} value={opt.value == null ? '__never__' : String(opt.value)}>
-                {opt.label}
-              </SelectItem>
-            ))}
-          </Select>
+          <div className="txn-control-select">
+            <Select
+              value={lockAfterDays == null ? '__never__' : String(lockAfterDays)}
+              onValueChange={(v) => onUpdate('lockAfterDays', v === '__never__' ? null : Number(v))}
+              ariaLabel={t.lockPeriodAria}
+            >
+              {LOCK_PERIOD_OPTIONS.map((opt) => (
+                <SelectItem key={opt.label} value={opt.value == null ? '__never__' : String(opt.value)}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </Select>
+          </div>
         </div>
       </div>
     </section>

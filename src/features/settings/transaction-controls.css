@@ -57,6 +57,12 @@
   line-height: 1.4;
 }
 
+.txn-control-select {
+  flex-shrink: 0;
+  width: auto;
+  min-width: 112px;
+}
+
 .txn-threshold-input {
   display: flex;
   align-items: center;
