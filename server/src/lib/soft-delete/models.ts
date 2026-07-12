@@ -22,6 +22,7 @@ export const SOFT_DELETE_MODELS = [
   'Document',
   'DocumentNumberSeries',
   'TermsAndConditionsTemplate',
+  'InvoiceTemplate',
 
   // Payments & finance
   'Payment',

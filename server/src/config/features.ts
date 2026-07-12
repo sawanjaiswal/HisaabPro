@@ -86,6 +86,17 @@ export const FEATURES = {
     enabled: envBool('FEATURE_V2_APPOINTMENTS', false),
     cohortPercent: envInt('FEATURE_V2_APPOINTMENTS_COHORT_PCT', 0),
   },
+
+  /**
+   * Invoice Templates & Settings. Gates /api/templates/* and
+   * /api/invoice-settings/*. Default ON — it closes a live 404 for the
+   * already-shipped `/settings/templates` + `/settings/invoice` FE. Flip
+   * `FEATURE_INVOICE_TEMPLATES=false` to instantly dark-launch off.
+   */
+  INVOICE_TEMPLATES: {
+    enabled: envBool('FEATURE_INVOICE_TEMPLATES', true),
+    cohortPercent: envInt('FEATURE_INVOICE_TEMPLATES_COHORT_PCT', 100),
+  },
 } as const
 
 export type FeatureKey = keyof typeof FEATURES

@@ -23,6 +23,9 @@ export enum ErrorCode {
   INVOICE_NOT_FOUND = 'INVOICE_NOT_FOUND',
   PRODUCT_NOT_FOUND = 'PRODUCT_NOT_FOUND',
   PAYMENT_NOT_FOUND = 'PAYMENT_NOT_FOUND',
+  TEMPLATE_NOT_FOUND = 'TEMPLATE_NOT_FOUND', // 404
+  TEMPLATE_LIMIT_REACHED = 'TEMPLATE_LIMIT_REACHED', // 400
+  TEMPLATE_IS_DEFAULT = 'TEMPLATE_IS_DEFAULT', // 400
 
   // Epic D PR1 — see docs/ARCHITECTURE_EPIC_D_crm_loyalty.md §3.6 / SECURITY_AUDIT M3/M4/S2/NEW_S1/S2
   STAFF_NOT_FOUND = 'STAFF_NOT_FOUND',
@@ -227,14 +230,12 @@ export function handleError(error: unknown): AppError {
         }
     }
   }
-
   // Zod validation errors
   if (error instanceof Error && error.name === 'ZodError' && 'issues' in error) {
     const issues = (error as { issues: Array<{ path: (string | number)[]; message: string }> }).issues
     const message = issues.map(i => `${i.path.join('.')}: ${i.message}`).join(', ')
     return validationError(message)
   }
-
   if (error instanceof Error) {
     logger.error('Unhandled error:', error)
     const safeMessage = process.env.NODE_ENV === 'production'

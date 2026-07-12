@@ -335,6 +335,11 @@ model Business {
   appointmentRecurrenceTemplates AppointmentRecurrenceTemplate[]
   appointmentWaitlists           AppointmentWaitlist[]
 
+  // Invoice Templates & Settings (migration: invoice_templates)
+  invoiceTemplates InvoiceTemplate[]
+  templateDefaults TemplateDefault[]
+  invoiceSettings  InvoiceSettings?
+
   @@index([name])
 }
 
@@ -1083,6 +1088,12 @@ model Document {
   // docs created directly). Architect §2.6 — used by the convert flow for idempotency.
   appointmentId String?
 
+  // Invoice Templates ([SHOULD_SHIP] §3.4) — which template rendered this doc.
+  // Nullable forever (legacy docs = null); SetNull so deleting a template never
+  // destroys invoice history. roundOff amount already lives in Document.roundOff (paise Int).
+  templateId String?
+  template   InvoiceTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
   // Relations
   business       Business     @relation(fields: [businessId], references: [id], onDelete: Restrict)
   party          Party        @relation(fields: [partyId], references: [id], onDelete: Restrict)
@@ -1155,6 +1166,8 @@ model Document {
   @@index([businessId, importJobId])
   // V2 Appointments — convert-to-invoice reverse lookup
   @@index([appointmentId])
+  // Invoice Templates — reverse lookup for SetNull on template delete
+  @@index([templateId])
 }
 
 model DocumentLineItem {
@@ -4533,4 +4546,79 @@ model AppointmentWaitlist {
 
   @@index([businessId, preferredDate])
   @@index([partyId])
+}
+
+// ─── Invoice Templates & Settings ────────────────────────────────────────────
+// Feature: invoice-templates. See docs/ARCHITECTURE_invoice-templates.md §3.
+// baseTemplate is a String + Zod allowlist (NOT a DB enum) — the FE union has
+// ~30 values and grows; an enum would force a migration per preset (R1).
+// config/printSettings are opaque JSON blobs, size-capped (≤10KB) in the service,
+// never per-key validated (R3). isDefault is DERIVED from TemplateDefault rows (R8).
+
+model InvoiceTemplate {
+  id            String    @id @default(cuid())
+  businessId    String
+  business      Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  name          String    @db.VarChar(100)
+  baseTemplate  String    @db.VarChar(40) // validated by Zod allowlist, NOT a DB enum (R1)
+  config        Json // TemplateConfig blob (≤10KB, enforced in service)
+  printSettings Json // PrintSettings blob
+  isActive      Boolean   @default(true)
+  isDeleted     Boolean   @default(false) // repo soft-delete convention (isDeleted + deletedAt)
+  deletedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  defaultFor TemplateDefault[]
+  documents  Document[] // [SHOULD_SHIP] back-relation for Document.templateId
+
+  @@index([businessId, isActive])
+  @@index([businessId, isDeleted]) // list query path
+  @@index([deletedAt]) // backs the purge cron
+  @@map("invoice_templates")
+}
+
+model TemplateDefault {
+  id           String          @id @default(cuid())
+  businessId   String
+  business     Business        @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  templateId   String
+  template     InvoiceTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  documentType String          @db.VarChar(30) // String + DOCUMENT_TYPES allowlist, not enum (R6/§11)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@unique([businessId, documentType]) // one default per doc type per business
+  @@index([businessId])
+  @@index([templateId])
+  @@map("template_defaults")
+}
+
+model InvoiceSettings {
+  id                    String            @id @default(cuid())
+  businessId            String            @unique
+  business              Business          @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  roundOffEnabled       Boolean           @default(true)
+  roundOffPrecision     RoundOffPrecision @default(ONE)
+  roundOffMethod        RoundOffMethod    @default(ROUND)
+  roundOffShowOnInvoice Boolean           @default(true)
+  quantityDecimals      Int               @default(2) @db.SmallInt // 0..3
+  rateDecimals          Int               @default(2) @db.SmallInt // 0..3
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+
+  @@map("invoice_settings")
+}
+
+enum RoundOffPrecision {
+  ONE
+  HALF
+  TEN_PAISE
+  NONE
+}
+
+enum RoundOffMethod {
+  ROUND
+  FLOOR
+  CEIL
 }

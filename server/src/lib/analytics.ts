@@ -32,6 +32,14 @@ export type AnalyticsEvent =
   // CRM #127
   | 'crm_tag_filtered'
   | 'crm_followup_set'
+  // Invoice Templates & Settings
+  | 'template_created'
+  | 'template_updated'
+  | 'template_deleted'
+  | 'template_duplicated'
+  | 'template_default_set'
+  | 'invoice_settings_updated'
+  | 'template_limit_hit'
 
 /**
  * Emit a structured analytics event. Context is an open record — every

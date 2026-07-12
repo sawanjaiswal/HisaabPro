@@ -26,15 +26,27 @@
 >    CONCURRENTLY` migration from a prior session — reset via drop/recreate + manual-SQL-then-`migrate resolve`,
 >    same pattern documented in `PRISMA_MIGRATION_RULES.md`; dev DB untouched.) Still needs a live-browser
 >    re-screenshot of `/settings/tax-rates` to close out the "visually re-verified" bar from the original audit.
-> 2. ⏸️ **`/settings/templates` 404 — SCOPE-EXPANDED, deferred 2026-07-12.** This is NOT a missing-route
->    bug: the FE (`src/features/templates/*`) is a full scaffold against `PRDs/invoice-templates-PLAN.md`
->    ("Status: Awaiting Approval") with zero backend — no `InvoiceTemplate`/`InvoiceSettings` Prisma
->    models, no service, no route registered anywhere in `server/src/app.routes.ts`. The PRD's own build
->    plan is 5+ days for the template engine alone. Building it touches `prisma/schema.prisma`, a
->    HIGH_RISK_PATH requiring the `architect`/`security` agent sequence + an approved
->    `.claude/design-plan-active.md` — not a same-session bugfix. Asked the user how to proceed (skip /
->    start `/start-epic invoice-templates` / stub an empty-list route as a stopgap); no response, so
->    deferred rather than silently building a multi-day epic or a half-measure stub. **Resume by asking
+> 2. ✅ **`/settings/templates` 404 — FIXED 2026-07-13.** Root cause was a genuine missing backend, not a
+>    routing bug: the FE (`src/features/templates/*`) was a full scaffold against
+>    `PRDs/invoice-templates-PLAN.md` with zero backend — no `InvoiceTemplate`/`InvoiceSettings` Prisma
+>    models, no service, no route registered anywhere in `server/src/app.routes.ts`. This touches
+>    `prisma/schema.prisma`, a HIGH_RISK_PATH, so it was built via the full mandated sequence rather than
+>    a stub: `scope-writer` → `docs/SCOPE_invoice-templates.md`, `architect` →
+>    `docs/ARCHITECTURE_invoice-templates.md` + `docs/API_CONTRACTS_invoice-templates.md` +
+>    `.claude/design-plan-active.md` (approved), then `backend` build per the 17-row File Plan. New
+>    `InvoiceTemplate`/`InvoiceSettings`/`TemplateDefault` Prisma models (add-only migration
+>    `20260712190000_invoice_templates`, applied via `prisma migrate dev` — never `db push`), routes at
+>    `/api/templates` + `/api/invoice-settings` matching the shipped FE contract exactly (bare
+>    arrays/objects, `baseTemplate` as String+Zod-allowlist not a Prisma enum, opaque JSON `config`/
+>    `printSettings` capped at 10KB, `isDefault` derived from `TemplateDefault` join rows, round-off
+>    mapped enum↔wire-string at the boundary). Tenant isolation via explicit `where:{businessId}` +
+>    `isDeleted`/`deletedAt` soft-delete registration (this repo's actual pattern, not scoped-prisma).
+>    Verified: server tsc clean; `enforce.js` shows only the 4 pre-existing oversized-file errors
+>    (untouched by this change); curl proof for 200 (list/create/settings-get/settings-put), 401
+>    (no-auth), and 400 (invalid body); visually confirmed via dev-login session — `/settings/templates`
+>    renders real templates with no 404 and no console errors.
+>    _(Superseded note, kept for history: previously deferred pending a user decision among skip /
+>    `/start-epic` / stub — see git history for the original entry.)_
 >    which of those three paths to take**, or just run `/start-epic invoice-templates` directly.
 > 3. ✅ **Black-bar rendering bug (marketing pages) — FIXED 2026-07-12**, checkout instance still open.
 >    Root cause: three landing sections (`before-after-section.tsx`, `cta-section.tsx`,

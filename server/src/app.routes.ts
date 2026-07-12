@@ -89,6 +89,8 @@ import importsRoutes from './routes/imports/index.js'
 import appointmentRoutes from './routes/appointments.js'
 import appointmentConvertRoutes from './routes/appointment-convert.js'
 import appointmentWaitlistRoutes from './routes/appointment-waitlist.js'
+import invoiceTemplatesRoutes from './routes/invoice-templates.routes.js'
+import invoiceSettingsRoutes from './routes/invoice-settings.routes.js'
 
 const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/imports', importsRoutes],
@@ -216,6 +218,12 @@ const ROUTE_MOUNTS: Array<[string, Router]> = [
   ['/api/appointments', appointmentConvertRoutes],
   ['/api/appointments', appointmentWaitlistRoutes],
   ['/api/appointments', appointmentRoutes],
+
+  // Invoice Templates & Settings — matches the shipped FE contract
+  // (api('/templates'), api('/invoice-settings')). Feature-gated inside each
+  // router via FEATURES.INVOICE_TEMPLATES (default ON — closes a live 404).
+  ['/api/templates', invoiceTemplatesRoutes],
+  ['/api/invoice-settings', invoiceSettingsRoutes],
 ]
 
 export function mountFeatureRoutes(app: Express): void {
