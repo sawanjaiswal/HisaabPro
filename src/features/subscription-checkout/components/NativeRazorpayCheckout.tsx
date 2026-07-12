@@ -20,6 +20,7 @@ import { registerPlugin } from '@capacitor/core'
 import { useAuth } from '@/context/AuthContext'
 import { APP_NAME } from '@/config/app.config'
 import { Skeleton } from '@/components/feedback/Skeleton'
+import { getRazorpayBackdropColor } from '../utils/checkout-theme.utils'
 import type {
   CheckoutSurfaceProps,
   RazorpayHandlerResponse,
@@ -30,7 +31,7 @@ interface NativeCheckoutOptions {
   subscription_id: string
   name?: string
   description?: string
-  theme?: { color?: string }
+  theme?: { color?: string; backdrop_color?: string }
   prefill?: { name?: string; contact?: string; email?: string }
 }
 
@@ -72,7 +73,7 @@ export function NativeRazorpayCheckout({ session, onEvent }: CheckoutSurfaceProp
           key: session.razorpayKeyId,
           subscription_id: session.razorpaySubscriptionId,
           name: APP_NAME,
-          theme: { color: '#0f3638' },
+          theme: { color: '#0f3638', backdrop_color: getRazorpayBackdropColor() },
           prefill: buildPrefill(user),
         })
         if (cancelled) return

@@ -50,10 +50,22 @@
 >    `.claude/fix-trace-blackbar.md`. Verified: FE tsc clean; reproduced pre-fix via `agent-browser`
 >    fast-scroll on an unauthenticated session at 375px and 1440px, re-ran the same repro post-fix —
 >    no black rectangle on either viewport.
->    **Checkout instance still unverified** — grepped `src/features/subscription-checkout/**` and found
->    zero `motion`/`whileInView` usage, so it is NOT the same bug; needs its own repro (requires an
->    authenticated session — the dev-server login redirect blocked a quick check this pass). Resume by
->    logging in and reproducing `/settings/subscription/checkout`'s bottom region directly.
+>    **Checkout instance — FIXED 2026-07-12 (separate root cause from the landing-page bug).**
+>    Confirmed via dev-login session (`admin`/`admin123`) that `subscription-checkout/**` has zero
+>    `motion`/`whileInView` usage — not the same bug. Grepped all HisaabPro-authored CSS/components in
+>    the feature for `black`/`#000`/`rgba(0,0,0` — zero matches, so the black region isn't this app's own
+>    code. Root cause: `MobileRazorpayCheckout.tsx` and `NativeRazorpayCheckout.tsx` both pass a Razorpay
+>    `theme` object with only `color` (accent) set — neither ever sets `backdrop_color`, so Razorpay's
+>    widget (an iframe/native view outside this app's CSS cascade) falls back to its own default opaque
+>    black modal backdrop, visible as a black band around/behind its bottom-sheet on mobile. Fixed by
+>    adding a shared `getRazorpayBackdropColor()` helper
+>    (`subscription-checkout/utils/checkout-theme.utils.ts`) that resolves the app's own
+>    `--backdrop-color` token value per theme, and passing it as `backdrop_color` in both call sites.
+>    5-whys + hypothesis in `.claude/fix-trace-checkout-blackbar.md`. Verified: FE tsc clean. **Caveat:**
+>    the real Razorpay widget could not be opened live in this dev environment — `server/.env` has no
+>    `RAZORPAY_*` credentials, so `POST /subscription/checkout` fails server-side before the widget ever
+>    renders. This is a documented-SDK-option fix based on code review, not a pixel-verified before/after;
+>    recommend a follow-up visual check once a sandbox Razorpay test key is available.
 > 4. ✅ **`/settings/units` low contrast — FIXED 2026-07-12.** Root cause: `src/features/units/units.css`
 >    used raw `--color-gray-N` values instead of the semantic `--color-text-primary/secondary/muted` +
 >    `--color-border` tokens, then manually remapped grays for dark mode using a Tailwind-style mental

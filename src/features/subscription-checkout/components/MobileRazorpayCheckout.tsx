@@ -17,6 +17,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { Button } from '@/components/ui/Button'
 import { loadRazorpayCheckout } from '../utils/checkout-js-loader'
+import { getRazorpayBackdropColor } from '../utils/checkout-theme.utils'
 import { OPENING_TIMEOUT_MS } from '../subscription-checkout.constants'
 import type {
   CheckoutSurfaceProps,
@@ -62,7 +63,7 @@ export function MobileRazorpayCheckout({ session, onEvent }: CheckoutSurfaceProp
           name: APP_NAME,
           method: { upi: true },
           prefill: buildPrefill(user),
-          theme: { color: '#0f3638' },
+          theme: { color: '#0f3638', backdrop_color: getRazorpayBackdropColor() },
           handler: (resp: RazorpayHandlerResponse) => {
             if (!cancelled && resp?.razorpay_payment_id) {
               onEvent({ kind: 'handler_fired', subscriptionId: session.razorpaySubscriptionId })
