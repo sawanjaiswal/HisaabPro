@@ -1,5 +1,76 @@
 # Backlog — resume 2026-06-01
 
+> **2026-07-12 update (UI/UX gold-standard audit + root-cause fix pass):** ✅ Audit COMPLETE —
+> mechanical grep scan (844 `.tsx` files) + full browser sweep of all 133 static routes, published to
+> artifact `159c87a8-be7b-47d4-a5d9-75ee2e9a6fd6`. Every "page silently redirects" claim from the
+> parallel-agent sweep was independently re-verified in an isolated single session before being
+> trusted (7 concurrent `agent-browser` sessions briefly shared one CDP port and produced false
+> positives — methodology note for next time: don't run audits with >3-4 concurrent browser sessions
+> without per-agent isolated ports).
+>
+> 🔵 IN FLIGHT — root-cause fix pass on the confirmed findings, following `/hp-design` as SSOT for any
+> UI touched. **TOMORROW — pick up here:**
+> 1. ✅ **`/settings/tax-rates` blank pane — FIXED 2026-07-12.** Root cause: `server/src/routes/tax-categories.ts`
+>    sent `sendSuccess(res, { categories })` (wrapped), but the FE service (`src/lib/services/tax.service.ts`)
+>    already typed the `api()` result as flat `TaxCategory[]` — `api()` only unwraps one `.data` level, so the
+>    hook received `{ categories: [] }`, not an array; `categories.length` was `undefined`, so neither the
+>    empty nor success branch in `TaxCategoriesPage.tsx` matched → blank pane. Codebase-wide check found the
+>    convention genuinely mixed (~50/50 flat vs. wrapped by endpoint), but each pair is normally self-consistent
+>    except two live mismatches: tax-categories AND `server/src/routes/party-groups.ts` (`{ groups }` wrapper
+>    vs. `party-group.service.ts`'s flat-array typing). Fixed both routes to send flat arrays (matches sibling
+>    `categories.ts`/`units.ts` convention; no FE change needed). 5-whys + hypothesis in
+>    `.claude/fix-trace-tax-rates.md`. Failing-test-first: new integration contract test
+>    `server/src/__tests__/integration/tax-categories-party-groups.contract.test.ts` — confirmed red before the
+>    fix, green after. Verified: server tsc clean, FE tsc clean, both contract tests + the existing
+>    `categories-units.contract.test.ts` pass. (Local test DB had unrelated drift — a failed `CREATE INDEX
+>    CONCURRENTLY` migration from a prior session — reset via drop/recreate + manual-SQL-then-`migrate resolve`,
+>    same pattern documented in `PRISMA_MIGRATION_RULES.md`; dev DB untouched.) Still needs a live-browser
+>    re-screenshot of `/settings/tax-rates` to close out the "visually re-verified" bar from the original audit.
+> 2. ⏸️ **`/settings/templates` 404 — SCOPE-EXPANDED, deferred 2026-07-12.** This is NOT a missing-route
+>    bug: the FE (`src/features/templates/*`) is a full scaffold against `PRDs/invoice-templates-PLAN.md`
+>    ("Status: Awaiting Approval") with zero backend — no `InvoiceTemplate`/`InvoiceSettings` Prisma
+>    models, no service, no route registered anywhere in `server/src/app.routes.ts`. The PRD's own build
+>    plan is 5+ days for the template engine alone. Building it touches `prisma/schema.prisma`, a
+>    HIGH_RISK_PATH requiring the `architect`/`security` agent sequence + an approved
+>    `.claude/design-plan-active.md` — not a same-session bugfix. Asked the user how to proceed (skip /
+>    start `/start-epic invoice-templates` / stub an empty-list route as a stopgap); no response, so
+>    deferred rather than silently building a multi-day epic or a half-measure stub. **Resume by asking
+>    which of those three paths to take**, or just run `/start-epic invoice-templates` directly.
+> 3. ✅ **Black-bar rendering bug (marketing pages) — FIXED 2026-07-12**, checkout instance still open.
+>    Root cause: three landing sections (`before-after-section.tsx`, `cta-section.tsx`,
+>    `invoice-templates-section.tsx`) each render Framer Motion `whileInView` blocks starting at
+>    `initial={{ opacity: 0 }}`, gated by a duplicated local `viewport={{ once: true, amount: 0.15 }}`
+>    config with no lead-time margin. A fast scroll (flick-scroll, anchor jump, or main-thread jank on a
+>    low-end Android device) moves the section into the viewport faster than the IntersectionObserver
+>    callback + re-render + repaint pipeline can catch up, leaving it rendered at `opacity: 0` for several
+>    frames — reads as solid black against the dark landing theme. Also an SSOT violation (3 duplicated
+>    reveal helpers). Fixed by consolidating into `src/components/ui/motion-reveal.ts`
+>    (`REVEAL_VIEWPORT` + `revealProps()`), adding `margin: '0px 0px 300px 0px'` to pre-trigger the
+>    reveal before the section is visually reached. 5-whys + hypothesis in
+>    `.claude/fix-trace-blackbar.md`. Verified: FE tsc clean; reproduced pre-fix via `agent-browser`
+>    fast-scroll on an unauthenticated session at 375px and 1440px, re-ran the same repro post-fix —
+>    no black rectangle on either viewport.
+>    **Checkout instance still unverified** — grepped `src/features/subscription-checkout/**` and found
+>    zero `motion`/`whileInView` usage, so it is NOT the same bug; needs its own repro (requires an
+>    authenticated session — the dev-server login redirect blocked a quick check this pass). Resume by
+>    logging in and reproducing `/settings/subscription/checkout`'s bottom region directly.
+> 4. **`/settings/units` low contrast** — `src/features/units/UnitsPage.tsx` — list row text likely pinned
+>    to `var(--text-muted)` where `var(--text-primary)`/`var(--text-secondary)` belongs; check against the
+>    4.5:1 contrast bar in `PAGE_AUDIT_CHECKLIST.md` §L.
+> 5. **`/settings/transaction-controls` overlap** — `src/features/settings/TransactionControlsPage.tsx` —
+>    the Lock Period `<select>` (showing "Never") overlaps its own description text instead of sitting in
+>    normal flow; likely a stray `position: absolute` or missing flex/grid wrapper.
+> 6. **E-Invoice / E-Way-Bill rebuild** — biggest item, 5 files (`EInvoiceCard.tsx`,
+>    `EInvoiceCancelDialog.tsx`, `EWayBillCard.tsx`, `EWayBillModal.tsx`,
+>    `EWayBillUpdatePartBDialog.tsx`) built entirely outside the design system (raw hex, hand-rolled sheet
+>    instead of `<Drawer>`, ~14 hardcoded strings needing `t.*` keys in both `translations.en.ts` and
+>    `translations.hi.ts`). Run a full `/hp-design` plan-and-approve pass before touching code — this is
+>    a real feature-shaped rebuild, not a spot fix.
+> 7. Every `fix:` commit above needs its own `.claude/fix-trace-<short>.md` (5-whys + failing test first)
+>    per the root-cause discipline in `~/.claude/CLAUDE.md` — don't batch them into one commit.
+> 8. Re-screenshot each fixed page (golden path) before marking done; this whole pass started from a
+>    visual audit, so "done" means visually confirmed, not just tsc-clean.
+
 > **2026-05-31 update (V2 Appointments):** 🔵 IN FLIGHT — full BE + FE + reminder trigger + migration **committed `b6b33e3`** (101 files, +11,159 LOC; pre-commit clean: enforce.js + tsc + ratchets). Tests: 49/49 BE (incl. cross-tenant, public-booking-signature, soft-delete-guard) + 46/46 FE. Multi-agent ceremony PASS (scope-auditor, architecture-auditor, security).
 >
 > **TOMORROW (2026-06-01) — pick up here:**
