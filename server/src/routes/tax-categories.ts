@@ -19,7 +19,7 @@ router.use(auth)
 router.get('/', asyncHandler(async (req, res) => {
   const businessId = req.user!.businessId
   const categories = await svc.listCategories(businessId, req.query.showInactive === 'true')
-  sendSuccess(res, { categories })
+  sendSuccess(res, categories)
 }))
 
 /** GET /:id — Get single tax category */

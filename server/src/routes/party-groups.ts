@@ -42,7 +42,7 @@ router.get(
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
     const groups = await partyService.listGroups(businessId)
-    sendSuccess(res, { groups })
+    sendSuccess(res, groups)
   })
 )
 
