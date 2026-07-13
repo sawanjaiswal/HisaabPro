@@ -21,3 +21,15 @@ export interface CreateBusinessResponse {
     createdAt: string
   }
 }
+
+export type DataSource = 'notebook' | 'excel' | 'tally' | 'otherApp' | 'other'
+
+export type StartPath = 'import' | 'fresh'
+
+export type OnboardingStep =
+  | 'welcome'
+  | 'businessDetails'
+  | 'businessType'
+  | 'dataSource'
+  | 'startPath'
+  | 'ready'

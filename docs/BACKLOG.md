@@ -140,6 +140,16 @@
 >
 > **Next up:** Render redeploy + set env vars (subscription, Aisensy, MSG91). Phase 7 only #143 left (creds-blocked). See "Resume order" below.
 
+> **Done (2026-07-13):** Onboarding 6-step journey rebuild — Welcome → Business
+> Details (name/phone/location) → Business Type (existing `VerticalPicker`) →
+> How do you work? → Choose your path → Ready, replacing the old 3-step flow.
+> New fields (`businessLocation`, `dataSource`, `startPath`) are frontend-only,
+> not sent to `POST /businesses` (no backend field yet — out of scope, would
+> touch Prisma/HIGH_RISK). Browser-verified end-to-end incl. real business
+> creation. Found + fixed a real bug during verification: `goToDashboard`
+> bounced back to `/onboarding` because `AuthContext.businesses` wasn't
+> refreshed post-creation — fixed via the existing `refreshActiveBusiness()`.
+
 ## Resume order
 
 ### 0. Ship-to-prod gate (RECOMMENDED — biggest backlog of unshipped value)

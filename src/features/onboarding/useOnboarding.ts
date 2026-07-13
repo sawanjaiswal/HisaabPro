@@ -6,15 +6,19 @@ import { useMutation } from '@tanstack/react-query'
 import { useAuth } from '../../context/AuthContext'
 import { api } from '../../lib/api'
 import { ROUTES } from '../../config/routes.config'
-import type { CreateBusinessResponse } from './onboarding.types'
+import type { CreateBusinessResponse, DataSource, StartPath } from './onboarding.types'
 
 export function useOnboarding() {
-  const { user } = useAuth()
+  const { user, refreshActiveBusiness } = useAuth()
 
   const [businessName, setBusinessName] = useState('')
   const [businessType, setBusinessType] = useState('general')
   const [phone, setPhone] = useState(user?.phone ?? '')
+  const [businessLocation, setBusinessLocation] = useState('')
+  const [dataSource, setDataSource] = useState<DataSource | undefined>(undefined)
+  const [startPath, setStartPath] = useState<StartPath | undefined>(undefined)
   const [error, setError] = useState('')
+  const [created, setCreated] = useState(false)
 
   const navigate = useNavigate()
 
@@ -24,8 +28,12 @@ export function useOnboarding() {
         method: 'POST',
         body: JSON.stringify(payload),
       }),
-    onSuccess: () => {
-      navigate(ROUTES.DASHBOARD, { replace: true })
+    onSuccess: async () => {
+      // The new business isn't in AuthContext yet — ProtectedRoute gates on
+      // `businesses.length` and would bounce goToDashboard() straight back
+      // to /onboarding without this refetch.
+      await refreshActiveBusiness()
+      setCreated(true)
     },
     onError: (err: unknown) => {
       setError(err instanceof Error ? err.message : 'Failed to create business. Please try again.')
@@ -47,6 +55,10 @@ export function useOnboarding() {
     })
   }, [businessName, businessType, phone, mutation])
 
+  const goToDashboard = useCallback(() => {
+    navigate(ROUTES.DASHBOARD, { replace: true })
+  }, [navigate])
+
   return {
     businessName,
     setBusinessName,
@@ -54,8 +66,16 @@ export function useOnboarding() {
     setBusinessType,
     phone,
     setPhone,
+    businessLocation,
+    setBusinessLocation,
+    dataSource,
+    setDataSource,
+    startPath,
+    setStartPath,
     loading: mutation.isPending,
     error,
+    created,
     handleSubmit,
+    goToDashboard,
   }
 }

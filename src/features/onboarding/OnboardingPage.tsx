@@ -1,17 +1,30 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { SEO } from '../../components/layout/SEO'
 import { Button } from '../../components/ui/Button'
-import { Input } from '../../components/ui/Input'
 import { APP_NAME } from '../../config/app.config'
 import { useLanguage } from '../../context/LanguageContext'
 import type { BusinessType } from '@/config/verticals.config'
 import { VerticalPicker } from './components/VerticalPicker'
+import { OnboardingStepper } from './components/OnboardingStepper'
+import { BusinessDetailsStep } from './components/BusinessDetailsStep'
+import { DataSourceStep } from './components/DataSourceStep'
+import { StartPathStep } from './components/StartPathStep'
+import { ReadyStep } from './components/ReadyStep'
 import { useOnboarding } from './useOnboarding'
+import type { OnboardingStep } from './onboarding.types'
 import './onboarding.css'
+import './onboarding-steps.css'
 
-type Step = 'welcome' | 'pickType' | 'setup'
+const STEP_ORDER: OnboardingStep[] = [
+  'welcome', 'businessDetails', 'businessType', 'dataSource', 'startPath', 'ready',
+]
 
+const WELCOME_ICON = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="onboarding-welcome-icon__svg">
+    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+  </svg>
+)
 const ICON_INVOICE = (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -43,16 +56,27 @@ const ICON_REPORT = (
 )
 
 export default function OnboardingPage() {
-  const [step, setStep] = useState<Step>('welcome')
+  const [step, setStep] = useState<OnboardingStep>('welcome')
   const [hasPickedType, setHasPickedType] = useState(false)
   const {
     businessName, setBusinessName,
     businessType, setBusinessType,
     phone, setPhone,
-    loading, error,
-    handleSubmit,
+    businessLocation, setBusinessLocation,
+    dataSource, setDataSource,
+    startPath, setStartPath,
+    loading, error, created,
+    handleSubmit, goToDashboard,
   } = useOnboarding()
   const { t } = useLanguage()
+
+  const stepIndex = STEP_ORDER.indexOf(step)
+  const goTo = (s: OnboardingStep) => setStep(s)
+  const goBack = () => goTo(STEP_ORDER[Math.max(0, stepIndex - 1)])
+
+  useEffect(() => {
+    if (created) setStep('ready')
+  }, [created])
 
   const features = [
     { icon: ICON_INVOICE, title: t.onboardingFeatureInvoiceTitle, desc: t.onboardingFeatureInvoiceDesc },
@@ -67,11 +91,7 @@ export default function OnboardingPage() {
       <div className="onboarding-page space-y-6">
         <SEO title={welcomeTitle} />
         <div className="onboarding-card stagger-enter onboarding-welcome-card">
-          <div className="onboarding-icon onboarding-welcome-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="onboarding-welcome-icon__svg">
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-            </svg>
-          </div>
+          <div className="onboarding-icon onboarding-welcome-icon" aria-hidden="true">{WELCOME_ICON}</div>
 
           <div className="onboarding-header">
             <h1 className="onboarding-title">{welcomeTitle}</h1>
@@ -95,7 +115,7 @@ export default function OnboardingPage() {
             variant="primary"
             size="lg"
             className="onboarding-submit"
-            onClick={() => setStep('pickType')}
+            onClick={() => goTo('businessDetails')}
           >
             {t.onboardingGetStarted}
           </Button>
@@ -104,44 +124,12 @@ export default function OnboardingPage() {
     )
   }
 
-  if (step === 'pickType') {
+  if (step === 'ready') {
     return (
       <div className="onboarding-page space-y-6">
-        <SEO title={t.pickBusinessType} />
-        <div className="onboarding-card stagger-enter onboarding-card--scrollable">
-          <div className="onboarding-card__scroll">
-            <div className="onboarding-header">
-              <h1 className="onboarding-title">{t.pickBusinessType}</h1>
-              <p className="onboarding-subtitle">{t.pickBusinessTypeDesc}</p>
-            </div>
-
-            <VerticalPicker
-              value={hasPickedType ? (businessType as BusinessType) : undefined}
-              onChange={(type) => { setBusinessType(type); setHasPickedType(true) }}
-            />
-          </div>
-
-          {hasPickedType && (
-            <div className="onboarding-card__footer fade-up">
-              <Button
-                type="button"
-                variant="primary"
-                size="lg"
-                className="onboarding-submit"
-                onClick={() => setStep('setup')}
-              >
-                {t.onboardingGetStarted}
-              </Button>
-              <Button variant="none"
-                type="button"
-                className="onboarding-back-btn"
-                onClick={() => setStep('welcome')}
-              >
-                <ArrowLeft className="w-4 h-4" aria-hidden="true" />
-                {t.onboardingBack}
-              </Button>
-            </div>
-          )}
+        <SEO title={t.onboardingStepReady} />
+        <div className="onboarding-card stagger-enter onboarding-welcome-card">
+          <ReadyStep onGoHome={goToDashboard} onExploreDemo={goToDashboard} />
         </div>
       </div>
     )
@@ -152,78 +140,75 @@ export default function OnboardingPage() {
       <SEO title={t.onboardingTitle} />
 
       <div className="onboarding-card stagger-enter">
-        <div className="onboarding-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-            <polyline points="9 22 9 12 15 12 15 22" />
-          </svg>
-        </div>
+        <OnboardingStepper current={step} />
 
-        <div className="onboarding-header">
-          <h1 className="onboarding-title">{t.onboardingTitle}</h1>
-          <p className="onboarding-subtitle">
-            {t.onboardingSubtitle.replace('{appName}', APP_NAME)}
-          </p>
-        </div>
-
-        <form
-          className="onboarding-form"
-          onSubmit={(e) => { e.preventDefault(); handleSubmit() }}
-          noValidate
-        >
-          <Input
-            id="businessName"
-            label={t.onboardingBusinessName}
-            type="text"
-            placeholder={t.onboardingBusinessNamePh}
-            value={businessName}
-            onChange={(e) => setBusinessName(e.target.value)}
+        {step === 'businessDetails' && (
+          <BusinessDetailsStep
+            businessName={businessName} setBusinessName={setBusinessName}
+            phone={phone} setPhone={setPhone}
+            businessLocation={businessLocation} setBusinessLocation={setBusinessLocation}
             disabled={loading}
-            autoFocus
-            autoComplete="organization"
-            maxLength={100}
-            required
+            onNext={() => goTo('businessType')}
+            onBack={() => goTo('welcome')}
           />
+        )}
 
-          <Input
-            id="phone"
-            label={t.onboardingPhone}
-            type="tel"
-            placeholder={t.onboardingPhonePh}
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            disabled={loading}
-            autoComplete="tel"
-            maxLength={10}
-            inputMode="numeric"
+        {step === 'businessType' && (
+          <div className="onboarding-form">
+            <div className="onboarding-header onboarding-header--step">
+              <h2 className="onboarding-step-title">{t.pickBusinessType}</h2>
+              <p className="onboarding-step-desc">{t.pickBusinessTypeDesc}</p>
+            </div>
+
+            <VerticalPicker
+              value={hasPickedType ? (businessType as BusinessType) : undefined}
+              onChange={(type) => { setBusinessType(type); setHasPickedType(true) }}
+            />
+
+            {hasPickedType && (
+              <div className="fade-up">
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="lg"
+                  className="onboarding-submit"
+                  onClick={() => goTo('dataSource')}
+                >
+                  {t.onboardingContinue}
+                </Button>
+                <Button variant="none" type="button" className="onboarding-back-btn" onClick={goBack}>
+                  <ArrowLeft className="w-4 h-4" aria-hidden="true" />
+                  {t.onboardingBack}
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {step === 'dataSource' && (
+          <DataSourceStep
+            value={dataSource}
+            onChange={setDataSource}
+            onNext={() => goTo('startPath')}
+            onBack={goBack}
           />
+        )}
 
-          {error && (
-            <p className="onboarding-error" role="alert">
-              {error}
-            </p>
-          )}
-
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
+        {step === 'startPath' && (
+          <StartPathStep
+            value={startPath}
+            onChange={setStartPath}
             loading={loading}
-            disabled={!businessName.trim()}
-            className="onboarding-submit"
-            aria-label={loading ? t.onboardingSubmitting : t.onboardingSubmitAria}
-          >
-            {loading ? t.onboardingSubmitting : t.onboardingSubmit}
-          </Button>
+            onNext={handleSubmit}
+            onBack={goBack}
+          />
+        )}
 
-          <Button variant="none"
-            type="button"
-            className="onboarding-back-btn"
-            onClick={() => setStep('pickType')}
-          >
-            {t.onboardingBack}
-          </Button>
-        </form>
+        {error && (
+          <p className="onboarding-error" role="alert">
+            {error}
+          </p>
+        )}
       </div>
     </div>
   )
