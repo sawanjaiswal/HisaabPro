@@ -13,31 +13,41 @@ import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { useLanguage } from '@/hooks/useLanguage'
+import { useAuth } from '@/context/AuthContext'
 import { ROUTES } from '@/config/routes.config'
 import { useHomeDashboard } from './useDashboard'
-import { isHomeDashboardEmpty, formatCompactAmount } from './dashboard.utils'
+import { isHomeDashboardEmpty, formatCompactAmount, getFirstName, buildTopPriorities } from './dashboard.utils'
 import { QUICK_ACTIONS } from './dashboard.constants'
 import { DashboardHeader } from './components/DashboardHeader'
-import { OutstandingHero } from './components/OutstandingHero'
+import { DashboardStatsGrid } from './components/DashboardStatsGrid'
 import { DashboardQuickActions } from './components/DashboardQuickActions'
-import { AlertStrip } from './components/AlertStrip'
+import { TopPrioritiesCard } from './components/TopPrioritiesCard'
 import { TopDebtors } from './components/TopDebtors'
 import { RecentActivityFeed } from './components/RecentActivityFeed'
-import { TodayCashStrip } from './components/TodayCashStrip'
 import { DashboardSkeleton } from './components/DashboardSkeleton'
 import { StaffDashboardSection } from './components/StaffDashboardSection'
-import type { RecentActivityItem } from './dashboard.types'
+import type { RecentActivityItem, PriorityItem } from './dashboard.types'
 import './dashboard-page.css'
 import './dashboard-hero.css'
 import './dashboard-actions.css'
-import './dashboard-alerts.css'
+import './dashboard-stats-grid.css'
+import './dashboard-priorities.css'
 import './dashboard-starred.css'
 import './dashboard-transactions.css'
+
+function getGreetingKey(): 'dashboardGreetingMorning' | 'dashboardGreetingAfternoon' | 'dashboardGreetingEvening' {
+  const hour = new Date().getHours()
+  if (hour < 12) return 'dashboardGreetingMorning'
+  if (hour < 17) return 'dashboardGreetingAfternoon'
+  return 'dashboardGreetingEvening'
+}
 
 export default function DashboardPage() {
   const navigate = useNavigate()
   const { t } = useLanguage()
+  const { user } = useAuth()
   const { data, status, refresh } = useHomeDashboard()
+  const todayLabel = new Date().toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })
 
   const handleQuickAction = (route: string) => navigate(route)
   const handleCollectClick = () => navigate(`${ROUTES.OUTSTANDING}?tab=receivable`)
@@ -63,8 +73,8 @@ export default function DashboardPage() {
 
   const handleViewAllOutstanding = () => navigate(ROUTES.OUTSTANDING)
 
-  const handleLowStockClick = () => navigate(ROUTES.INVENTORY_ALERTS)
-  const handleOverdueClick = () => navigate(ROUTES.OUTSTANDING)
+  const handleViewAllPriorities = () => navigate(ROUTES.OUTSTANDING)
+  const handlePriorityAction = (item: PriorityItem) => navigate(item.actionRoute)
 
   return (
     <AppShell>
@@ -112,6 +122,16 @@ export default function DashboardPage() {
           <>
             {/* Gradient area */}
             <div className="dashboard-top-section py-0">
+              <div className="dashboard-greeting-row">
+                <div>
+                  <h1 className="dashboard-greeting-title">
+                    {t[getGreetingKey()].replace('{name}', getFirstName(user?.name ?? ''))}
+                  </h1>
+                  <p className="dashboard-greeting-subtitle">{t.dashboardGreetingSubtitle}</p>
+                </div>
+                <span className="dashboard-greeting-date">{todayLabel}</span>
+              </div>
+
               <div className={`dashboard-sales-hero ${data.today.salesAmount === 0 ? 'dashboard-sales-hero--zero' : ''}`}>
                 <span className="dashboard-sales-label">{t.todaysSale}</span>
                 {data.today.salesAmount > 0 ? (
@@ -134,37 +154,30 @@ export default function DashboardPage() {
                 )}
               </div>
 
-              {(data.today.paymentsReceivedAmount > 0 || data.today.paymentsMadeAmount > 0 || data.today.netCashFlow !== 0) && (
-                <TodayCashStrip
-                  paymentsIn={data.today.paymentsReceivedAmount}
-                  paymentsOut={data.today.paymentsMadeAmount}
-                  netCashFlow={data.today.netCashFlow}
-                />
-              )}
-
-              <OutstandingHero
+              <DashboardStatsGrid
                 receivableTotal={data.outstanding.receivable.total}
-                receivablePartyCount={data.outstanding.receivable.partyCount}
                 payableTotal={data.outstanding.payable.total}
-                payablePartyCount={data.outstanding.payable.partyCount}
+                paymentsReceivedAmount={data.today.paymentsReceivedAmount}
+                paymentsMadeAmount={data.today.paymentsMadeAmount}
                 onCollectClick={handleCollectClick}
                 onPayClick={handlePayClick}
+              />
+
+              <TopPrioritiesCard
+                items={buildTopPriorities(data)}
+                onViewAll={handleViewAllPriorities}
+                onItemAction={handlePriorityAction}
               />
 
               <DashboardQuickActions actions={QUICK_ACTIONS} onAction={handleQuickAction} />
             </div>
 
-            {/* Upgrade banner + alerts → white section */}
-            <AlertStrip
-              lowStockCount={data.alerts.lowStockCount}
-              overdueInvoiceCount={data.alerts.overdueInvoiceCount}
-              onLowStockClick={handleLowStockClick}
-              onOverdueClick={handleOverdueClick}
-            />
+            {/* White drawer section */}
+            <div className="dashboard-white-section py-0">
+              <div className="dashboard-section-header">
+                <h2 className="dashboard-section-title">{t.businessOverview}</h2>
+              </div>
 
-            {/* White drawer section — flush against the AlertStrip above
-                (overrides parent space-y-6 gap with !mt-0). */}
-            <div className="dashboard-white-section py-0 !mt-0">
               <TopDebtors
                 debtors={data.topDebtors}
                 totalOutstanding={data.outstanding.receivable.total}

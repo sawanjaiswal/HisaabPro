@@ -105,6 +105,43 @@
   z-index: 0;
 }
 
+/* ─── Greeting row ──────────────────────────────────────────── */
+
+.dashboard-greeting-row {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  animation: fadeUp 400ms var(--ease-premium) both;
+}
+
+.dashboard-greeting-title {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--dash-text-primary);
+  letter-spacing: -0.02em;
+}
+
+.dashboard-greeting-subtitle {
+  font-size: var(--fs-sm);
+  color: var(--dash-text-secondary);
+  margin-top: 2px;
+}
+
+.dashboard-greeting-date {
+  flex-shrink: 0;
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--dash-text-secondary);
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-full);
+  padding: var(--space-1-5) var(--space-3);
+  white-space: nowrap;
+}
+
 /* ─── Top section (gradient area) ──────────────────────────── */
 
 .dashboard-top-section {
@@ -140,9 +177,7 @@
 
 .dashboard-white-section {
   background: var(--color-gray-0);
-  /* Sits flush against the alert banner above — kill margin from the
-   * parent's `space-y-*` utility so the white drawer butts the banner. */
-  margin-top: 0 !important;
+  margin-top: var(--space-2) !important;
   padding: var(--dash-section-gap) var(--dash-side-padding) calc(var(--bottom-nav-height) + 2rem);
   display: flex;
   flex-direction: column;
@@ -150,8 +185,7 @@
   flex: 1;
   position: relative;
   z-index: 1;
-  /* Sits flush against the alert banner above — no top rounding, no gap. */
-  border-radius: 0;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   box-shadow: var(--shadow-drawer-inset);
 }
 

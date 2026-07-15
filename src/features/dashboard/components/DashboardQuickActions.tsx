@@ -5,7 +5,10 @@
  */
 
 import React from 'react'
-import { BarChart3, CreditCard, MoreHorizontal, Package, Send, FileText } from 'lucide-react'
+import {
+  BarChart3, CreditCard, MoreHorizontal, Package, Send, FileText,
+  User, Receipt, ShoppingCart, Warehouse,
+} from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { QuickActionConfig } from '../dashboard.constants'
@@ -29,6 +32,10 @@ const LUCIDE_ICONS: Record<string, LucideIcon> = {
   Package,
   Send,
   FileText,
+  User,
+  Receipt,
+  ShoppingCart,
+  Warehouse,
 }
 
 export const DashboardQuickActions: React.FC<DashboardQuickActionsProps> = ({

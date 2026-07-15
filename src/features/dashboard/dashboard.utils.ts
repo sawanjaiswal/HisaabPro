@@ -4,7 +4,8 @@
  * All monetary params/return values in PAISE unless noted.
  */
 
-import type { HomeDashboardData, ActivityType } from './dashboard.types'
+import type { HomeDashboardData, ActivityType, PriorityItem } from './dashboard.types'
+import { ROUTES } from '@/config/routes.config'
 
 // ─── Currency formatting ──────────────────────────────────────────────────────
 
@@ -111,6 +112,57 @@ export function isInflowType(type: ActivityType): boolean {
 export function formatSignedAmount(paise: number, type: ActivityType): string {
   const prefix = isInflowType(type) ? '+ ' : '- '
   return prefix + formatCompactAmount(paise)
+}
+
+// ─── Top priorities (derived from existing home-dashboard fields only) ───────
+
+/**
+ * Build up to 3 actionable priority rows from data the home dashboard
+ * already returns — no new API fields. Skips rows with nothing to show.
+ */
+export function buildTopPriorities(data: HomeDashboardData): PriorityItem[] {
+  const items: PriorityItem[] = []
+  const topDebtor = data.topDebtors[0]
+
+  if (topDebtor && topDebtor.outstanding > 0) {
+    items.push({
+      id: 'payment-due',
+      tone: 'warning',
+      icon: 'IndianRupee',
+      title: topDebtor.name,
+      subtitle: `${formatCompactAmount(topDebtor.outstanding)} · ${
+        topDebtor.daysOverdue <= 0 ? 'Due today' : `${topDebtor.daysOverdue}d overdue`
+      }`,
+      actionLabelKey: 'remindAction',
+      actionRoute: ROUTES.REPORT_PARTY_STATEMENT.replace(':partyId', topDebtor.partyId),
+    })
+  }
+
+  if (data.alerts.lowStockCount > 0) {
+    items.push({
+      id: 'low-stock',
+      tone: 'danger',
+      icon: 'Package',
+      titleKey: 'priorityStockLow',
+      subtitle: String(data.alerts.lowStockCount),
+      actionLabelKey: 'orderNowAction',
+      actionRoute: ROUTES.INVENTORY_ALERTS,
+    })
+  }
+
+  if (data.alerts.overdueInvoiceCount > 0) {
+    items.push({
+      id: 'invoices-overdue',
+      tone: 'info',
+      icon: 'FileText',
+      titleKey: 'priorityInvoicesOverdue',
+      subtitle: String(data.alerts.overdueInvoiceCount),
+      actionLabelKey: 'reviewAction',
+      actionRoute: ROUTES.OUTSTANDING,
+    })
+  }
+
+  return items.slice(0, 3)
 }
 
 // ─── Empty state detection ────────────────────────────────────────────────────

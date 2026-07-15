@@ -1,0 +1,96 @@
+/* ============================================================
+   Dashboard Top Priorities — white overlapping card, rows w/ CTA
+   ============================================================ */
+
+.dashboard-priorities-card {
+  width: 100%;
+  background: var(--color-gray-0);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--dash-card-shadow, var(--shadow-card));
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-priorities-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.dashboard-priority-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+}
+
+.dashboard-priority-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard-priority-row--warning .dashboard-priority-icon {
+  background: var(--color-warning-50);
+  color: var(--color-warning-700);
+}
+.dashboard-priority-row--danger .dashboard-priority-icon {
+  background: var(--color-error-50);
+  color: var(--color-error-700);
+}
+.dashboard-priority-row--info .dashboard-priority-icon {
+  background: var(--color-info-50, var(--color-primary-50));
+  color: var(--color-info-600, var(--color-primary-600));
+}
+
+.dashboard-priority-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-priority-title {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--dash-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-priority-subtitle {
+  font-size: var(--fs-xs);
+  color: var(--dash-text-muted);
+  margin-top: 2px;
+}
+
+.dashboard-priority-row--danger .dashboard-priority-subtitle {
+  color: var(--color-error-600);
+  font-weight: 500;
+}
+
+.dashboard-priority-action {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+[data-theme="dark"] .dashboard-priorities-card {
+  background: var(--color-gray-0);
+  box-shadow: var(--shadow-card-dark);
+}
+
+[data-theme="dark"] .dashboard-priority-row--warning .dashboard-priority-icon {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+}
+[data-theme="dark"] .dashboard-priority-row--danger .dashboard-priority-icon {
+  background: var(--color-error-bg);
+  color: var(--color-error-text);
+}

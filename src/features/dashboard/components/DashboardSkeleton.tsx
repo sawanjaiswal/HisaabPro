@@ -13,27 +13,50 @@ export const DashboardSkeleton: React.FC = () => {
     <>
       {/* Top gradient section */}
       <div className="dashboard-top-section py-0" aria-busy="true" aria-label={t.loadingDashboard}>
+        {/* Greeting skeleton */}
+        <div className="dashboard-greeting-row" aria-hidden="true">
+          <div className="flex flex-col gap-2">
+            <Skeleton width="160px" height="20px" />
+            <Skeleton width="200px" height="14px" />
+          </div>
+          <Skeleton width="90px" height="28px" borderRadius="9999px" />
+        </div>
+
         {/* Sales hero skeleton */}
         <div className="dashboard-sales-hero" aria-hidden="true">
           <Skeleton width="80px" height="13px" />
           <Skeleton width="160px" height="32px" />
         </div>
 
-        {/* Outstanding hero skeleton */}
-        <div className="dashboard-hero" aria-hidden="true">
-          <div className="dashboard-hero-card dashboard-hero-card--skeleton flex flex-col gap-4">
-            <Skeleton width="80%" height="20px" />
-            <Skeleton width="60%" height="13px" />
-          </div>
-          <div className="dashboard-hero-card dashboard-hero-card--skeleton flex flex-col gap-4">
-            <Skeleton width="80%" height="20px" />
-            <Skeleton width="60%" height="13px" />
-          </div>
+        {/* Stats grid skeleton */}
+        <div className="dashboard-stats-grid" aria-hidden="true">
+          {Array.from({ length: 4 }, (_, i) => (
+            <div key={`stat-skeleton-${i}`} className="dashboard-stat-tile flex flex-col gap-2">
+              <Skeleton width="28px" height="28px" borderRadius="9999px" />
+              <Skeleton width="60%" height="18px" />
+              <Skeleton width="40%" height="11px" />
+            </div>
+          ))}
+        </div>
+
+        {/* Top priorities skeleton */}
+        <div className="dashboard-priorities-card" aria-hidden="true">
+          <Skeleton width="120px" height="17px" />
+          {Array.from({ length: 2 }, (_, i) => (
+            <div key={`priority-skeleton-${i}`} className="flex items-center gap-3 py-2">
+              <Skeleton width="36px" height="36px" borderRadius="9999px" />
+              <div className="flex-1 flex flex-col gap-1">
+                <Skeleton width="70%" height="14px" />
+                <Skeleton width="50%" height="12px" />
+              </div>
+              <Skeleton width="76px" height="32px" borderRadius="8px" />
+            </div>
+          ))}
         </div>
 
         {/* Action grid skeleton */}
         <div className="dashboard-action-grid" aria-hidden="true">
-          {Array.from({ length: 4 }, (_, i) => (
+          {Array.from({ length: 8 }, (_, i) => (
             <div key={`action-skeleton-${i}`} className="dashboard-action-item cursor-default">
               <Skeleton width="56px" height="56px" borderRadius="18px" />
               <Skeleton width="40px" height="12px" />

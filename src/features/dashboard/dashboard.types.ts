@@ -4,6 +4,8 @@
  * Display via formatAmount() from dashboard.utils.ts.
  */
 
+import type { TranslationKey } from '@/lib/translations'
+
 // ─── Home dashboard (single-call response) ───────────────────────────────────
 
 export interface HomeDashboardData {
@@ -56,6 +58,24 @@ export interface TopDebtor {
   /** ISO date string */
   oldestDueDate: string
   daysOverdue: number
+}
+
+// ─── Top priorities card (derived from existing data, no new API fields) ─────
+
+export type PriorityTone = 'warning' | 'danger' | 'info'
+
+export interface PriorityItem {
+  id: string
+  tone: PriorityTone
+  /** Lucide icon name */
+  icon: string
+  /** Literal display text (e.g. a party name) — takes priority over titleKey */
+  title?: string
+  /** Translation key — used when title is a generic label, not raw data */
+  titleKey?: TranslationKey
+  subtitle: string
+  actionLabelKey: TranslationKey
+  actionRoute: string
 }
 
 // ─── Quick action pill config ────────────────────────────────────────────────

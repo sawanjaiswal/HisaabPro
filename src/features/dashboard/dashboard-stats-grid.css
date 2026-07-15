@@ -1,0 +1,76 @@
+/* ============================================================
+   Dashboard Stats Grid — 2x2 flat tiles under the hero
+   ============================================================ */
+
+.dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.dashboard-stat-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-0);
+  border: none;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--dash-card-shadow, var(--shadow-card));
+  cursor: pointer;
+  font-family: var(--font-primary);
+  text-align: left;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+  transition: box-shadow var(--duration-fast) var(--ease-default);
+}
+
+.dashboard-stat-tile:disabled,
+.dashboard-stat-tile[aria-disabled="true"] {
+  cursor: default;
+}
+
+.dashboard-stat-tile-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-white-inverse);
+}
+
+.dashboard-stat-tile--teal .dashboard-stat-tile-icon {
+  background: var(--dash-teal-start, var(--color-primary-500));
+}
+.dashboard-stat-tile--lime .dashboard-stat-tile-icon {
+  background: var(--dash-lime, var(--color-lime-accent));
+  color: var(--color-primary-700);
+}
+.dashboard-stat-tile--success .dashboard-stat-tile-icon {
+  background: var(--color-success-500);
+}
+.dashboard-stat-tile--info .dashboard-stat-tile-icon {
+  background: var(--color-info-500);
+}
+
+.dashboard-stat-tile-amount {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--dash-text-primary);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.dashboard-stat-tile-label {
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--dash-text-muted);
+}
+
+[data-theme="dark"] .dashboard-stat-tile {
+  background: var(--color-gray-0);
+  box-shadow: var(--shadow-card-dark);
+}
