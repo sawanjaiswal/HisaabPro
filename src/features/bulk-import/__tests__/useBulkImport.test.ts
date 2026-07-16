@@ -1,10 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
+import { createTestWrapper } from '@/test/query-wrapper'
 import { useBulkImport } from '../useBulkImport'
 
 vi.mock('@/features/parties/party-crud.service', () => ({
   createParty: vi.fn().mockResolvedValue({}),
 }))
+
+const wrapper = createTestWrapper({ router: false })
 
 describe('useBulkImport', () => {
   beforeEach(() => {
@@ -12,7 +15,7 @@ describe('useBulkImport', () => {
   })
 
   it('starts in idle state', () => {
-    const { result } = renderHook(() => useBulkImport())
+    const { result } = renderHook(() => useBulkImport(), { wrapper })
     expect(result.current.status).toBe('idle')
     expect(result.current.contacts).toEqual([])
     expect(result.current.partyType).toBe('CUSTOMER')
@@ -24,7 +27,7 @@ describe('useBulkImport', () => {
   })
 
   it('toggleContact toggles selection on a contact', () => {
-    const { result } = renderHook(() => useBulkImport())
+    const { result } = renderHook(() => useBulkImport(), { wrapper })
 
     // Simulate contacts being loaded (directly set state via CSV import mock)
     // Use importCsv with a mock file
@@ -38,14 +41,14 @@ describe('useBulkImport', () => {
   })
 
   it('setPartyType changes party type', () => {
-    const { result } = renderHook(() => useBulkImport())
+    const { result } = renderHook(() => useBulkImport(), { wrapper })
 
     act(() => { result.current.setPartyType('SUPPLIER') })
     expect(result.current.partyType).toBe('SUPPLIER')
   })
 
   it('reset clears all state', () => {
-    const { result } = renderHook(() => useBulkImport())
+    const { result } = renderHook(() => useBulkImport(), { wrapper })
 
     act(() => { result.current.setPartyType('SUPPLIER') })
     act(() => { result.current.reset() })
@@ -58,7 +61,7 @@ describe('useBulkImport', () => {
   })
 
   it('selectAll toggles all valid contacts', () => {
-    const { result } = renderHook(() => useBulkImport())
+    const { result } = renderHook(() => useBulkImport(), { wrapper })
     // selectAll with false deselects (empty array = no effect)
     act(() => { result.current.selectAll(false) })
     expect(result.current.selectedCount).toBe(0)

@@ -59,6 +59,27 @@ export const REGISTRY = [
     forbidden: ["window\\.confirm\\("],
     note: "Confirm SSOT (PAGE_AUDIT_CHECKLIST §C).",
   },
+  {
+    capability: "reconcile party react-query cache after a mutation",
+    module: "src/features/parties/party-cache.ts",
+    exports: [
+      "reconcilePartyCreated",
+      "reconcilePartyUpdated",
+      "optimisticRemoveParty",
+      "reconcilePartyDeleted",
+      "invalidatePartyLists",
+    ],
+    // Every party create/update/delete must reconcile the cache HERE. Scattered
+    // invalidateQueries/setQueriesData on queryKeys.parties.* is exactly the
+    // drift that let a created party show a success toast but not appear until
+    // reload (usePartyForm forgot to invalidate; PartyDetailPage + bulk-import
+    // too). One module owns it → the divergence can't recur.
+    forbidden: [
+      "invalidateQueries\\(\\s*\\{\\s*queryKey:\\s*queryKeys\\.parties",
+      "setQueriesData[^\\n]*queryKeys\\.parties\\.all",
+    ],
+    note: "Party list/detail cache reconciliation SSOT. Fixed the save-not-showing bug.",
+  },
 
   // ── DISCOVERY (forbidden: [] → surfaced for reuse, not regex-guarded) ─────
 

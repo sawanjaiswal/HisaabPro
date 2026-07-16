@@ -1,7 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
-import type { ReactNode } from 'react'
 
 const mockNavigate = vi.fn()
 vi.mock('react-router-dom', async () => {
@@ -28,10 +26,10 @@ vi.mock('../useGstinVerify', () => ({
   }),
 }))
 
+import { createTestWrapper } from '@/test/query-wrapper'
 import { usePartyForm } from '../usePartyForm'
 
-const wrapper = ({ children }: { children: ReactNode }) =>
-  MemoryRouter({ children })
+const wrapper = createTestWrapper()
 
 describe('usePartyForm', () => {
   beforeEach(() => {
@@ -49,6 +47,7 @@ describe('usePartyForm', () => {
       creditLimit: 0,
       creditLimitMode: 'WARN',
       addresses: [],
+      customFields: [],
     })
     expect(result.current.errors).toEqual({})
     expect(result.current.isSubmitting).toBe(false)

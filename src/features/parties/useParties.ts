@@ -6,6 +6,7 @@ import { queryKeys } from '@/lib/query-keys'
 import { TIMEOUTS } from '@/config/app.config'
 import { DEFAULT_FILTERS } from './party.constants'
 import { getParties, createParty, deleteParty } from './party.service'
+import { reconcilePartyCreated, optimisticRemoveParty, invalidatePartyLists } from './party-cache'
 import type { PartyListResponse, PartyFilters, PartyFormData } from './party.types'
 
 type Status = 'loading' | 'error' | 'success'
@@ -77,15 +78,15 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
   }, [])
 
   const refresh = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.parties.all() })
+    invalidatePartyLists(queryClient)
   }, [queryClient])
 
   // Create mutation
   const createMutation = useMutation({
     mutationFn: (formData: PartyFormData) => createParty(formData),
-    onSuccess: (_result, formData) => {
+    onSuccess: (created, formData) => {
       toast.success(`${formData.name} added successfully`)
-      queryClient.invalidateQueries({ queryKey: queryKeys.parties.all() })
+      reconcilePartyCreated(queryClient, created)
     },
     onError: (err: Error) => {
       const message = err instanceof ApiError ? err.message : 'Failed to create party'
@@ -99,25 +100,16 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
 
   // Delete with undo (keeps existing UX: delay actual delete for 5s undo window)
   const handleDelete = useCallback((id: string, name: string) => {
-    // Optimistic: update cache directly
-    queryClient.setQueryData<PartyListResponse>(
-      queryKeys.parties.list(filters),
-      (old) => {
-        if (!old) return old
-        return {
-          ...old,
-          parties: old.parties.filter((p) => p.id !== id),
-          pagination: { ...old.pagination, total: old.pagination.total - 1 },
-        }
-      }
-    )
+    // Optimistic instant removal across all cached lists. No invalidate — the
+    // real delete is deferred 5s (undo window); refetching now would re-add it.
+    optimisticRemoveParty(queryClient, id)
 
     let undone = false
 
     toast.success(`${name} deleted`, {
       onUndo: () => {
         undone = true
-        queryClient.invalidateQueries({ queryKey: queryKeys.parties.all() })
+        invalidatePartyLists(queryClient)
       },
       undoLabel: 'Undo',
     })
@@ -127,10 +119,10 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
       deleteParty(id).catch((err: unknown) => {
         const message = err instanceof ApiError ? err.message : 'Failed to delete party'
         toast.error(message)
-        queryClient.invalidateQueries({ queryKey: queryKeys.parties.all() })
+        invalidatePartyLists(queryClient)
       })
     }, 5_000)
-  }, [filters, queryClient, toast])
+  }, [queryClient, toast])
 
   return {
     data,

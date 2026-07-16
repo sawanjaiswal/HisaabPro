@@ -13,8 +13,10 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useToast } from '@/hooks/useToast'
+import { useQueryClient } from '@tanstack/react-query'
 import { usePartyDetail } from './usePartyDetail'
 import { deleteParty } from './party.service'
+import { reconcilePartyDeleted } from './party-cache'
 import { PartyDetailHeader } from './components/PartyDetailHeader'
 import { PartyOverviewTab } from './components/PartyOverviewTab'
 import { PartyTransactionsTab } from './components/PartyTransactionsTab'
@@ -37,6 +39,7 @@ export default function PartyDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const toast = useToast()
+  const queryClient = useQueryClient()
   const { t } = useLanguage()
   const { tabs: TABS } = usePartyDetailTabs()
 
@@ -56,6 +59,7 @@ export default function PartyDetailPage() {
     setIsDeleting(true)
     deleteParty(partyId)
       .then(() => {
+        reconcilePartyDeleted(queryClient, partyId)
         toast.success(t.partyMovedToTrash)
         navigate(ROUTES.PARTIES)
       })

@@ -25,6 +25,7 @@ import { useToast } from '@/hooks/useToast'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ApiError } from '@/lib/api'
 import { queryKeys } from '@/lib/query-keys'
+import { invalidatePartyLists } from '@/features/parties/party-cache'
 import { formatRelativeTime } from '@/lib/format'
 import { FollowUpDatePicker } from '@/features/crm/components/FollowUpDatePicker'
 import { patchPartyCrm } from '@/features/crm/api/crm.service'
@@ -65,7 +66,7 @@ export function PartyCrmTab({ party, onPatched }: PartyCrmTabProps) {
       await patchPartyCrm(party.id, { followUpAt: draftFollowUpAt }, party.name)
       toast.success(navigator.onLine ? t.crmSaved : t.crmSavedQueuedOffline)
       queryClient.invalidateQueries({ queryKey: queryKeys.crm.all() })
-      queryClient.invalidateQueries({ queryKey: queryKeys.parties.all() })
+      invalidatePartyLists(queryClient)
       onPatched()
     } catch (err) {
       if (err instanceof ApiError && err.code === 'INVALID_FOLLOWUP_PAST') {

@@ -1,13 +1,16 @@
 /** Bulk Import Parties — State hook */
 
 import { useState, useCallback, useRef } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { createParty } from '@/features/parties/party-crud.service'
+import { invalidatePartyLists } from '@/features/parties/party-cache'
 import { IMPORT_BATCH_SIZE } from './bulk-import.constants'
 import { validateContact, deduplicateContacts, toBulkPartyData, normalizePhone, parseCsv } from './bulk-import.utils'
 import type { BulkImportStatus, ImportedContact, BulkImportResult, BulkPartyData } from './bulk-import.types'
 import type { PartyType } from '@/lib/types/party.types'
 
 export function useBulkImport() {
+  const queryClient = useQueryClient()
   const [status, setStatus] = useState<BulkImportStatus>('idle')
   const [contacts, setContacts] = useState<ImportedContact[]>([])
   const [partyType, setPartyType] = useState<PartyType>('CUSTOMER')
@@ -122,9 +125,12 @@ export function useBulkImport() {
       setProgress(Math.min(i + batch.length, parties.length))
     }
 
+    // Refresh party lists so imported parties appear without a reload.
+    if (result.succeeded > 0) invalidatePartyLists(queryClient)
+
     setImportResult(result)
     setStatus('done')
-  }, [contacts, partyType])
+  }, [contacts, partyType, queryClient])
 
   // ─── Reset ───────────────────────────────────────────────────────────────
   const reset = useCallback(() => {

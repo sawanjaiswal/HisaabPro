@@ -15,6 +15,7 @@ Exhaustive symbol index (auto, never stale): `.claude/ssot-index.json`
 | format paise/number money for display | `src/lib/format.ts` | `formatPaise`, `formatNumber`, `formatDate`, `toLocalISODate` | ✅ guarded |
 | show a transient toast notification | `src/hooks/useToast.ts` | `useToast` | ✅ guarded |
 | confirm a destructive action | `src/components/ui/ConfirmDialog.tsx` | `ConfirmDialog` | ✅ guarded |
+| reconcile party react-query cache after a mutation | `src/features/parties/party-cache.ts` | `reconcilePartyCreated`, `reconcilePartyUpdated`, `optimisticRemoveParty`, `reconcilePartyDeleted`, `invalidatePartyLists` | ✅ guarded |
 | build TanStack Query cache keys | `src/lib/query-keys.ts` | `queryKeys` | discovery-only |
 | merge Tailwind class names | `src/lib/utils.ts` | `cn` | discovery-only |
 
@@ -64,4 +65,13 @@ Forbidden elsewhere (commit-blocked):
 - `/window\.confirm\(/`
 
 Confirm SSOT (PAGE_AUDIT_CHECKLIST §C).
+
+### reconcile party react-query cache after a mutation
+Canon: `src/features/parties/party-cache.ts`
+
+Forbidden elsewhere (commit-blocked):
+- `/invalidateQueries\(\s*\{\s*queryKey:\s*queryKeys\.parties/`
+- `/setQueriesData[^\n]*queryKeys\.parties\.all/`
+
+Party list/detail cache reconciliation SSOT. Fixed the save-not-showing bug.
 

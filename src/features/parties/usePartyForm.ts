@@ -2,9 +2,11 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ROUTES } from '@/config/routes.config'
 import { createParty, updateParty } from './party.service'
+import { reconcilePartyCreated, reconcilePartyUpdated } from './party-cache'
 import {
   PHONE_REGEX,
   GSTIN_REGEX,
@@ -60,6 +62,7 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
 
   const navigate = useNavigate()
   const toast = useToast()
+  const queryClient = useQueryClient()
   const conflictReconcile = useConflictReconcile()
 
   const [form, setForm] = useState<PartyFormData>(initialData ?? INITIAL_FORM)
@@ -179,12 +182,14 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
         // #150 — a stale save 409s; withConflictGuard opens the reconcile dialog
         // instead of an error toast. versionOverride is supplied on overwrite.
         await conflictReconcile.withConflictGuard(async (versionOverride) => {
-          await updateParty(editId, payload, undefined, versionOverride ?? version)
+          const updated = await updateParty(editId, payload, undefined, versionOverride ?? version)
+          reconcilePartyUpdated(queryClient, updated)
           toast.success(`${form.name} updated`)
           navigate(`/parties/${editId}`)
         })
       } else {
-        await createParty(payload)
+        const created = await createParty(payload)
+        reconcilePartyCreated(queryClient, created)
         toast.success(`${form.name} added successfully`)
         navigate(ROUTES.PARTIES)
       }
@@ -193,7 +198,7 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
     } finally {
       setIsSubmitting(false)
     }
-  }, [form, isSubmitting, validate, toast, navigate, isEditMode, editId, version, conflictReconcile])
+  }, [form, isSubmitting, validate, toast, navigate, queryClient, isEditMode, editId, version, conflictReconcile])
 
   const reset = useCallback(() => {
     setForm(initialData ?? INITIAL_FORM)
