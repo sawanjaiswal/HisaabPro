@@ -10,7 +10,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, Menu } from 'lucide-react'
-import { APP_NAME } from '@/config/app.config'
+import { APP_NAME, APP_NAME_MARK } from '@/config/app.config'
 import { ROUTES } from '@/config/routes.config'
 import { OPEN_SIDE_NAV_EVENT } from '@/config/events.config'
 import { SyncStatusIcon } from '@/components/feedback/SyncStatusIcon'
@@ -87,7 +87,14 @@ export function Header({
               height={28}
               aria-hidden="true"
             />
-            <span className="header-brand-name">{title ?? APP_NAME}</span>
+            <span className="header-brand-name">
+              {title ?? (
+                <>
+                  {APP_NAME_MARK.base}
+                  <span className="header-brand-accent">{APP_NAME_MARK.accent}</span>
+                </>
+              )}
+            </span>
           </button>
         )}
       </div>

@@ -86,6 +86,9 @@
   text-overflow: ellipsis;
 }
 
+/* Two-tone wordmark: "Pro" renders in brand green on every surface. */
+.header-brand-accent { color: var(--color-success-600); }
+
 [data-theme="dark"] .header-brand:active { background: var(--color-gray-800); }
 [data-theme="dark"] .header-brand-name { color: var(--color-gray-100); }
 

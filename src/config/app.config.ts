@@ -1,6 +1,13 @@
 /** Single source of truth for app-wide constants */
 
 export const APP_NAME = 'HisaabPro' as const
+
+/** Two-tone brand wordmark: base ("Hisaab") + green accent ("Pro").
+ * Derived from APP_NAME so the name stays a single source of truth. */
+export const APP_NAME_MARK = {
+  base: APP_NAME.slice(0, -3),
+  accent: APP_NAME.slice(-3),
+} as const
 export const APP_TAGLINE = 'Billing, Inventory & Payments for Indian Businesses' as const
 export const APP_DOMAIN = 'hisaabpro.in' as const
 export const APP_VERSION = '0.1.0' as const

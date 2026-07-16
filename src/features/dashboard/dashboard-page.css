@@ -10,6 +10,52 @@
   display: none;
 }
 
+/* Home 2 dark-surface palette — a rich forest/emerald green (the mockup
+ * uses green, not the near-black primary-teal). Scoped to the dashboard so
+ * the header, hero panel and section overlap all read as one continuous
+ * green field. */
+:root:has(.dashboard-page) {
+  --hp-dash-surface: #012619; /* page / header / top field (Figma-sampled) */
+  --hp-dash-card: #003121;    /* Today's Business hero card (Figma-sampled) */
+}
+
+/* ─── Dark header on the dashboard (Home 2 redesign) ──────────────
+   The global Header primitive is dark ONLY while the dashboard is
+   mounted, so the top bar reads as one continuous dark-green panel
+   with the greeting + hero below it. Scoped via :has() so no other
+   page is affected. */
+:root:has(.dashboard-page) .header,
+:root:has(.dashboard-page) .header--scroll-condense,
+:root:has(.dashboard-page) .header--scroll-condense.is-scrolled {
+  background: var(--hp-dash-surface);
+  border-color: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+:root:has(.dashboard-page) .header-brand-name,
+:root:has(.dashboard-page) .header-title,
+:root:has(.dashboard-page) .header-back,
+:root:has(.dashboard-page) .header-icon-btn,
+:root:has(.dashboard-page) .header-actions button {
+  color: var(--color-white-inverse);
+}
+
+:root:has(.dashboard-page) .header-actions svg {
+  color: var(--color-white-inverse);
+}
+
+/* Kill the light glass circle + shadow on the sync/menu icon buttons so
+ * they sit flat on the dark green header (bell is already transparent). */
+:root:has(.dashboard-page) .header-icon-btn {
+  background: transparent;
+  box-shadow: none;
+}
+:root:has(.dashboard-page) .header-icon-btn:active {
+  background: var(--overlay-white-12, rgba(255, 255, 255, 0.12));
+}
+
 /* ─── Dashboard-specific tokens ───────────────────────────── */
 .dashboard-page {
   /* Color aliases — intentionally different from globals (dark mode overrides below change these) */
@@ -148,10 +194,37 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-8);
+  gap: var(--space-6);
   padding: var(--space-5) var(--dash-side-padding) 0;
   position: relative;
   z-index: 1;
+}
+
+/* ─── Dark hero variant (Home 2 redesign) ─────────────────────── */
+.dashboard-top-section--dark {
+  background: var(--hp-dash-surface);
+  padding-bottom: var(--space-8);
+}
+
+.dashboard-top-section--dark .dashboard-greeting-title {
+  color: var(--color-white-inverse);
+}
+
+.dashboard-top-section--dark .dashboard-greeting-subtitle {
+  color: var(--overlay-white-70, rgba(255, 255, 255, 0.7));
+}
+
+.dashboard-top-section--dark .dashboard-greeting-date {
+  color: var(--color-white-inverse);
+  background: var(--overlay-white-12, rgba(255, 255, 255, 0.12));
+  border-color: var(--overlay-white-15, rgba(255, 255, 255, 0.15));
+}
+
+/* White drawer overlaps up into the dark hero with rounded corners */
+.dashboard-top-section--dark + .dashboard-white-section {
+  margin-top: calc(-1 * var(--space-4)) !important;
+  position: relative;
+  z-index: 2;
 }
 
 /* Cap inner content width at desktop so cards don't stretch infinitely.

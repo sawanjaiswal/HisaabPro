@@ -1,0 +1,211 @@
+/* ============================================================
+   Dashboard "Today's Business" hero (Home 2 redesign)
+   Dark teal card: label+period, amount, delta, area chart, tiles.
+   ============================================================ */
+
+.dashboard-biz-hero {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  color: var(--color-white-inverse);
+  background: var(--hp-dash-card, #003121);
+  border: 1px solid var(--overlay-white-12, rgba(255, 255, 255, 0.12));
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+}
+
+.dashboard-biz-hero__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.dashboard-biz-hero__eyebrow {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--overlay-white-70, rgba(255, 255, 255, 0.7));
+}
+
+.dashboard-biz-hero__period {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--color-white-inverse);
+  background: transparent;
+  border: 1px solid var(--overlay-white-15, rgba(255, 255, 255, 0.15));
+  border-radius: var(--radius-full);
+  padding: var(--space-1-5) var(--space-3);
+  font-family: var(--font-primary);
+  cursor: pointer;
+  min-height: 32px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dashboard-biz-hero__amount {
+  font-size: var(--fs-6xl);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.dashboard-biz-hero__sublabel {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--overlay-white-70, rgba(255, 255, 255, 0.7));
+  margin-top: var(--space-2);
+}
+
+.dashboard-biz-hero__delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--color-success-300, #86efac);
+  background: var(--overlay-white-12, rgba(255, 255, 255, 0.12));
+  border-radius: var(--radius-full);
+  padding: 3px var(--space-2-5);
+  margin-top: var(--space-2-5);
+}
+
+.dashboard-biz-hero__delta-note {
+  font-weight: 500;
+  color: var(--overlay-white-70, rgba(255, 255, 255, 0.7));
+  margin-left: 2px;
+}
+
+.dashboard-biz-hero__chart {
+  margin-top: var(--space-2);
+  width: 100%;
+}
+
+/* ─── Area chart x-axis (rendered by AreaChart) ───────────────── */
+.area-chart-xaxis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-1);
+}
+
+.area-chart-xlabel {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--overlay-white-70, rgba(255, 255, 255, 0.7));
+}
+
+/* ─── Metric tiles row ────────────────────────────────────────── */
+.dashboard-metric-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.dashboard-metric-tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2-5);
+  border-radius: var(--radius-lg);
+  background: var(--overlay-white-08, rgba(255, 255, 255, 0.08));
+  border: 1px solid var(--overlay-white-12, rgba(255, 255, 255, 0.12));
+  min-width: 0;
+}
+
+.dashboard-metric-tile__head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dashboard-metric-tile__icon {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dashboard-metric-tile__icon--teal {
+  background: transparent;
+  color: var(--color-success-300, #86efac);
+}
+.dashboard-metric-tile__icon--coral {
+  background: transparent;
+  color: var(--color-error-300, #fca5a5);
+}
+.dashboard-metric-tile__icon--success {
+  background: transparent;
+  color: var(--color-success-300, #86efac);
+}
+
+.dashboard-metric-tile__label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--overlay-white-70, rgba(255, 255, 255, 0.72));
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-metric-tile__amount {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--color-white-inverse);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-metric-tile__delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.dashboard-metric-tile__delta.is-up { color: var(--color-success-300, #86efac); }
+.dashboard-metric-tile__delta.is-down { color: var(--color-error-300, #fca5a5); }
+
+.dashboard-metric-tile__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-success-300, #86efac);
+}
+
+.dashboard-metric-tile__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-success-400, #4ade80);
+}
+
+/* ─── Small screens (320px): 2×2 tiles instead of 4-across ─────── */
+@media (max-width: 360px) {
+  .dashboard-metric-tiles {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ─── Tablet and above ────────────────────────────────────────── */
+@media (min-width: 768px) {
+  .dashboard-biz-hero__amount {
+    font-size: var(--fs-6-5xl, var(--fs-6xl));
+  }
+}
