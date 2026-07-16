@@ -5,6 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
+    "dev:web": "vite --host",
+    "dev:api": "npm --prefix server run dev",
+    "dev:all": "concurrently -k -n web,api -c cyan,magenta \"npm:dev:web\" \"npm:dev:api\"",
     "build": "tsc -b && vite build",
     "preview": "vite preview --host",
     "lint": "eslint .",
@@ -79,6 +82,7 @@
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.0",
     "autocannon": "^8.0.0",
+    "concurrently": "^9.2.4",
     "jsdom": "^29.0.0",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.7.0",
