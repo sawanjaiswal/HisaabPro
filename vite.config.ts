@@ -94,6 +94,7 @@ export default defineConfig({
   },
   server: {
     port: 5002,
+    strictPort: true, // fail loudly if 5002 is taken (stale process) — never silently move to 5003
     host: true, // expose on LAN for mobile testing
     proxy: {
       '/api': {

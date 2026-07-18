@@ -41,6 +41,21 @@ if (process.env.NODE_ENV === 'production') {
 const app = createApp()
 const PORT = process.env.PORT || 5001
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`)
+})
+
+// Fail fast on a port collision instead of lingering half-bound. A stale/orphaned
+// API process holding this port is the usual cause of "app worked, then died":
+// the frontend proxy starts returning 502 BACKEND_DOWN. Exit clearly so the
+// tsx-watch respawn (or the operator) surfaces it.
+server.on('error', (err: NodeJS.ErrnoException) => {
+  if (err.code === 'EADDRINUSE') {
+    logger.error(
+      `FATAL: port ${PORT} is already in use — another server (likely a stale HisaabPro API process) is holding it. Free it with: lsof -ti tcp:${PORT} | xargs kill`,
+    )
+  } else {
+    logger.error(`FATAL: server failed to start: ${err.message}`)
+  }
+  process.exit(1)
 })

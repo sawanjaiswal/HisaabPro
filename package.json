@@ -4,8 +4,11 @@
   "version": "1.0.5",
   "type": "module",
   "scripts": {
+    "predev": "sh scripts/free-dev-ports.sh 5002",
     "dev": "vite --host",
+    "predev:web": "sh scripts/free-dev-ports.sh 5002",
     "dev:web": "vite --host",
+    "predev:api": "sh scripts/free-dev-ports.sh 5001",
     "dev:api": "npm --prefix server run dev",
     "dev:all": "concurrently -k -n web,api -c cyan,magenta \"npm:dev:web\" \"npm:dev:api\"",
     "build": "tsc -b && vite build",
