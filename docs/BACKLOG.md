@@ -279,6 +279,8 @@ Razorpay (subscription port code is shipped, just needs keys) · Aisensy (also u
 ### 8. Phase 3 deferred
 #89 Bank Reconciliation — fits naturally with Phase 7 #147.
 
+**Refactor: split account-liveness from feature-entitlement in gating.** `PlanGate` currently conflates two concerns — "is the account LOCKED?" (app-wide) and "does the plan include this feature?" (paid-only). `resolveGateAccess` (`src/features/subscription/gate-policy.ts`) already fixed the fail-closed-on-uncertainty bug and is the seam. Follow-up: stop wrapping FREE-tier features in an entitlement gate at all, and handle LOCKED once in an app-level guard so ~80 route wrappers shrink to only the genuinely paid features. Not a bug fix — a refactor; keep it out of `fix:` commits.
+
 ---
 
 ### 9. Per-vertical depth (audit 2026-05-09, still current)

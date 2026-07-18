@@ -14,7 +14,8 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
-import { isFeatureAllowed, minTierFor, type FeatureFlag } from './plan-limits'
+import { minTierFor, type FeatureFlag } from './plan-limits'
+import { resolveGateAccess } from './gate-policy'
 import { UpgradeDrawer } from './UpgradeDrawer'
 import { Button } from '@/components/ui/Button'
 
@@ -31,7 +32,24 @@ export function PlanGate({ feature, featureLabel, children, fallback }: PlanGate
   const timedOut = useLoadTimeout(isLoading, 8000)
   const [upgradeOpen, setUpgradeOpen] = useState(false)
 
-  if (isError || timedOut) {
+  // Single failure-mode policy: FREE-tier features fail OPEN (they render in
+  // loading/error/timeout and are blocked only by a KNOWN LOCKED account);
+  // paid features require a confirmed plan. See gate-policy.ts.
+  const decision = resolveGateAccess({
+    feature,
+    plan,
+    state,
+    isInGrace,
+    isLoading,
+    isError,
+    timedOut,
+  })
+
+  if (decision === 'allow') {
+    return <>{children}</>
+  }
+
+  if (decision === 'error') {
     return (
       <ErrorState
         title="Couldn't verify your plan"
@@ -41,7 +59,7 @@ export function PlanGate({ feature, featureLabel, children, fallback }: PlanGate
     )
   }
 
-  if (isLoading) {
+  if (decision === 'loading') {
     return (
       <div aria-busy="true" aria-live="polite" className="plan-gate-loading">
         Checking your plan…
@@ -49,15 +67,7 @@ export function PlanGate({ feature, featureLabel, children, fallback }: PlanGate
     )
   }
 
-  // LOCKED state: refuse paid features regardless of plan limits table.
-  const locked = state === 'LOCKED'
-  const allowed = !locked && isFeatureAllowed(plan, feature)
-
-  // In grace, allow access but rely on upstream OverflowBanner for nudging.
-  if (allowed || (isInGrace && isFeatureAllowed(plan, feature))) {
-    return <>{children}</>
-  }
-
+  // decision === 'upgrade'
   if (fallback) return <>{fallback}</>
 
   const required = minTierFor(feature)
