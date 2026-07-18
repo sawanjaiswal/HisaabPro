@@ -39,23 +39,56 @@
 ## Visual Identity
 
 ### Design Inspiration
-- **Primary**: NexoWallet by InksStudio (ui8.net) — deep teal + warm cream
+- **Primary**: NexoWallet by InksStudio (ui8.net) — layout/warm cream base; brand hue re-themed to deep emerald green (#026F39)
 - **Feature depth**: MyBillBook — but beat them on design quality
 - **Polish level**: Cred/Jupiter/Fi — premium fintech aesthetic for business users
 
 ### Color Philosophy
-- **Deep Teal** (#0B4F5E): Trust, professionalism, reliability
+- **Deep Emerald Green** (#026F39): Trust, growth, money — the brand primary
+  (migrated 2026-07 from deep teal #0B4F5E). Used for identity, primary CTAs,
+  nav-active, FAB, and dark hero surfaces.
+- **Success green** (#22C55E): a SEPARATE, brighter green reserved for status
+  only (paid / up / good) — never brand or CTA. Keep the two greens distinct.
 - **Lime-Yellow** (#E0EA49): Energy, modernity, CTA emphasis
 - **Warm cream** (#F8F7F4): Premium, elegant, NOT cold sterile white
 - **Warm neutrals**: Warm-tinted grays (#2A2824), NOT cold blue-grays (#374151)
 
 ### Design Principles
-1. **Numbers are heroes** — largest, boldest treatment for amounts
-2. **Sunlight-first** — high contrast (5.5:1+ WCAG AA), readable outdoors
-3. **Thumb-friendly** — 44px+ touch targets, bottom-anchored CTAs
-4. **Warm cream aesthetic** — NexoWallet signature, not generic white
-5. **Minimal shadows** — optimized for budget Rs 8K-15K Android phones
-6. **Data density** — spaced, scannable layouts (Zerodha Kite-inspired)
+1. **Emerald Hero two-tone** — the signature layout (see below): every primary
+   screen recolours its header to deep emerald and lifts its content off a
+   white rounded sheet. Home + Party detail are the reference skins.
+2. **Numbers are heroes** — largest, boldest treatment for amounts
+3. **Sunlight-first** — high contrast (5.5:1+ WCAG AA), readable outdoors
+4. **Thumb-friendly** — 44px+ touch targets, bottom-anchored CTAs
+5. **Warm cream aesthetic** — NexoWallet signature, not generic white
+6. **Minimal shadows** — optimized for budget Rs 8K-15K Android phones
+7. **Two densities, on purpose** — HisaabPro serves both a shopkeeper glancing
+   at his phone AND an accountant scanning a day book. So the app runs two
+   densities, chosen per surface, never mixed within one screen:
+   - **Consumer-comfortable** (default) — Raju the micro-retailer. Spaced,
+     scannable, thumb-first: ≥44px rows, tinted icon-square list items, generous
+     whitespace (Zerodha Kite / Cred calm). This is every list, detail, form,
+     and settings screen (archetypes A–N).
+     - **Accounting-compact** — Priya & Amit doing real bookkeeping. Dense grids
+     that show more rows per screen: ~36px rows, `tabular-nums`, right-aligned
+     numbers, zebra striping, sticky headers, totals rows (archetype O — day
+     book, trial balance, stock register, GST tables). Opt-in via
+     `<ResponsiveTable density="compact" alwaysTable zebra>`.
+   Compact is *earned* by the data — never a shortcut to cram consumer screens.
+   The page chrome around a grid (header, toolbar, CTAs) stays comfortable.
+
+### Signature Layout — Emerald Hero (skin v2, 2026-07)
+The defining look of the app. One continuous field split in two:
+- The global **header recolours to deep emerald** (`--color-hero-surface`,
+  #003121) with white title + white icons — no seam between OS bar and app.
+- A **hero field** on the emerald holds the greeting / summary tiles / hero
+  amount (white text, `--color-hero-text-secondary` for labels).
+- The **main content lifts off in a white rounded sheet** (`--radius-xl` top
+  corners, `--shadow-drawer-inset`), overlapping the emerald by `space-4`.
+
+Reusable primitive: `HeroPage` (`src/components/layout/HeroPage.tsx`). Reference
+implementations: `DashboardPage` (Home 2) and `PartyDetailPage`. Never hand-roll
+a dark-header + white-sheet — mount `HeroPage`.
 
 ## Indian-Specific Requirements
 

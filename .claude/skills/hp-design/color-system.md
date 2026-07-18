@@ -5,19 +5,28 @@
 
 ## Core Palette
 
-### Primary (Deep Teal — trust, professionalism)
+### Primary (Deep Emerald Green — trust, growth, money)
+> Migrated 2026-07 from Deep Teal (#0B4F5E). Green now signals both brand
+> identity AND the "money/growth" story that fits a billing app.
 | Token | Value | Usage |
 |-------|-------|-------|
-| `--color-primary-50` | `#E7EFF1` | Ultra-light tint backgrounds |
-| `--color-primary-100` | `#DAEBEA` | Soft tint, selected states |
-| `--color-primary-200` | `#A8D4D4` | Light tint |
-| `--color-primary-300` | `#5AACAB` | Medium tint |
-| `--color-primary-400` | `#0A6375` | Focus rings, active states |
-| `--color-primary-500` | `#0B4F5E` | **BRAND PRIMARY** — logos, headers |
-| `--color-primary-600` | `#052D35` | CTA button background |
-| `--color-primary-700` | `#042329` | CTA hover, dark on lime accent |
-| `--color-primary-800` | `#031B20` | Darkest tint |
-| `--color-primary-900` | `#021418` | Near-black teal |
+| `--color-primary-50` | `#E6F3EC` | Ultra-light tint backgrounds |
+| `--color-primary-100` | `#D2ECDC` | Soft tint, selected states |
+| `--color-primary-200` | `#A5D8BA` | Light tint |
+| `--color-primary-300` | `#55B384` | Medium tint |
+| `--color-primary-400` | `#068A48` | Focus rings, active states |
+| `--color-primary-500` | `#026F39` | **BRAND PRIMARY** — logos, headers, links |
+| `--color-primary-600` | `#024E29` | CTA button background |
+| `--color-primary-700` | `#013D20` | CTA hover, nav-active, FAB, dark on lime accent |
+| `--color-primary-800` | `#012E18` | Darkest tint, deep hero surface |
+| `--color-primary-900` | `#011F10` | Near-black emerald |
+
+> **Two greens — keep them distinct.** Brand emerald (`--color-primary-*`,
+> #026F39) = identity, primary CTAs, nav-active tab/underline/FAB, dark hero
+> surfaces, links. Success green (`--color-success-500`, #22C55E, below) =
+> **status only** — paid chips, up-deltas, "Good". Never a primary CTA or nav
+> element. On dark emerald hero surfaces, accents (up-delta, chart line,
+> sparkline dot) use bright `--color-success-300/400` for contrast.
 
 ### Secondary (Lime-Yellow — energy, CTAs)
 | Token | Value | Usage |
@@ -52,6 +61,21 @@
 | **Warning** | `#FFFBEB` | `#FEF3C7` | `#F59E0B` | `#D97706` | `#B45309` |
 | **Info** | `#EFF6FF` | `#DBEAFE` | `#3B82F6` | `#2563EB` | `#1D4ED8` |
 
+### Emerald Hero surface (signature two-tone skin)
+> The dark field behind the header + hero content on every primary screen
+> (Home, Party detail, …). Paired with the white rounded sheet below it.
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--color-hero-surface` | `#003121` | Dark emerald hero surface + recoloured header |
+| `--color-hero-text-secondary` | `rgba(255,255,255,.8)` | Labels/eyebrows on the emerald field |
+| `--color-white-inverse` | `#FFFFFF` | Values / titles on the emerald field |
+
+- Home's hand-built twin samples a slightly different pair
+  (`--hp-dash-surface: #012619`, `--hp-dash-card: #003121`); new pages use
+  `--color-hero-surface` via `HeroPage`.
+- Accents on the emerald (up-delta, chart line, sparkline dot) use bright
+  `--color-success-300/400` — never the dark brand emerald (invisible on it).
+
 ### Special Colors
 | Token | Value | Usage |
 |-------|-------|-------|
@@ -71,10 +95,10 @@
 ## Gradients (Hero Cards)
 | Name | Start | End | Usage |
 |------|-------|-----|-------|
-| Teal | `--gradient-teal-start` (#1b6369) | `--gradient-teal-end` (#123e42) | Collected/received cards |
+| Emerald | `--gradient-teal-start` (#026F39) | `--gradient-teal-end` (#013D20) | Collected/received cards (token name kept for compatibility) |
 | Coral | `--gradient-coral-start` (#ef5350) | `--gradient-coral-end` (#c62828) | Due/overdue cards |
 | Amber | `--gradient-amber-start` (#f59e0b) | `--gradient-amber-end` (#d97706) | Low stock alerts |
-| Calculator | `--gradient-calc-start` (#0B4F5E) | `--gradient-calc-end` (#0a3d4a) | Calculator display |
+| Calculator | `--gradient-calc-start` (#026F39) | `--gradient-calc-end` (#013D20) | Calculator display |
 | Cream page | `--color-cream-start` (#f9f9ed) | via `--color-cream-mid` (#fafaef) | `--color-cream-end` (#fdfdfd) | Dashboard/landing bg |
 
 ## Subtle Background Tints (badges, chips)
@@ -84,14 +108,14 @@
 | `--color-error-bg-subtle` | `rgba(239, 68, 68, 0.12)` | Overdue badge bg |
 | `--color-warning-bg-subtle` | `rgba(245, 158, 11, 0.12)` | Pending badge bg |
 | `--color-info-bg-subtle` | `rgba(59, 130, 246, 0.12)` | Info badge bg |
-| `--color-primary-bg-subtle` | `rgba(27, 99, 105, 0.12)` | Primary tint bg |
+| `--color-primary-bg-subtle` | `rgba(2, 111, 57, 0.12)` | Primary (emerald) tint bg |
 
 ## Overlay System
 | Token | Value | Usage |
 |-------|-------|-------|
 | `--overlay-white-*` | 01 to 90 opacity | Frosted glass, watermarks |
 | `--overlay-black-*` | 04 to 20 opacity | Darkening effects |
-| `--overlay-primary-*` | 04 to 20 opacity | Teal tint overlays |
+| `--overlay-primary-*` | 04 to 25 opacity | Emerald tint overlays (FAB shadow, etc.) |
 | `--overlay-success-*` | 05 to 25 opacity | Green tint overlays |
 | `--overlay-error-*` | 05 to 35 opacity | Red tint overlays |
 | `--overlay-warning-*` | 05 to 25 opacity | Amber tint overlays |
@@ -102,11 +126,64 @@
 
 ## Dark Theme
 Applied via `[data-theme="dark"]` in `tokens-dark.css`. All tokens auto-swap:
-- Primary brightens to cyan (#3FAED6)
+- Primary brightens to emerald (#35C176) — inverted ramp, 50=darkest
 - Secondary brightens (#D4DC4A)
 - Grays invert (bg: #0B0F15, text: #E0E2E7)
 - Shadows darken with border accent overlays
 - Components need ZERO `dark:` prefixes — CSS variables handle everything
+
+## Summary-Tile Tones (`<SummaryTiles>` — detail pages)
+The 3-up stat tiles on Party/Invoice/Payment detail. Each `tone` maps to a
+light tint bg + a toned value colour:
+| `tone` | Value colour | Tile bg | Use |
+|--------|--------------|---------|-----|
+| `due` | `--color-error-500` | `--color-error-50` | Amount owed / overdue |
+| `sales` | `--color-success-600` | `--color-success-50` | Total sales / received |
+| `paid` | `--color-success-600` | `--color-success-50` | Paid amount |
+| `info` | `--color-info-600` | `--color-info-50` | Last payment / dated facts |
+| `neutral` | `--text-primary` | `--color-gray-50` | Plain count / fallback |
+
+## Category icon-square tints (the universal list/row/tile motif)
+Every list row, settings row, quick-action tile, report card, notification, and
+priority item carries a 40×40 `--radius-md` icon square, tinted by category. This
+is the single most-repeated element in the app (see `screen-archetypes.md`). Use
+ONLY these existing families — no purple/violet token exists:
+| Category | Square bg | Icon colour |
+|----------|-----------|-------------|
+| Customer / party / collection | `--color-primary-50` | `--color-primary-500` |
+| Payment received / money-in | `--color-success-50` | `--color-success-600` |
+| Expense / due / overdue / out-of-stock | `--color-error-50` | `--color-error-500` |
+| Product / stock / inventory / low-stock | `--color-warning-50` | `--color-warning-600` |
+| Invoice / estimate / quotation / supplier / purchase | `--color-info-50` | `--color-info-600` |
+| Draft / disabled / neutral / "More" | `--color-gray-100` | `--color-gray-500` |
+
+> Mockups render quotations/purchase in violet — map to `info` (blue) in code.
+
+## Ledger Row Direction Tints (transaction rows)
+Direction-coloured icon square on ledger/transaction rows:
+| Direction | Icon | Square bg | Arrow colour |
+|-----------|------|-----------|--------------|
+| Debit (sale / invoice, balance ↑) | `ArrowUp` | `--color-error-50` (coral) | `--color-error-500` |
+| Credit (payment received, balance ↓) | `ArrowDown` | `--color-success-50` | `--color-success-600` |
+
+The credit amount renders green with a leading `−` (`--color-success-600`);
+the debit amount stays `--text-primary`.
+
+## Data-Grid / Accounting Table Tints (archetype O)
+Compact accounting grids (`<ResponsiveTable density="compact" alwaysTable zebra>` —
+day book, trial balance, stock register, GST tables). Reuse existing neutrals — no
+new tokens:
+| Element | Token |
+|---------|-------|
+| Gridline / row divider | `--color-gray-100` |
+| Zebra alt-row tint (odd rows) | `--color-gray-50` |
+| Sticky header bg | `--color-gray-50` |
+| Totals row bg (bold, `tabular-nums`) | `--color-gray-50` |
+| Debit amount (Dr, balance ↑) | `--color-error-500` |
+| Credit amount (Cr, balance ↓) | `--color-success-600` |
+
+Numbers are always right-aligned + `tabular-nums`. This is the accounting-density
+counterpart of the consumer icon-square row above — same palette, tighter spacing.
 
 ## Rules
 

@@ -108,6 +108,33 @@
 
 Use `min-h-[44px]` on all buttons, links, interactive rows.
 
+## Density Modes (consumer vs accounting grids)
+
+> Two densities coexist on purpose. Consumer screens (lists, detail, forms —
+> archetypes A–N) stay comfortable + 44px. Accounting grids (day book, trial
+> balance, stock register, GST tables — archetype O) go compact. Never mix the
+> two within a single surface. Compact is opt-in via
+> `<ResponsiveTable density="compact" alwaysTable zebra>`.
+
+| Mode | Row height | Cell padding | Where |
+|------|-----------|--------------|-------|
+| **Comfortable** (default) | ≥ 44px | `px-4 py-3` | Consumer screens — tinted icon-square rows, list/detail/form/settings |
+| **Compact** (accounting) | ~36px | `px-3 py-1.5` | Data grids only — `tabular-nums`, right-aligned numbers, zebra |
+
+Grid surface tokens:
+| Use | Token |
+|-----|-------|
+| Gridlines / row divider | `var(--color-gray-100)` |
+| Zebra alt-row tint | `var(--color-gray-50)` |
+| Sticky header bg | `var(--color-gray-50)` |
+| Totals row bg | `var(--color-gray-50)` (bold, `tabular-nums`) |
+| Debit amount (Dr) | `var(--color-error-500)` |
+| Credit amount (Cr) | `var(--color-success-600)` |
+
+The comfortable-screen mandates (`space-y-6` section gap, ≥44px rows) are
+relaxed **only inside** the grid. Page chrome, toolbars, and CTAs around the
+grid stay comfortable + 44px.
+
 ## Icon Sizes
 
 | Size | Value | Usage |

@@ -8,6 +8,14 @@
  *   <md  : each row renders as a Card with label-value pairs (one per column)
  *   ≥md  : standard table with sticky header
  *
+ * Density + accounting mode (2026-07):
+ *   density="compact"  → 36px rows (px-3 py-1.5) for data-dense ledgers/registers
+ *   density="comfortable" (default) → the original px-4 py-3 consumer spacing
+ *   alwaysTable        → render the scrollable grid at EVERY width (accounting
+ *                        grids — day book, trial balance — keep columns on phone
+ *                        via horizontal scroll instead of collapsing to cards)
+ *   zebra              → alternating row tint for scan-ability on wide tables
+ *
  * 4 UI states (loading / error / empty / data) are first-class via props so
  * feature pages don't need to wrap with extra logic.
  */
@@ -46,6 +54,12 @@ interface ResponsiveTableProps<T> {
   empty?: ReactNode
   /** Visible skeleton rows when loading (default 5). */
   skeletonRows?: number
+  /** Row/cell density. `compact` = 36px rows for data-dense accounting grids. Default `comfortable`. */
+  density?: 'comfortable' | 'compact'
+  /** Render the scrollable table at every width (no card collapse <md). For true accounting grids. */
+  alwaysTable?: boolean
+  /** Alternating row tint for scan-ability on wide tables. */
+  zebra?: boolean
   className?: string
 }
 
@@ -58,16 +72,22 @@ export function ResponsiveTable<T>({
   error,
   empty,
   skeletonRows = 5,
+  density = 'comfortable',
+  alwaysTable = false,
+  zebra = false,
   className = '',
 }: ResponsiveTableProps<T>) {
   if (loading) return <TableSkeleton columns={columns} rows={skeletonRows} />
   if (error) return <div className="py-6">{error}</div>
   if (rows.length === 0) return <div className="py-6">{empty}</div>
 
+  // Compact = data-dense accounting rows (~36px); comfortable = original consumer spacing.
+  const cellPad = density === 'compact' ? 'px-3 py-1.5' : 'px-4 py-3'
+
   return (
     <div className={`responsive-table ${className}`.trim()}>
-      {/* Mobile cards (<md) */}
-      <div className="md:hidden space-y-3">
+      {/* Mobile cards (<md) — skipped entirely when alwaysTable (accounting grid keeps columns) */}
+      <div className={`${alwaysTable ? 'hidden' : 'md:hidden'} space-y-3`}>
         {rows.map((row) => (
           <button
             key={rowKey(row)}
@@ -102,8 +122,8 @@ export function ResponsiveTable<T>({
         ))}
       </div>
 
-      {/* Desktop table (≥md) */}
-      <div className="hidden md:block overflow-x-auto">
+      {/* Table view — ≥md by default, or every width when alwaysTable */}
+      <div className={`${alwaysTable ? 'block' : 'hidden md:block'} overflow-x-auto`}>
         <table className="w-full text-[var(--fs-sm)]">
           <thead
             className="sticky top-0 z-10"
@@ -114,7 +134,7 @@ export function ResponsiveTable<T>({
                 <th
                   key={col.key}
                   scope="col"
-                  className={`px-4 py-3 font-medium text-${col.align ?? 'left'} ${col.width ?? ''}`}
+                  className={`${cellPad} font-medium text-${col.align ?? 'left'} ${col.width ?? ''}`}
                   style={{ color: 'var(--text-secondary)', borderBottom: '1px solid var(--color-gray-100)' }}
                 >
                   {col.header}
@@ -123,16 +143,17 @@ export function ResponsiveTable<T>({
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
+            {rows.map((row, i) => (
               <tr
                 key={rowKey(row)}
                 className={onRowClick ? 'cursor-pointer hover:bg-[var(--color-gray-50)]' : ''}
+                style={zebra && i % 2 === 1 ? { backgroundColor: 'var(--color-gray-50)' } : undefined}
                 onClick={onRowClick ? () => onRowClick(row) : undefined}
               >
                 {columns.map((col) => (
                   <td
                     key={col.key}
-                    className={`px-4 py-3 text-${col.align ?? 'left'}`}
+                    className={`${cellPad} text-${col.align ?? 'left'}${col.align === 'right' ? ' tabular-nums' : ''}`}
                     style={{ color: 'var(--text-primary)', borderBottom: '1px solid var(--color-gray-100)' }}
                   >
                     {col.render(row)}

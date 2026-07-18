@@ -1,6 +1,6 @@
 ---
 name: hp-design
-description: HisaabPro design system — RIGID workflow. MUST activate for ANY UI/page/component work. Deep Teal + Lime-Yellow palette, warm cream backgrounds, NexoWallet-inspired premium aesthetic.
+description: HisaabPro design system — RIGID workflow. MUST activate for ANY UI/page/component work. Deep Emerald Green (#026F39) + Lime-Yellow accent palette, warm cream backgrounds, deep-emerald hero surfaces, premium fintech aesthetic.
 ---
 
 # HisaabPro Design Workflow
@@ -8,6 +8,9 @@ description: HisaabPro design system — RIGID workflow. MUST activate for ANY U
 > WORKFLOW, not reference. Follow phases IN ORDER. Skipping = rejection.
 > OVERRIDE: If ui-ux-pro-max suggests colors or fonts, IGNORE those.
 > HisaabPro tokens are FINAL. Only use external guidance for UX/layout.
+>
+> **New here? Read `golden-path.md` once** — one feature built Phase 0→4 end to
+> end. It is the canonical worked example; pattern-match against it when unsure.
 
 ## Phase 0 — INIT (runs on activation)
 
@@ -23,7 +26,7 @@ Do these in parallel, ONCE per session:
 2. **Load the SSOT** (mandatory, no exceptions):
    - `.claude/design-system.config.cjs` — banned patterns, component registry,
      token prefixes, session gate config (single source imported by the hook)
-   - The reference card below (tokens, templates, components)
+   - The reference card below (routing tables + token namespaces)
 
 3. **Confirm loaded:** "Config loaded (N banned patterns, M components). Tokens ready."
 
@@ -99,7 +102,7 @@ Files to create/modify (each ≤ 250 lines):
 - [ ] src/features/[name]/components/[Component].tsx
 - [ ] src/features/[name]/[Name].tsx
 
-## Design tokens (specific vars — from reference card)
+## Design tokens (specific vars — from the namespace table below)
 - Colors: var(--color-primary-500), var(--color-gray-50), …
 - Radius: var(--radius-xl) card, --radius-md input, --radius-sm button
 - FS: var(--fs-xl), var(--fs-df), var(--fs-sm)
@@ -133,30 +136,36 @@ scope change or long pause = plan again.
 
 ## Phase 3 — BUILD
 
-Follow the checklist mechanically using the reference card below. Every rule
-traces to `.claude/design-system.config.cjs`:
+Follow the checklist mechanically. **Copy skeletons from `page-templates.md`**
+(FIELD TEMPLATES, PAGE TEMPLATES, HOOK/SKELETON/BADGE, the Emerald Hero skin) —
+do not redesign. Every rule traces to `.claude/design-system.config.cjs`:
 
-- Every color → `var(--color-*)` (see TOKEN_NAMESPACES.cssVarPrefixes)
+- Every color → `var(--color-*)` (see TOKEN NAMESPACES below)
 - Every z-index → `Z.*` from `config/zIndexes` or `var(--z-*)`
 - Every timing → `TIMINGS.*` or `var(--duration-*)`
 - Every string → `t.keyName` via `useLanguage()`
-- Every interactive element → component from `config.COMPONENTS`
+- Every interactive element → component from `config.COMPONENTS` (COMPONENT LOOKUP)
 - Every confirmation → `<ConfirmDialog>` (not window.confirm)
 - Every toast → `useToast()` (not alert())
 - Max 250 lines per file; feature order: types > constants > utils > hook > components > Page
 
 **Banned patterns:** see `config.BANNED_PATTERNS` — each cites its enforcer.
-Don't write them.
+Don't write them. What is / isn't mechanically caught: **ENFORCEMENT MAP** below.
 
-## Phase 4 — VERIFY
+## Phase 4 — VERIFY (falsifiable — a command, not a claim)
 
-After all files built:
+Run all three. Each must print its `*_OK` token; a non-baseline failure = not done.
 
-1. `node scripts/enforce.js` (or the project's standard enforcement command)
-2. Walk the checklist — every box ticked, all 4 UI states present.
-3. If errors → fix → re-run until 0.
+```bash
+npx tsc -b --noEmit                                   && echo TSC_OK
+node scripts/enforce.js                               && echo ENFORCE_OK
+node .claude/skills/hp-design/check-refs.mjs          && echo REFS_OK
+```
 
-**Done =** 0 enforce errors + checklist complete.
+Then walk the **POST-BUILD CHECKLIST** below — every box ticked, all 4 UI states
+present at 320px. If `enforce.js` reports OVERSIZED/errors in files THIS change
+did not touch, note them as pre-existing baseline (don't fix silently, don't
+claim they're yours). **Done = TSC_OK + ENFORCE_OK + REFS_OK + checklist complete.**
 
 ## Session gate (mechanical enforcement)
 
@@ -173,25 +182,38 @@ If Phase 0 is skipped, pre-tool-gate rejects every Write/Edit to a UI file.
 
 # HisaabPro Design System — Execution Card
 
+> This card is for **deciding and routing**. Full token *values* live in the
+> reference files (single source of truth); full JSX skeletons live in
+> `page-templates.md`. Read those on-demand — see DEEP REFERENCE at the bottom.
+
 ## PRE-BUILD (mandatory)
 
 - [ ] Run `ls src/components/ui/` — search for existing component before building
 - [ ] Confirm all strings use `t.keyName` via `useLanguage()` from `src/context/LanguageContext.tsx` (translations in `src/lib/translations.{en,hi}.ts`)
-- [ ] Pick the correct PAGE TEMPLATE below — copy skeleton, fill in fields
-- [ ] Pick field types from FIELD TEMPLATES — copy exact JSX per field
-- [ ] Confirm colors use CSS variables from `tokens-colors.css` — no hex, no Tailwind color classes
+- [ ] Pick the SCREEN ARCHETYPE, then copy its PAGE TEMPLATE from `page-templates.md`
+- [ ] Pick field types from FIELD TEMPLATES (`page-templates.md`) — copy exact JSX per field
+- [ ] Confirm colors use CSS variables — no hex, no Tailwind color classes
 
 ## COMPONENT LOOKUP (use these — NEVER raw HTML)
 
 | Need | Use | NEVER |
 |------|-----|-------|
+| **Emerald-hero page shell** | `<HeroPage hero={…}>…</HeroPage>` | Hand-rolled dark-header + white-sheet |
+| **Detail stat tiles** (Due/Sales/Paid) | `<SummaryTiles tiles={…}>` | Custom 3-up stat divs |
 | Button | `<Button variant="primary\|secondary\|outline\|text\|ghost\|danger">` | `<button>` |
 | Input | `<Input>` | `<input>` |
 | Card | `<Card>` | `<div>` with bg/border |
 | Drawer (bottom sheet) | `<Drawer>` | Custom modal |
 | Modal (centered) | `<Modal>` | Custom popup |
 | Confirm dialog | `<ConfirmDialog>` | Custom confirmation |
-| Badge | `<Badge variant="success\|error\|warning\|info\|default">` | Custom pill |
+| Badge / status pill / type pill | `<Badge variant="success\|error\|warning\|info\|default">` | Custom pill |
+| **Underline tabs** | `.party-detail-tabs` + `.party-detail-tab[.active]` pattern | Custom colored-bg tab bar |
+| **List / settings / activity row** | **tinted icon-square row** (see `screen-archetypes.md` → motif + D/H/K) | Plain `<li>`, untinted icon |
+| **Filter / status pills** | **segmented chip row** (active=emerald fill; see archetypes → C) | Custom coloured-bg tab bar |
+| **Transaction / ledger row** | direction-tinted icon square (see `page-templates.md` → LEDGER ROW) | Plain `<li>` |
+| **Data-dense / accounting table** | `<ResponsiveTable density="compact" alwaysTable zebra>` | Hand-rolled `<table>`; cards for tabular data |
+| **Any tabular list** | `<ResponsiveTable>` (cards <md, table ≥md) | Hand-rolled `<table>` |
+| **Bottom dual-action footer** | 2× `<Button>` (outline + primary) inline row | Fixed bar in feature CSS |
 | 4 states | `<Skeleton>` / `<EmptyState>` / `<ErrorState>` / `<Spinner>` | Custom loading/error/empty |
 | Toggle | checkbox with toggle CSS | Custom checkbox |
 | Avatar | `<PartyAvatar>` or `<Avatar>` | Custom avatar div |
@@ -204,436 +226,119 @@ If Phase 0 is skipped, pre-tool-gate rejects every Write/Edit to a UI file.
 
 ## ICON MAP (exact icon per field — no improvising)
 
-| Field type | Icon | Import |
-|-----------|------|--------|
-| Person name | `<User className="w-4 h-4" />` | `lucide-react` |
-| Phone | `<Phone className="w-4 h-4" />` | `lucide-react` |
-| Amount/Rate | `<IndianRupee className="w-4 h-4" />` or `₹` prefix span | `lucide-react` |
-| Email | `<Mail className="w-4 h-4" />` | `lucide-react` |
-| Address | `<MapPin className="w-4 h-4" />` | `lucide-react` |
-| Search | `<Search className="w-4 h-4" />` | `lucide-react` |
-| Sort/Filter | `<SlidersHorizontal className="w-4 h-4" />` | `lucide-react` |
-| Add action | `<Plus className="w-4 h-4" />` | `lucide-react` |
-| Close | `<X className="w-5 h-5" />` | `lucide-react` |
-| Payment cash | `<Wallet className="w-4 h-4" />` | `lucide-react` |
-| Payment UPI | `<Smartphone className="w-4 h-4" />` | `lucide-react` |
-| Invoice | `<FileText className="w-4 h-4" />` | `lucide-react` |
-| Product | `<Package className="w-4 h-4" />` | `lucide-react` |
-| Stock | `<Warehouse className="w-4 h-4" />` | `lucide-react` |
-| Settings | `<Settings className="w-4 h-4" />` | `lucide-react` |
-| Calendar | `<Calendar className="w-4 h-4" />` | `lucide-react` |
-| GST/Tax | `<Receipt className="w-4 h-4" />` | `lucide-react` |
-| Barcode | `<Barcode className="w-4 h-4" />` | `lucide-react` |
+| Field type | Icon | Field type | Icon |
+|-----------|------|-----------|------|
+| Person name | `<User />` | Payment UPI | `<Smartphone />` |
+| Phone | `<Phone />` | Invoice | `<FileText />` |
+| Amount/Rate | `<IndianRupee />` or `₹` span | Product | `<Package />` |
+| Email | `<Mail />` | Stock | `<Warehouse />` |
+| Address | `<MapPin />` | Settings | `<Settings />` |
+| Search | `<Search />` | Calendar | `<Calendar />` |
+| Sort/Filter | `<SlidersHorizontal />` | GST/Tax | `<Receipt />` |
+| Add action | `<Plus />` | Barcode | `<Barcode />` |
+| Close | `<X />` | Payment cash | `<Wallet />` |
 
-Icon sizes: form fields = `w-4 h-4`, action buttons = `w-5 h-5`, dialog headers = `w-6 h-6`.
+All from `lucide-react`. Sizes: form fields `w-4 h-4`, action buttons `w-5 h-5`,
+dialog headers `w-6 h-6`.
 
-## TOKENS (CSS variables only — no hex, no Tailwind color classes)
+## TOKEN NAMESPACES (which prefix — values live in the reference files)
 
-### Colors
-| Purpose | Token |
-|---------|-------|
-| Primary brand | `var(--color-primary-500)` (#0B4F5E deep teal) |
-| Primary CTA bg | `var(--color-primary-600)` (#052D35) |
-| Primary CTA hover | `var(--color-primary-700)` (#042329) |
-| Primary light tint | `var(--color-primary-100)` (#DAEBEA) |
-| Accent (lime) | `var(--color-secondary-300)` (#E0EA49) |
-| Accent CTA text | `var(--color-primary-700)` (dark on lime) |
-| Page bg (warm cream) | `var(--color-gray-50)` (#F8F7F4) |
-| Card bg | `var(--color-gray-0)` (#FFFFFF) |
-| Card border | `var(--color-gray-100)` (#F0EFEB) |
-| Input bg | `var(--color-gray-0)` |
-| Input border | `var(--color-gray-200)` (#E2E0DA) |
-| Input focus ring | `var(--color-primary-400)` (#0A6375) |
-| Primary text | `var(--text-primary)` → `var(--color-gray-800)` (#2A2824) |
-| Secondary text | `var(--text-secondary)` → `var(--color-gray-600)` (#5A584F) |
-| Muted text | `var(--text-muted)` → `var(--color-gray-400)` (#9C9A92) |
-| Inverse text | `var(--text-inverse)` → `var(--color-white-inverse)` (#FFF) |
-| Error | `var(--color-error-500)` (#EF4444) |
-| Error bg | `var(--color-error-50)` (#FEF2F2) |
-| Success | `var(--color-success-500)` (#22C55E) |
-| Success bg | `var(--color-success-50)` (#ECFDF5) |
-| Warning | `var(--color-warning-500)` (#F59E0B) |
-| Warning bg | `var(--color-warning-50)` (#FFFBEB) |
-| Info | `var(--color-info-500)` (#3B82F6) |
-| WhatsApp | `var(--color-whatsapp)` (#25D366) |
-| Lime accent | `var(--color-lime-accent)` (#cfdf2e) |
+Never write a raw hex, rgb, px, ms, or Tailwind color/size class. Pick the
+namespace; open the reference file only when you need the exact value.
 
-### Gradients (hero cards)
-| Purpose | Start → End |
-|---------|------------|
-| Teal (collected/received) | `var(--gradient-teal-start)` → `var(--gradient-teal-end)` |
-| Coral (due/overdue) | `var(--gradient-coral-start)` → `var(--gradient-coral-end)` |
-| Amber (low stock) | `var(--gradient-amber-start)` → `var(--gradient-amber-end)` |
-| Warm cream page | `var(--color-cream-start)` → `var(--color-cream-mid)` → `var(--color-cream-end)` |
+| Namespace | Prefix / source | Full values in |
+|-----------|-----------------|----------------|
+| Colors (palette, status, hero, overlays) | `var(--color-*)`, `var(--text-*)`, `var(--gradient-*)` | `color-system.md` |
+| Border radius | `var(--radius-{sm,md,lg,xl,full})` | `spacing-shadows.md` |
+| Spacing (8pt grid) | `var(--space-*)`, `px-4` side-padding | `spacing-shadows.md` |
+| Shadows / elevation | `var(--shadow-*)` | `spacing-shadows.md` |
+| Z-index | `Z.*` (`src/config/zIndexes.ts`) or `var(--z-*)` | `spacing-shadows.md` |
+| Type scale / font | `var(--fs-*)`, `var(--font-*)` (all rem) | `typography.md` |
+| Motion / easing | `var(--duration-*)`, `var(--ease-*)`, `TIMINGS.*` | `motion.md` |
 
-### Border Radius
-| Element | CSS class | Value | NEVER |
-|---------|-----------|-------|-------|
-| Cards | `rounded-[var(--radius-xl)]` | 20px | `rounded-lg` |
-| Inputs | `rounded-[var(--radius-md)]` | 12px | `rounded-md` |
-| Buttons | `rounded-[var(--radius-sm)]` | 8px | `rounded-full` |
-| Drawers (top) | `rounded-t-[var(--radius-lg)]` | 16px top | `rounded-t-md` |
-| Modals | `rounded-[var(--radius-lg)]` | 16px | `rounded-md` |
-| Chips/badges | `rounded-full` | pill | `rounded-lg` |
-| Avatars | `rounded-full` | circle | anything else |
+**High-frequency radius (memorise):** Card `--radius-xl` (20) · Input/toast
+`--radius-md` (12) · Button `--radius-sm` (8) · Modal/drawer-top `--radius-lg`
+(16) · chip/avatar `--radius-full`.
 
-### Typography
-| Element | Classes |
-|---------|---------|
-| Page title (list) | `text-[var(--fs-2xl)] font-bold` + `var(--text-primary)` |
-| Page title (form) | `text-[var(--fs-xl)] font-semibold` + `var(--text-primary)` |
-| Section title | `text-[var(--fs-lg)] font-semibold` + `var(--text-primary)` |
-| Subtitle / desc | `text-[var(--fs-sm)]` + `var(--text-secondary)` |
-| Label above input | `block text-[var(--fs-sm)] font-medium` + `var(--text-secondary)` |
-| Row item name | `text-[var(--fs-df)] font-semibold leading-tight truncate` + `var(--text-primary)` |
-| Row subtitle | `text-[var(--fs-xs)] mt-0.5` + `var(--text-muted)` |
-| Hero amount | `text-[var(--fs-5xl)] font-bold tabular-nums` |
-| Inline error | `mt-1 text-[var(--fs-xs)]` + `var(--color-error-500)` |
-| Helper text | `mt-1 text-[var(--fs-xs)]` + `var(--text-muted)` |
-| Body default | `text-[var(--fs-df)]` (15px) + `var(--text-primary)` |
-| Caption | `text-[var(--fs-xs)]` (12px) + `var(--text-muted)` |
-| Button text | `text-[var(--fs-base)] font-semibold` |
+### Two greens — the rule you break most (full version: `color-system.md`)
 
-Font family: `var(--font-primary)` = Inter. `var(--font-display)` = Inter. `var(--font-mono)` = JetBrains Mono.
-All font sizes MUST use rem via `var(--fs-*)`. Hero sizes use `var(--fs-5xl)` or `var(--fs-6xl)`.
+The app has a deep **brand emerald** (`--color-primary-*`, #026F39) AND a bright
+**success green** (`--color-success-500`, #22C55E). Never mix them:
+- **Brand emerald** = identity & primary actions: logo, primary buttons,
+  BottomNav active tab/underline/**FAB**, dark hero surfaces, links.
+- **Success green** = status only: paid chips, up-deltas, "Good", toast success.
+  Never a primary CTA or nav element.
+- On the dark emerald hero, accents (up-delta, chart line, sparkline) go bright
+  `--color-success-300/400` for contrast — never the dark brand emerald.
 
-### Spacing
-| Use | Tailwind |
-|-----|----------|
-| Page horizontal | `px-4` (16px = `var(--side-padding)`) |
-| Form wrapper | `px-4 py-6 max-w-md mx-auto` |
-| Form fields gap | `space-y-4` |
-| Label to input gap | `mb-1.5` |
-| Title block to form | `mb-6` |
-| Submit button | `mt-6` on Button |
-| Cancel link | `mt-4 text-center` |
-| List header | `px-4 pt-4 pb-2` |
-| List content | `px-4 py-4` |
-| Card grid gap | `gap-3` |
-| **Section container vertical padding** | **`py-0` (0px top AND bottom — mandatory)** |
-| **Section group gap** | **`space-y-6` or `gap-6` (24px = `var(--space-6)`) — mandatory between section siblings** |
-| Section horizontal padding | `px-4` (inherits side padding) |
-| Section internal padding | Move to INNER child (`<div className="py-4">…</div>`), not the section wrapper |
-| Bottom nav clearance | `pb-[calc(var(--bottom-nav-height)+2rem)]` |
+### SECTION LAYOUT RULES (mechanically enforced — do not violate)
 
-### SECTION LAYOUT RULES (mechanically enforced)
+Every UI section (className matching `-section`, `section-`, or `__section`):
+1. **`py-0`** — 0 padding top AND bottom on the section container. `pt-N`/`pb-N`/
+   `py-N` (N>0) is a compile-time error. Inner breathing room goes on a child.
+2. **Section-group gap = exactly 24px** — parent stacks with `space-y-6` or
+   `gap-6` ONLY. Any other value on a section-group container is an error.
+3. Horizontal padding (`px-4`) is fine — never vertical.
 
-Every UI section (a div/frame identified by a className matching `-section`,
-`section-`, or `__section`) MUST obey:
+Vertical rhythm comes from ONE place (the group gap), not each section's `py-*`.
+Enforcer: `.claude/design-system.config.cjs` → `section-{top,bottom}-padding-nonzero`,
+`section-py-nonzero`, `section-inline-padding-top/bottom`, `section-group-wrong-gap`.
 
-1. **padding-top: 0** and **padding-bottom: 0** on the section container.
-   - `py-0` is required. `pt-N`/`pb-N`/`py-N` where N > 0 is a compile-time error.
-   - If you need inner breathing room, add an inner child with its own padding.
-2. **Gap between sections: exactly 24px** (= `var(--space-6)`).
-   - Parent that stacks sections uses `space-y-6` or `gap-6` ONLY. Other values
-     on a section-group container are a compile-time error.
-3. Horizontal padding on the section is fine (`px-4`), just never vertical.
+## SCREEN ARCHETYPES (pick one before you build)
 
-Why: consistent vertical rhythm comes from ONE place (the section-group gap),
-not from each section adding its own `py-*` which compounds unpredictably.
-Sections that own their own vertical padding fight the grid.
+The 64-screen design set resolves to a small set of recurring **compositions**.
+Identify the archetype, then copy its PAGE TEMPLATE from `page-templates.md`.
+Full catalog (skeletons + rules): `screen-archetypes.md`.
 
-Enforcer: `.claude/design-system.config.cjs` → banned patterns
-`section-top-padding-nonzero`, `section-bottom-padding-nonzero`,
-`section-py-nonzero`, `section-inline-padding-top/bottom`,
-`section-group-wrong-gap`.
+| Screen kind | Archetype | Backbone |
+|-------------|-----------|----------|
+| Sales / Customers / Products / Expenses / any list | **A — List/Index** | search → filter chips (C) → date-grouped tinted rows (D) → totals+sparkline footer (I) |
+| Customer/Supplier ledger, Invoice/Payment/Product detail | **B — Entity Detail** | `HeroPage` → identity card → action-icons (E) → `SummaryTiles` → tabs → dual-action footer |
+| Success / Error / Empty / Offline / Permission | **F — Full-screen status** | centred illustration → title → sub → primary+secondary |
+| Onboarding / Setup / Import / Opening Balance | **G — Multi-step wizard** | step bar + `Step X of Y` → per-step form → Continue/Skip |
+| Settings / Business Profile / Security / Subscription | **H — Grouped list** | section-titled tinted rows + chevron/toggle/value |
+| Reports Home | **L — Reports hub** | 2-col report cards + Favourites |
+| Day book / trial balance / register / GST table / any accounting grid | **O — Data-dense grid** | `<ResponsiveTable density="compact" alwaysTable zebra>` + totals row |
+| Dashboard | **Emerald Hero + stages** | staged reveal (Stage 0→3) → Home 2 (shipped) |
 
-### Shadows
-| Element | Token |
-|---------|-------|
-| Card (default) | `var(--shadow-card)` |
-| Card (hover) | `var(--shadow-card-hover)` |
-| Modal | `var(--shadow-modal)` |
-| FAB (teal) | `var(--shadow-fab)` |
-| FAB (lime) | `var(--shadow-fab-lime)` |
-| Drawer | `var(--shadow-drawer-bottom)` |
-| Dropdown | `var(--shadow-dropdown)` |
-| Subtle | `var(--shadow-subtle)` |
-| Header glass | frosted: `backdrop-filter: blur(16px)` + `var(--header-glass-bg)` |
+> **Two densities, on purpose.** Archetypes A–N are the whitespace-generous
+> *consumer* skin (Raju). Archetype **O is the data-dense *accounting* skin**
+> (Priya/Amit) — compact rows, columns, `tabular-nums`, totals rows. On archetype-O
+> surfaces the `space-y-6` / 44px-row mandates are **relaxed for the grid itself**
+> (rows are the content). Never rebuild a data grid from cards — mount
+> `<ResponsiveTable>`.
 
-### Motion
-| Duration | Token | Usage |
-|----------|-------|-------|
-| 100ms | `var(--duration-fast)` | Button press, toggle |
-| 200ms | `var(--duration-normal)` | Standard transitions |
-| 300ms | `var(--duration-slow)` | Page transitions, modals |
-| Easing | `var(--ease-default)` | Standard (Material) |
-| Spring | `var(--ease-spring)` | Bounce (toasts, success) |
+**Signature skin — Emerald Hero:** the default for every primary screen. Mount
+`<HeroPage>` (emerald bar + white rounded sheet, recolours `<Header>` for free).
+Canonical DONE refs: `DashboardPage` (Home 2) + `PartyDetailPage`. Full diagram +
+JSX: `page-templates.md` → PAGE ARCHETYPE. Every archetype rides the same
+primitives: emerald `<Header>`, green FAB in the 5-tab BottomNav, warm-cream bg,
+white cards, the tinted icon-square motif, 4 UI states, `t.*` strings.
 
-### Z-Index
-| Layer | Value | Usage |
-|-------|-------|-------|
-| Sticky | `var(--z-sticky)` = 20 | Headers, sticky rows |
-| Overlay | `var(--z-overlay)` = 40 | Backdrops |
-| Modal | `var(--z-modal)` = 50 | Modals, drawers |
-| Toast | `var(--z-toast)` = 70 | Toast notifications |
+## ENFORCEMENT MAP (what is mechanically caught vs convention)
 
----
+Know which rules a machine will stop you on, and which rely on you. "Enforced"
+= a build/commit fails; "convention" = only this skill + review catch it.
 
-## FIELD TEMPLATES (copy per field type — don't invent)
+| Rule | Status | Where |
+|------|--------|-------|
+| Section `py-0` + 24px group gap | **enforced** | `enforce.js` / `design-system.config.cjs` banned patterns |
+| No raw `fetch()` in feature code | **enforced** | `scripts/enforce-offline.mjs` (pre-commit) |
+| Mutations pass `entityType`+`entityLabel` | **enforced** | `scripts/enforce-offline.mjs` |
+| File ≤ 250 lines | **enforced** | `enforce.js` (OVERSIZED) |
+| Fixed-bottom / sticky-top outside primitives | **enforced** | `enforce.js` checks 9–12 (PLATFORM_SHELL) |
+| `env(safe-area-*)` in feature code | **enforced** | `enforce.js` check 9 |
+| tsc types clean | **enforced** | `tsc -b --noEmit` |
+| Docs reference live components/tokens | **enforced** | `check-refs.mjs` (this skill) |
+| Component used vs raw HTML (`<Button>` not `<button>`) | *convention* | COMPONENT LOOKUP + review |
+| Two-greens (brand vs success) | *convention* | this card + `color-system.md` |
+| `var(--*)` tokens vs hex/Tailwind color | *partly* | some hex caught by `enforce.js`; palette-class not |
+| 4 UI states present | *convention* | POST-BUILD checklist + review |
+| `t.*` strings, no hardcoded English | *convention* | review (i18n keys not auto-diffed) |
+| Correct radius/icon per element | *convention* | this card |
 
-### Name Field
-```tsx
-<div>
-  <div className="flex items-center gap-1.5 mb-1.5">
-    <label className="block text-[var(--fs-sm)] font-medium" style={{ color: 'var(--text-secondary)' }}>
-      {t.customerName}
-    </label>
-  </div>
-  <Input type="text" maxLength={100}
-    placeholder={t.customerName} value={name} onChange={handleNameChange}
-    error={nameError} disabled={loading} />
-</div>
-```
-
-### Phone Field
-```tsx
-<div>
-  <label className="block text-[var(--fs-sm)] font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
-    {t.phoneNumber}
-  </label>
-  <Input type="text" inputMode="numeric" maxLength={10}
-    placeholder={t.phoneNumber} value={phone}
-    onChange={(e) => { const f = e.target.value.replace(/\D/g, ''); setPhone(f); }}
-    error={phoneError} disabled={loading} />
-</div>
-```
-
-### Amount Field (rupee prefix)
-```tsx
-<div>
-  <label className="block text-[var(--fs-sm)] font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
-    {t.amount}
-  </label>
-  <div className="relative">
-    <span className="absolute left-3 top-1/2 -translate-y-1/2 font-medium text-[var(--fs-sm)]"
-          style={{ color: 'var(--text-secondary)' }}>₹</span>
-    <input type="number" step="0.01" min="0" placeholder="0.00"
-      value={amount} onChange={(e) => setAmount(e.target.value)}
-      onKeyDown={(e) => { if (['e','E','+','-'].includes(e.key)) e.preventDefault(); }}
-      className="w-full pl-8 pr-3 py-3 border rounded-[var(--radius-md)] focus:outline-none focus:ring-2 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-      style={{ backgroundColor: 'var(--color-gray-0)', borderColor: 'var(--color-gray-200)', color: 'var(--text-primary)', '--tw-ring-color': 'var(--color-primary-400)' } as React.CSSProperties} />
-  </div>
-</div>
-```
-
-### Select (grid buttons)
-```tsx
-<div>
-  <label className="block text-[var(--fs-sm)] font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
-    {t.paymentMode}
-  </label>
-  <div className="grid grid-cols-2 gap-2">
-    {options.map(({ value, icon: Icon, label }) => (
-      <button key={value} type="button" onClick={() => setSelected(value)}
-        className="flex items-center gap-2 px-3 py-2.5 border rounded-[var(--radius-sm)] transition-all min-h-[44px]"
-        style={{
-          borderColor: selected === value ? 'var(--color-primary-500)' : 'var(--color-gray-200)',
-          backgroundColor: selected === value ? 'var(--color-primary-bg-subtle)' : 'var(--color-gray-0)',
-          color: selected === value ? 'var(--color-primary-500)' : 'var(--text-primary)',
-        }}>
-        <Icon className="w-4 h-4" />
-        <span className="text-[var(--fs-sm)] font-medium">{label}</span>
-      </button>
-    ))}
-  </div>
-</div>
-```
-
-### Section Grouping Rule
-- Max 4 fields per section. 5+ fields -> split into named sections
-- Section divider: `mb-6` gap + section label
-- Section label: `<p className="text-[var(--fs-xs)] font-medium uppercase tracking-wider mb-2" style={{ color: 'var(--text-muted)' }}>{t.sectionName}</p>`
-- Rate cards: wrap in `<div className="p-4 rounded-[var(--radius-md)] space-y-3" style={{ backgroundColor: 'var(--color-gray-50)', border: '1px solid var(--color-gray-200)' }}>`
-
----
-
-## PAGE TEMPLATES (copy skeleton — don't redesign)
-
-### FORM PAGE
-```tsx
-<div className="min-h-screen" style={{ backgroundColor: 'var(--color-gray-50)' }}>
-  <div className="px-4 py-6 max-w-md mx-auto">
-    <div className="flex items-start justify-between mb-6">
-      <div>
-        <h2 className="text-[var(--fs-xl)] font-semibold mb-1"
-            style={{ color: 'var(--text-primary)' }}>{t.pageTitle}</h2>
-        <p className="text-[var(--fs-sm)]" style={{ color: 'var(--text-secondary)' }}>{t.pageSubtitle}</p>
-      </div>
-    </div>
-    {error && <ErrorState message={error} />}
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Paste field templates here */}
-      <Button type="submit" loading={loading} disabled={!isValid || loading} className="w-full mt-6">
-        {loading ? t.saving : t.save}
-      </Button>
-    </form>
-    <div className="mt-4 text-center">
-      <button type="button" onClick={() => navigate(-1)}
-              className="text-[var(--fs-sm)] hover:underline" style={{ color: 'var(--text-secondary)' }}>
-        {t.cancel}
-      </button>
-    </div>
-  </div>
-</div>
-```
-
-### LIST PAGE
-```tsx
-<div className="min-h-screen pb-[calc(var(--bottom-nav-height)+2rem)]" style={{ backgroundColor: 'var(--color-gray-50)' }}>
-  <div className="border-b" style={{ backgroundColor: 'var(--color-gray-0)', borderColor: 'var(--color-gray-100)' }}>
-    <div className="px-4 pt-4 pb-2">
-      <div className="flex items-center justify-between mb-3">
-        <div>
-          <h1 className="text-[var(--fs-2xl)] font-bold" style={{ color: 'var(--text-primary)' }}>{t.title}</h1>
-          <p className="text-[var(--fs-xs)] mt-0.5" style={{ color: 'var(--text-secondary)' }}>{t.subtitle}</p>
-        </div>
-        <Button variant="primary" size="sm" icon={<Plus className="w-4 h-4" />}>{t.add}</Button>
-      </div>
-      <div className="flex items-center gap-2">
-        <div className="flex-1">
-          <Input placeholder={t.search} icon={<Search className="w-4 h-4" />}
-                 value={search} onChange={(e) => setSearch(e.target.value)} />
-        </div>
-        <button type="button" className="flex items-center gap-1.5 px-3 py-2.5 border rounded-[var(--radius-sm)] text-[var(--fs-sm)] min-h-[44px]"
-                style={{ borderColor: 'var(--color-gray-200)', color: 'var(--text-secondary)' }}>
-          <SlidersHorizontal className="w-4 h-4" />
-        </button>
-      </div>
-    </div>
-  </div>
-  <div className="px-4 py-4">
-    {loading ? <ListSkeleton /> : error ? <ErrorState message={error} onRetry={refetch} /> :
-     !data?.length ? <EmptyState title={t.noItemsYet} action={t.addFirst} /> : (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-        {data.map(item => <ItemCard key={item.id} item={item} />)}
-      </div>
-    )}
-  </div>
-</div>
-```
-
-### LIST ROW ITEM
-```tsx
-<button type="button" className="w-full px-4 py-3.5 text-left border-b"
-  style={{ borderColor: 'var(--color-gray-100)' }} onClick={() => onSelect(item)}>
-  <div className="flex items-center gap-3">
-    <PartyAvatar name={item.name} size="sm" />
-    <div className="flex-1 min-w-0">
-      <p className="text-[var(--fs-df)] font-semibold leading-tight truncate"
-         style={{ color: 'var(--text-primary)' }}>{item.name}</p>
-      <p className="text-[var(--fs-xs)] mt-0.5" style={{ color: 'var(--text-muted)' }}>{item.subtitle}</p>
-    </div>
-    <div className="text-right flex-shrink-0">{/* Amount or badge */}</div>
-  </div>
-</button>
-```
-
-### DETAIL PAGE
-```tsx
-<div className="min-h-screen pb-[calc(var(--bottom-nav-height)+2rem)]" style={{ backgroundColor: 'var(--color-gray-50)' }}>
-  {/* Hero section with gradient */}
-  <div className="px-4 py-6" style={{ background: 'linear-gradient(135deg, var(--gradient-teal-start), var(--gradient-teal-end))' }}>
-    <h1 className="text-[var(--fs-2xl)] font-bold" style={{ color: 'var(--text-inverse)' }}>{item.name}</h1>
-    <p className="text-[var(--fs-5xl)] font-bold tabular-nums mt-2" style={{ color: 'var(--text-inverse)' }}>
-      {formatCurrency(item.amount)}
-    </p>
-  </div>
-  {/* Content cards */}
-  <div className="px-4 -mt-4 space-y-4">
-    <Card className="p-4">{/* details */}</Card>
-  </div>
-</div>
-```
-
-### SETTINGS PAGE
-```tsx
-<div className="min-h-screen pb-[calc(var(--bottom-nav-height)+2rem)]" style={{ backgroundColor: 'var(--color-gray-50)' }}>
-  <div className="border-b" style={{ backgroundColor: 'var(--color-gray-0)', borderColor: 'var(--color-gray-100)' }}>
-    <div className="px-4 py-3">
-      <h1 className="text-[var(--fs-2xl)] font-bold" style={{ color: 'var(--text-primary)' }}>{t.settings}</h1>
-    </div>
-  </div>
-  <div className="px-4 space-y-4 pt-4 pb-6">{/* Settings sections */}</div>
-</div>
-```
-
-### DASHBOARD CARD (hero summary)
-```tsx
-<div className="rounded-[var(--radius-xl)] p-5 relative overflow-hidden"
-     style={{ background: 'linear-gradient(135deg, var(--gradient-teal-start), var(--gradient-teal-end))' }}>
-  <p className="text-[var(--fs-sm)] font-medium" style={{ color: 'var(--color-hero-text-secondary)' }}>{t.totalReceived}</p>
-  <p className="text-[var(--fs-5xl)] font-bold tabular-nums mt-1" style={{ color: 'var(--text-inverse)' }}>
-    {formatCurrency(amount)}
-  </p>
-</div>
-```
-
----
-
-## HOOK SKELETON (copy for form pages)
-
-```tsx
-const [field, setField] = useState('');
-const [fieldError, setFieldError] = useState('');
-const [error, setError] = useState('');
-const [loading, setLoading] = useState(false);
-
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setError('');
-  // 1. Validate all fields
-  if (!name.trim()) { setNameError(t.required); return; }
-  // 2. Submit
-  setLoading(true);
-  try {
-    const result = await api.create({ name: name.trim() });
-    toast.success(t.addedSuccessfully);
-    navigate(ROUTES.TARGET);
-  } catch (err) {
-    setError(err instanceof Error ? err.message : t.failedToSave);
-  } finally {
-    setLoading(false);
-  }
-};
-```
-
-## SKELETON TEMPLATE (loading state)
-```tsx
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-  {[1,2,3,4,5,6].map(i => (
-    <div key={i} className="border rounded-[var(--radius-xl)] p-4 animate-pulse"
-         style={{ backgroundColor: 'var(--color-gray-0)', borderColor: 'var(--color-gray-100)' }}>
-      <div className="flex items-center gap-3 mb-3">
-        <div className="w-10 h-10 rounded-full" style={{ backgroundColor: 'var(--color-gray-200)' }} />
-        <div className="flex-1">
-          <div className="h-4 rounded w-3/4 mb-2" style={{ backgroundColor: 'var(--color-gray-200)' }} />
-          <div className="h-3 rounded w-1/2" style={{ backgroundColor: 'var(--color-gray-200)' }} />
-        </div>
-      </div>
-    </div>
-  ))}
-</div>
-```
-
-### BADGE PATTERNS
-```tsx
-{/* Status badges */}
-<Badge variant="success">{t.paid}</Badge>      {/* green bg, green text */}
-<Badge variant="warning">{t.pending}</Badge>    {/* amber bg, amber text */}
-<Badge variant="error">{t.overdue}</Badge>      {/* red bg, red text */}
-<Badge variant="default">{t.draft}</Badge>      {/* gray bg, gray text */}
-
-{/* Amount display */}
-<span className="tabular-nums font-semibold" style={{ color: 'var(--color-success-600)' }}>
-  +{formatCurrency(received)}
-</span>
-<span className="tabular-nums font-semibold" style={{ color: 'var(--color-error-500)' }}>
-  -{formatCurrency(due)}
-</span>
-```
-
----
+Convention rules are the ones to double-check by hand — nothing will fail the
+build if you get them wrong.
 
 ## POST-BUILD CHECKLIST (mandatory)
 
@@ -649,28 +354,25 @@ const handleSubmit = async (e: React.FormEvent) => {
 - [ ] Font sizes use `var(--fs-*)` tokens (all rem)
 - [ ] Number inputs: `onKeyDown` blocks e/E/+/-, hides native spinners
 - [ ] Skeleton uses `animate-pulse` + `var(--color-gray-200)` blocks
-- [ ] Amounts displayed with `tabular-nums` class for alignment
-- [ ] Indian number format (Rs 1,00,000) via `Intl.NumberFormat('en-IN')`
+- [ ] Amounts displayed with `tabular-nums`; Indian format (Rs 1,00,000) via `Intl.NumberFormat('en-IN')`; paise on the wire
 - [ ] Warm cream background on pages (`var(--color-gray-50)`)
-- [ ] **Every section container has `py-0` (0 top AND bottom padding)**
-- [ ] **Section-group parent stacks with `space-y-6` or `gap-6` (24px)**
-- [ ] Inner padding lives on a CHILD of the section, not the section itself
-- [ ] No raw `fetch()` outside `src/lib/api.ts` / `src/lib/auth.ts` /
-      `hooks/useOnlineStatus.ts`; if unavoidable, pass `AbortController.signal`
+- [ ] **Every section container has `py-0`; section-group stacks with `space-y-6`/`gap-6`; inner padding on a CHILD**
+- [ ] No raw `fetch()` outside allowlist; if unavoidable, pass `AbortController.signal`
 - [ ] No PII in `console.*` / logger calls (phone, email, pin, otp, password)
-- [ ] Offline compliance (see `.claude/rules/OFFLINE_RULES.md`):
-      `api()` used, mutations pass `entityType`+`entityLabel`, no
-      `localStorage` writes for entity data
-- [ ] Variant-first: any new component must answer "why not extend an
-      existing variant" in the plan
+- [ ] Offline compliance (`.claude/rules/OFFLINE_RULES.md`): `api()` used, mutations pass `entityType`+`entityLabel`, no `localStorage` for entity data, tolerate optimistic `{}` return
+- [ ] Variant-first: any new component answers "why not extend an existing variant" in the plan
 
 ## DEEP REFERENCE (read on-demand, NOT upfront)
 
 | File | When to read |
 |------|-------------|
-| `brand-guidelines.md` | Logo usage, brand voice, Indian formatting rules |
-| `color-system.md` | Full palette with dark mode values, overlay system |
+| `golden-path.md` | **First time / when unsure** — one feature built Phase 0→4 end to end |
+| `page-templates.md` | **Building any page** — all FIELD + PAGE + HOOK/SKELETON/BADGE JSX skeletons, the Emerald Hero skin |
+| `screen-archetypes.md` | **Choosing a composition** — the 14 recurring screen archetypes (A–O) + the tinted-icon-square motif, from the 64-screen set |
+| `component-catalog.md` | Every component's props, usage example, and the decision tree |
+| `color-system.md` | Full palette + dark-mode values, status/hero/overlay tints, two-greens rule, data-grid tints |
 | `typography.md` | Complete type scale, font pairing rules |
-| `spacing-shadows.md` | Full spacing scale, z-index layers, elevation system |
+| `spacing-shadows.md` | Full spacing scale, radius, z-index, elevation, density modes |
 | `motion.md` | Animation tokens, easing curves, keyframe inventory |
-| `component-catalog.md` | Every component's usage examples and decision tree |
+| `brand-guidelines.md` | Logo usage, brand voice, Indian formatting, two-density philosophy |
+| `check-refs.mjs` | Freshness guard — run in Phase 4; fails if docs cite a dead component/token |

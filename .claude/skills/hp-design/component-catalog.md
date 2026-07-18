@@ -6,6 +6,8 @@
 ## Decision Tree — What Component to Use
 
 ```
+Need an emerald-hero page?  -> <HeroPage hero={...}>...</HeroPage>
+Need detail stat tiles?     -> <SummaryTiles tiles={...}>
 Need a button?              -> <Button variant="...">
 Need a text input?          -> <Input>
 Need a card container?      -> <Card>
@@ -24,9 +26,46 @@ Need user feedback?         -> <FeedbackWidget>
 Need toast notification?    -> useToast() from ToastContainer
 Need CAPTCHA?               -> <Turnstile>
 Need bulk selection?        -> <BulkActionBar>
+Need a tabular list?        -> <ResponsiveTable> (cards <md, table >=md)
+Need a dense accounting grid?-> <ResponsiveTable density="compact" alwaysTable zebra>
 ```
 
 ## Core Components
+
+### HeroPage (`src/components/layout/HeroPage.tsx`) — signature skin
+```tsx
+import { HeroPage } from '@/components/layout/HeroPage';
+
+<AppShell>
+  <Header title={t.parties} backTo={ROUTES.HOME} actions={menu} />
+  <HeroPage hero={<SummaryTiles tiles={tiles} />}>
+    {/* white-sheet content */}
+  </HeroPage>
+</AppShell>
+```
+The Emerald Hero two-tone shell (see `brand-guidelines.md` → Signature Layout).
+Renders the deep-emerald `hero` field + a white rounded sheet, and **recolours
+the global `<Header>` to emerald automatically** via `.hp-hero-page` + `:has()`.
+`hero` is optional (omit → sheet opens directly under the emerald bar). Use on
+Home, Party/Invoice/Payment detail — never hand-roll a dark-header + white-sheet.
+
+### SummaryTiles (`src/components/ui/SummaryTiles.tsx`)
+```tsx
+import { SummaryTiles } from '@/components/ui/SummaryTiles';
+
+<SummaryTiles
+  aria-label={t.summary}
+  tiles={[
+    { id: 'due',   label: t.totalDue,   value: fmt(dueP),   tone: 'due'   },
+    { id: 'sales', label: t.totalSales, value: fmt(salesP), tone: 'sales' },
+    { id: 'paid',  label: t.lastPayment,value: fmt(lastP),  tone: 'info'  },
+  ]}
+/>
+```
+Horizontal row of bordered stat tiles (muted label above a toned value). Pure
+display — parent owns loading/error/empty; values are pre-formatted strings.
+Tones: `due` (red) · `sales`/`paid` (green) · `info` (blue) · `neutral`. Feature
+wrappers: `PartySummaryTiles`, `InvoiceSummaryTiles`.
 
 ### Button (`src/components/ui/Button.tsx`)
 ```tsx
@@ -45,7 +84,7 @@ import { Button } from '@/components/ui/Button';
 | `icon` | ReactNode | — |
 | `className` | string | — |
 
-Styling: `btn-primary` = teal bg (#052D35). `btn-accent` = lime bg (#E0EA49) + dark text.
+Styling: `btn-primary` = emerald bg (`--color-primary-600`, #024E29). `btn-accent` = lime bg (#E0EA49) + dark text.
 All sizes enforce min 44px touch target.
 
 ### Input (`src/components/ui/Input.tsx`)
@@ -144,6 +183,45 @@ Wraps page content with proper padding and bottom nav clearance.
 
 ### PageTransition (`src/components/layout/PageTransition.tsx`)
 Route-level transition wrapper with fade+slideUp animation.
+
+### ResponsiveTable (`src/components/layout/ResponsiveTable.tsx`)
+```tsx
+import { ResponsiveTable, type TableColumn } from '@/components/layout/ResponsiveTable';
+
+// Consumer default — cards <md, table >=md
+<ResponsiveTable
+  rows={parties} rowKey={p => p.id} onRowClick={openParty}
+  loading={isLoading}
+  error={error ? <ErrorState message={error} onRetry={refetch} /> : undefined}
+  empty={<EmptyState title={t.noParties} />}
+  columns={columns}
+/>
+
+// Accounting grid — compact rows, columns kept on phone via scroll, zebra
+<ResponsiveTable density="compact" alwaysTable zebra
+  rows={entries} rowKey={e => e.id} columns={ledgerColumns} loading={loading} />
+```
+One primitive owns the card↔table switch AND the two densities. **Never
+hand-roll a `<table>` or a card-list for tabular data.** Owns all 4 UI states
+via props (`loading` / `error` / `empty` / data).
+
+| Prop | Type | Default | Notes |
+|------|------|---------|-------|
+| `columns` | `TableColumn<T>[]` | — | `{ key, header, render, align?, width?, desktopOnly?, mobileHide? }` |
+| `rows` | `T[]` | — | data |
+| `rowKey` | `(row) => string` | — | stable identity |
+| `onRowClick` | `(row) => void` | — | makes rows tappable |
+| `loading` | boolean | — | renders skeleton rows |
+| `error` | ReactNode | — | error state node |
+| `empty` | ReactNode | — | empty state node |
+| `skeletonRows` | number | `5` | loading skeleton count |
+| `density` | `'comfortable' \| 'compact'` | `comfortable` | `compact` = ~36px rows (`px-3 py-1.5`) for accounting grids |
+| `alwaysTable` | boolean | `false` | render the scrollable grid at every width (no card collapse <md) — for true accounting views |
+| `zebra` | boolean | `false` | alternating row tint (`--color-gray-50`) for scan-ability |
+
+`density`/`alwaysTable`/`zebra` are additive — omitting them preserves the
+original consumer behaviour exactly. `align="right"` columns auto-get
+`tabular-nums`. See `screen-archetypes.md` → archetype O for the full grid page.
 
 ## Feedback Components
 
