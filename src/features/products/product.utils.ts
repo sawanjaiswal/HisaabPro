@@ -43,6 +43,23 @@ export function formatPriceCompact(paise: number): string {
   })
 }
 
+/**
+ * Compact rupee for stat tiles — Indian lakh/crore short form.
+ * formatCompactInr(31600000) → "₹3.16L"   (paise → ₹3,16,000)
+ * formatCompactInr(250000000) → "₹25L"
+ * formatCompactInr(1200000000) → "₹1.2Cr"
+ * Small values fall back to the plain rupee integer.
+ */
+export function formatCompactInr(paise: number): string {
+  const rupees = paise / 100
+  const abs = Math.abs(rupees)
+  const trim = (n: number) => Number(n.toFixed(2)).toString()
+  if (abs >= 1e7) return `₹${trim(rupees / 1e7)}Cr`
+  if (abs >= 1e5) return `₹${trim(rupees / 1e5)}L`
+  if (abs >= 1e3) return `₹${trim(rupees / 1e3)}K`
+  return `₹${Math.round(rupees).toLocaleString('en-IN')}` // ssot-allow: format paise/number money for display — compact ₹L/₹Cr stat-tile formatter, distinct from formatPaise; only the small-value fallback overlaps
+}
+
 // ─── Stock formatting ─────────────────────────────────────────────────────────
 
 /**
@@ -55,6 +72,41 @@ export function formatStock(qty: number, symbol: string): string {
     ? qty.toString()
     : qty.toLocaleString('en-IN', { maximumFractionDigits: 3 })
   return `${formatted} ${symbol}`
+}
+
+/**
+ * Format stock quantity with the full unit name (mockup: "33 Bags", "1000 Bags").
+ * Pluralisation is naive (append "s") — matches the design's English labels.
+ */
+export function formatStockQtyUnit(qty: number, unitName: string): string {
+  const formatted = Number.isInteger(qty)
+    ? qty.toString()
+    : qty.toLocaleString('en-IN', { maximumFractionDigits: 3 })
+  const noun = qty === 1 ? unitName : `${unitName}s`
+  return `${formatted} ${noun}`
+}
+
+// ─── Margin ───────────────────────────────────────────────────────────────────
+
+/**
+ * Margin percent from sale + purchase price (both paise).
+ * margin = (sale − cost) / sale × 100. Returns null when cost is unknown or
+ * sale price is 0 (can't compute a meaningful margin).
+ * getMarginPercent(600, 500) → 16.67
+ */
+export function getMarginPercent(salePricePaise: number, purchasePricePaise: number | null): number | null {
+  if (purchasePricePaise == null || salePricePaise <= 0) return null
+  return ((salePricePaise - purchasePricePaise) / salePricePaise) * 100
+}
+
+/**
+ * Human margin label. formatMarginPercent(16.67) → "17%".
+ * Returns null when margin can't be computed (caller hides the field).
+ */
+export function formatMarginPercent(salePricePaise: number, purchasePricePaise: number | null): string | null {
+  const pct = getMarginPercent(salePricePaise, purchasePricePaise)
+  if (pct == null) return null
+  return `${Math.round(pct)}%`
 }
 
 // ─── Stock status ─────────────────────────────────────────────────────────────

@@ -111,10 +111,15 @@ export function DayBookGrid({ transactions, summary, density, emptyLabel }: DayB
       width: 'w-28',
       render: (txn) => {
         const dir = DIRECTION[txn.type]
+        // Neutral (stock adjustment) can be negative — let the formatter carry
+        // the native sign; directional rows show an explicit +/− on the magnitude.
+        const amountText =
+          dir === 'neutral'
+            ? formatAmount(txn.amount)
+            : `${DIRECTION_SIGN[dir]}${formatAmount(Math.abs(txn.amount))}`
         return (
           <span className="font-semibold" style={{ color: DIRECTION_COLOR[dir] }}>
-            {DIRECTION_SIGN[dir]}
-            {formatAmount(Math.abs(txn.amount))}
+            {amountText}
           </span>
         )
       },
