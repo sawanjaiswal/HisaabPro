@@ -12,6 +12,7 @@ import type { CreateBusinessInput, UpdateBusinessInput } from '../schemas/busine
 import { ensureSystemRoles } from './settings.service.js'
 import { applyVerticalDefaults } from './verticals/defaults.js'
 import { cloneBusinessSettings } from './business-clone.helper.js'
+import { seedDefaultAccounts } from './accounting/chart-of-accounts.js'
 
 const MAX_BUSINESSES = 10
 
@@ -101,6 +102,10 @@ export async function createBusiness(userId: string, data: CreateBusinessInput) 
 
   // Seed system roles for the new business
   await ensureSystemRoles(business.id)
+
+  // Seed the default chart of accounts so GL auto-posting (S1) can resolve its
+  // system accounts on the business's first invoice/payment. Idempotent.
+  await seedDefaultAccounts(business.id)
 
   // Seed vertical-specific InventorySetting defaults (no-op for 'general' etc.)
   await applyVerticalDefaults(business.id, business.businessType ?? 'general')
