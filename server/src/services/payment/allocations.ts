@@ -4,7 +4,7 @@
 
 import { prisma } from '../../lib/prisma.js'
 import { notFoundError, validationError } from '../../lib/errors.js'
-import { PAYMENT_DETAIL_SELECT } from './selects.js'
+import { PAYMENT_DETAIL_SELECT, mapPaymentDiscount } from './selects.js'
 import type { UpdateAllocationsInput } from '../../schemas/payment.schemas.js'
 
 export async function updateAllocations(
@@ -61,9 +61,10 @@ export async function updateAllocations(
       ))
     }
 
-    return tx.payment.findUniqueOrThrow({
+    const detail = await tx.payment.findUniqueOrThrow({
       where: { id: paymentId },
       select: PAYMENT_DETAIL_SELECT,
     })
+    return { ...detail, discount: mapPaymentDiscount(detail.discount) }
   })
 }

@@ -9,7 +9,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { updatePayment, deletePayment } from '../update-delete.js'
 import { prisma } from '../../../lib/prisma.js'
 
-vi.mock('../selects.js', () => ({ PAYMENT_DETAIL_SELECT: {} }))
+vi.mock('../selects.js', () => ({ PAYMENT_DETAIL_SELECT: {}, mapPaymentDiscount: (d: unknown) => d }))
 vi.mock('../../../lib/payment-types.js', () => ({
   paymentTypeDirection: vi.fn().mockReturnValue(1),
 }))

@@ -4,7 +4,7 @@
 
 import { prisma } from '../../lib/prisma.js'
 import { notFoundError } from '../../lib/errors.js'
-import { PAYMENT_DETAIL_SELECT } from './selects.js'
+import { PAYMENT_DETAIL_SELECT, mapPaymentDiscount } from './selects.js'
 import type { UpdatePaymentInput } from '../../schemas/payment.schemas.js'
 import { paymentTypeDirection } from '../../lib/payment-types.js'
 import type { PaymentType } from '../../../../shared/enums.js'
@@ -75,10 +75,11 @@ export async function updatePayment(
       },
     })
 
-    return tx.payment.findUniqueOrThrow({
+    const detail = await tx.payment.findUniqueOrThrow({
       where: { id: paymentId },
       select: PAYMENT_DETAIL_SELECT,
     })
+    return { ...detail, discount: mapPaymentDiscount(detail.discount) }
   })
 }
 

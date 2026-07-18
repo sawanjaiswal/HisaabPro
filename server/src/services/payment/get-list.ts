@@ -4,7 +4,7 @@
 
 import { prisma } from '../../lib/prisma.js'
 import { notFoundError } from '../../lib/errors.js'
-import { PAYMENT_LIST_SELECT, PAYMENT_DETAIL_SELECT } from './selects.js'
+import { PAYMENT_LIST_SELECT, PAYMENT_DETAIL_SELECT, mapPaymentDiscount } from './selects.js'
 import type { ListPaymentsQuery } from '../../schemas/payment.schemas.js'
 
 export async function getPayment(businessId: string, paymentId: string) {
@@ -37,7 +37,7 @@ export async function getPayment(businessId: string, paymentId: string) {
       invoiceDue: a.invoice.balanceDue,
       amount: a.amount,
     })),
-    discount: payment.discount,
+    discount: mapPaymentDiscount(payment.discount),
     createdBy: payment.creator ? { id: payment.creator.id, name: payment.creator.name } : null,
   }
 }

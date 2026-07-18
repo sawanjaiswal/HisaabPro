@@ -4,7 +4,7 @@
 
 import { prisma } from '../../lib/prisma.js'
 import { notFoundError, validationError } from '../../lib/errors.js'
-import { PAYMENT_DETAIL_SELECT } from './selects.js'
+import { PAYMENT_DETAIL_SELECT, mapPaymentDiscount } from './selects.js'
 import type { CreatePaymentInput } from '../../schemas/payment.schemas.js'
 import { notificationManager } from '../notifications/notification-manager.js'
 import { formatPaise } from '../notifications/notification-template.service.js'
@@ -138,10 +138,11 @@ export async function createPayment(
       },
     })
 
-    return tx.payment.findUniqueOrThrow({
+    const detail = await tx.payment.findUniqueOrThrow({
       where: { id: payment.id },
       select: PAYMENT_DETAIL_SELECT,
     })
+    return { ...detail, discount: mapPaymentDiscount(detail.discount) }
   })
 
   if (data.type === 'PAYMENT_IN') {
