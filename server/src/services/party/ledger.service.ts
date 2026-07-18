@@ -1,11 +1,7 @@
 /**
- * Party Ledger Service
- *
- * Computes a running-balance ledger for a party over a date window.
- * Three Prisma queries (Document, Payment, JournalEntryLine) are merged in JS
- * and sorted chronologically. Running balance is a single O(n) integer pass.
- *
- * All amounts in PAISE (integer — never float).
+ * Party Ledger Service — running-balance ledger for a party over a date window.
+ * Document/Payment/JournalEntryLine queries merged + sorted in JS; running
+ * balance is a single O(n) integer pass. All amounts in PAISE (never float).
  */
 
 import { prisma } from '../../lib/prisma.js'
@@ -85,7 +81,12 @@ export async function getPartyLedger(
     prisma.journalEntryLine.findMany({
       where: {
         partyId,
-        journalEntry: { businessId, status: 'POSTED', date: { lt: fromDate } },
+        journalEntry: {
+          businessId, status: 'POSTED', date: { lt: fromDate },
+          // Exclude auto-posted document/payment mirrors — those are already
+          // represented by the Document/Payment rows above (avoids double-count).
+          sourceType: { notIn: ['DOCUMENT', 'PAYMENT'] },
+        },
       },
       select: { debit: true, credit: true },
     }),
@@ -119,7 +120,7 @@ export async function getPartyLedger(
         isDeleted: false,
         type: docTypes ? { in: docTypes } : { in: Object.keys(DOC_VOUCHER_MAP) },
       },
-      select: { id: true, type: true, grandTotal: true, documentDate: true, documentNumber: true, createdAt: true, party: { select: { name: true } } },
+      select: { id: true, type: true, grandTotal: true, documentDate: true, documentNumber: true, createdAt: true, party: { select: { name: true } }, _count: { select: { lineItems: true } } },
       orderBy: [{ documentDate: 'asc' }, { createdAt: 'asc' }],
     }) : Promise.resolve([]),
 
@@ -129,14 +130,19 @@ export async function getPartyLedger(
         date: { gte: fromDate, lte: toDate },
         isDeleted: false,
       },
-      select: { id: true, type: true, amount: true, date: true, referenceNumber: true, notes: true, createdAt: true },
+      select: { id: true, type: true, amount: true, date: true, referenceNumber: true, mode: true, notes: true, createdAt: true },
       orderBy: [{ date: 'asc' }, { createdAt: 'asc' }],
     }) : Promise.resolve([]),
 
     wantJe ? prisma.journalEntryLine.findMany({
       where: {
         partyId,
-        journalEntry: { businessId, status: 'POSTED', date: { gte: fromDate, lte: toDate } },
+        journalEntry: {
+          businessId, status: 'POSTED', date: { gte: fromDate, lte: toDate },
+          // Exclude auto-posted document/payment mirrors — already represented
+          // by the Document/Payment rows above (avoids double-count).
+          sourceType: { notIn: ['DOCUMENT', 'PAYMENT'] },
+        },
       },
       select: { id: true, debit: true, credit: true, narration: true, createdAt: true, journalEntry: { select: { date: true, entryNumber: true, narration: true } } },
       orderBy: [{ journalEntry: { date: 'asc' } }, { createdAt: 'asc' }],
@@ -144,7 +150,7 @@ export async function getPartyLedger(
   ])
 
   // 4. Map to unified rows
-  type RawRow = { id: string; source: 'DOCUMENT' | 'PAYMENT' | 'JOURNAL'; date: Date; createdAt: Date; voucherType: LedgerVoucherType; voucherNumber: string; particulars: string; dr: number; cr: number }
+  type RawRow = { id: string; source: 'DOCUMENT' | 'PAYMENT' | 'JOURNAL'; date: Date; createdAt: Date; voucherType: LedgerVoucherType; voucherNumber: string; particulars: string; dr: number; cr: number; itemCount?: number; mode?: string }
 
   const allRows: RawRow[] = []
 
@@ -160,6 +166,7 @@ export async function getPartyLedger(
       particulars: `${d.type.replace(/_/g, ' ')} — ${(d as { party: { name: string } }).party.name}`,
       dr: mapping.sign > 0 ? amount : 0,
       cr: mapping.sign < 0 ? amount : 0,
+      itemCount: (d as { _count?: { lineItems: number } })._count?.lineItems,
     })
   }
 
@@ -173,6 +180,7 @@ export async function getPartyLedger(
       particulars: isIn ? 'Payment received' : 'Payment made',
       dr: isIn ? 0 : Number(p.amount),
       cr: isIn ? Number(p.amount) : 0,
+      mode: p.mode,
     })
   }
 
@@ -225,6 +233,8 @@ export async function getPartyLedger(
       particulars: r.particulars,
       dr: r.dr, cr: r.cr,
       runningBalance,
+      itemCount: r.itemCount,
+      mode: r.mode,
     }
   })
 
