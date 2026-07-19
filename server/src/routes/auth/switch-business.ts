@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { asyncHandler } from '../../middleware/asyncHandler.js'
 import { validate } from '../../middleware/validate.js'
 import { auth } from '../../middleware/auth.js'
-import { authRateLimiter } from '../../middleware/rate-limit.js'
+import { switchBusinessRateLimiter } from '../../middleware/rate-limit.js'
 import { switchBusinessSchema } from '../../schemas/auth.schemas.js'
 import { sendSuccess, sendError } from '../../lib/response.js'
 import { blacklistToken } from '../../lib/token-blacklist.js'
@@ -22,7 +22,7 @@ const router = Router()
 router.post(
   '/switch-business',
   auth,
-  authRateLimiter,
+  switchBusinessRateLimiter,
   validate(switchBusinessSchema),
   asyncHandler(async (req, res) => {
     const { userId, phone, businessId: currentBusinessId } = req.user!

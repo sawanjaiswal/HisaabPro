@@ -2,6 +2,7 @@ export type { RateLimitStore, RateLimitResult } from './store.js'
 export { createRateLimiter } from './factory.js'
 export {
   authRateLimiter,
+  switchBusinessRateLimiter,
   devLoginRateLimiter,
   otpRateLimiter,
 } from './auth-limiters.js'

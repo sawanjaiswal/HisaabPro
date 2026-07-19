@@ -1,6 +1,8 @@
 import {
   RATE_LIMIT_AUTH_WINDOW_MS,
   RATE_LIMIT_AUTH_MAX,
+  RATE_LIMIT_SWITCH_BUSINESS_WINDOW_MS,
+  RATE_LIMIT_SWITCH_BUSINESS_MAX,
   RATE_LIMIT_DEV_LOGIN_WINDOW_MS,
   RATE_LIMIT_DEV_LOGIN_MAX,
   RATE_LIMIT_OTP_WINDOW_MS,
@@ -8,12 +10,21 @@ import {
 } from '../../config/security.js'
 import { createRateLimiter } from './factory.js'
 
-/** 5 req/min per IP — login, send-otp */
+/** 20 req/min per IP — login, send-otp (unauthenticated brute-force surface) */
 export const authRateLimiter = createRateLimiter({
   windowMs: RATE_LIMIT_AUTH_WINDOW_MS,
   max: RATE_LIMIT_AUTH_MAX,
   message: 'Too many attempts. Please try again later.',
   eventName: 'rate_limit.auth_hit',
+})
+
+/** Switch-business is already `auth`-gated — give it its own generous bucket
+ *  (60/min) so multi-store owners are never locked out of hopping stores. */
+export const switchBusinessRateLimiter = createRateLimiter({
+  windowMs: RATE_LIMIT_SWITCH_BUSINESS_WINDOW_MS,
+  max: RATE_LIMIT_SWITCH_BUSINESS_MAX,
+  message: 'Too many business switches. Please slow down.',
+  eventName: 'rate_limit.switch_business_hit',
 })
 
 /** Dev-login limiter (only mounted when ALLOW_DEV_LOGIN=true). Generous cap so

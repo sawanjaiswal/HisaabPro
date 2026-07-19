@@ -120,8 +120,12 @@ export const MAX_PENDING_INVITES = 20
 /** Business switching rate limit window (ms) */
 export const RATE_LIMIT_SWITCH_BUSINESS_WINDOW_MS = 60 * 1000
 
-/** Max business switches per user per window */
-export const RATE_LIMIT_SWITCH_BUSINESS_MAX = 10
+/** Max business switches per user per window. Switch-business is an
+ *  AUTHENTICATED action (already behind `auth`), not a brute-force surface, so
+ *  this is a runaway-client guard, not a security cap. A multi-store owner
+ *  (Amit persona) legitimately hops stores several times a minute — 60/min
+ *  never locks out a real user while still stopping a stuck client loop. */
+export const RATE_LIMIT_SWITCH_BUSINESS_MAX = 60
 
 /** Business creation rate limit window (ms) — 1 hour */
 export const RATE_LIMIT_CREATE_BUSINESS_WINDOW_MS = 60 * 60 * 1000

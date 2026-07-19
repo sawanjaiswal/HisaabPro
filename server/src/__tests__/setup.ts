@@ -98,6 +98,7 @@ vi.mock('../middleware/rate-limit.js', () => {
   return {
     apiRateLimiter: passthrough,
     authRateLimiter: passthrough,
+    switchBusinessRateLimiter: passthrough,
     otpRateLimiter: passthrough,
     sensitiveRateLimiter: passthrough,
     sensitiveMutationLimiter: passthrough,
