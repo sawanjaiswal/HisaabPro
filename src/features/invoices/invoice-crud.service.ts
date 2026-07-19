@@ -109,11 +109,27 @@ export async function updateDocument(
   data: Partial<DocumentFormData>,
   expectedVersion?: number
 ): Promise<DocumentDetail> {
+  // The form payload is create-shaped, but updateDocumentSchema is `.strict()`
+  // and forbids the immutable create-only keys. Strip them before serializing
+  // so the PUT body conforms — otherwise every edit 400s ("Unrecognized key(s)").
+  // `type` is read first for offline-queue metadata, then dropped from the body.
+  const {
+    type,
+    clientId: _clientId,
+    originalDocumentId: _originalDocumentId,
+    creditDebitReason: _creditDebitReason,
+    ...body
+  } = data as Partial<DocumentFormData> & {
+    clientId?: string
+    originalDocumentId?: string
+    creditDebitReason?: string
+  }
+
   return api<DocumentDetail>(`/documents/${id}`, {
     method: 'PUT',
-    body: JSON.stringify(data),
-    entityType: data.type ? docTypeToEntity(data.type) : 'document',
-    entityLabel: data.type ? `${docTypeToEntity(data.type)} update` : 'Document update',
+    body: JSON.stringify(body),
+    entityType: type ? docTypeToEntity(type) : 'document',
+    entityLabel: type ? `${docTypeToEntity(type)} update` : 'Document update',
     entityVersion: expectedVersion, // #150 optimistic lock
   })
 }
