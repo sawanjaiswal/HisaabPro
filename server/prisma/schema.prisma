@@ -4622,3 +4622,20 @@ enum RoundOffMethod {
   FLOOR
   CEIL
 }
+
+/// Audit trail for every runUnscoped(...) window — the ONLY sanctioned cross-tenant
+/// access path (tenant-isolation Wave A). Platform-global; admin-read-only (M2,
+/// enforced at the route layer). Columns are deliberately NOT named `businessId`
+/// so the DMMF-derived SCOPED_MODELS filter does not classify the audit table as
+/// tenant-scoped. Retention trimmed by cron cleanup-unscoped-log.ts.
+model UnscopedAccessLog {
+  id                String   @id @default(cuid())
+  reason            String
+  subjectUserId     String?
+  subjectBusinessId String?
+  createdAt         DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([reason])
+  @@map("unscoped_access_log")
+}

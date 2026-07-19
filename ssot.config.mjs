@@ -97,4 +97,25 @@ export const REGISTRY = [
     forbidden: [],
     note: "clsx+twMerge wrapper. Don't re-roll className concatenation.",
   },
+
+  // ── Tenant isolation (Wave A, P0.1) ───────────────────────────────────────
+  {
+    capability: "carry the active tenant (business) context",
+    module: "server/src/lib/business-context.ts",
+    exports: ["runInBusinessContext", "getBusinessContext", "runUnscoped"],
+    // The tenant frame lives in ONE AsyncLocalStorage. A second business-keyed
+    // ALS anywhere else = a divergent context the scoping extension can't read.
+    forbidden: ["new AsyncLocalStorage<[^>]*[Bb]usiness"],
+    note: "Tenant context SSOT. runUnscoped is the ONLY sanctioned cross-tenant window.",
+  },
+  {
+    capability: "inject tenant (businessId) scoping into Prisma queries",
+    module: "server/src/lib/prisma-scoped.inject.ts",
+    exports: ["injectScope"],
+    // Discovery: manual `where:{ businessId }` is the legacy pattern across ~406
+    // service files (grandfathered). Surfaced so new scoping logic reuses the
+    // injector instead of hand-rolling AND-merge / findUnique→findFirst rewrites.
+    forbidden: [],
+    note: "Scoped-Prisma injector. Don't re-roll where-merge/rewrite; the $extends layer handles it.",
+  },
 ];

@@ -52,7 +52,12 @@ vi.mock('../lib/prisma.js', () => {
       return undefined
     },
   })
-  return { prisma: proxy }
+  // Scoped-Prisma exports (tenant-isolation Wave A): under the unit-test mock the raw
+  // base client and the scoped-tx shim collapse onto the same proxy — scoping is a
+  // runtime concern proven by the integration suite, not the mocked unit tests.
+  const scopedTransaction = (fn: unknown) =>
+    typeof fn === 'function' ? (fn as (tx: unknown) => unknown)(proxy) : Promise.resolve(fn)
+  return { prisma: proxy, __basePrismaUnsafe: proxy, scopedTransaction }
 })
 
 // Mock logger to silence output during tests
