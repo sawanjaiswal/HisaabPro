@@ -1,24 +1,24 @@
 /** Day Book — All transactions for a single day, chronological (lazy loaded) */
 
-import { useCallback, useState } from 'react'
-import { Calendar, Rows3 } from 'lucide-react'
+import { useCallback } from 'react'
+import { Calendar } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
-import { Button } from '@/components/ui/Button'
 import { ROUTES } from '@/config/routes.config'
 import { useDayBook } from './hooks/useDayBook'
 import { exportReport } from './report.service'
 import { DAY_BOOK_TYPE_LABELS } from './report.constants'
 import { ReportDateNavigator } from './components/ReportDateNavigator'
 import { ReportFilterPills } from './components/ReportFilterPills'
+import { ReportCardList } from './components/ReportCardList'
 import { ReportLoadMore } from './components/ReportLoadMore'
 import { ReportExportBar } from './components/ReportExportBar'
 import { ReportSkeleton } from './components/ReportSkeleton'
 import { DayBookSummaryBar } from './components/DayBookSummaryBar'
-import { DayBookGrid } from './components/DayBookGrid'
+import { DayBookTransactionCard } from './components/DayBookTransactionCard'
 import type { DayBookTransactionType } from './report.types'
 import './report-shared.css'
 import './report-cards.css'
@@ -36,7 +36,6 @@ const TYPE_FILTER_OPTIONS_BASE = Object.entries(DAY_BOOK_TYPE_LABELS).map(
 
 export default function DayBookPage() {
   const { t } = useLanguage()
-  const [density, setDensity] = useState<'comfortable' | 'compact'>('compact')
   const {
     data,
     status,
@@ -142,37 +141,13 @@ export default function DayBookPage() {
           />
         )}
 
-        {/* Transaction grid (archetype O — compact accounting table) */}
-        {hasTransactions && summary !== undefined && (
-          <section className="report-grid-section py-0" aria-label={t.dayBookTransactions}>
-            <div className="flex justify-end">
-              <Button
-                variant="ghost"
-                size="sm"
-                type="button"
-                onClick={() =>
-                  setDensity((d) => (d === 'compact' ? 'comfortable' : 'compact'))
-                }
-                aria-label={t.toggleDensity}
-                aria-pressed={density === 'compact'}
-                className="min-h-[44px] min-w-[44px]"
-                style={{
-                  color:
-                    density === 'compact'
-                      ? 'var(--color-primary-600)'
-                      : 'var(--text-muted)',
-                }}
-              >
-                <Rows3 className="w-5 h-5" aria-hidden="true" />
-              </Button>
-            </div>
-            <DayBookGrid
-              transactions={transactions}
-              summary={summary}
-              density={density}
-              emptyLabel={t.noActivityRecorded}
-            />
-          </section>
+        {/* Transaction list */}
+        {hasTransactions && (
+          <ReportCardList ariaLabel={t.dayBookTransactions}>
+            {transactions.map((txn) => (
+              <DayBookTransactionCard key={txn.id} transaction={txn} />
+            ))}
+          </ReportCardList>
         )}
 
         {/* Load more */}
