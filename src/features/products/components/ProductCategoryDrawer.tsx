@@ -6,10 +6,12 @@
 
 import React from 'react'
 import { Check } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { Drawer } from '@/components/ui/Drawer'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import { PREDEFINED_CATEGORIES } from '../product.constants'
+import { ROUTES } from '@/config/routes.config'
 
 interface ProductCategoryDrawerProps {
   open: boolean
@@ -25,6 +27,7 @@ export const ProductCategoryDrawer: React.FC<ProductCategoryDrawerProps> = ({
   onSelect,
 }) => {
   const { t } = useLanguage()
+  const navigate = useNavigate()
 
   const choose = (id: string | 'ALL') => {
     onSelect(id)
@@ -62,6 +65,16 @@ export const ProductCategoryDrawer: React.FC<ProductCategoryDrawerProps> = ({
           )
         })}
       </ul>
+
+      {/* Entry point to the full category list (#53) — the picker only filters. */}
+      <Button
+        variant="ghost"
+        size="md"
+        className="w-full"
+        onClick={() => { onClose(); navigate(ROUTES.PRODUCT_CATEGORIES) }}
+      >
+        {t.manageCategories}
+      </Button>
     </Drawer>
   )
 }

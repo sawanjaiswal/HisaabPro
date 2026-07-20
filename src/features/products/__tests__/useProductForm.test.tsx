@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { renderHook, act } from '@testing-library/react'
+import { renderHook, act, waitFor } from '@testing-library/react'
 
 const mockNavigate = vi.fn()
 vi.mock('react-router-dom', async () => {
@@ -173,7 +173,8 @@ describe('useProductForm', () => {
       act(() => { submitPromise = result.current.handleSubmit() })
       expect(result.current.isSubmitting).toBe(true)
       await act(async () => { resolveCreate!(); await submitPromise! })
-      expect(result.current.isSubmitting).toBe(false)
+      // The mutation's isPending settles a tick after the promise resolves.
+      await waitFor(() => expect(result.current.isSubmitting).toBe(false))
     })
     it('shows error toast on failure', async () => {
       mockCreateProduct.mockRejectedValue(new Error('Network'))

@@ -20,6 +20,7 @@ export const CreateParty = lazy(() => import('@/features/parties/CreatePartyPage
 export const PartyDetail = lazy(() => import('@/features/parties/PartyDetailPage'))
 export const Products = lazy(() => import('@/features/products/ProductsPage'))
 export const CreateProduct = lazy(() => import('@/features/products/CreateProductPage'))
+export const Categories = lazy(() => import('@/features/products/CategoriesPage'))
 export const ProductDetail = lazy(() => import('@/features/products/ProductDetailPage'))
 export const Invoices = lazy(() => import('@/features/invoices/InvoicesPage'))
 export const CreateInvoice = lazy(() => import('@/features/invoices/CreateInvoicePage'))

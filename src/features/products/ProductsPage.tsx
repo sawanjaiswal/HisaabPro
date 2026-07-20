@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Package } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -17,6 +17,7 @@ import { useBulkSelect } from '@/hooks/useBulkSelect'
 import { useToast } from '@/hooks/useToast'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useProducts } from './useProducts'
+import { useProductFilterActions } from './useProductFilterActions'
 import { useProductBulkActions } from './useProductBulkActions'
 import { ProductsPageHeader } from './components/ProductsPageHeader'
 import { ProductStatTiles } from './components/ProductStatTiles'
@@ -28,7 +29,6 @@ import { ProductCategoryDrawer } from './components/ProductCategoryDrawer'
 import { ProductFilterDrawer } from './components/ProductFilterDrawer'
 import { ProductListSkeleton } from './components/ProductListSkeleton'
 import { getProductByBarcode } from './product.service'
-import { DEFAULT_PRODUCT_FILTERS } from './product.constants'
 import { BarcodeScanner } from '@/components/ui/BarcodeScanner'
 import { LabelPrintDialog } from './label-print/LabelPrintDialog'
 import { ROUTES } from '@/config/routes.config'
@@ -41,7 +41,12 @@ export default function ProductsPage() {
   const navigate = useNavigate()
   const toast = useToast()
   const { t } = useLanguage()
-  const { data, status, filters, setSearch, setFilter, refresh, handleDelete } = useProducts()
+  // Arriving from the Categories list (#53) pre-applies that category.
+  const [searchParams] = useSearchParams()
+  const categoryIdFromUrl = searchParams.get('categoryId') ?? undefined
+  const { data, status, filters, setSearch, setFilter, refresh, handleDelete } = useProducts({
+    initialFilters: categoryIdFromUrl ? { categoryId: categoryIdFromUrl } : undefined,
+  })
   const bulk = useBulkSelect()
   const [scannerOpen, setScannerOpen] = useState(false)
   const [labelPrintOpen, setLabelPrintOpen] = useState(false)
@@ -56,12 +61,10 @@ export default function ProductsPage() {
     openLabelPrint: () => setLabelPrintOpen(true),
   })
 
-  const mode: 'all' | 'low' = filters.lowStockOnly ? 'low' : 'all'
-  const categoryActive = Boolean(filters.categoryId)
-  const filtersActive =
-    filters.status !== 'ACTIVE' ||
-    filters.sortBy !== DEFAULT_PRODUCT_FILTERS.sortBy ||
-    filters.sortOrder !== DEFAULT_PRODUCT_FILTERS.sortOrder
+  const {
+    mode, categoryActive, filtersActive,
+    enableLowStock, showAll, toggleLowStock, selectCategory, resetFilters,
+  } = useProductFilterActions(filters, setFilter)
 
   const handleBarcodeScan = async (value: string) => {
     setScannerOpen(false)
@@ -79,30 +82,6 @@ export default function ProductsPage() {
 
   const goToCreate = () => navigate(ROUTES.PRODUCT_NEW)
   const goToEdit = (id: string) => navigate(`/products/${id}/edit`)
-
-  const enableLowStock = () => {
-    setFilter('categoryId', undefined)
-    setFilter('lowStockOnly', true)
-  }
-
-  const showAll = () => {
-    setFilter('categoryId', undefined)
-    setFilter('lowStockOnly', false)
-  }
-
-  const toggleLowStock = () =>
-    filters.lowStockOnly ? setFilter('lowStockOnly', false) : enableLowStock()
-
-  const selectCategory = (categoryId: string | 'ALL') => {
-    setFilter('lowStockOnly', false)
-    setFilter('categoryId', categoryId === 'ALL' ? undefined : categoryId)
-  }
-
-  const resetFilters = () => {
-    setFilter('status', 'ACTIVE')
-    setFilter('sortBy', DEFAULT_PRODUCT_FILTERS.sortBy)
-    setFilter('sortOrder', DEFAULT_PRODUCT_FILTERS.sortOrder)
-  }
 
   const allProductIds = data?.products.map((p) => p.id) ?? []
 
