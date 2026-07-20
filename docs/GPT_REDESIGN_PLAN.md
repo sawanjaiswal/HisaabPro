@@ -221,11 +221,116 @@ Legend: **DONE** = shipped in `891528a` · **EXISTS** = current page to restyle 
   - [x] #46 Estimate details — `6b4af64`
   - [x] #43 Draft invoices — `1fea3d5`
   - [x] #47 Customer statement — `fe048f4`
-- [ ] Wave 5 — reports (6)
+- [ ] Wave 5 — reports (6) — **3/6 done**
   - [x] #14 Reports home — `e6a9f42` (+ favourites, `src/lib/prefs-store.ts`)
   - [x] #15/#68 Sales + Purchase report — `91257b0` (+ real trend aggregate, `DonutChart`)
-- [ ] Wave 6 — people/HR (6)
-- [ ] Wave 7 — tasks/reminders/search (6)
-- [ ] Wave 8 — settings/business/account (18)
-- [ ] Wave 9 — accounts/onboarding/import (5)
-- [ ] NEW feature builds — Delivery/Route, Today's Tasks, Help, About
+  - [x] #16 Profit & Loss — `81e0c1a` (+ real trend aggregate, fixed a load crash
+        from a fictional client type — `.claude/fix-trace-pl-contract.md`)
+  - [ ] #69 Cash flow — `src/features/reports/CashFlowPage.tsx`
+  - [ ] #31 GST report — `src/features/reports/GstReturnsPage.tsx`
+  - [ ] #66 Customer balance summary — `src/features/reports/AgingReportPage.tsx`
+- [ ] Wave 6 — people/HR (6) — **0/6**
+  - [ ] #21/71 Employee list — `src/features/hr/EmployeeListPage.tsx`
+  - [ ] #27 Employee details — `src/features/hr/EmployeeDetailPage.tsx`
+  - [ ] #28 Attendance — `src/features/hr/AttendancePage.tsx`
+  - [ ] #22/29 Daily collections — `src/features/collections/pages/AgingDashboard.tsx`
+        + `AgingBucketList.tsx` *(correction: these exist but are not named `*Page.tsx`)*
+  - [ ] #72 Permissions / roles — `src/features/settings/RolesPage.tsx`,
+        `StaffPermissionsPage.tsx`, `RoleBuilderPage.tsx`
+  - [ ] #26 Delivery / route — **NEW build, deferred** (see D2)
+- [ ] Wave 7 — tasks/reminders/search (6) — **0/6**
+  - [ ] #18/62 Notifications — `src/features/notifications/pages/NotificationsPage.tsx`
+        (+ `NotificationPreferencesPage.tsx`)
+  - [ ] #23 Add task / reminder — `src/features/marketing/pages/ReminderRuleFormPage.tsx`
+  - [ ] #30/63 Reminders — `src/features/marketing/pages/ReminderRuleListPage.tsx`,
+        `src/features/crm/pages/FollowUpsPage.tsx`
+  - [ ] #65 Calendar view — `src/features/appointments/pages/AppointmentsPage.tsx`
+  - [ ] #64 Today's tasks — **NEW build, deferred** (see D2)
+  - [ ] #24/61 Universal search — **NEW build, NOT a restyle.** *(correction: the
+        plan said "EXISTS/partial" — verified 2026-07-21 that no global-search
+        component, hook, or `/api/search` endpoint exists anywhere. Full-stack build.)*
+- [ ] Wave 8 — settings/business/account (18) — **0/18**
+      16 `*Page.tsx` under `src/features/settings/` + business profile / switcher /
+      godowns / subscription / backup / more. Largest wave; split into 8a (core
+      settings), 8b (business & branches), 8c (subscription/backup/integrations).
+- [ ] Wave 9 — accounts/onboarding/import (5) — **0/5**
+  - [ ] #56 Cash accounts — `src/features/accounting/ChartOfAccountsPage.tsx` / cash-register
+  - [ ] #57 Bank accounts — `src/features/bank-accounts/BankAccountsPage.tsx`
+  - [ ] #58 Opening balance — onboarding step
+  - [ ] #38/78 Business setup — `src/features/onboarding/OnboardingPage.tsx`,
+        `src/features/business/CreateBusinessPage.tsx`
+  - [ ] #59/79 Data import — `src/features/import/pages/ImportJobPage.tsx`,
+        `src/features/bulk-import/BulkImportPage.tsx`
+- [ ] NEW feature builds (**5**, was 4) — Delivery/Route #26, Today's Tasks #64,
+      Universal Search #24/61, Help #36, About #37
+
+---
+
+## 6. Audit — 2026-07-21 (100% sweep, all 190 page files)
+
+Method: `tsc`, both test suites, `enforce.js`, `enforce-offline.mjs`, `npm run ssot`,
+plus an import-following design-token/UI-state sweep over every `*Page.tsx` and its
+feature-local dependency tree. Numbers are measured, not estimated.
+
+### What the sweep found GREEN
+
+| Check | Result |
+|---|---|
+| Typecheck (root + server) | ✅ clean |
+| Client tests | ✅ 136 files · 1409 pass |
+| Server tests | ✅ 149 files · 1269 pass · 7 todo |
+| SSOT gate | ✅ pass (45 legacy grandfathered) |
+| Offline discipline | ✅ rawFetch 0/0 · localStorage 0/0 · mutationNoEntityType **1/6** |
+| Raw hex in feature code | ✅ 20 total — 18 legitimate (React-PDF, thermal receipt, Razorpay SDK theme), 2 are local token defs |
+| `window.confirm` / `alert()` | ✅ 0 in feature pages |
+| `dark:` Tailwind classes | ✅ 0 (CSS-var theme swap intact) |
+| `env(safe-area-inset-*)` | ✅ 0 (C5 holds) |
+| Page files > 250 lines | ✅ 0 |
+
+The design-token layer is effectively clean. The redesign sweep has not introduced
+drift — the remaining work is *coverage*, not *repair*.
+
+### What the sweep found RED
+
+**`enforce.js` — 6 blocking (all oversized, all pre-existing):**
+
+```
+server/src/lib/env.ts                                293L
+server/src/services/marketing/reminder-trigger.service.ts  286L
+src/lib/api.ts                                       279L
+src/components/layout/SideNav.tsx                    272L
+server/src/services/party/ledger.service.ts          260L
+server/src/services/hr/employee.service.ts           259L
+```
+
+**Platform-shell debt grew 5 → 13 warnings** (8 fixed-bottom Phase-3, 5 fixed-top
+Phase-4). New entries since the last audit: `business.css:107`,
+`payment-form-actions.css:67`, `pos-billing.css:388/593`, `pos.css:364`,
+`recurring-detail.css:286`, `role-builder.css:157`. The ratchet is warn-only, so
+these accumulated silently.
+
+### UI-state coverage across all 190 pages
+
+81 / 190 pages (43%) are fully clean. Gaps:
+
+| Missing | Pages |
+|---|---|
+| Error state | 37 |
+| Empty state | 32 |
+| `PageContainer` / layout primitive | 32 |
+| `useLanguage` (i18n) | 17 |
+| Loading state | 17 |
+
+Concentrated in: auth (`Login`/`Register`/`VerifyOtp`/`ForgotPassword`), BOM +
+production-runs (no i18n at all), marketing pages (no `PageContainer`), POS, and
+the `sales/create/*` thin wrappers. **Auth and onboarding are the highest-value
+fixes** — they are every user's first screen and currently miss all four states.
+
+### Plan corrections made from this audit
+
+1. **#24/61 Universal search does not exist** — reclassified EXISTS/partial → NEW
+   full-stack build. NEW-screen count 4 → 5.
+2. **#22/29 Daily collections exists** as `collections/pages/AgingDashboard.tsx` +
+   `AgingBucketList.tsx` (not `*Page.tsx`, which is why route sweeps miss them).
+3. **Wave 8 is 18 screens** — too large for one wave; split 8a / 8b / 8c.
+4. Remaining restyle work: **24 screens** across Waves 5–9, plus 5 NEW builds.
