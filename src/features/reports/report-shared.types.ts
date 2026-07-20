@@ -5,6 +5,8 @@
  * with (paise / 100) at the component layer.
  */
 
+import type { TranslationKey } from '@/lib/translations'
+
 // ─── Shared Report Types ──────────────────────────────────────────────────────
 
 /** Preset date range options shown in the filter bar */
@@ -85,8 +87,10 @@ export interface ExportResponse {
 /** A single report category card shown on the Reports Hub page */
 export interface ReportCategory {
   id: string
-  title: string
-  description: string
+  /** Translation key for the card title */
+  titleKey: TranslationKey
+  /** Translation key for the one-line description */
+  descKey: TranslationKey
   /** Lucide icon component name, e.g. "TrendingUp" */
   icon: string
   /** Full path from ROUTES config */

@@ -97,6 +97,17 @@ export const REGISTRY = [
     forbidden: [],
     note: "clsx+twMerge wrapper. Don't re-roll className concatenation.",
   },
+  {
+    capability: "persist a small local UI preference across app restarts",
+    module: "src/lib/prefs-store.ts",
+    exports: ["getPref", "setPref", "removePref", "clearPrefs"],
+    // Discovery-only: localStorage writes in feature code are already
+    // ratcheted to zero by scripts/enforce-offline.mjs, and the legacy
+    // survivors (biometric ids, sync timestamp, playstore mock) are not UI
+    // preferences — a regex guard here would only add noise.
+    forbidden: [],
+    note: "UI-preference SSOT (favourite reports, sticky UI choices). Cleared on logout via clearAuth().",
+  },
 
   // ── Tenant isolation (Wave A, P0.1) ───────────────────────────────────────
   {

@@ -1,105 +1,63 @@
-/** Reports Hub — landing page for all report categories (lazy loaded) */
+/** Reports Hub — landing page for all report categories (lazy loaded).
+ *
+ * Mockup #14: emerald hero band with a one-line subtitle, white sheet with a
+ * 2-up category grid, then a Favourites section with an Edit toggle.
+ */
 
-import React from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-  TrendingUp,
-  ShoppingCart,
-  Package,
-  Calendar,
-  Banknote,
-  Receipt,
-  FileText,
-  ChevronRight,
-  BarChart3,
-  Percent,
-  FileCode,
-  type LucideProps,
-} from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ROUTES } from '@/config/routes.config'
-import { REPORT_CATEGORIES } from './report.categories'
-import './report-hub.css'
 import { useLanguage } from '@/hooks/useLanguage'
-import { Button } from '@/components/ui/Button'
-
-// ─── Icon registry ────────────────────────────────────────────────────────────
-
-type IconComponent = React.FC<LucideProps>
-
-const ICON_MAP: Record<string, IconComponent> = {
-  TrendingUp,
-  ShoppingCart,
-  Package,
-  Calendar,
-  Banknote,
-  Receipt,
-  FileText,
-  BarChart3,
-  Percent,
-  FileCode,
-}
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
+import { REPORT_CATEGORIES } from './report.categories'
+import { useReportFavourites } from './useReportFavourites'
+import { ReportCategoryCard } from './components/ReportCategoryCard'
+import { ReportFavouritesSection } from './components/ReportFavouritesSection'
+import './report-hub.css'
 
 export default function ReportsHubPage() {
   const { t } = useLanguage()
   const navigate = useNavigate()
+  const [editing, setEditing] = useState(false)
+  const { favourites, hydrated, isFavourite, toggleFavourite } = useReportFavourites()
+
+  const hero = (
+    <p className="report-hub-hero-sub">{t.exploreBusinessInsights}</p>
+  )
 
   return (
     <AppShell>
       <Header title={t.reports} backTo={ROUTES.DASHBOARD} />
 
-      <div className="page-hero">
-        <section className="report-hub-hero" aria-label={t.reportsOverview}>
-          <div className="report-hub-hero-icon" aria-hidden="true">
-            <BarChart3 size={28} />
-          </div>
-          <div className="report-hub-hero-content">
-            <span className="report-hub-hero-title">{t.businessInsights}</span>
-            <span className="report-hub-hero-subtitle">
-              {t.trackSalesStockCashFlow}
-            </span>
-          </div>
-          <span className="report-hub-hero-count">{REPORT_CATEGORIES.length} {t.reportsCount}</span>
-        </section>
-      </div>
-
-      <PageContainer variant="dashboard" className="space-y-6">
-        <div className="report-hub">
-          <div className="report-hub-grid stagger-list">
-            {REPORT_CATEGORIES.map((category) => {
-              const Icon = ICON_MAP[category.icon] ?? TrendingUp
-
-              return (
-                <Button variant="none"
+      <HeroPage hero={hero}>
+        <PageContainer variant="dashboard" className="space-y-6">
+          <section className="report-hub-section py-0" aria-label={t.reportsOverview}>
+            <div className="report-hub-grid stagger-list">
+              {REPORT_CATEGORIES.map((category) => (
+                <ReportCategoryCard
                   key={category.id}
-                  className="report-category-card"
-                  onClick={() => navigate(category.route)}
-                  aria-label={`${t.viewReport} ${category.title}`}
-                  type="button"
-                  style={{ '--report-accent-color': category.color } as React.CSSProperties}
-                >
-                  <div className="report-category-icon" aria-hidden="true">
-                    <Icon size={22} />
-                  </div>
+                  category={category}
+                  editing={editing}
+                  isFavourite={isFavourite(category.id)}
+                  onOpen={(route) => navigate(route)}
+                  onToggleFavourite={toggleFavourite}
+                />
+              ))}
+            </div>
+          </section>
 
-                  <div>
-                    <div className="report-category-title">{category.title}</div>
-                    <div className="report-category-desc">{category.description}</div>
-                  </div>
-
-                  <div className="report-category-footer" aria-hidden="true">
-                    <ChevronRight size={16} />
-                  </div>
-                </Button>
-              )
-            })}
-          </div>
-        </div>
-      </PageContainer>
+          <ReportFavouritesSection
+            favourites={favourites}
+            hydrated={hydrated}
+            editing={editing}
+            onToggleEditing={() => setEditing((v) => !v)}
+            onOpen={(route) => navigate(route)}
+          />
+        </PageContainer>
+      </HeroPage>
     </AppShell>
   )
 }
