@@ -214,7 +214,13 @@ Legend: **DONE** = shipped in `891528a` · **EXISTS** = current page to restyle 
   - [x] #44 Sales return — `82cb1a7`
   - [x] #51 Purchase return — `82cb1a7`
   - [x] #52 Supplier ledger — `fb9b4cc` (direction-aware tiles)
-- [ ] Wave 4 — expenses/estimates/docs (6)
+- [x] Wave 4 — expenses/estimates/docs (6)
+  - [x] #10 Expense list — `1eacee3`
+  - [x] #13 Expense details — `f8cff00`
+  - [x] #45 Estimate list — `efc7727`
+  - [x] #46 Estimate details — `6b4af64`
+  - [x] #43 Draft invoices — `1fea3d5`
+  - [x] #47 Customer statement — `fe048f4`
 - [ ] Wave 5 — reports (6)
 - [ ] Wave 6 — people/HR (6)
 - [ ] Wave 7 — tasks/reminders/search (6)
