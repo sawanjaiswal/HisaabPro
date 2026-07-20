@@ -30,6 +30,19 @@ export const DATE_RANGE_LABELS: Record<DateRangePreset, string> = {
   custom:      'Custom',
 }
 
+/**
+ * Translation keys for the same presets — used where the control is rendered
+ * in the user's language (the hero range picker on the invoice report).
+ */
+export const DATE_RANGE_PRESET_KEYS = {
+  today:      'today',
+  this_week:  'thisWeek',
+  this_month: 'thisMonth',
+  last_month: 'lastMonth',
+  this_fy:    'thisFY',
+  custom:     'customRange',
+} as const satisfies Record<DateRangePreset, string>
+
 /** Ordered list used to render date range filter pills */
 export const DATE_RANGE_PRESETS: DateRangePreset[] = [
   'today',

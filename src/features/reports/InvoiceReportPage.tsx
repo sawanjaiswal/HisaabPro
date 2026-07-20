@@ -10,17 +10,21 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { FileText } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { PageContainer } from '@/components/layout/PageContainer'
+import { Button } from '@/components/ui/Button'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ROUTES } from '@/config/routes.config'
 import { getDateRange } from './report.utils'
-import { formatAmount } from './report.utils'
 import { useInvoiceReport } from './hooks/useInvoiceReport'
 import { InvoiceReportFilter } from './components/InvoiceReportFilter'
 import { InvoiceReportList } from './components/InvoiceReportList'
 import { InvoiceReportGrouped } from './components/InvoiceReportGrouped'
-import { ReportSummaryBar } from './components/ReportSummaryBar'
+import { InvoiceReportPeriod } from './components/InvoiceReportPeriod'
+import { InvoiceReportHero } from './components/InvoiceReportHero'
+import { InvoiceReportBreakup } from './components/InvoiceReportBreakup'
+import { InvoiceReportSummaryGrid } from './components/InvoiceReportSummaryGrid'
 import { ReportLoadMore } from './components/ReportLoadMore'
 import { ReportExportBar } from './components/ReportExportBar'
 import { ReportSkeleton } from './components/ReportSkeleton'
@@ -36,6 +40,7 @@ import type { StatusFilterValue } from './components/InvoiceReportFilter'
 import './report-shared.css'
 import './report-cards.css'
 import './report-shared-ui.css'
+import './report-invoice.css'
 import { useLanguage } from '@/hooks/useLanguage'
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -116,6 +121,11 @@ export default function InvoiceReportPage() {
     [navigate],
   )
 
+  /** Bottom CTA — hands off to the full invoice list (sales or purchases). */
+  const handleViewInvoices = useCallback(() => {
+    navigate(type === 'sale' ? ROUTES.INVOICES : ROUTES.PURCHASES)
+  }, [navigate, type])
+
   const handleExport = useCallback((_format: ExportFormat) => {
     // Export is handled by the service layer in a future implementation
   }, [])
@@ -127,79 +137,108 @@ export default function InvoiceReportPage() {
       ? (data.data.groups?.length ?? 0) > 0
       : (data.data.items?.length ?? 0) > 0)
 
-  const summaryItems = data
-    ? [
-        { label: t.totalInvoices, value: String(data.data.summary.totalInvoices) },
-        { label: t.totalAmount, value: formatAmount(data.data.summary.totalAmount), color: 'var(--color-primary-600)' },
-        { label: t.paid, value: formatAmount(data.data.summary.totalPaid), color: 'var(--color-success-600)' },
-        { label: t.outstanding, value: formatAmount(data.data.summary.totalOutstanding), color: 'var(--color-error-600)' },
-      ]
-    : []
+  const hero = (
+    <InvoiceReportPeriod
+      activePreset={activeDatePreset}
+      from={filters.from}
+      to={filters.to}
+      onPresetChange={handleDatePresetChange}
+    />
+  )
 
   return (
     <AppShell>
       <Header title={title} backTo={ROUTES.REPORTS} />
 
-      <PageContainer variant="list" className="space-y-6">
-        <InvoiceReportFilter
-          activeDatePreset={activeDatePreset}
-          activeStatus={activeStatus}
-          activeGroupBy={filters.groupBy}
-          activeSortBy={filters.sortBy}
-          onDatePresetChange={handleDatePresetChange}
-          onStatusChange={handleStatusChange}
-          onGroupByChange={handleGroupByChange}
-          onSortByChange={handleSortByChange}
-        />
+      <HeroPage hero={hero}>
+        <PageContainer variant="list" className="space-y-6">
+          {status === 'success' && data && (
+            <>
+              <InvoiceReportHero
+                type={type}
+                totalAmount={data.data.summary.totalAmount}
+                trend={data.data.trend}
+              />
+              <InvoiceReportBreakup summary={data.data.summary} />
+              <InvoiceReportSummaryGrid summary={data.data.summary} />
+            </>
+          )}
 
-        {status === 'success' && data && <ReportSummaryBar items={summaryItems} />}
-        {status === 'loading' && <ReportSkeleton rows={6} />}
-        {status === 'error' && (
-          <ErrorState
-            title={`${t.couldNotLoadReport} ${title.toLowerCase()}`}
-            message={t.checkConnectionRetry}
-            onRetry={refresh}
+          {status === 'loading' && (
+            <div className="invoice-report-hero-skeleton animate-pulse" aria-hidden="true" />
+          )}
+
+          <InvoiceReportFilter
+            activeDatePreset={activeDatePreset}
+            activeStatus={activeStatus}
+            activeGroupBy={filters.groupBy}
+            activeSortBy={filters.sortBy}
+            onDatePresetChange={handleDatePresetChange}
+            onStatusChange={handleStatusChange}
+            onGroupByChange={handleGroupByChange}
+            onSortByChange={handleSortByChange}
+            hideDateRange
           />
-        )}
 
-        {status === 'success' && !hasData && (
-          <EmptyState
-            icon={<FileText size={22} aria-hidden="true" />}
-            title={t.noInvoicesFound}
-            description={t.tryAdjustingFilters}
-          />
-        )}
+          {status === 'loading' && <ReportSkeleton rows={6} />}
+          {status === 'error' && (
+            <ErrorState
+              title={`${t.couldNotLoadReport} ${title.toLowerCase()}`}
+              message={t.checkConnectionRetry}
+              onRetry={refresh}
+            />
+          )}
 
-        {status === 'success' && hasData && !isGrouped && (
-          <InvoiceReportList
-            items={data?.data.items ?? []}
-            title={title}
-            onInvoiceClick={handleInvoiceClick}
-          />
-        )}
+          {status === 'success' && !hasData && (
+            <EmptyState
+              icon={<FileText size={22} aria-hidden="true" />}
+              title={t.noInvoicesFound}
+              description={t.tryAdjustingFilters}
+            />
+          )}
 
-        {status === 'success' && hasData && isGrouped && (
-          <InvoiceReportGrouped
-            groups={data?.data.groups ?? []}
-            title={title}
-            expandedGroups={expandedGroups}
-            onToggleGroup={handleToggleGroup}
-            onInvoiceClick={handleInvoiceClick}
-          />
-        )}
+          {status === 'success' && hasData && !isGrouped && (
+            <InvoiceReportList
+              items={data?.data.items ?? []}
+              title={title}
+              onInvoiceClick={handleInvoiceClick}
+            />
+          )}
 
-        {status === 'success' && (
-          <ReportLoadMore
-            hasMore={data?.meta.hasMore ?? false}
-            isLoading={false}
-            onLoadMore={loadMore}
-          />
-        )}
+          {status === 'success' && hasData && isGrouped && (
+            <InvoiceReportGrouped
+              groups={data?.data.groups ?? []}
+              title={title}
+              expandedGroups={expandedGroups}
+              onToggleGroup={handleToggleGroup}
+              onInvoiceClick={handleInvoiceClick}
+            />
+          )}
 
-        {status === 'success' && hasData && (
+          {status === 'success' && (
+            <ReportLoadMore
+              hasMore={data?.meta.hasMore ?? false}
+              isLoading={false}
+              onLoadMore={loadMore}
+            />
+          )}
+
+          {status === 'success' && hasData && (
           <ReportExportBar onExport={handleExport} disabled={false} />
-        )}
-      </PageContainer>
+          )}
+
+          {status === 'success' && hasData && (
+            <Button
+              variant="primary"
+              size="lg"
+              className="w-full"
+              onClick={handleViewInvoices}
+            >
+              {t.viewInvoices}
+            </Button>
+          )}
+          </PageContainer>
+      </HeroPage>
     </AppShell>
   )
 }

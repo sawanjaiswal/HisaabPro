@@ -4,6 +4,7 @@
 
 import { prisma } from '../../lib/prisma.js'
 import { groupItems } from './report-helpers.js'
+import { getInvoiceTrend } from './report-invoice-trend.js'
 import type { InvoiceReportQuery } from '../../schemas/report.schemas.js'
 
 export async function getInvoiceReport(businessId: string, query: InvoiceReportQuery) {
@@ -29,12 +30,15 @@ export async function getInvoiceReport(businessId: string, query: InvoiceReportQ
     where.paidAmount = { gt: 0 }
     where.balanceDue = { gt: 0 }
   }
+  // Totals describe the whole filtered range, so they must NOT see the cursor
+  // clause — otherwise the summary shrinks with every load-more page.
+  const totalsWhere = { ...where }
   if (cursor) where.id = { lt: cursor }
 
   const orderField = sortBy.startsWith('amount') ? 'grandTotal' : 'documentDate'
   const orderDir = sortBy.endsWith('asc') ? 'asc' : 'desc'
 
-  const [items, total, summary] = await Promise.all([
+  const [items, total, summary, paidCount, trend] = await Promise.all([
     prisma.document.findMany({
       where,
       select: {
@@ -46,9 +50,9 @@ export async function getInvoiceReport(businessId: string, query: InvoiceReportQ
       orderBy: { [orderField]: orderDir },
       take: limit + 1,
     }),
-    prisma.document.count({ where }),
+    prisma.document.count({ where: totalsWhere }),
     prisma.document.aggregate({
-      where,
+      where: totalsWhere,
       _count: true,
       _sum: {
         grandTotal: true,
@@ -57,6 +61,10 @@ export async function getInvoiceReport(businessId: string, query: InvoiceReportQ
         totalDiscount: true,
       },
     }),
+    prisma.document.count({ where: { ...totalsWhere, balanceDue: 0 } }),
+    // Analytics aggregate: first page only — load-more pages reuse the client's
+    // copy, and the trend is identical for every page of the same filter set.
+    !cursor && from && to ? getInvoiceTrend(totalsWhere, from, to) : Promise.resolve(null),
   ])
 
   const hasMore = items.length > limit
@@ -83,7 +91,10 @@ export async function getInvoiceReport(businessId: string, query: InvoiceReportQ
         totalPaid: summary._sum.paidAmount || 0,
         totalOutstanding: summary._sum.balanceDue || 0,
         totalDiscount: summary._sum.totalDiscount || 0,
+        paidInvoices: paidCount,
+        pendingInvoices: summary._count - paidCount,
       },
+      trend: trend ?? undefined,
       items: groupBy === 'none' ? mapped : undefined,
       groups: groupBy !== 'none' ? groupItems(mapped, groupBy) : undefined,
     },

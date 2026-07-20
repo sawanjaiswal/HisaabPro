@@ -24,6 +24,8 @@ export type {
   InvoiceReportItem,
   InvoiceReportGroup,
   InvoiceReportResponse,
+  InvoiceTrendPoint,
+  InvoiceReportTrend,
 } from './report-invoice.types'
 
 export type {

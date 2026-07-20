@@ -1,0 +1,249 @@
+/* Invoice Report (sales / purchases) — analytics block styles (mockup #15).
+ *
+ * Mobile-first: base targets 320px, min-width queries widen the layout.
+ * CSS variables only — no hex, no raw px colours.
+ */
+
+/* ─── Hero: period control on the emerald field ──────────────── */
+
+.invoice-report-period {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 var(--space-4) var(--space-4);
+}
+
+/* The range picker rides ON the emerald field, so the shared Select trigger
+   is stripped back to a text control instead of the light input surface. */
+.invoice-report-period__select.rx-select-trigger {
+  align-self: flex-start;
+  width: auto;
+  min-height: 44px;
+  padding: 0;
+  gap: var(--space-1);
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--color-white-inverse);
+}
+
+.invoice-report-period__select.rx-select-trigger:focus-visible {
+  outline: 2px solid var(--color-white-inverse);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.invoice-report-period__range {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--color-white-inverse);
+  opacity: 0.75;
+}
+
+/* ─── Total sales hero card ─────────────────────────────────── */
+
+.invoice-report-hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-5);
+  border-radius: var(--radius-xl);
+  background: var(--color-hero-surface);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.invoice-report-hero__label {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--color-white-inverse);
+  opacity: 0.7;
+}
+
+.invoice-report-hero__amount {
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  color: var(--color-white-inverse);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+}
+
+.invoice-report-hero__delta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  align-self: flex-start;
+  margin-top: var(--space-1);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-success-500);
+}
+
+.invoice-report-hero__delta.is-down {
+  color: var(--color-error-500);
+}
+
+.invoice-report-hero__delta-note {
+  font-weight: 500;
+  color: var(--color-white-inverse);
+  opacity: 0.65;
+}
+
+.invoice-report-hero__chart {
+  margin-top: var(--space-4);
+}
+
+.invoice-report-hero__no-trend {
+  margin-top: var(--space-4);
+  font-size: var(--fs-sm);
+  color: var(--color-white-inverse);
+  opacity: 0.6;
+}
+
+/* ─── Section shell (breakup, summary) ──────────────────────── */
+
+.invoice-report-section-title {
+  margin-bottom: var(--space-3);
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+/* ─── Breakup: donut + legend ───────────────────────────────── */
+
+.invoice-report-breakup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--color-gray-0);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+}
+
+.invoice-report-legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1;
+  min-width: 0;
+}
+
+.invoice-report-legend-row {
+  display: grid;
+  /* minmax(0,…) so a long label truncates instead of pushing the amount out.
+     Below 360px the card stacks (see the media query) and the legend gets the
+     full width — side-by-side only ever runs where there is room for it. */
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    'dot label value'
+    '.   .     share';
+  align-items: center;
+  gap: 2px var(--space-2);
+  font-size: var(--fs-sm);
+}
+
+.invoice-report-legend-dot {
+  grid-area: dot;
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.invoice-report-legend-label {
+  grid-area: label;
+  color: var(--color-gray-600);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.invoice-report-legend-value {
+  grid-area: value;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  font-variant-numeric: tabular-nums;
+}
+
+.invoice-report-legend-share {
+  grid-area: share;
+  justify-self: end;
+  font-size: var(--fs-xs);
+  color: var(--color-gray-500);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Small phones: the 132px donut + legend do not both fit on one line at
+   320px, so the card stacks and the legend spans the full card width. */
+@media (max-width: 359px) {
+  .invoice-report-breakup {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-4);
+  }
+
+  .invoice-report-breakup .donut-chart {
+    align-self: center;
+  }
+}
+
+/* ─── Summary metric grid ───────────────────────────────────── */
+
+.invoice-report-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.invoice-report-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-4);
+  background: var(--color-gray-0);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+}
+
+.invoice-report-metric-value {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--color-gray-800);
+  font-variant-numeric: tabular-nums;
+}
+
+.invoice-report-metric-label {
+  font-size: var(--fs-xs);
+  color: var(--color-gray-500);
+}
+
+/* ─── Loading skeleton for the analytics block ──────────────── */
+
+.invoice-report-hero-skeleton {
+  height: 210px;
+  border-radius: var(--radius-xl);
+  background: var(--color-gray-200);
+}
+
+/* ─── Tablet+ ───────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .invoice-report-metrics {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .invoice-report-breakup {
+    gap: var(--space-6);
+  }
+}
+
+/* ─── Dark theme ────────────────────────────────────────────── */
+
+[data-theme="dark"] .invoice-report-breakup,
+[data-theme="dark"] .invoice-report-metric,
+[data-theme="dark"] .invoice-report-hero {
+  box-shadow: var(--shadow-card-dark);
+}

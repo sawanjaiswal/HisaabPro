@@ -83,6 +83,9 @@ export function useInvoiceReport({
           ...query.data!,
           data: {
             summary: query.data!.data.summary,
+            // Load-more responses omit the analytics aggregate — keep the copy
+            // fetched with the first page of this filter set.
+            trend: query.data!.data.trend ?? prev.data.trend,
             items: nextItems.length > 0 ? [...prevItems, ...nextItems] : undefined,
             groups: nextGroups.length > 0 ? [...prevGroups, ...nextGroups] : undefined,
           },

@@ -1449,4 +1449,18 @@ export const hi = {
   importPaymentIssue_DUPLICATE_PAYMENT:             'डुप्लिकेट भुगतान',
   importPaymentIssue_INTRA_FILE_DUPLICATE:          'इस फ़ाइल में डुप्लिकेट',
   importPaymentIssue_COMMIT_BLOCKED_INVOICE_NOT_FOUND: 'इनवॉइस सूची में नहीं',
+
+  // Sales / Purchase report (/reports/sales, /reports/purchases)
+  thisWeek:            'इस हफ़्ते',
+  thisFY:              'इस वित्त वर्ष',
+  customRange:         'कस्टम',
+  summaryLabel:        'सारांश',
+  breakup:             'विवरण',
+  paidInvoices:        'भुगतान हुए बिल',
+  pendingInvoices:     'बाकी बिल',
+  avgInvoiceValue:     'औसत बिल राशि',
+  viewInvoices:        'बिल देखें',
+  discountGiven:       'दी गई छूट',
+  vsPreviousPeriod:    'पिछली अवधि से',
+  noTrendData:         'ट्रेंड के लिए पर्याप्त डेटा नहीं',
 } as const

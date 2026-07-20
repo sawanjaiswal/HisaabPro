@@ -1453,4 +1453,18 @@ export const en = {
   importPaymentIssue_DUPLICATE_PAYMENT:             'Duplicate payment',
   importPaymentIssue_INTRA_FILE_DUPLICATE:          'Duplicate in this file',
   importPaymentIssue_COMMIT_BLOCKED_INVOICE_NOT_FOUND: 'Invoice not in your list',
+
+  // Sales / Purchase report (/reports/sales, /reports/purchases)
+  thisWeek:            'This Week',
+  thisFY:              'This FY',
+  customRange:         'Custom',
+  summaryLabel:        'Summary',
+  breakup:             'Breakup',
+  paidInvoices:        'Paid Invoices',
+  pendingInvoices:     'Pending Invoices',
+  avgInvoiceValue:     'Avg Invoice Value',
+  viewInvoices:        'View Invoices',
+  discountGiven:       'Discount Given',
+  vsPreviousPeriod:    'vs last period',
+  noTrendData:         'Not enough data for a trend yet',
 } as const

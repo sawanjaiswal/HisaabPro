@@ -34,6 +34,26 @@ export interface InvoiceReportSummary {
   totalPaid: number          // paise
   totalOutstanding: number   // paise
   totalDiscount: number      // paise
+  /** Invoices fully settled (balanceDue = 0) */
+  paidInvoices: number
+  /** Invoices with any balance outstanding */
+  pendingInvoices: number
+}
+
+/** One bucket of the trend series shown in the Total Sales card */
+export interface InvoiceTrendPoint {
+  date: string               // ISO date, bucket start
+  amount: number             // paise
+}
+
+/**
+ * Analytics aggregate for the selected range. Present on the first page only —
+ * load-more responses omit it (it never changes within one filter set).
+ */
+export interface InvoiceReportTrend {
+  series: InvoiceTrendPoint[]
+  /** Total for the same-length window immediately before `from`, paise */
+  previousTotal: number
 }
 
 /** A single invoice row in the flat (ungrouped) result list */
@@ -66,6 +86,8 @@ export interface InvoiceReportResponse {
   success: boolean
   data: {
     summary: InvoiceReportSummary
+    /** Present on the first page of a filter set (omitted on load-more) */
+    trend?: InvoiceReportTrend
     /** Present when groupBy is 'none' */
     items?: InvoiceReportItem[]
     /** Present when groupBy is anything other than 'none' */

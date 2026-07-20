@@ -178,13 +178,10 @@
 
 /* ─── Dark theme ────────────────────────────────────────────── */
 
-[data-theme="dark"] .report-card-number {
-  color: var(--color-gray-200);
-}
-
-[data-theme="dark"] .report-card-amount {
-  color: var(--color-gray-100);
-}
+/* No colour overrides for .report-card-number / .report-card-amount here: the
+   dark token scale is INVERTED (gray-200 is a dark surface in dark mode), so
+   pinning them to gray-100/200 rendered dark-on-dark. They inherit gray-800,
+   which the dark theme already maps to a light ink. */
 
 [data-theme="dark"] .report-status-badge--paid {
   background: var(--color-success-bg-subtle);

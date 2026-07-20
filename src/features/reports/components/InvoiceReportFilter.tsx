@@ -55,6 +55,8 @@ interface InvoiceReportFilterProps {
   onStatusChange: (value: string) => void
   onGroupByChange: (value: string) => void
   onSortByChange: (value: string) => void
+  /** Hide the date pills when the page owns the range control (mockup #15 hero) */
+  hideDateRange?: boolean
 }
 
 export function InvoiceReportFilter({
@@ -66,6 +68,7 @@ export function InvoiceReportFilter({
   onStatusChange,
   onGroupByChange,
   onSortByChange,
+  hideDateRange = false,
 }: InvoiceReportFilterProps) {
   const { t } = useLanguage()
   const statusOptions = STATUS_OPTIONS_BASE.map((opt) => ({
@@ -75,12 +78,14 @@ export function InvoiceReportFilter({
 
   return (
     <div className="report-filter-bar">
-      <ReportFilterPills
-        options={DATE_RANGE_OPTIONS}
-        activeValue={activeDatePreset}
-        onChange={onDatePresetChange}
-        ariaLabel={t.dateRangeFilter}
-      />
+      {!hideDateRange && (
+        <ReportFilterPills
+          options={DATE_RANGE_OPTIONS}
+          activeValue={activeDatePreset}
+          onChange={onDatePresetChange}
+          ariaLabel={t.dateRangeFilter}
+        />
+      )}
 
       <ReportFilterPills
         options={statusOptions}
