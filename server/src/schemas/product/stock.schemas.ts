@@ -47,6 +47,16 @@ export const stockHistorySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
 })
 
+// === Business-wide adjustment log (mockup #48) ===
+
+export const stockAdjustmentQuerySchema = z.object({
+  cursor: z.string().optional(),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  search: z.string().trim().max(100).optional(),
+  /** Omitted = both directions. */
+  direction: z.enum(STOCK_ADJUST_TYPES).optional(),
+})
+
 // === Bulk stock adjustment ===
 
 const bulkAdjustItemSchema = z.object({
@@ -77,3 +87,4 @@ export type StockMovementQuery = z.infer<typeof stockMovementQuerySchema>
 export type StockValidateInput = z.infer<typeof stockValidateSchema>
 export type StockHistoryQuery = z.infer<typeof stockHistorySchema>
 export type BulkStockAdjustInput = z.infer<typeof bulkStockAdjustSchema>
+export type StockAdjustmentQuery = z.infer<typeof stockAdjustmentQuerySchema>

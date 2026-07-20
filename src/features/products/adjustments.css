@@ -1,0 +1,123 @@
+/* Stock Adjustments (mockup #48) — log rows with a signed delta.
+ *
+ * Used by StockAdjustmentsPage.tsx and AdjustmentRow.tsx.
+ */
+
+.adjustment-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.adjustment-row {
+  display: flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xs);
+}
+
+/* <Button variant="ghost"> underneath — reset its chrome so the whole row
+ * reads as one tappable band rather than a pill. */
+.adjustment-row-main {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: auto;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: var(--font-primary);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.adjustment-row-main:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
+.adjustment-row-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-50);
+  color: var(--color-primary-600);
+}
+
+.adjustment-row-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.adjustment-row-name {
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--color-gray-800);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adjustment-row-meta {
+  font-size: var(--fs-xs);
+  color: var(--color-gray-400);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Direction is status, not identity — success/error greens and reds. */
+.adjustment-row-delta {
+  flex-shrink: 0;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.adjustment-row-delta--in {
+  color: var(--color-success-600);
+}
+
+.adjustment-row-delta--out {
+  color: var(--color-error-600);
+}
+
+/* ─── Tablet+ ────────────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .adjustment-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .adjustment-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .adjustment-row {
+  box-shadow: var(--shadow-card-dark);
+}
+
+[data-theme="dark"] .adjustment-row-name {
+  color: var(--color-gray-900);
+}

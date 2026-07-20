@@ -13,6 +13,7 @@ export {
   listProducts,
   listStockMovements,
   listStockHistory,
+  listStockAdjustments,
   bulkAdjustStock,
   getProductAnalytics,
 } from './product/index.js'

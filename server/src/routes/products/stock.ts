@@ -12,6 +12,7 @@ import { prisma } from '../../lib/prisma.js'
 import logger from '../../lib/logger.js'
 import {
   stockAdjustSchema,
+  stockAdjustmentQuerySchema,
   stockMovementQuerySchema,
   stockValidateSchema,
   stockHistorySchema,
@@ -31,6 +32,17 @@ router.post(
   validate(stockValidateSchema),
   asyncHandler(async (req, res) => {
     const result = await validateStockForInvoice(req.user!.businessId, req.body.items)
+    sendSuccess(res, result)
+  })
+)
+
+/** GET /api/products/stock/adjustments — business-wide manual adjustment log */
+router.get(
+  '/stock/adjustments',
+  requirePermission('inventory.view'),
+  asyncHandler(async (req, res) => {
+    const query = stockAdjustmentQuerySchema.parse(req.query)
+    const result = await productService.listStockAdjustments(req.user!.businessId, query)
     sendSuccess(res, result)
   })
 )

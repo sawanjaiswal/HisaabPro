@@ -30,7 +30,7 @@ export type NavKey =
   | 'reports' | 'insights' | 'accounting' | 'gst' | 'gst-filing-check' | 'products'
   | 'greetings' | 'bulk-import' | 'marketing' | 'settings'
   | 'dashboard' | 'invoices' | 'parties'
-  | 'jobs' | 'orders' | 'batches' | 'godowns' | 'serial-numbers' | 'stock-verification' | 'stock-count' | 'stock-value-report' | 'bom' | 'production-runs'
+  | 'jobs' | 'orders' | 'batches' | 'godowns' | 'serial-numbers' | 'stock-verification' | 'stock-count' | 'stock-adjustments' | 'stock-value-report' | 'bom' | 'production-runs'
   | 'pos' | 'cash-register' | 'purchases' | 'collections' | 'inventory-alerts' | 'reorder-suggestions' | 'notifications' | 'serial-lookup'
 
 export interface VerticalProfile {

@@ -264,4 +264,12 @@ export const hiExt7 = {
   noCategoriesYet:           'अभी कोई श्रेणी नहीं',
   noCategoriesYetDesc:       'अपने प्रोडक्ट को समूह में रखें ताकि सूचियां और रिपोर्ट साफ़ रहें।',
   productLabel:              'प्रोडक्ट',
+  // ─── Stock Adjustments (#48) ───────────────────────────────────────────
+  stockAdjustmentTitle:      'स्टॉक समायोजन',
+  searchAdjustments:         'समायोजन खोजें',
+  filterAdjustments:         'समायोजन फ़िल्टर करें',
+  newAdjustment:             'नया समायोजन',
+  couldNotLoadAdjustments:   'समायोजन लोड नहीं हो सके',
+  noAdjustmentsYet:          'अभी कोई समायोजन नहीं',
+  noAdjustmentsYetDesc:      'स्टॉक गिनती में किए गए सुधार यहां दर्ज होंगे।',
 } as const

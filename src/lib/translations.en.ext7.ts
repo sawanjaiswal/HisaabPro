@@ -301,4 +301,12 @@ export const enExt7 = {
   noCategoriesYet:           'No categories yet',
   noCategoriesYetDesc:       'Group your products so lists and reports stay readable.',
   productLabel:              'Product',
+  // ─── Stock Adjustments (#48) ───────────────────────────────────────────
+  stockAdjustmentTitle:      'Stock Adjustment',
+  searchAdjustments:         'Search adjustments',
+  filterAdjustments:         'Filter adjustments',
+  newAdjustment:             'New adjustment',
+  couldNotLoadAdjustments:   'Could not load adjustments',
+  noAdjustmentsYet:          'No adjustments yet',
+  noAdjustmentsYetDesc:      'Corrections you make to stock counts will be logged here.',
 } as const
