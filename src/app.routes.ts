@@ -25,6 +25,7 @@ export const StockAdjustments = lazy(() => import('@/features/products/StockAdju
 export const ExpenseCategories = lazy(() => import('@/features/expenses/pages/ExpenseCategoriesPage'))
 export const ProductDetail = lazy(() => import('@/features/products/ProductDetailPage'))
 export const Invoices = lazy(() => import('@/features/invoices/InvoicesPage'))
+export const DraftInvoices = lazy(() => import('@/features/invoices/DraftInvoicesPage'))
 export const CreateInvoice = lazy(() => import('@/features/invoices/CreateInvoicePage'))
 export const InvoiceDetail = lazy(() => import('@/features/invoices/InvoiceDetailPage'))
 export const EditParty = lazy(() => import('@/features/parties/EditPartyPage'))

@@ -1,0 +1,90 @@
+/* ============================================================
+   Draft Invoices (mockup #43) — resume-or-discard rows.
+   Tokens only; dark mode via tokens-dark.css.
+   ============================================================ */
+
+.draft-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.draft-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: var(--color-gray-0);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  padding-right: var(--space-2);
+}
+
+[data-theme="dark"] .draft-row {
+  box-shadow: var(--shadow-card-dark);
+}
+
+/* The resume half fills the row; the delete button sits beside it. */
+.draft-row__main {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  padding: var(--space-3) var(--space-4);
+}
+
+.draft-row__main:active {
+  transform: scale(0.99);
+}
+
+.draft-row__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-50);
+  color: var(--color-primary-600);
+}
+
+.draft-row__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.draft-row__number {
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.draft-row__meta {
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.draft-row__amount {
+  flex-shrink: 0;
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.draft-row__delete {
+  flex-shrink: 0;
+  color: var(--color-error-600);
+}

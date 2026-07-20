@@ -28,6 +28,7 @@ export const ROUTES = {
   PRODUCT_EDIT: '/products/:id/edit',
   INVOICES: '/invoices',
   INVOICE_CREATE: '/invoices/new',
+  INVOICE_DRAFTS: '/invoices/drafts',
   INVOICE_DETAIL: '/invoices/:id',
   INVOICE_EDIT: '/invoices/:id/edit',
   PAYMENTS: '/payments',

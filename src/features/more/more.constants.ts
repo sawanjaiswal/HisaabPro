@@ -58,6 +58,7 @@ export const MORE_MENU_ITEMS: MoreMenuItem[] = [
   { id: 'cheques', navKey: 'cheques', label: 'Cheques', description: 'Track cheques', icon: 'FileCheck', route: ROUTES.CHEQUES, color: 'var(--color-warning-50)', group: 'money' },
   { id: 'bank', navKey: 'bank', label: 'Bank', description: 'Bank accounts', icon: 'Landmark', route: ROUTES.BANK_ACCOUNTS, color: 'var(--color-primary-50)', group: 'money' },
   { id: 'cash-register', navKey: 'cash-register', label: 'Cash Register', description: 'Daily cash sessions', icon: 'Wallet', route: ROUTES.CASH_REGISTER, color: 'var(--color-success-50)', group: 'money' },
+  { id: 'draft-invoices', navKey: 'draft-invoices', label: 'Draft Invoices', description: 'Invoices you started but did not save', icon: 'FileEdit', route: ROUTES.INVOICE_DRAFTS, color: 'var(--color-primary-50)', group: 'money' },
   { id: 'purchases', navKey: 'purchases', label: 'Purchases', description: 'Purchase invoices', icon: 'ShoppingBag', route: ROUTES.PURCHASES, color: 'var(--color-secondary-50)', group: 'money' },
   { id: 'sales-returns', navKey: 'sales-returns', label: 'Sales Return', description: 'Credit notes against sales', icon: 'Undo2', route: ROUTES.SALES_RETURNS, color: 'var(--color-secondary-50)', group: 'money' },
   { id: 'purchase-returns', navKey: 'purchase-returns', label: 'Purchase Return', description: 'Debit notes against purchases', icon: 'Undo2', route: ROUTES.PURCHASE_RETURNS, color: 'var(--color-secondary-50)', group: 'money' },

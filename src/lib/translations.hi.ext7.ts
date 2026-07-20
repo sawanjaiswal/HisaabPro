@@ -318,4 +318,12 @@ export const hiExt7 = {
   createdByLabel: 'बनाया',
   estimateAmountLabel: 'अनुमान राशि',
   downloadShare: 'डाउनलोड / साझा करें',
+  draftInvoicesTitle: 'ड्राफ़्ट बिल',
+  searchDraftInvoices: 'ड्राफ़्ट बिल खोजें',
+  noDraftInvoices: 'कोई ड्राफ़्ट नहीं',
+  noDraftInvoicesDesc: 'जो बिल आप शुरू करके सेव नहीं करते, वे यहाँ रहेंगे।',
+  untitledDraft: 'बिना नाम ड्राफ़्ट',
+  resumeDraft: 'जारी रखें',
+  discardDraftTitle: 'यह ड्राफ़्ट हटाएं?',
+  discardDraftDesc: 'ड्राफ़्ट हटा दिया जाएगा। इसे वापस नहीं लाया जा सकता।',
 } as const

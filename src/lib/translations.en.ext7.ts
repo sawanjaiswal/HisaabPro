@@ -355,4 +355,12 @@ export const enExt7 = {
   createdByLabel: 'Created by',
   estimateAmountLabel: 'Estimate amount',
   downloadShare: 'Download / Share',
+  draftInvoicesTitle: 'Draft invoices',
+  searchDraftInvoices: 'Search draft invoices',
+  noDraftInvoices: 'No drafts',
+  noDraftInvoicesDesc: 'Invoices you start but do not save will wait here.',
+  untitledDraft: 'Untitled draft',
+  resumeDraft: 'Resume',
+  discardDraftTitle: 'Discard this draft?',
+  discardDraftDesc: 'The draft will be deleted. This cannot be undone.',
 } as const

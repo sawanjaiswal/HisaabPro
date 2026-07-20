@@ -14,7 +14,7 @@ import {
   Login, Register, VerifyOtp, ForgotPassword, Onboarding, Dashboard,
   Parties, CreateParty, PartyDetail, EditParty, FollowUps,
   Products, CreateProduct, Categories, StockAdjustments, ProductDetail, EditProduct,
-  Invoices, CreateInvoice, InvoiceDetail, EditInvoice,
+  Invoices, CreateInvoice, InvoiceDetail, EditInvoice, DraftInvoices,
   TemplateGallery, TemplateEditor,
   Payments, RecordPayment, PaymentDetail, EditPayment, Outstanding,
   ReportsHub, SaleReport, PurchaseReport, PartyStatement, StockSummary,
@@ -105,6 +105,7 @@ export function App() {
         <Route path={ROUTES.PRODUCT_EDIT} element={<PageRoute><ProtectedRoute><PlanGate feature="products" featureLabel="Products"><EditProduct /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.INVOICES} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Invoices"><Invoices /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.INVOICE_CREATE} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Invoices"><CreateInvoice /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.INVOICE_DRAFTS} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Invoices"><DraftInvoices /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.INVOICE_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Invoices"><InvoiceDetail /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.INVOICE_EDIT} element={<PageRoute><ProtectedRoute><PlanGate feature="invoicing" featureLabel="Invoices"><EditInvoice /></PlanGate></ProtectedRoute></PageRoute>} />
 
