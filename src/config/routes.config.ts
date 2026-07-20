@@ -82,6 +82,7 @@ export const ROUTES = {
   BANK_ACCOUNTS: '/bank-accounts',
   BANK_RECONCILIATION: '/bank-reconciliation',
   EXPENSES: '/expenses',
+  EXPENSE_CATEGORIES: '/expenses/categories',
   OTHER_INCOME: '/other-income',
   VOICE_ENTRY: '/voice-entry',
   CHEQUES: '/cheques',

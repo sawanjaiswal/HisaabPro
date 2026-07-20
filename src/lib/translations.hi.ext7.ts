@@ -273,4 +273,6 @@ export const hiExt7 = {
   noAdjustmentsYet:          'अभी कोई समायोजन नहीं',
   noAdjustmentsYetDesc:      'स्टॉक गिनती में किए गए सुधार यहां दर्ज होंगे।',
   plSearch:                  'मूल्य सूचियां खोजें',
+  expenseCategories:         'खर्च श्रेणियां',
+  expenseLabel:              'खर्च',
 } as const

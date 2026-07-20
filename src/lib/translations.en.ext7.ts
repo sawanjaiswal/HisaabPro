@@ -310,4 +310,6 @@ export const enExt7 = {
   noAdjustmentsYet:          'No adjustments yet',
   noAdjustmentsYetDesc:      'Corrections you make to stock counts will be logged here.',
   plSearch:                  'Search price lists',
+  expenseCategories:         'Expense Categories',
+  expenseLabel:              'expense',
 } as const

@@ -26,7 +26,7 @@ import {
   GstReconciliationList, GstReconciliationDetail,
   ChartOfAccounts, JournalEntries, TrialBalance,
   BankAccounts, BankReconciliation, Expenses, OtherIncome, VoiceEntry, Cheques, Loans, LoanDetail,
-  ExpensesPending, ExpensesBudgets, ExpensesRecurring,
+  ExpensesPending, ExpensesBudgets, ExpensesRecurring, ExpenseCategories,
   ProfitLoss, BalanceSheet, CashFlow, AgingReport, ProfitabilityReport,
   DiscountReport, PredictiveAnalytics, ReorderSuggestions, GstFilingReadiness, TallyExport, FYClosure,
   More, BillScan, BulkImport, PublicLedger, ItemsLibrary, ImportUpload, ImportJobStub,
@@ -183,6 +183,7 @@ export function App() {
         <Route path={ROUTES.TRIAL_BALANCE} element={<PageRoute><ProtectedRoute><PlanGate feature="accounting" featureLabel="Trial Balance"><TrialBalance /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.BANK_ACCOUNTS} element={<PageRoute><ProtectedRoute><PlanGate feature="bankAccounts" featureLabel="Bank Accounts"><BankAccounts /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.EXPENSES} element={<PageRoute><ProtectedRoute><PlanGate feature="expenses" featureLabel="Expenses"><Expenses /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.EXPENSE_CATEGORIES} element={<PageRoute><ProtectedRoute><PlanGate feature="expenses" featureLabel="Expenses"><ExpenseCategories /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path="/expenses/pending" element={<PageRoute><ProtectedRoute><PlanGate feature="expenses" featureLabel="Expenses"><ExpensesPending /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path="/expenses/budgets" element={<PageRoute><ProtectedRoute><PlanGate feature="expenses" featureLabel="Expenses"><ExpensesBudgets /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path="/expenses/recurring" element={<PageRoute><ProtectedRoute><PlanGate feature="expenses" featureLabel="Expenses"><ExpensesRecurring /></PlanGate></ProtectedRoute></PageRoute>} />

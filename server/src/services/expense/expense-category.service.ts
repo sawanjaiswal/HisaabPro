@@ -51,7 +51,7 @@ export async function createExpenseCategory(
 }
 
 export async function listExpenseCategories(businessId: string) {
-  return prisma.expenseCategory.findMany({
+  const rows = await prisma.expenseCategory.findMany({
     where: { businessId, isActive: true },
     orderBy: [{ isSystem: 'desc' }, { sortOrder: 'asc' }, { name: 'asc' }],
     take: 200,
@@ -65,4 +65,10 @@ export async function listExpenseCategories(businessId: string) {
       _count: { select: { expenses: { where: { isDeleted: false } } } },
     },
   })
+
+  // Flatten Prisma's _count so the client type stays a plain category.
+  return rows.map(({ _count, ...category }) => ({
+    ...category,
+    expenseCount: _count.expenses,
+  }))
 }

@@ -1,6 +1,7 @@
 /** useExpenses — Manages expense list + category filter state (TanStack Query) */
 
 import { useState, useEffect, useCallback } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
@@ -24,7 +25,11 @@ interface UseExpensesReturn {
 export function useExpenses(): UseExpensesReturn {
   const toast = useToast()
   const queryClient = useQueryClient()
-  const [categoryFilter, setCategoryFilterState] = useState<string | null>(null)
+  // Arriving from the category list (#50) pre-applies that category.
+  const [searchParams] = useSearchParams()
+  const [categoryFilter, setCategoryFilterState] = useState<string | null>(
+    () => searchParams.get('categoryId'),
+  )
   const [page, setPage] = useState(1)
 
   const filters = { page, categoryFilter }

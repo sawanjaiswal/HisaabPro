@@ -1,0 +1,118 @@
+/* Expense Categories (mockup #50) — tinted icon-square rows.
+ *
+ * Used by pages/ExpenseCategoriesPage.tsx and components/ExpenseCategoryRow.tsx.
+ */
+
+.expense-category-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.expense-category-row {
+  display: flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xs);
+}
+
+/* <Button variant="ghost"> underneath — reset its chrome so the whole row
+ * reads as one tappable band rather than a pill. */
+.expense-category-row-main {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: auto;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: var(--font-primary);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.expense-category-row-main:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
+/* Tint follows the category's own colour via currentColor; the emerald below
+ * is the fallback for categories created before colours existed. */
+.expense-category-row-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  color: var(--color-primary-600);
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.expense-category-row-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.expense-category-row-name {
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--color-gray-800);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.expense-category-row-count {
+  font-size: var(--fs-xs);
+  color: var(--color-gray-400);
+}
+
+.expense-category-row-chevron {
+  flex-shrink: 0;
+  color: var(--color-gray-300);
+}
+
+.expense-category-form-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+/* ─── Tablet+ ────────────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .expense-category-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .expense-category-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .expense-category-row {
+  box-shadow: var(--shadow-card-dark);
+}
+
+[data-theme="dark"] .expense-category-row-name {
+  color: var(--color-gray-900);
+}

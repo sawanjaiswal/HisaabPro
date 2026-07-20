@@ -164,6 +164,15 @@ export default function ExpensesPage() {
               {c.name}
             </Button>
           ))}
+          {/* Entry point to the full category list (#50) — pills only filter. */}
+          <Button
+            variant="none"
+            type="button"
+            className="expense-filter-pill"
+            onClick={() => navigate(ROUTES.EXPENSE_CATEGORIES)}
+          >
+            {t.manageCategories}
+          </Button>
         </div>
 
         <div className="expense-action-bar">

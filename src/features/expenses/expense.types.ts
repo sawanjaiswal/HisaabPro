@@ -10,6 +10,8 @@ export interface ExpenseCategory {
   color: string | null
   isSystem: boolean
   createdAt: string
+  /** Non-deleted expenses filed under this category (list endpoint only). */
+  expenseCount?: number
 }
 
 export interface Expense {
