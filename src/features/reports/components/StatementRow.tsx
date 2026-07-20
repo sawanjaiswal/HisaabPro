@@ -1,7 +1,17 @@
-/** Single transaction row in the party statement ledger */
+/** One statement row — tinted icon square + amount (mockup #47).
+ *
+ * The mockup prints a settlement word ("Unpaid") beside invoices. We only
+ * know settlement for the ledger as a whole, not per document, so the row
+ * shows the running balance instead — the honest per-row equivalent, and the
+ * number a shopkeeper reading a statement is actually reconciling against.
+ */
 
-import { STATEMENT_TYPE_LABELS, STATEMENT_TYPE_COLORS } from '../report.constants'
+import { ArrowDownLeft, ArrowUpRight, FileText, RotateCcw } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
+import { useLanguage } from '@/hooks/useLanguage'
+import { STATEMENT_TYPE_LABELS } from '../report.constants'
 import { formatAmount, formatReportDate } from '../report.utils'
+import { statementRowAmount, statementRowTone } from '../statement-view.utils'
 import type { StatementTransaction } from '../report.types'
 
 export interface StatementRowProps {
@@ -9,55 +19,47 @@ export interface StatementRowProps {
   onNavigate: (referenceId: string, type: StatementTransaction['type']) => void
 }
 
+function iconFor(txn: StatementTransaction) {
+  if (txn.type === 'credit_note' || txn.type === 'debit_note') return <RotateCcw size={20} />
+  if (txn.type === 'payment_received') return <ArrowDownLeft size={20} />
+  if (txn.type === 'payment_made') return <ArrowUpRight size={20} />
+  return <FileText size={20} />
+}
+
 export function StatementRow({ txn, onNavigate }: StatementRowProps) {
-  const typeColor = STATEMENT_TYPE_COLORS[txn.type]
-  const isReceivable = txn.runningBalance >= 0
+  const { t } = useLanguage()
+  const tone = statementRowTone(txn)
+  const amount = statementRowAmount(txn)
+  const label = STATEMENT_TYPE_LABELS[txn.type]
 
   return (
-    <div
-      className="report-statement-row"
+    <Button
+      variant="none"
+      type="button"
+      className="statement-row"
       role="listitem"
       onClick={() => onNavigate(txn.referenceId, txn.type)}
-      style={{ cursor: 'pointer' }}
-      aria-label={`${STATEMENT_TYPE_LABELS[txn.type]}: ${txn.description}`}
+      aria-label={`${label} ${txn.reference}`}
     >
-      <div
-        className="report-statement-type-dot"
-        style={{ background: typeColor }}
-        aria-hidden="true"
-      />
-      <div className="report-statement-meta">
-        <div className="report-statement-description">{txn.description}</div>
-        <div
-          className="report-statement-reference"
-          style={{ color: typeColor }}
-        >
-          {STATEMENT_TYPE_LABELS[txn.type]} · {txn.reference}
-        </div>
-        <div className="report-statement-date">{formatReportDate(txn.date)}</div>
-      </div>
-      <div className="report-statement-amounts">
-        {txn.debit > 0 ? (
-          <span className="report-statement-debit">{formatAmount(txn.debit)}</span>
-        ) : (
-          <span className="report-statement-debit" style={{ opacity: 0.3 }}>—</span>
-        )}
-        {txn.credit > 0 ? (
-          <span className="report-statement-credit">{formatAmount(txn.credit)}</span>
-        ) : (
-          <span className="report-statement-credit" style={{ opacity: 0.3 }}>—</span>
-        )}
-        <span
-          className={`report-statement-balance ${
-            isReceivable
-              ? 'report-statement-balance--receivable'
-              : 'report-statement-balance--payable'
-          }`}
-        >
-          {formatAmount(Math.abs(txn.runningBalance))}
+      <span className={`statement-row__icon statement-row__icon--${tone}`} aria-hidden="true">
+        {iconFor(txn)}
+      </span>
+
+      <span className="statement-row__info">
+        <span className="statement-row__title">{txn.reference || label}</span>
+        <span className="statement-row__meta">
+          {label} · {formatReportDate(txn.date)}
         </span>
-      </div>
-      <div className="report-divider" />
-    </div>
+      </span>
+
+      <span className="statement-row__right">
+        <span className={`statement-row__amount statement-row__amount--${tone} tabular-nums`}>
+          {amount < 0 ? '−' : ''}{formatAmount(Math.abs(amount))}
+        </span>
+        <span className="statement-row__balance tabular-nums">
+          {t.balance} {formatAmount(Math.abs(txn.runningBalance))}
+        </span>
+      </span>
+    </Button>
   )
 }

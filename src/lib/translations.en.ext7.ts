@@ -363,4 +363,9 @@ export const enExt7 = {
   resumeDraft: 'Resume',
   discardDraftTitle: 'Discard this draft?',
   discardDraftDesc: 'The draft will be deleted. This cannot be undone.',
+  totalOutstanding: 'Total Outstanding',
+  paidTillDate: 'Paid Till Date',
+  statementInvoices: 'Invoices',
+  statementPayments: 'Payments',
+  statementReturns: 'Returns',
 } as const

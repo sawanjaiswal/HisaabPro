@@ -326,4 +326,9 @@ export const hiExt7 = {
   resumeDraft: 'जारी रखें',
   discardDraftTitle: 'यह ड्राफ़्ट हटाएं?',
   discardDraftDesc: 'ड्राफ़्ट हटा दिया जाएगा। इसे वापस नहीं लाया जा सकता।',
+  totalOutstanding: 'कुल बकाया',
+  paidTillDate: 'अब तक भुगतान',
+  statementInvoices: 'बिल',
+  statementPayments: 'भुगतान',
+  statementReturns: 'वापसी',
 } as const
