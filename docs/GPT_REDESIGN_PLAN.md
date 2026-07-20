@@ -223,6 +223,7 @@ Legend: **DONE** = shipped in `891528a` · **EXISTS** = current page to restyle 
   - [x] #47 Customer statement — `fe048f4`
 - [ ] Wave 5 — reports (6)
   - [x] #14 Reports home — `e6a9f42` (+ favourites, `src/lib/prefs-store.ts`)
+  - [x] #15/#68 Sales + Purchase report — `91257b0` (+ real trend aggregate, `DonutChart`)
 - [ ] Wave 6 — people/HR (6)
 - [ ] Wave 7 — tasks/reminders/search (6)
 - [ ] Wave 8 — settings/business/account (18)
