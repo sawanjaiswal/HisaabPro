@@ -1,45 +1,55 @@
-/** Purchases — List Page (lazy loaded), mockup #11.
+/** Returns — List Page (lazy loaded), mockups #44 (sales) and #51 (purchase).
  *
- * Archetype A over the shared document list, locked to PURCHASE_INVOICE:
- * search → segments → month-grouped rows → totals + sparkline footer.
- * Rows, groups and footer are the same primitives the sales list (#1) uses,
- * so the two screens stay identical apart from their direction.
+ * Both mockups are the same screen over a different document type, so one
+ * component serves both: search → segments → month-grouped rows → totals
+ * footer, on the same primitives the sales (#1) and purchase (#11) lists use.
+ *
+ * The mockups label rows "Approved" / "Pending". This app has no approval
+ * workflow on returns — a credit/debit note is either settled against the
+ * original bill or still outstanding — so the rows carry the settlement
+ * state we actually hold rather than a status we would have to invent.
+ *
+ * There is no create affordance yet: a return must reference the bill it
+ * reverses, and no picker for that exists. It arrives with the return form.
  */
 
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Search, ShoppingCart } from 'lucide-react'
+import { Search, Undo2 } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
-import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { FilterChips, type FilterChipOption } from '@/components/ui/FilterChips'
 import { PeriodGroup } from '@/components/ui/PeriodGroup'
 import { ListTotalsFooter } from '@/components/ui/ListTotalsFooter'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useInvoices } from '@/features/invoices/useInvoices'
+import { useDocumentSegments, type DocumentSegment } from '@/features/invoices/useDocumentSegments'
 import { InvoiceCard } from '@/features/invoices/components/InvoiceCard'
 import { InvoiceListSkeleton } from '@/features/invoices/components/InvoiceListSkeleton'
 import { groupByPeriod, toPeriodTotalsSeries } from '@/lib/period-groups.utils'
 import { ROUTES } from '@/config/routes.config'
-import { useDocumentSegments, type DocumentSegment } from '@/features/invoices/useDocumentSegments'
 import '@/features/invoices/invoice-list-items.css'
 
-export default function PurchasesPage() {
+interface ReturnsListPageProps {
+  /** CREDIT_NOTE = sales return (#44), DEBIT_NOTE = purchase return (#51). */
+  type?: 'CREDIT_NOTE' | 'DEBIT_NOTE'
+}
+
+export default function ReturnsListPage({ type = 'CREDIT_NOTE' }: ReturnsListPageProps) {
   const navigate = useNavigate()
   const { t } = useLanguage()
+  const isSalesReturn = type === 'CREDIT_NOTE'
 
-  const { data, status, filters, setSearch, setFilter: setQueryFilter, refresh } = useInvoices({
-    type: 'PURCHASE_INVOICE',
-  })
+  const { data, status, filters, setSearch, setFilter: setQueryFilter, refresh } = useInvoices({ type })
   const { segment, setSegment, visible } = useDocumentSegments(setQueryFilter)
 
   const documents = useMemo(() => visible(data?.documents ?? []), [visible, data?.documents])
 
-  // Purchases arrive in batches, so months — not days — are the useful period.
+  // Returns are occasional, so months — not days — are the useful period.
   const groups = useMemo(
     () => groupByPeriod(documents, (d) => d.documentDate, (d) => d.grandTotal, 'month'),
     [documents],
@@ -50,23 +60,15 @@ export default function PurchasesPage() {
     { value: 'ALL', label: t.all },
     { value: 'THIS_MONTH', label: t.thisMonth },
     { value: 'PENDING', label: t.pending },
-    { value: 'PAID', label: t.paid },
+    { value: 'PAID', label: t.settled },
   ]
 
-  const goToCreate = () => navigate(ROUTES.PURCHASE_NEW)
+  const title = isSalesReturn ? t.salesReturnsTitle : t.purchaseReturnsTitle
   const hasAny = status === 'success' && (data?.documents.length ?? 0) > 0
 
   return (
     <AppShell>
-      <Header
-        title={t.purchasesTitle}
-        backTo={ROUTES.MORE}
-        actions={
-          <Button variant="ghost" size="sm" onClick={goToCreate} aria-label={t.createPurchaseAriaLabel}>
-            <Plus size={20} aria-hidden="true" />
-          </Button>
-        }
-      />
+      <Header title={title} backTo={isSalesReturn ? ROUTES.INVOICES : ROUTES.PURCHASES} />
 
       <PageContainer variant="list" className="space-y-6">
         <div className="search-bar">
@@ -75,12 +77,12 @@ export default function PurchasesPage() {
             type="search"
             value={filters.search ?? ''}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder={t.searchByPartyOrNumber}
-            aria-label={t.purchasesTitle}
+            placeholder={t.searchReturns}
+            aria-label={title}
           />
         </div>
 
-        <FilterChips options={chips} value={segment} onChange={setSegment} label={t.purchasesTitle} />
+        <FilterChips options={chips} value={segment} onChange={setSegment} label={title} />
 
         {/* Loading */}
         {status === 'loading' && <InvoiceListSkeleton />}
@@ -88,7 +90,7 @@ export default function PurchasesPage() {
         {/* Error */}
         {status === 'error' && (
           <ErrorState
-            title={t.couldNotLoadInvoices}
+            title={t.couldNotLoadReturns}
             message={t.checkConnectionRetry}
             onRetry={refresh}
           />
@@ -100,14 +102,9 @@ export default function PurchasesPage() {
             ? <EmptyState title={t.noResults} description={t.tryDifferentSearch} />
             : (
               <EmptyState
-                icon={<ShoppingCart size={40} aria-hidden="true" />}
-                title={t.purchasesEmpty}
-                description={t.purchasesEmptyDesc}
-                action={
-                  <Button variant="primary" size="md" onClick={goToCreate} aria-label={t.createPurchaseAriaLabel}>
-                    {t.createPurchase}
-                  </Button>
-                }
+                icon={<Undo2 size={40} aria-hidden="true" />}
+                title={isSalesReturn ? t.noSalesReturnsYet : t.noPurchaseReturnsYet}
+                description={isSalesReturn ? t.noSalesReturnsYetDesc : t.noPurchaseReturnsYetDesc}
               />
             )
         )}
@@ -116,9 +113,9 @@ export default function PurchasesPage() {
         {status === 'success' && documents.length > 0 && (
           <>
             <div role="status" aria-live="polite" className="sr-only">
-              {documents.length} {documents.length === 1 ? t.purchaseFoundSingular : t.purchaseFoundPlural}
+              {documents.length} {documents.length === 1 ? t.returnFoundSingular : t.returnFoundPlural}
             </div>
-            <h2 className="sr-only">{t.purchaseListHeading}</h2>
+            <h2 className="sr-only">{t.returnListHeading}</h2>
 
             {groups.map((group) => (
               <PeriodGroup key={group.key} group={group}>
@@ -139,24 +136,18 @@ export default function PurchasesPage() {
 
             {data && (
               <ListTotalsFooter
-                label={t.totalPurchases}
+                label={t.totalReturns}
                 totalPaise={data.summary.totalAmount}
                 series={series}
                 splits={[
-                  { label: t.paid, paise: data.summary.totalPaid, tone: 'positive' },
-                  { label: t.dueLabel, paise: data.summary.totalDue, tone: 'negative' },
+                  { label: t.settled, paise: data.summary.totalPaid, tone: 'positive' },
+                  { label: t.pending, paise: data.summary.totalDue, tone: 'negative' },
                 ]}
               />
             )}
           </>
         )}
       </PageContainer>
-
-      {hasAny && (
-        <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.createPurchaseAriaLabel}>
-          <Plus size={24} aria-hidden="true" />
-        </Button>
-      )}
     </AppShell>
   )
 }

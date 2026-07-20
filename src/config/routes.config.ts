@@ -200,6 +200,8 @@ export const ROUTES = {
   PURCHASES: '/purchases',
   PURCHASE_DETAIL: '/purchases/:id',
   PURCHASE_NEW: '/purchases/new',
+  PURCHASE_RETURNS: '/purchases/returns',
+  SALES_RETURNS: '/sales/returns',
   PURCHASE_EDIT: '/purchases/:id/edit',
 
   // Inventory Phase 2 — Stock Verification mobile flow (INV-07)
