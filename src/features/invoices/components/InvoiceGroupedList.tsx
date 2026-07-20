@@ -1,17 +1,18 @@
 /** Invoice list — the day-grouped body (groups + rows).
  *
  * Extracted from InvoicesPage so the page stays under the 250-line gate.
- * Purely a composition of `<InvoiceListGroup>` + `<InvoiceCard>`; no new
+ * Purely a composition of `<DayGroup>` + `<InvoiceCard>`; no new
  * primitive and no state of its own.
  */
 
 import React from 'react'
-import { InvoiceListGroup } from './InvoiceListGroup'
+import { DayGroup } from '@/components/ui/DayGroup'
 import { InvoiceCard } from './InvoiceCard'
-import type { InvoiceDayGroup } from '../invoice-list-group.utils'
+import type { DayGroup as DayGroupModel } from '@/lib/day-groups.utils'
+import type { DocumentSummary } from '../invoice.types'
 
 interface InvoiceGroupedListProps {
-  groups: InvoiceDayGroup[]
+  groups: DayGroupModel<DocumentSummary>[]
   isBulkMode: boolean
   isSelected: (id: string) => boolean
   onToggle: (id: string) => void
@@ -29,8 +30,8 @@ export const InvoiceGroupedList: React.FC<InvoiceGroupedListProps> = ({
 }) => (
   <>
     {groups.map((group) => (
-      <InvoiceListGroup key={group.key} group={group}>
-        {group.documents.map((doc) => (
+      <DayGroup key={group.key} group={group}>
+        {group.items.map((doc) => (
           <div
             key={doc.id}
             className={`invoice-list-row${isSelected(doc.id) ? ' bulk-selected' : ''}`}
@@ -52,7 +53,7 @@ export const InvoiceGroupedList: React.FC<InvoiceGroupedListProps> = ({
             <div className="divider" aria-hidden="true" />
           </div>
         ))}
-      </InvoiceListGroup>
+      </DayGroup>
     ))}
   </>
 )

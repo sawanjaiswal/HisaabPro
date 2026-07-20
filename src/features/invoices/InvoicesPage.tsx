@@ -22,8 +22,8 @@ import { InvoiceSummaryBar } from './components/InvoiceSummaryBar'
 import { InvoiceFilterBar } from './components/InvoiceFilterBar'
 import { InvoiceListSkeleton } from './components/InvoiceListSkeleton'
 import { InvoiceGroupedList } from './components/InvoiceGroupedList'
-import { InvoiceTotalsFooter } from './components/InvoiceTotalsFooter'
-import { groupInvoicesByDay, toDailyTotalsSeries } from './invoice-list-group.utils'
+import { ListTotalsFooter } from '@/components/ui/ListTotalsFooter'
+import { groupByDay, toDailyTotalsSeries } from '@/lib/day-groups.utils'
 import { deleteDocument } from './invoice.service'
 import { ROUTES } from '@/config/routes.config'
 import { DOCUMENT_TYPE_LABELS } from './invoice.constants'
@@ -32,7 +32,6 @@ import type { BulkAction } from '@/components/ui/BulkActionBar'
 import './invoice-filter-bar.css'
 import './invoice-list-items.css'
 import './invoice-doc-badges.css'
-import './invoice-list-redesign.css'
 
 interface InvoicesPageProps {
   /** When rendered as tab content inside SalesHubPage, the parent already
@@ -125,7 +124,10 @@ export default function InvoicesPage({ embedded = false }: InvoicesPageProps) {
     return autoGenOnly ? docs.filter((d) => Boolean(d.recurringInvoiceId)) : docs
   }, [data?.documents, autoGenOnly])
   const allDocIds = visibleDocuments.map((d) => d.id)
-  const dayGroups = useMemo(() => groupInvoicesByDay(visibleDocuments), [visibleDocuments])
+  const dayGroups = useMemo(
+    () => groupByDay(visibleDocuments, (d) => d.documentDate, (d) => d.grandTotal),
+    [visibleDocuments],
+  )
   const dailySeries = useMemo(() => toDailyTotalsSeries(dayGroups), [dayGroups])
 
   const content = (
@@ -214,7 +216,15 @@ export default function InvoicesPage({ embedded = false }: InvoicesPageProps) {
             onLongPress={handleLongPress}
           />
           {!bulk.isActive && (
-            <InvoiceTotalsFooter summary={data.summary} series={dailySeries} />
+            <ListTotalsFooter
+              label={t.totalSales}
+              totalPaise={data.summary.totalAmount}
+              series={dailySeries}
+              splits={[
+                { label: t.receivedLabel, paise: data.summary.totalPaid, tone: 'positive' },
+                { label: t.dueLabel, paise: data.summary.totalDue, tone: 'negative' },
+              ]}
+            />
           )}
           </>
         )}

@@ -1,4 +1,4 @@
-/** Invoice list redesign — day groups + totals footer (mockup #1)
+/** Archetype-A list page — day groups + totals footer (mockups #1, #41).
  *
  * Tokens only: no hex, no rgb, no Tailwind palette classes.
  * Dark mode comes for free via tokens-dark.css.
@@ -6,13 +6,13 @@
 
 /* ── Day group ─────────────────────────────────────────────────────────── */
 
-.invoice-day-group {
+.day-group {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
 }
 
-.invoice-day-header {
+.day-group-header {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -20,21 +20,21 @@
   padding-inline: var(--space-1);
 }
 
-.invoice-day-label {
+.day-group-label {
   font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--text-secondary);
   letter-spacing: 0.01em;
 }
 
-.invoice-day-total {
+.day-group-total {
   font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--text-primary);
 }
 
 /* Rows sit on a single tinted sheet so a day reads as one block. */
-.invoice-day-rows {
+.day-group-rows {
   background: var(--color-surface);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-sm);
@@ -42,17 +42,17 @@
 }
 
 /* The last row in a group should not draw a trailing divider. */
-.invoice-day-rows .invoice-list-row:last-child .divider {
+.day-group-rows > *:last-child .divider {
   display: none;
 }
 
 /* ── Totals + sparkline footer ─────────────────────────────────────────── */
 
-.invoice-totals-footer {
+.list-totals-footer {
   display: block;
 }
 
-.invoice-totals-card {
+.list-totals-card {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
@@ -62,30 +62,30 @@
   box-shadow: var(--shadow-sm);
 }
 
-.invoice-totals-head {
+.list-totals-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-3);
 }
 
-.invoice-totals-label {
+.list-totals-label {
   font-size: var(--fs-sm);
   font-weight: 500;
   color: var(--text-secondary);
 }
 
-.invoice-totals-value {
+.list-totals-value {
   font-size: var(--fs-lg);
   font-weight: 700;
   color: var(--text-primary);
 }
 
-.invoice-totals-spark {
+.list-totals-spark {
   margin-inline: calc(var(--space-1) * -1);
 }
 
-.invoice-totals-split {
+.list-totals-split {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-3);
@@ -93,36 +93,37 @@
   border-top: 1px solid var(--color-border);
 }
 
-.invoice-totals-split-item {
+.list-totals-split-item {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
   min-width: 0;
 }
 
-.invoice-totals-split-label {
+.list-totals-split-label {
   font-size: var(--fs-xs);
   color: var(--text-secondary);
 }
 
-.invoice-totals-split-value {
+.list-totals-split-value {
   font-size: var(--fs-df);
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 /* Status colours — success green is status-only, never brand emerald here. */
-.invoice-totals-split-value--paid {
+.list-totals-split-value--positive {
   color: var(--color-success-600);
 }
 
-.invoice-totals-split-value--due {
+.list-totals-split-value--negative {
   color: var(--color-error-600);
 }
 
 /* ── Responsive ────────────────────────────────────────────────────────── */
 
 @media (min-width: 768px) {
-  .invoice-totals-split {
+  .list-totals-split {
     grid-template-columns: repeat(2, minmax(0, 12rem));
   }
 }
