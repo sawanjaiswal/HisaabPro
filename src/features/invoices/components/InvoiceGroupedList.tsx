@@ -7,9 +7,11 @@
 
 import React from 'react'
 import { DayGroup } from '@/components/ui/DayGroup'
+import { ListTotalsFooter } from '@/components/ui/ListTotalsFooter'
+import { useLanguage } from '@/hooks/useLanguage'
 import { InvoiceCard } from './InvoiceCard'
 import type { DayGroup as DayGroupModel } from '@/lib/day-groups.utils'
-import type { DocumentSummary } from '../invoice.types'
+import type { DocumentSummary, DocumentListResponse } from '../invoice.types'
 
 interface InvoiceGroupedListProps {
   groups: DayGroupModel<DocumentSummary>[]
@@ -18,6 +20,10 @@ interface InvoiceGroupedListProps {
   onToggle: (id: string) => void
   onDocClick: (id: string) => void
   onLongPress: (id: string) => void
+  /** Omitted in bulk mode — the totals card is not actionable there. */
+  summary?: DocumentListResponse['summary']
+  /** Per-day totals in PAISE, oldest → newest. */
+  series: number[]
 }
 
 export const InvoiceGroupedList: React.FC<InvoiceGroupedListProps> = ({
@@ -27,7 +33,11 @@ export const InvoiceGroupedList: React.FC<InvoiceGroupedListProps> = ({
   onToggle,
   onDocClick,
   onLongPress,
-}) => (
+  summary,
+  series,
+}) => {
+  const { t } = useLanguage()
+  return (
   <>
     {groups.map((group) => (
       <DayGroup key={group.key} group={group}>
@@ -55,5 +65,18 @@ export const InvoiceGroupedList: React.FC<InvoiceGroupedListProps> = ({
         ))}
       </DayGroup>
     ))}
+
+    {summary && (
+      <ListTotalsFooter
+        label={t.totalSales}
+        totalPaise={summary.totalAmount}
+        series={series}
+        splits={[
+          { label: t.receivedLabel, paise: summary.totalPaid, tone: 'positive' },
+          { label: t.dueLabel, paise: summary.totalDue, tone: 'negative' },
+        ]}
+      />
+    )}
   </>
-)
+  )
+}

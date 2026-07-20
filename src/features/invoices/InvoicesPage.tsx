@@ -22,7 +22,6 @@ import { InvoiceSummaryBar } from './components/InvoiceSummaryBar'
 import { InvoiceFilterBar } from './components/InvoiceFilterBar'
 import { InvoiceListSkeleton } from './components/InvoiceListSkeleton'
 import { InvoiceGroupedList } from './components/InvoiceGroupedList'
-import { ListTotalsFooter } from '@/components/ui/ListTotalsFooter'
 import { groupByDay, toDailyTotalsSeries } from '@/lib/day-groups.utils'
 import { deleteDocument } from './invoice.service'
 import { ROUTES } from '@/config/routes.config'
@@ -214,18 +213,9 @@ export default function InvoicesPage({ embedded = false }: InvoicesPageProps) {
             onToggle={bulk.toggle}
             onDocClick={handleDocClick}
             onLongPress={handleLongPress}
+            summary={bulk.isActive ? undefined : data.summary}
+            series={dailySeries}
           />
-          {!bulk.isActive && (
-            <ListTotalsFooter
-              label={t.totalSales}
-              totalPaise={data.summary.totalAmount}
-              series={dailySeries}
-              splits={[
-                { label: t.receivedLabel, paise: data.summary.totalPaid, tone: 'positive' },
-                { label: t.dueLabel, paise: data.summary.totalDue, tone: 'negative' },
-              ]}
-            />
-          )}
           </>
         )}
       </PageContainer>
