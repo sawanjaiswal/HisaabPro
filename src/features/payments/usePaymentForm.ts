@@ -44,8 +44,6 @@ export interface UsePaymentFormReturn {
   form: PaymentFormData
   errors: Record<string, string>
   isSubmitting: boolean
-  activeSection: PaymentFormSection
-  setActiveSection: (section: PaymentFormSection) => void
   updateField: <K extends keyof PaymentFormData>(key: K, value: PaymentFormData[K]) => void
   updateMode: (mode: PaymentMode) => void
   toggleAllocation: (invoiceId: string) => void
@@ -76,7 +74,6 @@ export function usePaymentForm({
     payment !== null ? buildFormFromPayment(payment) : buildInitialForm(defaultType),
   )
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [activeSection, setActiveSection] = useState<PaymentFormSection>('details')
 
   // ─── Delegate field / allocation / discount actions ──────────────────────
 
@@ -152,8 +149,6 @@ export function usePaymentForm({
     form,
     errors,
     isSubmitting,
-    activeSection,
-    setActiveSection,
     ...actions,
     validate,
     handleSubmit,

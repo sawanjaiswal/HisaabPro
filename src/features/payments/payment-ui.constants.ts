@@ -3,18 +3,7 @@
  * Labels and CSS variable references for payment form/detail UI elements.
  */
 
-import type {
-  PaymentFormSection,
-  PaymentDetailTab,
-} from './payment.types'
-
-// ─── Form section labels (pill tabs) ─────────────────────────────────────────
-
-export const PAYMENT_FORM_SECTION_LABELS: Record<PaymentFormSection, string> = {
-  details:  'Details',
-  invoices: 'Link Invoices',
-  discount: 'Discount',
-}
+import type { PaymentDetailTab } from './payment.types'
 
 // ─── Detail tab labels ────────────────────────────────────────────────────────
 

@@ -24,7 +24,6 @@ export {
 } from './outstanding-reminder.constants'
 
 export {
-  PAYMENT_FORM_SECTION_LABELS,
   PAYMENT_DETAIL_TAB_LABELS,
   AGING_BUCKET_LABELS,
   AGING_BUCKET_COLORS,

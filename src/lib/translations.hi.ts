@@ -462,6 +462,7 @@ export const hi = {
   chargesLabel:              'शुल्क',
   sectionItems:              'सामान',
   sectionDetails:            'विवरण',
+  sectionLinkInvoices:       'बिल जोड़ें',
   roundOff:                  'गोलाई',
   saveDraft:                 'ड्राफ्ट सहेजें',
   saveDraftAriaLabel:        'ड्राफ्ट के रूप में सहेजें',

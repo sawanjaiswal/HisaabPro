@@ -462,6 +462,7 @@ export const en = {
   chargesLabel:              'Charges',
   sectionItems:              'Items',
   sectionDetails:            'Details',
+  sectionLinkInvoices:       'Link Invoices',
   roundOff:                  'Round Off',
   saveDraft:                 'Save Draft',
   saveDraftAriaLabel:        'Save as draft',

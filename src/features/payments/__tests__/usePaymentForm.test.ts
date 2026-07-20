@@ -84,7 +84,6 @@ describe('usePaymentForm', () => {
     expect(result.current.form.mode).toBe('CASH')
     expect(result.current.errors).toEqual({})
     expect(result.current.isSubmitting).toBe(false)
-    expect(result.current.activeSection).toBe('details')
   })
 
   // 2. Custom defaultType
@@ -123,13 +122,6 @@ describe('usePaymentForm', () => {
     act(() => { valid = result.current.validate() })
     expect(valid!).toBe(true)
     expect(result.current.errors).toEqual({})
-  })
-
-  // 4. setActiveSection
-  it('setActiveSection changes the active section', () => {
-    const { result } = renderPaymentForm()
-    act(() => { result.current.setActiveSection('allocations' as never) })
-    expect(result.current.activeSection).toBe('allocations')
   })
 
   // 5. handleSubmit — success (create)
