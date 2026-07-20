@@ -29,8 +29,6 @@ const INITIAL_FORM: PartyFormData = {
   customFields: [],
 }
 
-type FormSection = 'basic' | 'business' | 'credit' | 'custom'
-
 export interface UsePartyFormOptions {
   /** When set, form operates in edit mode — calls updateParty instead of createParty */
   editId?: string
@@ -45,8 +43,6 @@ export interface UsePartyFormReturn {
   errors: Record<string, string>
   isSubmitting: boolean
   isEditMode: boolean
-  activeSection: FormSection
-  setActiveSection: (section: FormSection) => void
   updateField: <K extends keyof PartyFormData>(key: K, value: PartyFormData[K]) => void
   validate: () => boolean
   handleSubmit: () => Promise<void>
@@ -68,7 +64,6 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
   const [form, setForm] = useState<PartyFormData>(initialData ?? INITIAL_FORM)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [activeSection, setActiveSection] = useState<FormSection>('basic')
 
   const gstinVerify = useGstinVerify(
     initialData?.gstinVerified,
@@ -223,7 +218,6 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
   const reset = useCallback(() => {
     setForm(initialData ?? INITIAL_FORM)
     setErrors({})
-    setActiveSection('basic')
   }, [initialData])
 
   return {
@@ -231,8 +225,6 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
     errors,
     isSubmitting,
     isEditMode,
-    activeSection,
-    setActiveSection,
     updateField,
     validate,
     handleSubmit,

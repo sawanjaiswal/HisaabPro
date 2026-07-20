@@ -16,17 +16,12 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { usePartyForm } from './usePartyForm'
 import { getParty } from './party.service'
 import { paiseToRupeesNum } from './party.utils'
-import { PartyFormBasic } from './components/PartyFormBasic'
-import { PartyFormBusiness } from './components/PartyFormBusiness'
-import { PartyFormCredit } from './components/PartyFormCredit'
-import { PartyFormCustomFields } from './components/PartyFormCustomFields'
+import { PartyFormSections } from './components/PartyFormSections'
 import { usePresence } from '@/features/collaboration/usePresence'
 import { PresenceAvatars } from '@/features/collaboration/PresenceAvatars'
 import { ConflictDialog } from '@/features/collaboration/ConflictDialog'
 import type { PartyFormData, PartyDetail } from './party.types'
 import './create-party.css'
-
-type SectionId = 'basic' | 'business' | 'credit' | 'custom'
 
 /** Convert server PartyDetail → form-compatible PartyFormData */
 function detailToFormData(detail: PartyDetail): PartyFormData {
@@ -124,8 +119,6 @@ function EditPartyForm({ partyId, initialData, version }: { partyId: string; ini
     form,
     errors,
     isSubmitting,
-    activeSection,
-    setActiveSection,
     updateField,
     handleSubmit,
     gstinVerify,
@@ -140,50 +133,13 @@ function EditPartyForm({ partyId, initialData, version }: { partyId: string; ini
       <Header title={t.editParty} backTo={`/parties/${partyId}`} actions={<PresenceAvatars peers={peers} />} />
 
       <PageContainer className="create-party-page stagger-enter space-y-6">
-        <nav className="pill-tabs" role="tablist" aria-label={t.formSections}>
-          {[
-            { id: 'basic' as SectionId, label: t.basicInfo },
-            { id: 'business' as SectionId, label: t.business2 },
-            { id: 'credit' as SectionId, label: t.credit },
-            { id: 'custom' as SectionId, label: t.customFields },
-          ].map(section => (
-            <Button variant="none"
-              key={section.id}
-              type="button"
-              role="tab"
-              className={`pill-tab${activeSection === section.id ? ' active' : ''}`}
-              onClick={() => setActiveSection(section.id)}
-              aria-selected={activeSection === section.id}
-              aria-controls={`section-panel-${section.id}`}
-            >
-              {section.label}
-            </Button>
-          ))}
-        </nav>
-
-        <div
-          id={`section-panel-${activeSection}`}
-          role="tabpanel"
-          aria-label={
-            activeSection === 'basic' ? t.basicInfo
-              : activeSection === 'business' ? t.business2
-              : activeSection === 'credit' ? t.credit
-              : t.customFields
-          }
-        >
-          {activeSection === 'basic' && (
-            <PartyFormBasic form={form} errors={errors} onUpdate={updateField} isEditMode />
-          )}
-          {activeSection === 'business' && (
-            <PartyFormBusiness form={form} errors={errors} onUpdate={updateField} gstinVerify={gstinVerify} />
-          )}
-          {activeSection === 'credit' && (
-            <PartyFormCredit form={form} errors={errors} onUpdate={updateField} />
-          )}
-          {activeSection === 'custom' && (
-            <PartyFormCustomFields form={form} onUpdate={updateField} />
-          )}
-        </div>
+        <PartyFormSections
+          form={form}
+          errors={errors}
+          onUpdate={updateField}
+          gstinVerify={gstinVerify}
+          isEditMode
+        />
       </PageContainer>
 
       <div className="create-party-actions">

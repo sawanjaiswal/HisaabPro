@@ -52,7 +52,6 @@ describe('usePartyForm', () => {
     expect(result.current.errors).toEqual({})
     expect(result.current.isSubmitting).toBe(false)
     expect(result.current.isEditMode).toBe(false)
-    expect(result.current.activeSection).toBe('basic')
   })
 
   // 2. updateField updates form and clears field error
@@ -180,25 +179,13 @@ describe('usePartyForm', () => {
 
     act(() => {
       result.current.updateField('name', 'Changed')
-      result.current.setActiveSection('credit')
     })
     act(() => {
       result.current.reset()
     })
 
     expect(result.current.form.name).toBe('')
-    expect(result.current.activeSection).toBe('basic')
     expect(result.current.errors).toEqual({})
-  })
-
-  // 5. setActiveSection
-  it('updates active section', () => {
-    const { result } = renderHook(() => usePartyForm(), { wrapper })
-
-    act(() => {
-      result.current.setActiveSection('business')
-    })
-    expect(result.current.activeSection).toBe('business')
   })
 
   // 6. isEditMode derived from options
