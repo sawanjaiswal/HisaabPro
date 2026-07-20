@@ -312,4 +312,10 @@ export const hiExt7 = {
   expiredStatus: 'समाप्त',
   draftStatus: 'ड्राफ़्ट',
   searchEstimatesPlaceholder: 'पार्टी या नंबर से खोजें',
+  validTillLabel: 'मान्य तिथि',
+  itemSingular: 'वस्तु',
+  itemPlural: 'वस्तुएं',
+  createdByLabel: 'बनाया',
+  estimateAmountLabel: 'अनुमान राशि',
+  downloadShare: 'डाउनलोड / साझा करें',
 } as const

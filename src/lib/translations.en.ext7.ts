@@ -349,4 +349,10 @@ export const enExt7 = {
   expiredStatus: 'Expired',
   draftStatus: 'Draft',
   searchEstimatesPlaceholder: 'Search by party or number',
+  validTillLabel: 'Valid till',
+  itemSingular: 'item',
+  itemPlural: 'items',
+  createdByLabel: 'Created by',
+  estimateAmountLabel: 'Estimate amount',
+  downloadShare: 'Download / Share',
 } as const
