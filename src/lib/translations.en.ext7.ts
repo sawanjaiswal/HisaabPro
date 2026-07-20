@@ -277,4 +277,13 @@ export const enExt7 = {
   itemLabel:                 'Item',
   previewInvoice:            'Preview Invoice',
   amountInWordsLabel:        'Amount in words',
+
+  // ─── Low Stock (#49) ───────────────────────────────────────────────────
+  lowStockTitle:             'Low Stock',
+  criticalLabel:             'Critical',
+  lowLabel:                  'Low',
+  reorderLabel:              'Reorder',
+  createPurchaseOrder:       'Create Purchase Order',
+  filterStockAlerts:         'Filter stock alerts',
+  searchProductsShort:       'Search products',
 } as const

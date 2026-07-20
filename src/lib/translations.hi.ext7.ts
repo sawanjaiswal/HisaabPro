@@ -240,4 +240,13 @@ export const hiExt7 = {
   itemLabel:                 'आइटम',
   previewInvoice:            'बिल प्रीव्यू करें',
   amountInWordsLabel:        'शब्दों में राशि',
+
+  // ─── Low Stock (#49) ───────────────────────────────────────────────────
+  lowStockTitle:             'कम स्टॉक',
+  criticalLabel:             'गंभीर',
+  lowLabel:                  'कम',
+  reorderLabel:              'रीऑर्डर',
+  createPurchaseOrder:       'खरीद ऑर्डर बनाएं',
+  filterStockAlerts:         'स्टॉक अलर्ट फ़िल्टर करें',
+  searchProductsShort:       'प्रोडक्ट खोजें',
 } as const

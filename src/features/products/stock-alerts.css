@@ -1,0 +1,194 @@
+/* Low Stock (mockup #49) — alert rows with a stock-vs-minimum fill bar.
+ *
+ * Used by StockAlertsPage.tsx and StockAlertRow.tsx. The old page styled every
+ * row with inline `style={{}}` literals; all of it now runs through tokens.
+ */
+
+.stock-alert-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.stock-alert-row {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xs);
+}
+
+/* ─── Tappable body ──────────────────────────────────────────────────────── */
+
+/* <Button variant="ghost"> underneath — these reset its chrome so the whole row
+ * reads as one tappable band rather than a pill. */
+.stock-alert-main {
+  display: flex;
+  width: 100%;
+  height: auto;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  padding: 0;
+  padding-right: var(--space-6);
+  background: none;
+  border: none;
+  font-family: var(--font-primary);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.stock-alert-main:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
+.stock-alert-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-50);
+  color: var(--color-primary-600);
+}
+
+.stock-alert-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.stock-alert-name {
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--color-gray-800);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stock-alert-unit {
+  font-size: var(--fs-xs);
+  color: var(--color-gray-400);
+}
+
+.stock-alert-numbers {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.stock-alert-stock {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.stock-alert-stock--out {
+  color: var(--color-error-600);
+}
+
+.stock-alert-stock--critical {
+  color: var(--color-error-500);
+}
+
+.stock-alert-stock--low {
+  color: var(--color-warning);
+}
+
+.stock-alert-reorder {
+  font-size: var(--fs-xs);
+  color: var(--color-gray-400);
+}
+
+/* ─── Fill bar ───────────────────────────────────────────────────────────── */
+
+.stock-alert-bar {
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-100);
+  overflow: hidden;
+}
+
+.stock-alert-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width var(--duration-slow) var(--ease-default);
+}
+
+.stock-alert-bar--out .stock-alert-bar-fill {
+  background: var(--color-error-600);
+}
+
+.stock-alert-bar--critical .stock-alert-bar-fill {
+  background: var(--color-error-500);
+}
+
+.stock-alert-bar--low .stock-alert-bar-fill {
+  background: var(--color-warning);
+}
+
+/* ─── Dismiss ────────────────────────────────────────────────────────────── */
+
+.stock-alert-dismiss {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  min-width: 44px;
+  min-height: 44px;
+  color: var(--color-gray-400);
+}
+
+/* ─── Section heading ────────────────────────────────────────────────────── */
+
+.stock-alert-heading {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--color-gray-500);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ─── Tablet+ ────────────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .stock-alert-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .stock-alert-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .stock-alert-row {
+  box-shadow: var(--shadow-card-dark);
+}
+
+[data-theme="dark"] .stock-alert-name {
+  color: var(--color-gray-900);
+}
+
+/* ─── Reduced Motion ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .stock-alert-bar-fill {
+    transition: none !important;
+  }
+}
