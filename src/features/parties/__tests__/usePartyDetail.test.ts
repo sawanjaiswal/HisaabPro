@@ -39,10 +39,11 @@ describe('usePartyDetail', () => {
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load party')
   })
 
-  it('defaults activeTab to overview', () => {
+  // The mockup opens on the ledger — it is the reason anyone opens a party.
+  it('defaults activeTab to ledger', () => {
     mockGetParty.mockReturnValue(new Promise(() => {}))
     const { result } = renderHook(() => usePartyDetail('p-1'))
-    expect(result.current.activeTab).toBe('overview')
+    expect(result.current.activeTab).toBe('ledger')
   })
 
   it('refresh triggers re-fetch', async () => {

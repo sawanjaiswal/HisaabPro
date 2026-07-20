@@ -153,8 +153,13 @@ describe('useProductForm', () => {
         () => useProductForm({ editId: 'p-1', initialData: EDIT_DATA }), { wrapper: wrap },
       )
       await act(() => result.current.handleSubmit())
+      // Trailing args are the idempotency key and the optimistic-lock version,
+      // both undefined when there is no loaded product to version against.
       expect(mockUpdateProduct).toHaveBeenCalledWith(
-        'p-1', expect.not.objectContaining({ openingStock: expect.anything() }),
+        'p-1',
+        expect.not.objectContaining({ openingStock: expect.anything() }),
+        undefined,
+        undefined,
       )
       expect(mockToast.success).toHaveBeenCalledWith('Old updated')
       expect(mockNavigate).toHaveBeenCalledWith('/products/p-1')

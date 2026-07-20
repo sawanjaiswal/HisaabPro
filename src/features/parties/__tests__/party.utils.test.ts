@@ -34,14 +34,14 @@ describe('paisaToRupees', () => {
 
 describe('formatAmount', () => {
   it('prepends Rs', () => {
-    expect(formatAmount(100000)).toMatch(/^Rs /)
+    expect(formatAmount(100000)).toMatch(/^₹/)
   })
 })
 
 describe('formatOutstanding', () => {
   it('returns zero as receivable', () => {
     const result = formatOutstanding(0)
-    expect(result.text).toBe('Rs 0')
+    expect(result.text).toBe('₹0')
     expect(result.isReceivable).toBe(true)
   })
 

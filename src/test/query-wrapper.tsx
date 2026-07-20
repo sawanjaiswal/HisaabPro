@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter } from 'react-router-dom'
+import { LanguageProvider } from '@/context/LanguageContext'
 
 export function createTestWrapper(opts: { router?: boolean } = {}) {
   const withRouter = opts.router ?? true
@@ -11,7 +12,13 @@ export function createTestWrapper(opts: { router?: boolean } = {}) {
     },
   })
   return function Wrapper({ children }: { children: ReactNode }) {
-    const tree = <QueryClientProvider client={client}>{children}</QueryClientProvider>
+    // LanguageProvider is not optional: any hook that surfaces a user-facing
+    // string reaches for useLanguage(), which throws outside a provider.
+    const tree = (
+      <QueryClientProvider client={client}>
+        <LanguageProvider>{children}</LanguageProvider>
+      </QueryClientProvider>
+    )
     return withRouter ? <MemoryRouter>{tree}</MemoryRouter> : tree
   }
 }
