@@ -26,7 +26,7 @@ import {
   GstReconciliationList, GstReconciliationDetail,
   ChartOfAccounts, JournalEntries, TrialBalance,
   BankAccounts, BankReconciliation, Expenses, OtherIncome, VoiceEntry, Cheques, Loans, LoanDetail,
-  ExpensesPending, ExpensesBudgets, ExpensesRecurring, ExpenseCategories,
+  ExpensesPending, ExpensesBudgets, ExpensesRecurring, ExpenseCategories, ExpenseDetail,
   ProfitLoss, BalanceSheet, CashFlow, AgingReport, ProfitabilityReport,
   DiscountReport, PredictiveAnalytics, ReorderSuggestions, GstFilingReadiness, TallyExport, FYClosure,
   More, BillScan, BulkImport, PublicLedger, ItemsLibrary, ImportUpload, ImportJobStub,
@@ -187,6 +187,7 @@ export function App() {
         <Route path="/expenses/pending" element={<PageRoute><ProtectedRoute><PlanGate feature="expenses" featureLabel="Expenses"><ExpensesPending /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path="/expenses/budgets" element={<PageRoute><ProtectedRoute><PlanGate feature="expenses" featureLabel="Expenses"><ExpensesBudgets /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path="/expenses/recurring" element={<PageRoute><ProtectedRoute><PlanGate feature="expenses" featureLabel="Expenses"><ExpensesRecurring /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.EXPENSE_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="expenses" featureLabel="Expenses"><ExpenseDetail /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.OTHER_INCOME} element={<PageRoute><ProtectedRoute><PlanGate feature="expenses" featureLabel="Other Income"><OtherIncome /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.VOICE_ENTRY} element={<PageRoute><ProtectedRoute><PlanGate feature="expenses" featureLabel="Voice Entry"><VoiceEntry /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.CHEQUES} element={<PageRoute><ProtectedRoute><PlanGate feature="cheques" featureLabel="Cheques"><Cheques /></PlanGate></ProtectedRoute></PageRoute>} />

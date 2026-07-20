@@ -24,6 +24,8 @@ export interface Expense {
   paymentMode: ExpensePaymentMode
   notes: string | null
   referenceNumber: string | null
+  /** Attached bill image, when one was uploaded (detail page #13). */
+  receiptUrl?: string | null
   partyId: string | null
   partyName: string | null
   createdAt: string

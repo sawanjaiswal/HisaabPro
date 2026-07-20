@@ -115,6 +115,13 @@
 }
 
 .expense-card {
+  /* Rendered as <Button variant="none"> so the row navigates to #13 —
+     reset the button chrome back to a card. */
+  width: 100%;
+  border: none;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
   background: var(--color-gray-0);
   border-radius: var(--radius-xl);
   padding: var(--space-3) var(--space-4);
@@ -122,6 +129,10 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
+}
+
+.expense-card:active {
+  transform: scale(0.99);
 }
 
 .expense-card__icon {

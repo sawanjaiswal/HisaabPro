@@ -5,6 +5,9 @@
  */
 
 import { Receipt } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Button } from '@/components/ui/Button'
+import { ROUTES } from '@/config/routes.config'
 import { formatPaise } from '@/lib/format'
 import { PAYMENT_MODE_LABELS } from '../expense.constants'
 import type { Expense } from '../expense.types'
@@ -20,10 +23,17 @@ function formatTime(iso: string): string {
 
 export function ExpenseCard({ expense }: ExpenseCardProps) {
   const { t } = useLanguage()
+  const navigate = useNavigate()
   const label = expense.categoryName ?? t.uncategorised
 
   return (
-    <div className="expense-card" role="article" aria-label={`${label} ${formatPaise(expense.amount)}`}>
+    <Button
+      variant="none"
+      type="button"
+      className="expense-card"
+      onClick={() => navigate(ROUTES.EXPENSE_DETAIL.replace(':id', expense.id))}
+      aria-label={`${label} ${formatPaise(expense.amount)}`}
+    >
       <span className="expense-card__icon" aria-hidden="true">
         <Receipt size={20} />
       </span>
@@ -38,6 +48,6 @@ export function ExpenseCard({ expense }: ExpenseCardProps) {
         <span className="expense-card__amount tabular-nums">{formatPaise(expense.amount)}</span>
         <span className="expense-card__time">{formatTime(expense.createdAt)}</span>
       </span>
-    </div>
+    </Button>
   )
 }

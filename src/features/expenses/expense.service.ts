@@ -51,6 +51,21 @@ export async function createExpense(
   })
 }
 
+export async function updateExpense(
+  id: string,
+  input: Partial<CreateExpenseInput>,
+  signal?: AbortSignal,
+): Promise<Expense> {
+  return api<Expense>(`/expenses/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(input),
+    headers: replayHeaders(),
+    signal,
+    entityType: 'expense',
+    entityLabel: input.notes ?? 'Edit expense',
+  })
+}
+
 export async function deleteExpense(id: string, signal?: AbortSignal): Promise<void> {
   return api<void>(`/expenses/${id}`, {
     method: 'DELETE',
