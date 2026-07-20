@@ -21,6 +21,7 @@ export const queryKeys = {
     all: () => ['products'] as const,
     list: (filters: Filters) => ['products', 'list', filters] as const,
     detail: (id: string) => ['products', 'detail', id] as const,
+    analytics: (id: string) => ['products', 'analytics', id] as const,
     categories: () => ['products', 'categories'] as const,
   },
   invoices: {

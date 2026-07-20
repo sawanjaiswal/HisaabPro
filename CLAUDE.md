@@ -9,7 +9,8 @@
 
 ## Design Direction
 - Premium Cred/Jupiter polish — NOT Vyapar's dated UI
-- Light primary, dark secondary · Blue/teal trust color · Inter font · 16px min body
+- Light primary, dark secondary · Deep Emerald Green (#026F39) brand color · Inter font · 16px min body
+- Two greens, never mixed: brand emerald (`--color-primary-*`) = identity + primary actions + nav-active + FAB; success green (`--color-success-*`) = status only (paid/up/good). Deep-emerald hero surfaces (#003121) with bright-green accents on top.
 - Generous whitespace · soft shadows · 8-12px card radius · subtle micro-interactions
 - Mobile: 375px primary, 320px minimum · works on Rs 8K-15K Android phones with 2G/3G
 - Indian: Rs 1,00,000 format · English + Hindi · UPI/WhatsApp first-class · 58mm/80mm thermal

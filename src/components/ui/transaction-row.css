@@ -1,0 +1,122 @@
+/* TransactionRow — shared ledger/transaction row (Emerald Hero skin v2) */
+
+.txn-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-1);
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-gray-100);
+  min-height: 44px;
+}
+
+.txn-row:last-child {
+  border-bottom: none;
+}
+
+.txn-row--interactive {
+  cursor: pointer;
+  transition: opacity var(--duration-fast, 100ms) var(--ease-default, ease);
+}
+
+.txn-row--interactive:active {
+  opacity: 0.72;
+}
+
+/* Date block */
+.txn-row__date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 34px;
+  flex-shrink: 0;
+  line-height: 1.1;
+}
+
+.txn-row__day {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.txn-row__mon {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* Direction-tinted icon square */
+.txn-row__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+}
+
+.txn-row__icon--debit {
+  background: var(--color-error-50);
+  color: var(--color-error-500);
+}
+
+.txn-row__icon--credit {
+  background: var(--color-success-50);
+  color: var(--color-success-600);
+}
+
+/* Main text */
+.txn-row__main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.txn-row__title {
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.txn-row__ref {
+  margin-top: 2px;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Amount */
+.txn-row__amount-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.txn-row__amount {
+  font-size: var(--fs-md);
+  font-weight: 700;
+}
+
+.txn-row__sub {
+  margin-top: 2px;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.txn-row__chevron {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}

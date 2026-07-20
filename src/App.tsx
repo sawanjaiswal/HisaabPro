@@ -62,7 +62,7 @@ import {
 } from '@/app.routes'
 import {
   PageRoute, DashboardFallback, ProtectedRoute, GuestRoute,
-  HomeGate, PersistentNav, FloatingWidgets,
+  HomeGate, PersistentNav, FloatingWidgets, EdgeSwipeBack,
 } from '@/app.guards'
 
 export function App() {
@@ -294,6 +294,7 @@ export function App() {
         <Route path="*" element={<PageRoute><NotFound /></PageRoute>} />
       </Routes>
       </PageTransition>
+      <EdgeSwipeBack />
       <PersistentNav />
       <FloatingWidgets />
       <SideNav />

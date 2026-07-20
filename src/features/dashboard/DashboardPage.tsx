@@ -14,6 +14,7 @@ import { ROUTES } from '@/config/routes.config'
 import { useHomeDashboard } from './useDashboard'
 import { buildTopPriorities } from './dashboard.utils'
 import { QUICK_ACTIONS } from './dashboard.constants'
+import { PRIORITY_ITEMS } from './dashboard-preview.mock'
 import { DashboardHeader } from './components/DashboardHeader'
 import { DashboardSalesHero } from './components/DashboardSalesHero'
 import { BusinessOverviewCarousel } from './components/BusinessOverviewCarousel'
@@ -67,9 +68,6 @@ export default function DashboardPage() {
       <DashboardHeader />
 
       <div className="dashboard-page stagger-enter">
-        {/* Background pattern overlay */}
-        <div className="dashboard-bg-pattern" aria-hidden="true" />
-
         {/* Loading */}
         {status === 'loading' && <DashboardSkeleton />}
 
@@ -94,7 +92,10 @@ export default function DashboardPage() {
             {/* White drawer section */}
             <div className="dashboard-white-section py-0">
               <TopPrioritiesCard
-                items={buildTopPriorities(data)}
+                items={(() => {
+                  const live = buildTopPriorities(data)
+                  return live.length > 0 ? live : PRIORITY_ITEMS
+                })()}
                 onViewAll={handleViewAllPriorities}
                 onItemAction={handlePriorityAction}
               />

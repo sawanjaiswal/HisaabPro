@@ -7,7 +7,7 @@ import { getParty } from './party.service'
 import type { PartyDetail } from './party.types'
 
 type DetailStatus = 'loading' | 'error' | 'success'
-type DetailTab = 'overview' | 'transactions' | 'addresses' | 'ledger' | 'crm' | 'loyalty'
+type DetailTab = 'ledger' | 'invoices' | 'payments' | 'info'
 
 interface UsePartyDetailReturn {
   party: PartyDetail | null
@@ -22,7 +22,7 @@ export function usePartyDetail(id: string): UsePartyDetailReturn {
 
   const [party, setParty] = useState<PartyDetail | null>(null)
   const [status, setStatus] = useState<DetailStatus>('loading')
-  const [activeTab, setActiveTab] = useState<DetailTab>('overview')
+  const [activeTab, setActiveTab] = useState<DetailTab>('ledger')
   const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {

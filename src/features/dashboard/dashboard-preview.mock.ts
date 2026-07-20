@@ -6,6 +6,8 @@
  */
 
 import type { TranslationKey } from '@/lib/translations'
+import type { PriorityItem } from './dashboard.types'
+import { ROUTES } from '@/config/routes.config'
 
 export interface MetricTileMock {
   id: string
@@ -19,6 +21,8 @@ export interface MetricTileMock {
   /** Status pill text key (used when deltaPct is null, e.g. Cash in Hand) */
   statusKey?: TranslationKey
   tone: 'teal' | 'coral' | 'success'
+  /** When true, the tile is kept in data but not rendered on the dashboard */
+  hidden?: boolean
 }
 
 export interface OverviewCardMock {
@@ -45,9 +49,42 @@ export const SALES_X_LABELS = ['1 May', '8 May', '15 May', '22 May', '31 May']
 
 export const METRIC_TILES: MetricTileMock[] = [
   { id: 'collections', labelKey: 'collections', icon: 'Wallet', amount: 41_000_00, deltaPct: 12, tone: 'teal' },
-  { id: 'expenses', labelKey: 'expenses', icon: 'Receipt', amount: 8_500_00, deltaPct: -6, tone: 'coral' },
+  { id: 'expenses', labelKey: 'expenses', icon: 'Receipt', amount: 8_500_00, deltaPct: -6, tone: 'coral', hidden: true },
   { id: 'cash', labelKey: 'cashInHand', icon: 'Landmark', amount: 52_400_00, deltaPct: null, statusKey: 'statusGood', tone: 'success' },
-  { id: 'profit', labelKey: 'profitEst', icon: 'PieChart', amount: 43_800_00, deltaPct: 15, tone: 'teal' },
+  { id: 'profit', labelKey: 'profitEst', icon: 'PieChart', amount: 43_800_00, deltaPct: 15, tone: 'teal', hidden: true },
+]
+
+/** Preview rows for the Top Priorities card — mirrors Home 2.png. Used only
+ * as a fallback when the live buildTopPriorities() yields nothing (fresh /
+ * demo account), so the section is always visible during the redesign. */
+export const PRIORITY_ITEMS: PriorityItem[] = [
+  {
+    id: 'preview-payment-due',
+    tone: 'success',
+    icon: 'Users',
+    title: 'Raj Traders payment due',
+    subtitle: '₹40,000 · Due today',
+    actionLabelKey: 'remindAction',
+    actionRoute: ROUTES.OUTSTANDING,
+  },
+  {
+    id: 'preview-stock-low',
+    tone: 'danger',
+    icon: 'Package',
+    title: 'Cement stock low',
+    subtitle: '32 bags left',
+    actionLabelKey: 'orderNowAction',
+    actionRoute: ROUTES.INVENTORY_ALERTS,
+  },
+  {
+    id: 'preview-cash-pending',
+    tone: 'info',
+    icon: 'MessageSquare',
+    title: "Rahul hasn't submitted cash",
+    subtitle: 'Since yesterday',
+    actionLabelKey: 'reviewAction',
+    actionRoute: ROUTES.OUTSTANDING,
+  },
 ]
 
 export const OVERVIEW_CARDS: OverviewCardMock[] = [

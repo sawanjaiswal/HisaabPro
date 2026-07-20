@@ -16,7 +16,6 @@ import {
   SALES_SERIES,
   SALES_TODAY_PAISE,
   SALES_DELTA_PCT,
-  SALES_X_LABELS,
   METRIC_TILES,
 } from '../dashboard-preview.mock'
 import '../dashboard-sales-hero.css'
@@ -40,22 +39,27 @@ export const DashboardSalesHero: React.FC = () => {
         </Button>
       </div>
 
-      <span className="dashboard-biz-hero__amount">{formatCompactAmount(SALES_TODAY_PAISE)}</span>
-      <span className="dashboard-biz-hero__sublabel">{t.totalSales}</span>
+      <div className="dashboard-biz-hero__body">
+        <div className="dashboard-biz-hero__figures">
+          <span className="dashboard-biz-hero__amount">{formatCompactAmount(SALES_TODAY_PAISE)}</span>
+          <span className="dashboard-biz-hero__sublabel">{t.totalSales}</span>
 
-      <span className="dashboard-biz-hero__delta">
-        <ArrowUp size={13} aria-hidden="true" />
-        {SALES_DELTA_PCT}%
-        <span className="dashboard-biz-hero__delta-note">{t.vsYesterday}</span>
-      </span>
+          <span className="dashboard-biz-hero__delta-row">
+            <span className="dashboard-biz-hero__delta">
+              <ArrowUp size={13} strokeWidth={2.5} aria-hidden="true" />
+              {SALES_DELTA_PCT}%
+            </span>
+            <span className="dashboard-biz-hero__delta-note">{t.vsYesterday}</span>
+          </span>
+        </div>
 
-      <AreaChart
-        className="dashboard-biz-hero__chart"
-        data={SALES_SERIES}
-        color="var(--color-success-400, #4ade80)"
-        xLabels={SALES_X_LABELS}
-        height={130}
-      />
+        <AreaChart
+          className="dashboard-biz-hero__chart"
+          data={SALES_SERIES}
+          color="var(--color-success-400, #4ade80)"
+          height={112}
+        />
+      </div>
 
       <DashboardMetricTiles tiles={METRIC_TILES} />
     </div>

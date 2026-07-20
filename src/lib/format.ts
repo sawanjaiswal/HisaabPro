@@ -15,6 +15,29 @@ export function formatNumber(value: number): string {
   return new Intl.NumberFormat(CURRENCY.locale).format(value)
 }
 
+/**
+ * Format a stock/measure quantity: whole numbers render bare ("12"), fractional
+ * ones keep up to 3 decimals ("1.5"). Callers apply Math.abs when showing a
+ * signed delta separately. Used by stock-movement rows and stat tiles.
+ */
+export function formatQuantity(value: number): string {
+  return Number.isInteger(value)
+    ? value.toString()
+    : value.toLocaleString('en-IN', { maximumFractionDigits: 3 })
+}
+
+/** Format a date-time in Indian default: "12 Jul, 3:45 pm" */
+export function formatDateTime(date: Date | string): string {
+  const d = typeof date === 'string' ? new Date(date) : date
+  return d.toLocaleString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  })
+}
+
 /** Format date in Indian default: DD/MM/YYYY */
 export function formatDate(date: Date | string): string {
   const d = typeof date === 'string' ? new Date(date) : date

@@ -91,6 +91,19 @@ router.get(
   })
 )
 
+/** GET /api/products/:id/analytics — detail-page sales + stock analytics */
+router.get(
+  '/:id/analytics',
+  requirePermission('inventory.view'),
+  asyncHandler(async (req, res) => {
+    const result = await productService.getProductAnalytics(
+      req.user!.businessId,
+      String(req.params.id)
+    )
+    sendSuccess(res, result)
+  })
+)
+
 /** GET /api/products/:id/stock/history — Feature #102 */
 router.get(
   '/:id/stock/history',

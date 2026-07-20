@@ -14,4 +14,5 @@ export {
   listStockMovements,
   listStockHistory,
   bulkAdjustStock,
+  getProductAnalytics,
 } from './product/index.js'

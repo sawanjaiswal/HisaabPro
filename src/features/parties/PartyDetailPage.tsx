@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Pencil, Trash2, Users } from 'lucide-react'
+import { Users } from 'lucide-react'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
 import { AppShell } from '@/components/layout/AppShell'
@@ -10,7 +10,7 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
-import { Skeleton } from '@/components/feedback/Skeleton'
+import { PartyDetailSkeleton } from './components/PartyDetailSkeleton'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useToast } from '@/hooks/useToast'
 import { useQueryClient } from '@tanstack/react-query'
@@ -18,18 +18,17 @@ import { usePartyDetail } from './usePartyDetail'
 import { deleteParty } from './party.service'
 import { reconcilePartyDeleted } from './party-cache'
 import { PartyDetailHeader } from './components/PartyDetailHeader'
+import { PartySummaryTiles } from './components/PartySummaryTiles'
 import { PartyOverviewTab } from './components/PartyOverviewTab'
-import { PartyTransactionsTab } from './components/PartyTransactionsTab'
 import { PartyAddressesTab } from './components/PartyAddressesTab'
 import { PartyCrmTab } from './components/PartyCrmTab'
-import { PartyDetailLoyaltyTab } from './components/PartyDetailLoyaltyTab'
 import { usePartyDetailTabs } from './usePartyDetailTabs'
 import { ShareLedgerSheet } from '@/features/shared-ledger/components/ShareLedgerSheet'
 import { useShareLedger } from '@/features/shared-ledger/useShareLedger'
 import { CommitmentsSection } from '@/features/collections/CommitmentsSection'
 import { StatementPDFPreview } from '@/features/collections/StatementPDFPreview'
 import { PartyLedgerTab } from './ledger/PartyLedgerTab'
-import { PartyQuickActions } from './components/PartyQuickActions'
+import { PartyDetailActionBar } from './components/PartyDetailActionBar'
 import { InviteDrawer } from '@/features/invite-claim/InviteDrawer'
 import '@/features/shared-ledger/shared-ledger.css'
 import './party-detail-header.css'
@@ -71,48 +70,26 @@ export default function PartyDetailPage() {
       })
   }
 
-  const headerActions = (
-    <>
-      <Button
-        variant="ghost" size="sm"
-        onClick={handleEdit}
-        aria-label={t.editParty}
-      >
-        <Pencil size={18} aria-hidden="true" />
-      </Button>
-      <Button
-        variant="ghost" size="sm"
-        onClick={() => setDeleteOpen(true)}
-        aria-label={t.deleteParty}
-      >
-        <Trash2 size={18} aria-hidden="true" />
-      </Button>
-    </>
-  )
-
   return (
     <>
       <AppShell>
-        <Header title={t.partyDetails} backTo={ROUTES.PARTIES} actions={headerActions} />
+        {party ? (
+          <PartyDetailHeader
+            party={party}
+            onBack={() => navigate(ROUTES.PARTIES)}
+            onEdit={handleEdit}
+            onInvoice={() => navigate(`/invoices/new?partyId=${partyId}`)}
+            onShare={() => setShareOpen(true)}
+            onInvite={() => setInviteOpen(true)}
+            onDelete={() => setDeleteOpen(true)}
+            showInvite={party.userId == null}
+          />
+        ) : (
+          <Header variant="emerald" title={t.partyDetails} backTo={ROUTES.PARTIES} />
+        )}
 
         <PageContainer variant="detail" className="space-y-6">
-          {status === 'loading' && (
-            <>
-              <div className="card-primary" style={{ marginBottom: 'var(--space-4)', minHeight: 140 }}>
-                <Skeleton height="1.5rem" width="60%" />
-                <div style={{ marginTop: 'var(--space-3)' }}>
-                  <Skeleton height="1rem" width="40%" />
-                </div>
-                <div style={{ marginTop: 'var(--space-4)' }}>
-                  <Skeleton height="2.5rem" width="50%" />
-                </div>
-              </div>
-              <Skeleton height="2.5rem" borderRadius="var(--radius-full)" />
-              <div style={{ marginTop: 'var(--space-4)' }}>
-                <Skeleton height="5rem" borderRadius="var(--radius-lg)" count={3} />
-              </div>
-            </>
-          )}
+          {status === 'loading' && <PartyDetailSkeleton />}
 
           {status === 'error' && (
             <ErrorState
@@ -140,19 +117,17 @@ export default function PartyDetailPage() {
           )}
 
           {status === 'success' && party && (
-            <div className="stagger-enter">
+            <div className="stagger-enter space-y-4">
               <div role="status" aria-live="polite" className="sr-only">
                 {party.name} {t.detailsLoaded}
               </div>
-              <PartyDetailHeader party={party} />
+              {/* Summary tiles (Outstanding / Sales MTD / Last Payment) — mockup */}
+              <PartySummaryTiles party={party} />
 
-              {/* Quick Actions — like MyBillBook */}
-              <PartyQuickActions
+              {/* Primary actions — Receive Payment + WhatsApp Statement */}
+              <PartyDetailActionBar
                 partyId={partyId}
                 onStatement={() => setStmtOpen(true)}
-                onShare={() => setShareOpen(true)}
-                onInvite={() => setInviteOpen(true)}
-                showInvite={party.userId == null}
               />
 
               {shareOpen && (
@@ -185,37 +160,23 @@ export default function PartyDetailPage() {
                 />
               )}
 
-              <div className="pill-tabs party-detail-tabs" role="tablist" aria-label={t.partyDetailSections}>
+              <div className="party-detail-tabs" role="tablist" aria-label={t.partyDetailSections}>
                 {TABS.map((tab) => (
                   <Button variant="none"
                     key={tab.id}
                     role="tab"
-                    className={`pill-tab${activeTab === tab.id ? ' active' : ''}`}
+                    className={`party-detail-tab${activeTab === tab.id ? ' active' : ''}`}
                     onClick={() => setActiveTab(tab.id)}
                     aria-selected={activeTab === tab.id}
                     aria-controls={`panel-${tab.id}`}
                   >
+                    <tab.icon size={16} aria-hidden="true" />
                     {tab.label}
                   </Button>
                 ))}
               </div>
 
               <div id={`panel-${activeTab}`} role="tabpanel" aria-label={`${TABS.find(tab => tab.id === activeTab)?.label ?? activeTab} ${t.tabContent}`}>
-                {activeTab === 'overview' && (
-                  <>
-                    <PartyOverviewTab party={party} />
-                    <CommitmentsSection partyId={partyId} partyName={party.name} />
-                  </>
-                )}
-
-                {activeTab === 'transactions' && (
-                  <PartyTransactionsTab partyId={partyId} />
-                )}
-
-                {activeTab === 'addresses' && (
-                  <PartyAddressesTab addresses={party.addresses} />
-                )}
-
                 {activeTab === 'ledger' && (
                   <PartyLedgerTab
                     partyId={partyId}
@@ -224,12 +185,31 @@ export default function PartyDetailPage() {
                   />
                 )}
 
-                {activeTab === 'crm' && (
-                  <PartyCrmTab party={party} onPatched={refresh} />
+                {activeTab === 'invoices' && (
+                  <PartyLedgerTab
+                    partyId={partyId}
+                    partyName={party.name}
+                    businessName={party.companyName ?? party.name}
+                    lockTypes={['SALE']}
+                  />
                 )}
 
-                {activeTab === 'loyalty' && (
-                  <PartyDetailLoyaltyTab partyId={partyId} />
+                {activeTab === 'payments' && (
+                  <PartyLedgerTab
+                    partyId={partyId}
+                    partyName={party.name}
+                    businessName={party.companyName ?? party.name}
+                    lockTypes={['PAYMENT']}
+                  />
+                )}
+
+                {activeTab === 'info' && (
+                  <>
+                    <PartyOverviewTab party={party} />
+                    <PartyAddressesTab addresses={party.addresses} />
+                    <PartyCrmTab party={party} onPatched={refresh} />
+                    <CommitmentsSection partyId={partyId} partyName={party.name} />
+                  </>
                 )}
               </div>
             </div>

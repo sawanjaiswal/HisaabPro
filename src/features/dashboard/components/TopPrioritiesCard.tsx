@@ -7,7 +7,7 @@
  */
 
 import React from 'react'
-import { IndianRupee, Package, FileText } from 'lucide-react'
+import { IndianRupee, Package, FileText, Users, MessageSquare } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
@@ -19,7 +19,7 @@ interface TopPrioritiesCardProps {
   onItemAction: (item: PriorityItem) => void
 }
 
-const ICONS: Record<string, LucideIcon> = { IndianRupee, Package, FileText }
+const ICONS: Record<string, LucideIcon> = { IndianRupee, Package, FileText, Users, MessageSquare }
 
 export const TopPrioritiesCard: React.FC<TopPrioritiesCardProps> = ({
   items,

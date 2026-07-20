@@ -1,40 +1,32 @@
 /**
  * Party detail — Tab list builder.
  *
- * Owns the visibility logic for conditional tabs (currently: Loyalty, which
- * is gated by the program being enabled). Keeps PartyDetailPage.tsx under
- * the 250-line file ratchet.
+ * The detail page shows four tabs matching the Customer Details mockup:
+ * Ledger · Invoices · Payments · Info. "Info" folds the old Overview,
+ * Addresses and CRM sections into one tab.
  */
 
+import type { LucideIcon } from 'lucide-react'
+import { List, FileText, CreditCard, Info } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
-import { useLoyaltyProgram } from '@/features/loyalty/hooks/useLoyaltyProgram'
 
-export type PartyDetailTab =
-  | 'overview'
-  | 'transactions'
-  | 'addresses'
-  | 'ledger'
-  | 'crm'
-  | 'loyalty'
+export type PartyDetailTab = 'ledger' | 'invoices' | 'payments' | 'info'
 
 export interface PartyDetailTabSpec {
   id: PartyDetailTab
   label: string
+  icon: LucideIcon
 }
 
-export function usePartyDetailTabs(): { tabs: PartyDetailTabSpec[]; isLoyaltyOn: boolean } {
+export function usePartyDetailTabs(): { tabs: PartyDetailTabSpec[] } {
   const { t } = useLanguage()
-  const { program } = useLoyaltyProgram()
-  const isLoyaltyOn = Boolean(program?.enabled)
 
   const tabs: PartyDetailTabSpec[] = [
-    { id: 'overview', label: t.overview },
-    { id: 'transactions', label: t.transactions },
-    { id: 'addresses', label: t.addresses },
-    { id: 'ledger', label: t.ledgerTab },
-    { id: 'crm', label: t.crmDetailTabCrm },
-    ...(isLoyaltyOn ? [{ id: 'loyalty' as const, label: t.loyaltyTabTitle }] : []),
+    { id: 'ledger', label: t.ledgerTab, icon: List },
+    { id: 'invoices', label: t.invoices, icon: FileText },
+    { id: 'payments', label: t.payments, icon: CreditCard },
+    { id: 'info', label: t.infoTab, icon: Info },
   ]
 
-  return { tabs, isLoyaltyOn }
+  return { tabs }
 }

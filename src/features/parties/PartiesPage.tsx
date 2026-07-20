@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Plus, Users, Upload } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { BulkActionBar } from '@/components/ui/BulkActionBar'
@@ -13,13 +13,16 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { useParties } from './useParties'
 import { PartySummaryBar } from './components/PartySummaryBar'
 import { PartyFilterBar } from './components/PartyFilterBar'
+import { PartyFilterDrawer } from './components/PartyFilterDrawer'
+import { PartyOutstandingCard } from './components/PartyOutstandingCard'
+import { PartyListHeader } from './components/PartyListHeader'
+import { PARTY_STATUS_FILTERS, type PartyStatusFilter } from './party.constants'
 import { PartyCard } from './components/PartyCard'
 import { useOptOutSet } from '@/features/marketing/hooks/useOptOutSet'
 import { TagFilterBar } from '@/features/crm/components/TagFilterBar'
 import { PartyListSkeleton } from './components/PartyListSkeleton'
 import { deleteParty } from './party.service'
 import { ROUTES } from '@/config/routes.config'
-import type { PartyType } from './party.types'
 import type { BulkAction } from '@/components/ui/BulkActionBar'
 import './parties.css'
 import '@/styles/components.crm.css'
@@ -35,6 +38,15 @@ export default function PartiesPage() {
   const bulk = useBulkSelect()
   const optOutSet = useOptOutSet()
   const [isBulkDeleting, setIsBulkDeleting] = useState(false)
+  const [status_, setStatusFilter] = useState<PartyStatusFilter>('ALL')
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
+
+  const handleStatusChange = (value: PartyStatusFilter) => {
+    setStatusFilter(value)
+    const mapped = PARTY_STATUS_FILTERS[value]
+    setFilter('isActive', mapped.isActive)
+    setFilter('hasOutstanding', mapped.hasOutstanding)
+  }
 
   const handlePartyClick = (id: string) => {
     if (bulk.isActive) {
@@ -50,7 +62,6 @@ export default function PartiesPage() {
     }
   }
 
-  const handleTypeChange = (value: PartyType | 'ALL') => setFilter('type', value)
   const goToCreate = () => navigate(PARTY_NEW_ROUTE)
 
   const handleBulkDelete = async () => {
@@ -90,6 +101,7 @@ export default function PartiesPage() {
   return (
     <AppShell>
       <Header
+        scrollCondense
         title={bulk.isActive ? `${bulk.selectedCount} ${t.selected}` : t.parties}
         actions={
           !bulk.isActive ? (
@@ -109,20 +121,21 @@ export default function PartiesPage() {
         }
       />
 
-      {status === 'success' && data && !bulk.isActive && (
-        <div className="page-hero">
+      <HeroPage>
+        {!bulk.isActive && status === 'success' && data && (
           <PartySummaryBar summary={data.summary} />
-        </div>
-      )}
+        )}
 
-      <PageContainer variant="list" className="space-y-6">
         {!bulk.isActive && (
           <>
             <PartyFilterBar
               search={filters.search}
               onSearchChange={setSearch}
               activeType={filters.type}
-              onTypeChange={handleTypeChange}
+              onTypeChange={(type) => setFilter('type', type)}
+              counts={data?.summary}
+              onFilterClick={() => setFilterDrawerOpen(true)}
+              hasActiveFilter={status_ !== 'ALL'}
             />
             <TagFilterBar
               activeTag={filters.tag ?? ''}
@@ -162,7 +175,8 @@ export default function PartiesPage() {
 
         {status === 'success' && data && data.parties.length > 0 && (
           <>
-          <h2 className="sr-only">{t.partyList}</h2>
+          <div className="party-list-section">
+          <PartyListHeader onSortChange={(sortBy) => setFilter('sortBy', sortBy)} />
           <div className="party-list stagger-list" role="list" aria-label={t.parties}>
             {data.parties.map((party) => (
               <div
@@ -182,15 +196,29 @@ export default function PartiesPage() {
               </div>
             ))}
           </div>
+          {!bulk.isActive && (
+            <PartyOutstandingCard
+              netOutstanding={data.summary.netOutstanding}
+              totalParties={data.summary.totalParties}
+            />
+          )}
+          </div>
           </>
         )}
-      </PageContainer>
+      </HeroPage>
 
       {!bulk.isActive && status === 'success' && data && data.parties.length > 0 && (
         <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.addNewPartyLabel}>
           <Plus size={24} aria-hidden="true" />
         </Button>
       )}
+
+      <PartyFilterDrawer
+        open={filterDrawerOpen}
+        onClose={() => setFilterDrawerOpen(false)}
+        activeStatus={status_}
+        onStatusChange={handleStatusChange}
+      />
 
       <BulkActionBar
         selectedCount={bulk.selectedCount}

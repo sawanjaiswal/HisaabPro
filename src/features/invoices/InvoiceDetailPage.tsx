@@ -18,6 +18,7 @@ import { useInvoiceDetail } from './useInvoiceDetail'
 import { deleteDocument } from './invoice.service'
 import { DETAIL_TABS } from './invoice.constants'
 import { InvoiceDetailHeader } from './components/InvoiceDetailHeader'
+import { InvoiceSummaryTiles } from './components/InvoiceSummaryTiles'
 import { InvoiceDetailHeaderActions } from './components/InvoiceDetailHeaderActions'
 import { InvoiceDetailSkeleton } from './components/InvoiceDetailSkeleton'
 import { InvoiceOverviewPanel } from './components/InvoiceOverviewPanel'
@@ -104,7 +105,7 @@ export default function InvoiceDetailPage() {
   return (
     <>
       <AppShell>
-        <Header title={t.invoiceDetail} backTo={ROUTES.INVOICES} actions={headerActions} />
+        <Header variant="emerald" title={t.invoiceDetail} backTo={ROUTES.INVOICES} actions={headerActions} />
 
       <PageContainer variant="detail" className="space-y-6">
         {status === 'loading' && <InvoiceDetailSkeleton />}
@@ -148,6 +149,8 @@ export default function InvoiceDetailPage() {
 
             <div ref={previewRef} className="invoice-export-capture stagger-enter">
             <InvoiceDetailHeader document={document} />
+            {/* Summary tiles (Total / Paid / Due) — GPT new-design pattern */}
+            <InvoiceSummaryTiles document={document} />
 
             <div className="pill-tabs invoice-detail-tabs" role="tablist" aria-label={t.invoiceDetailSections}>
               {DETAIL_TABS.map((tab) => (

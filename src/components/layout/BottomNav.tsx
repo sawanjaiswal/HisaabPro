@@ -1,24 +1,47 @@
 import { createPortal } from 'react-dom'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { Home, ShoppingCart, Users, Plus, Menu, CalendarClock } from 'lucide-react'
+import { Users, Plus, Menu, Package } from 'lucide-react'
 import type { ComponentType, SVGProps } from 'react'
 import { ROUTES } from '@/config/routes.config'
 import { OPEN_SIDE_NAV_EVENT } from '@/config/events.config'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useKeyboardVisible } from '@/hooks/useKeyboardVisible'
-import { FEATURES } from '@/config/features'
 import './BottomNav.css'
 
 type IconType = ComponentType<SVGProps<SVGSVGElement> & { size?: number }>
+
+/**
+ * Solid house with a door cut into the bottom edge. The door is a concave
+ * notch in the single fill path — not a separate sub-path — so it reads as a
+ * proper doorway at any fill colour without the fragile paint-order "punch"
+ * trick lucide's House needs.
+ */
+function HouseSolidIcon({ size = 24, ...props }: SVGProps<SVGSVGElement> & { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      stroke="none"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <path d="M11.06 3.03a1.5 1.5 0 0 1 1.88 0l7.5 6a1.5 1.5 0 0 1 .56 1.17V19a1.5 1.5 0 0 1-1.5 1.5H14.5V15a1.5 1.5 0 0 0-1.5-1.5h-2A1.5 1.5 0 0 0 9.5 15v5.5H4.5A1.5 1.5 0 0 1 3 19v-8.8a1.5 1.5 0 0 1 .56-1.17z" />
+    </svg>
+  )
+}
 
 interface NavItem {
   to: string
   icon: IconType
   label: string
   end?: boolean
+  iconClassName?: string
 }
 
-function NavTab({ to, icon: Icon, label, end }: NavItem) {
+function NavTab({ to, icon: Icon, label, end, iconClassName }: NavItem) {
   return (
     <li className="bnav__cell">
       <NavLink
@@ -29,7 +52,7 @@ function NavTab({ to, icon: Icon, label, end }: NavItem) {
         }
         aria-label={label}
       >
-        <span className="bnav__icon">
+        <span className={`bnav__icon${iconClassName ? ` ${iconClassName}` : ''}`}>
           <Icon size={22} aria-hidden="true" />
         </span>
         <span className="bnav__label">{label}</span>
@@ -45,12 +68,9 @@ export function BottomNav() {
   const keyboardOpen = useKeyboardVisible()
 
   const items: readonly NavItem[] = [
-    { to: ROUTES.DASHBOARD, icon: Home, label: t.home ?? 'Home' },
-    { to: ROUTES.SALES, icon: ShoppingCart, label: t.salesHub ?? 'Sales' },
-    ...(FEATURES.V2_APPOINTMENTS.enabled
-      ? [{ to: ROUTES.APPOINTMENTS, icon: CalendarClock, label: t.appointments ?? 'Calendar' }]
-      : []),
-    { to: ROUTES.PARTIES, icon: Users, label: t.parties },
+    { to: ROUTES.DASHBOARD, icon: HouseSolidIcon, label: t.home ?? 'Home', iconClassName: 'bnav__icon--home' },
+    { to: ROUTES.PARTIES, icon: Users, label: t.customers ?? 'Customers' },
+    { to: ROUTES.PRODUCTS, icon: Package, label: t.products ?? 'Products' },
   ]
 
   // Total cells = nav items + the Create button + the Menu button — the
@@ -97,7 +117,7 @@ export function BottomNav() {
               title={t.createInvoice ?? 'Create new invoice'}
             >
               <span className="bnav__icon bnav__icon--create">
-                <Plus size={20} strokeWidth={2.5} aria-hidden="true" />
+                <Plus size={26} strokeWidth={2.5} aria-hidden="true" />
               </span>
               <span className="bnav__label">{t.create ?? 'Create'}</span>
             </button>

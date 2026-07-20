@@ -3,6 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <!--
+      No-flash theme init. The app's theme source-of-truth is localStorage
+      `theme` (default 'light'), applied to <html data-theme> by ThemeContext
+      AFTER React mounts. This inline script sets data-theme during head parse,
+      before first paint, so the critical CSS below can key its background off
+      the SAME signal the app uses — never off `prefers-color-scheme`, which the
+      app deliberately ignores (a dark-OS user on the light app must stay light).
+    -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light');
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+    <!--
       CSP — constrains the injection-relevant directives (script-src, frame-src)
       to self + Razorpay's checkout/api origins, the only third party we embed.
       connect-src stays broad (https:/ws:) so the API base URL and Vite HMR work
@@ -45,10 +63,14 @@
          lowest-priority layer, so base.css's `@layer base` wins as soon as it
          loads. */
       @layer skeleton;
-      :root { color-scheme: light dark; }
+      :root { color-scheme: light; }
+      :root[data-theme="dark"] { color-scheme: dark; }
       @layer skeleton {
         html, body { margin: 0; min-height: 100%; background: #F8F7F4; font-family: Inter, system-ui, sans-serif; }
-        @media (prefers-color-scheme: dark) { html, body { background: #0E0E0F; } }
+        /* Keyed off data-theme (the app's real theme signal), NOT
+           prefers-color-scheme — otherwise a dark-OS user on the default light
+           theme gets a black html/body bleeding behind the cream app. */
+        html[data-theme="dark"], html[data-theme="dark"] body { background: #0E0E0F; }
       }
       #root[data-app-ready] .app-shell-skeleton { display: none; }
       .app-shell-skeleton {
@@ -76,10 +98,8 @@
         0% { background-position: 200% 0; }
         100% { background-position: -200% 0; }
       }
-      @media (prefers-color-scheme: dark) {
-        .app-shell-skeleton__header, .app-shell-skeleton__nav { background: rgba(20,20,22,0.9); border-color: rgba(255,255,255,0.08); }
-        .app-shell-skeleton__row { background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 100%); }
-      }
+      html[data-theme="dark"] .app-shell-skeleton__header, html[data-theme="dark"] .app-shell-skeleton__nav { background: rgba(20,20,22,0.9); border-color: rgba(255,255,255,0.08); }
+      html[data-theme="dark"] .app-shell-skeleton__row { background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 100%); }
     </style>
   </head>
   <body>

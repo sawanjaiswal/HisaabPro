@@ -50,14 +50,10 @@
   align-items: stretch;
 }
 
+/* Active-tab underline is rendered by `.bnav__tab--active::after` (centers
+ * under the label naturally), so the JS-positioned indicator span is unused. */
 .bnav__indicator {
-  position: absolute;
-  top: 6px;
-  height: calc(var(--bnav-h) - 12px);
-  background: var(--color-primary-100);
-  border-radius: var(--radius-full);
-  transition: left 0.28s var(--ease-spring), width 0.28s var(--ease-spring);
-  z-index: 0;
+  display: none;
 }
 
 .bnav__cell {
@@ -69,17 +65,18 @@
 }
 
 .bnav__tab {
+  position: relative;
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 4px;
   padding: 6px 4px;
   text-decoration: none;
-  color: var(--color-gray-400);
+  color: var(--color-gray-500);
   font-size: var(--fs-2xs);
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: -0.1px;
   line-height: 1;
   background: transparent;
@@ -104,7 +101,29 @@
 }
 
 .bnav__tab--active {
-  color: var(--color-primary-500);
+  color: var(--color-primary-700);
+}
+
+/* Active icons stay OUTLINE-only (lucide stroke icons: Users, SquareActivity) —
+   the active state is conveyed by the emerald `color` + the underline, not a
+   fill. Filling stroke icons produced solid blobs (esp. the Customers "Users"
+   glyph), so only the purpose-built solid Home glyph gets a fill. */
+.bnav__tab--active .bnav__icon--home svg,
+.bnav__tab--active .bnav__icon--home svg :first-child {
+  fill: currentColor;
+}
+
+/* Green rounded underline centered beneath the active label. */
+.bnav__tab--active::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-700);
 }
 
 .bnav__tab--active .bnav__icon {
@@ -131,15 +150,26 @@
   max-width: 100%;
 }
 
-/* Create tab — in-flow like every other cell, distinguished by a lime
- * accent circle behind the icon instead of a floating cutout FAB. */
+/* Create tab — solid-green circular FAB, lifted so it rises above the bar's
+ * top edge (matches mockup). No label under it. */
 .bnav__icon--create {
-  width: 30px;
-  height: 30px;
+  width: 52px;
+  height: 52px;
   border-radius: var(--radius-full);
-  background: var(--color-secondary-300);
-  color: var(--color-primary-700);
+  background: var(--color-primary-700);
+  color: var(--color-gray-0);
+  transform: translateY(-14px);
+  box-shadow: 0 6px 16px -4px var(--overlay-primary-25);
   transition: transform 0.18s var(--ease-spring);
+}
+
+/* The lifted FAB leaves a gap where the label would sit; collapse the cell's
+ * label so the circle reads as centered. */
+.bnav__tab--create {
+  gap: 0;
+}
+.bnav__tab--create .bnav__label {
+  display: none;
 }
 
 .bnav__icon--create svg {
@@ -147,11 +177,11 @@
 }
 
 .bnav__tab--create:hover .bnav__icon--create {
-  transform: scale(1.06);
+  transform: translateY(-14px) scale(1.06);
 }
 
 .bnav__tab--create:active .bnav__icon--create {
-  transform: scale(0.92);
+  transform: translateY(-14px) scale(0.92);
 }
 
 /* Reserve page space so content never hides behind the bar.

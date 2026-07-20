@@ -4,7 +4,7 @@
 
 ## Aesthetic: Warm Luxury Utility
 
-**DFII: 17/15** — Deep teal trust + lime energy on warm cream canvas. Premium enough for Cred users, functional enough for Rs 8,000 Android phones.
+**DFII: 17/15** — Deep emerald green (#026F39) trust/growth + lime energy on warm cream canvas. Premium enough for Cred users, functional enough for Rs 8,000 Android phones.
 
 **Differentiation anchor:** Warm cream-to-white gradient + teal gradient summary cards + lime accent pops. If screenshotted without logo, instantly recognizable vs Vyapar (cold gray) or MyBillBook (flat white).
 
@@ -39,22 +39,32 @@ AppShell
 - List items: `txn-row` pattern (avatar + info + amount), dividers between
 - FAB: teal gradient circle with glow shadow
 
-### 2. Detail Page (Party Detail, Invoice Detail, Payment Detail)
+### 2. Detail Page (Party Detail, Invoice Detail, Payment Detail) — Emerald Hero skin
+
+> Skin v2 (2026-07). `PartyDetailPage` is the canonical reference. The old
+> gradient-hero-with-giant-amount layout is RETIRED.
 
 ```
 AppShell
-  Header (frosted, back button + title + actions)
-  PageContainer
-    Hero Header (large avatar + name + badge + key metric)
-    Pill Tabs (Overview / Transactions / Addresses)
-    Tab Content
+  Header (recoloured to deep emerald --color-hero-surface, white title + actions)
+  HeroPage                          ← src/components/layout/HeroPage.tsx
+    White identity card             ← circle avatar + name + type pill + status pill + phone + location
+    SummaryTiles                    ← Due (red) / Sales (green) / Last Payment (blue)
+    Underline tabs                  ← Ledger (first) / Invoices / Payments / Details / Notes
+    Tab content                     ← ledger direction-tinted rows, etc.
+    Inline dual-action footer       ← outline "Send Statement" + primary "Add Payment"
 ```
 
 **Key visual rules:**
-- Hero header: 56px avatar, name 1.25rem/700, badge next to name
-- Key metric (balance/total): `money-hero` class, colored by sign (green/red)
-- Tab content: card sections with generous padding
-- Info rows: label (gray-500, 0.75rem) + value (gray-800, 0.9375rem/600)
+- Header + hero field are deep emerald (#003121); content lifts off a white
+  rounded sheet (`--radius-xl` top). Mount `HeroPage` — never hand-roll it.
+- Identity card: white (`--color-gray-0`), circle avatar, name 1.25rem/700,
+  **type pill** (Badge info) beside name, **status pill** (Badge success/default)
+  top-right, phone + `MapPin` location muted.
+- Stat tiles via `<SummaryTiles>` — tones due/sales/info (see color-system.md).
+- Tabs = underline bar (`.party-detail-tabs`), active = emerald text + underline.
+- Ledger rows: date block + direction-tinted icon square + title/doc-no + amount.
+- Footer: 2 inline Buttons (outline + primary), NOT a fixed bar.
 
 ### 3. Form Page (Create Party, Create Invoice, Record Payment)
 
@@ -126,11 +136,13 @@ Full-screen
 - Dashboard adds its own `dashboard-page` background on top
 
 ### Header
-- Frosted glass: `rgba(248, 247, 244, 0.92)` + `backdrop-filter: blur(16px)`
-- Bottom border: `1px solid rgba(0, 0, 0, 0.04)`
-- Title: 1.25rem / 700 / gray-900
-- Back button: 40x40 circle, transparent → gray-100 on :active
-- Always sticky, always z-index: 20
+- **Default (light):** frosted glass `var(--header-glass-bg)` + `backdrop-filter: blur(16px)`, bottom border `rgba(0,0,0,0.04)`, title 1.25rem/700/gray-900.
+- **Emerald Hero variant (skin v2):** on Home + detail pages the SAME `<Header>`
+  recolours to deep emerald `var(--color-hero-surface)` (#003121) with white
+  title + white icons and no border/glass. This is automatic when a `HeroPage`
+  (or `.dashboard-page`) is mounted — do NOT add per-page header CSS.
+- Back button: 40x40 circle, transparent → gray-100 (or white @12% on emerald) on :active.
+- Always sticky, always z-index: 20.
 
 ### Cards
 - White, 20px radius, 20px padding
@@ -139,9 +151,15 @@ Full-screen
 - Teal gradient cards: `linear-gradient(135deg, #1b6369 0%, #0f3638 100%)`
 
 ### Avatars
-- 44x44, 12px radius (rounded square, not circle)
-- Subtle shadow: `0 2px 6px rgba(0, 0, 0, 0.08)`
-- Colored by name hash, white text initials
+- List rows: 44x44, 12px radius (rounded square).
+- **Detail identity card (skin v2): circle avatar** (`--radius-full`), larger
+  (56px), emerald fill + white initials.
+- Subtle shadow: `0 2px 6px rgba(0, 0, 0, 0.08)`; colored by name hash.
+
+### Summary Tiles (detail pages, skin v2)
+- `<SummaryTiles>` — 3-up bordered stat tiles under the identity card.
+- Muted label above a toned value; tones due (red) / sales·paid (green) /
+  info (blue) / neutral. See `.claude/skills/hp-design/color-system.md`.
 
 ### FAB
 - 56x56, full circle
@@ -155,10 +173,12 @@ Full-screen
 - Tinted background at ~50% opacity, darker text
 - Status colors: green (paid), amber (pending), red (overdue), gray (draft), teal (info)
 
-### Pill Tabs
-- White bg, gray-200 border, 40px min-height
-- Active: teal-600 bg, white text, subtle glow shadow
-- :active (non-selected): gray-100 bg
+### Tabs
+- **Detail pages (skin v2): underline tabs** (`.party-detail-tabs`) — flat, no
+  filled bg: active = emerald text + 2px emerald underline (`--color-primary-500`),
+  inactive = `--text-muted`. Horizontally scrollable, 44px targets.
+- **Pill tabs** (forms / segmented filters): white bg, gray-200 border, 40px
+  min-height, active = emerald-600 bg + white text, :active (non-selected) = gray-100.
 
 ### Search Bar
 - White pill, gray-100 border, subtle shadow
@@ -214,8 +234,8 @@ Full-screen
 
 | Role | Token | Hex |
 |------|-------|-----|
-| Brand primary | `--color-primary-500` | #0B4F5E |
-| Brand teal dark | `--color-primary-600` | #052D35 |
+| Brand primary | `--color-primary-500` | #026F39 (deep emerald) |
+| Brand emerald dark | `--color-primary-600` | #024E29 |
 | Lime accent | `--color-lime-accent` | #cfdf2e |
 | Lime (secondary) | `--color-secondary-300` | #E0EA49 |
 | Success | `--color-success-600` | #16A34A |

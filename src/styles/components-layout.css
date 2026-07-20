@@ -114,22 +114,13 @@
 }
 
 .header-title {
-  font-size: var(--fs-2xl);
+  /* Fixed 16px on every breakpoint — the always-on header title size. */
+  font-size: var(--fs-base);
   font-weight: 700;
   color: var(--color-gray-900);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-/* Sub-page headers carry back-arrow + up to 4 right-side icons (page action,
- * bell, sync, menu) — on narrow phones that leaves too little room for even
- * a short title like "New Invoice" at --fs-2xl, so it clips. Step down one
- * size to buy back width instead of shrinking the icon row. */
-@media (max-width: 400px) {
-  .header-title {
-    font-size: var(--fs-xl);
-  }
 }
 
 /* Right group: action icons */
@@ -138,6 +129,52 @@
   align-items: center;
   gap: var(--space-1);
   flex-shrink: 0;
+}
+
+/* === HEADER VARIANT — emerald hero bar (internal detail pages) === */
+/* Deep-emerald surface with white back arrow, title, and action icons.
+ * Used on detail pages (party/customer, invoice, product) so the identity of
+ * the record sits on the brand hero colour — matches the Customer Details
+ * mockup. Foreground is white in BOTH themes because the surface is dark. */
+.header--emerald {
+  background: var(--color-hero-surface);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom-color: transparent;
+  color: var(--color-white-inverse);
+}
+
+.header--emerald .header-back {
+  color: var(--color-white-inverse);
+}
+
+.header--emerald .header-back:active {
+  background: var(--overlay-white-15);
+}
+
+.header--emerald .header-title {
+  color: var(--color-white-inverse);
+}
+
+/* Action-row icons (bell, sync, menu, overflow) inherit white on the hero
+ * surface. Neutralise the light glass pill so icons sit flush like the mockup;
+ * pressed feedback uses a white overlay instead of a grey fill. */
+.header--emerald .header-actions {
+  color: var(--color-white-inverse);
+}
+
+.header--emerald .header-icon-btn,
+.header--emerald .notif-bell,
+.header--emerald .header-actions .btn-ghost {
+  background: transparent;
+  color: var(--color-white-inverse);
+  box-shadow: none;
+}
+
+.header--emerald .header-icon-btn:active,
+.header--emerald .notif-bell:active,
+.header--emerald .header-actions .btn-ghost:hover:not(:disabled) {
+  background: var(--overlay-white-15);
 }
 
 /* === HEADER VARIANTS — centered title + scroll-condense (dashboard pattern) === */

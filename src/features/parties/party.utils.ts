@@ -9,18 +9,30 @@ export function paisaToRupees(paise: number): string {
   })
 }
 
-/** Format as Rs display: 500000 → "Rs 5,000" */
+/** Format as ₹ display: 500000 → "₹5,000" */
 export function formatAmount(paise: number): string {
-  return `Rs ${paisaToRupees(paise)}`
+  return `₹${paisaToRupees(paise)}`
 }
 
 /** Format outstanding with sign: positive = receivable, negative = payable */
 export function formatOutstanding(paise: number): { text: string; isReceivable: boolean } {
-  if (paise === 0) return { text: 'Rs 0', isReceivable: true }
+  if (paise === 0) return { text: '₹0', isReceivable: true }
   return {
-    text: `Rs ${paisaToRupees(paise)}`,
+    text: `₹${paisaToRupees(paise)}`,
     isReceivable: paise > 0,
   }
+}
+
+/** Row status derived honestly from the outstanding balance.
+ * Positive balance = they owe us (To Collect); negative = they've paid ahead
+ * (Advance); zero = Settled. `labelKey` resolves via useLanguage(). */
+export function getPartyRowStatus(paise: number): {
+  labelKey: 'toCollect' | 'advance' | 'settled'
+  tone: 'due' | 'advance' | 'settled'
+} {
+  if (paise > 0) return { labelKey: 'toCollect', tone: 'due' }
+  if (paise < 0) return { labelKey: 'advance', tone: 'advance' }
+  return { labelKey: 'settled', tone: 'settled' }
 }
 
 /** Extract PAN from GSTIN (chars 3-12) */

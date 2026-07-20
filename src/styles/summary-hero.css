@@ -121,6 +121,14 @@
   font-size: var(--fs-sm);
   font-weight: 500;
   opacity: 0.7;
+  margin-right: 3px;
+}
+
+/* Party count beside the label — "(2)" */
+.summary-hero-label-count {
+  font-weight: 500;
+  opacity: 0.65;
+  font-variant-numeric: tabular-nums;
 }
 
 .summary-hero-label {
@@ -140,6 +148,107 @@
 
 .summary-hero-chevron--dark {
   color: var(--color-hero-text-muted);
+}
+
+/* ─── v2 layout (mockup) — icon ring · label above amount · sub-line ── */
+
+.summary-hero-card--v2 {
+  align-items: center;
+  gap: var(--space-2);
+  justify-content: flex-start;
+  padding: var(--space-3) var(--space-3);
+  min-height: 96px;
+}
+
+.summary-hero-card--v2 .summary-hero-card-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 2px;
+}
+
+.summary-hero-card--v2 .summary-hero-label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  opacity: 1;
+  white-space: nowrap;
+}
+
+.summary-hero-card--v2 .summary-hero-amount {
+  font-size: var(--fs-xl);
+  line-height: 1.1;
+}
+
+.summary-hero-card--v2 .summary-hero-rupee {
+  font-size: var(--fs-sm);
+  opacity: 0.9;
+}
+
+.summary-hero-card--v2 .summary-hero-sub {
+  font-size: var(--fs-xs);
+  opacity: 0.7;
+}
+
+.summary-hero-card--v2 .summary-hero-chevron {
+  margin-left: calc(var(--space-1) * -1);
+}
+
+.summary-hero-icon-ring {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--overlay-white-30, rgba(255, 255, 255, 0.3));
+  background: var(--overlay-white-10, rgba(255, 255, 255, 0.1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.summary-hero-icon-ring--dark {
+  border-color: var(--overlay-dark-15, rgba(0, 0, 0, 0.15));
+  background: var(--overlay-dark-05, rgba(0, 0, 0, 0.05));
+}
+
+.summary-hero-sub {
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+
+/* Tiny screens — drop the chevron so label + amount never wrap at 320px */
+@media (max-width: 379px) {
+  .summary-hero-icon-ring {
+    width: 34px;
+    height: 34px;
+  }
+
+  .summary-hero-icon-ring svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .summary-hero-card--v2 .summary-hero-chevron {
+    display: none;
+  }
+}
+
+/* Tablet+ keeps the roomier mockup proportions.
+ * Double class beats the base ≥768 .summary-hero-card rule below. */
+@media (min-width: 768px) {
+  .summary-hero-card.summary-hero-card--v2 {
+    padding: var(--space-5);
+    gap: var(--space-3);
+  }
+
+  .summary-hero-card.summary-hero-card--v2 .summary-hero-amount {
+    font-size: var(--fs-3xl);
+  }
+
+  .summary-hero-icon-ring {
+    width: 48px;
+    height: 48px;
+  }
 }
 
 /* Keyframes */

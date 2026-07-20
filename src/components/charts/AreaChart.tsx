@@ -11,15 +11,22 @@ interface AreaChartProps {
   data: number[]
   /** Line + fill colour (CSS var recommended). */
   color: string
-  /** Evenly-spaced axis labels shown under the chart (e.g. dates). */
+  /** Evenly-spaced axis labels; only the first and last are shown (start/end). */
   xLabels?: string[]
+  /** Draw faint horizontal grid lines behind the trace. */
+  showGrid?: boolean
   height?: number
   className?: string
 }
 
 const VB_WIDTH = 320
+/** Horizontal insets so the end dot + glow never clip at the SVG edges. */
+const PAD_LEFT = 6
+const PAD_RIGHT = 12
+/** Number of horizontal grid lines. */
+const GRID_LINES = 4
 
-export function AreaChart({ data, color, xLabels, height = 130, className }: AreaChartProps) {
+export function AreaChart({ data, color, xLabels, showGrid = false, height = 130, className }: AreaChartProps) {
   const gradientId = useId()
   const fadeId = useId()
   const maskId = useId()
@@ -33,20 +40,27 @@ export function AreaChart({ data, color, xLabels, height = 130, className }: Are
   const padTop = 8
   const padBottom = 10
   const usableH = height - padTop - padBottom
-  const stepX = VB_WIDTH / (data.length - 1)
+  const usableW = VB_WIDTH - PAD_LEFT - PAD_RIGHT
+  const stepX = usableW / (data.length - 1)
 
   const points = data.map((v, i) => {
-    const x = i * stepX
+    const x = PAD_LEFT + i * stepX
     const y = padTop + usableH * (1 - (v - min) / span)
     return [x, y] as const
   })
 
   const line = points.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ')
-  const area = `${line} L${VB_WIDTH} ${height} L0 ${height} Z`
+  const area = `${line} L${points[points.length - 1][0].toFixed(1)} ${height} L${PAD_LEFT} ${height} Z`
   const [endX, endY] = points[points.length - 1]
+
+  const gridYs = showGrid
+    ? Array.from({ length: GRID_LINES }, (_, i) => padTop + (usableH * i) / (GRID_LINES - 1))
+    : []
+  const edgeLabels = xLabels && xLabels.length > 0 ? [xLabels[0], xLabels[xLabels.length - 1]] : []
 
   return (
     <div className={className}>
+      <div className="area-chart-plot" style={{ position: 'relative' }}>
       <svg
         width="100%"
         height={height}
@@ -72,18 +86,40 @@ export function AreaChart({ data, color, xLabels, height = 130, className }: Are
             <rect x="0" y="0" width={VB_WIDTH} height={height} fill={`url(#${fadeId})`} />
           </mask>
         </defs>
+        {/* Horizontal grid lines behind the trace. */}
+        {gridYs.map((gy) => (
+          <line
+            key={gy}
+            x1={PAD_LEFT}
+            y1={gy}
+            x2={VB_WIDTH - PAD_RIGHT}
+            y2={gy}
+            stroke="var(--overlay-white-70, rgba(255,255,255,0.7))"
+            strokeOpacity="0.12"
+            strokeWidth="1"
+          />
+        ))}
         <g mask={`url(#${maskId})`}>
           <path d={area} fill={`url(#${gradientId})`} />
           <path d={line} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
         </g>
-        {/* End marker sits outside the mask so it stays fully opaque. */}
-        <circle cx={endX} cy={endY} r="6" fill={color} fillOpacity="0.25" />
-        <circle cx={endX} cy={endY} r="3.5" fill={color} stroke="#fff" strokeWidth="1.5" />
       </svg>
-      {xLabels && xLabels.length > 0 && (
+      {/* End marker is an HTML overlay so it stays a true circle despite the
+          SVG's non-uniform preserveAspectRatio stretch. */}
+      <span
+        className="area-chart-enddot"
+        style={{
+          left: `${(endX / VB_WIDTH) * 100}%`,
+          top: `${(endY / height) * 100}%`,
+          ['--dot-color' as string]: color,
+        }}
+        aria-hidden="true"
+      />
+      </div>
+      {edgeLabels.length > 0 && (
         <div className="area-chart-xaxis">
-          {xLabels.map((label) => (
-            <span key={label} className="area-chart-xlabel">{label}</span>
+          {edgeLabels.map((label, i) => (
+            <span key={`${i}-${label}`} className="area-chart-xlabel">{label}</span>
           ))}
         </div>
       )}

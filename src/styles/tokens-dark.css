@@ -1,16 +1,16 @@
 /* === DARK THEME — Token overrides + component overrides === */
 
 [data-theme="dark"] {
-  --color-primary-50:  #0A2A33;
-  --color-primary-100: #0D3640;
-  --color-primary-200: #135162;
-  --color-primary-300: #1A7A93;
-  --color-primary-400: #2199B5;
-  --color-primary-500: #3FAED6;
-  --color-primary-600: #62C0E0;
-  --color-primary-700: #8AD2EA;
-  --color-primary-800: #B3E4F3;
-  --color-primary-900: #DCF2FA;
+  --color-primary-50:  #0A2A1A;
+  --color-primary-100: #0D3624;
+  --color-primary-200: #135137;
+  --color-primary-300: #1A7A50;
+  --color-primary-400: #219961;
+  --color-primary-500: #35C176;
+  --color-primary-600: #5FD293;
+  --color-primary-700: #88E0AF;
+  --color-primary-800: #B3ECCC;
+  --color-primary-900: #DCF7E7;
 
   --color-secondary-50:  #2A2B14;
   --color-secondary-100: #3A3E1A;
@@ -64,8 +64,8 @@
   --color-error-bg-subtle: rgba(239, 68, 68, 0.15);
   --color-warning-bg-subtle: rgba(245, 158, 11, 0.15);
   --color-info-bg-subtle: rgba(59, 130, 246, 0.15);
-  --color-primary-bg-subtle: rgba(63, 174, 214, 0.12);
-  --color-primary-bg-subtle-strong: rgba(63, 174, 214, 0.18);
+  --color-primary-bg-subtle: rgba(53, 193, 118, 0.12);
+  --color-primary-bg-subtle-strong: rgba(53, 193, 118, 0.18);
 
   /* Hero card text on gradient backgrounds — dark mode */
   --color-hero-text-secondary: rgba(255, 255, 255, 0.8);
@@ -77,14 +77,14 @@
 
   --color-lime-accent: #D4DC4A;
 
-  --gradient-teal-start: #0D3640;
-  --gradient-teal-end:   #0A2A33;
+  --gradient-teal-start: #0D3624;
+  --gradient-teal-end:   #0A2A1A;
   --gradient-coral-start: #B91C1C;
   --gradient-coral-end:   #7F1D1D;
   --gradient-amber-start: #B45309;
   --gradient-amber-end:   #92400E;
-  --gradient-calc-start: #0a1a1e;
-  --gradient-calc-end:   #0d2429;
+  --gradient-calc-start: #0a1e14;
+  --gradient-calc-end:   #0d2a1c;
 
   --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
   --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(43, 51, 66, 0.5);

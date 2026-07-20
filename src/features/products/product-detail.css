@@ -280,3 +280,261 @@
     align-items: flex-end;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   GPT reskin — Product Detail (identity · stats · actions · metrics · summary
+   · activity · footer). Consumer skin, warm-cream page, white cards.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Identity card ─────────────────────────────────────────────────────── */
+.pd-identity {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.875rem;
+  align-items: start;
+  padding: 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+.pd-identity__thumb {
+  width: 84px;
+  height: 84px;
+  border-radius: var(--radius-lg);
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-alt);
+  flex-shrink: 0;
+}
+.pd-identity__body { min-width: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.pd-identity__name {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+  word-break: break-word;
+}
+.pd-identity__sku {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+.pd-identity__sku-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  transition: background var(--duration-fast, 150ms) var(--ease-out, ease);
+}
+.pd-identity__sku-btn:hover { background: var(--color-surface-alt); }
+.pd-identity__pills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.pd-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3125rem 0.625rem;
+  border-radius: var(--radius-full);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1;
+}
+.pd-pill__dot { width: 7px; height: 7px; border-radius: var(--radius-full); background: currentColor; }
+.pd-pill--ok   { color: var(--color-success-700); background: color-mix(in srgb, var(--color-success-500) 14%, transparent); }
+.pd-pill--warn { color: var(--color-warning-700); background: color-mix(in srgb, var(--color-warning-500) 16%, transparent); }
+.pd-pill--bad  { color: var(--color-error-700);   background: color-mix(in srgb, var(--color-error-500) 14%, transparent); }
+.pd-identity__save { color: var(--color-text-secondary); }
+.pd-identity__save--on { color: var(--color-primary-600); }
+
+/* ── 4-up stat row ─────────────────────────────────────────────────────── */
+.pd-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+.pd-stats__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.875rem 0.5rem;
+  text-align: center;
+}
+.pd-stats__cell + .pd-stats__cell { border-left: 1px solid var(--color-border); }
+.pd-stats__value { font-size: var(--fs-lg); font-weight: 700; color: var(--color-text-primary); line-height: 1.1; }
+.pd-stats__unit  { font-size: var(--fs-sm); color: var(--color-text-secondary); }
+.pd-stats__label { font-size: var(--fs-xs); color: var(--color-text-muted); }
+.pd-stats__cell--warn .pd-stats__value,
+.pd-stats__cell--warn .pd-stats__label { color: var(--color-warning-600); }
+
+/* ── Quick-action row ──────────────────────────────────────────────────── */
+.pd-actions {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.25rem;
+  padding: 0.75rem 0.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+.pd-actions__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem;
+  min-height: 44px;
+}
+.pd-actions__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  color: var(--color-primary-600);
+  background: color-mix(in srgb, var(--color-primary-500) 8%, transparent);
+  transition: background var(--duration-fast, 150ms) var(--ease-out, ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .pd-actions__item:hover .pd-actions__icon { background: color-mix(in srgb, var(--color-primary-500) 15%, transparent); }
+}
+.pd-actions__item:active .pd-actions__icon { background: color-mix(in srgb, var(--color-primary-500) 18%, transparent); }
+.pd-actions__label { font-size: var(--fs-xs); color: var(--color-text-secondary); text-align: center; }
+
+/* ── Overview metric grid ──────────────────────────────────────────────── */
+.pd-overview__title,
+.pd-card__title { font-size: var(--fs-md); font-weight: 700; color: var(--color-text-primary); }
+.pd-overview__title { margin-bottom: 0.75rem; }
+.pd-metric-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+.pd-metric {
+  --pd-accent: var(--color-success-500);
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0.875rem;
+  border-radius: var(--radius-xl);
+  background: color-mix(in srgb, var(--pd-accent) 6%, var(--color-surface));
+  border: 1px solid color-mix(in srgb, var(--pd-accent) 14%, var(--color-border));
+}
+.pd-metric--sales  { --pd-accent: var(--color-success-500); }
+.pd-metric--units  { --pd-accent: var(--color-info-500); }
+.pd-metric--profit { --pd-accent: var(--color-success-600); }
+.pd-metric--price  { --pd-accent: var(--color-warning-500); }
+.pd-metric__head { display: flex; align-items: center; gap: 0.5rem; }
+.pd-metric__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-md);
+  color: var(--pd-accent);
+  background: color-mix(in srgb, var(--pd-accent) 16%, transparent);
+  flex-shrink: 0;
+}
+.pd-metric__label { font-size: var(--fs-sm); font-weight: 600; color: var(--color-text-secondary); }
+.pd-metric__value { font-size: var(--fs-2xl); font-weight: 700; color: var(--color-text-primary); line-height: 1.1; }
+.pd-metric__foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 0.5rem; margin-top: 0.125rem; }
+.pd-metric__sub { font-size: var(--fs-xs); color: var(--color-text-muted); white-space: nowrap; }
+.pd-metric__spark { flex: 1; min-width: 0; max-width: 96px; }
+
+/* ── Generic card head (summary + activity + pricing) ──────────────────── */
+.pd-card {
+  padding: 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+.pd-card__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+.pd-card__link { font-size: var(--fs-sm); font-weight: 600; color: var(--color-primary-600); }
+.pd-card__link:hover { text-decoration: underline; }
+
+/* ── Stock summary rows ────────────────────────────────────────────────── */
+.pd-summary__list { display: flex; flex-direction: column; }
+.pd-summary__row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6875rem 0;
+  border-bottom: 1px solid var(--color-gray-100);
+}
+.pd-summary__row:last-child { border-bottom: none; }
+.pd-summary__icon { display: inline-flex; color: var(--color-text-muted); }
+.pd-summary__icon--ok   { color: var(--color-success-600); }
+.pd-summary__icon--warn { color: var(--color-warning-600); }
+.pd-summary__label { font-size: var(--fs-df); color: var(--color-text-secondary); }
+.pd-summary__value { font-size: var(--fs-df); font-weight: 700; color: var(--color-text-primary); }
+.pd-summary__unit  { font-weight: 500; color: var(--color-text-muted); }
+.pd-summary__row--ok   .pd-summary__label,
+.pd-summary__row--ok   .pd-summary__value { color: var(--color-success-700); }
+.pd-summary__row--warn .pd-summary__label,
+.pd-summary__row--warn .pd-summary__value { color: var(--color-warning-600); }
+.pd-summary__cta { width: 100%; margin-top: 0.875rem; }
+
+/* ── Info tab: description + barcode blocks ────────────────────────────────── */
+.pd-info__desc {
+  font-size: var(--fs-df);
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.75rem;
+}
+.pd-info__barcode {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.875rem;
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--color-gray-100);
+}
+
+/* ── Recent activity rows ──────────────────────────────────────────────── */
+.pd-activity__list { display: flex; flex-direction: column; }
+.pd-activity__row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6875rem 0;
+  border-bottom: 1px solid var(--color-gray-100);
+}
+.pd-activity__row:last-child { border-bottom: none; }
+.pd-activity__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+.pd-activity__icon--ok   { color: var(--color-success-600); background: color-mix(in srgb, var(--color-success-500) 12%, transparent); }
+.pd-activity__icon--bad  { color: var(--color-error-600);   background: color-mix(in srgb, var(--color-error-500) 12%, transparent); }
+.pd-activity__icon--info { color: var(--color-info-500);    background: color-mix(in srgb, var(--color-info-500) 12%, transparent); }
+.pd-activity__body { display: flex; flex-direction: column; gap: 0.125rem; min-width: 0; }
+.pd-activity__title { font-size: var(--fs-df); font-weight: 600; color: var(--color-text-primary); }
+.pd-activity__time  { font-size: var(--fs-xs); color: var(--color-text-muted); }
+.pd-activity__delta { font-size: var(--fs-df); font-weight: 700; white-space: nowrap; }
+.pd-activity__delta--ok   { color: var(--color-success-600); }
+.pd-activity__delta--bad  { color: var(--color-error-600); }
+.pd-activity__delta--info { color: var(--color-info-500); }
+
+/* ── Dual-action footer ────────────────────────────────────────────────── */
+.pd-footer { display: flex; gap: 0.75rem; }
+.pd-footer__btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
+.pd-footer__btn--danger {
+  color: var(--color-error-600);
+  border-color: color-mix(in srgb, var(--color-error-500) 45%, transparent);
+}
+.pd-footer__btn--danger:hover { background: color-mix(in srgb, var(--color-error-500) 8%, transparent); }

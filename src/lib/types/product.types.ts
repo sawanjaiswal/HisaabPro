@@ -14,7 +14,8 @@ export interface ProductSummary {
   barcode?: string
   /** Barcode format — defaults to CODE128 */
   barcodeFormat?: BarcodeFormat
-  category: { id: string; name: string }
+  /** null for uncategorized products (Category.onDelete = SetNull) */
+  category: { id: string; name: string } | null
   unit: { id: string; name: string; symbol: string }
   /** Sale price in PAISE */
   salePrice: number

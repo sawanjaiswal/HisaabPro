@@ -25,6 +25,14 @@ interface HeaderProps {
   actions?: ReactNode
   /** Apply a frosted-glass background only after the user scrolls 16px+. Default: false. */
   scrollCondense?: boolean
+  /**
+   * Visual treatment. When omitted, back-button sub-pages default to
+   * `'emerald'` and everything else (brand/root + hero list pages) to
+   * `'default'` — see `effectiveVariant` below. Pass explicitly to override.
+   * - `'default'` — frosted cream glass, dark foreground.
+   * - `'emerald'` — deep-emerald hero surface, white back/title/action icons.
+   */
+  variant?: 'default' | 'emerald'
 }
 
 export function Header({
@@ -32,6 +40,7 @@ export function Header({
   backTo,
   actions,
   scrollCondense = false,
+  variant,
 }: HeaderProps) {
   const navigate = useNavigate()
   const [isScrolled, setIsScrolled] = useState(false)
@@ -51,8 +60,15 @@ export function Header({
 
   const openSideNav = () => window.dispatchEvent(new Event(OPEN_SIDE_NAV_EVENT))
 
+  // Back-button sub-pages get the emerald hero bar by default; brand/root and
+  // scroll-condense hero pages (which bleed transparent) stay on the cream
+  // treatment. An explicit `variant` prop always wins.
+  const effectiveVariant =
+    variant ?? (backTo !== undefined && !scrollCondense ? 'emerald' : 'default')
+
   const className = [
     'header',
+    effectiveVariant === 'emerald' && 'header--emerald',
     scrollCondense && 'header--scroll-condense',
     scrollCondense && isScrolled && 'is-scrolled',
   ].filter(Boolean).join(' ')

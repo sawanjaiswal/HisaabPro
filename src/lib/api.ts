@@ -131,16 +131,22 @@ export async function api<T>(
   } catch (err) {
     clearTimeout(timeoutId)
 
-    // Timeout or intentional abort — surface a clear message instead of the raw DOM string
+    // Timeout — a real failure worth surfacing with a friendly message.
+    // The timeout aborts with a reason: DOMException('Request timed out','TimeoutError').
+    if (
+      err instanceof DOMException &&
+      (err.name === 'TimeoutError' || err.message === 'Request timed out')
+    ) {
+      throw new ApiError('Request timed out — please check your connection and try again', 'TIMEOUT', 0)
+    }
+
+    // Genuine cancellation (component unmount, navigation, StrictMode double-invoke)
+    // aborts with NO reason → a plain AbortError. Rethrow it UNWRAPPED so every
+    // caller's `err.name === 'AbortError'` guard swallows it instead of toasting.
+    // Wrapping it in an ApiError (name 'ApiError') was the root cause of the
+    // spurious "Request was cancelled" toast.
     if (err instanceof DOMException && err.name === 'AbortError') {
-      const isTimeout = err.message === 'Request timed out'
-      throw new ApiError(
-        isTimeout
-          ? 'Request timed out — please check your connection and try again'
-          : 'Request was cancelled',
-        isTimeout ? 'TIMEOUT' : 'ABORTED',
-        0,
-      )
+      throw err
     }
 
     // Network error on a mutation → queue it offline

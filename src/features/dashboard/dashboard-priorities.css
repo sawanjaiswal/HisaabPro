@@ -25,29 +25,56 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-2) 0;
+  padding: var(--space-3) 0;
+}
+
+/* Thin divider between rows (not above the first / below the last). */
+.dashboard-priority-row:not(:last-child) {
+  border-bottom: 1px solid var(--color-gray-100);
 }
 
 .dashboard-priority-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-full);
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.dashboard-priority-row--success .dashboard-priority-icon {
+  background: var(--color-primary-50);
+  color: var(--color-primary-600);
+}
 .dashboard-priority-row--warning .dashboard-priority-icon {
   background: var(--color-warning-50);
   color: var(--color-warning-700);
 }
 .dashboard-priority-row--danger .dashboard-priority-icon {
   background: var(--color-error-50);
-  color: var(--color-error-700);
+  color: var(--color-error-600);
 }
 .dashboard-priority-row--info .dashboard-priority-icon {
   background: var(--color-info-50, var(--color-primary-50));
+  color: var(--color-info-600, var(--color-primary-600));
+}
+
+/* Tone-tinted CTA outline buttons (Remind green, Order Now red, Review blue). */
+/* Border always matches the text: drive it from currentColor. */
+.dashboard-priorities-card .dashboard-priority-action {
+  border-color: currentColor;
+}
+.dashboard-priority-row--success .dashboard-priority-action {
+  color: var(--color-primary-600);
+}
+.dashboard-priority-row--warning .dashboard-priority-action {
+  color: var(--color-warning-600);
+}
+.dashboard-priority-row--danger .dashboard-priority-action {
+  color: var(--color-error-600);
+}
+.dashboard-priority-row--info .dashboard-priority-action {
   color: var(--color-info-600, var(--color-primary-600));
 }
 
@@ -79,6 +106,13 @@
 .dashboard-priority-action {
   flex-shrink: 0;
   white-space: nowrap;
+  /* Same width for every row (Remind / Order Now / Review) + more compact. */
+  width: 80px;
+  min-width: 80px;
+  height: 30px;
+  min-height: 30px;
+  padding-inline: var(--space-1-5);
+  font-size: 12px;
 }
 
 [data-theme="dark"] .dashboard-priorities-card {
@@ -86,6 +120,13 @@
   box-shadow: var(--shadow-card-dark);
 }
 
+[data-theme="dark"] .dashboard-priority-row:not(:last-child) {
+  border-bottom-color: var(--overlay-white-08, rgba(255, 255, 255, 0.08));
+}
+[data-theme="dark"] .dashboard-priority-row--success .dashboard-priority-icon {
+  background: var(--color-primary-900, rgba(16, 185, 129, 0.15));
+  color: var(--color-primary-300);
+}
 [data-theme="dark"] .dashboard-priority-row--warning .dashboard-priority-icon {
   background: var(--color-warning-bg);
   color: var(--color-warning-text);

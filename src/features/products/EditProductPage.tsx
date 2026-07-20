@@ -22,7 +22,7 @@ function detailToFormData(detail: ProductDetail): ProductFormData {
     name: detail.name,
     sku: detail.sku,
     autoGenerateSku: false,
-    categoryId: detail.category.id,
+    categoryId: detail.category?.id ?? null,
     unitId: detail.unit.id,
     salePrice: detail.salePrice,
     purchasePrice: detail.purchasePrice ?? 0,

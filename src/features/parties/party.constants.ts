@@ -19,6 +19,45 @@ export const PARTY_TYPE_OPTIONS: { value: PartyType | 'ALL'; label: string }[] =
   { value: 'BOTH', label: 'Both' },
 ]
 
+/** Type filter chips (All / Customers / Suppliers / Both) — mockup v2.
+ * Counts come from the list summary; labelKey resolves via useLanguage(). */
+export const PARTY_TYPE_FILTER_OPTIONS: {
+  value: PartyType | 'ALL'
+  labelKey: 'all' | 'customers' | 'suppliers' | 'both'
+  countKey: 'totalParties' | 'customersCount' | 'suppliersCount' | 'bothCount'
+}[] = [
+  { value: 'ALL', labelKey: 'all', countKey: 'totalParties' },
+  { value: 'CUSTOMER', labelKey: 'customers', countKey: 'customersCount' },
+  { value: 'SUPPLIER', labelKey: 'suppliers', countKey: 'suppliersCount' },
+  { value: 'BOTH', labelKey: 'both', countKey: 'bothCount' },
+]
+
+/** Status filter pills (All / Due / Active / Inactive) — mockup redesign.
+ * Each maps to real query params; `tone` drives the pill color. */
+export type PartyStatusFilter = 'ALL' | 'DUE' | 'ACTIVE' | 'INACTIVE'
+
+export const PARTY_STATUS_OPTIONS: {
+  value: PartyStatusFilter
+  labelKey: 'all' | 'due' | 'active' | 'inactive'
+  tone: 'brand' | 'due' | 'active' | 'inactive'
+}[] = [
+  { value: 'ALL', labelKey: 'all', tone: 'brand' },
+  { value: 'DUE', labelKey: 'due', tone: 'due' },
+  { value: 'ACTIVE', labelKey: 'active', tone: 'active' },
+  { value: 'INACTIVE', labelKey: 'inactive', tone: 'inactive' },
+]
+
+/** Map a status pill to the party filter fields it drives. */
+export const PARTY_STATUS_FILTERS: Record<
+  PartyStatusFilter,
+  { isActive?: boolean; hasOutstanding?: boolean }
+> = {
+  ALL: { isActive: undefined, hasOutstanding: undefined },
+  DUE: { isActive: undefined, hasOutstanding: true },
+  ACTIVE: { isActive: true, hasOutstanding: undefined },
+  INACTIVE: { isActive: false, hasOutstanding: undefined },
+}
+
 export const SORT_OPTIONS = [
   { value: 'name', label: 'Name' },
   { value: 'outstanding', label: 'Outstanding' },
@@ -31,7 +70,8 @@ export const DEFAULT_FILTERS: PartyFilters = {
   limit: 20,
   search: '',
   type: 'ALL',
-  isActive: true,
+  // undefined = All (active + inactive) — matches the default "All" status pill
+  isActive: undefined,
   sortBy: 'name',
   sortOrder: 'asc',
 }

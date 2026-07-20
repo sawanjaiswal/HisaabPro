@@ -70,7 +70,7 @@
   --dash-avatar-shadow: var(--shadow-md);
   /* Spacing — use global tokens directly */
   --dash-side-padding: var(--side-padding);
-  --dash-section-gap: var(--space-6);
+  --dash-section-gap: var(--space-8);
   --dash-stagger-base: 80ms;
 }
 
@@ -125,30 +125,8 @@
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  background:
-    linear-gradient(
-      180deg,
-      var(--color-cream-start) 0%,
-      var(--color-cream-mid) 20%,
-      var(--color-primary-50) 45%,
-      var(--color-cream-end) 65%,
-      var(--color-gray-0) 100%
-    );
+  background: var(--hp-dash-surface);
   position: relative;
-}
-
-/* Background pattern overlay — subtle, restrained */
-.dashboard-bg-pattern {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 280px;
-  background: url('/assets/bg-pattern.png') no-repeat center top;
-  background-size: cover;
-  opacity: 0.08;
-  pointer-events: none;
-  z-index: 0;
 }
 
 /* ─── Greeting row ──────────────────────────────────────────── */
@@ -195,7 +173,7 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-6);
-  padding: var(--space-5) var(--dash-side-padding) 0;
+  padding: var(--space-4) var(--dash-side-padding) 0;
   position: relative;
   z-index: 1;
 }
@@ -319,7 +297,8 @@
   align-items: center;
   gap: var(--space-1);
   min-height: 44px;
-  padding: var(--space-1) var(--space-3);
+  /* No right padding — "View all" sits flush with the card's right edge. */
+  padding: var(--space-1) 0 var(--space-1) var(--space-3);
   border-radius: var(--radius-full);
   -webkit-tap-highlight-color: transparent;
   transition:
@@ -383,18 +362,7 @@
   --dash-teal-10: var(--overlay-accent-dark-12);
   --dash-card-shadow: var(--shadow-card-dark);
   --dash-avatar-shadow: var(--shadow-avatar-subtle);
-  background: linear-gradient(
-    180deg,
-    var(--color-gray-0) 0%,
-    var(--color-gray-50) 20%,
-    var(--color-primary-50) 45%,
-    var(--color-gray-50) 65%,
-    var(--color-gray-50) 100%
-  );
-}
-
-[data-theme="dark"] .dashboard-bg-pattern {
-  opacity: 0.04;
+  background: var(--hp-dash-surface);
 }
 
 [data-theme="dark"] .dashboard-white-section {

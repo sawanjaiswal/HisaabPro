@@ -13,7 +13,7 @@ import { getProduct } from './product.service'
 import type { ProductDetail } from './product.types'
 
 type DetailStatus = 'loading' | 'error' | 'success'
-type DetailTab = 'overview' | 'stock' | 'info'
+type DetailTab = 'overview' | 'stock' | 'pricing' | 'info' | 'history'
 
 interface UseProductDetailReturn {
   product: ProductDetail | null

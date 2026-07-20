@@ -1,19 +1,26 @@
 /* === DESIGN SYSTEM TOKENS — Color Palette === */
-/* Deep Teal + Lime-Yellow palette, warm cream backgrounds */
-/* Extracted from NexoWallet by InksStudio (ui8.net) */
+/* Deep Emerald Green (#026F39) + Lime-Yellow accent, warm cream backgrounds */
+/* Brand migrated 2026-07 from Deep Teal (#0B4F5E) → Deep Emerald (#026F39). */
+/* NOTE: --gradient-teal-* keeps its name for compatibility but now holds
+   emerald values (#026F39 → #013D20). Success-green (#22C55E) stays separate:
+   brand-emerald = identity/CTA/nav, success-green = status only. */
 
 :root {
-  /* Primary (Deep Teal) — trust, professionalism */
-  --color-primary-50:  #E7EFF1;
-  --color-primary-100: #DAEBEA;
-  --color-primary-200: #A8D4D4;
-  --color-primary-300: #5AACAB;
-  --color-primary-400: #0A6375;
-  --color-primary-500: #0B4F5E; /* PRIMARY BRAND */
-  --color-primary-600: #052D35;
-  --color-primary-700: #042329;
-  --color-primary-800: #031B20;
-  --color-primary-900: #021418;
+  /* Primary (Deep Emerald Green) — trust, professionalism */
+  --color-primary-50:  #E6F3EC;
+  --color-primary-100: #D2ECDC;
+  --color-primary-200: #A5D8BA;
+  --color-primary-300: #55B384;
+  --color-primary-400: #068A48;
+  --color-primary-500: #026F39; /* PRIMARY BRAND */
+  --color-primary-600: #024E29;
+  --color-primary-700: #013D20;
+  --color-primary-800: #012E18;
+  --color-primary-900: #011F10;
+
+  /* Deep-emerald hero surface — the SSOT green field behind the app header on
+   * hero pages (dashboard, parties, etc.). Documented brand hero = #003121. */
+  --color-hero-surface: #003121;
 
   /* Secondary (Lime-Yellow) — energy, CTAs, highlights */
   --color-secondary-50:  #FCFDED;
@@ -73,8 +80,8 @@
   --color-error-bg-subtle: rgba(239, 68, 68, 0.12);
   --color-warning-bg-subtle: rgba(245, 158, 11, 0.12);
   --color-info-bg-subtle: rgba(59, 130, 246, 0.12);
-  --color-primary-bg-subtle: rgba(27, 99, 105, 0.12);
-  --color-primary-bg-subtle-strong: rgba(27, 99, 105, 0.15);
+  --color-primary-bg-subtle: rgba(2, 111, 57, 0.12);
+  --color-primary-bg-subtle-strong: rgba(2, 111, 57, 0.15);
 
   /* Hero card text on gradient backgrounds */
   --color-hero-text-secondary: rgba(255, 255, 255, 0.8);
@@ -112,9 +119,9 @@
   --color-warning:        var(--color-warning-500);
   --color-info:           var(--color-info-500);
 
-  /* Gradient hero cards — teal (collect/received/stock-value) */
-  --gradient-teal-start: #1b6369;
-  --gradient-teal-end:   #123e42;
+  /* Gradient hero cards — emerald (collect/received/stock-value) */
+  --gradient-teal-start: #026F39;
+  --gradient-teal-end:   #013D20;
   /* Gradient hero cards — coral/red (due/overdue) */
   --gradient-coral-start: #ef5350;
   --gradient-coral-end:   #c62828;
@@ -122,8 +129,8 @@
   --gradient-amber-start: #f59e0b;
   --gradient-amber-end:   #d97706;
   /* Calculator dark display */
-  --gradient-calc-start: #0B4F5E;
-  --gradient-calc-end:   #0a3d4a;
+  --gradient-calc-start: #026F39;
+  --gradient-calc-end:   #013D20;
 
   /* Warm cream page gradient (dashboard, landing) */
   --color-cream-start: #f9f9ed;

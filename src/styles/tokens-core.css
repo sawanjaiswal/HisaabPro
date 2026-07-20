@@ -6,21 +6,23 @@
   --font-mono: 'JetBrains Mono', 'Roboto Mono', monospace;
   --font-display: 'Inter', system-ui, sans-serif;
 
-  /* Typography — Font size scale (all rem for accessibility) */
-  --fs-3xs: 0.625rem;   /* 10px — micro badges */
-  --fs-2xs: 0.6875rem;  /* 11px — tiny labels, badge text */
-  --fs-xs:  0.75rem;    /* 12px — captions, timestamps */
-  --fs-sm:  0.8125rem;  /* 13px — secondary text, labels */
-  --fs-md:  0.875rem;   /* 14px — body small, nav items */
-  --fs-df:  0.9375rem;  /* 15px — default body, card text */
-  --fs-base: 1rem;      /* 16px — inputs, primary body */
-  --fs-lg:  1.0625rem;  /* 17px — emphasized body */
-  --fs-xl:  1.125rem;   /* 18px — section titles */
-  --fs-2xl: 1.25rem;    /* 20px — page titles */
-  --fs-3xl: 1.375rem;   /* 22px — large headings */
-  --fs-4xl: 1.5rem;     /* 24px — hero subheadings */
-  --fs-5xl: 2rem;       /* 32px — hero headings */
-  --fs-6xl: 3rem;       /* 48px — hero amounts */
+  /* Typography — Font size scale (all rem for accessibility)
+     Compact mobile ramp: body 13-14px, captions 10-12px, buttons 12-14px,
+     titles 16-18px. Tuned for information-dense phone screens. */
+  --fs-3xs: 0.5625rem;  /* 9px  — micro badges */
+  --fs-2xs: 0.625rem;   /* 10px — tiny labels, badge text */
+  --fs-xs:  0.6875rem;  /* 11px — captions, timestamps */
+  --fs-sm:  0.75rem;    /* 12px — secondary text, labels */
+  --fs-md:  0.8125rem;  /* 13px — body small, nav items */
+  --fs-df:  0.875rem;   /* 14px — default body, card text */
+  --fs-base: 0.875rem;  /* 14px — inputs, primary body */
+  --fs-lg:  0.9375rem;  /* 15px — emphasized body */
+  --fs-xl:  1rem;       /* 16px — section titles */
+  --fs-2xl: 1.125rem;   /* 18px — page titles */
+  --fs-3xl: 1.1875rem;  /* 19px — large headings */
+  --fs-4xl: 1.3125rem;  /* 21px — hero subheadings */
+  --fs-5xl: 1.625rem;   /* 26px — hero headings */
+  --fs-6xl: 2.25rem;    /* 36px — hero amounts */
 
   /* Typography — Semantic text colors */
   --text-primary: var(--color-gray-800);

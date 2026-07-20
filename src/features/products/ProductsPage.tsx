@@ -1,161 +1,146 @@
-/** Products — List page (lazy loaded) */
+/** Products — List page (GPT mockup redesign, lazy loaded).
+ * Title + scan/add · 4 stat tiles · search + chip filters · sortable rows ·
+ * "keep stock healthy" footer. Bulk-select (long-press) reuses BulkActionBar.
+ */
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Package, ScanBarcode, BookOpen } from 'lucide-react'
+import { Package } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { BulkActionBar } from '@/components/ui/BulkActionBar'
+import { Button } from '@/components/ui/Button'
 import { useBulkSelect } from '@/hooks/useBulkSelect'
 import { useToast } from '@/hooks/useToast'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useProducts } from './useProducts'
-import { ProductSummaryBar } from './components/ProductSummaryBar'
+import { useProductBulkActions } from './useProductBulkActions'
+import { ProductsPageHeader } from './components/ProductsPageHeader'
+import { ProductStatTiles } from './components/ProductStatTiles'
 import { ProductFilterBar } from './components/ProductFilterBar'
+import { ProductListHeader } from './components/ProductListHeader'
 import { ProductCard } from './components/ProductCard'
+import { ProductStockHealthCard } from './components/ProductStockHealthCard'
+import { ProductCategoryDrawer } from './components/ProductCategoryDrawer'
+import { ProductFilterDrawer } from './components/ProductFilterDrawer'
 import { ProductListSkeleton } from './components/ProductListSkeleton'
-import { deleteProduct, getProductByBarcode } from './product.service'
+import { getProductByBarcode } from './product.service'
+import { DEFAULT_PRODUCT_FILTERS } from './product.constants'
 import { BarcodeScanner } from '@/components/ui/BarcodeScanner'
 import { LabelPrintDialog } from './label-print/LabelPrintDialog'
-import './barcode.css'
 import { ROUTES } from '@/config/routes.config'
-import type { BulkAction } from '@/components/ui/BulkActionBar'
+import type { ProductStatus } from '@/lib/types/product.types'
+import './barcode.css'
 import './products.css'
-import { Button } from '@/components/ui/Button'
+import './products-redesign.css'
 
 export default function ProductsPage() {
   const navigate = useNavigate()
   const toast = useToast()
   const { t } = useLanguage()
-  const { data, status, filters, setSearch, setFilter, refresh } = useProducts()
+  const { data, status, filters, setSearch, setFilter, refresh, handleDelete } = useProducts()
   const bulk = useBulkSelect()
-  const [isBulkDeleting, setIsBulkDeleting] = useState(false)
   const [scannerOpen, setScannerOpen] = useState(false)
   const [labelPrintOpen, setLabelPrintOpen] = useState(false)
+  const [categoryDrawerOpen, setCategoryDrawerOpen] = useState(false)
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
+
+  const { bulkActions, isBulkDeleting } = useProductBulkActions({
+    selectedIds: bulk.selectedIds,
+    selectedCount: bulk.selectedCount,
+    clear: bulk.clear,
+    refresh,
+    openLabelPrint: () => setLabelPrintOpen(true),
+  })
+
+  const mode: 'all' | 'low' = filters.lowStockOnly ? 'low' : 'all'
+  const categoryActive = Boolean(filters.categoryId)
+  const filtersActive =
+    filters.status !== 'ACTIVE' ||
+    filters.sortBy !== DEFAULT_PRODUCT_FILTERS.sortBy ||
+    filters.sortOrder !== DEFAULT_PRODUCT_FILTERS.sortOrder
 
   const handleBarcodeScan = async (value: string) => {
     setScannerOpen(false)
     const product = await getProductByBarcode(value)
-    if (product) {
-      navigate(`/products/${product.id}`)
-    } else {
-      toast.error(`${t.noBarcodeProdFound}: ${value}`)
-    }
+    if (product) navigate(`/products/${product.id}`)
+    else toast.error(`${t.noBarcodeProdFound}: ${value}`)
   }
 
   const handleProductClick = (id: string) => {
-    if (bulk.isActive) {
-      bulk.toggle(id)
-    } else {
-      navigate(`/products/${id}`)
-    }
+    if (bulk.isActive) bulk.toggle(id)
+    else navigate(`/products/${id}`)
   }
 
-  const handleLongPress = (id: string) => {
-    if (!bulk.isActive) {
-      bulk.toggle(id)
-    }
+  const handleLongPress = (id: string) => { if (!bulk.isActive) bulk.toggle(id) }
+
+  const goToCreate = () => navigate(ROUTES.PRODUCT_NEW)
+  const goToEdit = (id: string) => navigate(`/products/${id}/edit`)
+
+  const enableLowStock = () => {
+    setFilter('categoryId', undefined)
+    setFilter('lowStockOnly', true)
   }
 
-  const handleCategoryChange = (value: string | 'ALL') => {
-    setFilter('categoryId', value === 'ALL' ? undefined : value)
-    // Category and Low Stock render as one pill-tab row (mutually exclusive
-    // in the UI) — clear the other filter so switching back to All/category
-    // doesn't leave a stale lowStockOnly:true silently filtering the list.
+  const showAll = () => {
+    setFilter('categoryId', undefined)
     setFilter('lowStockOnly', false)
   }
 
-  const handleLowStockToggle = (value: boolean) => {
-    setFilter('lowStockOnly', value)
-    if (value) setFilter('categoryId', undefined)
-  }
-  const goToCreate = () => navigate(ROUTES.PRODUCT_NEW)
+  const toggleLowStock = () =>
+    filters.lowStockOnly ? setFilter('lowStockOnly', false) : enableLowStock()
 
-  const handleBulkDelete = async () => {
-    const count = bulk.selectedCount
-    setIsBulkDeleting(true)
-    try {
-      const ids = Array.from(bulk.selectedIds)
-      await Promise.all(ids.map((id) => deleteProduct(id)))
-      toast.success(`${count} ${count === 1 ? t.product : t.productsLabel} ${t.delete.toLowerCase()}`)
-      bulk.clear()
-      refresh()
-    } catch {
-      toast.error(t.failedDeleteProducts)
-    } finally {
-      setIsBulkDeleting(false)
-    }
+  const selectCategory = (categoryId: string | 'ALL') => {
+    setFilter('lowStockOnly', false)
+    setFilter('categoryId', categoryId === 'ALL' ? undefined : categoryId)
+  }
+
+  const resetFilters = () => {
+    setFilter('status', 'ACTIVE')
+    setFilter('sortBy', DEFAULT_PRODUCT_FILTERS.sortBy)
+    setFilter('sortOrder', DEFAULT_PRODUCT_FILTERS.sortOrder)
   }
 
   const allProductIds = data?.products.map((p) => p.id) ?? []
 
-  const handlePrintLabels = () => {
-    if (bulk.selectedCount === 0) {
-      toast.info('Select products first to print labels')
-      return
-    }
-    setLabelPrintOpen(true)
-  }
-
-  const bulkActions: BulkAction[] = [
-    {
-      id: 'delete',
-      label: t.delete,
-      icon: 'delete',
-      isDanger: true,
-      onClick: handleBulkDelete,
-    },
-    {
-      id: 'print-labels',
-      label: 'Print labels',
-      icon: 'export',
-      onClick: handlePrintLabels,
-    },
-    {
-      id: 'export',
-      label: t.export,
-      icon: 'export',
-      onClick: () => toast.info(t.exportComingSoon),
-    },
-  ]
-
   return (
     <AppShell>
       <Header
-        title={bulk.isActive ? `${bulk.selectedCount} ${t.selected}` : t.products}
-        actions={
-          !bulk.isActive ? (
-            <>
-              <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.ITEMS_LIBRARY)} aria-label={t.itemsLibrary}>
-                <BookOpen size={18} aria-hidden="true" />
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => setScannerOpen(true)} aria-label={t.scanBarcode}>
-                <ScanBarcode size={20} aria-hidden="true" />
-              </Button>
-            </>
-          ) : undefined
-        }
+        scrollCondense
+        title={bulk.isActive ? `${bulk.selectedCount} ${t.selected}` : undefined}
       />
 
-      {status === 'success' && data && !bulk.isActive && (
-        <div className="page-hero">
-          <ProductSummaryBar summary={data.summary} />
-        </div>
-      )}
-
       <PageContainer variant="list" className="space-y-6">
+        {!bulk.isActive && (
+          <ProductsPageHeader onScan={() => setScannerOpen(true)} onAdd={goToCreate} />
+        )}
+
+        {status === 'success' && data && !bulk.isActive && (
+          <ProductStatTiles
+            summary={data.summary}
+            onLowStock={enableLowStock}
+            onValue={() => toast.info(t.comingSoon)}
+            onOutOfStock={() => toast.info(t.comingSoon)}
+          />
+        )}
+
         {!bulk.isActive && (
           <ProductFilterBar
             search={filters.search}
             onSearchChange={setSearch}
-            activeCategoryId={filters.categoryId ?? 'ALL'}
-            onCategoryChange={handleCategoryChange}
-            lowStockOnly={filters.lowStockOnly ?? false}
-            onLowStockToggle={handleLowStockToggle}
+            onScan={() => setScannerOpen(true)}
+            mode={mode}
+            categoryActive={categoryActive}
+            filtersActive={filtersActive}
             lowStockCount={data?.summary?.lowStockCount}
+            onSelectAll={showAll}
+            onFavorites={() => toast.info(t.comingSoon)}
+            onLowStock={toggleLowStock}
+            onOpenCategories={() => setCategoryDrawerOpen(true)}
+            onOpenFilters={() => setFilterDrawerOpen(true)}
           />
         )}
 
@@ -182,42 +167,44 @@ export default function ProductsPage() {
           />
         )}
 
-        {status === 'success' && data && (
-          <div role="status" aria-live="polite" className="sr-only">
-            {data.products.length} {data.products.length === 1 ? t.product : t.productsLabel} {t.found}
+        {status === 'success' && data && data.products.length > 0 && (
+          <div className="product-list-section" role="status" aria-live="polite">
+            <ProductListHeader
+              total={data.pagination.total}
+              activeSortBy={filters.sortBy}
+              onSortChange={(sortBy) => setFilter('sortBy', sortBy)}
+            />
+            <h2 className="sr-only">{t.productList}</h2>
+            <div className="product-list stagger-list" role="list" aria-label={t.products}>
+              {data.products.map((product) => (
+                <div
+                  key={product.id}
+                  className={`product-list-item${bulk.isSelected(product.id) ? ' bulk-selected' : ''}`}
+                  role="listitem"
+                >
+                  <ProductCard
+                    product={product}
+                    onClick={handleProductClick}
+                    onEdit={goToEdit}
+                    onDelete={handleDelete}
+                    onLongPress={handleLongPress}
+                    isSelected={bulk.isSelected(product.id)}
+                    isBulkMode={bulk.isActive}
+                  />
+                  <div className="divider" aria-hidden="true" />
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
-        {status === 'success' && data && data.products.length > 0 && (
-          <>
-          <h2 className="sr-only">{t.productList}</h2>
-          <div className="product-list stagger-list" role="list" aria-label={t.products}>
-            {data.products.map((product) => (
-              <div
-                key={product.id}
-                className={`product-list-item${bulk.isSelected(product.id) ? ' bulk-selected' : ''}`}
-                role="listitem"
-              >
-                <ProductCard
-                  product={product}
-                  onClick={handleProductClick}
-                  onLongPress={handleLongPress}
-                  isSelected={bulk.isSelected(product.id)}
-                  isBulkMode={bulk.isActive}
-                />
-                <div className="divider" aria-hidden="true" />
-              </div>
-            ))}
-          </div>
-          </>
+        {status === 'success' && data && !bulk.isActive && (
+          <ProductStockHealthCard
+            lowStockCount={data.summary.lowStockCount}
+            onViewLowStock={enableLowStock}
+          />
         )}
       </PageContainer>
-
-      {!bulk.isActive && status === 'success' && data && data.products.length > 0 && (
-        <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.addNewProduct}>
-          <Plus size={24} aria-hidden="true" />
-        </Button>
-      )}
 
       <BulkActionBar
         selectedCount={bulk.selectedCount}
@@ -227,11 +214,28 @@ export default function ProductsPage() {
         actions={bulkActions}
         isProcessing={isBulkDeleting}
       />
+
+      <ProductCategoryDrawer
+        open={categoryDrawerOpen}
+        onClose={() => setCategoryDrawerOpen(false)}
+        activeCategoryId={filters.categoryId ?? 'ALL'}
+        onSelect={selectCategory}
+      />
+
+      <ProductFilterDrawer
+        open={filterDrawerOpen}
+        onClose={() => setFilterDrawerOpen(false)}
+        status={filters.status}
+        sortBy={filters.sortBy}
+        sortOrder={filters.sortOrder}
+        onStatusChange={(s: ProductStatus | undefined) => setFilter('status', s)}
+        onSortByChange={(sortBy) => setFilter('sortBy', sortBy)}
+        onSortOrderChange={(order) => setFilter('sortOrder', order)}
+        onReset={resetFilters}
+      />
+
       {scannerOpen && (
-        <BarcodeScanner
-          onScan={handleBarcodeScan}
-          onClose={() => setScannerOpen(false)}
-        />
+        <BarcodeScanner onScan={handleBarcodeScan} onClose={() => setScannerOpen(false)} />
       )}
       {labelPrintOpen && (
         <LabelPrintDialog

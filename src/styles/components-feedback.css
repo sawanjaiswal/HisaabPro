@@ -70,6 +70,28 @@
   color: var(--color-gray-300);
 }
 
+/* Variant: trailing action (e.g. scan camera) unified inside the pill.
+   Keeps one border/shadow around search + action instead of two boxes. */
+.search-bar--action {
+  padding-right: var(--space-1);
+}
+
+.search-bar__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+.search-bar__action:active {
+  background: var(--color-gray-100);
+}
+
 /* === LIST STAGGER — cards cascade in sequentially === */
 @keyframes list-item-enter {
   from {

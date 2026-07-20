@@ -1,11 +1,18 @@
 import React, { useRef, useCallback } from 'react'
-import { Check } from 'lucide-react'
+import { Check, ChevronRight } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
-import type { PartySummary } from '../party.types'
-import { PARTY_TYPE_LABELS } from '../party.constants'
-import { formatOutstanding, formatPhone, timeAgo } from '../party.utils'
+import type { PartySummary, PartyType } from '../party.types'
+import { formatOutstanding, formatPhone, getPartyRowStatus } from '../party.utils'
 import { PartyAvatar } from '../../../components/ui/PartyAvatar'
 import { OptOutChip } from '@/features/marketing/components/OptOutChip'
+
+/** labelKey per party type — resolves via useLanguage() */
+const TYPE_CHIP: Record<PartyType, 'customer' | 'supplier' | 'both' | 'staff'> = {
+  CUSTOMER: 'customer',
+  SUPPLIER: 'supplier',
+  BOTH: 'both',
+  STAFF: 'staff',
+}
 
 interface PartyCardProps {
   party: PartySummary
@@ -32,11 +39,7 @@ export const PartyCard: React.FC<PartyCardProps> = ({
 }) => {
   const { t } = useLanguage()
   const { text: balanceText, isReceivable } = formatOutstanding(party.outstandingBalance)
-  const badgeClass = party.type === 'CUSTOMER'
-    ? 'badge badge-customer'
-    : party.type === 'SUPPLIER'
-      ? 'badge badge-supplier'
-      : 'badge'
+  const rowStatus = getPartyRowStatus(party.outstandingBalance)
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const didLongPress = useRef(false)
@@ -92,25 +95,33 @@ export const PartyCard: React.FC<PartyCardProps> = ({
       <div className="txn-info">
         <div className="party-card-header">
           <span className="txn-name">{party.name}</span>
-          <span className={badgeClass}>{PARTY_TYPE_LABELS[party.type]}</span>
           {isOptedOut && <OptOutChip />}
         </div>
         {party.phone && (
           <span className="txn-date">{formatPhone(party.phone)}</span>
         )}
-        {party.priceList && (
-          <span className="party-card-pl-chip">{party.priceList.name}</span>
-        )}
+        <div className="party-card-chips">
+          <span className={`party-card-type-chip party-card-type-chip--${party.type.toLowerCase()}`}>
+            {t[TYPE_CHIP[party.type]]}
+          </span>
+          {party.priceList && (
+            <span className="party-card-pl-chip">{party.priceList.name}</span>
+          )}
+        </div>
       </div>
 
       <div className="party-card-right">
         <div className={`txn-amount ${isReceivable ? 'txn-amount-positive' : 'txn-amount-negative'}`}>
           {balanceText}
         </div>
-        {party.lastTransactionAt && (
-          <div className="txn-category">{timeAgo(party.lastTransactionAt)}</div>
-        )}
+        <div className={`party-card-status party-card-status--${rowStatus.tone}`}>
+          {t[rowStatus.labelKey]}
+        </div>
       </div>
+
+      {!isBulkMode && (
+        <ChevronRight size={18} aria-hidden="true" className="party-card-chevron" />
+      )}
     </div>
   )
 }

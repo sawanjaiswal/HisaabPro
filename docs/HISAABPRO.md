@@ -579,7 +579,7 @@ Source: `.claude/rules/OFFLINE_RULES.md`. Enforced by `scripts/enforce-offline.m
 
 Source: `.claude/skills/hp-design/SKILL.md` + `docs/DESIGN_LANGUAGE.md` + `docs/DESIGN_SYSTEM.md` + `docs/PAGE_DESIGN_GUIDE.md`. Per-page checklist: `.claude/rules/PAGE_AUDIT_CHECKLIST.md`.
 
-**Aesthetic:** premium Cred/Jupiter polish. Light primary, dark secondary. Blue/teal trust colour. Inter font, 16 px min body. Generous whitespace, soft shadows, 8–12 px radius, subtle micro-interactions. Mobile 375 px primary, 320 px minimum.
+**Aesthetic:** premium Cred/Jupiter polish. Light primary, dark secondary. Deep emerald green (#026F39) trust/growth brand colour. Inter font, 16 px min body. Generous whitespace, soft shadows, 8–12 px radius, subtle micro-interactions. Mobile 375 px primary, 320 px minimum.
 
 **Tokens (no raw values allowed):**
 - Colour: `var(--color-*)` only — no hex, no Tailwind palette (`text-red-500` banned).

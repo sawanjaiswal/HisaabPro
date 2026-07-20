@@ -1,12 +1,15 @@
-/** Product Detail — Stock movements tab */
+/** Product Detail — Stock / History tab: full stock-movement list.
+ *  Reskinned to the `pd-card` / `pd-activity` language (matching the Overview
+ *  Recent Activity block) so it's consistent with the rest of the detail page. */
 
 import React from 'react'
-import { ArrowDownLeft, ArrowUpRight, Package } from 'lucide-react'
+import { ArrowUpRight, ArrowDownRight, ShoppingCart, Package } from 'lucide-react'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { StockMovement } from '../product.types'
 import { formatMovementType } from '../product.utils'
-import { Button } from '@/components/ui/Button'
+import { formatQuantity } from '@/lib/format'
 
 interface ProductStockTabProps {
   movements: StockMovement[]
@@ -14,13 +17,16 @@ interface ProductStockTabProps {
   onAdjust: () => void
 }
 
-const MOVEMENT_IN_TYPES = new Set(['PURCHASE', 'ADJUSTMENT_IN', 'OPENING', 'RETURN_IN'])
+const IN_TYPES = new Set(['PURCHASE', 'ADJUSTMENT_IN', 'OPENING', 'RETURN_IN'])
 
-const formatDate = (iso: string): string =>
+const fmtQty = (n: number) => formatQuantity(Math.abs(n))
+
+const fmtWhen = (iso: string) =>
   new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
 
 export const ProductStockTab: React.FC<ProductStockTabProps> = ({ movements, unitSymbol, onAdjust }) => {
   const { t } = useLanguage()
+
   if (movements.length === 0) {
     return (
       <EmptyState
@@ -37,47 +43,38 @@ export const ProductStockTab: React.FC<ProductStockTabProps> = ({ movements, uni
   }
 
   return (
-    <div>
-      <div className="card" role="list" aria-label={t.stockMovements}>
-        {movements.map((movement) => {
-          const isIn = MOVEMENT_IN_TYPES.has(movement.type)
-          const directionClass = isIn ? 'in' : 'out'
-          const qtyPrefix = isIn ? '+' : '-'
+    <section className="pd-card pd-activity" aria-label={t.stockMovements}>
+      <header className="pd-card__head">
+        <h3 className="pd-card__title">{t.stockMovements}</h3>
+      </header>
 
+      <ul className="pd-activity__list" role="list">
+        {movements.map((m) => {
+          const isIn = IN_TYPES.has(m.type)
+          const tone = m.type === 'PURCHASE' ? 'info' : isIn ? 'ok' : 'bad'
+          const icon = m.type === 'PURCHASE'
+            ? <ShoppingCart size={18} />
+            : isIn ? <ArrowUpRight size={18} /> : <ArrowDownRight size={18} />
           return (
-            <div key={movement.id} className="stock-movement-row" role="listitem">
-              <div
-                className={`stock-movement-icon stock-movement-icon-${directionClass}`}
-                aria-hidden="true"
-              >
-                {isIn ? <ArrowDownLeft size={16} /> : <ArrowUpRight size={16} />}
-              </div>
-
-              <div className="stock-movement-info">
-                <div className="stock-movement-type">{formatMovementType(movement.type)}</div>
-                <div className="stock-movement-date">{formatDate(movement.createdAt)}</div>
-              </div>
-
-              <div className="stock-movement-meta">
-                <div className={`stock-movement-qty stock-movement-qty--${directionClass}`}>
-                  {qtyPrefix}{Math.abs(movement.quantity)} {unitSymbol}
-                </div>
-                <div className="stock-movement-balance">
-                  {t.balLabel}: {movement.balanceAfter} {unitSymbol}
-                </div>
-              </div>
-            </div>
+            <li key={m.id} className="pd-activity__row">
+              <span className={`pd-activity__icon pd-activity__icon--${tone}`} aria-hidden="true">{icon}</span>
+              <span className="pd-activity__body">
+                <span className="pd-activity__title">{formatMovementType(m.type)}</span>
+                <span className="pd-activity__time">
+                  {fmtWhen(m.createdAt)} · {t.balLabel}: {m.balanceAfter} {unitSymbol}
+                </span>
+              </span>
+              <span className={`pd-activity__delta pd-activity__delta--${tone} tabular-nums`}>
+                {isIn ? '+' : '-'}{fmtQty(m.quantity)} {unitSymbol}
+              </span>
+            </li>
           )
         })}
-      </div>
+      </ul>
 
-      <Button variant="outline"
-        className="product-adjust-btn"
-        onClick={onAdjust}
-        aria-label={t.adjustStock}
-      >
+      <Button variant="outline" className="pd-summary__cta" onClick={onAdjust} aria-label={t.adjustStock}>
         {t.adjustStock}
       </Button>
-    </div>
+    </section>
   )
 }

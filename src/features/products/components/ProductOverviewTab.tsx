@@ -1,82 +1,117 @@
-/** Product Detail — Overview tab: pricing + inventory info rows */
+/** Product Detail — Overview tab (GPT reskin): analytics metric grid +
+ *  stock-summary breakdown + recent-activity list. All numbers are real,
+ *  sourced from the /products/:id/analytics endpoint. */
 
-import { IndianRupee, Package, Warehouse, Receipt } from 'lucide-react'
+import { CircleDollarSign, ShoppingBag, TrendingUp } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Skeleton } from '@/components/feedback/Skeleton'
+import { ErrorState } from '@/components/feedback/ErrorState'
 import type { ProductDetail } from '../product.types'
+import type { ProductAnalytics } from '../product-analytics.types'
 import { formatProductPrice } from '../product.utils'
-import { PREDEFINED_CATEGORIES, PREDEFINED_UNITS, STOCK_VALIDATION_LABELS } from '../product.constants'
-import { ProductPricePreviewPanel } from './ProductPricePreviewPanel'
+import { ProductMetricCard } from './ProductMetricCard'
+import { ProductStockSummaryCard } from './ProductStockSummaryCard'
+import { ProductRecentActivity } from './ProductRecentActivity'
 
 interface ProductOverviewTabProps {
   product: ProductDetail
+  analytics: ProductAnalytics | null
+  isLoading: boolean
+  isError: boolean
+  onRetry: () => void
+  onAdjust: () => void
+  onViewStock: () => void
+  onViewActivity: () => void
 }
 
-export function ProductOverviewTab({ product }: ProductOverviewTabProps) {
+export function ProductOverviewTab({
+  product,
+  analytics,
+  isLoading,
+  isError,
+  onRetry,
+  onAdjust,
+  onViewStock,
+  onViewActivity,
+}: ProductOverviewTabProps) {
   const { t } = useLanguage()
+  const unit = product.unit.symbol
 
-  const categoryName = PREDEFINED_CATEGORIES.find((c) => c.id === product.category.id)?.name ?? product.category.name
-  const unitName = PREDEFINED_UNITS.find((u) => u.id === product.unit.id)?.name ?? product.unit.name
-  const marginPercent = product.purchasePrice && product.purchasePrice > 0 && product.salePrice > 0
-    ? Math.round(((product.salePrice - product.purchasePrice) / product.salePrice) * 100)
-    : null
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="pd-metric-grid">
+          {[0, 1, 2, 3].map((i) => (
+            <Skeleton key={i} height="6.5rem" borderRadius="var(--radius-xl)" />
+          ))}
+        </div>
+        <Skeleton height="18rem" borderRadius="var(--radius-xl)" />
+      </div>
+    )
+  }
+
+  if (isError || !analytics) {
+    return <ErrorState title={t.couldNotLoadProduct} message={t.checkConnectionRetry} onRetry={onRetry} />
+  }
+
+  const m = analytics.salesMetrics
 
   return (
-    <>
-      <div className="card product-info-card">
-        <span className="product-info-section-label">{t.pricingSection}</span>
-        <div className="product-info-row">
-          <IndianRupee className="product-info-icon" aria-hidden="true" />
-          <span className="product-info-label">{t.salePriceLabel}</span>
-          <span className="product-info-value product-info-value--bold">{formatProductPrice(product.salePrice)}</span>
+    <div className="space-y-6">
+      <section className="pd-overview" aria-label={t.productOverview}>
+        <h3 className="pd-overview__title">{t.productOverview}</h3>
+        <div className="pd-metric-grid">
+          <ProductMetricCard
+            tone="sales"
+            icon={<CircleDollarSign size={18} />}
+            label={t.salesValue}
+            value={formatProductPrice(m.salesValue)}
+            sub={t.thisMonth}
+            spark={m.spark.salesValue}
+            sparkColor="var(--color-success-500)"
+          />
+          <ProductMetricCard
+            tone="units"
+            icon={<ShoppingBag size={18} />}
+            label={t.unitsSold}
+            value={`${m.unitsSold} ${unit}`}
+            sub={t.thisMonth}
+            spark={m.spark.unitsSold}
+            sparkColor="var(--color-info-500)"
+          />
+          <ProductMetricCard
+            tone="profit"
+            icon={<TrendingUp size={18} />}
+            label={t.profitMetric}
+            value={formatProductPrice(m.profit)}
+            sub={t.thisMonth}
+            spark={m.spark.profit}
+            sparkColor="var(--color-success-600)"
+          />
+          <ProductMetricCard
+            tone="price"
+            icon={<CircleDollarSign size={18} />}
+            label={t.avgSellingPrice}
+            value={formatProductPrice(m.avgSellingPrice)}
+            sub={t.thisMonth}
+            spark={m.spark.avgSellingPrice}
+            sparkColor="var(--color-warning-500)"
+          />
         </div>
-        <div className="product-info-row">
-          <IndianRupee className="product-info-icon" aria-hidden="true" />
-          <span className="product-info-label">{t.purchasePriceLabel}</span>
-          <span className="product-info-value">
-            {product.purchasePrice !== null ? formatProductPrice(product.purchasePrice) : t.notSet}
-          </span>
-        </div>
-        {marginPercent !== null && (
-          <div className="product-info-row">
-            <IndianRupee className="product-info-icon" aria-hidden="true" />
-            <span className="product-info-label">{t.marginLabel}</span>
-            <span className="product-info-value product-info-value--bold" style={{ color: 'var(--color-success-600)' }}>
-              {marginPercent}%
-            </span>
-          </div>
-        )}
-      </div>
+      </section>
 
-      <div className="card product-info-card">
-        <span className="product-info-section-label">{t.inventorySection}</span>
-        <div className="product-info-row">
-          <Package className="product-info-icon" aria-hidden="true" />
-          <span className="product-info-label">{t.categoryLabel}</span>
-          <span className="product-info-value">{categoryName}</span>
-        </div>
-        <div className="product-info-row">
-          <Warehouse className="product-info-icon" aria-hidden="true" />
-          <span className="product-info-label">{t.unitLabel}</span>
-          <span className="product-info-value">{unitName} ({product.unit.symbol})</span>
-        </div>
-        <div className="product-info-row">
-          <Warehouse className="product-info-icon" aria-hidden="true" />
-          <span className="product-info-label">{t.minStockLabel}</span>
-          <span className="product-info-value">
-            {product.minStockLevel > 0 ? `${product.minStockLevel} ${product.unit.symbol}` : t.notSet}
-          </span>
-        </div>
-        <div className="product-info-row">
-          <Receipt className="product-info-icon" aria-hidden="true" />
-          <span className="product-info-label">{t.validationLabel}</span>
-          <span className="product-info-value">{STOCK_VALIDATION_LABELS[product.stockValidation]}</span>
-        </div>
-      </div>
-
-      <ProductPricePreviewPanel
-        productId={product.id}
-        salePrice={product.salePrice}
+      <ProductStockSummaryCard
+        summary={analytics.stockSummary}
+        unitLabel={unit}
+        onAdjust={onAdjust}
+        onViewAll={onViewStock}
       />
-    </>
+
+      <ProductRecentActivity
+        movements={product.recentMovements}
+        unitLabel={unit}
+        onViewAll={onViewActivity}
+      />
+    </div>
   )
 }

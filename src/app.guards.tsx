@@ -13,6 +13,7 @@ import { SideNavRail } from '@/components/layout/SideNavRail'
 import { DashboardSkeleton } from '@/features/dashboard/components/DashboardSkeleton'
 import { useAuth } from '@/context/AuthContext'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
+import { useEdgeSwipeBack } from '@/hooks/useEdgeSwipeBack'
 import { CalculatorOverlay, FeedbackWidget, Login, Landing, AdminCoupons } from '@/app.routes'
 
 export function PageRoute({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
@@ -70,13 +71,33 @@ export function HomeGate() {
 
 const NAV_HIDDEN_PATTERNS = /\/(new|edit)(\/|$)|\/pos\b/
 
+// Entity detail (leaf) pages are drilled into via the back-stack, not the tab
+// bar — standard mobile apps hide the bottom nav there and let the page's own
+// action footer own the bottom. Matches `/section/:id` only (list roots and
+// `/section/:id/sub` keep the nav). Edit/new leaves are covered above.
+const DETAIL_LEAF_PATTERN =
+  /^\/(parties|products|invoices|payments|appointments|recurring|loans|godowns|jobs|batches|stock-verification)\/[^/]+$/
+
+// Always-mounted (returns null) so the left-edge back-swipe listener is live on
+// every authed screen without being tied to a route-conditional render.
+export function EdgeSwipeBack() {
+  useEdgeSwipeBack()
+  return null
+}
+
 export function PersistentNav() {
   const { pathname } = useLocation()
   const { isAuthenticated } = useAuth()
   useKeyboardShortcuts(isAuthenticated)
   // Onboarding runs before the user has a business — Sales/Parties/etc. are
   // meaningless and the floating FAB visually overlaps the step's own CTA.
-  if (!isAuthenticated || pathname === ROUTES.ONBOARDING || NAV_HIDDEN_PATTERNS.test(pathname)) return null
+  if (
+    !isAuthenticated ||
+    pathname === ROUTES.ONBOARDING ||
+    NAV_HIDDEN_PATTERNS.test(pathname) ||
+    DETAIL_LEAF_PATTERN.test(pathname)
+  )
+    return null
   return (
     <>
       <SideNavRail />

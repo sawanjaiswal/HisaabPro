@@ -28,6 +28,8 @@ export interface ProductListResponse {
     lowStockCount: number
     /** Total stock value in PAISE (sum of currentStock x purchasePrice) */
     totalStockValue: number
+    /** Count of ACTIVE products with currentStock <= 0 (business-wide) */
+    outOfStockCount: number
   }
 }
 

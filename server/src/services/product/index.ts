@@ -6,3 +6,5 @@
 export { createProduct, getProduct, updateProduct, deleteProduct, findByBarcode } from './crud.js'
 export { listProducts } from './search.js'
 export { listStockMovements, listStockHistory, bulkAdjustStock } from './stock.js'
+export { getProductAnalytics } from './analytics.js'
+export type { ProductAnalytics } from './analytics.js'

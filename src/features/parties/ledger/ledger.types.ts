@@ -12,6 +12,8 @@ export type LedgerVoucherType =
 
 export interface LedgerRow {
   id: string
+  /** Which entity the row came from — drives per-row navigation. */
+  source: 'DOCUMENT' | 'PAYMENT' | 'JOURNAL'
   date: string          // ISO date string YYYY-MM-DD
   voucherType: LedgerVoucherType
   particulars: string
@@ -22,6 +24,10 @@ export interface LedgerRow {
   cr: number
   /** Running balance in PAISE — positive = debit (we owe), negative = credit (they owe) */
   runningBalance: number
+  /** Line-item count on the source document (absent for payments/journal). */
+  itemCount?: number
+  /** Payment mode (CASH/UPI/…) — present only on PAYMENT rows. */
+  mode?: string
 }
 
 export interface LedgerResponse {

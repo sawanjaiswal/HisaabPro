@@ -1,39 +1,31 @@
-/** Party Detail — Ledger tab: date range + voucher type filter + table + PDF export */
+/** Party Detail — Ledger tab: month dropdown + filter sheet + row list + PDF export */
 
 import { useCallback, useState } from 'react'
 import { Button } from '@/components/ui/Button'
-import { FileDown } from 'lucide-react'
+import { FileDown, Filter } from 'lucide-react'
 import { pdf } from '@react-pdf/renderer'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useToast } from '@/hooks/useToast'
 import { usePartyLedger } from './usePartyLedger'
 import { PartyLedgerPDF } from './PartyLedgerPDF'
-import { LedgerTable } from './components/LedgerTable'
+import { LedgerRowList } from './components/LedgerRowList'
+import { LedgerMonthPicker } from './components/LedgerMonthPicker'
+import { LedgerFilterDrawer } from './components/LedgerFilterDrawer'
 import { LedgerLoading } from './components/LedgerLoading'
 import { LedgerEmpty } from './components/LedgerEmpty'
 import { LedgerError } from './components/LedgerError'
-import { formatPaise } from '@/lib/format'
 import type { LedgerVoucherType } from './ledger.types'
 import './ledger.css'
-import { Input } from '@/components/ui/Input'
 
 interface PartyLedgerTabProps {
   partyId: string
   partyName: string
   businessName: string
+  /** Fixed voucher-type filter (Invoices/Payments tabs). Hides the filter sheet. */
+  lockTypes?: LedgerVoucherType[]
 }
 
-const ALL_TYPES: { label: string; value: LedgerVoucherType }[] = [
-  { label: 'Sale',        value: 'SALE' },
-  { label: 'Purchase',    value: 'PURCHASE' },
-  { label: 'Payment',     value: 'PAYMENT' },
-  { label: 'Receipt',     value: 'RECEIPT' },
-  { label: 'Credit Note', value: 'CREDIT_NOTE' },
-  { label: 'Debit Note',  value: 'DEBIT_NOTE' },
-  { label: 'Journal',     value: 'JOURNAL' },
-]
-
-export function PartyLedgerTab({ partyId, partyName, businessName }: PartyLedgerTabProps) {
+export function PartyLedgerTab({ partyId, partyName, businessName, lockTypes }: PartyLedgerTabProps) {
   const { t } = useLanguage()
   const toast = useToast()
   const {
@@ -52,19 +44,26 @@ export function PartyLedgerTab({ partyId, partyName, businessName }: PartyLedger
     setTo,
     setSelectedTypes,
     refresh,
-  } = usePartyLedger(partyId)
+  } = usePartyLedger(partyId, lockTypes)
 
   const [isExporting, setIsExporting] = useState(false)
+  const [filterOpen, setFilterOpen] = useState(false)
 
-  const toggleType = useCallback(
-    (type: LedgerVoucherType) => {
-      setSelectedTypes(
-        selectedTypes.includes(type)
-          ? selectedTypes.filter((v) => v !== type)
-          : [...selectedTypes, type],
-      )
+  const handleMonthChange = useCallback(
+    (nextFrom: string, nextTo: string) => {
+      setFrom(nextFrom)
+      setTo(nextTo)
     },
-    [selectedTypes, setSelectedTypes],
+    [setFrom, setTo],
+  )
+
+  const handleApplyFilters = useCallback(
+    (nextFrom: string, nextTo: string, types: LedgerVoucherType[]) => {
+      setFrom(nextFrom)
+      setTo(nextTo)
+      setSelectedTypes(types)
+    },
+    [setFrom, setTo, setSelectedTypes],
   )
 
   const handleExportPDF = useCallback(async () => {
@@ -94,58 +93,50 @@ export function PartyLedgerTab({ partyId, partyName, businessName }: PartyLedger
 
   return (
     <div className="party-ledger-tab">
-      {/* Filters */}
-      <div className="ledger-filters">
-        <div className="ledger-date-row">
-          <div className="ledger-date-group">
-            <label htmlFor="ledger-from" className="ledger-date-label">{t.fromDate}</label>
-            <Input
-              id="ledger-from"
-              type="date"
-              className="ledger-date-input"
-              value={from}
-              onChange={(e) => setFrom(e.target.value)}
-              max={to}
-              aria-label={t.ledgerFromDate}
-            />
-          </div>
-          <div className="ledger-date-group">
-            <label htmlFor="ledger-to" className="ledger-date-label">{t.toDate}</label>
-            <Input
-              id="ledger-to"
-              type="date"
-              className="ledger-date-input"
-              value={to}
-              onChange={(e) => setTo(e.target.value)}
-              min={from}
-              aria-label={t.ledgerToDate}
-            />
-          </div>
-        </div>
-
-        {/* Voucher type chips — multi-select */}
-        <div
-          className="ledger-type-chips"
-          role="group"
-          aria-label={t.filterByVoucherType}
-        >
-          {ALL_TYPES.map(({ label, value }) => {
-            const active = selectedTypes.includes(value)
-            return (
-              <Button variant="none"
-                key={value}
-                type="button"
-                className={`ledger-type-chip${active ? ' active' : ''}`}
-                onClick={() => toggleType(value)}
-                aria-pressed={active}
-                aria-label={`${active ? t.remove : t.add} ${label} ${t.filter}`}
-              >
-                {label}
-              </Button>
-            )
-          })}
+      {/* Toolbar: month dropdown · filter + export */}
+      <div className="ledger-toolbar">
+        <LedgerMonthPicker from={from} to={to} onChange={handleMonthChange} />
+        <div className="ledger-toolbar__actions">
+          {!lockTypes && (
+            <Button
+              variant="none"
+              type="button"
+              className="ledger-filter-btn"
+              onClick={() => setFilterOpen(true)}
+              aria-label={t.filter}
+            >
+              <Filter size={16} aria-hidden="true" />
+              <span>{t.filter}</span>
+              {selectedTypes.length > 0 && (
+                <span className="ledger-filter-badge">{selectedTypes.length}</span>
+              )}
+            </Button>
+          )}
+          {status === 'success' && rows.length > 0 && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleExportPDF}
+              disabled={isExporting}
+              aria-label={t.downloadLedgerPDF}
+            >
+              <FileDown size={16} aria-hidden="true" />
+            </Button>
+          )}
         </div>
       </div>
+
+      {!lockTypes && (
+        <LedgerFilterDrawer
+          open={filterOpen}
+          onClose={() => setFilterOpen(false)}
+          from={from}
+          to={to}
+          selectedTypes={selectedTypes}
+          onApply={handleApplyFilters}
+        />
+      )}
 
       {/* Loading */}
       {status === 'loading' && <LedgerLoading />}
@@ -160,41 +151,17 @@ export function PartyLedgerTab({ partyId, partyName, businessName }: PartyLedger
             <LedgerEmpty />
           ) : (
             <>
-              {/* Summary */}
-              <div className="ledger-summary" aria-label={t.ledgerSummary}>
-                <div className="ledger-summary-card">
-                  <p className="ledger-summary-label">{t.openingBalance}</p>
-                  <p className="ledger-summary-value">{formatPaise(Math.abs(openingBalance))}</p>
-                </div>
-                <div className="ledger-summary-card">
-                  <p className="ledger-summary-label">{t.closingBalance}</p>
-                  <p className="ledger-summary-value">{formatPaise(Math.abs(closingBalance))}</p>
-                </div>
-              </div>
-
-              {/* Export PDF */}
-              <div className="ledger-export-bar">
-                <Button
-                  type="button"
-                  variant="ghost" size="sm"
-                  onClick={handleExportPDF}
-                  disabled={isExporting}
-                  aria-label={t.downloadLedgerPDF}
-                >
-                  <FileDown size={16} aria-hidden="true" />
-                  <span>{isExporting ? t.exporting : t.downloadPdf}</span>
-                </Button>
-              </div>
-
-              <LedgerTable
+              <LedgerRowList
                 rows={rows}
                 openingBalance={openingBalance}
                 closingBalance={closingBalance}
+                asOn={to}
               />
 
               {/* Load more */}
               {hasNextPage && (
-                <Button variant="none"
+                <Button
+                  variant="none"
                   type="button"
                   className="ledger-load-more"
                   onClick={() => fetchNextPage()}

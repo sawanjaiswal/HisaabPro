@@ -88,8 +88,30 @@
 
 ## Layout Patterns
 
+### Emerald Hero archetype (skin v2, 2026-07 — the signature layout)
+> The default for every primary screen. Reference implementations: **Home**
+> (`DashboardPage` / Home 2) and **Party detail** (`PartyDetailPage`).
+
+One continuous field split in two:
+1. **Header recolours to deep emerald** `var(--color-hero-surface)` (#003121) —
+   white title + white icons, no seam with the OS status bar.
+2. **Hero field** on the emerald holds greeting / `SummaryTiles` / hero amount
+   (white text; labels use `var(--color-hero-text-secondary)`).
+3. **White rounded sheet** lifts the main content off the emerald
+   (`border-radius: var(--radius-xl) var(--radius-xl) 0 0`, `--shadow-drawer-inset`,
+   overlaps up by `var(--space-4)`).
+
+Mount the primitive — never hand-roll it: `HeroPage`
+(`src/components/layout/HeroPage.tsx`), which also recolours the global
+`<Header>` via `.hp-hero-page` + `:has()`. Detail-page anatomy on the sheet:
+white identity card (circle avatar + name + **type pill** + **status pill**) →
+`SummaryTiles` (Due/Sales/Paid) → **underline tabs** → rows → inline
+dual-action footer (outline + primary).
+
 ### Page Background
-Every page uses the warm gradient: `linear-gradient(to bottom, #f9f9ed, #fdfdfd)` with a subtle decorative background graphic positioned at the top.
+Cream page bg is `var(--color-gray-50)` (#F8F7F4). Emerald-hero pages start on
+`var(--color-hero-surface)` behind the header + hero field, then the white sheet
+takes over. (Legacy warm gradient `#f9f9ed → #fdfdfd` remains on landing.)
 
 ### Edge-to-Edge
 - Content extends full width with 16px side padding
@@ -129,11 +151,21 @@ Content from the upgrade banner downward lives in a **bottom drawer** that:
 - Remaining: colored circle avatars (56px) with 2px white border + shadow
 - Name below each (12px Regular #666)
 
-### Transaction Rows
-- Left: colored initial circle (24px) in white shadow container (32px)
-- Middle: name (16px Medium) + subtitle "Invoice #NNN - Date" (14px Regular #999)
-- Right: amount + status badge (PAID green / UNPAID red)
-- Far right: pill button "Add" or "View" with teal icon
+### Transaction / Ledger Rows (skin v2)
+- Left: **date block** — day (bold) over month (muted).
+- **Direction-tinted icon square** (40px, `--radius-md`): debit (sale/invoice,
+  balance ↑) = `ArrowUp` on `--color-error-50` coral tint; credit (payment
+  received, balance ↓) = `ArrowDown` on `--color-success-50` green tint.
+- Middle: title (`Sale Invoice`) + doc-no (`INV-1056`, muted).
+- Right: amount `tabular-nums` — credit is green with leading `−`
+  (`--color-success-600`), debit is `--text-primary`; payment mode (UPI/Cash)
+  muted below.
+- Far right: `ChevronRight` (muted).
+
+### Underline Tabs (skin v2)
+Detail-page tabs are a flat underline bar (`.party-detail-tabs`), NOT filled
+pills: active = emerald text + 2px emerald underline (`--color-primary-500`);
+inactive = `--text-muted`. Horizontally scrollable, no scrollbar, 44px targets.
 
 ### Bottom Navigation
 - White bar with SVG bezier-curve wave notch at top center (NOT a sharp circle cutout)
@@ -160,7 +192,7 @@ These tokens are the SSOT. Always use them — never hardcode values.
 |-------|-------|-----|
 | `--side-padding` | `16px` | Edge-to-edge content padding on all pages |
 | `--bottom-nav-height` | `90px` | Bottom nav height (for page bottom padding) |
-| `--color-primary-500` | `#0B4F5E` | Primary brand teal |
+| `--color-primary-500` | `#026F39` | Primary brand emerald (was teal #0B4F5E pre-2026-07) |
 | `--color-secondary-300` | `#E0EA49` | Accent lime-yellow |
 | `--space-1` to `--space-8` | 4px–32px | 8pt grid spacing |
 | `--radius-sm/md/lg/xl/full` | 8px–9999px | Border radius scale |

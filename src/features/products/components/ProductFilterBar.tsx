@@ -1,84 +1,115 @@
-/** Product list — search + category pill filter bar */
+/** Products — search + chip filter row (GPT mockup).
+ *
+ * Search field with a camera (scan) button, then five chips:
+ * All · Favorites · Low Stock · Categories · Filters. Category/Filters open
+ * bottom-sheets; Favorites is coming-soon; All/Low Stock toggle the list.
+ */
 
 import React from 'react'
-import { Search, AlertTriangle } from 'lucide-react'
+import { Search, Camera, List, Star, AlertTriangle, Folder, Filter } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
-import { PREDEFINED_CATEGORIES } from '../product.constants'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 
 interface ProductFilterBarProps {
   search: string
   onSearchChange: (term: string) => void
-  activeCategoryId: string | 'ALL'
-  onCategoryChange: (categoryId: string | 'ALL') => void
-  lowStockOnly?: boolean
-  onLowStockToggle?: (value: boolean) => void
+  onScan: () => void
+  /** Which toggle chip is active: 'all' (no filter) or 'low' (low-stock only). */
+  mode: 'all' | 'low'
+  categoryActive: boolean
+  filtersActive: boolean
   lowStockCount?: number
+  onSelectAll: () => void
+  onFavorites: () => void
+  onLowStock: () => void
+  onOpenCategories: () => void
+  onOpenFilters: () => void
 }
 
 export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
   search,
   onSearchChange,
-  activeCategoryId,
-  onCategoryChange,
-  lowStockOnly = false,
-  onLowStockToggle,
+  onScan,
+  mode,
+  categoryActive,
+  filtersActive,
   lowStockCount,
+  onSelectAll,
+  onFavorites,
+  onLowStock,
+  onOpenCategories,
+  onOpenFilters,
 }) => {
   const { t } = useLanguage()
 
   return (
     <div className="product-filter-bar">
-      <div className="search-bar">
+      <div className="search-bar search-bar--pill search-bar--action">
         <Search size={18} aria-hidden="true" />
         <Input
           type="search"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder={t.searchByNameOrSku}
+          placeholder={t.searchProductsPlaceholder}
           aria-label={t.searchProducts}
         />
+        <Button
+          variant="none"
+          className="search-bar__action"
+          onClick={onScan}
+          aria-label={t.scanBarcode}
+        >
+          <Camera size={20} aria-hidden="true" />
+        </Button>
       </div>
 
-      <div className="pill-tabs" role="group" aria-label={t.filterProductsByCategory}>
-        <Button variant="none"
-          key="ALL"
-          className={`pill-tab${activeCategoryId === 'ALL' ? ' active' : ''}`}
-          onClick={() => onCategoryChange('ALL')}
-          aria-pressed={activeCategoryId === 'ALL'}
-          aria-label={t.showAllProducts}
+      <div className="product-chips" role="group" aria-label={t.filters}>
+        <Button
+          variant="none"
+          className={`product-chip${mode === 'all' && !categoryActive ? ' product-chip--on' : ''}`}
+          onClick={onSelectAll}
+          aria-pressed={mode === 'all' && !categoryActive}
         >
+          <List size={15} aria-hidden="true" />
           {t.all}
         </Button>
-        {onLowStockToggle && (
-          <Button variant="none"
-            key="LOW_STOCK"
-            className={`pill-tab${lowStockOnly ? ' active' : ''}`}
-            onClick={() => onLowStockToggle(!lowStockOnly)}
-            aria-pressed={lowStockOnly}
-            aria-label={lowStockOnly ? t.showAllProducts : t.lowStockOnly}
-          >
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-              <AlertTriangle size={14} aria-hidden="true" />
-              {t.lowStockOnly}
-              {typeof lowStockCount === 'number' && lowStockCount > 0 && (
-                <span className="pill-tab-badge" aria-hidden="true">{lowStockCount}</span>
-              )}
-            </span>
-          </Button>
-        )}
-        {PREDEFINED_CATEGORIES.map((cat) => (
-          <Button variant="none"
-            key={cat.id}
-            className={`pill-tab${activeCategoryId === cat.id ? ' active' : ''}`}
-            onClick={() => onCategoryChange(cat.id)}
-            aria-pressed={activeCategoryId === cat.id}
-            aria-label={`${t.showCatProducts} ${cat.name} ${t.productsLabel}`}
-          >
-            {cat.name}
-          </Button>
-        ))}
+
+        <Button variant="none" className="product-chip" onClick={onFavorites}>
+          <Star size={15} aria-hidden="true" />
+          {t.favorites}
+        </Button>
+
+        <Button
+          variant="none"
+          className={`product-chip${mode === 'low' ? ' product-chip--on' : ''}`}
+          onClick={onLowStock}
+          aria-pressed={mode === 'low'}
+        >
+          <AlertTriangle size={15} aria-hidden="true" />
+          {t.lowStock}
+          {typeof lowStockCount === 'number' && lowStockCount > 0 && (
+            <span className="product-chip-count" aria-hidden="true">{lowStockCount}</span>
+          )}
+        </Button>
+
+        <Button
+          variant="none"
+          className={`product-chip${categoryActive ? ' product-chip--on' : ''}`}
+          onClick={onOpenCategories}
+        >
+          <Folder size={15} aria-hidden="true" />
+          {t.categories}
+        </Button>
+
+        <Button
+          variant="none"
+          className={`product-chip${filtersActive ? ' product-chip--on' : ''}`}
+          onClick={onOpenFilters}
+        >
+          <Filter size={15} aria-hidden="true" />
+          {t.filters}
+        </Button>
       </div>
     </div>
   )

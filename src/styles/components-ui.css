@@ -339,6 +339,29 @@
   box-shadow: var(--shadow-subtle);
 }
 
+/* Count badge inside a filter pill — e.g. "Customers 42" (GPT new-design) */
+.pill-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  margin-left: var(--space-1);
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--color-gray-100);
+  color: var(--color-gray-600);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.pill-tab.active .pill-tab-count {
+  background: var(--overlay-white-20);
+  color: var(--color-white-inverse);
+}
+
 /* Dark theme pill tab overrides */
 [data-theme="dark"] .pill-tab {
   background: var(--color-gray-50);

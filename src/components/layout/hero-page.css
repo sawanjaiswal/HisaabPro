@@ -1,0 +1,109 @@
+/* ============================================================
+   HeroPage — reusable emerald-hero page shell
+   Generalized from the dashboard's Home 2 layout (dashboard-page.css).
+   A page mounts <HeroPage>; the `.hp-hero-page` marker recolours the
+   global Header primitive to the deep-emerald surface via :has(), so the
+   header + emerald field + white sheet read as one continuous design.
+   ============================================================ */
+
+/* ─── Recolour the global Header while a hero page is mounted ─────
+   Scoped via :has() so no other page is affected — the header, hero
+   field and sheet overlap all read as one continuous emerald field. */
+:root:has(.hp-hero-page) .header,
+:root:has(.hp-hero-page) .header--scroll-condense,
+:root:has(.hp-hero-page) .header--scroll-condense.is-scrolled {
+  background: var(--color-hero-surface);
+  border-color: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+:root:has(.hp-hero-page) .header-brand-name,
+:root:has(.hp-hero-page) .header-title,
+:root:has(.hp-hero-page) .header-back,
+:root:has(.hp-hero-page) .header-icon-btn,
+:root:has(.hp-hero-page) .header-actions button,
+:root:has(.hp-hero-page) .header-actions svg {
+  color: var(--color-white-inverse);
+}
+
+/* Kill the light glass circle + shadow on the sync/menu icon buttons so
+ * they sit flat on the emerald bar (same fix the dashboard uses). */
+:root:has(.hp-hero-page) .header-icon-btn {
+  background: transparent;
+  box-shadow: none;
+}
+:root:has(.hp-hero-page) .header-icon-btn:active {
+  background: var(--overlay-white-12, rgba(255, 255, 255, 0.12));
+}
+
+/* ─── Page shell ─────────────────────────────────────────────── */
+
+.hp-hero-page {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  background: var(--color-hero-surface);
+}
+
+/* Emerald field directly under the header (holds summary/hero content). */
+.hp-hero-top {
+  background: var(--color-hero-surface);
+  padding: var(--space-3) var(--side-padding) var(--space-6);
+  position: relative;
+  z-index: 1;
+}
+
+/* Inverse text helpers for anything placed on the emerald field. */
+.hp-hero-top,
+.hp-hero-top .hp-hero-eyebrow {
+  color: var(--color-white-inverse);
+}
+
+.hp-hero-eyebrow {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--overlay-white-70, rgba(255, 255, 255, 0.7));
+}
+
+/* ─── White rounded sheet (main content) ─────────────────────── */
+
+.hp-hero-sheet {
+  background: var(--color-gray-0);
+  /* Lift the sheet up into the emerald field for the rounded-card overlap. */
+  margin-top: calc(-1 * var(--space-4));
+  padding: var(--space-6) var(--side-padding) calc(var(--bottom-nav-height) + 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  flex: 1;
+  position: relative;
+  z-index: 2;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  box-shadow: var(--shadow-drawer-inset);
+}
+
+/* When there's no emerald hero content, still round the sheet under the bar. */
+.hp-hero-page > .hp-hero-sheet:first-child {
+  margin-top: 0;
+}
+
+@media (min-width: 768px) {
+  .hp-hero-top > *,
+  .hp-hero-sheet > * {
+    width: 100%;
+    max-width: var(--content-max-dashboard, 1120px);
+    margin-inline: auto;
+  }
+}
+
+/* ─── Dark theme ─────────────────────────────────────────────── */
+
+[data-theme="dark"] .hp-hero-sheet {
+  background: var(--color-gray-50);
+  box-shadow: var(--shadow-drawer-inset);
+}

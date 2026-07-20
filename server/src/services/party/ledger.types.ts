@@ -48,6 +48,10 @@ export interface LedgerRow {
   dr: number          // paise — 0 if credit row
   cr: number          // paise — 0 if debit row
   runningBalance: number // paise — signed (positive = receivable)
+  /** Number of line items on the source document (0 for payments/journal). */
+  itemCount?: number
+  /** Payment mode (CASH/UPI/…) — present only on PAYMENT rows. */
+  mode?: string
 }
 
 // Cursor payload encoded as base64 JSON

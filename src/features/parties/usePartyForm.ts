@@ -179,10 +179,30 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
 
     try {
       if (isEditMode && editId) {
+        // updatePartySchema is .strict() and only accepts the core mutable fields —
+        // addresses / openingBalance / gstin* view-flags are managed elsewhere and
+        // would 400 the request. Whitelist to the schema's field set. (see
+        // .claude/fix-trace-party-update.md)
+        const updatePayload: Partial<PartyFormData> = {
+          name: payload.name,
+          phone: payload.phone,
+          email: payload.email,
+          companyName: payload.companyName,
+          type: payload.type,
+          groupId: payload.groupId,
+          tags: payload.tags,
+          gstin: payload.gstin,
+          pan: payload.pan,
+          creditLimit: payload.creditLimit,
+          creditLimitMode: payload.creditLimitMode,
+          notes: payload.notes,
+          customFields: payload.customFields,
+          priceListId: payload.priceListId,
+        }
         // #150 — a stale save 409s; withConflictGuard opens the reconcile dialog
         // instead of an error toast. versionOverride is supplied on overwrite.
         await conflictReconcile.withConflictGuard(async (versionOverride) => {
-          const updated = await updateParty(editId, payload, undefined, versionOverride ?? version)
+          const updated = await updateParty(editId, updatePayload, undefined, versionOverride ?? version)
           reconcilePartyUpdated(queryClient, updated)
           toast.success(`${form.name} updated`)
           navigate(`/parties/${editId}`)

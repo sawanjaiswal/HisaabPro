@@ -36,11 +36,14 @@ export interface UsePartyLedgerReturn {
   refresh: () => void
 }
 
-export function usePartyLedger(partyId: string): UsePartyLedgerReturn {
+export function usePartyLedger(
+  partyId: string,
+  initialTypes: LedgerVoucherType[] = [],
+): UsePartyLedgerReturn {
   const defaults = defaultDateRange()
   const [from, setFrom] = useState(defaults.from)
   const [to, setTo] = useState(defaults.to)
-  const [selectedTypes, setSelectedTypes] = useState<LedgerVoucherType[]>([])
+  const [selectedTypes, setSelectedTypes] = useState<LedgerVoucherType[]>(initialTypes)
 
   const params: LedgerParams = {
     from,

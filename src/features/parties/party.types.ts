@@ -50,8 +50,22 @@ export interface PartyPricingItem {
   minQty: number
 }
 
+/** Hero summary-tile stats returned alongside the party detail payload. */
+export interface PartyDetailStats {
+  /** Sum of this calendar month's sale-invoice grand totals (paise). */
+  salesMtd: number
+  /** Count of this calendar month's sale invoices. */
+  invoiceCountMtd: number
+  /** Most recent incoming payment, or null when the party has never paid. */
+  lastPayment: { amount: number; date: string; mode: string } | null
+  /** True when any non-deleted sale invoice is past its due date with balance owing. */
+  isOverdue: boolean
+}
+
 /** Full party detail */
 export interface PartyDetail extends PartySummary {
+  /** Hero-tile aggregates (sales MTD, last payment, overdue) — server-derived. */
+  stats?: PartyDetailStats
   version?: number // #150 optimistic-lock token
   email?: string
   companyName?: string
@@ -114,7 +128,8 @@ export interface PartyFilters {
   type: PartyType | 'ALL'
   groupId?: string
   hasOutstanding?: boolean
-  isActive: boolean
+  /** undefined = both active + inactive (the "All" status pill) */
+  isActive?: boolean
   sortBy: 'name' | 'outstanding' | 'recentTransaction' | 'createdAt'
   sortOrder: 'asc' | 'desc'
   // CRM #127 — single-tag narrow filter (TagFilterBar chips).

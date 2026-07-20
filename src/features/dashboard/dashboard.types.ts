@@ -62,7 +62,7 @@ export interface TopDebtor {
 
 // ─── Top priorities card (derived from existing data, no new API fields) ─────
 
-export type PriorityTone = 'warning' | 'danger' | 'info'
+export type PriorityTone = 'warning' | 'danger' | 'info' | 'success'
 
 export interface PriorityItem {
   id: string

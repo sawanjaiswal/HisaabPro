@@ -47,8 +47,24 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Compact 2-column body: figures left, chart fills the right at the same
+ * height so the card stays short. Wraps to a stack only on the narrowest
+ * screens where a side-by-side chart would be unreadable. */
+.dashboard-biz-hero__body {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-4);
+}
+
+.dashboard-biz-hero__figures {
+  flex: 0 0 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .dashboard-biz-hero__amount {
-  font-size: var(--fs-6xl);
+  font-size: var(--fs-5xl);
   font-weight: 800;
   letter-spacing: -0.04em;
   line-height: 1;
@@ -62,29 +78,73 @@
   margin-top: var(--space-2);
 }
 
+.dashboard-biz-hero__delta-row {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2-5);
+}
+
 .dashboard-biz-hero__delta {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   width: fit-content;
   font-size: var(--fs-xs);
   font-weight: 700;
   color: var(--color-success-300, #86efac);
-  background: var(--overlay-white-12, rgba(255, 255, 255, 0.12));
+  background: var(--color-success-500-a15, rgba(34, 197, 94, 0.16));
   border-radius: var(--radius-full);
-  padding: 3px var(--space-2-5);
-  margin-top: var(--space-2-5);
+  padding: 4px var(--space-2-5);
 }
 
 .dashboard-biz-hero__delta-note {
-  font-weight: 500;
-  color: var(--overlay-white-70, rgba(255, 255, 255, 0.7));
-  margin-left: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-white-inverse);
+  white-space: nowrap;
 }
 
 .dashboard-biz-hero__chart {
-  margin-top: var(--space-2);
+  flex: 1 1 0;
+  min-width: 0;
   width: 100%;
+}
+
+/* Narrowest phones: stack figures over chart so neither is squeezed. */
+@media (max-width: 359px) {
+  .dashboard-biz-hero__body {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+  }
+  .dashboard-biz-hero__amount {
+    font-size: var(--fs-6xl);
+  }
+}
+
+/* ─── Area chart end marker (HTML overlay — stays a true circle) ─ */
+.area-chart-enddot {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--dot-color, #4ade80);
+  transform: translate(-50%, -50%);
+  box-shadow:
+    0 0 0 5px color-mix(in srgb, var(--dot-color, #4ade80) 22%, transparent),
+    0 0 10px 2px color-mix(in srgb, var(--dot-color, #4ade80) 55%, transparent);
+  pointer-events: none;
+}
+.area-chart-enddot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #fff;
 }
 
 /* ─── Area chart x-axis (rendered by AreaChart) ───────────────── */
@@ -92,6 +152,9 @@
   display: flex;
   justify-content: space-between;
   margin-top: var(--space-1);
+  /* Lift date text so its baseline lines up with the "vs yesterday" note
+     (whose baseline floats higher because the delta chip is taller). */
+  padding-bottom: 5px;
 }
 
 .area-chart-xlabel {
@@ -103,7 +166,7 @@
 /* ─── Metric tiles row ────────────────────────────────────────── */
 .dashboard-metric-tiles {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--space-2);
   margin-top: var(--space-4);
 }
@@ -114,8 +177,8 @@
   gap: var(--space-1);
   padding: var(--space-2-5);
   border-radius: var(--radius-lg);
-  background: var(--overlay-white-08, rgba(255, 255, 255, 0.08));
-  border: 1px solid var(--overlay-white-12, rgba(255, 255, 255, 0.12));
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   min-width: 0;
 }
 
@@ -194,6 +257,85 @@
   height: 6px;
   border-radius: 50%;
   background: var(--color-success-400, #4ade80);
+}
+
+/* ─── Liquid reveal wrapper for the hidden (2nd-row) tiles ──────── */
+.dashboard-metric-reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--duration-slow, 420ms)
+    var(--ease-liquid, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.dashboard-metric-reveal.is-open {
+  grid-template-rows: 1fr;
+}
+
+.dashboard-metric-reveal__inner {
+  overflow: hidden;
+  min-height: 0;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity var(--duration-normal, 260ms) var(--ease-out, ease),
+    transform var(--duration-slow, 420ms)
+      var(--ease-liquid, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.dashboard-metric-reveal.is-open .dashboard-metric-reveal__inner {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Second-row grid keeps the same 2-col rhythm; add the inter-row gap only
+   inside the reveal so the collapsed state has zero height. */
+.dashboard-metric-tiles--revealed {
+  margin-top: var(--space-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-metric-reveal,
+  .dashboard-metric-reveal__inner {
+    transition: none;
+  }
+}
+
+/* ─── Reveal toggle (chevron pinned to the card's bottom edge) ──── */
+.dashboard-metric-toggle {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, 50%);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--overlay-white-15, rgba(255, 255, 255, 0.15));
+  background: var(--hp-dash-card, #003121);
+  color: var(--color-white-inverse);
+  opacity: 0.5;
+  cursor: pointer;
+  border-radius: var(--radius-full);
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--duration-fast, 150ms) var(--ease-out, ease),
+              background var(--duration-fast, 150ms) var(--ease-out, ease),
+              border-color var(--duration-fast, 150ms) var(--ease-out, ease);
+}
+
+.dashboard-metric-toggle:hover {
+  opacity: 1;
+  border-color: var(--overlay-white-30, rgba(255, 255, 255, 0.3));
+  background: color-mix(in srgb, var(--hp-dash-card, #003121) 88%, #fff);
+}
+
+.dashboard-metric-toggle svg {
+  transition: transform var(--duration-normal, 220ms) var(--ease-out, ease);
+}
+
+.dashboard-metric-toggle.is-open svg {
+  transform: rotate(180deg);
 }
 
 /* ─── Small screens (320px): 2×2 tiles instead of 4-across ─────── */
