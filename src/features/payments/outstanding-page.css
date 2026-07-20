@@ -1,6 +1,6 @@
-/* Outstanding Page — page container, summary cards, aging chart, list layout
+/* Receivables Page — page container, aging chart, list layout
  *
- * Used by OutstandingPage.tsx and OutstandingSummaryBar.tsx.
+ * Used by OutstandingPage.tsx.
  * Mobile-first: base styles target 320px, min-width queries add tablet+ layout.
  */
 
@@ -11,78 +11,6 @@
   flex-direction: column;
   min-height: 100%;
   animation: fadeUp 400ms var(--ease-premium) both;
-}
-
-/* ─── Summary cards (horizontal scroll) ─────────────────────────────────── */
-
-/* Horizontal scroll row: Receivable, Payable, Net */
-.outstanding-summary-cards {
-  display: flex;
-  gap: var(--space-3);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  padding-bottom: var(--space-1);
-  margin-bottom: var(--space-5);
-}
-
-.outstanding-summary-cards::-webkit-scrollbar {
-  display: none;
-}
-
-/* Individual summary card — teal dark card style */
-.outstanding-summary-card {
-  flex-shrink: 0;
-  min-width: 140px;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-4);
-  background: var(--color-primary-600);
-  border-radius: var(--radius-lg);
-  color: var(--color-white-inverse);
-  animation: fadeUp 400ms var(--ease-premium) 60ms both;
-}
-
-.outstanding-summary-card:nth-child(2) {
-  animation-delay: 120ms;
-}
-
-.outstanding-summary-card:nth-child(3) {
-  animation-delay: 180ms;
-}
-
-.outstanding-summary-card--net {
-  background: var(--color-primary-500);
-}
-
-.outstanding-summary-card-label {
-  font-size: var(--fs-xs);
-  font-weight: 500;
-  color: var(--color-primary-200);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.outstanding-summary-card-amount {
-  font-size: var(--fs-2xl);
-  font-weight: 700;
-  color: var(--color-white-inverse);
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
-}
-
-.outstanding-summary-card-amount--receivable {
-  color: var(--color-success-500);
-}
-
-.outstanding-summary-card-amount--payable {
-  color: var(--color-error-500);
-}
-
-.outstanding-summary-card-count {
-  font-size: var(--fs-2xs);
-  color: var(--color-primary-200);
 }
 
 /* ─── Aging chart ────────────────────────────────────────────────────────── */
@@ -179,21 +107,7 @@
 /* ─── Tablet+ adjustments ────────────────────────────────────────────────── */
 
 @media (min-width: 768px) {
-  /* Summary cards no longer need to scroll — expand naturally */
-  .outstanding-summary-cards {
-    overflow-x: visible;
-  }
-
-  .outstanding-summary-card {
-    flex: 1;
-    min-width: unset;
-  }
-
-  .outstanding-summary-card-amount {
-    font-size: var(--fs-4xl);
-  }
-
-  /* Two-column card grid on tablet */
+  /* Two-column row grid on tablet */
   .outstanding-list {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -218,15 +132,10 @@
   color: var(--color-gray-500);
 }
 
-[data-theme="dark"] .outstanding-summary-card {
-  box-shadow: var(--shadow-overlay-fab);
-}
-
 /* ─── Reduced Motion ─────────────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
-  .outstanding-page,
-  .outstanding-summary-card {
+  .outstanding-page {
     animation: none !important;
   }
 }

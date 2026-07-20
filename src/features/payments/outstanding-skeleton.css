@@ -1,10 +1,8 @@
-/* Outstanding Skeleton — loading placeholder cards
+/* Receivables Skeleton — loading placeholder rows
  *
- * Used by OutstandingSkeleton.tsx.
- * Renders shimmer cards while outstanding data loads.
+ * Used by OutstandingSkeleton.tsx. Mirrors the .outstanding-row shape so the
+ * list does not reflow when data lands.
  */
-
-/* ─── Skeleton loader ────────────────────────────────────────────────────── */
 
 .outstanding-skeleton {
   display: flex;
@@ -12,27 +10,14 @@
   gap: var(--space-3);
 }
 
-.outstanding-skeleton-card {
-  background: var(--color-gray-0);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-gray-100);
-  padding: var(--space-4);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.outstanding-skeleton-top {
+.outstanding-skeleton-row {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-}
-
-.outstanding-skeleton-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-md);
-  flex-shrink: 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-0);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-gray-100);
 }
 
 .outstanding-skeleton-content {
@@ -42,39 +27,9 @@
   gap: var(--space-2);
 }
 
-.outstanding-skeleton-line {
-  height: 14px;
-  border-radius: var(--radius-sm);
-}
-
-.outstanding-skeleton-line--short {
-  width: 40%;
-}
-
-.outstanding-skeleton-line--medium {
-  width: 60%;
-}
-
-.outstanding-skeleton-bar {
-  height: 6px;
-  width: 100%;
-  border-radius: var(--radius-full);
-}
-
-.outstanding-skeleton-actions {
-  display: flex;
-  gap: var(--space-2);
-}
-
-.outstanding-skeleton-btn {
-  flex: 1;
-  height: 44px;
-  border-radius: var(--radius-md);
-}
-
 /* ─── Dark Theme ─────────────────────────────────────────────────────────── */
 
-[data-theme="dark"] .outstanding-skeleton-card {
+[data-theme="dark"] .outstanding-skeleton-row {
   background: var(--color-gray-50);
   border-color: var(--color-gray-200);
 }

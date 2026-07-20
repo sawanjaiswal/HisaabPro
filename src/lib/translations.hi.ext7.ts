@@ -114,6 +114,13 @@ export const hiExt7 = {
   dateInfoLabel:             'तारीख',
   dateRequired:              'तारीख *',
   daysOverdue:               'दिन अतिदेय',
+  daysWord:                  'दिन',
+  dueInLabel:                'बकाया',
+  dueTodayLabel:             'आज देय',
+  fromCustomersLabel:        'ग्राहकों से',
+  fromLabel:                 '',
+  overdueByLabel:            'अतिदेय',
+  totalOutstandingLabel:     'कुल बकाया',
   deletePaymentDesc:         'यह भुगतान स्थायी रूप से हटा दिया जाएगा। कोई भी लिंक किया गया बिल आवंटन हटा दिया जाएगा।',
   deletePaymentTitle:        'भुगतान हटाएं?',
   deselectLabel:             'अचयनित करें',
@@ -223,4 +230,7 @@ export const hiExt7 = {
 
   // ─── Dashboard — Cash Strip ────────────────────────────────────────────
   todaysCashFlow:            'आज का कैश फ्लो',
+
+  // ─── Receivables ───────────────────────────────────────────────────────
+  viewAllCustomers:          'सभी ग्राहक देखें',
 } as const

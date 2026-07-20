@@ -1,103 +1,61 @@
-/** Outstanding list — per-party card with progress bar and action buttons */
+/** Receivables list row (mockup #17) — avatar, party, due status, amount.
+ *
+ * The old card carried a progress bar hardcoded to 0% and a "Paid: Rs 0.00"
+ * label: OutstandingParty has no invoiced total, so both were decoration that
+ * read as data. They are gone. Remind / Record-payment moved into the drawer
+ * the row opens, which is where the party context already is.
+ */
 
 import React from 'react'
-import { Bell, IndianRupee } from 'lucide-react'
+import { PartyAvatar } from '@/components/ui/PartyAvatar'
 import { useLanguage } from '@/hooks/useLanguage'
+import { formatPaise } from '@/lib/format'
 import type { OutstandingParty } from '../payment.types'
-import { Button } from '@/components/ui/Button'
 
 interface OutstandingCardProps {
   party: OutstandingParty
-  onRemind: (partyId: string) => void
-  onRecordPayment: (partyId: string) => void
 }
 
-const INR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' })
-
-function formatAmount(paise: number): string {
-  return INR.format(Math.abs(paise) / 100)
+/** Whole days from today until `iso` — negative once the date has passed. */
+function daysUntil(iso: string): number {
+  const due = new Date(iso)
+  if (Number.isNaN(due.getTime())) return 0
+  const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
+  return Math.round((startOfDay(due) - startOfDay(new Date())) / 86_400_000)
 }
 
-export const OutstandingCard: React.FC<OutstandingCardProps> = ({
-  party,
-  onRemind,
-  onRecordPayment,
-}) => {
+export const OutstandingCard: React.FC<OutstandingCardProps> = ({ party }) => {
   const { t } = useLanguage()
   const isReceivable = party.type === 'RECEIVABLE'
   const isOverdue = party.daysOverdue > 0
-  const cardClass = `outstanding-card${isOverdue ? ' outstanding-card--overdue' : ''}`
-  const amountClass = isReceivable
-    ? 'outstanding-card-amount outstanding-card-amount--receivable'
-    : 'outstanding-card-amount outstanding-card-amount--payable'
-  const daysClass = isOverdue
-    ? 'outstanding-card-days outstanding-card-days--overdue'
-    : 'outstanding-card-days'
 
-  // Progress bar: paid portion out of total invoiced
-  // We derive total from outstanding + estimated paid via invoiceCount heuristic.
-  // Since we only have outstanding here, we show a fixed 0% fill when there's no
-  // partial payment context — the bar still renders and conveys direction.
-  const paidPct = 0 // OutstandingParty doesn't carry total invoiced; bar shows overdue state
-
-  const daysLabel = isOverdue
-    ? `${party.invoiceCount} ${party.invoiceCount !== 1 ? t.invoicesWord : t.invoiceWord} · ${party.daysOverdue} ${t.daysOverdue}`
-    : `${party.invoiceCount} ${party.invoiceCount !== 1 ? t.invoicesWord : t.invoiceWord}`
-
-  const hasPhone = party.partyPhone.trim() !== ''
+  let status: string
+  if (isOverdue) {
+    status = `${t.overdueByLabel} ${party.daysOverdue} ${t.daysWord}`
+  } else if (party.oldestDueDate) {
+    const days = daysUntil(party.oldestDueDate)
+    status = days <= 0 ? t.dueTodayLabel : `${t.dueInLabel} ${days} ${t.daysWord}`
+  } else {
+    const word = party.invoiceCount === 1 ? t.invoiceWord : t.invoicesWord
+    status = `${party.invoiceCount} ${word}`
+  }
 
   return (
-    <div className={cardClass} aria-label={`${t.outstandingFor} ${party.partyName}`}>
-      <div className="outstanding-card-top">
-        <div className="outstanding-card-info">
-          <div className="outstanding-card-party">{party.partyName}</div>
-          <div className={daysClass}>{daysLabel}</div>
-        </div>
-        <div
-          className={amountClass}
-          aria-label={`${isReceivable ? t.receivable : t.payable}: ${formatAmount(party.outstanding)}`}
-        >
-          {formatAmount(party.outstanding)}
+    <div className="outstanding-row" aria-label={`${t.outstandingFor} ${party.partyName}`}>
+      <PartyAvatar name={party.partyName} phone={party.partyPhone} size="md" />
+
+      <div className="outstanding-row-main">
+        <div className="outstanding-row-party">{party.partyName}</div>
+        <div className={`outstanding-row-status${isOverdue ? ' outstanding-row-status--overdue' : ''}`}>
+          {status}
         </div>
       </div>
 
-      <div className="outstanding-progress-bar" aria-hidden="true">
-        <div
-          className={`outstanding-progress-fill${isOverdue ? ' outstanding-progress-fill--overdue' : ''}`}
-          style={{ width: `${paidPct}%` }}
-        />
-      </div>
-      <div className="outstanding-progress-meta" aria-hidden="true">
-        <span className="outstanding-progress-label outstanding-progress-label--paid">
-          {t.paidColon} {formatAmount(0)}
-        </span>
-        <span className="outstanding-progress-label">
-          {t.dueAmount} {formatAmount(party.outstanding)}
-        </span>
-      </div>
-
-      <div className="outstanding-card-actions">
-        <Button variant="none"
-          className="outstanding-action-remind"
-          onClick={() => onRemind(party.partyId)}
-          disabled={!hasPhone}
-          aria-label={hasPhone
-            ? `${t.sendReminderTo} ${party.partyName}`
-            : `${t.cannotRemindNoPhone} ${party.partyName}`
-          }
-        >
-          <Bell size={14} aria-hidden="true" />
-          {t.remindBtn}
-        </Button>
-        <Button variant="none"
-          className="outstanding-action-pay"
-          onClick={() => onRecordPayment(party.partyId)}
-          aria-label={`${t.recordPaymentFrom} ${party.partyName}`}
-        >
-          <IndianRupee size={14} aria-hidden="true" />
-          {t.pay}
-        </Button>
-      </div>
+      <span
+        className={`outstanding-row-amount tabular-nums outstanding-row-amount--${isReceivable ? 'receivable' : 'payable'}`}
+      >
+        {formatPaise(Math.abs(party.outstanding))}
+      </span>
     </div>
   )
 }

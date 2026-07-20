@@ -5,7 +5,7 @@
  */
 
 import { useState } from 'react'
-import { MessageCircle, Copy, Check } from 'lucide-react'
+import { MessageCircle, Copy, Check, IndianRupee } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
 import { useLanguage } from '@/hooks/useLanguage'
 import { APP_NAME } from '@/config/app.config'
@@ -19,6 +19,9 @@ interface ReminderDrawerProps {
   partyPhone: string
   /** Outstanding amount in paise */
   outstanding: number
+  /** Opens Record Payment for this party. The Receivables row is display-only
+      (mockup #17), so its pay action lives here. */
+  onRecordPayment?: () => void
 }
 
 const INR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' })
@@ -38,7 +41,7 @@ function sanitizePhone(phone: string): string {
   return digits
 }
 
-export function ReminderDrawer({ open, onClose, partyName, partyPhone, outstanding }: ReminderDrawerProps) {
+export function ReminderDrawer({ open, onClose, partyName, partyPhone, outstanding, onRecordPayment }: ReminderDrawerProps) {
   const { t } = useLanguage()
   const [copied, setCopied] = useState(false)
   const message = buildReminderMessage(partyName, outstanding)
@@ -87,6 +90,18 @@ export function ReminderDrawer({ open, onClose, partyName, partyPhone, outstandi
             {copied ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
             {copied ? t.copied : t.copyMessage}
           </Button>
+
+          {onRecordPayment && (
+            <Button
+              type="button"
+              variant="outline" size="md" className="py-0"
+              onClick={onRecordPayment}
+              aria-label={`${t.recordPaymentFrom} ${partyName}`}
+            >
+              <IndianRupee size={16} aria-hidden="true" />
+              {t.recordPayment}
+            </Button>
+          )}
         </div>
       </div>
     </Drawer>

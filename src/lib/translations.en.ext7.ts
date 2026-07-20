@@ -144,6 +144,13 @@ export const enExt7 = {
   dateInfoLabel:             'Date',
   dateRequired:              'Date *',
   daysOverdue:               'days overdue',
+  daysWord:                  'days',
+  dueInLabel:                'Due in',
+  dueTodayLabel:             'Due today',
+  fromCustomersLabel:        'customers',
+  fromLabel:                 'From',
+  overdueByLabel:            'Overdue by',
+  totalOutstandingLabel:     'Total Outstanding',
   deletePaymentDesc:         'This payment will be permanently deleted. Any linked invoice allocations will be removed.',
   deletePaymentTitle:        'Delete Payment?',
   deselectLabel:             'Deselect',
@@ -260,4 +267,7 @@ export const enExt7 = {
 
   // ─── Dashboard — Cash Strip ────────────────────────────────────────────
   todaysCashFlow:            "Today's cash flow",
+
+  // ─── Receivables ───────────────────────────────────────────────────────
+  viewAllCustomers:          'View all customers',
 } as const

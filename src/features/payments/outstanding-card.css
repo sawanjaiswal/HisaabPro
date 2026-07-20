@@ -1,52 +1,73 @@
-/* Outstanding Card — per-party card, progress bar, action buttons
+/* Receivables — total card + party rows (mockup #17)
  *
- * Used by OutstandingCard.tsx.
- * Includes card layout, amount badges, progress track, remind/pay buttons.
+ * Used by OutstandingTotalCard.tsx and OutstandingCard.tsx.
+ * The old per-party card (progress track + inline Remind/Pay buttons) is gone:
+ * the progress bar had no invoiced total behind it, and the actions moved into
+ * the reminder drawer the row already opens.
  */
 
-/* ─── Outstanding card ───────────────────────────────────────────────────── */
+/* ─── Total outstanding card ─────────────────────────────────────────────── */
 
-/* Per-party card: name, amount, days overdue, progress bar, actions */
-.outstanding-card {
-  background: var(--color-gray-0);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-gray-100);
-  padding: var(--space-4);
-  box-shadow: var(--shadow-xs);
+.outstanding-total {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  transition: transform 180ms var(--ease-premium);
+  gap: var(--space-1);
+  padding: var(--space-5) var(--space-4);
+  background: var(--color-hero-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
 }
 
-.outstanding-card:active {
-  transform: scale(0.985);
+.outstanding-total-label {
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--color-success-300);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-.outstanding-card:focus-visible {
-  outline: 2px solid var(--color-primary-500);
-  outline-offset: 2px;
-  border-radius: var(--radius-lg);
+.outstanding-total-amount {
+  font-size: var(--fs-4xl);
+  font-weight: 700;
+  color: var(--color-white-inverse);
+  letter-spacing: -0.02em;
 }
 
-/* Overdue card gets a subtle red left border accent */
-.outstanding-card--overdue {
-  border-left: 3px solid var(--color-error-400);
+.outstanding-total-meta {
+  font-size: var(--fs-sm);
+  color: var(--color-success-300);
 }
 
-/* Top row: avatar + party name + overdue badge + amount */
-.outstanding-card-top {
+/* ─── Party row ──────────────────────────────────────────────────────────── */
+
+.outstanding-row {
   display: flex;
   align-items: center;
   gap: var(--space-3);
+  min-height: 44px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-0);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-gray-100);
+  box-shadow: var(--shadow-xs);
+  transition: transform 180ms var(--ease-premium);
 }
 
-.outstanding-card-info {
+.outstanding-row:active {
+  transform: scale(0.985);
+}
+
+.outstanding-row:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+.outstanding-row-main {
   flex: 1;
   min-width: 0;
 }
 
-.outstanding-card-party {
+.outstanding-row-party {
   font-weight: 600;
   font-size: var(--fs-df);
   color: var(--color-gray-800);
@@ -55,174 +76,50 @@
   text-overflow: ellipsis;
 }
 
-.outstanding-card-days {
+.outstanding-row-status {
   font-size: var(--fs-xs);
   color: var(--color-gray-400);
   margin-top: 1px;
 }
 
-.outstanding-card-days--overdue {
+.outstanding-row-status--overdue {
   color: var(--color-error-600);
   font-weight: 500;
 }
 
-.outstanding-card-amount {
+.outstanding-row-amount {
+  flex-shrink: 0;
   font-weight: 700;
   font-size: var(--fs-lg);
-  color: var(--color-gray-800);
-  flex-shrink: 0;
   letter-spacing: -0.01em;
-  font-variant-numeric: tabular-nums;
 }
 
-.outstanding-card-amount--receivable {
+.outstanding-row-amount--receivable {
   color: var(--color-success-600);
 }
 
-.outstanding-card-amount--payable {
+.outstanding-row-amount--payable {
   color: var(--color-error-600);
-}
-
-/* ─── Progress bar ───────────────────────────────────────────────────────── */
-
-/* Track: shows paid portion (green) vs still due (gray) */
-.outstanding-progress-bar {
-  height: 6px;
-  border-radius: var(--radius-full);
-  background: var(--color-gray-100);
-  overflow: hidden;
-}
-
-.outstanding-progress-fill {
-  height: 100%;
-  border-radius: var(--radius-full);
-  background: var(--color-success-500);
-  transition: width var(--duration-slow) var(--ease-default);
-}
-
-.outstanding-progress-fill--overdue {
-  background: var(--color-error-400);
-}
-
-.outstanding-progress-meta {
-  display: flex;
-  justify-content: space-between;
-  margin-top: var(--space-1);
-}
-
-.outstanding-progress-label {
-  font-size: var(--fs-2xs);
-  color: var(--color-gray-400);
-}
-
-.outstanding-progress-label--paid {
-  color: var(--color-success-600);
-  font-weight: 500;
-}
-
-/* ─── Card action buttons ────────────────────────────────────────────────── */
-
-/* Remind + Pay / Record side by side */
-.outstanding-card-actions {
-  display: flex;
-  gap: var(--space-2);
-}
-
-.outstanding-action-remind {
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-1);
-  height: 44px;
-  padding: 0 var(--space-3);
-  background: transparent;
-  border: 1.5px solid var(--color-gray-200);
-  border-radius: var(--radius-md);
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  font-family: var(--font-primary);
-  color: var(--color-gray-700);
-  cursor: pointer;
-  transition:
-    background var(--duration-fast) var(--ease-default),
-    transform 180ms var(--ease-premium);
-  -webkit-tap-highlight-color: transparent;
-}
-
-.outstanding-action-remind:active {
-  background: var(--color-gray-50);
-  transform: scale(0.97);
-}
-
-.outstanding-action-remind:focus-visible {
-  outline: 2px solid var(--color-primary-500);
-  outline-offset: 2px;
-  border-radius: var(--radius-md);
-}
-
-.outstanding-action-pay {
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-1);
-  height: 44px;
-  padding: 0 var(--space-3);
-  background: var(--color-primary-600);
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  font-family: var(--font-primary);
-  color: var(--color-white-inverse);
-  cursor: pointer;
-  transition:
-    background var(--duration-fast) var(--ease-default),
-    transform 180ms var(--ease-premium);
-  -webkit-tap-highlight-color: transparent;
-}
-
-.outstanding-action-pay:active {
-  background: var(--color-primary-700);
-  transform: scale(0.97);
-}
-
-.outstanding-action-pay:focus-visible {
-  outline: 2px solid var(--color-primary-500);
-  outline-offset: 2px;
-  border-radius: var(--radius-md);
 }
 
 /* ─── Dark Theme ─────────────────────────────────────────────────────────── */
 
-[data-theme="dark"] .outstanding-card {
+[data-theme="dark"] .outstanding-row {
   box-shadow: var(--shadow-card-dark);
 }
 
-[data-theme="dark"] .outstanding-card-party {
+[data-theme="dark"] .outstanding-row-party {
   color: var(--color-gray-900);
 }
 
-[data-theme="dark"] .outstanding-card-days {
+[data-theme="dark"] .outstanding-row-status {
   color: var(--color-gray-500);
-}
-
-[data-theme="dark"] .outstanding-progress-label {
-  color: var(--color-gray-500);
-}
-
-[data-theme="dark"] .outstanding-action-remind {
-  border-color: var(--color-gray-300);
-  color: var(--color-gray-700);
 }
 
 /* ─── Reduced Motion ─────────────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
-  .outstanding-card:active,
-  .outstanding-action-remind:active,
-  .outstanding-action-pay:active {
+  .outstanding-row:active {
     transform: none !important;
   }
 }

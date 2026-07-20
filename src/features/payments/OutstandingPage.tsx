@@ -1,6 +1,6 @@
 /** Outstanding — receivable/payable summary, aging chart, party list. */
 
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Banknote } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -8,15 +8,16 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { Button } from '@/components/ui/Button'
 import { BulkActionBar, type BulkAction } from '@/components/ui/BulkActionBar'
 import { useBulkSelect } from '@/hooks/useBulkSelect'
 import { useToast } from '@/hooks/useToast'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { useOutstanding } from './useOutstanding'
-import { OutstandingSummaryBar } from './components/OutstandingSummaryBar'
+import { OutstandingTotalCard } from './components/OutstandingTotalCard'
 import { OutstandingFilterBar } from './components/OutstandingFilterBar'
-import { OutstandingCard } from './components/OutstandingCard'
+import { OutstandingPartyList } from './components/OutstandingPartyList'
 import { OutstandingSkeleton } from './components/OutstandingSkeleton'
 import { ReminderDrawer } from './components/ReminderDrawer'
 import { AgingChart } from './components/AgingChart'
@@ -26,8 +27,6 @@ import './outstanding-page.css'
 import './outstanding-card.css'
 import './outstanding-filter.css'
 import './outstanding-skeleton.css'
-
-const LONG_PRESS_MS = 500
 
 export default function OutstandingPage() {
   const navigate = useNavigate()
@@ -70,39 +69,6 @@ export default function OutstandingPage() {
     navigate(`${ROUTES.PAYMENT_NEW}?type=PAYMENT_IN&partyId=${partyId}`)
   }
 
-  // Long-press → enter bulk mode (receivable only)
-  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const didLongPressRef = useRef(false)
-
-  const startLongPress = (partyId: string, party: OutstandingParty) => {
-    if (party.type !== 'RECEIVABLE') return
-    didLongPressRef.current = false
-    longPressTimer.current = setTimeout(() => {
-      didLongPressRef.current = true
-      bulk.toggle(partyId)
-    }, LONG_PRESS_MS)
-  }
-
-  const cancelLongPress = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current)
-      longPressTimer.current = null
-    }
-  }
-
-  const handleCardClick = (partyId: string, party: OutstandingParty) => {
-    if (didLongPressRef.current) {
-      didLongPressRef.current = false
-      return
-    }
-    if (bulk.isActive) {
-      if (party.type === 'RECEIVABLE') bulk.toggle(partyId)
-      return
-    }
-    // Default: open the per-party reminder drawer
-    handleRemind(partyId)
-  }
-
   const selectableIds = (data?.parties ?? [])
     .filter((p) => p.type === 'RECEIVABLE')
     .map((p) => p.partyId)
@@ -128,6 +94,16 @@ export default function OutstandingPage() {
     }
   }
 
+  const totals = data?.totals
+  const totalPaise =
+    filters.type === 'PAYABLE' ? (totals?.totalPayable ?? 0)
+    : filters.type === 'RECEIVABLE' ? (totals?.totalReceivable ?? 0)
+    : (totals?.net ?? 0)
+  const totalLabel =
+    filters.type === 'PAYABLE' ? t.payable
+    : filters.type === 'RECEIVABLE' ? t.totalOutstandingLabel
+    : t.net
+
   const bulkActions: BulkAction[] = [
     {
       id: 'remind',
@@ -145,8 +121,14 @@ export default function OutstandingPage() {
       />
 
       <PageContainer variant="list" className="space-y-6">
-        {/* Summary cards */}
-        {status === 'success' && data && <OutstandingSummaryBar totals={data.totals} />}
+        {/* Total outstanding for the direction currently filtered (mockup #17) */}
+        {status === 'success' && data && (
+          <OutstandingTotalCard
+            label={totalLabel}
+            totalPaise={totalPaise}
+            partyCount={data.pagination.total}
+          />
+        )}
 
         {/* Aging chart */}
         {status === 'success' && data && data.aging && (
@@ -188,39 +170,27 @@ export default function OutstandingPage() {
 
         {/* Party list */}
         {status === 'success' && data && data.parties.length > 0 && (
-          <div className="outstanding-list stagger-list" role="list" aria-label={t.outstandingPartiesList}>
-            {data.parties.map((party) => {
-              const selected = bulk.isSelected(party.partyId)
-              const isReceivable = party.type === 'RECEIVABLE'
-              return (
-                <div
-                  key={party.partyId}
-                  role="listitem"
-                  className={selected ? 'bulk-selected outstanding-list-item--selected' : 'outstanding-list-item'}
-                  onPointerDown={() => startLongPress(party.partyId, party)}
-                  onPointerUp={cancelLongPress}
-                  onPointerCancel={cancelLongPress}
-                  onPointerLeave={cancelLongPress}
-                  onClick={(e) => {
-                    // Only intercept clicks on the wrapper itself, not on inner action buttons
-                    if (bulk.isActive && isReceivable) {
-                      e.stopPropagation()
-                      handleCardClick(party.partyId, party)
-                    }
-                  }}
-                  aria-selected={selected || undefined}
-                  style={bulk.isActive && isReceivable ? { cursor: 'pointer' } : undefined}
-                >
-                  <OutstandingCard
-                    party={party}
-                    onRemind={handleRemind}
-                    onRecordPayment={handleRecordPayment}
-                  />
-                </div>
-              )
-            })}
-          </div>
+          <OutstandingPartyList
+            parties={data.parties}
+            isBulkActive={bulk.isActive}
+            isSelected={bulk.isSelected}
+            onToggleSelect={bulk.toggle}
+            onOpenParty={handleRemind}
+          />
         )}
+
+        {/* Mockup #17 footer — the full party book, not just the ones who owe */}
+        {status === 'success' && data && data.parties.length > 0 && (
+          <Button
+            variant="outline"
+            size="md"
+            className="w-full"
+            onClick={() => navigate(ROUTES.PARTIES)}
+          >
+            {t.viewAllCustomers}
+          </Button>
+        )}
+
         {/* Reminder drawer */}
         <ReminderDrawer
           open={reminderTarget !== null}
@@ -228,6 +198,9 @@ export default function OutstandingPage() {
           partyName={reminderTarget?.partyName ?? ''}
           partyPhone={reminderTarget?.partyPhone ?? ''}
           outstanding={reminderTarget?.outstanding ?? 0}
+          onRecordPayment={
+            reminderTarget ? () => handleRecordPayment(reminderTarget.partyId) : undefined
+          }
         />
       </PageContainer>
 
