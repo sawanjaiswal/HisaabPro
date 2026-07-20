@@ -221,12 +221,13 @@ Legend: **DONE** = shipped in `891528a` · **EXISTS** = current page to restyle 
   - [x] #46 Estimate details — `6b4af64`
   - [x] #43 Draft invoices — `1fea3d5`
   - [x] #47 Customer statement — `fe048f4`
-- [ ] Wave 5 — reports (6) — **3/6 done**
+- [ ] Wave 5 — reports (6) — **4/6 done**
   - [x] #14 Reports home — `e6a9f42` (+ favourites, `src/lib/prefs-store.ts`)
   - [x] #15/#68 Sales + Purchase report — `91257b0` (+ real trend aggregate, `DonutChart`)
   - [x] #16 Profit & Loss — `81e0c1a` (+ real trend aggregate, fixed a load crash
         from a fictional client type — `.claude/fix-trace-pl-contract.md`)
-  - [ ] #69 Cash flow — `src/features/reports/CashFlowPage.tsx`
+  - [x] #69 Cash flow — `7084996` (+ direct-method aggregate `cash-flow-direct.ts`,
+        fixed the same fictional-client-type crash as #16)
   - [ ] #31 GST report — `src/features/reports/GstReturnsPage.tsx`
   - [ ] #66 Customer balance summary — `src/features/reports/AgingReportPage.tsx`
 - [ ] Wave 6 — people/HR (6) — **0/6**
