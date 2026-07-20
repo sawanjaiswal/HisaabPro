@@ -26,7 +26,6 @@ import { usePresence } from '@/features/collaboration/usePresence'
 import { PresenceAvatars } from '@/features/collaboration/PresenceAvatars'
 import { ConflictDialog } from '@/features/collaboration/ConflictDialog'
 import type { DocumentFormData } from '../invoice.types'
-import '../invoice-form-redesign.css'
 
 interface EditInvoiceFormProps {
   invoiceId: string
@@ -139,7 +138,7 @@ export function EditInvoiceForm({
 
         <Accordion
           type="multiple"
-          className="invoice-form-accordion"
+          className="form-accordion"
           value={openSections}
           onValueChange={setOpenSections}
         >

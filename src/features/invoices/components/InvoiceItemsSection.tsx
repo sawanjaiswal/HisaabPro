@@ -11,7 +11,7 @@ import { LineItemEditor } from './LineItemEditor'
 import { useLinePriceMeta } from './useLinePriceMeta'
 import { useBogoPermission } from '../useBogoPermission'
 import { PartySearchInput } from './PartySearchInput'
-import { InvoiceFormSection } from './InvoiceFormSection'
+import { FormSection } from '@/components/ui/FormSection'
 import { ProductSearchInput } from './ProductSearchInput'
 import { TaxPickerColumn } from './TaxPickerColumn'
 import { HsnTypeahead } from './HsnTypeahead'
@@ -102,7 +102,7 @@ export function InvoiceItemsSection({
 
   return (
     <div className="line-items-section py-0 space-y-6">
-      <InvoiceFormSection title={t.customer}>
+      <FormSection title={t.customer}>
         <PartySearchInput value={partyId} onChange={onPartyChange} error={errors.partyId} />
 
         {partyId && (
@@ -117,14 +117,14 @@ export function InvoiceItemsSection({
             onReset={resetOverride}
           />
         )}
-      </InvoiceFormSection>
+      </FormSection>
 
-      <InvoiceFormSection
+      <FormSection
         title={t.sectionItems}
         action={
           <Button variant="none"
             type="button"
-            className="invoice-form-section-action"
+            className="form-section-action"
             onClick={onToggleProductSearch}
             aria-label={showProductSearch ? t.hideProductSearch : t.addLineItemLabel}
             aria-expanded={showProductSearch}
@@ -205,7 +205,7 @@ export function InvoiceItemsSection({
           <ProductSearchInput onSelect={handleProductSelect} addedProductIds={addedProductIds} />
         </div>
       )}
-      </InvoiceFormSection>
+      </FormSection>
     </div>
   )
 }

@@ -35,7 +35,6 @@ import {
   AccordionContent,
 } from '@/components/ui/accordion'
 import './invoice-party-search.css'
-import './invoice-form-redesign.css'
 import './invoice-line-items.css'
 import './invoice-product-search.css'
 import './invoice-summary.css'
@@ -182,7 +181,7 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
 
         <Accordion
           type="multiple"
-          className="invoice-form-accordion"
+          className="form-accordion"
           value={openSections}
           onValueChange={setOpenSections}
         >

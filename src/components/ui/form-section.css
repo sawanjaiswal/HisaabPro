@@ -1,15 +1,16 @@
-/** Create/Edit Invoice — single-scroll labelled sections (mockup #2)
+/** FormSection — labelled section inside a single-scroll form.
  *
- * Replaces the pill-tab form nav. Tokens only.
+ * Also styles the collapsible optional sections (`.form-accordion`) that
+ * replaced pill-tab form navigation. Tokens only.
  */
 
-.invoice-form-section {
+.form-section {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
 }
 
-.invoice-form-section-head {
+.form-section-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -17,15 +18,15 @@
   min-height: 2rem;
 }
 
-.invoice-form-section-title {
+.form-section-title {
   font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--text-secondary);
   letter-spacing: 0.01em;
 }
 
-/* "+ Add Item" — a text action, emerald because it is a primary affordance. */
-.invoice-form-section-action {
+/* Text action in a section header — emerald because it is a primary affordance. */
+.form-section-action {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
@@ -38,36 +39,36 @@
   border-radius: var(--radius-sm);
 }
 
-.invoice-form-section-action:active {
+.form-section-action:active {
   background: var(--color-primary-50);
 }
 
-.invoice-form-section-body {
+.form-section-body {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
 }
 
-/* ── Collapsible optional sections (Details / Charges) ─────────────────── */
+/* ── Collapsible optional sections ─────────────────────────────────────── */
 
-.invoice-form-accordion {
+.form-accordion {
   background: var(--color-surface);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-sm);
   padding-inline: var(--space-4);
 }
 
-.invoice-form-accordion [data-slot='accordion-trigger'] {
+.form-accordion [data-slot='accordion-trigger'] {
   min-height: 44px;
   font-size: var(--fs-df);
   font-weight: 600;
   color: var(--text-primary);
 }
 
-.invoice-form-accordion [data-slot='accordion-trigger']:hover {
+.form-accordion [data-slot='accordion-trigger']:hover {
   text-decoration: none;
 }
 
-.invoice-form-accordion [data-slot='accordion-item'] {
+.form-accordion [data-slot='accordion-item'] {
   border-color: var(--color-border);
 }
