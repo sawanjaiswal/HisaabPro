@@ -21,19 +21,9 @@ vi.mock('../middleware/idempotency.js', () => ({
 vi.mock('../middleware/replay-protection.js', () => ({
   replayProtection: (_req: unknown, _res: unknown, next: () => void) => next(),
 }))
-vi.mock('../middleware/rate-limit.js', () => {
-  const passthrough = (_req: unknown, _res: unknown, next: () => void) => next()
-  return {
-    createRateLimiter: () => passthrough,
-    apiRateLimiter: passthrough,
-    authRateLimiter: passthrough,
-    otpRateLimiter: passthrough,
-    sensitiveMutationLimiter: passthrough,
-    couponValidateRateLimiter: passthrough,
-    couponIpRateLimiter: passthrough,
-    devLoginRateLimiter: passthrough,
-    userMutationLimiter: passthrough,
-  }
+vi.mock('../middleware/rate-limit.js', async (importOriginal) => {
+  const { rateLimitPassthrough } = await import('./helpers.js')
+  return rateLimitPassthrough(importOriginal)
 })
 
 // ── Mock service layer (we test route wiring, not business logic) ───────────

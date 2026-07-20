@@ -14,19 +14,9 @@ import {
 } from './helpers.js'
 
 // Mock rate-limit middleware — passthrough for tests
-vi.mock('../middleware/rate-limit.js', () => {
-  const pass = (_req: unknown, _res: unknown, next: () => void) => next()
-  return {
-    createRateLimiter: () => pass,
-    authRateLimiter: pass,
-    otpRateLimiter: pass,
-    apiRateLimiter: pass,
-    sensitiveMutationLimiter: pass,
-    couponValidateRateLimiter: pass,
-    couponIpRateLimiter: pass,
-    devLoginRateLimiter: pass,
-    userMutationLimiter: pass,
-  }
+vi.mock('../middleware/rate-limit.js', async (importOriginal) => {
+  const { rateLimitPassthrough } = await import('./helpers.js')
+  return rateLimitPassthrough(importOriginal)
 })
 
 // Mock the party service — all business logic is tested separately

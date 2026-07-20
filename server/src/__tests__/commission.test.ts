@@ -35,19 +35,9 @@ import {
 } from '../services/pos/pos-commission-symmetry.js'
 import type { CommissionRuleDTO } from '../services/commission/commission-rule.service.js'
 
-vi.mock('../middleware/rate-limit.js', () => {
-  const pass = (_req: unknown, _res: unknown, next: () => void) => next()
-  return {
-    createRateLimiter: () => pass,
-    authRateLimiter: pass,
-    otpRateLimiter: pass,
-    apiRateLimiter: pass,
-    sensitiveMutationLimiter: pass,
-    couponValidateRateLimiter: pass,
-    couponIpRateLimiter: pass,
-    devLoginRateLimiter: pass,
-    userMutationLimiter: pass,
-  }
+vi.mock('../middleware/rate-limit.js', async (importOriginal) => {
+  const { rateLimitPassthrough } = await import('./helpers.js')
+  return rateLimitPassthrough(importOriginal)
 })
 
 const app = createApp()

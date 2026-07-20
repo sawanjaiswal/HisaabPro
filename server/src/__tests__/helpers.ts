@@ -159,3 +159,30 @@ export function resetMocks() {
 export function getMockPrisma() {
   return mockPrisma
 }
+
+/** Passthrough mock factory for `middleware/rate-limit.js`.
+ *
+ * Pass it straight to vi.mock — the path stays per-file (test depth varies),
+ * the mock surface does not:
+ *
+ *   vi.mock('../middleware/rate-limit.js', rateLimitPassthrough)
+ *
+ * The export list is derived from the real module rather than hand-listed, so
+ * a limiter added to rate-limit/index.ts is mocked automatically. Hand-written
+ * literals silently rot instead: every suite that mounts the affected router
+ * dies at import with "No <name> export is defined on the mock", which is how
+ * switchBusinessRateLimiter took out 8 files at once. */
+export async function rateLimitPassthrough(
+  importOriginal: () => Promise<Record<string, unknown>>
+) {
+  const actual = await importOriginal()
+  const pass = (_req: unknown, _res: unknown, next: () => void) => next()
+  // createRateLimiter is a factory (returns middleware); every other export is
+  // already-constructed middleware.
+  return Object.fromEntries(
+    Object.keys(actual).map((name) => [
+      name,
+      name === 'createRateLimiter' ? () => pass : pass,
+    ])
+  )
+}

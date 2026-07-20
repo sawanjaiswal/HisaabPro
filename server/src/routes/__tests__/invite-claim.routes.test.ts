@@ -28,14 +28,9 @@ vi.mock('../../middleware/public/rate-limit.js', () => ({
   WINDOW_MS: 60_000,
 }))
 
-vi.mock('../../middleware/rate-limit.js', () => {
-  const pass = (_req: unknown, _res: unknown, next: () => void) => next()
-  return {
-    apiRateLimiter: pass, authRateLimiter: pass, devLoginRateLimiter: pass,
-    otpRateLimiter: pass, sensitiveMutationLimiter: pass, couponValidateRateLimiter: pass,
-    couponIpRateLimiter: pass, createRateLimiter: () => pass, userMutationLimiter: pass,
-    sensitiveRateLimiter: pass,
-  }
+vi.mock('../../middleware/rate-limit.js', async (importOriginal) => {
+  const { rateLimitPassthrough } = await import('../../__tests__/helpers.js')
+  return rateLimitPassthrough(importOriginal)
 })
 
 vi.mock('../../lib/token-blacklist.js', () => ({
