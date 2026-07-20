@@ -270,4 +270,11 @@ export const enExt7 = {
 
   // ─── Receivables ───────────────────────────────────────────────────────
   viewAllCustomers:          'View all customers',
+
+  // ─── Invoice Preview (#3) ──────────────────────────────────────────────
+  saveAndSend:               'Save & Send',
+  itemsLabel:                'Items',
+  itemLabel:                 'Item',
+  previewInvoice:            'Preview Invoice',
+  amountInWordsLabel:        'Amount in words',
 } as const

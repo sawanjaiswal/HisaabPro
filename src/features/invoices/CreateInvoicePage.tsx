@@ -21,19 +21,12 @@ import { getCreateTitle } from '@/features/sales/sales.utils'
 import type { DocumentType } from './invoice.types'
 import { InvoiceTotalsBar } from './components/InvoiceTotalsBar'
 import { InvoiceItemsSection } from './components/InvoiceItemsSection'
-import { InvoiceDetailsSection } from './components/InvoiceDetailsSection'
-import { InvoiceCustomFieldsSection } from './components/InvoiceCustomFieldsSection'
-import { InvoiceChargesSection } from './components/InvoiceChargesSection'
 import { GstInvoiceHeader } from './components/GstInvoiceHeader'
 import { UntaggedTaxDialog } from './components/UntaggedTaxDialog'
+import { InvoicePreviewDrawer } from './components/InvoicePreviewDrawer'
+import { InvoiceOptionalSections } from './components/InvoiceOptionalSections'
 import { StockShortageBanner } from './components/StockShortageBanner'
 import { ExpiredBatchBanner } from '@/features/inventory/components/ExpiredBatchBanner'
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from '@/components/ui/accordion'
 import './invoice-party-search.css'
 import './invoice-line-items.css'
 import './invoice-product-search.css'
@@ -80,6 +73,8 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
   const { compositionScheme } = useGstGate()
   const [productNames, setProductNames] = useState<Record<string, string>>({})
   const [showProductSearch, setShowProductSearch] = useState(false)
+  const [partyName, setPartyName] = useState('')
+  const [showPreview, setShowPreview] = useState(false)
   /** Optional sections start collapsed to match the mockup's clean scroll, but
    *  charges open on their own when the document already carries some. */
   const [openSections, setOpenSections] = useState<string[]>(
@@ -88,8 +83,10 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
 
   useBillScanPrefill({ addLineItem, updateField, setProductNames })
 
-  const handlePartyChange = useCallback((id: string, _name: string) => {
+  const handlePartyChange = useCallback((id: string, name: string) => {
     updateField('partyId', id)
+    // Kept for the preview's "Bill To" block — the form itself only needs the id.
+    setPartyName(name)
   }, [updateField])
 
   const handleProductSelect = useCallback((productId: string, ratePaise: number, productName: string) => {
@@ -179,45 +176,15 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
           onToggleProductSearch={toggleProductSearch}
         />
 
-        <Accordion
-          type="multiple"
-          className="form-accordion"
-          value={openSections}
-          onValueChange={setOpenSections}
-        >
-          <AccordionItem value="details">
-            <AccordionTrigger>{t.sectionDetails}</AccordionTrigger>
-            <AccordionContent className="space-y-6">
-              <InvoiceDetailsSection
-                documentDate={form.documentDate}
-                paymentTerms={form.paymentTerms}
-                vehicleNumber={form.vehicleNumber ?? ''}
-                notes={form.notes ?? ''}
-                termsAndConditions={form.termsAndConditions ?? ''}
-                includeSignature={form.includeSignature}
-                onUpdateField={updateField}
-              />
-              <InvoiceCustomFieldsSection
-                documentType={form.type}
-                values={(form.customFieldValues ?? {}) as Record<string, unknown>}
-                errors={{}}
-                onChange={(v) => updateField('customFieldValues', v)}
-              />
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="charges">
-            <AccordionTrigger>{t.chargesLabel}</AccordionTrigger>
-            <AccordionContent>
-              <InvoiceChargesSection
-                charges={form.additionalCharges}
-                onUpdateCharge={updateCharge}
-                onRemoveCharge={removeCharge}
-                onAddCharge={addCharge}
-              />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+        <InvoiceOptionalSections
+          form={form}
+          openSections={openSections}
+          onOpenSectionsChange={setOpenSections}
+          onUpdateField={updateField}
+          onAddCharge={addCharge}
+          onUpdateCharge={updateCharge}
+          onRemoveCharge={removeCharge}
+        />
       </PageContainer>
 
       <InvoiceTotalsBar
@@ -232,6 +199,20 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
         onSave={handleSubmit}
         onSaveDraft={handleSaveDraft}
         showProfit={false}
+        onPreview={() => setShowPreview(true)}
+      />
+
+      <InvoicePreviewDrawer
+        open={showPreview}
+        onClose={() => setShowPreview(false)}
+        onConfirm={handleSubmit}
+        isSubmitting={isSubmitting}
+        partyName={partyName}
+        documentDate={form.documentDate}
+        lineItems={form.lineItems}
+        productNames={productNames}
+        totals={totals}
+        notes={form.notes}
       />
 
       {showUntaggedDialog && (

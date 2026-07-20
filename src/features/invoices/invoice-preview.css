@@ -1,0 +1,174 @@
+/* Invoice Preview (mockup #3) — the paper-document skin
+ *
+ * Used by InvoicePreviewDrawer.tsx. Deliberately flatter than the rest of the
+ * app: this pane is a facsimile of the printed invoice, so it uses ruled rows
+ * and a plain white sheet rather than the card-and-shadow chrome.
+ */
+
+.invoice-preview-doc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-4);
+  background: var(--color-gray-0);
+  border-radius: var(--radius-lg);
+}
+
+/* ─── Brand row ──────────────────────────────────────────────────────────── */
+
+.invoice-preview-brand {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.invoice-preview-business {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--color-primary-600);
+  letter-spacing: -0.01em;
+}
+
+.invoice-preview-doctype {
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.invoice-preview-meta {
+  font-size: var(--fs-sm);
+  color: var(--color-gray-500);
+}
+
+/* ─── Bill-to block ──────────────────────────────────────────────────────── */
+
+.invoice-preview-billto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.invoice-preview-billto-label {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.invoice-preview-billto-name {
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+/* ─── Items table ────────────────────────────────────────────────────────── */
+
+.invoice-preview-items {
+  display: flex;
+  flex-direction: column;
+}
+
+.invoice-preview-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 3rem 4.5rem 5.5rem;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  font-size: var(--fs-sm);
+  color: var(--color-gray-700);
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.invoice-preview-row--head {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom-color: var(--color-gray-200);
+}
+
+.invoice-preview-item-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─── Totals ─────────────────────────────────────────────────────────────── */
+
+.invoice-preview-totals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.invoice-preview-total-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--fs-sm);
+  color: var(--color-gray-600);
+}
+
+.invoice-preview-total-row--grand {
+  margin-top: var(--space-1);
+  padding: var(--space-3);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-df);
+  font-weight: 700;
+  color: var(--color-gray-800);
+}
+
+/* ─── Amount in words / notes ────────────────────────────────────────────── */
+
+.invoice-preview-words {
+  font-size: var(--fs-sm);
+  color: var(--color-gray-600);
+}
+
+.invoice-preview-words-label {
+  display: block;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.invoice-preview-notes {
+  font-size: var(--fs-sm);
+  color: var(--color-gray-500);
+  white-space: pre-wrap;
+}
+
+/* ─── Footer actions ─────────────────────────────────────────────────────── */
+
+.invoice-preview-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.invoice-preview-actions > * {
+  width: 100%;
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .invoice-preview-doc {
+  background: var(--color-gray-50);
+}
+
+[data-theme="dark"] .invoice-preview-billto-name,
+[data-theme="dark"] .invoice-preview-total-row--grand {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .invoice-preview-total-row--grand {
+  background: var(--color-gray-100);
+}

@@ -17,6 +17,9 @@ interface InvoiceTotalsBarProps {
   onSave: () => void
   onSaveDraft: () => void
   showProfit: boolean
+  /** Mockup #2 ends in Preview, not Save — when set, the primary button opens
+   *  the preview and the real save runs from there. */
+  onPreview?: () => void
 }
 
 export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
@@ -31,6 +34,7 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
   onSave,
   onSaveDraft,
   showProfit,
+  onPreview,
 }) => {
   const { t } = useLanguage()
   const isProfitPositive = totalProfit >= 0
@@ -97,11 +101,13 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
         <Button
           type="button"
           variant="primary" size="md"
-          onClick={onSave}
+          onClick={onPreview ?? onSave}
           disabled={isSubmitting}
-          aria-label={isSubmitting ? t.savingInvoice : t.saveInvoice}
+          aria-label={
+            onPreview ? t.previewInvoice : isSubmitting ? t.savingInvoice : t.saveInvoice
+          }
         >
-          {isSubmitting ? t.saving : t.save}
+          {onPreview ? t.previewInvoice : isSubmitting ? t.saving : t.save}
         </Button>
       </div>
     </div>

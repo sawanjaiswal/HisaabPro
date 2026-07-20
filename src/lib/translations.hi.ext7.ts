@@ -233,4 +233,11 @@ export const hiExt7 = {
 
   // ─── Receivables ───────────────────────────────────────────────────────
   viewAllCustomers:          'सभी ग्राहक देखें',
+
+  // ─── Invoice Preview (#3) ──────────────────────────────────────────────
+  saveAndSend:               'सेव करें और भेजें',
+  itemsLabel:                'आइटम',
+  itemLabel:                 'आइटम',
+  previewInvoice:            'बिल प्रीव्यू करें',
+  amountInWordsLabel:        'शब्दों में राशि',
 } as const
