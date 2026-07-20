@@ -306,4 +306,10 @@ export const hiExt7 = {
   deleteExpenseTitle: 'यह खर्च हटाएं?',
   deleteExpenseDesc: 'यह खर्च आपके रिकॉर्ड से हट जाएगा। इसे वापस नहीं लाया जा सकता।',
   paidToLabel: 'किसे दिया',
+  sentStatus: 'भेजा गया',
+  acceptedStatus: 'स्वीकृत',
+  convertedStatus: 'बदला गया',
+  expiredStatus: 'समाप्त',
+  draftStatus: 'ड्राफ़्ट',
+  searchEstimatesPlaceholder: 'पार्टी या नंबर से खोजें',
 } as const

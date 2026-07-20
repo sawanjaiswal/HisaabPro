@@ -1,28 +1,41 @@
-/** Sales pipeline — shared chassis for EST / SO / DC list pages.
+/** Sales pipeline — shared chassis for EST / SO / DC list pages (mockup #45).
  *
- * Receives `type` prop; thin wrapper pages hard-code the type.
- * 4 UI states: loading / empty / error / success.
+ * Archetype A: search → view-status chips → tinted-icon rows → totals footer.
+ * Thin wrapper pages hard-code the type. 4 UI states.
+ *
+ * Chips read Sent / Accepted / Expired per the mockup; the translation from
+ * stored statuses lives in sales-status.utils so nothing here invents state.
+ * "Expired" cannot be filtered server-side (it is derived from dueDate), so
+ * that one chip narrows the fetched page in memory.
  */
 
-import React from 'react'
-import { Button } from '@/components/ui/Button'
+import React, { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus } from 'lucide-react'
+import { Plus, Search } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { FilterChips, type FilterChipOption } from '@/components/ui/FilterChips'
+import { ListTotalsFooter } from '@/components/ui/ListTotalsFooter'
 import { useLanguage } from '@/hooks/useLanguage'
+import { groupByPeriod, toPeriodTotalsSeries } from '@/lib/period-groups.utils'
 import { useDocumentList } from './useDocumentList'
 import { DocumentListSkeleton } from './components/DocumentListSkeleton'
 import { DocumentEmptyState } from './components/DocumentEmptyState'
 import { DocumentListCard } from './components/DocumentListCard'
-import { DocumentListFilterBar } from './components/DocumentListFilterBar'
-import { SALES_CREATE_LABELS, SALES_DETAIL_ROUTES } from './sales.constants'
+import { SALES_CREATE_LABELS, SALES_CREATE_ROUTES, SALES_DETAIL_ROUTES } from './sales.constants'
+import {
+  VIEW_FILTER_TO_STATUS,
+  isExpired,
+  acceptedLabelFor,
+  type DocumentViewFilter,
+  type DocumentViewStatus,
+} from './sales-status.utils'
 import type { SalesDocumentType } from './sales.types'
-import '../invoices/invoice-filter-bar.css'
-import '../invoices/invoice-list-items.css'
-import '../invoices/invoice-doc-badges.css'
+import './sales-doc-list.css'
 
 interface DocumentListPageProps {
   type: SalesDocumentType
@@ -41,29 +54,45 @@ export const DocumentListPage: React.FC<DocumentListPageProps> = ({
 }) => {
   const navigate = useNavigate()
   const { t } = useLanguage()
+  const { data, status, filterState, setSearch, setStatusFilter, refresh } = useDocumentList({ type })
+  const [view, setView] = useState<DocumentViewFilter>('ALL')
 
-  const {
-    data,
-    status,
-    filterState,
-    setSearch,
-    setStatusFilter,
-    refresh,
-  } = useDocumentList({ type })
+  const createRoute = SALES_CREATE_ROUTES[type]
+  const acceptedLabel = acceptedLabelFor(type, { accepted: t.acceptedStatus, converted: t.convertedStatus })
 
-  const createRoute = (() => {
-    switch (type) {
-      case 'ESTIMATE':         return '/sales/estimates/new'
-      case 'SALE_ORDER':       return '/sales/orders/new'
-      case 'DELIVERY_CHALLAN': return '/sales/challans/new'
-    }
-  })()
-
-  const handleCardClick = (id: string) => {
-    navigate(SALES_DETAIL_ROUTES[type](id))
+  const statusLabels: Record<DocumentViewStatus, string> = {
+    DRAFT: t.draftStatus,
+    SENT: t.sentStatus,
+    ACCEPTED: acceptedLabel,
+    EXPIRED: t.expiredStatus,
   }
 
-  const documents = data?.documents ?? []
+  const chips: FilterChipOption<DocumentViewFilter>[] = [
+    { value: 'ALL', label: t.all },
+    { value: 'SENT', label: t.sentStatus },
+    { value: 'ACCEPTED', label: acceptedLabel },
+    { value: 'EXPIRED', label: t.expiredStatus },
+  ]
+
+  const handleViewChange = (next: DocumentViewFilter) => {
+    setView(next)
+    setStatusFilter(VIEW_FILTER_TO_STATUS[next] ?? 'ALL')
+  }
+
+  const documents = useMemo(() => {
+    const all = data?.documents ?? []
+    return view === 'EXPIRED' ? all.filter((doc) => isExpired(doc)) : all
+  }, [data, view])
+
+  const groups = useMemo(
+    () => groupByPeriod(documents, (d) => d.documentDate, (d) => d.grandTotal, 'month'),
+    [documents],
+  )
+  const series = useMemo(() => toPeriodTotalsSeries(groups), [groups])
+  const pageTotal = useMemo(
+    () => documents.reduce((sum, doc) => sum + doc.grandTotal, 0),
+    [documents],
+  )
 
   const content = (
     <>
@@ -77,20 +106,25 @@ export const DocumentListPage: React.FC<DocumentListPageProps> = ({
               onClick={() => navigate(createRoute)}
               aria-label={SALES_CREATE_LABELS[type]}
             >
-              <Plus size={18} aria-hidden="true" />
-              <span className="hidden sm:inline">{SALES_CREATE_LABELS[type]}</span>
+              <Plus size={20} aria-hidden="true" />
             </Button>
           }
         />
       )}
 
-      <PageContainer variant="list" className="space-y-4">
-        <DocumentListFilterBar
-          search={filterState.search}
-          activeStatus={filterState.status}
-          onSearchChange={setSearch}
-          onStatusChange={setStatusFilter}
-        />
+      <PageContainer variant="list" className="space-y-6">
+        <div className="search-bar">
+          <Search size={18} aria-hidden="true" />
+          <Input
+            type="search"
+            value={filterState.search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t.searchEstimatesPlaceholder}
+            aria-label={pageTitle}
+          />
+        </div>
+
+        <FilterChips options={chips} value={view} onChange={handleViewChange} label={pageTitle} />
 
         {status === 'loading' && <DocumentListSkeleton />}
 
@@ -98,53 +132,38 @@ export const DocumentListPage: React.FC<DocumentListPageProps> = ({
           <ErrorState
             title={
               type === 'ESTIMATE'
-                ? t.couldNotLoadEstimates ?? 'Could not load estimates'
+                ? t.couldNotLoadEstimates
                 : type === 'SALE_ORDER'
-                  ? t.couldNotLoadSaleOrders ?? 'Could not load sale orders'
-                  : t.couldNotLoadChallans ?? 'Could not load delivery challans'
+                  ? t.couldNotLoadSaleOrders
+                  : t.couldNotLoadChallans
             }
-            message={t.checkConnectionRetry ?? 'Check your connection and try again.'}
+            message={t.checkConnectionRetry}
             onRetry={refresh}
           />
         )}
 
         {status === 'success' && documents.length === 0 && (
-          <DocumentEmptyState
-            type={type}
-            onCreateClick={() => navigate(createRoute)}
-          />
+          <DocumentEmptyState type={type} onCreateClick={() => navigate(createRoute)} />
         )}
 
         {status === 'success' && documents.length > 0 && (
           <>
-            <div
-              role="status"
-              aria-live="polite"
-              className="sr-only"
-            >
-              {documents.length} {documents.length === 1 ? 'document' : 'documents'}
-            </div>
-            <div className="invoice-list stagger-list" role="list" aria-label={pageTitle}>
+            <div className="sales-doc-list" role="list" aria-label={pageTitle}>
               {documents.map((doc) => (
-                <div key={doc.id} className="invoice-list-row" role="listitem">
-                  <DocumentListCard document={doc} onClick={handleCardClick} />
-                  <div className="divider" aria-hidden="true" />
+                <div key={doc.id} role="listitem">
+                  <DocumentListCard
+                    document={doc}
+                    onClick={(id) => navigate(SALES_DETAIL_ROUTES[type](id))}
+                    statusLabels={statusLabels}
+                  />
                 </div>
               ))}
             </div>
+
+            <ListTotalsFooter label={pageTitle} totalPaise={pageTotal} series={series} />
           </>
         )}
       </PageContainer>
-
-      {status === 'success' && documents.length > 0 && (
-        <Button variant="none"
-          className="fab"
-          onClick={() => navigate(createRoute)}
-          aria-label={SALES_CREATE_LABELS[type]}
-        >
-          <Plus size={24} aria-hidden="true" />
-        </Button>
-      )}
     </>
   )
 

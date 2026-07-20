@@ -1,0 +1,125 @@
+/* ============================================================
+   Sales pipeline list rows (mockup #45) — estimate / sale order /
+   delivery challan. Tokens only; dark mode via tokens-dark.css.
+   ============================================================ */
+
+.sales-doc-row {
+  /* Rendered as <Button variant="none"> so the whole row is tappable —
+     reset the button chrome back to a card. */
+  width: 100%;
+  border: none;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  background: var(--color-gray-0);
+  border-radius: var(--radius-xl);
+  padding: var(--space-3) var(--space-4);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+}
+
+.sales-doc-row:active {
+  transform: scale(0.99);
+}
+
+[data-theme="dark"] .sales-doc-row {
+  box-shadow: var(--shadow-card-dark);
+}
+
+/* ─── Icon square — tinted by view status ───────────────────── */
+
+.sales-doc-row__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-50);
+  color: var(--color-primary-600);
+}
+
+.sales-doc-row__icon--accepted {
+  background: var(--color-success-50);
+  color: var(--color-success-600);
+}
+
+.sales-doc-row__icon--expired {
+  background: var(--color-error-50);
+  color: var(--color-error-600);
+}
+
+.sales-doc-row__icon--draft {
+  background: var(--color-gray-100);
+  color: var(--color-gray-500);
+}
+
+/* ─── Info column ───────────────────────────────────────────── */
+
+.sales-doc-row__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sales-doc-row__number {
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sales-doc-row__party,
+.sales-doc-row__date {
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── Right column ──────────────────────────────────────────── */
+
+.sales-doc-row__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.sales-doc-row__amount {
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sales-doc-row__status {
+  font-size: var(--fs-xs);
+  font-weight: 500;
+}
+
+.sales-doc-row__status--muted {
+  color: var(--text-secondary);
+}
+
+.sales-doc-row__status--positive {
+  color: var(--color-success-600);
+}
+
+.sales-doc-row__status--negative {
+  color: var(--color-error-600);
+}
+
+/* ─── List stack ────────────────────────────────────────────── */
+
+.sales-doc-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}

@@ -343,4 +343,10 @@ export const enExt7 = {
   deleteExpenseTitle: 'Delete this expense?',
   deleteExpenseDesc: 'This expense will be removed from your records. This cannot be undone.',
   paidToLabel: 'Paid to',
+  sentStatus: 'Sent',
+  acceptedStatus: 'Accepted',
+  convertedStatus: 'Converted',
+  expiredStatus: 'Expired',
+  draftStatus: 'Draft',
+  searchEstimatesPlaceholder: 'Search by party or number',
 } as const
