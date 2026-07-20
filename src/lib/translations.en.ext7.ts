@@ -329,4 +329,7 @@ export const enExt7 = {
   purchasesMtd:              'Purchases (MTD)',
   paymentsMade:              'Payments Made',
   bills:                     'bills',
+  totalExpensesThisMonth:    'Total Expenses',
+  searchExpenses:            'Search expenses',
+  totalExpenses:             'Total Expenses',
 } as const

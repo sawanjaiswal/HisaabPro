@@ -292,4 +292,7 @@ export const hiExt7 = {
   purchasesMtd:              'खरीद (इस माह)',
   paymentsMade:              'भुगतान किया',
   bills:                     'बिल',
+  totalExpensesThisMonth:    'कुल खर्च',
+  searchExpenses:            'खर्च खोजें',
+  totalExpenses:             'कुल खर्च',
 } as const

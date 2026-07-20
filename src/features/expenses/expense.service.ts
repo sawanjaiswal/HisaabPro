@@ -23,10 +23,13 @@ function replayHeaders(): HeadersInit {
 export async function listExpenses(
   page: number,
   categoryId: string | null,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  /** Local ISO date — the "This month" segment (#10) narrows server-side. */
+  from?: string,
 ): Promise<ExpenseListResponse> {
   const params = new URLSearchParams({ page: String(page), limit: String(EXPENSE_PAGE_LIMIT) })
   if (categoryId) params.set('categoryId', categoryId)
+  if (from) params.set('from', from)
   return api<ExpenseListResponse>(`/expenses?${params}`, { signal })
 }
 

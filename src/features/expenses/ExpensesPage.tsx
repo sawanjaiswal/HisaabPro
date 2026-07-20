@@ -1,30 +1,39 @@
-/** Expenses — List Page with Pending row, Budget banner, and Trend card */
+/** Expenses — List Page, mockup #10.
+ *
+ * Archetype A: search → segments → day-grouped rows with day totals → totals
+ * and sparkline footer. The overview blocks (trend, budget caps, pending
+ * confirmations, budgets/recurring nav) sit above the list in ExpensesOverview.
+ *
+ * "This month" narrows server-side; search filters the fetched page in memory
+ * because /expenses has no search parameter.
+ */
 
-import { useState, useEffect } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Plus, Receipt, Clock } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { Plus, Receipt, Search } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { PeriodGroup } from '@/components/ui/PeriodGroup'
+import { ListTotalsFooter } from '@/components/ui/ListTotalsFooter'
 import { ROUTES } from '@/config/routes.config'
 import { queryKeys } from '@/lib/query-keys'
+import { groupByPeriod, toPeriodTotalsSeries } from '@/lib/period-groups.utils'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useExpenses } from './useExpenses'
-import { listExpenseCategories, listPendingExpenses } from './expense.service'
-import { listBudgets } from './services/budget.service'
+import { useExpenseCategoryList } from './useExpenseCategoryList'
 import { ExpenseCard } from './components/ExpenseCard'
+import { ExpenseFilterBar } from './components/ExpenseFilterBar'
+import { ExpensesOverview } from './components/ExpensesOverview'
 import { AddExpenseDrawer } from './components/AddExpenseDrawer'
-import { PendingExpenseCard, PendingCardSkeleton } from './components/PendingExpenseCard'
-import { BudgetCapsBanner } from './components/BudgetCapsBanner'
-import { CashflowTrendCard } from './components/CashflowTrendCard'
 import { EXPENSE_PAGE_LIMIT } from './expense.constants'
-import type { ExpenseCategory } from './expense.types'
 import './expenses.css'
 import './expenses-upgrade.css'
-import { useLanguage } from '@/hooks/useLanguage'
-import { Button } from '@/components/ui/Button'
 
 const NOW_MONTH = new Date().toISOString().slice(0, 7)
 
@@ -32,30 +41,21 @@ export default function ExpensesPage() {
   const { t } = useLanguage()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const { items, total, page, status, categoryFilter, setCategoryFilter, setPage, refresh } = useExpenses()
+  const {
+    items, total, page, status, refresh,
+    categoryFilter, setCategoryFilter,
+    thisMonthOnly, setThisMonthOnly,
+    search, setSearch, setPage,
+  } = useExpenses()
+  const categories = useExpenseCategoryList()
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const [categories, setCategories] = useState<ExpenseCategory[]>([])
 
-  useEffect(() => {
-    const controller = new AbortController()
-    listExpenseCategories(controller.signal)
-      .then(setCategories)
-      .catch(() => { /* non-critical */ })
-    return () => controller.abort()
-  }, [])
-
-  // Pending expenses
-  const pendingQuery = useQuery({
-    queryKey: queryKeys.expenses.pending(),
-    queryFn: ({ signal }) => listPendingExpenses(signal),
-  })
-  const pendingItems = pendingQuery.data ?? []
-
-  // Budgets for banner
-  const budgetQuery = useQuery({
-    queryKey: queryKeys.expenses.budgets(NOW_MONTH),
-    queryFn: ({ signal }) => listBudgets(NOW_MONTH, signal),
-  })
+  const groups = useMemo(
+    () => groupByPeriod(items, (e) => e.date, (e) => e.amount, 'day'),
+    [items],
+  )
+  const series = useMemo(() => toPeriodTotalsSeries(groups), [groups])
+  const pageTotal = useMemo(() => items.reduce((sum, e) => sum + e.amount, 0), [items])
 
   function refreshAll() {
     refresh()
@@ -65,140 +65,84 @@ export default function ExpensesPage() {
 
   const totalPages = Math.ceil(total / EXPENSE_PAGE_LIMIT)
 
-  if (status === 'loading') {
-    return (
-      <AppShell>
-        <Header title={t.expenses ?? 'Expenses'} backTo={ROUTES.DASHBOARD} />
-        <PageContainer variant="list" className="space-y-6">
+  return (
+    <AppShell>
+      <Header
+        title={t.expenses}
+        backTo={ROUTES.DASHBOARD}
+        actions={
+          <Button variant="ghost" size="sm" onClick={() => setDrawerOpen(true)} aria-label={t.recordExpense}>
+            <Plus size={20} aria-hidden="true" />
+          </Button>
+        }
+      />
+
+      <PageContainer variant="list" className="space-y-6">
+        <ExpensesOverview month={NOW_MONTH} onPendingResolved={refreshAll} />
+
+        <div className="search-bar">
+          <Search size={18} aria-hidden="true" />
+          <Input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t.searchExpenses}
+            aria-label={t.expenses}
+          />
+        </div>
+
+        <ExpenseFilterBar
+          categories={categories}
+          categoryFilter={categoryFilter}
+          onCategoryChange={setCategoryFilter}
+          thisMonthOnly={thisMonthOnly}
+          onThisMonthChange={setThisMonthOnly}
+          onManageCategories={() => navigate(ROUTES.EXPENSE_CATEGORIES)}
+        />
+
+        {/* Loading */}
+        {status === 'loading' && (
           <div className="expense-skeleton" aria-busy="true">
             {['sk-1', 'sk-2', 'sk-3', 'sk-4'].map((k) => <div key={k} className="expense-skeleton__card" />)}
           </div>
-        </PageContainer>
-      </AppShell>
-    )
-  }
+        )}
 
-  if (status === 'error') {
-    return (
-      <AppShell>
-        <Header title={t.expenses ?? 'Expenses'} backTo={ROUTES.DASHBOARD} />
-        <PageContainer variant="list" className="space-y-6">
+        {/* Error */}
+        {status === 'error' && (
           <ErrorState title={t.couldNotLoadExpenses} message={t.checkConnectionRetry} onRetry={refresh} />
-        </PageContainer>
-      </AppShell>
-    )
-  }
-
-  return (
-    <AppShell>
-      <Header title={t.expenses ?? 'Expenses'} backTo={ROUTES.DASHBOARD} />
-      <PageContainer variant="list" className="space-y-6">
-
-        {/* Trend card */}
-        <CashflowTrendCard />
-
-        {/* Budget caps banner */}
-        <BudgetCapsBanner
-          budgets={budgetQuery.data ?? []}
-          loading={budgetQuery.isPending}
-          error={budgetQuery.isError}
-        />
-
-        {/* Pending confirmations row */}
-        {pendingQuery.isPending && (
-          <div className="pending-row" aria-busy="true">
-            <PendingCardSkeleton />
-            <PendingCardSkeleton />
-          </div>
-        )}
-        {!pendingQuery.isPending && pendingItems.length > 0 && (
-          <section className="pending-row" aria-label={t.expensesPending ?? 'Pending confirmations'}>
-            <div className="pending-row__header">
-              <Clock size={14} aria-hidden="true" />
-              <span className="pending-row__title">{t.expensesPending ?? 'Pending'}</span>
-              <span className="pending-row__count">{pendingItems.length}</span>
-              <Button variant="none"
-                type="button"
-                className="pending-row__see-all"
-                onClick={() => navigate('/expenses/pending')}
-              >
-                See all
-              </Button>
-            </div>
-            <div className="pending-row__list">
-              {pendingItems.slice(0, 3).map((item) => (
-                <PendingExpenseCard key={item.id} item={item} onDone={refreshAll} />
-              ))}
-            </div>
-          </section>
         )}
 
-        {/* Quick nav tiles */}
-        <div className="expenses-nav-tiles">
-          <Button variant="none" type="button" className="expenses-nav-tile" onClick={() => navigate('/expenses/budgets')}>
-            {t.expensesBudgetsTitle ?? 'Budgets'}
-          </Button>
-          <Button variant="none" type="button" className="expenses-nav-tile" onClick={() => navigate('/expenses/recurring')}>
-            {t.expensesRecurringTitle ?? 'Recurring'}
-          </Button>
-        </div>
-
-        {/* Category filter pills */}
-        <div className="expense-filter-bar stagger-filters" role="group" aria-label={t.filterByCategoryGroup}>
-          <Button variant="none"
-            type="button"
-            className={`expense-filter-pill${categoryFilter === null ? ' expense-filter-pill--active' : ''}`}
-            onClick={() => setCategoryFilter(null)}
-            aria-pressed={categoryFilter === null}
-          >
-            {t.all}
-          </Button>
-          {categories.map((c) => (
-            <Button variant="none"
-              key={c.id}
-              type="button"
-              className={`expense-filter-pill${categoryFilter === c.id ? ' expense-filter-pill--active' : ''}`}
-              onClick={() => setCategoryFilter(c.id)}
-              aria-pressed={categoryFilter === c.id}
-            >
-              {c.name}
-            </Button>
-          ))}
-          {/* Entry point to the full category list (#50) — pills only filter. */}
-          <Button
-            variant="none"
-            type="button"
-            className="expense-filter-pill"
-            onClick={() => navigate(ROUTES.EXPENSE_CATEGORIES)}
-          >
-            {t.manageCategories}
-          </Button>
-        </div>
-
-        <div className="expense-action-bar">
-          <span className="expense-count">{total} {total === 1 ? t.expenseSingular : t.expensesPlural}</span>
-          <Button variant="none" type="button" className="expense-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.recordExpense}>
-            <Plus size={14} aria-hidden="true" /> {t.addExpenseBtn}
-          </Button>
-        </div>
-
-        {items.length === 0 && (
-          <EmptyState
-            icon={<Receipt size={22} aria-hidden="true" />}
-            title={t.noExpensesRecorded}
-            description={t.startTrackingExpenses}
-            action={
-              <Button variant="none" type="button" className="expense-add-btn" onClick={() => setDrawerOpen(true)}>
-                <Plus size={14} aria-hidden="true" /> {t.recordFirstExpense}
-              </Button>
-            }
-          />
+        {/* Empty — nothing recorded vs nothing matching the filters */}
+        {status === 'success' && items.length === 0 && (
+          search || categoryFilter || thisMonthOnly
+            ? <EmptyState title={t.noResults} description={t.tryDifferentSearch} />
+            : (
+              <EmptyState
+                icon={<Receipt size={40} aria-hidden="true" />}
+                title={t.noExpensesRecorded}
+                description={t.startTrackingExpenses}
+                action={
+                  <Button variant="primary" size="md" onClick={() => setDrawerOpen(true)}>
+                    {t.recordFirstExpense}
+                  </Button>
+                }
+              />
+            )
         )}
 
-        {items.length > 0 && (
-          <div className="expense-list stagger-list">
-            {items.map((e) => <ExpenseCard key={e.id} expense={e} />)}
-          </div>
+        {/* Success */}
+        {status === 'success' && items.length > 0 && (
+          <>
+            {groups.map((group) => (
+              <PeriodGroup key={group.key} group={group}>
+                {group.items.map((expense) => (
+                  <ExpenseCard key={expense.id} expense={expense} />
+                ))}
+              </PeriodGroup>
+            ))}
+
+            <ListTotalsFooter label={t.totalExpenses} totalPaise={pageTotal} series={series} />
+          </>
         )}
 
         {totalPages > 1 && (
