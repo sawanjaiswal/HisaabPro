@@ -96,6 +96,7 @@ export const en = {
   todaySales:          'Today\'s Sales',
   thisMonth:           'This Month',
   lastMonth:           'Last Month',
+  totalReceived:       'Total Received',
   dateToday:           'Today',
   dateYesterday:       'Yesterday',
   netProfit:           'Net Profit',

@@ -1,10 +1,10 @@
-/** Payments — List Page (lazy loaded)
+/** Payment History — List Page (lazy loaded), mockup #41.
  *
- * Follows PartiesPage.tsx pattern: summary bar, filter bar,
- * card list, 4 UI states, FAB for create, bulk select.
+ * Archetype A: search + filter chips, month-grouped rows on tinted sheets,
+ * totals footer. 4 UI states, FAB for create, bulk select.
  */
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Banknote } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -17,15 +17,14 @@ import { useBulkSelect } from '@/hooks/useBulkSelect'
 import { useToast } from '@/hooks/useToast'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
+import { groupByPeriod, toPeriodTotalsSeries } from '@/lib/period-groups.utils'
 import { usePayments } from './usePayments'
-import { PaymentSummaryBar } from './components/PaymentSummaryBar'
 import { PaymentFilterBar } from './components/PaymentFilterBar'
-import { PaymentCard } from './components/PaymentCard'
+import { PaymentGroupedList } from './components/PaymentGroupedList'
 import { PaymentListSkeleton } from './components/PaymentListSkeleton'
 import { deletePayment } from './payment.service'
 import type { PaymentType, PaymentMode } from './payment.types'
 import type { BulkAction } from '@/components/ui/BulkActionBar'
-import './payment-hero.css'
 import './payment-filter.css'
 import './payment-list.css'
 import { Button } from '@/components/ui/Button'
@@ -93,6 +92,20 @@ export default function PaymentsPage() {
 
   const allPaymentIds = data?.payments.map((p) => p.id) ?? []
 
+  /* Mockup #41 buckets by month. A month's header total is its NET movement, so
+     outflows subtract instead of inflating the "received" figure. */
+  const monthGroups = useMemo(
+    () =>
+      groupByPeriod(
+        data?.payments ?? [],
+        (p) => p.date,
+        (p) => (p.type === 'PAYMENT_IN' ? p.amount : -p.amount),
+        'month',
+      ),
+    [data?.payments],
+  )
+  const monthlySeries = useMemo(() => toPeriodTotalsSeries(monthGroups), [monthGroups])
+
   const bulkActions: BulkAction[] = [
     {
       id: 'delete',
@@ -111,13 +124,7 @@ export default function PaymentsPage() {
 
   return (
     <AppShell>
-      <Header title={bulk.isActive ? `${bulk.selectedCount} ${t.selected}` : t.payments} />
-
-      {status === 'success' && data && !bulk.isActive && (
-        <div className="page-hero">
-          <PaymentSummaryBar summary={data.summary} />
-        </div>
-      )}
+      <Header title={bulk.isActive ? `${bulk.selectedCount} ${t.selected}` : t.paymentHistory} />
 
       <PageContainer variant="list" className="space-y-6">
         {!bulk.isActive && (
@@ -167,28 +174,17 @@ export default function PaymentsPage() {
         {status === 'success' && data && data.payments.length > 0 && (
           <>
           <h2 className="sr-only">{t.paymentList}</h2>
-          <div className="payment-list stagger-list" role="list" aria-label={t.payments}>
-            {data.payments.map((payment) => (
-              <div
-                key={payment.id}
-                className={`payment-list-row${bulk.isSelected(payment.id) ? ' bulk-selected' : ''}`}
-                role="listitem"
-                onClick={(e) => {
-                  if (bulk.isActive) {
-                    e.stopPropagation()
-                    bulk.toggle(payment.id)
-                  }
-                }}
-              >
-                <PaymentCard
-                  payment={payment}
-                  onClick={handlePaymentClick}
-                  onLongPress={handleLongPress}
-                  isSelected={bulk.isSelected(payment.id)}
-                  isBulkMode={bulk.isActive}
-                />
-              </div>
-            ))}
+          <div className="payment-list-groups stagger-list" role="list" aria-label={t.payments}>
+            <PaymentGroupedList
+              groups={monthGroups}
+              isBulkMode={bulk.isActive}
+              isSelected={bulk.isSelected}
+              onToggle={bulk.toggle}
+              onPaymentClick={handlePaymentClick}
+              onLongPress={handleLongPress}
+              summary={bulk.isActive ? undefined : data.summary}
+              series={monthlySeries}
+            />
           </div>
           </>
         )}

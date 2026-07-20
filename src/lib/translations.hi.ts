@@ -96,6 +96,7 @@ export const hi = {
   todaySales:          'आज की बिक्री',
   thisMonth:           'इस महीने',
   lastMonth:           'पिछले महीने',
+  totalReceived:       'कुल प्राप्त',
   dateToday:           'आज',
   dateYesterday:       'कल',
   netProfit:           'शुद्ध लाभ',
