@@ -11,6 +11,7 @@ import { LineItemEditor } from './LineItemEditor'
 import { useLinePriceMeta } from './useLinePriceMeta'
 import { useBogoPermission } from '../useBogoPermission'
 import { PartySearchInput } from './PartySearchInput'
+import { InvoiceFormSection } from './InvoiceFormSection'
 import { ProductSearchInput } from './ProductSearchInput'
 import { TaxPickerColumn } from './TaxPickerColumn'
 import { HsnTypeahead } from './HsnTypeahead'
@@ -100,22 +101,39 @@ export function InvoiceItemsSection({
   const addedProductIds = lineItems.map((item) => item.productId)
 
   return (
-    <div className="line-items-section py-0">
-      <PartySearchInput value={partyId} onChange={onPartyChange} error={errors.partyId} />
+    <div className="line-items-section py-0 space-y-6">
+      <InvoiceFormSection title={t.customer}>
+        <PartySearchInput value={partyId} onChange={onPartyChange} error={errors.partyId} />
 
-      {partyId && (
-        <PriceListOverrideSelector
-          availableLists={availableLists}
-          loading={listsLoading}
-          selectedListId={selectedListId}
-          partyDefaultListId={partyDefaultListId}
-          displayName={displayName}
-          isOverridden={isOverridden}
-          onSelect={setOverride}
-          onReset={resetOverride}
-        />
-      )}
+        {partyId && (
+          <PriceListOverrideSelector
+            availableLists={availableLists}
+            loading={listsLoading}
+            selectedListId={selectedListId}
+            partyDefaultListId={partyDefaultListId}
+            displayName={displayName}
+            isOverridden={isOverridden}
+            onSelect={setOverride}
+            onReset={resetOverride}
+          />
+        )}
+      </InvoiceFormSection>
 
+      <InvoiceFormSection
+        title={t.sectionItems}
+        action={
+          <Button variant="none"
+            type="button"
+            className="invoice-form-section-action"
+            onClick={onToggleProductSearch}
+            aria-label={showProductSearch ? t.hideProductSearch : t.addLineItemLabel}
+            aria-expanded={showProductSearch}
+          >
+            <Plus size={16} aria-hidden="true" />
+            {showProductSearch ? t.hideSearch : t.addItem}
+          </Button>
+        }
+      >
       {lineItems.map((item, index) => {
         const { lineTotal, discountAmount } = calculateLineTotal(
           item.quantity, item.rate, item.discountType, item.discountValue,
@@ -187,17 +205,7 @@ export function InvoiceItemsSection({
           <ProductSearchInput onSelect={handleProductSelect} addedProductIds={addedProductIds} />
         </div>
       )}
-
-      <Button variant="none"
-        type="button"
-        className="add-item-btn"
-        onClick={onToggleProductSearch}
-        aria-label={showProductSearch ? t.hideProductSearch : t.addLineItemLabel}
-        aria-expanded={showProductSearch}
-      >
-        <Plus size={18} aria-hidden="true" />
-        {showProductSearch ? t.hideSearch : t.addItem}
-      </Button>
+      </InvoiceFormSection>
     </div>
   )
 }

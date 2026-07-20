@@ -16,12 +16,17 @@ import { InvoiceCustomFieldsSection } from './InvoiceCustomFieldsSection'
 import { InvoiceChargesSection } from './InvoiceChargesSection'
 import { GstInvoiceHeader } from './GstInvoiceHeader'
 import { StockShortageBanner } from './StockShortageBanner'
-import { FORM_SECTIONS } from '../invoice.constants'
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '@/components/ui/accordion'
 import { usePresence } from '@/features/collaboration/usePresence'
 import { PresenceAvatars } from '@/features/collaboration/PresenceAvatars'
 import { ConflictDialog } from '@/features/collaboration/ConflictDialog'
 import type { DocumentFormData } from '../invoice.types'
-import { Button } from '@/components/ui/Button'
+import '../invoice-form-redesign.css'
 
 interface EditInvoiceFormProps {
   invoiceId: string
@@ -41,8 +46,6 @@ export function EditInvoiceForm({
     form,
     errors,
     isSubmitting,
-    activeSection,
-    setActiveSection,
     updateField,
     addLineItem,
     updateLineItem,
@@ -65,6 +68,11 @@ export function EditInvoiceForm({
   const { gstEnabled, compositionScheme } = useGstGate()
   const [productNames, setProductNames] = useState<Record<string, string>>(initialProductNames)
   const [showProductSearch, setShowProductSearch] = useState(false)
+  /** An existing invoice usually already has charges — open that section when
+   *  it does, so editing does not require hunting for it. */
+  const [openSections, setOpenSections] = useState<string[]>(
+    () => (initialData.additionalCharges.length > 0 ? ['charges'] : []),
+  )
 
   const handlePartyChange = useCallback((_partyId: string, _name: string) => {
     updateField('partyId', _partyId)
@@ -94,7 +102,7 @@ export function EditInvoiceForm({
     <AppShell>
       <Header title={t.editInvoice} backTo={`/invoices/${invoiceId}`} actions={<PresenceAvatars peers={peers} />} />
 
-      <PageContainer className="invoice-details-section py-0">
+      <PageContainer className="invoice-details-section py-0 space-y-6">
         {stockShortageItems.length > 0 && (
           <StockShortageBanner items={stockShortageItems} onDismiss={clearStockShortage} />
         )}
@@ -107,51 +115,37 @@ export function EditInvoiceForm({
           />
         )}
 
-        <nav className="pill-tabs" role="tablist" aria-label={t.invoiceFormSections}>
-          {FORM_SECTIONS.map((section) => (
-            <Button variant="none"
-              key={section.id}
-              type="button"
-              role="tab"
-              className={`pill-tab${activeSection === section.id ? ' active' : ''}`}
-              onClick={() => setActiveSection(section.id)}
-              aria-selected={activeSection === section.id}
-              aria-controls={`section-panel-${section.id}`}
-            >
-              {section.label}
-            </Button>
-          ))}
-        </nav>
+        {/* Same single-scroll structure as CreateInvoicePage (mockup #2) so the
+            two forms do not diverge. */}
+        <InvoiceItemsSection
+          partyId={form.partyId}
+          lineItems={form.lineItems}
+          productNames={productNames}
+          showProductSearch={showProductSearch}
+          errors={errors}
+          stockWarnings={stockWarnings}
+          hasStockBlocks={hasStockBlocks}
+          gstEnabled={gstEnabled}
+          compositionScheme={compositionScheme}
+          isEditMode={true}
+          priceListId={priceListId}
+          onPriceListChange={(id) => updateField('priceListId', id)}
+          onPartyChange={handlePartyChange}
+          onProductSelect={handleProductSelect}
+          onUpdateLineItem={updateLineItem}
+          onRemoveLineItem={removeLineItem}
+          onToggleProductSearch={toggleProductSearch}
+        />
 
-        <div
-          id={`section-panel-${activeSection}`}
-          role="tabpanel"
-          aria-label={FORM_SECTIONS.find((s) => s.id === activeSection)?.label}
+        <Accordion
+          type="multiple"
+          className="invoice-form-accordion"
+          value={openSections}
+          onValueChange={setOpenSections}
         >
-          {activeSection === 'items' && (
-            <InvoiceItemsSection
-              partyId={form.partyId}
-              lineItems={form.lineItems}
-              productNames={productNames}
-              showProductSearch={showProductSearch}
-              errors={errors}
-              stockWarnings={stockWarnings}
-              hasStockBlocks={hasStockBlocks}
-              gstEnabled={gstEnabled}
-              compositionScheme={compositionScheme}
-              isEditMode={true}
-              priceListId={priceListId}
-              onPriceListChange={(id) => updateField('priceListId', id)}
-              onPartyChange={handlePartyChange}
-              onProductSelect={handleProductSelect}
-              onUpdateLineItem={updateLineItem}
-              onRemoveLineItem={removeLineItem}
-              onToggleProductSearch={toggleProductSearch}
-            />
-          )}
-
-          {activeSection === 'details' && (
-            <>
+          <AccordionItem value="details">
+            <AccordionTrigger>{t.sectionDetails}</AccordionTrigger>
+            <AccordionContent className="space-y-6">
               <InvoiceDetailsSection
                 documentDate={form.documentDate}
                 paymentTerms={form.paymentTerms}
@@ -167,18 +161,21 @@ export function EditInvoiceForm({
                 errors={{}}
                 onChange={(v) => updateField('customFieldValues', v)}
               />
-            </>
-          )}
+            </AccordionContent>
+          </AccordionItem>
 
-          {activeSection === 'charges' && (
-            <InvoiceChargesSection
-              charges={form.additionalCharges}
-              onUpdateCharge={updateCharge}
-              onRemoveCharge={removeCharge}
-              onAddCharge={addCharge}
-            />
-          )}
-        </div>
+          <AccordionItem value="charges">
+            <AccordionTrigger>{t.chargesLabel}</AccordionTrigger>
+            <AccordionContent>
+              <InvoiceChargesSection
+                charges={form.additionalCharges}
+                onUpdateCharge={updateCharge}
+                onRemoveCharge={removeCharge}
+                onAddCharge={addCharge}
+              />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </PageContainer>
 
       <InvoiceTotalsBar

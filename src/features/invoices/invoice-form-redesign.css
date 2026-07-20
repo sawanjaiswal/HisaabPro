@@ -1,0 +1,73 @@
+/** Create/Edit Invoice — single-scroll labelled sections (mockup #2)
+ *
+ * Replaces the pill-tab form nav. Tokens only.
+ */
+
+.invoice-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.invoice-form-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 2rem;
+}
+
+.invoice-form-section-title {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.01em;
+}
+
+/* "+ Add Item" — a text action, emerald because it is a primary affordance. */
+.invoice-form-section-action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 44px;
+  padding-inline: var(--space-2);
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--color-primary-600);
+  background: transparent;
+  border-radius: var(--radius-sm);
+}
+
+.invoice-form-section-action:active {
+  background: var(--color-primary-50);
+}
+
+.invoice-form-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ── Collapsible optional sections (Details / Charges) ─────────────────── */
+
+.invoice-form-accordion {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  padding-inline: var(--space-4);
+}
+
+.invoice-form-accordion [data-slot='accordion-trigger'] {
+  min-height: 44px;
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.invoice-form-accordion [data-slot='accordion-trigger']:hover {
+  text-decoration: none;
+}
+
+.invoice-form-accordion [data-slot='accordion-item'] {
+  border-color: var(--color-border);
+}

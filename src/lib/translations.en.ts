@@ -460,6 +460,8 @@ export const en = {
   allPaidLabel:              'All Paid',
   noAmountDue:               'No amount due',
   chargesLabel:              'Charges',
+  sectionItems:              'Items',
+  sectionDetails:            'Details',
   roundOff:                  'Round Off',
   saveDraft:                 'Save Draft',
   saveDraftAriaLabel:        'Save as draft',

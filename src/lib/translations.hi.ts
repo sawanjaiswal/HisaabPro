@@ -460,6 +460,8 @@ export const hi = {
   allPaidLabel:              'सब भुगतान हो गया',
   noAmountDue:               'कोई बकाया नहीं',
   chargesLabel:              'शुल्क',
+  sectionItems:              'सामान',
+  sectionDetails:            'विवरण',
   roundOff:                  'गोलाई',
   saveDraft:                 'ड्राफ्ट सहेजें',
   saveDraftAriaLabel:        'ड्राफ्ट के रूप में सहेजें',

@@ -28,8 +28,14 @@ import { GstInvoiceHeader } from './components/GstInvoiceHeader'
 import { UntaggedTaxDialog } from './components/UntaggedTaxDialog'
 import { StockShortageBanner } from './components/StockShortageBanner'
 import { ExpiredBatchBanner } from '@/features/inventory/components/ExpiredBatchBanner'
-import { FORM_SECTIONS } from './invoice.constants'
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '@/components/ui/accordion'
 import './invoice-party-search.css'
+import './invoice-form-redesign.css'
 import './invoice-line-items.css'
 import './invoice-product-search.css'
 import './invoice-summary.css'
@@ -49,8 +55,6 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
     form,
     errors,
     isSubmitting,
-    activeSection,
-    setActiveSection,
     updateField,
     addLineItem,
     updateLineItem,
@@ -77,6 +81,11 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
   const { compositionScheme } = useGstGate()
   const [productNames, setProductNames] = useState<Record<string, string>>({})
   const [showProductSearch, setShowProductSearch] = useState(false)
+  /** Optional sections start collapsed to match the mockup's clean scroll, but
+   *  charges open on their own when the document already carries some. */
+  const [openSections, setOpenSections] = useState<string[]>(
+    () => (form.additionalCharges.length > 0 ? ['charges'] : []),
+  )
 
   useBillScanPrefill({ addLineItem, updateField, setProductNames })
 
@@ -149,50 +158,37 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
           />
         )}
 
-        <nav className="pill-tabs" role="tablist" aria-label={t.invoiceFormSections}>
-          {FORM_SECTIONS.map((section) => (
-            <Button variant="none"
-              key={section.id}
-              type="button"
-              role="tab"
-              className={`pill-tab${activeSection === section.id ? ' active' : ''}`}
-              onClick={() => setActiveSection(section.id)}
-              aria-selected={activeSection === section.id}
-              aria-controls={`section-panel-${section.id}`}
-            >
-              {section.label}
-            </Button>
-          ))}
-        </nav>
+        {/* Mockup #2 is one continuous scroll — Customer and Items are always
+            visible; the optional sections collapse rather than hiding behind
+            tabs, so nothing that used to be reachable stops being reachable. */}
+        <InvoiceItemsSection
+          partyId={form.partyId}
+          lineItems={form.lineItems}
+          productNames={productNames}
+          showProductSearch={showProductSearch}
+          errors={errors}
+          stockWarnings={stockWarnings}
+          hasStockBlocks={hasStockBlocks}
+          gstEnabled={gstEnabled}
+          compositionScheme={compositionScheme}
+          priceListId={priceListId}
+          onPriceListChange={(id) => updateField('priceListId', id)}
+          onPartyChange={handlePartyChange}
+          onProductSelect={handleProductSelect}
+          onUpdateLineItem={updateLineItem}
+          onRemoveLineItem={removeLineItem}
+          onToggleProductSearch={toggleProductSearch}
+        />
 
-        <div
-          id={`section-panel-${activeSection}`}
-          role="tabpanel"
-          aria-label={FORM_SECTIONS.find((s) => s.id === activeSection)?.label}
+        <Accordion
+          type="multiple"
+          className="invoice-form-accordion"
+          value={openSections}
+          onValueChange={setOpenSections}
         >
-          {activeSection === 'items' && (
-            <InvoiceItemsSection
-              partyId={form.partyId}
-              lineItems={form.lineItems}
-              productNames={productNames}
-              showProductSearch={showProductSearch}
-              errors={errors}
-              stockWarnings={stockWarnings}
-              hasStockBlocks={hasStockBlocks}
-              gstEnabled={gstEnabled}
-              compositionScheme={compositionScheme}
-              priceListId={priceListId}
-              onPriceListChange={(id) => updateField('priceListId', id)}
-              onPartyChange={handlePartyChange}
-              onProductSelect={handleProductSelect}
-              onUpdateLineItem={updateLineItem}
-              onRemoveLineItem={removeLineItem}
-              onToggleProductSearch={toggleProductSearch}
-            />
-          )}
-
-          {activeSection === 'details' && (
-            <>
+          <AccordionItem value="details">
+            <AccordionTrigger>{t.sectionDetails}</AccordionTrigger>
+            <AccordionContent className="space-y-6">
               <InvoiceDetailsSection
                 documentDate={form.documentDate}
                 paymentTerms={form.paymentTerms}
@@ -208,18 +204,21 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
                 errors={{}}
                 onChange={(v) => updateField('customFieldValues', v)}
               />
-            </>
-          )}
+            </AccordionContent>
+          </AccordionItem>
 
-          {activeSection === 'charges' && (
-            <InvoiceChargesSection
-              charges={form.additionalCharges}
-              onUpdateCharge={updateCharge}
-              onRemoveCharge={removeCharge}
-              onAddCharge={addCharge}
-            />
-          )}
-        </div>
+          <AccordionItem value="charges">
+            <AccordionTrigger>{t.chargesLabel}</AccordionTrigger>
+            <AccordionContent>
+              <InvoiceChargesSection
+                charges={form.additionalCharges}
+                onUpdateCharge={updateCharge}
+                onRemoveCharge={removeCharge}
+                onAddCharge={addCharge}
+              />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </PageContainer>
 
       <InvoiceTotalsBar
