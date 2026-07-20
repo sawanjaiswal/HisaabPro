@@ -1,57 +1,91 @@
-/** Purchases — List Page (lazy loaded)
+/** Purchases — List Page (lazy loaded), mockup #11.
  *
- * Thin wrapper over the existing invoice list, locked to PURCHASE_INVOICE type.
- * 4 UI states: loading · error · empty · success.
+ * Archetype A over the shared document list, locked to PURCHASE_INVOICE:
+ * search → segments → month-grouped rows → totals + sparkline footer.
+ * Rows, groups and footer are the same primitives the sales list (#1) uses,
+ * so the two screens stay identical apart from their direction.
  */
 
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Button } from '@/components/ui/Button'
-import { Plus, ShoppingCart } from 'lucide-react'
+import { Plus, Search, ShoppingCart } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { FilterChips, type FilterChipOption } from '@/components/ui/FilterChips'
+import { PeriodGroup } from '@/components/ui/PeriodGroup'
+import { ListTotalsFooter } from '@/components/ui/ListTotalsFooter'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useInvoices } from '@/features/invoices/useInvoices'
 import { InvoiceCard } from '@/features/invoices/components/InvoiceCard'
 import { InvoiceListSkeleton } from '@/features/invoices/components/InvoiceListSkeleton'
+import { groupByPeriod, toPeriodTotalsSeries } from '@/lib/period-groups.utils'
 import { ROUTES } from '@/config/routes.config'
+import { usePurchaseFilters, type PurchaseFilter } from './usePurchaseFilters'
 import '@/features/invoices/invoice-list-items.css'
-import { Input } from '@/components/ui/Input'
 
 export default function PurchasesPage() {
   const navigate = useNavigate()
   const { t } = useLanguage()
 
-  const { data, status, filters, setSearch, refresh } = useInvoices({
+  const { data, status, filters, setSearch, setFilter: setQueryFilter, refresh } = useInvoices({
     type: 'PURCHASE_INVOICE',
   })
+  const { filter, setFilter, visible } = usePurchaseFilters(setQueryFilter)
 
-  const handleDocClick = (id: string) => {
-    navigate(ROUTES.INVOICE_DETAIL.replace(':id', id))
-  }
+  const documents = useMemo(() => visible(data?.documents ?? []), [visible, data?.documents])
+
+  // Purchases arrive in batches, so months — not days — are the useful period.
+  const groups = useMemo(
+    () => groupByPeriod(documents, (d) => d.documentDate, (d) => d.grandTotal, 'month'),
+    [documents],
+  )
+  const series = useMemo(() => toPeriodTotalsSeries(groups), [groups])
+
+  const chips: FilterChipOption<PurchaseFilter>[] = [
+    { value: 'ALL', label: t.all },
+    { value: 'THIS_MONTH', label: t.thisMonth },
+    { value: 'PENDING', label: t.pending },
+    { value: 'PAID', label: t.paid },
+  ]
 
   const goToCreate = () => navigate(ROUTES.PURCHASE_NEW)
+  const hasAny = status === 'success' && (data?.documents.length ?? 0) > 0
 
   return (
     <AppShell>
-      <Header title={t.purchasesTitle} backTo={ROUTES.MORE} />
+      <Header
+        title={t.purchasesTitle}
+        backTo={ROUTES.MORE}
+        actions={
+          <Button variant="ghost" size="sm" onClick={goToCreate} aria-label={t.createPurchaseAriaLabel}>
+            <Plus size={20} aria-hidden="true" />
+          </Button>
+        }
+      />
 
       <PageContainer variant="list" className="space-y-6">
         <div className="search-bar">
+          <Search size={18} aria-hidden="true" />
           <Input
             type="search"
             value={filters.search ?? ''}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t.searchByPartyOrNumber}
             aria-label={t.purchasesTitle}
-            style={{ width: '100%' }}
           />
         </div>
 
+        <FilterChips options={chips} value={filter} onChange={setFilter} label={t.purchasesTitle} />
+
+        {/* Loading */}
         {status === 'loading' && <InvoiceListSkeleton />}
 
+        {/* Error */}
         {status === 'error' && (
           <ErrorState
             title={t.couldNotLoadInvoices}
@@ -60,38 +94,65 @@ export default function PurchasesPage() {
           />
         )}
 
-        {status === 'success' && data && data.documents.length === 0 && (
-          <EmptyState
-            icon={<ShoppingCart size={40} aria-hidden="true" />}
-            title={t.purchasesEmpty}
-            description={t.purchasesEmptyDesc}
-            action={
-              <Button variant="primary" size="md" onClick={goToCreate} aria-label={t.createPurchaseAriaLabel}>
-                {t.createPurchase}
-              </Button>
-            }
-          />
+        {/* Empty — nothing recorded vs nothing matching the segment */}
+        {status === 'success' && documents.length === 0 && (
+          hasAny || filters.search
+            ? <EmptyState title={t.noResults} description={t.tryDifferentSearch} />
+            : (
+              <EmptyState
+                icon={<ShoppingCart size={40} aria-hidden="true" />}
+                title={t.purchasesEmpty}
+                description={t.purchasesEmptyDesc}
+                action={
+                  <Button variant="primary" size="md" onClick={goToCreate} aria-label={t.createPurchaseAriaLabel}>
+                    {t.createPurchase}
+                  </Button>
+                }
+              />
+            )
         )}
 
-        {status === 'success' && data && data.documents.length > 0 && (
+        {/* Success */}
+        {status === 'success' && documents.length > 0 && (
           <>
             <div role="status" aria-live="polite" className="sr-only">
-              {data.documents.length} {data.documents.length === 1 ? t.purchaseFoundSingular : t.purchaseFoundPlural}
+              {documents.length} {documents.length === 1 ? t.purchaseFoundSingular : t.purchaseFoundPlural}
             </div>
             <h2 className="sr-only">{t.purchaseListHeading}</h2>
-            <div className="invoice-list stagger-list" role="list" aria-label={t.purchasesTitle}>
-              {data.documents.map((doc) => (
-                <div key={doc.id} className="invoice-list-row" role="listitem">
-                  <InvoiceCard document={doc} onClick={handleDocClick} onLongPress={() => {}} isSelected={false} isBulkMode={false} />
-                  <div className="divider" aria-hidden="true" />
-                </div>
-              ))}
-            </div>
+
+            {groups.map((group) => (
+              <PeriodGroup key={group.key} group={group}>
+                {group.items.map((doc) => (
+                  <div key={doc.id} className="invoice-list-row" role="listitem">
+                    <InvoiceCard
+                      document={doc}
+                      onClick={(id) => navigate(ROUTES.INVOICE_DETAIL.replace(':id', id))}
+                      onLongPress={() => {}}
+                      isSelected={false}
+                      isBulkMode={false}
+                    />
+                    <div className="divider" aria-hidden="true" />
+                  </div>
+                ))}
+              </PeriodGroup>
+            ))}
+
+            {data && (
+              <ListTotalsFooter
+                label={t.totalPurchases}
+                totalPaise={data.summary.totalAmount}
+                series={series}
+                splits={[
+                  { label: t.paid, paise: data.summary.totalPaid, tone: 'positive' },
+                  { label: t.dueLabel, paise: data.summary.totalDue, tone: 'negative' },
+                ]}
+              />
+            )}
           </>
         )}
       </PageContainer>
 
-      {status === 'success' && data && data.documents.length > 0 && (
+      {hasAny && (
         <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.createPurchaseAriaLabel}>
           <Plus size={24} aria-hidden="true" />
         </Button>
