@@ -22,7 +22,7 @@ import { InvoiceSummaryBar } from './components/InvoiceSummaryBar'
 import { InvoiceFilterBar } from './components/InvoiceFilterBar'
 import { InvoiceListSkeleton } from './components/InvoiceListSkeleton'
 import { InvoiceGroupedList } from './components/InvoiceGroupedList'
-import { groupByDay, toDailyTotalsSeries } from '@/lib/day-groups.utils'
+import { groupByPeriod, toPeriodTotalsSeries } from '@/lib/period-groups.utils'
 import { deleteDocument } from './invoice.service'
 import { ROUTES } from '@/config/routes.config'
 import { DOCUMENT_TYPE_LABELS } from './invoice.constants'
@@ -124,10 +124,10 @@ export default function InvoicesPage({ embedded = false }: InvoicesPageProps) {
   }, [data?.documents, autoGenOnly])
   const allDocIds = visibleDocuments.map((d) => d.id)
   const dayGroups = useMemo(
-    () => groupByDay(visibleDocuments, (d) => d.documentDate, (d) => d.grandTotal),
+    () => groupByPeriod(visibleDocuments, (d) => d.documentDate, (d) => d.grandTotal),
     [visibleDocuments],
   )
-  const dailySeries = useMemo(() => toDailyTotalsSeries(dayGroups), [dayGroups])
+  const dailySeries = useMemo(() => toPeriodTotalsSeries(dayGroups), [dayGroups])
 
   const content = (
     <>

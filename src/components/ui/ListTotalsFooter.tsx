@@ -9,7 +9,7 @@
 import React from 'react'
 import { AreaChart } from '@/components/charts/AreaChart'
 import { formatPaise } from '@/lib/format'
-import './day-group.css'
+import './period-group.css'
 
 export interface ListTotalsSplit {
   label: string

@@ -95,6 +95,7 @@ export const hi = {
   viewAll:             'सभी देखें',
   todaySales:          'आज की बिक्री',
   thisMonth:           'इस महीने',
+  lastMonth:           'पिछले महीने',
   dateToday:           'आज',
   dateYesterday:       'कल',
   netProfit:           'शुद्ध लाभ',

@@ -1,18 +1,18 @@
-/** Archetype-A list page — day groups + totals footer (mockups #1, #41).
+/** Archetype-A list page — period groups + totals footer (mockups #1, #41).
  *
  * Tokens only: no hex, no rgb, no Tailwind palette classes.
  * Dark mode comes for free via tokens-dark.css.
  */
 
-/* ── Day group ─────────────────────────────────────────────────────────── */
+/* ── Period group ─────────────────────────────────────────────────────────── */
 
-.day-group {
+.period-group {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
 }
 
-.day-group-header {
+.period-group-header {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -20,21 +20,21 @@
   padding-inline: var(--space-1);
 }
 
-.day-group-label {
+.period-group-label {
   font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--text-secondary);
   letter-spacing: 0.01em;
 }
 
-.day-group-total {
+.period-group-total {
   font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--text-primary);
 }
 
 /* Rows sit on a single tinted sheet so a day reads as one block. */
-.day-group-rows {
+.period-group-rows {
   background: var(--color-surface);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-sm);
@@ -42,7 +42,7 @@
 }
 
 /* The last row in a group should not draw a trailing divider. */
-.day-group-rows > *:last-child .divider {
+.period-group-rows > *:last-child .divider {
   display: none;
 }
 
