@@ -7,6 +7,7 @@ import { prisma } from '../../lib/prisma.js'
 import { notFoundError } from '../../lib/errors.js'
 import type { ListPartiesQuery } from '../../schemas/party.schemas.js'
 import { getPartyStats } from './detail-stats.js'
+import type { PartyType } from '../../../../shared/enums.js'
 
 export async function listParties(businessId: string, filters: ListPartiesQuery) {
   const {
@@ -217,7 +218,7 @@ export async function getParty(businessId: string, partyId: string) {
 
   if (!party) throw notFoundError('Party')
 
-  // Hero-tile stats (sales MTD, last payment, overdue flag) — see detail-stats.ts
-  const stats = await getPartyStats(businessId, partyId)
+  // Hero-tile stats — direction follows the party type; see detail-stats.ts
+  const stats = await getPartyStats(businessId, partyId, party.type as PartyType)
   return { ...party, stats }
 }

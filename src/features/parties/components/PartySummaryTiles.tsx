@@ -1,9 +1,12 @@
-/** Party summary tiles — Outstanding / Sales (MTD) / Last Payment row.
+/** Party summary tiles — three tinted stat tiles above the detail tabs.
  *
- * Matches the Customer Details mockup: three tinted stat tiles, each with a
- * value and a subtitle hint (Overdue flag, invoice count, last-payment date +
- * mode). Subtitle data comes from the server-derived `party.stats`; when it is
- * absent (stale offline cache) the hints degrade gracefully. Amounts are paise.
+ * Wording follows the party's direction: a customer reads Outstanding /
+ * Sales (MTD) / Last Payment (mockup #27), a supplier reads Total Payable /
+ * Purchases (MTD) / Payments Made (mockup #52 — Supplier Ledger). The numbers
+ * behind them are already direction-aware — see server detail-stats.ts.
+ *
+ * Subtitle data comes from the server-derived `party.stats`; when it is absent
+ * (stale offline cache) the hints degrade gracefully. Amounts are paise.
  */
 
 import React from 'react'
@@ -32,11 +35,16 @@ export const PartySummaryTiles: React.FC<PartySummaryTilesProps> = ({ party }) =
   const { t } = useLanguage()
   const stats = party.stats
   const due = Math.max(party.outstandingBalance, 0)
+  const isSupplier = party.type === 'SUPPLIER'
 
-  // Sales value: MTD when stats are present, else fall back to lifetime total.
-  const salesValue = stats ? stats.salesMtd : party.totalBusiness
-  const salesLabel = stats ? t.salesMtd : t.totalSales
-  const salesHint = stats ? `${stats.invoiceCountMtd} ${t.invoices}` : undefined
+  // Billing value: MTD when stats are present, else fall back to lifetime total.
+  const billedValue = stats ? stats.salesMtd : party.totalBusiness
+  const billedLabel = isSupplier
+    ? (stats ? t.purchasesMtd : t.totalPurchases)
+    : (stats ? t.salesMtd : t.totalSales)
+  const billedHint = stats
+    ? `${stats.invoiceCountMtd} ${isSupplier ? t.bills : t.invoices}`
+    : undefined
 
   const last = stats?.lastPayment ?? null
   const lastHint = last
@@ -49,7 +57,7 @@ export const PartySummaryTiles: React.FC<PartySummaryTilesProps> = ({ party }) =
       tiles={[
         {
           id: 'due',
-          label: t.outstanding,
+          label: isSupplier ? t.totalPayable : t.outstanding,
           value: formatAmount(due),
           tone: 'due',
           icon: <ArrowDownRight className="w-4 h-4" />,
@@ -58,15 +66,15 @@ export const PartySummaryTiles: React.FC<PartySummaryTilesProps> = ({ party }) =
         },
         {
           id: 'sales',
-          label: salesLabel,
-          value: formatAmount(salesValue),
+          label: billedLabel,
+          value: formatAmount(billedValue),
           tone: 'sales',
           icon: <TrendingUp className="w-4 h-4" />,
-          hint: salesHint,
+          hint: billedHint,
         },
         {
           id: 'last-payment',
-          label: t.lastPayment,
+          label: isSupplier ? t.paymentsMade : t.lastPayment,
           value: last ? formatAmount(last.amount) : '—',
           tone: 'info',
           icon: <Wallet className="w-4 h-4" />,

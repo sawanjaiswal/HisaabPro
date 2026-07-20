@@ -325,4 +325,8 @@ export const enExt7 = {
   returnFoundSingular:       'return found',
   returnFoundPlural:         'returns found',
   returnListHeading:         'Return list',
+  totalPayable:              'Total Payable',
+  purchasesMtd:              'Purchases (MTD)',
+  paymentsMade:              'Payments Made',
+  bills:                     'bills',
 } as const

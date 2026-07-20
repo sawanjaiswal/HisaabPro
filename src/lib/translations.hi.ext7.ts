@@ -288,4 +288,8 @@ export const hiExt7 = {
   returnFoundSingular:       'वापसी मिली',
   returnFoundPlural:         'वापसी मिलीं',
   returnListHeading:         'वापसी सूची',
+  totalPayable:              'कुल देय',
+  purchasesMtd:              'खरीद (इस माह)',
+  paymentsMade:              'भुगतान किया',
+  bills:                     'बिल',
 } as const
