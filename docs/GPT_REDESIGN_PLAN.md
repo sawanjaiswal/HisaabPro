@@ -208,7 +208,12 @@ Legend: **DONE** = shipped in `891528a` · **EXISTS** = current page to restyle 
   - [x] #55 Price list — `62a974e`
   - [x] #50 Expense categories — `61d0626`
   - [x] #67 Stock history — `c446f48`
-- [ ] Wave 3 — purchases (5)
+- [x] Wave 3 — purchases (5)
+  - [x] #11 Purchase list — `128d58c`
+  - [x] #12 Add purchase — `9e9cd6a`
+  - [x] #44 Sales return — `82cb1a7`
+  - [x] #51 Purchase return — `82cb1a7`
+  - [x] #52 Supplier ledger — `fb9b4cc` (direction-aware tiles)
 - [ ] Wave 4 — expenses/estimates/docs (6)
 - [ ] Wave 5 — reports (6)
 - [ ] Wave 6 — people/HR (6)
