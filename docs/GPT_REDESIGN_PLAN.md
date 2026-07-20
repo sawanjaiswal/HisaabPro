@@ -200,7 +200,14 @@ Legend: **DONE** = shipped in `891528a` · **EXISTS** = current page to restyle 
   - [x] #41 Payment History — `ded15c8`
   - [x] #42/104 Payment Details — `4601188`
   - [x] #17 Receivables — `c7b8a26`
-- [ ] Wave 2 — inventory (6)
+- [x] Wave 2 — inventory (6)
+  - [x] #8 Product list — landed with Wave 1 sweep
+  - [x] #53 Category list — `2617795`
+  - [x] #49/101 Low stock / Stock alerts — `c3eaddc`
+  - [x] #48 Stock adjustment log — `630679c`
+  - [x] #55 Price list — `62a974e`
+  - [x] #50 Expense categories — `61d0626`
+  - [x] #67 Stock history — `c446f48`
 - [ ] Wave 3 — purchases (5)
 - [ ] Wave 4 — expenses/estimates/docs (6)
 - [ ] Wave 5 — reports (6)
