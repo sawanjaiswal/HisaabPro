@@ -275,4 +275,5 @@ export const hiExt7 = {
   plSearch:                  'मूल्य सूचियां खोजें',
   expenseCategories:         'खर्च श्रेणियां',
   expenseLabel:              'खर्च',
+  adjustments:               'समायोजन',
 } as const

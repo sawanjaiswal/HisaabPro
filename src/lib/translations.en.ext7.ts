@@ -312,4 +312,5 @@ export const enExt7 = {
   plSearch:                  'Search price lists',
   expenseCategories:         'Expense Categories',
   expenseLabel:              'expense',
+  adjustments:               'Adjustments',
 } as const
