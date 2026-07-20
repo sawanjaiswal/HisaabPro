@@ -1,17 +1,4 @@
-/** Payment UI — Form sections, detail tabs, and aging buckets
- *
- * Labels and CSS variable references for payment form/detail UI elements.
- */
-
-import type { PaymentDetailTab } from './payment.types'
-
-// ─── Detail tab labels ────────────────────────────────────────────────────────
-
-export const PAYMENT_DETAIL_TAB_LABELS: Record<PaymentDetailTab, string> = {
-  overview:    'Overview',
-  allocations: 'Allocations',
-  history:     'History',
-}
+/** Payment UI — aging bucket labels and CSS variable references. */
 
 // ─── Aging bucket labels ──────────────────────────────────────────────────────
 

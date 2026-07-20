@@ -37,7 +37,6 @@ export {
 export type OutstandingPartyType = 'CUSTOMER' | 'SUPPLIER' | 'BOTH'
 
 /** Tabs on the payment detail screen */
-export type PaymentDetailTab = 'overview' | 'allocations' | 'history'
 
 /** Pill tabs on the payment creation/edit form */
 export type PaymentFormSection = 'details' | 'invoices' | 'discount'

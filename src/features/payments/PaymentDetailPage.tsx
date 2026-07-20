@@ -1,7 +1,7 @@
-/** Payment Detail — Page (lazy loaded)
+/** Payment Details — Page (lazy loaded), mockup #42.
  *
- * Follows InvoiceDetailPage.tsx pattern: hero header card,
- * pill tabs (Overview / Allocations / History), 4 UI states.
+ * Single scroll: identity card → info rows → linked invoices → receipt
+ * actions. 4 UI states.
  */
 
 import { useState } from 'react'
@@ -16,29 +16,20 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { usePaymentDetail } from './usePaymentDetail'
-import { PAYMENT_DETAIL_TAB_LABELS } from './payment.constants'
 import { PaymentDetailSkeleton } from './components/PaymentDetailSkeleton'
 import { PaymentDetailHero } from './components/PaymentDetailHero'
-import { PaymentOverviewTab } from './components/PaymentOverviewTab'
-import { PaymentAllocationsTab } from './components/PaymentAllocationsTab'
-import { PaymentHistoryTab } from './components/PaymentHistoryTab'
+import { PaymentDetailRows } from './components/PaymentDetailRows'
+import { PaymentAllocationsSection } from './components/PaymentAllocationsSection'
 import { VoucherShareBar } from './voucher/VoucherShareBar'
-import type { PaymentDetailTab } from './payment.types'
-import './payment-hero.css'
+import './payment-detail.css'
 import { Button } from '@/components/ui/Button'
-
-const TABS: { id: PaymentDetailTab; label: string }[] = [
-  { id: 'overview', label: PAYMENT_DETAIL_TAB_LABELS.overview },
-  { id: 'allocations', label: PAYMENT_DETAIL_TAB_LABELS.allocations },
-  { id: 'history', label: PAYMENT_DETAIL_TAB_LABELS.history },
-]
 
 export default function PaymentDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { t } = useLanguage()
   const paymentId = id ?? ''
-  const { payment, status, activeTab, setActiveTab, refresh, handleDelete } = usePaymentDetail(paymentId)
+  const { payment, status, refresh, handleDelete } = usePaymentDetail(paymentId)
 
   const [deleteOpen, setDeleteOpen] = useState(false)
 
@@ -100,57 +91,34 @@ export default function PaymentDetailPage() {
 
         {/* Success */}
         {status === 'success' && payment && (
-          <div className="stagger-enter">
+          <div className="stagger-enter space-y-6">
             <div role="status" aria-live="polite" className="sr-only">
               {t.paymentDetailsLoaded}
             </div>
+
             <PaymentDetailHero
               type={payment.type}
               partyName={payment.partyName}
               amount={payment.amount}
-              date={payment.date}
               mode={payment.mode}
             />
 
+            <PaymentDetailRows
+              type={payment.type}
+              date={payment.date}
+              mode={payment.mode}
+              referenceNumber={payment.referenceNumber}
+              amount={payment.amount}
+              discount={payment.discount}
+              unallocatedAmount={payment.unallocatedAmount}
+              notes={payment.notes}
+              allocations={payment.allocations}
+            />
+
+            <PaymentAllocationsSection allocations={payment.allocations} />
+
             {/* Voucher download / print (#90 receipt, #91 payment) */}
-            <div className="mt-4">
-              <VoucherShareBar payment={payment} />
-            </div>
-
-            {/* Pill tabs */}
-            <div className="pill-tabs" role="tablist" aria-label={t.paymentDetailSections}>
-              {TABS.map((tab) => (
-                <Button variant="none"
-                  key={tab.id}
-                  role="tab"
-                  className={`pill-tab${activeTab === tab.id ? ' active' : ''}`}
-                  onClick={() => setActiveTab(tab.id)}
-                  aria-selected={activeTab === tab.id}
-                  aria-controls={`panel-${tab.id}`}
-                >
-                  {tab.label}
-                </Button>
-              ))}
-            </div>
-
-            <div id={`panel-${activeTab}`} role="tabpanel" aria-label={`${activeTab} ${t.tabContent}`}>
-              {activeTab === 'overview' && (
-                <PaymentOverviewTab
-                  type={payment.type}
-                  date={payment.date}
-                  mode={payment.mode}
-                  referenceNumber={payment.referenceNumber}
-                  amount={payment.amount}
-                  discount={payment.discount}
-                  unallocatedAmount={payment.unallocatedAmount}
-                  notes={payment.notes}
-                />
-              )}
-              {activeTab === 'allocations' && (
-                <PaymentAllocationsTab allocations={payment.allocations} />
-              )}
-              {activeTab === 'history' && <PaymentHistoryTab />}
-            </div>
+            <VoucherShareBar payment={payment} />
           </div>
         )}
       </PageContainer>

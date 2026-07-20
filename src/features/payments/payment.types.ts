@@ -16,7 +16,6 @@ export type {
   OutstandingType,
   OutstandingSortBy,
   OutstandingPartyType,
-  PaymentDetailTab,
   PaymentFormSection,
 } from './payment-enums.types'
 

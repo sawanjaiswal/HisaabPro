@@ -1,0 +1,151 @@
+/* ============================================================
+   Payment Details (mockup #42) — identity card, info rows,
+   allocation rows. Single scroll, no tabs.
+   Tokens only; dark mode comes from tokens-dark.css.
+   ============================================================ */
+
+/* ─── Identity card ─────────────────────────────────────────── */
+
+.payment-identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.payment-identity-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.payment-identity-party {
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.payment-identity-meta {
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.payment-identity-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.payment-identity-amount {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.payment-identity-amount--in {
+  color: var(--color-success-600);
+}
+
+.payment-identity-amount--out {
+  color: var(--color-error-600);
+}
+
+.payment-identity-direction {
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+}
+
+/* ─── Info rows ─────────────────────────────────────────────── */
+
+.payment-info-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  padding: 0 var(--space-4);
+}
+
+.payment-info-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 44px;
+  padding: var(--space-3) 0;
+}
+
+.payment-info-row + .payment-info-row {
+  border-top: 1px solid var(--color-border);
+}
+
+.payment-info-label {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.payment-info-value {
+  font-size: var(--fs-df);
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: right;
+  word-break: break-word;
+}
+
+.payment-info-value--negative {
+  color: var(--color-error-600);
+}
+
+/* Notes stack their label above a full-width paragraph. */
+.payment-info-row--stacked {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
+
+.payment-info-row--stacked .payment-info-value {
+  text-align: left;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* ─── Allocation rows ───────────────────────────────────────── */
+
+.payment-alloc-list {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  padding: 0 var(--space-4);
+}
+
+.payment-alloc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 44px;
+  padding: var(--space-3) 0;
+}
+
+.payment-alloc-row + .payment-alloc-row {
+  border-top: 1px solid var(--color-border);
+}
+
+.payment-alloc-invoice {
+  font-size: var(--fs-df);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.payment-alloc-amount {
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--text-primary);
+}

@@ -1,11 +1,11 @@
 /** Payment Detail — Hook to fetch and manage a single payment record
  *
- * TanStack Query v5 migration. Fetches full PaymentDetail by ID,
- * manages tab state, and delete action. Query replaces useState +
+ * TanStack Query v5 migration. Fetches full PaymentDetail by ID
+ * and owns the delete action. Query replaces useState +
  * useEffect + refreshKey.
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
@@ -13,15 +13,13 @@ import { ApiError } from '@/lib/api'
 import { queryKeys } from '@/lib/query-keys'
 import { ROUTES } from '@/config/routes.config'
 import { getPayment, deletePayment } from './payment.service'
-import type { PaymentDetail, PaymentDetailTab } from './payment.types'
+import type { PaymentDetail } from './payment.types'
 
 type DetailStatus = 'loading' | 'error' | 'success'
 
 interface UsePaymentDetailReturn {
   payment: PaymentDetail | null
   status: DetailStatus
-  activeTab: PaymentDetailTab
-  setActiveTab: (tab: PaymentDetailTab) => void
   refresh: () => void
   handleDelete: () => void
 }
@@ -30,8 +28,6 @@ export function usePaymentDetail(id: string): UsePaymentDetailReturn {
   const toast = useToast()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-
-  const [activeTab, setActiveTab] = useState<PaymentDetailTab>('overview')
 
   // TanStack Query replaces useState(payment) + useEffect(fetch) + refreshKey
   const query = useQuery({
@@ -77,8 +73,6 @@ export function usePaymentDetail(id: string): UsePaymentDetailReturn {
   return {
     payment,
     status,
-    activeTab,
-    setActiveTab,
     refresh,
     handleDelete,
   }
