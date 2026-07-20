@@ -1,0 +1,211 @@
+# GPT New-Design Redesign Plan
+
+> Source mockups: `~/Downloads/Folders/Projects Images/HisaabPro app/GPT New design/untitled folder/` (9 contact sheets, screens **1–104**).
+> Goal: bring every current HisaabPro page in line with the new GPT design language, one page at a time.
+> Execution rule: **every page goes through the `/hp-design` skill** (RIGID workflow) and the `PAGE_AUDIT_CHECKLIST.md` gate before commit.
+
+---
+
+## 0. What the new design language is (extracted from the mockups)
+
+Consistent across all 104 screens — this is the visual contract every page must hit:
+
+- **Deep-emerald hero band** at the top of most screens (`--color-hero-surface`), white/light text on it, rounded bottom corners.
+- **Back-chevron + centered title** header on all detail/sub pages; list roots keep the app `<Header>`.
+- **Summary tiles row** — 2–4 stat tiles directly under the hero (Total Due / Paid / Sales style), soft cards, `tabular-nums`, colored value text (red = due/overdue, emerald = positive).
+- **Segmented tab bar** under the summary (All / Overview / Invoices / Payments / Activity) — pill/underline style.
+- **Transaction rows** — leading icon chip, two-line label (name + sub), right-aligned amount + status pill.
+- **Bottom nav** — Home · Customers · center **＋ FAB** (emerald circle) · Reports · More — on every top-level screen.
+- **Primary CTA** — full-width emerald button pinned bottom (via `<BottomActionBar>`/`<Drawer>` footer, never raw fixed).
+- **Status pills** — Paid/Received (emerald), Overdue/Unpaid (red), Pending (amber), Draft/Sent (neutral).
+- **Filter/sort** — right-side icon opens a bottom `<Drawer>` (design #70).
+- All tokens per `hp-design`: cream bg, emerald brand, lime-yellow accent, Inter, 12px card radius, soft shadows. Dark-mode parity mandatory.
+
+**Reusable primitives already built in commit `891528a`** (reuse, do NOT rebuild): `HeroPage`, `SummaryTiles`, `TransactionRow`, `PartyOutstandingCard`, per-feature `*FilterDrawer`. New shared primitives this epic will likely add: `SegmentedTabs`, `StatusPill` (if not present), `BottomActionBar` (Phase-3 primitive already planned).
+
+---
+
+## 1. Dedup — 104 mockups → unique screens → current route → status
+
+Legend: **DONE** = shipped in `891528a` · **EXISTS** = current page to restyle · **NEW** = no current page / new feature · **STATE** = shared UI-state pattern.
+
+### Already DONE (commit 891528a) — verify only
+| # (mockup) | Screen | Route |
+|---|---|---|
+| 60 | Dashboard (demo) | `/dashboard` |
+| 4, 39 | Customer/Party list + empty | `/parties` |
+| 5, 47, 102 | Customer ledger / detail | `/parties/:id` |
+| 8 | Product list | `/products` |
+| 54 | Product details | `/products/:id` |
+| 9 | Add/Edit product | `/products/:id/edit`, `/products/new` |
+| 103 | Invoice details | `/invoices/:id` |
+| 70 | Filter & sort drawer | (drawer primitive) |
+
+### WAVE 1 — Core sales & money flow (highest traffic)
+| # | Screen | Route | Status |
+|---|---|---|---|
+| 1 | Sales / Invoice list | `/invoices` | EXISTS |
+| 2 | Create Invoice | `/invoices/new` | EXISTS |
+| 3 | Invoice Preview (PDF) | (in create/detail) | EXISTS |
+| 6 | Add Customer | `/parties/new` | EXISTS |
+| 7 | Receive Payment | `/payments/new` | EXISTS |
+| 41 | Payment History / list | `/payments` | EXISTS |
+| 42, 104 | Payment Details | `/payments/:id` | EXISTS |
+| 17 | Receivables / Outstanding | `/outstanding` | EXISTS |
+
+### WAVE 2 — Inventory & catalog
+| # | Screen | Route | Status |
+|---|---|---|---|
+| 8→ | (done) | | |
+| 53 | Category list | (products filter/category drawer) | EXISTS/partial |
+| 49, 101 | Low stock / Stock alert | `/inventory/reorder-suggestions` or StockAlerts | EXISTS |
+| 48 | Stock adjustment | inventory adjust | EXISTS/NEW |
+| 67 | Stock history | (product detail tab) | EXISTS |
+| 55 | Price list | `/price-lists` (PriceListsPage) | EXISTS |
+| 50 | Expense categories | `/expenses` categories | EXISTS |
+
+### WAVE 3 — Purchases & suppliers
+| # | Screen | Route | Status |
+|---|---|---|---|
+| 11 | Purchase list | `/purchases` | EXISTS |
+| 12 | Add purchase | `/purchases/new` | EXISTS |
+| 44 | Sales return | sales returns / credit note | EXISTS/NEW |
+| 51 | Purchase return | purchase returns / debit note | EXISTS/NEW |
+| 52 | Supplier ledger | `/parties/:id` (supplier) | DONE-ish |
+
+### WAVE 4 — Expenses, estimates, documents
+| # | Screen | Route | Status |
+|---|---|---|---|
+| 10 | Expense list | `/expenses` | EXISTS |
+| 13 | Expense details | expense detail | EXISTS/NEW |
+| 45 | Estimate list | `/sales` estimates (EstimatesPage) | EXISTS |
+| 46 | Estimate details | EstimateDetailPage | EXISTS |
+| 43 | Draft invoices | invoices?status=draft | EXISTS |
+| 47 | Customer statement | `/reports/party-statement/:id` | EXISTS |
+
+### WAVE 5 — Reports
+| # | Screen | Route | Status |
+|---|---|---|---|
+| 14 | Reports home | `/reports` | EXISTS |
+| 15, 68 | Sales report / P&L | `/reports/sales`, `/reports/profit-loss` | EXISTS |
+| 16 | Profit & Loss | `/reports/profit-loss` | EXISTS |
+| 69 | Cash flow | `/reports/cash-flow` | EXISTS |
+| 31 | GST report | `/reports/gst-returns` | EXISTS |
+| 66 | Customer balance summary | `/reports/aging` or receivables | EXISTS |
+
+### WAVE 6 — People, HR, collections
+| # | Screen | Route | Status |
+|---|---|---|---|
+| 21, 71 | Employee list | `/hr/employees` (EmployeeListPage) | EXISTS |
+| 27 | Employee details | EmployeeDetailPage | EXISTS |
+| 28 | Attendance | AttendancePage | EXISTS |
+| 22, 29 | Daily collections | collections | EXISTS |
+| 26 | Delivery / route | — | **NEW** (not built) |
+| 72 | Permissions / roles | `/settings/roles`, `/settings/permissions` | EXISTS |
+
+### WAVE 7 — Tasks, reminders, notifications, search
+| # | Screen | Route | Status |
+|---|---|---|---|
+| 18, 62 | Notifications | `/notifications` | EXISTS |
+| 23 | Add task / reminder | crm reminder form | EXISTS |
+| 30, 63 | Reminders | `/marketing/reminders`, `/crm/follow-ups` | EXISTS |
+| 64 | Today's tasks | — | **NEW** |
+| 65 | Calendar view | `/appointments` (calendar) | EXISTS/partial |
+| 24, 61 | Universal search | global search overlay | EXISTS/partial |
+
+### WAVE 8 — Settings, business, account
+| # | Screen | Route | Status |
+|---|---|---|---|
+| 19, 74 | Settings | `/settings` | EXISTS |
+| 20, 76 | Business profile | business settings | EXISTS |
+| 98 | Manage business | business settings | EXISTS |
+| 99 | Multiple businesses (switch) | business switcher | EXISTS |
+| 100 | Branch / location | godowns/branches | EXISTS |
+| 97 | Account & security | `/settings/security` | EXISTS |
+| 96 | Theme | `/settings/theme` | EXISTS |
+| 35, 77, 95 | Language | language settings | EXISTS |
+| 34, 75, 86 | WhatsApp integration / preview | settings | EXISTS |
+| 33, 73, 84 | Subscription plan | `/settings/subscription` | EXISTS |
+| 32, 81 | Backup & restore | `/settings/backup` | EXISTS |
+| 93 | Quick actions | FAB/quick-actions sheet | EXISTS/partial |
+| 94 | Data sync | sync status | EXISTS/partial |
+| 25 | More menu | `/more` | EXISTS |
+| 36 | Help & support | — | **NEW** |
+| 37, 83 | About HisaabPro | — | **NEW** |
+
+### WAVE 9 — Accounts, onboarding, import
+| # | Screen | Route | Status |
+|---|---|---|---|
+| 56 | Cash accounts | accounting/cash | EXISTS/NEW |
+| 57 | Bank accounts | `/bank-accounts` | EXISTS |
+| 58 | Opening balance | onboarding step | EXISTS/NEW |
+| 38, 78 | Business setup / first-time | `/onboarding`, CreateBusiness | EXISTS |
+| 59, 79 | Data import | `/settings/import`, `/imports` | EXISTS |
+
+### WAVE 10 — Shared UI states & primitives (do EARLY, blocks others)
+| # | Pattern | Where | Status |
+|---|---|---|---|
+| 89 | Success screen | success state primitive | STATE |
+| 90 | Error state | `<ErrorState>` | STATE (align) |
+| 87 | Permission denied | plan-gate / access-denied | STATE |
+| 88, 40, 80 | Offline banner / mode | `<OfflineBanner>` | STATE (align) |
+| 91 | Confirm delete | `<ConfirmDialog>` | STATE (align) |
+| 92 | Date-range picker | date-range drawer | EXISTS/NEW |
+| 85 | Payment reminder (to customer) | reminder send sheet | EXISTS |
+| 70 | Filter & sort | `<Drawer>` filter | DONE pattern |
+
+---
+
+## 2. Sequencing rationale
+
+1. **Wave 10 (shared states/primitives) first** — Success/Error/Empty/Offline/Confirm and `SegmentedTabs`/`StatusPill` are consumed by every other wave. Locking them prevents rework.
+2. **Wave 1 (sales & money)** next — highest user traffic, most visible ROI.
+3. Waves 2–5 — the operational core (inventory, purchases, expenses, reports).
+4. Waves 6–9 — people/settings/accounts, lower traffic.
+5. **NEW screens** (Delivery/Route #26, Today's Tasks #64, Help #36, About #37) are scoped as **separate feature builds**, not restyles — flagged for `/f`, not this restyle sweep.
+
+## 3. Per-page workflow (every page, no exceptions)
+
+1. Open the mockup + the live page side by side (Chrome, real record).
+2. `/hp-design` skill → map deltas to tokens/components.
+3. 6-layer split if the page grows past 250L (types→constants→utils→hooks→components→page).
+4. Reuse `HeroPage` / `SummaryTiles` / `TransactionRow` / `*FilterDrawer` — never rebuild.
+5. All 4 UI states + 320/375/768/1024/1280 responsive.
+6. `PAGE_AUDIT_CHECKLIST.md` A→N gate.
+7. `node scripts/enforce.js` + `tsc -b --noEmit` clean.
+8. Commit one page (or one tight page-group) at a time.
+
+## 4. Decisions (locked 2026-07-20)
+
+- **D1 — Start point:** Wave 10 (shared states & primitives) FIRST, then Wave 1.
+- **D2 — 4 NEW screens** (Delivery/Route #26, Today's Tasks #64, Help #36, About #37):
+  **DEFERRED.** Before building, **compare with competitor apps** (Vyapar, myBillBook,
+  Khatabook, OkCredit) to define scope — remind Sawan. NOT part of the restyle sweep.
+- **D3 — Commit granularity:** ONE commit per page.
+- **D4 — Duplicated mockups:** highest-numbered mockup = latest/authoritative design.
+
+## 5. Progress tracker (update as pages land)
+
+- [x] Wave 10 — shared states & primitives — **already satisfied** by `FeedbackState`
+      + presets (EmptyState/ErrorState/NetworkError/NotFoundPage), `Badge`, `Tabs`,
+      `ConfirmDialog`, `OfflineBanner`. No `SegmentedTabs`/`StatusPill` fork needed.
+      Only open gap: a unified `DateRangePicker` (#92), currently ad-hoc across ~8
+      report/filter pages — deferred, not blocking.
+- [x] Wave 1 — sales & money (8 screens) — **DONE**
+  - [x] #1 Sales / Invoice list — `9c31564`
+  - [x] #2 Create Invoice (+ Edit Invoice, same form engine) — `592a3bb`
+  - [x] #3 Invoice Preview — `082b0f0`
+  - [x] #6 Add Customer — `21cc4db`
+  - [x] #7 Receive Payment — `7168be9`
+  - [x] #41 Payment History — `ded15c8`
+  - [x] #42/104 Payment Details — `4601188`
+  - [x] #17 Receivables — `c7b8a26`
+- [ ] Wave 2 — inventory (6)
+- [ ] Wave 3 — purchases (5)
+- [ ] Wave 4 — expenses/estimates/docs (6)
+- [ ] Wave 5 — reports (6)
+- [ ] Wave 6 — people/HR (6)
+- [ ] Wave 7 — tasks/reminders/search (6)
+- [ ] Wave 8 — settings/business/account (18)
+- [ ] Wave 9 — accounts/onboarding/import (5)
+- [ ] NEW feature builds — Delivery/Route, Today's Tasks, Help, About
