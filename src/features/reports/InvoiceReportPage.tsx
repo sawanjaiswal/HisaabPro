@@ -21,7 +21,7 @@ import { useInvoiceReport } from './hooks/useInvoiceReport'
 import { InvoiceReportFilter } from './components/InvoiceReportFilter'
 import { InvoiceReportList } from './components/InvoiceReportList'
 import { InvoiceReportGrouped } from './components/InvoiceReportGrouped'
-import { InvoiceReportPeriod } from './components/InvoiceReportPeriod'
+import { ReportPeriodSelect } from './components/ReportPeriodSelect'
 import { InvoiceReportHero } from './components/InvoiceReportHero'
 import { InvoiceReportBreakup } from './components/InvoiceReportBreakup'
 import { InvoiceReportSummaryGrid } from './components/InvoiceReportSummaryGrid'
@@ -40,6 +40,7 @@ import type { StatusFilterValue } from './components/InvoiceReportFilter'
 import './report-shared.css'
 import './report-cards.css'
 import './report-shared-ui.css'
+import './report-period.css'
 import './report-invoice.css'
 import { useLanguage } from '@/hooks/useLanguage'
 
@@ -138,7 +139,7 @@ export default function InvoiceReportPage() {
       : (data.data.items?.length ?? 0) > 0)
 
   const hero = (
-    <InvoiceReportPeriod
+    <ReportPeriodSelect
       activePreset={activeDatePreset}
       from={filters.from}
       to={filters.to}

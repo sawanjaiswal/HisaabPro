@@ -1,144 +1,136 @@
-/** Profit & Loss Report Page
+/** Profit & Loss Report (mockup #16)
  *
- * Income vs expenses with net profit/loss.
- * Date range picker. 4 UI states.
+ * Emerald hero carrying the period picker, then the Income / Expenses
+ * statement and a Net Profit card with the vs-previous-period delta and the
+ * per-day curve.
+ *
+ * The client type mirrors the server's return value exactly — the page used to
+ * read keys the API never sent and crashed on load
+ * (see .claude/fix-trace-pl-contract.md).
  */
 
 import { useState, useEffect, useCallback } from 'react'
-import { RefreshCw, BarChart3 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { BarChart3 } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { PageContainer } from '@/components/layout/PageContainer'
+import { Button } from '@/components/ui/Button'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { useToast } from '@/hooks/useToast'
+import { useLanguage } from '@/hooks/useLanguage'
 import { ApiError } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
-import { formatPaise } from '@/lib/format'
+import { getDateRange } from './report.utils'
 import { getProfitLoss } from './finance.service'
-import type { ProfitLossData, ProfitLossSection } from './finance.types'
-import './report-finance.css'
-import { useLanguage } from '@/hooks/useLanguage'
-import { toLocalISODate } from '../../lib/format'
-import { Input } from '@/components/ui/Input'
-import { Button } from '@/components/ui/Button'
-
-function SectionCard({ section, amountClass }: { section: ProfitLossSection; amountClass?: string }) {
-  return (
-    <div className="finance-section py-0">
-      <div className="finance-section__header py-0">
-        <span className="finance-section__title py-0">{section.label}</span>
-        <span className={`finance-section__total ${amountClass ?? ''}`}>{formatPaise(section.amount)}</span>
-      </div>
-      {section.items.length > 0 && (
-        <div className="finance-section__rows py-0">
-          {section.items.map((item) => (
-            <div key={item.label} className="finance-section__row py-0">
-              <span className="finance-section__row-label py-0">{item.label}</span>
-              <span className="finance-section__row-amount py-0">{formatPaise(item.amount)}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
-function getMonthRange(): { from: string; to: string } {
-  const now = new Date()
-  const from = toLocalISODate(new Date(now.getFullYear(), now.getMonth(), 1))
-  const to = toLocalISODate(new Date(now.getFullYear(), now.getMonth() + 1, 0))
-  return { from, to }
-}
+import { ReportPeriodSelect } from './components/ReportPeriodSelect'
+import { ProfitLossStatement } from './components/ProfitLossStatement'
+import { ProfitLossNetCard } from './components/ProfitLossNetCard'
+import type { ProfitLossData } from './finance.types'
+import type { DateRangePreset } from './report.types'
+import './report-period.css'
+import './report-profit-loss.css'
 
 export default function ProfitLossPage() {
   const { t } = useLanguage()
   const toast = useToast()
-  const [dateRange, setDateRange] = useState(getMonthRange)
+  const navigate = useNavigate()
+
+  const [preset, setPreset] = useState<DateRangePreset>('this_month')
+  const [range, setRange] = useState(() => getDateRange('this_month'))
   const [data, setData] = useState<ProfitLossData | null>(null)
-  const [fetchStatus, setFetchStatus] = useState<'loading' | 'error' | 'success'>('loading')
+  const [status, setStatus] = useState<'loading' | 'error' | 'success'>('loading')
   const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
     const controller = new AbortController()
-    setFetchStatus('loading')
-    getProfitLoss(dateRange.from, dateRange.to, controller.signal)
-      .then((d) => { setData(d); setFetchStatus('success') })
+    setStatus('loading')
+    getProfitLoss(range.from, range.to, controller.signal)
+      .then((d) => {
+        setData(d)
+        setStatus('success')
+      })
       .catch((err: unknown) => {
         if (err instanceof Error && err.name === 'AbortError') return
-        setFetchStatus('error')
+        setStatus('error')
         toast.error(err instanceof ApiError ? err.message : t.failedLoadPl)
       })
     return () => controller.abort()
-  }, [dateRange, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [range, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
 
-  if (fetchStatus === 'loading') {
-    return (
-      <AppShell>
-        <Header title={t.profitAndLoss} backTo={ROUTES.REPORTS} />
-        <PageContainer>
-          <div className="finance-skeleton" aria-busy="true">
-            {['sk-1', 'sk-2', 'sk-3'].map((k) => <div key={k} className="finance-skeleton__section py-0" />)}
-          </div>
-        </PageContainer>
-      </AppShell>
-    )
-  }
+  const handlePresetChange = useCallback((value: string) => {
+    const next = value as DateRangePreset
+    setPreset(next)
+    if (next !== 'custom') setRange(getDateRange(next))
+  }, [])
 
-  if (fetchStatus === 'error') {
-    return (
-      <AppShell>
-        <Header title={t.profitAndLoss} backTo={ROUTES.REPORTS} />
-        <PageContainer>
-          <ErrorState title={t.couldNotLoadPl} message={t.checkConnectionRetry} onRetry={refresh} />
-        </PageContainer>
-      </AppShell>
-    )
-  }
+  /** Bottom CTA — the day book is the line-by-line view behind these totals. */
+  const handleViewFullReport = useCallback(() => {
+    navigate(ROUTES.REPORT_DAY_BOOK)
+  }, [navigate])
 
-  const isProfit = (data?.netProfit ?? 0) >= 0
+  const hasActivity =
+    data !== null && (data.income.totalIncome !== 0 || data.expenses.totalExpenses !== 0)
+
+  const hero = (
+    <ReportPeriodSelect
+      activePreset={preset}
+      from={range.from}
+      to={range.to}
+      onPresetChange={handlePresetChange}
+    />
+  )
 
   return (
     <AppShell>
       <Header title={t.profitAndLoss} backTo={ROUTES.REPORTS} />
-      <PageContainer variant="list" className="space-y-6">
-        <div className="finance-date-bar fade-up">
-          <span className="finance-date-bar__label">{t.from}</span>
-          <Input type="date" className="finance-date-bar__input" value={dateRange.from} onChange={(e) => setDateRange((r) => ({ ...r, from: e.target.value }))} aria-label={t.fromDate} />
-          <span className="finance-date-bar__label">{t.to}</span>
-          <Input type="date" className="finance-date-bar__input" value={dateRange.to} onChange={(e) => setDateRange((r) => ({ ...r, to: e.target.value }))} aria-label={t.toDate} />
-          <Button variant="none" type="button" className="finance-date-bar__refresh-btn" onClick={refresh} aria-label={t.refreshReport}>
-            <RefreshCw size={14} aria-hidden="true" />
-          </Button>
-        </div>
 
-        {!data && (
-          <EmptyState
-            icon={<BarChart3 size={22} aria-hidden="true" />}
-            title={t.noDataForThisPeriod}
-            description={t.tryDifferentDateRange}
-          />
-        )}
+      <HeroPage hero={hero}>
+        <PageContainer variant="list" className="space-y-6">
+          {status === 'loading' && (
+            <>
+              <div className="pl-net-skeleton animate-pulse" aria-hidden="true" />
+              <div className="pl-statement-skeleton animate-pulse" aria-busy="true" />
+            </>
+          )}
 
-        {data && (
-          <>
-            <SectionCard section={data.revenue} />
-            <SectionCard section={data.costOfGoods} />
-            <div className={`finance-net-row${isProfit ? ' finance-net-row--profit' : ' finance-net-row--loss'}`}>
-              <span className="finance-net-row__label">{t.grossProfit}</span>
-              <span className="finance-net-row__amount">{formatPaise(data.grossProfit)}</span>
-            </div>
-            <SectionCard section={data.expenses} />
-            {data.otherIncome.amount > 0 && <SectionCard section={data.otherIncome} />}
-            <div className={`finance-net-row${isProfit ? ' finance-net-row--profit' : ' finance-net-row--loss'}`}>
-              <span className="finance-net-row__label">{isProfit ? t.netProfitLabel : t.netLossLabel}</span>
-              <span className="finance-net-row__amount">{formatPaise(Math.abs(data.netProfit))}</span>
-            </div>
-          </>
-        )}
-      </PageContainer>
+          {status === 'error' && (
+            <ErrorState
+              title={t.couldNotLoadPl}
+              message={t.checkConnectionRetry}
+              onRetry={refresh}
+            />
+          )}
+
+          {status === 'success' && !hasActivity && (
+            <EmptyState
+              icon={<BarChart3 size={22} aria-hidden="true" />}
+              title={t.noDataForThisPeriod}
+              description={t.tryDifferentDateRange}
+            />
+          )}
+
+          {status === 'success' && data && hasActivity && (
+            <>
+              <ProfitLossNetCard netProfit={data.netProfit} trend={data.trend} />
+              <ProfitLossStatement data={data} />
+
+              <Button
+                variant="primary"
+                size="lg"
+                className="w-full"
+                onClick={handleViewFullReport}
+              >
+                {t.viewFullReport}
+              </Button>
+            </>
+          )}
+        </PageContainer>
+      </HeroPage>
     </AppShell>
   )
 }

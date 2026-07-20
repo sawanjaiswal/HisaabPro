@@ -1,0 +1,177 @@
+/* Profit & Loss report — statement + net-profit card (mockup #16).
+ *
+ * Mobile-first: base targets 320px, min-width queries widen the layout.
+ * CSS variables only — no hex, no raw px colours.
+ */
+
+/* ─── Net profit card (emerald hero surface) ────────────────── */
+
+.pl-net {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-5);
+  border-radius: var(--radius-xl);
+  background: var(--color-hero-surface);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.pl-net__label {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--color-white-inverse);
+  opacity: 0.7;
+}
+
+.pl-net__amount {
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  color: var(--color-white-inverse);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+}
+
+.pl-net__delta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  align-self: flex-start;
+  margin-top: var(--space-1);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-success-500);
+}
+
+.pl-net__delta.is-down {
+  color: var(--color-error-500);
+}
+
+.pl-net__delta-note {
+  font-weight: 500;
+  color: var(--color-white-inverse);
+  opacity: 0.65;
+}
+
+.pl-net__chart {
+  margin-top: var(--space-4);
+}
+
+.pl-net__no-trend {
+  margin-top: var(--space-4);
+  font-size: var(--fs-sm);
+  color: var(--color-white-inverse);
+  opacity: 0.6;
+}
+
+/* ─── Statement card (Income / Expenses) ────────────────────── */
+
+.pl-statement {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-5);
+  background: var(--color-gray-0);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+}
+
+.pl-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.pl-group__title {
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.pl-group__rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.pl-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 28px;
+}
+
+.pl-row__label {
+  font-size: var(--fs-md);
+  color: var(--color-gray-600);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pl-row__amount {
+  margin: 0;
+  font-size: var(--fs-md);
+  font-weight: 500;
+  color: var(--color-gray-800);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Group total — separated by a hairline, heavier ink, tone-coloured amount. */
+.pl-row--total {
+  margin-top: var(--space-1);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-gray-100);
+}
+
+.pl-row--total .pl-row__label {
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.pl-row--total .pl-row__amount {
+  font-size: var(--fs-df);
+  font-weight: 700;
+}
+
+.pl-row--income .pl-row__amount {
+  color: var(--color-success-600);
+}
+
+.pl-row--expense .pl-row__amount {
+  color: var(--color-error-600);
+}
+
+/* ─── Loading skeletons ─────────────────────────────────────── */
+
+.pl-net-skeleton {
+  height: 230px;
+  border-radius: var(--radius-xl);
+  background: var(--color-gray-200);
+}
+
+.pl-statement-skeleton {
+  height: 300px;
+  border-radius: var(--radius-xl);
+  background: var(--color-gray-200);
+}
+
+/* ─── Tablet+ ───────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .pl-statement {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+    align-items: start;
+  }
+}
+
+/* ─── Dark theme ────────────────────────────────────────────── */
+
+[data-theme="dark"] .pl-net,
+[data-theme="dark"] .pl-statement {
+  box-shadow: var(--shadow-card-dark);
+}

@@ -1463,4 +1463,14 @@ export const hi = {
   discountGiven:       'दी गई छूट',
   vsPreviousPeriod:    'पिछली अवधि से',
   noTrendData:         'ट्रेंड के लिए पर्याप्त डेटा नहीं',
+
+  // Profit & Loss report (mockup #16)
+  income: 'आय',
+  otherIncomeLabel: 'अन्य आय',
+  totalIncome: 'कुल आय',
+  expensesLabel: 'खर्च',
+  purchasesLabel: 'खरीद',
+  directExpenses: 'प्रत्यक्ष खर्च',
+  indirectExpenses: 'अप्रत्यक्ष खर्च',
+  viewFullReport: 'पूरी रिपोर्ट देखें',
 } as const

@@ -5,9 +5,13 @@
  */
 
 import { getAccountMovements } from './helpers.js'
+import { getProfitLossTrend } from './profit-and-loss-trend.js'
 
 export async function getProfitAndLoss(businessId: string, from: Date, to: Date) {
-  const movements = await getAccountMovements(businessId, from, to, ['INCOME', 'EXPENSE'])
+  const [movements, trend] = await Promise.all([
+    getAccountMovements(businessId, from, to, ['INCOME', 'EXPENSE']),
+    getProfitLossTrend(businessId, from, to),
+  ])
 
   // Income accounts: credit-normal — net income = credit - debit
   const incomeLines = movements
@@ -75,5 +79,6 @@ export async function getProfitAndLoss(businessId: string, from: Date, to: Date)
     },
     grossProfit,
     netProfit,
+    trend,
   }
 }

@@ -4,44 +4,6 @@
  * CSS variables only — no hex, no raw px colours.
  */
 
-/* ─── Hero: period control on the emerald field ──────────────── */
-
-.invoice-report-period {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 0 var(--space-4) var(--space-4);
-}
-
-/* The range picker rides ON the emerald field, so the shared Select trigger
-   is stripped back to a text control instead of the light input surface. */
-.invoice-report-period__select.rx-select-trigger {
-  align-self: flex-start;
-  width: auto;
-  min-height: 44px;
-  padding: 0;
-  gap: var(--space-1);
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  font-size: var(--fs-lg);
-  font-weight: 700;
-  color: var(--color-white-inverse);
-}
-
-.invoice-report-period__select.rx-select-trigger:focus-visible {
-  outline: 2px solid var(--color-white-inverse);
-  outline-offset: 4px;
-  border-radius: var(--radius-sm);
-}
-
-.invoice-report-period__range {
-  font-size: var(--fs-sm);
-  font-weight: 500;
-  color: var(--color-white-inverse);
-  opacity: 0.75;
-}
-
 /* ─── Total sales hero card ─────────────────────────────────── */
 
 .invoice-report-hero {

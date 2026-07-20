@@ -2,21 +2,49 @@
 
 // ─── Profit & Loss ───────────────────────────────────────────────────────────
 
-export interface ProfitLossSection {
-  label: string
+/** One ledger account's contribution to a P&L group. */
+export interface ProfitLossLine {
+  accountName: string
   amount: number              // paise
-  items: Array<{ label: string; amount: number }>
 }
 
+export interface ProfitLossIncome {
+  sales: number               // paise
+  otherIncome: number         // paise
+  totalIncome: number         // paise
+  breakdown: ProfitLossLine[]
+}
+
+export interface ProfitLossExpenses {
+  purchases: number           // paise
+  directExpenses: number      // paise
+  indirectExpenses: number    // paise
+  totalExpenses: number       // paise
+  breakdown: ProfitLossLine[]
+}
+
+export interface ProfitLossTrendPoint {
+  date: string                // YYYY-MM-DD
+  amount: number              // paise, may be negative
+}
+
+export interface ProfitLossTrend {
+  series: ProfitLossTrendPoint[]
+  previousNetProfit: number   // paise
+}
+
+/**
+ * Mirrors `getProfitAndLoss()` in server/src/services/reports/profit-and-loss.ts.
+ * Keep the field names identical — this type is the only thing standing between
+ * the page and a runtime crash (see .claude/fix-trace-pl-contract.md).
+ */
 export interface ProfitLossData {
-  from: string
-  to: string
-  revenue: ProfitLossSection
-  costOfGoods: ProfitLossSection
+  period: { from: string; to: string }
+  income: ProfitLossIncome
+  expenses: ProfitLossExpenses
   grossProfit: number         // paise
-  expenses: ProfitLossSection
-  otherIncome: ProfitLossSection
   netProfit: number           // paise
+  trend: ProfitLossTrend
 }
 
 // ─── Balance Sheet ────────────────────────────────────────────────────────────

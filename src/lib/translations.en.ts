@@ -1467,4 +1467,14 @@ export const en = {
   discountGiven:       'Discount Given',
   vsPreviousPeriod:    'vs last period',
   noTrendData:         'Not enough data for a trend yet',
+
+  // Profit & Loss report (mockup #16)
+  income: 'Income',
+  otherIncomeLabel: 'Other Income',
+  totalIncome: 'Total Income',
+  expensesLabel: 'Expenses',
+  purchasesLabel: 'Purchases',
+  directExpenses: 'Direct Expenses',
+  indirectExpenses: 'Indirect Expenses',
+  viewFullReport: 'View Full Report',
 } as const
