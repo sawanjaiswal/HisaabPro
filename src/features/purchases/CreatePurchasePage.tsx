@@ -1,8 +1,9 @@
-/** Create Purchase Invoice — Page (lazy loaded)
+/** Create Purchase Invoice — Page (lazy loaded), mockup #12.
  *
- * Wraps the existing invoice form with type=PURCHASE_INVOICE.
- * Shows "Stock will be added on save" hint.
- * Follows CreateInvoicePage pattern exactly.
+ * The same form engine as Create Invoice (#2), locked to PURCHASE_INVOICE:
+ * one continuous scroll — supplier and items always visible, the optional
+ * blocks collapse instead of hiding behind tabs. Details opens by default
+ * because the mockup shows purchase date and supplier invoice no. up front.
  */
 
 import { useCallback, useState } from 'react'
@@ -14,15 +15,13 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { useInvoiceForm } from '@/features/invoices/useInvoiceForm'
 import { InvoiceTotalsBar } from '@/features/invoices/components/InvoiceTotalsBar'
 import { InvoiceItemsSection } from '@/features/invoices/components/InvoiceItemsSection'
-import { InvoiceDetailsSection } from '@/features/invoices/components/InvoiceDetailsSection'
-import { InvoiceChargesSection } from '@/features/invoices/components/InvoiceChargesSection'
-import { FORM_SECTIONS } from '@/features/invoices/invoice.constants'
+import { InvoiceOptionalSections } from '@/features/invoices/components/InvoiceOptionalSections'
 import { ROUTES } from '@/config/routes.config'
 import '@/features/invoices/invoice-party-search.css'
 import '@/features/invoices/invoice-line-items.css'
 import '@/features/invoices/invoice-product-search.css'
 import '@/features/invoices/invoice-summary.css'
-import { Button } from '@/components/ui/Button'
+import './purchase-form.css'
 
 export default function CreatePurchasePage() {
   const { t } = useLanguage()
@@ -33,8 +32,6 @@ export default function CreatePurchasePage() {
     form,
     errors,
     isSubmitting,
-    activeSection,
-    setActiveSection,
     updateField,
     addLineItem,
     updateLineItem,
@@ -48,6 +45,12 @@ export default function CreatePurchasePage() {
     handleSubmit,
     handleSaveDraft,
   } = useInvoiceForm('PURCHASE_INVOICE')
+
+  /** Details is open from the start — a purchase without its date and the
+   *  supplier's bill number is not a usable record. */
+  const [openSections, setOpenSections] = useState<string[]>(
+    () => (form.additionalCharges.length > 0 ? ['details', 'charges'] : ['details']),
+  )
 
   const handlePartyChange = useCallback((id: string, _name: string) => {
     updateField('partyId', id)
@@ -76,87 +79,38 @@ export default function CreatePurchasePage() {
     <AppShell>
       <Header title={t.newPurchase} backTo={ROUTES.PURCHASES} />
 
-      {/* "Stock will be added on save" hint */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 'var(--space-2)',
-          padding: 'var(--space-2) var(--space-4)',
-          background: 'var(--color-surface-secondary)',
-          borderBottom: '1px solid var(--color-border)',
-          fontSize: 'var(--fs-xs)',
-          color: 'var(--color-text-muted)',
-        }}
-        role="status"
-        aria-live="polite"
-      >
-        <Package size={14} aria-hidden="true" />
-        <span>{t.stockWillBeAdded}</span>
-      </div>
-
       <PageContainer className="invoice-details-section stagger-enter py-0 space-y-6">
-        <nav className="pill-tabs" role="tablist" aria-label={t.purchaseFormSections}>
-          {FORM_SECTIONS.map((section) => (
-            <Button variant="none"
-              key={section.id}
-              type="button"
-              role="tab"
-              className={`pill-tab${activeSection === section.id ? ' active' : ''}`}
-              onClick={() => setActiveSection(section.id)}
-              aria-selected={activeSection === section.id}
-              aria-controls={`section-panel-${section.id}`}
-            >
-              {section.label}
-            </Button>
-          ))}
-        </nav>
-
-        <div
-          id={`section-panel-${activeSection}`}
-          role="tabpanel"
-          aria-label={FORM_SECTIONS.find((s) => s.id === activeSection)?.label}
-        >
-          {activeSection === 'items' && (
-            <InvoiceItemsSection
-              partyId={form.partyId}
-              lineItems={form.lineItems}
-              productNames={productNames}
-              showProductSearch={showProductSearch}
-              errors={errors}
-              stockWarnings={stockWarnings}
-              hasStockBlocks={hasStockBlocks}
-              gstEnabled={false}
-              compositionScheme={false}
-              onPartyChange={handlePartyChange}
-              onProductSelect={handleProductSelect}
-              onUpdateLineItem={updateLineItem}
-              onRemoveLineItem={removeLineItem}
-              onToggleProductSearch={toggleProductSearch}
-            />
-          )}
-
-          {activeSection === 'details' && (
-            <InvoiceDetailsSection
-              documentDate={form.documentDate}
-              paymentTerms={form.paymentTerms}
-              vehicleNumber={form.vehicleNumber ?? ''}
-              notes={form.notes ?? ''}
-              termsAndConditions={form.termsAndConditions ?? ''}
-              includeSignature={form.includeSignature}
-              onUpdateField={updateField}
-            />
-          )}
-
-          {activeSection === 'charges' && (
-            <InvoiceChargesSection
-              charges={form.additionalCharges}
-              onUpdateCharge={updateCharge}
-              onRemoveCharge={removeCharge}
-              onAddCharge={addCharge}
-            />
-          )}
+        <div className="purchase-stock-hint" role="status" aria-live="polite">
+          <Package size={16} aria-hidden="true" />
+          <span>{t.stockWillBeAdded}</span>
         </div>
+
+        <InvoiceItemsSection
+          partyId={form.partyId}
+          lineItems={form.lineItems}
+          productNames={productNames}
+          showProductSearch={showProductSearch}
+          errors={errors}
+          stockWarnings={stockWarnings}
+          hasStockBlocks={hasStockBlocks}
+          gstEnabled={false}
+          compositionScheme={false}
+          onPartyChange={handlePartyChange}
+          onProductSelect={handleProductSelect}
+          onUpdateLineItem={updateLineItem}
+          onRemoveLineItem={removeLineItem}
+          onToggleProductSearch={toggleProductSearch}
+        />
+
+        <InvoiceOptionalSections
+          form={form}
+          openSections={openSections}
+          onOpenSectionsChange={setOpenSections}
+          onUpdateField={updateField}
+          onAddCharge={addCharge}
+          onUpdateCharge={updateCharge}
+          onRemoveCharge={removeCharge}
+        />
       </PageContainer>
 
       <InvoiceTotalsBar

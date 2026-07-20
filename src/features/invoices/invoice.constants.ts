@@ -25,12 +25,6 @@ export const DETAIL_TABS: { id: DetailTab; label: string }[] = [
 /** Document types that support e-compliance (e-invoice + e-way bill) */
 export const ECOMPLIANCE_DOCUMENT_TYPES = new Set(['SALE_INVOICE', 'PURCHASE_INVOICE'])
 
-export const FORM_SECTIONS: { id: 'items' | 'details' | 'charges'; label: string }[] = [
-  { id: 'items', label: 'Items' },
-  { id: 'details', label: 'Details' },
-  { id: 'charges', label: 'Charges' },
-]
-
 export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   SALE_INVOICE:      'Sale Invoice',
   PURCHASE_INVOICE:  'Purchase Invoice',

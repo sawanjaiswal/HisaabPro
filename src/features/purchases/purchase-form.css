@@ -1,0 +1,29 @@
+/* Create Purchase (mockup #12) — the "stock will be added" notice.
+ *
+ * Used by CreatePurchasePage.tsx. The notice is the one thing the purchase
+ * form carries that the sales form does not, so it lives here rather than in
+ * the shared invoice CSS.
+ */
+
+.purchase-stock-hint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-xs);
+  color: var(--color-gray-500);
+}
+
+.purchase-stock-hint svg {
+  flex-shrink: 0;
+  color: var(--color-primary-600);
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .purchase-stock-hint svg {
+  color: var(--color-primary-400);
+}
