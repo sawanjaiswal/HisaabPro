@@ -8,13 +8,15 @@
 
 import { getBalancesAsOf } from './helpers.js'
 import { getProfitAndLoss } from './profit-and-loss.js'
+import { getCashFlowDirect } from './cash-flow-direct.js'
 
 export async function getCashFlowStatement(businessId: string, from: Date, to: Date) {
-  // Compute P&L + opening/closing balances in parallel — all three are independent
-  const [pnl, openingBalances, closingBalances] = await Promise.all([
+  // P&L, opening/closing balances and the direct-method split are independent
+  const [pnl, openingBalances, closingBalances, direct] = await Promise.all([
     getProfitAndLoss(businessId, from, to),
     getBalancesAsOf(businessId, new Date(from.getTime() - 1)),
     getBalancesAsOf(businessId, to),
+    getCashFlowDirect(businessId, from, to),
   ])
 
   // Opening and closing cash = CASH + BANK subtype accounts
@@ -100,5 +102,11 @@ export async function getCashFlowStatement(businessId: string, from: Date, to: D
     netChange,
     openingCash,
     closingCash,
+    // Direct method — what the Cash Flow screen renders. The indirect blocks
+    // above stay for statement exports.
+    inflows: direct.inflows,
+    outflows: direct.outflows,
+    netCashFlow: direct.netCashFlow,
+    partial: direct.partial,
   }
 }

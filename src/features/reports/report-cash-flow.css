@@ -1,0 +1,140 @@
+/* Cash Flow report — inflow / outflow statement (mockup #69).
+ *
+ * Mobile-first: base targets 320px, min-width queries widen the layout.
+ * CSS variables only — no hex, no raw px colours.
+ */
+
+.cf-statement {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-5);
+  background: var(--color-gray-0);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+}
+
+.cf-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cf-group__title {
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.cf-group__rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.cf-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 28px;
+}
+
+.cf-row__label {
+  font-size: var(--fs-md);
+  color: var(--color-gray-600);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cf-row__amount {
+  margin: 0;
+  font-size: var(--fs-md);
+  font-weight: 500;
+  color: var(--color-gray-800);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Group total — separated by a hairline, heavier ink, tone-coloured amount. */
+.cf-row--total {
+  margin-top: var(--space-1);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-gray-100);
+}
+
+.cf-row--total .cf-row__label {
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.cf-row--total .cf-row__amount {
+  font-size: var(--fs-df);
+  font-weight: 700;
+}
+
+.cf-row--in .cf-row__amount {
+  color: var(--color-success-600);
+}
+
+.cf-row--out .cf-row__amount {
+  color: var(--color-error-600);
+}
+
+/* ─── Reconciliation block (net + opening/closing) ──────────── */
+
+.cf-reconcile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-gray-100);
+}
+
+.cf-row--net .cf-row__label {
+  font-size: var(--fs-df);
+  font-weight: 700;
+  color: var(--color-gray-800);
+}
+
+.cf-row--net .cf-row__amount {
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  color: var(--color-gray-800);
+}
+
+.cf-partial-note {
+  font-size: var(--fs-sm);
+  color: var(--color-gray-600);
+}
+
+/* ─── Loading skeleton ──────────────────────────────────────── */
+
+.cf-statement-skeleton {
+  height: 420px;
+  border-radius: var(--radius-xl);
+  background: var(--color-gray-200);
+}
+
+/* ─── Tablet+ ───────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .cf-statement {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  /* The reconciliation reads against both groups, so it spans them. */
+  .cf-reconcile {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ─── Dark theme ────────────────────────────────────────────── */
+
+[data-theme="dark"] .cf-statement {
+  box-shadow: var(--shadow-card-dark);
+}

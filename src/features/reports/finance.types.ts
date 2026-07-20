@@ -64,19 +64,39 @@ export interface BalanceSheetData {
 
 // ─── Cash Flow ────────────────────────────────────────────────────────────────
 
-export interface CashFlowSection {
-  label: string
-  netAmount: number           // paise
-  items: Array<{ label: string; amount: number }>
+export interface CashFlowInflows {
+  cashSales: number           // paise
+  receivablesReceived: number // paise
+  other: number               // paise
+  total: number               // paise
 }
 
+export interface CashFlowOutflows {
+  purchases: number           // paise
+  expenses: number            // paise
+  other: number               // paise
+  total: number               // paise
+}
+
+/**
+ * Mirrors `getCashFlowStatement()` in server/src/services/reports/cash-flow.ts.
+ * Only the direct-method fields the screen renders are typed here; the indirect
+ * operating/investing/financing blocks the same endpoint returns are left out
+ * on purpose — nothing on the client reads them yet.
+ *
+ * Keep the field names identical to the server. The previous hand-written shape
+ * described a payload the API never sent and the page crashed on load
+ * (see .claude/fix-trace-pl-contract.md).
+ */
 export interface CashFlowData {
-  from: string
-  to: string
-  operating: CashFlowSection
-  investing: CashFlowSection
-  financing: CashFlowSection
+  period: { from: string; to: string }
+  inflows: CashFlowInflows
+  outflows: CashFlowOutflows
   netCashFlow: number         // paise
+  openingCash: number         // paise
+  closingCash: number         // paise
+  /** Period held more entries than one read covers — totals are a lower bound. */
+  partial: boolean
 }
 
 // ─── Aging Report ─────────────────────────────────────────────────────────────
