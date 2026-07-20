@@ -4,7 +4,7 @@
  * card list, 4 UI states, FAB for create, bulk select.
  */
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
 import { Plus, FileText, Camera } from 'lucide-react'
@@ -20,8 +20,10 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { useInvoices } from './useInvoices'
 import { InvoiceSummaryBar } from './components/InvoiceSummaryBar'
 import { InvoiceFilterBar } from './components/InvoiceFilterBar'
-import { InvoiceCard } from './components/InvoiceCard'
 import { InvoiceListSkeleton } from './components/InvoiceListSkeleton'
+import { InvoiceGroupedList } from './components/InvoiceGroupedList'
+import { InvoiceTotalsFooter } from './components/InvoiceTotalsFooter'
+import { groupInvoicesByDay, toDailyTotalsSeries } from './invoice-list-group.utils'
 import { deleteDocument } from './invoice.service'
 import { ROUTES } from '@/config/routes.config'
 import { DOCUMENT_TYPE_LABELS } from './invoice.constants'
@@ -30,6 +32,7 @@ import type { BulkAction } from '@/components/ui/BulkActionBar'
 import './invoice-filter-bar.css'
 import './invoice-list-items.css'
 import './invoice-doc-badges.css'
+import './invoice-list-redesign.css'
 
 interface InvoicesPageProps {
   /** When rendered as tab content inside SalesHubPage, the parent already
@@ -117,10 +120,13 @@ export default function InvoicesPage({ embedded = false }: InvoicesPageProps) {
   ]
 
   const typeLabel = activeType === 'ALL' ? t.invoices : DOCUMENT_TYPE_LABELS[activeType]
-  const visibleDocuments = autoGenOnly
-    ? (data?.documents ?? []).filter((d) => Boolean(d.recurringInvoiceId))
-    : (data?.documents ?? [])
+  const visibleDocuments = useMemo(() => {
+    const docs = data?.documents ?? []
+    return autoGenOnly ? docs.filter((d) => Boolean(d.recurringInvoiceId)) : docs
+  }, [data?.documents, autoGenOnly])
   const allDocIds = visibleDocuments.map((d) => d.id)
+  const dayGroups = useMemo(() => groupInvoicesByDay(visibleDocuments), [visibleDocuments])
+  const dailySeries = useMemo(() => toDailyTotalsSeries(dayGroups), [dayGroups])
 
   const content = (
     <>
@@ -199,30 +205,17 @@ export default function InvoicesPage({ embedded = false }: InvoicesPageProps) {
         {status === 'success' && data && visibleDocuments.length > 0 && (
           <>
           <h2 className="sr-only">{t.invoiceListHeading}</h2>
-          <div className="invoice-list stagger-list" role="list" aria-label={t.invoices}>
-            {visibleDocuments.map((doc) => (
-              <div
-                key={doc.id}
-                className={`invoice-list-row${bulk.isSelected(doc.id) ? ' bulk-selected' : ''}`}
-                role="listitem"
-                onClick={(e) => {
-                  if (bulk.isActive) {
-                    e.stopPropagation()
-                    bulk.toggle(doc.id)
-                  }
-                }}
-              >
-                <InvoiceCard
-                  document={doc}
-                  onClick={handleDocClick}
-                  onLongPress={handleLongPress}
-                  isSelected={bulk.isSelected(doc.id)}
-                  isBulkMode={bulk.isActive}
-                />
-                <div className="divider" aria-hidden="true" />
-              </div>
-            ))}
-          </div>
+          <InvoiceGroupedList
+            groups={dayGroups}
+            isBulkMode={bulk.isActive}
+            isSelected={bulk.isSelected}
+            onToggle={bulk.toggle}
+            onDocClick={handleDocClick}
+            onLongPress={handleLongPress}
+          />
+          {!bulk.isActive && (
+            <InvoiceTotalsFooter summary={data.summary} series={dailySeries} />
+          )}
           </>
         )}
       </PageContainer>
