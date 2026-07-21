@@ -1,0 +1,40 @@
+/* ─── Party detail — sticky outstanding bar ────────────────────────────────
+   Fills the BottomActionBar primitive; the primitive owns fixed positioning
+   and the safe-area inset (PLATFORM_SHELL C6/C9) — nothing here touches either.
+   Mobile-first: amount left, CTA right, and the CTA never shrinks below its
+   tap target because the amount is the flexible half.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.pd-paybar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.pd-paybar__amount {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.pd-paybar__value {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--color-error-500);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pd-paybar__label {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.pd-paybar__cta {
+  flex: 0 0 auto;
+  min-height: 44px;
+}

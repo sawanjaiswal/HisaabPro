@@ -1,5 +1,7 @@
 /** Party Management — Constants */
 
+import type { BadgeVariant } from '@/components/ui/Badge'
+import type { LedgerRowStatus } from './ledger/ledger.types'
 import type { PartyType, PartyFilters } from './party.types'
 
 export const PARTY_TYPE_LABELS: Record<PartyType, string> = {
@@ -96,6 +98,26 @@ export const GST_STATE_CODE_MAP: Record<string, string> = {
   '30': 'Goa', '31': 'Lakshadweep', '32': 'Kerala',
   '33': 'Tamil Nadu', '34': 'Puducherry', '35': 'Andaman and Nicobar Islands',
   '36': 'Telangana', '37': 'Andhra Pradesh', '38': 'Ladakh',
+}
+
+/**
+ * Ledger row settlement state → status pill.
+ *
+ * `Badge` has no `partial` variant and does not need one: PARTIAL and PENDING
+ * are both "still owing, not yet late", so they share the amber `pending`
+ * treatment and differ only in wording. The label keys all already exist in
+ * both translation files — PENDING reads "Unpaid", which is what a full
+ * balance not yet due actually is.
+ */
+export const LEDGER_STATUS_BADGE: Record<
+  LedgerRowStatus,
+  { variant: BadgeVariant; labelKey: 'paid' | 'unpaid' | 'partial' | 'overdue' | 'draft' }
+> = {
+  PAID:    { variant: 'paid',    labelKey: 'paid' },
+  PARTIAL: { variant: 'pending', labelKey: 'partial' },
+  PENDING: { variant: 'pending', labelKey: 'unpaid' },
+  OVERDUE: { variant: 'overdue', labelKey: 'overdue' },
+  DRAFT:   { variant: 'draft',   labelKey: 'draft' },
 }
 
 /** GSTIN verification debounce delay in ms */

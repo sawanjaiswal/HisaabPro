@@ -1,0 +1,69 @@
+/* ─── Party detail — primary action row ────────────────────────────────────
+   Mobile-first: the base rules ARE the 320px layout, and every media query
+   below only adds room. Two labelled buttons share the leftover width; the ⋯
+   is a fixed 44px square that never shrinks, so at the narrow end the labels
+   truncate instead of the tap target collapsing.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.pd-actions {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-2);
+}
+
+/* Wrapper, not the button itself — `flex:1` on a `.btn` would fight the
+   button's own inline layout for its icon + label. */
+.pd-actions__cta {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.pd-actions__cta .btn {
+  width: 100%;
+  min-height: 44px;
+  gap: var(--space-2);
+}
+
+/* The label is the only part allowed to give way under pressure. */
+.pd-actions__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Fixed square: `flex:0 0 44px` keeps the trigger at the 44px tap minimum no
+   matter how narrow the viewport gets. */
+.pd-actions__more {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+}
+
+.pd-actions__more:hover:not(:disabled) {
+  background: var(--color-gray-100);
+}
+
+/* ≥480px — past the smallest phones there is room to breathe. */
+@media (min-width: 480px) {
+  .pd-actions {
+    gap: var(--space-3);
+  }
+}
+
+/* ≥768px — on a tablet/desktop sheet the row stops stretching edge to edge and
+   centres, so the two CTAs keep a thumb-sized shape instead of becoming banners. */
+@media (min-width: 768px) {
+  .pd-actions {
+    max-width: 640px;
+    margin-inline: auto;
+  }
+}

@@ -1,6 +1,7 @@
 /** Party Ledger — filter sheet: voucher-type chips + custom date range */
 
 import { useEffect, useState } from 'react'
+import { FileDown } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Drawer } from '@/components/ui/Drawer'
@@ -15,6 +16,13 @@ interface LedgerFilterDrawerProps {
   selectedTypes: LedgerVoucherType[]
   /** Commit the draft filters back to the ledger hook. */
   onApply: (from: string, to: string, types: LedgerVoucherType[]) => void
+  /**
+   * PDF export — lives here rather than in the toolbar because a search field
+   * plus three icons does not fit at 320px, and exporting is an occasional
+   * action. Omitted when there is nothing to export.
+   */
+  onExport?: () => void
+  isExporting?: boolean
 }
 
 const ALL_TYPES: { label: string; value: LedgerVoucherType }[] = [
@@ -28,7 +36,7 @@ const ALL_TYPES: { label: string; value: LedgerVoucherType }[] = [
 ]
 
 export function LedgerFilterDrawer({
-  open, onClose, from, to, selectedTypes, onApply,
+  open, onClose, from, to, selectedTypes, onApply, onExport, isExporting = false,
 }: LedgerFilterDrawerProps) {
   const { t } = useLanguage()
   const [draftFrom, setDraftFrom] = useState(from)
@@ -127,6 +135,24 @@ export function LedgerFilterDrawer({
             })}
           </div>
         </div>
+
+        {onExport && (
+          <div>
+            <span className="ledger-filter-heading">{t.export}</span>
+            <Button
+              variant="outline"
+              size="md"
+              className="ledger-export-btn"
+              onClick={onExport}
+              disabled={isExporting}
+              loading={isExporting}
+              aria-label={t.downloadLedgerPDF}
+            >
+              <FileDown size={16} aria-hidden="true" />
+              <span>{t.downloadLedgerPDF}</span>
+            </Button>
+          </div>
+        )}
       </div>
     </Drawer>
   )

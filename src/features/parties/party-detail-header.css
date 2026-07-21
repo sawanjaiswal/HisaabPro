@@ -102,18 +102,41 @@
   background: var(--overlay-white-15);
 }
 
-/* Icon action buttons on the hero surface — flush white, overlay on press */
+/* Icon action buttons on the hero surface — icon over caption, flush white,
+   overlay on press. The caption is what turns a guessable glyph row into a
+   readable one; the 44px floor is on the whole stack, not the icon. */
 .header--party-detail .pdh-icon-btn {
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border-radius: var(--radius-full);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: var(--space-1) var(--space-1);
+  border-radius: var(--radius-md);
   color: var(--color-white-inverse);
   background: transparent;
+  border: none;
 }
 
 .header--party-detail .pdh-icon-btn:active {
   background: var(--overlay-white-15);
+}
+
+.pdh-icon-label {
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Below ~360px four labelled actions cannot share the row with the name, so
+   the captions drop and the cluster falls back to the icon row it extends. */
+@media (max-width: 359px) {
+  .pdh-icon-label {
+    display: none;
+  }
 }
 
 /* Row 2 — phone · location contact strip */

@@ -1,7 +1,7 @@
 /** Party Detail — emerald hero header: back · name + status · edit/call/menu · contact row */
 
 import React from 'react'
-import { ArrowLeft, Pencil, Phone, MapPin } from 'lucide-react'
+import { ArrowLeft, Pencil, Phone, MapPin, MessageCircle } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
 import type { PartyDetail } from '../party.types'
@@ -15,6 +15,7 @@ interface PartyDetailHeaderProps {
   onEdit: () => void
   onInvoice: () => void
   onShare: () => void
+  onStatement: () => void
   onInvite: () => void
   onDelete: () => void
   /** Invite shown only when the portal is not yet claimed */
@@ -35,6 +36,7 @@ export const PartyDetailHeader: React.FC<PartyDetailHeaderProps> = ({
   onEdit,
   onInvoice,
   onShare,
+  onStatement,
   onInvite,
   onDelete,
   showInvite,
@@ -44,6 +46,15 @@ export const PartyDetailHeader: React.FC<PartyDetailHeaderProps> = ({
 
   const handleCall = () => {
     if (party.phone) window.location.href = `tel:${party.phone}`
+  }
+
+  // wa.me wants the bare number — strip spaces/dashes and assume the Indian
+  // country code when the party was saved as a plain 10-digit mobile.
+  const handleWhatsapp = () => {
+    if (!party.phone) return
+    const digits = party.phone.replace(/\D/g, '')
+    const withCc = digits.length === 10 ? `91${digits}` : digits
+    window.open(`https://wa.me/${withCc}`, '_blank', 'noopener,noreferrer')
   }
 
   return (
@@ -70,29 +81,46 @@ export const PartyDetailHeader: React.FC<PartyDetailHeaderProps> = ({
           </span>
         </div>
 
+        {/* Labelled cluster — an unlabelled icon row on the hero was the single
+            most-missed affordance in the mockup review; the caption costs one
+            line of --fs-xs and removes the guesswork. */}
         <div className="pdh-actions">
           <Button
-            variant="ghost"
+            variant="none"
             className="pdh-icon-btn"
             onClick={onEdit}
             aria-label={t.editParty}
           >
             <Pencil size={20} aria-hidden="true" />
+            <span className="pdh-icon-label">{t.edit}</span>
           </Button>
           {party.phone && (
             <Button
-              variant="ghost"
+              variant="none"
               className="pdh-icon-btn"
               onClick={handleCall}
               aria-label={t.callParty}
             >
               <Phone size={20} aria-hidden="true" />
+              <span className="pdh-icon-label">{t.call}</span>
+            </Button>
+          )}
+          {party.phone && (
+            <Button
+              variant="none"
+              className="pdh-icon-btn"
+              onClick={handleWhatsapp}
+              aria-label={t.whatsapp}
+            >
+              <MessageCircle size={20} aria-hidden="true" />
+              <span className="pdh-icon-label">{t.whatsapp}</span>
             </Button>
           )}
           <PartyDetailMenu
             onEdit={onEdit}
             onInvoice={onInvoice}
             onShare={onShare}
+            onStatement={onStatement}
             onInvite={onInvite}
             onDelete={onDelete}
             showInvite={showInvite}

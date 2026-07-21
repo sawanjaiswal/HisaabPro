@@ -57,6 +57,16 @@
 }
 .btn-destructive:hover:not(:disabled) { background: var(--color-error-700); }
 
+/* Destructive intent without destructive weight — a red-outlined action that
+ * sits in a row of neutral ones (detail-page "Delete customer") and must not
+ * out-shout the primary CTA beside it the way a filled red button does. */
+.btn-outline-destructive {
+  background: transparent;
+  color: var(--color-error-500);
+  border: 1.5px solid var(--color-error-500);
+}
+.btn-outline-destructive:hover:not(:disabled) { background: var(--color-error-50); }
+
 .btn-ghost {
   background: transparent;
   color: var(--color-gray-600);

@@ -31,28 +31,43 @@ export interface SummaryTile {
   iconTone?: SummaryTileTone
 }
 
+/**
+ * `tile` — bordered cards, one per stat (the original detail-page look).
+ * `divided` — a single flush strip split by hairline rules, no card borders and
+ * no icon circles. This is the entity-detail header treatment: it reads as one
+ * band of numbers rather than three competing cards, which is what lets four
+ * stats fit where three cards used to.
+ */
+export type SummaryTilesVariant = 'tile' | 'divided'
+
 interface SummaryTilesProps {
   tiles: SummaryTile[]
+  variant?: SummaryTilesVariant
   className?: string
   'aria-label'?: string
 }
 
 export const SummaryTiles: React.FC<SummaryTilesProps> = ({
   tiles,
+  variant = 'tile',
   className = '',
   'aria-label': ariaLabel,
 }) => {
   if (tiles.length === 0) return null
 
+  // The divided strip is deliberately icon-free — a tinted circle per column
+  // reintroduces the visual weight the variant exists to remove.
+  const showIcons = variant !== 'divided'
+
   return (
     <div
-      className={`summary-tiles ${className}`.trim()}
+      className={`summary-tiles summary-tiles--${variant} ${className}`.trim()}
       role="list"
       aria-label={ariaLabel}
     >
       {tiles.map((tile) => (
-        <div key={tile.id} className={`summary-tile summary-tile--${tile.tone ?? 'neutral'}${tile.icon ? ' summary-tile--has-icon' : ''}`} role="listitem">
-          {tile.icon && (
+        <div key={tile.id} className={`summary-tile summary-tile--${tile.tone ?? 'neutral'}${tile.icon && showIcons ? ' summary-tile--has-icon' : ''}`} role="listitem">
+          {tile.icon && showIcons && (
             <span
               className={`summary-tile__icon summary-tile__icon--${tile.iconTone ?? tile.tone ?? 'neutral'}`}
               aria-hidden="true"

@@ -1,15 +1,15 @@
-/** Party Detail — Ledger tab: month dropdown + filter sheet + row list + PDF export */
+/** Party Detail — Ledger tab: search + filter + month toolbar, row list, PDF export */
 
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/Button'
-import { FileDown, Filter } from 'lucide-react'
 import { pdf } from '@react-pdf/renderer'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useToast } from '@/hooks/useToast'
 import { usePartyLedger } from './usePartyLedger'
 import { PartyLedgerPDF } from './PartyLedgerPDF'
+import { filterRowsByQuery } from './ledger.utils'
 import { LedgerRowList } from './components/LedgerRowList'
-import { LedgerMonthPicker } from './components/LedgerMonthPicker'
+import { LedgerToolbar } from './components/LedgerToolbar'
 import { LedgerFilterDrawer } from './components/LedgerFilterDrawer'
 import { LedgerLoading } from './components/LedgerLoading'
 import { LedgerEmpty } from './components/LedgerEmpty'
@@ -48,6 +48,12 @@ export function PartyLedgerTab({ partyId, partyName, businessName, lockTypes }: 
 
   const [isExporting, setIsExporting] = useState(false)
   const [filterOpen, setFilterOpen] = useState(false)
+  const [query, setQuery] = useState('')
+
+  // Search narrows what is on screen only. The running-balance figures stay
+  // computed from the full row set — a filtered ledger whose balances re-derive
+  // from the visible subset would show numbers that do not reconcile.
+  const visibleRows = useMemo(() => filterRowsByQuery(rows, query), [rows, query])
 
   const handleMonthChange = useCallback(
     (nextFrom: string, nextTo: string) => {
@@ -93,39 +99,16 @@ export function PartyLedgerTab({ partyId, partyName, businessName, lockTypes }: 
 
   return (
     <div className="party-ledger-tab">
-      {/* Toolbar: month dropdown · filter + export */}
-      <div className="ledger-toolbar">
-        <LedgerMonthPicker from={from} to={to} onChange={handleMonthChange} />
-        <div className="ledger-toolbar__actions">
-          {!lockTypes && (
-            <Button
-              variant="none"
-              type="button"
-              className="ledger-filter-btn"
-              onClick={() => setFilterOpen(true)}
-              aria-label={t.filter}
-            >
-              <Filter size={16} aria-hidden="true" />
-              <span>{t.filter}</span>
-              {selectedTypes.length > 0 && (
-                <span className="ledger-filter-badge">{selectedTypes.length}</span>
-              )}
-            </Button>
-          )}
-          {status === 'success' && rows.length > 0 && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleExportPDF}
-              disabled={isExporting}
-              aria-label={t.downloadLedgerPDF}
-            >
-              <FileDown size={16} aria-hidden="true" />
-            </Button>
-          )}
-        </div>
-      </div>
+      <LedgerToolbar
+        query={query}
+        onQueryChange={setQuery}
+        from={from}
+        to={to}
+        onMonthChange={handleMonthChange}
+        showFilter={!lockTypes}
+        filterCount={selectedTypes.length}
+        onOpenFilter={() => setFilterOpen(true)}
+      />
 
       {!lockTypes && (
         <LedgerFilterDrawer
@@ -135,6 +118,8 @@ export function PartyLedgerTab({ partyId, partyName, businessName, lockTypes }: 
           to={to}
           selectedTypes={selectedTypes}
           onApply={handleApplyFilters}
+          onExport={rows.length > 0 ? handleExportPDF : undefined}
+          isExporting={isExporting}
         />
       )}
 
@@ -147,12 +132,12 @@ export function PartyLedgerTab({ partyId, partyName, businessName, lockTypes }: 
       {/* Success */}
       {status === 'success' && (
         <>
-          {rows.length === 0 ? (
+          {visibleRows.length === 0 ? (
             <LedgerEmpty />
           ) : (
             <>
               <LedgerRowList
-                rows={rows}
+                rows={visibleRows}
                 openingBalance={openingBalance}
                 closingBalance={closingBalance}
                 asOn={to}

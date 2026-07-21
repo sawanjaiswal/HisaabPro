@@ -16,6 +16,10 @@ export const badgeVariants = cva('badge', {
   defaultVariants: { variant: 'info' },
 })
 
+/** The variant names, without cva's `null | undefined` — for callers that store
+ * a variant in their own props/constants and must pick a concrete one. */
+export type BadgeVariant = NonNullable<VariantProps<typeof badgeVariants>['variant']>
+
 interface BadgeProps extends VariantProps<typeof badgeVariants> {
   children: string
   className?: string

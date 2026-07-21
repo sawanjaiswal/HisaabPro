@@ -1490,4 +1490,21 @@ export const hi = {
   taxableSales: 'कर योग्य बिक्री',
   taxablePurchases: 'कर योग्य खरीद',
   viewDetailedReport: 'विस्तृत रिपोर्ट देखें',
+
+  // ─── Party detail (single-customer template) ──────────────────────────────
+  whatsapp: 'व्हाट्सएप',
+  call: 'कॉल',
+  moreActions: 'और विकल्प',
+  oldestDue: 'सबसे पुराना बकाया',
+  days: 'दिन',
+  openInvoices: 'बकाया बिल',
+  invoicesCount: 'बिल',
+  overdueByDays: '{days} दिन से अतिदेय',
+  oldestInvoiceOverdue: 'सबसे पुराना बिल अतिदेय है',
+  searchTransactions: 'लेन-देन खोजें',
+  balanceLabel: 'शेष',
+  outstandingSuffix: 'बकाया',
+  receiveFullPaymentHint: 'पूरी बकाया राशि प्राप्त करें',
+  receiveAmount: 'प्राप्त करें',
+  statusPending: 'बाकी',
 } as const

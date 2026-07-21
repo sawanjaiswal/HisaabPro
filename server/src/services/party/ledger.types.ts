@@ -12,6 +12,14 @@ export const LEDGER_VOUCHER_TYPES = [
 
 export type LedgerVoucherType = typeof LEDGER_VOUCHER_TYPES[number]
 
+/**
+ * Settlement state of the source document, for the ledger row's status pill.
+ * Derived (not stored): OVERDUE outranks PARTIAL/PENDING because a past-due
+ * invoice is the thing the user has to act on, whatever it has been part-paid.
+ * Payment and journal rows have no settlement state and carry no status.
+ */
+export type LedgerRowStatus = 'DRAFT' | 'PAID' | 'PARTIAL' | 'PENDING' | 'OVERDUE'
+
 // Query schema (for route param parsing)
 export const ledgerQuerySchema = z.object({
   from: z
@@ -52,6 +60,8 @@ export interface LedgerRow {
   itemCount?: number
   /** Payment mode (CASH/UPI/…) — present only on PAYMENT rows. */
   mode?: string
+  /** Settlement state — present only on DOCUMENT rows. */
+  status?: LedgerRowStatus
 }
 
 // Cursor payload encoded as base64 JSON

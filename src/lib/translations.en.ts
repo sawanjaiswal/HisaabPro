@@ -1494,4 +1494,21 @@ export const en = {
   taxableSales: 'Taxable Sales',
   taxablePurchases: 'Taxable Purchases',
   viewDetailedReport: 'View Detailed Report',
+
+  // ─── Party detail (single-customer template) ──────────────────────────────
+  whatsapp: 'WhatsApp',
+  call: 'Call',
+  moreActions: 'More actions',
+  oldestDue: 'Oldest Due',
+  days: 'days',
+  openInvoices: 'Open Invoices',
+  invoicesCount: 'invoices',
+  overdueByDays: 'overdue by {days} days',
+  oldestInvoiceOverdue: 'Oldest invoice is overdue',
+  searchTransactions: 'Search transactions',
+  balanceLabel: 'Balance',
+  outstandingSuffix: 'outstanding',
+  receiveFullPaymentHint: 'Receive the full outstanding amount',
+  receiveAmount: 'Receive',
+  statusPending: 'Pending',
 } as const

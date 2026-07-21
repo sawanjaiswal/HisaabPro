@@ -82,7 +82,8 @@ export async function getPartyLedger(
         isDeleted: false,
         type: docTypes ? { in: docTypes } : { in: Object.keys(DOC_VOUCHER_MAP) },
       },
-      select: { id: true, type: true, grandTotal: true, documentDate: true, documentNumber: true, createdAt: true, party: { select: { name: true } }, _count: { select: { lineItems: true } } },
+      // status/balanceDue/dueDate feed the row's settlement pill (documentLedgerStatus).
+      select: { id: true, type: true, grandTotal: true, documentDate: true, documentNumber: true, createdAt: true, status: true, balanceDue: true, dueDate: true, party: { select: { name: true } }, _count: { select: { lineItems: true } } },
       orderBy: [{ documentDate: 'asc' }, { createdAt: 'asc' }],
     }) : Promise.resolve([]),
 
@@ -146,6 +147,7 @@ export async function getPartyLedger(
       runningBalance,
       itemCount: r.itemCount,
       mode: r.mode,
+      status: r.status,
     }
   })
 

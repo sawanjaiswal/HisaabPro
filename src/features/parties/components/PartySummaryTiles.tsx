@@ -1,16 +1,16 @@
-/** Party summary tiles — three tinted stat tiles above the detail tabs.
+/** Party summary tiles — four divider-separated stats above the detail tabs.
  *
  * Wording follows the party's direction: a customer reads Outstanding /
- * Sales (MTD) / Last Payment (mockup #27), a supplier reads Total Payable /
- * Purchases (MTD) / Payments Made (mockup #52 — Supplier Ledger). The numbers
- * behind them are already direction-aware — see server detail-stats.ts.
+ * Oldest Due / Open Invoices / Last Payment, a supplier reads Total Payable
+ * for the first column (mockup #52 — Supplier Ledger). The numbers behind
+ * them are already direction-aware — see server detail-stats.ts.
  *
- * Subtitle data comes from the server-derived `party.stats`; when it is absent
- * (stale offline cache) the hints degrade gracefully. Amounts are paise.
+ * Stat data comes from the server-derived `party.stats`; when it is absent
+ * (stale offline cache) the derived columns fall back to "—" rather than
+ * showing a confident zero. Amounts are paise.
  */
 
 import React from 'react'
-import { ArrowDownRight, TrendingUp, Wallet } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { SummaryTiles } from '@/components/ui/SummaryTiles'
 import { PAYMENT_MODE_LABELS } from '@/features/payments/payment-labels.constants'
@@ -22,13 +22,10 @@ interface PartySummaryTilesProps {
   party: PartyDetail
 }
 
-/** "10 May 2025" — short Indian date for the last-payment hint. */
+/** "10 May" — short Indian date for the last-payment hint. The year is dropped
+ *  because the divided strip gives each column roughly a quarter of 375px. */
 function formatShortDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-IN', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  })
+  return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
 }
 
 export const PartySummaryTiles: React.FC<PartySummaryTilesProps> = ({ party }) => {
@@ -37,15 +34,6 @@ export const PartySummaryTiles: React.FC<PartySummaryTilesProps> = ({ party }) =
   const due = Math.max(party.outstandingBalance, 0)
   const isSupplier = party.type === 'SUPPLIER'
 
-  // Billing value: MTD when stats are present, else fall back to lifetime total.
-  const billedValue = stats ? stats.salesMtd : party.totalBusiness
-  const billedLabel = isSupplier
-    ? (stats ? t.purchasesMtd : t.totalPurchases)
-    : (stats ? t.salesMtd : t.totalSales)
-  const billedHint = stats
-    ? `${stats.invoiceCountMtd} ${isSupplier ? t.bills : t.invoices}`
-    : undefined
-
   const last = stats?.lastPayment ?? null
   const lastHint = last
     ? `${formatShortDate(last.date)} (${PAYMENT_MODE_LABELS[last.mode as PaymentMode] ?? last.mode})`
@@ -53,6 +41,7 @@ export const PartySummaryTiles: React.FC<PartySummaryTilesProps> = ({ party }) =
 
   return (
     <SummaryTiles
+      variant="divided"
       aria-label={t.partyOverview}
       tiles={[
         {
@@ -60,24 +49,29 @@ export const PartySummaryTiles: React.FC<PartySummaryTilesProps> = ({ party }) =
           label: isSupplier ? t.totalPayable : t.outstanding,
           value: formatAmount(due),
           tone: 'due',
-          icon: <ArrowDownRight className="w-4 h-4" />,
-          hint: stats?.isOverdue ? t.overdue : undefined,
+        },
+        {
+          id: 'oldest-due',
+          label: t.oldestDue,
+          // 0 days is a real answer only when something IS overdue; with no
+          // overdue invoice at all the honest reading is "nothing", not "0 days".
+          value: stats?.isOverdue ? `${stats.oldestDueDays}` : '—',
+          tone: stats?.isOverdue ? 'due' : 'neutral',
+          hint: stats?.isOverdue ? t.days : undefined,
           hintTone: 'due',
         },
         {
-          id: 'sales',
-          label: billedLabel,
-          value: formatAmount(billedValue),
-          tone: 'sales',
-          icon: <TrendingUp className="w-4 h-4" />,
-          hint: billedHint,
+          id: 'open-invoices',
+          label: t.openInvoices,
+          value: stats ? `${stats.openInvoiceCount}` : '—',
+          tone: 'neutral',
+          hint: stats ? t.invoicesCount : undefined,
         },
         {
           id: 'last-payment',
-          label: isSupplier ? t.paymentsMade : t.lastPayment,
+          label: t.lastPayment,
           value: last ? formatAmount(last.amount) : '—',
-          tone: 'info',
-          icon: <Wallet className="w-4 h-4" />,
+          tone: 'paid',
           hint: lastHint,
         },
       ]}

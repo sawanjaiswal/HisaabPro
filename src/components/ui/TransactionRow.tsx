@@ -5,6 +5,7 @@
  */
 
 import { ArrowDown, ArrowUp, ChevronRight } from 'lucide-react'
+import { Badge, type BadgeVariant } from '@/components/ui/Badge'
 import { formatPaise } from '@/lib/format'
 import './transaction-row.css'
 
@@ -21,6 +22,13 @@ export interface TransactionRowProps {
   reference?: string
   /** Amount in PAISE. Credit renders green with a leading minus; debit renders plain. */
   amountPaise: number
+  /**
+   * Optional status pill on the meta line beside the reference (ledger rows
+   * carry the invoice's state — Overdue / Pending / Paid). Label is
+   * already-translated; the caller picks the variant so this stays
+   * domain-agnostic.
+   */
+  status?: { label: string; variant: BadgeVariant }
   /** Optional right-aligned subtitle under the amount (e.g. payment mode). */
   subtitle?: string
   /** When provided the row is a button and shows a chevron affordance. */
@@ -45,6 +53,7 @@ export function TransactionRow({
   title,
   reference,
   amountPaise,
+  status,
   subtitle,
   onClick,
 }: TransactionRowProps) {
@@ -65,7 +74,16 @@ export function TransactionRow({
 
       <div className="txn-row__main">
         <p className="txn-row__title">{title}</p>
-        {reference && <p className="txn-row__ref">{reference}</p>}
+        {(reference || status) && (
+          <div className="txn-row__meta">
+            {reference && <span className="txn-row__ref">{reference}</span>}
+            {status && (
+              <Badge variant={status.variant} className="txn-row__status">
+                {status.label}
+              </Badge>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="txn-row__amount-wrap">

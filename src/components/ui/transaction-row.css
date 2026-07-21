@@ -86,13 +86,30 @@
   text-overflow: ellipsis;
 }
 
-.txn-row__ref {
+/* Reference + optional status pill share one line. The reference is the part
+   that gives way — the pill is a fixed, short word and truncating it would
+   turn "Overdue" into a meaningless stub. */
+.txn-row__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   margin-top: 2px;
+  min-width: 0;
+}
+
+.txn-row__ref {
+  flex: 0 1 auto;
   font-size: var(--fs-xs);
   color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.txn-row__status {
+  flex-shrink: 0;
+  font-size: var(--fs-2xs);
+  padding: 1px var(--space-2);
 }
 
 /* Amount */
@@ -109,11 +126,13 @@
   font-weight: 700;
 }
 
+/* Not uppercased: this slot now also carries "Balance: ₹1,200", and forcing
+   caps on a money string reads as shouting. Callers pass display-ready text. */
 .txn-row__sub {
   margin-top: 2px;
   font-size: var(--fs-xs);
   color: var(--text-muted);
-  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .txn-row__chevron {

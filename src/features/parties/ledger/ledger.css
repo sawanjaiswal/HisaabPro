@@ -97,6 +97,49 @@
   display: flex;
   align-items: center;
   gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+/* ── Search field ──────────────────────────────────────────────────────────
+   The `<Input>` primitive with its inset-icon layout; only the toolbar sizing
+   is overridden here, because this field shares one 320px row with the filter
+   and month triggers and cannot take the form field's full height. */
+.ledger-search {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ledger-search .input {
+  min-height: 40px;
+  font-size: var(--fs-sm);
+}
+
+/* Clear the WebKit search decorations — they collide with the inset icon. */
+.ledger-search .input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+/* Calendar glyph + month trigger read as one control. */
+.ledger-toolbar__month {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 40px;
+  padding-inline: var(--space-2);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+}
+
+.ledger-toolbar__month-icon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* PDF export, now inside the filter drawer. */
+.ledger-export-btn {
+  width: 100%;
+  gap: var(--space-2);
+  min-height: 44px;
 }
 
 .ledger-month-btn {
@@ -434,11 +477,26 @@
   border-radius: var(--radius-md);
 }
 
+/* Wallet square — mirrors the opening-balance bar so the two ends of the
+   ledger read as a matched pair rather than two unrelated summary blocks. */
+.ledger-total__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-100);
+  color: var(--color-primary-500);
+}
+
 .ledger-total__meta {
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+  flex: 1 1 auto;
 }
 
 .ledger-total__amt {

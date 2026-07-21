@@ -23,13 +23,13 @@ import { PartyOverviewTab } from './components/PartyOverviewTab'
 import { PartyAddressesTab } from './components/PartyAddressesTab'
 import { PartyCrmTab } from './components/PartyCrmTab'
 import { usePartyDetailTabs } from './usePartyDetailTabs'
-import { ShareLedgerSheet } from '@/features/shared-ledger/components/ShareLedgerSheet'
 import { useShareLedger } from '@/features/shared-ledger/useShareLedger'
 import { CommitmentsSection } from '@/features/collections/CommitmentsSection'
-import { StatementPDFPreview } from '@/features/collections/StatementPDFPreview'
+import { PartyDetailOverlays } from './components/PartyDetailOverlays'
 import { PartyLedgerTab } from './ledger/PartyLedgerTab'
 import { PartyDetailActionBar } from './components/PartyDetailActionBar'
-import { InviteDrawer } from '@/features/invite-claim/InviteDrawer'
+import { PartyOverdueAlert } from './components/PartyOverdueAlert'
+import { PartyDetailPayBar } from './components/PartyDetailPayBar'
 import '@/features/shared-ledger/shared-ledger.css'
 import './party-detail-header.css'
 import { Button } from '@/components/ui/Button'
@@ -53,6 +53,7 @@ export default function PartyDetailPage() {
   const shareLedger = useShareLedger(partyId)
 
   const handleEdit = () => navigate(`/parties/${partyId}/edit`)
+  const handleReceivePayment = () => navigate(`/payments/new?partyId=${partyId}`)
 
   const handleDelete = () => {
     setIsDeleting(true)
@@ -81,6 +82,7 @@ export default function PartyDetailPage() {
             onInvoice={() => navigate(`/invoices/new?partyId=${partyId}`)}
             onShare={() => setShareOpen(true)}
             onInvite={() => setInviteOpen(true)}
+            onStatement={() => setStmtOpen(true)}
             onDelete={() => setDeleteOpen(true)}
             showInvite={party.userId == null}
           />
@@ -121,44 +123,41 @@ export default function PartyDetailPage() {
               <div role="status" aria-live="polite" className="sr-only">
                 {party.name} {t.detailsLoaded}
               </div>
-              {/* Summary tiles (Outstanding / Sales MTD / Last Payment) — mockup */}
+              {/* Stat strip — Outstanding / Oldest Due / Open Invoices / Last Payment */}
               <PartySummaryTiles party={party} />
 
-              {/* Primary actions — Receive Payment + WhatsApp Statement */}
+              {/* Advisory: hides itself when nothing is overdue */}
+              {party.stats?.oldestOverdueInvoice && (
+                <PartyOverdueAlert
+                  invoiceNumber={party.stats.oldestOverdueInvoice.number}
+                  amountPaise={party.stats.oldestOverdueInvoice.amountPaise}
+                  daysOverdue={party.stats.oldestOverdueInvoice.daysOverdue}
+                  onReceivePayment={handleReceivePayment}
+                />
+              )}
+
+              {/* Primary actions — Receive Payment · New Invoice · ⋯ */}
               <PartyDetailActionBar
                 partyId={partyId}
                 onStatement={() => setStmtOpen(true)}
+                onEdit={handleEdit}
+                onShare={() => setShareOpen(true)}
+                onInvite={() => setInviteOpen(true)}
+                onDelete={() => setDeleteOpen(true)}
+                showInvite={party.userId == null}
               />
 
-              {shareOpen && (
-                <ShareLedgerSheet
-                  partyName={party.name}
-                  shares={shareLedger.shares}
-                  isCreating={shareLedger.isCreating}
-                  onCreate={shareLedger.createShare}
-                  onRevoke={shareLedger.revokeShare}
-                  onCopy={shareLedger.copyLink}
-                  onClose={() => setShareOpen(false)}
-                />
-              )}
-              {inviteOpen && (
-                <InviteDrawer
-                  partyId={partyId}
-                  partyName={party.name}
-                  partyPhone={party.phone}
-                  onClose={() => setInviteOpen(false)}
-                />
-              )}
-              {stmtOpen && (
-                <StatementPDFPreview
-                  open={stmtOpen}
-                  onClose={() => setStmtOpen(false)}
-                  partyId={partyId}
-                  partyName={party.name}
-                  partyPhone={party.phone}
-                  businessName={party.companyName ?? party.name}
-                />
-              )}
+              <PartyDetailOverlays
+                party={party}
+                partyId={partyId}
+                shareLedger={shareLedger}
+                shareOpen={shareOpen}
+                onCloseShare={() => setShareOpen(false)}
+                inviteOpen={inviteOpen}
+                onCloseInvite={() => setInviteOpen(false)}
+                stmtOpen={stmtOpen}
+                onCloseStatement={() => setStmtOpen(false)}
+              />
 
               <div className="party-detail-tabs" role="tablist" aria-label={t.partyDetailSections}>
                 {TABS.map((tab) => (
@@ -215,6 +214,13 @@ export default function PartyDetailPage() {
             </div>
           )}
         </PageContainer>
+
+        {status === 'success' && party && (
+          <PartyDetailPayBar
+            outstandingPaise={party.outstandingBalance}
+            onReceivePayment={handleReceivePayment}
+          />
+        )}
       </AppShell>
 
       <ConfirmDialog

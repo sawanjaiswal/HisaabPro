@@ -16,6 +16,7 @@ export const buttonVariants = cva('btn', {
       outline: 'btn-outline',
       accent: 'btn-accent',
       destructive: 'btn-destructive',
+      'outline-destructive': 'btn-outline-destructive',
       ghost: 'btn-ghost',
       none: '',
     },

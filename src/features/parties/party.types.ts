@@ -60,6 +60,18 @@ export interface PartyDetailStats {
   lastPayment: { amount: number; date: string; mode: string } | null
   /** True when any non-deleted sale invoice is past its due date with balance owing. */
   isOverdue: boolean
+  /** Whole days the oldest still-owing overdue invoice is past due; 0 when none. */
+  oldestDueDays: number
+  /** Count of non-draft invoices with balance still owing (overdue or not). */
+  openInvoiceCount: number
+  /** Oldest still-owing overdue invoice — drives the alert banner. Null hides it. */
+  oldestOverdueInvoice: {
+    id: string
+    number: string
+    /** Balance still owing on that invoice (paise), not its grand total. */
+    amountPaise: number
+    daysOverdue: number
+  } | null
 }
 
 /** Full party detail */

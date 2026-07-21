@@ -10,6 +10,13 @@ export type LedgerVoucherType =
   | 'JOURNAL'
   | 'OPENING'
 
+/**
+ * Settlement state of the source document — mirrors the server's
+ * `LedgerRowStatus`. Present only on DOCUMENT rows; payments and journal
+ * entries have no settlement state.
+ */
+export type LedgerRowStatus = 'DRAFT' | 'PAID' | 'PARTIAL' | 'PENDING' | 'OVERDUE'
+
 export interface LedgerRow {
   id: string
   /** Which entity the row came from — drives per-row navigation. */
@@ -28,6 +35,8 @@ export interface LedgerRow {
   itemCount?: number
   /** Payment mode (CASH/UPI/…) — present only on PAYMENT rows. */
   mode?: string
+  /** Settlement state — present only on DOCUMENT rows. */
+  status?: LedgerRowStatus
 }
 
 export interface LedgerResponse {

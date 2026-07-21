@@ -139,9 +139,86 @@
 
 /* Two tiles fall back to a 2-col grid so values stay legible; a lone tile
    fills the row. Three is the design default. */
-.summary-tiles:has(.summary-tile:nth-child(2):last-child) {
+.summary-tiles--tile:has(.summary-tile:nth-child(2):last-child) {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-.summary-tiles:has(.summary-tile:only-child) {
+.summary-tiles--tile:has(.summary-tile:only-child) {
   grid-template-columns: 1fr;
+}
+
+/* ─── variant: divided ─────────────────────────────────────────────────────
+   One flush strip of numbers split by hairline rules — no card borders, no
+   tinted backgrounds, no icon circles. Used by entity-detail headers, where
+   four stats have to sit in the band a three-card row used to fill.
+
+   Mobile-first: 2×2 at the 320px floor (four columns of Indian-format money
+   cannot stay legible there), 4-across from 360px up, which is where the
+   375px primary target and the mockup both live.
+   ───────────────────────────────────────────────────────────────────────── */
+
+.summary-tiles--divided {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+}
+
+.summary-tiles--divided .summary-tile {
+  padding: var(--space-3) var(--space-3);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  gap: var(--space-1);
+}
+
+/* Column rules. In 2-col mode the 2nd and 4th tiles open a column; in 4-col
+   mode every tile but the first does. Row rule only exists while wrapped. */
+.summary-tiles--divided .summary-tile:nth-child(2n) {
+  border-inline-start: 1px solid var(--color-gray-200);
+}
+
+.summary-tiles--divided .summary-tile:nth-child(n + 3) {
+  border-block-start: 1px solid var(--color-gray-200);
+}
+
+.summary-tiles--divided .summary-tile__label {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-secondary);
+}
+
+.summary-tiles--divided .summary-tile__value {
+  font-size: var(--fs-xl);
+  line-height: 1.15;
+}
+
+.summary-tiles--divided .summary-tile__hint {
+  font-size: var(--fs-sm);
+  white-space: normal;
+}
+
+@media (min-width: 360px) {
+  .summary-tiles--divided {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .summary-tiles--divided .summary-tile:nth-child(n + 3) {
+    border-block-start: 0;
+  }
+
+  .summary-tiles--divided .summary-tile:not(:first-child) {
+    border-inline-start: 1px solid var(--color-gray-200);
+  }
+
+  .summary-tiles--divided .summary-tile {
+    padding-inline: var(--space-2);
+  }
+
+  .summary-tiles--divided .summary-tile:first-child {
+    padding-inline-start: 0;
+  }
+
+  .summary-tiles--divided .summary-tile:last-child {
+    padding-inline-end: 0;
+  }
 }

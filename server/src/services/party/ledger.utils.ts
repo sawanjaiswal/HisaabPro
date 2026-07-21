@@ -9,7 +9,7 @@
 
 import { paymentTypeDirection } from '../../lib/payment-types.js'
 import type { PaymentType } from '../../../../shared/enums.js'
-import type { LedgerVoucherType } from './ledger.types.js'
+import type { LedgerRowStatus, LedgerVoucherType } from './ledger.types.js'
 
 /** Document types → ledger voucher type + sign (DR positive, CR negative). */
 export const DOC_VOUCHER_MAP: Record<string, { voucherType: LedgerVoucherType; sign: 1 | -1 }> = {
@@ -57,6 +57,7 @@ export interface RawRow {
   cr: number
   itemCount?: number
   mode?: string
+  status?: LedgerRowStatus
 }
 
 /** Minimal shapes the mappers need — structural, so Prisma selects satisfy them. */
@@ -69,6 +70,33 @@ export interface DocRowInput {
   createdAt: Date
   party: { name: string }
   _count?: { lineItems: number }
+  /** Stored workflow status (DRAFT/SENT/…) — only DRAFT is read directly. */
+  status?: string
+  /** Paise still owing; 0 (or less) means fully settled. */
+  balanceDue?: unknown
+  dueDate?: Date | null
+}
+
+/**
+ * Settlement state for a document ledger row.
+ *
+ * Order matters: a draft is not a receivable at all, a settled invoice can
+ * never be overdue, and OVERDUE outranks PARTIAL because "past due" is the
+ * fact the user acts on — part-payment doesn't soften a missed due date.
+ * `now` is injected so the mapping stays pure and testable.
+ */
+export function documentLedgerStatus(
+  doc: { status?: string; balanceDue?: unknown; grandTotal: unknown; dueDate?: Date | null },
+  now: Date,
+): LedgerRowStatus {
+  if (doc.status === 'DRAFT') return 'DRAFT'
+
+  const balance = Number(doc.balanceDue ?? 0)
+  if (balance <= 0) return 'PAID'
+
+  if (doc.dueDate && doc.dueDate.getTime() < now.getTime()) return 'OVERDUE'
+
+  return balance < Number(doc.grandTotal) ? 'PARTIAL' : 'PENDING'
 }
 export interface PayRowInput {
   id: string
@@ -119,6 +147,7 @@ export function mergeLedgerRows(
   docs: DocRowInput[],
   pays: PayRowInput[],
   jeLines: JeRowInput[],
+  now: Date = new Date(),
 ): RawRow[] {
   const rows: RawRow[] = []
 
@@ -135,6 +164,7 @@ export function mergeLedgerRows(
       dr: mapping.sign > 0 ? amount : 0,
       cr: mapping.sign < 0 ? amount : 0,
       itemCount: d._count?.lineItems,
+      status: documentLedgerStatus(d, now),
     })
   }
 

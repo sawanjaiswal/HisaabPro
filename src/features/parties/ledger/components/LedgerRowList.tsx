@@ -8,7 +8,7 @@ import { formatPaise } from '@/lib/format'
 import { PAYMENT_MODE_LABELS } from '@/features/payments/payment-labels.constants'
 import { ROUTES } from '@/config/routes.config'
 import type { PaymentMode } from '@/features/payments/payment.types'
-import { groupLedgerByMonth, rowAmountPaise, rowDirection } from '../ledger.utils'
+import { groupLedgerByMonth, rowAmountPaise, rowDirection, rowStatusBadge } from '../ledger.utils'
 import type { LedgerRow } from '../ledger.types'
 
 interface LedgerRowListProps {
@@ -67,6 +67,13 @@ export function LedgerRowList({ rows, openingBalance, closingBalance, asOn }: Le
   const { t } = useLanguage()
   const navigate = useNavigate()
   const groups = groupLedgerByMonth(rows, openingBalance)
+  const statusLabels = {
+    paid: t.paid,
+    unpaid: t.unpaid,
+    partial: t.partial,
+    overdue: t.overdue,
+    draft: t.draft,
+  }
   const closingTag = drCrTag(closingBalance)
   const openingTag = drCrTag(openingBalance)
 
@@ -105,6 +112,8 @@ export function LedgerRowList({ rows, openingBalance, closingBalance, asOn }: Le
                 title={rowTitle(row, t)}
                 reference={rowSubtitle(row, t.items)}
                 amountPaise={rowAmountPaise(row)}
+                status={rowStatusBadge(row, statusLabels)}
+                subtitle={`${t.balanceLabel}: ${formatPaise(Math.abs(row.runningBalance))}`}
                 onClick={rowHref(row)}
               />
             ))}
@@ -114,6 +123,9 @@ export function LedgerRowList({ rows, openingBalance, closingBalance, asOn }: Le
 
       {/* Running-balance footer */}
       <footer className="ledger-total">
+        <span className="ledger-total__icon" aria-hidden="true">
+          <Wallet className="w-4 h-4" />
+        </span>
         <div className="ledger-total__meta">
           <span className="ledger-total__label">{t.runningBalance}</span>
           {asOn && (
