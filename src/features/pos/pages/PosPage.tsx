@@ -116,28 +116,19 @@ export default function PosMainPage() {
           </Button>
         )}
 
-        {/* Cart panel overlay */}
-        {cartOpen && (
-          <>
-            <div
-              className="pos-overlay"
-              role="presentation"
-              aria-hidden="true"
-              onClick={() => setCartOpen(false)}
-            />
-            <CartPanel
-              items={page.store.items}
-              totals={page.store.totals}
-              onUpdateQty={page.store.updateQty}
-              onRemove={page.store.removeItem}
-              onClose={() => setCartOpen(false)}
-              onCheckout={() => {
-                setCartOpen(false)
-                page.openPayment()
-              }}
-            />
-          </>
-        )}
+        {/* Cart panel — <Drawer> brings its own backdrop and portal. */}
+        <CartPanel
+          open={cartOpen}
+          items={page.store.items}
+          totals={page.store.totals}
+          onUpdateQty={page.store.updateQty}
+          onRemove={page.store.removeItem}
+          onClose={() => setCartOpen(false)}
+          onCheckout={() => {
+            setCartOpen(false)
+            page.openPayment()
+          }}
+        />
 
         {/* Payment sheet */}
         <PaymentSheet

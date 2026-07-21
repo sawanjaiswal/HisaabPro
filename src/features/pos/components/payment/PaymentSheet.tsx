@@ -2,7 +2,8 @@
 
 import { useState, useCallback } from 'react'
 import { Button } from '@/components/ui/Button'
-import { X, Plus, Sparkles } from 'lucide-react'
+import { Drawer } from '@/components/ui/Drawer'
+import { Plus, Sparkles } from 'lucide-react'
 import { PaymentModeButton } from './PaymentModeButton'
 import { SplitTenderRow } from './SplitTenderRow'
 import { UpiQrModal } from './UpiQrModal'
@@ -90,32 +91,33 @@ export function PaymentSheet({
     setPayments(cleaned.length ? cleaned : [{ mode: 'CASH', amount: grandTotal }])
   }
 
-  if (!open) return null
-
   const primaryMode = payments[0]?.mode ?? 'CASH'
   const isSplit     = payments.length > 1
 
   return (
     <>
-      <div
-        className="pos-sheet-backdrop"
-        onClick={onClose}
-        role="presentation"
-        aria-hidden="true"
-      />
-      <div
-        className="pos-sheet"
-        role="dialog"
-        aria-modal="true"
-        aria-label={t.posPaymentTitle ?? 'Payment'}
-      >
-        <div className="pos-sheet__header">
-          <h2 className="pos-sheet__title">{t.posPaymentTitle ?? 'Payment'}</h2>
-          <Button variant="none" type="button" className="pos-sheet__close" onClick={onClose} aria-label={t.close ?? 'Close'}>
-            <X size={18} aria-hidden="true" />
+      <Drawer
+        open={open}
+        onClose={onClose}
+        title={t.posPaymentTitle ?? 'Payment'}
+        size="md"
+        // Mid-sale the sheet must not be dismissable — a stray backdrop tap
+        // would hide an in-flight charge with no way back to its outcome.
+        persistent={isProcessing}
+        footer={
+          <Button variant="none"
+            type="button"
+            className="pos-sheet__confirm-btn"
+            disabled={!isValid || isProcessing}
+            onClick={onConfirm}
+            aria-busy={isProcessing}
+          >
+            {isProcessing
+              ? (t.posProcessing ?? 'Processing…')
+              : (t.posConfirmSale ?? 'Confirm sale')}
           </Button>
-        </div>
-
+        }
+      >
         <div className="pos-sheet__body">
           <p className="pos-sheet__total-label">{t.posGrandTotal ?? 'Total'}</p>
           <p className="pos-sheet__total-amount">{paiseToInr(grandTotal)}</p>
@@ -198,21 +200,7 @@ export function PaymentSheet({
             </p>
           )}
         </div>
-
-        <div className="pos-sheet__footer">
-          <Button variant="none"
-            type="button"
-            className="pos-sheet__confirm-btn"
-            disabled={!isValid || isProcessing}
-            onClick={onConfirm}
-            aria-busy={isProcessing}
-          >
-            {isProcessing
-              ? (t.posProcessing ?? 'Processing…')
-              : (t.posConfirmSale ?? 'Confirm sale')}
-          </Button>
-        </div>
-      </div>
+      </Drawer>
 
       {showQr && (
         <UpiQrModal

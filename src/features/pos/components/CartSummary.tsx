@@ -2,6 +2,7 @@
 
 import { ShoppingCart } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { BottomActionBar } from '@/components/ui/BottomActionBar'
 import { formatPaise } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import { cartSubtotal, cartItemCount } from '../pos.utils'
@@ -21,7 +22,7 @@ export function CartSummary({ items, onCheckout }: CartSummaryProps) {
   if (items.length === 0) return null
 
   return (
-    <div className="pos-cart-summary" aria-label={t.posCartItems}>
+    <BottomActionBar className="pos-cart-summary" role="group" aria-label={t.posCartItems}>
       <div className="pos-cart-summary-info">
         <ShoppingCart size={18} aria-hidden="true" />
         <span className="pos-cart-summary-count">
@@ -40,6 +41,6 @@ export function CartSummary({ items, onCheckout }: CartSummaryProps) {
           {t.posCharge} {formatPaise(total)}
         </Button>
       </div>
-    </div>
+    </BottomActionBar>
   )
 }

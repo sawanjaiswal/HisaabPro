@@ -361,24 +361,13 @@
 
 /* ── Cart summary (sticky bottom) ─────────────────────────────── */
 
-.pos-cart-summary {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
+/* Layout only — <BottomActionBar> owns fixed positioning and safe-area math. */
+.bottom-action-bar.pos-cart-summary {
   justify-content: space-between;
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-gray-0);
-  border-top: 1px solid var(--color-gray-100);
-  z-index: var(--z-sticky);
-  box-shadow: var(--shadow-bar-bottom);
 }
 
-body:has(.bnav) .pos-cart-summary {
-  bottom: var(--bottom-nav-height);
-  padding-bottom: var(--space-3);
+.bottom-action-bar.pos-cart-summary > * {
+  flex: 0 0 auto;
 }
 
 .pos-cart-summary-info {

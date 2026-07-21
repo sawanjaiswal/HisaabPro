@@ -13,11 +13,27 @@ interface BottomActionBarProps {
   children: ReactNode
   /** Extra class for feature-specific tweaks — never for positioning. */
   className?: string
+  /**
+   * Names the bar for assistive tech. Only meaningful alongside a role that
+   * accepts a name — pass `role="group"` (or similar) when the bar carries
+   * more than a single button.
+   */
+  'aria-label'?: string
+  role?: string
 }
 
-export function BottomActionBar({ children, className }: BottomActionBarProps) {
+export function BottomActionBar({
+  children,
+  className,
+  role,
+  'aria-label': ariaLabel,
+}: BottomActionBarProps) {
   return (
-    <div className={className ? `bottom-action-bar ${className}` : 'bottom-action-bar'}>
+    <div
+      className={className ? `bottom-action-bar ${className}` : 'bottom-action-bar'}
+      role={role}
+      aria-label={ariaLabel}
+    >
       {children}
     </div>
   )

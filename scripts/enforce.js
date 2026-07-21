@@ -480,16 +480,10 @@ const FIXED_BOTTOM_ALLOWLIST = [
   /\/features\/landing\//,
 ]
 
-// Phase 3 migration debt: feature files with raw fixed-bottom that pre-date
-// the <BottomActionBar> SSOT. Any NEW file landing on this list is a hard
-// error — these files migrate to the primitive in Phase 3.
-// Save bars migrate to <BottomActionBar>; bottom sheets migrate to <Drawer>.
-// POS is the last holdout — its cart panel and payment sheet are a multi-step
-// flow, not a plain sheet, so they move on their own.
-const FIXED_BOTTOM_PHASE3_DEBT = new Set([
-  'src/features/pos/pos-billing.css',
-  'src/features/pos/pos.css',
-])
+// Phase 3 is complete: every feature save bar is on <BottomActionBar> and every
+// bottom sheet is on <Drawer>. The debt set is empty and stays empty — raw
+// fixed-bottom in feature CSS is now a hard error with no grandfathering.
+const FIXED_BOTTOM_PHASE3_DEBT = new Set([])
 
 let fixedBottomCount = 0
 const allCss = walkDir(FRONTEND_SRC, ['.css'])
