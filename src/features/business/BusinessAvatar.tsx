@@ -1,5 +1,4 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { createPortal } from 'react-dom'
 import { useAuth } from '@/context/AuthContext'
 import { getBusinessInitials, getBusinessColor } from './business.utils'
 import { BusinessSwitcher } from './components/BusinessSwitcher'
@@ -137,10 +136,9 @@ export function BusinessAvatar() {
         )}
       </div>
 
-      {showSwitcher && createPortal(
-        <BusinessSwitcher onClose={() => setShowSwitcher(false)} />,
-        document.body
-      )}
+      {/* Drawer portals itself — no createPortal, and mounting it unconditionally
+          lets Radix play the exit animation on close. */}
+      <BusinessSwitcher open={showSwitcher} onClose={() => setShowSwitcher(false)} />
     </>
   )
 }

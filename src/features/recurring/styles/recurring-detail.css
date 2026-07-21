@@ -276,58 +276,11 @@
 
 /* ── Bottom sheet ──────────────────────────────────────────────────────────── */
 
-.recurring-sheet-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  z-index: 90;
-}
-
-.recurring-sheet {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--color-gray-0);
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  padding: var(--space-5);
-  z-index: 91;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.recurring-sheet__handle {
-  width: 40px;
-  height: 4px;
-  border-radius: var(--radius-full);
-  background: var(--color-gray-200);
-  align-self: center;
-  margin-bottom: var(--space-1);
-}
-
-.recurring-sheet__title {
-  font-size: var(--fs-base);
-  font-weight: 700;
-  color: var(--color-gray-900);
-  margin: 0;
-}
-
 .recurring-sheet__body {
   font-size: var(--fs-df);
   color: var(--color-gray-600);
   margin: 0;
   line-height: 1.5;
-}
-
-.recurring-sheet__actions {
-  display: flex;
-  gap: var(--space-3);
-}
-
-.recurring-sheet__actions .recurring-btn {
-  flex: 1;
-  justify-content: center;
 }
 
 /* ── Warning button variant ────────────────────────────────────────────────── */

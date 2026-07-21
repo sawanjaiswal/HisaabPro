@@ -96,42 +96,6 @@
 }
 
 /* BusinessSwitcher bottom sheet */
-.business-switcher-overlay {
-  position: fixed;
-  inset: 0;
-  background: var(--backdrop-dark);
-  z-index: var(--z-modal-backdrop);
-  animation: fadeIn var(--duration-normal) var(--ease-default);
-}
-
-.business-switcher-sheet {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--color-surface);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  z-index: var(--z-modal);
-  max-height: 60vh;
-  overflow-y: auto;
-  animation: slide-up 0.25s ease;
-  padding: var(--space-2) 0;
-}
-
-.business-switcher-handle {
-  width: 40px;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--color-border);
-  margin: var(--space-2) auto;
-}
-
-.business-switcher-title {
-  font-size: var(--fs-base);
-  font-weight: 600;
-  padding: var(--space-2) var(--space-4);
-  color: var(--color-text);
-}
 
 .business-switcher-list {
   list-style: none;

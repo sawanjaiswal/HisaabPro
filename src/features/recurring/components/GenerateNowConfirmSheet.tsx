@@ -1,10 +1,9 @@
 /** GenerateNowConfirmSheet — bottom sheet confirmation for generate-now action */
 
-import { useRef } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatDate } from '@/lib/format'
-import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { Button } from '@/components/ui/Button'
+import { Drawer } from '@/components/ui/Drawer'
 
 interface GenerateNowConfirmSheetProps {
   open: boolean
@@ -24,41 +23,18 @@ export function GenerateNowConfirmSheet({
   onConfirm,
 }: GenerateNowConfirmSheetProps) {
   const { t } = useLanguage()
-  const sheetRef = useRef<HTMLDivElement>(null)
-  useFocusTrap(sheetRef, { active: open, onEscape: onCancel, disabled: isGenerating })
-
-  if (!open) return null
 
   return (
-    <>
-      <div
-        className="recurring-sheet-overlay"
-        role="presentation"
-        onClick={onCancel}
-        aria-hidden="true"
-      />
-      <div
-        ref={sheetRef}
-        className="recurring-sheet"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="generate-sheet-title"
-      >
-        <div className="recurring-sheet__handle" aria-hidden="true" />
-        <h2 className="recurring-sheet__title" id="generate-sheet-title">
-          {t.recurringGenerateNow ?? 'Generate Now'}
-        </h2>
-        <p className="recurring-sheet__body">
-          {t.recurringGenerateConfirm ?? 'Generate invoice now for'}{' '}
-          <strong>{scheduleName}</strong>?{' '}
-          {nextRunDate && (
-            <>
-              {t.recurringNextAutoRun ?? 'Next auto-run still on'}{' '}
-              <strong>{formatDate(nextRunDate)}</strong>.
-            </>
-          )}
-        </p>
-        <div className="recurring-sheet__actions">
+    <Drawer
+      open={open}
+      onClose={onCancel}
+      title={t.recurringGenerateNow ?? 'Generate Now'}
+      size="sm"
+      // Mid-generate the sheet must stay put — dismissing it would strand the
+      // request with no visible outcome.
+      persistent={isGenerating}
+      footer={
+        <>
           <Button variant="none"
             type="button"
             className="recurring-btn recurring-btn--secondary"
@@ -78,8 +54,19 @@ export function GenerateNowConfirmSheet({
               ? (t.recurringGenerating ?? 'Generating...')
               : (t.recurringGenerateNow ?? 'Generate')}
           </Button>
-        </div>
-      </div>
-    </>
+        </>
+      }
+    >
+      <p className="recurring-sheet__body">
+        {t.recurringGenerateConfirm ?? 'Generate invoice now for'}{' '}
+        <strong>{scheduleName}</strong>?{' '}
+        {nextRunDate && (
+          <>
+            {t.recurringNextAutoRun ?? 'Next auto-run still on'}{' '}
+            <strong>{formatDate(nextRunDate)}</strong>.
+          </>
+        )}
+      </p>
+    </Drawer>
   )
 }

@@ -483,15 +483,12 @@ const FIXED_BOTTOM_ALLOWLIST = [
 // Phase 3 migration debt: feature files with raw fixed-bottom that pre-date
 // the <BottomActionBar> SSOT. Any NEW file landing on this list is a hard
 // error — these files migrate to the primitive in Phase 3.
-// Remaining rows are bottom SHEETS (business switcher, recurring, POS cart /
-// payment panels) — those migrate to <Drawer>, not <BottomActionBar>, since
-// they carry a backdrop, a drag handle and their own scroll container.
-// The three save bars that used to sit here now consume <BottomActionBar>.
+// Save bars migrate to <BottomActionBar>; bottom sheets migrate to <Drawer>.
+// POS is the last holdout — its cart panel and payment sheet are a multi-step
+// flow, not a plain sheet, so they move on their own.
 const FIXED_BOTTOM_PHASE3_DEBT = new Set([
-  'src/features/business/business.css',
   'src/features/pos/pos-billing.css',
   'src/features/pos/pos.css',
-  'src/features/recurring/styles/recurring-detail.css',
 ])
 
 let fixedBottomCount = 0

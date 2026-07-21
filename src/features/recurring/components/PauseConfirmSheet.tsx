@@ -1,9 +1,8 @@
 /** PauseConfirmSheet — bottom sheet confirmation for pausing a schedule */
 
-import { useRef } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
-import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { Button } from '@/components/ui/Button'
+import { Drawer } from '@/components/ui/Drawer'
 
 interface PauseConfirmSheetProps {
   open: boolean
@@ -21,35 +20,18 @@ export function PauseConfirmSheet({
   onConfirm,
 }: PauseConfirmSheetProps) {
   const { t } = useLanguage()
-  const sheetRef = useRef<HTMLDivElement>(null)
-  useFocusTrap(sheetRef, { active: open, onEscape: onCancel, disabled: isPausing })
-
-  if (!open) return null
 
   return (
-    <>
-      <div
-        className="recurring-sheet-overlay"
-        role="presentation"
-        onClick={onCancel}
-        aria-hidden="true"
-      />
-      <div
-        ref={sheetRef}
-        className="recurring-sheet"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="pause-sheet-title"
-      >
-        <div className="recurring-sheet__handle" aria-hidden="true" />
-        <h2 className="recurring-sheet__title" id="pause-sheet-title">
-          {t.recurringPause ?? 'Pause Schedule'}
-        </h2>
-        <p className="recurring-sheet__body">
-          {t.recurringPauseConfirm ?? 'Pause'} <strong>{scheduleName}</strong>?{' '}
-          {t.recurringPauseDesc ?? 'Runs during the pause period will be skipped.'}
-        </p>
-        <div className="recurring-sheet__actions">
+    <Drawer
+      open={open}
+      onClose={onCancel}
+      title={t.recurringPause ?? 'Pause Schedule'}
+      size="sm"
+      // Mid-pause the sheet must stay put — dismissing it would strand the
+      // request with no visible outcome.
+      persistent={isPausing}
+      footer={
+        <>
           <Button variant="none"
             type="button"
             className="recurring-btn recurring-btn--secondary"
@@ -69,8 +51,13 @@ export function PauseConfirmSheet({
               ? (t.recurringPausing ?? 'Pausing...')
               : (t.recurringPause ?? 'Pause')}
           </Button>
-        </div>
-      </div>
-    </>
+        </>
+      }
+    >
+      <p className="recurring-sheet__body">
+        {t.recurringPauseConfirm ?? 'Pause'} <strong>{scheduleName}</strong>?{' '}
+        {t.recurringPauseDesc ?? 'Runs during the pause period will be skipped.'}
+      </p>
+    </Drawer>
   )
 }

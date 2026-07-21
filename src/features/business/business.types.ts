@@ -1,4 +1,5 @@
 export interface BusinessSwitcherProps {
+  open: boolean
   onClose: () => void
 }
 
