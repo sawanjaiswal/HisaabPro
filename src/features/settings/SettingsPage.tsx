@@ -8,37 +8,10 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-  Lock,
-  Fingerprint,
-  Key,
-  ShieldCheck,
-  Users,
-  Shield,
-  UserPlus,
-  ShieldAlert,
-  ClipboardList,
-  Calendar,
-  Keyboard,
-  Calculator,
-  Moon,
-  Languages,
-  Receipt,
-  Percent,
-  Briefcase,
-  Ruler,
-  Package,
-  Sparkles,
-  Trophy,
-  Store,
-  Palette,
-  Cloud,
-  LogOut,
-} from 'lucide-react'
-import type { LucideProps } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { ROUTES } from '@/config/routes.config'
@@ -55,35 +28,6 @@ import './settings.css'
 import './settings-toggle.css'
 import { Button } from '@/components/ui/Button'
 
-type IconComponent = React.FC<LucideProps>
-
-const ICON_MAP: Record<string, IconComponent> = {
-  Lock,
-  Fingerprint,
-  Key,
-  ShieldCheck,
-  Users,
-  Shield,
-  UserPlus,
-  ShieldAlert,
-  ClipboardList,
-  Calendar,
-  Keyboard,
-  Calculator,
-  Moon,
-  Languages,
-  Receipt,
-  Percent,
-  Briefcase,
-  Ruler,
-  Package,
-  Sparkles,
-  Trophy,
-  Store,
-  Palette,
-  Cloud,
-}
-
 function getNextDateFormat(current: DateFormat): DateFormat {
   const idx = DATE_FORMATS.indexOf(current)
   return DATE_FORMATS[(idx + 1) % DATE_FORMATS.length]
@@ -92,19 +36,6 @@ function getNextDateFormat(current: DateFormat): DateFormat {
 function getNextCalculatorPosition(current: CalculatorPosition): CalculatorPosition {
   return current === 'BOTTOM_RIGHT' ? 'BOTTOM_LEFT' : 'BOTTOM_RIGHT'
 }
-
-// Enrich sections with icon components — SettingsSection renders icons via slot
-// We pass icon-enriched sections; SettingsSection already references item.icon as string.
-// SettingsPage owns icon rendering by injecting into SettingsSection via the icon map.
-// Since SettingsSection renders icons as empty spans (icon is string key), we wrap it here.
-// The icons are passed down through the section items' icon field — SettingsSection
-// renders the icon slot as empty. We override by rendering our own SettingsSection
-// wrapper that injects the actual lucide component into the icon slot.
-//
-// Rather than forking SettingsSection, we rely on the existing SettingsSection API
-// and note that the icon slot is unused (renders empty span). This is a known gap
-// in SettingsSection that can be addressed later — the hub is functional without icons
-// since SettingsSection already applies the icon background class.
 
 export default function SettingsPage() {
   const navigate = useNavigate()
@@ -165,7 +96,7 @@ export default function SettingsPage() {
     <AppShell>
       <Header title={t.settings} backTo={ROUTES.DASHBOARD} />
 
-      <PageContainer>
+      <HeroPage>
         {status === 'loading' && <SettingsSkeleton />}
 
         {status === 'error' && (
@@ -203,14 +134,14 @@ export default function SettingsPage() {
             </Button>
           </div>
         )}
-      </PageContainer>
+      </HeroPage>
 
       <ConfirmDialog
         open={confirmLogout}
         onClose={() => setConfirmLogout(false)}
         onConfirm={doLogout}
         title={t.logout}
-        description="Sign out of your account?"
+        description={t.signOutConfirm}
         confirmLabel={t.logout}
         isDanger
       />
@@ -218,6 +149,4 @@ export default function SettingsPage() {
   )
 }
 
-// Export the icon map so other settings components can reuse it
-export { ICON_MAP }
 export type { AppSettings as SettingsPageAppSettings }

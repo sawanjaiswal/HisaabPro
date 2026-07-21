@@ -1,0 +1,147 @@
+/* ─── Grouped-list row (archetype H) ──────────────────────────────────────────
+ *
+ * Moved verbatim from `features/settings/settings.css` (.settings-item-*) when
+ * the row was promoted to a shared primitive. Tokens only — no raw hex or px
+ * magic beyond the two fixed icon/chevron squares.
+ * Mobile-first: base targets 375px.
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+.setting-group-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.setting-group-title {
+  font-family: var(--font-primary);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-gray-500);
+  padding: 0 var(--space-4);
+  margin-bottom: var(--space-1);
+}
+
+.setting-group {
+  background-color: var(--color-gray-0);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--color-gray-200);
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  min-height: 56px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-primary);
+  color: var(--color-gray-900);
+  transition: background-color var(--duration-snappy) var(--ease-default);
+  border-bottom: 1px solid var(--color-gray-100);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.setting-row:last-child {
+  border-bottom: none;
+}
+
+.setting-row:active {
+  background-color: var(--color-gray-50);
+}
+
+.setting-row:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: -2px;
+}
+
+.setting-row-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.setting-row-icon--primary {
+  background-color: var(--color-primary-50);
+  color: var(--color-primary-600);
+}
+
+.setting-row-icon--danger {
+  background-color: var(--color-error-50);
+  color: var(--color-error-600);
+}
+
+.setting-row-icon--warning {
+  background-color: var(--color-warning-50);
+  color: var(--color-warning-600);
+}
+
+/* A danger row tints its label too — the mockup's red Logout row. */
+.setting-row--danger .setting-row-label {
+  color: var(--color-error-600);
+}
+
+.setting-row-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+  flex: 1;
+  min-width: 0;
+}
+
+.setting-row-label {
+  font-size: var(--fs-df);
+  font-weight: 500;
+  color: var(--color-gray-900);
+  line-height: 1.4;
+}
+
+.setting-row-description {
+  font-size: var(--fs-xs);
+  color: var(--color-gray-500);
+  line-height: 1.35;
+}
+
+.setting-row-action {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+  color: var(--color-gray-400);
+}
+
+.setting-row-value {
+  font-size: var(--fs-md);
+  color: var(--color-gray-500);
+}
+
+.setting-row-chevron {
+  width: 16px;
+  height: 16px;
+  opacity: 0.4;
+}
+
+/* ─── Dark theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .setting-group {
+  background-color: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .setting-row {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .setting-row:active {
+  background-color: var(--color-gray-100);
+}
