@@ -35,7 +35,9 @@
     "ssot": "node scripts/ssot/check.mjs",
     "ssot:index": "node scripts/ssot/index.mjs",
     "ssot:doc": "node scripts/ssot/doc.mjs",
-    "ssot:baseline": "node scripts/ssot/check.mjs --baseline"
+    "ssot:baseline": "node scripts/ssot/check.mjs --baseline",
+    "lint:raw-client": "node scripts/scoped/lint-raw-client.mjs",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "dependencies": {
     "@capacitor-mlkit/barcode-scanning": "^8.1.0",

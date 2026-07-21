@@ -4639,3 +4639,82 @@ model UnscopedAccessLog {
   @@index([reason])
   @@map("unscoped_access_log")
 }
+
+/// Shadow-harness divergence sink (scoped-prisma shadow, Wave A).
+///
+/// Holds ANOMALIES ONLY — never a row per compared read. Healthy volume lives in
+/// ScopedShadowStat. The 5 000-distinct-keys/hour cap and the retention bounds
+/// below are both computed against that invariant (ARCHITECTURE §7.2, AC-30).
+///
+/// This table is a durable, platform-global, CROSS-TENANT IDENTIFIER-LINKAGE
+/// store: each row pairs subjectBusinessId (the querying tenant) with row ids
+/// belonging to OTHER tenants. That is the payload the epic exists to produce.
+/// Four controls bound it (§9.3): the 20-id cap, the dual retention ceiling
+/// below, admin-only hashed access, and a bounded synthetic canary fixture.
+///
+/// Columns are deliberately NOT named `businessId` — that name is the DMMF
+/// classifier input (scoped-models.ts:19-23) and would classify this platform
+/// table as tenant-scoped. Matches UnscopedAccessLog.subjectBusinessId.
+model ScopedShadowDivergence {
+  id                    String   @id @default(cuid())
+  kind                  String
+  model                 String
+  operation             String
+  subjectBusinessId     String?
+  unscopedCount         Int
+  scopedCount           Int
+  /// HARD CAP 20 ids each (SHADOW_MAX_IDS). Enforced in prisma-shadow.diff.ts
+  /// and re-asserted in prisma-shadow.redact.ts before persistence. `truncated`
+  /// records that the cap bit; unscopedCount/scopedCount carry the magnitude, so
+  /// the cap costs no diagnostic power.
+  onlyUnscoped          String[]
+  onlyScoped            String[]
+  truncated             Boolean  @default(false)
+  shapeHash             String
+  suppressed            Int      @default(0)
+  /// NOT NULL by design: Postgres treats NULLs as distinct in a unique index, so
+  /// a nullable routeHint would make every job-path row unique and the dedupe
+  /// upsert would never collapse the one population it exists to bound (§7.3).
+  routeHint             String   @default("")
+  provenance            String
+  hadBusinessOnToken    Boolean  @default(false)
+  hasInclude            Boolean  @default(false)
+  hasBoundedWindow      Boolean  @default(false)
+  observationIntervalMs Int
+  stackHint             String?
+  /// err.name only — err.message embeds the failing field's value (§9.2).
+  errorName             String?
+  createdAt             DateTime @default(now())
+  /// Retention runs on this, not createdAt: the dedupe upsert pins createdAt at
+  /// first-sight, so age-on-createdAt would delete a still-firing row (§7.4).
+  lastSeenAt            DateTime @default(now()) @updatedAt
+
+  /// The group key carries the CLASSIFICATION, not only the payload signature.
+  /// Every empty-diff kind shares one shapeHash, so keying on shapeHash alone
+  /// collapses the whole no-context population into one row and destroys the
+  /// runUnscoped backlog query this epic exists to produce (§7.2, AA-2).
+  @@unique([kind, model, operation, shapeHash, routeHint])
+  @@index([lastSeenAt])
+  @@index([createdAt])
+  @@index([kind, lastSeenAt])
+  @@index([kind, provenance, lastSeenAt])
+  @@map("scoped_shadow_divergence")
+}
+
+/// Hourly counters for the shadow harness. Holds no identifiers at all.
+/// kind='observed-framed' is the source for exit criterion 2 (§7.2a).
+model ScopedShadowStat {
+  id         String   @id @default(cuid())
+  hourBucket DateTime
+  kind       String
+  /// Only kind='observed-framed' carries a non-empty routeHint; every other kind
+  /// writes '' — keeps cardinality bounded (§7.2a).
+  routeHint  String   @default("")
+  count      Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  @@unique([hourBucket, kind, routeHint])
+  @@index([hourBucket])
+  @@index([kind, hourBucket])
+  @@map("scoped_shadow_stat")
+}

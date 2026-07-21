@@ -1,5 +1,24 @@
 #!/bin/sh
+# Repo commit gates. Each gate carries its OWN bypass — see the note below.
+
 # SSOT gate — blocks new drift against canonical modules (ssot.config.mjs).
 # Bypass for incidents only: SSOT_BYPASS=1 git commit ...
-[ "$SSOT_BYPASS" = "1" ] && { echo "[ssot] bypassed"; exit 0; }
-node scripts/ssot/check.mjs || exit 1
+if [ "$SSOT_BYPASS" = "1" ]; then
+  echo "[ssot] bypassed"
+else
+  node scripts/ssot/check.mjs || exit 1
+fi
+
+# Tenant-leak gate (#20, ARCHITECTURE §15.4) — B2 raw-client escape + B7 raw-SQL
+# ratchet. Neither is visible at runtime: an unscoped client returns rows from
+# every tenant and looks exactly like a query that works.
+#
+# Deliberately NOT under SSOT_BYPASS. Before this file was split, that one var
+# `exit 0`-ed the whole hook — so anyone silencing a module-drift complaint would
+# have silenced cross-tenant leak detection in the same keystroke, with nothing
+# in the output saying so.
+if [ "$RAW_CLIENT_BYPASS" = "1" ]; then
+  echo "[lint-raw-client] bypassed"
+else
+  node scripts/scoped/lint-raw-client.mjs || exit 1
+fi

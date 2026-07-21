@@ -87,6 +87,8 @@ export const GLOBAL_ALLOWLIST: ReadonlyMap<string, string> = new Map<string, str
   ['PinResetToken', 'auth artifact — keyed by userId'],
   ['DriveBackupConnection', 'per-user backup integration — keyed by userId'],
   ['UnscopedAccessLog', 'the cross-tenant-access audit log itself — platform-global (M2)'],
+  ['ScopedShadowDivergence', 'shadow-harness divergence sink — platform observability, no tenant'],
+  ['ScopedShadowStat', 'shadow-harness hourly counters — platform observability, no tenant'],
 ])
 
 // --- Per-model scalar FKs whose relation target is a DIRECTLY-scoped model.

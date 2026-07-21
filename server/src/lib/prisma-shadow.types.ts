@@ -32,11 +32,23 @@ export type ShadowProvenance = 'http' | 'job'
 export interface ShadowDb {
   scopedShadowDivergence: {
     upsert(args: unknown): Promise<unknown>
+    groupBy(args: unknown): Promise<unknown>
+    count(args?: unknown): Promise<number>
   }
   scopedShadowStat: {
     upsert(args: unknown): Promise<unknown>
+    findMany(args?: unknown): Promise<unknown>
   }
 }
+
+/**
+ * Counter names. Every clean framed comparison bumps `observed-framed`, which is
+ * what exit criterion 2 counts distinct `routeHint`s over — it rises with healthy
+ * traffic. Rev 2 based that criterion on the divergence table, which holds
+ * anomalies only and therefore reads near-zero during exactly the outcome it is
+ * meant to certify (RS-1).
+ */
+export type ShadowStatKind = ShadowKind | 'sampled' | 'observed-framed'
 
 /** Per-request metadata carried in an ALS slot. Never holds PII (§9.2). */
 export interface RequestMeta {
