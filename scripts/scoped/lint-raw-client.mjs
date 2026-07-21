@@ -63,6 +63,18 @@ const RAW_CLIENT_ALLOWLIST = new Set([
   //   `server/src/__tests__/setup.ts` — real, and it does hold the token, but
   //     `__tests__` is in IGNORED_DIRS, so the row could never be consulted.
   //     Re-add it in the same commit that starts walking test files.
+  //
+  // Tenant-safety note (ARCHITECTURE §19 risk 5 — the crons hold the base client):
+  //   `shadow-canary.cron.ts` needs the UNSCOPED client because it is the positive
+  //   control: under `shadow` the app client's $allOperations branch deliberately
+  //   returns the unscoped result (§3.1 (3)) and `shouldShadow` is sampled, so the
+  //   scoped answer it must assert on is unobtainable through `prisma`. It builds
+  //   that answer by running the real `injectScope` plan on the base client. Its
+  //   ONLY query is `Party.findMany` over two seeded SYNTHETIC fixture ids
+  //   (`CANARY_FIXTURE_IDS`, D-15) — it can neither read nor write any real
+  //   tenant's row, which is the property that made the bounded fixture replace
+  //   SCOPE:413-416's unbounded findMany in the first place.
+  'server/src/jobs/shadow-canary.cron.ts',
 ])
 
 /**

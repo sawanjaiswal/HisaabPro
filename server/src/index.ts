@@ -1,14 +1,17 @@
 import 'dotenv/config'
 import { initSentry } from './lib/sentry.js'
-import { validateNicEnv } from './lib/env.js'
+import { runBootGuards } from './lib/boot-guards.js'
 import { createApp } from './app.js'
 import logger from './lib/logger.js'
 
 // Initialize error tracking before app starts
 initSentry()
 
-// MB-5 boot-fail: throws if NIC_ENV=prod and NODE_ENV !== production
-validateNicEnv()
+// Every boot-time refusal in one call (SR-3): MB-5 NIC_ENV, the scoped-prisma
+// mode/cutover guard (M3), and the C4 retention/watch-window precondition.
+// Called here because `validateScopedPrismaBoot` shipped with zero call sites —
+// a boot guard nobody invokes is a control only in review.
+runBootGuards()
 
 // ─── Process-level error handlers (catch unhandled async errors) ─────────────
 

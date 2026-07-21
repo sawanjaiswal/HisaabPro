@@ -90,3 +90,78 @@ export const SHADOW_MAX_KEYS_PER_HOUR = 5000
  * observation interval, is more likely write skew than a missing filter (§9.1).
  */
 export const SHADOW_SKEW_MAX_IDS = 3
+
+// ── Phase 5 · jobs ──────────────────────────────────────────────────────────
+
+/**
+ * Retention, ceiling 1 (§7.4, D-14). Deletes on `lastSeenAt`, NOT `createdAt`:
+ * the dedupe upsert pins `createdAt` at first-sight, so an age-on-createdAt rule
+ * would delete the hottest still-firing divergence in the system on day 31.
+ */
+export const SHADOW_RETENTION_LAST_SEEN_DAYS = 30
+
+/**
+ * Retention, ceiling 2 (M-5, D-14). `lastSeenAt`-only retention means a
+ * continuously-firing row is NEVER deleted, and a row holding up to 20 ids
+ * belonging to other tenants is an indefinitely-retained cross-tenant identifier
+ * linkage — a DPDP erasure problem, not a bloat problem (§9.3). A row still
+ * firing at day 180 has been an open incident for six months; the next
+ * occurrence re-creates it with a fresh `createdAt`.
+ */
+export const SHADOW_RETENTION_ABSOLUTE_DAYS = 180
+
+/** `ScopedShadowStat` holds counters and no identifiers at all — one rule. */
+export const SHADOW_STAT_RETENTION_DAYS = 180
+
+/**
+ * Per-tick delete cap. A single unbounded `deleteMany` over a bloated table takes
+ * a long row-level lock on the table the cutover decision reads. The cron is
+ * daily and idempotent, so a backlog drains over consecutive nights instead of
+ * in one lock.
+ */
+export const SHADOW_RETENTION_MAX_DELETES = 5_000
+
+/**
+ * The exit-criteria window (§11). Every exit query runs over `lastSeenAt` inside
+ * this many days, which is what makes it DISJOINT from the retention predicate by
+ * construction: a row that fired during the window cannot also satisfy
+ * `lastSeenAt < 30d`. C4 turns that arithmetic into a boot assertion
+ * (`lib/boot-guards.ts`) so a future config edit cannot silently end it.
+ */
+export const SHADOW_WATCH_WINDOW_DAYS = 7
+
+/**
+ * C4 — the disjointness margin the boot assertion enforces:
+ * `SHADOW_RETENTION_LAST_SEEN_DAYS >= RATIO * SHADOW_WATCH_WINDOW_DAYS`.
+ */
+export const SHADOW_RETENTION_WINDOW_RATIO = 4
+
+/** Watchdog: how far back durable activity counts as "a watch is in progress". */
+export const SHADOW_WATCHDOG_ACTIVITY_WINDOW_MS = 24 * 60 * 60 * 1000
+
+/** Canary cadence and the age past which its absence pages (AC-18). */
+export const SHADOW_CANARY_INTERVAL_MIN = 15
+export const SHADOW_CANARY_MAX_AGE_MS = 45 * 60 * 1000
+
+/**
+ * The bounded synthetic canary fixture (D-15, §9.3 control 4).
+ *
+ * SCOPE:413-416 specified the canary as an unbounded `findMany` with no tenant
+ * predicate. That form returns other tenants' rows BY DESIGN and would persist a
+ * 20-id sample of real production ids every 15 minutes, forever, as its steady
+ * state — making the positive control itself the largest recurring source of the
+ * cross-tenant linkage the whole §9.3 section exists to bound.
+ *
+ * These two ids are seeded, synthetic, and fixed: `SELF` belongs to the canary
+ * business, `FOREIGN` to a second synthetic business. A scoped read of both ids
+ * under the canary frame must return exactly `[SELF]`. The control fails just as
+ * loudly as the unbounded form — it simply cannot manufacture linkage while
+ * doing so, because neither id names a real tenant's row.
+ */
+export const SHADOW_CANARY_MODEL = 'Party'
+export const SHADOW_CANARY_SELF_ID = 'shadow-canary-fixture-self'
+export const SHADOW_CANARY_FOREIGN_ID = 'shadow-canary-fixture-foreign'
+export const CANARY_FIXTURE_IDS: readonly string[] = [
+  SHADOW_CANARY_SELF_ID,
+  SHADOW_CANARY_FOREIGN_ID,
+]

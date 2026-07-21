@@ -48,7 +48,7 @@ export interface ShadowDb {
  * anomalies only and therefore reads near-zero during exactly the outcome it is
  * meant to certify (RS-1).
  */
-export type ShadowStatKind = ShadowKind | 'sampled' | 'observed-framed'
+export type ShadowStatKind = ShadowKind | 'sampled' | 'observed-framed' | 'watch-active'
 
 /** Per-request metadata carried in an ALS slot. Never holds PII (§9.2). */
 export interface RequestMeta {

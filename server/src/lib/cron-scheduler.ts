@@ -25,6 +25,9 @@ import { runMandateReminderJob } from '../services/subscription/cron-mandate-rem
 import { runLoyaltyExpiryCron } from '../services/loyalty/loyalty-expiry.cron.js'
 import { runPinGc } from '../jobs/pin-gc.job.js'
 import { runImportRetentionJob } from '../jobs/import-retention.cron.js'
+import { runShadowRetentionJob } from '../jobs/shadow-retention.cron.js'
+import { runShadowCanaryJob } from '../jobs/shadow-canary.cron.js'
+import { runShadowWatchdogJob } from '../jobs/shadow-watchdog.cron.js'
 import os from 'os'
 
 let initialized = false
@@ -120,6 +123,38 @@ export function initCronJobs(): void {
     timezone: 'Asia/Kolkata',
   })
 
+  // ── Scoped-prisma shadow harness (Phase 5, Files #31-#33) ────────────────
+  //
+  // NONE of these three is wrapped in a mode check, and that is deliberate for
+  // different reasons per job:
+  //
+  //   retention — must keep draining after a watch ends, or the DPDP ceilings
+  //               stop applying the moment someone flips the flag back to `off`.
+  //   canary    — self-skips on mode `off` inside the job, where the skip is
+  //               visible and testable rather than hidden in this registration.
+  //   watchdog  — SR-1. The failure it detects IS the mode var being lost, so a
+  //               `if (mode === 'shadow')` here would disable the alarm under
+  //               exactly the condition that should trigger it. Adoption
+  //               assertion A7 asserts this registration with mode `off`; a
+  //               guard around this line is what that assertion fails on.
+
+  // Daily 03:15 IST — dual retention ceiling: 30d lastSeenAt / 180d createdAt.
+  cron.schedule('15 3 * * *', () => void runShadowRetentionJob(), {
+    timezone: 'Asia/Kolkata',
+  })
+
+  // Every 15 min — the positive control. A `canary` row means detection still
+  // works; its absence for 45 min is what the watchdog pages on (AC-18).
+  cron.schedule('*/15 * * * *', () => void runShadowCanaryJob(), {
+    timezone: 'Asia/Kolkata',
+  })
+
+  // Every 10 min, unconditionally (SR-1). Predicate is over durable stat rows,
+  // never over a live env read — see the file header.
+  cron.schedule('*/10 * * * *', () => void runShadowWatchdogJob(), {
+    timezone: 'Asia/Kolkata',
+  })
+
   logger.info('cron.registered', {
     jobs: [
       'ptp-evaluator @ 01:00 IST',
@@ -137,6 +172,9 @@ export function initCronJobs(): void {
       'subscription-mandate-reminder @ 08:00 IST',
       'loyalty-expiry @ 04:15 IST', 'pin-gc @ 03:30 IST',
       'import-retention @ hourly IST',
+      'shadow-retention @ 03:15 IST',
+      'shadow-canary @ */15 IST',
+      'shadow-watchdog @ */10 IST (unconditional — SR-1)',
     ],
   })
 }
