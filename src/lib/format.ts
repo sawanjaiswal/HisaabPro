@@ -10,6 +10,25 @@ export function formatPaise(paise: number): string {
   }).format(paise / 100)
 }
 
+/**
+ * Format paise as a headline amount: 11515000 → "₹1,15,150", 12550 → "₹125.50".
+ *
+ * Decimals only when there are paise to show — the summary cards in the design
+ * set read "₹1,15,150", and a trailing ".00" on every hero figure is noise.
+ * Signed, unlike the older party-local helper it replaces: a negative net
+ * balance means "you owe them" and hiding that reversed the meaning.
+ */
+export function formatRupees(paise: number): string {
+  const rupees = paise / 100
+  const fraction = rupees % 1 === 0 ? 0 : 2
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    minimumFractionDigits: fraction,
+    maximumFractionDigits: 2,
+  }).format(rupees)
+}
+
 /** Format number in Indian system: 1,00,000 */
 export function formatNumber(value: number): string {
   return new Intl.NumberFormat(CURRENCY.locale).format(value)

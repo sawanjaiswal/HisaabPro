@@ -1,0 +1,57 @@
+/* Outstanding-total footer card — moved verbatim from parties.css when the
+   component was promoted to a shared primitive. */
+
+.outstanding-total-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  cursor: default;
+}
+
+.outstanding-total-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-50);
+  color: var(--color-primary-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.outstanding-total-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.outstanding-total-label {
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.outstanding-total-sub {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.outstanding-total-amount {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.outstanding-total-chevron {
+  flex-shrink: 0;
+  color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .outstanding-total-icon {
+  background: var(--color-primary-bg-subtle);
+}

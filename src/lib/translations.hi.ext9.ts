@@ -12,6 +12,8 @@ export const hiExt9 = {
   noOutstandingReceivables: 'कोई बकाया प्राप्य नहीं',
   noOutstandingPayables: 'कोई बकाया देय नहीं',
   allBalancesSettled: 'सभी बैलेंस चुकता हैं।',
+  filterByAge: 'अवधि से छाँटें',
+  noMatchingParties: 'कोई पार्टी नहीं मिली',
   receivablesAging: 'प्राप्य एजिंग',
   payablesAging: 'देय एजिंग',
   days31to60: '31-60 दिन',

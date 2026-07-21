@@ -1,0 +1,246 @@
+/* Aging report (#66 Customer Balance Summary).
+   Mobile-first: the base rules are the 320px layout, md+ swaps the party rows
+   for the five-bucket grid. */
+
+/* ─── Hero band ─────────────────────────────────────────────── */
+
+.aging-hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-bottom: var(--space-2);
+}
+
+.aging-search .input {
+  min-height: 44px;
+}
+
+/* Kill the WebKit "x" — the empty-state action already clears the query. */
+.aging-search input[type='search']::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+/* ─── Sheet + controls ──────────────────────────────────────── */
+
+.aging-sheet {
+  padding-bottom: var(--bottom-nav-height);
+}
+
+.aging-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.aging-controls .filter-chips {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.aging-refresh {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+}
+
+/* ─── Party rows (<md) ──────────────────────────────────────── */
+
+.aging-rowlist {
+  display: flex;
+  flex-direction: column;
+}
+
+.aging-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-3) 0;
+  text-align: start;
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.aging-row:last-child {
+  border-bottom: 0;
+}
+
+.aging-row__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.aging-row__name {
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.aging-row__sub {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.aging-row__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.aging-row__amount {
+  font-size: var(--fs-df);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.aging-row__badge {
+  font-size: var(--fs-2xs);
+  padding: 1px var(--space-2);
+}
+
+/* ─── Bucket grid (≥md) ─────────────────────────────────────── */
+
+.aging-table {
+  display: none;
+}
+
+.aging-table__party {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.aging-table__danger {
+  color: var(--color-error-500);
+  font-weight: 600;
+}
+
+.aging-table__totals {
+  display: grid;
+  grid-template-columns: 2fr repeat(5, 1fr);
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-top: 1px solid var(--color-gray-200);
+  font-size: var(--fs-sm);
+  text-align: end;
+}
+
+.aging-table__totals-label {
+  text-align: start;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+@media (min-width: 768px) {
+  .aging-hero {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .aging-search {
+    max-width: 320px;
+  }
+
+  .aging-rowlist {
+    display: none;
+  }
+
+  .aging-table {
+    display: block;
+  }
+}
+
+/* ─── Loading ───────────────────────────────────────────────── */
+
+.aging-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.aging-skeleton__chips {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.aging-skeleton__chip {
+  width: 72px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-200);
+}
+
+.aging-skeleton__rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.aging-skeleton__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.aging-skeleton__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-200);
+  flex-shrink: 0;
+}
+
+.aging-skeleton__lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1 1 auto;
+}
+
+.aging-skeleton__line {
+  height: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--color-gray-200);
+}
+
+.aging-skeleton__line--wide {
+  width: 60%;
+}
+
+.aging-skeleton__line--narrow {
+  width: 35%;
+}
+
+.aging-skeleton__amount {
+  width: 72px;
+  height: 16px;
+  border-radius: var(--radius-sm);
+  background: var(--color-gray-200);
+  flex-shrink: 0;
+}
+
+.aging-skeleton__footer {
+  height: 76px;
+  border-radius: var(--radius-xl);
+  background: var(--color-gray-200);
+}

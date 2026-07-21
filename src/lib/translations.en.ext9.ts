@@ -141,6 +141,8 @@ export const enExt9 = {
   couldNotLoadAging:           'Could not load aging report',
   refreshAgingReport:          'Refresh aging report',
   allBalancesSettled:          'All balances are settled.',
+  filterByAge:                 'Filter by age',
+  noMatchingParties:           'No parties match',
 
   // ─── Discount Report ──────────────────────────────────────────────────────
   couldNotLoadDiscountReport:  'Could not load discount report',

@@ -14,7 +14,7 @@ import { useParties } from './useParties'
 import { PartySummaryBar } from './components/PartySummaryBar'
 import { PartyFilterBar } from './components/PartyFilterBar'
 import { PartyFilterDrawer } from './components/PartyFilterDrawer'
-import { PartyOutstandingCard } from './components/PartyOutstandingCard'
+import { OutstandingTotalCard } from '@/components/ui/OutstandingTotalCard'
 import { PartyListHeader } from './components/PartyListHeader'
 import { PARTY_STATUS_FILTERS, type PartyStatusFilter } from './party.constants'
 import { PartyCard } from './components/PartyCard'
@@ -197,9 +197,12 @@ export default function PartiesPage() {
             ))}
           </div>
           {!bulk.isActive && (
-            <PartyOutstandingCard
-              netOutstanding={data.summary.netOutstanding}
-              totalParties={data.summary.totalParties}
+            <OutstandingTotalCard
+              label={t.totalOutstandingLabel}
+              totalPaise={data.summary.netOutstanding}
+              caption={`${data.summary.totalParties} ${
+                data.summary.totalParties === 1 ? t.party : t.parties
+              }`}
             />
           )}
           </div>
