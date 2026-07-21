@@ -79,6 +79,28 @@ detail/form pages flagged only for empty. Treat the empty column as a
 - Archetype B (entity detail) → not-found → **error state**, empty N/A
 - Forms / wizards → empty N/A
 
+### 2.1 The scan produces false positives in BOTH directions
+
+Verified by reading files on 2026-07-21. Do not action a §2 row without opening
+the file first.
+
+**Flagged as broken, actually fine** — the regexes look for `ErrorState` /
+`isLoading` / `isPending` / `Skeleton`. A page using local `error` state and a
+`loading` boolean scores 0 while handling both correctly. All four auth pages
+hit this: they were reported as failing error *and* loading; all four handle
+both. `LoginPage` needs no work at all.
+
+**Flagged as fine, actually worse** — a page can hand-roll a state with inline
+styles and pass nothing, or fail differently than reported. `CampaignListPage`
+"has" an error path built from inline `style={{…}}` literals, which is a token
+violation the scan cannot see.
+
+**And the reverse of both** — `SalesHubPage` / `EstimatesPage` contain zero
+`error` tokens. The scan said "missing error state"; the truth is worse, there
+is no error path at all.
+
+Net: the scan is a **triage list, not a work list**. It tells you where to look.
+
 ### Gaps by area — worst first
 
 | Area | Pages w/ gaps | error | empty | loading | i18n | shell |
@@ -110,31 +132,51 @@ via Appendix A.
 mockup coverage; this one optimises for **user-visible value per hour**. Where
 they disagree, follow this one and tick the wave table as screens land.
 
-### Phase 1 — Auth (4 screens) · ⛔ do first
+> **Order corrected 2026-07-21 13:45 after reading the files.** The first draft
+> put auth first on scan output alone. Reading the four auth pages showed the
+> scan was wrong about them — see §2.1. Sales moved to Phase 1 on verified
+> evidence. **Read the files before trusting a row in §2.**
 
-`LoginPage` · `RegisterPage` · `VerifyOtpPage` · `ForgotPasswordPage`
-
-Worst scores in the codebase: **all four fail all five checks**. No error state,
-no loading state, no shell primitive, 3 of 4 without i18n. This is the first
-screen every user sees and the only screen a *failed* user sees. A login that
-gives no feedback on a wrong OTP reads as a broken app, not a wrong password.
-
-Highest value-per-screen in the entire plan. Four files.
-
-### Phase 2 — Marketing shell (9 screens)
-
-All 9 miss a layout primitive and 7 miss error states. Uniform defect, uniform
-fix — mount `PageContainer`, add `<ErrorState onRetry>`. Cheapest large win;
-mechanical enough to batch.
-
-### Phase 3 — Sales (7 screens)
+### Phase 1 — Sales (7 screens) · ⛔ do first
 
 `SalesHubPage` · `DocumentListPage` · `EstimatesPage` · `SaleOrdersPage` ·
 `DeliveryChallansPage` · detail pages · `create/*` wrappers
 
-**Every one of the 7 lacks an error state.** Core revenue flow — a silent failure
-here means a user thinks an invoice saved when it did not. Highest correctness
-risk of any group, and it maps to redesign Waves 1 and 4.
+Verified by reading, not scanning: `SalesHubPage.tsx` and `EstimatesPage.tsx`
+contain **zero occurrences of `error` or `isError`** — no error path exists at
+all, not merely a missing primitive. A failed fetch renders an empty screen with
+no message and no retry, in the revenue path. A user concludes an invoice saved
+when it did not.
+
+Highest correctness risk in the codebase. Maps to redesign Waves 1 and 4.
+
+### Phase 2 — Marketing (9 screens)
+
+All 9 miss a layout primitive; 7 were flagged for error states. Reading
+`CampaignListPage.tsx` shows the error path **exists but is hand-rolled** —
+inline `style={{…}}` objects, raw padding/radius/colour literals, no
+`<ErrorState>`. So this is a **G3/G4 conversion**, not a missing state: swap the
+hand-rolled block for `<ErrorState onRetry>` and mount `PageContainer`. Uniform
+defect across all 9, mechanical enough to batch.
+
+### Phase 3 — Auth (4 screens) — smaller than it looked
+
+`LoginPage` · `RegisterPage` · `VerifyOtpPage` · `ForgotPasswordPage`
+
+Real remaining work after verification:
+
+| Page | Actual defect |
+|---|---|
+| `RegisterPage` | hardcoded English — "Create your free account", "Full Name" |
+| `VerifyOtpPage` | hardcoded English — "Verify OTP", "Back to registration" |
+| `ForgotPasswordPage` | partial i18n |
+| `LoginPage` | ✅ error + loading + i18n all present; no change needed |
+
+All four already handle `error` and `loading` — via local state and an inline
+`login-page__error`, which the scan's regexes did not recognise. The genuine
+tasks are **i18n keys** (a translation task) and optionally routing errors
+through `<ErrorState>`. The missing-shell flag is arguable: auth uses a
+full-screen centred card, and `PageContainer` is the wrong primitive for it.
 
 ### Phase 4 — Settings (13 screens)
 
