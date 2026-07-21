@@ -52,10 +52,13 @@ export function useBarcodeLookup(onFound: (product: QuickProduct) => void) {
         if (cached) return cached
         throw new Error('You\'re offline — product not in local cache.')
       }
-      // Online branch: hit the API
-      return api<QuickProduct>(
+      // Online branch: hit the API. The route wraps in { product } —
+      // see server/src/routes/products/bulk.ts.
+      const { product } = await api<{ product: QuickProduct | null }>(
         `/products/by-barcode/${encodeURIComponent(code)}`,
       )
+      if (!product) throw new Error(t.productNotFound)
+      return product
     },
     onSuccess: (product) => {
       onFound(product)

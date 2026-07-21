@@ -17,19 +17,31 @@ export type ReceiptWidth = '58mm' | '80mm' | 'A5'
 
 // ─── API DTOs ────────────────────────────────────────────────────────────────
 
+/**
+ * Wire shape of GET /api/pos/products — mirrors `PosProductDTO` in
+ * server/src/services/pos/pos-products.service.ts field for field.
+ *
+ * Every name here is load-bearing. This interface previously declared
+ * `salePrice` / `stock` / `unit` / `taxRate`, none of which the server sends,
+ * so the grid rendered ₹NaN and "Stock: undefined". Do not rename a field to
+ * read more nicely — map it at the store boundary instead.
+ */
 export interface PosProductDTO {
   id: string
   name: string
-  sku: string
-  salePrice: number        // paise
-  mrp?: number             // paise
-  stock: number
-  unit: string
-  categoryId?: string
-  categoryName?: string
-  hsnCode?: string
-  taxRate?: number         // percent e.g. 18
-  imageUrl?: string
+  sku: string | null
+  hsnCode: string | null
+  categoryId: string | null
+  categoryName: string | null
+  unitId: string | null
+  unitSymbol: string | null
+  /** Sale price in PAISE */
+  salePricePaise: number
+  currentStock: number
+  taxCategoryId: string | null
+  /** GST rate in BASIS POINTS — 1800 = 18.00%. Not a percent. */
+  gstRate: number
+  imageUrl: string | null
 }
 
 export interface PaymentSplitDTO {

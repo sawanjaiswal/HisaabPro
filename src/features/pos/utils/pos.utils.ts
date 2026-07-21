@@ -2,6 +2,15 @@
 
 import type { PosCartItem, PosCartTotals, PaymentSplit } from '../types/pos.types'
 
+/**
+ * Basis points → percent. `TaxCategory.rate` is stored in basis points
+ * (schema.prisma:1978 — 1800 = 18.00%) and travels that way on the wire;
+ * every cart calculation below expects a percent.
+ */
+export function basisPointsToPercent(bp: number): number {
+  return bp / 100
+}
+
 /** Line total for a single cart item (paise) */
 export function lineTotal(item: PosCartItem): number {
   return item.quantity * item.unitPrice - item.discount

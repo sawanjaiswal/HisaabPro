@@ -14,7 +14,7 @@ interface PosProductCardProps {
 
 export function PosProductCard({ product, onSelect, inCart }: PosProductCardProps) {
   const { t } = useLanguage()
-  const outOfStock = product.stock <= 0
+  const outOfStock = product.currentStock <= 0
 
   const handleClick = () => {
     if (!outOfStock) onSelect(product)
@@ -32,7 +32,7 @@ export function PosProductCard({ product, onSelect, inCart }: PosProductCardProp
       role="button"
       tabIndex={outOfStock ? -1 : 0}
       aria-disabled={outOfStock}
-      aria-label={`${product.name}, ${paiseToInr(product.salePrice)}${outOfStock ? ', out of stock' : ''}`}
+      aria-label={`${product.name}, ${paiseToInr(product.salePricePaise)}${outOfStock ? ', out of stock' : ''}`}
       className={[
         'pos-product-card',
         outOfStock ? 'pos-product-card--oos' : '',
@@ -60,14 +60,14 @@ export function PosProductCard({ product, onSelect, inCart }: PosProductCardProp
         <p className="pos-product-card__name" title={product.name}>
           {product.name}
         </p>
-        <p className="pos-product-card__price">{paiseToInr(product.salePrice)}</p>
+        <p className="pos-product-card__price">{paiseToInr(product.salePricePaise)}</p>
         {outOfStock ? (
           <span className="pos-product-card__stock pos-product-card__stock--oos">
             {t.posOutOfStock ?? 'Out of stock'}
           </span>
         ) : (
           <span className="pos-product-card__stock">
-            {(t.posStock ?? 'Stock: {n}').replace('{n}', String(product.stock))}
+            {(t.posStock ?? 'Stock: {n}').replace('{n}', String(product.currentStock))}
           </span>
         )}
       </div>

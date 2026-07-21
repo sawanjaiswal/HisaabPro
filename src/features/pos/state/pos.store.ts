@@ -4,6 +4,7 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import { recalcCart, applyQtyChange, applyDiscountChange } from './pos.cart-calc'
 import { MAX_CART_ITEMS } from '../utils/pos.constants'
+import { basisPointsToPercent } from '../utils/pos.utils'
 import type { PosCartItem, PosCartTotals, PaymentSplit, PosProductDTO } from '../types/pos.types'
 
 const SESSION_KEY = 'pos-cart-v2'
@@ -47,7 +48,7 @@ export const usePosStore = create<PosCartState>()(
         const existing = items.find((i) => i.productId === product.id)
 
         if (existing) {
-          if (existing.quantity >= product.stock) {
+          if (existing.quantity >= product.currentStock) {
             return { ok: false, reason: 'stock_limit' }
           }
           const updated = items.map((i) =>
@@ -67,14 +68,17 @@ export const usePosStore = create<PosCartState>()(
         const newItem: PosCartItem = {
           productId: product.id,
           name:      product.name,
-          sku:       product.sku,
-          hsnCode:   product.hsnCode,
+          sku:       product.sku ?? '',
+          hsnCode:   product.hsnCode ?? undefined,
           quantity:  1,
-          unitPrice: product.salePrice,
+          unitPrice: product.salePricePaise,
           discount:  0,
-          stock:     product.stock,
-          taxRate:   product.taxRate ?? 0,
-          unit:      product.unit,
+          stock:     product.currentStock,
+          // The wire carries basis points (1800 = 18%); the cart maths in
+          // pos.cart-calc.ts divides by 100, so convert at this boundary.
+          // Passing gstRate through raw would tax the line 100x over.
+          taxRate:   basisPointsToPercent(product.gstRate),
+          unit:      product.unitSymbol ?? '',
         }
         const updated = [...items, newItem]
         const totals  = recalcCart(updated)

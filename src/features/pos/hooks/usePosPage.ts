@@ -34,7 +34,7 @@ export function usePosPage() {
     if (!result.ok) {
       if (result.reason === 'stock_limit') {
         toast.warning(
-          (t.posOnlyXInStock ?? 'Only {count} in stock').replace('{count}', String(product.stock)),
+          (t.posOnlyXInStock ?? 'Only {count} in stock').replace('{count}', String(product.currentStock)),
         )
       } else if (result.reason === 'cart_limit') {
         toast.warning(

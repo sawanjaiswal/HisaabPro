@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Package } from 'lucide-react'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
-import { api } from '@/lib/api'
+import { getProducts } from '@/features/products/product-crud.service'
 import { formatPaise } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import { QUICK_GRID_LIMIT } from '../pos.constants'
@@ -30,11 +30,11 @@ export function QuickProductGrid({ onSelect }: QuickProductGridProps) {
     setLoading(true)
     setError(null)
 
-    api<{ items: QuickProduct[] }>(
-      `/products?take=${QUICK_GRID_LIMIT}&orderBy=salesCount&order=desc`,
-      { signal: ctrl.signal },
-    )
-      .then((res) => { if (!ctrl.signal.aborted) setProducts(res.items) })
+    // Canonical product-list fetch — `getProducts` owns the query-string shape
+    // and the response type. Hand-rolling either is how this grid ended up
+    // reading a `res.items` key the server has never sent.
+    getProducts({ limit: QUICK_GRID_LIMIT, status: 'ACTIVE' }, ctrl.signal)
+      .then((res) => { if (!ctrl.signal.aborted) setProducts(res.products) })
       .catch((err) => { if (!ctrl.signal.aborted) setError(err instanceof Error ? err.message : t.errorTitle) })
       .finally(() => { if (!ctrl.signal.aborted) setLoading(false) })
 

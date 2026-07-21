@@ -42,10 +42,10 @@ export function usePosCart() {
     setItems((prev) => {
       const existing = prev.find((i) => i.productId === product.id)
       if (existing) {
-        if (existing.quantity >= product.stock) {
+        if (existing.quantity >= product.currentStock) {
           queueMicrotask(() =>
             toastRef.current.warning(
-              tRef.current.posOnlyXInStock.replace('{count}', String(product.stock)),
+              tRef.current.posOnlyXInStock.replace('{count}', String(product.currentStock)),
             ),
           )
           return prev
@@ -71,7 +71,7 @@ export function usePosCart() {
         quantity: 1,
         unitPrice: product.salePrice,
         discount: 0,
-        stock: product.stock,
+        stock: product.currentStock,
       }]
     })
     setStatus('cart-active')
