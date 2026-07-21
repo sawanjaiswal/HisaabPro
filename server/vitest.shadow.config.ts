@@ -1,0 +1,43 @@
+/**
+ * Shadow-harness test config (File #47).
+ *
+ * Separate from `vitest.config.ts` because the shadow suites need a REAL
+ * Postgres: the Phase 0 spike counts `$on('query')` events, which only exist
+ * when statements actually reach a database. The default unit config points
+ * DATABASE_URL at a placeholder (`postgresql://test:test@localhost:5432/test`)
+ * that unit tests never dial, so a real-DB test inherited from it fails with a
+ * missing-column error that looks like schema drift and is not.
+ *
+ * `pool: 'forks'` + no parallelism: the harness reads its mode once at module
+ * load, so tests must not mutate env mid-process (SS-3).
+ */
+import { defineConfig } from 'vitest/config'
+import { resolve } from 'path'
+
+export default defineConfig({
+  resolve: {
+    alias: {
+      '../../shared/enums.js': resolve(__dirname, '../shared/enums.ts'),
+      '../../../shared/enums.js': resolve(__dirname, '../shared/enums.ts'),
+    },
+  },
+  test: {
+    globals: true,
+    environment: 'node',
+    include: [
+      'src/lib/__tests__/prisma-shadow.*.test.ts',
+      'src/__tests__/scoped-shadow.*.test.ts',
+      'src/__tests__/adoption/**/*.test.ts',
+    ],
+    testTimeout: 30_000,
+    fileParallelism: false,
+    sequence: { concurrent: false },
+    pool: 'forks',
+    env: {
+      NODE_ENV: 'test',
+      JWT_SECRET: 'test-secret-key-that-is-at-least-32-chars-long',
+      DATABASE_URL: 'postgresql://sawanjaiswal@localhost:5432/hisaabpro_test',
+      CORS_ORIGIN: 'http://localhost:5173',
+    },
+  },
+})
