@@ -294,6 +294,9 @@ drift — the remaining work is *coverage*, not *repair*.
 
 ### What the sweep found RED
 
+> **All RED in this section was drained the same day — see §7.** Kept as the
+> record of what the audit caught; §7 carries the current state.
+
 **`enforce.js` — 6 blocking (all oversized, all pre-existing):**
 
 ```
@@ -336,3 +339,75 @@ fixes** — they are every user's first screen and currently miss all four state
    `AgingBucketList.tsx` (not `*Page.tsx`, which is why route sweeps miss them).
 3. **Wave 8 is 18 screens** — too large for one wave; split 8a / 8b / 8c.
 4. Remaining restyle work: **24 screens** across Waves 5–9, plus 5 NEW builds.
+
+---
+
+## 7. State after the drain — 2026-07-21 (12:20)
+
+Everything §6 marked RED is closed. Measured, not estimated.
+
+### Gates — all green
+
+| Check | Result |
+|---|---|
+| `node scripts/enforce.js` | ✅ **0 errors, 0 warnings** (was 6 errors + 13 warnings) |
+| Typecheck (root + server) | ✅ clean |
+| Client tests | ✅ 139 files · **1418 pass** (+9) |
+| Server tests | ✅ 149 files · 1269 pass · 7 todo |
+| SSOT gate | ✅ pass (45 legacy grandfathered) |
+| Offline discipline | ✅ rawFetch 0/0 · localStorage 0/0 · mutationNoEntityType 1/6 |
+| hp-design `check-refs.mjs` | ✅ 23 components, 51 tokens resolve |
+
+### What landed
+
+| Commit | Change |
+|---|---|
+| `4a00713` | POS cart panel + payment sheet → `<Drawer>`; cart summary → `<BottomActionBar>` |
+| `3b7068e` | Six POS page bars → `<Header>`; sticky strips stack at `var(--header-height)` |
+| `2e292ae` | `docs/ARCHITECTURE_env-split.md` (high-risk gate artifact) |
+| `62f6297` | `server/src/lib/env.ts` 292L → 63L barrel over eight domain modules |
+| `d868aaf` | `--header-height` derived from the header's real parts |
+| `61a1c41` | POS product types derived from the real server contract |
+
+**Both platform-shell debt sets are now empty and promoted to hard errors.**
+`FIXED_BOTTOM_PHASE3_DEBT` and `FIXED_TOP_PHASE4_DEBT` are `new Set([])` —
+raw fixed-bottom or `top: 0` in feature CSS fails the build with no
+grandfathering. Phases 3 and 4 of PLATFORM_SHELL are complete.
+
+### Two bugs the drain exposed
+
+1. **`--header-height` was wrong by 13px** (declared 56px, real box 69px).
+   `.header` applies the token as `min-height` only, so the wrong value never
+   resized anything — it under-reported the header to all five consumers that
+   offset against it. `top: 0` had masked it; Phase 4 made it visible. Now
+   derived from `--header-content-height + 2×--space-3 + 1px + inset`.
+
+2. **POS ran on a fabricated `/products` contract** — crash on `/pos`, `₹NaN`
+   tiles on `/pos/billing`, and a silent stock-cap bypass that let a cashier
+   oversell. One cause: hand-written DTOs never compared to the server. Note
+   the trap recorded in `.claude/fix-trace-pos-contract.md` — correcting
+   `taxRate` → `gstRate` *without* the basis-points conversion would have taxed
+   every line 100x, silently. Fourth instance of this bug class.
+
+### What's left
+
+**Restyle coverage — the actual remaining redesign work:**
+
+- **24 screens** across Waves 5–9 (Wave 8 split 8a/8b/8c), plus **5 NEW builds**
+  (#24/61 universal search is a full-stack build, not a restyle)
+- UI-state coverage is **81/190 pages (43%) fully clean** — unchanged by the
+  drain, which was structural. Gaps: error 37 · empty 32 · `PageContainer` 32 ·
+  i18n 17 · loading 17
+- **Highest value: auth + onboarding** (`Login`/`Register`/`VerifyOtp`/
+  `ForgotPassword`) — every user's first screen, currently missing all four states
+
+**Known defects, not scheduled:**
+
+| Item | Note |
+|---|---|
+| `validateScopedPrismaBoot()` unwired | Owned by the `scoped-prisma-shadow` epic (`docs/ARCHITECTURE_scoped-prisma-shadow.md` §943, §1161). Do **not** wire it here. |
+| `/pos/history` filter `<select>`s unlabeled | Cosmetic; no visible label or placeholder |
+| `mutationNoEntityType` 1 remaining | Baseline 6 → 1; ratchet when the last one lands |
+
+**Not defects:** the 12 files over 250 lines are all enforce.js-exempt
+(translations, test files, marketing components).
