@@ -123,6 +123,17 @@ export interface ShadowPortSnapshot {
   harnessErrors: number
   keysThisHour: number
   keyCapShed: number
+  /**
+   * Breaker + rate state, surfaced through the port rather than by exporting the
+   * throttle: the throttle is per-port mutable state, and a second accessor onto
+   * it would let a reader observe a different instance than the one on the hot
+   * path — which is exactly the class of bug an operator status page must not have.
+   */
+  breakerOpen: boolean
+  /** `sampleRate × throttleFactor` — the rate in force, not the configured one. */
+  effectiveSample: number
+  /** Sampling decisions refused by breaker/inflight rather than the dice roll. */
+  throttled: number
 }
 
 export interface ShadowPort {

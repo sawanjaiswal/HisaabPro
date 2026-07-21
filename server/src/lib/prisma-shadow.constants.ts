@@ -165,3 +165,20 @@ export const CANARY_FIXTURE_IDS: readonly string[] = [
   SHADOW_CANARY_SELF_ID,
   SHADOW_CANARY_FOREIGN_ID,
 ]
+
+// ── Phase 5 · admin status (§8.2) ─────────────────────────────────────────────
+
+/**
+ * The status window. Equal to the watch window BY CONSTRUCTION, not by
+ * coincidence: exit criterion 2 (§11) is evaluated over the watch window, and a
+ * status page reporting a different span would have operators reading criterion-2
+ * evidence off numbers that do not cover the same period.
+ */
+export const SHADOW_STATUS_WINDOW_HOURS = SHADOW_WATCH_WINDOW_DAYS * 24
+
+/**
+ * Cap on `recent[]`. The divergence table is an anomaly table with a bounded id
+ * payload per row (B-6, 20 ids), so this bounds the worst-case identifier volume
+ * one status call can move out of the process at 50 × 40 ids.
+ */
+export const SHADOW_STATUS_RECENT_LIMIT = 50

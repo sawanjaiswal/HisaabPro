@@ -77,7 +77,7 @@ passthrough branch or a widen-instead-of-intersect is a cross-tenant data leak.
 | 3 | shadow harness port, wiring, containment tests | `11253fa` |
 | 4 | tenant + request-meta frames inside `auth` | `ef5292c` |
 | 5 · jobs | retention, canary, watchdog, boot guards | `5f9aa82` |
-| 5 · status | `shadow-status.service.ts` + admin route (#37-#40) | in progress |
+| 5 · status | `shadow-status.service.ts` + admin route (#37-#40) | `ce00919` |
 | 6 | adoption assertions A1-A12, shadow-mode CI project | pending |
 | 7 | runbook, continuation sites, render.yaml, GOLD_STANDARD rows | pending |
 

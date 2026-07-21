@@ -31,6 +31,8 @@
  *   DELETE /api/admin/coupons/:id         — deactivate (SUPER_ADMIN)
  *
  *   POST   /api/admin/notifications/broadcast — broadcast to tier (SUPER_ADMIN)
+ *
+ *   GET    /api/admin/scoped-shadow/status    — tenant-isolation shadow harness (404 unless mode=shadow)
  */
 
 import { Router } from 'express'
@@ -41,6 +43,7 @@ import adminDashboardRoutes from './admin-dashboard.js'
 import adminSettingsRoutes from './admin-settings.js'
 import adminCouponsRoutes from './admin-coupons.js'
 import adminNotificationsBroadcastRoutes from './notifications-broadcast.js'
+import scopedShadowRoutes from './scoped-shadow.admin.js'
 
 const router = Router()
 
@@ -51,5 +54,6 @@ router.use('/dashboard', adminDashboardRoutes)
 router.use('/settings', adminSettingsRoutes)
 router.use('/coupons', adminCouponsRoutes)
 router.use('/notifications', adminNotificationsBroadcastRoutes)
+router.use('/scoped-shadow', scopedShadowRoutes)
 
 export default router

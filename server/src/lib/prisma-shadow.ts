@@ -226,12 +226,18 @@ export function createShadowPort(config: ShadowPortConfig): ShadowPort {
 
   function snapshot(): ShadowPortSnapshot {
     const s = sink.snapshot()
+    const t = throttle.snapshot()
     return {
       sinkWriteFailed,
       sinkShed,
       harnessErrors,
       keysThisHour: s.keysThisHour,
       keyCapShed: s.keyCapShed,
+      breakerOpen: t.breaker === 'open',
+      // Clamped the same way the throttle clamps its own copy, so the reported
+      // rate cannot differ from the one the sampler is applying.
+      effectiveSample: Math.min(1, Math.max(0, config.sampleRate)) * t.throttleFactor,
+      throttled: t.throttled,
     }
   }
 
