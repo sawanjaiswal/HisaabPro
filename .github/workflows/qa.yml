@@ -31,6 +31,16 @@ jobs:
       - name: Offline patterns (ratcheted)
         run: node scripts/enforce-offline.mjs
 
+      # The invoker that cannot be un-configured (B-4). `.githooks/pre-commit`
+      # runs only where `core.hooksPath` was set — local git config, never
+      # committed — so a fresh clone, a CI runner, and any machine that skipped
+      # `npm install` all bypass the hook entirely. This step runs on every PR
+      # with no per-machine setup, and A9b (ci-lint-invocation.test.ts) parses
+      # this file and executes the command below verbatim, so deleting or
+      # renaming the step turns a test red rather than going unnoticed.
+      - name: Tenant-isolation raw-client lint
+        run: npm run lint:raw-client
+
       - name: Build
         run: npm run build
 

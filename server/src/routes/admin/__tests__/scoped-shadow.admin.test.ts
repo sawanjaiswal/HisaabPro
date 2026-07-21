@@ -16,7 +16,7 @@
  * role-checked), so the test asserts what the middleware actually does and the
  * 403 arm is covered by the reachable one: an admin whose account is inactive.
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import request from 'supertest'
 import { createApp } from '../../../app.js'
 import { generateAdminTokens } from '../../../middleware/admin-auth.js'

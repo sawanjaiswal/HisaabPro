@@ -29,6 +29,12 @@ export default defineConfig({
       'src/__tests__/scoped-shadow.*.test.ts',
       'src/__tests__/adoption/**/*.test.ts',
       'src/middleware/__tests__/auth-scope-frame.test.ts',
+      // Repo-level, not server-level: the raw-client lint is a root `scripts/`
+      // tool. It runs here rather than under the root vitest config because that
+      // one is the frontend suite — jsdom, with a testing-library setup file —
+      // and a CLI test has no business loading it. This config is already node,
+      // already serial, and already the epic's runner.
+      '../scripts/scoped/__tests__/*.test.ts',
     ],
     testTimeout: 30_000,
     fileParallelism: false,

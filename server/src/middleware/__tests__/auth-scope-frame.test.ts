@@ -75,9 +75,28 @@ const ROUTES = [
 const app = createApp()
 let token = ''
 
-/** The sink is fire-and-forget by design (§5.2) — give it a moment to land. */
-async function drain(ms = 800): Promise<void> {
-  await new Promise((r) => setTimeout(r, ms))
+/**
+ * The sink is fire-and-forget by design (§5.2), so the writes land after the
+ * responses do. Wait for the tables to stop growing rather than sleeping a fixed
+ * guess: a flat 800ms was enough for this file alone and NOT enough after fifteen
+ * other files had warmed the same database, which showed up as A3b capturing 14
+ * route hints instead of 16 — a threshold failure that reads exactly like a
+ * regression in route-hint resolution and is not one.
+ *
+ * Quiescence, not a target count: this helper must not know what the assertions
+ * expect, or it becomes a retry loop that waits for the test to pass.
+ */
+async function drain(maxMs = 8000): Promise<void> {
+  const deadline = Date.now() + maxMs
+  let previous = -1
+  let stable = 0
+  while (Date.now() < deadline && stable < 2) {
+    await new Promise((r) => setTimeout(r, 150))
+    const total =
+      (await db.scopedShadowDivergence.count()) + (await db.scopedShadowStat.count())
+    stable = total === previous ? stable + 1 : 0
+    previous = total
+  }
 }
 
 async function hitAll(): Promise<{ path: string; status: number }[]> {
