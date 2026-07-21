@@ -62,3 +62,6 @@ server/.env
 # Lighthouse CI reports (uploaded as GitHub Actions artifact)
 .lighthouseci
 .claude/ssot-index.json
+
+# Clobber backups
+.claude/plans/*.clobbered-*.md
