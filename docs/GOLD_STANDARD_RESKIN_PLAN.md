@@ -25,7 +25,7 @@
 
 | Wave | Screens | Status |
 |---|---|---|
-| 5 (tail) | #66 Customer balance summary | 1 left of 6 |
+| 5 (tail) | #66 Customer balance summary | **DONE** `80237ab` |
 | 6 | #21/71, #27, #28, #22/29, #72 | 0 of 5 restyles (+#26 NEW) |
 | 7 | #18/62, #23, #30/63, #65 | 0 of 4 restyles (+#64, #24/61 NEW) |
 | 8a/8b/8c | 18 settings/business/account screens | 0 of 18 |
@@ -80,7 +80,7 @@ are today's — any page projected past 250L gets a 6-layer split in its own pla
 
 | Page | L | Hero | Tiles | PgCtn | Skel | Err | Empty | i18n | Mockup |
 |---|--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|---|
-| `reports/AgingReportPage` | 131 | – | – | Y | **–** | Y | Y | Y | #66 |
+| ~~`reports/AgingReportPage`~~ | 182 | Y | – | Y | Y | Y | Y | Y | #66 ✅ |
 | `hr/EmployeeListPage` | 206 | – | – | Y | Y | Y | Y | Y | #21/71 |
 | `hr/EmployeeDetailPage` | 229 | – | – | Y | Y | Y | **–** | Y | #27 |
 | `hr/AttendancePage` | 225 | – | – | Y | Y | Y | Y | Y | #28 |
@@ -127,7 +127,7 @@ are today's — any page projected past 250L gets a 6-layer split in its own pla
 
 ## 3. Wave order and why
 
-1. **W5-tail — #66 Aging/Customer balance summary** (1 page). Finishes Wave 5 so
+1. ~~**W5-tail — #66 Aging/Customer balance summary**~~ — **DONE** `80237ab`. Finishes Wave 5 so
    the reports section is uniformly reskinned. Needs a skeleton added.
 2. **W8a — core settings** (#19/74 Settings, #25 More, #96 Theme, #97 Security/
    ActiveSessions, #32/81 Backup). Highest screen-per-hour: five near-identical
