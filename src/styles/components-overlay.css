@@ -1,5 +1,11 @@
 /* === MODAL === */
 .modal {
+  /* Explicit fill. This class used to sit on a native <dialog> and inherited
+     `background-color: canvas` from the UA stylesheet; since the Radix port
+     (74fd421) it sits on a portalled <div>, which paints nothing. Removing
+     this line makes every modal and confirm dialog transparent again —
+     guarded by src/components/ui/__tests__/overlay-surface.test.ts. */
+  background: var(--color-surface);
   border: none;
   border-radius: var(--radius-xl);
   padding: 0;
@@ -61,6 +67,59 @@
 /* Cancel button — full height touch target (min 44px via btn-md) */
 .confirm-dialog-cancel {
   border: 1.5px solid var(--color-gray-200);
+}
+
+/* Mobile: bottom sheet, matching .drawer-panel's geometry (drawer-panel.css).
+   A 360px box centred at 50% height sits well above the thumb on a phone.
+   Geometry only — the element stays a Radix AlertDialog so destructive
+   actions keep role="alertdialog" and initial focus on the confirm button,
+   which a swap to <Drawer> (a plain Dialog) would lose. */
+@keyframes confirmSheetIn {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+@keyframes confirmSheetOut {
+  from { transform: translateY(0); }
+  to   { transform: translateY(100%); }
+}
+
+@media (max-width: 767px) {
+  .rx-dialog-content.confirm-dialog {
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    transform: none;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    box-shadow: var(--shadow-drawer-bottom);
+  }
+
+  .rx-dialog-content.confirm-dialog[data-state='open'] {
+    animation: confirmSheetIn var(--duration-normal) var(--ease-default) both;
+  }
+  .rx-dialog-content.confirm-dialog[data-state='closed'] {
+    animation: confirmSheetOut var(--duration-fast) var(--ease-default) both;
+  }
+
+  /* Clear the OS gesture bar — .drawer-panel gets this from its own padding;
+     this surface has none, so the inset goes on the action row. */
+  .confirm-dialog .confirm-dialog-body {
+    padding-bottom: calc(var(--space-6) + var(--safe-area-inset-bottom, 0px));
+  }
+
+  /* Equal-width, thumb-sized actions instead of right-aligned small buttons */
+  .confirm-dialog .confirm-dialog-actions {
+    justify-content: stretch;
+  }
+  .confirm-dialog .confirm-dialog-actions > * {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rx-dialog-content.confirm-dialog[data-state] { animation: none; }
 }
 
 /* === FAB — Teal gradient circle with glow === */
