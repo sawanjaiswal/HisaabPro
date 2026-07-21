@@ -24,6 +24,7 @@ import './payment-form-layout.css'
 import './payment-form-details.css'
 import './payment-form-actions.css'
 import { Button } from '@/components/ui/Button'
+import { BottomActionBar } from '@/components/ui/BottomActionBar'
 
 export default function EditPaymentPage() {
   const { id } = useParams<{ id: string }>()
@@ -116,7 +117,7 @@ function EditPaymentForm({
         />
       </PageContainer>
 
-      <div className="payment-save-bar">
+      <BottomActionBar>
         <Button
           type="button"
           variant="primary" size="lg" className="payment-save-btn"
@@ -126,7 +127,7 @@ function EditPaymentForm({
         >
           {isSubmitting ? t.processing : t.updatePaymentBtn}
         </Button>
-      </div>
+      </BottomActionBar>
 
       <ConflictDialog
         conflict={conflictReconcile.conflict}

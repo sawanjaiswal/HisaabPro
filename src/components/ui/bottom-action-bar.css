@@ -1,0 +1,65 @@
+/* Bottom Action Bar — platform primitive for a page's sticky bottom CTA.
+ *
+ * Owns `position: fixed; bottom: 0` on behalf of feature pages (PLATFORM_SHELL
+ * C6) and, with it, the safe-area math (C9) that every hand-rolled save bar
+ * used to get wrong.
+ *
+ * Two placements, chosen automatically:
+ *   - page WITHOUT a BottomNav → sits on the screen edge and pads itself by
+ *     the bottom safe-area inset (gesture pill / 3-button nav).
+ *   - page WITH a BottomNav    → stacks above it at --bottom-nav-height, which
+ *     already contains the inset, so the bar drops its own padding.
+ */
+
+.bottom-action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  padding-bottom: calc(var(--space-3) + var(--safe-area-inset-bottom, 0px));
+  background: var(--color-gray-0);
+  border-top: 1px solid var(--color-gray-100);
+  box-shadow: var(--shadow-bar-top);
+}
+
+body:has(.bnav) .bottom-action-bar {
+  bottom: var(--bottom-nav-height);
+  padding-bottom: var(--space-3);
+}
+
+/* One child fills the bar; two split it evenly (Cancel / Save). */
+.bottom-action-bar > * {
+  flex: 1;
+  min-width: 0;
+}
+
+.bottom-action-bar .btn {
+  width: 100%;
+}
+
+/* ─── Tablet+ — cap the CTA width so it doesn't stretch across a wide screen */
+
+@media (min-width: 768px) {
+  .bottom-action-bar {
+    justify-content: center;
+  }
+
+  .bottom-action-bar > * {
+    max-width: 480px;
+  }
+
+  .bottom-action-bar .btn {
+    display: flex;
+  }
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .bottom-action-bar {
+  box-shadow: var(--shadow-bar-bottom);
+}

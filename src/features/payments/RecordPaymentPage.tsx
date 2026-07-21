@@ -9,6 +9,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { Button } from '@/components/ui/Button'
+import { BottomActionBar } from '@/components/ui/BottomActionBar'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { usePaymentForm } from './usePaymentForm'
@@ -49,7 +50,7 @@ export default function RecordPaymentPage() {
         />
       </PageContainer>
 
-      <div className="payment-save-bar">
+      <BottomActionBar>
         <Button
           type="button"
           variant="primary"
@@ -60,7 +61,7 @@ export default function RecordPaymentPage() {
         >
           {isSubmitting ? t.saving : t.savePaymentBtn}
         </Button>
-      </div>
+      </BottomActionBar>
     </AppShell>
   )
 }

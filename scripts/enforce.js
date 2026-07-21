@@ -417,6 +417,7 @@ const SAFE_AREA_PRIMITIVE_ALLOWLIST = [
   /\/components\/ui\/drawer-content\.css$/,
   /\/components\/ui\/drawer-panel\.css$/,
   /\/components\/ui\/bulk-action-bar\.css$/,
+  /\/components\/ui\/bottom-action-bar\.css$/,
   /\/components\/ui\/sticky-mobile-cta\./,
   /\/components\/feedback\//,
   /\/styles\/tokens-/,
@@ -471,6 +472,7 @@ const FIXED_BOTTOM_ALLOWLIST = [
   /\/components\/ui\/drawer-panel\.css$/,
   /\/components\/ui\/drawer-content\.css$/,
   /\/components\/ui\/bulk-action-bar\.css$/,
+  /\/components\/ui\/bottom-action-bar\.css$/,
   /\/components\/ui\/sticky-mobile-cta\./, // landing-only marketing CTA
   /\/components\/feedback\/sw-update-prompt\.css$/,
   /\/components\/feedback\/feedback-widget\.css$/,
@@ -481,14 +483,15 @@ const FIXED_BOTTOM_ALLOWLIST = [
 // Phase 3 migration debt: feature files with raw fixed-bottom that pre-date
 // the <BottomActionBar> SSOT. Any NEW file landing on this list is a hard
 // error — these files migrate to the primitive in Phase 3.
+// Remaining rows are bottom SHEETS (business switcher, recurring, POS cart /
+// payment panels) — those migrate to <Drawer>, not <BottomActionBar>, since
+// they carry a backdrop, a drag handle and their own scroll container.
+// The three save bars that used to sit here now consume <BottomActionBar>.
 const FIXED_BOTTOM_PHASE3_DEBT = new Set([
   'src/features/business/business.css',
-  'src/features/payments/payment-form-actions.css',
   'src/features/pos/pos-billing.css',
   'src/features/pos/pos.css',
   'src/features/recurring/styles/recurring-detail.css',
-  'src/features/settings/role-builder.css',
-  'src/features/tax/tax-category-form.css',
 ])
 
 let fixedBottomCount = 0

@@ -4,6 +4,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { Button } from '@/components/ui/Button'
+import { BottomActionBar } from '@/components/ui/BottomActionBar'
 import { ROUTES } from '@/config/routes.config'
 import { useAuth } from '@/context/AuthContext'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -23,11 +24,11 @@ export default function CreateTaxCategoryPage() {
       <PageContainer className="tax-category-form-page space-y-6">
         <TaxCategoryFormFields form={form} errors={errors} onUpdate={updateField} />
       </PageContainer>
-      <div className="tax-category-form-actions">
+      <BottomActionBar>
         <Button variant="primary" size="lg" loading={isSubmitting} onClick={handleSubmit} aria-label={t.saveTaxRate}>
           {t.saveTaxRate}
         </Button>
-      </div>
+      </BottomActionBar>
     </AppShell>
   )
 }

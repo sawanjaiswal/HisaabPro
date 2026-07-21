@@ -2,6 +2,7 @@
 
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
+import { BottomActionBar } from '@/components/ui/BottomActionBar'
 
 interface RoleSaveBarProps {
   isEditMode: boolean
@@ -12,7 +13,7 @@ interface RoleSaveBarProps {
 export function RoleSaveBar({ isEditMode, isSubmitting, onSave }: RoleSaveBarProps) {
   const { t } = useLanguage()
   return (
-    <div className="role-save-bar">
+    <BottomActionBar>
       <Button variant="none"
         type="button"
         className="role-save-button"
@@ -23,6 +24,6 @@ export function RoleSaveBar({ isEditMode, isSubmitting, onSave }: RoleSaveBarPro
       >
         {isSubmitting ? t.saving : t.saveRole}
       </Button>
-    </div>
+    </BottomActionBar>
   )
 }

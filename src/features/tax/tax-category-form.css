@@ -22,24 +22,3 @@
   gap: var(--space-3);
 }
 
-.tax-category-form-actions {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: var(--space-3) var(--space-4);
-  background-color: var(--color-gray-0);
-  border-top: 1px solid var(--color-gray-200);
-  z-index: var(--z-dropdown);
-}
-
-.tax-category-form-actions .btn {
-  width: 100%;
-}
-
-/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
-
-[data-theme="dark"] .tax-category-form-actions {
-  background-color: var(--color-gray-50);
-  border-color: var(--color-gray-200);
-}
