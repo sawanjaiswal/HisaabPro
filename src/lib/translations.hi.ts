@@ -1484,4 +1484,10 @@ export const hi = {
   openingCash: 'शुरुआती नकद',
   closingCash: 'अंतिम नकद',
   partialPeriodTotals: 'इस अवधि में इतनी प्रविष्टियाँ हैं कि पूरा जोड़ नहीं हो सका — दिखाए गए आंकड़े न्यूनतम हैं।',
+  cgst: 'CGST',
+  sgst: 'SGST',
+  igst: 'IGST',
+  taxableSales: 'कर योग्य बिक्री',
+  taxablePurchases: 'कर योग्य खरीद',
+  viewDetailedReport: 'विस्तृत रिपोर्ट देखें',
 } as const

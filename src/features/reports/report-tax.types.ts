@@ -25,12 +25,25 @@ export interface TaxSummaryFilters {
   to: string
 }
 
+/** Output tax owed, per GST component. Mirrors `netTaxLiability` in
+ *  server/src/services/tax-report.service.ts — sales tax less credit notes.
+ *  This was typed as a single `number` and the page rendered the object
+ *  through formatAmount(), printing NaN. */
+export interface NetTaxLiability {
+  cgst: number             // paise
+  sgst: number             // paise
+  igst: number             // paise
+  cess: number             // paise
+}
+
+/** Mirrors `getTaxSummary()` in server/src/services/tax-report.service.ts. */
 export interface TaxSummaryData {
+  period: { from: string; to: string }
   sales: TaxTotals
   purchases: TaxTotals
   creditNotes: TaxTotals
   debitNotes: TaxTotals
-  netTaxLiability: number   // paise — (sales + debitNotes) − (purchases + creditNotes)
+  netTaxLiability: NetTaxLiability
 }
 
 // ─── HSN Summary ──────────────────────────────────────────────────────────────

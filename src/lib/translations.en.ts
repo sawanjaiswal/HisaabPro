@@ -1488,4 +1488,10 @@ export const en = {
   openingCash: 'Opening Cash',
   closingCash: 'Closing Cash',
   partialPeriodTotals: 'This period has too many entries to total exactly — the figures shown are a lower bound.',
+  cgst: 'CGST',
+  sgst: 'SGST',
+  igst: 'IGST',
+  taxableSales: 'Taxable Sales',
+  taxablePurchases: 'Taxable Purchases',
+  viewDetailedReport: 'View Detailed Report',
 } as const

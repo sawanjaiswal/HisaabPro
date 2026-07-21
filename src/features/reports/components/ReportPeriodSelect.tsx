@@ -5,6 +5,7 @@
  * the picker.
  */
 
+import { Input } from '@/components/ui/Input'
 import { Select, SelectItem } from '@/components/ui/Select'
 import { useLanguage } from '@/hooks/useLanguage'
 import { DATE_RANGE_PRESET_KEYS } from '../report.constants'
@@ -16,6 +17,9 @@ interface ReportPeriodSelectProps {
   from?: string
   to?: string
   onPresetChange: (value: string) => void
+  /** Supply to make the "Custom range" preset usable — without it the option
+   *  is hidden rather than left as a dead choice that changes nothing. */
+  onRangeChange?: (range: { from: string; to: string }) => void
 }
 
 export function ReportPeriodSelect({
@@ -23,8 +27,13 @@ export function ReportPeriodSelect({
   from,
   to,
   onPresetChange,
+  onRangeChange,
 }: ReportPeriodSelectProps) {
   const { t } = useLanguage()
+
+  const presets = (Object.keys(DATE_RANGE_PRESET_KEYS) as DateRangePreset[]).filter(
+    (preset) => preset !== 'custom' || onRangeChange,
+  )
 
   return (
     <div className="report-period">
@@ -34,7 +43,7 @@ export function ReportPeriodSelect({
         ariaLabel={t.dateRangeFilter}
         className="report-period__select"
       >
-        {(Object.keys(DATE_RANGE_PRESET_KEYS) as DateRangePreset[]).map((preset) => (
+        {presets.map((preset) => (
           <SelectItem key={preset} value={preset}>
             {t[DATE_RANGE_PRESET_KEYS[preset]]}
           </SelectItem>
@@ -42,6 +51,25 @@ export function ReportPeriodSelect({
       </Select>
 
       <span className="report-period__range">{formatRangeLabel(from, to)}</span>
+
+      {activePreset === 'custom' && onRangeChange && from && to && (
+        <div className="report-period__custom">
+          <Input
+            type="date"
+            value={from}
+            max={to}
+            aria-label={t.fromDate}
+            onChange={(e) => onRangeChange({ from: e.target.value, to })}
+          />
+          <Input
+            type="date"
+            value={to}
+            min={from}
+            aria-label={t.toDate}
+            onChange={(e) => onRangeChange({ from, to: e.target.value })}
+          />
+        </div>
+      )}
     </div>
   )
 }

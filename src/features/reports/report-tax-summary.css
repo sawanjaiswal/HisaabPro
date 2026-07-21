@@ -34,6 +34,122 @@
   border-color: var(--color-primary-400);
 }
 
+/* ─── Mockup #31 — taxable totals card ──────────────────────── */
+
+.tax-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-gray-0);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+}
+
+.tax-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.tax-card__title {
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--color-gray-600);
+}
+
+.tax-card__count {
+  font-size: var(--fs-sm);
+  color: var(--color-gray-400);
+  flex-shrink: 0;
+}
+
+.tax-card__amount {
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  color: var(--color-gray-800);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Component split — equal columns so sales and purchases line up. */
+.tax-card__split {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-gray-100);
+}
+
+.tax-card__component {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tax-card__component-label {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--color-gray-500);
+  letter-spacing: 0.04em;
+}
+
+.tax-card__component-amount {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-gray-800);
+  font-variant-numeric: tabular-nums;
+}
+
+.tax-card__cess {
+  font-size: var(--fs-sm);
+  color: var(--color-gray-500);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Mockup #31 — net liability block ──────────────────────── */
+
+.tax-liability {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--color-primary-50);
+  border-radius: var(--radius-xl);
+}
+
+.tax-liability__label {
+  font-size: var(--fs-df);
+  font-weight: 600;
+  color: var(--color-primary-600);
+}
+
+.tax-liability__amount {
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  color: var(--color-primary-700);
+  font-variant-numeric: tabular-nums;
+}
+
+.tax-liability__split {
+  border-top-color: var(--color-primary-100);
+}
+
+.tax-liability .tax-card__component-label,
+.tax-liability .tax-card__component-amount {
+  color: var(--color-primary-600);
+}
+
+/* Cess makes it four columns — keep them even rather than wrapping one down. */
+.tax-liability__split:has(> :nth-child(4)) {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.tax-summary-cta {
+  width: 100%;
+}
+
 /* ─── Tax Summary Cards ─────────────────────────────────────── */
 
 .tax-summary-cards {
@@ -140,9 +256,16 @@
 
 /* ─── Dark theme ────────────────────────────────────────────── */
 
-[data-theme="dark"] .tax-summary-card {
-  background: var(--color-gray-900);
-  border-color: var(--color-gray-700);
+/* No dark override for .tax-summary-card: the dark gray scale is INVERTED, so
+   pinning it to gray-900 painted the card near-white with pale-gray labels on
+   top. --color-gray-0 already flips to the dark surface. */
+
+[data-theme="dark"] .tax-card {
+  box-shadow: var(--shadow-card-dark);
+}
+
+[data-theme="dark"] .tax-liability {
+  background: color-mix(in srgb, var(--color-primary-500) 12%, transparent);
 }
 
 [data-theme="dark"] .tax-net-liability {

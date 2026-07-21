@@ -39,3 +39,13 @@
   color: var(--color-white-inverse);
   opacity: 0.75;
 }
+
+/* Custom range — two date fields under the label. These keep the normal light
+   input surface: a date field stripped to transparent on the emerald band is
+   unreadable in both themes. */
+.report-period__custom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}

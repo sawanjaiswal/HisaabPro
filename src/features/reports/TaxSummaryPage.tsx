@@ -1,28 +1,62 @@
-/** Tax Summary Page — GST tax breakdown for a date range (lazy loaded) */
+/** Tax Summary Page — GST tax breakdown for a date range (mockup #31, lazy loaded)
+ *
+ * Emerald hero carries the period picker; the sheet below leads with the
+ * taxable sales/purchase totals and the net liability, then keeps the
+ * category cards and the HSN table that the old page already shipped.
+ */
 
+import { useState } from 'react'
 import { Receipt } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { Button } from '@/components/ui/Button'
 import { ROUTES } from '@/config/routes.config'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useTaxSummary } from './hooks/useTaxSummary'
 import { TaxSummaryCards } from './components/TaxSummaryCards'
+import { TaxTotalsCard } from './components/TaxTotalsCard'
+import { TaxNetLiabilityCard } from './components/TaxNetLiabilityCard'
 import { HsnSummaryTable } from './components/HsnSummaryTable'
+import { ReportPeriodSelect } from './components/ReportPeriodSelect'
 import { ReportSkeleton } from './components/ReportSkeleton'
-import { formatAmount } from './report.utils'
+import { getDateRange } from './report.utils'
+import type { DateRangePreset } from './report.types'
 import './report-shared.css'
 import './report-shared-ui.css'
+import './report-period.css'
 import './report-tax.css'
-import { useLanguage } from '@/hooks/useLanguage'
-import { Input } from '@/components/ui/Input'
 
 export default function TaxSummaryPage() {
   const { t } = useLanguage()
+  const navigate = useNavigate()
   const { data, status, filters, setFilters, refresh } = useTaxSummary()
 
+  // The hook owns the resolved dates; the preset is presentation state, so the
+  // picker can show "This FY" instead of re-deriving it from two ISO strings.
+  const [preset, setPreset] = useState<DateRangePreset>('this_fy')
+
   const { summary, hsnSummary } = data
+
+  const handlePresetChange = (value: string) => {
+    const next = value as DateRangePreset
+    setPreset(next)
+    if (next !== 'custom') setFilters(getDateRange(next))
+  }
+
+  const hero = (
+    <ReportPeriodSelect
+      activePreset={preset}
+      from={filters.from}
+      to={filters.to}
+      onPresetChange={handlePresetChange}
+      onRangeChange={(range) => setFilters(range)}
+    />
+  )
 
   // ─── Loading state ────────────────────────────────────────────────────────
 
@@ -30,9 +64,11 @@ export default function TaxSummaryPage() {
     return (
       <AppShell>
         <Header title={t.taxSummary} backTo={ROUTES.REPORTS} />
-        <PageContainer variant="list" className="space-y-6">
-          <ReportSkeleton rows={4} />
-        </PageContainer>
+        <HeroPage hero={hero}>
+          <PageContainer variant="list" className="space-y-6">
+            <ReportSkeleton rows={4} />
+          </PageContainer>
+        </HeroPage>
       </AppShell>
     )
   }
@@ -43,13 +79,15 @@ export default function TaxSummaryPage() {
     return (
       <AppShell>
         <Header title={t.taxSummary} backTo={ROUTES.REPORTS} />
-        <PageContainer variant="list" className="space-y-6">
-          <ErrorState
-            title={t.couldNotLoadTaxSummary}
-            message={t.checkConnectionRetry}
-            onRetry={refresh}
-          />
-        </PageContainer>
+        <HeroPage hero={hero}>
+          <PageContainer variant="list" className="space-y-6">
+            <ErrorState
+              title={t.couldNotLoadTaxSummary}
+              message={t.checkConnectionRetry}
+              onRetry={refresh}
+            />
+          </PageContainer>
+        </HeroPage>
       </AppShell>
     )
   }
@@ -60,57 +98,50 @@ export default function TaxSummaryPage() {
     <AppShell>
       <Header title={t.taxSummary} backTo={ROUTES.REPORTS} />
 
-      <PageContainer variant="list" className="space-y-6">
-        {/* Date range inputs */}
-        <div className="tax-date-row fade-up">
-          <Input
-            type="date"
-            className="tax-date-input"
-            value={filters.from}
-            max={filters.to}
-            aria-label={t.fromDate}
-            onChange={(e) => setFilters({ ...filters, from: e.target.value })}
-          />
-          <Input
-            type="date"
-            className="tax-date-input"
-            value={filters.to}
-            min={filters.from}
-            aria-label={t.toDate}
-            onChange={(e) => setFilters({ ...filters, to: e.target.value })}
-          />
-        </div>
+      <HeroPage hero={hero}>
+        <PageContainer variant="list" className="space-y-6">
+          {!summary && (
+            <EmptyState
+              icon={<Receipt size={22} aria-hidden="true" />}
+              title={t.noTaxDataFound}
+              description={t.noTaxableTransactions}
+            />
+          )}
 
-        {/* Empty state */}
-        {!summary && (
-          <EmptyState
-            icon={<Receipt size={22} aria-hidden="true" />}
-            title={t.noTaxDataFound}
-            description={t.noTaxableTransactions}
-          />
-        )}
+          {summary && (
+            <>
+              <TaxTotalsCard
+                title={t.taxableSales}
+                totals={summary.sales}
+                countLabel={`${summary.sales.count} ${t.invoices}`}
+              />
 
-        {/* Success */}
-        {summary && (
-          <>
-            {/* Net Tax Liability highlight */}
-            <div className="tax-net-liability">
-              <span className="tax-net-liability__label">{t.netTaxLiability}</span>
-              <span className="tax-net-liability__value">
-                {formatAmount(summary.netTaxLiability)}
-              </span>
-            </div>
+              <TaxTotalsCard
+                title={t.taxablePurchases}
+                totals={summary.purchases}
+                countLabel={`${summary.purchases.count} ${t.invoices}`}
+              />
 
-            {/* Category-wise tax cards */}
-            <TaxSummaryCards summary={summary} />
+              <TaxNetLiabilityCard liability={summary.netTaxLiability} />
 
-            {/* HSN summary */}
-            {hsnSummary && hsnSummary.items.length > 0 && (
-              <HsnSummaryTable items={hsnSummary.items} />
-            )}
-          </>
-        )}
-      </PageContainer>
+              {/* Category split — sales / ITC / credit + debit notes */}
+              <TaxSummaryCards summary={summary} />
+
+              {hsnSummary && hsnSummary.items.length > 0 && (
+                <HsnSummaryTable items={hsnSummary.items} />
+              )}
+
+              <Button
+                variant="outline"
+                className="tax-summary-cta"
+                onClick={() => navigate(ROUTES.REPORT_GST_RETURNS)}
+              >
+                {t.viewDetailedReport}
+              </Button>
+            </>
+          )}
+        </PageContainer>
+      </HeroPage>
     </AppShell>
   )
 }
