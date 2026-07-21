@@ -243,11 +243,22 @@
 
   /* Top: status bar */
   --header-safe-inset: var(--safe-area-inset-top, 0px);
-  /* 56px design-spec header + status-bar inset = total sticky-top space.
-   * Pages that need to offset content below the header (sticky filters,
-   * scroll-into-view) consume this; primitives that pad against the top
-   * also consume this. */
-  --header-height: calc(56px + var(--header-safe-inset));
+  /* Total sticky-top space. Pages that need to offset content below the header
+   * (sticky filters, scroll-into-view) consume this; primitives that pad
+   * against the top also consume this.
+   *
+   * Derived from the header's actual parts, NOT a hand-written total. The
+   * .header box is a 44px touch-target row plus its vertical padding plus the
+   * hairline border — 69px, not the 56px this token used to claim. Because
+   * .header applies the token as `min-height` and its content is taller, the
+   * old value never resized anything; it just made every strip that stacked at
+   * `top: var(--header-height)` sit 13px too high, tucked under the header.
+   * Keeping the parts symbolic means a padding or touch-target change moves
+   * the offset with it instead of drifting again (PLATFORM_SHELL C10). */
+  --header-content-height: 44px;               /* min touch target */
+  --header-height: calc(
+    var(--header-content-height) + 2 * var(--space-3) + 1px + var(--header-safe-inset)
+  );
 
   /* Bottom: BottomNav + gesture pill / 3-button nav */
   --bottom-nav-safe-inset: var(--safe-area-inset-bottom, 0px);
