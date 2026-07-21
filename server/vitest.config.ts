@@ -13,7 +13,18 @@ export default defineConfig({
     environment: 'node',
     setupFiles: ['./src/__tests__/setup.ts'],
     include: ['src/**/*.test.ts'],
-    exclude: ['src/__tests__/integration/**'],
+    // The shadow-harness suites that need a REAL Postgres and shadow mode belong to
+    // vitest.shadow.config.ts (File #47). Run here they fail against the placeholder
+    // DATABASE_URL below with a missing-column error that reads like schema drift —
+    // 9 red tests that are actually a wrong-config invocation. The pure-unit shadow
+    // files (diff/classify/redact/throttle/harness) stay in this pass.
+    exclude: [
+      'src/__tests__/integration/**',
+      'src/lib/__tests__/prisma-shadow.spike.test.ts',
+      'src/__tests__/scoped-shadow.*.test.ts',
+      'src/__tests__/adoption/**',
+      'src/middleware/__tests__/auth-scope-frame.test.ts',
+    ],
     testTimeout: 10_000,
     env: {
       NODE_ENV: 'test',

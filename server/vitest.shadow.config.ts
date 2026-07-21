@@ -28,6 +28,7 @@ export default defineConfig({
       'src/lib/__tests__/prisma-shadow.*.test.ts',
       'src/__tests__/scoped-shadow.*.test.ts',
       'src/__tests__/adoption/**/*.test.ts',
+      'src/middleware/__tests__/auth-scope-frame.test.ts',
     ],
     testTimeout: 30_000,
     fileParallelism: false,
@@ -38,6 +39,13 @@ export default defineConfig({
       JWT_SECRET: 'test-secret-key-that-is-at-least-32-chars-long',
       DATABASE_URL: 'postgresql://sawanjaiswal@localhost:5432/hisaabpro_test',
       CORS_ORIGIN: 'http://localhost:5173',
+      // §12.1 — the mode is read ONCE at module load and `clients` is memoised onto
+      // globalThis, so a test that sets this in beforeAll gets whatever the first
+      // importer in the worker already cached. Declaring it here (with forks +
+      // isolation) is what makes A1/A2/A3a assert the real wiring instead of
+      // passing for the wrong reason.
+      SCOPED_PRISMA_ENFORCE: 'shadow',
+      SCOPED_PRISMA_SHADOW_SAMPLE: '1',
     },
   },
 })

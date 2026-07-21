@@ -4,6 +4,7 @@ import { isBlacklisted, isUserBlacklisted } from '../lib/token-blacklist.js'
 import { sendError } from '../lib/response.js'
 import { prisma } from '../lib/prisma.js'
 import { ACCESS_TOKEN_COOKIE } from '../config/security.js'
+import { enterTenantFrame } from './scoped-context.js'
 
 // Extend Express Request to include user
 declare global {
@@ -73,7 +74,10 @@ export async function auth(req: Request, res: Response, next: NextFunction) {
     }
 
     req.user = { userId: payload.userId, phone: payload.phone, businessId: payload.businessId ?? '' }
-    next()
+    // Open the tenant + request-meta frames HERE, not via app.use: app-level
+    // middleware runs before this function, where req.user does not exist yet.
+    // `next()` is invoked inside, so the ALS stores survive the rest of the chain.
+    enterTenantFrame(req, next)
   } catch (error: unknown) {
     const err = error as { name?: string }
     if (err.name === 'TokenExpiredError') {
