@@ -2,22 +2,25 @@
  * Reminder Trigger Service — candidate queries per trigger type (PR5)
  * Returns { partyId, fireDate } tuples for next 24h window.
  * No req.* references — pure service.
+ *
+ * Date-window and dedup helpers live in `reminder-trigger.utils.ts`.
  */
 
 import { prisma } from '../../lib/prisma.js'
 import type { ReminderRule } from '@prisma/client'
+import {
+  CONTACTABLE_PARTY,
+  DAY_MS,
+  dayWindow,
+  dedupeByParty,
+  normaliseToUtcMidnight,
+  shiftDays,
+} from './reminder-trigger.utils.js'
+import type { Candidate } from './reminder-trigger.utils.js'
 
-export interface Candidate {
-  partyId: string
-  fireDate: Date
-}
-
-/** Normalise a date to UTC midnight (for idempotency key comparison) */
-export function normaliseToUtcMidnight(d: Date): Date {
-  const out = new Date(d)
-  out.setUTCHours(0, 0, 0, 0)
-  return out
-}
+// Re-exported so existing callers (reminder-cron.service, tests) keep one import surface.
+export { normaliseToUtcMidnight }
+export type { Candidate }
 
 // ---------------------------------------------------------------------------
 // Dispatcher
@@ -53,19 +56,14 @@ async function birthdayCandidates(
   offsetDays: number,
   now: Date,
 ): Promise<Candidate[]> {
-  const targetDate = new Date(now.getTime() + offsetDays * 86_400_000)
+  const targetDate = shiftDays(now, offsetDays)
   const targetMm = String(targetDate.getMonth() + 1).padStart(2, '0')
   const targetDd = String(targetDate.getDate()).padStart(2, '0')
 
+  // Month/day matching can't be expressed in a Prisma where — the year differs
+  // on every stored birthday — so eligible parties are filtered in JS.
   const parties = await prisma.party.findMany({
-    where: {
-      businessId,
-      isDeleted: false,
-      isActive: true,
-      marketingOptOut: false,
-      phone: { not: null },
-      birthday: { not: null },
-    },
+    where: { businessId, ...CONTACTABLE_PARTY, birthday: { not: null } },
     select: { id: true, birthday: true },
   })
 
@@ -88,10 +86,8 @@ async function paymentDueCandidates(
   offsetDays: number,
   now: Date,
 ): Promise<Candidate[]> {
-  const targetDate = new Date(now.getTime() + offsetDays * 86_400_000)
-  const startOfDay = new Date(targetDate)
-  startOfDay.setUTCHours(0, 0, 0, 0)
-  const endOfDay = new Date(startOfDay.getTime() + 86_400_000)
+  const targetDate = shiftDays(now, offsetDays)
+  const { startOfDay, endOfDay } = dayWindow(targetDate)
 
   const docs = await prisma.document.findMany({
     where: {
@@ -105,14 +101,7 @@ async function paymentDueCandidates(
     select: { partyId: true, dueDate: true },
   })
 
-  const seen = new Set<string>()
-  const results: Candidate[] = []
-  for (const d of docs) {
-    if (!d.partyId || seen.has(d.partyId)) continue
-    seen.add(d.partyId)
-    results.push({ partyId: d.partyId, fireDate: normaliseToUtcMidnight(targetDate) })
-  }
-  return results
+  return dedupeByParty(docs, targetDate)
 }
 
 // ---------------------------------------------------------------------------
@@ -124,10 +113,8 @@ async function paymentOverdueCandidates(
   offsetDays: number,
   now: Date,
 ): Promise<Candidate[]> {
-  const targetDate = new Date(now.getTime() - offsetDays * 86_400_000)
-  const startOfDay = new Date(targetDate)
-  startOfDay.setUTCHours(0, 0, 0, 0)
-  const endOfDay = new Date(startOfDay.getTime() + 86_400_000)
+  const targetDate = shiftDays(now, -offsetDays)
+  const { startOfDay, endOfDay } = dayWindow(targetDate)
 
   const docs = await prisma.document.findMany({
     where: {
@@ -141,14 +128,8 @@ async function paymentOverdueCandidates(
     select: { partyId: true },
   })
 
-  const seen = new Set<string>()
-  const results: Candidate[] = []
-  for (const d of docs) {
-    if (!d.partyId || seen.has(d.partyId)) continue
-    seen.add(d.partyId)
-    results.push({ partyId: d.partyId, fireDate: normaliseToUtcMidnight(now) })
-  }
-  return results
+  // Fires on `now`, not the (past) due date — the reminder is about today.
+  return dedupeByParty(docs, now)
 }
 
 // ---------------------------------------------------------------------------
@@ -160,18 +141,12 @@ async function followupCandidates(
   offsetDays: number,
   now: Date,
 ): Promise<Candidate[]> {
-  const targetDate = new Date(now.getTime() - offsetDays * 86_400_000)
-  const startOfDay = new Date(targetDate)
-  startOfDay.setUTCHours(0, 0, 0, 0)
-  const endOfDay = new Date(startOfDay.getTime() + 86_400_000)
+  const { startOfDay, endOfDay } = dayWindow(shiftDays(now, -offsetDays))
 
   const parties = await prisma.party.findMany({
     where: {
       businessId,
-      isDeleted: false,
-      isActive: true,
-      marketingOptOut: false,
-      phone: { not: null },
+      ...CONTACTABLE_PARTY,
       lastTransactionAt: { gte: startOfDay, lt: endOfDay },
     },
     select: { id: true },
@@ -189,21 +164,15 @@ async function inactiveCandidates(
   offsetDays: number,
   now: Date,
 ): Promise<Candidate[]> {
-  // Use floor(today/offsetDays)*offsetDays as fireDate for stable deduplication
-  const daysSinceEpoch = Math.floor(now.getTime() / (offsetDays * 86_400_000))
-  const stableFireDate = new Date(daysSinceEpoch * offsetDays * 86_400_000)
-
-  const cutoff = new Date(now.getTime() - offsetDays * 86_400_000)
+  // Bucket the fireDate to a floor(now / offsetDays) boundary so repeated ticks
+  // inside one window produce the same key and the ReminderInstance unique
+  // constraint dedupes them.
+  const daysSinceEpoch = Math.floor(now.getTime() / (offsetDays * DAY_MS))
+  const stableFireDate = new Date(daysSinceEpoch * offsetDays * DAY_MS)
+  const cutoff = shiftDays(now, -offsetDays)
 
   const parties = await prisma.party.findMany({
-    where: {
-      businessId,
-      isDeleted: false,
-      isActive: true,
-      marketingOptOut: false,
-      phone: { not: null },
-      lastTransactionAt: { lt: cutoff },
-    },
+    where: { businessId, ...CONTACTABLE_PARTY, lastTransactionAt: { lt: cutoff } },
     select: { id: true },
   })
 
@@ -220,10 +189,8 @@ async function orderDeliveryCandidates(
   offsetDays: number,
   now: Date,
 ): Promise<Candidate[]> {
-  const targetDate = new Date(now.getTime() + offsetDays * 86_400_000)
-  const startOfDay = new Date(targetDate)
-  startOfDay.setUTCHours(0, 0, 0, 0)
-  const endOfDay = new Date(startOfDay.getTime() + 86_400_000)
+  const targetDate = shiftDays(now, offsetDays)
+  const { startOfDay, endOfDay } = dayWindow(targetDate)
 
   const orders = await prisma.customOrder.findMany({
     where: {
@@ -235,14 +202,7 @@ async function orderDeliveryCandidates(
     select: { partyId: true },
   })
 
-  const seen = new Set<string>()
-  const results: Candidate[] = []
-  for (const o of orders) {
-    if (seen.has(o.partyId)) continue
-    seen.add(o.partyId)
-    results.push({ partyId: o.partyId, fireDate: normaliseToUtcMidnight(targetDate) })
-  }
-  return results
+  return dedupeByParty(orders, targetDate)
 }
 
 // ---------------------------------------------------------------------------
@@ -259,10 +219,8 @@ async function appointmentUpcomingCandidates(
   offsetDays: number,
   now: Date,
 ): Promise<Candidate[]> {
-  const targetDate = new Date(now.getTime() + offsetDays * 86_400_000)
-  const startOfDay = new Date(targetDate)
-  startOfDay.setUTCHours(0, 0, 0, 0)
-  const endOfDay = new Date(startOfDay.getTime() + 86_400_000)
+  const targetDate = shiftDays(now, offsetDays)
+  const { startOfDay, endOfDay } = dayWindow(targetDate)
 
   const appointments = await prisma.appointment.findMany({
     where: {
@@ -274,12 +232,5 @@ async function appointmentUpcomingCandidates(
     select: { partyId: true },
   })
 
-  const seen = new Set<string>()
-  const results: Candidate[] = []
-  for (const a of appointments) {
-    if (!a.partyId || seen.has(a.partyId)) continue
-    seen.add(a.partyId)
-    results.push({ partyId: a.partyId, fireDate: normaliseToUtcMidnight(targetDate) })
-  }
-  return results
+  return dedupeByParty(appointments, targetDate)
 }

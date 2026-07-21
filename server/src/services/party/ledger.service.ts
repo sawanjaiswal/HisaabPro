@@ -6,43 +6,16 @@
 
 import { prisma } from '../../lib/prisma.js'
 import { notFoundError } from '../../lib/errors.js'
-import { paymentTypeDirection } from '../../lib/payment-types.js'
-import type { PaymentType } from '../../../../shared/enums.js'
-import type { LedgerQuery, LedgerRow, LedgerVoucherType } from './ledger.types.js'
+import type { LedgerQuery, LedgerRow } from './ledger.types.js'
 import { encodeCursor, decodeCursor } from './ledger.types.js'
-
-// Document types → ledger voucher type + sign (DR positive, CR negative)
-const DOC_VOUCHER_MAP: Record<string, { voucherType: LedgerVoucherType; sign: 1 | -1 }> = {
-  SALE_INVOICE: { voucherType: 'SALE', sign: 1 },
-  POS_SALE:     { voucherType: 'SALE', sign: 1 },
-  ESTIMATE:     { voucherType: 'SALE', sign: 1 },
-  SALE_ORDER:   { voucherType: 'SALE', sign: 1 },
-  DELIVERY_CHALLAN: { voucherType: 'SALE', sign: 1 },
-  PURCHASE_INVOICE: { voucherType: 'PURCHASE', sign: -1 },
-  CREDIT_NOTE:  { voucherType: 'CN', sign: -1 },
-  DEBIT_NOTE:   { voucherType: 'DN', sign: 1 },
-}
-
-function startOfDay(dateStr: string): Date {
-  return new Date(`${dateStr}T00:00:00.000Z`)
-}
-
-function endOfDay(dateStr: string): Date {
-  return new Date(`${dateStr}T23:59:59.999Z`)
-}
-
-// Voucher-type filter → document types array
-function docTypesForFilter(voucherTypes?: LedgerVoucherType[]): string[] | undefined {
-  if (!voucherTypes?.length) return undefined
-  const result: string[] = []
-  for (const vt of voucherTypes) {
-    if (vt === 'SALE') result.push('SALE_INVOICE', 'POS_SALE', 'ESTIMATE', 'SALE_ORDER', 'DELIVERY_CHALLAN')
-    if (vt === 'PURCHASE') result.push('PURCHASE_INVOICE')
-    if (vt === 'CN') result.push('CREDIT_NOTE')
-    if (vt === 'DN') result.push('DEBIT_NOTE')
-  }
-  return result.length > 0 ? result : undefined
-}
+import {
+  DOC_VOUCHER_MAP,
+  computeOpeningBalance,
+  docTypesForFilter,
+  endOfDay,
+  mergeLedgerRows,
+  startOfDay,
+} from './ledger.utils.js'
 
 export async function getPartyLedger(
   businessId: string,
@@ -92,18 +65,7 @@ export async function getPartyLedger(
     }),
   ])
 
-  let openingBalance = 0
-  for (const d of docBefore) {
-    const mapping = DOC_VOUCHER_MAP[d.type]
-    if (mapping) openingBalance += mapping.sign * Number(d.grandTotal)
-  }
-  for (const p of payBefore) {
-    // paymentTypeDirection mirrors customer-outstanding sign (M6 v2.1); PAYROLL_*=0.
-    openingBalance += paymentTypeDirection(p.type as PaymentType) * Number(p.amount)
-  }
-  for (const j of jeBefore) {
-    openingBalance += Number(j.debit) - Number(j.credit)
-  }
+  const openingBalance = computeOpeningBalance(docBefore, payBefore, jeBefore)
 
   // 3. Window queries for the [from, to] range
   const wantDocs = !voucherTypes || voucherTypes.some(v => ['SALE', 'PURCHASE', 'CN', 'DN'].includes(v))
@@ -149,59 +111,8 @@ export async function getPartyLedger(
     }) : Promise.resolve([]),
   ])
 
-  // 4. Map to unified rows
-  type RawRow = { id: string; source: 'DOCUMENT' | 'PAYMENT' | 'JOURNAL'; date: Date; createdAt: Date; voucherType: LedgerVoucherType; voucherNumber: string; particulars: string; dr: number; cr: number; itemCount?: number; mode?: string }
-
-  const allRows: RawRow[] = []
-
-  for (const d of docs) {
-    const mapping = DOC_VOUCHER_MAP[d.type]
-    if (!mapping) continue
-    const amount = Number(d.grandTotal)
-    allRows.push({
-      id: d.id, source: 'DOCUMENT',
-      date: d.documentDate, createdAt: d.createdAt,
-      voucherType: mapping.voucherType,
-      voucherNumber: d.documentNumber ?? '',
-      particulars: `${d.type.replace(/_/g, ' ')} — ${(d as { party: { name: string } }).party.name}`,
-      dr: mapping.sign > 0 ? amount : 0,
-      cr: mapping.sign < 0 ? amount : 0,
-      itemCount: (d as { _count?: { lineItems: number } })._count?.lineItems,
-    })
-  }
-
-  for (const p of pays) {
-    const isIn = p.type === 'PAYMENT_IN'
-    allRows.push({
-      id: p.id, source: 'PAYMENT',
-      date: p.date, createdAt: p.createdAt,
-      voucherType: 'PAYMENT',
-      voucherNumber: p.referenceNumber ?? '',
-      particulars: isIn ? 'Payment received' : 'Payment made',
-      dr: isIn ? 0 : Number(p.amount),
-      cr: isIn ? Number(p.amount) : 0,
-      mode: p.mode,
-    })
-  }
-
-  for (const j of jeLines) {
-    allRows.push({
-      id: j.id, source: 'JOURNAL',
-      date: j.journalEntry.date, createdAt: j.createdAt,
-      voucherType: 'JE',
-      voucherNumber: j.journalEntry.entryNumber,
-      particulars: j.narration ?? j.journalEntry.narration ?? 'Journal Entry',
-      dr: Number(j.debit),
-      cr: Number(j.credit),
-    })
-  }
-
-  // 5. Sort merged rows
-  allRows.sort((a, b) => {
-    const d = a.date.getTime() - b.date.getTime()
-    if (d !== 0) return d
-    return a.createdAt.getTime() - b.createdAt.getTime()
-  })
+  // 4-5. Map to unified rows + sort
+  const allRows = mergeLedgerRows(docs, pays, jeLines)
 
   // 6. Cursor — skip rows up to and including the cursor position
   let startIdx = 0

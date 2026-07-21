@@ -2,59 +2,20 @@ import { API_URL, TIMEOUTS } from '@/config/app.config'
 import { SYNC_MUTATION_METHODS, SYNC_EXCLUDED_PATHS } from './offline.constants'
 import { enqueue } from './offline'
 import { readApiCache, writeApiCache } from './api-cache'
-import { getCsrfToken, invalidateCsrfToken } from './api-csrf'
+import { invalidateCsrfToken } from './api-csrf'
 import { attemptTokenRefresh } from './api-refresh'
 import { OFFLINE_MOCK, handleMockRequest, defaultMockResponse, UNHANDLED } from './playstore-mock'
 import { getApi403Handler } from './api-pin-gate'
 import type { PinRouteClass } from '@/features/pin-gate/pin-gate.types'
 import { isOfflineError, inferEntityType } from './api.utils'
+import { buildRequestHeaders, isNonRefreshableAuthPath, needsCsrf } from './api-request'
+import { parseApiResponse, throwOnConflict } from './api-response'
+import { ApiError } from './api-error'
+import type { ApiOptions } from './api.types'
 
-interface ApiOptions extends RequestInit {
-  timeout?: number
-  /** Skip the 401 refresh interceptor (used by refresh call itself) */
-  _skipRefresh?: boolean
-  /**
-   * Skip the 403 PIN_REQUIRED interceptor. Set by the PIN-verify retry path
-   * and by the PIN-verify call itself to prevent infinite loops (the
-   * interceptor would otherwise re-prompt for PIN on the PIN-prompt's own
-   * 401/429 response).
-   */
-  _skipPin?: boolean
-  /** Offline queue control. Set false to disable queueing for this call. */
-  offlineQueue?: boolean
-  /** Human-readable entity type for queue UI (e.g. "party") */
-  entityType?: string
-  /** Human-readable label for queue UI (e.g. "Raju Traders") */
-  entityLabel?: string
-  /** Opt-in IDB read cache for safe-to-persist GETs. Cleared on logout. Default: false. */
-  cacheReads?: boolean
-  /** #150 optimistic lock — last-read entity version; sent as X-Entity-Version (stale → 409 CONFLICT). */
-  entityVersion?: number
-}
-
-interface ApiResponse<T> {
-  success: boolean
-  data: T
-  error?: { code: string; message: string }
-}
-
-// Endpoints where a 401 means "these credentials/tokens are invalid," not
-// "the access token merely expired" — attempting a refresh here would either
-// recurse (refresh calling itself) or mask a genuine auth failure as a retry.
-// Every other path (including /auth/me, /auth/logout, /auth/switch-business)
-// goes through the normal refresh-and-retry interceptor.
-const NON_REFRESHABLE_AUTH_PATHS = [
-  '/auth/login',
-  '/auth/dev-login',
-  '/auth/refresh',
-  '/auth/register',
-  '/auth/verify-registration',
-  '/auth/verify-otp',
-]
-
-function isNonRefreshableAuthPath(path: string): boolean {
-  return NON_REFRESHABLE_AUTH_PATHS.some((p) => path.startsWith(p))
-}
+// Re-exported so `@/lib/api` stays the single import surface for callers.
+export { ApiError }
+export type { ApiOptions, ApiResponse } from './api.types'
 
 /** Fetch wrapper: timeout + httpOnly-cookie auth + abort + 401 refresh + 403 PIN gate + offline queue + opt-in IDB read cache. */
 export async function api<T>(
@@ -98,21 +59,6 @@ export async function api<T>(
     options.signal.addEventListener('abort', () => controller.abort(), { once: true })
   }
 
-  // CSRF: mutations require X-CSRF-Token header matching csrf-token cookie.
-  // Auth endpoints are exempt server-side; skip the roundtrip for them.
-  const needsCsrf = SYNC_MUTATION_METHODS.has(method) && !path.startsWith('/auth/')
-  const csrf = needsCsrf ? await getCsrfToken() : null
-
-  // Replay protection: replayProtection middleware demands a fresh nonce +
-  // timestamp on every mutation — send them so services don't need to remember.
-  const isMutation = SYNC_MUTATION_METHODS.has(method)
-  const replayHeaders: Record<string, string> = isMutation
-    ? {
-        'X-Request-Nonce': crypto.randomUUID(),
-        'X-Request-Timestamp': Date.now().toString(),
-      }
-    : {}
-
   const isFD = typeof FormData !== 'undefined' && fetchOptions.body instanceof FormData
   let response: Response
   try {
@@ -120,13 +66,13 @@ export async function api<T>(
       ...fetchOptions,
       credentials: 'include',
       signal: controller.signal,
-      headers: {
-        ...(isFD ? {} : { 'Content-Type': 'application/json' }),
-        ...(csrf ? { 'X-CSRF-Token': csrf } : {}),
-        ...replayHeaders,
-        ...(entityVersion !== undefined ? { 'X-Entity-Version': String(entityVersion) } : {}), // #150 optimistic lock
-        ...fetchOptions.headers,
-      },
+      headers: await buildRequestHeaders({
+        method,
+        path,
+        isFormData: isFD,
+        entityVersion,
+        callerHeaders: fetchOptions.headers,
+      }),
     })
   } catch (err) {
     clearTimeout(timeoutId)
@@ -194,7 +140,7 @@ export async function api<T>(
   }
 
   // 403 CSRF_FAILED — token may be stale (server restart); refresh once and retry
-  if (response.status === 403 && needsCsrf && !options._skipRefresh) {
+  if (response.status === 403 && needsCsrf(method, path) && !options._skipRefresh) {
     const body = await response.clone().json().catch(() => null) as { error?: { code?: string } } | null
     if (body?.error?.code === 'CSRF_FAILED') {
       invalidateCsrfToken()
@@ -217,62 +163,15 @@ export async function api<T>(
     }
   }
 
-  // 409 conflict — another user modified the record while offline, or stock shortage
-  if (response.status === 409) {
-    const conflictBody = await response.json().catch(() => null) as { error?: { code?: string; message?: string; items?: unknown } } | null
-    const errCode = conflictBody?.error?.code ?? 'CONFLICT'
-    throw new ApiError(
-      conflictBody?.error?.message || 'This record was modified by another user. Please refresh and try again.',
-      errCode,
-      409,
-      conflictBody?.error,
-    )
-  }
+  await throwOnConflict(response)
 
-  // 204/205/304 have no body — synthesize success
-  const NO_BODY_STATUSES = new Set([204, 205, 304])
-  let json: ApiResponse<T>
-  if (NO_BODY_STATUSES.has(response.status)) {
-    json = { success: true, data: undefined as T }
-  } else {
-    const rawBody = await response.text().catch(() => '')
-    try {
-      json = JSON.parse(rawBody) as ApiResponse<T>
-    } catch {
-      const GATEWAY_ERRORS = new Set([502, 503, 504])
-      const snippet = rawBody ? ` [${response.status}: ${rawBody.slice(0, 80)}]` : ` [${response.status}: empty]`
-      throw new ApiError(
-        GATEWAY_ERRORS.has(response.status)
-          ? 'Server is temporarily unavailable — please try again'
-          : `Server returned an unexpected response. Please try again.${snippet}`,
-        'INVALID_RESPONSE',
-        response.status
-      )
-    }
-  }
-
-  if (!response.ok || !json.success) {
-    throw new ApiError(
-      json.error?.message || `Request failed (${response.status})`,
-      json.error?.code || 'UNKNOWN',
-      response.status
-    )
-  }
+  const data = await parseApiResponse<T>(response)
 
   // Write-through: persist successful opt-in reads for the next offline pass.
   // Best-effort — quota / private-browsing failures must not break the call.
   if (shouldCacheRead) {
-    void writeApiCache(path, json.data)
+    void writeApiCache(path, data)
   }
 
-  return json.data
-}
-
-export class ApiError extends Error {
-  public detail?: unknown // e.g. INSUFFICIENT_STOCK items array
-  constructor(message: string, public code: string, public status: number, detail?: unknown) {
-    super(message)
-    this.name = 'ApiError'
-    this.detail = detail
-  }
+  return data
 }

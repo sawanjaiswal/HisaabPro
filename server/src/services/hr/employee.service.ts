@@ -45,6 +45,11 @@ import type {
   UpdateEmployeeInput,
 } from './employee.types.js'
 import type { Employee } from '@prisma/client'
+import {
+  buildEmployeeAuditDiff,
+  buildEmployeePatch,
+  buildPairedPartyPatch,
+} from './employee-update.utils.js'
 
 /** ─── createEmployee ────────────────────────────────────────────────────── */
 
@@ -127,50 +132,18 @@ export async function updateEmployee(
       throw new AppError(ErrorCode.NOT_FOUND, 404, 'EMPLOYEE_NOT_FOUND')
     }
 
-    // Build patch — only present keys; null === "clear field".
-    const data: Record<string, unknown> = {}
-    if (input.name !== undefined) data.name = input.name
-    if (input.phone !== undefined) data.phone = input.phone
-    if (input.designation !== undefined) data.designation = input.designation
-    if (input.dailyRatePaise !== undefined) data.dailyRate = input.dailyRatePaise
-    if (input.userId !== undefined) data.userId = input.userId
-    if (input.leftAt !== undefined) {
-      data.leftAt = input.leftAt === null ? null : new Date(input.leftAt)
-    }
-
     const employee = await tx.employee.update({
       where: { id },
-      data,
+      data: buildEmployeePatch(input),
     })
 
     // Mirror name/phone to paired Party so the STAFF row stays in sync.
-    const partyPatch: Record<string, unknown> = {}
-    if (input.name !== undefined) partyPatch.name = input.name
-    if (input.phone !== undefined) partyPatch.phone = input.phone
+    const partyPatch = buildPairedPartyPatch(input)
     if (Object.keys(partyPatch).length > 0) {
       await tx.party.update({ where: { id: existing.partyId }, data: partyPatch })
     }
 
-    // Audit: diff old vs new for the changed fields only.
-    const diff: Record<string, { old: unknown; new: unknown }> = {}
-    if (input.name !== undefined && input.name !== existing.name) {
-      diff.name = { old: existing.name, new: input.name }
-    }
-    if (input.phone !== undefined && input.phone !== existing.phone) {
-      diff.phone = { old: existing.phone, new: input.phone }
-    }
-    if (input.designation !== undefined && input.designation !== existing.designation) {
-      diff.designation = { old: existing.designation, new: input.designation }
-    }
-    if (input.dailyRatePaise !== undefined && input.dailyRatePaise !== existing.dailyRate) {
-      diff.dailyRate = { old: existing.dailyRate, new: input.dailyRatePaise }
-    }
-    if (input.userId !== undefined && input.userId !== existing.userId) {
-      diff.userId = { old: existing.userId, new: input.userId }
-    }
-    if (input.leftAt !== undefined) {
-      diff.leftAt = { old: existing.leftAt, new: input.leftAt }
-    }
+    const diff = buildEmployeeAuditDiff(input, existing)
 
     await tx.auditLog.create({
       data: {

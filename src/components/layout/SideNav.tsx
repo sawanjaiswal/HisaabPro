@@ -4,79 +4,32 @@
  * OPEN_SIDE_NAV_EVENT. Contains identity, business switcher (multi-company),
  * theme/calculator/notifications quick-actions, full app menu, and logout.
  * Replaces the per-page MenuDrawer pattern.
+ *
+ * State lives in `useSideNav`; the switcher and app menu are their own
+ * components — this file is the drawer shell.
  */
 
-import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { useNavigate } from 'react-router-dom'
-import { X, LogOut, Sun, Moon, Calculator, Bell, Check, Loader2, Plus } from 'lucide-react'
+import { X, LogOut, Sun, Moon, Calculator, Bell } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion'
 import { useAuth } from '@/context/AuthContext'
 import { useTheme } from '@/context/ThemeContext'
 import { useLanguage } from '@/hooks/useLanguage'
-import { ROUTES } from '@/config/routes.config'
-import { CALCULATOR_TOGGLE_EVENT, OPEN_SIDE_NAV_EVENT } from '@/config/events.config'
-import { MORE_MENU_ITEMS, MORE_MENU_GROUPS } from '@/features/more/more.constants'
-import { ICON_REGISTRY } from '@/features/more/more.icons'
-import { useVertical } from '@/hooks/useVertical'
-import { isNavVisible } from '@/config/verticals.config'
-import { getBusinessInitials, getBusinessColor } from '@/features/business/business.utils'
 import { TenantChip } from '@/features/business/components/TenantChip'
+import { SideNavBusinessSwitcher } from './SideNavBusinessSwitcher'
+import { SideNavMenuGroups } from './SideNavMenuGroups'
+import { useSideNav } from './useSideNav'
 import './side-nav.css'
-import type React from 'react'
 
 export function SideNav() {
-  const navigate = useNavigate()
-  const { user, businesses, activeBusiness, switchBusiness, isSwitching, switchingBusinessId, handleLogout } = useAuth()
+  const { user, activeBusiness, handleLogout } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const { t } = useLanguage()
-  const vertical = useVertical()
-  const [open, setOpen] = useState(false)
-  const [confirmLogout, setConfirmLogout] = useState(false)
-  const closeRef = useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    const handler = () => setOpen(true)
-    window.addEventListener(OPEN_SIDE_NAV_EVENT, handler)
-    return () => window.removeEventListener(OPEN_SIDE_NAV_EVENT, handler)
-  }, [])
-
-  useEffect(() => {
-    if (open) closeRef.current?.focus()
-  }, [open])
-
-  useEffect(() => {
-    if (!open) return
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }
-    document.addEventListener('keydown', handler)
-    return () => document.removeEventListener('keydown', handler)
-  }, [open])
-
-  useEffect(() => {
-    if (open) document.body.style.overflow = 'hidden'
-    else document.body.style.overflow = ''
-    return () => { document.body.style.overflow = '' }
-  }, [open])
-
-  const close = () => setOpen(false)
-
-  const handleNavigate = (route: string) => {
-    navigate(route)
-    close()
-  }
-
-  const handleSwitchBusiness = (id: string) => {
-    if (id === user?.businessId) return
-    void switchBusiness(id)
-  }
-
-  const handleAddBusiness = () => handleNavigate(ROUTES.CREATE_BUSINESS)
-
-  const handleCalculator = () => {
-    window.dispatchEvent(new Event(CALCULATOR_TOGGLE_EVENT))
-    close()
-  }
+  const {
+    open, close, closeRef,
+    confirmLogout, setConfirmLogout,
+    handleNavigate, handleCalculator,
+  } = useSideNav()
 
   if (!open) return null
 
@@ -138,106 +91,8 @@ export function SideNav() {
         )}
 
         <div className="side-nav-body">
-          {/* Only show switcher when there's an actual choice — else it duplicates TenantChip above. */}
-          {businesses.length > 1 && (
-            <section className="side-nav-section">
-              <h3 className="side-nav-section-title">Your Businesses</h3>
-              <Accordion type="single" collapsible className="side-nav-business-accordion">
-                <AccordionItem value="businesses" className="side-nav-business-accordion-item">
-                  <AccordionTrigger className="side-nav-business-accordion-trigger">
-                    <span className="side-nav-business-summary">
-                      {activeBusiness?.name ?? t.switchBusiness ?? 'Switch business'}
-                    </span>
-                  </AccordionTrigger>
-                  <AccordionContent className="side-nav-business-accordion-content">
-                    <div className="side-nav-business-list">
-                      {businesses.map((biz) => {
-                        const isActive = biz.id === user?.businessId
-                        const isLoading = switchingBusinessId === biz.id
-                        return (
-                          <button
-                            key={biz.id}
-                            type="button"
-                            className={`side-nav-business${isActive ? ' is-active' : ''}`}
-                            onClick={() => handleSwitchBusiness(biz.id)}
-                            disabled={isSwitching}
-                            aria-pressed={isActive}
-                          >
-                            <span
-                              className="side-nav-business-avatar"
-                              style={{ background: getBusinessColor(biz.id) }}
-                              aria-hidden="true"
-                            >
-                              {getBusinessInitials(biz.name)}
-                            </span>
-                            <span className="side-nav-business-info">
-                              <span className="side-nav-business-name">{biz.name}</span>
-                              {biz.role && <span className="side-nav-business-role">{biz.role}</span>}
-                            </span>
-                            <span className="side-nav-business-status" aria-hidden="true">
-                              {isLoading ? <Loader2 size={18} className="side-nav-spin" />
-                                : isActive ? <Check size={18} />
-                                : null}
-                            </span>
-                          </button>
-                        )
-                      })}
-                      <button
-                        type="button"
-                        className="side-nav-business side-nav-business--add"
-                        onClick={handleAddBusiness}
-                      >
-                        <span className="side-nav-business-avatar side-nav-business-avatar--ghost" aria-hidden="true">
-                          <Plus size={20} />
-                        </span>
-                        <span className="side-nav-business-info">
-                          <span className="side-nav-business-name">Add Business</span>
-                        </span>
-                      </button>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </section>
-          )}
-
-          {/* Full app menu — filtered by active business vertical */}
-          {MORE_MENU_GROUPS.map((group) => {
-            const items = MORE_MENU_ITEMS.filter(
-              (item) => item.group === group.id && isNavVisible(vertical, item.navKey),
-            )
-            if (items.length === 0) return null
-            return (
-              <section key={group.id} className="side-nav-section">
-                <h3 className="side-nav-section-title">
-                  <span aria-hidden="true">{group.emoji}</span>
-                  {group.label}
-                </h3>
-                <div className="side-nav-grid">
-                  {items.map((item) => {
-                    const Icon = ICON_REGISTRY[item.icon]
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        className="side-nav-item"
-                        onClick={() => handleNavigate(item.route)}
-                        aria-label={item.label}
-                      >
-                        <div
-                          className="side-nav-item-icon"
-                          style={{ '--icon-bg': item.color } as React.CSSProperties}
-                        >
-                          {Icon && <Icon size={20} aria-hidden="true" />}
-                        </div>
-                        <span className="side-nav-item-label">{item.label}</span>
-                      </button>
-                    )
-                  })}
-                </div>
-              </section>
-            )
-          })}
+          <SideNavBusinessSwitcher onNavigate={handleNavigate} />
+          <SideNavMenuGroups onNavigate={handleNavigate} />
 
           <div className="side-nav-footer">
             <div className="side-nav-grid">

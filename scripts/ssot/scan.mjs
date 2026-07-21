@@ -30,13 +30,33 @@ export function rel(p) {
 }
 
 // Extract exported symbol names from a source file.
+//
+// Two forms, both of which are part of a module's real export surface:
+//   1. declaration exports — `export function foo`, `export class Bar`
+//   2. export lists / re-exports — `export { A, B as C }`,
+//      `export type { D } from './d'`
+//
+// Form 2 matters because splitting an oversized module keeps its public
+// surface intact by re-exporting from the new file. Recognising only form 1
+// would report a symbol as "no longer exported" purely because it moved.
 export function exportsOf(file) {
   const src = readFileSync(file, "utf8");
   const names = new Set();
-  const re =
+
+  const declRe =
     /export\s+(?:async\s+)?(?:function|const|class|interface|type)\s+([A-Za-z0-9_]+)/g;
   let m;
-  while ((m = re.exec(src))) names.add(m[1]);
+  while ((m = declRe.exec(src))) names.add(m[1]);
+
+  const listRe = /export\s+(?:type\s+)?\{([^}]*)\}/g;
+  while ((m = listRe.exec(src))) {
+    for (const entry of m[1].split(",")) {
+      // `X as Y` exports the name Y; a bare `X` exports X.
+      const name = entry.trim().split(/\s+as\s+/).pop()?.trim();
+      if (name && /^[A-Za-z0-9_]+$/.test(name)) names.add(name);
+    }
+  }
+
   return [...names];
 }
 
