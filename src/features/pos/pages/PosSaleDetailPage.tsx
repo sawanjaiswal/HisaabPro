@@ -1,9 +1,9 @@
 /** POS — Single sale detail with void/restore + receipt preview */
 
 import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { useParams } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
+import { Header } from '@/components/layout/Header'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
@@ -21,7 +21,6 @@ const MOCK_BUSINESS = {
 
 export default function PosSaleDetailPage() {
   const { id }    = useParams<{ id: string }>()
-  const navigate  = useNavigate()
   const { t }     = useLanguage()
   const detail    = usePosSaleDetail(id)
   const [showVoid, setShowVoid] = useState(false)
@@ -32,12 +31,7 @@ export default function PosSaleDetailPage() {
     return (
       <AppShell>
         <div className="pos-page">
-          <header className="pos-header">
-            <Button variant="none" type="button" className="pos-back-btn" onClick={() => navigate(-1)} aria-label={t.back ?? 'Back'}>
-              <ArrowLeft size={20} aria-hidden="true" />
-            </Button>
-            <h1 className="pos-header__title">{t.posSaleDetail ?? 'Sale Detail'}</h1>
-          </header>
+          <Header title={t.posSaleDetail ?? 'Sale Detail'} backTo />
           <div className="pos-detail-skeleton" aria-busy="true">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="skeleton-box skeleton-box--detail-row" />
@@ -53,11 +47,7 @@ export default function PosSaleDetailPage() {
     return (
       <AppShell>
         <div className="pos-page">
-          <header className="pos-header">
-            <Button variant="none" type="button" className="pos-back-btn" onClick={() => navigate(-1)} aria-label={t.back ?? 'Back'}>
-              <ArrowLeft size={20} aria-hidden="true" />
-            </Button>
-          </header>
+          <Header title={t.posSaleDetail ?? 'Sale Detail'} backTo />
           <ErrorState
             title={t.posSaleNotFound ?? 'Sale not found'}
             onRetry={() => { void detail.refetch() }}
@@ -73,20 +63,13 @@ export default function PosSaleDetailPage() {
   return (
     <AppShell>
       <div className="pos-page">
-        <header className="pos-header">
-          <Button variant="none"
-            type="button"
-            className="pos-back-btn"
-            onClick={() => navigate(ROUTES.POS_HISTORY)}
-            aria-label={t.back ?? 'Back'}
-          >
-            <ArrowLeft size={20} aria-hidden="true" />
-          </Button>
-          <h1 className="pos-header__title">{sale.receiptNumber}</h1>
-          {sale.status === 'VOIDED' && (
-            <span className="pos-detail__voided-badge">{t.posVoided ?? 'Voided'}</span>
-          )}
-        </header>
+        <Header
+          title={sale.receiptNumber}
+          backTo={ROUTES.POS_HISTORY}
+          actions={sale.status === 'VOIDED'
+            ? <span className="pos-detail__voided-badge">{t.posVoided ?? 'Voided'}</span>
+            : undefined}
+        />
 
         <div className="pos-detail-page">
           {/* Summary */}

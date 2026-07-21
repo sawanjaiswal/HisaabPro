@@ -355,24 +355,6 @@
   margin-left: 4px;
 }
 
-/* ─── Bucket drill-down list ───────────────────────────────────────── */
-.bucket-list-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: var(--color-gray-0);
-  border-bottom: 1px solid var(--color-gray-100);
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-[data-theme='dark'] .bucket-list-header {
-  background: var(--color-gray-900);
-  border-bottom-color: var(--color-gray-800);
-}
-
 .bucket-list-header__label {
   font-size: 13px;
   font-weight: 700;

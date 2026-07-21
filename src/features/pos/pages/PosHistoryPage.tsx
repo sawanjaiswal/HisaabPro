@@ -1,15 +1,14 @@
 /** POS — Sales history page */
 
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
+import { Header } from '@/components/layout/Header'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { usePosHistory } from '../hooks/usePosHistory'
 import '../pos-billing.css'
 import { PosHistoryList } from '../components/history/PosHistoryList'
 import { PosHistoryFiltersBar } from '../components/history/PosHistoryFilters'
-import { Button } from '@/components/ui/Button'
 
 export default function PosHistoryPage() {
   const navigate = useNavigate()
@@ -19,17 +18,7 @@ export default function PosHistoryPage() {
   return (
     <AppShell>
       <div className="pos-page">
-        <header className="pos-header">
-          <Button variant="none"
-            type="button"
-            className="pos-back-btn"
-            onClick={() => navigate(ROUTES.POS)}
-            aria-label={t.back ?? 'Back'}
-          >
-            <ArrowLeft size={20} aria-hidden="true" />
-          </Button>
-          <h1 className="pos-header__title">{t.posSalesHistory ?? 'Sales History'}</h1>
-        </header>
+        <Header title={t.posSalesHistory ?? 'Sales History'} backTo={ROUTES.POS} />
 
         <div className="pos-history-page">
           <PosHistoryFiltersBar

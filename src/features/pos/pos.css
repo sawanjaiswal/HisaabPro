@@ -12,43 +12,6 @@
   background: var(--color-gray-50);
 }
 
-.pos-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-gray-0);
-  border-bottom: 1px solid var(--color-gray-100);
-  position: sticky;
-  top: 0;
-  z-index: var(--z-sticky);
-}
-
-.pos-back-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--color-gray-600);
-  padding: var(--space-2);
-  min-width: 44px;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-sm);
-  transition: background var(--duration-fast) var(--ease-default);
-}
-
-.pos-back-btn:active {
-  background: var(--color-gray-100);
-}
-
-.pos-header-title {
-  font-size: var(--fs-xl);
-  font-weight: 700;
-  color: var(--color-gray-800);
-}
-
 .pos-body {
   flex: 1;
   overflow-y: auto;
@@ -634,11 +597,6 @@
   background: var(--color-gray-900);
 }
 
-[data-theme="dark"] .pos-header {
-  background: var(--color-gray-800);
-  border-bottom-color: var(--color-gray-700);
-}
-
 [data-theme="dark"] .pos-scan-bar {
   background: var(--color-gray-800);
   border-bottom-color: var(--color-gray-700);
@@ -672,7 +630,6 @@
 
 /* ── Focus-visible ───────────────────────────────────────────── */
 
-.pos-back-btn:focus-visible,
 .pos-scan-clear:focus-visible,
 .pos-scan-camera-btn:focus-visible,
 .pos-quick-item:focus-visible,

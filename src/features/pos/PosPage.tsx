@@ -1,8 +1,7 @@
 /** POS Quick-Sale — Main page */
 
 import { useCallback } from 'react'
-import { ArrowLeft } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Header } from '@/components/layout/Header'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
 import { usePosCart } from './usePosCart'
@@ -16,11 +15,9 @@ import { QuickProductGrid } from './components/QuickProductGrid'
 import './pos.css'
 
 import type { PaymentMode } from './pos.types'
-import { Button } from '@/components/ui/Button'
 
 export default function PosPage() {
   const { t } = useLanguage()
-  const navigate = useNavigate()
   const cart = usePosCart()
   const checkout = usePosCheckout()
 
@@ -43,12 +40,7 @@ export default function PosPage() {
 
   return (
     <div className="pos-page space-y-6">
-      <header className="pos-header">
-        <Button variant="none" type="button" className="pos-back-btn" onClick={() => navigate(ROUTES.DASHBOARD)} aria-label={t.back}>
-          <ArrowLeft size={20} aria-hidden="true" />
-        </Button>
-        <h1 className="pos-header-title">{t.posQuickSale}</h1>
-      </header>
+      <Header title={t.posQuickSale} backTo={ROUTES.DASHBOARD} />
 
       <ScanBar onProductFound={cart.addItem} />
 

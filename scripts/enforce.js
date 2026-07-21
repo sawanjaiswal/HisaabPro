@@ -588,20 +588,10 @@ const FIXED_TOP_ALLOWLIST = [
   /\/features\/landing\//,                    // marketing nav
 ]
 
-// Phase 4 migration debt: feature files with raw `top: 0` that pre-date
-// the --header-safe-inset SSOT. These either (a) sit inside scroll
-// containers that don't reach viewport top (legitimate, e.g. nested list
-// headers in drawers — annotate with `enforce-ignore`) or (b) are page-
-// level custom headers that overlap the OS status bar on edge-to-edge
-// (real bug — migrate to <Header> or stack `top: var(--header-height)`).
-// New files are still hard-blocked.
-const FIXED_TOP_PHASE4_DEBT = new Set([
-  'src/features/cash-register/cash-register.css',
-  'src/features/collections/styles/aging.css',
-  'src/features/pos/pos-billing.css',
-  'src/features/pos/pos.css',
-  'src/features/reports/report-shared.css',
-])
+// Phase 4 is complete: every feature page bar is on <Header>, and sticky
+// strips below it stack with top: var(--header-height). The debt set is empty
+// and stays empty — raw fixed/sticky top:0 in feature CSS is a hard error.
+const FIXED_TOP_PHASE4_DEBT = new Set([])
 
 let fixedTopCount = 0
 

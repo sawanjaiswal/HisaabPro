@@ -1,9 +1,9 @@
 /** POS — Main POS page (grid + cart FAB) */
 
 import { useState, useMemo } from 'react'
-import { ArrowLeft, ShoppingCart } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { ShoppingCart } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
+import { Header } from '@/components/layout/Header'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { usePosPage } from '../hooks/usePosPage'
@@ -21,7 +21,6 @@ const MOCK_BUSINESS = {
 }
 
 export default function PosMainPage() {
-  const navigate  = useNavigate()
   const { t }     = useLanguage()
   const page      = usePosPage()
   const [cartOpen, setCartOpen] = useState(false)
@@ -36,17 +35,7 @@ export default function PosMainPage() {
     return (
       <AppShell>
         <div className="pos-page">
-          <header className="pos-header">
-            <Button variant="none"
-              type="button"
-              className="pos-back-btn"
-              onClick={page.newSale}
-              aria-label={t.posNewSale ?? 'New sale'}
-            >
-              <ArrowLeft size={20} aria-hidden="true" />
-            </Button>
-            <h1 className="pos-header__title">{t.posReceiptTitle ?? 'Receipt'}</h1>
-          </header>
+          <Header title={t.posReceiptTitle ?? 'Receipt'} backTo />
           <div className="pos-receipt-page">
             <ReceiptPreview sale={page.lastSale} businessInfo={MOCK_BUSINESS} />
             <div className="pos-receipt-page__actions">
@@ -68,17 +57,7 @@ export default function PosMainPage() {
     <AppShell>
       <div className="pos-page">
         {/* Header */}
-        <header className="pos-header">
-          <Button variant="none"
-            type="button"
-            className="pos-back-btn"
-            onClick={() => navigate(ROUTES.DASHBOARD)}
-            aria-label={t.back ?? 'Back'}
-          >
-            <ArrowLeft size={20} aria-hidden="true" />
-          </Button>
-          <h1 className="pos-header__title">{t.posBillingMode ?? 'POS Billing'}</h1>
-        </header>
+        <Header title={t.posBillingMode ?? 'POS Billing'} backTo={ROUTES.DASHBOARD} />
 
         {/* Customer selector */}
         <div className="pos-page__customer">
