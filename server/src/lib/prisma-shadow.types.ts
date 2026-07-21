@@ -116,9 +116,30 @@ export interface ShadowObserveInput {
   argFlags: ShadowArgFlags
 }
 
+/** In-process gauges for the admin status payload (§8.2). Never read from the DB. */
+export interface ShadowPortSnapshot {
+  sinkWriteFailed: number
+  sinkShed: number
+  harnessErrors: number
+  keysThisHour: number
+  keyCapShed: number
+}
+
 export interface ShadowPort {
   /** Sample × throttle × inflight × breaker. Cheap, synchronous. */
   shouldSample(): boolean
-  /** Fire-and-forget. Never throws, never returns a value, never awaited. */
-  observe(input: ShadowObserveInput): void
+  /**
+   * Fire-and-forget. Specified never to reject.
+   *
+   * Returns `Promise<void>` rather than `void` (rev-2 declared the latter) so the
+   * call site in `prisma-scoped.ts` can attach the terminal `.catch` at §4 (2b).
+   * Without a handle there is nothing to attach to, and on Node ≥ 15 a rejection
+   * escaping this function terminates the API — turning any future editing mistake
+   * inside `observe()` from a counted harness error into an outage. The return type
+   * IS the enforcement of the "never rejects" spec, not a note about it.
+   */
+  observe(input: ShadowObserveInput): Promise<void>
+  /** Sync-throw containment in the caller's branch (§4 (2a)/(2b)). Must not throw. */
+  countHarnessError(): void
+  snapshot(): ShadowPortSnapshot
 }

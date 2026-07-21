@@ -17,7 +17,19 @@ import { PrismaClient } from '@prisma/client'
 import logger from './logger.js'
 import { createSoftDeleteExtension } from './soft-delete/index.js'
 import { setUnscopedAuditSink } from './business-context.js'
-import { createScopingExtension, makeScopedTransaction, type ScopedClientLike } from './prisma-scoped.js'
+import {
+  createScopingExtension,
+  makeScopedTransaction,
+  setShadowPort,
+  type ScopedClientLike,
+} from './prisma-scoped.js'
+import { createShadowPort } from './prisma-shadow.js'
+import type { ShadowDb } from './prisma-shadow.types.js'
+// barrel row deferred — env.ts is owned by a concurrent session (epic: scoped-prisma-shadow)
+import {
+  getScopedPrismaShadowSample,
+  getScopedPrismaShadowTimeoutMs,
+} from './env.scoped-prisma.js'
 import { getScopedPrismaMode } from './env.js'
 
 function getDatabaseUrl(): string {
@@ -103,12 +115,44 @@ export const __basePrismaUnsafe = clients.base
 const scopedMode = getScopedPrismaMode()
 
 /**
- * The app-wide Prisma client. Scoped only under `enforce`; otherwise the previous
- * soft-delete client (land-dark). Typed as the soft-delete client — the scoping
- * extension is a query-only component and does not change the delegate surface.
+ * Install the shadow harness (§3.1). Under `shadow` ONLY.
+ *
+ * Two lines make shadow mode real — this one and the `prisma` resolution below —
+ * and neither is useful alone: a port with `prisma` on the unscoped client observes
+ * nothing, and the scoped client with no port is just `enforce` without enforcement.
+ * The adoption assertion fails if either is deleted, which is the whole point: this
+ * epic exists because four components typechecked, grepped clean, and were never
+ * called by anything.
+ *
+ * `clients.base` is referenced as a local const, NOT via the `__basePrismaUnsafe`
+ * export above. That removes the AA-6 declaration-order fragility at its source
+ * rather than leaving it as a constraint the next editor has to remember.
+ */
+if (scopedMode === 'shadow') {
+  setShadowPort(
+    createShadowPort({
+      db: clients.base as unknown as ShadowDb,
+      sampleRate: getScopedPrismaShadowSample(),
+      timeoutMs: getScopedPrismaShadowTimeoutMs(),
+    }),
+  )
+}
+
+/**
+ * The app-wide Prisma client (§3.1, three-way).
+ *
+ *   off      → soft-delete client; the scoping extension is not on the path
+ *   shadow   → scoped client; the harness branch returns the UNSCOPED result, so
+ *              runtime behaviour is unchanged while the diff is observed
+ *   enforce  → scoped client; injection is load-bearing
+ *
+ * Typed as the soft-delete client — the scoping extension is query-only and does
+ * not change the delegate surface, so none of the 186 service call sites change.
  */
 export const prisma: SoftDeletedClient =
-  scopedMode === 'enforce' ? (clients.scoped as unknown as SoftDeletedClient) : clients.softDeleted
+  scopedMode === 'off'
+    ? clients.softDeleted
+    : (clients.scoped as unknown as SoftDeletedClient)
 
 /** Type of the extended prisma client — use this instead of PrismaClient in service signatures */
 export type ExtendedPrismaClient = SoftDeletedClient
@@ -122,4 +166,11 @@ export const scopedTransaction = makeScopedTransaction(
   clients.scoped as unknown as { $transaction: <T>(fn: (tx: unknown) => Promise<T>, opts?: unknown) => Promise<T> },
 )
 
-logger.info(`Database connection initialized (soft-delete active, scoped-prisma mode=${scopedMode})`)
+// `client=` is load-bearing operator evidence, not decoration: it is the one line
+// that tells "shadow wired" apart from "shadow parsed and ignored", and it is the
+// runbook's first triage step.
+logger.info(
+  `Database connection initialized (soft-delete active, scoped-prisma mode=${scopedMode}, ` +
+    `client=${scopedMode === 'off' ? 'soft-delete' : 'scoped'}` +
+    `${scopedMode === 'shadow' ? `, shadow-sample=${getScopedPrismaShadowSample()}` : ''})`,
+)

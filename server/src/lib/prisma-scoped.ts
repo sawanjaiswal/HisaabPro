@@ -26,113 +26,132 @@ import {
   runReentry,
 } from './business-context.js'
 import { isTenantModel } from './scoped-models.js'
+import { injectScope } from './prisma-scoped.inject.js'
 import {
-  buildDeleteByIdArgs,
-  buildUpdateByIdArgs,
-  injectScope,
-  type FkGuard,
-  type ScopePlan,
-} from './prisma-scoped.inject.js'
+  executePlan,
+  type Continuation,
+  type ScopedClientLike,
+} from './prisma-scoped.exec.js'
+import {
+  getShadowPort,
+  readArgFlags,
+  shouldShadow,
+  ShadowPlanRefused,
+  ShadowProbeNoContext,
+} from './prisma-scoped.shadow.js'
 
-/** Minimal structural view of a Prisma model delegate (loose — the client is dynamic). */
-interface Delegate {
-  findFirst(args: unknown): Promise<{ id: string } | null>
-  findFirstOrThrow(args: unknown): Promise<{ id: string }>
-  update(args: unknown): Promise<unknown>
-  delete(args: unknown): Promise<unknown>
-  create(args: unknown): Promise<unknown>
-}
-export type ScopedClientLike = Record<string, Delegate>
-type Continuation = (args: unknown) => Promise<unknown>
+export {
+  ScopedNotFound,
+  FkTenantReject,
+  type ScopedClientLike,
+} from './prisma-scoped.exec.js'
+export { setShadowPort } from './prisma-scoped.shadow.js'
 
 /** Active interactive-tx client — set by scopedTransaction so two-step writes stay atomic. */
 const txSlot = new AsyncLocalStorage<ScopedClientLike>()
-
-export class ScopedNotFound extends Error {
-  readonly code = 'SCOPED_PRISMA_NOT_FOUND'
-  constructor(model: string) {
-    super(`No ${model} row in the active tenant matched the query`)
-    this.name = 'ScopedNotFound'
-  }
-}
-export class FkTenantReject extends Error {
-  readonly code = 'SCOPED_PRISMA_DATA_FK_REJECT'
-  constructor(g: FkGuard) {
-    super(`Referenced ${g.parentModel} (${g.relationLabel}=${g.value}) does not belong to the active tenant`)
-    this.name = 'FkTenantReject'
-  }
-}
-
-/** Verify every FK the write reassigns resolves to a row in this tenant (H1 FK-guard). */
-async function runGuards(client: ScopedClientLike, guards: FkGuard[], businessId: string): Promise<void> {
-  for (const g of guards) {
-    const parent = await runReentry(async () =>
-      await client[g.parentModel].findFirst({ where: { id: g.value, businessId }, select: { id: true } }),
-    )
-    if (!parent) throw new FkTenantReject(g)
-  }
-}
-
-async function executePlan(
-  client: ScopedClientLike,
-  model: string,
-  businessId: string,
-  plan: ScopePlan,
-  query: Continuation,
-  originalArgs: unknown,
-): Promise<unknown> {
-  await runGuards(client, plan.guards, businessId)
-  const { exec } = plan
-
-  switch (exec.kind) {
-    case 'passthrough':
-      return query(originalArgs)
-    case 'sameOp':
-      // same operation, new args → flows through inner soft-delete → DB
-      return query(exec.args)
-    case 'findFirst':
-      return runReentry(async () => await client[model][exec.operation](exec.args))
-    case 'twoStep':
-      return runReentry(async () => {
-        const found = await client[model].findFirst(exec.resolveArgs)
-        if (!found) {
-          if (exec.missingThrows) throw new ScopedNotFound(model)
-          return null
-        }
-        const writeArgs =
-          exec.writeOp === 'update'
-            ? buildUpdateByIdArgs(found.id, exec.args)
-            : buildDeleteByIdArgs(found.id, exec.args)
-        return await client[model][exec.writeOp](writeArgs)
-      })
-    case 'upsert':
-      return runReentry(async () => {
-        const found = await client[model].findFirst(exec.resolveArgs)
-        if (found) {
-          const a = exec.args as Record<string, unknown>
-          return await client[model].update({
-            where: { id: found.id },
-            data: exec.updateData,
-            ...(a.select !== undefined ? { select: a.select } : {}),
-            ...(a.include !== undefined ? { include: a.include } : {}),
-          })
-        }
-        return await client[model].create(exec.createArgs)
-      })
-  }
-}
 
 /**
  * Build the scoping extension. `getInner` is late-bound to the soft-delete client so
  * the re-dispatch target has no scoping layer (see composition note above).
  */
 export function createScopingExtension(getInner: () => ScopedClientLike) {
+  /**
+   * The scoped side of the comparison — the REAL mechanism, not a re-implementation.
+   *
+   * Fidelity note, stated rather than glossed: under `enforce` a read's `sameOp`
+   * branch calls the extension's own continuation; the probe calls a re-dispatch on
+   * the inner soft-delete client instead. Both traverse soft-delete exactly once and
+   * bottom out on the same pool, so the diff is apples-to-apples on the axis that
+   * matters. The residual difference is composition order inside Prisma's extension
+   * stack.
+   */
+  async function runScopedProbe(
+    model: string,
+    operation: string,
+    args: unknown,
+    businessId: string,
+  ): Promise<unknown> {
+    // Belt for AA-5. The primary control is observe()'s no-context branch; this
+    // exists so a future caller bypassing that branch gets a counted shadow-error
+    // instead of a fabricated clean diff. `where: { businessId: undefined }` is
+    // DROPPED by Prisma — the repo's own recorded cross-tenant footgun.
+    if (!businessId) throw new ShadowProbeNoContext(model)
+
+    const plan = injectScope(model, operation, args as Record<string, unknown> | undefined, businessId)
+    // Reads can never produce these kinds today, and executePlan issues REAL
+    // writes for them. Refusing here makes "shadow never writes" a property of the
+    // code rather than of what SHADOW_READ_OPS happens to contain right now.
+    if (plan.exec.kind === 'twoStep' || plan.exec.kind === 'upsert' || plan.exec.kind === 'passthrough') {
+      throw new ShadowPlanRefused(plan.exec.kind)
+    }
+
+    const client = getInner()
+    // The await sits INSIDE runReentry's callback. A non-awaiting callback tears
+    // the ALS store down before the lazy Prisma promise fires — every existing
+    // executePlan branch has this shape for the same reason.
+    // `Delegate` models only the five ops the write plans need; a probe legitimately
+    // calls findMany/findUniqueOrThrow too. Widened here rather than casting the op
+    // name to a member that exists, which would type-check while describing the
+    // wrong call.
+    const delegate = client[model] as unknown as Record<string, Continuation>
+    const probeContinuation: Continuation = (a) => runReentry(async () => await delegate[operation](a))
+
+    return executePlan(client, model, businessId, plan, probeContinuation, args)
+  }
+
   return Prisma.defineExtension({
     name: 'tenant-scoping',
     query: {
       $allModels: {
         async $allOperations({ model, operation, args, query }) {
           const q = query as Continuation
+
+          // ── SHADOW BRANCH — above the fail-closed guard chain, and the sole exit ──
+          const port = getShadowPort()
+          if (port && model) {
+            // (1) The caller's value is bound FIRST, before any harness code can
+            // run. Promise.resolve on a Prisma thenable subscribes exactly once,
+            // so both consumers share one query — this is what makes "at most one
+            // extra read per sampled read" true rather than hoped-for. Prisma
+            // promises being lazy has burned this layer before (see the header).
+            const real = Promise.resolve(q(args))
+            try {
+              if (shouldShadow(model, operation, txSlot.getStore() !== undefined)) {
+                void port
+                  .observe({
+                    model,
+                    operation,
+                    real,
+                    businessId: getBusinessContext()?.businessId,
+                    runScoped: (businessId) => runScopedProbe(model, operation, args, businessId),
+                    argFlags: readArgFlags(args),
+                  })
+                  // (2b) `observe` is specified never to reject; this is the
+                  // ENFORCEMENT of that spec, not belt-and-braces. On Node >= 15 an
+                  // unhandled rejection terminates the process, so a future editing
+                  // mistake inside observe() would turn a counted harness error into
+                  // an API outage.
+                  .catch(() => {
+                    try {
+                      port.countHarnessError()
+                    } catch {
+                      /* N-2 — total */
+                    }
+                  })
+              }
+            } catch {
+              // (2a) a synchronous throw anywhere in shouldShadow / arg reading
+              try {
+                port.countHarnessError()
+              } catch {
+                /* N-2 — total */
+              }
+            }
+            // (3) The UNSCOPED result. Runtime behaviour under shadow is unchanged,
+            // and nothing the probe computed can reach the caller.
+            return real
+          }
+
           if (!model || isReentrant() || !isTenantModel(model) || getUnscopedReason()) return q(args)
 
           const ctx = getBusinessContext()
