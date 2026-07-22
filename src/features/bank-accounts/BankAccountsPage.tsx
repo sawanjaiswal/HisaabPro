@@ -9,7 +9,8 @@ import { useState, useCallback } from 'react'
 import { Building2, Plus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { HeroPage } from '@/components/layout/HeroPage'
+import { Skeleton } from '@/components/feedback/Skeleton'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { Drawer } from '@/components/ui/Drawer'
@@ -98,62 +99,48 @@ export default function BankAccountsPage() {
     }
   }, [form, submitting, toast, refresh])
 
-  if (status === 'loading') {
-    return (
-      <AppShell>
-        <Header title={t.bankAccounts ?? "Bank Accounts"} backTo={ROUTES.DASHBOARD} />
-        <PageContainer variant="list" className="space-y-6">
-          <div className="bank-skeleton" aria-busy="true" aria-label={t.loadingAccounts2}>
-            {(['sk-1', 'sk-2', 'sk-3'] as const).map((key) => (
-              <div key={key} className="bank-skeleton__card" />
-            ))}
-          </div>
-        </PageContainer>
-      </AppShell>
-    )
-  }
-
-  if (status === 'error') {
-    return (
-      <AppShell>
-        <Header title={t.bankAccounts ?? "Bank Accounts"} backTo={ROUTES.DASHBOARD} />
-        <PageContainer variant="list" className="space-y-6">
-          <ErrorState title={t.couldNotLoadBankAccounts} message={t.checkConnectionRetry} onRetry={refresh} />
-        </PageContainer>
-      </AppShell>
-    )
-  }
-
   return (
     <AppShell>
       <Header title={t.bankAccounts ?? "Bank Accounts"} backTo={ROUTES.DASHBOARD} />
-      <PageContainer variant="list" className="space-y-6">
-        <div className="bank-action-bar">
-          <span className="bank-count">{total} {total === 1 ? t.accountSingular : t.accountsPlural}</span>
-          <Button variant="none" type="button" className="bank-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.addFirstAccount}>
-            <Plus size={14} aria-hidden="true" /> {t.addAccountBtn}
-          </Button>
-        </div>
-
-        {items.length === 0 && (
-          <EmptyState
-            icon={<Building2 size={22} aria-hidden="true" />}
-            title={t.noBankAccounts}
-            description={t.addBankAccountsDesc}
-            action={
-              <Button variant="none" type="button" className="bank-add-btn" onClick={() => setDrawerOpen(true)}>
-                <Plus size={14} aria-hidden="true" /> {t.addFirstAccount}
-              </Button>
-            }
-          />
-        )}
-
-        {items.length > 0 && (
-          <div className="bank-list stagger-list">
-            {items.map((account) => <BankAccountCard key={account.id} account={account} />)}
+      <HeroPage>
+        {status === 'loading' && (
+          <div className="bank-skeleton" aria-busy="true" aria-label={t.loadingAccounts2}>
+            <Skeleton height="96px" borderRadius="var(--radius-xl)" count={3} />
           </div>
         )}
-      </PageContainer>
+
+        {status === 'error' && (
+          <ErrorState title={t.couldNotLoadBankAccounts} message={t.checkConnectionRetry} onRetry={refresh} />
+        )}
+
+        {status === 'success' && (
+          <>
+            <div className="bank-action-bar">
+              <span className="bank-count">{total} {total === 1 ? t.accountSingular : t.accountsPlural}</span>
+              <Button variant="none" type="button" className="bank-add-btn" onClick={() => setDrawerOpen(true)} aria-label={t.addFirstAccount}>
+                <Plus size={14} aria-hidden="true" /> {t.addAccountBtn}
+              </Button>
+            </div>
+
+            {items.length === 0 ? (
+              <EmptyState
+                icon={<Building2 size={22} aria-hidden="true" />}
+                title={t.noBankAccounts}
+                description={t.addBankAccountsDesc}
+                action={
+                  <Button variant="none" type="button" className="bank-add-btn" onClick={() => setDrawerOpen(true)}>
+                    <Plus size={14} aria-hidden="true" /> {t.addFirstAccount}
+                  </Button>
+                }
+              />
+            ) : (
+              <div className="bank-list stagger-list">
+                {items.map((account) => <BankAccountCard key={account.id} account={account} />)}
+              </div>
+            )}
+          </>
+        )}
+      </HeroPage>
 
       <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title={t.addFirstAccount}>
         <form className="bank-drawer__form py-0" onSubmit={handleSubmit}>
