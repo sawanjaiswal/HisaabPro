@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { Plus, Warehouse } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
@@ -39,7 +39,7 @@ export default function GodownsPage() {
         }
       />
 
-      <PageContainer variant="list" className="space-y-6">
+      <HeroPage className="space-y-6">
         <nav className="pill-tabs" role="tablist" aria-label={t.godownSections}>
           {GODOWN_TABS.map((tab) => (
             <Button variant="none"
@@ -105,7 +105,7 @@ export default function GodownsPage() {
 
           {activeTab === 'transfers' && <TransferHistory />}
         </div>
-      </PageContainer>
+      </HeroPage>
 
       {activeTab === 'godowns' && status === 'success' && data && data.godowns.length > 0 && (
         <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.addNewGodown}>
