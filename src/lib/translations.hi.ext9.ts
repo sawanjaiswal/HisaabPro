@@ -266,4 +266,12 @@ export const hiExt9 = {
   marketingRuleNotFound:       'रिमाइंडर नियम नहीं मिला',
   marketingRuleNotFoundDesc:   'यह नियम हटा दिया गया हो सकता है। रिमाइंडर सूची पर वापस जाएं।',
   bulkImportPreparing:         'आपके संपर्क तैयार किए जा रहे हैं…',
+  createBusinessTitle:         'व्यापार बनाएं',
+  createBusinessNameReq:       'व्यापार का नाम *',
+  createBusinessNamePh:        'जैसे शर्मा जनरल स्टोर',
+  createBusinessTypeLabel:     'व्यापार का प्रकार',
+  createBusinessCloneLabel:    'मौजूदा व्यापार से सेटिंग्स कॉपी करें',
+  createBusinessCloneHint:     'भूमिकाएं, उत्पाद, श्रेणियां और सेटिंग्स कॉपी करता है',
+  createBusinessCloneFrom:     'किससे कॉपी करें',
+  createBusinessClonePickPh:   'एक व्यापार चुनें',
 } as const

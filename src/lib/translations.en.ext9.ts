@@ -276,4 +276,12 @@ export const enExt9 = {
   marketingRuleNotFound:       'Reminder rule not found',
   marketingRuleNotFoundDesc:   'This rule may have been deleted. Go back to the reminders list.',
   bulkImportPreparing:         'Preparing your contacts…',
+  createBusinessTitle:         'Create Business',
+  createBusinessNameReq:       'Business Name *',
+  createBusinessNamePh:        'e.g. Sharma General Store',
+  createBusinessTypeLabel:     'Business Type',
+  createBusinessCloneLabel:    'Clone settings from existing business',
+  createBusinessCloneHint:     'Copies roles, products, categories and settings',
+  createBusinessCloneFrom:     'Clone from',
+  createBusinessClonePickPh:   'Select a business',
 } as const
