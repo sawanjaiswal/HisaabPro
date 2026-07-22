@@ -97,13 +97,13 @@ are today's — any page projected past 250L gets a 6-layer split in its own pla
 | ~~`settings/SettingsPage`~~ | 152 | Y | – | Y | Y | Y | n/a | Y | #19/74 ✅ |
 | ~~`settings/ThemeAppearancePage`~~ | 65 | Y | – | Y | n/a | n/a | n/a | Y | #96 ✅ |
 | ~~`settings/ActiveSessionsPage`~~ | 150 | Y | – | Y | Y | Y | Y | Y | #97 ✅ |
-| `settings/StaffPage` | 153 | – | – | Y | **–** | Y | Y | Y | #71 |
+| ~~`settings/StaffPage`~~ | 148 | Y | – | Y | Y | Y | Y | Y | #71 ✅ |
 | ~~`more/MorePage`~~ | 91 | Y | – | Y | Y | Y | n/a | Y | #25 ✅ |
 | ~~`backup/BackupPage`~~ | 21 | Y | – | Y | Y | Y | Y | Y | #32/81 ✅ |
 | `subscription-checkout/SubscriptionCheckoutPage` | 121 | – | – | Y | Y | Y | Y | Y | #84 |
 | `pages/SubscriptionManagePage` | 135 | – | – | Y | Y | Y | Y | Y | #33/73 |
 | `business/CreateBusinessPage` | 124 | – | – | **–** | **–** | **–** | **–** | **–** | #38/78 |
-| `godowns/GodownsPage` | 117 | – | – | Y | Y | Y | Y | Y | #100 |
+| ~~`godowns/GodownsPage`~~ | 117 | Y | – | Y | Y | Y | Y | Y | #100 ✅ |
 | `bank-accounts/BankAccountsPage` | 208 | – | – | Y | **–** | Y | Y | Y | #57 |
 | `accounting/ChartOfAccountsPage` | 109 | – | – | Y | Y | Y | Y | Y | #56 |
 | `onboarding/OnboardingPage` | 215 | – | – | **–** | **–** | **–** | **–** | Y | #38/78 |

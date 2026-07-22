@@ -4,9 +4,10 @@ import { useNavigate } from 'react-router-dom'
 import { UserPlus, Users, Check } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { Skeleton } from '@/components/feedback/Skeleton'
 import { Drawer } from '@/components/ui/Drawer'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -40,13 +41,11 @@ export default function StaffPage() {
   return (
     <AppShell>
       <Header title={t.staff} backTo={ROUTES.SETTINGS} actions={inviteAction} />
-      <PageContainer className="staff-page space-y-6">
+      <HeroPage className="staff-page space-y-6">
 
         {status === 'loading' && (
           <div className="staff-list" aria-busy="true" aria-label={t.loadingStaffLabel}>
-            {[1, 2, 3].map((n) => (
-              <div key={n} className="staff-card" style={{ height: 72, opacity: 0.4, background: 'var(--color-gray-100)' }} />
-            ))}
+            <Skeleton height="72px" borderRadius="var(--radius-xl)" count={3} />
           </div>
         )}
 
@@ -147,7 +146,7 @@ export default function StaffPage() {
           </div>
         </Drawer>
 
-      </PageContainer>
+      </HeroPage>
     </AppShell>
   )
 }
