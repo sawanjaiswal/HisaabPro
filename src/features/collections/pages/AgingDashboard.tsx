@@ -1,17 +1,18 @@
 /**
- * AgingDashboard — Collections Hub main screen.
+ * AgingDashboard — Collections Hub main screen (#22/29).
  *
+ * Emerald Hero shell. One frame, one header; the body switches on query status.
  * 4 UI states: loading skeleton · error banner · empty (no receivables) · success.
- * Pull-to-refresh via query invalidation on scroll-to-top gesture.
  */
 
 import { useQueryClient } from '@tanstack/react-query'
 import { CheckCircle2, RefreshCw } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { useAgingData } from '../useAgingData'
@@ -22,7 +23,6 @@ import { AgingLoadingSkeleton } from '../components/AgingLoadingSkeleton'
 import { formatPaise } from '@/lib/format'
 import type { AgingBucket } from '../collections.types'
 import '../styles/aging.css'
-import { Button } from '@/components/ui/Button'
 
 const BUCKET_ORDER: AgingBucket[] = ['current', 'bucket_31', 'bucket_61', 'bucket_91']
 
@@ -35,125 +35,88 @@ export default function AgingDashboard() {
     queryClient.invalidateQueries({ queryKey: ['collections', 'aging'] })
   }
 
-  // Loading state
-  if (status === 'pending') {
-    return (
-      <AppShell>
-        <Header title={t.agingDashboard ?? 'Aging Dashboard'} />
-        <PageContainer>
-          <AgingLoadingSkeleton />
-        </PageContainer>
-      </AppShell>
-    )
-  }
+  const summary = status === 'success' ? data.summary : undefined
+  const hasReceivables = summary !== undefined && summary.totalReceivable > 0
 
-  // Error state
-  if (status === 'error') {
-    return (
-      <AppShell>
-        <Header title={t.agingDashboard ?? 'Aging Dashboard'} />
-        <PageContainer>
+  const refreshAction =
+    status === 'success' ? (
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={handleRefresh}
+        aria-label={t.agingRefreshing ?? 'Refresh'}
+      >
+        <RefreshCw size={18} aria-hidden="true" />
+      </Button>
+    ) : undefined
+
+  return (
+    <AppShell>
+      <Header title={t.agingDashboard ?? 'Aging Dashboard'} actions={refreshAction} />
+
+      <HeroPage>
+        {status === 'pending' && <AgingLoadingSkeleton />}
+
+        {status === 'error' && (
           <ErrorState
             title={t.agingError ?? 'Could not load aging data'}
             onRetry={() => refetch()}
             retryLabel={t.agingRetry ?? 'Retry'}
           />
-        </PageContainer>
-      </AppShell>
-    )
-  }
+        )}
 
-  const { summary, topOutstanding, brokenPtps } = data
-
-  // Empty state — total receivable is 0
-  if (summary.totalReceivable === 0) {
-    return (
-      <AppShell>
-        <Header
-          title={t.agingDashboard ?? 'Aging Dashboard'}
-          actions={
-            <Button variant="none"
-              type="button"
-              onClick={handleRefresh}
-              aria-label={t.agingRefreshing ?? 'Refresh'}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 8, color: 'var(--color-gray-600)' }}
-            >
-              <RefreshCw size={18} />
-            </Button>
-          }
-        />
-        <PageContainer>
+        {status === 'success' && !hasReceivables && (
           <EmptyState
             icon={<CheckCircle2 size={22} aria-hidden="true" />}
             title={t.allCaughtUp ?? 'All paid up!'}
             description={t.allCaughtUpDesc ?? 'No overdue receivables right now. Great work!'}
           />
-        </PageContainer>
-      </AppShell>
-    )
-  }
-
-  // Success state
-  return (
-    <AppShell>
-      <Header
-        title={t.agingDashboard ?? 'Aging Dashboard'}
-        actions={
-          <Button variant="none"
-            type="button"
-            onClick={handleRefresh}
-            aria-label={t.agingRefreshing ?? 'Refresh'}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 8, color: 'var(--color-gray-600)' }}
-          >
-            <RefreshCw size={18} />
-          </Button>
-        }
-      />
-      <PageContainer>
-        {isStale && (
-          <div className="aging-stale-banner" role="status">
-            {t.agingStaleData ?? 'Showing cached data'}
-          </div>
         )}
 
-        {/* Total receivable strip */}
-        <div className="aging-strip">
-          <p className="aging-strip__label">{t.totalReceivable ?? 'Total Receivable'}</p>
-          <p className="aging-strip__amount">{formatPaise(summary.totalReceivable)}</p>
-        </div>
-
-        {/* 2×2 bucket grid */}
-        <div className="aging-grid" role="list" aria-label="Aging buckets">
-          {BUCKET_ORDER.map((bucket) => {
-            const bucketSummary = summary.buckets[bucket]
-            if (!bucketSummary) return null
-            return (
-              <div key={bucket} role="listitem">
-                <AgingBucketTile
-                  bucket={bucket}
-                  summary={bucketSummary}
-                  drillDownPath={ROUTES.COLLECTIONS_BUCKET}
-                  partyLabel={t.agingParty ?? 'party'}
-                  partiesLabel={t.agingParties ?? 'parties'}
-                />
+        {status === 'success' && hasReceivables && summary && (
+          <>
+            {isStale && (
+              <div className="aging-stale-banner" role="status">
+                {t.agingStaleData ?? 'Showing cached data'}
               </div>
-            )
-          })}
-        </div>
+            )}
 
-        {/* Broken PTP alert */}
-        <BrokenPtpAlert
-          count={brokenPtps}
-          label={t.brokenPtps ?? 'Broken Promises'}
-          singleLabel={t.brokenPtp ?? 'Broken Promise'}
-        />
+            <div className="aging-strip">
+              <p className="aging-strip__label">{t.totalReceivable ?? 'Total Receivable'}</p>
+              <p className="aging-strip__amount">{formatPaise(summary.totalReceivable)}</p>
+            </div>
 
-        {/* Top 5 outstanding parties */}
-        <TopPartiesList
-          parties={topOutstanding}
-          sectionTitle={t.topOutstanding ?? 'Top Outstanding'}
-        />
-      </PageContainer>
+            <div className="aging-grid" role="list" aria-label={t.agingBucketsLabel ?? 'Aging buckets'}>
+              {BUCKET_ORDER.map((bucket) => {
+                const bucketSummary = summary.buckets[bucket]
+                if (!bucketSummary) return null
+                return (
+                  <div key={bucket} role="listitem">
+                    <AgingBucketTile
+                      bucket={bucket}
+                      summary={bucketSummary}
+                      drillDownPath={ROUTES.COLLECTIONS_BUCKET}
+                      partyLabel={t.agingParty ?? 'party'}
+                      partiesLabel={t.agingParties ?? 'parties'}
+                    />
+                  </div>
+                )
+              })}
+            </div>
+
+            <BrokenPtpAlert
+              count={data.brokenPtps}
+              label={t.brokenPtps ?? 'Broken Promises'}
+              singleLabel={t.brokenPtp ?? 'Broken Promise'}
+            />
+
+            <TopPartiesList
+              parties={data.topOutstanding}
+              sectionTitle={t.topOutstanding ?? 'Top Outstanding'}
+            />
+          </>
+        )}
+      </HeroPage>
     </AppShell>
   )
 }

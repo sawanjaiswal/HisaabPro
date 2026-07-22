@@ -252,4 +252,5 @@ export const hiExt9 = {
   noActiveSessions:        'कोई सक्रिय सत्र नहीं मिला',
   sessionJustNow:          'अभी',
   employeeDetailsSectionTitle: 'विवरण',
+  agingBucketsLabel:           'एजिंग बकेट',
 } as const

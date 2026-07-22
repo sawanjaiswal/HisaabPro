@@ -262,4 +262,5 @@ export const enExt9 = {
   noActiveSessions:            'No active sessions found',
   sessionJustNow:              'Just now',
   employeeDetailsSectionTitle: 'Details',
+  agingBucketsLabel:           'Aging buckets',
 } as const
