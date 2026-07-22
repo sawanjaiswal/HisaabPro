@@ -11,7 +11,9 @@ import { useEffect, useReducer } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { CreditCard } from 'lucide-react'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { AppShell } from '@/components/layout/AppShell'
+import { Header } from '@/components/layout/Header'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { Card } from '@/components/ui/Card'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { ErrorState } from '@/components/feedback/ErrorState'
@@ -109,13 +111,11 @@ export default function SubscriptionCheckoutPage() {
   }
 
   return (
-    <PageContainer variant="form">
-      <div className="checkout-page pb-[calc(var(--bottom-nav-height)+2rem)] pt-4">
-        <h1 className="checkout-page__heading text-[var(--fs-xl)] font-semibold mb-4">
-          {t.checkoutHeading}
-        </h1>
+    <AppShell>
+      <Header title={t.checkoutHeading} backTo />
+      <HeroPage>
         <Card className="checkout-card">{body}</Card>
-      </div>
-    </PageContainer>
+      </HeroPage>
+    </AppShell>
   )
 }
