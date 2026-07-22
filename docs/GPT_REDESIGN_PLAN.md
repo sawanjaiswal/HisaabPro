@@ -221,7 +221,7 @@ Legend: **DONE** = shipped in `891528a` · **EXISTS** = current page to restyle 
   - [x] #46 Estimate details — `6b4af64`
   - [x] #43 Draft invoices — `1fea3d5`
   - [x] #47 Customer statement — `fe048f4`
-- [ ] Wave 5 — reports (6) — **5/6 done**
+- [x] Wave 5 — reports (6) — **6/6 done**
   - [x] #14 Reports home — `e6a9f42` (+ favourites, `src/lib/prefs-store.ts`)
   - [x] #15/#68 Sales + Purchase report — `91257b0` (+ real trend aggregate, `DonutChart`)
   - [x] #16 Profit & Loss — `81e0c1a` (+ real trend aggregate, fixed a load crash
@@ -230,7 +230,9 @@ Legend: **DONE** = shipped in `891528a` · **EXISTS** = current page to restyle 
         fixed the same fictional-client-type crash as #16)
   - [x] #31 GST report — `src/features/reports/TaxSummaryPage.tsx` (route corrected:
         the mockup is the tax-summary screen, not the GSTR viewer)
-  - [ ] #66 Customer balance summary — `src/features/reports/AgingReportPage.tsx`
+  - [x] #66 Customer balance summary — `80237ab` (`src/features/reports/AgingReportPage.tsx`
+        — HeroPage + FilterChips + OutstandingTotalCard, RECEIVABLE/PAYABLE toggle,
+        aging buckets, 6-layer split under `reports/aging/`)
 - [ ] Wave 6 — people/HR (6) — **0/6**
   - [ ] #21/71 Employee list — `src/features/hr/EmployeeListPage.tsx`
   - [ ] #27 Employee details — `src/features/hr/EmployeeDetailPage.tsx`
