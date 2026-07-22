@@ -29,7 +29,7 @@
 | 6 | #21/71, #27, #28, #22/29, #72 | 0 of 5 restyles (+#26 NEW) |
 | 7 | #18/62, #23, #30/63, #65 | 0 of 4 restyles (+#64, #24/61 NEW) |
 | 8a/8b/8c | 18 settings/business/account screens | 0 of 18 |
-| 9 | #56, #57, #58, #38/78, #59/79 | 0 of 5 |
+| 9 | #56, #57, #58, #38/78, #59/79 | **DONE** — 6 existing pages restyled (#58 opening-balance is a NEW screen, deferred per D2; its BottomActionBar pattern applied to CreateBusiness/BulkImport) |
 | NEW builds | #26 Delivery, #64 Today's Tasks, #24/61 Universal Search, #36 Help, #37 About | deferred per D2 |
 
 ### Correction to a claim made in another session
@@ -102,13 +102,13 @@ are today's — any page projected past 250L gets a 6-layer split in its own pla
 | ~~`backup/BackupPage`~~ | 21 | Y | – | Y | Y | Y | Y | Y | #32/81 ✅ |
 | ~~`subscription-checkout/SubscriptionCheckoutPage`~~ | 121 | Y | – | Y | Y | Y | Y | Y | #84 ✅ |
 | ~~`pages/SubscriptionManagePage`~~ | 135 | Y | – | Y | Y | Y | Y | Y | #33/73 ✅ |
-| `business/CreateBusinessPage` | 124 | – | – | **–** | **–** | **–** | **–** | **–** | #38/78 |
+| ~~`business/CreateBusinessPage`~~ | 124 | Y | – | Y | n/a | Y | n/a | Y | #38/78 ✅ |
 | ~~`godowns/GodownsPage`~~ | 117 | Y | – | Y | Y | Y | Y | Y | #100 ✅ |
-| `bank-accounts/BankAccountsPage` | 208 | – | – | Y | **–** | Y | Y | Y | #57 |
-| `accounting/ChartOfAccountsPage` | 109 | – | – | Y | Y | Y | Y | Y | #56 |
-| `onboarding/OnboardingPage` | 215 | – | – | **–** | **–** | **–** | **–** | Y | #38/78 |
-| `import/pages/ImportJobPage` | 212 | – | – | Y | **–** | Y | **–** | Y | #59/79 |
-| `bulk-import/BulkImportPage` | 81 | – | – | Y | **–** | **–** | **–** | Y | #79 |
+| ~~`bank-accounts/BankAccountsPage`~~ | 208 | Y | – | Y | Y | Y | Y | Y | #57 ✅ |
+| ~~`accounting/ChartOfAccountsPage`~~ | 109 | Y | – | Y | Y | Y | Y | Y | #56 ✅ |
+| ~~`onboarding/OnboardingPage`~~ | 215 | n/a | n/a | n/a | n/a | n/a | Y | #38/78 ✅ |
+| ~~`import/pages/ImportJobPage`~~ | 212 | Y | – | Y | Y | Y | n/a | Y | #59/79 ✅ |
+| ~~`bulk-import/BulkImportPage`~~ | 81 | Y | – | Y | Y | Y | Y | Y | #79 ✅ |
 
 **Read of the table:**
 
