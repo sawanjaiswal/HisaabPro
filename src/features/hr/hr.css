@@ -70,3 +70,104 @@
   background: var(--color-gray-50);
   border-color: var(--color-gray-200);
 }
+
+/* ─── HR — employee detail (mockup #27, archetype B) ──────────────────────── */
+
+.employee-detail-identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-xl);
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-200);
+}
+
+.employee-detail-identity-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+  flex: 1;
+  min-width: 0;
+}
+
+.employee-detail-name {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  color: var(--color-gray-900);
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.employee-detail-sub {
+  font-size: var(--fs-xs);
+  color: var(--color-gray-500);
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.employee-detail-group {
+  border-radius: var(--radius-xl);
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-200);
+  padding: var(--space-1) var(--space-4);
+}
+
+.employee-detail-group-title {
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-gray-500);
+  padding: 0 var(--space-1);
+  margin-bottom: var(--space-1);
+}
+
+.employee-detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 44px;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.employee-detail-row:last-child {
+  border-bottom: none;
+}
+
+.employee-detail-row-label {
+  font-size: var(--fs-df);
+  color: var(--color-gray-500);
+  flex-shrink: 0;
+}
+
+.employee-detail-row-value {
+  font-size: var(--fs-df);
+  font-weight: 500;
+  color: var(--color-gray-900);
+  text-align: right;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.employee-detail-row-value--num {
+  font-variant-numeric: tabular-nums;
+}
+
+[data-theme="dark"] .employee-detail-identity,
+[data-theme="dark"] .employee-detail-group {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .employee-detail-row {
+  border-bottom-color: var(--color-gray-200);
+}

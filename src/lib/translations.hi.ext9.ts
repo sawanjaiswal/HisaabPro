@@ -251,4 +251,5 @@ export const hiExt9 = {
   logOutAllOtherDevices:   'अन्य सभी डिवाइस लॉग आउट करें',
   noActiveSessions:        'कोई सक्रिय सत्र नहीं मिला',
   sessionJustNow:          'अभी',
+  employeeDetailsSectionTitle: 'विवरण',
 } as const

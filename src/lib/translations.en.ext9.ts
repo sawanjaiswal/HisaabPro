@@ -261,4 +261,5 @@ export const enExt9 = {
   logOutAllOtherDevices:       'Log Out All Other Devices',
   noActiveSessions:            'No active sessions found',
   sessionJustNow:              'Just now',
+  employeeDetailsSectionTitle: 'Details',
 } as const
