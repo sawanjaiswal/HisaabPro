@@ -12,7 +12,7 @@
 import { useParams } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -124,7 +124,7 @@ export default function RoleBuilderPage() {
     <AppShell>
       <Header title={pageTitle} backTo={ROUTES.SETTINGS_ROLES} />
 
-      <PageContainer variant="form" className="space-y-6">
+      <HeroPage>
         {fetchStatus === 'loading' && <BuilderSkeleton />}
 
         {fetchStatus === 'error' && (
@@ -150,7 +150,7 @@ export default function RoleBuilderPage() {
             businessId={businessId}
           />
         )}
-      </PageContainer>
+      </HeroPage>
     </AppShell>
   )
 }
