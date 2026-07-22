@@ -26,9 +26,9 @@
 | Wave | Screens | Status |
 |---|---|---|
 | 5 (tail) | #66 Customer balance summary | **DONE** `80237ab` |
-| 6 | #21/71, #27, #28, #22/29, #72 | 0 of 5 restyles (+#26 NEW) |
-| 7 | #18/62, #23, #30/63, #65 | 0 of 4 restyles (+#64, #24/61 NEW) |
-| 8a/8b/8c | 18 settings/business/account screens | 0 of 18 |
+| 6 | #21/71, #27, #28, #22/29, #72 | **DONE** — all restyles (+#26 NEW deferred per D2) |
+| 7 | #18/62, #23, #30/63, #65 | **DONE** — all restyles (+#64, #24/61 NEW deferred per D2) |
+| 8a/8b/8c | 18 settings/business/account screens | **DONE** — all restyled |
 | 9 | #56, #57, #58, #38/78, #59/79 | **DONE** — 6 existing pages restyled (#58 opening-balance is a NEW screen, deferred per D2; its BottomActionBar pattern applied to CreateBusiness/BulkImport) |
 | NEW builds | #26 Delivery, #64 Today's Tasks, #24/61 Universal Search, #36 Help, #37 About | deferred per D2 |
 
