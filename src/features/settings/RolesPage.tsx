@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/Button'
 import { Plus, Shield } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
@@ -63,7 +63,7 @@ export default function RolesPage() {
     <AppShell>
       <Header title={t.roles} backTo={ROUTES.SETTINGS} />
 
-      <PageContainer>
+      <HeroPage>
         <div className="roles-page space-y-6">
           {status === 'loading' && <RolesListSkeleton />}
 
@@ -102,7 +102,7 @@ export default function RolesPage() {
             </div>
           )}
         </div>
-      </PageContainer>
+      </HeroPage>
 
       {status === 'success' && roles.length > 0 && (
         <Button variant="none"
