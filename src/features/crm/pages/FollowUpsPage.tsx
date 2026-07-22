@@ -21,7 +21,7 @@ import { useNavigate } from 'react-router-dom'
 import { ClipboardCheck, ListChecks } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
@@ -48,7 +48,7 @@ export default function FollowUpsPage() {
     <AppShell>
       <Header title={t.crmFollowUpsTitle} backTo={ROUTES.PARTIES} />
 
-      <PageContainer variant="list" className="space-y-6">
+      <HeroPage className="space-y-6">
         <div className="follow-ups-page__intro">
           <ClipboardCheck size={20} aria-hidden="true" className="follow-ups-page__intro-icon" />
           <p className="follow-ups-page__subtitle">{t.crmFollowUpsSubtitle}</p>
@@ -123,7 +123,7 @@ export default function FollowUpsPage() {
             </ol>
           </>
         )}
-      </PageContainer>
+      </HeroPage>
     </AppShell>
   )
 }
