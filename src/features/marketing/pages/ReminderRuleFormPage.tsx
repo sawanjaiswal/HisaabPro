@@ -2,18 +2,39 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { AppShell } from '@/components/layout/AppShell'
+import { Header } from '@/components/layout/Header'
+import { HeroPage } from '@/components/layout/HeroPage'
+import { ErrorState } from '@/components/feedback/ErrorState'
+import { Skeleton } from '@/components/feedback/Skeleton'
+import { BottomActionBar } from '@/components/ui/BottomActionBar'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useReminderRuleDetail, useCreateReminderRule, useUpdateReminderRule } from '../hooks/useReminderRules'
 import { useMarketingTemplateList } from '../hooks/useMarketingTemplates'
 import { ReminderTriggerPicker } from '../components/ReminderTriggerPicker'
 import { ChannelToggle } from '../components/ChannelToggle'
 import { Select, SelectItem } from '@/components/ui/Select'
-import { CHANNEL_LABEL } from '../marketing.constants'
-import { MARKETING_ROUTES } from '../marketing.constants'
+import { CHANNEL_LABEL, MARKETING_ROUTES } from '../marketing.constants'
 import type { MarketingChannel, ReminderRuleTrigger } from '../marketing.types'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import '../marketing.css'
+
+const FORM_ID = 'reminder-rule-form'
+
+function blockNumberKeys(e: React.KeyboardEvent<HTMLInputElement>) {
+  if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault()
+}
+
+function FormSkeleton({ label }: { label: string }) {
+  return (
+    <div className="reminder-form" aria-busy="true" aria-label={label}>
+      {[0, 1, 2, 3].map((i) => (
+        <Skeleton key={i} height="48px" borderRadius="var(--radius-md)" />
+      ))}
+    </div>
+  )
+}
 
 export default function ReminderRuleFormPage() {
   const { id } = useParams<{ id: string }>()
@@ -21,7 +42,7 @@ export default function ReminderRuleFormPage() {
   const { t } = useLanguage()
   const isEdit = !!id
 
-  const { rule, status: detailStatus } = useReminderRuleDetail(id ?? '')
+  const { rule, status: detailStatus, refetch } = useReminderRuleDetail(id ?? '')
   const createMutation = useCreateReminderRule()
   const updateMutation = useUpdateReminderRule(id ?? '', rule?.name ?? '')
 
@@ -59,14 +80,6 @@ export default function ReminderRuleFormPage() {
     }
   }
 
-  if (isEdit && detailStatus === 'loading') {
-    return (
-      <div className="page-container" style={{ padding: '16px' }} aria-busy="true" aria-label={t.marketingLoadingRuleAria}>
-        {[0, 1, 2, 3].map((i) => <div key={i} style={{ height: 48, borderRadius: 8, background: 'var(--color-gray-100)', marginBottom: 12, animation: 'pulse 1.5s infinite' }} />)}
-      </div>
-    )
-  }
-
   const activeTemplates = templates.filter((tpl) => tpl.isActive)
   const offsetLabel = trigger === 'BIRTHDAY' ? t.marketingDaysBeforeBirthday :
     trigger === 'PAYMENT_DUE' ? t.marketingDaysBeforeDue :
@@ -74,123 +87,102 @@ export default function ReminderRuleFormPage() {
     trigger === 'FOLLOWUP' ? t.marketingDaysAfterLastTxn :
     t.marketingDaysOfInactivity
 
+  const showForm = !isEdit || (detailStatus === 'success' && !!rule)
+
   return (
-    <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate(MARKETING_ROUTES.REMINDERS)} aria-label={t.marketingBackToRemindersAria}>
-          <ArrowLeft size={20} aria-hidden="true" />
-        </Button>
-        <h1 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>
-          {isEdit ? t.marketingEditReminderRule : t.marketingNewReminderRule}
-        </h1>
-      </div>
+    <AppShell>
+      <Header
+        title={isEdit ? t.marketingEditReminderRule : t.marketingNewReminderRule}
+        backTo={MARKETING_ROUTES.REMINDERS}
+      />
+      <HeroPage>
+        {isEdit && detailStatus === 'loading' && (
+          <FormSkeleton label={t.marketingLoadingRuleAria as string} />
+        )}
 
-      <form onSubmit={(e) => { void handleSubmit(e) }} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {/* Name */}
-        <div>
-          <label htmlFor="rule-name" style={labelStyle}>{t.marketingRuleNameLabel}</label>
-          <Input
-            id="rule-name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            maxLength={100}
-            placeholder={t.marketingRuleNamePh}
-            style={inputStyle}
-            aria-required="true"
+        {isEdit && detailStatus === 'error' && (
+          <ErrorState message={t.marketingLoadRuleError} onRetry={() => void refetch()} />
+        )}
+
+        {isEdit && detailStatus === 'success' && !rule && (
+          <ErrorState
+            title={t.marketingRuleNotFound}
+            message={t.marketingRuleNotFoundDesc}
           />
-        </div>
+        )}
 
-        {/* Trigger */}
-        <div>
-          <p style={labelStyle}>{t.marketingTriggerLabel}</p>
-          <ReminderTriggerPicker value={trigger} onChange={setTrigger} />
-        </div>
+        {showForm && (
+          <form id={FORM_ID} onSubmit={(e) => { void handleSubmit(e) }} className="reminder-form">
+            <Input
+              id="rule-name"
+              label={t.marketingRuleNameLabel}
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              maxLength={100}
+              placeholder={t.marketingRuleNamePh}
+              aria-required="true"
+            />
 
-        {/* Offset days */}
-        <div>
-          <label htmlFor="rule-offset" style={labelStyle}>
-            {offsetLabel}
-          </label>
-          <Input
-            id="rule-offset"
-            type="number"
-            min={0}
-            max={90}
-            value={offsetDays}
-            onChange={(e) => setOffsetDays(Math.max(0, Math.min(90, parseInt(e.target.value, 10) || 0)))}
-            style={{ ...inputStyle, maxWidth: '120px' }}
-          />
-        </div>
-
-        {/* Channel */}
-        <div>
-          <p style={labelStyle}>{t.marketingSendViaLabel}</p>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <ChannelToggle value={channel} onChange={(ch) => { setChannel(ch); setTemplateId('') }} disabled={isEdit} />
-          </div>
-        </div>
-
-        {/* Template */}
-        <div>
-          <label htmlFor="rule-template" style={labelStyle}>{t.marketingTemplateLabel}</label>
-          {activeTemplates.length === 0 ? (
-            <div style={{ padding: '12px', borderRadius: '8px', background: 'var(--color-warning-50)', border: '1px solid var(--color-warning-200)', fontSize: '13px', color: 'var(--color-warning-700)' }}>
-              {t.marketingNoActiveChannelTpl.replace('{{channel}}', CHANNEL_LABEL[channel])}
+            <div className="input-group">
+              <label className="input-label">{t.marketingTriggerLabel}</label>
+              <ReminderTriggerPicker value={trigger} onChange={setTrigger} />
             </div>
-          ) : (
-            <Select
-              value={templateId || undefined}
-              onValueChange={setTemplateId}
-              ariaLabel={t.marketingTemplateLabel}
-              placeholder={t.marketingSelectTemplatePh}
-            >
-              {activeTemplates.map((tpl) => (
-                <SelectItem key={tpl.id} value={tpl.id}>{tpl.name}</SelectItem>
-              ))}
-            </Select>
-          )}
-        </div>
 
-        <Button variant="none"
-          type="submit"
-          disabled={isPending || !canSubmit}
-          style={{
-            padding: '14px',
-            borderRadius: '12px',
-            border: 'none',
-            background: (isPending || !canSubmit) ? 'var(--color-gray-300)' : 'var(--color-primary-600)',
-            color: 'white',
-            fontWeight: 700,
-            fontSize: '15px',
-            cursor: (isPending || !canSubmit) ? 'not-allowed' : 'pointer',
-            marginTop: '8px',
-          }}
-        >
-          {isPending ? t.marketingSavingRule : t.marketingSaveRule}
-        </Button>
-      </form>
-    </div>
+            <Input
+              id="rule-offset"
+              label={offsetLabel}
+              type="number"
+              min={0}
+              max={90}
+              inputMode="numeric"
+              value={offsetDays}
+              onKeyDown={blockNumberKeys}
+              onChange={(e) => setOffsetDays(Math.max(0, Math.min(90, parseInt(e.target.value, 10) || 0)))}
+            />
+
+            <div className="input-group">
+              <label className="input-label">{t.marketingSendViaLabel}</label>
+              <ChannelToggle value={channel} onChange={(ch) => { setChannel(ch); setTemplateId('') }} disabled={isEdit} />
+            </div>
+
+            <div className="input-group">
+              <label className="input-label" htmlFor="rule-template">{t.marketingTemplateLabel}</label>
+              {activeTemplates.length === 0 ? (
+                <div className="reminder-form__warning">
+                  {t.marketingNoActiveChannelTpl.replace('{{channel}}', CHANNEL_LABEL[channel])}
+                </div>
+              ) : (
+                <Select
+                  value={templateId || undefined}
+                  onValueChange={setTemplateId}
+                  ariaLabel={t.marketingTemplateLabel}
+                  placeholder={t.marketingSelectTemplatePh}
+                >
+                  {activeTemplates.map((tpl) => (
+                    <SelectItem key={tpl.id} value={tpl.id}>{tpl.name}</SelectItem>
+                  ))}
+                </Select>
+              )}
+            </div>
+          </form>
+        )}
+      </HeroPage>
+
+      {showForm && (
+        <BottomActionBar>
+          <Button
+            variant="primary"
+            type="submit"
+            form={FORM_ID}
+            loading={isPending}
+            disabled={!canSubmit}
+          >
+            {isPending ? t.marketingSavingRule : t.marketingSaveRule}
+          </Button>
+        </BottomActionBar>
+      )}
+    </AppShell>
   )
-}
-
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  fontSize: '13px',
-  fontWeight: 600,
-  color: 'var(--color-gray-700)',
-  marginBottom: '8px',
-}
-
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '11px 12px',
-  borderRadius: '10px',
-  border: '1px solid var(--color-gray-300)',
-  fontSize: '14px',
-  color: 'var(--color-gray-800)',
-  background: 'white',
-  boxSizing: 'border-box',
 }

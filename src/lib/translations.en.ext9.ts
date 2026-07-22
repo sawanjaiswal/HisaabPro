@@ -272,4 +272,7 @@ export const enExt9 = {
   inviteTeamMemberDesc:        'Invite a team member to see their permissions here.',
   staffMembersLabel:           'Staff members',
   failedLoadPermissions:       'Failed to load permissions',
+  marketingLoadRuleError:      'Could not load this reminder rule. Tap to retry.',
+  marketingRuleNotFound:       'Reminder rule not found',
+  marketingRuleNotFoundDesc:   'This rule may have been deleted. Go back to the reminders list.',
 } as const

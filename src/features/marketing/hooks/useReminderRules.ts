@@ -50,7 +50,7 @@ export function useReminderRuleDetail(id: string) {
   const status: 'loading' | 'error' | 'success' =
     query.isPending ? 'loading' : query.isError ? 'error' : 'success'
 
-  return { rule: query.data ?? null, status, error: query.error }
+  return { rule: query.data ?? null, status, error: query.error, refetch: query.refetch }
 }
 
 // ─── useCreateReminderRule ────────────────────────────────────────────────────

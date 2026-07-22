@@ -262,4 +262,7 @@ export const hiExt9 = {
   inviteTeamMemberDesc:        'उनकी अनुमतियाँ यहाँ देखने के लिए किसी टीम सदस्य को आमंत्रित करें।',
   staffMembersLabel:           'स्टाफ सदस्य',
   failedLoadPermissions:       'अनुमतियाँ लोड करने में विफल',
+  marketingLoadRuleError:      'यह रिमाइंडर नियम लोड नहीं हो सका। पुनः प्रयास करने के लिए टैप करें।',
+  marketingRuleNotFound:       'रिमाइंडर नियम नहीं मिला',
+  marketingRuleNotFoundDesc:   'यह नियम हटा दिया गया हो सकता है। रिमाइंडर सूची पर वापस जाएं।',
 } as const
