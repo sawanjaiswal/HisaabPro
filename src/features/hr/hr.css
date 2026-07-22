@@ -1,0 +1,72 @@
+/* ─── HR — employee list row (mockup #21) ─────────────────────────────────── */
+
+.employee-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  min-height: 64px;
+  border-radius: var(--radius-lg);
+  background: var(--color-gray-0);
+  border: 1px solid var(--color-gray-200);
+  transition: background-color var(--duration-snappy) var(--ease-default);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.employee-row:active {
+  background: var(--color-gray-50);
+}
+
+.employee-row:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: -2px;
+}
+
+.employee-row-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+  flex: 1;
+  min-width: 0;
+}
+
+.employee-row-name {
+  font-size: var(--fs-df);
+  font-weight: 500;
+  color: var(--color-gray-900);
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.employee-row-sub {
+  font-size: var(--fs-xs);
+  color: var(--color-gray-500);
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Desktop: rows read better as a grid of cards. */
+@media (min-width: 768px) {
+  .employee-list-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+}
+
+@media (min-width: 1280px) {
+  .employee-list-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+[data-theme="dark"] .employee-row {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}

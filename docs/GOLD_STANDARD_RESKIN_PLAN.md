@@ -81,7 +81,7 @@ are today's — any page projected past 250L gets a 6-layer split in its own pla
 | Page | L | Hero | Tiles | PgCtn | Skel | Err | Empty | i18n | Mockup |
 |---|--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|---|
 | ~~`reports/AgingReportPage`~~ | 182 | Y | – | Y | Y | Y | Y | Y | #66 ✅ |
-| `hr/EmployeeListPage` | 206 | – | – | Y | Y | Y | Y | Y | #21/71 |
+| ~~`hr/EmployeeListPage`~~ | 190 | Y | – | Y | Y | Y | Y | Y | #21/71 ✅ |
 | `hr/EmployeeDetailPage` | 229 | – | – | Y | Y | Y | **–** | Y | #27 |
 | `hr/AttendancePage` | 225 | – | – | Y | Y | Y | Y | Y | #28 |
 | `collections/pages/AgingDashboard` | 159 | – | – | Y | Y | Y | Y | Y | #22/29 |
