@@ -12,9 +12,12 @@ services:
     rootDir: server
 
     # Build: install deps, generate Prisma client, run migrations.
-    # We intentionally skip `tsc` here — the server has accumulated type
-    # errors that are non-blocking at runtime but would fail a strict compile.
-    # Running via tsx (same tool used in dev) avoids the compile step entirely.
+    # We run via tsx (same tool used in dev) rather than compiling, so there is
+    # no `tsc` step here. The comment this replaces claimed the server "has
+    # accumulated type errors that would fail a strict compile" — that has not
+    # been true for some time (`npx tsc -p tsconfig.json --noEmit` is clean, and
+    # CI enforces it), and leaving it in place made a passing gate read as a
+    # known-broken one.
     buildCommand: npm install && npx prisma generate && npx prisma migrate deploy
 
     # Start directly with tsx (runtime TypeScript execution)
@@ -60,6 +63,45 @@ services:
       # Logging
       - key: LOG_LEVEL
         value: info
+
+      # Scoped-Prisma shadow harness — docs/RUNBOOK_scoped-shadow.md
+      #
+      # Every one of these is read ONCE at boot; changing any of them needs a
+      # restart. They are pinned here with explicit values rather than left to
+      # `sync: false` on purpose: the security audit's named scenario is the
+      # sample rate going missing on a redeploy while the mode flag survives,
+      # which would run every scoped read twice at 100%. A value in the
+      # blueprint cannot go missing.
+      #
+      # Rollout stages and the kill switch live in the runbook. Do not advance
+      # the mode from here without reading §3 of it.
+      - key: SCOPED_PRISMA_ENFORCE
+        value: "off"          # off | shadow | enforce — land dark; `enforce` is NOT authorised by the shadow epic
+      - key: SCOPED_PRISMA_SHADOW_SAMPLE
+        value: "0.01"         # fraction of eligible reads observed; ramp per runbook §3
+      - key: SCOPED_PRISMA_SHADOW_TIMEOUT_MS
+        value: "250"          # probe loses the race rather than holding a pool slot
+      - key: SCOPED_PRISMA_SHADOW_MAX_INFLIGHT
+        value: "2"            # concurrent probes, of a 10-connection pool
+      - key: SCOPED_PRISMA_SHADOW_SINK_MAX_INFLIGHT
+        value: "2"            # concurrent sink writes — gauged separately from the probe (B-2):
+                              # a no-context read skips the probe and still writes a row, so the
+                              # sink's share of the pool is budgeted, not assumed free.
+                              # Worst case with the line above: 4 of 10. Both gauges shed, never queue.
+
+      # Canary tenant. Unset = canary disabled, which is the correct default:
+      # a canary pointed at a real business would persist that tenant's row ids
+      # into the divergence table every 15 minutes, forever. Set it in the
+      # dashboard only after seeding the two fixture rows (runbook §7).
+      - key: SCOPED_PRISMA_SHADOW_CANARY_BUSINESS_ID
+        sync: false
+
+      # Post-cutover latch. Leave UNSET during shadow. Once set to "true",
+      # production FAILS TO BOOT unless SCOPED_PRISMA_ENFORCE=enforce — which is
+      # the point: after cutover, a mis-set mode flag must not be able to
+      # silently drop tenant isolation. Owned by the enforce epic, not this one.
+      - key: SCOPED_PRISMA_CUTOVER_DONE
+        sync: false
 
       # NOTE: Optional integrations (Razorpay, Resend, AISensy, MSG91,
       # Turnstile, Redis, referral config) are intentionally omitted

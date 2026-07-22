@@ -76,24 +76,34 @@ went from 5 warnings to 6 hard errors.
   (`prisma-scoped.{inject,merge,rewrite}.ts`), ALS context middleware, and the M3
   boot-guard that refuses to start prod if `SCOPED_PRISMA_CUTOVER_DONE=true`
   without `enforce`.
-- **⚠️ `shadow` mode is a stub — do not plan around it.** `getScopedPrismaMode()`
-  parses `'shadow'` and `getScopedPrismaShadowSample()` exists in `env.ts:267`,
-  but **neither has a single consumer.** `prisma.ts:110` is a two-way ternary:
-  `enforce ? scoped : softDeleted`. Setting `SCOPED_PRISMA_ENFORCE=shadow` today
-  changes only a log string — it does **not** diff scoped vs unscoped queries.
-  The shadow-diff harness described in the original architecture was never built.
+- **✅ `shadow` mode is now BUILT (2026-07-22).** The line above previously read
+  "shadow mode is a stub — do not plan around it"; that is no longer true and the
+  correction is load-bearing, so it is kept rather than deleted. `prisma.ts` is a
+  three-way resolution — `off → softDeleted`, `shadow → scoped + port`,
+  `enforce → scoped` — and setting `SCOPED_PRISMA_ENFORCE=shadow` now runs every
+  sampled read twice, compares the id sets, and writes divergences to
+  `scoped_shadow_divergence` / `scoped_shadow_stat`, **returning the unscoped
+  result unchanged.** Design: `docs/ARCHITECTURE_scoped-prisma-shadow.md`.
+  Operations: `docs/RUNBOOK_scoped-shadow.md`. Adoption is proven by A1–A12 (every
+  component carries a test that reddens when its call site is deleted). What
+  remains for this gap is the **rollout** (runbook §3) and the separate `enforce`
+  epic — not construction.
 - **Why it's still P0:** built-but-off provides zero runtime protection. Every
   one of the 186 service files still relies on hand-written `where: { businessId }`.
 - **Fix shape — two options, pick one:**
 
-  **Option A (recommended) — build the shadow harness first (~2-3 days), then roll out.**
-  1. Wire `shadow` mode in `prisma-scoped.ts`: run the query on both clients,
-     compare result-id sets, log divergence, **return the unscoped result** so
-     behaviour is unchanged. Sample via `getScopedPrismaShadowSample()`.
-  2. Deploy with `SCOPED_PRISMA_ENFORCE=shadow`. Watch 7 days.
-  3. Triage every divergence — each is either a genuine missing filter (fix the
-     service) or a legitimately-global query (add to the passthrough list).
-  4. Flip to `enforce`. Watch error rates 48h.
+  **Option A (recommended) — shadow harness (BUILT 2026-07-22), then roll out.**
+  Step 1 (build the harness) is **done** — see the ✅ note above. What remains:
+  1. ~~Wire `shadow` mode~~ — done. Runs both clients, compares id sets, writes
+     divergences, returns the unscoped result. Sampled via the env knobs now
+     pinned in `render.yaml`.
+  2. Deploy with `SCOPED_PRISMA_ENFORCE=shadow`, ramping the sample per runbook
+     §3 (0.01 → 1.0). Watch 7 days.
+  3. Triage every divergence using the runbook §9 signature — each is either a
+     genuine missing filter (fix the service) or legitimately global (passthrough
+     list). The `no-context` backlog is `docs/CONTINUATION_SITES_scoped-prisma.md`.
+  4. Flip to `enforce` — **a separate epic, not authorised by the shadow design.**
+     Watch error rates 48h.
   5. Set `SCOPED_PRISMA_CUTOVER_DONE=true` — the boot-guard then makes the state
      irreversible-by-accident.
 
@@ -178,6 +188,39 @@ server/src/services/hr/employee.service.ts                 259L
 `dashboard-page.css:18-19` defines `--hp-dash-surface: #012619` and
 `--hp-dash-card: #003121` locally. Should live with the global emerald hero
 tokens so dark-mode parity is automatic. **Effort:** XS.
+
+#### P2.4 · SR-2 — the mode flag moved outside high-risk-gate coverage *(security-relevant)*
+- **Evidence:** `~/.claude/rules/HIGH_RISK_PATHS.md` matches `**/lib/env.ts` and
+  requires an `architect` plan to edit it. During the shadow epic the scoped-Prisma
+  flag accessors were split into `server/src/lib/env.scoped-prisma.ts` — which the
+  glob does **not** match. `getScopedPrismaMode()`, `validateScopedPrismaBoot()`,
+  and the sample-rate/timeout/inflight knobs (the entire runtime tenant-isolation
+  switch) can now be edited with **no** approved design plan. The split was correct
+  for file-length; the gate coverage silently shrank with it.
+- **Durable owner of this row:** the fix is a **one-line pattern addition** to
+  `HIGH_RISK_PATHS.md` (`**/lib/env.scoped-prisma.ts` → `architect`, mirroring the
+  `env.ts` row). That file lives under `~/.claude/rules/` and is **not this repo's
+  to edit** — the shadow epic's plan (#53) records it as a blocked hand-off, and
+  this row is where it lives until an operator makes the change. Recorded here so
+  the gap is tracked in the repo that created it, per ARCHITECTURE §15.2 / SS-6.
+- **Until then:** treat `env.scoped-prisma.ts` as high-risk by convention — no
+  edit without `architect` review, gate or no gate.
+- **Effort:** XS (one line), blocked on the rules file being editable.
+
+#### P2.5 · C4 — retention/watch-window disjointness is a boot precondition, recorded
+- **Precondition (durable record, C4):** the shadow retention cron deletes rows on
+  `lastSeenAt < 30d`; the enforce-exit queries read a **7-day** `lastSeenAt` window.
+  The two sets cannot intersect *by construction*, which is what makes "exit
+  criteria computed over live rows" safe from "retention ate the evidence". This is
+  a **precondition of trusting the exit numbers**, not a nice-to-have.
+- **The real exposure is constant drift**, not the current values: once `render.yaml`
+  makes the 30-day and 180-day ceilings env knobs, someone can set retention below
+  the watch window and re-open the race. It is therefore closed by a **boot
+  assertion** (`retentionDays ≥ 4 × watchWindowDays` under mode `shadow`, in the
+  boot-guards) **and** by this durable record — meeting the same bar §19 already
+  sets for the sample-rate footgun. If the boot assertion is ever relaxed, this row
+  is the reason it must not be.
+- **Effort:** none (shipped) — this is a record, not a task.
 
 ### P3 — Coverage / hygiene
 

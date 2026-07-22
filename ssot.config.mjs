@@ -129,4 +129,38 @@ export const REGISTRY = [
     forbidden: [],
     note: "Scoped-Prisma injector. Don't re-roll where-merge/rewrite; the $extends layer handles it.",
   },
+
+  // ── Shadow harness (scoped-prisma-shadow epic, File #52) ──────────────────
+  {
+    capability: "compare scoped vs unscoped query result-id sets",
+    module: "server/src/lib/prisma-shadow.diff.ts",
+    exports: ["diffIds"],
+    // The shadow harness's whole verdict rests on ONE comparison. A second
+    // hand-rolled id-set diff would let the two sides classify divergence
+    // differently — the classify/sink/canary paths would then disagree about what
+    // "clean" means. `diffIds` owns the symmetric-difference AND the 20-id cap
+    // (§9.3); re-rolling it drops the cap.
+    //
+    // Guarded on the harness's DISTINCTIVE output shape (`onlyUnscoped` /
+    // `onlyScoped`), not on the generic "Set of mapped ids" idiom — the latter is
+    // an everyday pattern (payment reconciliation, dedupe) and guarding it would
+    // fire on unrelated code. The narrow guard catches a re-rolled shadow diff
+    // without policing set arithmetic everywhere.
+    forbidden: [
+      "onlyUnscoped\\s*[:=]\\s*[^;\\n]*\\.filter\\(",
+      "onlyScoped\\s*[:=]\\s*[^;\\n]*\\.filter\\(",
+    ],
+    note: "Shadow diff SSOT. One comparison, one cap. Don't hand-roll id-set difference for the harness.",
+  },
+  {
+    capability: "carry per-request provenance + route metadata for the shadow sink",
+    module: "server/src/lib/request-meta.ts",
+    exports: ["getRequestMeta", "runWithRequestMeta"],
+    // Same rule as the tenant frame directly above: this is ONE
+    // AsyncLocalStorage carrying provenance ('http' vs 'job') and the matched
+    // routeHint. A second meta-keyed ALS = a divergent slot the sink reads as
+    // empty, which reappears as spurious `no-context`/blank-routeHint rows.
+    forbidden: ["new AsyncLocalStorage<[^>]*(?:RequestMeta|[Pp]rovenance)"],
+    note: "Request-meta frame SSOT. Opened beside the tenant frame in auth; runUnscoped/job paths omit it deliberately.",
+  },
 ];

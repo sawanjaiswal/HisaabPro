@@ -18,6 +18,11 @@ Exhaustive symbol index (auto, never stale): `.claude/ssot-index.json`
 | reconcile party react-query cache after a mutation | `src/features/parties/party-cache.ts` | `reconcilePartyCreated`, `reconcilePartyUpdated`, `optimisticRemoveParty`, `reconcilePartyDeleted`, `invalidatePartyLists` | ✅ guarded |
 | build TanStack Query cache keys | `src/lib/query-keys.ts` | `queryKeys` | discovery-only |
 | merge Tailwind class names | `src/lib/utils.ts` | `cn` | discovery-only |
+| persist a small local UI preference across app restarts | `src/lib/prefs-store.ts` | `getPref`, `setPref`, `removePref`, `clearPrefs` | discovery-only |
+| carry the active tenant (business) context | `server/src/lib/business-context.ts` | `runInBusinessContext`, `getBusinessContext`, `runUnscoped` | ✅ guarded |
+| inject tenant (businessId) scoping into Prisma queries | `server/src/lib/prisma-scoped.inject.ts` | `injectScope` | discovery-only |
+| compare scoped vs unscoped query result-id sets | `server/src/lib/prisma-shadow.diff.ts` | `diffIds` | ✅ guarded |
+| carry per-request provenance + route metadata for the shadow sink | `server/src/lib/request-meta.ts` | `getRequestMeta`, `runWithRequestMeta` | ✅ guarded |
 
 ## How it's enforced (no memory)
 
@@ -74,4 +79,29 @@ Forbidden elsewhere (commit-blocked):
 - `/setQueriesData[^\n]*queryKeys\.parties\.all/`
 
 Party list/detail cache reconciliation SSOT. Fixed the save-not-showing bug.
+
+### carry the active tenant (business) context
+Canon: `server/src/lib/business-context.ts`
+
+Forbidden elsewhere (commit-blocked):
+- `/new AsyncLocalStorage<[^>]*[Bb]usiness/`
+
+Tenant context SSOT. runUnscoped is the ONLY sanctioned cross-tenant window.
+
+### compare scoped vs unscoped query result-id sets
+Canon: `server/src/lib/prisma-shadow.diff.ts`
+
+Forbidden elsewhere (commit-blocked):
+- `/onlyUnscoped\s*[:=]\s*[^;\n]*\.filter\(/`
+- `/onlyScoped\s*[:=]\s*[^;\n]*\.filter\(/`
+
+Shadow diff SSOT. One comparison, one cap. Don't hand-roll id-set difference for the harness.
+
+### carry per-request provenance + route metadata for the shadow sink
+Canon: `server/src/lib/request-meta.ts`
+
+Forbidden elsewhere (commit-blocked):
+- `/new AsyncLocalStorage<[^>]*(?:RequestMeta|[Pp]rovenance)/`
+
+Request-meta frame SSOT. Opened beside the tenant frame in auth; runUnscoped/job paths omit it deliberately.
 
