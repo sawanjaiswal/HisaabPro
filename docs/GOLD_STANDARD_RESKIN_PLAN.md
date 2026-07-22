@@ -92,8 +92,8 @@ are today's — any page projected past 250L gets a 6-layer split in its own pla
 | ~~`notifications/…/NotificationPreferencesPage`~~ | 218 | Y | – | Y | Y | Y | Y | Y | #18 ✅ |
 | ~~`marketing/pages/ReminderRuleFormPage`~~ | 203 | Y | – | Y | Y | Y | Y | Y | #23 ✅ |
 | ~~`marketing/pages/ReminderRuleListPage`~~ | 109 | Y | – | Y | Y | Y | Y | Y | #30/63 ✅ |
-| `crm/pages/FollowUpsPage` | 129 | – | – | Y | Y | Y | Y | Y | #30/63 |
-| `appointments/pages/AppointmentsPage` | 204 | – | – | Y | Y | Y | Y | Y | #65 |
+| ~~`crm/pages/FollowUpsPage`~~ | 129 | Y | – | Y | Y | Y | Y | Y | #30/63 ✅ |
+| ~~`appointments/pages/AppointmentsPage`~~ | 172 | Y | – | Y | Y | Y | Y | Y | #65 ✅ |
 | ~~`settings/SettingsPage`~~ | 152 | Y | – | Y | Y | Y | n/a | Y | #19/74 ✅ |
 | ~~`settings/ThemeAppearancePage`~~ | 65 | Y | – | Y | n/a | n/a | n/a | Y | #96 ✅ |
 | ~~`settings/ActiveSessionsPage`~~ | 150 | Y | – | Y | Y | Y | Y | Y | #97 ✅ |

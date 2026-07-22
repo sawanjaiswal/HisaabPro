@@ -13,10 +13,11 @@ import { useNavigate } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { Button } from '@/components/ui/Button'
+import { FilterChips } from '@/components/ui/FilterChips'
 import { useLanguage } from '@/hooks/useLanguage'
 import { onReplayRejected } from '@/lib/replay-bus'
 import { useAppointments } from '../hooks/useAppointments'
@@ -92,46 +93,17 @@ export default function AppointmentsPage() {
         actions={<DayPicker dateISO={dateISO} onChange={setDateISO} step={viewMode === 'week' ? 7 : 1} />}
       />
 
-      <PageContainer
-        variant="list"
-        className="pb-[calc(var(--bottom-nav-height)+2rem)] pt-4 space-y-4"
-      >
+      <HeroPage className="space-y-4">
         {/* View-mode segmented control */}
-        <div
-          role="tablist"
-          aria-label={t.viewMode ?? 'View'}
-          className="inline-flex rounded-[var(--radius-md)]"
-          style={{ border: '1px solid var(--color-border)' }}
-        >
-          <Button
-            variant="none"
-            role="tab"
-            aria-selected={viewMode === 'day'}
-            onClick={() => setViewMode('day')}
-            className="min-h-[44px] px-4 text-[var(--fs-sm)]"
-            style={{
-              background: viewMode === 'day' ? 'var(--color-surface-muted)' : 'transparent',
-              color: viewMode === 'day' ? 'var(--color-primary)' : 'var(--color-text)',
-              borderRadius: 'var(--radius-md) 0 0 var(--radius-md)',
-            }}
-          >
-            {t.dayView ?? 'Day'}
-          </Button>
-          <Button
-            variant="none"
-            role="tab"
-            aria-selected={viewMode === 'week'}
-            onClick={() => setViewMode('week')}
-            className="min-h-[44px] px-4 text-[var(--fs-sm)]"
-            style={{
-              background: viewMode === 'week' ? 'var(--color-surface-muted)' : 'transparent',
-              color: viewMode === 'week' ? 'var(--color-primary)' : 'var(--color-text)',
-              borderRadius: '0 var(--radius-md) var(--radius-md) 0',
-            }}
-          >
-            {t.weekView ?? 'Week'}
-          </Button>
-        </div>
+        <FilterChips<ViewMode>
+          label={t.viewMode ?? 'View'}
+          value={viewMode}
+          onChange={setViewMode}
+          options={[
+            { value: 'day', label: t.dayView ?? 'Day' },
+            { value: 'week', label: t.weekView ?? 'Week' },
+          ]}
+        />
 
         <div className="text-[var(--fs-lg)] font-medium">
           {formatDayLabel(date)}{' '}
@@ -179,7 +151,7 @@ export default function AppointmentsPage() {
             />
           )
         )}
-      </PageContainer>
+      </HeroPage>
 
       <Button
         variant="none"
