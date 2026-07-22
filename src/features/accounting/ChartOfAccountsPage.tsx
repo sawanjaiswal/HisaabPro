@@ -4,7 +4,7 @@ import { BookOpen } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
@@ -34,36 +34,24 @@ export default function ChartOfAccountsPage() {
     </Button>
   )
 
-  if (status === 'loading') {
-    return (
-      <AppShell>
-        <Header title={t.chartOfAccounts ?? "Chart of Accounts"} backTo={ROUTES.REPORTS} actions={seedAction} />
-        <PageContainer>
-          <div className="mb-3"><Skeleton height="64px" /></div>
-          <div className="mb-3"><Skeleton height="64px" /></div>
-          <div className="mb-3"><Skeleton height="64px" /></div>
-          <Skeleton height="64px" />
-        </PageContainer>
-      </AppShell>
-    )
-  }
+  return (
+    <AppShell>
+      <Header title={t.chartOfAccounts ?? "Chart of Accounts"} backTo={ROUTES.REPORTS} actions={seedAction} />
+      <HeroPage>
+        {status === 'loading' && (
+          <div className="space-y-3" aria-busy="true">
+            <Skeleton height="64px" />
+            <Skeleton height="64px" />
+            <Skeleton height="64px" />
+            <Skeleton height="64px" />
+          </div>
+        )}
 
-  if (status === 'error') {
-    return (
-      <AppShell>
-        <Header title={t.chartOfAccounts ?? "Chart of Accounts"} backTo={ROUTES.REPORTS} actions={seedAction} />
-        <PageContainer>
+        {status === 'error' && (
           <ErrorState title={t.couldNotLoadAccounts} onRetry={refresh} />
-        </PageContainer>
-      </AppShell>
-    )
-  }
+        )}
 
-  if (total === 0) {
-    return (
-      <AppShell>
-        <Header title={t.chartOfAccounts ?? "Chart of Accounts"} backTo={ROUTES.REPORTS} actions={seedAction} />
-        <PageContainer>
+        {status === 'success' && total === 0 && (
           <EmptyState
             icon={<BookOpen size={28} aria-hidden="true" />}
             title={t.noAccountsYet}
@@ -80,30 +68,25 @@ export default function ChartOfAccountsPage() {
               </Button>
             }
           />
-        </PageContainer>
-      </AppShell>
-    )
-  }
+        )}
 
-  return (
-    <AppShell>
-      <Header title={t.chartOfAccounts ?? "Chart of Accounts"} backTo={ROUTES.REPORTS} actions={seedAction} />
-      <PageContainer>
-        <div className="acc-page stagger-enter space-y-6">
-          {ACCOUNT_TYPE_ORDER.map((type) => {
-            const accounts = grouped.get(type) ?? []
-            return (
-              <AccountGroupSection
-                key={type}
-                type={type}
-                label={ACCOUNT_TYPE_LABELS[type]}
-                accounts={accounts}
-                groupBalance={sumGroupBalance(accounts)}
-              />
-            )
-          })}
-        </div>
-      </PageContainer>
+        {status === 'success' && total > 0 && (
+          <div className="acc-page stagger-enter space-y-6">
+            {ACCOUNT_TYPE_ORDER.map((type) => {
+              const accounts = grouped.get(type) ?? []
+              return (
+                <AccountGroupSection
+                  key={type}
+                  type={type}
+                  label={ACCOUNT_TYPE_LABELS[type]}
+                  accounts={accounts}
+                  groupBalance={sumGroupBalance(accounts)}
+                />
+              )
+            })}
+          </div>
+        )}
+      </HeroPage>
     </AppShell>
   )
 }
