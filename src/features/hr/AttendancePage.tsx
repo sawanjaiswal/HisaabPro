@@ -22,11 +22,12 @@ import { Link } from 'react-router-dom'
 import { UserPlus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { Button } from '@/components/ui/Button'
+import { BottomActionBar } from '@/components/ui/BottomActionBar'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
 import { AttendanceDateNav, isoToday, type AttendanceView } from './components/AttendanceDateNav'
@@ -123,94 +124,68 @@ export default function AttendancePage() {
     <AppShell>
       <Header title={t.attendanceTitle as string} backTo={ROUTES.DASHBOARD} />
 
-      <AttendanceDateNav
-        view={view}
-        from={from}
-        to={to}
-        onPrev={() => setAnchor(shiftIso(anchor, view === 'week' ? -7 : -30))}
-        onNext={() => setAnchor(shiftIso(anchor, view === 'week' ? 7 : 30))}
-        onToday={() => setAnchor(isoToday())}
-        onChangeView={setView}
-      />
+      <HeroPage>
+        <AttendanceDateNav
+          view={view}
+          from={from}
+          to={to}
+          onPrev={() => setAnchor(shiftIso(anchor, view === 'week' ? -7 : -30))}
+          onNext={() => setAnchor(shiftIso(anchor, view === 'week' ? 7 : 30))}
+          onToday={() => setAnchor(isoToday())}
+          onChangeView={setView}
+        />
 
-      <PageContainer
-        variant="dashboard"
-        className="space-y-6"
-        // 8rem leaves room for the sticky save bar AND the bottom-nav.
-        // The save bar itself sits at bottom: var(--bottom-nav-height) so it
-        // floats above the BottomNav without overlapping it.
-      >
-        <div style={{ paddingBottom: 'calc(var(--bottom-nav-height) + 4rem)' }}>
-          {isLoading && (
-            <div aria-busy="true" aria-label={t.loading as string} style={{
-              display: 'flex', flexDirection: 'column', gap: 'var(--space-2)',
-              padding: 'var(--space-4) 0',
-            }}>
-              {[1, 2, 3, 4].map((n) => (
-                <Skeleton key={n} height="56px" />
-              ))}
-            </div>
-          )}
+        {isLoading && (
+          <div
+            aria-busy="true"
+            aria-label={t.loading as string}
+            className="flex flex-col gap-[var(--space-2)]"
+          >
+            {[1, 2, 3, 4].map((n) => (
+              <Skeleton key={n} height="56px" />
+            ))}
+          </div>
+        )}
 
-          {isError && (
-            <ErrorState
-              title={t.attendanceLoadError as string}
-              onRetry={() => { employeesQuery.refresh(); attendance.refresh() }}
-            />
-          )}
+        {isError && (
+          <ErrorState
+            title={t.attendanceLoadError as string}
+            onRetry={() => { employeesQuery.refresh(); attendance.refresh() }}
+          />
+        )}
 
-          {!isLoading && !isError && showEmpty && (
-            <EmptyState
-              icon={<UserPlus size={48} aria-hidden="true" />}
-              title={t.attendanceNoEmployees as string}
-              action={
-                <Link to={ROUTES.HR_EMPLOYEES} className="btn btn-primary btn-md">
-                  {t.attendanceAddFirstEmployee as string}
-                </Link>
-              }
-            />
-          )}
+        {!isLoading && !isError && showEmpty && (
+          <EmptyState
+            icon={<UserPlus size={48} aria-hidden="true" />}
+            title={t.attendanceNoEmployees as string}
+            action={
+              <Link to={ROUTES.HR_EMPLOYEES} className="btn btn-primary btn-md">
+                {t.attendanceAddFirstEmployee as string}
+              </Link>
+            }
+          />
+        )}
 
-          {!isLoading && !isError && !showEmpty && (
-            <AttendanceGrid
-              employees={employees}
-              dates={view === 'week' && mobileDay ? dates : dates}
-              persistedByCell={persistedByCell}
-              pendingByCell={pending.pending}
-              onCellChange={pending.setCell}
-              mobileSingleDay
-            />
-          )}
-        </div>
-      </PageContainer>
+        {!isLoading && !isError && !showEmpty && (
+          <AttendanceGrid
+            employees={employees}
+            dates={dates}
+            persistedByCell={persistedByCell}
+            pendingByCell={pending.pending}
+            onCellChange={pending.setCell}
+            mobileSingleDay
+          />
+        )}
+      </HeroPage>
 
-      {/* Sticky save bar — floats above the BottomNav. Bottom math uses
-          --bottom-nav-height (which already includes the safe-area inset) so
-          the bar never sits behind the OS gesture pill on edge-to-edge. */}
+      {/* Sticky save bar via the BottomActionBar primitive — it owns the
+          fixed-bottom + bottom-nav + safe-area math (PLATFORM_SHELL C6). */}
       {pending.count > 0 && (
-        <div
-          role="region"
-          aria-label={t.attendancePendingCount as string}
-          style={{
-            position: 'fixed',
-            left: 0,
-            right: 0,
-            bottom: 'var(--bottom-nav-height)',
-            zIndex: 2,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 'var(--space-3)',
-            padding: 'var(--space-3) var(--space-4)',
-            background: 'var(--color-gray-0, white)',
-            borderTop: '1px solid var(--color-gray-100)',
-            boxShadow: 'var(--shadow-md, 0 -4px 12px rgba(0,0,0,0.08))',
-          }}
-        >
-          <span style={{ fontSize: 'var(--fs-sm, 0.875rem)', color: 'var(--color-gray-700)' }}>
+        <BottomActionBar role="region" aria-label={t.attendancePendingCount as string}>
+          <span className="text-[var(--fs-sm)] text-[var(--color-gray-700)]">
             {(t.attendancePendingCount as string).replace('{count}', String(pending.count))}
           </span>
-          <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+          <div className="flex gap-[var(--space-2)] justify-end">
             <Button variant="ghost" size="sm" onClick={pending.clearAll} disabled={batch.isPending}>
               {t.attendanceDiscardPending as string}
             </Button>
@@ -218,7 +193,7 @@ export default function AttendancePage() {
               {t.attendanceSavePending as string}
             </Button>
           </div>
-        </div>
+        </BottomActionBar>
       )}
     </AppShell>
   )
