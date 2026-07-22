@@ -10,12 +10,12 @@ import { useState } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { HeroPage } from '@/components/layout/HeroPage'
+import { Skeleton } from '@/components/feedback/Skeleton'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useToast } from '@/hooks/useToast'
-import { ParseProgress } from '../components/ParseProgress'
 import { ImportJobBody, type PreviewSubView } from '../components/ImportJobBody'
 import { useImportJobPolling } from '../hooks/useImportJobPolling'
 import {
@@ -116,12 +116,12 @@ export default function ImportJobPage() {
     return (
       <AppShell>
         <Header title={headerTitle} backTo={ROUTES.IMPORTS} />
-        <PageContainer variant="form" className="space-y-4">
+        <HeroPage>
           <ErrorState
             title={tx.importJobMissingIdTitle ?? 'Import not found'}
             message={tx.importJobMissingIdBody ?? 'No job id in the URL.'}
           />
-        </PageContainer>
+        </HeroPage>
       </AppShell>
     )
   }
@@ -139,7 +139,7 @@ export default function ImportJobPage() {
   return (
     <AppShell>
       <Header title={headerTitle} backTo={ROUTES.IMPORTS} />
-      <PageContainer variant="form" className="space-y-4">
+      <HeroPage>
         {showResumeCta && resumeImportJobId && (
           <ResumeInvoiceImportBanner
             resumeImportJobId={resumeImportJobId}
@@ -171,12 +171,11 @@ export default function ImportJobPage() {
           />
         )}
         {query.isPending && (
-          <ParseProgress
-            fileName={null}
-            format="generic_csv"
-            startedAt={new Date().toISOString()}
-            t={tx}
-          />
+          <div className="space-y-3" aria-busy="true" aria-label={tx.importJobLoadingLabel ?? 'Loading import'}>
+            <Skeleton height="48px" borderRadius="var(--radius-md)" />
+            <Skeleton height="180px" borderRadius="var(--radius-xl)" />
+            <Skeleton height="48px" borderRadius="var(--radius-md)" />
+          </div>
         )}
 
         {query.isError && (
@@ -206,7 +205,7 @@ export default function ImportJobPage() {
             t={tx}
           />
         )}
-      </PageContainer>
+      </HeroPage>
     </AppShell>
   )
 }
