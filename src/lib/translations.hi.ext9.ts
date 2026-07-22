@@ -265,4 +265,5 @@ export const hiExt9 = {
   marketingLoadRuleError:      'यह रिमाइंडर नियम लोड नहीं हो सका। पुनः प्रयास करने के लिए टैप करें।',
   marketingRuleNotFound:       'रिमाइंडर नियम नहीं मिला',
   marketingRuleNotFoundDesc:   'यह नियम हटा दिया गया हो सकता है। रिमाइंडर सूची पर वापस जाएं।',
+  bulkImportPreparing:         'आपके संपर्क तैयार किए जा रहे हैं…',
 } as const

@@ -3,7 +3,9 @@
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { HeroPage } from '@/components/layout/HeroPage'
+import { Skeleton } from '@/components/feedback/Skeleton'
+import { ErrorState } from '@/components/feedback/ErrorState'
 import { ROUTES } from '@/config/routes.config'
 import { useBulkImport } from './useBulkImport'
 import { ContactPicker } from './components/ContactPicker'
@@ -32,15 +34,22 @@ export default function BulkImportPage() {
         actions={
           status === 'preview' ? (
             <Button variant="ghost" size="sm" onClick={reset} aria-label={t.startOver}>
-              Reset
+              {t.reset}
             </Button>
           ) : undefined
         }
       />
 
-      <PageContainer variant="form" className="space-y-6">
-        {(status === 'idle' || status === 'picking') && (
+      <HeroPage>
+        {status === 'idle' && (
           <ContactPicker onPickContacts={pickContacts} onImportCsv={importCsv} />
+        )}
+
+        {status === 'picking' && (
+          <div className="space-y-3" aria-busy="true" aria-label={t.bulkImportPreparing}>
+            <Skeleton height="56px" borderRadius="var(--radius-xl)" />
+            <Skeleton height="56px" borderRadius="var(--radius-xl)" count={4} />
+          </div>
         )}
 
         {status === 'preview' && (
@@ -68,14 +77,14 @@ export default function BulkImportPage() {
         )}
 
         {status === 'error' && (
-          <div className="bulk-import-error">
-            <p>{error ?? t.somethingWentWrong}</p>
-            <Button type="button" variant="primary" size="md" onClick={reset}>
-              Try Again
-            </Button>
-          </div>
+          <ErrorState
+            title={t.somethingWentWrong}
+            message={error ?? undefined}
+            onRetry={reset}
+            retryLabel={t.tryAgain}
+          />
         )}
-      </PageContainer>
+      </HeroPage>
     </AppShell>
   )
 }

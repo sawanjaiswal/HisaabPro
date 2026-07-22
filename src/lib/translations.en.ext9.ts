@@ -275,4 +275,5 @@ export const enExt9 = {
   marketingLoadRuleError:      'Could not load this reminder rule. Tap to retry.',
   marketingRuleNotFound:       'Reminder rule not found',
   marketingRuleNotFoundDesc:   'This rule may have been deleted. Go back to the reminders list.',
+  bulkImportPreparing:         'Preparing your contacts…',
 } as const
