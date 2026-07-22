@@ -9,7 +9,7 @@
 import { useState } from 'react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Skeleton } from '@/components/feedback/Skeleton'
@@ -50,10 +50,10 @@ export function SubscriptionManagePage() {
   return (
     <AppShell>
       <Header title={t.subscription} backTo />
-      <PageContainer variant="form">
+      <HeroPage>
         <OverflowBanner onUpgrade={() => setUpgradeOpen(true)} />
 
-        <div className="px-4 py-4 space-y-6">
+        <div className="space-y-6">
           {isLoading ? (
             <div className="space-y-4">
               <Skeleton height="4rem" />
@@ -127,7 +127,7 @@ export function SubscriptionManagePage() {
           isDanger
           isLoading={cancelling || reactivating}
         />
-      </PageContainer>
+      </HeroPage>
     </AppShell>
   )
 }
