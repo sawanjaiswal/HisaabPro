@@ -79,7 +79,7 @@ passthrough branch or a widen-instead-of-intersect is a cross-tenant data leak.
 | 5 · jobs | retention, canary, watchdog, boot guards | `5f9aa82` |
 | 5 · status | `shadow-status.service.ts` + admin route (#37-#40) | `73a4525` |
 | 6 | adoption assertions A1-A12, shadow-mode CI project | `d7bbeee` |
-| 7 | runbook, continuation sites, render.yaml, GOLD_STANDARD rows | pending |
+| 7 | runbook, continuation sites, render.yaml, GOLD_STANDARD rows | `dc5f022` |
 
 ## The three properties this epic exists to protect
 
