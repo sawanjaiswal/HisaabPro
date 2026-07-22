@@ -1,7 +1,7 @@
 import { Sun, Moon } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { ROUTES } from '@/config/routes.config'
 import { useTheme } from '@/context/ThemeContext'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -16,7 +16,7 @@ export default function ThemeAppearancePage() {
   return (
     <AppShell>
       <Header title={t.themePageTitle} backTo={ROUTES.SETTINGS} />
-      <PageContainer className="theme-page stagger-enter space-y-6">
+      <HeroPage className="theme-page stagger-enter space-y-6">
         <section>
           <p className="theme-section-title">{t.themeAppearance}</p>
           <div className="theme-appearance-toggle" role="radiogroup" aria-label={t.themeAppearance}>
@@ -59,7 +59,7 @@ export default function ThemeAppearancePage() {
         >
           {t.themeHint}
         </p>
-      </PageContainer>
+      </HeroPage>
     </AppShell>
   )
 }

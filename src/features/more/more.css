@@ -171,10 +171,7 @@
 }
 
 /* ─── Identity card (mockup #25) ──────────────────────────────────────────── */
-
-.more-page {
-  padding-bottom: var(--bottom-nav-height);
-}
+/* Bottom-nav clearance comes from HeroPage's sheet padding — not repeated here. */
 
 .more-identity {
   display: flex;

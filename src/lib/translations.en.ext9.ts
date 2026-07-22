@@ -249,4 +249,16 @@ export const enExt9 = {
   invoiceEmailed:              'Invoice emailed',
   couldNotEmailInvoice:        'Could not email the invoice. Please try again.',
   customDetailsLabel:          'Custom Details',
+
+  // ─── Active sessions (#97) ────────────────────────────────────────────────
+  activeSessionsTitle:         'Active Sessions',
+  sessionThisDevice:           'This device',
+  sessionRevoked:              'Session revoked',
+  sessionRevokeFailed:         'Failed to revoke session',
+  sessionsRevokedAll:          'All other sessions logged out',
+  sessionsRevokeAllFailed:     'Failed to log out all devices',
+  sessionsCouldNotLoad:        'Could not load sessions',
+  logOutAllOtherDevices:       'Log Out All Other Devices',
+  noActiveSessions:            'No active sessions found',
+  sessionJustNow:              'Just now',
 } as const

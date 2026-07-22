@@ -2,7 +2,7 @@
 
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
 import { DriveBackupCard } from './DriveBackupCard'
@@ -13,9 +13,9 @@ export default function BackupPage() {
   return (
     <AppShell>
       <Header title={t.backupPageTitle} backTo={ROUTES.SETTINGS} />
-      <PageContainer className="stagger-enter space-y-6">
+      <HeroPage className="stagger-enter space-y-6">
         <DriveBackupCard />
-      </PageContainer>
+      </HeroPage>
     </AppShell>
   )
 }

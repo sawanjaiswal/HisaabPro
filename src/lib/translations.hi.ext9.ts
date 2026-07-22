@@ -239,4 +239,16 @@ export const hiExt9 = {
   invoiceEmailed:          'इनवॉइस ईमेल किया गया',
   couldNotEmailInvoice:    'इनवॉइस ईमेल नहीं हो सका। कृपया फिर से प्रयास करें।',
   customDetailsLabel:      'अन्य विवरण',
+
+  // ─── Active sessions (#97) ────────────────────────────────────────────────
+  activeSessionsTitle:     'सक्रिय सत्र',
+  sessionThisDevice:       'यह डिवाइस',
+  sessionRevoked:          'सत्र रद्द किया गया',
+  sessionRevokeFailed:     'सत्र रद्द नहीं हो सका',
+  sessionsRevokedAll:      'अन्य सभी सत्र लॉग आउट कर दिए गए',
+  sessionsRevokeAllFailed: 'सभी डिवाइस लॉग आउट नहीं हो सके',
+  sessionsCouldNotLoad:    'सत्र लोड नहीं हो सके',
+  logOutAllOtherDevices:   'अन्य सभी डिवाइस लॉग आउट करें',
+  noActiveSessions:        'कोई सक्रिय सत्र नहीं मिला',
+  sessionJustNow:          'अभी',
 } as const

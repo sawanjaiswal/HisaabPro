@@ -21,13 +21,19 @@ interface SettingListRowProps {
   label: string
   /** Muted sub-line under the label. */
   description?: string
+  /** Inline pill after the label, e.g. a "This device" badge. */
+  badge?: React.ReactNode
   /** Right-hand read-only value, e.g. "Dark", "Version 1.0.0". */
   value?: string
   /** Interactive right-hand slot (toggle, radio). Renders the row as a
    *  `<label>` so the control is not nested inside a button (WCAG 4.1.2). */
   control?: React.ReactNode
+  /** Trailing interactive element (e.g. a revoke button) on a row that is not
+   *  itself tappable. Renders the row as a plain `<div>` so the button is not
+   *  nested inside another button. */
+  action?: React.ReactNode
   /** Show the navigation chevron. Defaults to true when `onClick` is set and
-   *  neither `value` nor `control` occupies the slot. */
+   *  no other slot occupies the trailing area. */
   chevron?: boolean
   tone?: SettingRowTone
   onClick?: () => void
@@ -37,13 +43,16 @@ export const SettingListRow: React.FC<SettingListRowProps> = ({
   icon,
   label,
   description,
+  badge,
   value,
   control,
+  action,
   chevron,
   tone = 'primary',
   onClick,
 }) => {
-  const showChevron = chevron ?? (Boolean(onClick) && !value && !control)
+  const isButton = Boolean(onClick) && !control && !action
+  const showChevron = chevron ?? (isButton && !value)
   const ariaLabel = description ? `${label}: ${description}` : label
 
   const body = (
@@ -52,12 +61,16 @@ export const SettingListRow: React.FC<SettingListRowProps> = ({
         {icon}
       </span>
       <span className="setting-row-content">
-        <span className="setting-row-label">{label}</span>
+        <span className="setting-row-label">
+          {label}
+          {badge}
+        </span>
         {description && <span className="setting-row-description">{description}</span>}
       </span>
       <span className="setting-row-action">
         {value && <span className="setting-row-value">{value}</span>}
         {control}
+        {action}
         {showChevron && <ChevronRight className="setting-row-chevron" aria-hidden="true" />}
       </span>
     </>
@@ -65,6 +78,10 @@ export const SettingListRow: React.FC<SettingListRowProps> = ({
 
   if (control) {
     return <label className={`setting-row setting-row--${tone}`}>{body}</label>
+  }
+
+  if (!isButton) {
+    return <div className={`setting-row setting-row--${tone} setting-row--static`}>{body}</div>
   }
 
   return (

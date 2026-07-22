@@ -95,11 +95,11 @@ are today's — any page projected past 250L gets a 6-layer split in its own pla
 | `crm/pages/FollowUpsPage` | 129 | – | – | Y | Y | Y | Y | Y | #30/63 |
 | `appointments/pages/AppointmentsPage` | 204 | – | – | Y | Y | Y | Y | Y | #65 |
 | ~~`settings/SettingsPage`~~ | 152 | Y | – | Y | Y | Y | n/a | Y | #19/74 ✅ |
-| `settings/ThemeAppearancePage` | 65 | – | – | Y | **–** | **–** | **–** | Y | #96 |
-| `settings/ActiveSessionsPage` | 161 | – | – | Y | **–** | Y | Y | **–** | #97 |
+| ~~`settings/ThemeAppearancePage`~~ | 65 | Y | – | Y | n/a | n/a | n/a | Y | #96 ✅ |
+| ~~`settings/ActiveSessionsPage`~~ | 150 | Y | – | Y | Y | Y | Y | Y | #97 ✅ |
 | `settings/StaffPage` | 153 | – | – | Y | **–** | Y | Y | Y | #71 |
 | ~~`more/MorePage`~~ | 91 | Y | – | Y | Y | Y | n/a | Y | #25 ✅ |
-| `backup/BackupPage` | 21 | – | – | Y | **–** | **–** | **–** | Y | #32/81 |
+| ~~`backup/BackupPage`~~ | 21 | Y | – | Y | Y | Y | Y | Y | #32/81 ✅ |
 | `subscription-checkout/SubscriptionCheckoutPage` | 121 | – | – | Y | Y | Y | Y | Y | #84 |
 | `pages/SubscriptionManagePage` | 135 | – | – | Y | Y | Y | Y | Y | #33/73 |
 | `business/CreateBusinessPage` | 124 | – | – | **–** | **–** | **–** | **–** | **–** | #38/78 |
