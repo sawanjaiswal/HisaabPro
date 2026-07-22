@@ -2,7 +2,7 @@
 
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { Bell } from 'lucide-react'
@@ -99,9 +99,9 @@ function PrefRow({ row, onToggle, isPending, t }: PrefRowProps) {
 
 // ─── Skeletons ────────────────────────────────────────────────────────────────
 
-function PrefsSkeleton() {
+function PrefsSkeleton({ label }: { label: string }) {
   return (
-    <div className="notif-prefs-skeleton" aria-busy="true" aria-label="Loading preferences">
+    <div className="notif-prefs-skeleton" aria-busy="true" aria-label={label}>
       {Array.from({ length: 6 }).map((_, i) => (
         <div key={i} className="notif-prefs-skeleton__row">
           <div className="notif-prefs-skeleton__label" />
@@ -122,6 +122,7 @@ export default function NotificationPreferencesPage() {
   const { t } = useLanguage()
   const { data: prefs, status, refetch } = useNotificationPreferences()
   const updatePref = useUpdatePreferences()
+  const rows = prefs ?? []
 
   function handleToggle(
     row: NotificationPreferenceRow,
@@ -138,83 +139,64 @@ export default function NotificationPreferencesPage() {
     updatePref.mutate(patch)
   }
 
-  // ── Loading ──────────────────────────────────────────────────────────────
-  if (status === 'pending') {
-    return (
-      <AppShell>
-        <Header
-          title={t.notifPrefsTitle ?? 'Notification Preferences'}
-          backTo={ROUTES.NOTIFICATIONS}
-        />
-        <PageContainer>
-          <PrefsSkeleton />
-        </PageContainer>
-      </AppShell>
-    )
-  }
-
-  // ── Error ────────────────────────────────────────────────────────────────
-  if (status === 'error') {
-    return (
-      <AppShell>
-        <Header
-          title={t.notifPrefsTitle ?? 'Notification Preferences'}
-          backTo={ROUTES.NOTIFICATIONS}
-        />
-        <PageContainer>
-          <ErrorState
-            message={t.notifLoadError ?? 'Could not load preferences. Tap to retry.'}
-            onRetry={() => refetch()}
-          />
-        </PageContainer>
-      </AppShell>
-    )
-  }
-
-  const rows = prefs ?? []
-
-  // ── Success ──────────────────────────────────────────────────────────────
   return (
     <AppShell>
       <Header
         title={t.notifPrefsTitle ?? 'Notification Preferences'}
         backTo={ROUTES.NOTIFICATIONS}
       />
-      <PageContainer>
-        {/* Channel header */}
-        <div className="notif-prefs__row" style={{ background: 'var(--color-gray-50)' }}>
-          <span className="notif-prefs__row-label notif-prefs__row-label--muted">
-            {t.notifPrefsEventLabel ?? 'Event'}
-          </span>
-          <div className="notif-prefs__channel-group">
-            {(['App', 'Push', 'Email', t.notifComingSoon ?? 'WA'] as string[]).map((lbl) => (
-              <div key={lbl} className="notif-prefs__channel-col">
-                <span className="notif-prefs__channel-label">{lbl}</span>
+      <HeroPage>
+        {status === 'pending' && (
+          <PrefsSkeleton label={(t.loading as string) ?? 'Loading preferences'} />
+        )}
+
+        {status === 'error' && (
+          <ErrorState
+            message={t.notifLoadError ?? 'Could not load preferences. Tap to retry.'}
+            onRetry={() => refetch()}
+          />
+        )}
+
+        {status === 'success' && (
+          <>
+            <div className="notif-prefs">
+              {/* Channel header */}
+              <div className="notif-prefs__row" style={{ background: 'var(--color-gray-50)' }}>
+                <span className="notif-prefs__row-label notif-prefs__row-label--muted">
+                  {t.notifPrefsEventLabel ?? 'Event'}
+                </span>
+                <div className="notif-prefs__channel-group">
+                  {(['App', 'Push', 'Email', t.notifComingSoon ?? 'WA'] as string[]).map((lbl) => (
+                    <div key={lbl} className="notif-prefs__channel-col">
+                      <span className="notif-prefs__channel-label">{lbl}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
 
-        <div className="notif-prefs__section">
-          {rows.map((row) => (
-            <PrefRow
-              key={row.id}
-              row={row}
-              onToggle={(ch, v) => handleToggle(row, ch, v)}
-              isPending={updatePref.isPending}
-              t={t as unknown as Record<string, string>}
-            />
-          ))}
-          {rows.length === 0 && (
-            <EmptyState
-              icon={<Bell size={22} aria-hidden="true" />}
-              title={t.notifPrefsEmpty ?? 'No preferences found.'}
-            />
-          )}
-        </div>
+              <div className="notif-prefs__section">
+                {rows.map((row) => (
+                  <PrefRow
+                    key={row.id}
+                    row={row}
+                    onToggle={(ch, v) => handleToggle(row, ch, v)}
+                    isPending={updatePref.isPending}
+                    t={t as unknown as Record<string, string>}
+                  />
+                ))}
+                {rows.length === 0 && (
+                  <EmptyState
+                    icon={<Bell size={22} aria-hidden="true" />}
+                    title={t.notifPrefsEmpty ?? 'No preferences found.'}
+                  />
+                )}
+              </div>
+            </div>
 
-        <NotificationQuietHoursCard />
-      </PageContainer>
+            <NotificationQuietHoursCard />
+          </>
+        )}
+      </HeroPage>
     </AppShell>
   )
 }
