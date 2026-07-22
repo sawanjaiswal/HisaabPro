@@ -253,4 +253,13 @@ export const hiExt9 = {
   sessionJustNow:          'अभी',
   employeeDetailsSectionTitle: 'विवरण',
   agingBucketsLabel:           'एजिंग बकेट',
+  byRole:                      'भूमिका अनुसार',
+  byPerson:                    'व्यक्ति अनुसार',
+  viewPermissionsBy:           'अनुमतियाँ इस अनुसार देखें',
+  couldNotLoadPermissions:     'अनुमतियाँ लोड नहीं हो सकीं',
+  noRolesFound:                'कोई भूमिका नहीं मिली',
+  createRoleFirstDesc:         'इसकी अनुमतियाँ देखने के लिए पहले एक भूमिका बनाएं।',
+  inviteTeamMemberDesc:        'उनकी अनुमतियाँ यहाँ देखने के लिए किसी टीम सदस्य को आमंत्रित करें।',
+  staffMembersLabel:           'स्टाफ सदस्य',
+  failedLoadPermissions:       'अनुमतियाँ लोड करने में विफल',
 } as const

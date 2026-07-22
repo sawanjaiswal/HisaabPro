@@ -85,9 +85,9 @@ are today's — any page projected past 250L gets a 6-layer split in its own pla
 | ~~`hr/EmployeeDetailPage`~~ | 222 | Y | – | Y | Y | Y | n/a | Y | #27 ✅ |
 | ~~`hr/AttendancePage`~~ | 200 | Y | – | Y | Y | Y | Y | Y | #28 ✅ |
 | ~~`collections/pages/AgingDashboard`~~ | 122 | Y | – | Y | Y | Y | Y | Y | #22/29 ✅ |
-| `settings/RolesPage` | 118 | – | – | Y | Y | Y | Y | Y | #72 |
-| `settings/StaffPermissionsPage` | 154 | – | – | Y | Y | Y | Y | **–** | #72 |
-| `settings/RoleBuilderPage` | 156 | – | – | Y | Y | Y | **–** | Y | #72 |
+| ~~`settings/RolesPage`~~ | 118 | Y | – | Y | Y | Y | Y | Y | #72 ✅ |
+| ~~`settings/StaffPermissionsPage`~~ | 156 | Y | – | Y | Y | Y | Y | Y | #72 ✅ |
+| ~~`settings/RoleBuilderPage`~~ | 156 | Y | – | Y | Y | Y | Y | Y | #72 ✅ |
 | `notifications/pages/NotificationsPage` | 158 | – | – | Y | Y | Y | Y | Y | #18/62 |
 | `notifications/…/NotificationPreferencesPage` | 220 | – | – | Y | Y | Y | Y | Y | #18 |
 | `marketing/pages/ReminderRuleFormPage` | 196 | – | – | **–** | **–** | **–** | **–** | Y | #23 |

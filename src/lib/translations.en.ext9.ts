@@ -263,4 +263,13 @@ export const enExt9 = {
   sessionJustNow:              'Just now',
   employeeDetailsSectionTitle: 'Details',
   agingBucketsLabel:           'Aging buckets',
+  byRole:                      'By Role',
+  byPerson:                    'By Person',
+  viewPermissionsBy:           'View permissions by',
+  couldNotLoadPermissions:     'Could not load permissions',
+  noRolesFound:                'No roles found',
+  createRoleFirstDesc:         'Create a role first to view its permissions.',
+  inviteTeamMemberDesc:        'Invite a team member to see their permissions here.',
+  staffMembersLabel:           'Staff members',
+  failedLoadPermissions:       'Failed to load permissions',
 } as const
