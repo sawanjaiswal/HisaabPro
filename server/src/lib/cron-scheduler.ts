@@ -8,17 +8,14 @@
  */
 
 import cron from 'node-cron'
-import { prisma } from './prisma.js'
 import logger from './logger.js'
-import { evaluateOpenPtps } from '../services/collections/promise-to-pay-eval.service.js'
-import { runRecurringTick } from '../services/recurring/recurring-runner.service.js'
 import {
   runBatchExpiryAlertsJob,
   runRecurringRunsCleanup,
   runExpenseRecurringGenerator,
 } from './cron-job-runners.js'
+import { makeWorkerId, runRecurringGenerator, runPtpEvaluator } from './cron-runners.js'
 import { initNotificationCronJobs } from '../services/notifications/notification-cron.js'
-import { notifyPtpDueToday } from '../services/notifications/notification-hooks.js'
 import { runGraceExpiryJob } from '../services/subscription/cron-grace-expiry.js'
 import { runTrialEndJob } from '../services/subscription/cron-trial-end.js'
 import { runMandateReminderJob } from '../services/subscription/cron-mandate-reminder.js'
@@ -28,14 +25,7 @@ import { runImportRetentionJob } from '../jobs/import-retention.cron.js'
 import { runShadowRetentionJob } from '../jobs/shadow-retention.cron.js'
 import { runShadowCanaryJob } from '../jobs/shadow-canary.cron.js'
 import { runShadowWatchdogJob } from '../jobs/shadow-watchdog.cron.js'
-import os from 'os'
-
 let initialized = false
-
-/** Stable worker id used for cron claim ownership. */
-function makeWorkerId(): string {
-  return `${os.hostname()}:${process.pid}`
-}
 
 export function initCronJobs(): void {
   if (initialized) return
@@ -179,87 +169,6 @@ export function initCronJobs(): void {
   })
 }
 
-
-/**
- * Exported so tests / manual CLI can call it directly.
- */
-export async function runRecurringGenerator(workerId?: string): Promise<void> {
-  const wid = workerId ?? makeWorkerId()
-  logger.info('recurring-generator.start', { workerId: wid })
-  try {
-    const summary = await runRecurringTick(wid)
-    logger.info('recurring-generator.done', { workerId: wid, ...summary })
-  } catch (e) {
-    logger.error('recurring-generator.fatal', {
-      workerId: wid,
-      error: e instanceof Error ? e.message : String(e),
-    })
-  }
-}
-
-export async function runPtpEvaluator(): Promise<void> {
-  logger.info('ptp-evaluator.start')
-  const asOf = new Date()
-
-  // Today window for PTP_DUE_TODAY notifications
-  const todayStart = new Date(asOf)
-  todayStart.setHours(0, 0, 0, 0)
-  const todayEnd = new Date(asOf)
-  todayEnd.setHours(23, 59, 59, 999)
-
-  let cursor: string | undefined
-  const PAGE = 50
-
-  // Stream businesses in pages to avoid loading all into memory
-  while (true) {
-    const businesses = await prisma.business.findMany({
-      where: { isActive: true },
-      select: { id: true },
-      take: PAGE,
-      ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-      orderBy: { id: 'asc' },
-    })
-
-    if (businesses.length === 0) break
-
-    for (const biz of businesses) {
-      try {
-        // No outer transaction: each PTP's update+audit pair gets its own
-        // tiny $transaction inside evaluateOpenPtps, so one bad PTP doesn't
-        // roll back all other PTPs for the same business.
-        await evaluateOpenPtps(biz.id, asOf)
-      } catch (e) {
-        logger.error('ptp-evaluator.business_error', {
-          businessId: biz.id,
-          error: e instanceof Error ? e.message : String(e),
-        })
-      }
-
-      // PTP_DUE_TODAY — notify for open PTPs due today (non-blocking)
-      try {
-        const dueTodayPtps = await prisma.promiseToPay.findMany({
-          where: {
-            businessId: biz.id,
-            status: 'OPEN',
-            isDeleted: false,
-            promiseDate: { gte: todayStart, lte: todayEnd },
-          },
-          select: { id: true, amountPaise: true, promiseDate: true },
-        })
-        for (const ptp of dueTodayPtps) {
-          void notifyPtpDueToday({ businessId: biz.id, ptpId: ptp.id, amountPaise: ptp.amountPaise, promiseDate: ptp.promiseDate })
-        }
-      } catch (e) {
-        logger.error('ptp-due-today.error', { businessId: biz.id, error: e instanceof Error ? e.message : String(e) })
-      }
-    }
-
-    cursor = businesses[businesses.length - 1].id
-    if (businesses.length < PAGE) break
-  }
-
-  logger.info('ptp-evaluator.complete')
-}
-
-// Re-exported for back-compat with test imports.
+// Re-exported for back-compat with test / job imports.
 export { runBatchExpiryAlertsJob, runRecurringRunsCleanup, runExpenseRecurringGenerator }
+export { runRecurringGenerator, runPtpEvaluator } from './cron-runners.js'

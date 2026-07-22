@@ -21,6 +21,7 @@
  *      meant to certify (RS-1).
  */
 import { SHADOW_TIMEOUT_MS } from './prisma-shadow.constants.js'
+import { raceTimeout } from './prisma-shadow.race.js'
 import { classify } from './prisma-shadow.classify.js'
 import { diffIds } from './prisma-shadow.diff.js'
 import { buildErrorRecord, buildNoContextRecord, buildRecord } from './prisma-shadow.redact.js'
@@ -51,32 +52,9 @@ export interface ShadowPortConfig {
   throttle?: ShadowThrottle
 }
 
-/** The probe lost its race. Distinct from a probe that threw — different diagnosis. */
-export class ShadowProbeTimeout extends Error {
-  constructor(ms: number) {
-    super(`Shadow probe exceeded ${ms}ms`)
-    this.name = 'ShadowProbeTimeout'
-  }
-}
-
-/** Sink gauge saturated. Backpressure, not a broken pipe — see N-1. */
-export class ShadowSinkSaturated extends Error {
-  constructor() {
-    super('Shadow sink inflight gauge saturated')
-    this.name = 'ShadowSinkSaturated'
-  }
-}
-
-function raceTimeout<T>(work: Promise<T>, ms: number): Promise<T> {
-  let timer: NodeJS.Timeout
-  const bomb = new Promise<never>((_resolve, reject) => {
-    timer = setTimeout(() => reject(new ShadowProbeTimeout(ms)), ms)
-    // Never hold the event loop open for a probe — a pending timer here would
-    // delay process exit on every shutdown for no observational gain.
-    timer.unref?.()
-  })
-  return Promise.race([work, bomb]).finally(() => clearTimeout(timer))
-}
+// The probe race + its ShadowProbeTimeout / ShadowSinkSaturated signals moved to
+// prisma-shadow.race.ts; re-exported so importers keep a single entry point.
+export { ShadowProbeTimeout, ShadowSinkSaturated } from './prisma-shadow.race.js'
 
 export function createShadowPort(config: ShadowPortConfig): ShadowPort {
   const { db } = config
