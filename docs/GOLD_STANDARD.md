@@ -157,19 +157,20 @@ with a dedicated test (`__tests__/switch-business-limiter.test.ts`). G9 met.
 
 ### P2 — Debt burn-down
 
-#### P2.1 · `enforce.js` — 6 blocking errors (regression: were 0)
+#### P2.1 · `enforce.js` oversized files — ✅ **DONE** (verified 2026-07-23)
 ```
-server/src/lib/env.ts                                      293L  ⚠️ high-risk path
-server/src/services/marketing/reminder-trigger.service.ts  286L
-src/lib/api.ts                                             279L
-src/components/layout/SideNav.tsx                          272L
-server/src/services/party/ledger.service.ts                260L
-server/src/services/hr/employee.service.ts                 259L
+server/src/lib/env.ts                                      293L → 64L   ✅ split
+server/src/services/marketing/reminder-trigger.service.ts  286L → 236L  ✅
+src/lib/api.ts                                             279L → 177L  ✅
+src/components/layout/SideNav.tsx                          272L → 126L  ✅
+server/src/services/party/ledger.service.ts                260L → 172L  ✅
+server/src/services/hr/employee.service.ts                 259L → 231L  ✅
 ```
-- Split per the 6-layer rule (types → constants → utils → transport → service → route).
-- `env.ts` is a declared high-risk path — needs an approved design plan first, or
-  defer it and split the other 5.
-- **Acceptance:** `node scripts/enforce.js` → 0 errors. **Effort:** S each.
+All six original offenders were split. The shadow epic later added two more
+(`prisma-shadow.ts` 251L, `cron-scheduler.ts` 266L); both split 2026-07-23
+(`prisma-shadow.race.ts` + `cron-runners.ts`, commit `035de30f`).
+- **Acceptance MET:** `node scripts/enforce.js` → "All enforcement checks passed",
+  0 OVERSIZED. Re-verified 2026-07-23.
 
 #### P2.2 · Platform-shell debt grew 5 → 13 warnings
 - 8 × fixed-bottom (Phase 3) → `<BottomActionBar>` / `<Drawer>`:
@@ -224,9 +225,18 @@ tokens so dark-mode parity is automatic. **Effort:** XS.
 
 ### P3 — Coverage / hygiene
 
-- **P3.1** · 7 todo tests on the server — close them.
-- **P3.2** · Offline ratchet: drive the last `mutationNoEntityType` (1/6) to 0,
-  then `--ratchet` the baseline down so it can't regress.
+- **P3.1** · The 11 server `.todo`/`describe.todo` markers (import invoice + payment
+  end-to-end suites) are **intentional deferrals, not open gaps** — reviewed
+  2026-07-23. Each is one of: (a) a cross-reference signpost to coverage that already
+  lives in a unit suite (`#7/#8/#9/#10/#12` → `commit-invoices.test.ts`,
+  `import.invoice-route.test.ts`, `erasure.service.ts`), or (b) a scenario that
+  requires a live-Postgres concurrency/connection-drop harness that does not exist yet
+  (`#11/#13` mid-tx crash + advisory-lock race, and the four payment `describe.todo`
+  rows) — tracked as Phase 7 #150. Closing (a) would duplicate coverage; closing (b)
+  needs the DB harness first. **Leave as todo; not counted as debt.**
+- **P3.2** · Offline ratchet — ✅ **DONE** (2026-07-23, commit `954f13bb`). Last
+  `mutationNoEntityType` (`/expenses/ocr`, a read-shaped POST) opted out with
+  `offlineQueue:false`; baseline ratcheted to `0/0/0` for all three offline rules.
 
 ### P4 — Design sweep completion (G10)
 
