@@ -147,13 +147,18 @@ with a dedicated test (`__tests__/switch-business-limiter.test.ts`). G9 met.
 - **Fix:** per-page, against `PAGE_AUDIT_CHECKLIST.md` A→N.
 - **Effort:** M (batched by feature area, ~5 batches).
 
-#### P1.3 · Offline queue replay still unexercised end-to-end
-- **Evidence:** offline *discipline* is clean (rawFetch 0, localStorage 0), but no
-  test queues a mutation offline → goes online → asserts single application.
-  Unchanged since 07-19.
-- **Fix:** integration test — queue party + invoice + payment offline, replay,
-  assert single application + correct GL + idempotency on double-replay.
-- **Effort:** M.
+#### P1.3 · Offline queue replay — client contract ✅ covered; server half remains
+- **Evidence (was):** offline *discipline* was clean but no test queued a mutation
+  offline → went online → asserted single application.
+- **Done 2026-07-23** (commit `c744bead`, `src/lib/__tests__/offline-replay.test.ts`):
+  the **client replay contract** is now exercised end-to-end — 3 mutations
+  (party/invoice/payment) queued offline, replayed FIFO exactly once each with a
+  stable idempotency key, queue drained; double-replay is a no-op; 401 halts and
+  preserves order; 4xx dead-letters + fires the rejection bridge. Runs against the
+  real `processQueue` with an in-memory Dexie stand-in (jsdom has no IndexedDB).
+- **Remaining (server half):** a live-server integration test asserting server-side
+  single application + correct GL when the SAME idempotency key arrives twice. Needs
+  the running Express + DB harness (shares the Phase 7 #150 dependency). **Effort:** M.
 
 ### P2 — Debt burn-down
 
