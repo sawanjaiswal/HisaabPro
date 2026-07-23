@@ -146,6 +146,11 @@ export async function ocrReceipt(
     method: 'POST',
     body: JSON.stringify({ base64Image, mimeType }),
     signal,
-    // Never queue OCR offline — result is PII and time-sensitive
+    // Read-shaped POST: this returns parsed receipt data, it does not create a
+    // syncable entity. Opt out of the offline queue explicitly (same rationale
+    // as /payroll/run/preview) — queuing OCR would replay a stale, PII-bearing
+    // image later for a result the user needed now. entityType/Label would be
+    // dead metadata on a call that never surfaces in the queue UI.
+    offlineQueue: false,
   })
 }
