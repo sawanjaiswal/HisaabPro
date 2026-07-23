@@ -6,6 +6,12 @@
    brand-emerald = identity/CTA/nav, success-green = status only. */
 
 :root {
+  /* Light is the default theme — declare it so native controls (date/time
+     inputs, selects, scrollbars) render light even when the OS is in dark
+     mode. Without this they inherit the OS scheme and paint dark on our cream
+     surfaces. Dark theme sets `color-scheme: dark` in tokens-dark.css. */
+  color-scheme: light;
+
   /* Primary (Deep Emerald Green) — trust, professionalism */
   --color-primary-50:  #E6F3EC;
   --color-primary-100: #D2ECDC;

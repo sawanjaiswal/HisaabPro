@@ -1,0 +1,68 @@
+/* ─── DateField ────────────────────────────────────────────────────────────
+   Native date/time input, token-styled. `color-scheme` is pinned per theme so
+   the browser's own calendar text + popup stay light on our cream surfaces
+   even when the desktop OS is set to dark (the cause of the dark-brown field).
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.date-field {
+  width: 100%;
+  min-height: var(--input-min-height);
+  padding: 0 var(--space-4);
+  font-family: var(--font-primary);
+  font-size: var(--fs-base);
+  color: var(--color-gray-800);
+  background: var(--color-gray-0);
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  outline: none;
+  color-scheme: light;
+  transition: border-color var(--duration-fast) var(--ease-default);
+}
+
+[data-theme='dark'] .date-field {
+  color-scheme: dark;
+}
+
+.date-field:focus {
+  border: 2px solid var(--color-primary-400);
+  padding: 0 calc(var(--space-4) - 0.5px);
+}
+
+.date-field:disabled {
+  background: var(--color-gray-50);
+  color: var(--color-gray-400);
+  cursor: not-allowed;
+}
+
+/* The calendar glyph — tint it to the field colour and make it obviously tappable. */
+.date-field::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity var(--duration-fast) var(--ease-default);
+}
+
+.date-field::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* ── Labelled form-field mode ─────────────────────────────────────────────── */
+.date-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.date-field-label {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.date-field-group--error .date-field {
+  border-color: var(--color-error-500);
+}
+
+.date-field-error {
+  font-size: var(--fs-xs);
+  color: var(--color-error-500);
+}

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { FileDown } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Drawer } from '@/components/ui/Drawer'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { LedgerVoucherType } from '../ledger.types'
@@ -89,9 +89,8 @@ export function LedgerFilterDrawer({
           <div className="ledger-date-row">
             <div className="ledger-date-group">
               <label htmlFor="lf-from" className="ledger-date-label">{t.fromDate}</label>
-              <Input
+              <DateField
                 id="lf-from"
-                type="date"
                 className="ledger-date-input"
                 value={draftFrom}
                 max={draftTo}
@@ -101,9 +100,8 @@ export function LedgerFilterDrawer({
             </div>
             <div className="ledger-date-group">
               <label htmlFor="lf-to" className="ledger-date-label">{t.toDate}</label>
-              <Input
+              <DateField
                 id="lf-to"
-                type="date"
                 className="ledger-date-input"
                 value={draftTo}
                 min={draftFrom}
