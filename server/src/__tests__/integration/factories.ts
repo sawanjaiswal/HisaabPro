@@ -5,6 +5,7 @@
 
 import crypto from 'node:crypto'
 import { prisma } from '../../lib/prisma.js'
+import { seedDefaultAccounts } from '../../services/accounting/chart-of-accounts.js'
 
 const uid = () => crypto.randomUUID().slice(0, 8)
 
@@ -154,6 +155,10 @@ export async function createTestProduct(
 export async function seedFullSetup() {
   const user = await createTestUser()
   const business = await createTestBusiness(user.id)
+  // Mirror real onboarding (business.service.ts): a freshly-created business has
+  // its GL chart of accounts seeded. Without this, document/payment creates fail
+  // GL posting with "required system account(s) … missing" (idempotent seed).
+  await seedDefaultAccounts(business.id)
   const businessUser = await createTestBusinessUser(
     user.id,
     business.id,

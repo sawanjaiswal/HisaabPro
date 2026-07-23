@@ -45,7 +45,9 @@ describe('GET /api/expenses/categories', () => {
     const res = await authRequest(app, token).get('/api/expenses/categories')
     expect(res.status).toBe(200)
     expect(res.body.data.length).toBeGreaterThanOrEqual(10)
-    expect(res.body.data[0]).toHaveProperty('_count')
+    // The endpoint flattens Prisma's `_count` into a plain `expenseCount` field
+    // (expense-category.service.ts) — assert the shape the client actually gets.
+    expect(res.body.data[0]).toHaveProperty('expenseCount')
   })
 })
 
