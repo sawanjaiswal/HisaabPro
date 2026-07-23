@@ -100,7 +100,12 @@ these shows up in the `no-context` backlog with `provenance='http'` and
 gated frame-loss bug, not a backlog row.
 
 The `void f()` shape has a separate, non-scoping problem: a rejection there is
-unhandled. Out of this epic's scope, worth a row in `docs/BACKLOG.md`.
+unhandled — the process-level handler in `index.ts` logs it, but context-free.
+**Resolved 2026-07-23** (commit `3afbe930`): `stock-alert.service.ts:112` and
+`promise-to-pay-eval.service.ts:240` now attach a tagged `.catch()`;
+`campaign-dispatch.service.ts:95` already had one. The two `setImmediate` sites
+(`imports/create.route.ts`, `import/parse.service.ts`) run their own try/catch
+inside the scheduled work, so they are already attributed.
 
 ---
 
