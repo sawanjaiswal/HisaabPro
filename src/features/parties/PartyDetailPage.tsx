@@ -33,6 +33,7 @@ import { PartyDetailPayBar } from './components/PartyDetailPayBar'
 import '@/features/shared-ledger/shared-ledger.css'
 import './party-detail-header.css'
 import { Button } from '@/components/ui/Button'
+import { UnderlineTabs } from '@/components/ui/UnderlineTabs'
 
 export default function PartyDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -159,21 +160,12 @@ export default function PartyDetailPage() {
                 onCloseStatement={() => setStmtOpen(false)}
               />
 
-              <div className="party-detail-tabs" role="tablist" aria-label={t.partyDetailSections}>
-                {TABS.map((tab) => (
-                  <Button variant="none"
-                    key={tab.id}
-                    role="tab"
-                    className={`party-detail-tab${activeTab === tab.id ? ' active' : ''}`}
-                    onClick={() => setActiveTab(tab.id)}
-                    aria-selected={activeTab === tab.id}
-                    aria-controls={`panel-${tab.id}`}
-                  >
-                    <tab.icon size={16} aria-hidden="true" />
-                    {tab.label}
-                  </Button>
-                ))}
-              </div>
+              <UnderlineTabs
+                tabs={TABS}
+                value={activeTab}
+                onChange={setActiveTab}
+                ariaLabel={t.partyDetailSections}
+              />
 
               <div id={`panel-${activeTab}`} role="tabpanel" aria-label={`${TABS.find(tab => tab.id === activeTab)?.label ?? activeTab} ${t.tabContent}`}>
                 {activeTab === 'ledger' && (

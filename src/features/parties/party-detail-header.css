@@ -161,54 +161,8 @@
   color: var(--overlay-white-50);
 }
 
-/* ─── Underline tabs (self-contained — no dependency on .pill-tabs) ──────── */
-.party-detail-tabs {
-  display: flex;
-  gap: var(--space-5);
-  border-bottom: 1px solid var(--color-gray-200);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-
-.party-detail-tabs::-webkit-scrollbar {
-  display: none;
-}
-
-.party-detail-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1-5);
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  border-radius: 0;
-  margin-bottom: -1px;
-  padding: var(--space-3) 0;
-  min-height: 44px;
-  color: var(--text-muted);
-  font-size: var(--fs-df);
-  font-weight: 600;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: color var(--duration-snappy) var(--ease-default),
-    border-color var(--duration-snappy) var(--ease-default);
-}
-
-.party-detail-tab:hover {
-  color: var(--text-secondary);
-}
-
-.party-detail-tab.active {
-  color: var(--color-primary-500);
-  border-bottom-color: var(--color-primary-500);
-}
-
-.party-detail-tab:focus-visible {
-  outline: 2px solid var(--color-primary-500);
-  outline-offset: 2px;
-  border-radius: var(--radius-sm);
-}
+/* Underline tabs moved to the global primitive — src/components/ui/UnderlineTabs.tsx
+   + underline-tabs.css. */
 
 /* Gap between info section cards */
 .party-info-card {

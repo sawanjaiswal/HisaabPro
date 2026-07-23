@@ -1,7 +1,7 @@
-/** Party summary tiles — four divider-separated stats above the detail tabs.
+/** Party summary tiles — three divider-separated stats above the detail tabs.
  *
  * Wording follows the party's direction: a customer reads Outstanding /
- * Oldest Due / Open Invoices / Last Payment, a supplier reads Total Payable
+ * Open Invoices / Last Payment, a supplier reads Total Payable
  * for the first column (mockup #52 — Supplier Ledger). The numbers behind
  * them are already direction-aware — see server detail-stats.ts.
  *
@@ -49,16 +49,6 @@ export const PartySummaryTiles: React.FC<PartySummaryTilesProps> = ({ party }) =
           label: isSupplier ? t.totalPayable : t.outstanding,
           value: formatAmount(due),
           tone: 'due',
-        },
-        {
-          id: 'oldest-due',
-          label: t.oldestDue,
-          // 0 days is a real answer only when something IS overdue; with no
-          // overdue invoice at all the honest reading is "nothing", not "0 days".
-          value: stats?.isOverdue ? `${stats.oldestDueDays}` : '—',
-          tone: stats?.isOverdue ? 'due' : 'neutral',
-          hint: stats?.isOverdue ? t.days : undefined,
-          hintTone: 'due',
         },
         {
           id: 'open-invoices',

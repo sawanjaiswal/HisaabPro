@@ -5,7 +5,7 @@
  * switches it rather than forking a second menu that would drift.
  */
 
-import { MoreVertical, MoreHorizontal, Pencil, FileText, MessageCircle, Share2, UserPlus, Trash2 } from 'lucide-react'
+import { MoreVertical, MoreHorizontal, Pencil, FileText, MessageCircle, Send, Share2, UserPlus, Trash2 } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
 import {
@@ -23,6 +23,9 @@ interface PartyDetailMenuProps {
   onStatement: () => void
   onInvite: () => void
   onDelete: () => void
+  /** Opens a direct WhatsApp chat. Passed only where a phone number exists
+   *  (the hero header); omit and the item is hidden. */
+  onWhatsapp?: () => void
   /** Invite shown only when the portal is not yet claimed */
   showInvite: boolean
   /**
@@ -40,6 +43,7 @@ export function PartyDetailMenu({
   onStatement,
   onInvite,
   onDelete,
+  onWhatsapp,
   showInvite,
   appearance = 'hero',
 }: PartyDetailMenuProps) {
@@ -64,12 +68,18 @@ export function PartyDetailMenu({
           <Pencil size={16} aria-hidden="true" />
           <span>{t.editParty}</span>
         </DropdownMenuItem>
+        {onWhatsapp && (
+          <DropdownMenuItem onSelect={onWhatsapp}>
+            <MessageCircle size={16} aria-hidden="true" />
+            <span>{t.whatsapp}</span>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem onSelect={onInvoice}>
           <FileText size={16} aria-hidden="true" />
           <span>{t.createInvoiceLabel}</span>
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={onStatement}>
-          <MessageCircle size={16} aria-hidden="true" />
+          <Send size={16} aria-hidden="true" />
           <span>{t.whatsappStatement}</span>
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={onShare}>

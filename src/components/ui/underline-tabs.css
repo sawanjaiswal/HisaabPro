@@ -1,0 +1,49 @@
+/* UnderlineTabs — evenly-spaced flat underline tab control.
+ *
+ * Migrated from the party-detail-only `.party-detail-tabs` block so every
+ * detail page shares one implementation. Tabs claim an equal share of the
+ * row (`flex: 1`) and centre their content, so the set stays evenly
+ * distributed at 320px and up — no left-packed gaps, no horizontal scroll.
+ */
+
+.underline-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.underline-tab {
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1-5);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  margin-bottom: -1px;
+  padding: var(--space-3) var(--space-1);
+  min-height: 44px;
+  color: var(--text-muted);
+  font-size: var(--fs-df);
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--duration-snappy) var(--ease-default),
+    border-color var(--duration-snappy) var(--ease-default);
+}
+
+.underline-tab:hover {
+  color: var(--text-secondary);
+}
+
+.underline-tab.active {
+  color: var(--color-primary-500);
+  border-bottom-color: var(--color-primary-500);
+}
+
+.underline-tab:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
