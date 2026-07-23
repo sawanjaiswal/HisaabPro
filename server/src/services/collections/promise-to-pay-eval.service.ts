@@ -237,7 +237,11 @@ export async function evaluateOpenPtps(
         })
       })
       logger.info('ptp.evaluated', { ptpId: ptp.id, newStatus, businessId })
-      if (!isKept) void notifyPtpBroken({ businessId, ptpId: ptp.id, amountPaise: ptp.amountPaise, promiseDate: ptp.promiseDate })
+      // Sync try/catch can't catch this fire-and-forget rejection — attribute it.
+      if (!isKept)
+        void notifyPtpBroken({ businessId, ptpId: ptp.id, amountPaise: ptp.amountPaise, promiseDate: ptp.promiseDate }).catch((e) =>
+          logger.error('ptp.notify_broken.failed', { ptpId: ptp.id, businessId, error: String(e) })
+        )
     } catch (e) {
       logger.error('ptp.evaluate_error', { ptpId: ptp.id, businessId, error: e instanceof Error ? e.message : String(e) })
     }

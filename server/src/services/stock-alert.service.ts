@@ -108,7 +108,8 @@ export async function checkAndCreateAlerts(
 
   logger.info('Stock alert created', { businessId, productId, productName: product.name, alertType, currentStock, threshold })
 
-  // Fire notification (non-blocking, owner resolved inside hook)
+  // Fire notification (non-blocking). Attribute a rejection to THIS call rather
+  // than the context-free process-level "Unhandled promise rejection" (index.ts).
   void notifyStockAlert({
     businessId,
     alertType: alertType as 'LOW_STOCK' | 'OUT_OF_STOCK',
@@ -116,7 +117,7 @@ export async function checkAndCreateAlerts(
     productName: product.name,
     currentStock,
     threshold,
-  })
+  }).catch((e) => logger.error('stock-alert.notify.failed', { businessId, productId, error: String(e) }))
 }
 
 /**
