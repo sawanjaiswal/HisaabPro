@@ -198,8 +198,12 @@
 }
 
 @media (min-width: 360px) {
+  /* One equal column per tile (3 or 4) so the strip always fills the width
+     evenly — a fixed 4-col grid left an empty column when a stat was dropped. */
   .summary-tiles--divided {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
   }
 
   .summary-tiles--divided .summary-tile:nth-child(n + 3) {

@@ -87,7 +87,6 @@ export const PartyDetailHeader: React.FC<PartyDetailHeaderProps> = ({
               aria-label={t.callParty}
             >
               <Phone size={20} aria-hidden="true" />
-              <span className="pdh-icon-label">{t.call}</span>
             </Button>
           )}
           <PartyDetailMenu
