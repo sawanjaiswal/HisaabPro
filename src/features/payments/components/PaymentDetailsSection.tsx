@@ -11,6 +11,7 @@ import { getReferencePlaceholder } from '../payment.utils'
 import type { PaymentMode } from '../payment.types'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 
 const PAYMENT_MODES: PaymentMode[] = [
@@ -86,7 +87,7 @@ export function PaymentDetailsSection({
       <div className="payment-row">
         <div className="payment-field payment-field-half">
           <label className="label" htmlFor="payment-date">{t.dateRequired}</label>
-          <Input
+          <DateField
             id="payment-date"
             type="date"
             className="input"

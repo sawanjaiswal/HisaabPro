@@ -13,14 +13,14 @@ import { TrialBalanceTable } from './components/TrialBalanceTable'
 import { isBalanced, formatPaise } from './accounting.utils'
 import './accounting.css'
 import { useLanguage } from '@/hooks/useLanguage'
-import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 
 export default function TrialBalancePage() {
   const { t } = useLanguage()
   const { data, status, asOf, setAsOf, refresh } = useTrialBalance()
 
   const dateInput = (
-    <Input
+    <DateField
       type="date"
       className="tb-date-input"
       value={asOf}

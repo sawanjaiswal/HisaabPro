@@ -8,6 +8,7 @@ import { createCheque } from '../cheque.service'
 import type { ChequeType, CreateChequeInput } from '../cheque.types'
 import { toLocalISODate } from '../../../lib/format'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 
 const TODAY = toLocalISODate(new Date())
@@ -75,7 +76,7 @@ export function AddChequeDrawer({ open, onClose, onSuccess }: AddChequeDrawerPro
           </div>
           <div className="cheque-drawer__field py-0">
             <label className="cheque-drawer__label py-0" htmlFor="chqDate">{t.chequeDateLabel}</label>
-            <Input id="chqDate" type="date" required className="cheque-drawer__input py-0" value={form.chequeDate} onChange={(e) => setForm((f) => ({ ...f, chequeDate: e.target.value }))} />
+            <DateField id="chqDate" type="date" required className="cheque-drawer__input py-0" value={form.chequeDate} onChange={(e) => setForm((f) => ({ ...f, chequeDate: e.target.value }))} />
           </div>
         </div>
         <Button variant="none" type="submit" className="cheque-drawer__submit-btn py-0" disabled={submitting} aria-busy={submitting}>

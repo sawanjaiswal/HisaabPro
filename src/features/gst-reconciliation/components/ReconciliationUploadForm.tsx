@@ -14,6 +14,7 @@ import { ApiError } from '@/lib/api'
 import type { GstrInputItem } from '../reconciliation.types'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 
 interface Props {
@@ -117,7 +118,7 @@ export const ReconciliationUploadForm: React.FC<Props> = ({ onSuccess }) => {
     <form className="recon-upload-form" onSubmit={handleSubmit} noValidate>
       <div className="recon-upload-form__field">
         <label className="recon-upload-form__label" htmlFor="recon-period">{t.reconPeriodLabel}</label>
-        <Input
+        <DateField
           id="recon-period"
           type="month"
           className="recon-upload-form__input"

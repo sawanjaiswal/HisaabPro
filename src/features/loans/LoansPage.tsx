@@ -26,6 +26,7 @@ import './loans.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate } from '../../lib/format'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 
 // Status labels resolved via t at render time — see getLoanStatusLabel()
@@ -190,7 +191,7 @@ export default function LoansPage() {
           <div className="loan-drawer__row py-0">
             <div className="loan-drawer__field py-0">
               <label className="loan-drawer__label py-0" htmlFor="loanStart">{t.dateLabel}</label>
-              <Input id="loanStart" type="date" required className="loan-drawer__input py-0" value={form.startDate} onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))} />
+              <DateField id="loanStart" type="date" required className="loan-drawer__input py-0" value={form.startDate} onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))} />
             </div>
             <div className="loan-drawer__field py-0">
               <label className="loan-drawer__label py-0" htmlFor="loanEmi">{t.emiRsOptional}</label>

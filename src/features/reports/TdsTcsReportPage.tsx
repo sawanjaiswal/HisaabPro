@@ -21,7 +21,7 @@ import './report-shared.css'
 import './report-shared-ui.css'
 import './report-tds-tcs.css'
 import { useLanguage } from '@/hooks/useLanguage'
-import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 
 const TYPE_OPTIONS_BASE = [
   { value: 'all', labelKey: 'all' as const },
@@ -80,7 +80,7 @@ export default function TdsTcsReportPage() {
       <PageContainer variant="list" className="space-y-6">
         {/* Date range inputs */}
         <div className="tds-tcs-date-row">
-          <Input
+          <DateField
             type="date"
             className="tds-tcs-date-input"
             value={filters.from}
@@ -88,7 +88,7 @@ export default function TdsTcsReportPage() {
             aria-label={t.fromDate}
             onChange={(e) => setFilters({ ...filters, from: e.target.value })}
           />
-          <Input
+          <DateField
             type="date"
             className="tds-tcs-date-input"
             value={filters.to}

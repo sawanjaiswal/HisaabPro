@@ -7,7 +7,7 @@
 
 import { ChevronLeft, ChevronRight, Calendar as CalIcon } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { useLanguage } from '@/hooks/useLanguage'
 import { dateToISODate, formatDayLabel, isoDateToLocalDate } from '../appointment.utils'
 
@@ -50,7 +50,7 @@ export function DayPicker({ dateISO, onChange, step = 1 }: DayPickerProps) {
         <span className="text-[var(--fs-sm)] tabular-nums select-none">
           {formatDayLabel(current)}
         </span>
-        <Input
+        <DateField
           type="date"
           value={dateISO}
           onChange={(e) => onChange(e.target.value)}

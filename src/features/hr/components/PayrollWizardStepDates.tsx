@@ -13,8 +13,8 @@
  */
 
 import { useMemo, useState } from 'react'
-import { Calendar, Users } from 'lucide-react'
-import { Input } from '@/components/ui/Input'
+import { Users } from 'lucide-react'
+import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import {
@@ -121,22 +121,20 @@ export function PayrollWizardStepDates({
           {t.payrollStepDatesPeriodHeading as string}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Input
+          <DateField
             label={t.payrollFromDateLabel as string}
             type="date"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
-            icon={<Calendar size={16} aria-hidden="true" />}
             required
             error={errors.fromDate}
             disabled={busy}
           />
-          <Input
+          <DateField
             label={t.payrollToDateLabel as string}
             type="date"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
-            icon={<Calendar size={16} aria-hidden="true" />}
             required
             error={errors.toDate}
             disabled={busy}

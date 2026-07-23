@@ -19,7 +19,7 @@ import { FileText } from 'lucide-react'
 import { useToast } from '@/hooks/useToast'
 import { useGstr3bSummary, useGstr3bExport } from './useGstr3b'
 import type { Gstr3bSection } from './gst-returns.types'
-import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 
 function currentPeriod(): string {
   const now = new Date()
@@ -140,7 +140,7 @@ export default function Gstr3bPage() {
             <label className="gstr1-period-label" htmlFor="gstr3b-period">
               {t.gstr1PeriodLabel}
             </label>
-            <Input
+            <DateField
               id="gstr3b-period"
               type="month"
               className="gstr1-period-input"

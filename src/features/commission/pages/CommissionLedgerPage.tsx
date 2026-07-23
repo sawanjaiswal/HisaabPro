@@ -37,7 +37,7 @@ import { useCommissionLedger } from '../hooks/useCommissionLedger'
 import { currentPeriodYearMonth, formatPeriodLabel } from '../commission.utils'
 import type { CommissionLedgerRowDTO } from '../commission.types'
 import '@/styles/components.commission.css'
-import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 
 function describeBasis(row: CommissionLedgerRowDTO): string {
   if (row.commissionPaise < 0) return `${formatPaise(row.basisPaise)}`
@@ -76,7 +76,7 @@ export default function CommissionLedgerPage() {
             <Calendar size={14} aria-hidden="true" />
             {t.commissionLedgerPeriodLabel}
           </label>
-          <Input
+          <DateField
             id="commission-period"
             type="month"
             className="commission-ledger__period-input"

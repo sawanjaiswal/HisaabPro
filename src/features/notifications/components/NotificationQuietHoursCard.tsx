@@ -5,6 +5,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { useNotificationSettings, useUpdateSettings } from '../useNotifications'
 import '../notifications.css'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 
 /** Validate HH:MM format */
@@ -80,7 +81,7 @@ export function NotificationQuietHoursCard() {
           <label className="notif-quiet-hours__label" htmlFor="quiet-start">
             {t.notifQuietHoursStart ?? 'Start (HH:MM)'}
           </label>
-          <Input
+          <DateField
             id="quiet-start"
             type="time"
             className="notif-quiet-hours__input"
@@ -95,7 +96,7 @@ export function NotificationQuietHoursCard() {
           <label className="notif-quiet-hours__label" htmlFor="quiet-end">
             {t.notifQuietHoursEnd ?? 'End (HH:MM)'}
           </label>
-          <Input
+          <DateField
             id="quiet-end"
             type="time"
             className="notif-quiet-hours__input"

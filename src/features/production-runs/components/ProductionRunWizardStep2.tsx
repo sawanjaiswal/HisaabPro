@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 import type { WizardFormState } from '../production-run.types'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 
 interface Step2Props {
   wizard: WizardFormState
@@ -48,7 +49,7 @@ export function ProductionRunWizardStep2({ wizard, onUpdate, onNext, onBack }: S
 
       <div className="input-group">
         <label htmlFor="pr-date" className="input-label">Production date <span aria-hidden="true">*</span></label>
-        <Input
+        <DateField
           id="pr-date"
           className="input"
           type="date"

@@ -19,6 +19,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate, formatPaise } from '@/lib/format'
 import { OcrReceiptUpload } from './OcrReceiptUpload'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 
 interface AddExpenseDrawerProps {
@@ -149,7 +150,7 @@ export function AddExpenseDrawer({ open, onClose, onCreated, categories, expense
             </div>
             <div className="expense-drawer__field py-0">
               <label className="expense-drawer__label py-0" htmlFor="expDate">{t.dateLabel}</label>
-              <Input id="expDate" type="date" required className="expense-drawer__input py-0"
+              <DateField id="expDate" type="date" required className="expense-drawer__input py-0"
                 value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
             </div>
           </div>

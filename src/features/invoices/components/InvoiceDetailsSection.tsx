@@ -8,6 +8,7 @@ import { PaymentTermsSelector } from './PaymentTermsSelector'
 import type { DocumentFormData, PaymentTerms } from '../invoice.types'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 
 interface InvoiceDetailsSectionProps {
   documentDate: string
@@ -36,7 +37,7 @@ export function InvoiceDetailsSection({
     <div className="line-items-section py-0">
       <div className="line-item-field">
         <label className="label" htmlFor="invoice-date">{t.invoiceDateLabel}</label>
-        <Input
+        <DateField
           id="invoice-date"
           type="date"
           className="input"

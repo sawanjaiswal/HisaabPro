@@ -11,6 +11,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Textarea } from '@/components/ui/Textarea'
 import { Select, SelectItem } from '@/components/ui/Select'
 import { Skeleton } from '@/components/feedback/Skeleton'
@@ -141,7 +142,7 @@ export function PartyFormCustomFields({ form, onUpdate }: Props) {
             )}
 
             {def.fieldType === 'DATE' && (
-              <Input
+              <DateField
                 id={`cf-${def.id}`}
                 type="date"
                 className="input"

@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Select, SelectItem } from '@/components/ui/Select'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -138,14 +139,14 @@ export function CreateAppointmentDrawer({
           />
 
           <div className="grid grid-cols-2 gap-3">
-            <Input
+            <DateField
               label={t.date ?? 'Date'}
               type="date"
               value={formState.form.dateISO}
               onChange={(e) => formState.setField('dateISO', e.target.value)}
               required
             />
-            <Input
+            <DateField
               label={t.startTime ?? 'Start time'}
               type="time"
               value={formState.form.startTime}

@@ -7,6 +7,7 @@ import { toLocalISODate } from '@/lib/format'
 import { FREQUENCY_LABELS } from '../recurring.constants'
 import type { RecurringFrequency, CreateRecurringInput } from '../recurring.types'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 
 interface RecurringCreateDrawerProps {
@@ -205,7 +206,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
             <label htmlFor="rcd-start" className="recurring-drawer__label py-0">
               {t.startDateLabel}
             </label>
-            <Input
+            <DateField
               id="rcd-start"
               type="date"
               className="recurring-drawer__input py-0"
@@ -218,7 +219,7 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
             <label htmlFor="rcd-end" className="recurring-drawer__label py-0">
               {t.endDateOptional}
             </label>
-            <Input
+            <DateField
               id="rcd-end"
               type="date"
               className="recurring-drawer__input py-0"

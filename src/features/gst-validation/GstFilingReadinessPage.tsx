@@ -19,7 +19,7 @@ import { ReadinessSummary } from './components/ReadinessSummary'
 import { CheckRow } from './components/CheckRow'
 import { GST_READINESS_RETURN_TYPES } from './gst-validation.constants'
 import './gst-validation.css'
-import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 
 function currentPeriod(): string {
@@ -50,7 +50,7 @@ export default function GstFilingReadinessPage() {
             <label className="gstv-field__label" htmlFor="gstv-period">
               {t.gstReadinessPeriod}
             </label>
-            <Input
+            <DateField
               id="gstv-period"
               type="month"
               className="gstv-period-input"

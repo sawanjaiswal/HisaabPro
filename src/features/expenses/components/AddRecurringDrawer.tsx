@@ -14,6 +14,7 @@ import type {
 import { toLocalISODate } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 
 const FREQ_OPTIONS: RecurringFrequency[] = ['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY']
@@ -155,7 +156,7 @@ export function AddRecurringDrawer({
         <div className="expense-drawer__row">
           <div className="expense-drawer__field">
             <label className="expense-drawer__label" htmlFor="recStart">First run date</label>
-            <Input id="recStart" type="date" required className="expense-drawer__input"
+            <DateField id="recStart" type="date" required className="expense-drawer__input"
               value={form.nextRunDate}
               onChange={(e) => setForm((f) => ({ ...f, nextRunDate: e.target.value }))} />
           </div>

@@ -9,7 +9,7 @@ import { useState, useCallback } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Drawer } from '@/components/ui/Drawer'
-import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 
 type Preset = 'this_month' | 'last_3_months' | 'this_fy' | 'custom'
 
@@ -117,7 +117,7 @@ export function StatementPeriodPicker({ open, onClose, onConfirm, loading }: Pro
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', marginTop: 'var(--space-2)' }}>
             <div>
               <label className="form-label" htmlFor="stmt-from">{t.stmtFrom}</label>
-              <Input
+              <DateField
                 id="stmt-from"
                 type="date"
                 className="form-input"
@@ -128,7 +128,7 @@ export function StatementPeriodPicker({ open, onClose, onConfirm, loading }: Pro
             </div>
             <div>
               <label className="form-label" htmlFor="stmt-to">{t.stmtTo}</label>
-              <Input
+              <DateField
                 id="stmt-to"
                 type="date"
                 className="form-input"

@@ -12,6 +12,7 @@ import { useCreatePtp, useUpdatePtp } from './usePtp'
 import type { Ptp } from './collections.types'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 
 interface Props {
   open: boolean
@@ -149,7 +150,7 @@ export function PtpRecorderForm({ open, onClose, partyId, partyName, existingPtp
           <label className="form-label" htmlFor="ptp-date">
             {t.ptpDateLabel} *
           </label>
-          <Input
+          <DateField
             id="ptp-date"
             type="date"
             className="form-input"

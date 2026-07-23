@@ -16,7 +16,7 @@ import './report-shared.css'
 import './report-shared-ui.css'
 import './report-tax.css'
 import { useLanguage } from '@/hooks/useLanguage'
-import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 
 const RETURN_TABS: { type: GstReturnType; label: string }[] = [
@@ -112,7 +112,7 @@ export default function GstReturnsPage() {
         {/* Period selector */}
         <div className="gst-period-row">
           <label className="gst-period-label" htmlFor="gst-period">{t.period}</label>
-          <Input
+          <DateField
             id="gst-period"
             type="month"
             className="gst-period-input"

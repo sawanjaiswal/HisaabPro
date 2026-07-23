@@ -10,6 +10,7 @@ import '../coupon.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Select, SelectItem } from '@/components/ui/Select'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 
 interface CouponFormProps {
@@ -179,7 +180,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
       <div className="coupon-form-row">
         <div className="coupon-form-field">
           <label htmlFor="coupon-from">{t.validFrom}</label>
-          <Input
+          <DateField
             id="coupon-from"
             type="datetime-local"
             value={validFrom}
@@ -190,7 +191,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
 
         <div className="coupon-form-field">
           <label htmlFor="coupon-until">{t.validUntilCoupon}</label>
-          <Input
+          <DateField
             id="coupon-until"
             type="datetime-local"
             value={validUntil}

@@ -7,6 +7,7 @@ import { todayIso, parseRateInput } from '../currency.utils'
 import type { SupportedCurrency, SetExchangeRatePayload } from '../currency.types'
 import { BASE_CURRENCY } from '../currency.constants'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 
 interface SetRateFormProps {
@@ -90,7 +91,7 @@ export function SetRateForm({ currencies, onSubmit, onCancel }: SetRateFormProps
         <label className="set-rate-form__label" htmlFor="sr-date">
           {t.effectiveDateLabel}
         </label>
-        <Input
+        <DateField
           id="sr-date"
           type="date"
           className="set-rate-form__input"

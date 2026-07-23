@@ -5,7 +5,7 @@
  * the picker.
  */
 
-import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Select, SelectItem } from '@/components/ui/Select'
 import { useLanguage } from '@/hooks/useLanguage'
 import { DATE_RANGE_PRESET_KEYS } from '../report.constants'
@@ -54,14 +54,14 @@ export function ReportPeriodSelect({
 
       {activePreset === 'custom' && onRangeChange && from && to && (
         <div className="report-period__custom">
-          <Input
+          <DateField
             type="date"
             value={from}
             max={to}
             aria-label={t.fromDate}
             onChange={(e) => onRangeChange({ from: e.target.value, to })}
           />
-          <Input
+          <DateField
             type="date"
             value={to}
             min={from}

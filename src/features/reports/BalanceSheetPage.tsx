@@ -20,7 +20,7 @@ import type { BalanceSheetData, BalanceSheetSection } from './finance.types'
 import './report-finance.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate } from '../../lib/format'
-import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 
 function SectionCard({ section }: { section: BalanceSheetSection }) {
@@ -97,7 +97,7 @@ export default function BalanceSheetPage() {
       <PageContainer variant="list" className="space-y-6">
         <div className="finance-date-bar fade-up">
           <span className="finance-date-bar__label">{t.asOf}</span>
-          <Input type="date" className="finance-date-bar__input" value={asOf} onChange={(e) => setAsOf(e.target.value)} aria-label={t.asOfDate} />
+          <DateField type="date" className="finance-date-bar__input" value={asOf} onChange={(e) => setAsOf(e.target.value)} aria-label={t.asOfDate} />
           <Button variant="none" type="button" className="finance-date-bar__refresh-btn" onClick={refresh} aria-label={t.refreshBalanceSheet}>
             <RefreshCw size={14} aria-hidden="true" />
           </Button>

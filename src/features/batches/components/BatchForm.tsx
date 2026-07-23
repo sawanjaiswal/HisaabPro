@@ -7,6 +7,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 
 interface BatchFormProps {
   productId: string
@@ -51,7 +52,7 @@ export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProp
       <div className="batch-form-row">
         <div className="form-group">
           <label htmlFor="manufacturingDate" className="form-label">{t.mfgDate}</label>
-          <Input
+          <DateField
             id="manufacturingDate"
             type="date"
             className="form-input"
@@ -62,7 +63,7 @@ export function BatchForm({ productId, existingBatch, onSuccess }: BatchFormProp
 
         <div className="form-group">
           <label htmlFor="expiryDate" className="form-label">{t.expiryDate}</label>
-          <Input
+          <DateField
             id="expiryDate"
             type="date"
             className="form-input"

@@ -24,6 +24,7 @@ import './other-income.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate } from '../../lib/format'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 
 const PAGE_LIMIT = 20
@@ -174,7 +175,7 @@ export default function OtherIncomePage() {
             </div>
             <div className="income-drawer__field py-0">
               <label className="income-drawer__label py-0" htmlFor="incDate">{t.dateLabel}</label>
-              <Input id="incDate" type="date" required className="income-drawer__input py-0" value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
+              <DateField id="incDate" type="date" required className="income-drawer__input py-0" value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
             </div>
           </div>
           <div className="income-drawer__field py-0">

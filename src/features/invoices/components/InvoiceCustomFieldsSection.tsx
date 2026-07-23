@@ -12,6 +12,7 @@ import {
 import type { ApplicableDocumentType, DocumentCustomFieldDef } from '@/features/settings/document-custom-fields.service'
 import type { DocumentType } from '../invoice-form.types'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 
 /** Map full DocumentType → the subset that supports custom fields. */
 function toApplicableDocType(t: DocumentType): ApplicableDocumentType | null {
@@ -116,7 +117,7 @@ export function InvoiceCustomFieldsSection({ documentType, values, errors, onCha
               />
             )}
             {def.fieldType === 'DATE' && (
-              <Input
+              <DateField
                 type="date"
                 className="input"
                 value={typeof raw === 'string' ? raw : ''}

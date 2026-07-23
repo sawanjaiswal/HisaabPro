@@ -6,6 +6,7 @@ import { TemplatePicker } from './TemplatePicker'
 import { RECURRING_FREQUENCIES, FREQUENCY_LABELS } from '../recurring.constants'
 import type { RecurringFormState, FormErrors } from '../hooks/useRecurringForm'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -123,7 +124,7 @@ export function RecurringFormFields({
             {t.recurringFieldStartDate ?? 'Start Date'}
             <span className="rf-required" aria-hidden="true"> *</span>
           </label>
-          <Input
+          <DateField
             id="rf-start"
             type="date"
             className={`rf-input${errors.startDate ? ' rf-input--error' : ''}`}
@@ -143,7 +144,7 @@ export function RecurringFormFields({
           <label htmlFor="rf-end" className="rf-label">
             {t.recurringFieldEndDate ?? 'End Date (optional)'}
           </label>
-          <Input
+          <DateField
             id="rf-end"
             type="date"
             className={`rf-input${errors.endDate ? ' rf-input--error' : ''}`}

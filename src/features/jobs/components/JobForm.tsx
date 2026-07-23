@@ -11,6 +11,7 @@ import type { CreateJobInput, CreateJobItemInput } from '../api/jobs.api.types'
 import type { JobDetail } from '../jobs.types'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 
 interface JobFormProps {
   initialData?: JobDetail
@@ -150,7 +151,7 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: Jo
       {/* Scheduled date */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
         <label className="label" htmlFor="job-scheduled">{t.jobScheduledLabel}</label>
-        <Input
+        <DateField
           id="job-scheduled"
           type="datetime-local"
           className="input"

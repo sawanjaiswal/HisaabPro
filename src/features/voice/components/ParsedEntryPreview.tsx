@@ -5,6 +5,7 @@ import { Select, SelectItem } from '@/components/ui/Select'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { ParsedVoiceEntry, VoiceIntent, VoicePaymentMode } from '../voice.types'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 
 const PAYMENT_MODES: VoicePaymentMode[] = ['CASH', 'UPI', 'BANK_TRANSFER', 'CHEQUE', 'CARD']
 const PAYMENT_LABELS: Record<VoicePaymentMode, string> = {
@@ -81,7 +82,7 @@ export function ParsedEntryPreview({ draft, onChange, onConfirm, onCancel, savin
 
       <div className="voice-preview__field">
         <label className="voice-preview__label" htmlFor="voiceDate">{t.dateLabel}</label>
-        <Input
+        <DateField
           id="voiceDate" type="date" className="voice-preview__input" value={draft.dateISO}
           onChange={(e) => onChange({ dateISO: e.target.value })}
         />

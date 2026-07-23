@@ -2,7 +2,7 @@
 
 import { useLanguage } from '@/hooks/useLanguage'
 import { QuietHoursNotice } from './QuietHoursNotice'
-import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 
 interface Props {
@@ -59,7 +59,7 @@ export function CampaignWizardStep4Schedule({ sendNow, scheduledAt, onSendNowCha
           <label htmlFor="schedule-datetime" style={labelStyle}>
             {t.marketingScheduleDatetimeLabel} *
           </label>
-          <Input
+          <DateField
             id="schedule-datetime"
             type="datetime-local"
             min={minDatetime}

@@ -2,7 +2,7 @@
  *
  * Drawer-wrapped filter form for /settings/audit. Mirrors the BE query
  * surface: q, action, entityType, userId, dateFrom, dateTo. Date fields
- * use native `<Input type="date">` (ISO yyyy-mm-dd, what the BE accepts).
+ * use native `<DateField type="date">` (ISO yyyy-mm-dd, what the BE accepts).
  *
  * State is held locally until the user taps "Apply", then applied to the
  * parent hook in one shot — prevents partial filter changes from kicking
@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Select, SelectItem } from '@/components/ui/Select'
 
 const ALL = '__all__' as const
@@ -151,14 +152,14 @@ export function AuditFilterDrawer({
           autoComplete="off"
         />
 
-        <Input
+        <DateField
           label={t.auditDateFromLabel}
           type="date"
           value={draft.dateFrom ?? ''}
           onChange={(e) => update('dateFrom', e.target.value)}
         />
 
-        <Input
+        <DateField
           label={t.auditDateToLabel}
           type="date"
           value={draft.dateTo ?? ''}

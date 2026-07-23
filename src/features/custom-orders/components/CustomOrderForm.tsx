@@ -13,6 +13,7 @@ import type { CreateCustomOrderInput, CreateCustomOrderItemInput } from '../api/
 import type { CustomOrderDetail } from '../custom-orders.types'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 
 interface CustomOrderFormProps {
   initialData?: CustomOrderDetail
@@ -105,7 +106,7 @@ export function CustomOrderForm({ initialData, onSubmit, isSubmitting, submitLab
       <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: 140, display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
           <label className="label" htmlFor="order-delivery">Delivery Date &amp; Time</label>
-          <Input id="order-delivery" type="datetime-local" className="input" value={deliveryAt} onChange={(e) => setDeliveryAt(e.target.value)} />
+          <DateField id="order-delivery" type="datetime-local" className="input" value={deliveryAt} onChange={(e) => setDeliveryAt(e.target.value)} />
         </div>
         <div style={{ flex: 1, minWidth: 120, display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
           <label className="label" htmlFor="order-slot">Slot</label>

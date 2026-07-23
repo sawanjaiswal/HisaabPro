@@ -11,6 +11,7 @@ import { upsertBudget, updateBudget } from '../services/budget.service'
 import type { ExpenseCategory, BudgetUsageItem } from '../expense.types'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 
 interface AddBudgetDrawerProps {
@@ -91,7 +92,7 @@ export function AddBudgetDrawer({
 
         <div className="expense-drawer__field">
           <label className="expense-drawer__label" htmlFor="budgetMonth">Month</label>
-          <Input
+          <DateField
             id="budgetMonth"
             type="month"
             required

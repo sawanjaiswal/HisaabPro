@@ -7,6 +7,7 @@
 
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Select, SelectItem } from '@/components/ui/Select'
 import { useLanguage } from '@/hooks/useLanguage'
 import { validateRecurrence } from '../recurrence.utils'
@@ -138,7 +139,7 @@ export function RecurrenceFields({ value, onChange, startISO }: RecurrenceFields
                 onKeyDown={(e) => { if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault() }}
               />
             ) : (
-              <Input
+              <DateField
                 label={t.until ?? 'Until'}
                 type="date"
                 value={value.until}

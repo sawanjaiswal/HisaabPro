@@ -26,6 +26,7 @@ import './loans.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate } from '../../lib/format'
 import { Input } from '@/components/ui/Input'
+import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 
 // TXN_TYPE_LABELS resolved via t at render time — see getTxnTypeLabel()
@@ -198,7 +199,7 @@ export default function LoanDetailPage() {
             </div>
             <div className="loan-drawer__field py-0">
               <label className="loan-drawer__label py-0" htmlFor="txnDate">{t.dateLabel}</label>
-              <Input id="txnDate" type="date" required className="loan-drawer__input py-0" value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
+              <DateField id="txnDate" type="date" required className="loan-drawer__input py-0" value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
             </div>
           </div>
           <div className="loan-drawer__field py-0">
