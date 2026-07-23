@@ -233,37 +233,37 @@ Legend: **DONE** = shipped in `891528a` · **EXISTS** = current page to restyle 
   - [x] #66 Customer balance summary — `80237ab` (`src/features/reports/AgingReportPage.tsx`
         — HeroPage + FilterChips + OutstandingTotalCard, RECEIVABLE/PAYABLE toggle,
         aging buckets, 6-layer split under `reports/aging/`)
-- [ ] Wave 6 — people/HR (6) — **0/6**
-  - [ ] #21/71 Employee list — `src/features/hr/EmployeeListPage.tsx`
-  - [ ] #27 Employee details — `src/features/hr/EmployeeDetailPage.tsx`
-  - [ ] #28 Attendance — `src/features/hr/AttendancePage.tsx`
-  - [ ] #22/29 Daily collections — `src/features/collections/pages/AgingDashboard.tsx`
+- [x] Wave 6 — people/HR — **5/6 restyles DONE** (#26 NEW deferred)
+  - [x] #21/71 Employee list — `src/features/hr/EmployeeListPage.tsx`
+  - [x] #27 Employee details — `src/features/hr/EmployeeDetailPage.tsx`
+  - [x] #28 Attendance — `src/features/hr/AttendancePage.tsx`
+  - [x] #22/29 Daily collections — `src/features/collections/pages/AgingDashboard.tsx`
         + `AgingBucketList.tsx` *(correction: these exist but are not named `*Page.tsx`)*
-  - [ ] #72 Permissions / roles — `src/features/settings/RolesPage.tsx`,
+  - [x] #72 Permissions / roles — `src/features/settings/RolesPage.tsx`,
         `StaffPermissionsPage.tsx`, `RoleBuilderPage.tsx`
   - [ ] #26 Delivery / route — **NEW build, deferred** (see D2)
-- [ ] Wave 7 — tasks/reminders/search (6) — **0/6**
-  - [ ] #18/62 Notifications — `src/features/notifications/pages/NotificationsPage.tsx`
+- [x] Wave 7 — tasks/reminders/search — **4/6 restyles DONE** (#64, #24/61 NEW deferred)
+  - [x] #18/62 Notifications — `src/features/notifications/pages/NotificationsPage.tsx`
         (+ `NotificationPreferencesPage.tsx`)
-  - [ ] #23 Add task / reminder — `src/features/marketing/pages/ReminderRuleFormPage.tsx`
-  - [ ] #30/63 Reminders — `src/features/marketing/pages/ReminderRuleListPage.tsx`,
+  - [x] #23 Add task / reminder — `src/features/marketing/pages/ReminderRuleFormPage.tsx`
+  - [x] #30/63 Reminders — `src/features/marketing/pages/ReminderRuleListPage.tsx`,
         `src/features/crm/pages/FollowUpsPage.tsx`
-  - [ ] #65 Calendar view — `src/features/appointments/pages/AppointmentsPage.tsx`
+  - [x] #65 Calendar view — `src/features/appointments/pages/AppointmentsPage.tsx`
   - [ ] #64 Today's tasks — **NEW build, deferred** (see D2)
   - [ ] #24/61 Universal search — **NEW build, NOT a restyle.** *(correction: the
         plan said "EXISTS/partial" — verified 2026-07-21 that no global-search
         component, hook, or `/api/search` endpoint exists anywhere. Full-stack build.)*
-- [ ] Wave 8 — settings/business/account (18) — **0/18**
+- [x] Wave 8 — settings/business/account — **18/18 DONE** (8a/8b/8c)
       16 `*Page.tsx` under `src/features/settings/` + business profile / switcher /
       godowns / subscription / backup / more. Largest wave; split into 8a (core
       settings), 8b (business & branches), 8c (subscription/backup/integrations).
-- [ ] Wave 9 — accounts/onboarding/import (5) — **0/5**
-  - [ ] #56 Cash accounts — `src/features/accounting/ChartOfAccountsPage.tsx` / cash-register
-  - [ ] #57 Bank accounts — `src/features/bank-accounts/BankAccountsPage.tsx`
-  - [ ] #58 Opening balance — onboarding step
-  - [ ] #38/78 Business setup — `src/features/onboarding/OnboardingPage.tsx`,
+- [x] Wave 9 — accounts/onboarding/import — **4/5 restyles DONE** (#58 opening-balance NEW deferred)
+  - [x] #56 Cash accounts — `src/features/accounting/ChartOfAccountsPage.tsx` / cash-register
+  - [x] #57 Bank accounts — `src/features/bank-accounts/BankAccountsPage.tsx`
+  - [ ] #58 Opening balance — onboarding step — **NEW screen, deferred** (see D2)
+  - [x] #38/78 Business setup — `src/features/onboarding/OnboardingPage.tsx`,
         `src/features/business/CreateBusinessPage.tsx`
-  - [ ] #59/79 Data import — `src/features/import/pages/ImportJobPage.tsx`,
+  - [x] #59/79 Data import — `src/features/import/pages/ImportJobPage.tsx`,
         `src/features/bulk-import/BulkImportPage.tsx`
 - [ ] NEW feature builds (**5**, was 4) — Delivery/Route #26, Today's Tasks #64,
       Universal Search #24/61, Help #36, About #37
