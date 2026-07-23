@@ -33,7 +33,7 @@ import logger from '../../lib/logger.js'
 // itself, so the tx object passed by $transaction works without
 // prisma-client-extension propagation.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type TxLike = Pick<Prisma.TransactionClient, '$executeRaw'> & {
+type TxLike = Pick<Prisma.TransactionClient, '$executeRaw' | '$queryRaw'> & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   auditLog: { create: (args: { data: any }) => Promise<unknown> }
 }
@@ -47,10 +47,13 @@ export interface EraseImportDataResult {
  * Scrub all import PII for `userId`. Idempotent — re-running is a no-op
  * because subsequent UPDATEs match 0 rows.
  *
- * NOTE: Audit log rows are NOT deleted. The user's identity is already
- * de-referenced (`userId` becomes a dangling FK once the User row is
- * deleted by the parent pipeline — `onDelete: Restrict` on ImportJob.user
- * means the parent must call this BEFORE deleting the User).
+ * NOTE: Audit log rows are NOT deleted. The user's identity is de-referenced
+ * from every AuditLog row (step 2b sets `userId = NULL`) so the parent pipeline
+ * can later delete the User — `AuditLog.userId` is `onDelete: Restrict`, so a
+ * lingering reference would BLOCK the delete (it does not "dangle"). The
+ * erasure record this service writes is itself system-scoped (`userId` null,
+ * `systemActor` set) for the same reason. `ImportJob.user` is also Restrict, so
+ * the parent must call this BEFORE deleting the User.
  */
 export async function eraseImportData(
   userId: string,
@@ -90,24 +93,37 @@ export async function eraseImportData(
     rowsScrubbed: Number(rowsScrubbed),
   }
 
-  // 3) Immutable erasure record — payload references userId only,
-  //    never raw cell content (S9). businessId is unknown at this
-  //    layer (one user may span businesses) so we leave it on the
-  //    caller to provide via top-level user-erasure orchestrator.
-  await tx.auditLog.create({
-    data: {
-      businessId: 'SYSTEM',
-      userId,
-      entityType: 'ImportJob',
-      entityId: userId,
-      action: 'DELETE',
-      changes: {
-        event: 'import_job.erased',
-        jobsScrubbed: result.jobsScrubbed,
-        rowsScrubbed: result.rowsScrubbed,
-      },
-    },
-  })
+  // 3) Immutable erasure record(s). AuditLog.businessId is a NOT-NULL FK to
+  //    Business (onDelete Cascade), so a literal 'SYSTEM' businessId has no
+  //    backing row and throws P2003 at insert. Derive the real businesses from
+  //    the user's own ImportJobs (the scrub above does not touch businessId) so
+  //    the record is FK-valid AND correctly scoped — one record per business
+  //    the user imported into. The FK userId column stays NULL (the erased user
+  //    is referenced in the payload only, per S9 + the header note); the actor
+  //    is recorded via systemActor. Gated on an actual scrub so idempotent
+  //    re-runs write no duplicate record.
+  if (result.jobsScrubbed > 0 || result.rowsScrubbed > 0) {
+    const businesses = await tx.$queryRaw<Array<{ businessId: string }>>`
+      SELECT DISTINCT "businessId" FROM "ImportJob" WHERE "userId" = ${userId}
+    `
+    for (const { businessId } of businesses) {
+      await tx.auditLog.create({
+        data: {
+          businessId,
+          userId: null,
+          systemActor: 'dpdp-erasure',
+          entityType: 'ImportJob',
+          entityId: userId,
+          action: 'DELETE',
+          changes: {
+            event: 'import_job.erased',
+            jobsScrubbed: result.jobsScrubbed,
+            rowsScrubbed: result.rowsScrubbed,
+          },
+        },
+      })
+    }
+  }
 
   logger.info('import.erasure.done', { userId, ...result })
   return result

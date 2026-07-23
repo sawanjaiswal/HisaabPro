@@ -4,7 +4,8 @@
   "_gate": "This baseline gates Phase 2 (enforce): every site must be audited (reviewed for a WHERE business_id predicate) before SCOPED_PRISMA_ENFORCE=enforce ships. Until then a site is baseline-frozen but not yet certified tenant-safe.",
   "_generated": "2026-07-19",
   "_widened": "2026-07-21 (M-4a): the linter's walk root moved from server/src to the repo root, so scripts/, server/scripts/ and server/prisma/ are linted for the first time. server/scripts/backfill-money-paise.ts is the only file that surfaced. Its 8 sites are pre-existing and deliberately cross-tenant \u2014 it is a one-off rupees-to-paise migration that must rewrite every row in the table regardless of owner, so a business_id predicate would make it wrong, not safe. Frozen at its current count, NOT certified: the _gate above still applies before enforce ships.",
-  "_total": 88,
+  "_reviewed_2026_07_23": "erasure.service.ts raised 4\u21926: the $executeRaw scrubs were already frozen; the new $queryRaw (SELECT DISTINCT businessId FROM ImportJob WHERE userId = $1) is scoped by the erased userId, NOT by business. This is a platform-wide DPDP erasure sweep that must span every business the user imported into \u2014 a business_id predicate would make it wrong, not safe (same rationale as backfill-money-paise). Raw SQL is deliberately chosen here so a future ImportJob scoped-models entry can never silently tenant-narrow the sweep and under-erase. Reviewed tenant-safe. (The +2 is 1 real query + 1 token from widening the TxLike Pick to include '$queryRaw'.)",
+  "_total": 90,
   "sites": {
     "server/scripts/backfill-money-paise.ts": 8,
     "server/src/app.ts": 1,
@@ -30,7 +31,7 @@
     "server/src/services/import/commit.helpers.ts": 5,
     "server/src/services/import/commit.resolutions.ts": 1,
     "server/src/services/import/dedup/product-dedup.ts": 1,
-    "server/src/services/import/erasure.service.ts": 4,
+    "server/src/services/import/erasure.service.ts": 6,
     "server/src/services/import/invoice/party-resolver.ts": 2,
     "server/src/services/import/invoice/product-resolver.ts": 1,
     "server/src/services/loyalty/loyalty-redeem.service.ts": 1,

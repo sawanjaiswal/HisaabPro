@@ -12,7 +12,7 @@
  *   #5 — cross-tenant existence-leak (biz-A ref to biz-B invoice) ...... COVERED
  *   #6 — advisory-lock race (Doc-level concurrent commits) ............. TODO (live pg)
  *   #7 — mid-tx crash idempotency (resume on importJobId+rowIndex uniq)  TODO (live pg)
- *   #8 — DPDP cascade (Payment.importedBy SetNull) ..................... TODO (live pg)
+ *   #8 — DPDP cascade (eraseImportData scrub + FK-valid audit) ......... COVERED (live pg)
  *   #9 — 50×Rs250 vs Rs10,000 outstanding → 40 + 10 OVER_ALLOCATION .... COVERED
  *   #10 — client floor 7.1.3 (per-entity helper) ....................... COVERED (helper unit)
  *   #11 — PII-safe audit (no partyId / amount / reference in row) ...... COVERED
@@ -302,4 +302,10 @@ describe('PR-D4 #13 enforce-audit-coverage --block exit 0', () => {
 describe.todo('PR-D4 #2 ALLOCATION_INTERNAL_CONFLICT — concurrent commits hit same invoice')
 describe.todo('PR-D4 #6 advisory-lock race — Doc-level pg_advisory_xact_lock contention')
 describe.todo('PR-D4 #7 mid-tx crash idempotency — resume on Payment.(importJobId,rowIndex) unique')
-describe.todo('PR-D4 #8 DPDP cascade — erase user → ImportJobRow + Payment.importedBy SetNull')
+// PR-D4 #8 DPDP cascade — eraseImportData scrub + FK-valid immutable audit is
+// now covered live in src/__tests__/integration/import-erasure.contract.test.ts
+// (that suite also surfaced + fixed the businessId:'SYSTEM' / userId-Restrict FK
+// bugs the structural mock hid). The remaining half — a full User delete driving
+// Payment.importedBy SetNull — is blocked on the unbuilt user-erasure
+// orchestrator (erasure.service.ts:116), NOT on the harness; keep it a todo.
+describe.todo('PR-D4 #8b User-delete → Payment.importedBy SetNull (needs user-erasure orchestrator)')
