@@ -147,7 +147,7 @@ with a dedicated test (`__tests__/switch-business-limiter.test.ts`). G9 met.
 - **Fix:** per-page, against `PAGE_AUDIT_CHECKLIST.md` A→N.
 - **Effort:** M (batched by feature area, ~5 batches).
 
-#### P1.3 · Offline queue replay — client contract ✅ covered; server half remains
+#### P1.3 · Offline queue replay — ✅ **DONE** (client + server, 2026-07-23)
 - **Evidence (was):** offline *discipline* was clean but no test queued a mutation
   offline → went online → asserted single application.
 - **Done 2026-07-23** (commit `c744bead`, `src/lib/__tests__/offline-replay.test.ts`):
@@ -156,9 +156,15 @@ with a dedicated test (`__tests__/switch-business-limiter.test.ts`). G9 met.
   stable idempotency key, queue drained; double-replay is a no-op; 401 halts and
   preserves order; 4xx dead-letters + fires the rejection bridge. Runs against the
   real `processQueue` with an in-memory Dexie stand-in (jsdom has no IndexedDB).
-- **Remaining (server half):** a live-server integration test asserting server-side
-  single application + correct GL when the SAME idempotency key arrives twice. Needs
-  the running Express + DB harness (shares the Phase 7 #150 dependency). **Effort:** M.
+- **Server half — done 2026-07-23** (commit `a9811b4c`,
+  `server/src/__tests__/integration/idempotency-replay.contract.test.ts`): a real-DB
+  integration test drives `POST /api/payments` through the real `idempotencyCheck`
+  middleware — the same key replayed creates **one** Payment (cached 200, same id,
+  outstanding debited once); two/zero keys create two; and the same key from a
+  different user is not a hit (no cross-tenant cached-response leak). It did **not**
+  need the Phase 7 #150 connection-drop harness — only the existing contract harness,
+  which was itself resurrected the same day (commit `8b5d85da`: it was red at
+  collection — see the integration-suite notes / memory).
 
 ### P2 — Debt burn-down
 
@@ -274,7 +280,7 @@ Per D2, the NEW screens stay deferred pending competitor comparison
 | **B** | P2.1 split 5 non-high-risk oversized files · P2.2 drain shell debt **and promote both checks to errors** | G6 | unblocks clean commits |
 | **C** | P1.2 UI-state sweep — auth → onboarding → BOM/production → marketing → POS | G7 | first-impression quality |
 | **D** | P4 design sweep — Wave 5 → 6 → 7 → 9 → 8a/8b/8c | G10 | product polish |
-| **E** | P1.3 offline-replay integration test · P3.1 todo tests · P3.2 ratchet to 0 | G5, coverage | hygiene |
+| **E** | ~~P1.3 offline-replay integration test~~ ✅ done (`a9811b4c`) · P3.1 todo tests · P3.2 ratchet to 0 | G5, coverage | hygiene |
 | **F** | 5 NEW screens (after competitor comparison per D2) | — | net-new surface |
 
 **Critical path to "onboard multiple companies safely" = Now → Wave A.**
