@@ -4,9 +4,12 @@
  * enforce-audit-coverage.mjs — Audit Coverage SSOT enforcer (G1 closure).
  *
  * Reads `server/src/lib/audit/audit-coverage.ts` AUDIT_COVERED_SERVICES list
- * and verifies each named service file contains at least one
- * `auditLog.create(` or `auditLog.createMany(` invocation (tx.auditLog.create
- * inside a $transaction, or prisma.auditLog.create as a standalone write).
+ * and verifies each named service file contains at least one audit-write:
+ * a raw `auditLog.create(` / `auditLog.createMany(` invocation
+ * (tx.auditLog.create inside a $transaction, or prisma.auditLog.create as a
+ * standalone write), a call to the canonical `createAuditEntry(` writer
+ * (services/settings/audit.ts — the SSOT audit-write; routing through it is the
+ * PREFERRED form and must count, not be penalised), or an `audit-emit` wrapper.
  *
  * Mode (PR1B): REPORT-ONLY. Prints services missing audit-write. Exit 0.
  *               PR7 flips to BLOCKING when each service is wired.
@@ -30,10 +33,11 @@ const COVERAGE_FILE = join(SERVER_SRC, 'lib', 'audit', 'audit-coverage.ts')
 const BLOCKING = process.argv.includes('--block')
 
 // Accept any identifier holding a prisma-like surface (tx, prisma, db,
-// client, ...) so audit-emit wrappers count. Also accept named import
-// of `emit*` helpers from `audit-emit` (Phase 7 audit-emit wrappers).
+// client, ...) so audit-emit wrappers count. Also accept a call to the
+// canonical `createAuditEntry(` writer (SSOT — services/settings/audit.ts),
+// and a named import of `emit*` helpers from `audit-emit` (Phase 7 wrappers).
 const AUDIT_CALL_RE =
-  /(?:\b\w+\.auditLog\.(?:create|createMany)\s*\(|from\s+['"][^'"]*audit-emit[^'"]*['"]|\bemit(?:Uploaded|Parsed|RowDropped|DedupResolved|Committed|Expired|ParseTimeout|Cancelled)\s*\()/
+  /(?:\b\w+\.auditLog\.(?:create|createMany)\s*\(|\bcreateAuditEntry\s*\(|from\s+['"][^'"]*audit-emit[^'"]*['"]|\bemit(?:Uploaded|Parsed|RowDropped|DedupResolved|Committed|Expired|ParseTimeout|Cancelled)\s*\()/
 
 function parseCoverageList() {
   const src = readFileSync(COVERAGE_FILE, 'utf8')

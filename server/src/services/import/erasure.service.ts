@@ -26,6 +26,7 @@
 
 import type { Prisma } from '@prisma/client'
 import logger from '../../lib/logger.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 // Structural type — accepts ExtendedPrismaClient OR a $transaction tx.
 // We require the raw-SQL escape AND the audit-log writer (immutable
@@ -107,10 +108,11 @@ export async function eraseImportData(
       SELECT DISTINCT "businessId" FROM "ImportJob" WHERE "userId" = ${userId}
     `
     for (const { businessId } of businesses) {
-      await tx.auditLog.create({
-        data: {
+      // Canonical writer (SSOT) — it owns the businessId/userId/systemActor
+      // invariants; `tx` keeps the record inside the caller's transaction.
+      await createAuditEntry(
+        {
           businessId,
-          userId: null,
           systemActor: 'dpdp-erasure',
           entityType: 'ImportJob',
           entityId: userId,
@@ -121,7 +123,8 @@ export async function eraseImportData(
             rowsScrubbed: result.rowsScrubbed,
           },
         },
-      })
+        tx
+      )
     }
   }
 

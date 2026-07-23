@@ -98,6 +98,23 @@ export const REGISTRY = [
     note: "clsx+twMerge wrapper. Don't re-roll className concatenation.",
   },
   {
+    capability: "write an AuditLog entry",
+    module: "server/src/services/settings/audit.ts",
+    exports: ["createAuditEntry", "listAuditLog"],
+    // Discovery-only (mirrors the scoped-Prisma injector row): ~48 service
+    // files hand-roll `prisma.auditLog.create({...})` inline (grandfathered).
+    // A `forbidden` guard would fire on all of them at once and demand freezing
+    // ~47 baseline entries — the migration to route them through this writer is
+    // a GOLD_STANDARD hardening follow-up, not a gate flip. Surfaced here so new
+    // code reuses createAuditEntry, which owns the two FK invariants inline
+    // writers keep getting wrong: businessId is a NOT-NULL FK (no literal
+    // 'SYSTEM'), and a system actor leaves userId NULL + names itself via
+    // systemActor (AuditLog.userId is onDelete:Restrict — a stray ref blocks the
+    // user's later deletion). See .claude/fix-trace-erasure-audit-fk.md.
+    forbidden: [],
+    note: "Canonical AuditLog writer. tx-aware (pass a tx for atomic rollback) + system-actor-capable. enforce-audit-coverage.mjs counts a createAuditEntry() call as coverage.",
+  },
+  {
     capability: "persist a small local UI preference across app restarts",
     module: "src/lib/prefs-store.ts",
     exports: ["getPref", "setPref", "removePref", "clearPrefs"],
