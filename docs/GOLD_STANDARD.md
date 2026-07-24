@@ -140,9 +140,11 @@ with a dedicated test (`__tests__/switch-business-limiter.test.ts`). G9 met.
 
 #### P1.2 · UI-state coverage — 109 of 190 pages incomplete
 - **Evidence (`scripts/scan-ui-states.mjs`, 2026-07-24):** total=195, gold=79,
-  gaps=116. Remaining i18n gap by area: **cash-register (1)** in-app,
-  plus static `pages`/`landing`/`storefront` (marketing, English-only by design).
-  Auth + BOM + production-runs + custom-orders + jobs closed this pass. **Correction:**
+  gaps=116. **In-app i18n gap now 0.** The only remaining i18n-flagged rows are
+  thin route wrappers (`sales/create/*` — 6-line files delegating to
+  `CreateInvoicePage`, which owns the i18n) and static `pages`/`landing`/
+  `storefront` (marketing, English-only by design). Auth + BOM + production-runs
+  + custom-orders + jobs + cash-register all closed this pass. **Correction:**
   an earlier note here claimed i18n hit 0 — that was premature; the scanner
   surfaced feature areas the 2026-07-21 audit never listed.
 - **⚠️ The 2026-07-21 offender ranking was stale.** Re-measuring each area before
@@ -177,13 +179,25 @@ with a dedicated test (`__tests__/switch-business-limiter.test.ts`). G9 met.
      keys (column headers, FAB/row/status arias, loading/error titles). Status
      pill + list-page filter label maps moved into components. scan-ui-states:
      jobs i18n 2 → 0.
-  6. **Onboarding, marketing, POS** — re-measured 2026-07-24 as **already i18n'd**
+  6. **Cash-register** (15 components) — ✅ **i18n DONE 2026-07-24** (commit
+     `e4f80e5d`). The `cashReg*` keys were authored long ago but never wired into
+     the calculator/history/dialog components (a classic reuse gap). Reused ~35
+     existing keys + globals; added 32 gap keys to `ext20` (EN + HI) for toasts,
+     aria labels, keypad key names, evaluator error strings, and dialog copy.
+     Module-scope label maps (`ERROR_LABELS`, `DIRECTION_OPTIONS`, `KEY_LABELS`,
+     `emptyLabel`) moved into components to resolve against `t`. scan-ui-states:
+     cash-register i18n 1 → 0.
+  7. **Onboarding, marketing, POS** — re-measured 2026-07-24 as **already i18n'd**
      (the audit's claim was wrong). No work needed; PageContainer/responsive gaps,
      where they exist, are tracked under the Wave-B responsive sweep, not here.
 - **Fix:** per-page, against `PAGE_AUDIT_CHECKLIST.md` A→N.
-- **Status:** i18n sub-sweep all but closed. Remaining in-app: **cash-register
-  (1 page)** — the final batch. Static marketing pages
-  (`pages`/`landing`/`storefront`) are English-only by design and out of scope.
+- **Status:** ✅ **in-app i18n sub-sweep CLOSED (2026-07-24).** Every built
+  feature area is fully `t.*`-routed EN + HI. The scanner's residual i18n-flagged
+  rows are thin route wrappers (`sales/create/*`, which delegate to an already-
+  i18n'd page) and static marketing pages (`pages`/`landing`/`storefront`,
+  English-only by design) — both out of scope. Next in P1.2: the Wave-D
+  responsive / `PageContainer` sweep (loading/error/empty state coverage), tracked
+  separately.
 
 #### P1.3 · Offline queue replay — ✅ **DONE** (client + server, 2026-07-23)
 - **Evidence (was):** offline *discipline* was clean but no test queued a mutation
