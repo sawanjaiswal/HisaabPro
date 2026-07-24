@@ -7,6 +7,7 @@ import { formatVersionBadge } from '../../bom/bom.utils'
 import type { BomSummaryDTO } from '../../bom/bom.types'
 import type { WizardFormState } from '../production-run.types'
 import { Input } from '@/components/ui/Input'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface Step1Props {
   wizard: WizardFormState
@@ -15,6 +16,7 @@ interface Step1Props {
 }
 
 export function ProductionRunWizardStep1({ wizard, onUpdate, onNext }: Step1Props) {
+  const { t } = useLanguage()
   const [boms, setBoms] = useState<BomSummaryDTO[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -40,8 +42,8 @@ export function ProductionRunWizardStep1({ wizard, onUpdate, onNext }: Step1Prop
 
   return (
     <div className="pr-wizard-step">
-      <h2 className="pr-wizard-step__title">Choose Recipe</h2>
-      <p className="pr-wizard-step__desc">Select a Bill of Materials to run production against.</p>
+      <h2 className="pr-wizard-step__title">{t.prStepChooseRecipe}</h2>
+      <p className="pr-wizard-step__desc">{t.prChooseRecipeDesc}</p>
 
       {loading && (
         <div className="pr-wizard-bom-list">
@@ -52,18 +54,18 @@ export function ProductionRunWizardStep1({ wizard, onUpdate, onNext }: Step1Prop
       )}
 
       {!loading && error && (
-        <p className="pr-wizard-error" role="alert">Failed to load recipes. Please go back and try again.</p>
+        <p className="pr-wizard-error" role="alert">{t.prLoadRecipesError}</p>
       )}
 
       {!loading && !error && boms.length === 0 && (
-        <p className="pr-wizard-empty">No active recipes found. Create a BOM first.</p>
+        <p className="pr-wizard-empty">{t.prNoActiveRecipes}</p>
       )}
 
       {!loading && !error && boms.length > 0 && (
         <div
           className="pr-wizard-bom-list"
           role="radiogroup"
-          aria-label="Select a recipe"
+          aria-label={t.prSelectRecipe}
         >
           {boms.map((bom) => (
             <label
@@ -77,7 +79,7 @@ export function ProductionRunWizardStep1({ wizard, onUpdate, onNext }: Step1Prop
                 checked={wizard.bomId === bom.id}
                 onChange={() => selectBom(bom)}
                 className="sr-only"
-                aria-label={`Select ${bom.name}`}
+                aria-label={`${t.prSelectLabel} ${bom.name}`}
               />
               <div className="pr-wizard-bom-option__body">
                 <div className="pr-wizard-bom-option__product">{bom.productName}</div>
@@ -85,8 +87,8 @@ export function ProductionRunWizardStep1({ wizard, onUpdate, onNext }: Step1Prop
               </div>
               <div className="pr-wizard-bom-option__meta">
                 <span className="badge badge--neutral">{formatVersionBadge(bom.version)}</span>
-                {bom.isDefault && <span className="badge badge--primary">Default</span>}
-                <span className="pr-wizard-bom-option__count">{bom.componentCount} parts</span>
+                {bom.isDefault && <span className="badge badge--primary">{t.defaultLabel}</span>}
+                <span className="pr-wizard-bom-option__count">{bom.componentCount} {t.prParts}</span>
               </div>
             </label>
           ))}
@@ -99,9 +101,9 @@ export function ProductionRunWizardStep1({ wizard, onUpdate, onNext }: Step1Prop
           variant="primary"
           disabled={!canProceed}
           onClick={onNext}
-          aria-label="Continue to quantity and date"
+          aria-label={t.prContinueToQty}
         >
-          Next
+          {t.next}
         </Button>
       </div>
     </div>

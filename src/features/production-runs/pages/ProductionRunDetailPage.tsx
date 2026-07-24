@@ -5,14 +5,16 @@ import { ArrowLeft } from 'lucide-react'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { useProductionRunDetail } from '../hooks/useProductionRuns'
 import { ProductionRunCancelButton } from '../components/ProductionRunCancelButton'
-import { PR_STATUS_BADGE_CLASS, PR_STATUS_LABELS } from '../production-run.constants'
+import { PR_STATUS_BADGE_CLASS } from '../production-run.constants'
 import { formatRunDate, formatCostPaise } from '../production-run.utils'
+import { useLanguage } from '@/context/LanguageContext'
 import '../production-run.css'
 import { Button } from '@/components/ui/Button'
 
 function PRDetailSkeleton() {
+  const { t } = useLanguage()
   return (
-    <div className="bom-skeleton" aria-busy="true" aria-label="Loading run">
+    <div className="bom-skeleton" aria-busy="true" aria-label={t.prLoadingRun}>
       <div className="bom-skeleton__card" style={{ height: 100 }} />
       {[0, 1, 2].map((i) => <div key={i} className="bom-skeleton__card" style={{ height: 48 }} />)}
     </div>
@@ -22,7 +24,14 @@ function PRDetailSkeleton() {
 export default function ProductionRunDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const { run, status, refresh } = useProductionRunDetail(id ?? '')
+
+  const statusLabel: Record<string, string> = {
+    DRAFT: t.prStatusDraft,
+    COMPLETED: t.prStatusCompleted,
+    CANCELLED: t.prStatusCancelled,
+  }
 
   if (!id) return null
 
@@ -30,10 +39,10 @@ export default function ProductionRunDetailPage() {
     <div className="bom-page">
       {/* Back */}
       <div className="bom-page__header">
-        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate('/production-runs')} aria-label="Back to production runs">
+        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate('/production-runs')} aria-label={t.prBackToRuns}>
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
-        <h1 className="bom-page__title">Production Run</h1>
+        <h1 className="bom-page__title">{t.prDetailTitle}</h1>
       </div>
 
       {/* Loading */}
@@ -41,7 +50,7 @@ export default function ProductionRunDetailPage() {
 
       {/* Error */}
       {status === 'error' && (
-        <ErrorState title="Could not load run" onRetry={refresh} />
+        <ErrorState title={t.prLoadRunError} onRetry={refresh} />
       )}
 
       {/* Success */}
@@ -55,14 +64,14 @@ export default function ProductionRunDetailPage() {
                 <div className="bom-detail-card__name">{run.bomName} · v{run.bomVersion}</div>
               </div>
               <span className={PR_STATUS_BADGE_CLASS[run.status] ?? 'badge'}>
-                {PR_STATUS_LABELS[run.status] ?? run.status}
+                {statusLabel[run.status] ?? run.status}
               </span>
             </div>
             {run.notes && <p className="bom-detail-card__notes">{run.notes}</p>}
             <div className="bom-detail-card__meta">
-              <span>Qty: {run.quantityProduced}</span>
+              <span>{t.qty}: {run.quantityProduced}</span>
               <span>{formatRunDate(run.runDate)}</span>
-              <span>By {run.createdByName}</span>
+              <span>{t.prByLabel} {run.createdByName}</span>
             </div>
           </div>
 
@@ -77,7 +86,7 @@ export default function ProductionRunDetailPage() {
 
           {/* Components consumed */}
           <section className="bom-section">
-            <h2 className="bom-section__title">Components Consumed</h2>
+            <h2 className="bom-section__title">{t.prComponentsConsumed}</h2>
             <div className="pr-components-table-wrap">
               {run.components.map((c) => (
                 <div key={c.componentProductId} className="pr-component-row">
@@ -92,11 +101,11 @@ export default function ProductionRunDetailPage() {
           {/* Cost summary */}
           <div className="pr-cost-summary">
             <div className="pr-cost-row">
-              <span>Total component cost</span>
+              <span>{t.prTotalComponentCost}</span>
               <strong>{formatCostPaise(run.totalCostPaise)}</strong>
             </div>
             <div className="pr-cost-row">
-              <span>Per-unit cost</span>
+              <span>{t.prPerUnitCost}</span>
               <strong>{formatCostPaise(run.perUnitCostPaise)}</strong>
             </div>
           </div>

@@ -7,13 +7,16 @@ import { ProductionRunWizardStep1 } from '../components/ProductionRunWizardStep1
 import { ProductionRunWizardStep2 } from '../components/ProductionRunWizardStep2'
 import { ProductionRunWizardStep3 } from '../components/ProductionRunWizardStep3'
 import { useProductionRunForm } from '../hooks/useProductionRunForm'
-import { WIZARD_STEPS } from '../production-run.constants'
+import { useLanguage } from '@/context/LanguageContext'
 import '../production-run.css'
 
 export default function ProductionRunFormPage() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const [searchParams] = useSearchParams()
   const initialBomId = searchParams.get('bomId') ?? undefined
+
+  const wizardSteps = [t.prStepChooseRecipe, t.prStepQuantityDate, t.prStepReviewComponents, t.prStepConfirmRun]
 
   const { step, wizard, submitting, updateWizard, goNext, goBack, submit } =
     useProductionRunForm(initialBomId)
@@ -31,15 +34,15 @@ export default function ProductionRunFormPage() {
           type="button"
           className="btn-icon"
           onClick={handleBack}
-          aria-label={step === 0 ? 'Back to production runs' : 'Previous step'}
+          aria-label={step === 0 ? t.prBackToRuns : t.prPrevStep}
         >
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
         <div style={{ flex: 1 }}>
-          <h1 className="bom-page__title">{WIZARD_STEPS[step]}</h1>
-          <div className="pr-wizard-progress" role="progressbar" aria-valuenow={step + 1} aria-valuemin={1} aria-valuemax={WIZARD_STEPS.length}>
+          <h1 className="bom-page__title">{wizardSteps[step]}</h1>
+          <div className="pr-wizard-progress" role="progressbar" aria-valuenow={step + 1} aria-valuemin={1} aria-valuemax={wizardSteps.length}>
             <div className="pr-wizard-dots">
-              {WIZARD_STEPS.map((_, i) => (
+              {wizardSteps.map((_, i) => (
                 <span
                   key={i}
                   className={`pr-wizard-dot${i === step ? ' is-active' : i < step ? ' is-done' : ''}`}
@@ -47,7 +50,7 @@ export default function ProductionRunFormPage() {
                 />
               ))}
             </div>
-            <span className="pr-wizard-progress__label">Step {step + 1} of {WIZARD_STEPS.length}</span>
+            <span className="pr-wizard-progress__label">{t.prStep} {step + 1} {t.prOf} {wizardSteps.length}</span>
           </div>
         </div>
       </div>
@@ -80,45 +83,45 @@ export default function ProductionRunFormPage() {
 
       {step === 3 && (
         <div className="pr-wizard-step">
-          <h2 className="pr-wizard-step__title">Confirm Run</h2>
+          <h2 className="pr-wizard-step__title">{t.prStepConfirmRun}</h2>
           <div className="pr-confirm-summary">
             <div className="pr-confirm-row">
-              <span className="pr-confirm-row__label">Recipe</span>
+              <span className="pr-confirm-row__label">{t.prRecipe}</span>
               <span className="pr-confirm-row__value">{wizard.bomName}</span>
             </div>
             <div className="pr-confirm-row">
-              <span className="pr-confirm-row__label">Finished product</span>
+              <span className="pr-confirm-row__label">{t.prFinishedProduct}</span>
               <span className="pr-confirm-row__value">{wizard.finishedProductName}</span>
             </div>
             <div className="pr-confirm-row">
-              <span className="pr-confirm-row__label">Quantity</span>
+              <span className="pr-confirm-row__label">{t.prQuantity}</span>
               <span className="pr-confirm-row__value">{wizard.quantityProduced}</span>
             </div>
             <div className="pr-confirm-row">
-              <span className="pr-confirm-row__label">Run date</span>
+              <span className="pr-confirm-row__label">{t.prRunDate}</span>
               <span className="pr-confirm-row__value">{wizard.runDate}</span>
             </div>
             {wizard.notes && (
               <div className="pr-confirm-row">
-                <span className="pr-confirm-row__label">Notes</span>
+                <span className="pr-confirm-row__label">{t.notes}</span>
                 <span className="pr-confirm-row__value">{wizard.notes}</span>
               </div>
             )}
           </div>
 
           <div className="pr-wizard-step__actions">
-            <Button type="button" variant="ghost" onClick={goBack} disabled={submitting}>Back</Button>
+            <Button type="button" variant="ghost" onClick={goBack} disabled={submitting}>{t.back}</Button>
             <Button
               type="button"
               variant="primary"
               onClick={() => void submit()}
               disabled={submitting}
               aria-busy={submitting}
-              aria-label="Start production run"
+              aria-label={t.prStartProductionRunAria}
             >
               {submitting
-                ? <><Loader2 size={16} className="btn-spinner" aria-hidden="true" /> Starting run...</>
-                : 'Start Production Run'
+                ? <><Loader2 size={16} className="btn-spinner" aria-hidden="true" /> {t.prStartingRun}</>
+                : t.prStartProductionRun
               }
             </Button>
           </div>

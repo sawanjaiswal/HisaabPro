@@ -6,6 +6,7 @@ import { AlertTriangle, XCircle, CheckCircle } from 'lucide-react'
 import { getBom } from '../../bom/bom.service'
 import { buildAvailabilities, hasInsufficientStock, hasLowStock } from '../production-run.utils'
 import type { WizardFormState, ComponentAvailability } from '../production-run.types'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface Step3Props {
   wizard: WizardFormState
@@ -14,12 +15,14 @@ interface Step3Props {
 }
 
 function StockIcon({ status }: { status: ComponentAvailability['status'] }) {
-  if (status === 'ok') return <CheckCircle size={16} className="pr-avail-icon pr-avail-icon--ok" aria-label="Sufficient stock" />
-  if (status === 'low') return <AlertTriangle size={16} className="pr-avail-icon pr-avail-icon--low" aria-label="Low stock" />
-  return <XCircle size={16} className="pr-avail-icon pr-avail-icon--insufficient" aria-label="Insufficient stock" />
+  const { t } = useLanguage()
+  if (status === 'ok') return <CheckCircle size={16} className="pr-avail-icon pr-avail-icon--ok" aria-label={t.prSufficientStock} />
+  if (status === 'low') return <AlertTriangle size={16} className="pr-avail-icon pr-avail-icon--low" aria-label={t.prLowStockLabel} />
+  return <XCircle size={16} className="pr-avail-icon pr-avail-icon--insufficient" aria-label={t.prInsufficientStock} />
 }
 
 export function ProductionRunWizardStep3({ wizard, onNext, onBack }: Step3Props) {
+  const { t } = useLanguage()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [avail, setAvail] = useState<ComponentAvailability[]>([])
@@ -42,22 +45,22 @@ export function ProductionRunWizardStep3({ wizard, onNext, onBack }: Step3Props)
 
   return (
     <div className="pr-wizard-step">
-      <h2 className="pr-wizard-step__title">Review Components</h2>
+      <h2 className="pr-wizard-step__title">{t.prStepReviewComponents}</h2>
       <p className="pr-wizard-step__desc">
-        Producing <strong>{qty}</strong> × {wizard.finishedProductName}
+        {t.prProducing} <strong>{qty}</strong> × {wizard.finishedProductName}
       </p>
 
       {/* Banners */}
       {blocked && (
         <div className="pr-wizard-banner pr-wizard-banner--error" role="alert">
           <XCircle size={18} aria-hidden="true" />
-          <span>Cannot proceed — insufficient stock for one or more components.</span>
+          <span>{t.prCannotProceedStock}</span>
         </div>
       )}
       {warned && (
         <div className="pr-wizard-banner pr-wizard-banner--warning" role="status">
           <AlertTriangle size={18} aria-hidden="true" />
-          <span>Some materials are low on stock. Run will proceed with warnings recorded.</span>
+          <span>{t.prLowStockWarn}</span>
         </div>
       )}
 
@@ -72,7 +75,7 @@ export function ProductionRunWizardStep3({ wizard, onNext, onBack }: Step3Props)
 
       {/* Error */}
       {!loading && error && (
-        <p className="pr-wizard-error" role="alert">Failed to load component data. Go back and retry.</p>
+        <p className="pr-wizard-error" role="alert">{t.prLoadComponentError}</p>
       )}
 
       {/* Component list */}
@@ -84,7 +87,7 @@ export function ProductionRunWizardStep3({ wizard, onNext, onBack }: Step3Props)
               <div className="pr-avail-item__info">
                 <span className="pr-avail-item__name">{a.componentProductName}</span>
                 <span className="pr-avail-item__qty">
-                  Need {a.required}{a.unitName ? ` ${a.unitName}` : ''} · Stock {a.currentStock}
+                  {t.prNeed} {a.required}{a.unitName ? ` ${a.unitName}` : ''} · {t.stock} {a.currentStock}
                 </span>
               </div>
             </li>
@@ -96,25 +99,25 @@ export function ProductionRunWizardStep3({ wizard, onNext, onBack }: Step3Props)
       {!loading && (
         <div className="pr-wizard-cost">
           <span className="pr-wizard-cost__label">
-            Based on {qty} units of {wizard.finishedProductName}
+            {t.prBasedOn} {qty} {t.prUnitsOf} {wizard.finishedProductName}
           </span>
           <span className="pr-wizard-cost__value">
-            {avail.length} component{avail.length !== 1 ? 's' : ''} required
+            {avail.length} {avail.length !== 1 ? t.bomComponentsLower : t.bomComponent} {t.prRequired}
           </span>
         </div>
       )}
 
       <div className="pr-wizard-step__actions">
-        <Button type="button" variant="ghost" onClick={onBack}>Back</Button>
+        <Button type="button" variant="ghost" onClick={onBack}>{t.back}</Button>
         <Button
           type="button"
           variant="primary"
           disabled={blocked || loading}
           onClick={onNext}
-          aria-label="Confirm production run"
+          aria-label={t.prConfirmProductionRunAria}
           aria-disabled={blocked}
         >
-          Confirm
+          {t.prConfirm}
         </Button>
       </div>
     </div>

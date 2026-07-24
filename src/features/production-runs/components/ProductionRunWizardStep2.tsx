@@ -6,6 +6,7 @@ import type { WizardFormState } from '../production-run.types'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
 import { DateField } from '@/components/ui/DateField'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface Step2Props {
   wizard: WizardFormState
@@ -15,6 +16,7 @@ interface Step2Props {
 }
 
 export function ProductionRunWizardStep2({ wizard, onUpdate, onNext, onBack }: Step2Props) {
+  const { t } = useLanguage()
   const qty = parseFloat(wizard.quantityProduced)
   const qtyValid = wizard.quantityProduced.trim() !== '' && !isNaN(qty) && qty > 0
   const dateValid = !!wizard.runDate
@@ -22,13 +24,13 @@ export function ProductionRunWizardStep2({ wizard, onUpdate, onNext, onBack }: S
 
   return (
     <div className="pr-wizard-step">
-      <h2 className="pr-wizard-step__title">Quantity & Date</h2>
+      <h2 className="pr-wizard-step__title">{t.prStepQuantityDate}</h2>
       <p className="pr-wizard-step__desc">
-        How many <strong>{wizard.finishedProductName}</strong> are you producing?
+        {t.prHowMany} <strong>{wizard.finishedProductName}</strong> {t.prAreYouProducing}
       </p>
 
       <div className="input-group">
-        <label htmlFor="pr-qty" className="input-label">Quantity produced <span aria-hidden="true">*</span></label>
+        <label htmlFor="pr-qty" className="input-label">{t.prQuantityProduced} <span aria-hidden="true">*</span></label>
         <Input
           id="pr-qty"
           className={`input${!qtyValid && wizard.quantityProduced !== '' ? ' input-error-border' : ''}`}
@@ -37,18 +39,18 @@ export function ProductionRunWizardStep2({ wizard, onUpdate, onNext, onBack }: S
           step="0.001"
           value={wizard.quantityProduced}
           onChange={(e) => onUpdate({ quantityProduced: e.target.value })}
-          placeholder="e.g. 10"
+          placeholder={t.prQtyPlaceholder}
           inputMode="decimal"
           aria-required="true"
-          aria-label="Quantity produced"
+          aria-label={t.prQuantityProduced}
         />
         {!qtyValid && wizard.quantityProduced !== '' && (
-          <p className="input-error" role="alert">Quantity must be greater than 0</p>
+          <p className="input-error" role="alert">{t.prQtyMustBePositive}</p>
         )}
       </div>
 
       <div className="input-group">
-        <label htmlFor="pr-date" className="input-label">Production date <span aria-hidden="true">*</span></label>
+        <label htmlFor="pr-date" className="input-label">{t.prProductionDate} <span aria-hidden="true">*</span></label>
         <DateField
           id="pr-date"
           className="input"
@@ -57,13 +59,13 @@ export function ProductionRunWizardStep2({ wizard, onUpdate, onNext, onBack }: S
           onChange={(e) => onUpdate({ runDate: e.target.value })}
           max={todayISODate()}
           aria-required="true"
-          aria-label="Production date"
+          aria-label={t.prProductionDate}
         />
       </div>
 
       <div className="input-group">
         <label htmlFor="pr-notes" className="input-label">
-          Notes <span className="text-optional">(optional)</span>
+          {t.notes} <span className="text-optional">({t.optional})</span>
         </label>
         <Textarea
           id="pr-notes"
@@ -71,21 +73,21 @@ export function ProductionRunWizardStep2({ wizard, onUpdate, onNext, onBack }: S
           value={wizard.notes}
           onChange={(e) => onUpdate({ notes: e.target.value })}
           rows={2}
-          placeholder="Any notes about this run..."
-          aria-label="Notes"
+          placeholder={t.prNotesPlaceholder}
+          aria-label={t.notes}
         />
       </div>
 
       <div className="pr-wizard-step__actions">
-        <Button type="button" variant="ghost" onClick={onBack}>Back</Button>
+        <Button type="button" variant="ghost" onClick={onBack}>{t.back}</Button>
         <Button
           type="button"
           variant="primary"
           disabled={!canProceed}
           onClick={onNext}
-          aria-label="Review components"
+          aria-label={t.prStepReviewComponents}
         >
-          Review Components
+          {t.prStepReviewComponents}
         </Button>
       </div>
     </div>

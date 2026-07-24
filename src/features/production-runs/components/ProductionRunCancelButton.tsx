@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { XCircle, Loader2 } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useToast } from '@/hooks/useToast'
+import { useLanguage } from '@/context/LanguageContext'
 import { ApiError } from '@/lib/api'
 import { useQueryClient } from '@tanstack/react-query'
 import { cancelProductionRun } from '../production-run.service'
@@ -22,6 +23,7 @@ export function ProductionRunCancelButton({
   onCancelled,
 }: ProductionRunCancelButtonProps) {
   const toast = useToast()
+  const { t } = useLanguage()
   const queryClient = useQueryClient()
   const [confirm, setConfirm] = useState(false)
   const [cancelling, setCancelling] = useState(false)
@@ -31,15 +33,15 @@ export function ProductionRunCancelButton({
     try {
       await cancelProductionRun(runId, bomName)
       await queryClient.invalidateQueries({ queryKey: prKeys.all() })
-      toast.success('Production run cancelled')
+      toast.success(t.prRunCancelled)
       onCancelled()
     } catch (err) {
-      let msg = 'Failed to cancel run'
+      let msg = t.prCancelFailed
       if (err instanceof ApiError) {
         if (err.code === 'INVALID_STATUS' || err.code === 'ALREADY_CANCELLED') {
-          msg = 'This run cannot be cancelled'
+          msg = t.prCannotBeCancelled
         } else if (err.code === 'INSUFFICIENT_STOCK_TO_CANCEL') {
-          msg = 'Cannot cancel — finished goods stock would go negative'
+          msg = t.prCancelNegativeStock
         } else {
           msg = err.message
         }
@@ -57,12 +59,12 @@ export function ProductionRunCancelButton({
         className="btn btn-danger pr-cancel-btn"
         onClick={() => setConfirm(true)}
         disabled={cancelling}
-        aria-label="Cancel production run"
+        aria-label={t.prCancelRunAria}
         style={{ minHeight: 44 }}
       >
         {cancelling
-          ? <><Loader2 size={16} className="btn-spinner" aria-hidden="true" /> Cancelling...</>
-          : <><XCircle size={16} aria-hidden="true" /> Cancel Run</>
+          ? <><Loader2 size={16} className="btn-spinner" aria-hidden="true" /> {t.prCancelling}</>
+          : <><XCircle size={16} aria-hidden="true" /> {t.prCancelRun}</>
         }
       </Button>
 
@@ -70,10 +72,10 @@ export function ProductionRunCancelButton({
         open={confirm}
         onClose={() => setConfirm(false)}
         onConfirm={() => { setConfirm(false); void handleCancel() }}
-        title="Cancel Production Run?"
-        description="This will reverse all stock movements. Finished goods will be deducted and raw materials restored. This cannot be undone."
-        confirmLabel="Cancel Run"
-        cancelLabel="Keep Run"
+        title={t.prCancelRunTitle}
+        description={t.prCancelRunDesc}
+        confirmLabel={t.prCancelRun}
+        cancelLabel={t.prKeepRun}
         isDanger
         isLoading={cancelling}
       />
