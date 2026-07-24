@@ -179,10 +179,20 @@
   border-block-start: 1px solid var(--color-gray-200);
 }
 
-/* Refined micro-cap labels — the strip reads as a header band of stats, not a
-   sentence. Uppercase + tracking keeps them quiet under the big values. */
+/* Centered stack, value first: the number leads, the micro-cap label sits under
+   it, the hint anchors the bottom. Reordered with `order` (not DOM) so the other
+   SummaryTiles consumers keep their label-on-top layout. */
 .summary-tiles--divided .summary-tile {
   gap: var(--space-1-5);
+}
+
+.summary-tiles--divided .summary-tile__body {
+  align-items: center;
+  text-align: center;
+}
+
+.summary-tiles--divided .summary-tile__value {
+  order: -1;
 }
 
 .summary-tiles--divided .summary-tile__label {
