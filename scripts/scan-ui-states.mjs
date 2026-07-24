@@ -26,8 +26,14 @@ const rows = files.map((f) => {
   return {
     f: f.replace('src/features/', '').replace('src/pages/', 'pages/'),
     err: /ErrorState|onRetry/.test(s),
-    empty: /EmptyState/.test(s),
-    load: /Skeleton|animate-pulse|isLoading|isPending/.test(s),
+    // EmptyState primitive OR a feature-specific empty-state component
+    // (e.g. <PaymentHistoryEmpty>, <StockSummaryEmpty>) OR the finance
+    // report empty motif (`finance-empty` class).
+    empty: /EmptyState|[A-Z]\w*Empty\b|finance-empty/.test(s),
+    // Skeleton primitive/component, Tailwind pulse, RQ flags, OR the
+    // report loading conventions: lowercase `*-skeleton` CSS class and a
+    // fetch-status string equal to 'loading'.
+    load: /Skeleton|animate-pulse|isLoading|isPending|-skeleton|=== ?'loading'/.test(s),
     i18n: /useLanguage/.test(s),
     shell: /PageContainer|HeroPage|AppShell/.test(s),
   }

@@ -138,9 +138,10 @@ rollout is the only structural item left.**
 `switchBusinessRateLimiter` is mounted at `server/src/routes/auth/switch-business.ts:25`
 with a dedicated test (`__tests__/switch-business-limiter.test.ts`). G9 met.
 
-#### P1.2 · UI-state coverage — 109 of 190 pages incomplete
-- **Evidence (`scripts/scan-ui-states.mjs`, 2026-07-24):** total=195, gold=79,
-  gaps=116. **In-app i18n gap now 0.** The only remaining i18n-flagged rows are
+#### P1.2 · UI-state coverage — 99 of 195 pages incomplete
+- **Evidence (`scripts/scan-ui-states.mjs`, 2026-07-24):** total=195, **gold=96,
+  gaps=99** (was gold=79/gaps=116 before the scanner was sharpened — see below).
+  **In-app i18n gap now 0.** The only remaining i18n-flagged rows are
   thin route wrappers (`sales/create/*` — 6-line files delegating to
   `CreateInvoicePage`, which owns the i18n) and static `pages`/`landing`/
   `storefront` (marketing, English-only by design). Auth + BOM + production-runs
@@ -198,6 +199,23 @@ with a dedicated test (`__tests__/switch-business-limiter.test.ts`). G9 met.
   English-only by design) — both out of scope. Next in P1.2: the Wave-D
   responsive / `PageContainer` sweep (loading/error/empty state coverage), tracked
   separately.
+- **Scanner sharpened 2026-07-24** (commit pending): `scan-ui-states.mjs` was
+  systematically UNDER-counting gold because it only recognised the generic
+  `<EmptyState>` primitive and the `<Skeleton>`/`isLoading` tokens. The codebase
+  legitimately also uses (a) feature-specific empty components
+  (`<PaymentHistoryEmpty>`, `<StockSummaryEmpty>`) and the `finance-empty` motif,
+  and (b) loading via the lowercase `*-skeleton` class and `fetchStatus ===
+  'loading'`. Added those to the `empty`/`load` heuristics → gold 79 → 96,
+  gaps 116 → 99. **All 17 `reports/` pages verified gold by reading source**
+  (BalanceSheet/Discount/Profitability had loading via `finance-skeleton`;
+  PaymentHistory/StockSummary had empty via custom components) — the only two
+  still-flagged report pages (`ReportsHubPage`, `TallyExportPage`) are a static
+  link-hub and a pure export-action page, both by-design N/A for error/empty/load.
+- **True remaining P1.2 4-state gaps (99)** are now concentrated in: static
+  marketing/`pages`/`landing`/`storefront` (out of scope), `auth` status/form
+  pages (empty-by-design N/A), and the `sales/create/*` thin wrappers (delegate to
+  an already-gold page). The genuinely-actionable list-page gaps are a much
+  smaller subset — Wave-D targets those, not the raw 99.
 
 #### P1.3 · Offline queue replay — ✅ **DONE** (client + server, 2026-07-23)
 - **Evidence (was):** offline *discipline* was clean but no test queued a mutation
