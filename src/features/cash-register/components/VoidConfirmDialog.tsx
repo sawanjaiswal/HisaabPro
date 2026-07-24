@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { useVoidCashEntry } from '../useCashRegisterMutations'
 import { Textarea } from '@/components/ui/Textarea'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface Props {
   entryId: string
@@ -16,6 +17,7 @@ interface Props {
 
 export function VoidConfirmDialog({ entryId, businessId, onClose }: Props) {
   const toast = useToast()
+  const { t } = useLanguage()
   const voidMutation = useVoidCashEntry(businessId)
   const [reason, setReason] = useState('')
 
@@ -28,10 +30,10 @@ export function VoidConfirmDialog({ entryId, businessId, onClose }: Props) {
         reason: reason.trim() || null,
         idempotencyKey,
       })
-      toast.success('Entry voided')
+      toast.success(t.cashRegToastEntryVoided)
       onClose()
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : 'Could not void entry.')
+      toast.error(err instanceof ApiError ? err.message : t.cashRegToastErrorVoid)
     }
   }
 
@@ -45,13 +47,13 @@ export function VoidConfirmDialog({ entryId, businessId, onClose }: Props) {
       aria-describedby="void-dialog-desc"
     >
       <div className="cr-dialog__body">
-        <h2 id="void-dialog-title" className="cr-dialog__title">Void this entry?</h2>
+        <h2 id="void-dialog-title" className="cr-dialog__title">{t.cashRegVoidDialogTitle}</h2>
         <p id="void-dialog-desc" className="cr-dialog__desc">
-          This entry will be marked as voided. You can restore it later.
+          {t.cashRegVoidDialogDescription}
         </p>
 
         <label htmlFor="void-reason" className="cr-dialog__field-label">
-          Reason (optional)
+          {t.cashRegLabelVoidReason}
         </label>
         <Textarea
           id="void-reason"
@@ -59,7 +61,7 @@ export function VoidConfirmDialog({ entryId, businessId, onClose }: Props) {
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           maxLength={256}
-          placeholder="e.g. entered by mistake"
+          placeholder={t.cashRegVoidReasonPlaceholder}
           rows={2}
           disabled={voidMutation.isPending}
         />
@@ -71,7 +73,7 @@ export function VoidConfirmDialog({ entryId, businessId, onClose }: Props) {
             onClick={onClose}
             disabled={voidMutation.isPending}
           >
-            Cancel
+            {t.cancel}
           </Button>
           <Button
             type="button"
@@ -81,8 +83,8 @@ export function VoidConfirmDialog({ entryId, businessId, onClose }: Props) {
             aria-busy={voidMutation.isPending}
           >
             {voidMutation.isPending
-              ? <><Loader2 size={16} className="spinner" aria-hidden="true" /> Voiding…</>
-              : 'Void Entry'
+              ? <><Loader2 size={16} className="spinner" aria-hidden="true" /> {t.cashRegVoiding}</>
+              : t.cashRegVoidDialogButton
             }
           </Button>
         </div>

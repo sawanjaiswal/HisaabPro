@@ -6,6 +6,7 @@ import { HistoryEntryRow } from './HistoryEntryRow'
 import { formatPaise } from '../cashRegister.utils'
 import type { DayBucket } from '../cashRegister.types'
 import { Button } from '@/components/ui/Button'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface Props {
   buckets: DayBucket[]
@@ -51,6 +52,7 @@ export function HistoryList({
   isOwner,
   filterLabel,
 }: Props) {
+  const { t } = useLanguage()
   const sentinelRef = useRef<HTMLDivElement>(null)
 
   // Infinite scroll via IntersectionObserver
@@ -71,7 +73,7 @@ export function HistoryList({
 
   if (isLoading) {
     return (
-      <div className="cr-history-list" aria-label="Loading cash entries" aria-busy="true">
+      <div className="cr-history-list" aria-label={t.cashRegLoadingEntries} aria-busy="true">
         {[0, 1, 2].map((i) => <SkeletonRow key={i} i={i} />)}
       </div>
     )
@@ -81,9 +83,9 @@ export function HistoryList({
     return (
       <div className="cr-history-list cr-history-list--error">
         <div className="cr-history-list__error-card">
-          <p>Could not load history.</p>
+          <p>{t.cashRegHistoryError}</p>
           <Button variant="none" type="button" className="cr-history-list__retry" onClick={onRetry}>
-            Tap to retry
+            {t.cashRegHistoryRetry}
           </Button>
         </div>
       </div>
@@ -110,7 +112,7 @@ export function HistoryList({
               })}
             </span>
             <span className="cr-bucket__net">
-              Net: {formatPaise(bucket.netPaise)}
+              {t.cashRegSummaryNet}: {formatPaise(bucket.netPaise)}
             </span>
           </header>
 
@@ -132,7 +134,7 @@ export function HistoryList({
       <div ref={sentinelRef} className="cr-history-list__sentinel" aria-hidden="true" />
 
       {isFetchingNextPage && (
-        <div className="cr-history-list__loading-more" aria-label="Loading more entries">
+        <div className="cr-history-list__loading-more" aria-label={t.cashRegLoadingMore}>
           <span className="cr-history-list__loading-dot" />
         </div>
       )}

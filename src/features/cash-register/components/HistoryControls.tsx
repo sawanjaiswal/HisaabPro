@@ -3,6 +3,7 @@
 import type { CashHistoryFilter, CashHistorySort, CashEntryDirection } from '../cashRegister.types'
 import { Select, SelectItem } from '@/components/ui/Select'
 import { Button } from '@/components/ui/Button'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface Props {
   filter: CashHistoryFilter
@@ -13,17 +14,17 @@ interface Props {
 
 type DirectionOption = { value: CashEntryDirection | undefined; label: string }
 
-const DIRECTION_OPTIONS: DirectionOption[] = [
-  { value: undefined,  label: 'All' },
-  { value: 'IN',       label: 'In' },
-  { value: 'OUT',      label: 'Out' },
-]
-
 export function HistoryControls({ filter, sort, onFilterChange, onSortChange }: Props) {
+  const { t } = useLanguage()
+  const DIRECTION_OPTIONS: DirectionOption[] = [
+    { value: undefined,  label: t.cashRegFilterAll },
+    { value: 'IN',       label: t.cashRegSummaryIn },
+    { value: 'OUT',      label: t.cashRegSummaryOut },
+  ]
   return (
     <div className="cr-controls">
       {/* Direction filter pills */}
-      <div className="cr-controls__pills" role="group" aria-label="Filter by direction">
+      <div className="cr-controls__pills" role="group" aria-label={t.cashRegFilterDirAria}>
         {DIRECTION_OPTIONS.map((opt) => {
           const isActive = filter.direction === opt.value
           return (
@@ -46,22 +47,22 @@ export function HistoryControls({ filter, sort, onFilterChange, onSortChange }: 
           onClick={() => onFilterChange({ ...filter, includeVoided: !filter.includeVoided })}
           aria-pressed={filter.includeVoided}
         >
-          {filter.includeVoided ? 'Hide Voided' : 'Show Voided'}
+          {filter.includeVoided ? t.cashRegHideVoided : t.cashRegShowVoided}
         </Button>
       </div>
 
       {/* Sort dropdown */}
       <div className="cr-controls__sort">
-        <label className="cr-controls__sort-label">Sort</label>
+        <label className="cr-controls__sort-label">{t.cashRegSortLabel}</label>
         <Select
           value={sort.by}
           onValueChange={(v) => onSortChange({ by: v as CashHistorySort['by'] })}
-          ariaLabel="Sort entries"
+          ariaLabel={t.cashRegSortAria}
         >
-          <SelectItem value="newest">Newest</SelectItem>
-          <SelectItem value="oldest">Oldest</SelectItem>
-          <SelectItem value="highest">Highest</SelectItem>
-          <SelectItem value="lowest">Lowest</SelectItem>
+          <SelectItem value="newest">{t.cashRegSortNewest}</SelectItem>
+          <SelectItem value="oldest">{t.cashRegSortOldest}</SelectItem>
+          <SelectItem value="highest">{t.cashRegSortHighest}</SelectItem>
+          <SelectItem value="lowest">{t.cashRegSortLowest}</SelectItem>
         </Select>
       </div>
     </div>

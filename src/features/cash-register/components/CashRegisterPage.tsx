@@ -14,6 +14,7 @@ import { useCashCalculator } from '../useCashCalculator'
 import { useCashEntry } from '../useCashRegisterQueries'
 import { useRestoreCashEntry } from '../useCashRegisterMutations'
 import { useToast } from '@/hooks/useToast'
+import { useLanguage } from '@/hooks/useLanguage'
 import { ApiError } from '@/lib/api'
 import { LARGE_AMOUNT_PAISE } from '../cashRegister.constants'
 import { CalculatorPanel } from './CalculatorPanel'
@@ -30,6 +31,7 @@ import { Button } from '@/components/ui/Button'
 export default function CashRegisterPage() {
   const { user } = useAuth()
   const toast = useToast()
+  const { t } = useLanguage()
   const businessId = user?.businessId ?? ''
 
   const [tab, setTab] = useState<CashRegisterTab>('calculator')
@@ -61,18 +63,18 @@ export default function CashRegisterPage() {
     const key = await buildKey(`restore|${id}`)
     try {
       await restoreMutation.mutateAsync({ businessId, id, idempotencyKey: key })
-      toast.success('Entry restored')
+      toast.success(t.cashRegToastEntryRestored)
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : 'Could not restore entry.')
+      toast.error(err instanceof ApiError ? err.message : t.cashRegToastErrorRestore)
     }
-  }, [businessId, restoreMutation, toast])
+  }, [businessId, restoreMutation, toast, t])
 
   return (
     <AppShell>
-      <Header title="Cash Register" backTo={ROUTES.DASHBOARD} />
+      <Header title={t.cashRegTitle} backTo={ROUTES.DASHBOARD} />
 
       {/* Tab toggle */}
-      <div className="cr-tabs" role="tablist" aria-label="Cash register tabs">
+      <div className="cr-tabs" role="tablist" aria-label={t.cashRegTabsAria}>
         <Button variant="none"
           type="button"
           role="tab"
@@ -80,7 +82,7 @@ export default function CashRegisterPage() {
           aria-selected={tab === 'calculator'}
           onClick={() => setTab('calculator')}
         >
-          Calculator
+          {t.cashRegTabCalculator}
         </Button>
         <Button variant="none"
           type="button"
@@ -89,13 +91,13 @@ export default function CashRegisterPage() {
           aria-selected={tab === 'history'}
           onClick={() => setTab('history')}
         >
-          History
+          {t.cashRegTabHistory}
         </Button>
       </div>
 
       {/* Tab panels */}
       {tab === 'calculator' ? (
-        <div role="tabpanel" aria-label="Calculator tab">
+        <div role="tabpanel" aria-label={t.cashRegTabCalculator}>
           <PageContainer variant="form" asDiv>
           <CalculatorPanel
             expression={calc.expression}
@@ -112,7 +114,7 @@ export default function CashRegisterPage() {
           </PageContainer>
         </div>
       ) : (
-        <div role="tabpanel" aria-label="History tab">
+        <div role="tabpanel" aria-label={t.cashRegTabHistory}>
           <PageContainer variant="list" asDiv>
           <HistoryPanel
             onEdit={setEditingId}

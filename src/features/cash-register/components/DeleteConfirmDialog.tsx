@@ -4,6 +4,7 @@ import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useDeleteCashEntry } from '../useCashRegisterMutations'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface Props {
   entryId: string
@@ -13,16 +14,17 @@ interface Props {
 
 export function DeleteConfirmDialog({ entryId, businessId, onClose }: Props) {
   const toast = useToast()
+  const { t } = useLanguage()
   const deleteMutation = useDeleteCashEntry(businessId)
 
   const handleConfirm = async () => {
     const idempotencyKey = await buildKey(entryId)
     try {
       await deleteMutation.mutateAsync({ businessId, id: entryId, idempotencyKey })
-      toast.success('Entry deleted')
+      toast.success(t.cashRegToastEntryDeleted)
       onClose()
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : 'Could not delete entry.')
+      toast.error(err instanceof ApiError ? err.message : t.cashRegToastErrorDelete)
     }
   }
 
@@ -31,10 +33,10 @@ export function DeleteConfirmDialog({ entryId, businessId, onClose }: Props) {
       open
       onClose={onClose}
       onConfirm={() => void handleConfirm()}
-      title="Delete permanently?"
-      description="This cannot be undone. Only voided entries can be deleted."
-      confirmLabel="Delete"
-      cancelLabel="Cancel"
+      title={t.cashRegDeleteDialogTitle}
+      description={t.cashRegDeleteDialogDescription}
+      confirmLabel={t.cashRegDeleteDialogButton}
+      cancelLabel={t.cancel}
       isDanger
       isLoading={deleteMutation.isPending}
     />

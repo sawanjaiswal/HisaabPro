@@ -3,6 +3,7 @@
 import { KEYPAD_ROWS } from '../cashRegister.constants'
 import type { ExpressionAction } from '../cashRegister.types'
 import { Button } from '@/components/ui/Button'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface Props {
   onKey: (action: ExpressionAction) => void
@@ -20,20 +21,6 @@ function getAction(key: string): ExpressionAction | null {
   return { type: 'APPEND_DIGIT', digit: key }
 }
 
-const KEY_LABELS: Record<string, string> = {
-  'C':  'Clear',
-  '⌫':  'Backspace',
-  '+':  'Add',
-  '-':  'Subtract',
-  '*':  'Multiply',
-  '/':  'Divide',
-  '.':  'Decimal point',
-}
-
-function keyAriaLabel(key: string): string {
-  return KEY_LABELS[key] ?? key
-}
-
 function keyClass(key: string): string {
   const base = 'cr-keypad__key'
   if (key === 'C') return `${base} cr-keypad__key--clear`
@@ -43,13 +30,25 @@ function keyClass(key: string): string {
 }
 
 export function Keypad({ onKey, disabled }: Props) {
+  const { t } = useLanguage()
+  const KEY_LABELS: Record<string, string> = {
+    'C':  t.cashRegKeyClear,
+    '⌫':  t.cashRegKeyBackspace,
+    '+':  t.cashRegKeyAdd,
+    '-':  t.cashRegKeySubtract,
+    '*':  t.cashRegKeyMultiply,
+    '/':  t.cashRegKeyDivide,
+    '.':  t.cashRegKeyDecimal,
+  }
+  const keyAriaLabel = (key: string): string => KEY_LABELS[key] ?? key
+
   const handleKey = (key: string) => {
     const action = getAction(key)
     if (action) onKey(action)
   }
 
   return (
-    <div className="cr-keypad" role="group" aria-label="Calculator keypad">
+    <div className="cr-keypad" role="group" aria-label={t.cashRegKeypadAria}>
       {KEYPAD_ROWS.map((row, ri) => (
         <div key={ri} className="cr-keypad__row">
           {row.map((key) => (
@@ -73,7 +72,7 @@ export function Keypad({ onKey, disabled }: Props) {
           className="cr-keypad__key cr-keypad__key--back cr-keypad__key--wide"
           onClick={() => onKey({ type: 'BACKSPACE' })}
           disabled={disabled}
-          aria-label="Backspace"
+          aria-label={t.cashRegKeyBackspace}
         >
           ⌫
         </Button>

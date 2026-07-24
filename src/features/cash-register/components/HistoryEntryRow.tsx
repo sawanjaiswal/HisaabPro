@@ -5,6 +5,7 @@ import { MoreVertical } from 'lucide-react'
 import { formatPaise } from '../cashRegister.utils'
 import type { CashEntryDTO } from '../cashRegister.types'
 import { Button } from '@/components/ui/Button'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface Props {
   entry: CashEntryDTO
@@ -16,10 +17,12 @@ interface Props {
 }
 
 export function HistoryEntryRow({ entry, onEdit, onVoid, onRestore, onDelete, isOwner }: Props) {
+  const { t } = useLanguage()
   const [menuOpen, setMenuOpen] = useState(false)
 
   const isVoided = entry.voidedAt !== null
   const isEdited = entry.editCount > 0
+  const dirLabel = entry.direction === 'IN' ? t.cashRegButtonCashIn : t.cashRegButtonCashOut
 
   const toggleMenu = () => setMenuOpen((v) => !v)
   const closeMenu = () => setMenuOpen(false)
@@ -27,12 +30,12 @@ export function HistoryEntryRow({ entry, onEdit, onVoid, onRestore, onDelete, is
   return (
     <div
       className={`cr-entry-row${isVoided ? ' cr-entry-row--voided' : ''}`}
-      aria-label={`${entry.direction === 'IN' ? 'Cash In' : 'Cash Out'} ${formatPaise(entry.amountPaise)}`}
+      aria-label={`${dirLabel} ${formatPaise(entry.amountPaise)}`}
     >
       {/* Direction indicator */}
       <span
         className={`cr-entry-row__dir cr-entry-row__dir--${entry.direction.toLowerCase()}`}
-        aria-label={entry.direction === 'IN' ? 'Cash In' : 'Cash Out'}
+        aria-label={dirLabel}
       >
         {entry.direction === 'IN' ? '↑' : '↓'}
       </span>
@@ -47,10 +50,10 @@ export function HistoryEntryRow({ entry, onEdit, onVoid, onRestore, onDelete, is
         )}
         <div className="cr-entry-row__badges">
           {isEdited && (
-            <span className="cr-entry-row__badge cr-entry-row__badge--edited">Edited</span>
+            <span className="cr-entry-row__badge cr-entry-row__badge--edited">{t.cashRegBadgeEdited}</span>
           )}
           {isVoided && (
-            <span className="cr-entry-row__badge cr-entry-row__badge--voided">Voided</span>
+            <span className="cr-entry-row__badge cr-entry-row__badge--voided">{t.cashRegBadgeVoided}</span>
           )}
         </div>
       </div>
@@ -66,7 +69,7 @@ export function HistoryEntryRow({ entry, onEdit, onVoid, onRestore, onDelete, is
           type="button"
           className="cr-entry-row__kebab"
           onClick={toggleMenu}
-          aria-label="Entry actions"
+          aria-label={t.cashRegEntryActionsAria}
           aria-expanded={menuOpen}
           aria-haspopup="menu"
         >
@@ -80,26 +83,26 @@ export function HistoryEntryRow({ entry, onEdit, onVoid, onRestore, onDelete, is
               {!isVoided && (
                 <Button variant="none" type="button" role="menuitem" className="cr-entry-row__menu-item"
                   onClick={() => { onEdit(entry.id); closeMenu() }}>
-                  Edit
+                  {t.edit}
                 </Button>
               )}
               {!isVoided && (
                 <Button variant="none" type="button" role="menuitem" className="cr-entry-row__menu-item"
                   onClick={() => { onVoid(entry.id); closeMenu() }}>
-                  Void
+                  {t.cashRegMenuVoid}
                 </Button>
               )}
               {isVoided && (
                 <Button variant="none" type="button" role="menuitem" className="cr-entry-row__menu-item"
                   onClick={() => { onRestore(entry.id); closeMenu() }}>
-                  Restore
+                  {t.cashRegMenuRestore}
                 </Button>
               )}
               {isVoided && isOwner && (
                 <Button variant="none" type="button" role="menuitem"
                   className="cr-entry-row__menu-item cr-entry-row__menu-item--danger"
                   onClick={() => { onDelete(entry.id); closeMenu() }}>
-                  Delete
+                  {t.delete}
                 </Button>
               )}
             </div>

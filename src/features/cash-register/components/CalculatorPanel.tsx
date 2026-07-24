@@ -5,6 +5,7 @@ import { Keypad } from './Keypad'
 import { NoteField } from './NoteField'
 import { CommitButtons } from './CommitButtons'
 import type { ExpressionAction, ExpressionError } from '../cashRegister.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface Props {
   expression: string
@@ -31,6 +32,7 @@ export function CalculatorPanel({
   isSubmitting,
   isOffline,
 }: Props) {
+  const { t } = useLanguage()
   return (
     <div className="cr-calc-panel">
       <CalculatorDisplay
@@ -50,7 +52,7 @@ export function CalculatorPanel({
 
       {isOffline && (
         <div className="cr-offline-banner" role="status" aria-live="assertive">
-          No internet connection. Please retry.
+          {t.cashRegErrorNoInternet}
         </div>
       )}
 

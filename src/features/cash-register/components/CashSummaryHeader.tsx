@@ -2,6 +2,7 @@
 
 import { formatPaise, formatPaiseCompact } from '../cashRegister.utils'
 import type { CashSummaryDTO } from '../cashRegister.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface Props {
   summary: CashSummaryDTO | undefined
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function CashSummaryHeader({ summary, isLoading, isError }: Props) {
+  const { t } = useLanguage()
   if (isLoading) {
     return (
       <div className="cr-summary cr-summary--loading" aria-busy="true">
@@ -31,19 +33,19 @@ export function CashSummaryHeader({ summary, isLoading, isError }: Props) {
     <div className="cr-summary">
       {/* Today tile */}
       <div className="cr-summary__today">
-        <span className="cr-summary__today-label">Today</span>
+        <span className="cr-summary__today-label">{t.cashRegSummaryToday}</span>
         <span className={`cr-summary__today-net ${todayNet >= 0 ? 'cr-summary__today-net--pos' : 'cr-summary__today-net--neg'}`}>
           {isError ? '—' : formatPaiseCompact(Math.abs(todayNet))}
         </span>
         <div className="cr-summary__today-breakdown">
-          <span className="cr-summary__in">In: {isError ? '—' : formatPaiseCompact(todayIn)}</span>
-          <span className="cr-summary__out">Out: {isError ? '—' : formatPaiseCompact(todayOut)}</span>
+          <span className="cr-summary__in">{t.cashRegSummaryIn}: {isError ? '—' : formatPaiseCompact(todayIn)}</span>
+          <span className="cr-summary__out">{t.cashRegSummaryOut}: {isError ? '—' : formatPaiseCompact(todayOut)}</span>
         </div>
       </div>
 
       {/* 7-day bars */}
       {barDays.length > 0 && (
-        <div className="cr-summary__bars" aria-label="Last 7 days cash flow">
+        <div className="cr-summary__bars" aria-label={t.cashRegLast7Aria}>
           {barDays.map((day) => {
             const total = day.inPaise + day.outPaise
             const heightPct = (total / maxBar) * 100
@@ -66,7 +68,7 @@ export function CashSummaryHeader({ summary, isLoading, isError }: Props) {
 
       {/* 30-day tile */}
       <div className="cr-summary__30d">
-        <span className="cr-summary__30d-label">Last 30 Days</span>
+        <span className="cr-summary__30d-label">{t.cashRegSummaryLast30}</span>
         <span className={`cr-summary__30d-net ${last30 >= 0 ? 'cr-summary__30d-net--pos' : 'cr-summary__30d-net--neg'}`}>
           {isError ? '—' : formatPaiseCompact(Math.abs(last30))}
         </span>

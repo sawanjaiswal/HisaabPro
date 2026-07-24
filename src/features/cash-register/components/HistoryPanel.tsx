@@ -8,6 +8,7 @@ import { HistoryList } from './HistoryList'
 import { useCashSummary, useCashHistory } from '../useCashRegisterQueries'
 import { applyHistoryView, getTzOffsetMinutes } from '../cashRegister.utils'
 import type { CashHistoryFilter, CashHistorySort, CashEntryDTO } from '../cashRegister.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface Props {
   onEdit: (id: string) => void
@@ -19,13 +20,13 @@ interface Props {
 const DEFAULT_FILTER: CashHistoryFilter = { includeVoided: false }
 const DEFAULT_SORT: CashHistorySort = { by: 'newest' }
 
-function emptyLabel(filter: CashHistoryFilter): string {
-  if (filter.direction === 'IN') return 'No Cash In entries'
-  if (filter.direction === 'OUT') return 'No Cash Out entries'
-  return 'No cash entries yet'
-}
-
 export function HistoryPanel({ onEdit, onVoid, onRestore, onDelete }: Props) {
+  const { t } = useLanguage()
+  const emptyLabel = (filter: CashHistoryFilter): string => {
+    if (filter.direction === 'IN') return t.cashRegEmptyOnlyIn
+    if (filter.direction === 'OUT') return t.cashRegEmptyOnlyOut
+    return t.cashRegEmptyAllEntries
+  }
   const { user } = useAuth()
   const businessId = user?.businessId ?? ''
   const isOwner = (user as { role?: string } | null)?.role === 'OWNER'

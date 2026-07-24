@@ -3,6 +3,7 @@
 import { Loader2 } from 'lucide-react'
 import type { ExpressionError } from '../cashRegister.types'
 import { Button } from '@/components/ui/Button'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface Props {
   onCommit: (direction: 'IN' | 'OUT') => void
@@ -13,23 +14,24 @@ interface Props {
 }
 
 export function CommitButtons({ onCommit, isSubmitting, isDisabled, evalError, liveTotalPaise }: Props) {
+  const { t } = useLanguage()
   const canCommit = liveTotalPaise !== null && evalError === null && !isSubmitting
   const disabled = !canCommit || isDisabled
 
   return (
-    <div className="cr-commit" role="group" aria-label="Commit cash entry">
+    <div className="cr-commit" role="group" aria-label={t.cashRegCommitAria}>
       <Button variant="none"
         type="button"
         className="cr-commit__btn cr-commit__btn--in"
         onClick={() => onCommit('IN')}
         disabled={disabled}
         aria-busy={isSubmitting}
-        aria-label={isSubmitting ? 'Saving...' : 'Cash In'}
+        aria-label={isSubmitting ? t.saving : t.cashRegButtonCashIn}
       >
         {isSubmitting ? (
           <Loader2 size={18} className="cr-commit__spinner" aria-hidden="true" />
         ) : null}
-        <span>Cash In</span>
+        <span>{t.cashRegButtonCashIn}</span>
       </Button>
 
       <Button variant="none"
@@ -38,12 +40,12 @@ export function CommitButtons({ onCommit, isSubmitting, isDisabled, evalError, l
         onClick={() => onCommit('OUT')}
         disabled={disabled}
         aria-busy={isSubmitting}
-        aria-label={isSubmitting ? 'Saving...' : 'Cash Out'}
+        aria-label={isSubmitting ? t.saving : t.cashRegButtonCashOut}
       >
         {isSubmitting ? (
           <Loader2 size={18} className="cr-commit__spinner" aria-hidden="true" />
         ) : null}
-        <span>Cash Out</span>
+        <span>{t.cashRegButtonCashOut}</span>
       </Button>
     </div>
   )

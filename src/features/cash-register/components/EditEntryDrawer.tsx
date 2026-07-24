@@ -13,6 +13,7 @@ import { expressionReducer, EXPRESSION_INITIAL } from '../cashRegister.reducer'
 import { safeEvaluate } from '../cashRegister.evaluator'
 import type { CashEntryDTO } from '../cashRegister.types'
 import { Button } from '@/components/ui/Button'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface Props {
   entry: CashEntryDTO
@@ -22,6 +23,7 @@ interface Props {
 
 export function EditEntryDrawer({ entry, businessId, onClose }: Props) {
   const toast = useToast()
+  const { t } = useLanguage()
   const editMutation = useEditCashEntry(businessId)
 
   // Pre-fill expression from existing entry
@@ -53,10 +55,10 @@ export function EditEntryDrawer({ entry, businessId, onClose }: Props) {
         },
         idempotencyKey,
       })
-      toast.success('Entry updated')
+      toast.success(t.cashRegToastEntryUpdated)
       onClose()
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : 'Could not save. Try again.')
+      toast.error(err instanceof ApiError ? err.message : t.cashRegToastErrorSave)
     }
   }
 
@@ -64,7 +66,7 @@ export function EditEntryDrawer({ entry, businessId, onClose }: Props) {
     <Drawer
       open
       onClose={onClose}
-      title="Edit Entry"
+      title={t.cashRegDrawerTitle}
       size="md"
       footer={
         <Button variant="none"
@@ -75,8 +77,8 @@ export function EditEntryDrawer({ entry, businessId, onClose }: Props) {
           aria-busy={editMutation.isPending}
         >
           {editMutation.isPending
-            ? <><Loader2 size={16} className="spinner" aria-hidden="true" /> Saving…</>
-            : 'Save Changes'
+            ? <><Loader2 size={16} className="spinner" aria-hidden="true" /> {t.saving}</>
+            : t.cashRegDrawerSaveButton
           }
         </Button>
       }
