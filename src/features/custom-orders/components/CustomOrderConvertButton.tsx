@@ -3,6 +3,7 @@
 import { FileText } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useConvertOrderToInvoice } from '../hooks/useConvertOrderToInvoice'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface CustomOrderConvertButtonProps {
   orderId: string
@@ -11,6 +12,7 @@ interface CustomOrderConvertButtonProps {
 }
 
 export function CustomOrderConvertButton({ orderId, orderTitle, isOnline }: CustomOrderConvertButtonProps) {
+  const { t } = useLanguage()
   const { mutate, isPending } = useConvertOrderToInvoice()
 
   const handleClick = () => {
@@ -24,12 +26,12 @@ export function CustomOrderConvertButton({ orderId, orderTitle, isOnline }: Cust
       variant="primary" size="md"
       onClick={handleClick}
       disabled={isPending || !isOnline}
-      title={!isOnline ? 'Connect to internet to create invoice' : undefined}
-      aria-label="Convert order to invoice"
+      title={!isOnline ? t.coConvertOffline : undefined}
+      aria-label={t.coConvertAria}
       style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', minHeight: 44 }}
     >
       <FileText size={16} aria-hidden="true" />
-      {isPending ? 'Creating invoice...' : 'Create Invoice'}
+      {isPending ? t.coCreatingInvoice : t.coCreateInvoice}
     </Button>
   )
 }

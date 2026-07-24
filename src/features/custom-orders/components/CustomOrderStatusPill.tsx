@@ -2,15 +2,7 @@
 
 import type { CustomOrderStatus } from '../custom-orders.types'
 import { STATUS_COLOUR } from '../custom-orders.constants'
-
-const STATUS_LABELS: Record<CustomOrderStatus, string> = {
-  RECEIVED:      'Received',
-  IN_PRODUCTION: 'In Production',
-  READY:         'Ready',
-  DELIVERED:     'Delivered',
-  INVOICED:      'Invoiced',
-  CANCELLED:     'Cancelled',
-}
+import { useLanguage } from '@/context/LanguageContext'
 
 interface CustomOrderStatusPillProps {
   status: CustomOrderStatus
@@ -18,6 +10,15 @@ interface CustomOrderStatusPillProps {
 }
 
 export function CustomOrderStatusPill({ status, size = 'sm' }: CustomOrderStatusPillProps) {
+  const { t } = useLanguage()
+  const STATUS_LABELS: Record<CustomOrderStatus, string> = {
+    RECEIVED:      t.coStatusReceived,
+    IN_PRODUCTION: t.coStatusInProduction,
+    READY:         t.coStatusReady,
+    DELIVERED:     t.coStatusDelivered,
+    INVOICED:      t.coStatusInvoiced,
+    CANCELLED:     t.coStatusCancelled,
+  }
   const colours = STATUS_COLOUR[status]
   const fontSize = size === 'md' ? 'var(--fs-sm)' : 'var(--fs-xs)'
   const padding  = size === 'md' ? '4px 10px' : '2px 8px'
@@ -35,7 +36,7 @@ export function CustomOrderStatusPill({ status, size = 'sm' }: CustomOrderStatus
         color: colours.text,
         whiteSpace: 'nowrap',
       }}
-      aria-label={`Status: ${STATUS_LABELS[status]}`}
+      aria-label={`${t.coStatusAria}: ${STATUS_LABELS[status]}`}
     >
       {STATUS_LABELS[status]}
     </span>

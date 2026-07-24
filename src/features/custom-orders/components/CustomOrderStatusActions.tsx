@@ -6,6 +6,7 @@ import { getNextStatuses } from '../custom-orders.utils'
 import { useTransitionCustomOrder } from '../hooks/useTransitionCustomOrder'
 import type { CustomOrderStatus } from '../custom-orders.types'
 import { Input } from '@/components/ui/Input'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface CustomOrderStatusActionsProps {
   orderId: string
@@ -13,16 +14,16 @@ interface CustomOrderStatusActionsProps {
   currentStatus: CustomOrderStatus
 }
 
-const STATUS_BUTTON_LABELS: Record<CustomOrderStatus, string> = {
-  RECEIVED:      'Mark Received',
-  IN_PRODUCTION: 'Start Production',
-  READY:         'Mark Ready',
-  DELIVERED:     'Mark Delivered',
-  INVOICED:      'Mark Invoiced',
-  CANCELLED:     'Cancel Order',
-}
-
 export function CustomOrderStatusActions({ orderId, orderTitle, currentStatus }: CustomOrderStatusActionsProps) {
+  const { t } = useLanguage()
+  const STATUS_BUTTON_LABELS: Record<CustomOrderStatus, string> = {
+    RECEIVED:      t.coBtnMarkReceived,
+    IN_PRODUCTION: t.coBtnStartProduction,
+    READY:         t.coBtnMarkReady,
+    DELIVERED:     t.coBtnMarkDelivered,
+    INVOICED:      t.coBtnMarkInvoiced,
+    CANCELLED:     t.coBtnCancelOrder,
+  }
   const [cancelReason, setCancelReason] = useState('')
   const [showCancelPrompt, setShowCancelPrompt] = useState(false)
   const { mutate, isPending } = useTransitionCustomOrder()
@@ -70,16 +71,16 @@ export function CustomOrderStatusActions({ orderId, orderTitle, currentStatus }:
       {showCancelPrompt && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', padding: 'var(--space-3)', background: 'var(--color-error-50)', borderRadius: 8 }}>
           <label style={{ fontSize: 'var(--fs-sm)', fontWeight: 500, color: 'var(--color-error-700)' }}>
-            Reason for cancellation *
+            {t.coCancelReasonLabel} *
           </label>
           <Input
             type="text"
             className="input"
             value={cancelReason}
             onChange={(e) => setCancelReason(e.target.value)}
-            placeholder="Enter reason..."
+            placeholder={t.coCancelReasonPlaceholder}
             maxLength={500}
-            aria-label="Cancellation reason"
+            aria-label={t.coCancelReasonAria}
           />
           <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
             <Button variant="none"
@@ -89,7 +90,7 @@ export function CustomOrderStatusActions({ orderId, orderTitle, currentStatus }:
               disabled={!cancelReason.trim() || isPending}
               style={{ minHeight: 44 }}
             >
-              Confirm Cancel
+              {t.coConfirmCancel}
             </Button>
             <Button
               type="button"
@@ -97,7 +98,7 @@ export function CustomOrderStatusActions({ orderId, orderTitle, currentStatus }:
               onClick={() => { setShowCancelPrompt(false); setCancelReason('') }}
               style={{ minHeight: 44 }}
             >
-              Back
+              {t.back}
             </Button>
           </div>
         </div>

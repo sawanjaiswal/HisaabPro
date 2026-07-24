@@ -5,6 +5,7 @@ import { CustomOrderStatusPill } from './CustomOrderStatusPill'
 import { formatPaise, formatOrderNumber } from '../custom-orders.utils'
 import type { CustomOrderListRow } from '../custom-orders.types'
 import { Button } from '@/components/ui/Button'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface CustomOrderListItemProps {
   order: CustomOrderListRow
@@ -12,6 +13,7 @@ interface CustomOrderListItemProps {
 }
 
 export function CustomOrderListItem({ order, onClick }: CustomOrderListItemProps) {
+  const { t } = useLanguage()
   const delivery = order.deliveryAt
     ? new Date(order.deliveryAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
     : null
@@ -21,7 +23,7 @@ export function CustomOrderListItem({ order, onClick }: CustomOrderListItemProps
       type="button"
       className="order-list-item"
       onClick={() => onClick(order.id)}
-      aria-label={`Order ${formatOrderNumber(order.orderNumber, order.id)}: ${order.title}`}
+      aria-label={`${t.coOrderRowAria} ${formatOrderNumber(order.orderNumber, order.id)}: ${order.title}`}
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -74,7 +76,7 @@ export function CustomOrderListItem({ order, onClick }: CustomOrderListItemProps
                 borderRadius: 4,
                 padding: '1px 5px',
               }}>
-                Bal ₹{formatPaise(order.balancePaise)}
+                {t.coBalPrefix} ₹{formatPaise(order.balancePaise)}
               </span>
             )}
           </div>

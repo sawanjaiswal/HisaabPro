@@ -3,25 +3,27 @@
 import { ShoppingBag } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface CustomOrdersEmptyStateProps {
   onCreateNew: () => void
 }
 
 export function CustomOrdersEmptyState({ onCreateNew }: CustomOrdersEmptyStateProps) {
+  const { t } = useLanguage()
   return (
     <EmptyState
       icon={<ShoppingBag size={40} aria-hidden="true" />}
-      title="No orders yet"
-      description="Create your first custom order to start tracking bakery or tailor orders"
+      title={t.coEmptyTitle}
+      description={t.coEmptyDesc}
       action={
         <Button
           type="button"
           variant="primary" size="md"
           onClick={onCreateNew}
-          aria-label="Create first order"
+          aria-label={t.coCreateFirstAria}
         >
-          Create Order
+          {t.coCreateOrder}
         </Button>
       }
     />

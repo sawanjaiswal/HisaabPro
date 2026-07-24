@@ -17,10 +17,12 @@ import { CustomOrderConvertButton } from '../components/CustomOrderConvertButton
 import { RecordAdvanceModal } from '../components/RecordAdvanceModal'
 import { formatOrderNumber, formatPaise, canConvertToInvoice } from '../custom-orders.utils'
 import { ORDER_ROUTES } from '../custom-orders.constants'
+import { useLanguage } from '@/context/LanguageContext'
 
 function DetailSkeleton() {
+  const { t } = useLanguage()
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', padding: 'var(--space-4)' }} aria-busy="true" aria-label="Loading order details">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', padding: 'var(--space-4)' }} aria-busy="true" aria-label={t.coLoadingOrder}>
       {[180, 120, 80, 60, 250].map((w, i) => (
         <div key={i} className="skeleton" style={{ height: i === 4 ? 120 : 44, borderRadius: 8, width: `${w}px`, maxWidth: '100%' }} aria-hidden="true" />
       ))}
@@ -42,18 +44,19 @@ const isFinal = (status: string) => status === 'INVOICED' || status === 'CANCELL
 export default function CustomOrderDetailPage() {
   const { id = '' } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const { data: order, status, refetch } = useCustomOrder(id)
   const [showAdvanceModal, setShowAdvanceModal] = useState(false)
   const isOnline = navigator.onLine
 
-  if (status === 'pending') return <AppShell><Header title="Order Details" /><DetailSkeleton /></AppShell>
+  if (status === 'pending') return <AppShell><Header title={t.coOrderDetails} /><DetailSkeleton /></AppShell>
 
   if (status === 'error' || !order) {
     return (
       <AppShell>
-        <Header title="Order Details" />
+        <Header title={t.coOrderDetails} />
         <PageContainer>
-          <ErrorState title="Could not load order" message="Check your connection and try again" onRetry={refetch} />
+          <ErrorState title={t.coLoadErrorTitle} message={t.coConnectionRetry} onRetry={refetch} />
         </PageContainer>
       </AppShell>
     )
@@ -75,7 +78,7 @@ export default function CustomOrderDetailPage() {
               type="button"
               variant="ghost" size="sm"
               onClick={() => navigate(ORDER_ROUTES.EDIT(id))}
-              aria-label="Edit order"
+              aria-label={t.coEditOrderAria}
               style={{ minHeight: 44 }}
             >
               <Pencil size={16} aria-hidden="true" />
@@ -102,7 +105,7 @@ export default function CustomOrderDetailPage() {
               {delivery && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
                   <Calendar size={14} aria-hidden="true" />
-                  <span>Delivery: {delivery}{order.deliverySlot ? ` · ${order.deliverySlot}` : ''}</span>
+                  <span>{t.coDeliveryLabel}: {delivery}{order.deliverySlot ? ` · ${order.deliverySlot}` : ''}</span>
                 </div>
               )}
             </div>
@@ -114,7 +117,7 @@ export default function CustomOrderDetailPage() {
               </div>
               {order.balancePaise > 0 && (
                 <span style={{ fontSize: 'var(--fs-sm)', fontWeight: 600, color: 'var(--color-warning-700)', background: 'var(--color-warning-50)', borderRadius: 6, padding: '3px 8px' }}>
-                  Bal ₹{formatPaise(order.balancePaise)}
+                  {t.coBalPrefix} ₹{formatPaise(order.balancePaise)}
                 </span>
               )}
             </div>
@@ -128,16 +131,16 @@ export default function CustomOrderDetailPage() {
 
           {/* Status actions */}
           {!isFinal(order.status) && (
-            <Section title="Actions">
+            <Section title={t.coSecActions}>
               <CustomOrderStatusActions orderId={id} orderTitle={order.title} currentStatus={order.status} />
             </Section>
           )}
 
           {/* Convert to invoice CTA */}
           {showConvert && (
-            <Section title="Invoice">
+            <Section title={t.coSecInvoice}>
               <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', margin: 0 }}>
-                Order is ready. Create an invoice to bill the customer.
+                {t.coReadyToInvoice}
               </p>
               <CustomOrderConvertButton orderId={id} orderTitle={order.title} isOnline={isOnline} />
             </Section>
@@ -145,20 +148,20 @@ export default function CustomOrderDetailPage() {
 
           {/* Already invoiced */}
           {order.invoiceId && (
-            <Section title="Invoice">
+            <Section title={t.coSecInvoice}>
               <Button
                 type="button"
                 variant="ghost" size="sm"
                 onClick={() => navigate(`/invoices/${order.invoiceId}`)}
                 style={{ alignSelf: 'flex-start', minHeight: 44 }}
               >
-                View Invoice
+                {t.coViewInvoice}
               </Button>
             </Section>
           )}
 
           {/* Line items */}
-          <Section title="Items">
+          <Section title={t.coSecItems}>
             <CustomOrderItemsList items={order.items} />
           </Section>
 
@@ -166,18 +169,18 @@ export default function CustomOrderDetailPage() {
           <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 'var(--space-1)', alignItems: 'flex-end' }}>
             {order.discountPaise > 0 && (
               <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: 'var(--fs-sm)', color: 'var(--color-error-600)' }}>
-                <span>Discount</span>
+                <span>{t.coDiscount}</span>
                 <span>-₹{formatPaise(order.discountPaise)}</span>
               </div>
             )}
             <div style={{ display: 'flex', gap: 'var(--space-4)', fontWeight: 700, fontSize: 'var(--fs-md)', color: 'var(--color-text)' }}>
-              <span>Total</span>
+              <span>{t.coTotal}</span>
               <span>₹{formatPaise(order.totalPaise)}</span>
             </div>
           </div>
 
           {/* Advances */}
-          <Section title="Advances">
+          <Section title={t.coSecAdvances}>
             <CustomOrderAdvancesList
               advances={order.advances}
               orderId={id}
@@ -195,7 +198,7 @@ export default function CustomOrderDetailPage() {
                 style={{ alignSelf: 'flex-start', minHeight: 44, display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}
               >
                 <Plus size={15} aria-hidden="true" />
-                Record Advance
+                {t.coRecordAdvance}
               </Button>
             )}
           </Section>
@@ -204,7 +207,7 @@ export default function CustomOrderDetailPage() {
           {order.status === 'CANCELLED' && order.cancelReason && (
             <div style={{ padding: 'var(--space-3)', background: 'var(--color-error-50)', borderRadius: 8 }}>
               <p style={{ margin: 0, fontSize: 'var(--fs-sm)', color: 'var(--color-error-700)' }}>
-                <strong>Cancelled:</strong> {order.cancelReason}
+                <strong>{t.coCancelledPrefix}:</strong> {order.cancelReason}
               </p>
             </div>
           )}

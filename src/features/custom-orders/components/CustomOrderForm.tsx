@@ -14,6 +14,7 @@ import type { CustomOrderDetail } from '../custom-orders.types'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
 import { DateField } from '@/components/ui/DateField'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface CustomOrderFormProps {
   initialData?: CustomOrderDetail
@@ -41,7 +42,9 @@ function fromDetail(d: CustomOrderDetail): {
   }
 }
 
-export function CustomOrderForm({ initialData, onSubmit, isSubmitting, submitLabel = 'Save Order' }: CustomOrderFormProps) {
+export function CustomOrderForm({ initialData, onSubmit, isSubmitting, submitLabel }: CustomOrderFormProps) {
+  const { t } = useLanguage()
+  const resolvedSubmitLabel = submitLabel ?? t.coSaveOrder
   const init = initialData ? fromDetail(initialData) : { partyId: '', title: '', notes: '', deliveryAt: '', deliverySlot: '', deliveryAddress: '', discountPaise: 0, items: [makeItem()] }
 
   const [partyId, setPartyId]               = useState(init.partyId)
@@ -72,10 +75,10 @@ export function CustomOrderForm({ initialData, onSubmit, isSubmitting, submitLab
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {}
-    if (!partyId) errs.partyId = 'Customer is required'
-    if (!title.trim()) errs.title = 'Order title is required'
-    if (items.length === 0) errs.items = 'At least one item is required'
-    for (const it of items) { if (!it.description.trim()) { errs.items = 'All items need a description'; break } }
+    if (!partyId) errs.partyId = t.coErrCustomer
+    if (!title.trim()) errs.title = t.coErrTitle
+    if (items.length === 0) errs.items = t.coErrItemsMin
+    for (const it of items) { if (!it.description.trim()) { errs.items = t.coErrItemDesc; break } }
     setErrors(errs)
     return Object.keys(errs).length === 0
   }
@@ -93,78 +96,78 @@ export function CustomOrderForm({ initialData, onSubmit, isSubmitting, submitLab
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-        <label className="label" htmlFor="order-title">Order Title *</label>
-        <Input id="order-title" type="text" className="input" value={title} onChange={(e) => { setTitle(e.target.value); if (e.target.value) setErrors((p) => { const n = { ...p }; delete n.title; return n }) }} placeholder="e.g. 1 kg Vanilla Cake, Wedding Lehenga" maxLength={200} aria-required="true" aria-invalid={Boolean(errors.title)} />
+        <label className="label" htmlFor="order-title">{t.coOrderTitle} *</label>
+        <Input id="order-title" type="text" className="input" value={title} onChange={(e) => { setTitle(e.target.value); if (e.target.value) setErrors((p) => { const n = { ...p }; delete n.title; return n }) }} placeholder={t.coTitlePlaceholder} maxLength={200} aria-required="true" aria-invalid={Boolean(errors.title)} />
         {errors.title && <span className="field-error" role="alert">{errors.title}</span>}
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-        <label className="label" htmlFor="order-notes">Notes (optional)</label>
-        <Textarea id="order-notes" className="input" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Special instructions, customer preferences..." rows={2} maxLength={5000} style={{ resize: 'vertical', minHeight: 64 }} />
+        <label className="label" htmlFor="order-notes">{t.coNotesOptional}</label>
+        <Textarea id="order-notes" className="input" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t.coNotesPlaceholder} rows={2} maxLength={5000} style={{ resize: 'vertical', minHeight: 64 }} />
       </div>
 
       <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: 140, display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-          <label className="label" htmlFor="order-delivery">Delivery Date &amp; Time</label>
+          <label className="label" htmlFor="order-delivery">{t.coDeliveryDateTime}</label>
           <DateField id="order-delivery" type="datetime-local" className="input" value={deliveryAt} onChange={(e) => setDeliveryAt(e.target.value)} />
         </div>
         <div style={{ flex: 1, minWidth: 120, display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-          <label className="label" htmlFor="order-slot">Slot</label>
+          <label className="label" htmlFor="order-slot">{t.coSlot}</label>
           <Select
             value={deliverySlot || ANY}
             onValueChange={(v) => setDeliverySlot(v === ANY ? '' : v)}
-            ariaLabel="Slot"
+            ariaLabel={t.coSlot}
           >
-            <SelectItem value={ANY}>Any</SelectItem>
-            <SelectItem value="morning">Morning</SelectItem>
-            <SelectItem value="afternoon">Afternoon</SelectItem>
-            <SelectItem value="evening">Evening</SelectItem>
+            <SelectItem value={ANY}>{t.coSlotAny}</SelectItem>
+            <SelectItem value="morning">{t.coSlotMorning}</SelectItem>
+            <SelectItem value="afternoon">{t.coSlotAfternoon}</SelectItem>
+            <SelectItem value="evening">{t.coSlotEvening}</SelectItem>
           </Select>
         </div>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-        <label className="label" htmlFor="order-addr">Delivery Address (optional)</label>
+        <label className="label" htmlFor="order-addr">{t.coDeliveryAddress}</label>
         <Input id="order-addr" type="text" className="input" value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} maxLength={500} />
       </div>
 
       {/* Line items */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span className="label" style={{ margin: 0 }}>Items *</span>
+          <span className="label" style={{ margin: 0 }}>{t.coItemsRequired} *</span>
           {errors.items && <span className="field-error" role="alert">{errors.items}</span>}
         </div>
         {items.map((item, idx) => (
           <CustomOrderItemEditor key={item._key} item={item} index={idx} showRemove={items.length > 1} onUpdate={updateItem} onRemove={removeItem} />
         ))}
         <Button type="button" variant="ghost" size="sm" onClick={addItem} style={{ alignSelf: 'flex-start', minHeight: 44 }}>
-          <Plus size={16} aria-hidden="true" /> Add Item
+          <Plus size={16} aria-hidden="true" /> {t.coAddItem}
         </Button>
       </div>
 
       {/* Order-level discount */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-        <label className="label" htmlFor="order-discount">Order Discount (₹, optional)</label>
+        <label className="label" htmlFor="order-discount">{t.coOrderDiscount}</label>
         <Input id="order-discount" type="number" className="input" value={discountRs} min="0" step="0.01" onChange={(e) => setDiscountRs(e.target.value)} style={{ maxWidth: 160 }} />
       </div>
 
       {/* Totals summary */}
       <div style={{ borderTop: '2px solid var(--color-border)', paddingTop: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 'var(--space-1)', alignItems: 'flex-end' }}>
         <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
-          <span>Subtotal:</span><span>₹{formatPaise(totals.subtotalPaise)}</span>
+          <span>{t.coSubtotal}:</span><span>₹{formatPaise(totals.subtotalPaise)}</span>
         </div>
         {orderDiscountPaise > 0 && (
           <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: 'var(--fs-sm)', color: 'var(--color-error-600)' }}>
-            <span>Discount:</span><span>-₹{formatPaise(orderDiscountPaise)}</span>
+            <span>{t.coDiscount}:</span><span>-₹{formatPaise(orderDiscountPaise)}</span>
           </div>
         )}
         <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: 'var(--fs-md)', fontWeight: 700, color: 'var(--color-text)' }}>
-          <span>Total:</span><span>₹{formatPaise(grandTotal)}</span>
+          <span>{t.coTotal}:</span><span>₹{formatPaise(grandTotal)}</span>
         </div>
       </div>
 
       <Button type="submit" variant="primary" size="lg" disabled={isSubmitting} style={{ minHeight: 48, width: '100%' }}>
-        {isSubmitting ? 'Saving...' : submitLabel}
+        {isSubmitting ? t.saving : resolvedSubmitLabel}
       </Button>
     </form>
   )

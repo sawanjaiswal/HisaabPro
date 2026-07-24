@@ -139,10 +139,12 @@ rollout is the only structural item left.**
 with a dedicated test (`__tests__/switch-business-limiter.test.ts`). G9 met.
 
 #### P1.2 · UI-state coverage — 109 of 190 pages incomplete
-- **Evidence (measured, import-following sweep):** 37 pages have no error state,
-  32 no empty state, 32 no layout primitive, 17 no loading state. (i18n gap:
-  **0 as of 2026-07-24** — the last hardcoded-English pages, BOM + production-runs,
-  were closed this pass.)
+- **Evidence (`scripts/scan-ui-states.mjs`, 2026-07-24):** total=195, gold=77,
+  gaps=118. Remaining i18n gaps by area: **custom-orders (4), sales-create (3),
+  jobs (2), cash-register (1)** in-app, plus static `pages`/`landing`/`storefront`
+  (marketing, English-only by design). Auth + BOM + production-runs closed this
+  pass. **Correction:** an earlier note here claimed i18n hit 0 — that was
+  premature; the scanner surfaced feature areas the 2026-07-21 audit never listed.
 - **⚠️ The 2026-07-21 offender ranking was stale.** Re-measuring each area before
   editing (following imports, not just grepping the audit) showed onboarding,
   marketing, and POS were **already** fully `t.*`-routed. The genuine i18n gap was

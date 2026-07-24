@@ -8,9 +8,11 @@ import { useCreateCustomOrder } from '../hooks/useCreateCustomOrder'
 import { CustomOrderForm } from '../components/CustomOrderForm'
 import { ORDER_ROUTES } from '../custom-orders.constants'
 import type { CreateCustomOrderInput } from '../api/custom-orders.api.types'
+import { useLanguage } from '@/context/LanguageContext'
 
 export default function CustomOrderNewPage() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const { mutate, isPending } = useCreateCustomOrder()
 
   const handleSubmit = (data: CreateCustomOrderInput) => {
@@ -27,12 +29,12 @@ export default function CustomOrderNewPage() {
 
   return (
     <AppShell>
-      <Header title="New Order" />
+      <Header title={t.coNewOrder} />
       <PageContainer>
         <CustomOrderForm
           onSubmit={handleSubmit}
           isSubmitting={isPending}
-          submitLabel="Create Order"
+          submitLabel={t.coCreateOrder}
         />
       </PageContainer>
     </AppShell>

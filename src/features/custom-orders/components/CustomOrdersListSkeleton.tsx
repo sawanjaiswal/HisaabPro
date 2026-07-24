@@ -1,8 +1,11 @@
 /** CustomOrdersListSkeleton — loading UI state */
 
+import { useLanguage } from '@/context/LanguageContext'
+
 export function CustomOrdersListSkeleton() {
+  const { t } = useLanguage()
   return (
-    <div aria-label="Loading orders" aria-busy="true" style={{ display: 'flex', flexDirection: 'column' }}>
+    <div aria-label={t.coLoadingOrders} aria-busy="true" style={{ display: 'flex', flexDirection: 'column' }}>
       {Array.from({ length: 5 }).map((_, i) => (
         <div
           key={i}

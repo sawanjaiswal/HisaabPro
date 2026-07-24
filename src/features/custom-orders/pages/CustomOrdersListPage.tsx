@@ -15,24 +15,26 @@ import { CustomOrdersErrorState } from '../components/CustomOrdersErrorState'
 import { CUSTOM_ORDER_STATUSES, ORDER_ROUTES } from '../custom-orders.constants'
 import type { CustomOrderStatus } from '../custom-orders.types'
 import { Input } from '@/components/ui/Input'
+import { useLanguage } from '@/context/LanguageContext'
 
 const ALL = 'ALL' as const
 type Filter = CustomOrderStatus | typeof ALL
 
-const PILL_LABELS: Record<Filter, string> = {
-  ALL:           'All',
-  RECEIVED:      'Received',
-  IN_PRODUCTION: 'In Production',
-  READY:         'Ready',
-  DELIVERED:     'Delivered',
-  INVOICED:      'Invoiced',
-  CANCELLED:     'Cancelled',
-}
-
 export default function CustomOrdersListPage() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const [activeFilter, setActiveFilter] = useState<Filter>(ALL)
   const [balanceOnly, setBalanceOnly] = useState(false)
+
+  const PILL_LABELS: Record<Filter, string> = {
+    ALL:           t.all,
+    RECEIVED:      t.coStatusReceived,
+    IN_PRODUCTION: t.coStatusInProduction,
+    READY:         t.coStatusReady,
+    DELIVERED:     t.coStatusDelivered,
+    INVOICED:      t.coStatusInvoiced,
+    CANCELLED:     t.coStatusCancelled,
+  }
 
   const { data, status, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } = useCustomOrders(
     {
@@ -46,13 +48,13 @@ export default function CustomOrdersListPage() {
 
   return (
     <AppShell>
-      <Header title="Custom Orders" />
+      <Header title={t.coTitle} />
 
       <PageContainer>
         {/* Status filter pills */}
         <div
           role="group"
-          aria-label="Filter orders by status"
+          aria-label={t.coFilterByStatus}
           style={{
             display: 'flex',
             gap: 'var(--space-2)',
@@ -94,7 +96,7 @@ export default function CustomOrdersListPage() {
             onChange={(e) => setBalanceOnly(e.target.checked)}
             style={{ width: 16, height: 16 }}
           />
-          Balance pending only
+          {t.coBalancePendingOnly}
         </label>
 
         {status === 'pending' && <CustomOrdersListSkeleton />}
@@ -105,7 +107,7 @@ export default function CustomOrdersListPage() {
         )}
 
         {status === 'success' && allItems.length > 0 && (
-          <div role="list" aria-label="Custom orders" style={{ display: 'flex', flexDirection: 'column' }}>
+          <div role="list" aria-label={t.coListAria} style={{ display: 'flex', flexDirection: 'column' }}>
             {allItems.map((order) => (
               <div key={order.id} role="listitem">
                 <CustomOrderListItem order={order} onClick={(id) => navigate(ORDER_ROUTES.DETAIL(id))} />
@@ -122,7 +124,7 @@ export default function CustomOrdersListPage() {
             disabled={isFetchingNextPage}
             style={{ width: '100%', marginTop: 'var(--space-3)', minHeight: 44 }}
           >
-            {isFetchingNextPage ? 'Loading...' : 'Load more'}
+            {isFetchingNextPage ? t.coLoadingMore : t.coLoadMore}
           </Button>
         )}
       </PageContainer>
@@ -132,7 +134,7 @@ export default function CustomOrdersListPage() {
           type="button"
           className="fab"
           onClick={goToNew}
-          aria-label="Create new order"
+          aria-label={t.coCreateNewAria}
         >
           <Plus size={24} aria-hidden="true" />
         </Button>

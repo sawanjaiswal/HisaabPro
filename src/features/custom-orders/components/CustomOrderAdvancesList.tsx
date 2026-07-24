@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { formatPaise } from '../custom-orders.utils'
 import { useDeleteAdvance } from '../hooks/useDeleteAdvance'
 import type { CustomOrderAdvance, CustomOrderStatus } from '../custom-orders.types'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface CustomOrderAdvancesListProps {
   advances: CustomOrderAdvance[]
@@ -14,15 +15,6 @@ interface CustomOrderAdvancesListProps {
   advancePaise: number
   balancePaise: number
   totalPaise: number
-}
-
-const METHOD_LABELS: Record<string, string> = {
-  cash:   'Cash',
-  upi:    'UPI',
-  bank:   'Bank Transfer',
-  cheque: 'Cheque',
-  card:   'Card',
-  other:  'Other',
 }
 
 const isFinal = (status: CustomOrderStatus) => status === 'INVOICED' || status === 'CANCELLED'
@@ -36,13 +28,22 @@ export function CustomOrderAdvancesList({
   balancePaise,
   totalPaise,
 }: CustomOrderAdvancesListProps) {
+  const { t } = useLanguage()
+  const METHOD_LABELS: Record<string, string> = {
+    cash:   t.coMethodCash,
+    upi:    t.coMethodUpi,
+    bank:   t.coMethodBank,
+    cheque: t.coMethodCheque,
+    card:   t.coMethodCard,
+    other:  t.coMethodOther,
+  }
   const { mutate: doDelete, isPending } = useDeleteAdvance()
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
       {advances.length === 0 ? (
         <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--fs-sm)', margin: 0 }}>
-          No advances recorded yet.
+          {t.coNoAdvances}
         </p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
@@ -82,7 +83,7 @@ export function CustomOrderAdvancesList({
                   variant="ghost" size="sm"
                   onClick={() => doDelete({ orderId, advanceId: adv.id, title: orderTitle })}
                   disabled={isPending}
-                  aria-label={`Remove advance of ₹${formatPaise(adv.amountPaise)}`}
+                  aria-label={`${t.coRemoveAdvanceAria} ₹${formatPaise(adv.amountPaise)}`}
                   style={{ minHeight: 44, minWidth: 44, color: 'var(--color-error-600)' }}
                 >
                   <Trash2 size={15} aria-hidden="true" />
@@ -96,15 +97,15 @@ export function CustomOrderAdvancesList({
       {advances.length > 0 && (
         <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 'var(--space-2)', display: 'flex', flexDirection: 'column', gap: 'var(--space-1)', alignItems: 'flex-end' }}>
           <div style={{ display: 'flex', gap: 'var(--space-3)', fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
-            <span>Order Total</span>
+            <span>{t.coOrderTotal}</span>
             <span>₹{formatPaise(totalPaise)}</span>
           </div>
           <div style={{ display: 'flex', gap: 'var(--space-3)', fontSize: 'var(--fs-sm)', color: 'var(--color-success-700)' }}>
-            <span>Advance Paid</span>
+            <span>{t.coAdvancePaid}</span>
             <span>-₹{formatPaise(advancePaise)}</span>
           </div>
           <div style={{ display: 'flex', gap: 'var(--space-3)', fontSize: 'var(--fs-md)', fontWeight: 700, color: balancePaise > 0 ? 'var(--color-warning-700)' : 'var(--color-success-700)' }}>
-            <span>Balance Due</span>
+            <span>{t.coBalanceDue}</span>
             <span>₹{formatPaise(balancePaise)}</span>
           </div>
         </div>

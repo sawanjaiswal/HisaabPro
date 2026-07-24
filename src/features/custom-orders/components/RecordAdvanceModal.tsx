@@ -7,6 +7,7 @@ import { X } from 'lucide-react'
 import { useRecordAdvance } from '../hooks/useRecordAdvance'
 import { ADVANCE_METHODS } from '../custom-orders.constants'
 import { Input } from '@/components/ui/Input'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface RecordAdvanceModalProps {
   orderId: string
@@ -14,16 +15,16 @@ interface RecordAdvanceModalProps {
   onClose: () => void
 }
 
-const METHOD_LABELS: Record<string, string> = {
-  cash:   'Cash',
-  upi:    'UPI',
-  bank:   'Bank Transfer',
-  cheque: 'Cheque',
-  card:   'Card',
-  other:  'Other',
-}
-
 export function RecordAdvanceModal({ orderId, orderTitle, onClose }: RecordAdvanceModalProps) {
+  const { t } = useLanguage()
+  const METHOD_LABELS: Record<string, string> = {
+    cash:   t.coMethodCash,
+    upi:    t.coMethodUpi,
+    bank:   t.coMethodBank,
+    cheque: t.coMethodCheque,
+    card:   t.coMethodCard,
+    other:  t.coMethodOther,
+  }
   const [amountRs, setAmountRs] = useState('')
   const [method, setMethod] = useState<string>('cash')
   const [reference, setReference] = useState('')
@@ -35,7 +36,7 @@ export function RecordAdvanceModal({ orderId, orderTitle, onClose }: RecordAdvan
     e.preventDefault()
     const amt = parseFloat(amountRs)
     if (!amountRs || isNaN(amt) || amt <= 0) {
-      setError('Enter a valid amount')
+      setError(t.coErrValidAmount)
       return
     }
     const amountPaise = Math.round(amt * 100)
@@ -57,7 +58,7 @@ export function RecordAdvanceModal({ orderId, orderTitle, onClose }: RecordAdvan
   return (
     <div
       role="dialog"
-      aria-label="Record advance payment"
+      aria-label={t.coRecordAdvanceAria}
       aria-modal="true"
       style={{
         position: 'fixed', inset: 0, zIndex: 'var(--z-modal)' as unknown as number,
@@ -80,16 +81,16 @@ export function RecordAdvanceModal({ orderId, orderTitle, onClose }: RecordAdvan
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <h2 style={{ margin: 0, fontSize: 'var(--fs-md)', fontWeight: 700, color: 'var(--color-text)' }}>
-            Record Advance
+            {t.coRecordAdvance}
           </h2>
-          <Button type="button" variant="ghost" size="sm" onClick={onClose} aria-label="Close" style={{ minHeight: 44, minWidth: 44 }}>
+          <Button type="button" variant="ghost" size="sm" onClick={onClose} aria-label={t.close} style={{ minHeight: 44, minWidth: 44 }}>
             <X size={18} aria-hidden="true" />
           </Button>
         </div>
 
         <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-            <label className="label" htmlFor="adv-amount">Amount (₹) *</label>
+            <label className="label" htmlFor="adv-amount">{t.coAmountRequired} *</label>
             <Input
               id="adv-amount"
               type="number"
@@ -106,8 +107,8 @@ export function RecordAdvanceModal({ orderId, orderTitle, onClose }: RecordAdvan
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-            <label className="label" htmlFor="adv-method">Payment Method</label>
-            <Select value={method} onValueChange={setMethod} ariaLabel="Payment Method">
+            <label className="label" htmlFor="adv-method">{t.coPaymentMethod}</label>
+            <Select value={method} onValueChange={setMethod} ariaLabel={t.coPaymentMethod}>
               {ADVANCE_METHODS.map((m) => (
                 <SelectItem key={m} value={m}>{METHOD_LABELS[m]}</SelectItem>
               ))}
@@ -115,20 +116,20 @@ export function RecordAdvanceModal({ orderId, orderTitle, onClose }: RecordAdvan
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-            <label className="label" htmlFor="adv-ref">Reference (optional)</label>
+            <label className="label" htmlFor="adv-ref">{t.coReference}</label>
             <Input
               id="adv-ref"
               type="text"
               className="input"
               value={reference}
               onChange={(e) => setReference(e.target.value)}
-              placeholder="UPI ref, cheque no..."
+              placeholder={t.coReferencePlaceholder}
               maxLength={120}
             />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-            <label className="label" htmlFor="adv-notes">Notes (optional)</label>
+            <label className="label" htmlFor="adv-notes">{t.coNotesOptional}</label>
             <Input
               id="adv-notes"
               type="text"
@@ -145,7 +146,7 @@ export function RecordAdvanceModal({ orderId, orderTitle, onClose }: RecordAdvan
             disabled={isPending}
             style={{ minHeight: 48, width: '100%' }}
           >
-            {isPending ? 'Recording...' : 'Record Advance'}
+            {isPending ? t.coRecording : t.coRecordAdvance}
           </Button>
         </form>
       </div>
