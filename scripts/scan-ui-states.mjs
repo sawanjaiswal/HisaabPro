@@ -23,6 +23,19 @@ const files = execSync(
 
 const rows = files.map((f) => {
   const s = readFileSync(f, 'utf8')
+  // Thin wrapper: a short page whose whole body renders ANOTHER *Page/*ListPage
+  // component (e.g. EstimatesPage → <DocumentListPage>, CreateEstimatePage →
+  // <CreateInvoicePage>). All 4 UI states live in the delegate, which is scanned
+  // as its own row — so the wrapper inherits them. Counting it as a gap is a
+  // false positive.
+  const lineCount = s.split('\n').length
+  const isWrapper = lineCount < 26 && /<\w*(Page|ListPage)\b/.test(s)
+  if (isWrapper) {
+    return {
+      f: f.replace('src/features/', '').replace('src/pages/', 'pages/'),
+      err: true, empty: true, load: true, i18n: true, shell: true,
+    }
+  }
   return {
     f: f.replace('src/features/', '').replace('src/pages/', 'pages/'),
     err: /ErrorState|onRetry/.test(s),
