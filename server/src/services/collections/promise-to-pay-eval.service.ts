@@ -6,6 +6,7 @@
 import { prisma } from '../../lib/prisma.js'
 import logger from '../../lib/logger.js'
 import { notifyPtpBroken } from '../notifications/notification-hooks.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 // ─── List ────────────────────────────────────────────────────────────────────
 
@@ -97,18 +98,16 @@ export async function markPtpKept(
       },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        action: 'PTP_KEPT',
-        entityType: 'PromiseToPay',
-        entityId: ptpId,
-        entityLabel: `PTP ${ptpId}`,
-        userId: userId ?? null,
-        systemActor: systemActor ?? null,
-        changes: { paymentId },
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      action: 'PTP_KEPT',
+      entityType: 'PromiseToPay',
+      entityId: ptpId,
+      entityLabel: `PTP ${ptpId}`,
+      userId: userId ?? null,
+      systemActor: systemActor ?? null,
+      changes: { paymentId },
+    }, tx)
 
     return result
   })
@@ -223,18 +222,16 @@ export async function evaluateOpenPtps(
           },
         })
 
-        await tx.auditLog.create({
-          data: {
-            businessId,
-            action: `PTP_${newStatus}`,
-            entityType: 'PromiseToPay',
-            entityId: ptp.id,
-            entityLabel: `PTP ${ptp.id}`,
-            userId: null,
-            systemActor: 'cron:ptp-evaluator',
-            changes: { totalPaid, amountPaise: ptp.amountPaise, mostRecentPaymentId },
-          },
-        })
+        await createAuditEntry({
+          businessId,
+          action: `PTP_${newStatus}`,
+          entityType: 'PromiseToPay',
+          entityId: ptp.id,
+          entityLabel: `PTP ${ptp.id}`,
+          userId: null,
+          systemActor: 'cron:ptp-evaluator',
+          changes: { totalPaid, amountPaise: ptp.amountPaise, mostRecentPaymentId },
+        }, tx)
       })
       logger.info('ptp.evaluated', { ptpId: ptp.id, newStatus, businessId })
       // Sync try/catch can't catch this fire-and-forget rejection — attribute it.

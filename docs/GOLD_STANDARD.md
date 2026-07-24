@@ -248,8 +248,8 @@ tokens so dark-mode parity is automatic. **Effort:** XS.
 - **P3.2** · Offline ratchet — ✅ **DONE** (2026-07-23, commit `954f13bb`). Last
   `mutationNoEntityType` (`/expenses/ocr`, a read-shaped POST) opted out with
   `offlineQueue:false`; baseline ratcheted to `0/0/0` for all three offline rules.
-- **P3.3** · Canonical AuditLog writer — 🟡 **SSOT registered, migration pending**
-  (2026-07-23). A latent DPDP FK bug surfaced under real Postgres:
+- **P3.3** · Canonical AuditLog writer — ✅ **DONE** (migration + guarded gate,
+  2026-07-24). A latent DPDP FK bug surfaced under real Postgres:
   `erasure.service.ts` wrote its erasure record with `businessId:'SYSTEM'` (no such
   Business → P2003) and a non-null `userId` (→ `AuditLog.userId` `onDelete:Restrict`
   would block the erased user's own later deletion). Root-caused in
@@ -257,14 +257,20 @@ tokens so dark-mode parity is automatic. **Effort:** XS.
   and routing the write through the now-canonical `createAuditEntry()`
   (`services/settings/audit.ts`), which was extended to be **tx-aware** (atomic
   rollback inside the caller's `$transaction`) and **system-actor-capable**
-  (`userId` NULL + `systemActor` set). Registered as an SSOT discovery row
-  (`ssot.config.mjs`), and `enforce-audit-coverage.mjs` now counts a
-  `createAuditEntry()` call as coverage. **Follow-up (not this pass):** ~48 service
-  files still hand-roll `prisma.auditLog.create({...})` inline — each is a place the
-  same FK-invariant bug can recur. Migrating them onto `createAuditEntry()` lets the
-  SSOT row flip from discovery to a `forbidden`-guarded gate. Tracked here; low
-  urgency (the guarded writer + coverage gate already prevent NEW inline drift in the
-  covered services).
+  (`userId` NULL + `systemActor` set), and `enforce-audit-coverage.mjs` now counts a
+  `createAuditEntry()` call as coverage. **Then closed the class:** a codemod routed
+  all **64 inline `<client>.auditLog.create({...})` sites across 38 service files**
+  onto `createAuditEntry()`, and the `ssot.config.mjs` row was flipped from discovery
+  to a **`forbidden`-guarded gate** (`\.auditLog\.create(?:Many)?\s*\(`) — a raw
+  create outside the canon module now fails the commit. The only grandfathered
+  survivors (`ssot.baseline.json`) are sanctioned: the import `audit-emit*`
+  PII-minimal wrapper layer (its own centralised audit surface, per
+  SECURITY_AUDIT_PHASE7 S9) and the two `createMany` batch writers
+  (`document/create-audit.ts`, `collections/bulk-reminder.service.ts`) —
+  `createAuditEntry` is single-row. tsc clean · integration 99/99 · enforce.js green ·
+  `npm run ssot` green · `enforce-audit-coverage --block` green. (Note: the server
+  *unit* suite has a pre-existing order-dependent flake — a random single file fails
+  ~1-in-3 full runs on HEAD too, unrelated to this change; tracked separately.)
 
 ### P4 — Design sweep completion (G10)
 

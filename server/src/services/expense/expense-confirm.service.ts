@@ -9,6 +9,7 @@ import { notFoundError, conflictError, AppError, ErrorCode } from '../../lib/err
 import { computeNextRunDate } from './recurring.dates.js'
 import type { ExpenseFrequency } from './recurring.dates.js'
 import { postExpense } from '../accounting/posting/index.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 // ── Public API ─────────────────────────────────────────────────────────────
 
@@ -80,17 +81,15 @@ export async function confirmExpense(
     })
 
     // Audit log (fire-and-forget inside tx — on tx rollback the audit row also rolls back)
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        action: 'UPDATE',
-        entityType: 'expense',
-        entityId: expense.id,
-        entityLabel: `Expense confirmed`,
-        userId,
-        changes: { status: { from: expense.status, to: 'CONFIRMED' } },
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      action: 'UPDATE',
+      entityType: 'expense',
+      entityId: expense.id,
+      entityLabel: `Expense confirmed`,
+      userId,
+      changes: { status: { from: expense.status, to: 'CONFIRMED' } },
+    }, tx)
 
     return { id: expense.id, status: 'CONFIRMED' as const, confirmedAt: now }
   })
@@ -169,17 +168,15 @@ export async function skipExpense(
     }
 
     // Audit log
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        action: 'UPDATE',
-        entityType: 'expense',
-        entityId: expense.id,
-        entityLabel: 'Expense skipped',
-        userId,
-        changes: { status: { from: expense.status, to: 'SKIPPED' } },
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      action: 'UPDATE',
+      entityType: 'expense',
+      entityId: expense.id,
+      entityLabel: 'Expense skipped',
+      userId,
+      changes: { status: { from: expense.status, to: 'SKIPPED' } },
+    }, tx)
 
     return { id: expense.id, status: 'SKIPPED' as const, skippedAt: now }
   })

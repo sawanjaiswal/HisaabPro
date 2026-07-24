@@ -35,6 +35,7 @@ import {
 } from './pin-lockout.service.js'
 import { issuePinGraceCookie, type RouteClass } from './pin-grace-cookie.js'
 import { PIN_DUMMY_HASH } from '../../constants/pin-auth.constants.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 export interface VerifyPinInput {
   userId: string
@@ -88,17 +89,15 @@ export async function verifyUserPin(input: VerifyPinInput): Promise<VerifyPinRes
     // mint the grace cookie either.
     await prisma.$transaction(async (tx) => {
       await resetCounters(userId, tx)
-      await tx.auditLog.create({
-        data: {
-          businessId,
-          entityType: 'UserAppSettings',
-          entityId: userId,
-          entityLabel: null,
-          userId,
-          action: 'PIN_VERIFY_SUCCESS',
-          changes: { routeClass } as Record<string, unknown>,
-        },
-      })
+      await createAuditEntry({
+        businessId,
+        entityType: 'UserAppSettings',
+        entityId: userId,
+        entityLabel: null,
+        userId,
+        action: 'PIN_VERIFY_SUCCESS',
+        changes: { routeClass } as Record<string, unknown>,
+      }, tx)
     })
     issuePinGraceCookie(res, userId, businessId, routeClass, storedHash)
 
@@ -115,17 +114,15 @@ export async function verifyUserPin(input: VerifyPinInput): Promise<VerifyPinRes
   // the audit row commit atomically inside one tx.
   const lockAfter = await prisma.$transaction(async (tx) => {
     const result = await registerFailure(userId, tx)
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        entityType: 'UserAppSettings',
-        entityId: userId,
-        entityLabel: null,
-        userId,
-        action: 'PIN_VERIFY_FAILURE',
-        changes: { routeClass, lockoutTriggered: result.locked } as Record<string, unknown>,
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      entityType: 'UserAppSettings',
+      entityId: userId,
+      entityLabel: null,
+      userId,
+      action: 'PIN_VERIFY_FAILURE',
+      changes: { routeClass, lockoutTriggered: result.locked } as Record<string, unknown>,
+    }, tx)
     return result
   })
 

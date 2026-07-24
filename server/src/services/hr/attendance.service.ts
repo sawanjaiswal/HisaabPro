@@ -43,6 +43,7 @@
 import { prisma } from '../../lib/prisma.js'
 import { AppError, ErrorCode } from '../../lib/errors.js'
 import type { AttendanceStatus } from '../../schemas/attendance.schemas.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 /** Maximum date range the list endpoint will scan (92 days = a quarter). */
 export const ATTENDANCE_LIST_RANGE_MAX_DAYS = 92
@@ -167,18 +168,16 @@ export async function upsertAttendanceBatch(
     const sortedDates = entries.map((e) => e.date).sort()
     const dateRange = { from: sortedDates[0]!, to: sortedDates[sortedDates.length - 1]! }
 
-    await tx.auditLog.create({
-      data: {
-        businessId: activeBusinessId,
-        entityType: 'Attendance',
-        entityId: '', // batch — no single entity (per services/payment batch pattern)
-        action: 'UPSERT_BATCH',
-        userId: actorUserId,
-        changes: { batchSize: entries.length, dateRange, byStatus },
-        ipAddress: ipAddress ?? null,
-        deviceInfo: deviceInfo ?? null,
-      },
-    })
+    await createAuditEntry({
+      businessId: activeBusinessId,
+      entityType: 'Attendance',
+      entityId: '', // batch — no single entity (per services/payment batch pattern)
+      action: 'UPSERT_BATCH',
+      userId: actorUserId,
+      changes: { batchSize: entries.length, dateRange, byStatus },
+      ipAddress: ipAddress ?? null,
+      deviceInfo: deviceInfo ?? null,
+    }, tx)
 
     return { written: entries.length, byStatus }
   })

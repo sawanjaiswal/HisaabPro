@@ -15,8 +15,8 @@
  * visible in observability; we do NOT block the rotation.
  */
 
-import { prisma } from '../../lib/prisma.js'
 import logger from '../../lib/logger.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 export async function emitBusinessSwitchAudit(params: {
   actorUserId: string
@@ -29,18 +29,16 @@ export async function emitBusinessSwitchAudit(params: {
   const { actorUserId, fromBusinessId, toBusinessId, toBusinessName, ipAddress, deviceInfo } = params
 
   try {
-    await prisma.auditLog.create({
-      data: {
-        businessId: toBusinessId,
-        action: 'SWITCH',
-        entityType: 'BusinessSwitch',
-        entityId: toBusinessId,
-        entityLabel: toBusinessName ?? null,
-        userId: actorUserId,
-        changes: { fromBusinessId, toBusinessId },
-        ipAddress: ipAddress ?? null,
-        deviceInfo: deviceInfo ?? null,
-      },
+    await createAuditEntry({
+      businessId: toBusinessId,
+      action: 'SWITCH',
+      entityType: 'BusinessSwitch',
+      entityId: toBusinessId,
+      entityLabel: toBusinessName ?? null,
+      userId: actorUserId,
+      changes: { fromBusinessId, toBusinessId },
+      ipAddress: ipAddress ?? null,
+      deviceInfo: deviceInfo ?? null,
     })
   } catch (err) {
     logger.error('auth.switch_business.audit_failed', {

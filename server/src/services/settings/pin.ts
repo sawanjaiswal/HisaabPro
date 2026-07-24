@@ -6,6 +6,7 @@ import { prisma } from '../../lib/prisma.js'
 import { validationError, unauthorizedError } from '../../lib/errors.js'
 import { hashPassword, verifyPassword } from '../../lib/password.js'
 import type { SetPinInput, VerifyPinInput } from '../../schemas/settings.schemas.js'
+import { createAuditEntry } from './audit.js'
 
 export async function setPin(userId: string, businessId: string, data: SetPinInput) {
   const existing = await prisma.userAppSettings.findUnique({
@@ -30,17 +31,15 @@ export async function setPin(userId: string, businessId: string, data: SetPinInp
       select: { pinEnabled: true },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        entityType: 'User',
-        entityId: userId,
-        entityLabel: null,
-        userId,
-        action: 'PIN_RESET',
-        changes: { wasSet: Boolean(existing?.pinHash) },
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      entityType: 'User',
+      entityId: userId,
+      entityLabel: null,
+      userId,
+      action: 'PIN_RESET',
+      changes: { wasSet: Boolean(existing?.pinHash) },
+    }, tx)
 
     return updated
   })
@@ -111,17 +110,15 @@ export async function setOperationPin(
       update: { operationPinHash: pinHash },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        entityType: 'User',
-        entityId: businessId,
-        entityLabel: null,
-        userId,
-        action: 'PIN_RESET',
-        changes: { scope: 'OPERATION_PIN', wasSet: Boolean(config?.operationPinHash) },
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      entityType: 'User',
+      entityId: businessId,
+      entityLabel: null,
+      userId,
+      action: 'PIN_RESET',
+      changes: { scope: 'OPERATION_PIN', wasSet: Boolean(config?.operationPinHash) },
+    }, tx)
   })
 
   return { operationPinSet: true, updatedAt: new Date().toISOString() }

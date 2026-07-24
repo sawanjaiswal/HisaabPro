@@ -10,6 +10,7 @@ import { prisma } from '../lib/prisma.js'
 import logger from '../lib/logger.js'
 import { extractStateCode } from './gstin.utils.js'
 import type { PatchGstSettingsInput } from '../middleware/validate-gst-settings.js'
+import { createAuditEntry } from './settings/audit.js'
 
 // Transaction client type inferred from the prisma instance used in this file
 type TxClient = Parameters<Parameters<typeof prisma.$transaction>[0]>[0]
@@ -199,17 +200,15 @@ export async function updateGstSettings(
       turnoverSlab: biz.turnoverSlab ?? null,
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        userId,
-        action: 'GST_SETTINGS_UPDATE',
-        entityType: 'business',
-        entityId: businessId,
-        entityLabel: 'GST Settings',
-        changes: { before, after } as object,
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      userId,
+      action: 'GST_SETTINGS_UPDATE',
+      entityType: 'business',
+      entityId: businessId,
+      entityLabel: 'GST Settings',
+      changes: { before, after } as object,
+    }, tx)
 
     logger.info('GST_SETTINGS_UPDATE', {
       businessId,

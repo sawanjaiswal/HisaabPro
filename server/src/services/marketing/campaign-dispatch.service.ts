@@ -10,6 +10,7 @@ import { assertWithinCap, CostCapExceededError } from './marketing-cost-cap.serv
 import { enqueueAllRecipients } from './campaign-enqueue.service.js'
 import logger from '../../lib/logger.js'
 import type { SegmentFilter } from './campaign-segment.types.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 export { CostCapExceededError }
 
@@ -62,16 +63,14 @@ export async function launchCampaign(
     data: { status: targetStatus, startedAt: new Date(), recipientCount: partyIds.length },
   })
 
-  await prisma.auditLog.create({
-    data: {
-      businessId,
-      userId: actorUserId,
-      action: 'UPDATE',
-      entityType: 'marketing_campaign',
-      entityId: campaignId,
-      entityLabel: campaign.name,
-      changes: { actorUserId, actorRole, recipientCount: partyIds.length, channel: campaign.channel, action: 'LAUNCH' },
-    },
+  await createAuditEntry({
+    businessId,
+    userId: actorUserId,
+    action: 'UPDATE',
+    entityType: 'marketing_campaign',
+    entityId: campaignId,
+    entityLabel: campaign.name,
+    changes: { actorUserId, actorRole, recipientCount: partyIds.length, channel: campaign.channel, action: 'LAUNCH' },
   })
 
   // Materialise recipients in chunks
@@ -120,12 +119,10 @@ export async function cancelCampaign(
     data: { status: 'SKIPPED', skipReason: 'campaign_cancelled' },
   })
 
-  await prisma.auditLog.create({
-    data: {
-      businessId, userId: actorUserId, action: 'UPDATE',
-      entityType: 'marketing_campaign', entityId: campaignId, entityLabel: campaign.name,
-      changes: { actorUserId, actorRole, action: 'CANCEL' },
-    },
+  await createAuditEntry({
+    businessId, userId: actorUserId, action: 'UPDATE',
+    entityType: 'marketing_campaign', entityId: campaignId, entityLabel: campaign.name,
+    changes: { actorUserId, actorRole, action: 'CANCEL' },
   })
 
   logger.info('marketing.campaign.cancelled', { campaignId, businessId, actorUserId })

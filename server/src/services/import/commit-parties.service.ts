@@ -30,6 +30,7 @@ import {
   type StagedRowMin,
   type Tx,
 } from './commit.helpers.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 interface PartyNormalized {
   name: string
@@ -126,20 +127,18 @@ export async function commitChunkParties(
       sourceIndices.push(row.sourceIndex)
     }
   }
-  await tx.auditLog.create({
-    data: {
-      businessId: args.businessId,
-      entityType: 'ImportJob',
-      entityId: args.jobId,
-      userId: args.userId,
-      action: 'CREATE',
-      changes: {
-        event: 'parties.imported_batch',
-        partyIds: createdPartyIds,
-        sourceIndices,
-      },
+  await createAuditEntry({
+    businessId: args.businessId,
+    entityType: 'ImportJob',
+    entityId: args.jobId,
+    userId: args.userId,
+    action: 'CREATE',
+    changes: {
+      event: 'parties.imported_batch',
+      partyIds: createdPartyIds,
+      sourceIndices,
     },
-  })
+  }, tx)
   return {
     createdPartyIds,
     sourceIndices,

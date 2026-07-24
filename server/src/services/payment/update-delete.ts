@@ -10,6 +10,7 @@ import { paymentTypeDirection } from '../../lib/payment-types.js'
 import type { PaymentType } from '../../../../shared/enums.js'
 import { bumpVersionOrConflict } from '../../lib/optimistic-lock.js'
 import { postPayment, reverseSourceEntry } from '../accounting/posting/index.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 
 export async function updatePayment(
@@ -63,17 +64,15 @@ export async function updatePayment(
     })
     await postPayment(tx, { businessId, userId, payment: fresh })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        entityType: 'Payment',
-        entityId: paymentId,
-        entityLabel: (data.notes ?? '').slice(0, 120) || null,
-        userId,
-        action: 'UPDATE',
-        changes: data as Record<string, unknown>,
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      entityType: 'Payment',
+      entityId: paymentId,
+      entityLabel: (data.notes ?? '').slice(0, 120) || null,
+      userId,
+      action: 'UPDATE',
+      changes: data as Record<string, unknown>,
+    }, tx)
 
     const detail = await tx.payment.findUniqueOrThrow({
       where: { id: paymentId },
@@ -129,17 +128,15 @@ export async function deletePayment(businessId: string, paymentId: string, userI
       select: { id: true, deletedAt: true },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        entityType: 'Payment',
-        entityId: paymentId,
-        entityLabel: null,
-        userId,
-        action: 'DELETE',
-        changes: { type: payment.type, amount: payment.amount, partyId: payment.partyId, softDeleted: true },
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      entityType: 'Payment',
+      entityId: paymentId,
+      entityLabel: null,
+      userId,
+      action: 'DELETE',
+      changes: { type: payment.type, amount: payment.amount, partyId: payment.partyId, softDeleted: true },
+    }, tx)
 
     return { id: updated.id, deletedAt: updated.deletedAt }
   })

@@ -91,17 +91,15 @@ export async function createEmployee(
       },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId: actor.businessId,
-        entityType: 'Employee',
-        entityId: employee.id,
-        entityLabel: employee.name,
-        action: 'CREATE',
-        userId: actor.userId,
-        changes: { partyId: party.id, dailyRatePaise: input.dailyRatePaise },
-      },
-    })
+    await createAuditEntry({
+      businessId: actor.businessId,
+      entityType: 'Employee',
+      entityId: employee.id,
+      entityLabel: employee.name,
+      action: 'CREATE',
+      userId: actor.userId,
+      changes: { partyId: party.id, dailyRatePaise: input.dailyRatePaise },
+    }, tx)
 
     return { employee, party }
   })
@@ -145,17 +143,15 @@ export async function updateEmployee(
 
     const diff = buildEmployeeAuditDiff(input, existing)
 
-    await tx.auditLog.create({
-      data: {
-        businessId: actor.businessId,
-        entityType: 'Employee',
-        entityId: employee.id,
-        entityLabel: employee.name,
-        action: 'UPDATE',
-        userId: actor.userId,
-        changes: diff,
-      },
-    })
+    await createAuditEntry({
+      businessId: actor.businessId,
+      entityType: 'Employee',
+      entityId: employee.id,
+      entityLabel: employee.name,
+      action: 'UPDATE',
+      userId: actor.userId,
+      changes: diff,
+    }, tx)
 
     return employee
   })
@@ -211,17 +207,15 @@ export async function deleteEmployee(
       data: { isActive: false, isDeleted: true, deletedAt: now },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId: actor.businessId,
-        entityType: 'Employee',
-        entityId: id,
-        entityLabel: existing.name,
-        action: 'DELETE',
-        userId: actor.userId,
-        changes: { partyId: existing.partyId, softDeleted: true },
-      },
-    })
+    await createAuditEntry({
+      businessId: actor.businessId,
+      entityType: 'Employee',
+      entityId: id,
+      entityLabel: existing.name,
+      action: 'DELETE',
+      userId: actor.userId,
+      changes: { partyId: existing.partyId, softDeleted: true },
+    }, tx)
 
     return employee
   })
@@ -229,3 +223,4 @@ export async function deleteEmployee(
 
 /** Re-export the read paths so callers have a single import surface. */
 export { listEmployees, getEmployee } from './employee-list-get.js'
+import { createAuditEntry } from '../settings/audit.js'

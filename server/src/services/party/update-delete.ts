@@ -9,6 +9,7 @@ import { prisma } from '../../lib/prisma.js'
 import type { UpdatePartyInput, PartyPatchInput } from '../../schemas/party.schemas.js'
 import { requireParty, requireGroup } from './helpers.js'
 import { bumpVersionOrConflict } from '../../lib/optimistic-lock.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 export async function updateParty(
   businessId: string,
@@ -80,17 +81,15 @@ export async function updateParty(
       ))
     }
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        entityType: 'Party',
-        entityId: partyId,
-        entityLabel: updated.name.slice(0, 120),
-        userId,
-        action: 'UPDATE',
-        changes: data as Record<string, unknown>,
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      entityType: 'Party',
+      entityId: partyId,
+      entityLabel: updated.name.slice(0, 120),
+      userId,
+      action: 'UPDATE',
+      changes: data as Record<string, unknown>,
+    }, tx)
 
     return updated
   })
@@ -155,17 +154,15 @@ export async function deleteParty(
     if (force) {
       // Hard delete — only allowed when no transactions exist
       await tx.party.delete({ where: { id: partyId } })
-      await tx.auditLog.create({
-        data: {
-          businessId,
-          entityType: 'Party',
-          entityId: partyId,
-          entityLabel: existing.name?.slice(0, 120),
-          userId,
-          action: 'DELETE',
-          changes: { mode: 'hard' },
-        },
-      })
+      await createAuditEntry({
+        businessId,
+        entityType: 'Party',
+        entityId: partyId,
+        entityLabel: existing.name?.slice(0, 120),
+        userId,
+        action: 'DELETE',
+        changes: { mode: 'hard' },
+      }, tx)
       return { deleted: true, mode: 'hard' }
     }
 
@@ -174,17 +171,15 @@ export async function deleteParty(
       where: { id: partyId },
       data: { isActive: false },
     })
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        entityType: 'Party',
-        entityId: partyId,
-        entityLabel: existing.name?.slice(0, 120),
-        userId,
-        action: 'DELETE',
-        changes: { mode: 'soft' },
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      entityType: 'Party',
+      entityId: partyId,
+      entityLabel: existing.name?.slice(0, 120),
+      userId,
+      action: 'DELETE',
+      changes: { mode: 'soft' },
+    }, tx)
     return { deleted: true, mode: 'soft' }
   })
 }

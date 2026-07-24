@@ -4,8 +4,9 @@
  * Single source of truth for every mutation service that MUST write an
  * `AuditLog` row inside its `$transaction`. Pre-commit hook
  * `scripts/enforce-audit-coverage.mjs` reads this file, opens each listed
- * service, and verifies a `tx.auditLog.create(` or `prisma.auditLog.create(`
- * call exists in the file (or it is imported from an audit-writer helper).
+ * service, and verifies an audit-write exists: the canonical `createAuditEntry`
+ * writer (SSOT — `services/settings/audit.ts`), a raw create on the auditLog
+ * delegate, or an `audit-emit` wrapper import.
  *
  * Services in this list that lack an audit-write FAIL the commit.
  *

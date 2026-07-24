@@ -10,6 +10,7 @@
 import crypto from 'node:crypto'
 import { prisma } from '../lib/prisma.js'
 import type { SharedLink } from '@prisma/client'
+import { createAuditEntry } from './settings/audit.js'
 
 // ---------------------------------------------------------------------------
 // Internal helpers
@@ -92,17 +93,15 @@ export async function revokeSharedLink(args: RevokeSharedLinkArgs): Promise<Safe
       data: { revokedAt: new Date() },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId: args.businessId,
-        entityType: 'SharedLink',
-        entityId: link.id,
-        entityLabel: `${link.resourceType}:${link.resourceId}`.slice(0, 120),
-        userId: args.userId,
-        action: 'REVOKE',
-        changes: { resourceType: link.resourceType, resourceId: link.resourceId },
-      },
-    })
+    await createAuditEntry({
+      businessId: args.businessId,
+      entityType: 'SharedLink',
+      entityId: link.id,
+      entityLabel: `${link.resourceType}:${link.resourceId}`.slice(0, 120),
+      userId: args.userId,
+      action: 'REVOKE',
+      changes: { resourceType: link.resourceType, resourceId: link.resourceId },
+    }, tx)
 
     return stripTokenHash(link)
   })

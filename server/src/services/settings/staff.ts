@@ -77,13 +77,11 @@ export async function inviteStaff(
       },
       select: { id: true, code: true, expiresAt: true, status: true, name: true, phone: true },
     })
-    await tx.auditLog.create({
-      data: {
-        businessId, entityType: 'BusinessUser', entityId: row.id,
-        entityLabel: data.name.slice(0, 120), userId, action: 'INVITE',
-        changes: { phone: data.phone, roleId: data.roleId ?? null },
-      },
-    })
+    await createAuditEntry({
+      businessId, entityType: 'BusinessUser', entityId: row.id,
+      entityLabel: data.name.slice(0, 120), userId, action: 'INVITE',
+      changes: { phone: data.phone, roleId: data.roleId ?? null },
+    }, tx)
     return row
   })
 
@@ -91,6 +89,7 @@ export async function inviteStaff(
 }
 
 export { joinBusiness } from './staff-join.js'
+import { createAuditEntry } from './audit.js'
 
 /** Cancel a pending staff invite. */
 export async function cancelInvite(businessId: string, inviteId: string) {
@@ -165,13 +164,11 @@ export async function removeStaff(businessId: string, staffId: string, actorUser
       where: { id: staffId },
       data: { isActive: false, status: 'REMOVED' },
     })
-    await tx.auditLog.create({
-      data: {
-        businessId, entityType: 'BusinessUser', entityId: staffId,
-        entityLabel: bu.userId, userId: actorUserId, action: 'REMOVE',
-        changes: { removedUserId: bu.userId, prevRole: bu.role },
-      },
-    })
+    await createAuditEntry({
+      businessId, entityType: 'BusinessUser', entityId: staffId,
+      entityLabel: bu.userId, userId: actorUserId, action: 'REMOVE',
+      changes: { removedUserId: bu.userId, prevRole: bu.role },
+    }, tx)
   })
 }
 

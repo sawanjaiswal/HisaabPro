@@ -5,6 +5,7 @@
 
 import { prisma } from '../../lib/prisma.js'
 import logger from '../../lib/logger.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 export async function optOutParty(partyId: string, businessId: string, userId: string) {
   const party = await prisma.party.findFirst({
@@ -23,16 +24,14 @@ export async function optOutParty(partyId: string, businessId: string, userId: s
     data: { marketingOptOut: true, marketingOptOutAt: new Date(), updatedAt: new Date() },
   })
 
-  await prisma.auditLog.create({
-    data: {
-      businessId,
-      userId,
-      action: 'UPDATE',
-      entityType: 'party',
-      entityId: partyId,
-      entityLabel: party.name,
-      changes: { marketingOptOut: { from: false, to: true } },
-    },
+  await createAuditEntry({
+    businessId,
+    userId,
+    action: 'UPDATE',
+    entityType: 'party',
+    entityId: partyId,
+    entityLabel: party.name,
+    changes: { marketingOptOut: { from: false, to: true } },
   })
 
   logger.info('marketing.optout.set', { partyId, businessId, userId })
@@ -56,16 +55,14 @@ export async function optInParty(partyId: string, businessId: string, userId: st
     data: { marketingOptOut: false, marketingOptOutAt: null, updatedAt: new Date() },
   })
 
-  await prisma.auditLog.create({
-    data: {
-      businessId,
-      userId,
-      action: 'UPDATE',
-      entityType: 'party',
-      entityId: partyId,
-      entityLabel: party.name,
-      changes: { marketingOptOut: { from: true, to: false } },
-    },
+  await createAuditEntry({
+    businessId,
+    userId,
+    action: 'UPDATE',
+    entityType: 'party',
+    entityId: partyId,
+    entityLabel: party.name,
+    changes: { marketingOptOut: { from: true, to: false } },
   })
 
   logger.info('marketing.optin.set', { partyId, businessId, userId })

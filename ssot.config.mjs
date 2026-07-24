@@ -101,17 +101,22 @@ export const REGISTRY = [
     capability: "write an AuditLog entry",
     module: "server/src/services/settings/audit.ts",
     exports: ["createAuditEntry", "listAuditLog"],
-    // Discovery-only (mirrors the scoped-Prisma injector row): ~48 service
-    // files hand-roll `prisma.auditLog.create({...})` inline (grandfathered).
-    // A `forbidden` guard would fire on all of them at once and demand freezing
-    // ~47 baseline entries — the migration to route them through this writer is
-    // a GOLD_STANDARD hardening follow-up, not a gate flip. Surfaced here so new
-    // code reuses createAuditEntry, which owns the two FK invariants inline
-    // writers keep getting wrong: businessId is a NOT-NULL FK (no literal
-    // 'SYSTEM'), and a system actor leaves userId NULL + names itself via
-    // systemActor (AuditLog.userId is onDelete:Restrict — a stray ref blocks the
-    // user's later deletion). See .claude/fix-trace-erasure-audit-fk.md.
-    forbidden: [],
+    // GUARDED (2026-07-24): the 64 inline `<client>.auditLog.create({...})` sites
+    // across 38 service files were migrated onto createAuditEntry, so a raw
+    // create outside the canon module is now new drift. createAuditEntry owns the
+    // two FK invariants inline writers kept getting wrong: businessId is a
+    // NOT-NULL FK (no literal 'SYSTEM'), and a system actor leaves userId NULL +
+    // names itself via systemActor (AuditLog.userId is onDelete:Restrict — a stray
+    // ref blocks the user's later deletion). See .claude/fix-trace-erasure-audit-fk.md.
+    //
+    // Requires the open paren so it matches CALLS, not doc-comment mentions of
+    // the token. The sanctioned survivors are grandfathered in ssot.baseline.json:
+    // the import `audit-emit*` PII-minimal wrapper layer (its own centralised
+    // audit surface, per SECURITY_AUDIT_PHASE7 S9) and the two `createMany` batch
+    // writers (document/create-audit.ts, collections/bulk-reminder.service.ts) —
+    // createAuditEntry is single-row. Escape a new deliberate dup with
+    // `// ssot-allow: write an AuditLog entry`.
+    forbidden: ["\\.auditLog\\.create(?:Many)?\\s*\\("],
     note: "Canonical AuditLog writer. tx-aware (pass a tx for atomic rollback) + system-actor-capable. enforce-audit-coverage.mjs counts a createAuditEntry() call as coverage.",
   },
   {

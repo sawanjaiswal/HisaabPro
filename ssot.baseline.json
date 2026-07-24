@@ -1,5 +1,12 @@
 {
   "allowed": [
+    "server/src/services/collections/bulk-reminder.service.ts::await tx.auditLog.createMany({ data: auditData })",
+    "server/src/services/document/create-audit.ts::await tx.auditLog.createMany({",
+    "server/src/services/import/audit-emit-invoices.ts::await client.auditLog.create({",
+    "server/src/services/import/audit-emit-lifecycle.ts::await client.auditLog.create({",
+    "server/src/services/import/audit-emit-products.ts::await client.auditLog.create({",
+    "server/src/services/import/audit-emit.ts::await client.auditLog.create({",
+    "server/src/services/import/commit-payments/audit-emit.ts::await client.auditLog.create({",
     "server/src/services/collections/bulk-reminder.service.ts::return `₹${rupees.toLocaleString('en-IN')}`",
     "server/src/services/upi-link.service.ts::throw new UpiValidationError(`UPI amount exceeds maximum ₹${UPI_MAX_AMOUNT_RUPEES.toLocaleString('en-IN')}`)",
     "src/components/ui/invoice-templates-section-modal.tsx::<span style={{ color: t.accent, fontWeight: 700, fontSize: 'var(--fs-base)' }}>₹{total.toLocaleString('en-IN')}</span>",

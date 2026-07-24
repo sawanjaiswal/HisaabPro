@@ -11,6 +11,7 @@ import { markPtpKept } from './promise-to-pay-eval.service.js'
 import { invalidateAgingCache } from './aging.service.js'
 import { notificationManager } from '../notifications/notification-manager.js'
 import { formatPaise } from '../notifications/notification-template.service.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 interface RazorpayPaymentLinkPaidEvent {
   id: string                        // Razorpay event id (used for MB-1 dedupe)
@@ -152,21 +153,19 @@ export async function processWebhookPaymentLinkPaid(
     })
 
     // Audit log with systemActor
-    await tx.auditLog.create({
-      data: {
-        businessId: link.businessId,
-        action: 'PAYMENT_LINK_PAID',
-        entityType: 'PaymentLink',
-        entityId: link.id,
-        entityLabel: rzLinkId,
-        systemActor: WEBHOOK_ACTOR,
-        changes: {
-          rzPaymentId,
-          paidAmountPaise,
-          paymentId: payment.id,
-        },
+    await createAuditEntry({
+      businessId: link.businessId,
+      action: 'PAYMENT_LINK_PAID',
+      entityType: 'PaymentLink',
+      entityId: link.id,
+      entityLabel: rzLinkId,
+      systemActor: WEBHOOK_ACTOR,
+      changes: {
+        rzPaymentId,
+        paidAmountPaise,
+        paymentId: payment.id,
       },
-    })
+    }, tx)
   })
   } catch (e) {
     if (e instanceof DuplicateEventError) {

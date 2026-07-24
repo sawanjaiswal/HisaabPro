@@ -30,6 +30,7 @@ import {
   type StagedRowMin,
   type Tx,
 } from './commit.helpers.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 interface ProductNormalized {
   name: string
@@ -219,20 +220,18 @@ export async function commitChunkProducts(
       sourceIndices.push(row.sourceIndex)
     }
   }
-  await tx.auditLog.create({
-    data: {
-      businessId: args.businessId,
-      entityType: 'ImportJob',
-      entityId: args.jobId,
-      userId: args.userId,
-      action: 'CREATE',
-      changes: {
-        event: 'products.imported_batch',
-        productIds,
-        sourceIndices,
-      },
+  await createAuditEntry({
+    businessId: args.businessId,
+    entityType: 'ImportJob',
+    entityId: args.jobId,
+    userId: args.userId,
+    action: 'CREATE',
+    changes: {
+      event: 'products.imported_batch',
+      productIds,
+      sourceIndices,
     },
-  })
+  }, tx)
   return {
     // Field name stays `createdPartyIds` for ChunkResult shape compat;
     // it is the product-id list when entity='product'.

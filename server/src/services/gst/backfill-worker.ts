@@ -10,6 +10,7 @@ import { calculateDocumentTax } from '../tax-calc.js'
 import type { TaxLineInput } from '../tax-calc.types.js'
 import type { BackfillJobState } from './backfill-store.js'
 import { saveJobState, loadJobState } from './backfill-store.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 export interface ExecuteBackfillPayload {
   defaultTaxCategoryId: string
@@ -109,17 +110,15 @@ async function processDocument(
       },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId, userId,
-        entityType: 'Document', entityId: docId,
-        action: 'GST_BACKFILL',
-        changes: {
-          backfillJobId: jobId, before,
-          after: { placeOfSupply, totalCgst: tax.totalCgst, totalSgst: tax.totalSgst, totalIgst: tax.totalIgst, totalCess: tax.totalCess, grandTotal: doc.grandTotal },
-        },
+    await createAuditEntry({
+      businessId, userId,
+      entityType: 'Document', entityId: docId,
+      action: 'GST_BACKFILL',
+      changes: {
+        backfillJobId: jobId, before,
+        after: { placeOfSupply, totalCgst: tax.totalCgst, totalSgst: tax.totalSgst, totalIgst: tax.totalIgst, totalCess: tax.totalCess, grandTotal: doc.grandTotal },
       },
-    })
+    }, tx)
   })
 }
 
@@ -146,14 +145,12 @@ export async function runBackfillJob(
           where: { id: productId, businessId },
           data: { taxCategoryId: payload.defaultTaxCategoryId },
         })
-        await tx.auditLog.create({
-          data: {
-            businessId, userId,
-            entityType: 'Product', entityId: productId,
-            action: 'GST_BACKFILL',
-            changes: { backfillJobId: jobId, before: { taxCategoryId: null }, after: { taxCategoryId: payload.defaultTaxCategoryId } },
-          },
-        })
+        await createAuditEntry({
+          businessId, userId,
+          entityType: 'Product', entityId: productId,
+          action: 'GST_BACKFILL',
+          changes: { backfillJobId: jobId, before: { taxCategoryId: null }, after: { taxCategoryId: payload.defaultTaxCategoryId } },
+        }, tx)
       })
       state.processed++
     } catch (err) {
@@ -185,16 +182,14 @@ export async function runBackfillJob(
   await saveJobState(jobId, state)
 
   // Summary audit row
-  await prisma.auditLog.create({
-    data: {
-      businessId, userId,
-      entityType: 'BackfillJob', entityId: jobId,
-      action: 'GST_BACKFILL_RUN',
-      changes: {
-        productsUpdated: pendingProducts.length - state.errors.filter(e => productIds.includes(e.documentId)).length,
-        invoicesUpdated: pendingDocs.length - state.errors.filter(e => documentIds.includes(e.documentId)).length,
-        errors: state.errors.length,
-      },
+  await createAuditEntry({
+    businessId, userId,
+    entityType: 'BackfillJob', entityId: jobId,
+    action: 'GST_BACKFILL_RUN',
+    changes: {
+      productsUpdated: pendingProducts.length - state.errors.filter(e => productIds.includes(e.documentId)).length,
+      invoicesUpdated: pendingDocs.length - state.errors.filter(e => documentIds.includes(e.documentId)).length,
+      errors: state.errors.length,
     },
   })
 

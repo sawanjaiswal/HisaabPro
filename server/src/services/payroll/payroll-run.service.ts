@@ -195,23 +195,21 @@ export async function finalizePayrollRun(
         })
       }
 
-      await tx.auditLog.create({
-        data: {
-          businessId: actor.businessId,
-          entityType: 'PayrollRun',
-          entityId: run.id,
-          entityLabel: `${input.fromDate}..${input.toDate}`,
-          action: 'FINALIZE',
-          userId: actor.userId,
-          changes: {
-            fromDate: input.fromDate,
-            toDate: input.toDate,
-            totalNetPaise,
-            employeeCount: preview.lines.length,
-            mode,
-          },
+      await createAuditEntry({
+        businessId: actor.businessId,
+        entityType: 'PayrollRun',
+        entityId: run.id,
+        entityLabel: `${input.fromDate}..${input.toDate}`,
+        action: 'FINALIZE',
+        userId: actor.userId,
+        changes: {
+          fromDate: input.fromDate,
+          toDate: input.toDate,
+          totalNetPaise,
+          employeeCount: preview.lines.length,
+          mode,
         },
-      })
+      }, tx)
 
       return {
         payrollRunId: run.id,
@@ -239,3 +237,4 @@ export async function finalizePayrollRun(
 
 /** Re-export reverse so callers have a single import surface. */
 export { reversePayrollRun } from './payroll-run-reverse.js'
+import { createAuditEntry } from '../settings/audit.js'

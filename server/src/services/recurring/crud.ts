@@ -10,6 +10,7 @@ import type {
   ListRecurringQuery,
 } from '../../schemas/recurring.schemas.js'
 import { calculateNextRunDate, initialNextRunDate } from './dates.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 export async function createRecurring(
   businessId: string,
@@ -54,17 +55,15 @@ export async function createRecurring(
       },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        entityType: 'RecurringDocument',
-        entityId: recurring.id,
-        entityLabel: data.templateDocumentId.slice(0, 120),
-        userId,
-        action: 'CREATE',
-        changes: { templateDocumentId: data.templateDocumentId, frequency: data.frequency },
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      entityType: 'RecurringDocument',
+      entityId: recurring.id,
+      entityLabel: data.templateDocumentId.slice(0, 120),
+      userId,
+      action: 'CREATE',
+      changes: { templateDocumentId: data.templateDocumentId, frequency: data.frequency },
+    }, tx)
 
     return recurring
   })
@@ -167,17 +166,15 @@ export async function updateRecurring(
       },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        entityType: 'RecurringDocument',
-        entityId: recurringId,
-        entityLabel: null,
-        userId,
-        action: 'UPDATE',
-        changes: data as Record<string, unknown>,
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      entityType: 'RecurringDocument',
+      entityId: recurringId,
+      entityLabel: null,
+      userId,
+      action: 'UPDATE',
+      changes: data as Record<string, unknown>,
+    }, tx)
 
     return updated
   })
@@ -194,13 +191,11 @@ export async function deleteRecurring(businessId: string, recurringId: string, u
     if (existing.generatedCount === 0) {
       // No documents generated yet — safe hard delete
       await tx.recurringInvoice.delete({ where: { id: recurringId } })
-      await tx.auditLog.create({
-        data: {
-          businessId, entityType: 'RecurringDocument', entityId: recurringId,
-          entityLabel: null, userId, action: 'DELETE',
-          changes: { mode: 'hard', generatedCount: 0 },
-        },
-      })
+      await createAuditEntry({
+        businessId, entityType: 'RecurringDocument', entityId: recurringId,
+        entityLabel: null, userId, action: 'DELETE',
+        changes: { mode: 'hard', generatedCount: 0 },
+      }, tx)
       return { deleted: true, hard: true }
     }
 
@@ -209,13 +204,11 @@ export async function deleteRecurring(businessId: string, recurringId: string, u
       where: { id: recurringId },
       data: { status: 'COMPLETED' },
     })
-    await tx.auditLog.create({
-      data: {
-        businessId, entityType: 'RecurringDocument', entityId: recurringId,
-        entityLabel: null, userId, action: 'DELETE',
-        changes: { mode: 'complete', generatedCount: existing.generatedCount },
-      },
-    })
+    await createAuditEntry({
+      businessId, entityType: 'RecurringDocument', entityId: recurringId,
+      entityLabel: null, userId, action: 'DELETE',
+      changes: { mode: 'complete', generatedCount: existing.generatedCount },
+    }, tx)
     return { deleted: false, completed: true }
   })
 }

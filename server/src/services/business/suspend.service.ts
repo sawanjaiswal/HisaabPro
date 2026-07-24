@@ -25,6 +25,7 @@
 
 import { prisma } from '../../lib/prisma.js'
 import { AppError, ErrorCode } from '../../lib/errors.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 /**
  * Suspend a firm — sets `Business.suspendedAt = now()`. The next request
@@ -74,19 +75,17 @@ export async function suspendBusiness(params: {
       select: { id: true, name: true, suspendedAt: true },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        action: 'SUSPEND_FIRM',
-        entityType: 'Business',
-        entityId: businessId,
-        entityLabel: business.name,
-        userId: actorUserId,
-        reason,
-        ipAddress: ipAddress ?? null,
-        deviceInfo: deviceInfo ?? null,
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      action: 'SUSPEND_FIRM',
+      entityType: 'Business',
+      entityId: businessId,
+      entityLabel: business.name,
+      userId: actorUserId,
+      reason,
+      ipAddress: ipAddress ?? null,
+      deviceInfo: deviceInfo ?? null,
+    }, tx)
 
     return business
   })
@@ -135,18 +134,16 @@ export async function reactivateBusiness(params: {
       select: { id: true, name: true, suspendedAt: true },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        action: 'REACTIVATE_FIRM',
-        entityType: 'Business',
-        entityId: businessId,
-        entityLabel: business.name,
-        userId: actorUserId,
-        ipAddress: ipAddress ?? null,
-        deviceInfo: deviceInfo ?? null,
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      action: 'REACTIVATE_FIRM',
+      entityType: 'Business',
+      entityId: businessId,
+      entityLabel: business.name,
+      userId: actorUserId,
+      ipAddress: ipAddress ?? null,
+      deviceInfo: deviceInfo ?? null,
+    }, tx)
 
     return business
   })

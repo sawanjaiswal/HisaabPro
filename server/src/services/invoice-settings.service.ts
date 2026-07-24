@@ -15,6 +15,7 @@ import {
 } from './invoice-settings.mapper.js'
 import type { InvoiceSettingsDTO } from './invoice-template/template.types.js'
 import type { UpdateInvoiceSettingsInput } from '../schemas/invoice-settings.schema.js'
+import { createAuditEntry } from './settings/audit.js'
 
 const SETTINGS_SELECT = {
   roundOffEnabled: true,
@@ -52,20 +53,18 @@ export async function updateInvoiceSettings(
       update: { ...columns },
       select: SETTINGS_SELECT,
     })
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        entityType: 'InvoiceSettings',
-        entityId: businessId,
-        entityLabel: null,
-        userId,
-        action: 'UPDATE',
-        changes: {
-          roundOffPrecision: columns.roundOffPrecision,
-          roundOffMethod: columns.roundOffMethod,
-        },
+    await createAuditEntry({
+      businessId,
+      entityType: 'InvoiceSettings',
+      entityId: businessId,
+      entityLabel: null,
+      userId,
+      action: 'UPDATE',
+      changes: {
+        roundOffPrecision: columns.roundOffPrecision,
+        roundOffMethod: columns.roundOffMethod,
       },
-    })
+    }, tx)
     return updated
   })
 

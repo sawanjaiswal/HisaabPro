@@ -6,6 +6,7 @@ import { prisma } from '../../lib/prisma.js'
 import { notFoundError, conflictError } from '../../lib/errors.js'
 import { cancelLink } from '../razorpay/payment-link.client.js'
 import logger from '../../lib/logger.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 export async function cancelPaymentLink(
   businessId: string,
@@ -53,16 +54,14 @@ export async function cancelPaymentLink(
       },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        action: 'PAYMENT_LINK_CANCELLED',
-        entityType: 'PaymentLink',
-        entityId: linkId,
-        entityLabel: link.razorpayLinkId ?? linkId,
-        userId,
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      action: 'PAYMENT_LINK_CANCELLED',
+      entityType: 'PaymentLink',
+      entityId: linkId,
+      entityLabel: link.razorpayLinkId ?? linkId,
+      userId,
+    }, tx)
 
     return upd
   })

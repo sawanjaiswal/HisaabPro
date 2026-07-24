@@ -24,6 +24,7 @@ import {
 import type { InvoiceTemplateDTO, TemplateSummary } from './template.types.js'
 import type { CreateTemplateInput, UpdateTemplateInput } from '../../schemas/invoice-template.schema.js'
 import type { Prisma } from '@prisma/client'
+import { createAuditEntry } from '../settings/audit.js'
 
 const FULL_INCLUDE = { defaultFor: { select: { documentType: true } } } as const
 
@@ -76,17 +77,15 @@ export async function createTemplate(
       },
       include: FULL_INCLUDE,
     })
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        entityType: 'InvoiceTemplate',
-        entityId: row.id,
-        entityLabel: data.name.slice(0, 120),
-        userId,
-        action: 'CREATE',
-        changes: { baseTemplate: data.baseTemplate },
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      entityType: 'InvoiceTemplate',
+      entityId: row.id,
+      entityLabel: data.name.slice(0, 120),
+      userId,
+      action: 'CREATE',
+      changes: { baseTemplate: data.baseTemplate },
+    }, tx)
     return row
   })
 
@@ -120,17 +119,15 @@ export async function updateTemplate(
       },
       include: FULL_INCLUDE,
     })
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        entityType: 'InvoiceTemplate',
-        entityId: id,
-        entityLabel: null,
-        userId,
-        action: 'UPDATE',
-        changes: { fields: Object.keys(data) },
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      entityType: 'InvoiceTemplate',
+      entityId: id,
+      entityLabel: null,
+      userId,
+      action: 'UPDATE',
+      changes: { fields: Object.keys(data) },
+    }, tx)
     return row
   })
 
@@ -156,17 +153,15 @@ export async function softDeleteTemplate(
       where: { id },
       data: { isDeleted: true, deletedAt: new Date(), isActive: false },
     })
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        entityType: 'InvoiceTemplate',
-        entityId: id,
-        entityLabel: null,
-        userId,
-        action: 'DELETE',
-        changes: { mode: 'soft' },
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      entityType: 'InvoiceTemplate',
+      entityId: id,
+      entityLabel: null,
+      userId,
+      action: 'DELETE',
+      changes: { mode: 'soft' },
+    }, tx)
   })
 
   analyticsEmit('template_deleted', { templateId: id })
@@ -201,17 +196,15 @@ export async function duplicateTemplate(
       },
       include: FULL_INCLUDE,
     })
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        entityType: 'InvoiceTemplate',
-        entityId: row.id,
-        entityLabel: row.name.slice(0, 120),
-        userId,
-        action: 'CREATE',
-        changes: { duplicatedFrom: id },
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      entityType: 'InvoiceTemplate',
+      entityId: row.id,
+      entityLabel: row.name.slice(0, 120),
+      userId,
+      action: 'CREATE',
+      changes: { duplicatedFrom: id },
+    }, tx)
     return row
   })
 

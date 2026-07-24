@@ -2,6 +2,7 @@
 
 import { prisma } from '../../lib/prisma.js'
 import logger from '../../lib/logger.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 export interface CreatePtpInput {
   partyId: string
@@ -96,19 +97,17 @@ export async function createPtp(
       },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        action: 'PTP_CREATED',
-        entityType: 'PromiseToPay',
-        entityId: created.id,
-        // F-25: replace newlines before truncation so multi-line notes don't
-        // break audit table layout in admin UI.
-        entityLabel: notes ? notes.replace(/\n/g, ' ').substring(0, 200) : `PTP ${created.id}`,
-        userId,
-        changes: { amountPaise, promiseDate, partyId, invoiceId },
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      action: 'PTP_CREATED',
+      entityType: 'PromiseToPay',
+      entityId: created.id,
+      // F-25: replace newlines before truncation so multi-line notes don't
+      // break audit table layout in admin UI.
+      entityLabel: notes ? notes.replace(/\n/g, ' ').substring(0, 200) : `PTP ${created.id}`,
+      userId,
+      changes: { amountPaise, promiseDate, partyId, invoiceId },
+    }, tx)
 
     return created
   })
@@ -169,17 +168,15 @@ export async function updatePtp(
       },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        action: 'PTP_UPDATED',
-        entityType: 'PromiseToPay',
-        entityId: ptpId,
-        entityLabel: `PTP ${ptpId}`,
-        userId,
-        changes: patch as Record<string, unknown>,
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      action: 'PTP_UPDATED',
+      entityType: 'PromiseToPay',
+      entityId: ptpId,
+      entityLabel: `PTP ${ptpId}`,
+      userId,
+      changes: patch as Record<string, unknown>,
+    }, tx)
 
     return result
   })
@@ -222,17 +219,15 @@ export async function deletePtp(
       },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        action: 'PTP_CANCELLED',
-        entityType: 'PromiseToPay',
-        entityId: ptpId,
-        entityLabel: `PTP ${ptpId}`,
-        userId,
-        changes: { reason: 'user_deleted' },
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      action: 'PTP_CANCELLED',
+      entityType: 'PromiseToPay',
+      entityId: ptpId,
+      entityLabel: `PTP ${ptpId}`,
+      userId,
+      changes: { reason: 'user_deleted' },
+    }, tx)
   })
 
   logger.info('ptp.deleted', { ptpId, businessId })

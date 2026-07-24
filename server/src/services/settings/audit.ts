@@ -71,13 +71,17 @@ export async function createAuditEntry(
     action: string
     entityType: string
     entityId: string
-    entityLabel?: string
+    // Optional display/meta fields accept `null` as well as `undefined`: call
+    // sites routinely produce `something || null` (e.g. a truncated label), and
+    // every field is coerced to `|| null` below anyway — so the two are
+    // equivalent at the boundary. Widening avoids a pointless cast at 40+ sites.
+    entityLabel?: string | null
     userId?: string | null
-    systemActor?: string
+    systemActor?: string | null
     changes?: unknown
-    reason?: string
-    ipAddress?: string
-    deviceInfo?: string
+    reason?: string | null
+    ipAddress?: string | null
+    deviceInfo?: string | null
   },
   client: AuditWriteClient = prisma
 ) {

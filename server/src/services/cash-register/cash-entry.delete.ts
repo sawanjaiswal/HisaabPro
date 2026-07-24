@@ -6,6 +6,7 @@
 
 import { prisma } from '../../lib/prisma.js'
 import { notFoundError, conflictError } from '../../lib/errors.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 export async function hardDeleteCashEntry(args: {
   businessId: string
@@ -24,38 +25,36 @@ export async function hardDeleteCashEntry(args: {
   await prisma.$transaction(
     async (tx) => {
       // Write platform audit log BEFORE the delete (cascade would erase events)
-      await tx.auditLog.create({
-        data: {
-          businessId,
-          action: 'HARD_DELETED',
-          entityType: 'cashEntry',
-          entityId: id,
-          entityLabel: `${entry.direction} ${Number(entry.amountPaise)} (${entry.expression})`,
-          userId: userId, // AuditLog.userId is FK to User.id (not BusinessUser.id)
-          changes: {
-            snapshot: {
-              id: entry.id,
-              businessId: entry.businessId,
-              expression: entry.expression,
-              amountPaise: Number(entry.amountPaise),
-              direction: entry.direction,
-              note: entry.note,
-              createdBy: entry.createdBy,
-              createdAt: entry.createdAt.toISOString(),
-              voidedAt: entry.voidedAt?.toISOString() ?? null,
-              voidReason: entry.voidReason,
-            },
-            events: entry.events.map((e) => ({
-              id: e.id,
-              eventType: e.eventType,
-              actorId: e.actorId,
-              reason: e.reason,
-              changes: e.changes,
-              createdAt: e.createdAt.toISOString(),
-            })),
+      await createAuditEntry({
+        businessId,
+        action: 'HARD_DELETED',
+        entityType: 'cashEntry',
+        entityId: id,
+        entityLabel: `${entry.direction} ${Number(entry.amountPaise)} (${entry.expression})`,
+        userId: userId, // AuditLog.userId is FK to User.id (not BusinessUser.id)
+        changes: {
+          snapshot: {
+            id: entry.id,
+            businessId: entry.businessId,
+            expression: entry.expression,
+            amountPaise: Number(entry.amountPaise),
+            direction: entry.direction,
+            note: entry.note,
+            createdBy: entry.createdBy,
+            createdAt: entry.createdAt.toISOString(),
+            voidedAt: entry.voidedAt?.toISOString() ?? null,
+            voidReason: entry.voidReason,
           },
+          events: entry.events.map((e) => ({
+            id: e.id,
+            eventType: e.eventType,
+            actorId: e.actorId,
+            reason: e.reason,
+            changes: e.changes,
+            createdAt: e.createdAt.toISOString(),
+          })),
         },
-      })
+      }, tx)
 
       // Hard delete — voidedAt guard at DB level
       const deleted = await tx.cashEntry.deleteMany({

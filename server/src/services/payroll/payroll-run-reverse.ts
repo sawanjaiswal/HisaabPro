@@ -24,6 +24,7 @@
 import { Prisma } from '@prisma/client'
 import { prisma } from '../../lib/prisma.js'
 import { AppError, ErrorCode } from '../../lib/errors.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 /** ─── Types ─────────────────────────────────────────────────────────────── */
 
@@ -142,21 +143,19 @@ export async function reversePayrollRun(
           data: { status: 'REVERSED' },
         })
 
-        await tx.auditLog.create({
-          data: {
-            businessId: actor.businessId,
-            entityType: 'Payroll',
-            entityId: payroll.id,
-            entityLabel: `payroll:${payroll.id}`,
-            action: 'REVERSE',
-            userId: actor.userId,
-            changes: {
-              reversalPaymentId: reversal.id,
-              originalPaymentId: payroll.payment.id,
-              amountPaise: payroll.payment.amount,
-            },
+        await createAuditEntry({
+          businessId: actor.businessId,
+          entityType: 'Payroll',
+          entityId: payroll.id,
+          entityLabel: `payroll:${payroll.id}`,
+          action: 'REVERSE',
+          userId: actor.userId,
+          changes: {
+            reversalPaymentId: reversal.id,
+            originalPaymentId: payroll.payment.id,
+            amountPaise: payroll.payment.amount,
           },
-        })
+        }, tx)
 
         reversedCount += 1
         totalReversedPaise += payroll.payment.amount
@@ -168,20 +167,18 @@ export async function reversePayrollRun(
       })
 
       // ONE summary row for the run itself (matches finalize's pattern).
-      await tx.auditLog.create({
-        data: {
-          businessId: actor.businessId,
-          entityType: 'PayrollRun',
-          entityId: fullRun.id,
-          entityLabel: `payroll-run:${fullRun.id}`,
-          action: 'REVERSE',
-          userId: actor.userId,
-          changes: {
-            reversedCount,
-            totalReversedPaise,
-          },
+      await createAuditEntry({
+        businessId: actor.businessId,
+        entityType: 'PayrollRun',
+        entityId: fullRun.id,
+        entityLabel: `payroll-run:${fullRun.id}`,
+        action: 'REVERSE',
+        userId: actor.userId,
+        changes: {
+          reversedCount,
+          totalReversedPaise,
         },
-      })
+      }, tx)
 
       return {
         payrollRunId: fullRun.id,

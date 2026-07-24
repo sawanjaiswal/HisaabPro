@@ -5,6 +5,7 @@
 import { prisma } from '../../lib/prisma.js'
 import { notFoundError, validationError } from '../../lib/errors.js'
 import type { ReviewApprovalInput } from '../../schemas/settings.schemas.js'
+import { createAuditEntry } from './audit.js'
 
 export async function listApprovals(
   businessId: string,
@@ -69,17 +70,15 @@ export async function reviewApproval(
       },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        entityType: 'ApprovalPolicy',
-        entityId: approvalId,
-        entityLabel: (approval.type ?? '').slice(0, 120) || null,
-        userId,
-        action: 'APPROVAL_RESPONSE',
-        changes: { action: data.action, reviewNote: data.reviewNote ?? null },
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      entityType: 'ApprovalPolicy',
+      entityId: approvalId,
+      entityLabel: (approval.type ?? '').slice(0, 120) || null,
+      userId,
+      action: 'APPROVAL_RESPONSE',
+      changes: { action: data.action, reviewNote: data.reviewNote ?? null },
+    }, tx)
 
     return updated
   })

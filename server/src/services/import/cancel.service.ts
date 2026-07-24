@@ -19,6 +19,7 @@ import { AppError, ErrorCode } from '../../lib/errors.js'
 import logger from '../../lib/logger.js'
 import type { ExtendedPrismaClient } from '../../lib/prisma.js'
 import type { AuthContext } from '../../types/import.types.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 const CANCELLABLE_STATUSES = ['UPLOADED', 'PARSING', 'PREVIEWED'] as const
 
@@ -51,16 +52,14 @@ export async function cancelImportJob(
         'Import job cannot be cancelled in its current state',
       )
     }
-    await tx.auditLog.create({
-      data: {
-        businessId: auth.businessId,
-        entityType: 'ImportJob',
-        entityId: jobId,
-        userId: auth.userId,
-        action: 'UPDATE',
-        changes: { event: 'import_job.cancelled' },
-      },
-    })
+    await createAuditEntry({
+      businessId: auth.businessId,
+      entityType: 'ImportJob',
+      entityId: jobId,
+      userId: auth.userId,
+      action: 'UPDATE',
+      changes: { event: 'import_job.cancelled' },
+    }, tx)
     return updated.count
   })
   logger.info('import.cancel.done', {

@@ -4,6 +4,7 @@
 
 import { prisma } from '../../lib/prisma.js'
 import type { UpdateAppSettingsInput } from '../../schemas/settings.schemas.js'
+import { createAuditEntry } from './audit.js'
 
 export async function getAppSettings(userId: string) {
   const settings = await prisma.userAppSettings.findUnique({
@@ -40,17 +41,15 @@ export async function updateAppSettings(
       },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        entityType: 'AppSettings',
-        entityId: userId,
-        entityLabel: null,
-        userId,
-        action: 'UPDATE',
-        changes: data as Record<string, unknown>,
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      entityType: 'AppSettings',
+      entityId: userId,
+      entityLabel: null,
+      userId,
+      action: 'UPDATE',
+      changes: data as Record<string, unknown>,
+    }, tx)
 
     return updated
   })

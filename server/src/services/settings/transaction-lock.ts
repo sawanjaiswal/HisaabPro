@@ -4,6 +4,7 @@
 
 import { prisma } from '../../lib/prisma.js'
 import type { UpdateTransactionLockInput } from '../../schemas/settings.schemas.js'
+import { createAuditEntry } from './audit.js'
 
 export async function getTransactionLock(businessId: string) {
   const config = await prisma.transactionLockConfig.findUnique({
@@ -41,17 +42,15 @@ export async function updateTransactionLock(
       },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        entityType: 'TransactionLock',
-        entityId: businessId,
-        entityLabel: null,
-        userId,
-        action: 'UPDATE',
-        changes: data as Record<string, unknown>,
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      entityType: 'TransactionLock',
+      entityId: businessId,
+      entityLabel: null,
+      userId,
+      action: 'UPDATE',
+      changes: data as Record<string, unknown>,
+    }, tx)
 
     return updated
   })

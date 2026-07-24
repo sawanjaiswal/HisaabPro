@@ -10,6 +10,7 @@ import {
   updateOutstanding, getOutstandingReverseDelta,
 } from './helpers.js'
 import { reverseSourceEntry } from '../accounting/posting/index.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 export async function deleteDocument(businessId: string, documentId: string, userId: string) {
   const doc = await prisma.document.findFirst({
@@ -58,17 +59,15 @@ export async function deleteDocument(businessId: string, documentId: string, use
       select: { id: true, status: true, deletedAt: true, permanentDeleteAt: true },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        entityType: 'Document',
-        entityId: documentId,
-        entityLabel: doc.documentNumber?.slice(0, 120) ?? null,
-        userId,
-        action: 'DELETE',
-        changes: { type: doc.type, prevStatus: doc.status, softDeleted: true },
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      entityType: 'Document',
+      entityId: documentId,
+      entityLabel: doc.documentNumber?.slice(0, 120) ?? null,
+      userId,
+      action: 'DELETE',
+      changes: { type: doc.type, prevStatus: doc.status, softDeleted: true },
+    }, tx)
 
     return updated
   })

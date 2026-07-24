@@ -35,6 +35,7 @@ import { AppError, ErrorCode } from '../../lib/errors.js'
 import { hashPin } from './pin-hash.util.js'
 import { hashOTP, verifyOTP, sendOTP, generateOTP } from '../../lib/otp.js'
 import { PIN_RESET_TOKEN_TTL_MS } from '../../constants/pin-auth.constants.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 export interface RequestPinResetInput {
   userId: string
@@ -191,15 +192,13 @@ export async function confirmPinReset(input: ConfirmPinResetInput): Promise<Conf
       })
     }
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        action: 'PIN_RESET',
-        entityType: 'UserAppSettings',
-        entityId: userId,
-        userId,
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      action: 'PIN_RESET',
+      entityType: 'UserAppSettings',
+      entityId: userId,
+      userId,
+    }, tx)
   })
 
   logger.info('pin_reset.confirmed', { userId })

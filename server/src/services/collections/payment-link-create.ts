@@ -6,6 +6,7 @@ import { prisma } from '../../lib/prisma.js'
 import { notFoundError, validationError } from '../../lib/errors.js'
 import { createLink } from '../razorpay/payment-link.client.js'
 import logger from '../../lib/logger.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 const DEFAULT_EXPIRY_DAYS = 7
 const ALLOWED_STATUSES = ['SAVED', 'SHARED'] as const
@@ -122,22 +123,20 @@ export async function createPaymentLink(
       },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        action: 'PAYMENT_LINK_CREATED',
-        entityType: 'PaymentLink',
-        entityId: link.id,
-        entityLabel: invoice.documentNumber ?? invoiceId,
-        userId,
-        changes: {
-          invoiceId,
-          amountPaise: requestedAmount,
-          expireBy: expireBy.toISOString(),
-          shortUrl: maskedUrl,
-        },
+    await createAuditEntry({
+      businessId,
+      action: 'PAYMENT_LINK_CREATED',
+      entityType: 'PaymentLink',
+      entityId: link.id,
+      entityLabel: invoice.documentNumber ?? invoiceId,
+      userId,
+      changes: {
+        invoiceId,
+        amountPaise: requestedAmount,
+        expireBy: expireBy.toISOString(),
+        shortUrl: maskedUrl,
       },
-    })
+    }, tx)
 
     logger.info('payment_link.created', { linkId: link.id, invoiceId, amountPaise: requestedAmount })
     return { link, idempotent: false }

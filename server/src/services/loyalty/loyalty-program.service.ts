@@ -22,6 +22,7 @@ import {
   EXPIRY_MONTHS_MIN,
   EXPIRY_MONTHS_MAX,
 } from './loyalty.constants.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 // ─── Input schema ───────────────────────────────────────────────────────────
 
@@ -133,17 +134,15 @@ export async function upsertProgram(
       },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        entityType: 'LoyaltyProgram',
-        entityId: upserted.id,
-        entityLabel: null,
-        userId,
-        action: existing ? 'UPDATE' : 'CREATE',
-        changes: input as unknown as Record<string, unknown>,
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      entityType: 'LoyaltyProgram',
+      entityId: upserted.id,
+      entityLabel: null,
+      userId,
+      action: existing ? 'UPDATE' : 'CREATE',
+      changes: input as unknown as Record<string, unknown>,
+    }, tx)
 
     return upserted
   })

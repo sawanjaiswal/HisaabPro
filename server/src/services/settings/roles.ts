@@ -6,6 +6,7 @@ import { prisma } from '../../lib/prisma.js'
 import { notFoundError, validationError } from '../../lib/errors.js'
 import type { CreateRoleInput, UpdateRoleInput } from '../../schemas/settings.schemas.js'
 import { VALID_PERMISSIONS, ensureSystemRoles } from './permissions.js'
+import { createAuditEntry } from './audit.js'
 
 export async function listRoles(businessId: string) {
   await ensureSystemRoles(businessId)
@@ -67,13 +68,11 @@ export async function createRole(businessId: string, userId: string, data: Creat
       },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId, entityType: 'Role', entityId: role.id,
-        entityLabel: role.name.slice(0, 120), userId, action: 'CREATE',
-        changes: { permissions: data.permissions, isDefault: data.isDefault },
-      },
-    })
+    await createAuditEntry({
+      businessId, entityType: 'Role', entityId: role.id,
+      entityLabel: role.name.slice(0, 120), userId, action: 'CREATE',
+      changes: { permissions: data.permissions, isDefault: data.isDefault },
+    }, tx)
 
     return role
   })
@@ -112,13 +111,11 @@ export async function updateRole(businessId: string, roleId: string, userId: str
       },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId, entityType: 'Role', entityId: roleId,
-        entityLabel: updated.name.slice(0, 120), userId, action: 'UPDATE',
-        changes: data as Record<string, unknown>,
-      },
-    })
+    await createAuditEntry({
+      businessId, entityType: 'Role', entityId: roleId,
+      entityLabel: updated.name.slice(0, 120), userId, action: 'UPDATE',
+      changes: data as Record<string, unknown>,
+    }, tx)
 
     return updated
   })
@@ -150,13 +147,11 @@ export async function deleteRole(businessId: string, roleId: string, userId: str
       data: { isDeleted: true, deletedAt: new Date() },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId, entityType: 'Role', entityId: roleId,
-        entityLabel: role.name.slice(0, 120), userId, action: 'DELETE',
-        changes: { reassignedStaff: result.count, reassignToId },
-      },
-    })
+    await createAuditEntry({
+      businessId, entityType: 'Role', entityId: roleId,
+      entityLabel: role.name.slice(0, 120), userId, action: 'DELETE',
+      changes: { reassignedStaff: result.count, reassignToId },
+    }, tx)
 
     return { reassignedStaff: result.count }
   })

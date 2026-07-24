@@ -13,6 +13,7 @@ import { analyticsEmit } from '../../lib/analytics.js'
 import { templateNotFoundError } from './template.constants.js'
 import type { DocumentType } from '../../../../shared/enums.js'
 import type { SetDefaultResult } from './template.types.js'
+import { createAuditEntry } from '../settings/audit.js'
 
 /** POST /api/templates/:id/set-default. */
 export async function setDefaultTemplate(
@@ -49,17 +50,15 @@ export async function setDefaultTemplate(
       },
     })
 
-    await tx.auditLog.create({
-      data: {
-        businessId,
-        entityType: 'InvoiceTemplate',
-        entityId: templateId,
-        entityLabel: null,
-        userId,
-        action: 'UPDATE',
-        changes: { setDefaultFor: wanted },
-      },
-    })
+    await createAuditEntry({
+      businessId,
+      entityType: 'InvoiceTemplate',
+      entityId: templateId,
+      entityLabel: null,
+      userId,
+      action: 'UPDATE',
+      changes: { setDefaultFor: wanted },
+    }, tx)
   })
 
   // Read back the current set for this template.
