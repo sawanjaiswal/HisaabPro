@@ -2,9 +2,10 @@
  *
  * The counterpart to the pill-style `Tabs.tsx` (Radix): this is the flat
  * underline control used on detail pages (Customer / Supplier / Invoice).
- * Each tab claims an equal share of the row (`flex: 1`) so the set stays
- * evenly distributed at every width. Presentational only — the parent owns
- * the active value and the panels.
+ * Each tab is sized to its own label and separated by a single uniform gap,
+ * so the spacing between tabs stays constant and the underline hugs the text
+ * (short labels don't sit inside an over-wide column). Presentational only —
+ * the parent owns the active value and the panels.
  *
  *   <UnderlineTabs
  *     tabs={[{ id: 'ledger', label: t.ledgerTab, icon: List }]}
