@@ -140,22 +140,32 @@ with a dedicated test (`__tests__/switch-business-limiter.test.ts`). G9 met.
 
 #### P1.2 · UI-state coverage — 109 of 190 pages incomplete
 - **Evidence (measured, import-following sweep):** 37 pages have no error state,
-  32 no empty state, 32 no layout primitive, 17 no i18n, 17 no loading state.
-- **Worst offenders, ranked by user impact:**
+  32 no empty state, 32 no layout primitive, 17 no loading state. (i18n gap:
+  **0 as of 2026-07-24** — the last hardcoded-English pages, BOM + production-runs,
+  were closed this pass.)
+- **⚠️ The 2026-07-21 offender ranking was stale.** Re-measuring each area before
+  editing (following imports, not just grepping the audit) showed onboarding,
+  marketing, and POS were **already** fully `t.*`-routed. The genuine i18n gap was
+  auth (partial) + BOM + production-runs. All three are now closed:
   1. **Auth** — ✅ **i18n DONE 2026-07-24** (commit `9ee30183`). `LoginPage` was
      already `t.*`; `RegisterPage`/`VerifyOtpPage`/`ForgotPasswordPage` had ~33
      hardcoded English strings, now all on `t.*` (EN + HI), duplicated inline
-     `<style>` shake block deduped into `LoginPage.css`. These are archetype-F
-     full-screen forms — loading (button) + error states already present, empty
-     is N/A, so `PageContainer` doesn't apply. Auth line item closed.
-  2. **Onboarding / business creation** — *(next batch)* — `OnboardingPage`, `CreateBusinessPage`,
-     `JoinBusinessPage`, `BusinessTypePage`: same gaps, second screen.
-  3. **BOM + production-runs** (5 pages) — zero `useLanguage`; Hindi users see
-     raw English.
-  4. **Marketing** (8 pages) — no `PageContainer`; breaks the responsive contract.
-  5. **POS** (4 pages) — no container, plus 3 of the 13 shell warnings.
+     `<style>` shake block deduped into `LoginPage.css`. Archetype-F full-screen
+     forms — loading (button) + error states already present, empty is N/A.
+  2. **BOM** (6 files) — ✅ **i18n DONE 2026-07-24** (commit `i18n(bom)`). List /
+     detail / form pages + form-header + components-table + component-row: ~60
+     hardcoded strings → `t.bom*` keys (EN + HI). All 4 states already present.
+  3. **Production-runs** (7 files) — ✅ **i18n DONE 2026-07-24** (commit
+     `i18n(production-runs)`). List / detail / form + 3 wizard steps + cancel
+     button: ~70 strings → `t.pr*` keys (EN + HI); status labels + wizard step
+     titles now resolve at call sites; dead `PR_STATUS_LABELS`/`WIZARD_STEPS`
+     constants removed.
+  4. **Onboarding, marketing, POS** — re-measured 2026-07-24 as **already i18n'd**
+     (the audit's claim was wrong). No work needed; PageContainer/responsive gaps,
+     where they exist, are tracked under the Wave-B responsive sweep, not here.
 - **Fix:** per-page, against `PAGE_AUDIT_CHECKLIST.md` A→N.
-- **Effort:** M (batched by feature area, ~5 batches).
+- **Status:** i18n coverage line item **closed** — no page left with hardcoded
+  user-facing English.
 
 #### P1.3 · Offline queue replay — ✅ **DONE** (client + server, 2026-07-23)
 - **Evidence (was):** offline *discipline* was clean but no test queued a mutation
@@ -309,7 +319,7 @@ Per D2, the NEW screens stay deferred pending competitor comparison
 |------|-------|------|-----------|
 | **A (now — critical path)** | P0.1 — deploy `SCOPED_PRISMA_ENFORCE=shadow`, watch 7d → triage divergences → `enforce` → `CUTOVER_DONE=true` + red-team test. Flag rollout, not code. | **G1** | ⛔ gates multi-tenant launch |
 | ~~**B**~~ | ~~P2.1 oversized files · P2.2 shell debt + promote checks to errors~~ ✅ **DONE 2026-07-23/24** — enforce.js all-green | G6 ✅ | — |
-| **C** | P1.2 UI-state sweep — auth → onboarding → BOM/production → marketing → POS | G7 | first-impression quality |
+| **C** | P1.2 UI-state sweep — ✅ **i18n portion DONE 2026-07-24** (auth + BOM + production-runs closed; onboarding/marketing/POS re-measured as already `t.*`). Remaining C work = PageContainer/responsive gaps, folded into Wave D. | G7 | first-impression quality |
 | **D** | P4 design sweep — Wave 5 → 6 → 7 → 9 → 8a/8b/8c (current branch) | G10 | product polish |
 | **E** | ~~P1.3 offline-replay~~ ✅ · ~~P3.2 ratchet to 0~~ ✅ · P3.1 todo tests (deferred, needs DB harness) | G5 ✅, coverage | hygiene |
 | **F** | 5 NEW screens (after competitor comparison per D2) | — | net-new surface |
