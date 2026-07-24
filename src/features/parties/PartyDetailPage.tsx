@@ -27,7 +27,6 @@ import { useShareLedger } from '@/features/shared-ledger/useShareLedger'
 import { CommitmentsSection } from '@/features/collections/CommitmentsSection'
 import { PartyDetailOverlays } from './components/PartyDetailOverlays'
 import { PartyLedgerTab } from './ledger/PartyLedgerTab'
-import { PartyDetailActionBar } from './components/PartyDetailActionBar'
 import { PartyOverdueAlert } from './components/PartyOverdueAlert'
 import { PartyDetailPayBar } from './components/PartyDetailPayBar'
 import '@/features/shared-ledger/shared-ledger.css'
@@ -55,6 +54,7 @@ export default function PartyDetailPage() {
 
   const handleEdit = () => navigate(`/parties/${partyId}/edit`)
   const handleReceivePayment = () => navigate(`/payments/new?partyId=${partyId}`)
+  const handleNewInvoice = () => navigate(`/invoices/new?partyId=${partyId}`)
 
   const handleDelete = () => {
     setIsDeleting(true)
@@ -91,7 +91,11 @@ export default function PartyDetailPage() {
           <Header variant="emerald" title={t.partyDetails} backTo={ROUTES.PARTIES} />
         )}
 
-        <PageContainer variant="detail" className="space-y-6">
+        {/* Emerald field the white sheet curves over — mirrors HeroPage's
+            hp-hero-top so the detail page reads like every other page. */}
+        <div className="pd-hero-field" aria-hidden="true" />
+
+        <PageContainer variant="detail" className="pd-detail-sheet space-y-6">
           {status === 'loading' && <PartyDetailSkeleton />}
 
           {status === 'error' && (
@@ -137,17 +141,8 @@ export default function PartyDetailPage() {
                 />
               )}
 
-              {/* Primary actions — Receive Payment · New Invoice · ⋯ */}
-              <PartyDetailActionBar
-                partyId={partyId}
-                onStatement={() => setStmtOpen(true)}
-                onEdit={handleEdit}
-                onShare={() => setShareOpen(true)}
-                onInvite={() => setInviteOpen(true)}
-                onDelete={() => setDeleteOpen(true)}
-                showInvite={party.userId == null}
-              />
-
+              {/* Primary actions now live in the sticky pay bar; overflow
+                  actions (edit/share/statement/invite/delete) in the header ⋮ */}
               <PartyDetailOverlays
                 party={party}
                 partyId={partyId}
@@ -211,6 +206,7 @@ export default function PartyDetailPage() {
           <PartyDetailPayBar
             outstandingPaise={party.outstandingBalance}
             onReceivePayment={handleReceivePayment}
+            onNewInvoice={handleNewInvoice}
           />
         )}
       </AppShell>

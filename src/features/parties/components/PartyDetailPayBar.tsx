@@ -1,14 +1,16 @@
 /**
- * Party Detail — sticky outstanding bar.
+ * Party Detail — sticky bottom action bar.
  *
- * Keeps the balance and the one action that clears it on screen while the user
- * scrolls the ledger. Positioning belongs to the `BottomActionBar` primitive
- * (PLATFORM_SHELL C6/C9) — this component only fills it.
+ * Hosts the two primary party actions (Receive · Invoice) and, when money is
+ * owed, a strip above them showing the outstanding balance. Positioning and the
+ * safe-area math belong to the `BottomActionBar` primitive (PLATFORM_SHELL
+ * C6/C9) — this component only fills it.
  *
- * Renders nothing when there is nothing owing: a bar reading "₹0 outstanding"
- * occupies a permanent strip of a small screen to say nothing.
+ * Always rendered on a loaded party: the actions are the point, and the
+ * outstanding strip simply appears when there is a balance to clear.
  */
 
+import { PlusCircle, FilePlus } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { BottomActionBar } from '@/components/ui/BottomActionBar'
 import { Button } from '@/components/ui/Button'
@@ -16,35 +18,50 @@ import { formatAmount } from '../party.utils'
 import './party-pay-bar.css'
 
 interface PartyDetailPayBarProps {
-  /** Outstanding balance in PAISE. `<= 0` hides the bar entirely. */
+  /** Outstanding balance in PAISE. `> 0` shows the amount strip. */
   outstandingPaise: number
   onReceivePayment: () => void
+  onNewInvoice: () => void
 }
 
 export function PartyDetailPayBar({
   outstandingPaise,
   onReceivePayment,
+  onNewInvoice,
 }: PartyDetailPayBarProps) {
   const { t } = useLanguage()
 
-  if (outstandingPaise <= 0) return null
-
   return (
-    <BottomActionBar className="pd-paybar" role="group" aria-label={t.outstanding}>
-      <div className="pd-paybar__amount">
-        <span className="pd-paybar__value tabular-nums">{formatAmount(outstandingPaise)}</span>
-        <span className="pd-paybar__label">{t.outstandingSuffix}</span>
-      </div>
+    <BottomActionBar className="pd-paybar" role="group" aria-label={t.quickActions}>
+      {outstandingPaise > 0 && (
+        <div className="pd-paybar__strip">
+          <span className="pd-paybar__label">{t.outstanding}</span>
+          <span className="pd-paybar__value tabular-nums">{formatAmount(outstandingPaise)}</span>
+        </div>
+      )}
 
-      <Button
-        variant="primary"
-        size="md"
-        className="pd-paybar__cta"
-        onClick={onReceivePayment}
-        aria-label={t.receiveFullPaymentHint}
-      >
-        {t.receivePayment}
-      </Button>
+      <div className="pd-paybar__actions">
+        <Button
+          variant="primary"
+          size="md"
+          className="pd-paybar__cta"
+          onClick={onReceivePayment}
+          aria-label={t.receivePayment}
+        >
+          <PlusCircle size={18} aria-hidden="true" />
+          <span>{t.receiveAmount}</span>
+        </Button>
+        <Button
+          variant="secondary"
+          size="md"
+          className="pd-paybar__cta"
+          onClick={onNewInvoice}
+          aria-label={t.newInvoice}
+        >
+          <FilePlus size={18} aria-hidden="true" />
+          <span>{t.invoiceLabel}</span>
+        </Button>
+      </div>
     </BottomActionBar>
   )
 }

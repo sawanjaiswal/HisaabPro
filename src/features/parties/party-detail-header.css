@@ -17,6 +17,25 @@
   padding-bottom: var(--space-4);
 }
 
+/* ─── Curved white sheet (matches HeroPage / every other page) ──────────────
+   The bespoke sticky header stays put; a thin non-sticky emerald field sits
+   directly beneath it, and the white content sheet lifts up over that field so
+   its rounded top corners reveal the emerald behind them. Keeping the field
+   separate from the sticky header avoids any z-index fight on scroll — the
+   sheet only ever overlaps the field, never the header.
+   ───────────────────────────────────────────────────────────────────────── */
+.pd-hero-field {
+  height: var(--space-5);
+  background: var(--color-hero-surface);
+}
+
+.page-container.pd-detail-sheet {
+  /* Lift into the emerald field; `.page-container` already supplies the
+     white bg, radius-xl top corners, inset shadow and `position: relative`. */
+  margin-top: calc(-1 * var(--space-5));
+  z-index: 1;
+}
+
 /* Row 1 — back · identity · action icons */
 .pdh-top {
   display: flex;

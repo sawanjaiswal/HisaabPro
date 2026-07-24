@@ -2,7 +2,7 @@ import React, { useRef, useCallback } from 'react'
 import { Check, ChevronRight } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PartySummary, PartyType } from '../party.types'
-import { formatOutstanding, formatPhone, getPartyRowStatus } from '../party.utils'
+import { formatOutstanding, getPartyRowStatus } from '../party.utils'
 import { PartyAvatar } from '../../../components/ui/PartyAvatar'
 import { OptOutChip } from '@/features/marketing/components/OptOutChip'
 
@@ -95,18 +95,17 @@ export const PartyCard: React.FC<PartyCardProps> = ({
       <div className="txn-info">
         <div className="party-card-header">
           <span className="txn-name">{party.name}</span>
-          {isOptedOut && <OptOutChip />}
-        </div>
-        {party.phone && (
-          <span className="txn-date">{formatPhone(party.phone)}</span>
-        )}
-        <div className="party-card-chips">
-          <span className={`party-card-type-chip party-card-type-chip--${party.type.toLowerCase()}`}>
-            {t[TYPE_CHIP[party.type]]}
-          </span>
+          {/* Type tag only for non-default types — Customer is the majority and
+              is already filterable via the tabs, so tagging it is just noise. */}
+          {party.type !== 'CUSTOMER' && (
+            <span className={`party-card-type-chip party-card-type-chip--${party.type.toLowerCase()}`}>
+              {t[TYPE_CHIP[party.type]]}
+            </span>
+          )}
           {party.priceList && (
             <span className="party-card-pl-chip">{party.priceList.name}</span>
           )}
+          {isOptedOut && <OptOutChip />}
         </div>
       </div>
 

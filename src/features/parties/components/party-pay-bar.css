@@ -1,40 +1,65 @@
-/* ─── Party detail — sticky outstanding bar ────────────────────────────────
+/* ─── Party detail — sticky bottom action bar ──────────────────────────────
    Fills the BottomActionBar primitive; the primitive owns fixed positioning
    and the safe-area inset (PLATFORM_SHELL C6/C9) — nothing here touches either.
-   Mobile-first: amount left, CTA right, and the CTA never shrinks below its
-   tap target because the amount is the flexible half.
+   Layout: an optional outstanding strip stacked over the two primary actions,
+   which split the width evenly and never drop below their 44px tap target.
    ─────────────────────────────────────────────────────────────────────────── */
 
 .pd-paybar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-2);
 }
 
-.pd-paybar__amount {
+/* The primitive splits its direct children evenly (Cancel/Save row); here the
+   strip and the action row stack instead, so each hugs its own height rather
+   than growing to fill the column. Double-class beats `.bottom-action-bar > *`. */
+.bottom-action-bar.pd-paybar > * {
+  flex: 0 0 auto;
+}
+
+.pd-paybar__strip {
   display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  min-width: 0;
-  line-height: 1.2;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.pd-paybar__label {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
 .pd-paybar__value {
   font-size: var(--fs-lg);
   font-weight: 700;
   color: var(--color-error-500);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.pd-paybar__label {
-  font-size: var(--fs-xs);
-  color: var(--text-muted);
+.pd-paybar__actions {
+  display: flex;
+  gap: var(--space-3);
 }
 
 .pd-paybar__cta {
-  flex: 0 0 auto;
+  flex: 1 1 0;
   min-height: 44px;
+}
+
+/* Reserve room so the two-row bar never hides the tail of the page content. */
+body:has(.pd-paybar) .page-container {
+  padding-bottom: calc(var(--bottom-nav-height) + 96px + var(--space-4));
+}
+
+/* ─── Tablet+ — the primitive caps its column at 480px and centres it ───────── */
+@media (min-width: 768px) {
+  .bottom-action-bar.pd-paybar {
+    align-items: center;
+  }
+
+  .bottom-action-bar.pd-paybar > * {
+    width: 100%;
+    max-width: 480px;
+  }
 }
