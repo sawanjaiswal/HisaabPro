@@ -7,6 +7,7 @@ import { ArrowLeft, Edit2, Play, Trash2 } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { useToast } from '@/hooks/useToast'
+import { useLanguage } from '@/context/LanguageContext'
 import { ApiError } from '@/lib/api'
 import { useBomDetail, bomKeys } from '../hooks/useBom'
 import { BomComponentsTable } from '../components/BomComponentsTable'
@@ -16,8 +17,9 @@ import { useQueryClient } from '@tanstack/react-query'
 import '../bom.css'
 
 function BomDetailSkeleton() {
+  const { t } = useLanguage()
   return (
-    <div className="bom-skeleton" aria-busy="true" aria-label="Loading recipe">
+    <div className="bom-skeleton" aria-busy="true" aria-label={t.bomLoadingRecipes}>
       <div className="bom-skeleton__card" style={{ height: 48 }} />
       <div className="bom-skeleton__card" style={{ height: 32 }} />
       {[0, 1, 2].map((i) => <div key={i} className="bom-skeleton__card" style={{ height: 44 }} />)}
@@ -29,6 +31,7 @@ export default function BomDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const toast = useToast()
+  const { t } = useLanguage()
   const queryClient = useQueryClient()
   const { bom, status, refresh } = useBomDetail(id ?? '')
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -42,10 +45,10 @@ export default function BomDetailPage() {
     try {
       await deleteBom(id, bom.name)
       await queryClient.invalidateQueries({ queryKey: bomKeys.all() })
-      toast.success('Recipe deleted')
+      toast.success(t.bomRecipeDeleted)
       navigate('/bom')
     } catch (err) {
-      const msg = err instanceof ApiError ? err.message : 'Failed to delete recipe'
+      const msg = err instanceof ApiError ? err.message : t.bomDeleteFailed
       toast.error(msg)
       setDeleting(false)
     }
@@ -55,10 +58,10 @@ export default function BomDetailPage() {
     <div className="bom-page">
       {/* Back */}
       <div className="bom-page__header">
-        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate('/bom')} aria-label="Back to recipes">
+        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate('/bom')} aria-label={t.bomBackToRecipes}>
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
-        <h1 className="bom-page__title">Recipe Detail</h1>
+        <h1 className="bom-page__title">{t.bomRecipeDetail}</h1>
       </div>
 
       {/* Loading */}
@@ -66,7 +69,7 @@ export default function BomDetailPage() {
 
       {/* Error */}
       {status === 'error' && (
-        <ErrorState title="Could not load recipe" onRetry={refresh} />
+        <ErrorState title={t.bomLoadRecipeError} onRetry={refresh} />
       )}
 
       {/* Success */}
@@ -81,20 +84,20 @@ export default function BomDetailPage() {
               </div>
               <div className="bom-detail-card__badges">
                 <span className="badge badge--neutral">{formatVersionBadge(bom.version)}</span>
-                {bom.isDefault && <span className="badge badge--primary">Default</span>}
-                {!bom.isActive && <span className="badge badge--warning">Inactive</span>}
+                {bom.isDefault && <span className="badge badge--primary">{t.defaultLabel}</span>}
+                {!bom.isActive && <span className="badge badge--warning">{t.inactive}</span>}
               </div>
             </div>
             {bom.notes && <p className="bom-detail-card__notes">{bom.notes}</p>}
             <div className="bom-detail-card__meta">
-              <span>{bom.components.length} component{bom.components.length !== 1 ? 's' : ''}</span>
-              <span>{bom.productionRunCount} run{bom.productionRunCount !== 1 ? 's' : ''}</span>
+              <span>{bom.components.length} {bom.components.length !== 1 ? t.bomComponentsLower : t.bomComponent}</span>
+              <span>{bom.productionRunCount} {bom.productionRunCount !== 1 ? t.bomRuns : t.bomRun}</span>
             </div>
           </div>
 
           {/* Components */}
           <section className="bom-section">
-            <h2 className="bom-section__title">Components</h2>
+            <h2 className="bom-section__title">{t.bomComponentsHeading}</h2>
             <BomComponentsTable components={bom.components} />
           </section>
 
@@ -104,25 +107,25 @@ export default function BomDetailPage() {
               type="button"
               variant="primary"
               onClick={() => navigate(`/production-runs/new?bomId=${id}`)}
-              aria-label="Start production run"
+              aria-label={t.bomStartProductionRun}
             >
-              <Play size={16} aria-hidden="true" /> Start Run
+              <Play size={16} aria-hidden="true" /> {t.bomStartRun}
             </Button>
             <Button
               type="button"
               variant="ghost"
               onClick={() => navigate(`/bom/${id}/edit`)}
-              aria-label="Edit recipe"
+              aria-label={t.bomEditRecipeAria}
             >
-              <Edit2 size={16} aria-hidden="true" /> Edit
+              <Edit2 size={16} aria-hidden="true" /> {t.edit}
             </Button>
             <Button variant="none"
               type="button"
               className="btn btn-ghost btn-danger-ghost"
               onClick={() => setConfirmDelete(true)}
-              aria-label="Delete recipe"
+              aria-label={t.bomDeleteRecipeAria}
             >
-              <Trash2 size={16} aria-hidden="true" /> Delete
+              <Trash2 size={16} aria-hidden="true" /> {t.delete}
             </Button>
           </div>
         </>
@@ -132,10 +135,10 @@ export default function BomDetailPage() {
         open={confirmDelete}
         onClose={() => setConfirmDelete(false)}
         onConfirm={() => { setConfirmDelete(false); void handleDelete() }}
-        title="Delete Recipe?"
-        description="This will soft-delete the recipe. Existing production runs will not be affected."
-        confirmLabel={deleting ? 'Deleting...' : 'Delete Recipe'}
-        cancelLabel="Keep Recipe"
+        title={t.bomDeleteRecipeTitle}
+        description={t.bomDeleteRecipeDesc}
+        confirmLabel={deleting ? t.deleting : t.bomDeleteConfirm}
+        cancelLabel={t.bomKeepRecipe}
         isDanger
         isLoading={deleting}
       />

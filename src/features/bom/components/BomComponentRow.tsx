@@ -8,6 +8,7 @@ import { getProducts } from '@/lib/services/product.service'
 const NONE = '__none__' as const
 import { getUnits } from '@/features/products/unit.service'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useLanguage } from '@/context/LanguageContext'
 import type { BomComponentFormRow } from '../bom.types'
 import type { Unit } from '@/features/products/product.types'
 import { Input } from '@/components/ui/Input'
@@ -32,6 +33,7 @@ interface ProductOption {
 export function BomComponentRow({
   row, index, finishedProductId, errors, onChange, onRemove,
 }: BomComponentRowProps) {
+  const { t } = useLanguage()
   const [query, setQuery] = useState(row.componentProductName)
   const [results, setResults] = useState<ProductOption[]>([])
   const [open, setOpen] = useState(false)
@@ -57,10 +59,10 @@ export function BomComponentRow({
   }
 
   return (
-    <div className="bom-row" role="group" aria-label={`Component ${index + 1}`}>
+    <div className="bom-row" role="group" aria-label={`${t.bomComponentLabel} ${index + 1}`}>
       {/* Product search */}
       <div className="bom-row__product input-group">
-        <label className="input-label sr-only" htmlFor={`comp-product-${index}`}>Product</label>
+        <label className="input-label sr-only" htmlFor={`comp-product-${index}`}>{t.bomProduct}</label>
         <Input
           id={`comp-product-${index}`}
           className={`input${errors?.productId ? ' input-error-border' : ''}`}
@@ -68,9 +70,9 @@ export function BomComponentRow({
           onChange={(e) => { setQuery(e.target.value); setOpen(true) }}
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 150)}
-          placeholder="Search product..."
+          placeholder={t.bomSearchProduct}
           autoComplete="off"
-          aria-label="Component product"
+          aria-label={t.bomComponentProductAria}
           aria-haspopup="listbox"
           aria-expanded={open}
         />
@@ -87,7 +89,7 @@ export function BomComponentRow({
                   onMouseDown={() => selectProduct(p)}
                 >
                   <span className="bom-row__suggestion-name">{p.name}</span>
-                  <span className="bom-row__suggestion-stock">Stock: {p.currentStock}</span>
+                  <span className="bom-row__suggestion-stock">{t.stock}: {p.currentStock}</span>
                 </li>
               ))}
           </ul>
@@ -97,7 +99,7 @@ export function BomComponentRow({
 
       {/* Qty */}
       <div className="bom-row__qty input-group">
-        <label className="input-label sr-only" htmlFor={`comp-qty-${index}`}>Qty</label>
+        <label className="input-label sr-only" htmlFor={`comp-qty-${index}`}>{t.qty}</label>
         <Input
           id={`comp-qty-${index}`}
           className={`input${errors?.qty ? ' input-error-border' : ''}`}
@@ -106,22 +108,22 @@ export function BomComponentRow({
           step="0.001"
           value={row.quantity}
           onChange={(e) => onChange(index, { quantity: e.target.value })}
-          placeholder="Qty"
+          placeholder={t.qty}
           inputMode="decimal"
-          aria-label="Component quantity"
+          aria-label={t.bomComponentQuantityAria}
         />
         {errors?.qty && <p className="input-error" role="alert">{errors.qty}</p>}
       </div>
 
       {/* Unit */}
       <div className="bom-row__unit input-group">
-        <label className="input-label sr-only" htmlFor={`comp-unit-${index}`}>Unit</label>
+        <label className="input-label sr-only" htmlFor={`comp-unit-${index}`}>{t.unit}</label>
         <Select
           value={row.unitId || NONE}
           onValueChange={(v) => onChange(index, { unitId: v === NONE ? '' : v })}
-          ariaLabel="Component unit"
+          ariaLabel={t.bomComponentUnitAria}
         >
-          <SelectItem value={NONE}>Unit (opt.)</SelectItem>
+          <SelectItem value={NONE}>{t.bomUnitOpt}</SelectItem>
           {units.map((u) => (
             <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
           ))}
@@ -133,7 +135,7 @@ export function BomComponentRow({
         type="button"
         className="bom-row__remove btn btn-ghost btn-icon"
         onClick={() => onRemove(index)}
-        aria-label={`Remove component ${index + 1}`}
+        aria-label={`${t.bomRemoveComponentAria} ${index + 1}`}
         style={{ minWidth: 44, minHeight: 44 }}
       >
         <Trash2 size={16} aria-hidden="true" />

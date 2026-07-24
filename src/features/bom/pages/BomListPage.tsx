@@ -7,6 +7,7 @@ import { Plus, BookOpen, ChevronLeft, ChevronRight, Play } from 'lucide-react'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { useBomList } from '../hooks/useBom'
+import { useLanguage } from '@/context/LanguageContext'
 import { formatVersionBadge } from '../bom.utils'
 import type { BomListFilters } from '../bom.types'
 import '../bom.css'
@@ -14,8 +15,9 @@ import '../bom.css'
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
 function BomListSkeleton() {
+  const { t } = useLanguage()
   return (
-    <div className="bom-skeleton" aria-busy="true" aria-label="Loading recipes">
+    <div className="bom-skeleton" aria-busy="true" aria-label={t.bomLoadingRecipes}>
       {[0, 1, 2].map((i) => (
         <div key={i} className="bom-skeleton__card" />
       ))}
@@ -27,6 +29,7 @@ function BomListSkeleton() {
 
 export default function BomListPage() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const [filters, setFilters] = useState<BomListFilters>({ page: 1 })
   const { items, pagination, status, refresh } = useBomList(filters)
 
@@ -37,19 +40,19 @@ export default function BomListPage() {
       {/* Header */}
       <div className="bom-page__header">
         <div>
-          <h1 className="bom-page__title">Recipes</h1>
+          <h1 className="bom-page__title">{t.bomRecipes}</h1>
           {status === 'success' && (
-            <p className="bom-page__subtitle">{pagination.total} recipe{pagination.total !== 1 ? 's' : ''}</p>
+            <p className="bom-page__subtitle">{pagination.total} {pagination.total !== 1 ? t.bomRecipesLower : t.bomRecipe}</p>
           )}
         </div>
         <Button
           type="button"
           variant="primary" size="sm"
           onClick={() => navigate('/bom/new')}
-          aria-label="Create new recipe"
+          aria-label={t.bomCreateNewRecipe}
         >
           <Plus size={16} aria-hidden="true" />
-          New Recipe
+          {t.bomNewRecipe}
         </Button>
       </div>
 
@@ -59,8 +62,8 @@ export default function BomListPage() {
       {/* Error */}
       {status === 'error' && (
         <ErrorState
-          title="Could not load recipes"
-          message="Check your connection and try again."
+          title={t.bomLoadErrorTitle}
+          message={t.bomLoadErrorMsg}
           onRetry={refresh}
         />
       )}
@@ -69,11 +72,11 @@ export default function BomListPage() {
       {status === 'success' && items.length === 0 && (
         <EmptyState
           icon={<BookOpen size={22} aria-hidden="true" />}
-          title="No recipes yet"
-          description="Create a Bill of Materials to start tracking production."
+          title={t.bomEmptyTitle}
+          description={t.bomEmptyDesc}
           action={
             <Button type="button" variant="primary" onClick={() => navigate('/bom/new')}>
-              <Plus size={16} aria-hidden="true" /> New Recipe
+              <Plus size={16} aria-hidden="true" /> {t.bomNewRecipe}
             </Button>
           }
         />
@@ -90,20 +93,20 @@ export default function BomListPage() {
               onClick={() => navigate(`/bom/${bom.id}`)}
               tabIndex={0}
               onKeyDown={(e) => { if (e.key === 'Enter') navigate(`/bom/${bom.id}`) }}
-              aria-label={`Recipe: ${bom.name}`}
+              aria-label={`${t.bomRecipe}: ${bom.name}`}
             >
               <div className="bom-card__top">
                 <span className="bom-card__product">{bom.productName}</span>
                 <div className="bom-card__badges">
                   <span className="badge badge--neutral">{formatVersionBadge(bom.version)}</span>
-                  {bom.isDefault && <span className="badge badge--primary">Default</span>}
-                  {!bom.isActive && <span className="badge badge--warning">Inactive</span>}
+                  {bom.isDefault && <span className="badge badge--primary">{t.defaultLabel}</span>}
+                  {!bom.isActive && <span className="badge badge--warning">{t.inactive}</span>}
                 </div>
               </div>
               <div className="bom-card__bottom">
                 <span className="bom-card__name">{bom.name}</span>
                 <div className="bom-card__actions">
-                  <span className="bom-card__count">{bom.componentCount} component{bom.componentCount !== 1 ? 's' : ''}</span>
+                  <span className="bom-card__count">{bom.componentCount} {bom.componentCount !== 1 ? t.bomComponentsLower : t.bomComponent}</span>
                   <Button variant="none"
                     type="button"
                     className="btn btn-ghost btn-icon btn-sm"
@@ -111,7 +114,7 @@ export default function BomListPage() {
                       e.stopPropagation()
                       navigate(`/production-runs/new?bomId=${bom.id}`)
                     }}
-                    aria-label={`Start production run for ${bom.name}`}
+                    aria-label={`${t.bomStartRunForAria} ${bom.name}`}
                     style={{ minWidth: 44, minHeight: 44 }}
                   >
                     <Play size={14} aria-hidden="true" />
@@ -125,23 +128,23 @@ export default function BomListPage() {
 
       {/* Pagination */}
       {status === 'success' && (pagination.page > 1 || pagination.hasMore) && (
-        <div className="bom-pagination" role="navigation" aria-label="Pagination">
+        <div className="bom-pagination" role="navigation" aria-label={t.pagination}>
           <Button
             type="button"
             variant="ghost" size="sm"
             disabled={pagination.page <= 1}
             onClick={() => setPage(pagination.page - 1)}
-            aria-label="Previous page"
+            aria-label={t.previousPage}
           >
             <ChevronLeft size={16} aria-hidden="true" />
           </Button>
-          <span className="bom-pagination__label">Page {pagination.page}</span>
+          <span className="bom-pagination__label">{t.pageLabel} {pagination.page}</span>
           <Button
             type="button"
             variant="ghost" size="sm"
             disabled={!pagination.hasMore}
             onClick={() => setPage(pagination.page + 1)}
-            aria-label="Next page"
+            aria-label={t.nextPage}
           >
             <ChevronRight size={16} aria-hidden="true" />
           </Button>

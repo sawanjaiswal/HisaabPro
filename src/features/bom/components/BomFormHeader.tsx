@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { getProducts } from '@/lib/services/product.service'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useLanguage } from '@/context/LanguageContext'
 import type { BomFormData } from '../bom.types'
 import type { BomValidationErrors } from '../bom.utils'
 import { Textarea } from '@/components/ui/Textarea'
@@ -21,6 +22,7 @@ interface ProductOption {
 }
 
 export function BomFormHeader({ form, errors, editMode, onUpdate }: BomFormHeaderProps) {
+  const { t } = useLanguage()
   const [productQuery, setProductQuery] = useState(form.productName)
   const [productResults, setProductResults] = useState<ProductOption[]>([])
   const [productOpen, setProductOpen] = useState(false)
@@ -44,13 +46,13 @@ export function BomFormHeader({ form, errors, editMode, onUpdate }: BomFormHeade
     <div className="bom-form-header">
       {/* Recipe name */}
       <div className="input-group">
-        <label htmlFor="bom-name" className="input-label">Recipe name</label>
+        <label htmlFor="bom-name" className="input-label">{t.bomRecipeName}</label>
         <Input
           id="bom-name"
           className={`input${errors.name ? ' input-error-border' : ''}`}
           value={form.name}
           onChange={(e) => onUpdate('name', e.target.value)}
-          placeholder="e.g. Gift Basket v1"
+          placeholder={t.bomRecipeNameHint}
           maxLength={100}
           autoComplete="off"
           required
@@ -62,8 +64,8 @@ export function BomFormHeader({ form, errors, editMode, onUpdate }: BomFormHeade
       {/* Finished product picker */}
       <div className="input-group">
         <label htmlFor="bom-product" className="input-label">
-          Finished product
-          {editMode && <span className="text-optional"> (locked after first run)</span>}
+          {t.bomFinishedProduct}
+          {editMode && <span className="text-optional"> {t.bomLockedAfterRun}</span>}
         </label>
         <div className="bom-form-header__product-wrap">
           <Input
@@ -73,14 +75,14 @@ export function BomFormHeader({ form, errors, editMode, onUpdate }: BomFormHeade
             onChange={(e) => { setProductQuery(e.target.value); setProductOpen(true) }}
             onFocus={() => setProductOpen(true)}
             onBlur={() => setTimeout(() => setProductOpen(false), 150)}
-            placeholder="Search finished product..."
+            placeholder={t.bomSearchFinishedProduct}
             autoComplete="off"
-            aria-label="Finished product"
+            aria-label={t.bomFinishedProduct}
             aria-haspopup="listbox"
             aria-expanded={productOpen}
           />
           {productOpen && productResults.length > 0 && (
-            <ul className="bom-row__suggestions" role="listbox" aria-label="Product results">
+            <ul className="bom-row__suggestions" role="listbox" aria-label={t.bomProductResults}>
               {productResults.map((p) => (
                 <li
                   key={p.id}
@@ -105,9 +107,9 @@ export function BomFormHeader({ form, errors, editMode, onUpdate }: BomFormHeade
             type="checkbox"
             checked={form.isDefault}
             onChange={(e) => onUpdate('isDefault', e.target.checked)}
-            aria-label="Set as default recipe"
+            aria-label={t.bomSetDefaultAria}
           />
-          <span>Set as default recipe for this product</span>
+          <span>{t.bomSetDefault}</span>
         </label>
       </div>
 
@@ -119,9 +121,9 @@ export function BomFormHeader({ form, errors, editMode, onUpdate }: BomFormHeade
               type="checkbox"
               checked={form.isActive}
               onChange={(e) => onUpdate('isActive', e.target.checked)}
-              aria-label="Recipe is active"
+              aria-label={t.bomRecipeActive}
             />
-            <span>Recipe is active</span>
+            <span>{t.bomRecipeActive}</span>
           </label>
         </div>
       )}
@@ -129,16 +131,16 @@ export function BomFormHeader({ form, errors, editMode, onUpdate }: BomFormHeade
       {/* Notes */}
       <div className="input-group">
         <label htmlFor="bom-notes" className="input-label">
-          Notes <span className="text-optional">(optional)</span>
+          {t.notes} <span className="text-optional">({t.optional})</span>
         </label>
         <Textarea
           id="bom-notes"
           className="input"
           value={form.notes}
           onChange={(e) => onUpdate('notes', e.target.value)}
-          placeholder="Any notes about this recipe..."
+          placeholder={t.bomNotesHint}
           rows={2}
-          aria-label="Recipe notes"
+          aria-label={t.bomRecipeNotesAria}
         />
       </div>
     </div>
