@@ -13,19 +13,11 @@
 import React from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { SummaryTiles } from '@/components/ui/SummaryTiles'
-import { PAYMENT_MODE_LABELS } from '@/features/payments/payment-labels.constants'
-import type { PaymentMode } from '@/features/payments/payment.types'
 import type { PartyDetail } from '../party.types'
 import { formatAmount } from '../party.utils'
 
 interface PartySummaryTilesProps {
   party: PartyDetail
-}
-
-/** "10 May" — short Indian date for the last-payment hint. The year is dropped
- *  because the divided strip gives each column roughly a quarter of 375px. */
-function formatShortDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
 }
 
 export const PartySummaryTiles: React.FC<PartySummaryTilesProps> = ({ party }) => {
@@ -35,9 +27,6 @@ export const PartySummaryTiles: React.FC<PartySummaryTilesProps> = ({ party }) =
   const isSupplier = party.type === 'SUPPLIER'
 
   const last = stats?.lastPayment ?? null
-  const lastHint = last
-    ? `${formatShortDate(last.date)} (${PAYMENT_MODE_LABELS[last.mode as PaymentMode] ?? last.mode})`
-    : undefined
 
   return (
     <SummaryTiles
@@ -49,24 +38,18 @@ export const PartySummaryTiles: React.FC<PartySummaryTilesProps> = ({ party }) =
           label: isSupplier ? t.totalPayable : t.outstanding,
           value: formatAmount(due),
           tone: 'due',
-          // Keeps this column the same three-line height as the other two, so
-          // the hairline rules don't hang into empty space beneath a short tile.
-          // Muted (no hintTone) — a quiet caption, not a second red accent.
-          hint: t.due,
         },
         {
           id: 'open-invoices',
           label: t.openInvoices,
           value: stats ? `${stats.openInvoiceCount}` : '—',
           tone: 'neutral',
-          hint: stats ? t.invoicesCount : undefined,
         },
         {
           id: 'last-payment',
           label: t.lastPayment,
           value: last ? formatAmount(last.amount) : '—',
           tone: 'paid',
-          hint: lastHint,
         },
       ]}
     />
