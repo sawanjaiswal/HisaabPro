@@ -139,12 +139,12 @@ rollout is the only structural item left.**
 with a dedicated test (`__tests__/switch-business-limiter.test.ts`). G9 met.
 
 #### P1.2 · UI-state coverage — 109 of 190 pages incomplete
-- **Evidence (`scripts/scan-ui-states.mjs`, 2026-07-24):** total=195, gold=77,
-  gaps=118. Remaining i18n gaps by area: **custom-orders (4), sales-create (3),
-  jobs (2), cash-register (1)** in-app, plus static `pages`/`landing`/`storefront`
-  (marketing, English-only by design). Auth + BOM + production-runs closed this
-  pass. **Correction:** an earlier note here claimed i18n hit 0 — that was
-  premature; the scanner surfaced feature areas the 2026-07-21 audit never listed.
+- **Evidence (`scripts/scan-ui-states.mjs`, 2026-07-24):** total=195, gold=78,
+  gaps=117. Remaining i18n gaps by area: **jobs (2), cash-register (1)** in-app,
+  plus static `pages`/`landing`/`storefront` (marketing, English-only by design).
+  Auth + BOM + production-runs + custom-orders closed this pass. **Correction:**
+  an earlier note here claimed i18n hit 0 — that was premature; the scanner
+  surfaced feature areas the 2026-07-21 audit never listed.
 - **⚠️ The 2026-07-21 offender ranking was stale.** Re-measuring each area before
   editing (following imports, not just grepping the audit) showed onboarding,
   marketing, and POS were **already** fully `t.*`-routed. The genuine i18n gap was
@@ -162,12 +162,20 @@ with a dedicated test (`__tests__/switch-business-limiter.test.ts`). G9 met.
      button: ~70 strings → `t.pr*` keys (EN + HI); status labels + wizard step
      titles now resolve at call sites; dead `PR_STATUS_LABELS`/`WIZARD_STEPS`
      constants removed.
-  4. **Onboarding, marketing, POS** — re-measured 2026-07-24 as **already i18n'd**
+  4. **Custom-orders** (16 files: 4 pages + 12 components) — ✅ **i18n DONE
+     2026-07-24** (commit `i18n(custom-orders)`). Was a fully un-i18n'd area
+     (every file `useLanguage=0`). ~100 strings → `t.co*` keys (EN + HI): status
+     labels, filter pills, form fields/placeholders/validation, advance modal,
+     status-transition buttons, convert-to-invoice, and the 4 UI states.
+     Status/method/button label maps moved from module scope into components so
+     they resolve against `t`. scan-ui-states: custom-orders i18n 4 → 0.
+  5. **Onboarding, marketing, POS** — re-measured 2026-07-24 as **already i18n'd**
      (the audit's claim was wrong). No work needed; PageContainer/responsive gaps,
      where they exist, are tracked under the Wave-B responsive sweep, not here.
 - **Fix:** per-page, against `PAGE_AUDIT_CHECKLIST.md` A→N.
-- **Status:** i18n coverage line item **closed** — no page left with hardcoded
-  user-facing English.
+- **Status:** i18n sub-sweep nearly closed. Remaining in-app: **jobs (2 pages),
+  cash-register (1 page)** — next batches. Static marketing pages
+  (`pages`/`landing`/`storefront`) are English-only by design and out of scope.
 
 #### P1.3 · Offline queue replay — ✅ **DONE** (client + server, 2026-07-23)
 - **Evidence (was):** offline *discipline* was clean but no test queued a mutation
