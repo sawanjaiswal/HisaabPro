@@ -142,9 +142,13 @@ with a dedicated test (`__tests__/switch-business-limiter.test.ts`). G9 met.
 - **Evidence (measured, import-following sweep):** 37 pages have no error state,
   32 no empty state, 32 no layout primitive, 17 no i18n, 17 no loading state.
 - **Worst offenders, ranked by user impact:**
-  1. **Auth** — `LoginPage`, `RegisterPage`, `VerifyOtpPage`, `ForgotPasswordPage`:
-     no container, no i18n, no loading/error/empty. Every user's first screen.
-  2. **Onboarding / business creation** — `OnboardingPage`, `CreateBusinessPage`,
+  1. **Auth** — ✅ **i18n DONE 2026-07-24** (commit `9ee30183`). `LoginPage` was
+     already `t.*`; `RegisterPage`/`VerifyOtpPage`/`ForgotPasswordPage` had ~33
+     hardcoded English strings, now all on `t.*` (EN + HI), duplicated inline
+     `<style>` shake block deduped into `LoginPage.css`. These are archetype-F
+     full-screen forms — loading (button) + error states already present, empty
+     is N/A, so `PageContainer` doesn't apply. Auth line item closed.
+  2. **Onboarding / business creation** — *(next batch)* — `OnboardingPage`, `CreateBusinessPage`,
      `JoinBusinessPage`, `BusinessTypePage`: same gaps, second screen.
   3. **BOM + production-runs** (5 pages) — zero `useLanguage`; Hindi users see
      raw English.
