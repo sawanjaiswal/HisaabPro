@@ -5,6 +5,7 @@ import { JobStatusPill } from './JobStatusPill'
 import { formatPaise, formatJobNumber } from '../jobs.utils'
 import type { JobListRow } from '../jobs.types'
 import { Button } from '@/components/ui/Button'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface JobListItemProps {
   job: JobListRow
@@ -12,6 +13,7 @@ interface JobListItemProps {
 }
 
 export function JobListItem({ job, onClick }: JobListItemProps) {
+  const { t } = useLanguage()
   const scheduled = job.scheduledAt
     ? new Date(job.scheduledAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
     : null
@@ -21,7 +23,7 @@ export function JobListItem({ job, onClick }: JobListItemProps) {
       type="button"
       className="job-list-item"
       onClick={() => onClick(job.id)}
-      aria-label={`Job ${formatJobNumber(job.jobNumber, job.id)}: ${job.title}`}
+      aria-label={`${t.jobRowAriaPrefix} ${formatJobNumber(job.jobNumber, job.id)}: ${job.title}`}
       style={{
         display: 'flex',
         flexDirection: 'column',

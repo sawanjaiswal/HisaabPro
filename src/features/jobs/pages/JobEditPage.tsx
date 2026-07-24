@@ -10,10 +10,12 @@ import { useUpdateJob } from '../hooks/useUpdateJob'
 import { JobForm } from '../components/JobForm'
 import { JOB_ROUTES } from '../jobs.constants'
 import type { CreateJobInput } from '../api/jobs.api.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 function EditSkeleton() {
+  const { t } = useLanguage()
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', padding: 'var(--space-4)' }} aria-busy="true" aria-label="Loading job">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', padding: 'var(--space-4)' }} aria-busy="true" aria-label={t.jobLoadingOne}>
       {[200, 120, 80, 300].map((w, i) => (
         <div key={i} className="skeleton" style={{ height: 44, borderRadius: 8, width: `${w}px`, maxWidth: '100%' }} aria-hidden="true" />
       ))}
@@ -22,6 +24,7 @@ function EditSkeleton() {
 }
 
 export default function JobEditPage() {
+  const { t } = useLanguage()
   const { id = '' } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { data: job, status, refetch } = useJob(id)
@@ -35,13 +38,13 @@ export default function JobEditPage() {
     )
   }
 
-  if (status === 'pending') return <AppShell><Header title="Edit Job" /><EditSkeleton /></AppShell>
+  if (status === 'pending') return <AppShell><Header title={t.jobEditTitle} /><EditSkeleton /></AppShell>
   if (status === 'error' || !job) {
     return (
       <AppShell>
-        <Header title="Edit Job" />
+        <Header title={t.jobEditTitle} />
         <PageContainer>
-          <ErrorState title="Could not load job" message="Check your connection and try again" onRetry={refetch} />
+          <ErrorState title={t.couldNotLoadJob} message={t.jobsCheckConnection} onRetry={refetch} />
         </PageContainer>
       </AppShell>
     )
@@ -49,13 +52,13 @@ export default function JobEditPage() {
 
   return (
     <AppShell>
-      <Header title="Edit Job" />
+      <Header title={t.jobEditTitle} />
       <PageContainer>
         <JobForm
           initialData={job}
           onSubmit={handleSubmit}
           isSubmitting={isPending}
-          submitLabel="Save Changes"
+          submitLabel={t.jobSaveChanges}
         />
       </PageContainer>
     </AppShell>

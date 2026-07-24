@@ -1,8 +1,11 @@
 /** JobsListSkeleton — loading UI state */
 
+import { useLanguage } from '@/hooks/useLanguage'
+
 export function JobsListSkeleton() {
+  const { t } = useLanguage()
   return (
-    <div aria-label="Loading jobs" aria-busy="true" style={{ display: 'flex', flexDirection: 'column' }}>
+    <div aria-label={t.jobsLoading} aria-busy="true" style={{ display: 'flex', flexDirection: 'column' }}>
       {Array.from({ length: 5 }).map((_, i) => (
         <div
           key={i}

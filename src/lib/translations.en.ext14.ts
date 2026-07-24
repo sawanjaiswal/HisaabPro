@@ -70,4 +70,20 @@ export const enExt14 = {
   // ── Job list item ─────────────────────────────────────────────────────────
   couldNotLoadJob:         'Could not load job',
   jobLoadRetryHint:        'Check your connection and try again',
+
+  // ── Jobs list / detail i18n sweep ────────────────────────────────────────
+  jobCreateAriaLabel:      'Create new job',
+  jobCreateFirstAria:      'Create first job',
+  jobRowAriaPrefix:        'Job',
+  jobStatusLabel:          'Status',
+  jobNoItems:              'No items on this job.',
+  jobItemsTableAria:       'Job items',
+  jobColDescription:       'Description',
+  jobColQty:               'Qty',
+  jobColRate:              'Rate',
+  jobColTotal:             'Total',
+  jobLoadingOne:           'Loading job',
+  jobsLoading:             'Loading jobs',
+  jobsLoadError:           'Could not load jobs',
+  jobConvertAria:          'Convert job to invoice',
 }

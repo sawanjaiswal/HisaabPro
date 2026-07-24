@@ -70,4 +70,20 @@ export const hiExt14 = {
   // ── Job list item ─────────────────────────────────────────────────────────
   couldNotLoadJob:         'कार्य लोड नहीं हो सका',
   jobLoadRetryHint:        'अपना कनेक्शन जांचें और पुनः प्रयास करें',
+
+  // ── Jobs list / detail i18n sweep ────────────────────────────────────────
+  jobCreateAriaLabel:      'नया कार्य बनाएं',
+  jobCreateFirstAria:      'पहला कार्य बनाएं',
+  jobRowAriaPrefix:        'कार्य',
+  jobStatusLabel:          'स्थिति',
+  jobNoItems:              'इस कार्य पर कोई आइटम नहीं।',
+  jobItemsTableAria:       'कार्य आइटम',
+  jobColDescription:       'विवरण',
+  jobColQty:               'मात्रा',
+  jobColRate:              'दर',
+  jobColTotal:             'कुल',
+  jobLoadingOne:           'कार्य लोड हो रहा है',
+  jobsLoading:             'कार्य लोड हो रहे हैं',
+  jobsLoadError:           'कार्य लोड नहीं हो सके',
+  jobConvertAria:          'कार्य को चालान में बदलें',
 }

@@ -2,15 +2,7 @@
 
 import type { JobStatus } from '../jobs.types'
 import { STATUS_COLOUR } from '../jobs.constants'
-
-const STATUS_LABELS: Record<JobStatus, string> = {
-  QUOTED:      'Quoted',
-  SCHEDULED:   'Scheduled',
-  IN_PROGRESS: 'In Progress',
-  COMPLETED:   'Completed',
-  INVOICED:    'Invoiced',
-  CANCELLED:   'Cancelled',
-}
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface JobStatusPillProps {
   status: JobStatus
@@ -18,6 +10,15 @@ interface JobStatusPillProps {
 }
 
 export function JobStatusPill({ status, size = 'sm' }: JobStatusPillProps) {
+  const { t } = useLanguage()
+  const STATUS_LABELS: Record<JobStatus, string> = {
+    QUOTED:      t.jobStatusQuoted,
+    SCHEDULED:   t.jobStatusScheduled,
+    IN_PROGRESS: t.jobStatusInProgress,
+    COMPLETED:   t.jobStatusCompleted,
+    INVOICED:    t.jobStatusInvoiced,
+    CANCELLED:   t.jobStatusCancelled,
+  }
   const colours = STATUS_COLOUR[status]
   const fontSize = size === 'md' ? 'var(--fs-sm)' : 'var(--fs-xs)'
   const padding  = size === 'md' ? '4px 10px' : '2px 8px'
@@ -35,7 +36,7 @@ export function JobStatusPill({ status, size = 'sm' }: JobStatusPillProps) {
         color: colours.text,
         whiteSpace: 'nowrap',
       }}
-      aria-label={`Status: ${STATUS_LABELS[status]}`}
+      aria-label={`${t.jobStatusLabel}: ${STATUS_LABELS[status]}`}
     >
       {STATUS_LABELS[status]}
     </span>

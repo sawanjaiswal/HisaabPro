@@ -2,16 +2,18 @@
 
 import { formatPaise, hourlyLineLabel } from '../jobs.utils'
 import type { JobItem } from '../jobs.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface JobItemsListProps {
   items: JobItem[]
 }
 
 export function JobItemsList({ items }: JobItemsListProps) {
+  const { t } = useLanguage()
   if (items.length === 0) {
     return (
       <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--fs-sm)' }}>
-        No items on this job.
+        {t.jobNoItems}
       </p>
     )
   }
@@ -20,14 +22,14 @@ export function JobItemsList({ items }: JobItemsListProps) {
     <div style={{ overflowX: 'auto' }}>
       <table
         style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--fs-sm)' }}
-        aria-label="Job items"
+        aria-label={t.jobItemsTableAria}
       >
         <thead>
           <tr style={{ borderBottom: '2px solid var(--color-border)' }}>
-            <th style={{ textAlign: 'left', padding: 'var(--space-2)', color: 'var(--color-text-secondary)', fontWeight: 600 }}>Description</th>
-            <th style={{ textAlign: 'right', padding: 'var(--space-2)', color: 'var(--color-text-secondary)', fontWeight: 600 }}>Qty</th>
-            <th style={{ textAlign: 'right', padding: 'var(--space-2)', color: 'var(--color-text-secondary)', fontWeight: 600 }}>Rate</th>
-            <th style={{ textAlign: 'right', padding: 'var(--space-2)', color: 'var(--color-text-secondary)', fontWeight: 600 }}>Total</th>
+            <th style={{ textAlign: 'left', padding: 'var(--space-2)', color: 'var(--color-text-secondary)', fontWeight: 600 }}>{t.jobColDescription}</th>
+            <th style={{ textAlign: 'right', padding: 'var(--space-2)', color: 'var(--color-text-secondary)', fontWeight: 600 }}>{t.jobColQty}</th>
+            <th style={{ textAlign: 'right', padding: 'var(--space-2)', color: 'var(--color-text-secondary)', fontWeight: 600 }}>{t.jobColRate}</th>
+            <th style={{ textAlign: 'right', padding: 'var(--space-2)', color: 'var(--color-text-secondary)', fontWeight: 600 }}>{t.jobColTotal}</th>
           </tr>
         </thead>
         <tbody>

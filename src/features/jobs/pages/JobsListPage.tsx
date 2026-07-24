@@ -14,21 +14,22 @@ import { JobsEmptyState } from '../components/JobsEmptyState'
 import { JobsErrorState } from '../components/JobsErrorState'
 import { JOB_STATUSES, JOB_ROUTES } from '../jobs.constants'
 import type { JobStatus } from '../jobs.types'
+import { useLanguage } from '@/hooks/useLanguage'
 
 const ALL = 'ALL' as const
 type Filter = JobStatus | typeof ALL
 
-const PILL_LABELS: Record<Filter, string> = {
-  ALL: 'All',
-  QUOTED: 'Quoted',
-  SCHEDULED: 'Scheduled',
-  IN_PROGRESS: 'In Progress',
-  COMPLETED: 'Completed',
-  INVOICED: 'Invoiced',
-  CANCELLED: 'Cancelled',
-}
-
 export default function JobsListPage() {
+  const { t } = useLanguage()
+  const PILL_LABELS: Record<Filter, string> = {
+    ALL: t.jobStatusAll,
+    QUOTED: t.jobStatusQuoted,
+    SCHEDULED: t.jobStatusScheduled,
+    IN_PROGRESS: t.jobStatusInProgress,
+    COMPLETED: t.jobStatusCompleted,
+    INVOICED: t.jobStatusInvoiced,
+    CANCELLED: t.jobStatusCancelled,
+  }
   const navigate = useNavigate()
   const [activeFilter, setActiveFilter] = useState<Filter>(ALL)
 
@@ -42,13 +43,13 @@ export default function JobsListPage() {
 
   return (
     <AppShell>
-      <Header title="Jobs" />
+      <Header title={t.jobsTitle} />
 
       <PageContainer>
         {/* Status filter pills */}
         <div
           role="group"
-          aria-label="Filter jobs by status"
+          aria-label={t.jobFilterAriaLabel}
           style={{
             display: 'flex',
             gap: 'var(--space-2)',
@@ -90,7 +91,7 @@ export default function JobsListPage() {
         )}
 
         {status === 'success' && allItems.length > 0 && (
-          <div role="list" aria-label="Jobs" style={{ display: 'flex', flexDirection: 'column' }}>
+          <div role="list" aria-label={t.jobsListAriaLabel} style={{ display: 'flex', flexDirection: 'column' }}>
             {allItems.map((job) => (
               <div key={job.id} role="listitem">
                 <JobListItem job={job} onClick={(id) => navigate(JOB_ROUTES.DETAIL(id))} />
@@ -107,7 +108,7 @@ export default function JobsListPage() {
             disabled={isFetchingNextPage}
             style={{ width: '100%', marginTop: 'var(--space-3)', minHeight: 44 }}
           >
-            {isFetchingNextPage ? 'Loading...' : 'Load more'}
+            {isFetchingNextPage ? t.jobLoadingMore : t.jobLoadMore}
           </Button>
         )}
       </PageContainer>
@@ -117,7 +118,7 @@ export default function JobsListPage() {
         type="button"
         className="fab"
         onClick={goToNew}
-        aria-label="Create new job"
+        aria-label={t.jobCreateAriaLabel}
       >
         <Plus size={24} aria-hidden="true" />
       </Button>

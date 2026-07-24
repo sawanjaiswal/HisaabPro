@@ -1,16 +1,18 @@
 /** JobsErrorState — error UI state with retry */
 
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface JobsErrorStateProps {
   onRetry: () => void
 }
 
 export function JobsErrorState({ onRetry }: JobsErrorStateProps) {
+  const { t } = useLanguage()
   return (
     <ErrorState
-      title="Could not load jobs"
-      message="Check your connection and try again"
+      title={t.jobsLoadError}
+      message={t.jobsCheckConnection}
       onRetry={onRetry}
     />
   )

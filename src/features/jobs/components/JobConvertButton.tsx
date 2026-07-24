@@ -3,6 +3,7 @@
 import { FileText } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useConvertJobToInvoice } from '../hooks/useConvertJobToInvoice'
+import { useLanguage } from '@/hooks/useLanguage'
 
 interface JobConvertButtonProps {
   jobId: string
@@ -11,6 +12,7 @@ interface JobConvertButtonProps {
 }
 
 export function JobConvertButton({ jobId, jobTitle, isOnline }: JobConvertButtonProps) {
+  const { t } = useLanguage()
   const { mutate, isPending } = useConvertJobToInvoice()
 
   const handleClick = () => {
@@ -24,12 +26,12 @@ export function JobConvertButton({ jobId, jobTitle, isOnline }: JobConvertButton
       variant="primary" size="md"
       onClick={handleClick}
       disabled={isPending || !isOnline}
-      title={!isOnline ? 'Connect to internet to create invoice' : undefined}
-      aria-label="Convert job to invoice"
+      title={!isOnline ? t.jobConvertOffline : undefined}
+      aria-label={t.jobConvertAria}
       style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', minHeight: 44 }}
     >
       <FileText size={16} aria-hidden="true" />
-      {isPending ? 'Creating invoice...' : 'Create Invoice'}
+      {isPending ? t.jobConverting : t.jobConvertToInvoice}
     </Button>
   )
 }
