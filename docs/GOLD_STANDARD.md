@@ -139,10 +139,10 @@ rollout is the only structural item left.**
 with a dedicated test (`__tests__/switch-business-limiter.test.ts`). G9 met.
 
 #### P1.2 · UI-state coverage — 109 of 190 pages incomplete
-- **Evidence (`scripts/scan-ui-states.mjs`, 2026-07-24):** total=195, gold=78,
-  gaps=117. Remaining i18n gaps by area: **jobs (2), cash-register (1)** in-app,
+- **Evidence (`scripts/scan-ui-states.mjs`, 2026-07-24):** total=195, gold=79,
+  gaps=116. Remaining i18n gap by area: **cash-register (1)** in-app,
   plus static `pages`/`landing`/`storefront` (marketing, English-only by design).
-  Auth + BOM + production-runs + custom-orders closed this pass. **Correction:**
+  Auth + BOM + production-runs + custom-orders + jobs closed this pass. **Correction:**
   an earlier note here claimed i18n hit 0 — that was premature; the scanner
   surfaced feature areas the 2026-07-21 audit never listed.
 - **⚠️ The 2026-07-21 offender ranking was stale.** Re-measuring each area before
@@ -169,12 +169,20 @@ with a dedicated test (`__tests__/switch-business-limiter.test.ts`). G9 met.
      status-transition buttons, convert-to-invoice, and the 4 UI states.
      Status/method/button label maps moved from module scope into components so
      they resolve against `t`. scan-ui-states: custom-orders i18n 4 → 0.
-  5. **Onboarding, marketing, POS** — re-measured 2026-07-24 as **already i18n'd**
+  5. **Jobs** (9 files: 2 pages + 7 components) — ✅ **i18n DONE 2026-07-24**
+     (commit `21734672`). 5 jobs files were already `t.*`; the remaining
+     list page, edit page, status pill, list item, items table, convert button,
+     and 3 UI-state components had hardcoded English. Reused the existing rich
+     `job*` namespace in `translations.*.ext14.ts`; added 14 genuinely-missing
+     keys (column headers, FAB/row/status arias, loading/error titles). Status
+     pill + list-page filter label maps moved into components. scan-ui-states:
+     jobs i18n 2 → 0.
+  6. **Onboarding, marketing, POS** — re-measured 2026-07-24 as **already i18n'd**
      (the audit's claim was wrong). No work needed; PageContainer/responsive gaps,
      where they exist, are tracked under the Wave-B responsive sweep, not here.
 - **Fix:** per-page, against `PAGE_AUDIT_CHECKLIST.md` A→N.
-- **Status:** i18n sub-sweep nearly closed. Remaining in-app: **jobs (2 pages),
-  cash-register (1 page)** — next batches. Static marketing pages
+- **Status:** i18n sub-sweep all but closed. Remaining in-app: **cash-register
+  (1 page)** — the final batch. Static marketing pages
   (`pages`/`landing`/`storefront`) are English-only by design and out of scope.
 
 #### P1.3 · Offline queue replay — ✅ **DONE** (client + server, 2026-07-23)
