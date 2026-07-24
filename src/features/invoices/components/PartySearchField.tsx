@@ -1,10 +1,10 @@
-/** Search input field for party lookup — icon, input, clear/chevron controls */
+/** Search input field for party lookup — thin wrapper over the global
+ *  <SearchInput> primitive with the invoice-specific placeholder / a11y. */
 
 import React from 'react'
-import { Search, X, ChevronDown } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
-import { Input } from '@/components/ui/Input'
-import { Button } from '@/components/ui/Button'
+import { SearchInput } from '@/components/ui/SearchInput'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -31,45 +31,20 @@ export const PartySearchField: React.FC<PartySearchFieldProps> = ({
 }) => {
   const { t } = useLanguage()
   return (
-    <div className="party-search-input-wrap">
-      <Search
-        className="party-search-icon"
-        size={16}
-        aria-hidden="true"
-      />
-      <Input
-        id="party-search-input"
-        ref={inputRef}
-        type="text"
-        className="input party-search-field"
-        placeholder={t.searchPartyNamePhone}
-        value={query}
-        onChange={onQueryChange}
-        onFocus={onFocus}
-        onKeyDown={onKeyDown}
-        autoComplete="off"
-        aria-label={t.searchCustomerSupplier}
-        aria-expanded={showDropdown}
-        aria-haspopup="listbox"
-        aria-autocomplete="list"
-      />
-      {query.length > 0 && (
-        <Button variant="none"
-          type="button"
-          className="party-search-clear"
-          onClick={onClear}
-          aria-label={t.clearSearch}
-        >
-          <X size={14} aria-hidden="true" />
-        </Button>
-      )}
-      {query.length === 0 && (
-        <ChevronDown
-          className="party-search-chevron"
-          size={14}
-          aria-hidden="true"
-        />
-      )}
-    </div>
+    <SearchInput
+      id="party-search-input"
+      inputRef={inputRef}
+      value={query}
+      onChange={onQueryChange}
+      onFocus={onFocus}
+      onKeyDown={onKeyDown}
+      onClear={onClear}
+      placeholder={t.searchPartyNamePhone}
+      ariaLabel={t.searchCustomerSupplier}
+      ariaExpanded={showDropdown}
+      ariaHasPopup="listbox"
+      ariaAutocomplete="list"
+      trailingWhenEmpty={<ChevronDown size={14} aria-hidden="true" />}
+    />
   )
 }

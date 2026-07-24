@@ -7,11 +7,14 @@ import { getParties } from '@/lib/services/party.service'
 import type { PartySummary } from '@/lib/types/party.types'
 import { PartySearchField } from './PartySearchField'
 import { PartySearchDropdown } from './PartySearchDropdown'
+import { useInstantAddParty } from './useInstantAddParty'
 import { Button } from '@/components/ui/Button'
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const SEARCH_LIMIT = 5
+const SEARCH_LIMIT = 8
+/** Recent parties shown the moment the field is focused (before any typing). */
+const RECENT_LIMIT = 8
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -20,6 +23,9 @@ interface PartySearchInputProps {
   value: string
   onChange: (id: string, name: string) => void
   error?: string
+  /** Hide the built-in field label — set when a parent FormSection already
+   *  supplies the heading (invoice form), so the label isn't shown twice. */
+  showLabel?: boolean
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -28,6 +34,7 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
   value,
   onChange,
   error,
+  showLabel = true,
 }) => {
   const { t } = useLanguage()
   const [query, setQuery] = useState('')
@@ -46,10 +53,6 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
 
   useEffect(() => {
     if (!isOpen) return
-    if (debouncedQuery.trim().length === 0) {
-      setResults([])
-      return
-    }
 
     // Abort any in-flight request
     abortRef.current?.abort()
@@ -59,8 +62,13 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
     setIsLoading(true)
     setFetchError(false)
 
+    // Empty query → show the most recent parties immediately (no typing needed);
+    // otherwise search by the debounced query.
+    const trimmed = debouncedQuery.trim()
     getParties(
-      { search: debouncedQuery.trim(), limit: SEARCH_LIMIT },
+      trimmed.length > 0
+        ? { search: trimmed, limit: SEARCH_LIMIT }
+        : { limit: RECENT_LIMIT },
       controller.signal,
     )
       .then((res) => {
@@ -119,6 +127,22 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
     [onChange],
   )
 
+  const { isCreating, addParty } = useInstantAddParty({
+    onCreated: (id, name) => {
+      setSelectedName(name)
+      setQuery('')
+      setResults([])
+      setIsOpen(false)
+      onChange(id, name)
+    },
+    onError: () => setFetchError(true),
+  })
+
+  const handleAddNew = useCallback(() => {
+    setFetchError(false)
+    void addParty(query)
+  }, [addParty, query])
+
   const handleClear = useCallback(() => {
     setSelectedName('')
     setQuery('')
@@ -158,9 +182,11 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
 
   return (
     <div className="party-search" ref={containerRef}>
-      <label className="label" htmlFor="party-search-input">
-        {t.customerSupplierLabel}
-      </label>
+      {showLabel && (
+        <label className="label" htmlFor="party-search-input">
+          {t.customerSupplierLabel}
+        </label>
+      )}
 
       {isSelected ? (
         <div className="party-selector-selected" role="status" aria-label={`Selected: ${selectedName}`}>
@@ -193,8 +219,10 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
           results={results}
           isLoading={isLoading}
           fetchError={fetchError}
+          isCreating={isCreating}
           debouncedQuery={debouncedQuery}
           onSelect={handleSelect}
+          onAddNew={handleAddNew}
         />
       )}
 

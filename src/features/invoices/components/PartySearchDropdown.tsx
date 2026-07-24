@@ -1,6 +1,7 @@
 /** Dropdown list for party search results — loading, error, empty, hint, and result states */
 
 import React from 'react'
+import { Plus } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PartySummary, PartyType } from '@/lib/types/party.types'
 
@@ -10,8 +11,12 @@ interface PartySearchDropdownProps {
   results: PartySummary[]
   isLoading: boolean
   fetchError: boolean
+  /** True while the inline "Add new party" create is in flight. */
+  isCreating: boolean
   debouncedQuery: string
   onSelect: (party: PartySummary) => void
+  /** Create a party named after the current query and select it, instantly. */
+  onAddNew: () => void
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -20,8 +25,10 @@ export const PartySearchDropdown: React.FC<PartySearchDropdownProps> = ({
   results,
   isLoading,
   fetchError,
+  isCreating,
   debouncedQuery,
   onSelect,
+  onAddNew,
 }) => {
   const { t } = useLanguage()
   const PARTY_TYPE_LABELS: Record<PartyType, string> = {
@@ -59,7 +66,14 @@ export const PartySearchDropdown: React.FC<PartySearchDropdownProps> = ({
         </li>
       )}
 
-      {!isLoading && !fetchError && trimmedQuery.length === 0 && (
+      {/* Recent parties surface on focus, before any typing. */}
+      {!isLoading && !fetchError && trimmedQuery.length === 0 && results.length > 0 && (
+        <li className="party-search-section-label" aria-hidden="true">
+          {t.recentParties}
+        </li>
+      )}
+
+      {!isLoading && !fetchError && trimmedQuery.length === 0 && results.length === 0 && (
         <li className="party-search-status party-search-hint">
           {t.typeToSearchParties}
         </li>
@@ -88,6 +102,30 @@ export const PartySearchDropdown: React.FC<PartySearchDropdownProps> = ({
           </div>
         </li>
       ))}
+
+      {/* Instant "Add new party" — creates a party named after the query and
+          selects it without leaving the invoice. Shown whenever the user has
+          typed something that isn't an exact existing match. */}
+      {!isLoading && !fetchError && trimmedQuery.length > 0 && (
+        <li
+          className="party-search-add-new"
+          role="option"
+          aria-selected={false}
+          aria-busy={isCreating}
+          tabIndex={0}
+          onClick={onAddNew}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') onAddNew()
+          }}
+        >
+          <span className="party-search-add-icon" aria-hidden="true">
+            {isCreating ? <span className="party-search-spinner" /> : <Plus size={16} />}
+          </span>
+          <span className="party-search-add-label">
+            {isCreating ? t.creatingParty : <>{t.addParty} &ldquo;{trimmedQuery}&rdquo;</>}
+          </span>
+        </li>
+      )}
     </ul>
   )
 }

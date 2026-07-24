@@ -1,0 +1,52 @@
+/* ============================================================
+ * search-input.css — global SearchInput primitive
+ * Leading search icon + input + trailing clear/adornment.
+ * Built on `.input`; owns only the icon/padding/trailing layout.
+ * ============================================================ */
+
+.search-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.search-input-icon {
+  position: absolute;
+  left: var(--space-3);
+  color: var(--color-gray-400);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+/* Scoped + :focus variant so the icon padding survives the base
+   `.input:focus` padding shorthand (otherwise text slides under the icon). */
+.search-input .search-input-field,
+.search-input .search-input-field:focus {
+  padding-left: calc(var(--space-3) + 16px + var(--space-2));
+  padding-right: calc(var(--space-3) + 16px + var(--space-2));
+  width: 100%;
+}
+
+.search-input-trailing {
+  position: absolute;
+  right: var(--space-3);
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-gray-400);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+}
+
+.search-input-trailing:hover {
+  color: var(--color-gray-600);
+}
+
+.search-input-trailing--static {
+  pointer-events: none;
+}

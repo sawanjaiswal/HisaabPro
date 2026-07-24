@@ -533,6 +533,7 @@ export const hi = {
   searchParties:             'पार्टियाँ खोजें',
   searchByNamePhoneGstin:    'नाम, फ़ोन या GSTIN से खोजें...',
   recentParties:             'हाल की पार्टियाँ',
+  creatingParty:             'पार्टी जोड़ी जा रही है…',
   sortLabel:                 'क्रमबद्ध करें',
   totalOutstandingLabel:     'कुल बकाया',
   runningBalance:            'चालू बकाया',

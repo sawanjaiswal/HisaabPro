@@ -103,7 +103,7 @@ export function InvoiceItemsSection({
   return (
     <div className="line-items-section py-0 space-y-6">
       <FormSection title={t.customer}>
-        <PartySearchInput value={partyId} onChange={onPartyChange} error={errors.partyId} />
+        <PartySearchInput value={partyId} onChange={onPartyChange} error={errors.partyId} showLabel={false} />
 
         {partyId && (
           <PriceListOverrideSelector

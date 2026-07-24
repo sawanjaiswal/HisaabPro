@@ -72,7 +72,10 @@
   flex-shrink: 0;
 }
 
-.party-search-field {
+/* Scoped + :focus variant so the icon padding survives the base
+   `.input:focus` padding shorthand (otherwise text slides under the icon). */
+.party-search-input-wrap .party-search-field,
+.party-search-input-wrap .party-search-field:focus {
   padding-left: calc(var(--space-3) + 16px + var(--space-2));
   padding-right: calc(var(--space-3) + 16px + var(--space-2));
   width: 100%;
@@ -195,6 +198,52 @@
 .party-search-type-badge--both {
   background: var(--color-info-50);
   color: var(--color-info-700);
+}
+
+/* Section label above the recent-parties list (shown on focus) */
+.party-search-section-label {
+  padding: var(--space-2) var(--space-4) var(--space-1);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-gray-400);
+}
+
+/* Instant "Add new party" action row */
+.party-search-add-new {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  min-height: 44px;
+  cursor: pointer;
+  border-top: 1px solid var(--color-gray-100);
+  color: var(--color-primary-600);
+  font-size: var(--fs-df);
+  font-weight: 600;
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+.party-search-add-new:hover,
+.party-search-add-new:focus {
+  background: var(--color-primary-50);
+  outline: none;
+}
+
+.party-search-add-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-primary-600);
+}
+
+.party-search-add-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Loading spinner (CSS-only) */

@@ -533,6 +533,7 @@ export const en = {
   searchParties:             'Search parties',
   searchByNamePhoneGstin:    'Search by name, phone or GSTIN...',
   recentParties:             'Recent Parties',
+  creatingParty:             'Adding party…',
   sortLabel:                 'Sort',
   totalOutstandingLabel:     'Total Outstanding',
   runningBalance:            'Running Balance',
