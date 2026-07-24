@@ -45,7 +45,13 @@ not sub-legible type.
 
 ## 2. Reconciled deltas (ranked)
 
-### D1 — Financial summary: enrich, keep calm **(P1)**
+### D1 — Financial summary: enrich, keep calm **(P1)** — ✅ SHIPPED (252177d7)
+Built as `PartyFinancialSummary` (replaced `PartySummaryTiles`): Outstanding
+headline + Credit limit / Available credit (only when a limit is set, over-limit
+toned) / Customer-since / Last payment as calm meta rows. `creditLimit` (already
+on the wire) is now typed on `PartyDetail`; `avgPaymentTime` still deferred.
+
+
 Spec wants ONE Mercury/Stripe-calm card with Outstanding + Credit Limit +
 Available Credit + Customer-since (or Last Payment / Avg Payment Time).
 Current `PartySummaryTiles` = 3 tiles (Outstanding / Open Invoices / Last Payment).
