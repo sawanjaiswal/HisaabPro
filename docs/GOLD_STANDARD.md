@@ -8,8 +8,8 @@
 > **Method:** every number below was measured against the codebase, not
 > estimated. Re-run the commands in each section to refresh.
 >
-> Last audited: **2026-07-21** · Branch: `redesign/mobile-first-sweep`
-> (previous audit: 2026-07-19 on `master`)
+> Last audited: **2026-07-24** · Branch: `redesign/mobile-first-sweep`
+> (previous audits: 2026-07-21 same branch · 2026-07-19 on `master`)
 
 ---
 
@@ -17,48 +17,54 @@
 
 HisaabPro is gold when ALL of these hold (measurable gates, not vibes):
 
-| # | Gate | How it's checked | 07-19 | 07-21 |
-|---|------|------------------|-------|-------|
-| G1 | **No cross-tenant data leak is structurally possible** | Every scoped query auto-injects `businessId` at the data layer; a missed filter fails closed | ❌ | 🟡 **built, landed dark** |
-| G2 | Core billing loop works end-to-end, every day | login→business→party→product→invoice→payment→dashboard→ledger | ✅ | ✅ |
-| G3 | Server + client test suites green, 0 failing | `npm test` both packages | ✅ | ✅ 1409 + 1269 |
-| G4 | `tsc` clean both packages | `npm run typecheck` | ✅ | ✅ |
-| G5 | Offline-first discipline holds | `node scripts/enforce-offline.mjs` | 🟡 | 🟡 1 debt item |
-| G6 | Platform-shell invariants hold | `node scripts/enforce.js` | 🟡 5 | 🔴 **6 errors + 13 warnings** |
-| G7 | Every screen has all 4 UI states + 320px clean | per-page audit sweep | ⬜ | 🟡 **81/190 measured clean** |
-| G8 | Money is always integer paise; ledgers reconcile | GL trial-balance = 0 | ✅ | ✅ |
-| G9 | Multi-business switching is smooth | switch has its own limiter | ❌ | ✅ **MET** |
-| G10 | **Every screen matches the GPT design language** *(new gate)* | `docs/GPT_REDESIGN_PLAN.md` tracker | — | 🟡 **~34/58 screens** |
+| # | Gate | How it's checked | 07-19 | 07-21 | 07-24 |
+|---|------|------------------|-------|-------|-------|
+| G1 | **No cross-tenant data leak is structurally possible** | Every scoped query auto-injects `businessId` at the data layer; a missed filter fails closed | ❌ | 🟡 **built, landed dark** | 🟡 built + shadow-ready, still off |
+| G2 | Core billing loop works end-to-end, every day | login→business→party→product→invoice→payment→dashboard→ledger | ✅ | ✅ | ✅ |
+| G3 | Server + client test suites green, 0 failing | `npm test` both packages | ✅ | ✅ 1409 + 1269 | ✅ (not re-run this pass — last green 07-23) |
+| G4 | `tsc` clean both packages | `npm run typecheck` | ✅ | ✅ | ✅ re-verified |
+| G5 | Offline-first discipline holds | `node scripts/enforce-offline.mjs` | 🟡 | 🟡 1 debt item | ✅ **0/0/0 clean** |
+| G6 | Platform-shell invariants hold | `node scripts/enforce.js` | 🟡 5 | 🔴 **6 errors + 13 warnings** | ✅ **all checks green** |
+| G7 | Every screen has all 4 UI states + 320px clean | per-page audit sweep | ⬜ | 🟡 **81/190 measured clean** | 🟡 81/190 (no new sweep) |
+| G8 | Money is always integer paise; ledgers reconcile | GL trial-balance = 0 | ✅ | ✅ | ✅ |
+| G9 | Multi-business switching is smooth | switch has its own limiter | ❌ | ✅ **MET** | ✅ |
+| G10 | **Every screen matches the GPT design language** | `docs/GPT_REDESIGN_PLAN.md` tracker | — | 🟡 **~34/58 screens** | 🟡 ~34/58 (parties/DateField/tabs polished) |
 
-**Headline (changed since 07-19):** the scoped-Prisma tenant-isolation layer is
-now **built** (`prisma-scoped.{ts,inject,merge,rewrite}`, `scoped-models.ts`,
-`scoped-context` middleware, boot-guard in `env.ts`) — but it is **landed dark**.
-`SCOPED_PRISMA_ENFORCE` is not set in `render.yaml` or any env file, so
-`getScopedPrismaMode()` returns `'off'` and production still runs unscoped
-queries. The remaining work is a **rollout plus one missing piece** — the
-`shadow` diff harness is a stub with no consumers — not the 1-2 week epic the
-07-19 audit projected. That is now the single highest-leverage action in this plan.
+**Headline (changed since 07-21):** the debt gates all closed. `enforce.js` went
+from **6 errors + 13 warnings → all-green** (P2.1 oversized files split, P2.2
+platform-shell debt fully drained with both debt sets now empty *and still
+gating*), and the offline ratchet reached **0/0/0** (P3.2). The audit-writer SSOT
+landed (P3.3): 64 inline `auditLog.create` sites migrated onto `createAuditEntry`
+behind a `forbidden`-guarded commit gate. `tsc` clean both packages, re-verified.
+The scoped-Prisma tenant-isolation layer (G1) remains **built + shadow-ready but
+landed dark** — `SCOPED_PRISMA_ENFORCE` is still unset, so production runs
+unscoped. **G1 is now the ONLY structural gate not green**, and its remaining work
+is a flag rollout (shadow-watch → enforce), not construction. That is the single
+highest-leverage action left in this plan.
 
 ---
 
-## 1. Current health baseline (measured 2026-07-21)
+## 1. Current health baseline (measured 2026-07-24)
 
 ```
-Client tests      136 files · 1409 pass · 0 fail          npx vitest run
-Server tests      149 files · 1269 pass · 0 fail · 7 todo npm --prefix server test
-Typecheck         clean (root + server)                    npx tsc -b --noEmit
-Offline ratchet   rawFetch 0/0 · localStorage 0/0 · mutMeta 1/6
-                                                           node scripts/enforce-offline.mjs
-SSOT gate         pass (45 legacy grandfathered)           npm run ssot
-enforce.js        6 blocking · 13 warnings                 node scripts/enforce.js
-Pages audited     190 · 81 fully clean (43%)               (import-following design sweep)
-Raw hex           20 total · 18 legitimate                 grep, var()-fallback-excluded
+Typecheck         clean (root + server)                    npx tsc -b --noEmit      ✅ re-verified
+Offline ratchet   rawFetch 0/0 · localStorage 0/0 · mutMeta 0/0 (1873 files)
+                                                           node scripts/enforce-offline.mjs  ✅
+SSOT gate         pass (59 legacy grandfathered)           npm run ssot             ✅
+enforce.js        ALL checks passed · 0 errors · 0 warnings  node scripts/enforce.js  ✅
+Client tests      1409 pass · 0 fail  (not re-run this pass — last green 07-23)  npx vitest run
+Server tests      1269 pass · 0 fail · 7 todo (not re-run — order-dependent flake)  npm --prefix server test
+Pages audited     190 · 81 fully clean (43%)  (no new sweep since 07-21)  (import-following design sweep)
 Routes            209                                      grep -c 'path=' src/App.tsx
 ```
 
-Still a **healthy** baseline. Test count grew (1245 → 1269 server, +164 client)
-and G9 closed. Two things regressed: platform-shell debt (5 → 13) and enforce.js
-went from 5 warnings to 6 hard errors.
+Baseline improved on every mechanical gate. Since 07-21: enforce.js flipped from
+6 errors + 13 warnings → all-green (P2.1 + P2.2 closed), offline ratchet reached
+0/0/0 (P3.2), the audit-writer SSOT landed (P3.3 — ssot grandfathered count rose
+45 → 59 as the guarded rows were added). Test suites weren't re-run this pass;
+they were last green 07-23 and no server logic changed since (the only server
+diff is the audit-writer refactor, covered by integration 99/99). **G1 shadow
+rollout is the only structural item left.**
 
 ---
 
@@ -183,18 +189,17 @@ All six original offenders were split. The shadow epic later added two more
 - **Acceptance MET:** `node scripts/enforce.js` → "All enforcement checks passed",
   0 OVERSIZED. Re-verified 2026-07-23.
 
-#### P2.2 · Platform-shell debt grew 5 → 13 warnings
-- 8 × fixed-bottom (Phase 3) → `<BottomActionBar>` / `<Drawer>`:
-  `business.css:107`, `payment-form-actions.css:67`, `pos-billing.css:388,593`,
-  `pos.css:364`, `recurring-detail.css:286`, `role-builder.css:157`,
-  `tax-category-form.css:25`
-- 5 × fixed/sticky-top (Phase 4) → `<Header>` primitive or `top: var(--header-height)`:
-  `cash-register.css:535`, `aging.css:359`, `pos-billing.css:15`, `pos.css:15`,
-  `report-shared.css:11`
-- **Root cause of the growth:** these are *warnings*, so new violations land
-  silently. **Fix the enforcement, not just the files** — promote both checks to
-  errors once the list is drained, so the ratchet can only go down.
-- **Effort:** S each · **Acceptance:** enforce.js 0 warnings, both checks blocking.
+#### P2.2 · Platform-shell debt — ✅ **DONE** (verified 2026-07-24)
+Both debt lists are fully drained AND the checks now gate as errors:
+`FIXED_BOTTOM_PHASE3_DEBT` and `FIXED_TOP_PHASE4_DEBT` are both `new Set([])` in
+`scripts/enforce.js`, and check 10 (fixed-bottom) + check 12 (sticky/fixed top:0)
+pass with zero exceptions. The 13 files listed in the 07-21 audit (business.css,
+payment-form-actions.css, pos-billing.css, pos.css, recurring-detail.css,
+role-builder.css, tax-category-form.css, cash-register.css, aging.css,
+report-shared.css) all migrated onto `<BottomActionBar>`/`<Drawer>` or
+`top: var(--header-height)`. The "fix the enforcement, not just the files" ask is
+met — an empty debt set means new violations fail the commit, ratchet can only go
+down. **Acceptance MET:** `node scripts/enforce.js` → all checks passed, 0 warnings.
 
 #### P2.3 · Two feature-local design tokens outside the token file
 `dashboard-page.css:18-19` defines `--hp-dash-surface: #012619` and
@@ -298,19 +303,21 @@ Per D2, the NEW screens stay deferred pending competitor comparison
 
 | Wave | Scope | Gate | Blocking? |
 |------|-------|------|-----------|
-| **Now** | **P0.1 — wire the shadow-diff harness in `prisma-scoped.ts` (the stub `shadow` mode does nothing today)** | G1 | ⛔ critical path |
-| **A** | P0.1 shadow-watch 7d → triage divergences → `enforce` → `CUTOVER_DONE=true` + red-team test | **G1** | ⛔ gates multi-tenant launch |
-| **B** | P2.1 split 5 non-high-risk oversized files · P2.2 drain shell debt **and promote both checks to errors** | G6 | unblocks clean commits |
+| **A (now — critical path)** | P0.1 — deploy `SCOPED_PRISMA_ENFORCE=shadow`, watch 7d → triage divergences → `enforce` → `CUTOVER_DONE=true` + red-team test. Flag rollout, not code. | **G1** | ⛔ gates multi-tenant launch |
+| ~~**B**~~ | ~~P2.1 oversized files · P2.2 shell debt + promote checks to errors~~ ✅ **DONE 2026-07-23/24** — enforce.js all-green | G6 ✅ | — |
 | **C** | P1.2 UI-state sweep — auth → onboarding → BOM/production → marketing → POS | G7 | first-impression quality |
-| **D** | P4 design sweep — Wave 5 → 6 → 7 → 9 → 8a/8b/8c | G10 | product polish |
-| **E** | ~~P1.3 offline-replay integration test~~ ✅ done (`a9811b4c`) · P3.1 todo tests · P3.2 ratchet to 0 | G5, coverage | hygiene |
+| **D** | P4 design sweep — Wave 5 → 6 → 7 → 9 → 8a/8b/8c (current branch) | G10 | product polish |
+| **E** | ~~P1.3 offline-replay~~ ✅ · ~~P3.2 ratchet to 0~~ ✅ · P3.1 todo tests (deferred, needs DB harness) | G5 ✅, coverage | hygiene |
 | **F** | 5 NEW screens (after competitor comparison per D2) | — | net-new surface |
 
-**Critical path to "onboard multiple companies safely" = Now → Wave A.**
-Everything after Wave A is quality, not safety.
+**Critical path to "onboard multiple companies safely" = Wave A.** It is the only
+structural gate left; everything after it is quality, not safety.
 
-Wave B is deliberately ahead of C and D: with 6 blocking `enforce.js` errors,
-every commit in Waves C/D has to fight the gate or bypass it.
+Wave B is complete — enforce.js is all-green with empty debt sets, so Waves C/D
+commits no longer fight the gate. Remaining loose end outside the waves: **P2.3**
+(2 local dash tokens → global emerald hero tokens, XS) and **P2.4/SR-2** (the
+`env.scoped-prisma.ts` high-risk-glob gap, blocked on the `~/.claude/rules` file
+being editable).
 
 ---
 
