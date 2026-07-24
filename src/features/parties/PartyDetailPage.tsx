@@ -18,7 +18,7 @@ import { usePartyDetail } from './usePartyDetail'
 import { deleteParty } from './party.service'
 import { reconcilePartyDeleted } from './party-cache'
 import { PartyDetailHeader } from './components/PartyDetailHeader'
-import { PartySummaryTiles } from './components/PartySummaryTiles'
+import { PartyFinancialSummary } from './components/PartyFinancialSummary'
 import { PartyOverviewTab } from './components/PartyOverviewTab'
 import { PartyAddressesTab } from './components/PartyAddressesTab'
 import { PartyCrmTab } from './components/PartyCrmTab'
@@ -129,7 +129,7 @@ export default function PartyDetailPage() {
                 {party.name} {t.detailsLoaded}
               </div>
               {/* Stat strip — Outstanding / Oldest Due / Open Invoices / Last Payment */}
-              <PartySummaryTiles party={party} />
+              <PartyFinancialSummary party={party} />
 
               {/* Advisory: hides itself when nothing is overdue */}
               {party.stats?.oldestOverdueInvoice && (

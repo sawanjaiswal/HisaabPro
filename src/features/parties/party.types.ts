@@ -86,6 +86,8 @@ export interface PartyDetail extends PartySummary {
   gstinVerified?: boolean
   gstinLegalName?: string
   gstinStatus?: string
+  /** Credit limit in paise (server-selected on the detail payload). 0 = no limit. */
+  creditLimit: number
   creditLimitMode: CreditLimitMode
   totalBusiness: number
   notes?: string
