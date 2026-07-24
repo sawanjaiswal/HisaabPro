@@ -2,12 +2,14 @@ import { Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { SEO } from '../../components/layout/SEO'
 import { useVerifyOtp } from './useVerifyOtp'
+import { useLanguage } from '@/context/LanguageContext'
 import { ROUTES } from '@/config/routes.config'
 import './LoginPage.css'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 
 export default function VerifyOtpPage() {
+  const { t } = useLanguage()
   const {
     phone, otp, loading, error, shake,
     secondsLeft, resendCooldown, resending,
@@ -19,18 +21,18 @@ export default function VerifyOtpPage() {
 
   return (
     <div className="login-page">
-      <SEO title="Verify OTP" />
+      <SEO title={t.verifyOtp} />
 
       <div className="login-page__card stagger-enter">
-        <Link to={ROUTES.REGISTER} className="auth-otp__back" aria-label="Back to registration">
+        <Link to={ROUTES.REGISTER} className="auth-otp__back" aria-label={t.backToRegistration}>
           <ArrowLeft size={20} />
-          <span>Change number</span>
+          <span>{t.changeNumber}</span>
         </Link>
 
         <div className="login-page__header">
-          <h1 className="login-page__title">Verify OTP</h1>
+          <h1 className="login-page__title">{t.verifyOtp}</h1>
           <p className="login-page__subtitle">
-            Sent to +91 {phone.slice(0, 5)}XXXXX
+            {t.sentTo} +91 {phone.slice(0, 5)}XXXXX
           </p>
         </div>
 
@@ -59,17 +61,17 @@ export default function VerifyOtpPage() {
 
           {error && <p className="auth-otp__error">{error}</p>}
 
-          {loading && <p className="auth-otp__verifying">Verifying…</p>}
+          {loading && <p className="auth-otp__verifying">{t.verifying}</p>}
 
           <div className="auth-otp__resend">
             {secondsLeft > 0 && (
               <p className="auth-otp__cooldown">
-                OTP expires in {formatTime(secondsLeft)}
+                {t.otpExpiresIn} {formatTime(secondsLeft)}
               </p>
             )}
             {resendCooldown > 0 ? (
               <p className="auth-otp__cooldown">
-                Resend in {resendCooldown}s
+                {t.resendIn} {resendCooldown}s
               </p>
             ) : (
               <Button variant="none"
@@ -78,7 +80,7 @@ export default function VerifyOtpPage() {
                 disabled={resending}
                 type="button"
               >
-                {resending ? 'Sending…' : 'Resend OTP'}
+                {resending ? t.sending : t.resendOtp}
               </Button>
             )}
           </div>
@@ -89,18 +91,10 @@ export default function VerifyOtpPage() {
             onClick={handleVerify}
             type="button"
           >
-            {loading ? 'Verifying…' : 'Verify & Create Account'}
+            {loading ? t.verifying : t.verifyAndCreate}
           </Button>
         </div>
       </div>
-
-      <style>{`
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          20%, 60% { transform: translateX(-8px); }
-          40%, 80% { transform: translateX(8px); }
-        }
-      `}</style>
     </div>
   )
 }

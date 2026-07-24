@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { SEO } from '../../components/layout/SEO'
 import { APP_NAME } from '../../config/app.config'
 import { api, ApiError } from '@/lib/api'
+import { useLanguage } from '@/context/LanguageContext'
 import { ROUTES } from '@/config/routes.config'
 import {
   type Step,
@@ -18,6 +19,7 @@ import { Button } from '@/components/ui/Button'
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const [step, setStep] = useState<Step>('phone')
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
@@ -58,7 +60,7 @@ export default function ForgotPasswordPage() {
       setSecondsLeft(OTP_TTL_SEC)
       setResendCooldown(RESEND_COOLDOWN_SEC)
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Failed to send OTP.')
+      setError(err instanceof ApiError ? err.message : t.failedSendOtp)
     } finally {
       setLoading(false)
       submittingRef.current = false
@@ -90,8 +92,8 @@ export default function ForgotPasswordPage() {
     if (submittingRef.current || loading) return
     const code = otp.join('')
     if (code.length < 6) return
-    if (newPassword !== confirmPassword) { setError('Passwords do not match.'); return }
-    if (newPassword.length < 6) { setError('Password must be at least 6 characters.'); return }
+    if (newPassword !== confirmPassword) { setError(t.passwordsNoMatch); return }
+    if (newPassword.length < 6) { setError(t.passwordMin6); return }
     submittingRef.current = true
     setError('')
     setLoading(true)
@@ -106,7 +108,7 @@ export default function ForgotPasswordPage() {
       triggerShake()
       setOtp(['', '', '', '', '', ''])
       inputRefs.current[0]?.focus()
-      setError(err instanceof ApiError ? err.message : 'Reset failed. Please try again.')
+      setError(err instanceof ApiError ? err.message : t.resetFailed)
     } finally {
       setLoading(false)
       submittingRef.current = false
@@ -127,7 +129,7 @@ export default function ForgotPasswordPage() {
       setOtp(['', '', '', '', '', ''])
       inputRefs.current[0]?.focus()
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Failed to resend OTP.')
+      setError(err instanceof ApiError ? err.message : t.failedResendOtp)
     } finally {
       setResending(false)
     }
@@ -135,23 +137,23 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="login-page">
-      <SEO title="Reset Password" />
+      <SEO title={t.resetPassword} />
       <div className="login-page__card stagger-enter">
         {step === 'phone' && (
           <>
             <div className="login-page__header">
               <h1 className="login-page__title">{APP_NAME}</h1>
-              <p className="login-page__subtitle">Reset your password</p>
+              <p className="login-page__subtitle">{t.resetYourPassword}</p>
             </div>
             <form className="login-page__form" onSubmit={(e) => { e.preventDefault(); if (phoneRegex.test(phone) && !loading) handleSendOtp() }}>
               <div className="login-page__field">
-                <label className="login-page__label" htmlFor="phone">Registered Mobile Number</label>
+                <label className="login-page__label" htmlFor="phone">{t.registeredMobile}</label>
                 <Input
                   id="phone"
                   type="tel"
                   inputMode="numeric"
                   className="login-page__input"
-                  placeholder="10-digit mobile number"
+                  placeholder={t.mobileNumberHint}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
                   autoFocus
@@ -159,10 +161,10 @@ export default function ForgotPasswordPage() {
               </div>
               {error && <p className="login-page__error">{error}</p>}
               <Button variant="none" type="submit" className="login-page__submit" disabled={!phoneRegex.test(phone) || loading}>
-                {loading ? 'Sending OTP…' : 'Send OTP'}
+                {loading ? t.sendingOtp : t.sendOtp}
               </Button>
               <p className="login-page__hint">
-                <Link to={ROUTES.LOGIN} style={{ color: 'var(--color-primary-500)' }}>Back to Sign In</Link>
+                <Link to={ROUTES.LOGIN} className="login-page__link">{t.backToSignIn}</Link>
               </p>
             </form>
           </>
@@ -170,8 +172,8 @@ export default function ForgotPasswordPage() {
         {step === 'verify' && (
           <>
             <div className="login-page__header">
-              <h1 className="login-page__title">Enter OTP</h1>
-              <p className="login-page__subtitle">Sent to {maskPhone(phone)}</p>
+              <h1 className="login-page__title">{t.enterOtp}</h1>
+              <p className="login-page__subtitle">{t.sentTo} {maskPhone(phone)}</p>
             </div>
             <div className="auth-otp">
               <div
@@ -196,19 +198,19 @@ export default function ForgotPasswordPage() {
                 ))}
               </div>
               <div className="login-page__field" style={{ marginTop: 'var(--space-2)' }}>
-                <label className="login-page__label" htmlFor="newPassword">New Password</label>
-                <Input id="newPassword" type="password" className="login-page__input" placeholder="At least 6 characters" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} autoComplete="new-password" />
+                <label className="login-page__label" htmlFor="newPassword">{t.newPasswordLabel}</label>
+                <Input id="newPassword" type="password" className="login-page__input" placeholder={t.min6CharsHint} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} autoComplete="new-password" />
               </div>
               <div className="login-page__field">
-                <label className="login-page__label" htmlFor="confirmPassword">Confirm Password</label>
-                <Input id="confirmPassword" type="password" className="login-page__input" placeholder="Repeat password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="new-password" />
+                <label className="login-page__label" htmlFor="confirmPassword">{t.confirmPassword}</label>
+                <Input id="confirmPassword" type="password" className="login-page__input" placeholder={t.repeatPasswordHint} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="new-password" />
               </div>
               {error && <p className="auth-otp__error">{error}</p>}
               <div className="auth-otp__resend">
-                {secondsLeft > 0 && <p className="auth-otp__cooldown">OTP expires in {formatTime(secondsLeft)}</p>}
+                {secondsLeft > 0 && <p className="auth-otp__cooldown">{t.otpExpiresIn} {formatTime(secondsLeft)}</p>}
                 {resendCooldown > 0
-                  ? <p className="auth-otp__cooldown">Resend in {resendCooldown}s</p>
-                  : <Button variant="none" className="auth-otp__back" onClick={handleResend} disabled={resending} type="button">{resending ? 'Sending…' : 'Resend OTP'}</Button>
+                  ? <p className="auth-otp__cooldown">{t.resendIn} {resendCooldown}s</p>
+                  : <Button variant="none" className="auth-otp__back" onClick={handleResend} disabled={resending} type="button">{resending ? t.sending : t.resendOtp}</Button>
                 }
               </div>
               <Button variant="none"
@@ -217,7 +219,7 @@ export default function ForgotPasswordPage() {
                 onClick={handleReset}
                 type="button"
               >
-                {loading ? 'Resetting…' : 'Reset Password'}
+                {loading ? t.resetting : t.resetPassword}
               </Button>
             </div>
           </>
@@ -226,22 +228,15 @@ export default function ForgotPasswordPage() {
           <>
             <div className="login-page__header">
               <div style={{ fontSize: 48, textAlign: 'center', marginBottom: 'var(--space-2)' }}>✓</div>
-              <h1 className="login-page__title" style={{ fontSize: 'var(--fs-2xl)' }}>Password Reset!</h1>
-              <p className="login-page__subtitle">Your password has been updated. All devices have been signed out.</p>
+              <h1 className="login-page__title" style={{ fontSize: 'var(--fs-2xl)' }}>{t.passwordResetDone}</h1>
+              <p className="login-page__subtitle">{t.passwordResetDesc}</p>
             </div>
             <Button variant="none" className="login-page__submit" onClick={() => navigate(ROUTES.LOGIN, { replace: true })} type="button">
-              Sign In
+              {t.signIn}
             </Button>
           </>
         )}
       </div>
-      <style>{`
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          20%, 60% { transform: translateX(-8px); }
-          40%, 80% { transform: translateX(8px); }
-        }
-      `}</style>
     </div>
   )
 }

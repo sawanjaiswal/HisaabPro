@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { SEO } from '../../components/layout/SEO'
 import { APP_NAME } from '../../config/app.config'
 import { useRegister } from './useRegister'
+import { useLanguage } from '@/context/LanguageContext'
 import { ROUTES } from '@/config/routes.config'
 import './LoginPage.css'
 import { Input } from '@/components/ui/Input'
@@ -10,6 +11,7 @@ import { Button } from '@/components/ui/Button'
 const phoneRegex = /^[6-9]\d{9}$/
 
 export default function RegisterPage() {
+  const { t } = useLanguage()
   const {
     name, setName,
     phone, setPhone,
@@ -22,12 +24,12 @@ export default function RegisterPage() {
 
   return (
     <div className="login-page">
-      <SEO title="Create Account" />
+      <SEO title={t.createAccount} />
 
       <div className="login-page__card stagger-enter">
         <div className="login-page__header">
           <h1 className="login-page__title">{APP_NAME}</h1>
-          <p className="login-page__subtitle">Create your free account</p>
+          <p className="login-page__subtitle">{t.createFreeAccount}</p>
         </div>
 
         <form
@@ -38,13 +40,13 @@ export default function RegisterPage() {
           }}
         >
           <div className="login-page__field">
-            <label className="login-page__label" htmlFor="name">Full Name</label>
+            <label className="login-page__label" htmlFor="name">{t.fullName}</label>
             <div className="login-page__input-wrapper">
               <Input
                 id="name"
                 type="text"
                 className="login-page__input"
-                placeholder="Your name"
+                placeholder={t.yourNameHint}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 autoComplete="name"
@@ -54,14 +56,14 @@ export default function RegisterPage() {
           </div>
 
           <div className="login-page__field">
-            <label className="login-page__label" htmlFor="phone">Mobile Number</label>
+            <label className="login-page__label" htmlFor="phone">{t.mobileNumber}</label>
             <div className="login-page__input-wrapper">
               <Input
                 id="phone"
                 type="tel"
                 inputMode="numeric"
                 className="login-page__input"
-                placeholder="10-digit mobile number"
+                placeholder={t.mobileNumberHint}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
                 autoComplete="tel"
@@ -70,13 +72,13 @@ export default function RegisterPage() {
           </div>
 
           <div className="login-page__field">
-            <label className="login-page__label" htmlFor="password">Password</label>
+            <label className="login-page__label" htmlFor="password">{t.password}</label>
             <div className="login-page__input-wrapper">
               <Input
                 id="password"
                 type="password"
                 className="login-page__input"
-                placeholder="At least 6 characters"
+                placeholder={t.min6CharsHint}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="new-password"
@@ -91,13 +93,13 @@ export default function RegisterPage() {
             className="login-page__submit"
             disabled={!isValid || loading}
           >
-            {loading ? 'Sending OTP…' : 'Continue'}
+            {loading ? t.sendingOtp : t.continueWith}
           </Button>
 
           <p className="login-page__hint">
-            Already have an account?{' '}
-            <Link to={ROUTES.LOGIN} style={{ color: 'var(--color-primary-500)' }}>
-              Sign in
+            {t.alreadyHaveAccount}{' '}
+            <Link to={ROUTES.LOGIN} className="login-page__link">
+              {t.signIn}
             </Link>
           </p>
         </form>
