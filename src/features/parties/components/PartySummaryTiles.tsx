@@ -49,6 +49,10 @@ export const PartySummaryTiles: React.FC<PartySummaryTilesProps> = ({ party }) =
           label: isSupplier ? t.totalPayable : t.outstanding,
           value: formatAmount(due),
           tone: 'due',
+          // Keeps this column the same three-line height as the other two, so
+          // the hairline rules don't hang into empty space beneath a short tile.
+          // Muted (no hintTone) — a quiet caption, not a second red accent.
+          hint: t.due,
         },
         {
           id: 'open-invoices',

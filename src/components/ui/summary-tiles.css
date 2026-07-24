@@ -179,21 +179,36 @@
   border-block-start: 1px solid var(--color-gray-200);
 }
 
+/* Refined micro-cap labels — the strip reads as a header band of stats, not a
+   sentence. Uppercase + tracking keeps them quiet under the big values. */
+.summary-tiles--divided .summary-tile {
+  gap: var(--space-1-5);
+}
+
 .summary-tiles--divided .summary-tile__label {
-  font-size: var(--fs-sm);
-  font-weight: 500;
-  letter-spacing: 0;
-  text-transform: none;
-  color: var(--text-secondary);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
 
 .summary-tiles--divided .summary-tile__value {
   font-size: var(--fs-xl);
-  line-height: 1.15;
+  line-height: 1.1;
+}
+
+/* Deeper, calmer red for money owed — the neon error-500 read as an alarm. */
+.summary-tiles--divided .summary-tile__value--due {
+  color: var(--color-error-600);
+}
+.summary-tiles--divided .summary-tile__value--paid {
+  color: var(--color-success-600);
 }
 
 .summary-tiles--divided .summary-tile__hint {
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
+  font-weight: 500;
   white-space: normal;
 }
 
