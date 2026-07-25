@@ -77,15 +77,3 @@ export function timeAgo(dateStr: string): string {
   if (diffMin > 0) return `${diffMin}m ago`
   return 'Just now'
 }
-
-/** Available credit (paise): limit − outstanding. Negative = over the limit. */
-export function availableCreditPaise(creditLimit: number, outstandingBalance: number): number {
-  return creditLimit - Math.max(outstandingBalance, 0)
-}
-
-/** "Mar 2025" — the month a party was first added, for a "Customer since" line. */
-export function formatMonthYear(dateStr: string): string {
-  const date = new Date(dateStr)
-  if (Number.isNaN(date.getTime())) return '—'
-  return new Intl.DateTimeFormat('en-IN', { month: 'short', year: 'numeric' }).format(date)
-}
