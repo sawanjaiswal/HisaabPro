@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useMemo, useCallback } 
 import type { ReactNode } from 'react'
 import type { AuthUser, BusinessSummary } from '../features/auth/auth.types'
 import * as authLib from '../lib/auth'
+import { ApiError } from '../lib/api-error'
 
 interface AuthContextType {
   user: AuthUser | null
@@ -55,8 +56,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setActiveBusiness(response.activeBusiness)
         authLib.setCachedUser(response.user)
         authLib.setCachedBusinesses(response.businesses)
-      } catch {
-        if (!cached) {
+      } catch (err) {
+        // The cached user is an offline-first hint, not proof of a session. Keep
+        // it when the request never got an answer (no network, server down) —
+        // that is the 2G case the cache exists for. Drop it on a 401: the
+        // refresh interceptor has already retried and failed, so the session is
+        // authoritatively gone (revoked, expired, logged out elsewhere) and
+        // trusting the cache strands the user on a dashboard that can only
+        // render errors, with no route back to /login.
+        // See .claude/fix-trace-dead-session-stranded.md.
+        const sessionIsGone = err instanceof ApiError && err.status === 401
+        if (!cached || sessionIsGone) {
           authLib.clearAuth()
           setUser(null)
           setBusinesses([])
