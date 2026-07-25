@@ -1,5 +1,28 @@
 # Backlog — resume 2026-06-01
 
+> **2026-07-25 — Create-Invoice gold-standard SHIPPED (commit `c9e48b6f`).** Master
+> doc: `docs/INVOICE_GOLD_STANDARD.md`. Phases 0–4 (keyboard grid) landed on
+> `redesign/mobile-first-sweep`: GST-first-class summary + payment-at-creation
+> (one-tx), "usually bought" frequent-product chips (tenant-scoped, 5-test
+> integration proof), qty→rate→disc Enter-flow, barcode add-and-return loop, and
+> the desktop hotkey grid (⌘/Ctrl+K quick-add, ⌘/Ctrl+S save, Esc, F2 scan).
+> Verified: tsc clean · enforce.js + enforce-offline.mjs pass · 108 invoice FE
+> tests + payment/frequent-products integration suites green. Not pushed.
+>
+> 🔵 **REMAINING from the invoice epic (desktop-power + voice — deliberately deferred):**
+> 1. ⬜ **Bulk edit line items** (~1 build pass, client-only, no schema). Multi-row
+>    select (checkbox per line-row) + a bulk-action bar (reuse the existing
+>    `bulk-action-bar` primitive) → batch delete / apply-discount-to-all /
+>    mark-free. Low risk; closes out Phase 4's non-voice work.
+> 2. ⬜ **Voice item entry** (own epic, ~3–5 passes). Speech capture (Web Speech
+>    API + native Capacitor path) → parse phrase to product+qty → fuzzy-match the
+>    catalog → confirm sheet. **Hindi voice** is the hard part; needs offline
+>    degradation. Run `scope-writer → architect` first (accuracy thresholds,
+>    confirm UX, offline fallback are real design decisions) — do NOT bolt on.
+> 3. ⏭️ **Item-edit `<Drawer>` sheet — WON'T DO (documented).** Redundant with the
+>    inline per-row editors already on every line; a second edit surface is a net
+>    negative in the dense mobile UI. Kept here so it isn't "rediscovered" as a gap.
+
 > **2026-07-12 update (UI/UX gold-standard audit + root-cause fix pass):** ✅ Audit COMPLETE —
 > mechanical grep scan (844 `.tsx` files) + full browser sweep of all 133 static routes, published to
 > artifact `159c87a8-be7b-47d4-a5d9-75ee2e9a6fd6`. Every "page silently redirects" claim from the

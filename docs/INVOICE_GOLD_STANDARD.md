@@ -3,7 +3,11 @@
 > Sources: Vyapar "Sale" audit (2026-07-24) + product brief "Invoice Creation
 > Flow GS" (2026-07-25) + Sawan's 3 scope decisions (2026-07-25).
 > Target: `CreateInvoicePage.tsx` (`/invoices/new`), all form factors.
-> Status: **PLAN + wireframes.** Build starts after wireframe sign-off.
+> Status: **✅ SHIPPED (2026-07-25) — Phases 0–4 keyboard grid, commit `c9e48b6f`.**
+> tsc clean · enforce.js + enforce-offline.mjs pass · 108 invoice FE tests +
+> payment/frequent-products integration suites green.
+> **Remaining (moved to `docs/BACKLOG.md`, 2026-07-25 entry):** bulk edit
+> (~1 pass) and voice item entry (own epic, ~3–5 passes). See §4 Phase 4.
 
 ## 0. Locked decisions (2026-07-25)
 
