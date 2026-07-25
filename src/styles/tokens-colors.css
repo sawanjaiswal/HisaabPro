@@ -27,6 +27,10 @@
   /* Deep-emerald hero surface — the SSOT green field behind the app header on
    * hero pages (dashboard, parties, etc.). Documented brand hero = #003121. */
   --color-hero-surface: #003121;
+  /* Deeper hero field — the dashboard header / top band sits a shade darker
+   * than the hero card so the two overlapping panels read apart. Both are
+   * intentionally dark in light AND dark themes (no override in tokens-dark). */
+  --color-hero-surface-deep: #012619;
 
   /* Secondary (Lime-Yellow) — energy, CTAs, highlights */
   --color-secondary-50:  #FCFDED;

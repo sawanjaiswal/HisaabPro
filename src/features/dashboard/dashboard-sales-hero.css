@@ -9,7 +9,7 @@
   flex-direction: column;
   position: relative;
   color: var(--color-white-inverse);
-  background: var(--hp-dash-card, #003121);
+  background: var(--color-hero-surface);
   border: 1px solid var(--overlay-white-12, rgba(255, 255, 255, 0.12));
   border-radius: var(--radius-xl);
   padding: var(--space-5);
@@ -313,7 +313,7 @@
   height: 32px;
   padding: 0;
   border: 1px solid var(--overlay-white-15, rgba(255, 255, 255, 0.15));
-  background: var(--hp-dash-card, #003121);
+  background: var(--color-hero-surface);
   color: var(--color-white-inverse);
   opacity: 0.5;
   cursor: pointer;
@@ -327,7 +327,7 @@
 .dashboard-metric-toggle:hover {
   opacity: 1;
   border-color: var(--overlay-white-30, rgba(255, 255, 255, 0.3));
-  background: color-mix(in srgb, var(--hp-dash-card, #003121) 88%, #fff);
+  background: color-mix(in srgb, var(--color-hero-surface) 88%, #fff);
 }
 
 .dashboard-metric-toggle svg {

@@ -14,10 +14,6 @@
  * uses green, not the near-black primary-teal). Scoped to the dashboard so
  * the header, hero panel and section overlap all read as one continuous
  * green field. */
-:root:has(.dashboard-page) {
-  --hp-dash-surface: #012619; /* page / header / top field (Figma-sampled) */
-  --hp-dash-card: #003121;    /* Today's Business hero card (Figma-sampled) */
-}
 
 /* ─── Dark header on the dashboard (Home 2 redesign) ──────────────
    The global Header primitive is dark ONLY while the dashboard is
@@ -27,7 +23,7 @@
 :root:has(.dashboard-page) .header,
 :root:has(.dashboard-page) .header--scroll-condense,
 :root:has(.dashboard-page) .header--scroll-condense.is-scrolled {
-  background: var(--hp-dash-surface);
+  background: var(--color-hero-surface-deep);
   border-color: transparent;
   box-shadow: none;
   -webkit-backdrop-filter: none;
@@ -125,7 +121,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  background: var(--hp-dash-surface);
+  background: var(--color-hero-surface-deep);
   position: relative;
 }
 
@@ -180,7 +176,7 @@
 
 /* ─── Dark hero variant (Home 2 redesign) ─────────────────────── */
 .dashboard-top-section--dark {
-  background: var(--hp-dash-surface);
+  background: var(--color-hero-surface-deep);
   padding-bottom: var(--space-8);
 }
 
@@ -362,7 +358,7 @@
   --dash-teal-10: var(--overlay-accent-dark-12);
   --dash-card-shadow: var(--shadow-card-dark);
   --dash-avatar-shadow: var(--shadow-avatar-subtle);
-  background: var(--hp-dash-surface);
+  background: var(--color-hero-surface-deep);
 }
 
 [data-theme="dark"] .dashboard-white-section {
