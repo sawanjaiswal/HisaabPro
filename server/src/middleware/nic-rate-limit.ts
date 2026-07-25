@@ -7,6 +7,7 @@ import type { Request } from 'express'
 import { createRateLimiter } from './rate-limit/factory.js'
 
 export const nicRateLimit = createRateLimiter({
+  name: 'nic',
   windowMs: 1_000, // 1 second window
   max: 10,
   message: 'Too many e-invoice requests — max 10/s per business',

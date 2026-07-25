@@ -19,9 +19,7 @@
     "test:watch": "vitest",
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "enforce": "node ../scripts/enforce.js",
-    "check:soft-delete": "node ../scripts/check-soft-delete.js",
-    "e2e:reset": "tsx prisma/e2e-reset.ts",
-    "e2e:seed": "tsx prisma/e2e-seed.ts"
+    "check:soft-delete": "node ../scripts/check-soft-delete.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.95.1",

@@ -16,6 +16,15 @@ export interface RateLimitResult {
 export interface RateLimitStore {
   increment(key: string, windowMs: number): Promise<RateLimitResult>
   reset(key: string): Promise<void>
+  /**
+   * Drop every bucket. Optional — only the in-memory store implements it, and
+   * only the E2E test hook calls it. E2E drives real auth flows from a single
+   * IP, so a whole suite shares one bucket (authRateLimiter is 20/min) and
+   * later specs would 429 for reasons that have nothing to do with the case
+   * under test. Deliberately absent from the Redis store: a shared backend must
+   * never expose a flush.
+   */
+  clearAll?(): Promise<void>
 }
 
 // ---------------------------------------------------------------------------
@@ -62,6 +71,10 @@ class MemoryStore implements RateLimitStore {
 
   async reset(key: string): Promise<void> {
     this.entries.delete(key)
+  }
+
+  async clearAll(): Promise<void> {
+    this.entries.clear()
   }
 }
 

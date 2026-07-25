@@ -33,6 +33,7 @@ function makeKeyFn(group: PublicRouteGroup) {
 
 const limiters: Record<PublicRouteGroup, ReturnType<typeof createRateLimiter>> = {
   health: createRateLimiter({
+    name: 'public-health',
     windowMs: WINDOW_MS,
     max: BUCKET_CONFIG.health,
     message: 'Too many requests',
@@ -40,6 +41,7 @@ const limiters: Record<PublicRouteGroup, ReturnType<typeof createRateLimiter>> =
     eventName: 'rate_limit.public_health',
   }),
   invoice: createRateLimiter({
+    name: 'public-invoice',
     windowMs: WINDOW_MS,
     max: BUCKET_CONFIG.invoice,
     message: 'Too many requests',
@@ -47,6 +49,7 @@ const limiters: Record<PublicRouteGroup, ReturnType<typeof createRateLimiter>> =
     eventName: 'rate_limit.public_invoice',
   }),
   store: createRateLimiter({
+    name: 'public-store',
     windowMs: WINDOW_MS,
     max: BUCKET_CONFIG.store,
     message: 'Too many requests',
@@ -54,6 +57,7 @@ const limiters: Record<PublicRouteGroup, ReturnType<typeof createRateLimiter>> =
     eventName: 'rate_limit.public_store',
   }),
   invite: createRateLimiter({
+    name: 'public-invite',
     windowMs: WINDOW_MS,
     max: BUCKET_CONFIG.invite,
     message: 'Too many requests',
@@ -61,6 +65,7 @@ const limiters: Record<PublicRouteGroup, ReturnType<typeof createRateLimiter>> =
     eventName: 'rate_limit.public_invite',
   }),
   claim: createRateLimiter({
+    name: 'public-claim',
     windowMs: WINDOW_MS,
     max: BUCKET_CONFIG.claim,
     message: 'Too many requests',

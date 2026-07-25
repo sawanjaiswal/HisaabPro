@@ -12,6 +12,7 @@ import { createRateLimiter } from './factory.js'
 
 /** 20 req/min per IP — login, send-otp (unauthenticated brute-force surface) */
 export const authRateLimiter = createRateLimiter({
+  name: 'auth',
   windowMs: RATE_LIMIT_AUTH_WINDOW_MS,
   max: RATE_LIMIT_AUTH_MAX,
   message: 'Too many attempts. Please try again later.',
@@ -21,6 +22,7 @@ export const authRateLimiter = createRateLimiter({
 /** Switch-business is already `auth`-gated — give it its own generous bucket
  *  (60/min) so multi-store owners are never locked out of hopping stores. */
 export const switchBusinessRateLimiter = createRateLimiter({
+  name: 'switch-business',
   windowMs: RATE_LIMIT_SWITCH_BUSINESS_WINDOW_MS,
   max: RATE_LIMIT_SWITCH_BUSINESS_MAX,
   message: 'Too many business switches. Please slow down.',
@@ -30,6 +32,7 @@ export const switchBusinessRateLimiter = createRateLimiter({
 /** Dev-login limiter (only mounted when ALLOW_DEV_LOGIN=true). Generous cap so
  *  shared NATs and local automation don't exhaust the bucket during normal use. */
 export const devLoginRateLimiter = createRateLimiter({
+  name: 'dev-login',
   windowMs: RATE_LIMIT_DEV_LOGIN_WINDOW_MS,
   max: RATE_LIMIT_DEV_LOGIN_MAX,
   message: 'Too many dev-login attempts. Please slow down.',
@@ -38,6 +41,7 @@ export const devLoginRateLimiter = createRateLimiter({
 
 /** 3 req/10min per IP — OTP verification */
 export const otpRateLimiter = createRateLimiter({
+  name: 'otp',
   windowMs: RATE_LIMIT_OTP_WINDOW_MS,
   max: RATE_LIMIT_OTP_MAX,
   message: 'Too many OTP requests. Please wait before trying again.',

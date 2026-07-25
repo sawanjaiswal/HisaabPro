@@ -25,6 +25,7 @@ const HEARTBEAT_PATHS = new Set<string>([
 ])
 
 const _apiRateLimiter = createRateLimiter({
+  name: 'global',
   windowMs: RATE_LIMIT_GLOBAL_WINDOW_MS,
   max: RATE_LIMIT_GLOBAL_MAX,
   message: 'Too many requests. Please slow down.',
@@ -43,6 +44,7 @@ export const apiRateLimiter = (req: Request, res: Response, next: NextFunction) 
  * Default: 600 writes/hour/user — generous for real usage, hard cap on runaways.
  */
 const userCrudLimiter = createRateLimiter({
+  name: 'crud',
   windowMs: RATE_LIMIT_CRUD_WINDOW_MS,
   max: RATE_LIMIT_CRUD_MAX,
   message: 'Too many changes in a short period. Please slow down.',
@@ -61,6 +63,7 @@ export const userMutationLimiter = (req: Request, res: Response, next: NextFunct
 
 /** 20 req/min per authenticated user — delete, bulk operations */
 export const sensitiveMutationLimiter = createRateLimiter({
+  name: 'sensitive',
   windowMs: RATE_LIMIT_SENSITIVE_WINDOW_MS,
   max: RATE_LIMIT_SENSITIVE_MAX,
   message: 'Too many mutating requests. Please slow down.',

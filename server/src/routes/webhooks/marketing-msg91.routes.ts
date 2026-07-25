@@ -27,6 +27,7 @@ import { getMsg91MarketingWebhookToken } from '../../lib/env.js'
 const router = Router()
 
 const ipLimiter = createRateLimiter({
+  name: 'webhook-marketing-msg91',
   windowMs: 60_000,
   max: 600,
   message: 'Too many requests',

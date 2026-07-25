@@ -1,4 +1,5 @@
 import { defineConfig } from '@playwright/test'
+import { e2eDatabaseUrl } from './scripts/e2e/db-url.mjs'
 
 /**
  * E2E config — REAL backend, real Postgres. See docs/E2E_TEST_PLAN.md §0.
@@ -42,7 +43,9 @@ export default defineConfig({
       port: 5001,
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
-      env: { E2E_TEST_HOOKS: '1' },
+      // DATABASE_URL is forced, not inherited: server/.env points at the dev
+      // database, and these specs create and destroy tenants.
+      env: { E2E_TEST_HOOKS: '1', DATABASE_URL: e2eDatabaseUrl() },
     },
     {
       command: 'npm run dev:web',

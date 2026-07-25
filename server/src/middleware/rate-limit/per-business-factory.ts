@@ -50,6 +50,7 @@ export function createPerBusinessLimiter(
   opts: PerBusinessLimiterOpts = {},
 ): RequestHandler {
   const inner = createRateLimiter({
+    name: prefix,
     windowMs,
     max,
     message: opts.message ?? 'Too many requests. Try again shortly.',

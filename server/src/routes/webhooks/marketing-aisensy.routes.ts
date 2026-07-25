@@ -28,6 +28,7 @@ import { getAisensyWebhookSecret } from '../../lib/env.js'
 const router = Router()
 
 const ipLimiter = createRateLimiter({
+  name: 'webhook-marketing-aisensy',
   windowMs: 60_000,
   max: 600,
   message: 'Too many requests',

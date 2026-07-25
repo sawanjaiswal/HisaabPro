@@ -1,0 +1,49 @@
+/**
+ * Shared constants for the gold-standard suites. See docs/E2E_TEST_PLAN.md.
+ *
+ * No mock data lives here — only reserved identifiers and the selectors the
+ * app actually renders. Anything resembling a fixture response belongs in the
+ * database (npm run e2e:seed), not in the spec.
+ */
+
+export const ROUTES = {
+  LANDING: '/',
+  LOGIN: '/login',
+  REGISTER: '/register',
+  VERIFY_OTP: '/verify-otp',
+  ONBOARDING: '/onboarding',
+  DASHBOARD: '/dashboard',
+  INVOICES: '/invoices',
+} as const
+
+/** Seeded by `npm run e2e:seed` — see server/prisma/e2e-seed.ts. */
+export const SEEDED_OWNER_PHONE = '9000000001'
+/** Guaranteed to have no account (FIX-NEW). */
+export const UNREGISTERED_PHONE = '9000000099'
+
+export const VALID_PASSWORD = 'Test@12345'
+
+/**
+ * A phone no other run will collide with. Registration is not idempotent, so
+ * every registration spec needs its own number or the 2nd run hits TC-REG-04's
+ * duplicate path instead of its own.
+ */
+export function uniquePhone(): string {
+  return `9${String(Date.now()).slice(-9)}`
+}
+
+/**
+ * OTP digit boxes have no id, name, or aria-label — only a class. Selecting by
+ * class is a smell, but inventing a testid the app doesn't render would be
+ * worse. Logged as an a11y finding under TC-UI (inputs must be labelled).
+ */
+export const SEL = {
+  otpDigit: '.auth-otp__digit',
+  otpError: '.auth-otp__error',
+  loginError: '.login-page__error',
+} as const
+
+/** Server-side security constants mirrored from server/src/config/security.ts. */
+export const OTP_LENGTH = 6
+export const OTP_MAX_ATTEMPTS = 5
+export const RESEND_COOLDOWN_SECONDS = 30

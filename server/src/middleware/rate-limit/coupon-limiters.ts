@@ -8,6 +8,7 @@ import { createRateLimiter } from './factory.js'
 
 /** 10 req/min per authenticated user — coupon code validation (brute-force prevention) */
 export const couponValidateRateLimiter = createRateLimiter({
+  name: 'coupon-validate',
   windowMs: RATE_LIMIT_COUPON_VALIDATE_WINDOW_MS,
   max: RATE_LIMIT_COUPON_VALIDATE_MAX,
   message: 'Too many coupon validation attempts. Please try again later.',
@@ -17,6 +18,7 @@ export const couponValidateRateLimiter = createRateLimiter({
 
 /** 20 req/min per IP — coupon endpoints (cross-user brute-force on shared IPs) */
 export const couponIpRateLimiter = createRateLimiter({
+  name: 'coupon-ip',
   windowMs: RATE_LIMIT_COUPON_IP_WINDOW_MS,
   max: RATE_LIMIT_COUPON_IP_MAX,
   message: 'Too many coupon requests from this network. Please try again later.',

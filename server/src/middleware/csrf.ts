@@ -21,6 +21,7 @@ import {
   CSRF_HEADER_NAME,
   CSRF_COOKIE_TTL_MS,
 } from '../config/security.js'
+import { testHooksEnabled } from '../lib/test-hooks.js'
 
 /** Auth paths that don't require CSRF (unauthenticated — no session cookie exists yet) */
 const CSRF_EXEMPT_AUTH_PATHS = new Set([
@@ -49,6 +50,13 @@ function safeCompare(a: string, b: string): boolean {
 }
 
 export function csrfProtection(req: Request, res: Response, next: NextFunction) {
+  // Test-only router. It is not mounted at all unless testHooksEnabled() (never
+  // in production — see lib/test-hooks.ts), and its POSTs are issued by the
+  // Playwright request context, which holds no CSRF cookie. Without this the
+  // reset hook returns CSRF_FAILED and silently clears nothing, so every gold
+  // spec after the first ~20 auth calls 429s for reasons unrelated to its case.
+  if (testHooksEnabled() && req.path.startsWith('/api/__test__/')) return next()
+
   if (req.headers.authorization?.startsWith('Bearer ')) return next()
   if (CSRF_EXEMPT_AUTH_PATHS.has(req.path)) return next()
   const method = req.method.toUpperCase()

@@ -40,8 +40,8 @@
     "prepare": "git config core.hooksPath .githooks || true",
     "e2e:coverage": "node scripts/e2e-coverage.mjs",
     "e2e:matrix": "node scripts/e2e-coverage.mjs --matrix",
-    "e2e:reset": "npm --prefix server run e2e:reset",
-    "e2e:seed": "npm --prefix server run e2e:seed"
+    "e2e:reset": "node scripts/e2e/run.mjs reset",
+    "e2e:seed": "node scripts/e2e/run.mjs seed"
   },
   "dependencies": {
     "@capacitor-mlkit/barcode-scanning": "^8.1.0",

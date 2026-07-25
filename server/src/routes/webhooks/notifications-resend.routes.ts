@@ -27,6 +27,7 @@ import { markSent, markFailed } from '../../services/notifications/notification-
 const router = Router()
 
 const webhookIpLimiter = createRateLimiter({
+  name: 'webhook-notifications-resend',
   windowMs: 60_000,
   max: 600,
   message: 'Too many requests from this IP',

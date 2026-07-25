@@ -13,6 +13,7 @@ import { asyncHandler } from '../middleware/asyncHandler.js'
 import { sendSuccess } from '../lib/response.js'
 import { notFoundError, validationError } from '../lib/errors.js'
 import { testHooksEnabled, readLastOtp, clearOtpBuffer } from '../lib/test-hooks.js'
+import { getStore } from '../middleware/rate-limit/store.js'
 
 const router = Router()
 
@@ -41,6 +42,28 @@ router.get(
     if (!record) throw notFoundError('No OTP issued for that phone in the last 5 minutes')
 
     sendSuccess(res, { phone: record.phone, otp: record.otp, issuedAt: record.at })
+  })
+)
+
+/**
+ * POST /api/__test__/reset-rate-limits — drop every bucket.
+ *
+ * E2E drives real auth flows from one IP, so an entire suite shares a single
+ * bucket (authRateLimiter is 20/min). Without this, spec #9 fails with a 429
+ * caused by specs #1-8 — a failure that says nothing about the case under test
+ * and looks exactly like a product bug. TC-REG-11/TC-AUTH-03 deliberately do
+ * NOT call this: proving the limiter fires is the whole point of those cases.
+ */
+router.post(
+  '/reset-rate-limits',
+  asyncHandler(async (_req, res) => {
+    const store = await getStore()
+    if (!store.clearAll) {
+      sendSuccess(res, { cleared: false, reason: 'store does not support clearAll (Redis)' })
+      return
+    }
+    await store.clearAll()
+    sendSuccess(res, { cleared: true })
   })
 )
 
