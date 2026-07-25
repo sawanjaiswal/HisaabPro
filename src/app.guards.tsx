@@ -109,10 +109,17 @@ export function PersistentNav() {
 export function FloatingWidgets() {
   const { pathname } = useLocation()
   if (pathname !== ROUTES.DASHBOARD) return null
+  // Own error boundary, `null` fallback: these are optional decoration loaded
+  // from separate chunks. Suspense covers a pending import but not a rejected
+  // one, so without this a chunk that 404s (offline, or a stale tab after a
+  // deploy) throws to the app-level boundary in App.tsx and replaces the entire
+  // shell — nav included — with "Something went wrong". A calculator overlay
+  // must not be able to take the navigation away mid-invoice.
+  // See .claude/fix-trace-widget-chunk-blanks-app.md.
   return (
-    <>
+    <ErrorBoundary fallback={null}>
       <Suspense fallback={null}><CalculatorOverlay position="BOTTOM_LEFT" /></Suspense>
       <Suspense fallback={null}><FeedbackWidget /></Suspense>
-    </>
+    </ErrorBoundary>
   )
 }
