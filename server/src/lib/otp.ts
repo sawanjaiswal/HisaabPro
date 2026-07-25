@@ -6,6 +6,7 @@ import {
   OTP_MAX_ATTEMPTS,
   OTP_RESEND_COOLDOWN_MS,
 } from '../config/security.js'
+import { recordIssuedOtp } from './test-hooks.js'
 
 /** Lower rounds for OTP — short-lived, speed matters more than brute-force resistance */
 const OTP_BCRYPT_ROUNDS = 6
@@ -31,6 +32,10 @@ export function verifyOTP(storedHash: string, provided: string): Promise<boolean
 
 /** Send OTP via MSG91 Flow API. Returns true if sent successfully. */
 export async function sendOTP(phone: string, otp: string): Promise<boolean> {
+  // No-op unless E2E_TEST_HOOKS=1 on a non-production process. OTPs are hashed
+  // at rest, so automation has no other read path — see lib/test-hooks.ts.
+  recordIssuedOtp(phone, otp)
+
   const authKey = process.env.MSG91_AUTH_KEY
   const templateId = process.env.MSG91_TEMPLATE_ID
 

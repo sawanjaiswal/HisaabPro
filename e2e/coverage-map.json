@@ -1,0 +1,1610 @@
+{
+  "accounting/chart-of-accounts": {
+    "suite": "TC-ACC",
+    "note": "GL, journals, FY closure, Tally export"
+  },
+  "accounting/fy-closure": {
+    "suite": "TC-ACC",
+    "note": "GL, journals, FY closure, Tally export"
+  },
+  "accounting/journal-entries": {
+    "suite": "TC-ACC",
+    "note": "GL, journals, FY closure, Tally export"
+  },
+  "accounting/tally-export": {
+    "suite": "TC-ACC",
+    "note": "GL, journals, FY closure, Tally export"
+  },
+  "admin/coupons": {
+    "suite": "TC-BIL",
+    "note": "subscription, payments gateway, coupons, referral"
+  },
+  "api:accounting": {
+    "suite": "TC-ACC",
+    "note": "GL, journals, FY closure, Tally export"
+  },
+  "api:admin": {
+    "suite": "TC-ADM",
+    "note": "platform admin console"
+  },
+  "api:analytics": {
+    "suite": "TC-RPT",
+    "note": "reports"
+  },
+  "api:appointment-convert": {
+    "suite": "TC-APT",
+    "note": "appointments"
+  },
+  "api:appointment-public": {
+    "suite": "TC-APT",
+    "note": "appointments"
+  },
+  "api:appointment-waitlist": {
+    "suite": "TC-APT",
+    "note": "appointments"
+  },
+  "api:appointments": {
+    "suite": "TC-APT",
+    "note": "appointments"
+  },
+  "api:audit": {
+    "suite": "TC-DATA",
+    "note": "backup, restore, export, audit log, recycle bin"
+  },
+  "api:auth": {
+    "suite": "TC-AUTH",
+    "note": "login, password reset, PIN, biometric, sessions"
+  },
+  "api:auth-pin": {
+    "suite": "TC-AUTH",
+    "note": "login, password reset, PIN, biometric, sessions"
+  },
+  "api:backup": {
+    "suite": "TC-DATA",
+    "note": "backup, restore, export, audit log, recycle bin"
+  },
+  "api:bank": {
+    "suite": "TC-BNK",
+    "note": "bank accounts + reconciliation"
+  },
+  "api:bank-reconciliation": {
+    "suite": "TC-BNK",
+    "note": "bank accounts + reconciliation"
+  },
+  "api:batches": {
+    "suite": "TC-BAT",
+    "note": "batches + expiry"
+  },
+  "api:biometric": {
+    "suite": "TC-AUTH",
+    "note": "login, password reset, PIN, biometric, sessions"
+  },
+  "api:bom": {
+    "suite": "TC-BOM",
+    "note": "BOM, recipe cost, production"
+  },
+  "api:businesses": {
+    "suite": "TC-BIZ",
+    "note": "business create/switch/join"
+  },
+  "api:cash-entries": {
+    "suite": "TC-CASH",
+    "note": "cash register"
+  },
+  "api:categories": {
+    "suite": "TC-PRD",
+    "note": "products, categories, stock alerts"
+  },
+  "api:cheques": {
+    "suite": "TC-PAY",
+    "note": "payments, outstanding, cheques"
+  },
+  "api:collections": {
+    "suite": "TC-COLL",
+    "note": "collections, aging buckets, PTP"
+  },
+  "api:commission": {
+    "suite": "TC-COM",
+    "note": "commission rules + ledger"
+  },
+  "api:coupons": {
+    "suite": "TC-BIL",
+    "note": "subscription, payments gateway, coupons, referral"
+  },
+  "api:currency": {
+    "suite": "TC-MSTR",
+    "note": "masters: units, currency, inventory settings"
+  },
+  "api:custom-fields": {
+    "suite": "TC-DOC",
+    "note": "document settings, templates, custom fields"
+  },
+  "api:custom-orders": {
+    "suite": "TC-ORD",
+    "note": "custom orders"
+  },
+  "api:dashboard": {
+    "suite": "TC-DASH",
+    "note": "dashboard"
+  },
+  "api:document-settings": {
+    "suite": "TC-DOC",
+    "note": "document settings, templates, custom fields"
+  },
+  "api:document-share-links": {
+    "suite": "TC-PUB",
+    "note": "public + unauthenticated surfaces"
+  },
+  "api:documents": {
+    "suite": "TC-INV",
+    "note": "invoice CRUD + document engine"
+  },
+  "api:einvoice": {
+    "suite": "TC-EIN",
+    "note": "e-invoice IRN"
+  },
+  "api:events": {
+    "suite": "TC-COLLAB",
+    "note": "presence, live events, feedback"
+  },
+  "api:ewaybill": {
+    "suite": "TC-EWB",
+    "note": "e-way bill"
+  },
+  "api:expense-budgets": {
+    "suite": "TC-EXP",
+    "note": "expenses, budgets, OCR, templates"
+  },
+  "api:expense-confirm": {
+    "suite": "TC-EXP",
+    "note": "expenses, budgets, OCR, templates"
+  },
+  "api:expense-ocr": {
+    "suite": "TC-EXP",
+    "note": "expenses, budgets, OCR, templates"
+  },
+  "api:expense-templates": {
+    "suite": "TC-EXP",
+    "note": "expenses, budgets, OCR, templates"
+  },
+  "api:expense-trend": {
+    "suite": "TC-EXP",
+    "note": "expenses, budgets, OCR, templates"
+  },
+  "api:expenses": {
+    "suite": "TC-EXP",
+    "note": "expenses, budgets, OCR, templates"
+  },
+  "api:export": {
+    "suite": "TC-DATA",
+    "note": "backup, restore, export, audit log, recycle bin"
+  },
+  "api:feedback": {
+    "suite": "TC-COLLAB",
+    "note": "presence, live events, feedback"
+  },
+  "api:financial-reports": {
+    "suite": "TC-ACC",
+    "note": "GL, journals, FY closure, Tally export"
+  },
+  "api:fy-closure": {
+    "suite": "TC-ACC",
+    "note": "GL, journals, FY closure, Tally export"
+  },
+  "api:godowns": {
+    "suite": "TC-GDN",
+    "note": "godowns + transfers"
+  },
+  "api:gst-backfill": {
+    "suite": "TC-GST",
+    "note": "GST config, returns, validation"
+  },
+  "api:gst-returns": {
+    "suite": "TC-GST",
+    "note": "GST config, returns, validation"
+  },
+  "api:gst-settings": {
+    "suite": "TC-GST",
+    "note": "GST config, returns, validation"
+  },
+  "api:gst-validation": {
+    "suite": "TC-GST",
+    "note": "GST config, returns, validation"
+  },
+  "api:gstin": {
+    "suite": "TC-GST",
+    "note": "GST config, returns, validation"
+  },
+  "api:hr-attendance": {
+    "suite": "TC-HR",
+    "note": "HR attendance, employees, payroll"
+  },
+  "api:hr-employees": {
+    "suite": "TC-HR",
+    "note": "HR attendance, employees, payroll"
+  },
+  "api:hsn": {
+    "suite": "TC-GST",
+    "note": "GST config, returns, validation"
+  },
+  "api:imports": {
+    "suite": "TC-IMP",
+    "note": "data import"
+  },
+  "api:inventory-settings": {
+    "suite": "TC-MSTR",
+    "note": "masters: units, currency, inventory settings"
+  },
+  "api:invoice-settings": {
+    "suite": "TC-DOC",
+    "note": "document settings, templates, custom fields"
+  },
+  "api:invoice-templates": {
+    "suite": "TC-DOC",
+    "note": "document settings, templates, custom fields"
+  },
+  "api:jobs": {
+    "suite": "TC-JOB",
+    "note": "jobs (services)"
+  },
+  "api:loans": {
+    "suite": "TC-LON",
+    "note": "loans + EMI"
+  },
+  "api:loyalty": {
+    "suite": "TC-LOY",
+    "note": "loyalty"
+  },
+  "api:marketing": {
+    "suite": "TC-MKT",
+    "note": "marketing, campaigns, reminders, greetings"
+  },
+  "api:notifications": {
+    "suite": "TC-NOT",
+    "note": "notifications + preferences"
+  },
+  "api:other-income": {
+    "suite": "TC-INC",
+    "note": "other income"
+  },
+  "api:parties": {
+    "suite": "TC-PTY",
+    "note": "parties CRUD, groups, ledger"
+  },
+  "api:party": {
+    "suite": "TC-PTY",
+    "note": "parties CRUD, groups, ledger"
+  },
+  "api:party-groups": {
+    "suite": "TC-PTY",
+    "note": "parties CRUD, groups, ledger"
+  },
+  "api:payments": {
+    "suite": "TC-PAY",
+    "note": "payments, outstanding, cheques"
+  },
+  "api:payroll": {
+    "suite": "TC-HR",
+    "note": "HR attendance, employees, payroll"
+  },
+  "api:pos-products-receipt": {
+    "suite": "TC-POS",
+    "note": "POS quick sale"
+  },
+  "api:pos-sales": {
+    "suite": "TC-POS",
+    "note": "POS quick sale"
+  },
+  "api:presence": {
+    "suite": "TC-COLLAB",
+    "note": "presence, live events, feedback"
+  },
+  "api:price-list-assign": {
+    "suite": "TC-PRL",
+    "note": "price lists"
+  },
+  "api:price-list-entries": {
+    "suite": "TC-PRL",
+    "note": "price lists"
+  },
+  "api:price-lists": {
+    "suite": "TC-PRL",
+    "note": "price lists"
+  },
+  "api:production-runs": {
+    "suite": "TC-BOM",
+    "note": "BOM, recipe cost, production"
+  },
+  "api:products": {
+    "suite": "TC-PRD",
+    "note": "products, categories, stock alerts"
+  },
+  "api:public": {
+    "suite": "TC-PUB",
+    "note": "public + unauthenticated surfaces"
+  },
+  "api:razorpay": {
+    "suite": "TC-BIL",
+    "note": "subscription, payments gateway, coupons, referral"
+  },
+  "api:recipe-cost": {
+    "suite": "TC-BOM",
+    "note": "BOM, recipe cost, production"
+  },
+  "api:reconciliation": {
+    "suite": "TC-PUR",
+    "note": "purchases + purchase returns"
+  },
+  "api:recurring": {
+    "suite": "TC-REC",
+    "note": "recurring invoices"
+  },
+  "api:recycle-bin": {
+    "suite": "TC-DATA",
+    "note": "backup, restore, export, audit log, recycle bin"
+  },
+  "api:referral": {
+    "suite": "TC-BIL",
+    "note": "subscription, payments gateway, coupons, referral"
+  },
+  "api:reorder": {
+    "suite": "TC-ROR",
+    "note": "reorder suggestions + alerts"
+  },
+  "api:reports": {
+    "suite": "TC-RPT",
+    "note": "reports"
+  },
+  "api:serial-numbers": {
+    "suite": "TC-SER",
+    "note": "serial numbers"
+  },
+  "api:sessions": {
+    "suite": "TC-AUTH",
+    "note": "login, password reset, PIN, biometric, sessions"
+  },
+  "api:settings": {
+    "suite": "TC-STG",
+    "note": "settings pages, roles, staff, permissions"
+  },
+  "api:stock-alerts": {
+    "suite": "TC-PRD",
+    "note": "products, categories, stock alerts"
+  },
+  "api:stock-verification": {
+    "suite": "TC-SV",
+    "note": "stock verification"
+  },
+  "api:storefront": {
+    "suite": "TC-PUB",
+    "note": "public + unauthenticated surfaces"
+  },
+  "api:subscription": {
+    "suite": "TC-BIL",
+    "note": "subscription, payments gateway, coupons, referral"
+  },
+  "api:tax-categories": {
+    "suite": "TC-GST",
+    "note": "GST config, returns, validation"
+  },
+  "api:tax-reports": {
+    "suite": "TC-GST",
+    "note": "GST config, returns, validation"
+  },
+  "api:tds-tcs": {
+    "suite": "TC-GST",
+    "note": "GST config, returns, validation"
+  },
+  "api:test-hooks": {
+    "suite": "TC-SEC",
+    "note": "E2E test hooks — TC-SEC-09 asserts the router is absent without E2E_TEST_HOOKS=1 and always absent in production"
+  },
+  "api:units": {
+    "suite": "TC-MSTR",
+    "note": "masters: units, currency, inventory settings"
+  },
+  "api:webhooks": {
+    "suite": "TC-BIL",
+    "note": "subscription, payments gateway, coupons, referral"
+  },
+  "appointments": {
+    "suite": "TC-APT",
+    "note": "appointments"
+  },
+  "bank-accounts": {
+    "suite": "TC-BNK",
+    "note": "bank accounts + reconciliation"
+  },
+  "bank-reconciliation": {
+    "suite": "TC-BNK",
+    "note": "bank accounts + reconciliation"
+  },
+  "batches": {
+    "suite": "TC-BAT",
+    "note": "batches + expiry"
+  },
+  "bill-scan": {
+    "suite": "TC-SCN",
+    "note": "bill scan OCR"
+  },
+  "bom": {
+    "suite": "TC-BOM",
+    "note": "BOM, recipe cost, production"
+  },
+  "business": {
+    "suite": "TC-BIZ",
+    "note": "business create/switch/join"
+  },
+  "cash-register": {
+    "suite": "TC-CASH",
+    "note": "cash register"
+  },
+  "cheques": {
+    "suite": "TC-PAY",
+    "note": "payments, outstanding, cheques"
+  },
+  "collections": {
+    "suite": "TC-COLL",
+    "note": "collections, aging buckets, PTP"
+  },
+  "commission/leaderboard": {
+    "suite": "TC-COM",
+    "note": "commission rules + ledger"
+  },
+  "commission/ledger": {
+    "suite": "TC-COM",
+    "note": "commission rules + ledger"
+  },
+  "crm/follow-ups": {
+    "suite": "TC-CRM",
+    "note": "CRM follow-ups"
+  },
+  "dashboard": {
+    "suite": "TC-DASH",
+    "note": "dashboard"
+  },
+  "expenses": {
+    "suite": "TC-EXP",
+    "note": "expenses, budgets, OCR, templates"
+  },
+  "forgot-password": {
+    "suite": "TC-AUTH",
+    "note": "login, password reset, PIN, biometric, sessions"
+  },
+  "godowns": {
+    "suite": "TC-GDN",
+    "note": "godowns + transfers"
+  },
+  "greetings": {
+    "suite": "TC-MKT",
+    "note": "marketing, campaigns, reminders, greetings"
+  },
+  "gst/backfill": {
+    "suite": "TC-GST",
+    "note": "GST config, returns, validation"
+  },
+  "gst/filing-readiness": {
+    "suite": "TC-GST",
+    "note": "GST config, returns, validation"
+  },
+  "gst/reconciliation": {
+    "suite": "TC-GST",
+    "note": "GST config, returns, validation"
+  },
+  "gst/returns": {
+    "suite": "TC-GST",
+    "note": "GST config, returns, validation"
+  },
+  "hr/attendance": {
+    "suite": "TC-HR",
+    "note": "HR attendance, employees, payroll"
+  },
+  "hr/employees": {
+    "suite": "TC-HR",
+    "note": "HR attendance, employees, payroll"
+  },
+  "hr/payroll": {
+    "suite": "TC-HR",
+    "note": "HR attendance, employees, payroll"
+  },
+  "imports": {
+    "suite": "TC-IMP",
+    "note": "data import"
+  },
+  "insights": {
+    "suite": "TC-INS",
+    "note": "insights"
+  },
+  "inventory/alerts": {
+    "suite": "TC-ROR",
+    "note": "reorder suggestions + alerts"
+  },
+  "inventory/reorder-suggestions": {
+    "suite": "TC-ROR",
+    "note": "reorder suggestions + alerts"
+  },
+  "inventory/verify": {
+    "suite": "TC-SV",
+    "note": "stock verification"
+  },
+  "invoices": {
+    "suite": "TC-INV",
+    "note": "invoice CRUD + document engine"
+  },
+  "job:import-retention": {
+    "suite": "TC-CRON",
+    "note": "import job retention purge"
+  },
+  "job:pin-gc": {
+    "suite": "TC-CRON",
+    "note": "PIN token garbage collection"
+  },
+  "job:run-batch-expiry-alerts.ts": {
+    "suite": "TC-CRON",
+    "note": "batch expiry alerts"
+  },
+  "job:run-ptp-evaluator.ts": {
+    "suite": "TC-CRON",
+    "note": "promise-to-pay evaluator"
+  },
+  "job:run-recurring-generator.ts": {
+    "suite": "TC-CRON",
+    "note": "recurring invoice generator"
+  },
+  "job:shadow-canary": {
+    "suite": "TC-CRON",
+    "note": "scoped-prisma shadow canary/watchdog/retention"
+  },
+  "job:shadow-retention": {
+    "suite": "TC-CRON",
+    "note": "scoped-prisma shadow canary/watchdog/retention"
+  },
+  "job:shadow-watchdog": {
+    "suite": "TC-CRON",
+    "note": "scoped-prisma shadow canary/watchdog/retention"
+  },
+  "jobs": {
+    "suite": "TC-JOB",
+    "note": "jobs (services)"
+  },
+  "join": {
+    "suite": "TC-BIZ",
+    "note": "business create/switch/join"
+  },
+  "landing": {
+    "suite": "TC-PUB",
+    "note": "public + unauthenticated surfaces"
+  },
+  "loans": {
+    "suite": "TC-LON",
+    "note": "loans + EMI"
+  },
+  "login": {
+    "suite": "TC-AUTH",
+    "note": "login, password reset, PIN, biometric, sessions"
+  },
+  "marketing": {
+    "suite": "TC-MKT",
+    "note": "marketing, campaigns, reminders, greetings"
+  },
+  "marketing/campaigns": {
+    "suite": "TC-MKT",
+    "note": "marketing, campaigns, reminders, greetings"
+  },
+  "marketing/opt-outs": {
+    "suite": "TC-MKT",
+    "note": "marketing, campaigns, reminders, greetings"
+  },
+  "marketing/reminders": {
+    "suite": "TC-MKT",
+    "note": "marketing, campaigns, reminders, greetings"
+  },
+  "marketing/templates": {
+    "suite": "TC-MKT",
+    "note": "marketing, campaigns, reminders, greetings"
+  },
+  "model:AdminAction": {
+    "suite": "TC-ADM",
+    "note": "admin model"
+  },
+  "model:AdminUser": {
+    "suite": "TC-ADM",
+    "note": "admin model"
+  },
+  "model:Appointment": {
+    "suite": "TC-APT",
+    "note": "appointment model"
+  },
+  "model:AppointmentRecurrenceTemplate": {
+    "suite": "TC-APT",
+    "note": "appointment model"
+  },
+  "model:AppointmentStatusEvent": {
+    "suite": "TC-APT",
+    "note": "appointment model"
+  },
+  "model:AppointmentWaitlist": {
+    "suite": "TC-APT",
+    "note": "appointment model"
+  },
+  "model:ApprovalRequest": {
+    "suite": "TC-HR",
+    "note": "HR model"
+  },
+  "model:Attendance": {
+    "suite": "TC-HR",
+    "note": "HR model"
+  },
+  "model:AuditLog": {
+    "suite": "TC-DATA",
+    "note": "audit + backup model"
+  },
+  "model:AuditLogRedaction": {
+    "suite": "TC-DATA",
+    "note": "audit + backup model"
+  },
+  "model:BankAccount": {
+    "suite": "TC-BNK",
+    "note": "banking model"
+  },
+  "model:BankStatementImport": {
+    "suite": "TC-BNK",
+    "note": "banking model"
+  },
+  "model:BankStatementLine": {
+    "suite": "TC-BNK",
+    "note": "banking model"
+  },
+  "model:Batch": {
+    "suite": "TC-BAT",
+    "note": "batch model"
+  },
+  "model:Bom": {
+    "suite": "TC-BOM",
+    "note": "manufacturing model"
+  },
+  "model:BomComponent": {
+    "suite": "TC-BOM",
+    "note": "manufacturing model"
+  },
+  "model:Business": {
+    "suite": "TC-STG",
+    "note": "account + settings model"
+  },
+  "model:BusinessAddon": {
+    "suite": "TC-BIL",
+    "note": "billing model"
+  },
+  "model:BusinessUser": {
+    "suite": "TC-STG",
+    "note": "account + settings model"
+  },
+  "model:CashEntry": {
+    "suite": "TC-CASH",
+    "note": "cash register model"
+  },
+  "model:CashEntryEvent": {
+    "suite": "TC-CASH",
+    "note": "cash register model"
+  },
+  "model:Category": {
+    "suite": "TC-PRD",
+    "note": "product data model"
+  },
+  "model:Cheque": {
+    "suite": "TC-PAY",
+    "note": "payment data model"
+  },
+  "model:CollectionCadence": {
+    "suite": "TC-COLL",
+    "note": "collections + reminders model"
+  },
+  "model:CommissionLedger": {
+    "suite": "TC-COM",
+    "note": "commission model"
+  },
+  "model:CommissionRule": {
+    "suite": "TC-COM",
+    "note": "commission model"
+  },
+  "model:Coupon": {
+    "suite": "TC-BIL",
+    "note": "billing model"
+  },
+  "model:CouponRedemption": {
+    "suite": "TC-BIL",
+    "note": "billing model"
+  },
+  "model:CustomFieldDefinition": {
+    "suite": "TC-DOC",
+    "note": "document config model"
+  },
+  "model:CustomOrder": {
+    "suite": "TC-ORD",
+    "note": "custom order model"
+  },
+  "model:CustomOrderAdvance": {
+    "suite": "TC-ORD",
+    "note": "custom order model"
+  },
+  "model:CustomOrderItem": {
+    "suite": "TC-ORD",
+    "note": "custom order model"
+  },
+  "model:DigitalSignature": {
+    "suite": "TC-INV",
+    "note": "document data model"
+  },
+  "model:Document": {
+    "suite": "TC-INV",
+    "note": "document data model"
+  },
+  "model:DocumentAdditionalCharge": {
+    "suite": "TC-INV",
+    "note": "document data model"
+  },
+  "model:DocumentCustomFieldValue": {
+    "suite": "TC-INV",
+    "note": "document data model"
+  },
+  "model:DocumentLineItem": {
+    "suite": "TC-INV",
+    "note": "document data model"
+  },
+  "model:DocumentNumberSeries": {
+    "suite": "TC-INV",
+    "note": "document data model"
+  },
+  "model:DocumentSettings": {
+    "suite": "TC-DOC",
+    "note": "document config model"
+  },
+  "model:DocumentShareLog": {
+    "suite": "TC-DOC",
+    "note": "document config model"
+  },
+  "model:DriveBackupConnection": {
+    "suite": "TC-DATA",
+    "note": "audit + backup model"
+  },
+  "model:EInvoice": {
+    "suite": "TC-EIN",
+    "note": "e-invoice model"
+  },
+  "model:EWayBill": {
+    "suite": "TC-EWB",
+    "note": "e-way bill model"
+  },
+  "model:Employee": {
+    "suite": "TC-HR",
+    "note": "HR model"
+  },
+  "model:EmployeeAdvance": {
+    "suite": "TC-HR",
+    "note": "HR model"
+  },
+  "model:ExchangeRate": {
+    "suite": "TC-MSTR",
+    "note": "masters model"
+  },
+  "model:Expense": {
+    "suite": "TC-EXP",
+    "note": "expense model"
+  },
+  "model:ExpenseBudget": {
+    "suite": "TC-EXP",
+    "note": "expense model"
+  },
+  "model:ExpenseCategory": {
+    "suite": "TC-EXP",
+    "note": "expense model"
+  },
+  "model:ExpenseTemplate": {
+    "suite": "TC-EXP",
+    "note": "expense model"
+  },
+  "model:FeatureAddon": {
+    "suite": "TC-BIL",
+    "note": "billing model"
+  },
+  "model:Feedback": {
+    "suite": "TC-COLLAB",
+    "note": "feedback model"
+  },
+  "model:FinancialYearClosure": {
+    "suite": "TC-ACC",
+    "note": "GL model"
+  },
+  "model:Godown": {
+    "suite": "TC-GDN",
+    "note": "godown model"
+  },
+  "model:GodownStock": {
+    "suite": "TC-GDN",
+    "note": "godown model"
+  },
+  "model:GodownTransfer": {
+    "suite": "TC-GDN",
+    "note": "godown model"
+  },
+  "model:GstReconciliation": {
+    "suite": "TC-GST",
+    "note": "GST data model"
+  },
+  "model:GstReconciliationEntry": {
+    "suite": "TC-GST",
+    "note": "GST data model"
+  },
+  "model:GstReturn": {
+    "suite": "TC-GST",
+    "note": "GST data model"
+  },
+  "model:HsnCode": {
+    "suite": "TC-GST",
+    "note": "GST data model"
+  },
+  "model:IdempotencyLog": {
+    "suite": "TC-MW",
+    "note": "idempotency model"
+  },
+  "model:ImportJob": {
+    "suite": "TC-IMP",
+    "note": "import model"
+  },
+  "model:ImportJobRow": {
+    "suite": "TC-IMP",
+    "note": "import model"
+  },
+  "model:InventorySetting": {
+    "suite": "TC-MSTR",
+    "note": "masters model"
+  },
+  "model:InvoiceSettings": {
+    "suite": "TC-DOC",
+    "note": "document config model"
+  },
+  "model:InvoiceTemplate": {
+    "suite": "TC-DOC",
+    "note": "document config model"
+  },
+  "model:Job": {
+    "suite": "TC-JOB",
+    "note": "jobs model"
+  },
+  "model:JobItem": {
+    "suite": "TC-JOB",
+    "note": "jobs model"
+  },
+  "model:JournalEntry": {
+    "suite": "TC-ACC",
+    "note": "GL model"
+  },
+  "model:JournalEntryLine": {
+    "suite": "TC-ACC",
+    "note": "GL model"
+  },
+  "model:LedgerAccount": {
+    "suite": "TC-ACC",
+    "note": "GL model"
+  },
+  "model:LoanAccount": {
+    "suite": "TC-LON",
+    "note": "loan model"
+  },
+  "model:LoanTransaction": {
+    "suite": "TC-LON",
+    "note": "loan model"
+  },
+  "model:LoyaltyLedger": {
+    "suite": "TC-LOY",
+    "note": "loyalty model"
+  },
+  "model:LoyaltyProgram": {
+    "suite": "TC-LOY",
+    "note": "loyalty model"
+  },
+  "model:MarketingCampaign": {
+    "suite": "TC-MKT",
+    "note": "marketing model"
+  },
+  "model:MarketingCampaignRecipient": {
+    "suite": "TC-MKT",
+    "note": "marketing model"
+  },
+  "model:MarketingTemplate": {
+    "suite": "TC-MKT",
+    "note": "marketing model"
+  },
+  "model:Notification": {
+    "suite": "TC-NOT",
+    "note": "notification model"
+  },
+  "model:NotificationCostTally": {
+    "suite": "TC-NOT",
+    "note": "notification model"
+  },
+  "model:NotificationJob": {
+    "suite": "TC-NOT",
+    "note": "notification model"
+  },
+  "model:NotificationPreference": {
+    "suite": "TC-NOT",
+    "note": "notification model"
+  },
+  "model:OpeningBalance": {
+    "suite": "TC-PTY",
+    "note": "party data model"
+  },
+  "model:OtherIncome": {
+    "suite": "TC-INC",
+    "note": "other income model"
+  },
+  "model:OtpCode": {
+    "suite": "TC-AUTH",
+    "note": "auth model"
+  },
+  "model:Party": {
+    "suite": "TC-PTY",
+    "note": "party data model"
+  },
+  "model:PartyAddress": {
+    "suite": "TC-PTY",
+    "note": "party data model"
+  },
+  "model:PartyCustomFieldValue": {
+    "suite": "TC-PTY",
+    "note": "party data model"
+  },
+  "model:PartyGroup": {
+    "suite": "TC-PTY",
+    "note": "party data model"
+  },
+  "model:PartyPricing": {
+    "suite": "TC-PTY",
+    "note": "party data model"
+  },
+  "model:Payment": {
+    "suite": "TC-PAY",
+    "note": "payment data model"
+  },
+  "model:PaymentAllocation": {
+    "suite": "TC-PAY",
+    "note": "payment data model"
+  },
+  "model:PaymentDiscount": {
+    "suite": "TC-PAY",
+    "note": "payment data model"
+  },
+  "model:PaymentLink": {
+    "suite": "TC-PAY",
+    "note": "payment data model"
+  },
+  "model:PaymentReminder": {
+    "suite": "TC-PAY",
+    "note": "payment data model"
+  },
+  "model:Payroll": {
+    "suite": "TC-HR",
+    "note": "HR model"
+  },
+  "model:PayrollRun": {
+    "suite": "TC-HR",
+    "note": "HR model"
+  },
+  "model:PayslipSnapshot": {
+    "suite": "TC-HR",
+    "note": "HR model"
+  },
+  "model:PinResetToken": {
+    "suite": "TC-AUTH",
+    "note": "auth model"
+  },
+  "model:PosReceiptCounter": {
+    "suite": "TC-POS",
+    "note": "POS data model"
+  },
+  "model:PosSale": {
+    "suite": "TC-POS",
+    "note": "POS data model"
+  },
+  "model:PosSaleEvent": {
+    "suite": "TC-POS",
+    "note": "POS data model"
+  },
+  "model:PosSaleItem": {
+    "suite": "TC-POS",
+    "note": "POS data model"
+  },
+  "model:PosSetting": {
+    "suite": "TC-POS",
+    "note": "POS data model"
+  },
+  "model:PriceList": {
+    "suite": "TC-PRL",
+    "note": "price list model"
+  },
+  "model:PriceListEntry": {
+    "suite": "TC-PRL",
+    "note": "price list model"
+  },
+  "model:Product": {
+    "suite": "TC-PRD",
+    "note": "product data model"
+  },
+  "model:ProductCustomFieldValue": {
+    "suite": "TC-PRD",
+    "note": "product data model"
+  },
+  "model:ProductionRun": {
+    "suite": "TC-BOM",
+    "note": "manufacturing model"
+  },
+  "model:ProductionRunComponent": {
+    "suite": "TC-BOM",
+    "note": "manufacturing model"
+  },
+  "model:PromiseToPay": {
+    "suite": "TC-COLL",
+    "note": "collections + reminders model"
+  },
+  "model:PushToken": {
+    "suite": "TC-NOT",
+    "note": "notification model"
+  },
+  "model:ReconciliationMatch": {
+    "suite": "TC-BNK",
+    "note": "banking model"
+  },
+  "model:RecurringInvoice": {
+    "suite": "TC-REC",
+    "note": "recurring model"
+  },
+  "model:RecurringInvoiceRun": {
+    "suite": "TC-REC",
+    "note": "recurring model"
+  },
+  "model:ReferralCode": {
+    "suite": "TC-BIL",
+    "note": "billing model"
+  },
+  "model:ReferralEvent": {
+    "suite": "TC-BIL",
+    "note": "billing model"
+  },
+  "model:ReferralReward": {
+    "suite": "TC-BIL",
+    "note": "billing model"
+  },
+  "model:ReferralWithdrawal": {
+    "suite": "TC-BIL",
+    "note": "billing model"
+  },
+  "model:RefreshToken": {
+    "suite": "TC-AUTH",
+    "note": "auth model"
+  },
+  "model:ReminderConfig": {
+    "suite": "TC-COLL",
+    "note": "collections + reminders model"
+  },
+  "model:ReminderInstance": {
+    "suite": "TC-COLL",
+    "note": "collections + reminders model"
+  },
+  "model:ReminderLog": {
+    "suite": "TC-COLL",
+    "note": "collections + reminders model"
+  },
+  "model:ReminderRule": {
+    "suite": "TC-COLL",
+    "note": "collections + reminders model"
+  },
+  "model:Role": {
+    "suite": "TC-STG",
+    "note": "account + settings model"
+  },
+  "model:ScopedShadowDivergence": {
+    "suite": "TC-ADM",
+    "note": "admin model"
+  },
+  "model:ScopedShadowStat": {
+    "suite": "TC-ADM",
+    "note": "admin model"
+  },
+  "model:SerialNumber": {
+    "suite": "TC-SER",
+    "note": "serial model"
+  },
+  "model:SharedLink": {
+    "suite": "TC-DOC",
+    "note": "document config model"
+  },
+  "model:StaffInvite": {
+    "suite": "TC-STG",
+    "note": "account + settings model"
+  },
+  "model:StockAlert": {
+    "suite": "TC-PRD",
+    "note": "product data model"
+  },
+  "model:StockMovement": {
+    "suite": "TC-PRD",
+    "note": "product data model"
+  },
+  "model:StockVerification": {
+    "suite": "TC-SV",
+    "note": "stock verification model"
+  },
+  "model:StockVerificationItem": {
+    "suite": "TC-SV",
+    "note": "stock verification model"
+  },
+  "model:StorefrontProduct": {
+    "suite": "TC-PUB",
+    "note": "storefront model"
+  },
+  "model:Subscription": {
+    "suite": "TC-BIL",
+    "note": "billing model"
+  },
+  "model:SubscriptionEvent": {
+    "suite": "TC-BIL",
+    "note": "billing model"
+  },
+  "model:TaxCategory": {
+    "suite": "TC-GST",
+    "note": "GST data model"
+  },
+  "model:TemplateDefault": {
+    "suite": "TC-DOC",
+    "note": "document config model"
+  },
+  "model:TermsAndConditionsTemplate": {
+    "suite": "TC-DOC",
+    "note": "document config model"
+  },
+  "model:TransactionLockConfig": {
+    "suite": "TC-STG",
+    "note": "account + settings model"
+  },
+  "model:Unit": {
+    "suite": "TC-MSTR",
+    "note": "masters model"
+  },
+  "model:UnitConversion": {
+    "suite": "TC-MSTR",
+    "note": "masters model"
+  },
+  "model:UnscopedAccessLog": {
+    "suite": "TC-DATA",
+    "note": "audit + backup model"
+  },
+  "model:UpiMandate": {
+    "suite": "TC-PAY",
+    "note": "payment data model"
+  },
+  "model:User": {
+    "suite": "TC-STG",
+    "note": "account + settings model"
+  },
+  "model:UserAppSettings": {
+    "suite": "TC-STG",
+    "note": "account + settings model"
+  },
+  "model:UserSuspension": {
+    "suite": "TC-ADM",
+    "note": "admin model"
+  },
+  "model:WebAuthnCredential": {
+    "suite": "TC-AUTH",
+    "note": "auth model"
+  },
+  "model:WebhookEvent": {
+    "suite": "TC-BIL",
+    "note": "billing model"
+  },
+  "more": {
+    "suite": "TC-NAV",
+    "note": "nav hubs + global lookup"
+  },
+  "mw:admin-auth": {
+    "suite": "TC-MW",
+    "note": "authn/authz middleware"
+  },
+  "mw:asyncHandler": {
+    "suite": "TC-MW",
+    "note": "request middleware"
+  },
+  "mw:auth": {
+    "suite": "TC-MW",
+    "note": "authn/authz middleware"
+  },
+  "mw:captcha": {
+    "suite": "TC-MW",
+    "note": "attack-surface middleware"
+  },
+  "mw:commission-ledger-auth": {
+    "suite": "TC-MW",
+    "note": "authn/authz middleware"
+  },
+  "mw:conflict-detection": {
+    "suite": "TC-MW",
+    "note": "idempotency + conflict middleware"
+  },
+  "mw:csrf": {
+    "suite": "TC-MW",
+    "note": "attack-surface middleware"
+  },
+  "mw:errorHandler": {
+    "suite": "TC-MW",
+    "note": "request middleware"
+  },
+  "mw:field-filter": {
+    "suite": "TC-MW",
+    "note": "tenant scoping + field filtering"
+  },
+  "mw:idempotency": {
+    "suite": "TC-MW",
+    "note": "idempotency + conflict middleware"
+  },
+  "mw:nic-rate-limit": {
+    "suite": "TC-MW",
+    "note": "attack-surface middleware"
+  },
+  "mw:performance": {
+    "suite": "TC-MW",
+    "note": "request middleware"
+  },
+  "mw:permission": {
+    "suite": "TC-MW",
+    "note": "authn/authz middleware"
+  },
+  "mw:pos-checkout-auth": {
+    "suite": "TC-MW",
+    "note": "authn/authz middleware"
+  },
+  "mw:rate-limit": {
+    "suite": "TC-MW",
+    "note": "attack-surface middleware"
+  },
+  "mw:replay-protection": {
+    "suite": "TC-MW",
+    "note": "attack-surface middleware"
+  },
+  "mw:require-active-business": {
+    "suite": "TC-MW",
+    "note": "authn/authz middleware"
+  },
+  "mw:require-feature": {
+    "suite": "TC-MW",
+    "note": "paid-feature gating middleware"
+  },
+  "mw:require-min-client-version": {
+    "suite": "TC-MW",
+    "note": "request middleware"
+  },
+  "mw:require-no-active-job": {
+    "suite": "TC-MW",
+    "note": "request middleware"
+  },
+  "mw:require-recent-pin": {
+    "suite": "TC-MW",
+    "note": "authn/authz middleware"
+  },
+  "mw:requireIdempotencyKey": {
+    "suite": "TC-MW",
+    "note": "idempotency + conflict middleware"
+  },
+  "mw:resolve-public-token": {
+    "suite": "TC-MW",
+    "note": "tenant scoping + field filtering"
+  },
+  "mw:resolve-scoped": {
+    "suite": "TC-MW",
+    "note": "tenant scoping + field filtering"
+  },
+  "mw:sanitize-input": {
+    "suite": "TC-MW",
+    "note": "attack-surface middleware"
+  },
+  "mw:scoped-context": {
+    "suite": "TC-MW",
+    "note": "tenant scoping + field filtering"
+  },
+  "mw:sse-emit": {
+    "suite": "TC-MW",
+    "note": "request middleware"
+  },
+  "mw:subscription-gate": {
+    "suite": "TC-MW",
+    "note": "request middleware"
+  },
+  "mw:validate": {
+    "suite": "TC-MW",
+    "note": "request middleware"
+  },
+  "mw:validate-gst-settings": {
+    "suite": "TC-MW",
+    "note": "request middleware"
+  },
+  "notifications": {
+    "suite": "TC-NOT",
+    "note": "notifications + preferences"
+  },
+  "notifications/preferences": {
+    "suite": "TC-NOT",
+    "note": "notifications + preferences"
+  },
+  "onboarding": {
+    "suite": "TC-ONB",
+    "note": "onboarding wizard"
+  },
+  "orders": {
+    "suite": "TC-ORD",
+    "note": "custom orders"
+  },
+  "other-income": {
+    "suite": "TC-INC",
+    "note": "other income"
+  },
+  "outstanding": {
+    "suite": "TC-PAY",
+    "note": "payments, outstanding, cheques"
+  },
+  "parties": {
+    "suite": "TC-PTY",
+    "note": "parties CRUD, groups, ledger"
+  },
+  "payments": {
+    "suite": "TC-PAY",
+    "note": "payments, outstanding, cheques"
+  },
+  "pos": {
+    "suite": "TC-POS",
+    "note": "POS quick sale"
+  },
+  "pricing": {
+    "suite": "TC-PUB",
+    "note": "public + unauthenticated surfaces"
+  },
+  "production-runs": {
+    "suite": "TC-BOM",
+    "note": "BOM, recipe cost, production"
+  },
+  "products": {
+    "suite": "TC-PRD",
+    "note": "products, categories, stock alerts"
+  },
+  "public/ledger": {
+    "suite": "TC-PUB",
+    "note": "public + unauthenticated surfaces"
+  },
+  "purchases": {
+    "suite": "TC-PUR",
+    "note": "purchases + purchase returns"
+  },
+  "recipe-cost": {
+    "suite": "TC-BOM",
+    "note": "BOM, recipe cost, production"
+  },
+  "recurring": {
+    "suite": "TC-REC",
+    "note": "recurring invoices"
+  },
+  "register": {
+    "suite": "TC-REG",
+    "note": "registration + OTP"
+  },
+  "reports": {
+    "suite": "TC-RPT",
+    "note": "reports"
+  },
+  "reports/aging": {
+    "suite": "TC-PAY",
+    "note": "payments, outstanding, cheques"
+  },
+  "reports/balance-sheet": {
+    "suite": "TC-RPT",
+    "note": "reports"
+  },
+  "reports/cash-flow": {
+    "suite": "TC-RPT",
+    "note": "reports"
+  },
+  "reports/day-book": {
+    "suite": "TC-RPT",
+    "note": "reports"
+  },
+  "reports/discounts": {
+    "suite": "TC-RPT",
+    "note": "reports"
+  },
+  "reports/gst-returns": {
+    "suite": "TC-GST",
+    "note": "GST config, returns, validation"
+  },
+  "reports/party-statement": {
+    "suite": "TC-RPT",
+    "note": "reports"
+  },
+  "reports/payment-history": {
+    "suite": "TC-PAY",
+    "note": "payments, outstanding, cheques"
+  },
+  "reports/profit-loss": {
+    "suite": "TC-RPT",
+    "note": "reports"
+  },
+  "reports/profitability": {
+    "suite": "TC-RPT",
+    "note": "reports"
+  },
+  "reports/purchases": {
+    "suite": "TC-RPT",
+    "note": "reports"
+  },
+  "reports/sales": {
+    "suite": "TC-RPT",
+    "note": "reports"
+  },
+  "reports/stock-summary": {
+    "suite": "TC-RPT",
+    "note": "reports"
+  },
+  "reports/stock-value": {
+    "suite": "TC-RPT",
+    "note": "reports"
+  },
+  "reports/tax-summary": {
+    "suite": "TC-GST",
+    "note": "GST config, returns, validation"
+  },
+  "reports/tds-tcs": {
+    "suite": "TC-GST",
+    "note": "GST config, returns, validation"
+  },
+  "reports/trial-balance": {
+    "suite": "TC-ACC",
+    "note": "GL, journals, FY closure, Tally export"
+  },
+  "sales": {
+    "suite": "TC-EST",
+    "note": "estimates"
+  },
+  "sales/challans": {
+    "suite": "TC-DC",
+    "note": "delivery challans"
+  },
+  "sales/estimates": {
+    "suite": "TC-EST",
+    "note": "estimates"
+  },
+  "sales/orders": {
+    "suite": "TC-SO",
+    "note": "sale orders"
+  },
+  "sales/returns": {
+    "suite": "TC-RET",
+    "note": "sales returns / credit notes"
+  },
+  "serial-lookup": {
+    "suite": "TC-NAV",
+    "note": "nav hubs + global lookup"
+  },
+  "settings": {
+    "suite": "TC-STG",
+    "note": "settings pages, roles, staff, permissions"
+  },
+  "settings/audit-log": {
+    "suite": "TC-DATA",
+    "note": "backup, restore, export, audit log, recycle bin"
+  },
+  "settings/backup": {
+    "suite": "TC-DATA",
+    "note": "backup, restore, export, audit log, recycle bin"
+  },
+  "settings/commission": {
+    "suite": "TC-COM",
+    "note": "commission rules + ledger"
+  },
+  "settings/currency": {
+    "suite": "TC-MSTR",
+    "note": "masters: units, currency, inventory settings"
+  },
+  "settings/document-custom-fields": {
+    "suite": "TC-DOC",
+    "note": "document settings, templates, custom fields"
+  },
+  "settings/documents": {
+    "suite": "TC-DOC",
+    "note": "document settings, templates, custom fields"
+  },
+  "settings/gst": {
+    "suite": "TC-GST",
+    "note": "GST config, returns, validation"
+  },
+  "settings/import": {
+    "suite": "TC-IMP",
+    "note": "data import"
+  },
+  "settings/inventory": {
+    "suite": "TC-MSTR",
+    "note": "masters: units, currency, inventory settings"
+  },
+  "settings/loyalty": {
+    "suite": "TC-LOY",
+    "note": "loyalty"
+  },
+  "settings/permissions": {
+    "suite": "TC-STG",
+    "note": "settings pages, roles, staff, permissions"
+  },
+  "settings/pin-setup": {
+    "suite": "TC-AUTH",
+    "note": "login, password reset, PIN, biometric, sessions"
+  },
+  "settings/price-lists": {
+    "suite": "TC-PRL",
+    "note": "price lists"
+  },
+  "settings/roles": {
+    "suite": "TC-STG",
+    "note": "settings pages, roles, staff, permissions"
+  },
+  "settings/security": {
+    "suite": "TC-AUTH",
+    "note": "login, password reset, PIN, biometric, sessions"
+  },
+  "settings/sessions": {
+    "suite": "TC-AUTH",
+    "note": "login, password reset, PIN, biometric, sessions"
+  },
+  "settings/shortcuts": {
+    "suite": "TC-STG",
+    "note": "settings pages, roles, staff, permissions"
+  },
+  "settings/staff": {
+    "suite": "TC-STG",
+    "note": "settings pages, roles, staff, permissions"
+  },
+  "settings/storefront": {
+    "suite": "TC-PUB",
+    "note": "public + unauthenticated surfaces"
+  },
+  "settings/subscription": {
+    "suite": "TC-BIL",
+    "note": "subscription, payments gateway, coupons, referral"
+  },
+  "settings/tax-rates": {
+    "suite": "TC-GST",
+    "note": "GST config, returns, validation"
+  },
+  "settings/templates": {
+    "suite": "TC-DOC",
+    "note": "document settings, templates, custom fields"
+  },
+  "settings/theme": {
+    "suite": "TC-STG",
+    "note": "settings pages, roles, staff, permissions"
+  },
+  "settings/transaction-controls": {
+    "suite": "TC-STG",
+    "note": "settings pages, roles, staff, permissions"
+  },
+  "settings/units": {
+    "suite": "TC-MSTR",
+    "note": "masters: units, currency, inventory settings"
+  },
+  "stock-verification": {
+    "suite": "TC-SV",
+    "note": "stock verification"
+  },
+  "verify-otp": {
+    "suite": "TC-REG",
+    "note": "registration + OTP"
+  },
+  "voice-entry": {
+    "suite": "TC-VCE",
+    "note": "voice entry"
+  }
+}

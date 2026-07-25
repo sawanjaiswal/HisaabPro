@@ -37,7 +37,11 @@
     "ssot:doc": "node scripts/ssot/doc.mjs",
     "ssot:baseline": "node scripts/ssot/check.mjs --baseline",
     "lint:raw-client": "node scripts/scoped/lint-raw-client.mjs",
-    "prepare": "git config core.hooksPath .githooks || true"
+    "prepare": "git config core.hooksPath .githooks || true",
+    "e2e:coverage": "node scripts/e2e-coverage.mjs",
+    "e2e:matrix": "node scripts/e2e-coverage.mjs --matrix",
+    "e2e:reset": "npm --prefix server run e2e:reset",
+    "e2e:seed": "npm --prefix server run e2e:seed"
   },
   "dependencies": {
     "@capacitor-mlkit/barcode-scanning": "^8.1.0",

@@ -1,5 +1,7 @@
 /** Route mount table — extracted from app.ts to keep that file under 250 LOC. */
 import type { Express, Router } from 'express'
+import { testHooksEnabled } from './lib/test-hooks.js'
+import testHooksRoutes from './routes/test-hooks.route.js'
 import authRoutes from './routes/auth/index.js'
 import feedbackRoutes from './routes/feedback.js'
 import backupRoutes from './routes/backup.js'
@@ -228,4 +230,10 @@ const ROUTE_MOUNTS: Array<[string, Router]> = [
 
 export function mountFeatureRoutes(app: Express): void {
   for (const [path, router] of ROUTE_MOUNTS) app.use(path, router)
+
+  // E2E test hooks — NOT in ROUTE_MOUNTS, because that table is unconditional
+  // and this router must not exist unless the process was started with
+  // E2E_TEST_HOOKS=1 on a non-production NODE_ENV. Guarded again per-request
+  // inside the router itself. See server/src/lib/test-hooks.ts.
+  if (testHooksEnabled()) app.use('/api/__test__', testHooksRoutes)
 }
