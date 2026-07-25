@@ -49,6 +49,22 @@ export function initServiceWorker(): void {
   if (typeof window === 'undefined') return
   if (!('serviceWorker' in navigator)) return
 
+  // Dev self-heal: a SW registered by an earlier `vite preview` / Capacitor
+  // build lingers on localhost and serves a cached index.html whose hashed
+  // chunk URLs no longer exist under `vite dev` → blank/white tab. Tear any
+  // stale registration (and its caches) down so dev never boots governed by
+  // an old worker. registerSW is a no-op in dev anyway (no devOptions), so
+  // there is nothing to register here.
+  if (import.meta.env.DEV) {
+    navigator.serviceWorker.getRegistrations().then((regs) => {
+      regs.forEach((reg) => reg.unregister())
+    })
+    if ('caches' in window) {
+      caches.keys().then((keys) => keys.forEach((k) => caches.delete(k)))
+    }
+    return
+  }
+
   const update = registerSW({
     immediate: true,
     onRegisteredSW(_swUrl, registration) {
