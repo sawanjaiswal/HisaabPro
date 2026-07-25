@@ -19,11 +19,14 @@
 
 import { PrismaClient } from '@prisma/client'
 import { seedDefaultAccounts } from '../src/services/accounting/chart-of-accounts.js'
+import { hashPassword } from '../src/lib/password.js'
 
 const prisma = new PrismaClient()
 
 /** Reserved E2E numbers — never issued to a real user; specs hardcode these. */
 export const E2E_OWNER_PHONE = '9000000001'
+/** Password for every seeded account. Mirrored by e2e/gold/support/constants.ts. */
+export const E2E_PASSWORD = 'Test@12345'
 export const E2E_STAFF_PHONE = '9000000002'
 /** FIX-NEW: guaranteed to have no account. */
 export const E2E_UNREGISTERED_PHONE = '9000000099'
@@ -33,10 +36,23 @@ const withGst = flags.includes('--gst')
 const withData = flags.includes('--seeded')
 
 async function seedTenant() {
+  // Hashed with the app's own util so a change to SALT_ROUNDS or the algorithm
+  // cannot leave the seed producing a hash the login path refuses.
+  const passwordHash = await hashPassword(E2E_PASSWORD)
+
   const user = await prisma.user.upsert({
     where: { phone: E2E_OWNER_PHONE },
-    update: { name: 'E2E Owner', isActive: true, isSuspended: false },
-    create: { phone: E2E_OWNER_PHONE, name: 'E2E Owner', isActive: true },
+    update: {
+      name: 'E2E Owner',
+      isActive: true,
+      isSuspended: false,
+      passwordHash,
+      // A prior run's brute-force case may have locked this account. A seed that
+      // leaves it locked is a seed that cannot log in.
+      failedLoginAttempts: 0,
+      accountLockedUntil: null,
+    },
+    create: { phone: E2E_OWNER_PHONE, name: 'E2E Owner', isActive: true, passwordHash },
   })
 
   const business = await prisma.business.upsert({

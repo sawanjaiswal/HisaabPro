@@ -145,7 +145,13 @@ export async function logout() {
       method: 'POST',
     })
   } catch {
-    // Logout should succeed client-side even if server fails
+    // A user who taps Logout must end up logged out of this device even with no
+    // network — so local state is cleared regardless. This swallow is for the
+    // offline case only: any *server-reachable* failure here is a bug, and it
+    // hid one for a long time (403 CSRF_FAILED on every logout — see
+    // .claude/fix-trace-logout-session-survives.md). TC-AUTH-06 now asserts the
+    // server session is actually dead, so a regression fails the suite instead
+    // of disappearing into this catch.
   }
   clearAuth()
 }

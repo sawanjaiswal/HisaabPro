@@ -8,7 +8,7 @@
 
 import { test as base, expect, type APIRequestContext, type Page } from '@playwright/test'
 import { registerVerifiedUser, testHooksLive } from './api'
-import { uniquePhone, VALID_PASSWORD, ROUTES } from './constants'
+import { uniquePhone, VALID_PASSWORD, ROUTES, COOKIES, CSRF_HEADER } from './constants'
 
 interface FreshUser {
   phone: string
@@ -89,6 +89,23 @@ export async function typeOtp(page: Page, otp: string, selector: string): Promis
  */
 export function actionFailures(failures: string[]): string[] {
   return failures.filter((f) => !/\/api\/auth\/(me|refresh)$/.test(f))
+}
+
+/**
+ * Issues a state-changing API call the way the app does: with the CSRF token
+ * bootstrapped from the cookie. Playwright's request context inherits cookies
+ * but sends no `x-csrf-token` header, so a bare POST is rejected with
+ * CSRF_FAILED — which would look like the endpoint failing rather than the
+ * caller skipping a step the real client performs.
+ */
+export async function csrfPost(page: Page, path: string, data?: unknown) {
+  await page.request.get(`${path.replace(/\/api\/.*$/, '')}/api/auth/csrf-token`).catch(() => {})
+  const cookies = await page.context().cookies()
+  const token = cookies.find((c) => c.name === COOKIES.csrf)?.value ?? ''
+  return page.request.post(path, {
+    headers: { [CSRF_HEADER]: token },
+    ...(data === undefined ? {} : { data }),
+  })
 }
 
 /** Non-2xx/3xx responses seen during the test — catches silent 500s. */

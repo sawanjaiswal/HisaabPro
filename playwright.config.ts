@@ -52,6 +52,12 @@ export default defineConfig({
       port: 5002,
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
+      // Forced, not inherited: app.config.ts falls back to AUTH_MODE
+      // 'dev-login' when VITE_AUTH_MODE is unset, and that form posts
+      // /api/auth/dev-login — a route the server refuses unless
+      // ALLOW_DEV_LOGIN=true. Without this the suite would exercise a path
+      // production disables and never touch /api/auth/login at all.
+      env: { VITE_AUTH_MODE: 'otp' },
     },
   ],
 })

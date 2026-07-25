@@ -43,6 +43,18 @@ export const SEL = {
   loginError: '.login-page__error',
 } as const
 
+/**
+ * Auth cookie names, mirrored from server/src/config/security.ts. The `__Secure-`
+ * prefix is production-only (it requires Secure=true, which HTTP dev cannot set),
+ * so a spec that hardcoded the prefixed name would silently find nothing locally.
+ */
+export const COOKIES = {
+  access: 'at',
+  refresh: 'rt',
+  csrf: 'csrf-token',
+} as const
+export const CSRF_HEADER = 'x-csrf-token'
+
 /** Server-side security constants mirrored from server/src/config/security.ts. */
 export const OTP_LENGTH = 6
 export const OTP_MAX_ATTEMPTS = 5
