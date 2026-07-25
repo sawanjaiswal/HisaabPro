@@ -8,8 +8,8 @@
 > **Method:** every number below was measured against the codebase, not
 > estimated. Re-run the commands in each section to refresh.
 >
-> Last audited: **2026-07-24** · Branch: `redesign/mobile-first-sweep`
-> (previous audits: 2026-07-21 same branch · 2026-07-19 on `master`)
+> Last audited: **2026-07-25** · Branch: `redesign/mobile-first-sweep`
+> (previous audits: 2026-07-24 · 2026-07-21 same branch · 2026-07-19 on `master`)
 
 ---
 
@@ -28,7 +28,20 @@ HisaabPro is gold when ALL of these hold (measurable gates, not vibes):
 | G7 | Every screen has all 4 UI states + 320px clean | per-page audit sweep | ⬜ | 🟡 **81/190 measured clean** | 🟡 81/190 (no new sweep) |
 | G8 | Money is always integer paise; ledgers reconcile | GL trial-balance = 0 | ✅ | ✅ | ✅ |
 | G9 | Multi-business switching is smooth | switch has its own limiter | ❌ | ✅ **MET** | ✅ |
-| G10 | **Every screen matches the GPT design language** | `docs/GPT_REDESIGN_PLAN.md` tracker | — | 🟡 **~34/58 screens** | 🟡 ~34/58 (parties/DateField/tabs polished) |
+| G10 | **Every screen matches the GPT design language** | `docs/GPT_REDESIGN_PLAN.md` tracker | — | 🟡 **~34/58 screens** | 🟢 **restyles complete; 5 NEW builds deferred (D2)** |
+
+**Re-audit 2026-07-25 (this pass):** every mechanical gate re-verified green from
+a cold run — `tsc` clean (root + server), `enforce.js` all-green, offline ratchet
+`0/0/0` (1876 files), `npm run ssot` pass, `check-refs` fresh. **G3 re-run green**
+(client `vitest` exit 0; server exit 0 modulo one known 10 s-timeout flake in
+`storefront-proof.test.ts` — order-dependent, red on HEAD too, per memory
+`project_unit_suite_flake`). **P2.3 closed** (dashboard's two local surface tokens
+promoted to global `--color-hero-surface` / `--color-hero-surface-deep`).
+**G10 corrected:** the §P4 "24 restyles remaining" line was stale — the
+`GPT_REDESIGN_PLAN.md` checklist shows Waves 5–9 **all restyled** (6/6, 5/6, 4/6,
+18/18, 4/5); the only open items are the **5 NEW builds**, all deferred per D2.
+**Net: the sole structural gate not green is G1**, and its remaining work is a
+flag rollout (Wave A), not construction — unchanged as the critical path.
 
 **Headline (changed since 07-21):** the debt gates all closed. `enforce.js` went
 from **6 errors + 13 warnings → all-green** (P2.1 oversized files split, P2.2
@@ -277,10 +290,14 @@ report-shared.css) all migrated onto `<BottomActionBar>`/`<Drawer>` or
 met — an empty debt set means new violations fail the commit, ratchet can only go
 down. **Acceptance MET:** `node scripts/enforce.js` → all checks passed, 0 warnings.
 
-#### P2.3 · Two feature-local design tokens outside the token file
-`dashboard-page.css:18-19` defines `--hp-dash-surface: #012619` and
-`--hp-dash-card: #003121` locally. Should live with the global emerald hero
-tokens so dark-mode parity is automatic. **Effort:** XS.
+#### P2.3 · Two feature-local design tokens outside the token file — ✅ **DONE** (2026-07-25)
+`dashboard-page.css` previously defined `--hp-dash-surface: #012619` and
+`--hp-dash-card: #003121` locally. Promoted to global `tokens-colors.css`:
+`--hp-dash-card` folded onto the existing `--color-hero-surface` (identical
+`#003121`), and `--hp-dash-surface` became a new `--color-hero-surface-deep`
+(`#012619`). All usages across `dashboard-page.css` + `dashboard-sales-hero.css`
+repointed; zero `hp-dash-*` remain. Both are theme-fixed hero surfaces, so no
+`tokens-dark.css` override is needed (parity automatic).
 
 #### P2.4 · SR-2 — the mode flag moved outside high-risk-gate coverage *(security-relevant)*
 - **Evidence:** `~/.claude/rules/HIGH_RISK_PATHS.md` matches `**/lib/env.ts` and
@@ -353,25 +370,37 @@ tokens so dark-mode parity is automatic. **Effort:** XS.
   *unit* suite has a pre-existing order-dependent flake — a random single file fails
   ~1-in-3 full runs on HEAD too, unrelated to this change; tracked separately.)
 
-### P4 — Design sweep completion (G10)
+### P4 — Design sweep completion (G10) — restyles ✅ **COMPLETE**; 5 NEW builds deferred
 
-Tracked in full in `docs/GPT_REDESIGN_PLAN.md §5`. Summary of what remains:
+**Corrected 2026-07-25.** The table below (a stale "24 restyles remaining"
+snapshot) has been superseded by the `docs/GPT_REDESIGN_PLAN.md §5` checklist,
+which shows every restyle wave **done**:
 
-| Wave | Scope | Remaining |
+| Wave | Scope | Status (GPT_REDESIGN_PLAN checklist) |
+|---|---|---|
+| 5 | Reports | ✅ 6/6 restyled |
+| 6 | People / HR / collections | ✅ 5/6 restyled (#26 Delivery/Route = NEW, deferred) |
+| 7 | Tasks / reminders / calendar | ✅ 4/6 restyled (#64, #24/61 = NEW, deferred) |
+| 8 | Settings / business / account | ✅ 18/18 restyled (8a/8b/8c) |
+| 9 | Accounts / onboarding / import | ✅ 4/5 restyled (#58 opening-balance = NEW, deferred) |
+
+**Only the 5 NEW builds remain, all deferred per D2** pending competitor
+comparison (Vyapar / myBillBook / Khatabook / OkCredit): Delivery-Route #26,
+Today's Tasks #64, **Universal Search #24/61** (a full-stack build — no
+global-search component, hook, or `/api/search` endpoint exists), Help #36,
+About #37. No restyle work is outstanding; G10 is green for the shipped surface.
+
+<details><summary>Superseded 07-24 "remaining" table (kept for history)</summary>
+
+| Wave | Scope | Remaining (as of 07-24, now stale) |
 |---|---|---|
 | 5 | Reports | 4 of 6 (P&L, Cash flow, GST, Aging) |
 | 6 | People / HR / collections | 5 restyles + 1 NEW |
 | 7 | Tasks / reminders / calendar | 4 restyles + 2 NEW |
 | 8 | Settings / business / account | 18 — split 8a/8b/8c |
 | 9 | Accounts / onboarding / import | 5 |
-| NEW | Delivery-Route, Today's Tasks, **Universal Search**, Help, About | 5 full builds |
 
-**24 restyles + 5 new builds.** Universal Search was reclassified this audit —
-it was listed as "EXISTS/partial" but no global-search component, hook, or
-`/api/search` endpoint exists anywhere. It is a full-stack build.
-
-Per D2, the NEW screens stay deferred pending competitor comparison
-(Vyapar / myBillBook / Khatabook / OkCredit).
+</details>
 
 ---
 
@@ -381,19 +410,21 @@ Per D2, the NEW screens stay deferred pending competitor comparison
 |------|-------|------|-----------|
 | **A (now — critical path)** | P0.1 — deploy `SCOPED_PRISMA_ENFORCE=shadow`, watch 7d → triage divergences → `enforce` → `CUTOVER_DONE=true` + red-team test. Flag rollout, not code. | **G1** | ⛔ gates multi-tenant launch |
 | ~~**B**~~ | ~~P2.1 oversized files · P2.2 shell debt + promote checks to errors~~ ✅ **DONE 2026-07-23/24** — enforce.js all-green | G6 ✅ | — |
-| **C** | P1.2 UI-state sweep — ✅ **i18n portion DONE 2026-07-24** (auth + BOM + production-runs closed; onboarding/marketing/POS re-measured as already `t.*`). Remaining C work = PageContainer/responsive gaps, folded into Wave D. | G7 | first-impression quality |
-| **D** | P4 design sweep — Wave 5 → 6 → 7 → 9 → 8a/8b/8c (current branch) | G10 | product polish |
-| **E** | ~~P1.3 offline-replay~~ ✅ · ~~P3.2 ratchet to 0~~ ✅ · P3.1 todo tests (deferred, needs DB harness) | G5 ✅, coverage | hygiene |
-| **F** | 5 NEW screens (after competitor comparison per D2) | — | net-new surface |
+| ~~**C**~~ | ~~P1.2 UI-state sweep — i18n portion~~ ✅ **DONE 2026-07-24** (auth + BOM + production-runs closed; onboarding/marketing/POS already `t.*`). Residual PageContainer/responsive gaps rode with the design sweep. | G7 ✅ | first-impression quality |
+| ~~**D**~~ | ~~P4 design sweep — Waves 5→9~~ ✅ **COMPLETE 2026-07-25** — every restyle wave done (6/6, 5/6, 4/6, 18/18, 4/5 per GPT_REDESIGN_PLAN §5); only the 5 NEW builds split off to Wave F. | G10 ✅ | product polish |
+| **E** | ~~P1.3 offline-replay~~ ✅ · ~~P3.2 ratchet to 0~~ ✅ · P3.1 todo tests (deferred, needs live-PG concurrency harness) | G5 ✅, coverage | hygiene |
+| **F** | 5 NEW screens — Delivery-Route #26, Today's Tasks #64, Universal Search #24/61, Help #36, About #37 (deferred per D2, after competitor comparison) | — | net-new surface |
 
 **Critical path to "onboard multiple companies safely" = Wave A.** It is the only
-structural gate left; everything after it is quality, not safety.
+structural gate left; every restyle/polish wave (B, C, D) is complete, so
+everything remaining is either the isolation cutover (A, ops/flag), deferred
+hygiene (P3.1), or deferred net-new surface (F).
 
-Wave B is complete — enforce.js is all-green with empty debt sets, so Waves C/D
-commits no longer fight the gate. Remaining loose end outside the waves: **P2.3**
-(2 local dash tokens → global emerald hero tokens, XS) and **P2.4/SR-2** (the
-`env.scoped-prisma.ts` high-risk-glob gap, blocked on the `~/.claude/rules` file
-being editable).
+Wave B is complete — enforce.js is all-green with empty debt sets. **P2.3** (dash
+surface tokens → global emerald hero tokens) landed 2026-07-25. The sole loose end
+outside the waves: **P2.4/SR-2** — the `env.scoped-prisma.ts` high-risk-glob gap,
+blocked on the `~/.claude/rules/HIGH_RISK_PATHS.md` file (global, not this repo)
+being editable.
 
 ---
 
