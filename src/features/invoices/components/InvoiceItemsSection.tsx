@@ -13,6 +13,8 @@ import { useBogoPermission } from '../useBogoPermission'
 import { PartySearchInput } from './PartySearchInput'
 import { FormSection } from '@/components/ui/FormSection'
 import { ProductSearchInput } from './ProductSearchInput'
+import { FrequentProductChips } from './FrequentProductChips'
+import { InvoiceScanButton } from './InvoiceScanButton'
 import { TaxPickerColumn } from './TaxPickerColumn'
 import { HsnTypeahead } from './HsnTypeahead'
 import { calculateLineTotal } from '../invoice-calc.utils'
@@ -99,6 +101,7 @@ export function InvoiceItemsSection({
   )
 
   const addedProductIds = lineItems.map((item) => item.productId)
+  const addedQuantities = Object.fromEntries(lineItems.map((item) => [item.productId, item.quantity]))
 
   return (
     <div className="line-items-section py-0 space-y-6">
@@ -200,9 +203,21 @@ export function InvoiceItemsSection({
 
       {errors.stock && <span className="field-error" role="alert">{errors.stock}</span>}
 
+      {partyId && (
+        <FrequentProductChips
+          partyId={partyId}
+          quantities={addedQuantities}
+          onAdd={handleProductSelect}
+        />
+      )}
+
+      <div className="invoice-scan-row">
+        <InvoiceScanButton onAdd={handleProductSelect} />
+      </div>
+
       {showProductSearch && (
         <div className="product-search-panel py-0">
-          <ProductSearchInput onSelect={handleProductSelect} addedProductIds={addedProductIds} />
+          <ProductSearchInput onSelect={handleProductSelect} addedProductIds={addedProductIds} autoFocus />
         </div>
       )}
       </FormSection>

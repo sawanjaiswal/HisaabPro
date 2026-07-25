@@ -11,6 +11,7 @@ export {
   getOutstandingDelta, getOutstandingReverseDelta,
 } from './document/helpers.js'
 export { createDocument } from './document/create.js'
+export { createDocumentWithPayment } from './document/create-with-payment.js'
 export { getDocument, listDocuments } from './document/get-list.js'
 export { updateDocument } from './document/update.js'
 export { deleteDocument } from './document/delete.js'

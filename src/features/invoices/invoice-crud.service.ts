@@ -6,6 +6,7 @@ import type {
   DocumentDeleteResponse,
   DocumentFilters,
   DocumentFormData,
+  DocumentWirePayload,
   ConversionTargetType,
   NextDocumentNumber,
   DocumentNumberSeriesConfig,
@@ -91,9 +92,10 @@ export async function getDocument(
   return api<DocumentDetail>(`/documents/${id}`, { signal })
 }
 
-/** Create a new document (DRAFT or SAVED). */
+/** Create a new document (DRAFT or SAVED). Accepts the wire payload from
+ *  `normalizeFormPayload` — carries `payment` only when money was received. */
 export async function createDocument(
-  data: DocumentFormData
+  data: DocumentWirePayload
 ): Promise<DocumentDetail> {
   return api<DocumentDetail>('/documents', {
     method: 'POST',
@@ -106,7 +108,7 @@ export async function createDocument(
 /** Update an existing document (blocked once CONVERTED or DELETED). */
 export async function updateDocument(
   id: string,
-  data: Partial<DocumentFormData>,
+  data: Partial<DocumentWirePayload>,
   expectedVersion?: number
 ): Promise<DocumentDetail> {
   // The form payload is create-shaped, but updateDocumentSchema is `.strict()`

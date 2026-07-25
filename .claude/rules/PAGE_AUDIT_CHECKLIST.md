@@ -58,7 +58,7 @@ Order: A→N. Mechanical enforcers cited where they exist
 - [ ] Bottom-nav clearance: `pb-[calc(var(--bottom-nav-height)+2rem)]`
 - [ ] No `position: fixed; bottom: 0` outside platform-primitive allowlist
 - [ ] No `position: sticky|fixed; top: 0` outside allowlist
-- [ ] Touch targets ≥ 44px (`min-h-[44px]`)
+- [ ] Touch targets ≥ 40px (`min-h-[40px]`) — hardware floor, independent of text size
 
 ## F. Responsive (Wave-specific)
 
@@ -67,7 +67,7 @@ Order: A→N. Mechanical enforcers cited where they exist
 - [ ] Forms: `max-w-2xl mx-auto` ≥md
 - [ ] No horizontal scroll at 320, 375, 768, 1024, 1280, 1536
 - [ ] Tables use `<ResponsiveTable>` (cards <md, table ≥md)
-- [ ] Tap targets remain ≥44px on desktop
+- [ ] Tap targets remain ≥40px on desktop
 - [ ] SideNav rail does not overlap content at 1024-1279
 
 ## G. 4 UI states (mandatory)
@@ -109,7 +109,7 @@ Order: A→N. Mechanical enforcers cited where they exist
 
 ## L. Accessibility
 
-- [ ] Color contrast ≥ 4.5:1 body text
+- [ ] Color contrast ≥ 4.5:1 body text (density scale is fine; **no font below 9px** — `--fs-3xs` is the hard floor)
 - [ ] Focus rings visible on every interactive element
 - [ ] Icon-only buttons have `aria-label`
 - [ ] Inputs have associated `<label>` or `aria-label`

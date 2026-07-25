@@ -49,6 +49,8 @@ function detailToFormData(detail: DocumentDetail): DocumentFormData {
     isReverseCharge: detail.isReverseCharge ?? false,
     supplyType: detail.supplyType ?? 'B2C_SMALL',
     placeOfSupply: detail.placeOfSupply ?? undefined,
+    // Payment-at-creation is a create-only concern; edit never re-collects it.
+    payment: { amountReceived: 0, mode: 'CASH', referenceNumber: '' },
   }
 }
 

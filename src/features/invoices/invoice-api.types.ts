@@ -9,19 +9,19 @@ import type {
   DiscountType,
   DocumentSortBy,
   DocumentStatus,
-  DocumentStockValidation,
   DocumentType,
-  ExportFormat,
   FinancialYearFormat,
   PaymentTerms,
-  RoundOffSetting,
-  ShareChannel,
 } from './invoice-enums.types'
 import type {
   DocumentSummary,
   TransportDetails,
 } from './invoice-document.types'
 import type { TaxPricingMode } from '../tax/tax.types'
+
+// Settings & terms-template types live in their own file (250-line discipline);
+// re-exported so `./invoice-api.types` and the barrel keep exposing them.
+export type * from './invoice-settings.types'
 
 // ─── API Responses ────────────────────────────────────────────────────────────
 
@@ -169,7 +169,41 @@ export interface DocumentFormData {
   /** #134 — In-form: `{ [fieldDefId]: value }`. On wire (after normalize): `Array<{ fieldDefId, valueJson }>`. */
   customFieldValues?: Record<string, unknown> | Array<{ fieldDefId: string; valueJson: unknown }>
   priceListId?: string | null // Epic B PR2 — override; null = party default; stored for audit traceability
+  /** Gold-standard payment-at-creation — money received against this invoice.
+   *  Sent to the server (nested `payment`) only when amountReceived > 0 and the
+   *  doc is a SAVED sale invoice; the server records a real Payment + allocation
+   *  via the canonical createPayment service. `mode`/`referenceNumber` describe
+   *  how it was received. Kept in form state so the toggle is controlled. */
+  payment: InvoicePaymentFormData
 }
+
+/** In-form representation of the receive-payment toggle. */
+export interface InvoicePaymentFormData {
+  /** Paise. 0 = "did not receive payment now" (credit sale). */
+  amountReceived: number
+  mode: PaymentModeValue
+  referenceNumber: string
+}
+
+/** Payment modes accepted by the server (shared/enums PAYMENT_MODES). */
+export type PaymentModeValue =
+  | 'CASH' | 'UPI' | 'BANK_TRANSFER' | 'CHEQUE' | 'NEFT_RTGS_IMPS' | 'CREDIT_CARD' | 'OTHER'
+
+/** Wire-ready create/update payload produced by `normalizeFormPayload`.
+ *
+ *  Three client-only form fields are dropped before serialization because the
+ *  `.strict()` server schemas reject them (they'd 400 every create/update):
+ *   · `supplyType`   — the server derives it from the party GSTIN + grand total
+ *                      (create.ts `resolveSupplyType`); the form value is only a
+ *                      UI hint (drives the RCM toggle).
+ *   · `vehicleNumber` — persisted only via `transportDetails.vehicleNumber`;
+ *                       `normalizeFormPayload` folds the top-level value in there.
+ *   · `payment`      — attached by the create call site ONLY (and only when money
+ *                      was received); updates never carry it. */
+export type DocumentWirePayload =
+  Omit<DocumentFormData, 'supplyType' | 'vehicleNumber' | 'payment'> & {
+    payment?: InvoicePaymentFormData
+  }
 
 // ─── Document Conversion ──────────────────────────────────────────────────────
 
@@ -194,56 +228,5 @@ export interface ConvertDocumentRequest {
   targetType: ConversionTargetType
 }
 
-// ─── Document Settings ────────────────────────────────────────────────────────
-
-export interface DocumentDefaultAdditionalCharge {
-  name: string
-  type: ChargeType
-  /** Default value; 0 means no default amount pre-filled */
-  value: number
-}
-
-/** Business-level document configuration — mirrors GET /settings/documents response */
-export interface DocumentSettings {
-  defaultPaymentTerms: PaymentTerms
-  stockValidation: DocumentStockValidation
-  roundOffTo: RoundOffSetting
-  decimalPlaces: {
-    quantity: number
-    rate: number
-    amount: number
-  }
-  defaultTermsAndConditions: string | null
-  autoShareOnSave: boolean
-  autoShareChannel: ShareChannel
-  autoShareFormat: ExportFormat
-  /** Whether to show profit margin to billing staff */
-  showProfitDuringBilling: boolean
-  allowFutureDates: boolean
-  /** Days before a saved document is locked for editing (0 = no lock) */
-  transactionLockDays: number
-  recycleBinRetentionDays: number
-  defaultAdditionalCharges: DocumentDefaultAdditionalCharge[]
-  /** Block sales where qty < product.moq — returns MOQ_VIOLATION error on backend */
-  enforceMoq: boolean
-  /** Show 40×40 product thumbnail in each invoice line item row */
-  showLineItemImages: boolean
-}
-
-// ─── Terms & Conditions Template ─────────────────────────────────────────────
-export interface TermsTemplate {
-  id: string
-  name: string
-  content: string
-  isDefault: boolean
-  appliesTo: DocumentType[]
-  createdAt: string
-  updatedAt: string
-}
-
-export interface TermsTemplateFormData {
-  name: string
-  content: string
-  isDefault?: boolean
-  appliesTo: DocumentType[]
-}
+// Document settings & Terms-template types moved to ./invoice-settings.types
+// (re-exported at the top of this file).

@@ -7,6 +7,7 @@ import { getParties } from '@/lib/services/party.service'
 import type { PartySummary } from '@/lib/types/party.types'
 import { PartySearchField } from './PartySearchField'
 import { PartySearchDropdown } from './PartySearchDropdown'
+import { PartyBalanceChip } from './PartyBalanceChip'
 import { useInstantAddParty } from './useInstantAddParty'
 import { Button } from '@/components/ui/Button'
 
@@ -192,6 +193,9 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
         <div className="party-selector-selected" role="status" aria-label={`Selected: ${selectedName}`}>
           <div className="party-selector-info">
             <div className="party-selector-name">{selectedName}</div>
+            {/* Balance + GSTIN surface the moment a customer is picked, so the
+                seller sees existing dues before adding items. */}
+            <PartyBalanceChip partyId={value} />
           </div>
           <Button variant="none"
             type="button"

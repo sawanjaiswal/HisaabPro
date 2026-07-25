@@ -16,6 +16,7 @@ export const queryKeys = {
     customFields: () => ['parties', 'custom-fields'] as const,
     transactions: (id: string, filters: Filters) => ['parties', 'transactions', id, filters] as const,
     ledger: (id: string, params: Filters) => ['parties', 'ledger', id, params] as const,
+    frequentProducts: (id: string) => ['parties', 'frequent-products', id] as const,
   },
   products: {
     all: () => ['products'] as const,

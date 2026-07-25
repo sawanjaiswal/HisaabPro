@@ -22,6 +22,9 @@ interface ProductSearchInputProps {
   onSelect: (productId: string, ratePaise: number, productName: string) => void
   /** IDs of products already in the line items — shown as "Added" */
   addedProductIds: string[]
+  /** When true, focus the field on mount so the keyboard stays open as the
+   *  seller flows straight from picking a customer into adding items. */
+  autoFocus?: boolean
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -29,6 +32,7 @@ interface ProductSearchInputProps {
 export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
   onSelect,
   addedProductIds,
+  autoFocus = false,
 }) => {
   const { t } = useLanguage()
   const [query, setQuery] = useState('')
@@ -99,6 +103,15 @@ export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
       abortRef.current?.abort()
     }
   }, [])
+
+  // ─── Auto-focus on mount (selling flow: customer → item search) ───────────
+
+  useEffect(() => {
+    if (!autoFocus) return
+    // rAF so the focus lands after the panel has painted (keyboard stays up).
+    const id = requestAnimationFrame(() => inputRef.current?.focus())
+    return () => cancelAnimationFrame(id)
+  }, [autoFocus])
 
   // ─── Handlers ────────────────────────────────────────────────────────────
 

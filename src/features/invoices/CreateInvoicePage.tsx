@@ -1,9 +1,4 @@
-/** Create Invoice — Page (lazy loaded)
- *
- * Follows CreatePartyPage.tsx pattern: pill tabs for sections,
- * sticky bottom totals bar with save actions.
- * Sections: Items · Details · Charges
- */
+/** Create Invoice — Page (lazy). One continuous scroll; sticky totals bar saves. */
 
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -14,17 +9,23 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { Button } from '@/components/ui/Button'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
+import { useToast } from '@/hooks/useToast'
 import { useGstGate } from '@/features/gst/useGstGate'
 import { useInvoiceForm } from './useInvoiceForm'
+import { useInvoiceHotkeys } from './useInvoiceHotkeys'
 import { useBillScanPrefill } from './useBillScanPrefill'
 import { getCreateTitle } from '@/features/sales/sales.utils'
 import type { DocumentType } from './invoice.types'
 import { InvoiceTotalsBar } from './components/InvoiceTotalsBar'
+import { InvoiceHeaderMeta } from './components/InvoiceHeaderMeta'
 import { InvoiceItemsSection } from './components/InvoiceItemsSection'
 import { GstInvoiceHeader } from './components/GstInvoiceHeader'
 import { UntaggedTaxDialog } from './components/UntaggedTaxDialog'
 import { InvoicePreviewDrawer } from './components/InvoicePreviewDrawer'
 import { InvoiceOptionalSections } from './components/InvoiceOptionalSections'
+import { InvoiceGstSummary } from './components/InvoiceGstSummary'
+import { ReceivePaymentToggle } from './components/ReceivePaymentToggle'
+import { useInvoiceGstSummary } from './useInvoiceGstSummary'
 import { StockShortageBanner } from './components/StockShortageBanner'
 import { ExpiredBatchBanner } from '@/features/inventory/components/ExpiredBatchBanner'
 import './invoice-party-search.css'
@@ -34,15 +35,14 @@ import './invoice-summary.css'
 import './invoice-gst-banners.css'
 
 interface CreateInvoicePageProps {
-  /** Document type override — defaults to SALE_INVOICE.
-   * Used by Estimate / Sale Order / Delivery Challan create routes
-   * which share this same form engine (architect Q3 decision). */
+  /** Document type override — Estimate / Sale Order / Challan share this engine. */
   type?: DocumentType
 }
 
 export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoicePageProps) {
   const nav = useNavigate()
   const { t } = useLanguage()
+  const toast = useToast()
   const {
     form,
     errors,
@@ -71,12 +71,12 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
   } = useInvoiceForm(type)
 
   const { compositionScheme } = useGstGate()
+  const gstSummary = useInvoiceGstSummary(form.lineItems, form.placeOfSupply, form.taxPricingMode)
   const [productNames, setProductNames] = useState<Record<string, string>>({})
   const [showProductSearch, setShowProductSearch] = useState(false)
   const [partyName, setPartyName] = useState('')
   const [showPreview, setShowPreview] = useState(false)
-  /** Optional sections start collapsed to match the mockup's clean scroll, but
-   *  charges open on their own when the document already carries some. */
+  // Optional sections start collapsed; charges open when the doc already has some.
   const [openSections, setOpenSections] = useState<string[]>(
     () => (form.additionalCharges.length > 0 ? ['charges'] : []),
   )
@@ -85,29 +85,37 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
 
   const handlePartyChange = useCallback((id: string, name: string) => {
     updateField('partyId', id)
-    // Kept for the preview's "Bill To" block — the form itself only needs the id.
-    setPartyName(name)
-  }, [updateField])
+    setPartyName(name) // kept for the preview's "Bill To" block
+    // Picking a customer flows straight into item search — only when empty.
+    if (id && form.lineItems.length === 0) setShowProductSearch(true)
+  }, [updateField, form.lineItems.length])
 
   const handleProductSelect = useCallback((productId: string, ratePaise: number, productName: string) => {
-    const alreadyAdded = form.lineItems.some((item) => item.productId === productId)
-    if (alreadyAdded) return
+    // Re-selecting an already-added product bumps its qty (tap the same chip
+    // twice = two units); no modal confirm — it would kill the one-tap flow.
+    const existing = form.lineItems.findIndex((item) => item.productId === productId)
+    if (existing >= 0) {
+      updateLineItem(existing, { quantity: (form.lineItems[existing]?.quantity ?? 1) + 1 })
+      toast.success(t.qtyIncreased)
+      return
+    }
 
     setProductNames((prev) => ({ ...prev, [productId]: productName }))
     addLineItem({
-      productId,
-      quantity: 1,
-      rate: ratePaise,
-      discountType: 'PERCENTAGE',
-      discountValue: 0,
-      taxCategoryId: null,
-      hsnCode: '',
+      productId, quantity: 1, rate: ratePaise, discountType: 'PERCENTAGE',
+      discountValue: 0, taxCategoryId: null, hsnCode: '',
     })
-  }, [form.lineItems, addLineItem])
+  }, [form.lineItems, addLineItem, updateLineItem, toast, t])
 
   const toggleProductSearch = useCallback(() => {
     setShowProductSearch((v) => !v)
   }, [])
+
+  useInvoiceHotkeys({
+    onQuickAdd: () => setShowProductSearch(true),
+    onSave: handleSubmit,
+    onEscape: () => setShowProductSearch(false),
+  })
 
   const formTitle = type === 'SALE_INVOICE'
     ? t.newInvoice
@@ -146,6 +154,11 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
           />
         )}
 
+        <InvoiceHeaderMeta
+          documentDate={form.documentDate}
+          onDateChange={(v) => updateField('documentDate', v)}
+        />
+
         {gstEnabled && (
           <GstInvoiceHeader
             form={form}
@@ -154,9 +167,6 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
           />
         )}
 
-        {/* Mockup #2 is one continuous scroll — Customer and Items are always
-            visible; the optional sections collapse rather than hiding behind
-            tabs, so nothing that used to be reachable stops being reachable. */}
         <InvoiceItemsSection
           partyId={form.partyId}
           lineItems={form.lineItems}
@@ -184,7 +194,20 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
           onAddCharge={addCharge}
           onUpdateCharge={updateCharge}
           onRemoveCharge={removeCharge}
+          hideDate
         />
+
+        {/* GST breakdown — mounts only when GST is on with non-zero tax. */}
+        {gstSummary && <InvoiceGstSummary data={gstSummary} />}
+
+        {/* Payment-at-creation — sale invoices only. */}
+        {type === 'SALE_INVOICE' && totals.grandTotal > 0 && (
+          <ReceivePaymentToggle
+            grandTotal={totals.grandTotal}
+            payment={form.payment}
+            onChange={(next) => updateField('payment', next)}
+          />
+        )}
       </PageContainer>
 
       <InvoiceTotalsBar

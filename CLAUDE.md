@@ -9,7 +9,8 @@
 
 ## Design Direction
 - Premium Cred/Jupiter polish — NOT Vyapar's dated UI
-- Light primary, dark secondary · Deep Emerald Green (#026F39) brand color · Inter font · 16px min body
+- Light primary, dark secondary · Deep Emerald Green (#026F39) brand color · Inter font
+- Density type scale (business apps favour density over size — matches `--fs-*` tokens): page title 18 (`--fs-2xl`) · section title 13 (`--fs-md`) · body 12-14 (`--fs-sm`/`--fs-df`) · metadata 10 (`--fs-2xs`) · caption 9 (`--fs-3xs`, hard floor — never below 9px). Touch targets ≥ 40px regardless of text size.
 - Two greens, never mixed: brand emerald (`--color-primary-*`) = identity + primary actions + nav-active + FAB; success green (`--color-success-*`) = status only (paid/up/good). Deep-emerald hero surfaces (#003121) with bright-green accents on top.
 - Generous whitespace · soft shadows · 8-12px card radius · subtle micro-interactions
 - Mobile: 375px primary, 320px minimum · works on Rs 8K-15K Android phones with 2G/3G
@@ -21,7 +22,7 @@ Path: `/Users/sawanjaiswal/DudhHisaab`
 - Keep as-is: crypto OTP, timingSafeEqual, token blacklist, rate limits, WebAuthn, offline auth
 
 ## Key Decisions
-- No GST in MVP (Phase 2) · No microservices · Offline-first (IndexedDB primary)
+- GST is first-class in the billing/invoice flow (tax %/HSN per line, GST summary, place-of-supply); other GST features (returns, filing) stay phased · No microservices · Offline-first (IndexedDB primary)
 - React-PDF (client-side, not Puppeteer) · Cursor pagination · Amounts in paise (integer)
 - `/f <feature>` to build · 6-layer split per feature · 4 UI states every screen
 

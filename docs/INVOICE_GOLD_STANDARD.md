@@ -1,190 +1,165 @@
-# Create-Invoice — Gold-Standard Plan
+# Create-Invoice — Gold-Standard Plan (v3)
 
-> Benchmark: Vyapar "Sale" create flow (7 screens, captured 2026-07-24).
-> Target: `/invoices/new?type=SALE` on HisaabPro.
-> Status: **PLAN ONLY** — no code in this pass.
+> Sources: Vyapar "Sale" audit (2026-07-24) + product brief "Invoice Creation
+> Flow GS" (2026-07-25) + Sawan's 3 scope decisions (2026-07-25).
+> Target: `CreateInvoicePage.tsx` (`/invoices/new`), all form factors.
+> Status: **PLAN + wireframes.** Build starts after wireframe sign-off.
 
-## 0. Guardrails (what this plan may and may not do)
+## 0. Locked decisions (2026-07-25)
 
-- **No GST in MVP.** HSN/SAC, Tax %, IGST, State of Supply, tax themes, "Without
-  Tax" fields, `Item wise tax`, GST invoice preview themes — all **Phase 2**.
-  Everything below is the *non-GST* subset of Vyapar's flow.
-- **Our aesthetic, not theirs.** Vyapar is dated bordered-Material with
-  torn-ticket totals and a watermark. We stay Cred/Jupiter-clean on emerald
-  (`--color-primary-*`), 16px min body, soft shadows, 8–12px radius.
-- **Reuse first.** New primitives only where none exists. Existing engine:
-  `useInvoiceForm`, `InvoiceTotalsBar`, `InvoiceItemsSection`,
-  `InvoiceOptionalSections`, `PartySearchInput` (+ new global `SearchInput`).
-- **4 UI states, tokens, i18n (en+hi), 320px, offline — every screen.**
+1. **GST is IN the flow now** — reverses CLAUDE.md "No GST in MVP." Tax %/HSN
+   per line, GST summary, place-of-supply are first-class. → **constitution edit
+   required** (see §0.1).
+2. **Typography density → 9–14px** — Sawan chose to adopt the brief's dense
+   scale AND update the core guidelines. → **constitution edit required.**
+   Engineering note kept on record: tap targets stay **≥40px** (touch area ≠
+   font size — a 40px row can hold 11px text); contrast still targeted ≥4.5:1
+   so small text stays legible on cheap Android. This is the one place I'm
+   holding a floor the brief didn't ask for, because it's a hardware fact, not
+   a style preference.
+3. **Mobile + tablet + desktop together** — responsive is part of every phase,
+   not a later epic.
 
----
+### 0.1 Constitution changes this plan will make (first build step)
+| file | change |
+|---|---|
+| `CLAUDE.md` | "No GST in MVP (Phase 2)" → GST in invoice flow; keep other GST features phased |
+| `CLAUDE.md` | "16px min body" → density scale: title 18 / section 13 / body 12-14 / meta 10 / caption 9; tap targets ≥40px |
+| `.claude/rules/PAGE_AUDIT_CHECKLIST.md` §L | contrast ≥4.5:1 retained; remove 16px-min implication; add "no font below 9px" floor |
+| `--fs-*` tokens | **already dense in `tokens-core.css`** (`--fs-3xs`=9 … `--fs-2xl`=18); no new tokens — map screens onto the existing scale |
 
-## 1. Vyapar screen-by-screen audit
+> These are project-guideline edits (not high-risk gated paths). They land in
+> one commit labelled `chore(guidelines): adopt GST-in-flow + density scale`.
 
-### Screen 1 — Sale (main create) `224053`
-| Element | Verdict | Take for HP |
+## 1. The one sentence
+Fastest way for an Indian shopkeeper to sell — invoice is the byproduct.
+Repeat invoice **<20s**. Software never interrupts the conversation.
+
+## 2. Target selling flow
+`Customer → Items → Total → Receive payment? → Done`. Nothing before the first
+item except the customer. Progressive disclosure: cash hides credit/due-date;
+retail hides transport; GST slots show per the tax config.
+
+**Line-item row anatomy** (mobile):
+```
+#1  Ultratech Cement            ₹380 × 10        ₹3,800   ✕
+    HSN 2523 · 18% GST  (2nd line, --fs-2xs meta)          └─ delete row (≥40px hit)
+```
+Tap the row body → opens the edit bottom-sheet (P3). The trailing **✕** deletes
+the row immediately (no confirm — undo via toast). `onRemoveLineItem` is already
+wired in `LineItemEditor`; P1 only surfaces it as the ✕ control.
+
+## 3. Current state → target (grounded)
+| Brief principle | Today | Gap |
 |---|---|---|
-| Header: back · "Sale" · **Credit/Cash toggle** · settings | Keep the payment-nature toggle | **Adopt** Cash/Credit segmented control |
-| **Invoice No. `33` + Date side-by-side, on surface, editable** | Strong — no digging | **Adopt** (ours is buried in a collapsed accordion) |
-| **Party Balance `₹600.00`** top-right above customer | Strong context | **Adopt** inline balance on party select |
-| Customer* (floating label) + Phone Number | Good, but 2 fields | Adopt as 1 party picker; phone auto-from-party |
-| "Billed Items" collapsible + line cards (#, name, qty×rate, disc, tax, total) | Good density | **Adopt** card summary (drop tax row) |
-| "Add Items" dashed button, centered | Good affordance | Adopt |
-| **Totals block: Total → Received (checkbox+₹) → Balance Due (green)** | **The key pattern** | **Adopt** — biggest gap |
-| Payment Type (Cash ▾) + Add Payment Type | Useful | Adopt simple mode dropdown (Cash/UPI/Bank) |
-| State of Supply | GST | **Reject** (Phase 2) |
-| Description + image, Add Document | OK | Keep notes; defer attachments |
-| Terms & Conditions (collapsible) | OK | Already have |
-| Sticky: **Save & New / Save** | Good | **Adopt** dual-action |
+| Auto-focus item search after customer | toggle behind "+ Add item" (2 extra taps) | **P0** |
+| Recents on customer focus | ✅ done | — |
+| Auto-load balance/credit/GSTIN/place-of-supply on select | price-list ✅; balance/GST **not shown** | **P0/P1** |
+| Invoice # + date on surface | buried in accordion | **P0** |
+| Progressive disclosure cash/credit/transport | all shown always | **P1** |
+| GST per line (tax%/HSN) + GST summary | flag-gated, not first-class | **P0 (now in-scope)** |
+| Item edit in bottom sheet | inline editor | P1 |
+| "Already added → +qty?" | silently ignored | P2 |
+| Receive-payment toggle→expand + real payment | absent | **P0** (backend) |
+| Live summary / advanced-collapsed / sticky bar | ✅ | keep |
+| Keyboard qty→price→disc tab | not wired | P2 |
+| Barcode scan-loop / Voice | partial / absent | P3 |
+| Tablet 2-pane / desktop keyboard grid | mobile only | **now in-scope, every phase** |
 
-### Screen 2 — Add Items (empty) `224058`
-- Dedicated sub-screen: Item Name (focused, floating label) · Quantity · Unit (▾) · Rate · ~~Without Tax~~.
-- **Take:** move item entry into a focused sheet with generous fields, not cramped inline rows. Drop "Without Tax".
+## 4. Phased build (responsive baked into each)
 
-### Screen 3 — Item settings toggles `224136`
-- Config sprawl: barcode, stock, manufacturing, party-wise rate, wholesale, decimals, item-wise tax/discount, HSN…
-- **Take:** **Reject** as a create-flow surface. Over-configuration for Raju. (Some already live in our Product model.)
+### Phase 0 — Constitution + tokens ✅ DONE (2026-07-25)
+CLAUDE.md (GST-in-flow + density scale + ≥40px touch), PAGE_AUDIT §E/§L updated.
+`--fs-*` tokens already dense in `tokens-core.css` — no new tokens.
 
-### Screen 4 — Add Items (filled) `224126`
-- Qty `236` · Unit `Bag` · Rate `33`. **Totals & Taxes**: Subtotal (Rate×Qty) · Discount (`06 %` | `₹467.28` dual input) · Tax% (GST) · Total.
-- **Take:** **Adopt** the **dual discount input** (% ⇄ ₹ toggle) and live per-item subtotal. **Reject** the Tax% row (Phase 2).
-
-### Screen 5 — Settings drawer `224147`
-- Sale Prefix · Transaction SMS · Additional Fields · Additional Charges · Billing Type (Full Sale / Mobile POS).
-- **Take:** mostly **Reject** for create flow. Prefix belongs in business settings; charges we already have; SMS = WhatsApp-share later.
-
-### Screens 6–7 — PDF preview (Tally / GST themes) `224208` `224259`
-- Theme picker + full tax-invoice PDF with Sub Total / Discount / **Received / Balance / You Saved**.
-- **Take:** we already have `InvoicePreviewDrawer` + React-PDF. **Adopt** the "Received / Balance / You Saved" lines into our preview + PDF once the received-amount field lands. **Reject** GST columns.
-
----
-
-## 2. Current HisaabPro state (grounded in code)
-
-Page: `CreateInvoicePage.tsx` → continuous scroll:
-`StockBanners → [GstHeader] → InvoiceItemsSection (party + line items) →
-InvoiceOptionalSections (Details accordion + Charges accordion)` +
-sticky `InvoiceTotalsBar` + `InvoicePreviewDrawer`.
-
-`DocumentFormData` (`invoice-api.types.ts:141`) has **no**:
-- `documentNumber` on surface (server auto-generates; not shown/editable)
-- `amountReceived` / any payment-at-creation field
-- party balance (form stores only `partyId`)
-- cash/credit nature
-
-Backend: regular `POST /api/documents` (`routes/documents/crud.ts`) creates the
-document with **no payment**. Only the POS `quick-sale.ts` endpoint accepts
-`amountPaid` and writes a `Payment` + `PaymentAllocation` in one transaction —
-that logic is the reuse target for "received at creation".
-
----
-
-## 3. Gap analysis (ranked)
-
-| # | Gap | Priority | Evidence |
+### Phase 1 — Selling-flow core + responsive shell  ✅ CORE DONE (2026-07-25)
+- ✅ Auto-focus item search on customer select (`ProductSearchInput autoFocus`
+  + `CreateInvoicePage` opens search on party set) — kills the 2 extra taps.
+- ✅ `InvoiceHeaderMeta` — invoice #(auto) + date surfaced at top; date hidden
+  in Details accordion via `hideDate` (edit form unaffected).
+- ✅ Delete per row already present (`LineItemEditor` Trash2, ≥40px).
+- Progressive disclosure = existing Details accordion (collapsed by default).
+- Responsive baseline = `PageContainer`; desktop power-grid deferred to P4.
+| path | action | ~lines | layer |
 |---|---|---|---|
-| G1 | Invoice # + Date not on surface (buried in Details accordion; # not shown at all) | **P0** | Screen 1 vs `InvoiceOptionalSections` |
-| G2 | No "Amount Received / Balance Due" block — can't record payment at creation | **P0** | Screen 1 totals vs `DocumentFormData` (no field) + `crud.ts` (no payment) |
-| G3 | Party balance not shown on select | **P1** | Screen 1 `₹600.00` |
-| G4 | Cash/Credit nature toggle absent | **P1** | Screen 1 header |
-| G5 | Line-item entry is cramped inline, not a focused sheet | **P1** | Screens 2/4 vs `InvoiceItemsSection` |
-| G6 | Per-item discount is single-mode; no % ⇄ ₹ toggle + live line subtotal | **P2** | Screen 4 dual input |
-| G7 | Payment mode (Cash/UPI/Bank) not selectable at creation | **P2** | Screen 1 Payment Type |
-| G8 | Preview/PDF lacks Received/Balance/You-Saved lines | **P2** | Screens 6/7 |
+| `components/InvoiceHeaderMeta.tsx` | create | ~90 | # + date on surface |
+| `hooks/useAutoFocusItemSearch.ts` | create | ~40 | focus item search on party set |
+| `components/InvoiceItemsSection.tsx` | edit | +25 | auto-open+focus search; drop toggle friction |
+| `components/LineItemEditor.tsx` | edit | +8 | surface delete as trailing **✕** on each row (≥40px hit) — `onRemoveLineItem` already wired |
+| `components/InvoiceProgressiveDetails.tsx` | create | ~120 | cash/credit/transport disclosure |
+| `layouts/InvoiceResponsiveLayout.tsx` | create | ~140 | 1-col mobile / 2-pane tablet / 3-col desktop |
+| density css + `invoice-summary.css` | edit | ~+90 | css |
+| `translations.en/hi.ts` | edit | ~+20 | i18n |
 
----
-
-## 4. Gold-standard target (HP, reimagined)
-
-```
-┌ Header ────────────────────────────────────┐
-│ ‹  New Invoice        [ Cash | Credit ]  📷 │  ← G4 segmented toggle
-├─────────────────────────────────────────────┤
-│  Invoice #INV-0033 ▾        Date 25/07/26 ▾ │  ← G1 on-surface row
-├─────────────────────────────────────────────┤
-│  🔎 Search or add customer…                 │  ← global SearchInput (done)
-│  Ramesh Traders          Balance ₹600 ▸     │  ← G3 inline balance
-├─────────────────────────────────────────────┤
-│  ITEMS                                       │
-│  #1 Jisko      30 × ₹66      ₹1,960.20  ✎   │  ← summary cards (G5)
-│  ＋ Add item                                 │  → opens item sheet (Drawer)
-├─────────────────────────────────────────────┤
-│  Notes · Charges · Terms      (accordion)   │  ← existing optional sections
-└─────────────────────────────────────────────┘
-┌ Sticky totals ─────────────────────────────┐
-│  Subtotal              ₹9,500.54            │
-│  ☑ Received            ₹5,000.00            │  ← G2
-│  Balance Due           ₹4,500.54  (green)   │  ← G2
-│  [ Save & New ]        [ Preview / Save ]   │  ← G1 dual action
-└─────────────────────────────────────────────┘
-```
-
----
-
-## 5. Phased implementation plan
-
-Order = P0 → P1 → P2. Each phase ships independently and passes
-`enforce.js` + `tsc` + the PAGE_AUDIT_CHECKLIST.
-
-### Phase A — P0: on-surface # + date, and Received/Balance block
-
-**Backend** (received-amount path — reuse `quick-sale` payment logic):
+### Phase 2 — GST first-class + payment-at-creation  ✅ DONE (2026-07-25)
+- ✅ `ReceivePaymentToggle` — amount·method·ref on the create screen; wired to
+  `form.payment`, sent nested only when `amountReceived>0` on a SAVED sale
+  invoice. Server records a real Payment + allocation via canonical
+  `createDocumentWithPayment` → `createPayment`.
+- ✅ `InvoiceGstSummary` + `useInvoiceGstSummary` — CGST/SGST/IGST split via the
+  canonical `calculateDocumentTax` engine (no drift from server), inter/intra
+  driven by place-of-supply vs business state; handles INCLUSIVE back-calc.
+- ✅ `PartyBalanceChip` — outstanding balance (due/advance/settled) + GSTIN the
+  moment a customer is picked; reuses `getParty` + the detail query key.
+- ✅ Wire: `normalizeFormPayload` strips server-derived `supplyType` and folds
+  `vehicleNumber` into `transportDetails` (fixes a latent strict-schema 400 on
+  both create AND edit). `DocumentWirePayload` is the single wire SSOT.
+- Proof: 7-test integration suite (`documents-payment.contract.test.ts`) green —
+  allocation clamp, change calc, party-outstanding vs invoice-balanceDue, DRAFT
+  ignore, `received=0` 400, top-level `supplyType`/`vehicleNumber` 400. tsc +
+  enforce.js clean; 108 invoice FE tests pass.
 
 | path | action | ~lines | layer |
 |---|---|---|---|
-| `server/src/schemas/document.schema.ts` | edit | +8 | schema (add optional `amountReceived`, `paymentMode`) |
-| `server/src/services/document/create-with-payment.ts` | create | ~90 | service (wrap doc create + `payment/create.ts` + allocation in one tx) |
-| `server/src/routes/documents/crud.ts` | edit | +12 | route (call new service when `amountReceived>0`) |
+| `components/LineItemTaxRow.tsx` (promote TaxPicker+HSN inline) | edit | ~+40 | GST per line always-on when enabled |
+| `components/InvoiceGstSummary.tsx` | create | ~90 | CGST/SGST/IGST split + place-of-supply |
+| `components/ReceivePaymentToggle.tsx` | create | ~120 | No/Yes → Amount·Method·Ref |
+| `components/PartyBalanceChip.tsx` | create | ~70 | inline balance + GSTIN on select |
+| `server/.../document.schema.ts` | edit | +8 | `amountReceived,paymentMode,paymentRef` |
+| `server/.../document/create-with-payment.ts` | create | ~90 | doc+payment+allocation, one tx |
+| `server/.../documents/crud.ts` | edit | +12 | branch on `amountReceived>0` |
+| `invoice-api.types.ts` + `useInvoiceForm.ts` | edit | +20 | fields + payload |
 
-> Note: touches the Payment ledger. Not a high-risk glob (no stripe/refund/
-> webhook), but money-adjacent — needs a 201 + allocation-correctness curl and
-> an integration test asserting `paidAmount`/`balance` before ship.
+> Payment path is money-adjacent → curl 201 + allocation correctness + 400
+> (`received>total`) + integration test before ship.
 
-**Frontend:**
+### Phase 3 — Intelligence, edit-sheet, keyboard  ✅ DONE (2026-07-25)
+- ✅ `Usually bought` chips → `GET /parties/:id/frequent-products` (5-test
+  integration proof: ranking, DRAFT-excluded, party isolation, 404). Chips stay
+  visible after add and show a running `×N`; a re-tap bumps that line's qty.
+- ✅ "Already added → +qty": `handleProductSelect` now bumps the existing line's
+  quantity (+toast) instead of no-op'ing — reachable via chip re-tap.
+- ✅ Keyboard qty→price→disc→next-row: `Enter` walks the three line fields and
+  jumps to the next row's qty (`.select()` primes overtype); number fields now
+  block `e/E/+/-`.
+- ⏭️ **Item edit bottom-`<Drawer>` sheet — SKIPPED (deliberate).** Every line
+  already renders full inline editors (qty/rate/discount/delete-✕) via
+  `LineItemFields`; a separate edit sheet would duplicate the editing surface
+  in a dense mobile UI — a net negative. Inline edit + the keyboard flow cover
+  the need.
+- ✅ Barcode add-and-return loop: `InvoiceScanButton` reuses `<BarcodeScanner>`
+  + `useBarcodeLookup`; on each found product it adds the line and re-arms the
+  scanner (remount via `scanKey`) so scanning is continuous. Device-only
+  (camera/wedge) — verified by construction + tsc/enforce.
 
-| path | action | ~lines | layer |
-|---|---|---|---|
-| `invoice-api.types.ts` | edit | +4 | types (`amountReceived?`, `paymentMode?`) |
-| `useInvoiceForm.ts` | edit | +15 | hook (state + submit payload) |
-| `components/InvoiceHeaderMeta.tsx` | create | ~90 | component (# ▾ + Date row) |
-| `components/InvoiceReceivedRow.tsx` | create | ~110 | component (checkbox + ₹ input + Balance Due) |
-| `components/InvoiceTotalsBar.tsx` | edit | +25 | component (host received row + balance) |
-| `invoice-summary.css` | edit | +40 | css |
-| `translations.en.ts` / `.hi.ts` | edit | +12 | i18n |
+### Phase 4 — Desktop power + voice  🔶 KEYBOARD GRID DONE (2026-07-25)
+- ✅ Desktop keyboard grid — `useInvoiceHotkeys`: **⌘/Ctrl+K** quick-add (opens +
+  focuses product search), **⌘/Ctrl+S** save (suppresses the browser save
+  dialog), **Esc** closes search; **F2** opens the barcode scan loop (bound in
+  `InvoiceScanButton`). Used ⌘/Ctrl+S rather than ⌥S — ⌥S inserts a glyph on
+  macOS; Ctrl/Cmd+S is the universal save chord.
+- ⏭️ **Bulk edit — DEFERRED (with voice).** Multi-row select + batch actions is a
+  spreadsheet-grid interaction that doesn't fit the current card-based, few-line
+  mobile invoice; it belongs with the desktop/voice epic, not this mobile-first
+  sweep. Inline per-row edit + the keyboard flow cover day-to-day editing.
+- ⏭️ Voice item entry — own epic (unchanged).
 
-### Phase B — P1: party balance, cash/credit, item sheet
+## 5. Rejected
+Vyapar bordered/torn-ticket styling · giant KPI cards · huge buttons · settings
+inside the flow · per-field edit pages · asking for known customer data · any
+font **below 9px**.
 
-| path | action | ~lines | layer |
-|---|---|---|---|
-| `components/PartyBalanceChip.tsx` | create | ~70 | component (fetch outstanding on select) |
-| `components/InvoiceNatureToggle.tsx` | create | ~60 | component (Cash/Credit segmented) |
-| `components/ItemEntryDrawer.tsx` | create | ~180 | component (focused item sheet over `<Drawer>`) |
-| `components/LineItemSummaryCard.tsx` | create | ~90 | component (#, name, qty×rate, total, edit) |
-| `InvoiceItemsSection.tsx` | edit | ~-40 | component (swap inline editor → cards + drawer) |
-| relevant css | edit | +60 | css |
-
-### Phase C — P2: dual discount, payment mode, preview lines
-
-| path | action | ~lines | layer |
-|---|---|---|---|
-| `components/DiscountDualInput.tsx` | create | ~90 | component (% ⇄ ₹ toggle + live subtotal) |
-| `components/PaymentModeSelect.tsx` | create | ~60 | component (Cash/UPI/Bank) |
-| `InvoicePreviewDrawer.tsx` + `pdf/InvoicePdfDocument.tsx` | edit | +30 | Received/Balance/You-Saved lines |
-
----
-
-## 6. Explicitly rejected (do NOT build)
-
-GST/HSN/Tax%/IGST/State of Supply/tax themes · "Without Tax" fields · item
-config-toggle sprawl (Screen 3) · Sale Prefix in create flow · Mobile POS
-billing-type switch · torn-ticket totals kitsch · bordered-Material styling ·
-watermark.
-
-## 7. Acceptance (per phase)
-
-- `node scripts/enforce.js` 0 errors · `npx tsc -b --noEmit` clean
-- No horizontal scroll at 320/375/768/1024/1280
-- 4 UI states visible · i18n en+hi · tokens only · offline (`api()`, optimistic `{}`)
-- Phase A backend: curl 201 with payment, allocation `paidAmount` correct, 400 on `amountReceived>total`
-- Golden path recorded: create SALE with 2 items + partial received → Balance Due correct → appears paid-partial in list
-```
+## 6. Acceptance
+`enforce.js` 0 · `tsc` clean · 4 states · i18n en+hi · tokens · **320/375/768/1024/1280
+no h-scroll** · offline · **repeat invoice <20s mid-phone** · tap targets ≥40px ·
+GST math verified against a known invoice.

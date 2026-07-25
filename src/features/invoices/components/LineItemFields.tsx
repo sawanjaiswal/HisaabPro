@@ -48,6 +48,28 @@ export const LineItemFields: React.FC<LineItemFieldsProps> = ({
 }) => {
   const { t } = useLanguage()
 
+  // Rapid-entry keyboard flow: Enter walks qty → rate → discount → next row's
+  // qty, and every number field blocks the e/E/+/- characters the native
+  // number input would otherwise accept. Focus-by-id keeps this decoupled from
+  // refs across the row/section boundary; `.select()` primes the field for
+  // immediate overtype. Last row's discount-Enter simply finds no next qty and
+  // stops — the seller taps "Add item" (or scans) to open a new line.
+  const advanceOnEnter = useCallback(
+    (nextId: string) => (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (['e', 'E', '+', '-'].includes(e.key)) {
+        e.preventDefault()
+        return
+      }
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        const el = document.getElementById(nextId) as HTMLInputElement | null
+        el?.focus()
+        el?.select()
+      }
+    },
+    [],
+  )
+
   const handleQuantity = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const qty = parseFloat(e.target.value)
     if (!isNaN(qty) && qty >= 0.001) onChange({ quantity: qty })
@@ -84,6 +106,7 @@ export const LineItemFields: React.FC<LineItemFieldsProps> = ({
           min={0.001}
           step={0.001}
           onChange={handleQuantity}
+          onKeyDown={advanceOnEnter(`line-rate-${index}`)}
           aria-label={`${t.quantityFor} ${productName}`}
         />
       </div>
@@ -99,6 +122,7 @@ export const LineItemFields: React.FC<LineItemFieldsProps> = ({
           step={0.01}
           disabled={readOnly}
           onChange={handleRate}
+          onKeyDown={advanceOnEnter(`line-discount-${index}`)}
           aria-label={`${t.rateInRupeesFor} ${productName}`}
         />
         {priceSource && priceSource !== 'PRODUCT_DEFAULT' && onResetPrice && (
@@ -139,6 +163,7 @@ export const LineItemFields: React.FC<LineItemFieldsProps> = ({
             step={0.01}
             disabled={readOnly}
             onChange={handleDiscountValue}
+            onKeyDown={advanceOnEnter(`line-qty-${index + 1}`)}
             aria-label={`${t.discount} ${discountType === 'AMOUNT' ? t.discountAmountFor : t.discountPercentFor} ${productName}`}
           />
         </div>

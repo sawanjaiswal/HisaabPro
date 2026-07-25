@@ -1,0 +1,61 @@
+/** FrequentProductChips — "usually bought" one-tap add row.
+ *  Tokens only; dark mode follows automatically via CSS variables. */
+
+.frequent-chips {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.frequent-chips-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.frequent-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* Compact pill that still meets the 40px tap floor. Layered on <Button
+   variant="outline">, so border/hover/focus come from the primitive. */
+.frequent-chip {
+  gap: 4px;
+  min-height: 40px;
+  max-width: 100%;
+  padding: 0 var(--space-3);
+  font-size: var(--fs-2xs);
+  border-radius: var(--radius-full);
+}
+
+.frequent-chip-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 140px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.frequent-chip-price {
+  font-weight: 600;
+  color: var(--color-primary-600);
+}
+
+/* Once on the invoice the chip switches from price to a running "×N" count and
+   picks up an emerald wash so the seller sees at a glance what's already added. */
+.frequent-chip--added {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-600);
+}
+
+.frequent-chip-qty {
+  font-weight: 700;
+  color: var(--color-primary-700);
+}

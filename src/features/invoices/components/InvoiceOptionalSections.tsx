@@ -26,6 +26,8 @@ interface InvoiceOptionalSectionsProps {
   onAddCharge: (charge: AdditionalChargeFormData) => void
   onUpdateCharge: (index: number, charge: Partial<AdditionalChargeFormData>) => void
   onRemoveCharge: (index: number) => void
+  /** Hide the date field inside Details when it's surfaced by InvoiceHeaderMeta. */
+  hideDate?: boolean
 }
 
 export const InvoiceOptionalSections: React.FC<InvoiceOptionalSectionsProps> = ({
@@ -36,6 +38,7 @@ export const InvoiceOptionalSections: React.FC<InvoiceOptionalSectionsProps> = (
   onAddCharge,
   onUpdateCharge,
   onRemoveCharge,
+  hideDate = false,
 }) => {
   const { t } = useLanguage()
 
@@ -56,6 +59,7 @@ export const InvoiceOptionalSections: React.FC<InvoiceOptionalSectionsProps> = (
             notes={form.notes ?? ''}
             termsAndConditions={form.termsAndConditions ?? ''}
             includeSignature={form.includeSignature}
+            hideDate={hideDate}
             onUpdateField={onUpdateField}
           />
           <InvoiceCustomFieldsSection

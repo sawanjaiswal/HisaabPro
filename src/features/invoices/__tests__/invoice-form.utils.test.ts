@@ -56,6 +56,7 @@ describe('validateInvoiceForm', () => {
     taxPricingMode: 'EXCLUSIVE' as const,
     isReverseCharge: false,
     supplyType: 'B2C_SMALL',
+    payment: { amountReceived: 0, mode: 'CASH', referenceNumber: '' },
   }
 
   it('returns empty errors for valid form', () => {
@@ -115,6 +116,7 @@ describe('normalizeFormPayload', () => {
     taxPricingMode: 'EXCLUSIVE' as const,
     isReverseCharge: false,
     supplyType: 'B2C_SMALL',
+    payment: { amountReceived: 0, mode: 'CASH', referenceNumber: '' },
   }
 
   it('sets status to target status', () => {
@@ -132,5 +134,29 @@ describe('normalizeFormPayload', () => {
     const result = normalizeFormPayload({ ...baseForm, notes: '  ', termsAndConditions: '' }, 'SAVED')
     expect(result.notes).toBeUndefined()
     expect(result.termsAndConditions).toBeUndefined()
+  })
+
+  it('strips the client-only supplyType key (server derives it)', () => {
+    const result = normalizeFormPayload(baseForm, 'SAVED')
+    expect('supplyType' in result).toBe(false)
+  })
+
+  it('never emits payment (create call site attaches it, never normalize)', () => {
+    const result = normalizeFormPayload(
+      { ...baseForm, payment: { amountReceived: 5000, mode: 'UPI', referenceNumber: '' } },
+      'SAVED',
+    )
+    expect(result.payment).toBeUndefined()
+  })
+
+  it('folds a top-level vehicleNumber into transportDetails and drops the top-level key', () => {
+    const result = normalizeFormPayload({ ...baseForm, vehicleNumber: ' mh12ab1234 ' }, 'SAVED')
+    expect('vehicleNumber' in result).toBe(false)
+    expect(result.transportDetails).toEqual({ vehicleNumber: 'mh12ab1234', driverName: null, transportNotes: null })
+  })
+
+  it('leaves transportDetails untouched when no vehicle number is entered', () => {
+    const result = normalizeFormPayload({ ...baseForm, vehicleNumber: '' }, 'SAVED')
+    expect(result.transportDetails).toBeNull()
   })
 })

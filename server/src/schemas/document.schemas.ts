@@ -17,6 +17,7 @@ import {
   SHARE_CHANNELS,
   EXPORT_FORMATS,
   ROUND_OFF_SETTINGS,
+  PAYMENT_MODES,
 } from '../../../shared/enums.js'
 
 // === Line Item ===
@@ -97,6 +98,15 @@ export const createDocumentSchema = z.object({
   customFieldValues: z.array(customFieldValueInputSchema).max(50).optional(),
   // Epic B PR2 — per-invoice price-list tier override (security 2.2: .cuid() not .uuid())
   priceListId: z.string().cuid().nullable().optional(),
+  // Gold-standard payment-at-creation — record money received against this
+  // invoice in one shot. Honoured only for SAVED SALE_INVOICEs; the amount is
+  // allocated (up to grandTotal) via the canonical createPayment service, any
+  // excess becomes party advance. Ignored for drafts / non-sale docs.
+  payment: z.object({
+    amountReceived: z.number().int().min(1).max(9_999_999_900), // paise
+    mode: z.enum(PAYMENT_MODES).default('CASH'),
+    referenceNumber: z.string().max(100).optional(),
+  }).optional(),
 }).strict()
 
 // === Update Document ===
@@ -168,22 +178,15 @@ export const recycleBinSchema = z.object({
   limit: z.coerce.number().int().min(1).max(200).default(20),
 })
 
-// === Share ===
-
-export const shareWhatsAppSchema = z.object({
-  format: z.enum(['IMAGE', 'PDF']),
-  recipientPhone: z.string().min(10).max(15),
-  message: z.string().max(1000).optional(),
-})
-
-export const shareEmailSchema = z.object({
-  recipientEmail: z.string().email(),
-  subject: z.string().max(200),
-  body: z.string().max(5000).optional(),
-  format: z.enum(['PDF']).default('PDF'),
-  // Client-rendered invoice PDF (base64) — server has no renderer (#32); capped under the 2 MB json limit.
-  pdfBase64: z.string().max(1_500_000).optional(),
-})
+// === Share (schemas + inferred types re-exported from document-share.schemas) ===
+export {
+  shareWhatsAppSchema,
+  shareEmailSchema,
+} from './document-share.schemas.js'
+export type {
+  ShareWhatsAppInput,
+  ShareEmailInput,
+} from './document-share.schemas.js'
 
 // === Number Series ===
 
@@ -241,7 +244,6 @@ export type CreateDocumentInput = z.infer<typeof createDocumentSchema>
 export type UpdateDocumentInput = z.infer<typeof updateDocumentSchema>
 export type ListDocumentsQuery = z.infer<typeof listDocumentsSchema>
 export type ConvertDocumentInput = z.infer<typeof convertDocumentSchema>
-export type ShareWhatsAppInput = z.infer<typeof shareWhatsAppSchema>
-export type ShareEmailInput = z.infer<typeof shareEmailSchema>
+// ShareWhatsAppInput / ShareEmailInput re-exported above from document-share.schemas
 export type UpdateNumberSeriesInput = z.infer<typeof updateNumberSeriesSchema>
 export type UpdateDocumentSettingsInput = z.infer<typeof updateDocumentSettingsSchema>

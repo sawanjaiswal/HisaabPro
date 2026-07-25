@@ -8,6 +8,7 @@ import { toLocalISODate } from '@/lib/format'
 import type {
   DocumentType,
   DocumentFormData,
+  DocumentWirePayload,
 } from './invoice.types'
 
 // ─── Initial form state builder ─────────────────────────────────────────────
@@ -36,6 +37,8 @@ export function buildInitialForm(type: DocumentType): DocumentFormData {
     customFieldValues: {},
     // Epic B PR2 — price-list override (null = use party's default)
     priceListId: null,
+    // Gold-standard payment-at-creation — starts empty (credit sale by default).
+    payment: { amountReceived: 0, mode: 'CASH', referenceNumber: '' },
   }
 }
 
@@ -95,14 +98,30 @@ export function hasUntaggedTaxLines(form: DocumentFormData): boolean {
 export function normalizeFormPayload(
   form: DocumentFormData,
   targetStatus: 'SAVED' | 'DRAFT',
-): DocumentFormData {
+): DocumentWirePayload {
+  // Drop the three client-only fields the `.strict()` server schema rejects.
+  // `supplyType` is server-derived; `payment` is attached by the create call
+  // site (never on update); `vehicleNumber` is folded into transportDetails
+  // below (the only shape the server persists it from).
+  const { supplyType: _supplyType, vehicleNumber, payment: _payment, ...rest } = form
+  const trimmedVehicle = vehicleNumber?.trim()
   return {
-    ...form,
+    ...rest,
     status: targetStatus,
     // Normalise empty strings to undefined so the server omits them
     notes: form.notes?.trim() || undefined,
     termsAndConditions: form.termsAndConditions?.trim() || undefined,
     customFieldValues: serializeCustomFieldValues(form.customFieldValues),
+    // Fold the top-level vehicle number into transportDetails — the server
+    // reads `transportDetails.vehicleNumber`, so a top-level key would both be
+    // rejected by `.strict()` and silently dropped.
+    transportDetails: trimmedVehicle
+      ? {
+          vehicleNumber: trimmedVehicle,
+          driverName: form.transportDetails?.driverName ?? null,
+          transportNotes: form.transportDetails?.transportNotes ?? null,
+        }
+      : form.transportDetails,
   }
 }
 

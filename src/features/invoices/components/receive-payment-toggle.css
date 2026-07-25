@@ -1,0 +1,100 @@
+/** Receive-Payment Toggle — payment-at-creation card.
+ *  Tokens only; dark mode follows automatically via CSS variables.
+ *  Fields render through <Input> and chips through <Button>, so those own
+ *  their border/focus/hover — this file only lays them out. */
+
+.receive-payment {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.receive-payment-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.receive-payment-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-50);
+  color: var(--color-primary-600);
+}
+
+.receive-payment-titles {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.receive-payment-title {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+.receive-payment-subtitle {
+  font-size: var(--fs-2xs);
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+/* ── Amount row ────────────────────────────────────────────────────────── */
+
+.receive-payment-amount-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Let the Input flex to fill the row beside the Clear button. */
+.receive-payment-amount-row .receive-payment-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Mode chips ───────────────────────────────────────────────────────── */
+
+.receive-payment-modes {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* Equal-width fill; <Button> supplies the look (primary=selected). */
+.receive-payment-mode {
+  flex: 1 1 0;
+}
+
+/* ── Balance line ─────────────────────────────────────────────────────── */
+
+.receive-payment-balance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--space-2);
+  border-top: 1px dashed var(--color-border);
+  font-size: var(--fs-sm);
+  color: var(--color-text-secondary);
+}
+
+.receive-payment-balance-value {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.receive-payment-paid {
+  font-weight: 600;
+  color: var(--color-success-600);
+}

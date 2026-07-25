@@ -27,6 +27,7 @@ import { idempotencyCheck } from '../middleware/idempotency.js'
 import * as partyService from '../services/party.service.js'
 import { getPartyLedger } from '../services/party/ledger.service.js'
 import { ledgerQuerySchema } from '../services/party/ledger.types.js'
+import { getFrequentProducts } from '../services/party/frequent-products.js'
 import partyInviteRoutes from './parties/invite.routes.js'
 import crmRoutes from './parties/crm.routes.js'
 
@@ -164,6 +165,19 @@ router.get(
     const query = ledgerQuerySchema.parse(req.query)
     const data = await getPartyLedger(businessId, String(req.params.partyId), query)
     sendSuccess(res, data)
+  })
+)
+
+// Frequent products ----------------------------------------------------------
+// "Usually bought" chips on the invoice screen — the party's most-repeated
+// sale-invoice products, ranked by distinct-invoice frequency.
+router.get(
+  '/:partyId/frequent-products',
+  requirePermission('parties.read'),
+  asyncHandler(async (req, res) => {
+    const businessId = req.user!.businessId
+    const frequentProducts = await getFrequentProducts(businessId, String(req.params.partyId))
+    sendSuccess(res, { frequentProducts })
   })
 )
 

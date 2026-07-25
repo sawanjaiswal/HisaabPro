@@ -17,6 +17,9 @@ interface InvoiceDetailsSectionProps {
   notes: string
   termsAndConditions: string
   includeSignature: boolean
+  /** When the date is surfaced elsewhere (InvoiceHeaderMeta), hide it here to
+   *  avoid a duplicate field. Defaults to showing it (edit form still uses it). */
+  hideDate?: boolean
   onUpdateField: <K extends keyof DocumentFormData>(
     key: K,
     value: DocumentFormData[K],
@@ -30,22 +33,25 @@ export function InvoiceDetailsSection({
   notes,
   termsAndConditions,
   includeSignature,
+  hideDate = false,
   onUpdateField,
 }: InvoiceDetailsSectionProps) {
   const { t } = useLanguage()
   return (
     <div className="line-items-section py-0">
-      <div className="line-item-field">
-        <label className="label" htmlFor="invoice-date">{t.invoiceDateLabel}</label>
-        <DateField
-          id="invoice-date"
-          type="date"
-          className="input"
-          value={documentDate}
-          onChange={(e) => onUpdateField('documentDate', e.target.value)}
-          aria-label={t.invoiceDateAriaLabel}
-        />
-      </div>
+      {!hideDate && (
+        <div className="line-item-field">
+          <label className="label" htmlFor="invoice-date">{t.invoiceDateLabel}</label>
+          <DateField
+            id="invoice-date"
+            type="date"
+            className="input"
+            value={documentDate}
+            onChange={(e) => onUpdateField('documentDate', e.target.value)}
+            aria-label={t.invoiceDateAriaLabel}
+          />
+        </div>
+      )}
 
       <div className="line-item-field">
         <label className="label">{t.paymentTermsLabel}</label>

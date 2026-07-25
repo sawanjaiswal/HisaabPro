@@ -1,0 +1,8 @@
+/** InvoiceScanButton — barcode add-and-return trigger.
+ *  Tokens only; dark mode follows automatically via CSS variables. */
+
+.invoice-scan-btn {
+  gap: 6px;
+  min-height: 40px;
+  border-radius: var(--radius-full);
+}

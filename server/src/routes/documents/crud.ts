@@ -65,7 +65,10 @@ router.post(
   requireBogoIfFreeItem,
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId
-    const doc = await documentService.createDocument(businessId, req.user!.userId, req.body)
+    // Payment-at-creation: when the body carries `payment`, the orchestrator
+    // creates the doc AND records the money received (canonical createPayment).
+    // Without it, this is the plain create — same 201 shape either way.
+    const doc = await documentService.createDocumentWithPayment(businessId, req.user!.userId, req.body)
     sendSuccess(res, doc, 201)
   })
 )
