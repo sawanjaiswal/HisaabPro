@@ -167,6 +167,56 @@ describe('POST /api/parties', () => {
     expect(partyService.createParty).not.toHaveBeenCalled()
   })
 
+  // The party form stamps asOfDate with toLocalISODate() — a calendar day, the
+  // format every date input in the app speaks and the only value the UI can
+  // produce. Validating it as an RFC-3339 instant made every opening balance
+  // unsaveable. See .claude/fix-trace-opening-balance-rejected.md.
+  it('accepts a calendar-date asOfDate on an opening balance', async () => {
+    mockOwnerPermission()
+    vi.mocked(partyService.createParty).mockResolvedValue(MOCK_PARTY as any)
+
+    const res = await authAgent(app)
+      .post('/api/parties')
+      .send({
+        ...CREATE_PARTY_BODY,
+        openingBalance: { amount: 150000, type: 'RECEIVABLE', asOfDate: '2026-07-26' },
+      })
+
+    expect(res.status, JSON.stringify(res.body)).toBe(201)
+  })
+
+  it('still accepts a full ISO datetime asOfDate', async () => {
+    mockOwnerPermission()
+    vi.mocked(partyService.createParty).mockResolvedValue(MOCK_PARTY as any)
+
+    const res = await authAgent(app)
+      .post('/api/parties')
+      .send({
+        ...CREATE_PARTY_BODY,
+        openingBalance: {
+          amount: 150000,
+          type: 'RECEIVABLE',
+          asOfDate: '2026-07-26T00:00:00.000Z',
+        },
+      })
+
+    expect(res.status, JSON.stringify(res.body)).toBe(201)
+  })
+
+  it('rejects an asOfDate that is neither a date nor a datetime', async () => {
+    mockOwnerPermission()
+
+    const res = await authAgent(app)
+      .post('/api/parties')
+      .send({
+        ...CREATE_PARTY_BODY,
+        openingBalance: { amount: 150000, type: 'RECEIVABLE', asOfDate: '26/07/2026' },
+      })
+
+    expect(res.status).toBe(400)
+    expect(partyService.createParty).not.toHaveBeenCalled()
+  })
+
   it('returns 400 validation error when name is missing', async () => {
     mockOwnerPermission()
 

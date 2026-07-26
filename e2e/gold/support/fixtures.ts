@@ -58,9 +58,24 @@ export { expect }
 /** Logs in through the real form and waits for the app shell to take over. */
 export async function loginViaUi(page: Page, phone: string, password: string): Promise<void> {
   await page.goto(ROUTES.LOGIN)
-  await page.locator('#identifier').fill(phone)
-  await page.locator('#password').fill(password)
-  await page.getByRole('button', { name: /sign in/i }).click()
+
+  const identifier = page.locator('#identifier')
+  const password_ = page.locator('#password')
+  const submit = page.getByRole('button', { name: /sign in/i })
+
+  // The CTA is disabled until both fields hold a value. Typing into the form
+  // before React has hydrated it silently loses the keystrokes — the input
+  // shows text, the component's state does not, and the button stays disabled
+  // through a 60s retry loop that reads like the login endpoint hanging.
+  // Re-fill until the value sticks, then wait on the button's own state.
+  await expect(async () => {
+    await identifier.fill(phone)
+    await password_.fill(password)
+    await expect(identifier).toHaveValue(phone, { timeout: 1_000 })
+    await expect(submit).toBeEnabled({ timeout: 1_000 })
+  }).toPass({ timeout: 20_000 })
+
+  await submit.click()
   await page.waitForURL((url) => !url.pathname.startsWith(ROUTES.LOGIN), { timeout: 20_000 })
 }
 
@@ -103,7 +118,15 @@ export async function csrfPost(page: Page, path: string, data?: unknown) {
   const cookies = await page.context().cookies()
   const token = cookies.find((c) => c.name === COOKIES.csrf)?.value ?? ''
   return page.request.post(path, {
-    headers: { [CSRF_HEADER]: token },
+    headers: {
+      [CSRF_HEADER]: token,
+      // replayProtection rejects a mutation without these; the real client adds
+      // them in buildRequestHeaders() for every state-changing request, so a
+      // helper that omitted them would fail as MISSING_REQUEST_HEADERS and read
+      // like the endpoint being broken.
+      'X-Request-Nonce': crypto.randomUUID(),
+      'X-Request-Timestamp': Date.now().toString(),
+    },
     ...(data === undefined ? {} : { data }),
   })
 }

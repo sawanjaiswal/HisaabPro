@@ -35,7 +35,16 @@ const customFieldValueSchema = z.object({
 const openingBalanceSchema = z.object({
   amount: z.number().int().min(0, 'Opening balance must be non-negative'),
   type: z.enum(OPENING_BALANCE_TYPES),
-  asOfDate: z.string().datetime({ message: 'asOfDate must be a valid ISO date' }),
+  // A calendar day, not an instant: no UI anywhere sets a time of day for an
+  // opening balance, and it is read back as a day (statement headers). Demanding
+  // RFC-3339 made the field unsaveable from the only form that writes it — the
+  // client sends toLocalISODate()'s YYYY-MM-DD, as every date input in the app
+  // does. Full datetimes still validate so the Excel importer and any mutation
+  // already sitting in the offline queue keep working.
+  // See .claude/fix-trace-opening-balance-rejected.md.
+  asOfDate: z.union([z.string().date(), z.string().datetime()], {
+    message: 'asOfDate must be a valid ISO date',
+  }),
   notes: z.string().max(500).optional(),
 }).strict()
 
