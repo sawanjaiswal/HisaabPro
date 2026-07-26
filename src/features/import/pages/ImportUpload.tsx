@@ -65,9 +65,9 @@ export default function ImportUploadPage() {
       // Stash commit token for ImportJobPage → useImportCommit (FE.5).
       // BE does not echo the token on GET, so this is the only carrier
       // between upload and commit. sessionStorage clears on tab close.
-      stashCommitToken(res.jobId, res.commitToken)
+      stashCommitToken(res.job.id, res.job.commitToken ?? null)
       toast.success(tx.importUploadSuccess ?? 'Upload received')
-      navigate(importJobPath(res.jobId))
+      navigate(importJobPath(res.job.id))
     },
     onError: (err) => {
       const msg = err instanceof Error ? err.message : (tx.importUploadFailed ?? 'Upload failed')

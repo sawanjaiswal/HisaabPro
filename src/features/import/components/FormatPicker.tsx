@@ -18,10 +18,10 @@ interface FormatPickerProps {
 }
 
 const ICON_BY_FORMAT: Record<ImportFormat, typeof FileText> = {
-  tally_xml: FileCode,
-  vyapar_csv: FileText,
-  busy_xls: FileSpreadsheet,
-  generic_csv: FileJson,
+  TALLY_XML: FileCode,
+  VYAPAR_CSV: FileText,
+  BUSY_XLSX: FileSpreadsheet,
+  GENERIC_CSV: FileJson,
 }
 
 export function FormatPicker({ value, onChange, disabled = false }: FormatPickerProps) {

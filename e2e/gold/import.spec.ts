@@ -187,3 +187,31 @@ test('TC-IMP-05 a file that is not the declared format fails cleanly, never half
   }
   expect(await partyCount(page), 'nothing was written').toBe(before)
 })
+
+test('TC-IMP-06 the wizard itself uploads a file and reaches the preview', async ({ page }) => {
+  // TC-IMP-01..05 drive the API. This one drives what the shopkeeper touches:
+  // the three pickers, the file input, and the navigation to the preview. The
+  // client had its own copy of the upload contract, and it was wrong in three
+  // places at once — a lowercase format the server's strict enum rejects, a
+  // response shape nobody sends, and an idempotency header nobody reads. None
+  // of that is visible from an API test.
+  const tag = uniqueName('Wizard')
+  const csv = vyaparPartiesCsv([
+    { 'Party Name': `${tag} One`, 'Phone Number': uniquePartyPhone() },
+  ])
+
+  await page.goto('/imports')
+  await page.getByRole('radio', { name: /Parties/i }).first().click()
+  await page.getByRole('radio', { name: /Vyapar/i }).first().click()
+  await page.locator('input[type="file"]').setInputFiles({
+    name: 'parties.csv',
+    mimeType: 'text/csv',
+    buffer: Buffer.from(csv, 'utf8'),
+  })
+  await page.getByRole('button', { name: /Upload and preview/i }).click()
+
+  // The upload must land on a real job — /imports/undefined was what the
+  // broken contract produced, and it looks like a working navigation.
+  await expect(page).toHaveURL(/\/imports\/c[a-z0-9]{20,}$/, { timeout: 15_000 })
+  await expect(page.getByText(`${tag} One`).first()).toBeVisible({ timeout: 15_000 })
+})

@@ -18,6 +18,19 @@ import type {
   ImportJobView,
 } from '../types/import.types'
 
+/**
+ * Every /imports route sits behind `requireMinClientVersion` and reads the
+ * `X-Client-Version` HEADER (require-min-client-version.ts:43). In production
+ * a missing header is a hard 426 — so this is not optional decoration, it is
+ * the price of entry to the whole import API. It is the import contract's
+ * version, deliberately NOT `APP_VERSION`: the gate asks "does this client
+ * implement the 7.1 import protocol", which is exactly what the constant
+ * mirrored from server/src/constants/import.constants.ts means.
+ */
+function importHeaders(extra?: Record<string, string>): Record<string, string> {
+  return { 'X-Client-Version': IMPORT_MIN_CLIENT_VERSION, ...extra }
+}
+
 export interface UploadImportArgs {
   file: File
   format: ImportFormat
@@ -33,14 +46,13 @@ export async function uploadImport(args: UploadImportArgs): Promise<CreateImport
   const form = new FormData()
   form.append('entity', entity)
   form.append('format', format)
-  form.append('clientVersion', IMPORT_MIN_CLIENT_VERSION)
   if (columnMapping) form.append('columnMapping', JSON.stringify(columnMapping))
   form.append('file', file, file.name)
 
   return api<CreateImportRes>('/imports', {
     method: 'POST',
     body: form,
-    headers: { 'Idempotency-Key': idempotencyKey },
+    headers: importHeaders({ 'X-Idempotency-Key': idempotencyKey }),
     // Multipart cannot be queued — don't try.
     offlineQueue: false,
     entityType: 'import',
@@ -74,13 +86,16 @@ export async function getImportJob(
   if (opts.limit) params.set('limit', String(opts.limit))
   const qs = params.toString()
   const suffix = qs ? `?${qs}` : ''
-  return api<ImportJobView>(`/imports/${encodeURIComponent(jobId)}${suffix}`)
+  return api<ImportJobView>(`/imports/${encodeURIComponent(jobId)}${suffix}`, {
+    headers: importHeaders(),
+  })
 }
 
 export async function cancelImportJob(jobId: string): Promise<void> {
   await api<void>(`/imports/${encodeURIComponent(jobId)}/cancel`, {
     method: 'POST',
     body: JSON.stringify({}),
+    headers: importHeaders(),
     offlineQueue: false,
     entityType: 'import',
     entityLabel: 'Cancel import',
@@ -103,7 +118,7 @@ export async function commitImportJob(
   return api<CommitImportRes>(`/imports/${encodeURIComponent(jobId)}/commit`, {
     method: 'POST',
     body: JSON.stringify(payload),
-    headers: { 'X-Idempotency-Key': idempotencyKey },
+    headers: importHeaders({ 'X-Idempotency-Key': idempotencyKey }),
     offlineQueue: false,
     entityType: 'import',
     entityLabel: `Commit import ${jobId}`,

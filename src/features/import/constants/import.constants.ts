@@ -24,28 +24,28 @@ export interface FormatOption {
 
 export const FORMAT_OPTIONS: readonly FormatOption[] = [
   {
-    value: 'tally_xml',
+    value: 'TALLY_XML',
     labelKey: 'importFormatTallyXmlLabel',
     descKey: 'importFormatTallyXmlDesc',
     extensions: ['xml'],
     accept: '.xml,text/xml,application/xml',
   },
   {
-    value: 'vyapar_csv',
+    value: 'VYAPAR_CSV',
     labelKey: 'importFormatVyaparCsvLabel',
     descKey: 'importFormatVyaparCsvDesc',
     extensions: ['csv'],
     accept: '.csv,text/csv',
   },
   {
-    value: 'busy_xls',
+    value: 'BUSY_XLSX',
     labelKey: 'importFormatBusyXlsLabel',
     descKey: 'importFormatBusyXlsDesc',
     extensions: ['xlsx', 'xls'],
     accept: '.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel',
   },
   {
-    value: 'generic_csv',
+    value: 'GENERIC_CSV',
     labelKey: 'importFormatGenericCsvLabel',
     descKey: 'importFormatGenericCsvDesc',
     extensions: ['csv'],

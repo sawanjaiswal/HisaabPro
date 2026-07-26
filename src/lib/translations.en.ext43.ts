@@ -59,10 +59,10 @@ export const enExt43 = {
   importJobRetry: 'Try again',
 
   // Format short labels used inside ParseProgress (compact line).
-  importFormat_tally_xml_short: 'Tally XML',
-  importFormat_vyapar_csv_short: 'Vyapar CSV',
-  importFormat_busy_xls_short: 'Busy Excel',
-  importFormat_generic_csv_short: 'CSV',
+  importFormat_TALLY_XML_short: 'Tally XML',
+  importFormat_VYAPAR_CSV_short: 'Vyapar CSV',
+  importFormat_BUSY_XLSX_short: 'Busy Excel',
+  importFormat_GENERIC_CSV_short: 'CSV',
 
   // ── FE.2 — Parsing state ───────────────────────────────────────────────
   importParseProgressTitle: 'Parsing your file…',

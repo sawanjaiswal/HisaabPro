@@ -3,7 +3,7 @@
  *
  * M4 fix — there is NO signed-URL fallback. The entire endpoint sits
  * behind the same auth chain as get.route (cookie → active-business →
- * owner → feature → version). Re-using the auth cookie eliminates the
+ * owner → feature). Re-using the auth cookie eliminates the
  * pre-signed S3 / GCS link, which had three problems:
  *   1. Lifetime drift — anyone with the link could re-fetch for hours.
  *   2. No revocation — rotating user roles didn't kill outstanding URLs.
@@ -23,13 +23,11 @@ import { auth } from '../../middleware/auth.js'
 import { requireActiveBusiness } from '../../middleware/require-active-business.js'
 import { requireOwner } from '../../middleware/permission.js'
 import { requireFeature } from '../../middleware/require-feature.js'
-import { requireMinClientVersion } from '../../middleware/require-min-client-version.js'
 import { asyncHandler } from '../../middleware/asyncHandler.js'
 import { prisma } from '../../lib/prisma.js'
 import { sendError } from '../../lib/response.js'
 import { ErrorCode } from '../../lib/errors.js'
 import { getAuth } from '../../lib/auth-helper.js'
-import { IMPORT_MIN_CLIENT_VERSION } from '../../constants/import.constants.js'
 import { prefixUnsafeCell } from '../../services/import/security/csv-injection.js'
 
 const ERROR_ROW_PAGE = 500
@@ -65,7 +63,12 @@ errorCsvImportRoute.get(
   requireActiveBusiness,
   requireOwner(),
   requireFeature('DATA_IMPORT'),
-  requireMinClientVersion(IMPORT_MIN_CLIENT_VERSION),
+  // NO requireMinClientVersion here — deliberately. This endpoint is reached by
+  // a top-level browser navigation (the download), and a navigation cannot
+  // carry a custom header, so in production the gate would 426 every download
+  // no matter how new the client is. The gate exists to stop a stale client
+  // replaying queued COMMITS against the 7.1 contract; a read-only CSV of the
+  // job's own error rows has no such hazard. Auth + ownership still apply.
   asyncHandler(async (req: Request, res: Response) => {
     const jobId = String(req.params.id ?? '')
     if (!jobId) {

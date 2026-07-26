@@ -66,7 +66,9 @@ export default defineConfig({
       // /api/auth/dev-login — a route the server refuses unless
       // ALLOW_DEV_LOGIN=true. Without this the suite would exercise a path
       // production disables and never touch /api/auth/login at all.
-      env: { VITE_AUTH_MODE: 'otp' },
+      // VITE_FEATURE_DATA_IMPORT mirrors the server flag: ImportUpload renders
+      // a disabled stub without it, so the wizard could not be tested at all.
+      env: { VITE_AUTH_MODE: 'otp', VITE_FEATURE_DATA_IMPORT: 'true' },
     },
   ],
 })
