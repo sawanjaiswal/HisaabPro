@@ -11,7 +11,8 @@ import {
   PHONE_REGEX,
   GSTIN_REGEX,
 } from './party.constants'
-import { extractPanFromGstin, rupeesToPaise } from './party.utils'
+import { extractPanFromGstin } from './party.utils'
+import { toCreatePartyPayload, toUpdatePartyPayload } from './party.payload'
 import { useGstinVerify } from './useGstinVerify'
 import type { UseGstinVerifyReturn } from './useGstinVerify'
 import { useConflictReconcile } from '@/features/collaboration/useConflictReconcile'
@@ -159,41 +160,12 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
 
     setIsSubmitting(true)
 
-    // Convert opening balance amount from rupees to paise before sending.
-    // Strip empty/whitespace-only custom field values — server requires non-empty strings.
-    const payload: PartyFormData = {
-      ...form,
-      customFields: form.customFields.filter(cf => cf.value != null && cf.value.trim() !== ''),
-      openingBalance: form.openingBalance
-        ? {
-            ...form.openingBalance,
-            amount: rupeesToPaise(form.openingBalance.amount),
-          }
-        : undefined,
-    }
-
+    // Both server schemas are .strict(): the form state is a superset of either
+    // one, so it is mapped to the schema's field set — never spread raw.
+    // See src/features/parties/party.payload.ts.
     try {
       if (isEditMode && editId) {
-        // updatePartySchema is .strict() and only accepts the core mutable fields —
-        // addresses / openingBalance / gstin* view-flags are managed elsewhere and
-        // would 400 the request. Whitelist to the schema's field set. (see
-        // .claude/fix-trace-party-update.md)
-        const updatePayload: Partial<PartyFormData> = {
-          name: payload.name,
-          phone: payload.phone,
-          email: payload.email,
-          companyName: payload.companyName,
-          type: payload.type,
-          groupId: payload.groupId,
-          tags: payload.tags,
-          gstin: payload.gstin,
-          pan: payload.pan,
-          creditLimit: payload.creditLimit,
-          creditLimitMode: payload.creditLimitMode,
-          notes: payload.notes,
-          customFields: payload.customFields,
-          priceListId: payload.priceListId,
-        }
+        const updatePayload = toUpdatePartyPayload(form)
         // #150 — a stale save 409s; withConflictGuard opens the reconcile dialog
         // instead of an error toast. versionOverride is supplied on overwrite.
         await conflictReconcile.withConflictGuard(async (versionOverride) => {
@@ -203,7 +175,7 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
           navigate(`/parties/${editId}`)
         })
       } else {
-        const created = await createParty(payload)
+        const created = await createParty(toCreatePartyPayload(form))
         reconcilePartyCreated(queryClient, created)
         toast.success(`${form.name} added successfully`)
         navigate(ROUTES.PARTIES)

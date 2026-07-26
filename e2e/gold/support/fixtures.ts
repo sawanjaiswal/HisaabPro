@@ -131,6 +131,43 @@ export async function csrfPost(page: Page, path: string, data?: unknown) {
   })
 }
 
+/**
+ * The offline mutation queue as the browser holds it (Dexie → IndexedDB).
+ *
+ * A queued mutation that never lands is indistinguishable from one that was
+ * never queued unless the item's own status and error are read back — "still
+ * pending" (the app never retried), "dead" (the server refused it) and "absent"
+ * are three different bugs.
+ */
+export async function readSyncQueue(
+  page: Page,
+): Promise<Array<{ path: string; status: string; errorMessage: string | null }>> {
+  return page.evaluate(async () => {
+    // Mirrors SYNC_DB_NAME (src/lib/offline.constants.ts). Matching loosely on
+    // /hisaab/ would open whichever of the app's several IndexedDB databases
+    // came back first and report an empty queue for the wrong store.
+    const name = 'hisaabpro-sync'
+    return new Promise((resolve) => {
+      const req = indexedDB.open(name)
+      req.onerror = () => resolve([])
+      req.onsuccess = () => {
+        const db = req.result
+        if (!db.objectStoreNames.contains('syncQueue')) return resolve([])
+        const all = db.transaction('syncQueue', 'readonly').objectStore('syncQueue').getAll()
+        all.onerror = () => resolve([])
+        all.onsuccess = () =>
+          resolve(
+            all.result.map((i: Record<string, unknown>) => ({
+              path: String(i.path),
+              status: String(i.status),
+              errorMessage: (i.errorMessage as string | null) ?? null,
+            })),
+          )
+      }
+    })
+  })
+}
+
 /** Non-2xx/3xx responses seen during the test — catches silent 500s. */
 export function trackFailedRequests(page: Page): { get: () => string[] } {
   const failures: string[] = []

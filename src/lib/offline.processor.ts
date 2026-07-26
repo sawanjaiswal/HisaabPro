@@ -9,6 +9,7 @@ import { SYNC_QUEUE_MAX_RETRIES, SYNC_RETRY_DELAYS } from './offline.constants'
 import type { SyncQueueItem, SyncItemStatus } from './offline.types'
 import { db, notify, purgeStaleDead } from './offline.queue'
 import { notifyReplayRejection } from './api-queue-replay'
+import { buildRequestHeaders } from './api-request'
 
 // ─── Last-sync timestamp ──────────────────────────────────────────────────────
 
@@ -115,8 +116,18 @@ export async function processQueue(): Promise<void> {
       notify()
 
       try {
-        const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-        if (current.idempotencyKey) headers['X-Idempotency-Key'] = current.idempotencyKey
+        // Same headers the live client sends. A replay is an ordinary mutation
+        // as far as the server is concerned: without the CSRF token it is a 403
+        // and without the replay nonce/timestamp a 400 — both non-retryable
+        // 4xx, so hand-rolling this header set dead-lettered every queued
+        // mutation on reconnect. See .claude/fix-trace-offline-replay-headers.md.
+        const headers = (await buildRequestHeaders({
+          method: current.method,
+          isFormData: false,
+          callerHeaders: current.idempotencyKey
+            ? { 'X-Idempotency-Key': current.idempotencyKey }
+            : undefined,
+        })) as Record<string, string>
 
         const response = await fetch(`${API_URL}${current.path}`, {
           method: current.method,

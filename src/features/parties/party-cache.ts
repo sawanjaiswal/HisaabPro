@@ -13,9 +13,18 @@
  * in the background. Do NOT call `invalidateQueries({ queryKey:
  * queryKeys.parties.* })` directly from feature code — use these instead.
  */
-import type { QueryClient } from '@tanstack/react-query'
+import type { InfiniteData, QueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query-keys'
 import type { PartyDetail, PartyListResponse } from './party.types'
+
+/**
+ * A cached `['parties', ...]` list is one of two shapes: a single response
+ * (detail-page sidebars, pickers) or the accumulated pages of the main list's
+ * `useInfiniteQuery`. Every helper below goes through `updatePartyLists` so a
+ * new call site cannot silently handle one shape and skip the other — the bug
+ * that shape blindness produces is a success toast with an unchanged list.
+ */
+type PartyListCache = PartyListResponse | InfiniteData<PartyListResponse>
 
 /** Type guard — a cached `['parties', ...]` entry that is a paginated list. */
 function isPartyList(value: unknown): value is PartyListResponse {
@@ -26,6 +35,36 @@ function isPartyList(value: unknown): value is PartyListResponse {
   )
 }
 
+/** Type guard — the `{ pages, pageParams }` envelope of an infinite list. */
+function isInfinitePartyList(value: unknown): value is InfiniteData<PartyListResponse> {
+  const pages = (value as InfiniteData<PartyListResponse> | null)?.pages
+  return Array.isArray(pages) && pages.every(isPartyList)
+}
+
+/**
+ * Applies `transform` to every cached party list page, in either shape.
+ * `index` is the page's position, so a transform can distinguish "prepend to
+ * the first page" from "this page only needs its total adjusted".
+ */
+function updatePartyLists(
+  qc: QueryClient,
+  transform: (page: PartyListResponse, index: number) => PartyListResponse,
+): void {
+  qc.setQueriesData<PartyListCache>({ queryKey: queryKeys.parties.all() }, (old) => {
+    if (isInfinitePartyList(old)) return { ...old, pages: old.pages.map(transform) }
+    if (isPartyList(old)) return transform(old, 0)
+    return old
+  })
+}
+
+/** Shifts a page's `total` without letting it go negative. */
+function withTotalDelta(page: PartyListResponse, delta: number): PartyListResponse {
+  return {
+    ...page,
+    pagination: { ...page.pagination, total: Math.max(0, page.pagination.total + delta) },
+  }
+}
+
 /**
  * Instant-insert a newly created party into every cached list, then invalidate.
  * `created` (a `PartyDetail`) extends `PartySummary`, so it drops straight into
@@ -33,18 +72,14 @@ function isPartyList(value: unknown): value is PartyListResponse {
  * follow-up invalidation when that filter is next viewed.
  */
 export function reconcilePartyCreated(qc: QueryClient, created: PartyDetail): void {
-  qc.setQueriesData<PartyListResponse>(
-    { queryKey: queryKeys.parties.all() },
-    (old) => {
-      if (!isPartyList(old)) return old
-      if (old.parties.some((p) => p.id === created.id)) return old
-      return {
-        ...old,
-        parties: [created, ...old.parties],
-        pagination: { ...old.pagination, total: old.pagination.total + 1 },
-      }
-    },
-  )
+  updatePartyLists(qc, (page, index) => {
+    if (page.parties.some((p) => p.id === created.id)) return page
+    // The row goes on page 1 only — putting it on every loaded page would show
+    // the same party three times. Later pages still carry the bumped total so
+    // the summary card and the "has more" check stay consistent.
+    const bumped = withTotalDelta(page, 1)
+    return index === 0 ? { ...bumped, parties: [created, ...bumped.parties] } : bumped
+  })
   qc.invalidateQueries({ queryKey: queryKeys.parties.all() })
 }
 
@@ -53,16 +88,10 @@ export function reconcilePartyCreated(qc: QueryClient, created: PartyDetail): vo
  * invalidate. Keeps the list row and the open detail view in sync instantly.
  */
 export function reconcilePartyUpdated(qc: QueryClient, updated: PartyDetail): void {
-  qc.setQueriesData<PartyListResponse>(
-    { queryKey: queryKeys.parties.all() },
-    (old) => {
-      if (!isPartyList(old)) return old
-      return {
-        ...old,
-        parties: old.parties.map((p) => (p.id === updated.id ? { ...p, ...updated } : p)),
-      }
-    },
-  )
+  updatePartyLists(qc, (page) => ({
+    ...page,
+    parties: page.parties.map((p) => (p.id === updated.id ? { ...p, ...updated } : p)),
+  }))
   qc.setQueryData(queryKeys.parties.detail(updated.id), updated)
   qc.invalidateQueries({ queryKey: queryKeys.parties.all() })
 }
@@ -74,18 +103,12 @@ export function reconcilePartyUpdated(qc: QueryClient, updated: PartyDetail): vo
  * `invalidatePartyLists` (on undo / error / after the real delete lands).
  */
 export function optimisticRemoveParty(qc: QueryClient, id: string): void {
-  qc.setQueriesData<PartyListResponse>(
-    { queryKey: queryKeys.parties.all() },
-    (old) => {
-      if (!isPartyList(old)) return old
-      if (!old.parties.some((p) => p.id === id)) return old
-      return {
-        ...old,
-        parties: old.parties.filter((p) => p.id !== id),
-        pagination: { ...old.pagination, total: Math.max(0, old.pagination.total - 1) },
-      }
-    },
-  )
+  updatePartyLists(qc, (page) => {
+    // Decrement on the page that actually held the row, so a party removed
+    // from page 2 doesn't take the total down once per loaded page.
+    if (!page.parties.some((p) => p.id === id)) return page
+    return withTotalDelta({ ...page, parties: page.parties.filter((p) => p.id !== id) }, -1)
+  })
 }
 
 /**

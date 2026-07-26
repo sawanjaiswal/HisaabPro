@@ -142,6 +142,7 @@ export const enExt1 = {
   totalCredit:           'Total Credit',
   transactionLedger:     'Transaction ledger',
   loadMoreTransactions:  'Load more transactions',
+  loadMoreParties:       'Load more parties',
   loadMore2:             'Load More',
   balAbbrev:             'Bal:',
   viewDetailsFor:        'View details for',

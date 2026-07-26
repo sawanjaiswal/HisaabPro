@@ -10,7 +10,7 @@ import { LanguageProvider } from './context/LanguageContext'
 import { PinGateProvider } from './providers/PinGateProvider'
 import { App } from './App'
 import { initServiceWorker } from './lib/sw-register'
-import { recoverStuckItems } from './lib/offline'
+import { recoverStuckItems, startOfflineAutoSync } from './lib/offline'
 import { initSentry } from './lib/sentry'
 import './styles/globals.css'
 
@@ -20,6 +20,8 @@ initSentry()
 // Register service worker + recover any stuck sync items from previous crash
 initServiceWorker()
 recoverStuckItems()
+// Owns queue draining for the whole app lifetime — never a component's job.
+startOfflineAutoSync()
 
 const rootEl = document.getElementById('root')!
 

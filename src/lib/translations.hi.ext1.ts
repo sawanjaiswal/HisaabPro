@@ -142,6 +142,7 @@ export const hiExt1 = {
   totalCredit:           'कुल क्रेडिट',
   transactionLedger:     'लेनदेन लेजर',
   loadMoreTransactions:  'और लेनदेन लोड करें',
+  loadMoreParties:       'और पार्टियाँ लोड करें',
   loadMore2:             'और लोड करें',
   balAbbrev:             'बैलेंस:',
   viewDetailsFor:        'विवरण देखें',

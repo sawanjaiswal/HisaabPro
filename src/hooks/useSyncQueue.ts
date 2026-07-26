@@ -7,7 +7,6 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useOnlineStatusWithCallbacks } from './useOnlineStatus'
 import { useSubscription } from './useSubscription'
 import { PLAN_HIERARCHY } from '@/features/subscription/plan-limits'
 import {
@@ -70,12 +69,9 @@ export function useSyncQueue() {
     }
   }, [refresh])
 
-  // Process queue when coming online
-  useOnlineStatusWithCallbacks({
-    onOnline: () => {
-      processQueue()
-    },
-  })
+  // Draining is NOT this hook's job: startOfflineAutoSync() (src/lib/offline.autosync.ts)
+  // owns it at module level, because this hook unmounts with the header that
+  // renders it and would miss the reconnect it was supposed to react to.
 
   // Reactivate blocked items when plan upgrades (402 items → pending)
   const { plan } = useSubscription()

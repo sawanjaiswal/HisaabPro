@@ -147,25 +147,33 @@ function stopHeartbeat(): void {
 }
 
 /**
+ * Subscribe to the dual-signal online state from outside React.
+ *
+ * Non-React consumers (the offline queue's auto-sync) need the same signal a
+ * component gets, without being bound to a component's lifetime — an
+ * unmountable subscriber misses transitions that happen while it is gone.
+ * Returns an unsubscribe function.
+ */
+export function subscribeOnlineStatus(listener: (online: boolean) => void): () => void {
+  globalListeners.add(listener);
+  if (globalListeners.size === 1) startHeartbeat();
+
+  return () => {
+    globalListeners.delete(listener);
+    if (globalListeners.size === 0) stopHeartbeat();
+  };
+}
+
+/**
  * Hook to detect online/offline status using dual-signal approach.
  */
 export function useOnlineStatus(): boolean {
   const [isOnline, setIsOnline] = useState(globalIsOnline);
 
   useEffect(() => {
-    const listener = (online: boolean) => setIsOnline(online);
-    globalListeners.add(listener);
-
-    if (globalListeners.size === 1) {
-      startHeartbeat();
-    }
-
+    const unsubscribe = subscribeOnlineStatus((online: boolean) => setIsOnline(online));
     setIsOnline(globalIsOnline);
-
-    return () => {
-      globalListeners.delete(listener);
-      if (globalListeners.size === 0) stopHeartbeat();
-    };
+    return unsubscribe;
   }, []);
 
   return isOnline;

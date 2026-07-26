@@ -75,6 +75,13 @@ vi.mock('../offline.queue', () => {
   return { db: { syncQueue: table }, notify: () => {}, purgeStaleDead: async () => 0 }
 })
 
+// Real CSRF fetching would add an untracked GET to the recorded calls; the
+// token's provenance is api.ts's concern, not the replayer's.
+vi.mock('../api-csrf', () => ({
+  getCsrfToken: async () => 'test-csrf-token',
+  invalidateCsrfToken: () => {},
+}))
+
 const replayRejection = vi.fn()
 vi.mock('../api-queue-replay', () => ({
   notifyReplayRejection: (...a: unknown[]) => replayRejection(...a),
@@ -82,7 +89,12 @@ vi.mock('../api-queue-replay', () => ({
 
 import { processQueue } from '../offline.processor'
 
-type FetchCall = { url: string; method: string; key: string | undefined }
+type FetchCall = {
+  url: string
+  method: string
+  key: string | undefined
+  headers: Record<string, string>
+}
 let calls: FetchCall[]
 
 function mockFetch(responder: (call: FetchCall, n: number) => { ok: boolean; status: number }) {
@@ -91,7 +103,12 @@ function mockFetch(responder: (call: FetchCall, n: number) => { ok: boolean; sta
     'fetch',
     vi.fn(async (url: string, opts: RequestInit) => {
       const headers = (opts.headers ?? {}) as Record<string, string>
-      const call: FetchCall = { url, method: opts.method!, key: headers['X-Idempotency-Key'] }
+      const call: FetchCall = {
+        url,
+        method: opts.method!,
+        key: headers['X-Idempotency-Key'],
+        headers,
+      }
       calls.push(call)
       const { ok, status } = responder(call, n++)
       return {
@@ -176,5 +193,24 @@ describe('offline replay — failure handling', () => {
     expect(store.items[0].status).toBe('dead')
     expect(replayRejection).toHaveBeenCalledTimes(1)
     expect(replayRejection.mock.calls[0][0]).toMatchObject({ entityType: 'invoice', status: 400 })
+  })
+})
+
+describe('offline replay — request headers', () => {
+  it('replays with the CSRF token and replay-protection headers the live client sends', async () => {
+    // Without these the server answers 403 CSRF_FAILED / 400
+    // MISSING_REQUEST_HEADERS, which the processor treats as a non-retryable
+    // 4xx — so every mutation made offline is dead-lettered on reconnect and
+    // the user's work is silently lost.
+    store.seed({ path: '/parties', createdAt: 1 })
+    mockFetch(() => ({ ok: true, status: 200 }))
+
+    await processQueue()
+
+    const [{ headers }] = calls
+    expect(headers['X-CSRF-Token']).toBe('test-csrf-token')
+    expect(headers['X-Request-Nonce']).toBeTruthy()
+    expect(headers['X-Request-Timestamp']).toBeTruthy()
+    expect(headers['Content-Type']).toBe('application/json')
   })
 })

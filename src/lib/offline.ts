@@ -9,6 +9,7 @@
  * Implementation split across:
  *   - offline.queue.ts     — Dexie DB, listeners, queue CRUD
  *   - offline.processor.ts — sync drain, retry logic, last-sync timestamp
+ *   - offline.autosync.ts  — decides when the drain runs
  */
 
 export {
@@ -23,6 +24,8 @@ export {
   recoverStuckItems,
   purgeStaleDead,
 } from './offline.queue'
+
+export { startOfflineAutoSync } from './offline.autosync'
 
 export {
   processQueue,

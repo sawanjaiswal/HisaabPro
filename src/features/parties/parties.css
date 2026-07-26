@@ -567,3 +567,11 @@
   background: var(--color-gray-50);
   border-color: var(--color-gray-200);
 }
+
+/* Load more — the list is paged, so the pager sits below the last row and
+   above the outstanding-total card (mirrors .party-txn-load-more). */
+.party-list-load-more {
+  display: flex;
+  align-self: center;
+  margin: var(--space-3) auto 0;
+}

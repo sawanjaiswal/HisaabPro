@@ -21,6 +21,7 @@ import { PartyCard } from './components/PartyCard'
 import { useOptOutSet } from '@/features/marketing/hooks/useOptOutSet'
 import { TagFilterBar } from '@/features/crm/components/TagFilterBar'
 import { PartyListSkeleton } from './components/PartyListSkeleton'
+import { PartyListLoadMore } from './components/PartyListLoadMore'
 import { deleteParty } from './party.service'
 import { ROUTES } from '@/config/routes.config'
 import type { BulkAction } from '@/components/ui/BulkActionBar'
@@ -34,7 +35,8 @@ export default function PartiesPage() {
   const navigate = useNavigate()
   const toast = useToast()
   const { t } = useLanguage()
-  const { data, status, filters, setSearch, setFilter, refresh } = useParties()
+  const { data, status, filters, setSearch, setFilter, refresh, hasMore, loadMore, isLoadingMore } =
+    useParties()
   const bulk = useBulkSelect()
   const optOutSet = useOptOutSet()
   const [isBulkDeleting, setIsBulkDeleting] = useState(false)
@@ -196,6 +198,7 @@ export default function PartiesPage() {
               </div>
             ))}
           </div>
+          <PartyListLoadMore hasMore={hasMore} isLoading={isLoadingMore} onLoadMore={loadMore} />
           {!bulk.isActive && (
             <OutstandingTotalCard
               label={t.totalOutstandingLabel}

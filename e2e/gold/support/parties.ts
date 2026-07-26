@@ -48,6 +48,20 @@ export async function apiCreateParty(
 }
 
 /**
+ * How many parties the business actually has.
+ *
+ * Read from the API, not the page: the list's live region announces
+ * `data.parties.length` — the number of rows *rendered* — so using it as the
+ * total would make a truncated list look complete, which is the exact failure
+ * TC-PTY-07 is looking for.
+ */
+export async function apiPartyTotal(page: Page): Promise<number> {
+  const res = await page.request.get(`${API}/parties?limit=1`)
+  const body = (await res.json()) as { data?: { pagination?: { total?: number } } }
+  return body.data?.pagination?.total ?? 0
+}
+
+/**
  * Expands one of the party form's collapsed blocks (Business / Credit / Custom
  * fields). Only the identity fields are visible on load — opening balance and
  * GSTIN live behind an Accordion, so a spec that fills them without this step

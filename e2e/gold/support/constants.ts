@@ -55,6 +55,21 @@ export const COOKIES = {
 } as const
 export const CSRF_HEADER = 'x-csrf-token'
 
+/**
+ * GSTINs whose mod-36 checksum actually validates (server/src/services/gstin.utils.ts).
+ *
+ * A GSTIN that merely matches the 15-char regex is rejected — the commonly
+ * copy-pasted "27AAPFU0939F1ZV" fails the check digit. State code 27 is
+ * Maharashtra, which is the seeded business's own state, so it drives the
+ * intra-state CGST+SGST branch; 29 (Karnataka) drives IGST.
+ */
+export const GSTIN = {
+  intraState: '27AAPFU0939F1ZF',
+  interState: '29AAPFU0939F1Z9',
+  malformed: 'NOTAGSTIN12345',
+  badChecksum: '27AAPFU0939F1ZV',
+} as const
+
 /** Server-side security constants mirrored from server/src/config/security.ts. */
 export const OTP_LENGTH = 6
 export const OTP_MAX_ATTEMPTS = 5

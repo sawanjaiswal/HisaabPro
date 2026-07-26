@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react'
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useInfiniteQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { queryKeys } from '@/lib/query-keys'
@@ -21,7 +21,11 @@ interface UsePartiesReturn {
   filters: PartyFilters
   setSearch: (term: string) => void
   setFilter: <K extends keyof PartyFilters>(key: K, value: PartyFilters[K]) => void
-  setPage: (page: number) => void
+  /** True while the server reports pages the user has not loaded yet. */
+  hasMore: boolean
+  /** Appends the next page to `data.parties`. No-op when `hasMore` is false. */
+  loadMore: () => void
+  isLoadingMore: boolean
   refresh: () => void
   handleCreate: (formData: PartyFormData) => Promise<void>
   handleDelete: (id: string, name: string) => void
@@ -36,13 +40,33 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
     ...initialFilters,
   })
 
-  // TanStack Query replaces useState(data) + useEffect(fetch) + refreshKey
-  const query = useQuery({
+  // Paged, not single-shot: a business with more parties than `limit` must be
+  // able to reach the rest. `useInfiniteQuery` accumulates pages so "load more"
+  // grows the list; a `useQuery` keyed on `filters.page` would swap rows 1-20
+  // for 21-40 instead. Same idiom as the other paged lists in the app
+  // (src/features/custom-orders/hooks/useCustomOrders.ts).
+  const query = useInfiniteQuery({
     queryKey: queryKeys.parties.list(filters),
-    queryFn: ({ signal }) => getParties(filters, signal),
+    queryFn: ({ pageParam, signal }) => getParties({ ...filters, page: pageParam }, signal),
+    initialPageParam: filters.page,
+    getNextPageParam: (last) =>
+      last.pagination.page < last.pagination.totalPages ? last.pagination.page + 1 : undefined,
   })
 
-  const data = query.data ?? null
+  // Flattened back into the single-response shape every consumer already reads.
+  // `pagination` comes from the newest page (its `page` is how far the user has
+  // scrolled); `summary` from the first, since the totals it carries describe
+  // the whole filtered set and do not change page to page.
+  const data = useMemo<PartyListResponse | null>(() => {
+    const pages = query.data?.pages
+    if (!pages?.length) return null
+    return {
+      parties: pages.flatMap((p) => p.parties),
+      pagination: pages[pages.length - 1].pagination,
+      summary: pages[0].summary,
+    }
+  }, [query.data])
+
   const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
 
   // Show toast on fetch error
@@ -73,9 +97,9 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
     setFilters((prev) => ({ ...prev, [key]: value, page: 1 }))
   }, [])
 
-  const setPage = useCallback((page: number) => {
-    setFilters((prev) => ({ ...prev, page }))
-  }, [])
+  const loadMore = useCallback(() => {
+    if (query.hasNextPage && !query.isFetchingNextPage) query.fetchNextPage()
+  }, [query])
 
   const refresh = useCallback(() => {
     invalidatePartyLists(queryClient)
@@ -130,7 +154,9 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
     filters,
     setSearch,
     setFilter,
-    setPage,
+    hasMore: query.hasNextPage,
+    loadMore,
+    isLoadingMore: query.isFetchingNextPage,
     refresh,
     handleCreate,
     handleDelete,
