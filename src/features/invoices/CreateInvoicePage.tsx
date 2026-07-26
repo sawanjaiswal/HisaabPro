@@ -14,7 +14,7 @@ import { useGstGate } from '@/features/gst/useGstGate'
 import { useInvoiceForm } from './useInvoiceForm'
 import { useInvoiceHotkeys } from './useInvoiceHotkeys'
 import { useBillScanPrefill } from './useBillScanPrefill'
-import { getCreateTitle } from '@/features/sales/sales.utils'
+import { getCreateTitle, getCreateBackTo } from '@/features/sales/sales.utils'
 import type { DocumentType } from './invoice.types'
 import { InvoiceTotalsBar } from './components/InvoiceTotalsBar'
 import { InvoiceHeaderMeta } from './components/InvoiceHeaderMeta'
@@ -68,6 +68,7 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
     batchErrorCode,
     clearBatchError,
     priceListId,
+    validate,
   } = useInvoiceForm(type)
 
   const { compositionScheme } = useGstGate()
@@ -125,12 +126,7 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
     <AppShell>
       <Header
         title={formTitle}
-        backTo={
-          type === 'ESTIMATE'         ? '/sales/estimates'
-          : type === 'SALE_ORDER'     ? '/sales/orders'
-          : type === 'DELIVERY_CHALLAN' ? '/sales/challans'
-          : ROUTES.INVOICES
-        }
+        backTo={getCreateBackTo(type)}
         actions={
           <Button variant="none" type="button" className="header-icon-btn" onClick={() => nav(ROUTES.BILL_SCAN)} aria-label={t.scanBillAddItems}>
             <Camera size={20} aria-hidden="true" />
@@ -222,7 +218,10 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
         onSave={handleSubmit}
         onSaveDraft={handleSaveDraft}
         showProfit={false}
-        onPreview={() => setShowPreview(true)}
+        // Preview is the last stop before saving, so it runs the same checks the
+        // save does — an empty ₹0.00 preview with a live "Save & Send" button
+        // only leads to a rejected save the seller has to decode.
+        onPreview={() => { if (validate()) setShowPreview(true) }}
       />
 
       <InvoicePreviewDrawer

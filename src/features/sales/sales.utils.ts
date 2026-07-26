@@ -1,5 +1,6 @@
 /** Sales pipeline — pure utility functions (type→label, lineage→steps). */
 
+import { ROUTES } from '@/config/routes.config'
 import type { DocumentType, DocumentStatus } from '../invoices/invoice.types'
 import type { LineageNode, PipelineStep, SalesDocumentType } from './sales.types'
 import {
@@ -35,6 +36,16 @@ export function getCreateTitle(type: DocumentType): string {
     case 'SALE_INVOICE':     return 'Create Invoice'
     case 'PURCHASE_INVOICE': return 'Create Purchase Invoice'
     default:                 return 'Create Document'
+  }
+}
+
+/** Where the back arrow goes from a create form — each type has its own list. */
+export function getCreateBackTo(type: DocumentType): string {
+  switch (type) {
+    case 'ESTIMATE':         return '/sales/estimates'
+    case 'SALE_ORDER':       return '/sales/orders'
+    case 'DELIVERY_CHALLAN': return '/sales/challans'
+    default:                 return ROUTES.INVOICES
   }
 }
 
