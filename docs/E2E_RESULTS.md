@@ -27,6 +27,7 @@ Last run: 2026-07-26.
 | K — GST returns & tax reports (return side) | `e2e/gold/gst-returns.spec.ts` | 12 | 12 | 0 | 0 |
 | L — Payments, allocation & outstanding | `e2e/gold/payments.spec.ts` | 10 | 10 | 0 | 0 |
 | K — GST backfill | `e2e/gold/gst-backfill.spec.ts` | 5 | 5 | 0 | 0 |
+| F — Data import (upload → preview → commit) | `e2e/gold/import.spec.ts` | 6 | 6 | 0 | 0 |
 
 TC-PTY-09 (party statement: opening + transactions − payments = closing) is
 planned but not written. Suite K's invoice half covers TC-GST-01..08 (08 is the
@@ -471,3 +472,82 @@ it lived inside the handler.
 Root: `server/src/routes/gst-backfill.route.ts` — the check is now a middleware,
 ordered with the other refusals ahead of the limiter.
 Caught by TC-GSTBF-03 followed by TC-GSTBF-04. Fixed in `631ebbfc`.
+
+### F34 — Every import commit died on the advisory lock — **BLOCKER**, FIXED
+
+`pg_advisory_xact_lock` has a `(bigint)` and an `(int4,int4)` overload, never
+`(bigint,bigint)`. Widening both arguments to `hashtextextended` aborted the
+transaction with 42883 before a single row was written, so no import could ever
+commit. The namespace now folds into the hashed text — full 64-bit key, keys
+still disjoint.
+Root: `server/src/services/import/commit.helpers.ts:60`. Fixed in `911f43a1`.
+
+### F35 — The commit's four-field bind could never be satisfied — **BLOCKER**, FIXED
+
+`ImportJob.idempotencyKey` was written nowhere, so the M3 equality check always
+failed with 409 BAD_COMMIT_TOKEN. Carrying the upload's key forward is not an
+option: `idempotencyCheck` keys its replay log by (key, user) alone, so a commit
+re-presenting the upload's key is answered with the cached *upload* response.
+The commit claims its own key inside the same transaction; the bind accepts an
+unclaimed job.
+Root: `server/src/services/import/commit.helpers.ts:110`. Fixed in `911f43a1`.
+
+### F36 — Imported parties carried a phone shape nothing else could read — **BLOCKER**, FIXED
+
+The normalizer wrote E.164 while every other writer of `Party.phone` stores bare
+10 digits. Exact-dedup compared against `Party.phone` and therefore never matched
+an existing customer, and an imported party failed the update schema on the way
+back in. `lib/party-phone.ts` is now the one definition and the field is named
+`phone` so the shape cannot drift again.
+Root: `server/src/services/import/normalizers/party-normalizer.ts:71`. Fixed in `911f43a1`.
+
+### F37 — All three parsers dropped nameless rows before the preview saw them — **BLOCKER**, FIXED
+
+Counts are the shopkeeper's only reconciliation: "498 imported" against a file
+they believe holds 500 is a customer who quietly does not exist. Row validity is
+now judged only by the normalizer (which already flags `MISSING_NAME`); genuine
+non-party filters (Vyapar `Type`, Tally ledger group) stay.
+Root: `server/src/services/import/parsers/vyapar-csv.parser.ts:88`. Fixed in `911f43a1`.
+
+### F38 — A duplicate was staged as new, and the create aborted the whole file — **BLOCKER**, FIXED
+
+`classifyRow` judged a row from its issues alone and ignored the dedup result, so
+a customer the shop already had was created a second time and the
+`(businessId, phone)` unique index took the entire commit down with it — losing
+every other row in the file. Status is now the single place a row's fate is
+decided, duplicates *within* one file are detected too, and unresolved duplicates
+count as skipped so committed + skipped + errors reconciles to the row count.
+This also unblocks SKIP / OVERWRITE / CREATE_NEW, which were unreachable: they
+only accept `DUPLICATE_*` rows and no row was ever in that status.
+Root: `server/src/services/import/party-parse.helper.ts:34`. Fixed in `911f43a1`.
+
+### F39 — The wizard could not complete an upload from the UI — **BLOCKER**, FIXED
+
+Four client/server contract drifts, none visible to the compiler because
+`api<T>()` asserts its type parameter instead of checking it: `CreateImportRes`
+described a flat `{jobId}` envelope the route has never returned (every upload
+navigated to `/imports/undefined`); `ImportFormat` was lowercase against a
+`.strict()` uppercase server enum; the idempotency key went out as
+`Idempotency-Key`, which the middleware ignores, so a double submit is processed
+twice instead of replayed; and `clientVersion` was appended to the FormData —
+rejected by `.strict()` — while `requireMinClientVersion` reads the
+`X-Client-Version` **header**, missing on every request. In production that last
+one is a 426 on all five import routes: the feature would have been unreachable
+from the app even with the flag on.
+
+`error-csv` drops the version gate instead. It is fetched by a top-level browser
+navigation, which cannot carry a custom header, so the gate would 426 every
+download from every client. The gate stops stale clients replaying COMMITs; a
+read-only CSV of the job's own error rows carries no such risk, and auth + owner
++ feature still apply.
+Root: `src/features/import/types/import.types.ts` + `services/import.service.ts`.
+Caught by TC-IMP-06. Fixed in `98870c7c`.
+
+### F40 — Import ships disabled unless two flags are set — **BLOCKER (release config)**
+
+`requireFeature('DATA_IMPORT')` defaults OFF server-side and the wizard is behind
+`VITE_FEATURE_DATA_IMPORT` client-side. Production must set **both**
+`FEATURE_DATA_IMPORT=true` (plus `FEATURE_DATA_IMPORT_COHORT_PCT=100` for a full
+rollout) and `VITE_FEATURE_DATA_IMPORT=true`, or "import your customers from
+Excel" silently does not exist for anyone. This is why none of F34–F39 had ever
+been hit by a user: nobody could reach the path.
