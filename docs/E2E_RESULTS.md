@@ -22,13 +22,14 @@ Last run: 2026-07-26.
 | I — Products (create, GST fields, edit/delete) | `e2e/gold/products.spec.ts` | 5 | 5 | 0 | 0 |
 | I — Products (stock, low stock, barcode, paging) | `e2e/gold/products-stock.spec.ts` | 5 | 5 | 0 | 0 |
 | J — Invoices (create, discounts, totals, validation) | `e2e/gold/invoices.spec.ts` | 5 | 5 | 0 | 0 |
+| J — Invoices (draft, edit, delete, payment, stock) | `e2e/gold/invoices-lifecycle.spec.ts` | 5 | 5 | 0 | 0 |
+| K — GST invoicing (split, rates, inclusive, RCM) | `e2e/gold/gst-invoicing.spec.ts` | 7 | 7 | 0 | 0 |
 
 TC-PTY-09 (party statement: opening + transactions − payments = closing) is
-planned but not written. Suite J is part 1 only — TC-INV-05 (draft), 06 (edit
-re-reconciles), 07 (delete/cancel reverses stock + ledger + audit), 08 (payment
-full/partial) and TC-PRD-08 (stock falls when an invoice is raised) are still to
-write. Remaining suites (GST, import, payments, reports, settings) are not
-written yet.
+planned but not written. Suite K covers TC-GST-01..07; the return-side cases
+(B2B/B2C supply type, HSN summary, GSTR-1/3B, credit note reducing liability,
+composition Bill of Supply) are still to write. Remaining suites (import,
+payments, reports, settings) are not written yet.
 
 ---
 
@@ -335,6 +336,40 @@ Trace: `.claude/fix-trace-discount-subtracted-twice.md`. Caught by TC-INV-02.
 preview with a live "Save & Send" button that only led to a rejected save the
 seller had to decode. Preview now runs the same checks as save.
 Caught by TC-INV-15.
+
+### F26 — A deleted invoice kept billing the customer — **BLOCKER**, FIXED
+
+Delete wrote `status: 'DELETED'` but never `isDeleted: true`, while `Document`
+is registered in `SOFT_DELETE_MODELS` — so every reader without its own status
+predicate (party ledger, public invoice view, share links, quota counts) still
+returned the row. A cancelled sale stayed on the customer's statement and kept
+demanding money. `isDeleted` is now the fact that delete writes and restore
+clears, and the five recycle-bin queries carry the extension's documented
+explicit-`isDeleted` bypass.
+Trace: `.claude/fix-trace-deleted-invoice-still-in-ledger.md`. Caught by TC-INV-07.
+
+### F27 — Every GST invoice stored zero tax — **BLOCKER**, FIXED
+
+The invoice form posts `taxCategoryId` and nothing else, but the server read the
+rate from an optional `gstRate` field in the request body that no client sends.
+The UI rendered its GST summary from the category's own rate, so the bill on
+screen and the bill in the database disagreed by the whole tax. The rate is now
+resolved from the category inside `buildCalcItems` — a server-owned fact, since a
+client that could state the rate could bill 0% on taxable goods. The update path
+had a drifted copy of that mapping (no INCLUSIVE back-calculation) and now calls
+the same builder.
+Trace: `.claude/fix-trace-gst-rate-never-applied.md`. Caught by TC-GST-02.
+
+### F28 — A reverse-charge invoice could not be saved at all — **BLOCKER**, FIXED
+
+RCM zeroed the tax heads after the totals were computed, leaving `grandTotal`,
+`roundOff` and profit carrying tax the supplier never collects; the GL entry came
+out unbalanced (debit 118000 ≠ credit 100000) and the save was rejected. The rule
+now runs inside `calculateDocumentTotals` before `preRound`, through the
+`isReverseCharge` option the type already declared and nothing read. Line-level
+tax amounts stay populated — GSTR-1 reports an RCM supply with its rate and
+taxable value.
+Trace: `.claude/fix-trace-rcm-grandtotal-still-taxed.md`. Caught by TC-GST-06.
 
 ---
 
