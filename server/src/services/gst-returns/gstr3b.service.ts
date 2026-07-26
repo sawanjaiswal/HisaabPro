@@ -94,13 +94,27 @@ async function fetchAggregates(businessId: string, start: Date, end: Date) {
   }
   const sums = { _sum: { totalTaxableValue: true, totalCgst: true, totalSgst: true, totalIgst: true, totalCess: true } } as const
 
+  // "Carries GST" is any non-zero head, never CGST alone: the split is
+  // state-dependent (intra-state bills CGST+SGST, inter-state bills IGST), so a
+  // CGST-only test drops every inter-state document out of both the taxed and
+  // the nil-rated bucket. TAXED and NIL are exact complements of each other.
+  const TAXED = {
+    OR: [
+      { totalCgst: { gt: 0 } },
+      { totalSgst: { gt: 0 } },
+      { totalIgst: { gt: 0 } },
+      { totalCess: { gt: 0 } },
+    ],
+  }
+  const NIL = { totalCgst: 0, totalSgst: 0, totalIgst: 0, totalCess: 0 }
+
   const [agg31a, agg31b, agg31d, agg4, agg5, agg31c] = await Promise.all([
-    prisma.document.aggregate({ where: { ...base, type: 'SALE_INVOICE', supplyType: { in: ['B2B', 'B2C_LARGE', 'B2C_SMALL'] }, isReverseCharge: false, totalCgst: { gt: 0 } }, ...sums }),
+    prisma.document.aggregate({ where: { ...base, type: 'SALE_INVOICE', supplyType: { in: ['B2B', 'B2C_LARGE', 'B2C_SMALL'] }, isReverseCharge: false, ...TAXED }, ...sums }),
     prisma.document.aggregate({ where: { ...base, type: 'SALE_INVOICE', supplyType: { in: ['EXPORT', 'SEZ'] } }, ...sums }),
     prisma.document.aggregate({ where: { ...base, type: 'PURCHASE_INVOICE', isReverseCharge: true }, ...sums }),
-    prisma.document.aggregate({ where: { ...base, type: 'PURCHASE_INVOICE', isReverseCharge: false, totalCgst: { gt: 0 } }, ...sums }),
-    prisma.document.aggregate({ where: { ...base, type: 'PURCHASE_INVOICE', totalCgst: 0, totalSgst: 0, totalIgst: 0 }, ...sums }),
-    prisma.document.aggregate({ where: { ...base, type: 'SALE_INVOICE', totalCgst: 0, totalSgst: 0, totalIgst: 0 }, ...sums }),
+    prisma.document.aggregate({ where: { ...base, type: 'PURCHASE_INVOICE', isReverseCharge: false, ...TAXED }, ...sums }),
+    prisma.document.aggregate({ where: { ...base, type: 'PURCHASE_INVOICE', ...NIL }, ...sums }),
+    prisma.document.aggregate({ where: { ...base, type: 'SALE_INVOICE', ...NIL }, ...sums }),
   ])
 
   return {

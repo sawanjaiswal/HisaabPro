@@ -23,13 +23,17 @@ Last run: 2026-07-26.
 | I — Products (stock, low stock, barcode, paging) | `e2e/gold/products-stock.spec.ts` | 5 | 5 | 0 | 0 |
 | J — Invoices (create, discounts, totals, validation) | `e2e/gold/invoices.spec.ts` | 5 | 5 | 0 | 0 |
 | J — Invoices (draft, edit, delete, payment, stock) | `e2e/gold/invoices-lifecycle.spec.ts` | 5 | 5 | 0 | 0 |
-| K — GST invoicing (split, rates, inclusive, RCM) | `e2e/gold/gst-invoicing.spec.ts` | 7 | 7 | 0 | 0 |
+| K — GST invoicing (split, rates, inclusive, RCM, UI) | `e2e/gold/gst-invoicing.spec.ts` | 8 | 8 | 0 | 0 |
+| L — GST returns & tax reports | `e2e/gold/gst-returns.spec.ts` | 12 | 12 | 0 | 0 |
 
 TC-PTY-09 (party statement: opening + transactions − payments = closing) is
-planned but not written. Suite K covers TC-GST-01..07; the return-side cases
-(B2B/B2C supply type, HSN summary, GSTR-1/3B, credit note reducing liability,
-composition Bill of Supply) are still to write. Remaining suites (import,
-payments, reports, settings) are not written yet.
+planned but not written. Suite K covers TC-GST-01..08 (08 is the browser case:
+a GST-registered seller sees the tax on New Invoice and the grand total
+includes it). Suite L covers the return side — tax summary windowing, drafts and
+deleted documents excluded, credit notes reducing liability, HSN summary,
+GSTR-1 B2B, the stored return, GSTR-3B outward tax and ITC, filing readiness.
+Composition / Bill-of-Supply rejection and the GST backfill route are still to
+write. Remaining suites (import, payments, reports, settings) are not written yet.
 
 ---
 
@@ -370,6 +374,29 @@ now runs inside `calculateDocumentTotals` before `preRound`, through the
 tax amounts stay populated — GSTR-1 reports an RCM supply with its rate and
 taxable value.
 Trace: `.claude/fix-trace-rcm-grandtotal-still-taxed.md`. Caught by TC-GST-06.
+
+### F29 — A GST-registered seller saw no GST at all on New Invoice — **BLOCKER**, FIXED
+
+Four causes stacked on one screen: the GST card's gate never fetched settings;
+`getGstSettings` typed the wire body (`{ settings }`) as the settings themselves,
+so `gstEnabled` read `undefined` app-wide; the product pickers passed positional
+arguments and dropped the product's `taxCategoryId`, leaving every line untaxed;
+and the client totals never added tax, so the bar quoted the pre-tax amount while
+the server stored the taxed one. Each fixed at its own SSOT — the gate owns its
+fetch, the service unwraps the envelope, pickers emit one `ProductPick` object,
+and `calculateInvoiceTotals` takes `totalTax` and rounds off the taxed figure.
+Trace: `.claude/fix-trace-gst-ui-never-loads.md`. Caught by TC-GST-08.
+
+### F30 — Every inter-state supply vanished from GSTR-3B — **BLOCKER**, FIXED
+
+`fetchAggregates` expressed "this document carries GST" as `totalCgst > 0`. The
+split is state-dependent, so an inter-state document (IGST only) matched neither
+the taxable rows nor the nil-rated ones and fell out of 3B entirely: outward
+IGST was never declared, and IGST paid on inter-state purchases was never claimed
+as input credit — the business pays that tax twice and under-declares its
+liability. "Taxed" is now any non-zero head, with the nil-rated bucket its exact
+complement.
+Trace: `.claude/fix-trace-gstr3b-igst-dropped.md`. Caught by TC-GSTR-11/12.
 
 ---
 
