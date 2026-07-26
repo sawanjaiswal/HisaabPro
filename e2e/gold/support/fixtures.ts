@@ -155,8 +155,13 @@ export function actionFailures(failures: string[]): string[] {
  * CSRF_FAILED — which would look like the endpoint failing rather than the
  * caller skipping a step the real client performs.
  */
-export async function csrfPost(page: Page, path: string, data?: unknown) {
-  return csrfRequest(page, 'post', path, data)
+export async function csrfPost(
+  page: Page,
+  path: string,
+  data?: unknown,
+  options?: { headers?: Record<string, string> },
+) {
+  return csrfRequest(page, 'post', path, data, options)
 }
 
 /** As {@link csrfPost}, for the other state-changing verbs (PUT / PATCH / DELETE). */
@@ -165,6 +170,8 @@ export async function csrfRequest(
   method: 'post' | 'put' | 'patch' | 'delete',
   path: string,
   data?: unknown,
+  /** Extra request headers — e.g. `Idempotency-Key` on endpoints that demand one. */
+  options?: { headers?: Record<string, string> },
 ) {
   await page.request.get(`${path.replace(/\/api\/.*$/, '')}/api/auth/csrf-token`).catch(() => {})
   const cookies = await page.context().cookies()
@@ -178,6 +185,7 @@ export async function csrfRequest(
       // like the endpoint being broken.
       'X-Request-Nonce': crypto.randomUUID(),
       'X-Request-Timestamp': Date.now().toString(),
+      ...(options?.headers ?? {}),
     },
     ...(data === undefined ? {} : { data }),
   })
