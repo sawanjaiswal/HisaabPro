@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { asyncHandler } from '../../middleware/asyncHandler.js'
 import { validate } from '../../middleware/validate.js'
-import { authRateLimiter } from '../../middleware/rate-limit.js'
+import { authRateLimiter, otpRateLimiter } from '../../middleware/rate-limit.js'
 import { captchaGuard, recordFailedAttempt } from '../../middleware/captcha.js'
 import {
   registerSchema,
@@ -24,6 +24,8 @@ router.post(
   authRateLimiter,
   captchaGuard,
   validate(registerSchema),
+  // After validate: the limiter keys on the phone, which must be a checked one.
+  otpRateLimiter,
   asyncHandler(async (req, res) => {
     const result = await authService.register(req.body)
     if (!result.sent) {
@@ -76,6 +78,7 @@ router.post(
   '/resend-otp',
   authRateLimiter,
   validate(resendOtpSchema),
+  otpRateLimiter,
   asyncHandler(async (req, res) => {
     const result = await authService.resendOtp(req.body.phone as string)
     if (!result.sent) {

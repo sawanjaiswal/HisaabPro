@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { asyncHandler } from '../../middleware/asyncHandler.js'
 import { validate } from '../../middleware/validate.js'
-import { authRateLimiter } from '../../middleware/rate-limit.js'
+import { authRateLimiter, otpRateLimiter } from '../../middleware/rate-limit.js'
 import { captchaGuard } from '../../middleware/captcha.js'
 import {
   forgotPasswordSchema,
@@ -21,6 +21,8 @@ router.post(
   authRateLimiter,
   captchaGuard,
   validate(forgotPasswordSchema),
+  // After validate: the limiter keys on the phone, which must be a checked one.
+  otpRateLimiter,
   asyncHandler(async (req, res) => {
     const result = await authService.forgotPassword(req.body)
     if (!result.sent) {

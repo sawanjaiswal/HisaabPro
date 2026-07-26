@@ -39,9 +39,25 @@ export const devLoginRateLimiter = createRateLimiter({
   eventName: 'rate_limit.dev_login_hit',
 })
 
-/** 3 req/10min per IP — OTP verification */
+/**
+ * 3 req/10min per PHONE — every endpoint that sends an OTP.
+ *
+ * Keyed by the number, not the caller: the resource being protected is one
+ * person's handset and the per-message cost of reaching it, and both belong to
+ * the phone. Keying by IP at this cap would instead lock out a shop whose three
+ * staff register over one wifi — the burst brake for a caller is
+ * `authRateLimiter` (20/min per IP), which stays alongside this.
+ *
+ * MUST be mounted AFTER `validate(...)`, so the key comes from a body the
+ * schema has already checked rather than from arbitrary input. The IP fallback
+ * is for a request that somehow arrives without one — it must still land in a
+ * bucket, never in the un-keyed void.
+ */
 export const otpRateLimiter = createRateLimiter({
-  name: 'otp',
+  keyFn: (req) => {
+    const phone = typeof req.body?.phone === 'string' ? req.body.phone : null
+    return `rl:otp:${phone ?? `ip:${req.ip ?? 'unknown'}`}`
+  },
   windowMs: RATE_LIMIT_OTP_WINDOW_MS,
   max: RATE_LIMIT_OTP_MAX,
   message: 'Too many OTP requests. Please wait before trying again.',

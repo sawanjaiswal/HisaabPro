@@ -15,7 +15,7 @@ Last run: 2026-07-26.
 | Suite | Spec | Cases | Pass | Fail | Skip |
 |---|---|---|---|---|---|
 | B — Registration & OTP | `e2e/gold/registration.spec.ts` | 13 | 13 | 0 | 0 |
-| C — Login & session | `e2e/gold/auth.spec.ts` | 11 | 9 | 2 | 0 |
+| C — Login & session | `e2e/gold/auth.spec.ts` | 11 | 8 | 3 | 0 |
 | A — App shell | `e2e/gold/shell.spec.ts` | 8 | 7 | 0 | 1 |
 | H — Parties (CRUD) | `e2e/gold/parties.spec.ts` | 5 | 5 | 0 | 0 |
 | H — Parties (list, GSTIN, offline) | `e2e/gold/parties-list.spec.ts` | 6 | 6 | 0 | 0 |
@@ -32,6 +32,9 @@ Last run: 2026-07-26.
 | G — Dashboard | `e2e/gold/dashboard.spec.ts` | 8 | 8 | 0 | 0 |
 | E — Business & multi-business | `e2e/gold/business.spec.ts` | 5 | 5 | 0 | 0 |
 | O — Offline & sync | `e2e/gold/offline.spec.ts` | 8 | 8 | 0 | 0 |
+| Q — Security (isolation, authn, CSRF) | `e2e/gold/security.spec.ts` | 4 | 4 | 0 | 0 |
+| Q — Security (privilege, injection, limits, leakage) | `e2e/gold/security-hardening.spec.ts` | 4 | 4 | 0 | 0 |
+| Q — Test-hook gate (TC-SEC-09) | `server/src/__tests__/test-hooks.test.ts` | 4 | 4 | 0 | 0 |
 
 TC-PTY-09 (party statement: opening + transactions − payments = closing) is
 planned but not written. Suite K's invoice half covers TC-GST-01..08 (08 is the
@@ -52,9 +55,28 @@ three refusals, one real run asserting the stored parts still sum to the stored
 grand total, key replay, and the hourly limit. Note for the record: the backfill
 tags untagged **products** but deliberately leaves existing document line items
 alone, so a bill already given to a customer keeps the total it was issued with.
-Remaining suites (reports, settings,
-responsive/a11y, security, POS, purchases, expenses, accounting) are not written
-yet.
+Suite Q (`TC-SEC-01..09`) covers the cases where a
+failure is an incident rather than a bug: a second real tenant ("Rival Traders",
+seeded and logged in for real) whose party, product and freshly created invoice
+must be unreadable by id and absent from every scoped list; the same rows
+unwritable, then re-read by their owner to prove the refusal was not a scoped
+response over an unscoped write; every authenticated path proved live with a
+session before being refused without one; a mutation with the session cookie but
+no CSRF header refused, with the tokened call as the control; a shopkeeper
+session refused at every `/admin/*` path; a script in a party name rendered as
+characters on both list and detail; OTP and password attempts capped per phone
+and per IP while a bystander number still registers; the console and `/auth/me`
+carrying no customer phone, GSTIN, token or hash. TC-SEC-09 is a server unit test
+rather than a browser case — the hatch is gated on the `NODE_ENV` the server
+booted with, which a live run cannot vary.
+
+Remaining suites (reports, settings, responsive/a11y, POS, purchases, expenses,
+accounting) are not written yet.
+
+Suite C's third failure is TC-AUTH-05 (an expired access token should refresh
+silently; the app bounces to `/login`), tracked as part of the F12/F56 refresh
+family. It is unrelated to the OTP-limiter change below — confirmed by running
+`auth.spec.ts` in isolation both with and without it.
 
 ---
 
@@ -760,3 +782,22 @@ feature. Caught by TC-OFF-07. Unit test:
 `src/features/parties/__tests__/usePartyForm.offline.test.ts`.
 Root cause: `src/features/parties/usePartyForm.ts:179`.
 Trace: `.claude/fix-trace-offline-party-save-no-feedback.md`.
+
+### F60 — The OTP rate limiter was written and never attached — **HIGH**, FIXED
+
+`otpRateLimiter` (3 per 10 minutes) existed, was exported, was re-exported from
+the barrel — and was imported by nothing. Every OTP-issuing route
+(`/auth/register`, `/auth/resend-otp`, `/auth/forgot-password`) mounted only the
+generic `authRateLimiter` (20/min per IP), so one phone could be sent roughly
+120 messages an hour, each billed to us and each landing on a stranger's handset.
+The config still read as though OTP was capped at 3/10min: an unwired limiter
+fails silently and permissively, and nothing tests a middleware's absence.
+
+Now mounted on all three routes, immediately after `validate(...)` so the key
+comes from a checked body, and keyed on the **phone** rather than the IP — the
+resource being protected is one person's handset and our per-message cost, both
+identified by the number. Per-IP at this cap would lock out a shop whose three
+staff register over one wifi; the per-IP burst brake stays alongside it.
+Caught by TC-SEC-07 (which also asserts a bystander number still registers).
+Root cause: `server/src/routes/auth/register.ts:24`.
+Trace: `.claude/fix-trace-otp-limiter-unwired.md`.
