@@ -5,7 +5,8 @@ import { useMemo } from 'react'
 import { api } from '@/lib/api'
 
 interface OptOutListResponse {
-  data: Array<{ id: string }>
+  optOuts: Array<{ id: string }>
+  nextCursor: string | null
 }
 
 const EMPTY: ReadonlySet<string> = new Set()
@@ -19,7 +20,7 @@ export function useOptOutSet(): ReadonlySet<string> {
   })
 
   return useMemo(() => {
-    if (!query.data?.data?.length) return EMPTY
-    return new Set(query.data.data.map((p) => p.id))
+    if (!query.data?.optOuts?.length) return EMPTY
+    return new Set(query.data.optOuts.map((p) => p.id))
   }, [query.data])
 }

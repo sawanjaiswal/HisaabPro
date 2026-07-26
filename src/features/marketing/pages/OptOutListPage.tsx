@@ -22,7 +22,7 @@ interface OptOutParty {
 }
 
 interface OptOutListResponse {
-  data: OptOutParty[]
+  optOuts: OptOutParty[]
   nextCursor: string | null
 }
 
@@ -60,7 +60,7 @@ export default function OptOutListPage() {
     },
   })
 
-  const parties = query.data?.data ?? []
+  const parties = query.data?.optOuts ?? []
 
   return (
     <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>

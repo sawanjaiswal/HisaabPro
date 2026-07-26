@@ -68,3 +68,37 @@ export async function optInParty(partyId: string, businessId: string, userId: st
   logger.info('marketing.optin.set', { partyId, businessId, userId })
   return updated
 }
+
+export interface ListOptOutsQuery {
+  limit: number
+  cursor?: string
+}
+
+/**
+ * Parties this business has opted out of marketing, newest opt-out first.
+ *
+ * Backs both the opt-out management page and the chip the parties list renders
+ * on an opted-out party — the client has called this since PR3 and the route
+ * did not exist, so every parties-list render logged a 404.
+ */
+export async function listOptOutParties(businessId: string, { limit, cursor }: ListOptOutsQuery) {
+  const parties = await prisma.party.findMany({
+    where: { businessId, isDeleted: false, marketingOptOut: true },
+    select: {
+      id: true,
+      name: true,
+      phone: true,
+      marketingOptOut: true,
+      marketingOptOutAt: true,
+    },
+    // marketingOptOutAt can be null on rows opted out before it was recorded,
+    // so id is the tiebreaker that keeps the cursor stable.
+    orderBy: [{ marketingOptOutAt: 'desc' }, { id: 'desc' }],
+    take: limit + 1,
+    ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+  })
+
+  const hasMore = parties.length > limit
+  const page = hasMore ? parties.slice(0, limit) : parties
+  return { optOuts: page, nextCursor: hasMore ? (page[page.length - 1]?.id ?? null) : null }
+}

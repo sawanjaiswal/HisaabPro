@@ -9,7 +9,11 @@ import { auth } from '../../middleware/auth.js'
 import { sendSuccess, sendError } from '../../lib/response.js'
 import { segmentFilterSchema } from '../../services/marketing/campaign-segment.types.js'
 import { previewSegment } from '../../services/marketing/campaign-segment.service.js'
-import { optOutParty, optInParty } from '../../services/marketing/marketing-optout.service.js'
+import {
+  optOutParty,
+  optInParty,
+  listOptOutParties,
+} from '../../services/marketing/marketing-optout.service.js'
 import { createRateLimiter } from '../../middleware/rate-limit/factory.js'
 import { z } from 'zod'
 
@@ -44,6 +48,24 @@ router.post(
       return sendError(res, parsed.error.issues.map((i) => i.message).join(', '), 'VALIDATION_ERROR', 400)
     }
     const result = await previewSegment(req.user!.businessId, parsed.data.filter)
+    sendSuccess(res, result)
+  }),
+)
+
+const listOptOutsSchema = z.object({
+  limit: z.coerce.number().int().min(1).max(500).default(50),
+  cursor: z.string().optional(),
+})
+
+// GET /api/marketing/opt-outs — the parties that opted out of marketing
+router.get(
+  '/opt-outs',
+  asyncHandler(async (req, res) => {
+    const parsed = listOptOutsSchema.safeParse(req.query)
+    if (!parsed.success) {
+      return sendError(res, parsed.error.issues.map((i) => i.message).join(', '), 'VALIDATION_ERROR', 400)
+    }
+    const result = await listOptOutParties(req.user!.businessId, parsed.data)
     sendSuccess(res, result)
   }),
 )
